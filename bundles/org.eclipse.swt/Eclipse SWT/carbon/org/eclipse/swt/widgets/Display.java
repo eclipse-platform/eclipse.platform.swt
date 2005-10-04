@@ -190,6 +190,10 @@ public class Display extends Device {
 	int errorImage, infoImage, warningImage;
 	int errorImageData, infoImageData, warningImageData;
 	
+	/* System Settings */
+	boolean runSettings;
+	RGBColor highlightColor;
+
 	/* Dock icon */
 	int dockImage, dockImageData;
 
@@ -342,7 +346,8 @@ int actionProc (int theControl, int partCode) {
 }
 
 int appearanceProc (int theAppleEvent, int reply, int handlerRefcon) {
-	runSettings ();
+	runSettings = true;
+	wakeThread ();
 	return OS.eventNotHandledErr;
 }
 
@@ -925,6 +930,11 @@ void createDisplay (DeviceData data) {
 	OS.ClearMenuBar ();
 	queue = OS.GetCurrentEventQueue ();
 	OS.TXNInitTextension (0, 0, 0);
+	
+	/* Save the current highlight color */
+	OS.RegisterAppearanceClient ();
+	highlightColor = new RGBColor ();
+	OS.GetThemeBrushAsColor ((short) OS.kThemeBrushPrimaryHighlightColor, (short) getDepth(), true, highlightColor);
 }
 
 synchronized static void deregister (Display display) {
@@ -1674,29 +1684,27 @@ public Thread getSyncThread () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-	//NOT DONE
-	
 	RGBColor rgb = new RGBColor ();
 	switch (id) {
-		case SWT.COLOR_INFO_FOREGROUND: 						return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_INFO_BACKGROUND: 						return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
-		case SWT.COLOR_TITLE_FOREGROUND:						OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleActive, (short)getDepth(), true, rgb); break;
-		case SWT.COLOR_TITLE_BACKGROUND:						OS.GetThemeBrushAsColor((short)-5/*undocumented darker highlight color*/, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_INFO_FOREGROUND: return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_INFO_BACKGROUND: return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
+		case SWT.COLOR_TITLE_FOREGROUND: OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_BACKGROUND: OS.GetThemeBrushAsColor((short)-5/*undocumented darker highlight color*/, (short)getDepth(), true, rgb); break;
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: 	OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb) ; break;
 		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:	OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleInactive, (short)getDepth(), true, rgb); break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: 	OS.GetThemeBrushAsColor((short)OS.kThemeBrushSecondaryHighlightColor, (short)getDepth(), true, rgb); break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: OS.GetThemeBrushAsColor((short)OS.kThemeBrushSecondaryHighlightColor, (short)getDepth(), true, rgb); break;
-		case SWT.COLOR_WIDGET_DARK_SHADOW:				return Color.carbon_new (this, new float [] {0x33 / 255f, 0x33 / 255f, 0x33 / 255f, 1});
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:			return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0x66 / 255f, 1});
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				return Color.carbon_new (this, new float [] {0x99 / 255f, 0x99 / 255f, 0x99 / 255f, 1});
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:		return Color.carbon_new (this, new float [] {0xCC / 255f, 0xCC / 255f, 0xCC / 255f, 1});
-		case SWT.COLOR_WIDGET_BACKGROUND: 					OS.GetThemeBrushAsColor((short)OS.kThemeBrushButtonFaceActive, (short)getDepth(), true, rgb); break;
-		case SWT.COLOR_WIDGET_FOREGROUND:					OS.GetThemeTextColor((short)OS.kThemeTextColorPushButtonActive, (short)getDepth(), true, rgb); break;
-		case SWT.COLOR_WIDGET_BORDER: 							return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_LIST_FOREGROUND: 						OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
-		case SWT.COLOR_LIST_BACKGROUND: 						OS.GetThemeBrushAsColor((short)OS.kThemeBrushListViewBackground, (short)getDepth(), true, rgb); break;
-		case SWT.COLOR_LIST_SELECTION_TEXT: 					OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
-		case SWT.COLOR_LIST_SELECTION:								OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_DARK_SHADOW: return Color.carbon_new (this, new float [] {0x33 / 255f, 0x33 / 255f, 0x33 / 255f, 1});
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW: return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0x66 / 255f, 1});
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW: return Color.carbon_new (this, new float [] {0x99 / 255f, 0x99 / 255f, 0x99 / 255f, 1});
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW: return Color.carbon_new (this, new float [] {0xCC / 255f, 0xCC / 255f, 0xCC / 255f, 1});
+		case SWT.COLOR_WIDGET_BACKGROUND: OS.GetThemeBrushAsColor((short)OS.kThemeBrushButtonFaceActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_FOREGROUND: OS.GetThemeTextColor((short)OS.kThemeTextColorPushButtonActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_BORDER: return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_LIST_FOREGROUND: OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_BACKGROUND: OS.GetThemeBrushAsColor((short)OS.kThemeBrushListViewBackground, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_SELECTION_TEXT: OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_SELECTION: OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb); break;
 		default:
 			return super.getSystemColor (id);	
 	}
@@ -2718,7 +2726,9 @@ int[] readImageRef(int path) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	boolean events = runTimers ();
+	boolean events = false;
+	events |= runSettings ();
+	events |= runTimers ();
 	events |= runEnterExit ();
 	events |= runPopups ();
 	events |= runGrabs ();
@@ -3236,7 +3246,10 @@ boolean runPopups () {
 	return result;
 }
 
-void runSettings () {
+boolean runSettings () {
+	if (!runSettings) return false;
+	runSettings = false;
+	initializeInsets ();
 	sendEvent (SWT.Settings, null);
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -3246,6 +3259,7 @@ void runSettings () {
 			shell.layout (true, true);
 		}
 	}
+	return true;
 }
 
 boolean runTimers () {
@@ -3545,10 +3559,28 @@ public boolean sleep () {
 		OS.DisposeWindow (disposeWindow);
 		disposeWindow = 0;
 	}
+	if (eventTable != null && eventTable.hooks (SWT.Settings)) {
+		RGBColor color = new RGBColor ();
+		int status = OS.noErr, depth = getDepth ();
+		do {
+			allowTimers = false;
+			status = OS.ReceiveNextEvent (0, null, 0.5, false, null);
+			allowTimers = true;
+			if (status == OS.eventLoopTimedOutErr) {
+				OS.GetThemeBrushAsColor ((short) OS.kThemeBrushPrimaryHighlightColor, (short) depth, true, color);
+				if (highlightColor.red != color.red || highlightColor.green != color.green || highlightColor.blue != color.blue) {
+					highlightColor = color;
+					runSettings = true;
+					return true;
+				}
+			}
+		} while (status == OS.eventLoopTimedOutErr);
+		return status == OS.noErr;
+	}
 	allowTimers = false;
-	boolean result = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
+	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null);
 	allowTimers = true;
-	return result;
+	return status == OS.noErr;
 }
 
 /**
