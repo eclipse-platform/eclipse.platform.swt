@@ -331,7 +331,7 @@ public Browser(Composite parent, int style) {
 	// [webView setUIDelegate:delegate];
 	WebKit.objc_msgSend(webView, WebKit.S_setUIDelegate, delegate);
 	
-	/* register delegate for all notifications send out from webview */
+	/* register delegate for all notifications sent out from webview */
 	WebKit.objc_msgSend(notificationCenter, WebKit.S_addObserver_selector_name_object, delegate, WebKit.S_handleNotification, 0, webView);
 	
 	// [webView setPolicyDelegate:delegate];
@@ -767,6 +767,8 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 27: makeFirstResponder(arg0); break;
 		case 28: runJavaScriptAlertPanelWithMessage(arg0); break;
 		case 29: runOpenPanelForFileButtonWithResultListener(arg0); break;
+		case 30: decideDestinationWithSuggestedFilename(arg0, arg1); break;
+		case 31: downloadDidFinish(arg0); break;
 	}
 	return ret;
 }
@@ -1629,6 +1631,7 @@ void runOpenPanelForFileButtonWithResultListener(int resultListener) {
 	result.getChars(0, length, buffer, 0);
 	int filename = OS.CFStringCreateWithCharacters(0, buffer, length);
 	WebKit.objc_msgSend(resultListener, WebKit.S_chooseFilename, filename);
+	OS.CFRelease(filename);
 }
 void webViewClose() {
 	Shell parent = getShell();
@@ -1705,7 +1708,16 @@ void setToolbarsVisible(int visible) {
 /* PolicyDelegate */
 
 void decidePolicyForMIMEType(int type, int request, int frame, int listener) {
-	WebKit.objc_msgSend(listener, WebKit.S_use);
+	boolean canShow = WebKit.objc_msgSend(WebKit.C_WebView, WebKit.S_canShowMIMEType, type) != 0;
+	if (canShow) {
+		WebKit.objc_msgSend(listener, WebKit.S_use);
+		return;
+	}
+
+	/* Safari cannot display the content, so offer to download it instead */ 
+	WebKit.objc_msgSend(listener, WebKit.S_ignore);
+	int download = WebKit.objc_msgSend(WebKit.C_WebDownload, WebKit.S_alloc);
+	WebKit.objc_msgSend(download, WebKit.S_initWithRequestDelegate, request, delegate);
 }
 
 void decidePolicyForNavigationAction(int actionInformation, int request, int frame, int listener) {
@@ -1751,4 +1763,33 @@ void decidePolicyForNewWindowAction(int actionInformation, int request, int fram
 void unableToImplementPolicyWithError(int error, int frame) {
 }
 
+/* WebDownload */
+
+void decideDestinationWithSuggestedFilename (int download, int filename) {
+	int length = OS.CFStringGetLength(filename);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(filename, range, buffer);
+	String name = new String(buffer);
+	FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+	dialog.setText(SWT.getMessage ("SWT_FileDownload")); //$NON-NLS-1$
+	dialog.setFileName(name);
+	String path = dialog.open();
+	if (path == null) {
+		/* cancel pressed */
+		WebKit.objc_msgSend(download, WebKit.S_release);
+		return;
+	}
+	length = path.length();
+	char[] chars = new char[length];
+	path.getChars(0, length, chars, 0);
+	int result = OS.CFStringCreateWithCharacters(0, chars, length);
+	WebKit.objc_msgSend(download, WebKit.S_setDestinationAllowOverwrite, result, 1);
+	OS.CFRelease(result);
+}
+
+void downloadDidFinish (int download) {
+	WebKit.objc_msgSend(download, WebKit.S_release);
+}
 }
