@@ -2006,7 +2006,7 @@ public Font getSystemFont () {
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
-	return tray = new Tray (this, SWT.NULL);
+	return tray = new Tray (this, SWT.NONE);
 }
 
 /**

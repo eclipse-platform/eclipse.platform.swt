@@ -50,7 +50,7 @@ public class ColorDialog extends Dialog {
  * @see Widget#getStyle
  */
 public ColorDialog (Shell parent) {
-	this (parent, SWT.NULL);
+	this (parent, SWT.NONE);
 }
 /**
  * Constructs a new instance of this class given its parent
