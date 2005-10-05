@@ -160,13 +160,14 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
-	style = checkBits (style, SWT.TOP, SWT.BOTTOM, 0, 0, 0, 0);
-	
-	/* Force tabs to be on the bottom for tab folders on PPC */
+	/*
+	* When the SWT.TOP style has not been set, force the
+	* tabs to be on the bottom for tab folders on PPC.
+	*/
 	if (OS.IsPPC) {
-		style |= SWT.BOTTOM;
-		style &= ~SWT.TOP;
+		if ((style & SWT.TOP) == 0) style |= SWT.BOTTOM;
 	}
+	style = checkBits (style, SWT.TOP, SWT.BOTTOM, 0, 0, 0, 0);
 	
 	/*
 	* Even though it is legal to create this widget
