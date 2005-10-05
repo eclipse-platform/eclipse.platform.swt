@@ -424,8 +424,8 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
-	if (focusIndex == -1) return result;
 	if (result == OS.noErr) return result;
+	if (focusIndex == -1) return result;
 	int [] keyboardEvent = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
