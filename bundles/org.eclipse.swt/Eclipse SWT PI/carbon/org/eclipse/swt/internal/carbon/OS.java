@@ -71,8 +71,8 @@ public class OS extends Platform {
 	public static final int kAlertStdAlertOtherButton     = 3;
 	public static final int kAtSpecifiedOrigin = 0;
 	public static final int kATSDeletedGlyphcode = 0xFFFF;
+	public static final int kATSLineLastNoJustification = 0x00000020;
 	public static final int kATSUAscentTag = 284;
-	public static final int kATSUBeforeWithStreamShiftTag = 267;
 	public static final int kATSUCrossStreamShiftTag = 269;
 	public static final int kATSUDescentTag = 285;
 	public static final int kATSUDirectDataBaselineDeltaFixedArray = 1;
