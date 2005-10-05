@@ -225,14 +225,16 @@ Control [] computeTabList () {
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER)) != 0;
-	createHandle (index, scrolled);
+	createHandle (index, true, scrolled);
 }
 
-void createHandle (int index, boolean scrolled) {
+void createHandle (int index, boolean fixed, boolean scrolled) {
 	if (scrolled) {
-		fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_fixed_set_has_window (fixedHandle, true);
+		if (fixed) {
+			fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
+			if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_fixed_set_has_window (fixedHandle, true);
+		}
 		int /*long*/ vadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
 		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
 		int /*long*/ hadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
@@ -254,7 +256,7 @@ void createHandle (int index, boolean scrolled) {
 		}
 	}
 	if (scrolled) {
-		OS.gtk_container_add (fixedHandle, scrolledHandle);
+		if (fixed) OS.gtk_container_add (fixedHandle, scrolledHandle);
 		/*
 		* Force the scrolledWindow to have a single child that is
 		* not scrolled automatically.  Calling gtk_container_add()

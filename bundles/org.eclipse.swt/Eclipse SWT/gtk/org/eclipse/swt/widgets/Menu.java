@@ -256,8 +256,9 @@ void createHandle (int index) {
 	if ((style & SWT.BAR) != 0) {
 		handle = OS.gtk_menu_bar_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		int /*long*/ parentHandle = parent.fixedHandle;
-		OS.gtk_container_add (parentHandle, handle);
+		int /*long*/ vboxHandle = parent.vboxHandle;
+		OS.gtk_container_add (vboxHandle, handle);
+		OS.gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, OS.GTK_PACK_START);
 	} else {
 		handle = OS.gtk_menu_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);

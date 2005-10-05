@@ -100,7 +100,7 @@ public class Decorations extends Canvas {
 	Menu [] menus;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	int /*long*/ accelGroup;	
+	int /*long*/ accelGroup, vboxHandle;
 	
 Decorations () {
 	/* Do nothing */
@@ -472,6 +472,11 @@ void releaseChildren (boolean destroy) {
 		}
 		menus = null;
 	}
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	vboxHandle = 0;
 }
 
 void releaseWidget () {

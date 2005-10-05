@@ -530,7 +530,7 @@ void createHandle (int index) {
 	} else {
 		shellHandle = OS.gtk_plug_new (handle);
 	}
-	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 		OS.gtk_window_set_destroy_with_parent (shellHandle, true);
@@ -550,7 +550,11 @@ void createHandle (int index) {
 	} else {
 		OS.gtk_window_set_resizable (shellHandle, false);
 	}
-	createHandle (index, true);
+	vboxHandle = OS.gtk_vbox_new (false, 0);
+	if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	createHandle (index, false, true);
+	OS.gtk_container_add (vboxHandle, scrolledHandle);
+	OS.gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, OS.GTK_PACK_END);
 	OS.gtk_window_set_title (shellHandle, new byte [1]);
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
 		OS.gtk_container_set_border_width (shellHandle, 1);
@@ -655,7 +659,21 @@ void fixShell (Shell newShell, Control control) {
 }
 
 void forceResize () {
-	/* Do nothing.  Shell keeps the size of its children up to date. */
+	forceResize (OS.GTK_WIDGET_WIDTH (vboxHandle), OS.GTK_WIDGET_HEIGHT (vboxHandle));
+}
+
+void forceResize (int width, int height) {
+	int flags = OS.GTK_WIDGET_FLAGS (vboxHandle);
+	OS.GTK_WIDGET_SET_FLAGS (vboxHandle, OS.GTK_VISIBLE);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (vboxHandle, requisition);
+	GtkAllocation allocation = new GtkAllocation ();
+	allocation.width = width;
+	allocation.height = height;
+	OS.gtk_widget_size_allocate (vboxHandle, allocation);
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS (vboxHandle, OS.GTK_VISIBLE);	
+	}
 }
 
 public Point getLocation () {
@@ -689,12 +707,8 @@ public Point getMinimumSize () {
 
 public Point getSize () {
 	checkWidget ();
-	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle);
-	if (menuBar != null)  {
-		int /*long*/ barHandle = menuBar.handle;
-		height += OS.GTK_WIDGET_HEIGHT (barHandle);
-	}
+	int width = OS.GTK_WIDGET_WIDTH (vboxHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (vboxHandle);
 	return new Point (width + trimWidth (), height + trimHeight ());
 }
 
@@ -1058,20 +1072,7 @@ void resizeBounds (int width, int height, boolean notify) {
 	if (enableWindow != 0) {
 		OS.gdk_window_resize (enableWindow, width, height);
 	}
-	int border = OS.gtk_container_get_border_width (shellHandle);
-	int menuHeight = 0;
-	GtkRequisition requisition = new GtkRequisition ();
-	if (menuBar != null) {
-		int /*long*/ menuHandle = menuBar.handle;
-		OS.gtk_widget_size_request (menuHandle, requisition);
-		menuHeight = OS.GTK_WIDGET_REQUISITION_HEIGHT (menuHandle);
-		OS.gtk_widget_set_size_request (menuHandle, width - (border  * 2), menuHeight);
-		height = Math.max (1, height - menuHeight);
-	}
-	OS.gtk_fixed_move (fixedHandle, scrolledHandle, 0, menuHeight);
-	OS.gtk_widget_set_size_request (scrolledHandle, width - (border  * 2), height - (border  * 2));
-	OS.gtk_widget_size_request (fixedHandle, requisition);
-	OS.gtk_container_resize_children (fixedHandle);
+	forceResize (width, height);
 	if (notify) {
 		resized = true;
 		sendEvent (SWT.Resize);
@@ -1222,11 +1223,8 @@ void setInitialBounds () {
 	Rectangle rect = monitor.getClientArea ();
 	int width = rect.width * 5 / 8;
 	int height = rect.height * 5 / 8;
-	OS.gtk_widget_set_size_request (scrolledHandle, width, height);
 	OS.gtk_window_resize (shellHandle, width, height);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (fixedHandle, requisition);
-	OS.gtk_container_resize_children (fixedHandle);
+	resizeBounds (width, height, false);
 }
 
 public void setMaximized (boolean maximized) {
@@ -1259,8 +1257,8 @@ public void setMenuBar (Menu menu) {
 		createAccelGroup ();
 		menuBar.addAccelerators (accelGroup);
 	}
-	int width = OS.GTK_WIDGET_WIDTH (shellHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (shellHandle);
+	int width = OS.GTK_WIDGET_WIDTH (vboxHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (vboxHandle);
 	resizeBounds (width, height, !both);
 }
 
@@ -1459,10 +1457,10 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
 }
 
 void showWidget () {
-	OS.gtk_container_add (shellHandle, fixedHandle);
+	OS.gtk_container_add (shellHandle, vboxHandle);
 	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
 	if (handle != 0) OS.gtk_widget_show (handle);
-	if (fixedHandle != 0) OS.gtk_widget_show (fixedHandle);
+	if (vboxHandle != 0) OS.gtk_widget_show (vboxHandle);
 }
 
 boolean traverseEscape () {
@@ -1562,12 +1560,8 @@ public Rectangle getBounds () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
-	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle);
-	if (menuBar != null)  {
-		int /*long*/ barHandle = menuBar.handle;
-		height += OS.GTK_WIDGET_HEIGHT (barHandle);
-	}
+	int width = OS.GTK_WIDGET_WIDTH (vboxHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (vboxHandle);
 	return new Rectangle (x [0], y [0], width + trimWidth (), height + trimHeight ());
 }
 
