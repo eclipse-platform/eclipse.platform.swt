@@ -336,6 +336,9 @@ public Browser(Composite parent, int style) {
 	
 	// [webView setPolicyDelegate:delegate];
 	WebKit.objc_msgSend(webView, WebKit.S_setPolicyDelegate, delegate);
+
+	// [webView setDownloadDelegate:delegate];
+	WebKit.objc_msgSend(webView, WebKit.S_setDownloadDelegate, delegate);
 }
 
 public static void clearSessions () {
@@ -768,7 +771,6 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 28: runJavaScriptAlertPanelWithMessage(arg0); break;
 		case 29: runOpenPanelForFileButtonWithResultListener(arg0); break;
 		case 30: decideDestinationWithSuggestedFilename(arg0, arg1); break;
-		case 31: downloadDidFinish(arg0); break;
 	}
 	return ret;
 }
@@ -1709,15 +1711,7 @@ void setToolbarsVisible(int visible) {
 
 void decidePolicyForMIMEType(int type, int request, int frame, int listener) {
 	boolean canShow = WebKit.objc_msgSend(WebKit.C_WebView, WebKit.S_canShowMIMEType, type) != 0;
-	if (canShow) {
-		WebKit.objc_msgSend(listener, WebKit.S_use);
-		return;
-	}
-
-	/* Safari cannot display the content, so offer to download it instead */ 
-	WebKit.objc_msgSend(listener, WebKit.S_ignore);
-	int download = WebKit.objc_msgSend(WebKit.C_WebDownload, WebKit.S_alloc);
-	WebKit.objc_msgSend(download, WebKit.S_initWithRequestDelegate, request, delegate);
+	WebKit.objc_msgSend(listener, canShow ? WebKit.S_use : WebKit.S_download);
 }
 
 void decidePolicyForNavigationAction(int actionInformation, int request, int frame, int listener) {
@@ -1787,9 +1781,5 @@ void decideDestinationWithSuggestedFilename (int download, int filename) {
 	int result = OS.CFStringCreateWithCharacters(0, chars, length);
 	WebKit.objc_msgSend(download, WebKit.S_setDestinationAllowOverwrite, result, 1);
 	OS.CFRelease(result);
-}
-
-void downloadDidFinish (int download) {
-	WebKit.objc_msgSend(download, WebKit.S_release);
 }
 }

@@ -217,7 +217,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 /* WebPolicyDelegate */
 - (void)webView:(WebView *)sender decidePolicyForMIMEType:(NSString *)type request:(NSURLRequest *)request frame:(WebFrame*)frame decisionListener:(id<WebPolicyDecisionListener>)listener
 {
-	proc((int)sender, user_data, 19, (int)type, (int)request, (int)listener, 0);
+	proc((int)sender, user_data, 19, (int)type, (int)request, (int)frame, (int)listener);
 }
 
 - (void)webView:(WebView *)sender decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id<WebPolicyDecisionListener>)listener
@@ -242,11 +242,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 - (void)download:(NSURLDownload *)download decideDestinationWithSuggestedFilename:(NSString *)filename
 {
 	proc((int)download, user_data, 30, (int)download, (int)filename, 0, 0);
-}
-
-- (void)downloadDidFinish:(NSURLDownload *)download
-{
-	proc((int)download, user_data, 31, (int)download, 0, 0, 0);
 }
 
 @end
