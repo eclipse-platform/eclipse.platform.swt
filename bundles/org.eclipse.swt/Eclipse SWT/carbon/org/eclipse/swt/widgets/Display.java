@@ -115,6 +115,7 @@ public class Display extends Device {
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
+	boolean closing;
 	
 	/* Deferred dispose window */
 	int disposeWindow;
@@ -197,8 +198,6 @@ public class Display extends Device {
 	/* Dock icon */
 	int dockImage, dockImageData;
 
-	/* System Cursors Cache */
-
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 
@@ -209,40 +208,40 @@ public class Display extends Device {
 		{55,	SWT.COMMAND},
 
 		/* Non-Numeric Keypad Keys */
-		{126,	SWT.ARROW_UP},
-		{125,	SWT.ARROW_DOWN},
-		{123,	SWT.ARROW_LEFT},
-		{124,	SWT.ARROW_RIGHT},
-		{116,	SWT.PAGE_UP},
-		{121,	SWT.PAGE_DOWN},
-		{115,	SWT.HOME},
-		{119,	SWT.END},
+		{126, SWT.ARROW_UP},
+		{125, SWT.ARROW_DOWN},
+		{123, SWT.ARROW_LEFT},
+		{124, SWT.ARROW_RIGHT},
+		{116, SWT.PAGE_UP},
+		{121, SWT.PAGE_DOWN},
+		{115, SWT.HOME},
+		{119, SWT.END},
 //		{??,	SWT.INSERT},
 
 		/* Virtual and Ascii Keys */
 		{51,	SWT.BS},
 		{36,	SWT.CR},
-		{117,	SWT.DEL},
+		{117, SWT.DEL},
 		{53,	SWT.ESC},
 		{76,	SWT.LF},
 		{48,	SWT.TAB},	
 		
 		/* Functions Keys */
-		{122,	SWT.F1},
-		{120,	SWT.F2},
+		{122, SWT.F1},
+		{120, SWT.F2},
 		{99,	SWT.F3},
-		{118,	SWT.F4},
+		{118, SWT.F4},
 		{96,	SWT.F5},
 		{97,	SWT.F6},
 		{98,	SWT.F7},
-		{100,	SWT.F8},
-		{101,	SWT.F9},
-		{109,	SWT.F10},
-		{103,	SWT.F11},
-		{111,	SWT.F12},
-		{105,	SWT.F13},
-		{107,	SWT.F14},
-		{113,	SWT.F15},
+		{100, SWT.F8},
+		{101, SWT.F9},
+		{109, SWT.F10},
+		{103, SWT.F11},
+		{111, SWT.F12},
+		{105, SWT.F13},
+		{107, SWT.F14},
+		{113, SWT.F15},
 		
 		/* Numeric Keypad Keys */
 		{67, SWT.KEYPAD_MULTIPLY},
@@ -270,7 +269,7 @@ public class Display extends Device {
 //		{??,	SWT.PAUSE},
 //		{??,	SWT.BREAK},
 //		{??,	SWT.PRINT_SCREEN},
-		{114,	SWT.HELP},
+		{114, SWT.HELP},
 		
 	};
 
@@ -723,7 +722,10 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 	switch (eventKind) {
 		case OS.kEventProcessCommand: {
 			if (command.commandID == OS.kAEQuitApplication) {
-				close ();
+				if (!closing) {
+					closing = true;
+					close ();
+				}
 				return OS.noErr;
 			}
 			if ((command.attributes & OS.kHICommandFromMenu) != 0) {
