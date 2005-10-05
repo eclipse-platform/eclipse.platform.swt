@@ -197,7 +197,7 @@ public Color getBackground (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	RECT rect = getBounds (itemIndex, 0, true, false);
+	RECT rect = getBounds (itemIndex, 0, true, false, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
@@ -219,12 +219,12 @@ public Rectangle getBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	RECT rect = getBounds (itemIndex, index, true, true);
+	RECT rect = getBounds (itemIndex, index, true, true, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-RECT getBounds (int row, int column, boolean getText, boolean getImage) {
+RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean full) {
 	if (!getText && !getImage) return new RECT ();
 	int columnCount = Math.max (1, parent.getColumnCount ());
 	if (0 > column || column > columnCount - 1) return new RECT ();
@@ -278,7 +278,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 							}
 						}
 					} else {
-						if (getImage) rect.right = rect.left;
+						if (getImage && !full) rect.right = rect.left;
 					}
 				}
 			}
@@ -470,7 +470,7 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	RECT rect = getBounds (itemIndex, index, false, true);
+	RECT rect = getBounds (itemIndex, index, false, true, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
@@ -559,7 +559,7 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	RECT rect = getBounds (index, column, drawText, drawImage);
+	RECT rect = getBounds (index, column, drawText, drawImage, true);
 	OS.InvalidateRect (hwnd, rect, true);
 }
 
