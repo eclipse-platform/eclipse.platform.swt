@@ -722,10 +722,7 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 	switch (eventKind) {
 		case OS.kEventProcessCommand: {
 			if (command.commandID == OS.kAEQuitApplication) {
-				if (!closing) {
-					closing = true;
-					close ();
-				}
+				if (!closing) close ();
 				return OS.noErr;
 			}
 			if ((command.attributes & OS.kHICommandFromMenu) != 0) {
@@ -840,6 +837,7 @@ void clearMenuFlags () {
  */
 public void close () {
 	checkDevice ();
+	closing = true;
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if (event.doit) dispose ();
