@@ -235,9 +235,7 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
  * @since 2.0
  * 
  * @param automation the automation object that provides the event notification
- * 
  * @param eventID the id of the event
- * 
  * @param listener the listener
  *
  * @exception IllegalArgumentException <ul> 
@@ -254,6 +252,30 @@ public void addEventListener(OleAutomation automation, int eventID, OleListener 
 	}
 	
 }
+/**
+ * Adds the listener to receive events.
+ *
+ * @since 3.2
+ * 
+ * @param automation the automation object that provides the event notification
+ * @param eventSinkId the GUID of the event sink
+ * @param eventID the id of the event
+ * @param listener the listener
+ *
+ * @exception IllegalArgumentException <ul> 
+ *	   <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
+ */
+public void addEventListener(OleAutomation automation, String eventSinkId, int eventID, OleListener listener) {
+	if (listener == null || automation == null || eventSinkId == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
+	int address = automation.getAddress();
+	if (address == 0) return;
+	char[] buffer = (eventSinkId +"\0").toCharArray();
+	GUID guid = new GUID();
+	if (COM.IIDFromString(buffer, guid) != COM.S_OK) return;
+	addEventListener(address, guid, eventID, listener);
+}
+
 void addEventListener(int iunknown, GUID guid, int eventID, OleListener listener) {
 	if (listener == null || iunknown == 0 || guid == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
 	// have we connected to this kind of event sink before?
