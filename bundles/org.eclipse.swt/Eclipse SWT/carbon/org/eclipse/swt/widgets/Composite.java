@@ -515,8 +515,8 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
+int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
 	if ((state & CANVAS) != 0) {
 		int [] keyboardEvent = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);

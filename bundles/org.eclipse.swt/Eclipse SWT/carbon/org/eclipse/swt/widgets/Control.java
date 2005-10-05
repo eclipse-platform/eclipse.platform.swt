@@ -1539,8 +1539,15 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 			control = control.parent;
 		}
 	}
+	int result = kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
+	if (result == OS.noErr || consume [0]) return OS.noErr;
+	return result;
+}
+
+int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
+	int [] keyboardEvent = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	if (!sendKeyEvent (SWT.KeyDown, keyboardEvent [0])) return OS.noErr;
-	if (consume [0]) return 	OS.noErr;
 	return OS.eventNotHandledErr;
 }
 

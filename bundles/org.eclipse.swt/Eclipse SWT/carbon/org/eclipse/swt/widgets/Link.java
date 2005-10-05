@@ -422,8 +422,8 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
+int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if (focusIndex == -1) return result;
 	int [] keyboardEvent = new int [1];
