@@ -323,7 +323,7 @@ abstract class Tab {
 	 */
 	Composite createTabFolderPage (TabFolder tabFolder) {
 		/* Create a two column page with a SashForm*/
-		tabFolderPage = new Composite (tabFolder, SWT.NULL);
+		tabFolderPage = new Composite (tabFolder, SWT.NONE);
 		tabFolderPage.setLayout (new FillLayout ());
 		sash = new SashForm (tabFolderPage, SWT.HORIZONTAL);
 	

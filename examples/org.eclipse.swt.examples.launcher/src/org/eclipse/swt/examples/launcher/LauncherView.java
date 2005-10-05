@@ -47,7 +47,7 @@ public class LauncherView extends ViewPart {
 		workbenchShell = getSite().getShell();
 		parent.setLayout(new SplitLayout());
 				
-		Group launchGroup = new Group(parent, SWT.NULL);
+		Group launchGroup = new Group(parent, SWT.NONE);
 		launchGroup.setText(LauncherPlugin.getResourceString("view.launchGroup.text"));
 		
 		GridLayout gridLayout = new GridLayout();
@@ -100,7 +100,7 @@ public class LauncherView extends ViewPart {
 			}
 		});
 
-		Group descriptionGroup = new Group(parent, SWT.NULL);
+		Group descriptionGroup = new Group(parent, SWT.NONE);
 		descriptionGroup.setText(LauncherPlugin.getResourceString("view.descriptionGroup.text"));
 		descriptionGroup.setLayout(new FillLayout());
 		

@@ -102,7 +102,7 @@ public class ImageAnalyzer {
 			dialog = new Shell(getParent(), getStyle());
 			dialog.setText(getText());
 			dialog.setLayout(new GridLayout());
-			Label label = new Label(dialog, SWT.NULL);
+			Label label = new Label(dialog, SWT.NONE);
 			label.setText(message);
 			label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 			text = new Text(dialog, SWT.SINGLE | SWT.BORDER);
@@ -236,7 +236,7 @@ public class ImageAnalyzer {
 		separator.setLayoutData(gridData);
 		
 		// Add a composite to contain some control widgets across the top.
-		Composite controls = new Composite(shell, SWT.NULL);
+		Composite controls = new Composite(shell, SWT.NONE);
 		RowLayout rowLayout = new RowLayout();
 		rowLayout.marginTop = 0;
 		rowLayout.marginBottom = 5;
@@ -247,7 +247,7 @@ public class ImageAnalyzer {
 		controls.setLayoutData(gridData);
 		
 		// Combo to change the background.
-		Group group = new Group(controls, SWT.NULL);
+		Group group = new Group(controls, SWT.NONE);
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("Background"));
 		backgroundCombo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -270,7 +270,7 @@ public class ImageAnalyzer {
 			"0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1",
 			"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2",
 			"3", "4", "5", "6", "7", "8", "9", "10",};
-		group = new Group(controls, SWT.NULL);
+		group = new Group(controls, SWT.NONE);
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("X_scale"));
 		scaleXCombo = new Combo(group, SWT.DROP_DOWN);
@@ -285,7 +285,7 @@ public class ImageAnalyzer {
 		});
 		
 		// Combo to change the y scale.
-		group = new Group(controls, SWT.NULL);
+		group = new Group(controls, SWT.NONE);
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("Y_scale"));
 		scaleYCombo = new Combo(group, SWT.DROP_DOWN);
@@ -300,7 +300,7 @@ public class ImageAnalyzer {
 		});
 		
 		// Combo to change the alpha value.
-		group = new Group(controls, SWT.NULL);
+		group = new Group(controls, SWT.NONE);
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("Alpha_K"));
 		alphaCombo = new Combo(group, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -315,7 +315,7 @@ public class ImageAnalyzer {
 		});
 		
 		// Check box to request incremental display.
-		group = new Group(controls, SWT.NULL);
+		group = new Group(controls, SWT.NONE);
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("Display"));
 		incrementalCheck = new Button(group, SWT.CHECK);
@@ -364,7 +364,7 @@ public class ImageAnalyzer {
 		});
 
 		// Group the animation buttons.
-		group = new Group(controls, SWT.NULL);
+		group = new Group(controls, SWT.NONE);
 		group.setLayout(new RowLayout());
 		group.setText(bundle.getString("Animation"));
 
@@ -399,7 +399,7 @@ public class ImageAnalyzer {
 		});
 
 		// Label to show the image file type.
-		typeLabel = new Label(shell, SWT.NULL);
+		typeLabel = new Label(shell, SWT.NONE);
 		typeLabel.setText(bundle.getString("Type_initial"));
 		typeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
@@ -453,22 +453,22 @@ public class ImageAnalyzer {
 		});
 
 		// Label to show the image size.
-		sizeLabel = new Label(shell, SWT.NULL);
+		sizeLabel = new Label(shell, SWT.NONE);
 		sizeLabel.setText(bundle.getString("Size_initial"));
 		sizeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the image depth.
-		depthLabel = new Label(shell, SWT.NULL);
+		depthLabel = new Label(shell, SWT.NONE);
 		depthLabel.setText(bundle.getString("Depth_initial"));
 		depthLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the transparent pixel.
-		transparentPixelLabel = new Label(shell, SWT.NULL);
+		transparentPixelLabel = new Label(shell, SWT.NONE);
 		transparentPixelLabel.setText(bundle.getString("Transparent_pixel_initial"));
 		transparentPixelLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the time to load.
-		timeToLoadLabel = new Label(shell, SWT.NULL);
+		timeToLoadLabel = new Label(shell, SWT.NONE);
 		timeToLoadLabel.setText(bundle.getString("Time_to_load_initial"));
 		timeToLoadLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
@@ -477,32 +477,32 @@ public class ImageAnalyzer {
 		separator.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the logical screen size for animation.
-		screenSizeLabel = new Label(shell, SWT.NULL);
+		screenSizeLabel = new Label(shell, SWT.NONE);
 		screenSizeLabel.setText(bundle.getString("Animation_size_initial"));
 		screenSizeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the background pixel.
-		backgroundPixelLabel = new Label(shell, SWT.NULL);
+		backgroundPixelLabel = new Label(shell, SWT.NONE);
 		backgroundPixelLabel.setText(bundle.getString("Background_pixel_initial"));
 		backgroundPixelLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the image location (x, y).
-		locationLabel = new Label(shell, SWT.NULL);
+		locationLabel = new Label(shell, SWT.NONE);
 		locationLabel.setText(bundle.getString("Image_location_initial"));
 		locationLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the image disposal method.
-		disposalMethodLabel = new Label(shell, SWT.NULL);
+		disposalMethodLabel = new Label(shell, SWT.NONE);
 		disposalMethodLabel.setText(bundle.getString("Disposal_initial"));
 		disposalMethodLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the image delay time.
-		delayTimeLabel = new Label(shell, SWT.NULL);
+		delayTimeLabel = new Label(shell, SWT.NONE);
 		delayTimeLabel.setText(bundle.getString("Delay_initial"));
 		delayTimeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the background pixel.
-		repeatCountLabel = new Label(shell, SWT.NULL);
+		repeatCountLabel = new Label(shell, SWT.NONE);
 		repeatCountLabel.setText(bundle.getString("Repeats_initial"));
 		repeatCountLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
@@ -511,7 +511,7 @@ public class ImageAnalyzer {
 		separator.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show if the image has a direct or indexed palette.
-		paletteLabel = new Label(shell, SWT.NULL);
+		paletteLabel = new Label(shell, SWT.NONE);
 		paletteLabel.setText(bundle.getString("Palette_initial"));
 		paletteLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
@@ -580,7 +580,7 @@ public class ImageAnalyzer {
 		});
 
 		// Label to show data-specific fields.
-		dataLabel = new Label(shell, SWT.NULL);
+		dataLabel = new Label(shell, SWT.NONE);
 		dataLabel.setText(bundle.getString("Pixel_data_initial"));
 		gridData = new GridData();
 		gridData.horizontalSpan = 2;
@@ -614,7 +614,7 @@ public class ImageAnalyzer {
 		});
 		
 		// Label to show status and cursor location in image.
-		statusLabel = new Label(shell, SWT.NULL);
+		statusLabel = new Label(shell, SWT.NONE);
 		statusLabel.setText("");
 		gridData = new GridData();
 		gridData.horizontalSpan = 2;
@@ -1139,7 +1139,7 @@ public class ImageAnalyzer {
 
 		try {
 			// Ask the user to specify the printer.
-			PrintDialog dialog = new PrintDialog(shell, SWT.NULL);
+			PrintDialog dialog = new PrintDialog(shell, SWT.NONE);
 			PrinterData printerData = dialog.open();
 			if (printerData == null) return;
 			

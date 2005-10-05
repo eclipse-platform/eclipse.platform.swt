@@ -284,7 +284,7 @@ public class FileViewer {
 	 * @param layoutData the layout data
 	 */
 	private void createToolBar(final Shell shell, Object layoutData) {
-		toolBar = new ToolBar(shell, SWT.NULL);
+		toolBar = new ToolBar(shell, SWT.NONE);
 		toolBar.setLayoutData(layoutData);
 		ToolItem item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
@@ -549,9 +549,9 @@ public class FileViewer {
 				++masterIndex;
 			} else if (compare < 0) {
 				// should appear before file, insert it
-				TreeItem newItem = new TreeItem(tree, SWT.NULL, itemIndex);
+				TreeItem newItem = new TreeItem(tree, SWT.NONE, itemIndex);
 				treeInitVolume(newItem, masterFile);
-				new TreeItem(newItem, SWT.NULL); // placeholder child item to get "expand" button
+				new TreeItem(newItem, SWT.NONE); // placeholder child item to get "expand" button
 				++itemIndex;
 				++masterIndex;
 				--i;
@@ -562,9 +562,9 @@ public class FileViewer {
 		}
 		for (;masterIndex < masterFiles.length; ++masterIndex) {
 			final File masterFile = masterFiles[masterIndex];
-			TreeItem newItem = new TreeItem(tree, SWT.NULL);
+			TreeItem newItem = new TreeItem(tree, SWT.NONE);
 			treeInitVolume(newItem, masterFile);
-			new TreeItem(newItem, SWT.NULL); // placeholder child item to get "expand" button
+			new TreeItem(newItem, SWT.NONE); // placeholder child item to get "expand" button
 		}		
 	}
 	
@@ -581,7 +581,7 @@ public class FileViewer {
 			// Refresh non-expanded item
 			if (dirItem.getData(TREEITEMDATA_STUB) != null) {
 				treeItemRemoveAll(dirItem);
-				new TreeItem(dirItem, SWT.NULL); // placeholder child item to get "expand" button
+				new TreeItem(dirItem, SWT.NONE); // placeholder child item to get "expand" button
 				dirItem.setData(TREEITEMDATA_STUB, null);
 			}
 			return;
@@ -625,9 +625,9 @@ public class FileViewer {
 				++itemIndex;
 			} else if (compare < 0) {
 				// should appear before file, insert it
-				TreeItem newItem = new TreeItem(dirItem, SWT.NULL, itemIndex);
+				TreeItem newItem = new TreeItem(dirItem, SWT.NONE, itemIndex);
 				treeInitFolder(newItem, masterFile);
-				new TreeItem(newItem, SWT.NULL); // add a placeholder child item so we get the "expand" button
+				new TreeItem(newItem, SWT.NONE); // add a placeholder child item so we get the "expand" button
 				masterFile = null;
 				++itemIndex;
 				--i;
@@ -638,9 +638,9 @@ public class FileViewer {
 		}
 		while ((masterFile != null) || (masterIndex < masterFiles.length)) {
 			if (masterFile != null) {
-				TreeItem newItem = new TreeItem(dirItem, SWT.NULL);
+				TreeItem newItem = new TreeItem(dirItem, SWT.NONE);
 				treeInitFolder(newItem, masterFile);
-				new TreeItem(newItem, SWT.NULL); // add a placeholder child item so we get the "expand" button
+				new TreeItem(newItem, SWT.NONE); // add a placeholder child item so we get the "expand" button
 				if (masterIndex == masterFiles.length) break;
 			}
 			masterFile = masterFiles[masterIndex++];

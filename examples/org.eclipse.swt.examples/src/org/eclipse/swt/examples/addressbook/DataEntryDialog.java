@@ -46,7 +46,7 @@ private void addTextListener(final Text text) {
 	});
 }
 private void createControlButtons() {
-	Composite composite = new Composite(shell, SWT.NULL);
+	Composite composite = new Composite(shell, SWT.NONE);
 	composite.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 2;
@@ -75,7 +75,7 @@ private void createControlButtons() {
 private void createTextWidgets() {
 	if (labels == null) return;
 	
-	Composite composite = new Composite(shell, SWT.NULL);
+	Composite composite = new Composite(shell, SWT.NONE);
 	composite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 	GridLayout layout= new GridLayout();
 	layout.numColumns = 2;

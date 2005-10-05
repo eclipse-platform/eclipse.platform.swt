@@ -202,7 +202,7 @@ void createStyledText() {
 }
 
 void createToolBar() {
-	toolBar = new ToolBar(shell, SWT.NULL);
+	toolBar = new ToolBar(shell, SWT.NONE);
 	SelectionAdapter listener = new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
 			setStyle (event.widget);

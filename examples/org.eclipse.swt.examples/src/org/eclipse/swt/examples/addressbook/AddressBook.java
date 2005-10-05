@@ -474,7 +474,7 @@ private void createFileMenu(Menu menuBar) {
 
 
 	//File -> New Contact
-	MenuItem subItem = new MenuItem(menu, SWT.NULL);
+	MenuItem subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("New_contact"));
 	subItem.setAccelerator(SWT.MOD1 + 'N');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -482,7 +482,7 @@ private void createFileMenu(Menu menuBar) {
 			newEntry();
 		}
 	});
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Edit_contact"));
 	subItem.setAccelerator(SWT.MOD1 + 'E');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -497,7 +497,7 @@ private void createFileMenu(Menu menuBar) {
 	new MenuItem(menu, SWT.SEPARATOR);
 	
 	//File -> New Address Book
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("New_address_book"));
 	subItem.setAccelerator(SWT.MOD1 + 'B');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -509,7 +509,7 @@ private void createFileMenu(Menu menuBar) {
 	});
 
 	//File -> Open
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Open_address_book"));
 	subItem.setAccelerator(SWT.MOD1 + 'O');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -521,7 +521,7 @@ private void createFileMenu(Menu menuBar) {
 	});
 
 	//File -> Save.
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Save_address_book"));
 	subItem.setAccelerator(SWT.MOD1 + 'S');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -531,7 +531,7 @@ private void createFileMenu(Menu menuBar) {
 	});
 	
 	//File -> Save As.
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Save_book_as"));
 	subItem.setAccelerator(SWT.MOD1 + 'A');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -544,7 +544,7 @@ private void createFileMenu(Menu menuBar) {
 	new MenuItem(menu, SWT.SEPARATOR);
 	
 	//File -> Exit.
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Exit"));
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -601,7 +601,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	});
 
 	//Edit -> Copy
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Copy"));
 	subItem.setAccelerator(SWT.MOD1 + 'C');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -616,7 +616,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	});
 	
 	//Edit -> Paste
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Paste"));
 	subItem.setAccelerator(SWT.MOD1 + 'V');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -629,7 +629,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	});
 	
 	//Edit -> Delete
-	subItem = new MenuItem(menu, SWT.NULL);
+	subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("Delete"));
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -663,7 +663,7 @@ private Menu createSortMenu() {
 	Menu submenu = new Menu(shell, SWT.DROP_DOWN);
 	MenuItem subitem;
 	for(int i = 0; i < columnNames.length; i++) {
-		subitem = new MenuItem (submenu, SWT.NULL);
+		subitem = new MenuItem (submenu, SWT.NONE);
 		subitem.setText(columnNames [i]);
 		final int column = i;
 		subitem.addSelectionListener(new SelectionAdapter() {
@@ -694,7 +694,7 @@ private void createSearchMenu(Menu menuBar) {
 	item.setMenu(searchMenu);
 
 	//Search -> Find...
-	item = new MenuItem(searchMenu, SWT.NULL);
+	item = new MenuItem(searchMenu, SWT.NONE);
 	item.setText(resAddressBook.getString("Find"));
 	item.setAccelerator(SWT.MOD1 + 'F');
 	item.addSelectionListener(new SelectionAdapter() {
@@ -709,7 +709,7 @@ private void createSearchMenu(Menu menuBar) {
 	});
 
 	//Search -> Find Next
-	item = new MenuItem(searchMenu, SWT.NULL);
+	item = new MenuItem(searchMenu, SWT.NONE);
 	item.setText(resAddressBook.getString("Find_next"));
 	item.setAccelerator(SWT.F3);
 	item.addSelectionListener(new SelectionAdapter() {
@@ -809,7 +809,7 @@ private Menu createPopUpMenu() {
 	new MenuItem(popUpMenu, SWT.SEPARATOR);	
 	
 	//Find...
-	item = new MenuItem(popUpMenu, SWT.NULL);
+	item = new MenuItem(popUpMenu, SWT.NONE);
 	item.setText(resAddressBook.getString("Pop_up_find"));
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -838,7 +838,7 @@ private void createHelpMenu(Menu menuBar) {
 	item.setMenu(menu);
 	
 	//Help -> About Text Editor
-	MenuItem subItem = new MenuItem(menu, SWT.NULL);
+	MenuItem subItem = new MenuItem(menu, SWT.NONE);
 	subItem.setText(resAddressBook.getString("About"));
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
