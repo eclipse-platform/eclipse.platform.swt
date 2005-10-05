@@ -483,7 +483,8 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 					OS.gdk_event_get_coords (eventPtr, x_win, y_win);
 					int x = OS.GTK_WIDGET_X (arrowHandle) - OS.GTK_WIDGET_X (handle);
 					int width = OS.GTK_WIDGET_WIDTH (arrowHandle);
-					if (x <= (int)x_win [0] && (int)x_win [0] <= x + width) {
+					if ((((state & SWT.RIGHT_TO_LEFT) == 0) && x <= (int)x_win [0])
+						|| (((state & SWT.RIGHT_TO_LEFT) != 0) && (int)x_win [0] <= x + width)) {
 						event.detail = SWT.ARROW;
 						int /*long*/ topHandle = topHandle ();
 						event.x = OS.GTK_WIDGET_X (topHandle);
