@@ -399,7 +399,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		return new Point (width, height);
 	}
 	int extra = 0;
-	boolean hasImage = image != null, hasText = text.length () != 0;
+	boolean hasImage = image != null, hasText = true;
 	if (OS.COMCTL32_MAJOR < 6) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
@@ -408,9 +408,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hasImage) {
 		if (image != null) {
 			Rectangle rect = image.getBounds ();
-			width += rect.width;
-			if (hasText) width += MARGIN * 2;
-			height += rect.height;
+			width = rect.width;
+			if (hasText && text.length () != 0) {
+				width += MARGIN * 2;
+			}
+			height = rect.height;
 			extra = MARGIN * 2;
 		}
 	}
@@ -423,7 +425,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.GetTextMetrics (hDC, lptm);
 		int length = text.length ();
 		if (length == 0) {
-			height += lptm.tmHeight;
+			height = Math.max (height, lptm.tmHeight);
 		} else {
 			extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
 			TCHAR buffer = new TCHAR (getCodePage (), text, true);
