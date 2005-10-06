@@ -1335,6 +1335,7 @@ public class OS extends Platform {
 	public static final int TVM_GETITEM = IsUnicode ? 0x113e : 0x110c;
 	public static final int TVM_GETITEMHEIGHT = 0x111c;
 	public static final int TVM_GETITEMRECT = 0x1104;
+	public static final int TVM_GETITEMSTATE = TV_FIRST + 39;
 	public static final int TVM_GETNEXTITEM = 0x110a;
 	public static final int TVM_GETTEXTCOLOR = 0x1120;
 	public static final int TVM_GETTOOLTIPS = TV_FIRST + 25;
