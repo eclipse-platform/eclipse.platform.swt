@@ -121,7 +121,7 @@ void fixFocus (Control focusControl) {
 		if (control.setFocus ()) return;
 	}
 	shell.setSavedFocus (focusControl);
-	int /*long*/ focusHandle = shell.fixedHandle;
+	int /*long*/ focusHandle = shell.vboxHandle;
 	OS.GTK_WIDGET_SET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
 	OS.gtk_widget_grab_focus (focusHandle);
 	OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
