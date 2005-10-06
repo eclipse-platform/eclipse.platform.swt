@@ -1072,8 +1072,11 @@ void resizeBounds (int width, int height, boolean notify) {
 	if (enableWindow != 0) {
 		OS.gdk_window_resize (enableWindow, width, height);
 	}
-	OS.gtk_widget_set_size_request (vboxHandle, width, height);
-	forceResize (width, height);
+	int border = OS.gtk_container_get_border_width (shellHandle);
+	int boxWidth = width - 2*border;
+	int boxHeight = height - 2*border;
+	OS.gtk_widget_set_size_request (vboxHandle, boxWidth, boxHeight);
+	forceResize (boxWidth, boxHeight);
 	if (notify) {
 		resized = true;
 		sendEvent (SWT.Resize);
