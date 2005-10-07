@@ -52,14 +52,32 @@ public class TextStyle {
 
 	/**
 	 * the underline flag of the style
+	 * 
+	 * @since 3.1
 	 */	
 	public boolean underline;
 	
 	/**
 	 * the strikeout flag of the style
+	 * 
+	 * @since 3.1
 	 */	
 	public boolean strikeout;
-
+	
+	/**
+	 * the GlyphMetrics of the style
+	 * 
+	 * @since 3.2
+	 */	
+	public GlyphMetrics metrics;
+	
+	/**
+	 * the baseline rise of the style. 
+	 * 
+	 * @since 3.2
+	 */	
+	public int rise;
+	
 /** 
  * Create a new text style with the specified font, foreground
  * and background.
@@ -92,17 +110,21 @@ public boolean equals(Object object) {
 	if (object == null) return false;
 	if (!(object instanceof TextStyle)) return false;
 	TextStyle style = (TextStyle)object;	
-	if (this.foreground != null) {
-		if (!this.foreground.equals(style.foreground)) return false;
+	if (foreground != null) {
+		if (!foreground.equals(style.foreground)) return false;
 	} else if (style.foreground != null) return false;
-	if (this.background != null) {
-		if (!this.background.equals(style.background)) return false;
+	if (background != null) {
+		if (!background.equals(style.background)) return false;
 	} else if (style.background != null) return false;
-	if (this.font != null) {
-		if (!this.font.equals(style.font)) return false;
+	if (font != null) {
+		if (!font.equals(style.font)) return false;
 	} else if (style.font != null) return false;
-	if (this.underline != style.underline) return false;
-	if (this.strikeout != style.strikeout) return false;
+	if (metrics != null) {
+		if (!metrics.equals(style.metrics)) return false;
+	} else if (style.metrics != null) return false;
+	if (underline != style.underline) return false;
+	if (strikeout != style.strikeout) return false;
+	if (rise != style.rise) return false;
 	return true;
 }
 
@@ -119,10 +141,12 @@ public boolean equals(Object object) {
 public int hashCode() {
 	int hash = 0;
 	if (foreground != null) hash ^= foreground.hashCode();
-	if (background != null) hash ^= background.hashCode();
+	if (background != null) hash ^= background.hashCode();	
 	if (font != null) hash ^= font.hashCode();
+	if (metrics != null) hash ^= metrics.hashCode();
 	if (underline) hash ^= hash;
 	if (strikeout) hash ^= hash;
+	hash ^= rise;
 	return hash;
 }
 
@@ -133,7 +157,43 @@ public int hashCode() {
  * @return a string representation of the <code>RGB</code>
  */
 public String toString () {
-	return "TextStyle {font: " + font + ", foreground: " + foreground + ", background: " + background + ", underline: " + underline + ", strikeout: " + strikeout + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+	StringBuffer buffer = new StringBuffer("TextStyle {");
+	int startLength = buffer.length();
+	if (font != null) {
+		if (buffer.length() > startLength) buffer.append(", ");
+		buffer.append("font=");
+		buffer.append(font);
+	}
+	if (foreground != null) {
+		if (buffer.length() > startLength) buffer.append(", ");
+		buffer.append("foreground=");
+		buffer.append(foreground);
+	}
+	if (background != null) {
+		if (buffer.length() > startLength) buffer.append(", ");
+		buffer.append("background=");
+		buffer.append(background);
+	}
+	if (underline) {
+		if (buffer.length() > startLength) buffer.append(", ");
+		buffer.append("underlined");
+	}
+	if (strikeout) {
+		if (buffer.length() > startLength) buffer.append(", ");
+		buffer.append("striked out");
+	}
+	if (rise != 0) {
+		if (buffer.length() > startLength) buffer.append(", ");
+		buffer.append("rise=");
+		buffer.append(rise);
+	}
+	if (metrics != null) {
+		if (buffer.length() > startLength) buffer.append(", ");
+		buffer.append("metrics=");
+		buffer.append(metrics);
+	}
+	buffer.append("}");
+	return buffer.toString();
 }
 
 }
