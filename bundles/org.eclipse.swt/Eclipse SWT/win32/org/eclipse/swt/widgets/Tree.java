@@ -221,34 +221,34 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
 	}
 	switch (msg) {
-//		case OS.WM_SETFOCUS: {
-//			/*
-//			* Feature in Windows.  When a tree control processes WM_SETFOCUS,
-//			* if no item is selected, the first item in the tree is selected.
-//			* This is unexpected and might clear the previous selection.
-//			* The fix is to detect that there is no selection and set it to
-//			* the first item in the tree.  If the item was not selected,
-//			* only the focus is assigned.
-//			*/
-//			if ((style & SWT.SINGLE) != 0) break;
-//			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-//			if (hItem == 0) {
-//				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-//				if (hItem != 0) {
-//					TVITEM tvItem = new TVITEM ();
-//					tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
-//					tvItem.hItem = hItem;
-//					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-//					ignoreDeselect = ignoreSelect = lockSelection = true;
-//					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
-//					if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
-//						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-//					}
-//					ignoreDeselect = ignoreSelect = lockSelection = false;
-//				}
-//			}
-//			break;
-//		}
+		case OS.WM_SETFOCUS: {
+			/*
+			* Feature in Windows.  When a tree control processes WM_SETFOCUS,
+			* if no item is selected, the first item in the tree is selected.
+			* This is unexpected and might clear the previous selection.
+			* The fix is to detect that there is no selection and set it to
+			* the first item in the tree.  If the item was not selected,
+			* only the focus is assigned.
+			*/
+			if ((style & SWT.SINGLE) != 0) break;
+			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+			if (hItem == 0) {
+				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+				if (hItem != 0) {
+					TVITEM tvItem = new TVITEM ();
+					tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+					tvItem.hItem = hItem;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					ignoreDeselect = ignoreSelect = lockSelection = true;
+					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
+					if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
+						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+					}
+					ignoreDeselect = ignoreSelect = lockSelection = false;
+				}
+			}
+			break;
+		}
 		case OS.WM_MOUSEWHEEL: {
 			int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 			updateScrollBar ();
