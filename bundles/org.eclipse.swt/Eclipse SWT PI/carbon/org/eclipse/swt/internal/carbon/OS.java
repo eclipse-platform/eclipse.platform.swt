@@ -108,6 +108,7 @@ public class OS extends Platform {
 	public static final int kATSUStyleStrikeThroughTag = 292;
 	public static final int kATSULeftTab = 0;
 	public static final int kATSUseDeviceOrigins = 1;
+	public static final int kATSUseLineHeight = 0x7FFFFFFF;
 	public static final int kATSUSizeTag = 262;
 	public static final int kATSUToTextEnd = 0xFFFFFFFF;
 	public static final int kCFAllocatorDefault = 0;
