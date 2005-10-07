@@ -39,6 +39,8 @@ public final class TextLayout extends Resource {
 	int alignment;
 	int wrapWidth;
 	int orientation;
+	int indent;
+	boolean justify;
 	int[] tabs;
 	int[] segments;
 	StyleItem[] styles;
@@ -82,6 +84,9 @@ public final class TextLayout extends Resource {
 		int leading;
 		int x;
 
+		/* Justily info (malloc during computeRuns) */
+		int justify;
+
 		/* ScriptBreak */
 		int psla;
 
@@ -110,10 +115,14 @@ public final class TextLayout extends Resource {
 		if (advances != 0) {
 			OS.HeapFree(hHeap, 0, advances);
 			advances = 0;
-		}		
+		}
 		if (goffsets != 0) {
 			OS.HeapFree(hHeap, 0, goffsets);
 			goffsets = 0;
+		}
+		if (justify != 0) {
+			OS.HeapFree(hHeap, 0, justify);
+			justify = 0;
 		}
 		if (psla != 0) {
 			OS.HeapFree(hHeap, 0, psla);
@@ -211,7 +220,7 @@ void computeRuns (GC gc) {
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-	int lineWidth = 0, lineStart = 0, lineCount = 1;
+	int lineWidth = indent, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		if (run.length == 1) {
@@ -256,7 +265,11 @@ void computeRuns (GC gc) {
 		if (wrapWidth != -1 && lineWidth + run.width > wrapWidth && !run.tab) {
 			int start = 0;
 			int[] piDx = new int[run.length];
-			OS.ScriptGetLogicalWidths(run.analysis, run.length, run.glyphCount, run.advances, run.clusters, run.visAttrs, piDx);
+			if (run.style != null && run.style.metrics != null) {
+				piDx[0] = run.width;
+			} else {
+				OS.ScriptGetLogicalWidths(run.analysis, run.length, run.glyphCount, run.advances, run.clusters, run.visAttrs, piDx);
+			}
 			int width = 0, maxWidth = wrapWidth - lineWidth;
 			while (width + piDx[start] < maxWidth) {
 				width += piDx[start++];
@@ -331,7 +344,7 @@ void computeRuns (GC gc) {
 		lineWidth += run.width;
 		if (run.lineBreak) {
 			lineStart = i + 1;
-			lineWidth = 0;
+			lineWidth = run.softBreak ?  0 : indent;
 			lineCount++;
 		}
 	}
@@ -363,16 +376,41 @@ void computeRuns (GC gc) {
 			}
 			runs[line] = new StyleItem[lineRunCount];
 			System.arraycopy(lineRuns, 0, runs[line], 0, lineRunCount);
-			StyleItem lastRun = runs[line][lineRunCount - 1];
-			runs[line] = reorder(runs[line]);
-			this.lineWidth[line] = lineWidth;
-			lineWidth = 0;
-			if (wrapWidth != -1) {
-				switch (alignment) {
-					case SWT.CENTER: lineWidth = (wrapWidth - this.lineWidth[line]) / 2; break;
-					case SWT.RIGHT: lineWidth = wrapWidth - this.lineWidth[line]; break;
+			
+			if (justify && wrapWidth != -1 && run.softBreak && lineWidth > 0) {
+				if (line == 0) {
+					lineWidth += indent;
+				} else {
+					StyleItem[] previousLine = runs[line - 1];
+					StyleItem previousRun = previousLine[previousLine.length - 1];
+					if (previousRun.lineBreak && !previousRun.softBreak) {
+						lineWidth += indent;
+					}
 				}
+				int hHeap = OS.GetProcessHeap();
+				int newLineWidth = 0;
+				for (int j = 0; j < runs[line].length; j++) {
+					StyleItem item = runs[line][j];
+					int iDx = item.width * wrapWidth / lineWidth;
+					if (iDx != item.width) {
+						item.justify = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, item.glyphCount * 4);
+						OS.ScriptJustify(item.visAttrs, item.advances, item.glyphCount, iDx - item.width, 2, item.justify);
+						item.width = iDx;
+					}
+					newLineWidth += item.width; 
+				}
+				lineWidth = newLineWidth;
 			}
+			this.lineWidth[line] = lineWidth;
+			
+			runs[line] = reorder(runs[line]);
+			StyleItem lastRun = runs[line][lineRunCount - 1];
+			if (run.softBreak && run != lastRun) {
+				run.softBreak = run.lineBreak = false;
+				lastRun.softBreak = lastRun.lineBreak = true;
+			}
+			
+			lineWidth = getLineIndent(line);
 			for (int j = 0; j < runs[line].length; j++) {
 				runs[line][j].x = lineWidth;
 				lineWidth += runs[line][j].width;
@@ -491,13 +529,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
 	Rectangle clip = gc.getClipping();
 	for (int line=0; line<runs.length; line++) {
-		int drawX = x, drawY = y + lineY[line];
-		if (wrapWidth != -1) {
-			switch (alignment) {
-				case SWT.CENTER: drawX += (wrapWidth - lineWidth[line]) / 2; break;
-				case SWT.RIGHT: drawX += wrapWidth - lineWidth[line]; break;
-			}
-		}
+		int drawX = x + getLineIndent(line);
+		int drawY = y + lineY[line];
 		if (drawX > clip.x + clip.width) continue;
 		if (drawX + lineWidth[line] < clip.x) continue;
 		StyleItem[] lineRuns = runs[line];
@@ -517,7 +550,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 					if (fullSelection) {
 						OS.SelectObject(hdc, selBrush);
-						OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight, dwRop);
+						OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight - lineSpacing, dwRop);
 					} else {
 						if (run.style != null && run.style.background != null) {
 							int bg = run.style.background.handle;
@@ -536,14 +569,15 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							int cChars = run.length;
 							int gGlyphs = run.glyphCount;
 							int[] piX = new int[1];
-							OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+							int advances = run.justify != 0 ? run.justify : run.advances;
+							OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 							int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 							rect.left = drawX + runX;
 							rect.top = drawY;
-							OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+							OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 							runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 							rect.right = drawX + runX;
-							rect.bottom = drawY + lineHeight;
+							rect.bottom = drawY + lineHeight - lineSpacing;
 							OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, dwRop);
 						}
 					}
@@ -557,7 +591,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			if (run.length == 0) continue;
 			if (drawX > clip.x + clip.width) break;
 			if (drawX + run.width >= clip.x) {
-				if (!run.tab && (!run.lineBreak || run.softBreak)) {
+				if (!run.tab && (!run.lineBreak || run.softBreak) && !(run.style != null && run.style.metrics != null)) {
 					int end = run.start + run.length - 1;
 					int fg = foreground;
 					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
@@ -570,7 +604,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					checkItem(hdc, run);
 					OS.SelectObject(hdc, getItemFont(run));
 					int drawRunY = drawY + (baseline - run.ascent);
-					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, 0, run.goffsets);
+					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
 					if ((run.style != null) && (run.style.underline || run.style.strikeout)) {
 						int newPen = hasSelection && fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.BS_SOLID, 1, fg);
 						int oldPen = OS.SelectObject(hdc, newPen);
@@ -595,15 +629,16 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						int cChars = run.length;
 						int gGlyphs = run.glyphCount;
 						int[] piX = new int[1];
-						OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+						int advances = run.justify != 0 ? run.justify : run.advances;
+						OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 						int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 						rect.left = drawX + runX;
 						rect.top = drawY;
-						OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+						OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 						runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 						rect.right = drawX + runX;
 						rect.bottom = drawY + lineHeight;
-						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, 0, run.goffsets);
+						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
 						if ((run.style != null) && (run.style.underline || run.style.strikeout)) {							
 							int oldPen = OS.SelectObject(hdc, selPen);
 							if (run.style.underline) {
@@ -692,7 +727,7 @@ public Rectangle getBounds () {
 		width = wrapWidth;
 	} else {
 		for (int line=0; line<runs.length; line++) {
-			width = Math.max(width, lineWidth[line]);
+			width = Math.max(width, lineWidth[line] + getLineIndent(line));
 		}
 	}
 	return new Rectangle (0, 0, width, lineY[lineY.length - 1]);
@@ -738,7 +773,8 @@ public Rectangle getBounds (int start, int end) {
 			int cx = 0;
 			if (!run.tab) {
 				int[] piX = new int[1];
-				OS.ScriptCPtoX(start - run.start, false, run.length, run.glyphCount, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+				int advances = run.justify != 0 ? run.justify : run.advances;
+				OS.ScriptCPtoX(start - run.start, false, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
 				cx = isRTL ? run.width - piX[0] : piX[0];
 			}
 			if (run.analysis.fRTL ^ isRTL) {
@@ -751,7 +787,8 @@ public Rectangle getBounds (int start, int end) {
 			int cx = run.width;
 			if (!run.tab) {
 				int[] piX = new int[1];
-				OS.ScriptCPtoX(end - run.start, true, run.length, run.glyphCount, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+				int advances = run.justify != 0 ? run.justify : run.advances;
+				OS.ScriptCPtoX(end - run.start, true, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
 				cx = isRTL ? run.width - piX[0] : piX[0];
 			}
 			if (run.analysis.fRTL ^ isRTL) {
@@ -763,7 +800,7 @@ public Rectangle getBounds (int start, int end) {
 		left = Math.min(left, runLead);
 		right = Math.max(right, runTrail);
 		top = Math.min(top, lineY[run.lineBreak ? lineIndex - 1 : lineIndex]);
-		bottom = Math.max(bottom, lineY[run.lineBreak ? lineIndex : lineIndex + 1]);
+		bottom = Math.max(bottom, lineY[run.lineBreak ? lineIndex : lineIndex + 1] - lineSpacing);
 	}
 	return new Rectangle(left, top, right - left, bottom - top);
 }
@@ -800,6 +837,38 @@ public int getDescent () {
 public Font getFont () {
 	checkLayout();
 	return font;
+}
+
+/**
+* Returns the receiver's indent.
+*
+* @return the receiver's indent
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+* 
+* @since 3.2
+*/
+public int getIndent () {
+	checkLayout();
+	return indent;
+}
+
+/**
+* Returns the receiver's justification.
+*
+* @return the receiver's justification
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+* 
+* @since 3.2
+*/
+public boolean getJustify () {
+	checkLayout();
+	return justify;
 }
 
 int getItemFont (StyleItem item) {
@@ -858,14 +927,10 @@ public Rectangle getLineBounds(int lineIndex) {
 	checkLayout();
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int x = 0, y = lineY[lineIndex];	
-	int width = lineWidth[lineIndex], height = lineY[lineIndex + 1] - y; 
-	if (wrapWidth != -1) {
-		switch (alignment) {
-			case SWT.CENTER: x = (wrapWidth - width) / 2; break;
-			case SWT.RIGHT: x = wrapWidth - width; break;
-		}
-	}
+	int x = getLineIndent(lineIndex);
+	int y = lineY[lineIndex];
+	int width = lineWidth[lineIndex];
+	int height = lineY[lineIndex + 1] - y - lineSpacing;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -883,6 +948,36 @@ public int getLineCount () {
 	checkLayout();
 	computeRuns(null);
 	return runs.length;
+}
+
+int getLineIndent (int lineIndex) {
+	int lineIndent = 0;
+	if (lineIndex == 0) {
+		lineIndent = indent;
+	} else {
+		StyleItem[] previousLine = runs[lineIndex - 1];
+		StyleItem previousRun = previousLine[previousLine.length - 1];
+		if (previousRun.lineBreak && !previousRun.softBreak) {
+			lineIndent = indent;
+		}
+	}
+	if (wrapWidth != -1) {
+		boolean partialLine = true;
+		if (justify) {
+			StyleItem[] lineRun = runs[lineIndex];
+			if (lineRun[lineRun.length - 1].softBreak) {
+				partialLine = false;
+			}
+		}
+		if (partialLine) {
+			int lineWidth = this.lineWidth[lineIndex] + lineIndent;
+			switch (alignment) {
+				case SWT.CENTER: lineIndent += (wrapWidth - lineWidth) / 2; break;
+				case SWT.RIGHT: lineIndent += wrapWidth - lineWidth; break;
+			}
+		}
+	}
+	return lineIndent;
 }
 
 /**
@@ -933,33 +1028,30 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int hDC = device.internal_new_GC(null);
 	int srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
-	if (text.length() == 0) {
-		OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont);
-		OS.GetTextMetrics(srcHdc, lptm);
-		lptm.tmAscent = Math.max(lptm.tmAscent, this.ascent);
-		lptm.tmDescent = Math.max(lptm.tmDescent, this.descent);		
-	} else {
-		int ascent = this.ascent, descent = this.descent, leading = 0, aveCharWidth = 0, height = 0;
+	OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont);
+	OS.GetTextMetrics(srcHdc, lptm);
+	OS.DeleteDC(srcHdc);
+	device.internal_dispose_GC(hDC, null);
+	
+	int ascent = Math.max(lptm.tmAscent, this.ascent);
+	int descent = Math.max(lptm.tmDescent, this.descent);
+	int leading = lptm.tmInternalLeading;
+	if (text.length() != 0) {
 		StyleItem[] lineRuns = runs[lineIndex];
 		for (int i = 0; i<lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
-			checkItem(srcHdc, run);
-			OS.SelectObject(srcHdc, getItemFont(run));
-			OS.GetTextMetrics(srcHdc, lptm);
-			ascent = Math.max(ascent, lptm.tmAscent);
-			descent = Math.max(descent, lptm.tmDescent);
-			height = Math.max(height, lptm.tmHeight);
-			leading = Math.max(leading, lptm.tmInternalLeading);
-			aveCharWidth += lptm.tmAveCharWidth;
+			if (run.ascent > ascent) {
+				ascent = run.ascent;
+				leading = run.leading;
+			}
+			descent = Math.max(descent, run.descent);
 		}
-		lptm.tmAscent = ascent;
-		lptm.tmDescent = descent;
-		lptm.tmHeight = height;
-		lptm.tmInternalLeading = leading;
-		lptm.tmAveCharWidth = aveCharWidth / lineRuns.length;
 	}
-	if (srcHdc != 0) OS.DeleteDC(srcHdc);
-	device.internal_dispose_GC(hDC, null);
+	lptm.tmAscent = ascent;
+	lptm.tmDescent = descent;
+	lptm.tmHeight = ascent + descent;
+	lptm.tmInternalLeading = leading;
+	lptm.tmAveCharWidth = 0;
 	return FontMetrics.win32_new(lptm);
 }
 
@@ -1022,7 +1114,10 @@ public Point getLocation (int offset, boolean trailing) {
 			StyleItem run = lineRuns[i];
 			int end = run.start + run.length;
 			if (run.start <= offset && offset < end) {
-				if (run.tab) {
+				if (run.style != null && run.style.metrics != null) {
+					if (trailing) width += run.width;
+					result = new Point(width, lineY[line]);
+				} else if (run.tab) {
 					if (trailing || (offset == length)) width += run.width;
 					result = new Point(width, lineY[line]);
 				} else {
@@ -1030,7 +1125,8 @@ public Point getLocation (int offset, boolean trailing) {
 					int cChars = run.length;
 					int gGlyphs = run.glyphCount;
 					int[] piX = new int[1];
-					OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+					int advances = run.justify != 0 ? run.justify : run.advances;
+					OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 					if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 						result = new Point(width + (run.width - piX[0]), lineY[line]);
 					} else {
@@ -1043,12 +1139,7 @@ public Point getLocation (int offset, boolean trailing) {
 		}
 	}
 	if (result == null) result = new Point(0, 0);
-	if (wrapWidth != -1) {
-		switch (alignment) {
-			case SWT.CENTER: result.x += (wrapWidth - lineWidth[line]) / 2; break;
-			case SWT.RIGHT: result.x += wrapWidth - lineWidth[line]; break;
-		}
-	}
+	result.x += getLineIndent(line);
 	return result;
 }
 
@@ -1197,12 +1288,7 @@ public int getOffset (int x, int y, int[] trailing) {
 		if (lineY[line + 1] > y) break;
 	}
 	line = Math.min(line, runs.length - 1);
-	if (wrapWidth != -1) {
-		switch (alignment) {
-			case SWT.CENTER: x -= (wrapWidth - lineWidth[line]) / 2; break;
-			case SWT.RIGHT: x -= wrapWidth - lineWidth[line]; break;
-		}
-	}
+	x -= getLineIndent(line);
 	StyleItem[] lineRuns = runs[line];
 	if (x >= lineWidth[line]) x = lineWidth[line] - 1;
 	if (x < 0) x = 0;
@@ -1223,7 +1309,8 @@ public int getOffset (int x, int y, int[] trailing) {
 			if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 				xRun = run.width - xRun;
 			}
-			OS.ScriptXtoCP(xRun, cChars, cGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piCP, piTrailing);
+			int advances = run.justify != 0 ? run.justify : run.advances;
+			OS.ScriptXtoCP(xRun, cChars, cGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piCP, piTrailing);
 			if (trailing != null) trailing[0] = piTrailing[0];
 			return untranslateOffset(run.start + piCP[0]);
 		}
@@ -1538,6 +1625,8 @@ public void setAlignment (int alignment) {
 	if (alignment == 0) return;
 	if ((alignment & SWT.LEFT) != 0) alignment = SWT.LEFT;
 	if ((alignment & SWT.RIGHT) != 0) alignment = SWT.RIGHT;
+	if (this.alignment == alignment) return;
+	freeRuns();
 	this.alignment = alignment;
 }
 
@@ -1618,6 +1707,47 @@ public void setFont (Font font) {
 	this.font = font;
 }
 
+/**
+ * Sets the indent of the receiver. This indent it applied of the first line of 
+ * each paragraph.  
+ * <p>
+ *
+ * @param indent new indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setIndent (int indent) {
+	checkLayout();
+	if (indent < 0) return;	
+	if (this.indent == indent) return;
+	freeRuns();
+	this.indent = indent;
+}
+
+/**
+ * Sets the justification of the receiver. Note that the receiver's
+ * width must be set in order to use justification. 
+ * <p>
+ *
+ * @param justify new justify
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setJustify (boolean justify) {
+	checkLayout();
+	if (this.justify == justify) return;
+	freeRuns();
+	this.justify = justify;
+}
+ 
 /**
  * Sets the orientation of the receiver, which must be one
  * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
@@ -1911,12 +2041,24 @@ void shape (final int hdc, final StyleItem run) {
 	run.advances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
 	run.goffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
 	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, run.advances, run.goffsets, abc);
-	run.width = abc[0] + abc[1] + abc[2];
-	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
-	OS.GetTextMetrics(hdc, lptm);
-	run.ascent = lptm.tmAscent;
-	run.descent = lptm.tmDescent;
-	run.leading = lptm.tmInternalLeading;
+	if (run.style != null && run.style.metrics != null) {
+		GlyphMetrics metrics = run.style.metrics;
+		run.width = metrics.width * run.glyphCount;
+		run.ascent = metrics.ascent;
+		run.descent = metrics.descent;
+		run.leading = 0;
+	} else {
+		run.width = abc[0] + abc[1] + abc[2];
+		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+		OS.GetTextMetrics(hdc, lptm);
+		run.ascent = lptm.tmAscent;
+		run.descent = lptm.tmDescent;
+		run.leading = lptm.tmInternalLeading;
+	}
+	if (run.style != null) {
+		run.ascent += run.style.rise;
+		run.descent -= +run.style.rise;
+	}
 }
 
 int validadeOffset(int offset, int step) {
