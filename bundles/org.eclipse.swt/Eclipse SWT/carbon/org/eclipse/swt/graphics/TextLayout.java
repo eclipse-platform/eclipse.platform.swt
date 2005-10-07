@@ -58,6 +58,14 @@ public final class TextLayout extends Resource {
 					length += 1;
 					ptrLength += 1;
 				}
+				if (style.metrics != null) {
+					length += 3;
+					ptrLength += 12;
+				}
+				if (style.rise != 0) {
+					length += 1;
+					ptrLength += 4;
+				}
 			}
 			if (font == null) font = defaultFont;
 			boolean synthesize = false;
@@ -134,6 +142,41 @@ public final class TextLayout extends Resource {
 				ptr1 += sizes[index];
 				index++;
 			}
+			if (style != null && style.metrics != null) {
+				GlyphMetrics metrics = style.metrics; 
+				buffer[0] = OS.Long2Fix(metrics.ascent);
+				tags[index] = OS.kATSUAscentTag;
+				sizes[index] = 4;
+				values[index] = ptr1;
+				OS.memcpy(values[index], buffer, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
+				
+				buffer[0] = OS.Long2Fix(metrics.descent);
+				tags[index] = OS.kATSUDescentTag;
+				sizes[index] = 4;
+				values[index] = ptr1;
+				OS.memcpy(values[index], buffer, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
+				
+				buffer[0] = OS.Long2Fix(metrics.width);
+				tags[index] = OS.kATSUImposeWidthTag;
+				sizes[index] = 4;
+				values[index] = ptr1;
+				OS.memcpy(values[index], buffer, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
+			}
+			if (style != null && style.rise != 0) {
+				buffer[0] = OS.Long2Fix(style.rise);
+				tags[index] = OS.kATSUCrossStreamShiftTag;
+				sizes[index] = 4;
+				values[index] = ptr1;
+				OS.memcpy(values[index], buffer, sizes[index]);
+				ptr1 += sizes[index];
+				index++;
+			}
 			if (foreground != null) {
 				RGBColor rgb = new RGBColor ();
 				float[] color = foreground.handle;
@@ -163,13 +206,15 @@ public final class TextLayout extends Resource {
 	int textPtr;
 	StyleItem[] styles;
 	int layout;
-	int spacing, ascent, descent;	
+	int spacing, ascent, descent, indent;
+	int indentStyle;
 	int[] tabs;
 	int[] segments;
 	int tabsPtr;
-	int[] breaks, lineX, lineWidth, lineHeight, lineAscent;
+	int[] breaks, hardBreaks, lineX, lineWidth, lineHeight, lineAscent;
 
 	static final int TAB_COUNT = 32;
+	static final char ZWS = '\u200B';
 	
 /**	 
  * Constructs a new instance of this class on the given device.
@@ -194,6 +239,7 @@ public TextLayout (Device device) {
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	layout = buffer[0];
 	setLayoutControl(OS.kATSULineDirectionTag, OS.kATSULeftToRightBaseDirection, 1);
+	setLayoutControl(OS.kATSULineLayoutOptionsTag, OS.kATSLineLastNoJustification, 4);
 	OS.ATSUSetHighlightingMethod(layout, 1, new ATSUUnhighlightData());
 	ascent = descent = -1;
 	text = "";
@@ -208,45 +254,74 @@ void checkLayout() {
 
 void computeRuns() {
 	if (breaks != null) return;
-	int length = text.length();
-	if (length != 0) {
+	int textLength = text.length();
+	if (textLength != 0) {
+		char[] chars = new char[textLength + 1];
+		text.getChars(0, textLength, chars, 1);
+		chars[0] = ZWS;
+		int breakCount = 0;
+		for (int i = 0; i < chars.length; i++) {
+			char c = chars[i];
+			if (c == '\n' || c == '\r') {
+				breakCount++;
+			}
+		}
+		hardBreaks = new int [breakCount];
+		breakCount = 0;
+		for (int i = 0; i < chars.length; i++) {
+			char c = chars[i];
+			if (c == '\n' || c == '\r') {
+				chars[i] = ZWS;
+				hardBreaks[breakCount++] = i;
+			}
+		}
+		int newTextPtr = OS.NewPtr(chars.length * 2);
+		OS.memcpy(newTextPtr, chars, chars.length * 2);
+		OS.ATSUSetTextPointerLocation(layout, newTextPtr, 0, chars.length, chars.length);
+		OS.ATSUSetTransientFontMatching(layout, true);
+		if (textPtr != 0) OS.DisposePtr(textPtr);
+		textPtr = newTextPtr;
+	}	
+	int[] buffer = new int[1];
+	int length = translateOffset(text.length());
+	if (textLength != 0) {
 		for (int i = 0; i < styles.length - 1; i++) {
 			StyleItem run = styles[i];
 			run.createStyle(font);
-			int runLength = styles[i + 1].start - run.start;
-			OS.ATSUSetRunStyle(layout, run.atsuStyle, run.start, runLength);
+			int start = translateOffset(run.start);
+			int runLength = translateOffset(styles[i + 1].start) - start;
+			OS.ATSUSetRunStyle(layout, run.atsuStyle, start, runLength);
 		}
-		int[] buffer = new int[1];
-		if (ascent != -1) {
-			OS.ATSUGetLayoutControl(layout, OS.kATSULineAscentTag, 4, buffer, null);
+		if (indent >= 0) {
 			int ptr = OS.NewPtr(4);
-			buffer[0] = OS.Long2Fix(Math.max(ascent, OS.Fix2Long(buffer[0])));
+			buffer[0] = OS.Long2Fix(indent);
 			OS.memcpy(ptr, buffer, 4);
-			int[] tags = new int[]{OS.kATSULineAscentTag};
+			int[] tags = new int[]{OS.kATSUImposeWidthTag};
 			int[] sizes = new int[]{4};
 			int[] values = new int[]{ptr};
-			OS.ATSUSetLineControls(layout, 0, tags.length, tags, sizes, values);
+			OS.ATSUCreateStyle(buffer);
+			indentStyle = buffer[0];
+			OS.ATSUSetAttributes(indentStyle, tags.length, tags, sizes, values);
 			OS.DisposePtr(ptr);
-		}
-		if (descent != -1) {
-			OS.ATSUGetLayoutControl(layout, OS.kATSULineDescentTag, 4, buffer, null);
-			int ptr = OS.NewPtr(4);
-			buffer[0] = OS.Long2Fix(Math.max(descent, OS.Fix2Long(buffer[0])));
-			OS.memcpy(ptr, buffer, 4);
-			int[] tags = new int[]{OS.kATSULineDescentTag};
-			int[] sizes = new int[]{4};
-			int[] values = new int[]{ptr};
-			OS.ATSUSetLineControls(layout, 0, tags.length, tags, sizes, values);
-			OS.DisposePtr(ptr);
+			OS.ATSUSetRunStyle(layout, indentStyle, 0, 1);
+			for (int i = 0; i < hardBreaks.length; i++) {
+				int offset = hardBreaks[i];
+				OS.ATSUSetRunStyle(layout, indentStyle, offset, 1);
+			}
 		}
 		OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
-		int wrapWidth = OS.Fix2Long(buffer[0]);
-		int width = wrapWidth == 0 ? 0x7fff : wrapWidth;
-		OS.ATSUBatchBreakLines(layout, 0, OS.kATSUToTextEnd, OS.Long2Fix(width), buffer);
-		int count = Math.max(0, buffer[0]);
-		breaks = new int[count + 1];
-		OS.ATSUGetSoftLineBreaks(layout, 0, OS.kATSUToTextEnd, count, breaks, buffer);
-		breaks[count] = length;
+		int wrapWidth = buffer[0];
+		for (int i=0, start=0; i<hardBreaks.length+1; i++) {
+			int hardBreak = i == hardBreaks.length ? length : hardBreaks[i];
+			buffer[0] = 0;
+			if (wrapWidth != 0) OS.ATSUBatchBreakLines(layout, start, hardBreak - start, wrapWidth, buffer);
+			OS.ATSUSetSoftLineBreak(layout, hardBreak);
+			start = hardBreak;
+		}
+		OS.ATSUGetSoftLineBreaks(layout, 0, OS.kATSUToTextEnd, 0, null, buffer);
+		int count = buffer[0];
+		breaks = new int[count];
+		OS.ATSUGetSoftLineBreaks(layout, 0, OS.kATSUToTextEnd, count, breaks, null);
 	} else {
 		breaks = new int[1];
 	}
@@ -258,15 +333,43 @@ void computeRuns() {
 	if (length != 0) {
 		ATSTrapezoid trapezoid = new ATSTrapezoid();
 		for (int i=0, start=0; i<lineCount; i++) {
+			if (ascent != -1) {
+				int ptr = OS.NewPtr(4);
+				buffer[0] = OS.kATSUseLineHeight;
+				OS.memcpy(ptr, buffer, 4);
+				int[] tags = new int[]{OS.kATSULineAscentTag};
+				int[] sizes = new int[]{4};
+				int[] values = new int[]{ptr};
+				OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
+				OS.ATSUGetLineControl(layout, start, OS.kATSULineAscentTag, 4, buffer, null);
+				buffer[0] = OS.Long2Fix(Math.max(ascent, OS.Fix2Long(buffer[0])));
+				OS.memcpy(ptr, buffer, 4);
+				OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
+				OS.DisposePtr(ptr);
+			}
+			if (descent != -1) {
+				int ptr = OS.NewPtr(4);
+				buffer[0] = OS.kATSUseLineHeight;
+				OS.memcpy(ptr, buffer, 4);
+				int[] tags = new int[]{OS.kATSULineDescentTag};
+				int[] sizes = new int[]{4};
+				int[] values = new int[]{ptr};
+				OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
+				OS.ATSUGetLineControl(layout, start, OS.kATSULineDescentTag, 4, buffer, null);
+				buffer[0] = OS.Long2Fix(Math.max(descent, OS.Fix2Long(buffer[0])));
+				OS.memcpy(ptr, buffer, 4);
+				OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
+				OS.DisposePtr(ptr);
+			}
 			int lineBreak = breaks[i];
-			int lineLength = skipHardBreak(lineBreak) - start;
-			OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineLength == 0 ? 1 : lineLength, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+			int lineLength = lineBreak - start;
+			OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineLength, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
 			lineX[i] = OS.Fix2Long(trapezoid.lowerLeft_x);
 			lineAscent[i] = -OS.Fix2Long(trapezoid.upperRight_y);
 			if (lineLength != 0) {
 				lineWidth[i] = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
 			}
-			lineHeight[i] = OS.Fix2Long(trapezoid.lowerRight_y) + lineAscent[i];
+			lineHeight[i] = OS.Fix2Long(trapezoid.lowerRight_y) + lineAscent[i] + spacing;
 			start = lineBreak;
 		}
 	}
@@ -288,6 +391,8 @@ public void dispose() {
 	textPtr = 0;
 	if (tabsPtr != 0) OS.DisposePtr(tabsPtr);
 	tabsPtr = 0;
+	if (indentStyle != 0) OS.ATSUDisposeStyle(indentStyle);
+	indentStyle = 0;
 	device = null;
 }
 
@@ -336,7 +441,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int length = text.length();
+	int length = translateOffset(text.length());
 	if (length == 0) return;
 	setLayoutControl(OS.kATSUCGContextTag, gc.handle, 4);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
@@ -366,19 +471,17 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			gc.getClipping(clipping);
 			rect = clipping.getBounds();
 		}
-		int start = run.start;
-		int end = j + 1 < styles.length ? styles[j + 1].start - 1 : length;
+		int start = translateOffset(run.start);
+		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
 		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
 			int lineBreak = breaks[i];
 			int lineEnd = lineBreak - 1;
 			if (!(start > lineEnd || end < lineStart)) {
 				int highStart = Math.max(lineStart, start);
 				int highEnd = Math.min(lineEnd, end);
-				int highLen = skipHardBreak(highEnd) - highStart + 1;
+				int highLen = highEnd - highStart + 1;
 				if (highLen > 0) {
-					OS.ATSUGetTextHighlight(layout, lineX[i], lineY, highStart, highLen, region.handle);
-					OS.OffsetRgn(region.handle, (short)0, (short)(lineY + lineAscent[i]));
-					OS.OffsetRgn(region.handle, (short)x, (short)y);
+					OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, region.handle);
 					region.intersect(clipping);
 					gc.setClipping(region);
 					gc.fillRectangle(rect);
@@ -397,13 +500,15 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		region.dispose();
 	}
 
+	selectionStart = translateOffset(selectionStart);
+	selectionEnd = translateOffset(selectionEnd);
 	OS.CGContextScaleCTM(gc.handle, 1, -1);
 	OS.CGContextSetFillColor(gc.handle, gc.data.foreground);
 	int drawX = OS.Long2Fix(x);
 	int drawY = y;
 	for (int i=0, start=0; i<breaks.length; i++) {
 		int lineBreak = breaks[i];
-		int lineLength = skipHardBreak(lineBreak) - start;
+		int lineLength = lineBreak - start;
 		if (lineLength > 0) {
 			int fixYDraw = OS.Long2Fix(-(drawY + lineAscent[i]));
 			OS.ATSUDrawText(layout, start, lineLength, drawX, fixYDraw);
@@ -427,6 +532,8 @@ void freeRuns() {
 		StyleItem run = styles[i];
 		run.freeStyle();
 	}
+	if (indentStyle != 0) OS.ATSUDisposeStyle(indentStyle);
+	indentStyle = 0;
 	breaks = lineX = lineWidth = lineHeight = lineAscent = null;
 }
 
@@ -517,6 +624,8 @@ public Rectangle getBounds(int start, int end) {
 	if (start > end) return new Rectangle(0, 0, 0, 0);
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
+	start = translateOffset(start);
+	end = translateOffset(end);
 	int rgn = OS.NewRgn();
 	Rect rect = new Rect();
 	Rect rect1 = new Rect();
@@ -526,11 +635,10 @@ public Rectangle getBounds(int start, int end) {
 		if (!(start > lineEnd || end < lineStart)) {
 			int highStart = Math.max(lineStart, start);
 			int highEnd = Math.min(lineEnd, end);
-			int highLen = skipHardBreak(highEnd) - highStart + 1;
+			int highLen = highEnd - highStart + 1;
 			if (highLen > 0) {
-				OS.ATSUGetTextHighlight(layout, lineX[i], lineY, highStart, highLen, rgn);
+				OS.ATSUGetTextHighlight(layout, 0, OS.Long2Fix(lineY + lineAscent[i]), highStart, highLen, rgn);
 				OS.GetRegionBounds(rgn, rect1);
-				OS.OffsetRect(rect1, (short)0, (short)(lineY + lineAscent[i]));
 				OS.UnionRect(rect, rect1, rect);
 			}
 		}
@@ -576,6 +684,18 @@ public Font getFont () {
 	return font;
 }
 
+public int getIndent () {
+	checkLayout();	
+	return indent;
+}
+
+public boolean getJustify () {
+	checkLayout();
+	int[] buffer = new int[1];
+	OS.ATSUGetLayoutControl(layout, OS.kATSULineJustificationFactorTag, 4, buffer, null);
+	return buffer[0] == OS.kATSUFullJustification;
+}
+
 /**
  * Returns the embedding level for the specified character offset. The
  * embedding level is usually used to determine the directionality of a
@@ -595,6 +715,7 @@ public int getLevel(int offset) {
 	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	offset = translateOffset(offset);	
 	int level = 0;
 	//TODO
 	return level;
@@ -615,7 +736,9 @@ public int[] getLineOffsets() {
 	checkLayout ();
 	computeRuns();
 	int[] offsets = new int[breaks.length + 1];
-	System.arraycopy(breaks, 0, offsets, 1, breaks.length);
+	for (int i = 1; i < offsets.length; i++) {
+		offsets[i] = untranslateOffset(breaks[i - 1]);	
+	}
 	return offsets;
 }
 
@@ -638,6 +761,7 @@ public int getLineIndex(int offset) {
 	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	offset = translateOffset(offset);
 	for (int i=0; i<breaks.length-1; i++) {
 		int lineBreak = breaks[i];
 		if (lineBreak > offset) return i;
@@ -667,7 +791,9 @@ public Rectangle getLineBounds(int lineIndex) {
 	for (int i=0; i<lineIndex; i++) {
 		lineY += lineHeight[i];
 	}
-	return new Rectangle(lineX[lineIndex], lineY, lineWidth[lineIndex], lineHeight[lineIndex]);
+	int lineX = this.lineX[lineIndex];
+	int lineWidth = this.lineWidth[lineIndex];
+	return new Rectangle(lineX, lineY, lineWidth, lineHeight[lineIndex] - spacing);
 }
 
 /**
@@ -744,6 +870,8 @@ public Point getLocation(int offset, boolean trailing) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return new Point(0, 0);
+	offset = translateOffset(offset);
+	length = translateOffset(length);
 	int lineY = 0;
 	for (int i=0; i<breaks.length-1; i++) {
 		int lineBreak = breaks[i];
@@ -784,6 +912,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return 0;
+	offset = translateOffset(offset);
 	int[] newOffset = new int[1];
 	int type = OS.kATSUByCharacter;
 	switch (movement) {
@@ -792,6 +921,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	}
 	if (forward) {
 		OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
+		newOffset[0] = untranslateOffset(newOffset[0]);
 		if (movement == SWT.MOVEMENT_WORD) {
 			while (newOffset[0] < length && Compatibility.isWhitespace(text.charAt(newOffset[0]))) {
 				newOffset[0]++;
@@ -799,6 +929,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 		}
 	} else {
 		OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
+		newOffset[0] = untranslateOffset(newOffset[0]);
 		if (movement == SWT.MOVEMENT_WORD) {
 			while (newOffset[0] > 0 && !Compatibility.isWhitespace(text.charAt(newOffset[0] - 1))) {
 				newOffset[0]--;
@@ -875,14 +1006,12 @@ public int getOffset(int x, int y, int[] trailing) {
 		lineY += height;
 		start = lineBreak;
 	}
-	if (x >= lineX[lineIndex] + lineWidth[lineIndex]) x = lineX[lineIndex] + lineWidth[lineIndex] - 1;
-	if (x < lineX[lineIndex]) x = lineX[lineIndex];
 	int[] offset = new int[]{start};
 	boolean[] leading = new boolean[1];
 	OS.ATSUPositionToOffset(layout, OS.Long2Fix(x), OS.Long2Fix(y - lineY), offset, leading, null);
 	if (trailing != null) trailing[0] = (leading[0] ? 0 : 1);
 	if (!leading[0]) offset[0]--;
-	return offset[0];
+	return Math.min(untranslateOffset(offset[0]), length - 1);
 }
 
 /**
@@ -1167,6 +1296,20 @@ public void setFont (Font font) {
 	this.font = font;
 }
 
+public void setIndent (int indent) {
+	checkLayout ();
+	if (this.indent == indent) return;
+	freeRuns();
+	this.indent = indent;
+}
+
+public void setJustify (boolean justify) {
+	checkLayout ();
+	if (justify == getJustify()) return;
+	freeRuns();
+	setLayoutControl(OS.kATSULineJustificationFactorTag, justify ? OS.kATSUFullJustification : OS.kATSUNoJustification, 4);
+}
+
 /**
  * Sets the orientation of the receiver, which must be one
  * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
@@ -1241,6 +1384,7 @@ public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.spacing == spacing) return;
+	freeRuns();
 	this.spacing = spacing;
 }
 
@@ -1392,22 +1536,6 @@ public void setText (String text) {
 	if (text.equals(this.text)) return;
 	freeRuns();
 	this.text = text;
-	int length = text.length();
-	if (length != 0) {
-		/*
-		* Bug in the Macintosh.  ATSUI does not break the last line
-		* if it is empty. The fix is to add an extra line. 
-		*/
-		char c = text.charAt(length - 1);
-		if (c == '\n') length++;
-		char[] chars = new char[length];
-		text.getChars(0, text.length(), chars, 0);
-		if (c == '\n') chars [length - 1] = '\n';
-		textPtr = OS.NewPtr(length * 2);
-		OS.memcpy(textPtr, chars, length * 2);
-		OS.ATSUSetTextPointerLocation(layout, textPtr, 0, length, length);
-		OS.ATSUSetTransientFontMatching(layout, true);
-	}
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
@@ -1438,21 +1566,6 @@ public void setWidth (int width) {
 	setLayoutControl(OS.kATSULineWidthTag, OS.Long2Fix(Math.max(0, width)), 4);
 }
 
-int skipHardBreak(int lineBreak) {
-	while (lineBreak > 0) {
-		char c = text.charAt(lineBreak - 1);
-		switch (c) {
-			case '\r':
-			case '\n':
-				break;
-			default:
-				return lineBreak;
-		}
-		lineBreak--;
-	}
-	return lineBreak;
-}
-
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -1464,4 +1577,18 @@ public String toString () {
 	return "TextLayout {" + layout + "}";
 }
 
-} 
+/*
+ *  Translate a client offset to an internal offset
+ */
+int translateOffset (int offset) {
+	return offset + 1;
+}
+
+/*
+ *  Translate an internal offset to a client offset
+ */
+int untranslateOffset (int offset) {
+	return Math.max(0, offset - 1);
+}
+
+}
