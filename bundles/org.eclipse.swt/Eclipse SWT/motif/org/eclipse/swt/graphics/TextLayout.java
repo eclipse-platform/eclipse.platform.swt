@@ -242,7 +242,7 @@ void computeRuns () {
 				runAscent = fontStruct.ascent;
 				runDescent = fontStruct.descent;
 			}
-			ascent = Math.max(ascent, runAscent);
+			ascent = Math.max(ascent, runAscent + run.style.rise);
 			descent = Math.max(descent, runDescent - run.style.rise);
 			if (run.style.rise != 0) {
 				run.baseline += run.style.rise;
