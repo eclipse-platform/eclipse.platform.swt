@@ -1560,9 +1560,6 @@ public boolean setText(String html) {
 	
 	nsIURI uri = new nsIURI(result[0]);
 	result[0] = 0;
-	rc = XPCOM.NS_GetComponentManager(result);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 
 	/* aContentType */
 	byte[] buffer = "text/plain".getBytes(); //$NON-NLS-1$
