@@ -2140,7 +2140,7 @@ void setItemCount (int /*long*/ parentIter, int count) {
 /*public*/ void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
-	setItemCount(0, count);
+	setItemCount (0, count);
 }
 /**
  * Selects all of the items in the receiver.
