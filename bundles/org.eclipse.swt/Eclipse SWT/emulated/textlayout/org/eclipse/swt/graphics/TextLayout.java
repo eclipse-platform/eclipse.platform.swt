@@ -39,6 +39,8 @@ public final class TextLayout {
 	int alignment;
 	int wrapWidth;
 	int orientation;
+	int indent;
+	boolean justify;
 	int[] tabs;
 	int[] segments;
 	StyleItem[] styles;
@@ -140,12 +142,14 @@ void computeRuns (GC gc) {
 			gc.setFont(getItemFont(run));
 			char[] chars = new char[run.length];
 			text.getChars(run.start, run.start + run.length, chars, 0);
-			int width = 0, maxWidth = wrapWidth - lineWidth;
-			int charWidth = gc.stringExtent(String.valueOf(chars[start])).x;
-			while (width + charWidth < maxWidth) {
-				width += charWidth;
-				start++;
-				charWidth =	gc.stringExtent(String.valueOf(chars[start])).x;
+			if (!(run.style != null && run.style.metrics != null)) {
+				int width = 0, maxWidth = wrapWidth - lineWidth;
+				int charWidth = gc.stringExtent(String.valueOf(chars[start])).x;
+				while (width + charWidth < maxWidth) {
+					width += charWidth;
+					start++;
+					charWidth =	gc.stringExtent(String.valueOf(chars[start])).x;
+				}
 			}
 			int firstStart = start;
 			int firstIndice = i;			
@@ -316,14 +320,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	final Font gcFont = gc.getFont();
 	Rectangle clip = gc.getClipping();
 	for (int line=0; line<runs.length; line++) {
-		int drawX = x, drawY = y + lineY[line];
+		int drawX = x + getLineIndent(line);
+		int drawY = y + lineY[line];
 		StyleItem[] lineRuns = runs[line];
-		if (wrapWidth != -1) {
-			switch (alignment) {
-				case SWT.CENTER: drawX += (wrapWidth - lineWidth[line]) / 2; break;
-				case SWT.RIGHT: drawX += wrapWidth - lineWidth[line]; break;
-			}
-		}
 		if (drawX > clip.x + clip.width) continue;
 		if (drawX + lineWidth[line] < clip.x) continue;
 		int baseline = Math.max(0, this.ascent);
@@ -350,7 +349,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					if (fullSelection) {
 						gc.setBackground(selectionBackground);
 						gc.fillRectangle(drawX, drawY, run.width, lineHeight);
-						if (!run.tab) {
+						if (!run.tab && !(run.style != null && run.style.metrics != null)) {
 							gc.setForeground(selectionForeground);
 							String string = text.substring(run.start, run.start + run.length);
 							gc.drawString(string, drawX, drawRunY, true);
@@ -374,14 +373,16 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							if (run.style != null && run.style.foreground != null) fg = run.style.foreground;
 							gc.setForeground(fg);
 							String string = text.substring(run.start, run.start + run.length);
-							gc.drawString(string, drawX, drawRunY, true);
-							if (run.style != null && run.style.underline) {
-								int underlineY = drawRunY + run.ascent + 1;
-								gc.drawLine (drawX, underlineY, drawX + run.width, underlineY);								
-							}
-							if (run.style != null && run.style.strikeout) {
-								int strikeoutY = drawRunY + (run.ascent + run.descent) - (run.ascent + run.descent)/2 - 1;
-								gc.drawLine (drawX, strikeoutY, drawX + run.width, strikeoutY);
+							if (!(run.style != null && run.style.metrics != null)) {
+								gc.drawString(string, drawX, drawRunY, true);
+								if (run.style != null && run.style.underline) {
+									int underlineY = drawRunY + run.ascent + 1;
+									gc.drawLine (drawX, underlineY, drawX + run.width, underlineY);
+								}
+								if (run.style != null && run.style.strikeout) {
+									int strikeoutY = drawRunY + (run.ascent + run.descent) - (run.ascent + run.descent)/2 - 1;
+									gc.drawLine (drawX, strikeoutY, drawX + run.width, strikeoutY);
+								}
 							}
 							boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
 							if (partialSelection) {
@@ -393,7 +394,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 								int selWidth = gc.stringExtent(string).x;
 								gc.setBackground(selectionBackground);
 								gc.fillRectangle(selX, drawY, selWidth, lineHeight);
-								if (fg != selectionForeground) {
+								if (fg != selectionForeground && !(run.style != null && run.style.metrics != null)) {
 									gc.setForeground(selectionForeground);
 									gc.drawString(string, selX, drawRunY, true);
 									if (run.style != null && run.style.underline) {
@@ -474,7 +475,7 @@ public Rectangle getBounds () {
 		width = wrapWidth;
 	} else {
 		for (int line=0; line<runs.length; line++) {
-			width = Math.max(width, lineWidth[line]);
+			width = Math.max(width, lineWidth[line] + getLineIndent(line));
 		}
 	}
 	return new Rectangle (0, 0, width, lineY[lineY.length - 1]);
@@ -508,7 +509,7 @@ public Rectangle getBounds (int start, int end) {
 
 	Rectangle rect = new Rectangle(0, 0, 0, 0);
 	rect.y = lineY[startLine];
-	rect.height = lineY[endLine + 1] - rect.y;
+	rect.height = lineY[endLine + 1] - rect.y - lineSpacing;
 	if (startLine == endLine) {
 		rect.x = getLocation(start, false).x;
 		rect.width = getLocation(end, true).x - rect.x;
@@ -552,6 +553,17 @@ public int getDescent () {
 public Font getFont () {
 	checkLayout();
 	return font;
+}
+
+
+public int getIndent () {
+	checkLayout();
+	return indent;
+}
+
+public boolean getJustify () {
+	checkLayout();
+	return justify;
 }
 
 /**
@@ -611,14 +623,10 @@ public Rectangle getLineBounds(int lineIndex) {
 	checkLayout();
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int x = 0, y = lineY[lineIndex];
-	int width = lineWidth[lineIndex], height = lineY[lineIndex + 1] - y;
-	if (wrapWidth != -1) {
-		switch (alignment) {
-			case SWT.CENTER: x = (wrapWidth - width) / 2; break;
-			case SWT.RIGHT: x = wrapWidth - width; break;
-		}
-	}
+	int x = getLineIndent(lineIndex);
+	int y = lineY[lineIndex];
+	int width = lineWidth[lineIndex];
+	int height = lineY[lineIndex + 1] - y - lineSpacing;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -636,6 +644,36 @@ public int getLineCount () {
 	checkLayout();
 	computeRuns(null);
 	return runs.length;
+}
+
+int getLineIndent (int lineIndex) {
+	int lineIndent = 0;
+	if (lineIndex == 0) {
+		lineIndent = indent;
+	} else {
+		StyleItem[] previousLine = runs[lineIndex - 1];
+		StyleItem previousRun = previousLine[previousLine.length - 1];
+		if (previousRun.lineBreak && !previousRun.softBreak) {
+			lineIndent = indent;
+		}
+	}
+	if (wrapWidth != -1) {
+		boolean partialLine = true;
+//		if (justify) {
+//			StyleItem[] lineRun = runs[lineIndex];
+//			if (lineRun[lineRun.length - 1].softBreak) {
+//				partialLine = false;
+//			}
+//		}
+		if (partialLine) {
+			int lineWidth = this.lineWidth[lineIndex] + lineIndent;
+			switch (alignment) {
+				case SWT.CENTER: lineIndent += (wrapWidth - lineWidth) / 2; break;
+				case SWT.RIGHT: lineIndent += wrapWidth - lineWidth; break;
+			}
+		}
+	}
+	return lineIndent;
 }
 
 /**
@@ -683,30 +721,34 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	GC gc = new GC(device);
-	Font font = this.font != null ? this.font : device.getSystemFont();
-	FontMetrics metrics = null;
-	if (text.length() == 0) {
-		gc.setFont(font);
-		metrics = gc.getFontMetrics();
-	} else {
-		int ascent = this.ascent, descent = this.descent, leading = 0, aveCharWidth = 0, height = 0;
+	gc.setFont(this.font != null ? this.font : device.getSystemFont());
+	FontMetrics metrics = gc.getFontMetrics();
+	int ascent = Math.max(metrics.getAscent(), this.ascent);
+	int descent = Math.max(metrics.getDescent(), this.descent);
+	if (text.length() != 0) {
 		StyleItem[] lineRuns = runs[lineIndex];
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
-			Font runFont = run.style != null ? run.style.font : null;
-			if (runFont == null) runFont = font;
-			gc.setFont(font);
-			metrics = gc.getFontMetrics();
-			ascent = Math.max (ascent, metrics.getAscent());
-			descent = Math.max (descent, metrics.getDescent());
-			height = Math.max (height, metrics.getHeight());
-			leading = Math.max (leading, metrics.getLeading());
-			aveCharWidth += metrics.getAverageCharWidth();
+			if (run.style != null) {
+				int runAscent = 0;
+				int runDescent = 0;
+				if (run.style.metrics != null) {
+					GlyphMetrics glyphMetrics = run.style.metrics;
+					runAscent = glyphMetrics.ascent;
+					runDescent = glyphMetrics.descent;
+				} else if (run.style.font != null) {
+					gc.setFont(run.style.font);
+					metrics = gc.getFontMetrics();
+					runAscent = metrics.getAscent();
+					runDescent = metrics.getDescent();
+				}
+				ascent = Math.max(ascent, runAscent + run.style.rise);
+				descent = Math.max(descent, runDescent - run.style.rise);
+			}
 		}
-		metrics = FontMetrics.internal_new(ascent, descent, aveCharWidth / lineRuns.length, leading, height);
 	}
 	gc.dispose();
-	return metrics;
+	return FontMetrics.gtk_new(ascent, descent, 0, 0, ascent + descent);
 }
 
 /**
@@ -762,12 +804,7 @@ public Point getLocation (int offset, boolean trailing) {
 		}
 	}
 	if (result == null) result = new Point(0, 0);
-	if (wrapWidth != -1) {
-		switch (alignment) {
-			case SWT.CENTER: result.x += (wrapWidth - lineWidth[line]) / 2; break;
-			case SWT.RIGHT: result.x += wrapWidth - lineWidth[line]; break;
-		}
-	}
+	result.x += getLineIndent(line);
 	return result;
 }
 
@@ -887,12 +924,7 @@ public int getOffset (int x, int y, int[] trailing) {
 		if (lineY[line + 1] > y) break;
 	}
 	line = Math.min(line, runs.length - 1);
-	if (wrapWidth != -1) {
-		switch (alignment) {
-			case SWT.CENTER: x -= (wrapWidth - lineWidth[line]) / 2; break;
-			case SWT.RIGHT: x -= wrapWidth - lineWidth[line]; break;
-		}
-	}
+	x -= getLineIndent(line);
 	if (x >= lineWidth[line]) x = lineWidth[line] - 1;
 	if (x < 0) x = 0;
 	StyleItem[] lineRuns = runs[line];
@@ -1177,12 +1209,23 @@ StyleItem[] merge (StyleItem[] items, int itemCount) {
 }
 
 void place (GC gc, StyleItem run) {
-	String string = text.substring(run.start, run.start + run.length);
-	Point extent = gc.stringExtent(string);
-	FontMetrics metrics = gc.getFontMetrics();
-	run.width = extent.x;
-	run.ascent = metrics.getAscent() + metrics.getLeading();
-	run.descent = metrics.getDescent();
+	if (run.style != null && run.style.metrics != null) {
+		GlyphMetrics metrics = run.style.metrics;
+		run.ascent = metrics.ascent;
+		run.descent = metrics.descent;
+		run.width = metrics.width;
+	} else {
+		String string = text.substring(run.start, run.start + run.length);
+		Point extent = gc.stringExtent(string);
+		FontMetrics metrics = gc.getFontMetrics();
+		run.width = extent.x;
+		run.ascent = metrics.getAscent() + metrics.getLeading();
+		run.descent = metrics.getDescent();
+	}
+	if (run.style != null) {
+		run.ascent += run.style.rise;
+		run.descent -= run.style.rise;
+	}
 }
 
 /**
@@ -1210,6 +1253,7 @@ public void setAlignment (int alignment) {
 	if (alignment == 0) return;
 	if ((alignment & SWT.LEFT) != 0) alignment = SWT.LEFT;
 	if ((alignment & SWT.RIGHT) != 0) alignment = SWT.RIGHT;
+	freeRuns();
 	this.alignment = alignment;
 }
 
@@ -1288,6 +1332,20 @@ public void setFont (Font font) {
 	if (font != null && font.equals(this.font)) return;
 	freeRuns();
 	this.font = font;
+}
+
+public void setIndent (int indent) {
+	checkLayout();
+	if (this.indent == indent) return;
+	freeRuns();
+	this.indent = indent;
+}
+
+public void setJustify (boolean justify) {
+	checkLayout();
+	if (this.justify == justify) return;
+	freeRuns();
+	this.justify = justify;
 }
 
 /**
