@@ -5732,7 +5732,7 @@ void setTVHITTESTINFOFields(JNIEnv *env, jobject lpObject, TVHITTESTINFO *lpStru
 typedef struct TVINSERTSTRUCT_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID hParent, hInsertAfter, mask, hItem, state, stateMask, pszText, cchTextMax, iImage, iSelectedImage, cChildren, lParam;
+	jfieldID hParent, hInsertAfter, mask, hItem, state, stateMask, pszText, cchTextMax, iImage, iSelectedImage, cChildren, lParam, iIntegral;
 } TVINSERTSTRUCT_FID_CACHE;
 
 TVINSERTSTRUCT_FID_CACHE TVINSERTSTRUCTFc;
@@ -5753,6 +5753,7 @@ void cacheTVINSERTSTRUCTFields(JNIEnv *env, jobject lpObject)
 	TVINSERTSTRUCTFc.iSelectedImage = (*env)->GetFieldID(env, TVINSERTSTRUCTFc.clazz, "iSelectedImage", "I");
 	TVINSERTSTRUCTFc.cChildren = (*env)->GetFieldID(env, TVINSERTSTRUCTFc.clazz, "cChildren", "I");
 	TVINSERTSTRUCTFc.lParam = (*env)->GetFieldID(env, TVINSERTSTRUCTFc.clazz, "lParam", "I");
+	TVINSERTSTRUCTFc.iIntegral = (*env)->GetFieldID(env, TVINSERTSTRUCTFc.clazz, "iIntegral", "I");
 	TVINSERTSTRUCTFc.cached = 1;
 }
 
@@ -5771,6 +5772,9 @@ TVINSERTSTRUCT *getTVINSERTSTRUCTFields(JNIEnv *env, jobject lpObject, TVINSERTS
 	lpStruct->item.iSelectedImage = (*env)->GetIntField(env, lpObject, TVINSERTSTRUCTFc.iSelectedImage);
 	lpStruct->item.cChildren = (*env)->GetIntField(env, lpObject, TVINSERTSTRUCTFc.cChildren);
 	lpStruct->item.lParam = (*env)->GetIntField(env, lpObject, TVINSERTSTRUCTFc.lParam);
+#ifndef _WIN32_WCE
+	lpStruct->itemex.iIntegral = (*env)->GetIntField(env, lpObject, TVINSERTSTRUCTFc.iIntegral);
+#endif
 	return lpStruct;
 }
 
@@ -5789,6 +5793,9 @@ void setTVINSERTSTRUCTFields(JNIEnv *env, jobject lpObject, TVINSERTSTRUCT *lpSt
 	(*env)->SetIntField(env, lpObject, TVINSERTSTRUCTFc.iSelectedImage, (jint)lpStruct->item.iSelectedImage);
 	(*env)->SetIntField(env, lpObject, TVINSERTSTRUCTFc.cChildren, (jint)lpStruct->item.cChildren);
 	(*env)->SetIntField(env, lpObject, TVINSERTSTRUCTFc.lParam, (jint)lpStruct->item.lParam);
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, TVINSERTSTRUCTFc.iIntegral, (jint)lpStruct->itemex.iIntegral);
+#endif
 }
 #endif
 
@@ -5847,6 +5854,40 @@ void setTVITEMFields(JNIEnv *env, jobject lpObject, TVITEM *lpStruct)
 	(*env)->SetIntField(env, lpObject, TVITEMFc.iSelectedImage, (jint)lpStruct->iSelectedImage);
 	(*env)->SetIntField(env, lpObject, TVITEMFc.cChildren, (jint)lpStruct->cChildren);
 	(*env)->SetIntField(env, lpObject, TVITEMFc.lParam, (jint)lpStruct->lParam);
+}
+#endif
+
+#ifndef NO_TVITEMEX
+typedef struct TVITEMEX_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID iIntegral;
+} TVITEMEX_FID_CACHE;
+
+TVITEMEX_FID_CACHE TVITEMEXFc;
+
+void cacheTVITEMEXFields(JNIEnv *env, jobject lpObject)
+{
+	if (TVITEMEXFc.cached) return;
+	cacheTVITEMFields(env, lpObject);
+	TVITEMEXFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TVITEMEXFc.iIntegral = (*env)->GetFieldID(env, TVITEMEXFc.clazz, "iIntegral", "I");
+	TVITEMEXFc.cached = 1;
+}
+
+TVITEMEX *getTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct)
+{
+	if (!TVITEMEXFc.cached) cacheTVITEMEXFields(env, lpObject);
+	getTVITEMFields(env, lpObject, (TVITEM *)lpStruct);
+	lpStruct->iIntegral = (*env)->GetIntField(env, lpObject, TVITEMEXFc.iIntegral);
+	return lpStruct;
+}
+
+void setTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct)
+{
+	if (!TVITEMEXFc.cached) cacheTVITEMEXFields(env, lpObject);
+	setTVITEMFields(env, lpObject, (TVITEM *)lpStruct);
+	(*env)->SetIntField(env, lpObject, TVITEMEXFc.iIntegral, (jint)lpStruct->iIntegral);
 }
 #endif
 

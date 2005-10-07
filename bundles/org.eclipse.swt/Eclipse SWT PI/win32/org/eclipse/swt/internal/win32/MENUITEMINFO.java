@@ -33,6 +33,6 @@ public class MENUITEMINFO {
 	* that the correct struct size is used for the Windows platform.
 	*/
 	static {
-		sizeof = OS.WIN32_VERSION < OS.VERSION(4, 10) ? 44 : 48;
+		sizeof = OS.WIN32_VERSION < OS.VERSION (4, 10) ? 44 : 48;
 	}
 }

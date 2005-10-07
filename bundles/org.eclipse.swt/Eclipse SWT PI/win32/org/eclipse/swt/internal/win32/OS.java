@@ -1315,6 +1315,7 @@ public class OS extends Platform {
 	public static final int TVHT_ONITEMSTATEICON = 0x40;
 	public static final int TVIF_HANDLE = 0x10;
 	public static final int TVIF_IMAGE = 0x2;
+	public static final int TVIF_INTEGRAL = 0x0080;
 	public static final int TVIF_PARAM = 0x4;
 	public static final int TVIF_SELECTEDIMAGE = 0x20;
 	public static final int TVIF_STATE = 0x8;
@@ -1349,6 +1350,7 @@ public class OS extends Platform {
 	public static final int TVM_SETIMAGELIST = 0x1109;
 	public static final int TVM_SETINSERTMARK = 0x111a;
 	public static final int TVM_SETITEM = IsUnicode ? 0x113f : 0x110d;
+	public static final int TVM_SETITEMHEIGHT = TV_FIRST + 27;
 	public static final int TVM_SETTEXTCOLOR = 0x111e;
 	public static final int TVN_BEGINDRAGW = 0xfffffe38;
 	public static final int TVN_BEGINDRAGA = 0xfffffe69;
@@ -1373,6 +1375,7 @@ public class OS extends Platform {
 	public static final int TVS_HASLINES = 0x2;
 	public static final int TVS_LINESATROOT = 0x4;
 	public static final int TVS_NOHSCROLL = 0x8000;
+	public static final int TVS_NONEVENHEIGHT = 0x4000;
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
 	public static final int UDM_GETACCEL = 0x046C;

@@ -1295,6 +1295,18 @@ void setTVITEMFields(JNIEnv *env, jobject lpObject, TVITEM *lpStruct);
 #define TVITEM_sizeof() 0
 #endif
 
+#ifndef NO_TVITEMEX
+void cacheTVITEMEXFields(JNIEnv *env, jobject lpObject);
+TVITEMEX *getTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct);
+void setTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct);
+#define TVITEMEX_sizeof() sizeof(TVITEMEX)
+#else
+#define cacheTVITEMEXFields(a,b)
+#define getTVITEMEXFields(a,b,c) NULL
+#define setTVITEMEXFields(a,b,c)
+#define TVITEMEX_sizeof() 0
+#endif
+
 #ifndef NO_UDACCEL
 void cacheUDACCELFields(JNIEnv *env, jobject lpObject);
 UDACCEL *getUDACCELFields(JNIEnv *env, jobject lpObject, UDACCEL *lpStruct);

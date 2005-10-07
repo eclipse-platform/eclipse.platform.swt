@@ -10,20 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.win32;
 
-public class TVINSERTSTRUCT {
-	public int hParent;
-	public int hInsertAfter;
-//	public TVITEMEX item;
-	public int mask;
-	public int hItem;
-	public int state;
-	public int stateMask;
-	public int pszText;
-  	public int cchTextMax;
-  	public int iImage;
-  	public int iSelectedImage;
-	public int cChildren;
-	public int lParam;
+public class TVITEMEX extends TVITEM {
 	public int iIntegral;
-	public static final int sizeof = 48 + (OS.IsWinCE ? 0 : 4);
+	public static final int sizeof = 44;
 }
