@@ -126,6 +126,11 @@ int _getBackgroundPixel () {
 	return pixel;
 }
 
+TreeItem _getItem (int hItem, int id) {
+	if ((style & SWT.VIRTUAL) == 0) return items [id];
+	return id != -1 ? items [id] : new TreeItem (this, SWT.NONE, -1, -1, hItem);
+}
+
 void _setBackgroundPixel (int pixel) {
 	/*
 	* Bug in Windows.  When TVM_GETBKCOLOR is used more
@@ -216,6 +221,34 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
 	}
 	switch (msg) {
+//		case OS.WM_SETFOCUS: {
+//			/*
+//			* Feature in Windows.  When a tree control processes WM_SETFOCUS,
+//			* if no item is selected, the first item in the tree is selected.
+//			* This is unexpected and might clear the previous selection.
+//			* The fix is to detect that there is no selection and set it to
+//			* the first item in the tree.  If the item was not selected,
+//			* only the focus is assigned.
+//			*/
+//			if ((style & SWT.SINGLE) != 0) break;
+//			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+//			if (hItem == 0) {
+//				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+//				if (hItem != 0) {
+//					TVITEM tvItem = new TVITEM ();
+//					tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+//					tvItem.hItem = hItem;
+//					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+//					ignoreDeselect = ignoreSelect = lockSelection = true;
+//					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
+//					if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
+//						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+//					}
+//					ignoreDeselect = ignoreSelect = lockSelection = false;
+//				}
+//			}
+//			break;
+//		}
 		case OS.WM_MOUSEWHEEL: {
 			int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 			updateScrollBar ();
@@ -294,15 +327,29 @@ protected void checkSubclass () {
  */
 /*public*/ void clear (int index, boolean all) {
 	checkWidget ();
-	clear (null, index, all);
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+	hItem = findItem (hItem, index);
+	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	clear (hItem, tvItem);
+	if (all) {
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		clearAll (hItem, tvItem, all);
+	}
 }
 
-void clear (TreeItem parentItem, int index, boolean all) {
-	checkWidget ();
-	TreeItem item = parentItem != null ? parentItem.getItem (index) : getItem (index);
-	item.clear ();
-	item.redraw ();
-	if (all) item.clearAll (all);
+void clear (int hItem, TVITEM tvItem) {
+	tvItem.hItem = hItem;
+	TreeItem item = null;
+	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
+		item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
+	}
+	if (item != null) {
+		item.clear ();
+		item.redraw ();
+	}
 }
 
 /**
@@ -325,15 +372,20 @@ void clear (TreeItem parentItem, int index, boolean all) {
  */
 /*public*/ void clearAll (boolean all) {
 	checkWidget ();
-	TreeItem [] items = all ? this.items : getItems ();
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			item.clear ();
-			if (!all) item.redraw ();
-		}
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	if (hItem == 0) return;
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	clearAll (hItem, tvItem, all);
+}
+
+void clearAll (int hItem, TVITEM tvItem, boolean all) {
+	while (hItem != 0) {
+		clear (hItem, tvItem);
+		int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		if (all) clearAll (hFirstItem, tvItem, all);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 	}
-	if (all) OS.InvalidateRect (handle, null, true);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -570,70 +622,86 @@ void createItem (TreeColumn column, int index) {
 	}
 }
 
-void createItem (TreeItem item, int hParent, int hInsertAfter) {
-	int id = lastID < items.length ? lastID : 0;
-	while (id < items.length && items [id] != null) id++;
-	if (id == items.length) {
-		/*
-		* Grow the array faster when redraw is off or the
-		* table is not visible.  When the table is painted,
-		* the items array is resized to be smaller to reduce
-		* memory usage.
-		*/
-		int length = items.length + 4;
-		if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
-			length = Math.max (4, items.length * 3 / 2);
-			shrink = true;
+void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
+	int id = -1;
+	if (item != null) {
+		id = lastID < items.length ? lastID : 0;
+		while (id < items.length && items [id] != null) id++;
+		if (id == items.length) {
+			/*
+			* Grow the array faster when redraw is off or the
+			* table is not visible.  When the table is painted,
+			* the items array is resized to be smaller to reduce
+			* memory usage.
+			*/
+			int length = 0;
+			if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+				length = items.length + 4;
+			} else {
+				shrink = true;
+				length = Math.max (4, items.length * 3 / 2);
+			}
+			TreeItem [] newItems = new TreeItem [length];
+			System.arraycopy (items, 0, newItems, 0, items.length);
+			items = newItems;
 		}
-		TreeItem [] newItems = new TreeItem [length + 4];
-		System.arraycopy (items, 0, newItems, 0, items.length);
-		items = newItems;
+		lastID = id + 1;
 	}
-	lastID = id + 1;
-	TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
-	tvInsert.hParent = hParent;
-	tvInsert.hInsertAfter = hInsertAfter;
-	tvInsert.lParam = id;
-	tvInsert.pszText = OS.LPSTR_TEXTCALLBACK;
-	tvInsert.iImage = tvInsert.iSelectedImage = OS.I_IMAGECALLBACK;
-	tvInsert.mask = OS.TVIF_TEXT | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE | OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	if ((style & SWT.CHECK) != 0) {
-		tvInsert.mask = tvInsert.mask | OS.TVIF_STATE;
-		tvInsert.state = 1 << 12;
-		tvInsert.stateMask = OS.TVIS_STATEIMAGEMASK;
+	int hNewItem = 0;
+	if (hItem == 0) {
+		TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
+		tvInsert.hParent = hParent;
+		tvInsert.hInsertAfter = hInsertAfter;
+		tvInsert.lParam = id;
+		tvInsert.pszText = OS.LPSTR_TEXTCALLBACK;
+		tvInsert.iImage = tvInsert.iSelectedImage = OS.I_IMAGECALLBACK;
+		tvInsert.mask = OS.TVIF_TEXT | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE | OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		if ((style & SWT.CHECK) != 0) {
+			tvInsert.mask = tvInsert.mask | OS.TVIF_STATE;
+			tvInsert.state = 1 << 12;
+			tvInsert.stateMask = OS.TVIS_STATEIMAGEMASK;
+		}
+		hNewItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
+		if (hNewItem == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
+		/*
+		* This code is intentionally commented.
+		*/
+//		if (hParent != 0) {
+//			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//			bits |= OS.TVS_LINESATROOT;
+//			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+//		}
+	} else {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		tvItem.hItem = hNewItem = hItem;
+		tvItem.lParam = id;
+		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 	}
-	int hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
-	if (hItem == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	item.handle = hItem;
-	items [id] = item;
-
-	/*
-	* This code is intentionally commented.
-	*/
-//	if (hParent != 0) {
-//		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//		bits |= OS.TVS_LINESATROOT;
-//		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-//	}
-
-	/*
-	* Bug in Windows.  When a child item is added to a parent item
-	* that has no children outside of WM_NOTIFY with control code
-	* TVN_ITEMEXPANDED, the tree widget does not redraw the +/-
-	* indicator.  The fix is to detect the case when the first
-	* child is added to a visible parent item and redraw the parent.
-	*/
-	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
-		int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-		if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
-			RECT rect = new RECT ();
-			rect.left = hParent;
-			if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
-				OS.InvalidateRect (handle, rect, true);
+	if (item != null) {
+		item.handle = hNewItem;
+		items [id] = item;
+	}
+	if (hItem == 0) {
+		/*
+		* Bug in Windows.  When a child item is added to a parent item
+		* that has no children outside of WM_NOTIFY with control code
+		* TVN_ITEMEXPANDED, the tree widget does not redraw the +/-
+		* indicator.  The fix is to detect the case when the first
+		* child is added to a visible parent item and redraw the parent.
+		*/
+		if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+			int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+			if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
+				RECT rect = new RECT ();
+				rect.left = hParent;
+				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+					OS.InvalidateRect (handle, rect, true);
+				}
 			}
 		}
+		updateScrollBar ();
 	}
-	updateScrollBar ();
 }
 
 void createParent () {
@@ -733,6 +801,18 @@ void deregister () {
 	if (hwndHeader != 0) display.removeControl (hwndHeader);
 }
 
+void deselect (int hItem, TVITEM tvItem, int hIgnoreItem) {
+	while (hItem != 0) {
+		if (hItem != hIgnoreItem) {
+			tvItem.hItem = hItem;
+			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		}
+		int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		deselect (hFirstItem, tvItem, hIgnoreItem);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	}
+}
+
 /**
  * Deselects all selected items in the receiver.
  *
@@ -754,12 +834,17 @@ public void deselectAll () {
 		}
 	} else {
 		int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);	
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
-			if (item != null) {
-				tvItem.hItem = item.handle;
-				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
+		if ((style & SWT.VIRTUAL) != 0) {
+			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+			deselect (hItem, tvItem, 0);
+		} else {
+			for (int i=0; i<items.length; i++) {
+				TreeItem item = items [i];
+				if (item != null) {
+					tvItem.hItem = item.handle;
+					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+				}
 			}
 		}
 		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
@@ -898,7 +983,7 @@ void destroyItem (TreeColumn column) {
 	}
 }
 
-void destroyItem (TreeItem item) {
+void destroyItem (TreeItem item, int hItem) {
 	hFirstIndexOf = hLastIndexOf = 0;
 	/*
 	* Feature in Windows.  When an item is removed that is not
@@ -909,7 +994,7 @@ void destroyItem (TreeItem item) {
 	* the item and validate the damage caused by the removing of
 	* the item.
 	*/
-	int hItem = item.handle, hParent = 0;
+	int hParent = 0;
 	boolean fixRedraw = false;
 	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
@@ -919,7 +1004,11 @@ void destroyItem (TreeItem item) {
 	if (fixRedraw) {
 		hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
 		OS.UpdateWindow (handle);
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+		/*
+		* This code is intentionally commented.
+		*/
+//		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	if ((style & SWT.MULTI) != 0) {
 		ignoreDeselect = ignoreSelect = lockSelection = true;
@@ -929,7 +1018,11 @@ void destroyItem (TreeItem item) {
 		ignoreDeselect = ignoreSelect = lockSelection = false;
 	}
 	if (fixRedraw) {
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+		/*
+		* This code is intentionally commented.
+		*/
+//		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.ValidateRect (handle, null);
 		/*
 		* If the item that was deleted was the last child of a tree item that
@@ -1025,8 +1118,7 @@ Widget findItem (int id) {
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	tvItem.hItem = id;
 	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
-		int lParam = tvItem.lParam;
-		if (0 <= lParam && lParam < items.length) return items [lParam];
+		return _getItem (tvItem.hItem, tvItem.lParam);
 	}
 	return null;
 }
@@ -1096,6 +1188,20 @@ int getBackgroundPixel () {
 		return background;
 	}
 	return _getBackgroundPixel ();
+}
+
+/*
+* Not currently used.
+*/
+TreeItem getFocusItem () {
+//	checkWidget ();
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+	if (hItem == 0) return null;
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+	tvItem.hItem = hItem;
+	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+	return _getItem (tvItem.hItem, tvItem.lParam);
 }
 
 int getForegroundPixel () {
@@ -1321,7 +1427,7 @@ public TreeItem getItem (int index) {
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	tvItem.hItem = hItem;
 	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-	return items [tvItem.lParam];
+	return _getItem (hItem, tvItem.lParam);
 }
 
 /**
@@ -1353,7 +1459,7 @@ public TreeItem getItem (Point point) {
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 			tvItem.hItem = lpht.hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			return items [tvItem.lParam];
+			return _getItem (lpht.hItem, tvItem.lParam);
 		}
 	}
 	return null;
@@ -1452,7 +1558,7 @@ TreeItem [] getItems (int hTreeItem) {
 	*/
 	while (tvItem.hItem != 0) {
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		TreeItem item = items [tvItem.lParam];
+		TreeItem item = _getItem (tvItem.hItem, tvItem.lParam);
 		if (item != null) result [index++] = item;
 		tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, tvItem.hItem);
 	}
@@ -1488,6 +1594,18 @@ public boolean getLinesVisible () {
 	return linesVisible;
 }
 
+int getNextSelection (int hItem) {
+	while (hItem != 0) {
+		int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+		if ((state & OS.TVIS_SELECTED) != 0) return hItem;
+		int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		int hSelected = getNextSelection (hFirstItem);
+		if (hSelected != 0) return hSelected;
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	}
+	return 0;
+}
+
 /**
  * Returns the receiver's parent item, which must be a
  * <code>TreeItem</code> or null when the receiver is a
@@ -1503,6 +1621,27 @@ public boolean getLinesVisible () {
 public TreeItem getParentItem () {
 	checkWidget ();
 	return null;
+}
+
+int getSelection (int hItem, TVITEM tvItem, TreeItem [] selection, int count) {
+	int result = 0;
+	while (hItem != 0) {
+		if (tvItem != null && selection != null && count < selection.length) {
+			tvItem.hItem = hItem;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+				selection [count++] = _getItem (hItem, tvItem.lParam);
+				result++;
+			}
+		} else {
+			int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+			if ((state & OS.TVIS_SELECTED) != 0) result++;
+		}
+		int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		result += getSelection (hFirstItem, tvItem, selection, count);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	}
+	return result;
 }
 
 /**
@@ -1531,7 +1670,7 @@ public TreeItem [] getSelection () {
 		tvItem.hItem = hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return new TreeItem [0];
-		return new TreeItem [] {items [tvItem.lParam]};
+		return new TreeItem [] {_getItem (tvItem.hItem, tvItem.lParam)};
 	}
 	int count = 0;
 	TreeItem [] guess = new TreeItem [8];
@@ -1539,14 +1678,19 @@ public TreeItem [] getSelection () {
 	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				if (count < guess.length) guess [count] = item;
-				count++;
+	if ((style & SWT.VIRTUAL) != 0) {
+		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		count = getSelection (hItem, tvItem, guess, 0);
+	} else {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) {
+				tvItem.hItem = item.handle;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+					if (count < guess.length) guess [count] = item;
+					count++;
+				}
 			}
 		}
 	}
@@ -1559,14 +1703,19 @@ public TreeItem [] getSelection () {
 		return result;
 	}
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	int index = 0;
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				result [index++] = item;
+	if ((style & SWT.VIRTUAL) != 0) {
+		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		getSelection (hItem, tvItem, result, 0);
+	} else {
+		int index = 0;
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) {
+				tvItem.hItem = item.handle;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+					result [index++] = item;
+				}
 			}
 		}
 	}
@@ -1598,15 +1747,20 @@ public int getSelectionCount () {
 	}
 	int count = 0;
 	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
+	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) count++;
+	if ((style & SWT.VIRTUAL) != 0) {
+		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		count = getSelection (hItem, tvItem, null, 0);
+	} else {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) {
+				tvItem.hItem = item.handle;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((tvItem.state & OS.TVIS_SELECTED) != 0) count++;
+			}
 		}
 	}
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
@@ -1676,8 +1830,10 @@ public TreeItem getTopItem () {
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_PARAM;
 	tvItem.hItem = hItem;
-	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0) return null;
-	return items [tvItem.lParam];
+	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
+		return _getItem (hItem, tvItem.lParam);
+	}
+	return null;
 }
 
 int imageIndex (Image image, int index) {
@@ -1783,28 +1939,28 @@ void register () {
 	if (hwndHeader != 0) display.addControl (hwndHeader, this);
 }
 
-void releaseItem (TreeItem item, TVITEM tvItem, boolean release) {
-	int hItem = item.handle;
-	if (release) item.release (false);
+void releaseItem (int hItem, TVITEM tvItem, boolean release) {
 	if (hItem == hAnchor) hAnchor = 0;
 	if (hItem == hInsert) hInsert = 0;
 	tvItem.hItem = hItem;
 	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
-		if (tvItem.lParam < lastID) lastID = tvItem.lParam;
-		items [tvItem.lParam] = null;
+		if (tvItem.lParam != -1) {
+			if (tvItem.lParam < lastID) lastID = tvItem.lParam;
+			if (release) {
+				TreeItem item = items [tvItem.lParam];
+				if (item != null) item.release (false);
+			}
+			items [tvItem.lParam] = null;
+		}
 	}
 }
 
-void releaseItems (TreeItem [] nodes, TVITEM tvItem) {
-	for (int i=0; i<nodes.length; i++) {
-		TreeItem item = nodes [i];
-		TreeItem [] sons = item.getItems ();
-		if (sons.length != 0) {
-			releaseItems (sons, tvItem);
-		}
-		if (!item.isDisposed ()) {
-			releaseItem (item, tvItem, true);
-		}
+void releaseItems (int hItem, TVITEM tvItem) {
+	hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+	while (hItem != 0) {
+		releaseItems (hItem, tvItem);
+		releaseItem (hItem, tvItem, true);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 	}
 }
 
@@ -2006,10 +2162,15 @@ public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
 	count = Math.max (0, count);
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	setItemCount (count, hItem, null);
+	setItemCount (count, OS.TVGN_ROOT, hItem);
 }
 
-void setItemCount (int count, int hItem, TreeItem parent) {
+void setItemCount (int count, int hParent, int hItem) {
+	boolean redraw = false;
+	if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
+		redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	}
 	int itemCount = 0;
 	while (hItem != 0 && itemCount < count) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
@@ -2018,29 +2179,37 @@ void setItemCount (int count, int hItem, TreeItem parent) {
 	if (hItem != 0) {
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hItem);
 		tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		while (tvItem.hItem != 0) {
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			TreeItem item = items [tvItem.lParam];
-			if (item != null && !item.isDisposed ()) item.dispose ();
+			TreeItem item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
+			if (item != null && !item.isDisposed ()) {
+				item.dispose ();
+			} else {
+				releaseItem (tvItem.hItem, tvItem, false);
+				destroyItem (null, tvItem.hItem);
+			}
 			tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		}
-		tvItem.hItem = hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		TreeItem item = items [tvItem.lParam];
-		if (item != null && !item.isDisposed ()) item.dispose ();
 	}
-	shrink = true;
-	int extra = Math.max (4, (count + 3) / 4 * 4);
-	TreeItem [] newItems =  new TreeItem [items.length + extra];
-	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
-	items = newItems;
-	for (int i=itemCount; i<count; i++) {
-		if (parent == null) {
-			new TreeItem (this, SWT.NONE);
-		} else {
-			new TreeItem (parent, SWT.NONE);
+	if ((style & SWT.VIRTUAL) != 0) {
+		for (int i=itemCount; i<count; i++) {
+			createItem (null, hParent, OS.TVI_LAST, 0);
 		}
+	} else {
+		shrink = true;
+		int extra = Math.max (4, (count + 3) / 4 * 4);
+		TreeItem [] newItems = new TreeItem [items.length + extra];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+		for (int i=itemCount; i<count; i++) {
+			new TreeItem (this, SWT.NONE, hParent, OS.TVI_LAST, 0);
+		}
+	}
+	if (redraw) {
+		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		OS.InvalidateRect (handle, null, true);
 	}
 }
 
@@ -2076,6 +2245,16 @@ int scrolledHandle () {
 	return count == 0 ? handle : hwndParent;
 }
 
+void select (int hItem, TVITEM tvItem) {
+	while (hItem != 0) {
+		tvItem.hItem = hItem;
+		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		select (hFirstItem, tvItem);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	}
+}
+
 /**
  * Selects all of the items in the receiver.
  * <p>
@@ -2094,12 +2273,17 @@ public void selectAll () {
 	tvItem.state = OS.TVIS_SELECTED;
 	tvItem.stateMask = OS.TVIS_SELECTED;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);	
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
+	if ((style & SWT.VIRTUAL) != 0) {
+		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		select (hItem, tvItem);
+	} else {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null) {
+				tvItem.hItem = item.handle;
+				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			}
 		}
 	}
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
@@ -2411,6 +2595,33 @@ void setScrollWidth () {
 	ignoreResize = oldIgnore;
 }
 
+void setSelection (int hItem, TVITEM tvItem, TreeItem [] selection) {
+	while (hItem != 0) {
+		int index = 0;
+		while (index < selection.length) {
+			TreeItem item = selection [index];
+			if (item != null && item.handle == hItem) break;
+			index++;
+		}
+		tvItem.hItem = hItem;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+			if (index == selection.length) {
+				tvItem.state = 0;
+				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			}
+		} else {
+			if (index != selection.length) {
+				tvItem.state = OS.TVIS_SELECTED;
+				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			}
+		}
+		int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		setSelection (hFirstItem, tvItem, selection);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	}
+}
+
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selection is cleared before the new items are selected.
@@ -2501,25 +2712,30 @@ public void setSelection (TreeItem [] items) {
 	tvItem.stateMask = OS.TVIS_SELECTED;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	for (int i=0; i<this.items.length; i++) {
-		item = this.items [i];
-		if (item != null) {
-			int index = 0;
-			while (index < length) {
-				if (items [index] == item) break;
-				index++;
-			}
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				if (index == length) {
-					tvItem.state = 0;
-					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+	if ((style & SWT.VIRTUAL) != 0) {
+		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		setSelection (hItem, tvItem, items);
+	} else {
+		for (int i=0; i<this.items.length; i++) {
+			item = this.items [i];
+			if (item != null) {
+				int index = 0;
+				while (index < length) {
+					if (items [index] == item) break;
+					index++;
 				}
-			} else {
-				if (index != length) {
-					tvItem.state = OS.TVIS_SELECTED;
-					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+				tvItem.hItem = item.handle;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+					if (index == length) {
+						tvItem.state = 0;
+						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+					}
+				} else {
+					if (index != length) {
+						tvItem.state = OS.TVIS_SELECTED;
+						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+					}
 				}
 			}
 		}
@@ -2792,22 +3008,28 @@ public void showSelection () {
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return;
 	} else {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
 		int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-		int index = 0;
-		while (index <items.length) {
-			TreeItem item = items [index];
-			if (item != null) {
-				tvItem.hItem = item.handle;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-					hItem = tvItem.hItem;
-					break;
+		if ((style & SWT.VIRTUAL) != 0) {
+			int hRoot = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+			hItem = getNextSelection (hRoot);
+		} else {
+			//FIXME - this code expands first selected item it finds
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_STATE;
+			int index = 0;
+			while (index <items.length) {
+				TreeItem item = items [index];
+				if (item != null) {
+					tvItem.hItem = item.handle;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+						hItem = tvItem.hItem;
+						break;
+					}
 				}
+				index++;
 			}
-			index++;
 		}
 		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 	}
@@ -3128,12 +3350,13 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 					tvItem.state |= OS.TVIS_SELECTED;
 				}
 				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+				TreeItem item = _getItem (hItem, tvItem.lParam);
 				Event event = new Event ();
-				event.item = items [tvItem.lParam];
+				event.item = item;
 				postEvent (SWT.Selection, event);
 				if ((style & SWT.CHECK) != 0) {
 					event = new Event ();
-					event.item = items [tvItem.lParam];
+					event.item = item;
 					event.detail = SWT.CHECK;
 					postEvent (SWT.Selection, event);
 				}
@@ -3156,7 +3379,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 				tvItem.hItem = hItem;
 				tvItem.mask = OS.TVIF_PARAM;
 				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				event.item = items [tvItem.lParam];
+				event.item = _getItem (hItem, tvItem.lParam);
 			}
 			postEvent (SWT.DefaultSelection, event);
 			return LRESULT.ZERO;
@@ -3242,7 +3465,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					tvItem.hItem = hNewItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					Event event = new Event ();
-					event.item = items [tvItem.lParam];
+					event.item = _getItem (hNewItem, tvItem.lParam);
 					postEvent (SWT.Selection, event);
 					return new LRESULT (code);
 				}
@@ -3400,7 +3623,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 					OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);	
 				}
 				Event event = new Event ();
-				event.item = items [tvItem.lParam];
+				event.item = _getItem (tvItem.hItem, tvItem.lParam);
 				event.detail = SWT.CHECK;
 				postEvent (SWT.Selection, event);
 				return LRESULT.ZERO;
@@ -3415,7 +3638,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 			tvItem.hItem = lpht.hItem;
 			tvItem.mask = OS.TVIF_PARAM;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			event.item = items [tvItem.lParam];
+			event.item = _getItem (tvItem.hItem, tvItem.lParam);
 			postEvent (SWT.DefaultSelection, event);
 		}
 	}
@@ -3472,7 +3695,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			tvItem.hItem = lpht.hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			Event event = new Event ();
-			event.item = items [tvItem.lParam];
+			event.item = _getItem (tvItem.hItem, tvItem.lParam);
 			postEvent (SWT.Selection, event);
 		}
 		return new LRESULT (code);
@@ -3504,7 +3727,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);	
 			}
 			Event event = new Event ();
-			event.item = items [tvItem.lParam];
+			event.item = _getItem (tvItem.hItem, tvItem.lParam);
 			event.detail = SWT.CHECK;
 			postEvent (SWT.Selection, event);
 			return LRESULT.ZERO;
@@ -3623,12 +3846,17 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			if (!hittestSelected || !dragStarted) {
 				tvItem.state = 0;
 				int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-				OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);	
-				for (int i=0; i<items.length; i++) {
-					TreeItem item = items [i];
-					if (item != null && item.handle != hNewItem) {
-						tvItem.hItem = item.handle;
-						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+				OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
+				if ((style & SWT.VIRTUAL) != 0) {
+					int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+					deselect (hItem, tvItem, hNewItem);
+				} else {
+					for (int i=0; i<items.length; i++) {
+						TreeItem item = items [i];
+						if (item != null && item.handle != hNewItem) {
+							tvItem.hItem = item.handle;
+							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+						}
 					}
 				}
 				tvItem.hItem = hNewItem;
@@ -3665,7 +3893,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		tvItem.mask = OS.TVIF_PARAM;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		Event event = new Event ();
-		event.item = items [tvItem.lParam];
+		event.item = _getItem (tvItem.hItem, tvItem.lParam);
 		postEvent (SWT.Selection, event);
 	}
 	gestureCompleted = false;
@@ -4029,6 +4257,19 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.TVN_GETDISPINFOW: {
 			NMTVDISPINFO lptvdi = new NMTVDISPINFO ();
 			OS.MoveMemory (lptvdi, lParam, NMTVDISPINFO.sizeof);
+			if ((style & SWT.VIRTUAL) != 0) {
+				if (lptvdi.lParam == -1) {
+					if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
+					RECT itemRect = new RECT ();
+					itemRect.left = lptvdi.hItem;
+					if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, itemRect) == 0) {
+						break;
+					}
+					RECT rect = new RECT ();
+					OS.GetClientRect (handle, rect);
+					if (!OS.IntersectRect (rect, rect, itemRect)) break;
+				}
+			}
 			/*
 			* Feature in Windows.  When a new tree item is inserted
 			* using TVM_INSERTITEM, a TVN_GETDISPINFO is sent before
@@ -4037,33 +4278,20 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			* 
 			* NOTE: This only happens on XP with the version 6.00 of
 			* COMCTL32.DLL.
-			*/
-			if (items == null) break;
-			TreeItem item = items [lptvdi.lParam];
-			if (item == null) break;
-			/* 
+			* 
 			* Feature in Windows.  When TVM_DELETEITEM is called with
 			* TVI_ROOT to remove all items from a tree, under certain
 			* circumstances, the tree sends TVN_GETDISPINFO for items
 			* that are about to be disposed.  The fix is to check for
 			* disposed items.
 			*/
+			if (items == null) break;
+			TreeItem item = _getItem (lptvdi.hItem, lptvdi.lParam);
+			if (item == null) break;
 			if (item.isDisposed ()) break;
-			if (!item.cached) {
-				if ((style & SWT.VIRTUAL) != 0) {
-					if (drawCount == 0 && OS.IsWindowVisible (handle)) {
-						RECT itemRect = new RECT ();
-						itemRect.left = lptvdi.hItem;
-						if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, itemRect) != 0) {
-							RECT rect = new RECT ();
-							OS.GetClientRect (handle, rect);
-							if (OS.IntersectRect (rect, rect, itemRect)) {
-								if (!checkData (item, false)) break;
-							}
-						}
-					}
-				} else {
-					item.cached = true;
+			if ((style & SWT.VIRTUAL) != 0) {
+				if (!item.cached) {
+					if (!checkData (item, false)) break;
 				}
 			}
 			int index = 0;
@@ -4162,7 +4390,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					* NOTE: This only happens on XP with the version 6.00 of
 					* COMCTL32.DLL,
 					*/
-					TreeItem item = items [nmcd.lItemlParam];
+					TreeItem item = _getItem (nmcd.dwItemSpec, nmcd.lItemlParam);
 					if (item == null) break;
 					if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) {
 						break;
@@ -4243,7 +4471,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					return new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
 				}
 				case OS.CDDS_ITEMPOSTPAINT: {
-					TreeItem item = items [nmcd.lItemlParam];
+					TreeItem item = _getItem (nmcd.dwItemSpec, nmcd.lItemlParam);
 					if (item == null) break;
 					/*
 					* Feature in Windows.  Under certain circumstances, Windows
@@ -4493,7 +4721,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
 				hAnchor = tvItem.hItem;
 				Event event = new Event ();
-				event.item = items [tvItem.lParam];
+				event.item = _getItem (tvItem.hItem, tvItem.lParam);
 				postEvent (SWT.Selection, event);
 			}
 			updateScrollBar ();
@@ -4558,7 +4786,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				* items.  The fix is to check for null. 
 				*/
 				if (items == null) break;
-				TreeItem item = items [tvItem.lParam];
+				TreeItem item = _getItem (tvItem.hItem, tvItem.lParam);
 				if (item == null) break;
 				Event event = new Event ();
 				event.item = item;

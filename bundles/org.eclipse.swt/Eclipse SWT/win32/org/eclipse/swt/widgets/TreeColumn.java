@@ -335,32 +335,33 @@ public void pack () {
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_PARAM;
-	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	while (hItem != 0) {
-		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
-		tvItem.hItem = hItem;
+	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	while (tvItem.hItem != 0) {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-		TreeItem item = parent.items [tvItem.lParam];
-		if (index == 0) {
-			rect.left = item.handle;
-			if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
-				columnWidth = Math.max (columnWidth, rect.right);
+		TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
+		if (item != null) {
+			if (index == 0) {
+				rect.left = item.handle;
+				if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+					columnWidth = Math.max (columnWidth, rect.right);
+				}
+			} else {
+				int imageWidth = 0, textWidth = 0;
+				Image image = item.images != null ? item.images [index] : null;
+				if (image != null) {
+					Rectangle bounds = image.getBounds ();
+					imageWidth = bounds.width;
+				}
+				String string = item.strings != null ? item.strings [index] : null;
+				if (string != null) {
+					TCHAR buffer = new TCHAR (cp, string, false);
+					OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+					textWidth = rect.right - rect.left;
+				}
+				columnWidth = Math.max (columnWidth, imageWidth + textWidth + Tree.INSET * 3);
 			}
-		} else {
-			int imageWidth = 0, textWidth = 0;
-			Image image = item.images != null ? item.images [index] : null;
-			if (image != null) {
-				Rectangle bounds = image.getBounds ();
-				imageWidth = bounds.width;
-			}
-			String string = item.strings != null ? item.strings [index] : null;
-			if (string != null) {
-				TCHAR buffer = new TCHAR (cp, string, false);
-				OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-				textWidth = rect.right - rect.left;
-			}
-			columnWidth = Math.max (columnWidth, imageWidth + textWidth + Tree.INSET * 3);
 		}
+		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, tvItem.hItem);
 	}
 	TCHAR buffer = new TCHAR (cp, text, false);
 	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);

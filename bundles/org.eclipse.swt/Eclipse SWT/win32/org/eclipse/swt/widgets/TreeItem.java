@@ -80,9 +80,7 @@ public class TreeItem extends Item {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style) {
-	super (parent, style);
-	this.parent = parent;
-	parent.createItem (this, 0, OS.TVI_LAST);
+	this (parent, style, OS.TVGN_ROOT, OS.TVI_LAST, 0);
 }
 
 /**
@@ -117,17 +115,7 @@ public TreeItem (Tree parent, int style) {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style, int index) {
-	super (parent, style);
-	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	this.parent = parent;
-	int hItem = OS.TVI_FIRST;
-	if (index != 0) {
-		int hwnd = parent.handle;
-		int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		hItem = parent.findItem (hFirstItem, index - 1);
-		if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-	}
-	parent.createItem (this, 0, hItem);
+	this (parent, style, OS.TVGN_ROOT, findPrevious (parent, index), 0);
 }
 
 /**
@@ -161,9 +149,7 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	super (checkNull (parentItem).parent, style);
-	parent = parentItem.parent;
-	parent.createItem (this, parentItem.handle, OS.TVI_LAST);
+	this (checkNull (parentItem).parent, style, parentItem.handle, OS.TVI_LAST, 0);
 }
 
 /**
@@ -198,23 +184,45 @@ public TreeItem (TreeItem parentItem, int style) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style, int index) {
-	super (checkNull (parentItem).parent, style);
-	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	parent = parentItem.parent;
-	int hItem = OS.TVI_FIRST;
-	int hParent = parentItem.handle;
-	if (index != 0) {
-		int hwnd = parent.handle;
-		int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-		hItem = parent.findItem (hFirstItem, index - 1);
-		if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-	}
-	parent.createItem (this, hParent, hItem);
+	this (checkNull (parentItem).parent, style, parentItem.handle, findPrevious (parentItem, index), 0);
+}
+
+public TreeItem (Tree parent, int style, int hParent, int hInsertAfter, int hItem) {
+	super (parent, style);
+	this.parent = parent;
+	parent.createItem (this, hParent, hInsertAfter, hItem);
 }
 
 static TreeItem checkNull (TreeItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return item;
+}
+
+static int findPrevious (Tree parent, int index) {
+	if (parent == null) return 0;
+	if (index < 0) SWT.error (SWT.ERROR_INVALID_RANGE);
+	int hItem = OS.TVI_FIRST;
+	if (index != 0) {
+		int hwnd = parent.handle;
+		int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		hItem = parent.findItem (hFirstItem, index - 1);
+		if (hItem == 0) SWT.error (SWT.ERROR_INVALID_RANGE);
+	}
+	return hItem;
+}
+
+static int findPrevious (TreeItem parentItem, int index) {
+	if (parentItem == null) return 0;
+	if (index < 0) SWT.error (SWT.ERROR_INVALID_RANGE);
+	Tree parent = parentItem.parent;
+	int hItem = OS.TVI_FIRST, hParent = parentItem.handle;
+	if (index != 0) {
+		int hwnd = parent.handle;
+		int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+		hItem = parent.findItem (hFirstItem, index - 1);
+		if (hItem == 0) SWT.error (SWT.ERROR_INVALID_RANGE);
+	}
+	return hItem;
 }
 
 protected void checkSubclass () {
@@ -231,6 +239,7 @@ void clear () {
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 		tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
+		tvItem.state = 1 << 12;
 		tvItem.hItem = handle;
 		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 	}
@@ -263,7 +272,18 @@ void clear () {
  */
 /*public*/ void clear (int index, boolean all) {
 	checkWidget ();
-	parent.clear (this, index, all);
+	int hwnd = parent.handle;
+	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+	hItem = parent.findItem (hItem, index);
+	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	parent.clear (hItem, tvItem);
+	if (all) {
+		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+		parent.clearAll (hItem, tvItem, all);
+	}
 }
 
 /**
@@ -286,20 +306,19 @@ void clear () {
  */
 /*public*/ void clearAll (boolean all) {
 	checkWidget ();
-	TreeItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		item.clear ();
-		item.redraw ();
-		if (all) item.clearAll (all);
-	}
+	int hwnd = parent.handle;
+	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	if (hItem == 0) return;
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	parent.clearAll (hItem, tvItem, all);
 }
 
 void destroyWidget () {
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	parent.releaseItem (this, tvItem, false);
-	parent.destroyItem (this);
+	parent.releaseItem (handle, tvItem, false);
+	parent.destroyItem (this, handle);
 	releaseHandle ();
 }
 
@@ -647,7 +666,7 @@ public TreeItem getItem (int index) {
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	tvItem.hItem = hItem;
 	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return parent.items [tvItem.lParam];
+	return parent._getItem (tvItem.hItem, tvItem.lParam);
 }
 
 /**
@@ -781,7 +800,7 @@ public TreeItem getParentItem () {
 	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, handle);
 	if (tvItem.hItem == 0) return null;
 	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return parent.items [tvItem.lParam];
+	return parent._getItem (tvItem.hItem, tvItem.lParam);
 }
 
 public String getText () {
@@ -881,7 +900,7 @@ void releaseChildren (boolean destroy) {
 	if (destroy) {
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-		parent.releaseItems (getItems (), tvItem);
+		parent.releaseItems (handle, tvItem);
 	}
 	super.releaseChildren (destroy);
 }
@@ -917,8 +936,13 @@ public void removeAll () {
 	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 	while (tvItem.hItem != 0) {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-		TreeItem item = parent.items [tvItem.lParam];
-		if (item != null && !item.isDisposed ()) item.dispose ();
+		TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
+		if (item != null && !item.isDisposed ()) {
+			item.dispose ();
+		} else {
+			parent.releaseItem (tvItem.hItem, tvItem, false);
+			parent.destroyItem (null, tvItem.hItem);
+		}
 		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 	}
 }
@@ -1070,7 +1094,7 @@ public void setExpanded (boolean expanded) {
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 			tvItem.hItem = hNewItem;
 			if (OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem) != 0) {
-				event.item = parent.items [tvItem.lParam];	
+				event.item = parent._getItem (tvItem.hItem, tvItem.lParam);
 			}
 			parent.hAnchor = hNewItem;
 		}
@@ -1114,14 +1138,13 @@ public void setFont (Font font){
 	* to be clipped.  The fix is to reset the text, causing
 	* Windows to compute the new bounds using the new font.
 	*/
-	if (cached) {
+	if (this != parent.currentItem) {
 		int hwnd = parent.handle;
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
 		tvItem.hItem = handle;
 		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-		if ((parent.style & SWT.VIRTUAL) == 0) cached = false;
 	}
 }
 
@@ -1173,12 +1196,14 @@ public void setFont (int index, Font font) {
 	* Windows to compute the new bounds using the new font.
 	*/
 	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-		tvItem.hItem = handle;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		if (this != parent.currentItem) {
+			int hwnd = parent.handle;
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+			tvItem.hItem = handle;
+			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		}
 	} else {
 		redraw (index, true, false);
 	}
@@ -1363,20 +1388,22 @@ public void setImage (int index, Image image) {
 	parent.imageIndex (image, index);
 	
 	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
-		tvItem.hItem = handle;
-		tvItem.iImage = tvItem.iSelectedImage = OS.I_IMAGECALLBACK;
-		/*
-		* Bug in Windows.  When I_IMAGECALLBACK is used with TVM_SETITEM
-		* to indicate that an image has changed, Windows does not draw
-		* the new image.  The fix is to use LPSTR_TEXTCALLBACK to force
-		* Windows to ask for the text, causing Windows to ask for both.
-		*/
-		tvItem.mask |= OS.TVIF_TEXT;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		if (this != parent.currentItem) {
+			int hwnd = parent.handle;
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
+			tvItem.hItem = handle;
+			tvItem.iImage = tvItem.iSelectedImage = OS.I_IMAGECALLBACK;
+			/*
+			* Bug in Windows.  When I_IMAGECALLBACK is used with TVM_SETITEM
+			* to indicate that an image has changed, Windows does not draw
+			* the new image.  The fix is to use LPSTR_TEXTCALLBACK to force
+			* Windows to ask for the text, causing Windows to ask for both.
+			*/
+			tvItem.mask |= OS.TVIF_TEXT;
+			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		}
 	} else {
 		redraw (index, false, true);
 	}
@@ -1428,7 +1455,7 @@ public void setText (String [] strings) {
 	count = Math.max (0, count);
 	int hwnd = parent.handle;
 	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	parent.setItemCount (count, hItem, this);
+	parent.setItemCount (count, handle, hItem);
 }
 
 /**
@@ -1463,12 +1490,14 @@ public void setText (int index, String string) {
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-		tvItem.hItem = handle;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		if (this != parent.currentItem) {
+			int hwnd = parent.handle;
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+			tvItem.hItem = handle;
+			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		}
 	} else {
 		redraw (index, true, false);
 	}
