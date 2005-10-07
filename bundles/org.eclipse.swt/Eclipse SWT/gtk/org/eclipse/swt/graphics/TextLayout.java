@@ -209,6 +209,28 @@ void computeRuns () {
 			OS.memmove (attr, attribute, PangoAttribute.sizeof);
 			OS.pango_attr_list_insert(attrList, attr);
 		}
+		GlyphMetrics metrics = style.metrics;
+		if (metrics != null) {
+			PangoRectangle rect = new PangoRectangle();
+			rect.y =  -(metrics.ascent * OS.PANGO_SCALE);
+			rect.height = (metrics.ascent + metrics.descent) * OS.PANGO_SCALE;
+			rect.width = metrics.width * OS.PANGO_SCALE;
+			int /*long*/ attr = OS.pango_attr_shape_new (rect, rect);
+			OS.memmove (attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = byteStart;
+			attribute.end_index = byteEnd;
+			OS.memmove (attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
+		}
+		int rise = style.rise;
+		if (rise != 0) {
+			int /*long*/ attr = OS.pango_attr_rise_new (rise * OS.PANGO_SCALE);
+			OS.memmove (attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = byteStart;
+			attribute.end_index = byteEnd;
+			OS.memmove (attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
+		}
 	}
 	OS.pango_layout_set_attributes(layout, attrList);
 }
@@ -491,6 +513,16 @@ public Font getFont () {
 	return font;
 }
 
+public int getIndent () {
+	checkLayout();
+	return OS.PANGO_PIXELS(OS.pango_layout_get_indent(layout));
+}
+
+public boolean getJustify () {
+	checkLayout();
+	return OS.pango_layout_get_justify(layout);
+}
+
 /**
  * Returns the embedding level for the specified character offset. The
  * embedding level is usually used to determine the directionality of a
@@ -635,49 +667,25 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int /*long*/ font = this.font != null ? this.font.handle : device.systemFont.handle;
-	int /*long*/ lang = OS.pango_context_get_language(context);
-	int ascent = 0, descent = 0, averageCharWidth = 0, height = 0;
-	int /*long*/ metrics = OS.pango_context_get_metrics(context, font, lang);
+	int ascent = 0, descent = 0;
 	PangoLayoutLine line = new PangoLayoutLine();
 	OS.memmove(line, OS.pango_layout_get_line(layout, lineIndex), PangoLayoutLine.sizeof);
-	int /*long*/ runs = line.runs;
-	if (text.length() == 0 || runs == 0) {
+	if (line.runs == 0) {
+		int /*long*/ font = this.font != null ? this.font.handle : device.systemFont.handle;
+		int /*long*/ lang = OS.pango_context_get_language(context);
+		int /*long*/ metrics = OS.pango_context_get_metrics(context, font, lang);
 		ascent = OS.pango_font_metrics_get_ascent(metrics);
 		descent = OS.pango_font_metrics_get_descent(metrics);
-		averageCharWidth = OS.pango_font_metrics_get_approximate_char_width(metrics);
-		height = ascent + descent;
+		OS.pango_font_metrics_unref(metrics);
 	} else {
-		PangoLayoutRun run = new PangoLayoutRun();
-		PangoItem item = new PangoItem();
-		int runCount = 0;
-		ascent = Math.max(0, this.ascent * OS.PANGO_SCALE);
-		descent = Math.max(0, this.descent * OS.PANGO_SCALE);
-		while (runs != 0) {
-			OS.memmove(run, OS.g_slist_data(runs), PangoLayoutRun.sizeof);
-			OS.memmove(item, run.item, PangoItem.sizeof);
-			int /*long*/ runMetrics = metrics;
-			if (item.analysis_font != 0) {
-				runMetrics = OS.pango_font_get_metrics(item.analysis_font, item.analysis_language);
-			}
-			int runAscent = OS.pango_font_metrics_get_ascent(runMetrics);
-			int runDescent = OS.pango_font_metrics_get_descent(runMetrics);
-			ascent = Math.max(ascent, runAscent);
-			descent = Math.max(descent, runDescent);
-			averageCharWidth += OS.pango_font_metrics_get_approximate_char_width(runMetrics);
-			height = Math.max(height, runAscent + runDescent);
-			if (metrics != runMetrics) OS.pango_font_metrics_unref(runMetrics);
-			runCount++;
-			runs = OS.g_slist_next(runs);
-		}
-		averageCharWidth = averageCharWidth / runCount;
+		PangoRectangle rect = new PangoRectangle();
+		OS.pango_layout_line_get_extents(OS.pango_layout_get_line(layout, lineIndex), null, rect);
+		ascent = -rect.y;
+		descent = rect.height - ascent;
 	}
-	OS.pango_font_metrics_unref(metrics);
 	ascent = OS.PANGO_PIXELS(ascent);
 	descent = OS.PANGO_PIXELS(descent);
-	averageCharWidth = OS.PANGO_PIXELS(averageCharWidth);
-	height = OS.PANGO_PIXELS(height);
-	return FontMetrics.gtk_new(ascent, descent, averageCharWidth, 0, height);
+	return FontMetrics.gtk_new(ascent, descent, 0, 0, ascent + descent);
 }
 
 /**
@@ -1183,6 +1191,17 @@ public void setFont (Font font) {
 	if (font != null && font.equals(this.font)) return;
 	this.font = font;
 	OS.pango_layout_set_font_description(layout, font != null ? font.handle : 0);
+}
+
+
+public void setIndent (int indent) {
+	checkLayout();
+	OS.pango_layout_set_indent(layout, indent * OS.PANGO_SCALE);
+}
+
+public void setJustify (boolean justify) {
+	checkLayout();
+	OS.pango_layout_set_justify(layout, justify);
 }
 
 /**
