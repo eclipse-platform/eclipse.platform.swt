@@ -69,24 +69,25 @@ public abstract class Widget {
 	static final int OBSCURED = 1<<6;
 	static final int MOVED = 1<<7;
 	static final int RESIZED = 1<<8;
-	static final int ZERO_SIZED = 1<<9;
-	static final int HIDDEN = 1<<10;
-	static final int FOREGROUND = 1<<11;
-	static final int BACKGROUND = 1<<12;
-	static final int FONT = 1<<13;
+	static final int ZERO_WIDTH = 1<<9;
+	static final int ZERO_HEIGHT = 1<<10;
+	static final int HIDDEN = 1<<11;
+	static final int FOREGROUND = 1<<12;
+	static final int BACKGROUND = 1<<13;
+	static final int FONT = 1<<14;
 	
 	/* A layout was requested on this widget */
-	static final int LAYOUT_NEEDED	= 1<<14;
+	static final int LAYOUT_NEEDED	= 1<<15;
 	
 	/* The preferred size of a child has changed */
-	static final int LAYOUT_CHANGED = 1<<15;
+	static final int LAYOUT_CHANGED = 1<<16;
 	
 	/* A layout was requested in this widget hierachy */
-	static final int LAYOUT_CHILD = 1<<16;
+	static final int LAYOUT_CHILD = 1<<17;
 
 	/* More global state flags */
-	static final int RELEASED = 1<<17;
-	static final int DISPOSE_SENT = 1<<18;
+	static final int RELEASED = 1<<18;
+	static final int DISPOSE_SENT = 1<<19;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;

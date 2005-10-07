@@ -188,11 +188,8 @@ public Rectangle getClientArea () {
 	int /*long*/ clientHandle = clientHandle ();
 	int x = OS.GTK_WIDGET_X (clientHandle);
 	int y = OS.GTK_WIDGET_Y (clientHandle);
-	int width = 0, height = 0;
-	if ((state & ZERO_SIZED) == 0) {
-		width = OS.GTK_WIDGET_WIDTH (clientHandle);
-		height = OS.GTK_WIDGET_HEIGHT (clientHandle);			
-	}
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle);
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (clientHandle);
 	return new Rectangle (x, y, width, height);
 }
 /**

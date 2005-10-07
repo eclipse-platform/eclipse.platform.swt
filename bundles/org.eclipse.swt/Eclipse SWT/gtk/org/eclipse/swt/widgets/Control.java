@@ -451,11 +451,8 @@ public Rectangle getBounds () {
 	int /*long*/ topHandle = topHandle ();
 	int x = OS.GTK_WIDGET_X (topHandle);
 	int y = OS.GTK_WIDGET_Y (topHandle);
-	if ((state & ZERO_SIZED) != 0) {
-		return new Rectangle (x, y, 0, 0);
-	}
-	int width = OS.GTK_WIDGET_WIDTH (topHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
 	return new Rectangle (x, y, width, height);
 }
 
@@ -544,11 +541,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		}
 	}
 	if (resize) {
-		int oldWidth = 0, oldHeight = 0;
-		if ((state & ZERO_SIZED) == 0) {
-			oldWidth = OS.GTK_WIDGET_WIDTH (topHandle);
-			oldHeight = OS.GTK_WIDGET_HEIGHT (topHandle);
-		}
+		int oldWidth = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+		int oldHeight = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
 		sameExtent = width == oldWidth && height == oldHeight;
 		if (!sameExtent && !(width == 0 && height == 0)) {
 			int newWidth = Math.max (1, width);
@@ -596,14 +590,14 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* when they are resized larger.
 	*/
 	if (!sameExtent) {
-		if (width == 0 && height == 0) {
-			state |= ZERO_SIZED;
+		state = (width == 0) ? state | ZERO_WIDTH : state & ~ZERO_WIDTH;
+		state = (height == 0) ? state | ZERO_HEIGHT : state & ~ZERO_HEIGHT;
+		if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) != 0) {
 			if (enableWindow != 0) {
 				OS.gdk_window_hide (enableWindow);
 			}
 			OS.gtk_widget_hide (topHandle);
 		} else {
-			state &= ~ZERO_SIZED;
 			if ((state & HIDDEN) == 0) {
 				if (enableWindow != 0) {
 					OS.gdk_window_show_unraised (enableWindow);
@@ -700,12 +694,9 @@ public void setLocation(int x, int y) {
  */
 public Point getSize () {
 	checkWidget();
-	if ((state & ZERO_SIZED) != 0) {
-		return new Point (0, 0);
-	}
 	int /*long*/ topHandle = topHandle ();
-	int width = OS.GTK_WIDGET_WIDTH (topHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (topHandle);
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (topHandle);
 	return new Point (width, height);
 }
 
@@ -2793,7 +2784,7 @@ void setForegroundColor (GdkColor color) {
 }
 
 void setInitialBounds () {
-	if ((state & ZERO_SIZED) != 0) {
+	if ((state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
 		/*
 		* Feature in GTK.  On creation, each widget's allocation is
 		* initialized to a position of (-1, -1) until the widget is
@@ -3016,7 +3007,7 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		state &= ~HIDDEN;
-		if ((state & ZERO_SIZED) == 0) {
+		if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
 			if (enableWindow != 0) OS.gdk_window_show_unraised (enableWindow);
 			OS.gtk_widget_show (topHandle);
 		}
@@ -3136,12 +3127,12 @@ boolean showMenu (int x, int y) {
 
 void showWidget () {
 	// Comment this line to disable zero-sized widgets
-	state |= ZERO_SIZED;
+	state |= ZERO_WIDTH | ZERO_HEIGHT;
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, topHandle);
 	if (handle != 0 && handle != topHandle) OS.gtk_widget_show (handle);
-	if ((state & ZERO_SIZED) == 0) {
+	if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
 		if (fixedHandle != 0) OS.gtk_widget_show (fixedHandle);
 	}
 }
