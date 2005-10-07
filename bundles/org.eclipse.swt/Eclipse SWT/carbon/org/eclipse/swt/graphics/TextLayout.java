@@ -1581,6 +1581,7 @@ public String toString () {
  *  Translate a client offset to an internal offset
  */
 int translateOffset (int offset) {
+	if (text.length() == 0) return 0;
 	return offset + 1;
 }
 
