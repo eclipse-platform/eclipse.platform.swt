@@ -748,7 +748,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		}
 	}
 	gc.dispose();
-	return FontMetrics.gtk_new(ascent, descent, 0, 0, ascent + descent);
+	return FontMetrics.internal_new(ascent, descent, 0, 0, ascent + descent);
 }
 
 /**
