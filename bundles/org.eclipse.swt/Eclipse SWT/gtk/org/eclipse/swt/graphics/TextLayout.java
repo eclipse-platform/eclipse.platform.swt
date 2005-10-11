@@ -1196,6 +1196,7 @@ public void setFont (Font font) {
 
 public void setIndent (int indent) {
 	checkLayout();
+	if (indent < 0) return;
 	OS.pango_layout_set_indent(layout, indent * OS.PANGO_SCALE);
 }
 
