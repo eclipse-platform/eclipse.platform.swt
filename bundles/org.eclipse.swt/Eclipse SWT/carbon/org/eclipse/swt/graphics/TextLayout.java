@@ -870,6 +870,7 @@ public Point getLocation(int offset, boolean trailing) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return new Point(0, 0);
+	boolean nextOffset = offset != length && text.charAt(offset) != '\n' && trailing;
 	offset = translateOffset(offset);
 	length = translateOffset(length);
 	int lineY = 0;
@@ -878,7 +879,7 @@ public Point getLocation(int offset, boolean trailing) {
 		if (lineBreak > offset) break;
 		lineY += lineHeight[i];
 	}
-	if (offset != length && text.charAt(offset) != '\n' && trailing) offset++;
+	if (nextOffset) offset++;
 	ATSUCaret caret = new ATSUCaret();
 	OS.ATSUOffsetToPosition(layout, offset, !trailing, caret, null, null);
 	return new Point(Math.min(OS.Fix2Long(caret.fX), OS.Fix2Long(caret.fDeltaX)), lineY);
@@ -1298,6 +1299,7 @@ public void setFont (Font font) {
 
 public void setIndent (int indent) {
 	checkLayout ();
+	if (indent < 0) return;
 	if (this.indent == indent) return;
 	freeRuns();
 	this.indent = indent;

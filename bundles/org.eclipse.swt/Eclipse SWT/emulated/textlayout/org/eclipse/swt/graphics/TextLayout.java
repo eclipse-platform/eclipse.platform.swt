@@ -748,7 +748,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		}
 	}
 	gc.dispose();
-	return FontMetrics.gtk_new(ascent, descent, 0, 0, ascent + descent);
+	return FontMetrics.internal_new(ascent, descent, 0, 0, ascent + descent);
 }
 
 /**
@@ -1336,6 +1336,7 @@ public void setFont (Font font) {
 
 public void setIndent (int indent) {
 	checkLayout();
+	if (indent < 0) return;
 	if (this.indent == indent) return;
 	freeRuns();
 	this.indent = indent;
