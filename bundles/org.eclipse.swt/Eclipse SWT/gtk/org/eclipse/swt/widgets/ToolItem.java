@@ -284,10 +284,37 @@ public Rectangle getBounds () {
 	checkWidget();
 	parent.forceResize ();
 	int /*long*/ topHandle = topHandle ();
-	int x = OS.GTK_WIDGET_X (topHandle);
-	int y = OS.GTK_WIDGET_Y (topHandle);
-	int width = OS.GTK_WIDGET_WIDTH (topHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	int x, y, width, height;
+	/*
+	* Bug in GTK.  Toolbar items are only allocated their minimum size
+	* in versions before 2.4.0.  The fix is to use the total size
+	* available minus any borders.
+	*/
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0) && control != null && !control.isDisposed ()) {
+		int border = OS.gtk_container_get_border_width (parent.handle);
+		byte [] shadowType = Converter.wcsToMbcs (null, "shadow_type", true);
+		int [] shadow = new int [1];
+		OS.gtk_widget_style_get (parent.handle, shadowType, shadow, 0);
+		if (shadow [0] != OS.GTK_SHADOW_NONE) {
+			border += OS.gtk_style_get_xthickness (OS.gtk_widget_get_style (parent.handle));
+		}
+		if ((parent.style & SWT.VERTICAL) != 0) {
+			x = border;
+			y = OS.GTK_WIDGET_Y (topHandle) + border;
+			width = OS.GTK_WIDGET_WIDTH (parent.handle) - border*2;
+			height = OS.GTK_WIDGET_HEIGHT (topHandle);			
+		} else {
+			x = OS.GTK_WIDGET_X (topHandle) + border;
+			y = border;
+			width = OS.GTK_WIDGET_WIDTH (topHandle);
+			height = OS.GTK_WIDGET_HEIGHT (parent.handle) - border*2;
+		}
+	} else {
+		x = OS.GTK_WIDGET_X (topHandle);
+		y = OS.GTK_WIDGET_Y (topHandle);
+		width = OS.GTK_WIDGET_WIDTH (topHandle);
+		height = OS.GTK_WIDGET_HEIGHT (topHandle);		
+	}
 	return new Rectangle (x, y, width, height);
 }
 
