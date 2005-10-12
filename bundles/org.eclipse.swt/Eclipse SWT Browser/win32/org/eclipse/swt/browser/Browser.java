@@ -823,7 +823,12 @@ public boolean execute(String script) {
 	pVarResult.dispose();
 
 	/* get IHTMLWindow2 */
-	rgdispid = document.getIDsOfNames(new String[]{"parentWindow"}); //$NON-NLS-1$ 
+	rgdispid = document.getIDsOfNames(new String[]{"parentWindow"}); //$NON-NLS-1$
+	if (rgdispid == null) {
+		/* implies that browser's content is not a IHTMLDocument2 (eg.- acrobat reader) */
+		document.dispose();
+		return false;
+	}
 	dispIdMember = rgdispid[0];
 	pVarResult = document.getProperty(dispIdMember);
 	OleAutomation ihtmlWindow2 = pVarResult.getAutomation();
