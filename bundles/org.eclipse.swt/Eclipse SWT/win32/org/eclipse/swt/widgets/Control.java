@@ -531,7 +531,7 @@ void destroyWidget () {
 void drawBackground (int hDC) {
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
-	drawBackground (hDC, getBackgroundPixel (), rect);
+	drawBackground (hDC, rect);
 }
 
 void drawBackground (int hDC, int pixel, RECT rect) {
