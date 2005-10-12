@@ -259,7 +259,7 @@ void computeRuns() {
 		char[] chars = new char[textLength + 1];
 		text.getChars(0, textLength, chars, 1);
 		chars[0] = ZWS;
-		int breakCount = 0;
+		int breakCount = 1;
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
 			if (c == '\n' || c == '\r') {
@@ -275,6 +275,7 @@ void computeRuns() {
 				hardBreaks[breakCount++] = i;
 			}
 		}
+		hardBreaks[breakCount] = translateOffset(textLength);
 		int newTextPtr = OS.NewPtr(chars.length * 2);
 		OS.memcpy(newTextPtr, chars, chars.length * 2);
 		OS.ATSUSetTextPointerLocation(layout, newTextPtr, 0, chars.length, chars.length);
@@ -283,7 +284,7 @@ void computeRuns() {
 		textPtr = newTextPtr;
 	}	
 	int[] buffer = new int[1];
-	int length = translateOffset(text.length());
+	int length = translateOffset(textLength);
 	if (textLength != 0) {
 		for (int i = 0; i < styles.length - 1; i++) {
 			StyleItem run = styles[i];
@@ -304,15 +305,15 @@ void computeRuns() {
 			OS.ATSUSetAttributes(indentStyle, tags.length, tags, sizes, values);
 			OS.DisposePtr(ptr);
 			OS.ATSUSetRunStyle(layout, indentStyle, 0, 1);
-			for (int i = 0; i < hardBreaks.length; i++) {
+			for (int i = 0; i < hardBreaks.length-1; i++) {
 				int offset = hardBreaks[i];
 				OS.ATSUSetRunStyle(layout, indentStyle, offset, 1);
 			}
 		}
 		OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
 		int wrapWidth = buffer[0];
-		for (int i=0, start=0; i<hardBreaks.length+1; i++) {
-			int hardBreak = i == hardBreaks.length ? length : hardBreaks[i];
+		for (int i=0, start=0; i<hardBreaks.length; i++) {
+			int hardBreak = hardBreaks[i];
 			buffer[0] = 0;
 			if (wrapWidth != 0) OS.ATSUBatchBreakLines(layout, start, hardBreak - start, wrapWidth, buffer);
 			OS.ATSUSetSoftLineBreak(layout, hardBreak);
@@ -626,6 +627,14 @@ public Rectangle getBounds(int start, int end) {
 	end = Math.min(Math.max(0, end), length - 1);
 	start = translateOffset(start);
 	end = translateOffset(end);
+	for (int i = 0; i < hardBreaks.length; i++) {
+		if (start == hardBreaks[i]) {
+			if (start > 0) start--;
+		}
+		if (end == hardBreaks[i]) {
+			if (end > 0) end--;
+		}
+	}
 	int rgn = OS.NewRgn();
 	Rect rect = new Rect();
 	Rect rect1 = new Rect();
@@ -870,16 +879,21 @@ public Point getLocation(int offset, boolean trailing) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (length == 0) return new Point(0, 0);
-	boolean nextOffset = offset != length && text.charAt(offset) != '\n' && trailing;
 	offset = translateOffset(offset);
-	length = translateOffset(length);
+	for (int i = 0; i < hardBreaks.length; i++) {
+		if (offset == hardBreaks[i]) {
+			trailing = true;
+			if (offset > 0) offset--;
+			break;
+		}
+	}
 	int lineY = 0;
 	for (int i=0; i<breaks.length-1; i++) {
 		int lineBreak = breaks[i];
 		if (lineBreak > offset) break;
 		lineY += lineHeight[i];
 	}
-	if (nextOffset) offset++;
+	if (trailing) offset++;
 	ATSUCaret caret = new ATSUCaret();
 	OS.ATSUOffsetToPosition(layout, offset, !trailing, caret, null, null);
 	return new Point(Math.min(OS.Fix2Long(caret.fX), OS.Fix2Long(caret.fDeltaX)), lineY);
@@ -1012,6 +1026,12 @@ public int getOffset(int x, int y, int[] trailing) {
 	OS.ATSUPositionToOffset(layout, OS.Long2Fix(x), OS.Long2Fix(y - lineY), offset, leading, null);
 	if (trailing != null) trailing[0] = (leading[0] ? 0 : 1);
 	if (!leading[0]) offset[0]--;
+	for (int i = 0; i < hardBreaks.length; i++) {
+		if (offset[0] == hardBreaks[i]) {
+			offset[0]++;
+			break;
+		}
+	}
 	return Math.min(untranslateOffset(offset[0]), length - 1);
 }
 
