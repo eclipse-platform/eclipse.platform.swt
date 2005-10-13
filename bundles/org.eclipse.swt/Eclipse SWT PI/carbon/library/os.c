@@ -4493,6 +4493,25 @@ fail:
 }
 #endif
 
+#ifndef NO_GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2_3I
+JNIEXPORT jint JNICALL OS_NATIVE(GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2_3I)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jobject arg4, jintArray arg5)
+{
+	ControlEditTextSelectionRec _arg4, *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2_3I_FUNC);
+	if (arg4) if ((lparg4 = getControlEditTextSelectionRecFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)GetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (void *)lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) setControlEditTextSelectionRecFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2_3I_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I
 JNIEXPORT jint JNICALL OS_NATIVE(GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I)
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jobject arg4, jintArray arg5)
@@ -6712,6 +6731,424 @@ fail:
 }
 #endif
 
+#ifndef NO_HIScrollViewCreate
+JNIEXPORT jint JNICALL OS_NATIVE(HIScrollViewCreate)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIScrollViewCreate_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)HIScrollViewCreate(arg0, (HIViewRef*)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, HIScrollViewCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HITextViewCreate
+JNIEXPORT jint JNICALL OS_NATIVE(HITextViewCreate)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	jint *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HITextViewCreate_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)HITextViewCreate(lparg0, arg1, arg2, (HIViewRef *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HITextViewCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HITextViewGetTXNObject
+JNIEXPORT jint JNICALL OS_NATIVE(HITextViewGetTXNObject)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HITextViewGetTXNObject_FUNC);
+	rc = (jint)HITextViewGetTXNObject((HIViewRef)arg0);
+	OS_NATIVE_EXIT(env, that, HITextViewGetTXNObject_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawBackground
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawBackground)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeBackgroundDrawInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawBackground_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeBackgroundDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawBackground(lparg0, lparg1, (CGContextRef)arg2, arg3);
+fail:
+	if (arg1 && lparg1) setHIThemeBackgroundDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawBackground_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawButton
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawButton)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3, jobject arg4)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeButtonDrawInfo _arg1, *lparg1=NULL;
+	CGRect _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawButton_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeButtonDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = &_arg4) == NULL) goto fail;
+	rc = (jint)HIThemeDrawButton((const HIRect *)lparg0, (const HIThemeButtonDrawInfo *)lparg1, (CGContextRef)arg2, (HIThemeOrientation)arg3, (HIRect *)lparg4);
+fail:
+	if (arg4 && lparg4) setCGRectFields(env, arg4, lparg4);
+	if (arg1 && lparg1) setHIThemeButtonDrawInfoFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawButton_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawFocusRect
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawFocusRect)
+	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1, jint arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawFocusRect_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawFocusRect(lparg0, arg1, (CGContextRef)arg2, arg3);
+fail:
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawFocusRect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawFrame
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawFrame)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeFrameDrawInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawFrame_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeFrameDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawFrame(lparg0, lparg1, (CGContextRef)arg2, arg3);
+fail:
+	if (arg1 && lparg1) setHIThemeFrameDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawFrame_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawGenericWell
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawGenericWell)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeButtonDrawInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawGenericWell_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeButtonDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawGenericWell((const HIRect *)lparg0, (const HIThemeButtonDrawInfo *)lparg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
+fail:
+	if (arg1 && lparg1) setHIThemeButtonDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawGenericWell_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawGroupBox
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawGroupBox)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeGroupBoxDrawInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawGroupBox_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeGroupBoxDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawGroupBox(lparg0, lparg1, (CGContextRef)arg2, arg3);
+fail:
+	if (arg1 && lparg1) setHIThemeGroupBoxDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawGroupBox_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawGrowBox
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawGrowBox)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	CGPoint _arg0, *lparg0=NULL;
+	HIThemeGrowBoxDrawInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawGrowBox_FUNC);
+	if (arg0) if ((lparg0 = getCGPointFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeGrowBoxDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawGrowBox(lparg0, lparg1, (CGContextRef)arg2, arg3);
+fail:
+	if (arg1 && lparg1) setHIThemeGrowBoxDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawGrowBox_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawPopupArrow
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawPopupArrow)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemePopupArrowDrawInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawPopupArrow_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemePopupArrowDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawPopupArrow(lparg0, lparg1, (CGContextRef)arg2, arg3);
+fail:
+	if (arg1 && lparg1) setHIThemePopupArrowDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawPopupArrow_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawSeparator
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawSeparator)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeSeparatorDrawInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawSeparator_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeSeparatorDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawSeparator(lparg0, lparg1, (CGContextRef)arg2, arg3);
+fail:
+	if (arg1 && lparg1) setHIThemeSeparatorDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawSeparator_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawTab
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawTab)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3, jobject arg4)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeTabDrawInfo _arg1, *lparg1=NULL;
+	CGRect _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawTab_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeTabDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = &_arg4) == NULL) goto fail;
+	rc = (jint)HIThemeDrawTab((const HIRect *)lparg0, (const HIThemeTabDrawInfo *)lparg1, (CGContextRef)arg2, (HIThemeOrientation)arg3, (HIRect *)lparg4);
+fail:
+	if (arg4 && lparg4) setCGRectFields(env, arg4, lparg4);
+	if (arg1 && lparg1) setHIThemeTabDrawInfoFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawTab_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawTabPane
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawTabPane)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeTabPaneDrawInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawTabPane_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeTabPaneDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawTabPane((const HIRect *)lparg0, (const HIThemeTabPaneDrawInfo *)lparg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
+fail:
+	if (arg1 && lparg1) setHIThemeTabPaneDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawTabPane_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawTextBox
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawTextBox)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jint arg3, jint arg4)
+{
+	CGRect _arg1, *lparg1=NULL;
+	HIThemeTextInfo _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawTextBox_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getHIThemeTextInfoFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawTextBox((CFStringRef)arg0, lparg1, lparg2, (CGContextRef)arg3, arg4);
+fail:
+	if (arg2 && lparg2) setHIThemeTextInfoFields(env, arg2, lparg2);
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawTextBox_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeDrawTrack
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeDrawTrack)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
+{
+	HIThemeTrackDrawInfo _arg0, *lparg0=NULL;
+	CGRect _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeDrawTrack_FUNC);
+	if (arg0) if ((lparg0 = getHIThemeTrackDrawInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeDrawTrack(lparg0, lparg1, (CGContextRef)arg2, arg3);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setHIThemeTrackDrawInfoFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeDrawTrack_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeGetButtonBackgroundBounds
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetButtonBackgroundBounds)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeButtonDrawInfo _arg1, *lparg1=NULL;
+	CGRect _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetButtonBackgroundBounds_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeButtonDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getCGRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)HIThemeGetButtonBackgroundBounds(lparg0, lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) setCGRectFields(env, arg2, lparg2);
+	if (arg1 && lparg1) setHIThemeButtonDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeGetButtonBackgroundBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeGetButtonContentBounds
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetButtonContentBounds)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIThemeButtonDrawInfo _arg1, *lparg1=NULL;
+	CGRect _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetButtonContentBounds_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIThemeButtonDrawInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getCGRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)HIThemeGetButtonContentBounds(lparg0, lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) setCGRectFields(env, arg2, lparg2);
+	if (arg1 && lparg1) setHIThemeButtonDrawInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeGetButtonContentBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeHitTestScrollBarArrows
+JNIEXPORT jboolean JNICALL OS_NATIVE(HIThemeHitTestScrollBarArrows)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jboolean arg2, jobject arg3, jobject arg4, jshortArray arg5)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIScrollBarTrackInfo _arg1, *lparg1=NULL;
+	CGPoint _arg3, *lparg3=NULL;
+	CGRect _arg4, *lparg4=NULL;
+	jshort *lparg5=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeHitTestScrollBarArrows_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIScrollBarTrackInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getCGPointFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getCGRectFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetShortArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jboolean)HIThemeHitTestScrollBarArrows(lparg0, lparg1, arg2, lparg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseShortArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) setCGRectFields(env, arg4, lparg4);
+	if (arg3 && lparg3) setCGPointFields(env, arg3, lparg3);
+	if (arg1 && lparg1) setHIScrollBarTrackInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeHitTestScrollBarArrows_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeHitTestTrack
+JNIEXPORT jboolean JNICALL OS_NATIVE(HIThemeHitTestTrack)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jshortArray arg2)
+{
+	HIThemeTrackDrawInfo _arg0, *lparg0=NULL;
+	CGPoint _arg1, *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeHitTestTrack_FUNC);
+	if (arg0) if ((lparg0 = getHIThemeTrackDrawInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getCGPointFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jboolean)HIThemeHitTestTrack(lparg0, lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) setCGPointFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setHIThemeTrackDrawInfoFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeHitTestTrack_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeSetFill
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeSetFill)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeSetFill_FUNC);
+/*
+	rc = (jint)HIThemeSetFill((ThemeBrush)arg0, (void *)arg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(ThemeBrush, void *, CGContextRef, HIThemeOrientation);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIThemeSetFill_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIThemeSetFill"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((ThemeBrush)arg0, (void *)arg1, (CGContextRef)arg2, (HIThemeOrientation)arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, HIThemeSetFill_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIViewAddSubview
 JNIEXPORT jint JNICALL OS_NATIVE(HIViewAddSubview)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -6720,6 +7157,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewAddSubview)
 	OS_NATIVE_ENTER(env, that, HIViewAddSubview_FUNC);
 	rc = (jint)HIViewAddSubview((HIViewRef)arg0, (HIViewRef)arg1);
 	OS_NATIVE_EXIT(env, that, HIViewAddSubview_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewChangeAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewChangeAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewChangeAttributes_FUNC);
+	rc = (jint)HIViewChangeAttributes((HIViewRef)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, HIViewChangeAttributes_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewChangeFeatures
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewChangeFeatures)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewChangeFeatures_FUNC);
+	rc = (jint)HIViewChangeFeatures((HIViewRef)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, HIViewChangeFeatures_FUNC);
 	return rc;
 }
 #endif
@@ -6748,6 +7209,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewConvertPoint)
 fail:
 	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, HIViewConvertPoint_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewConvertRect
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewConvertRect)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	CGRect _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewConvertRect_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)HIViewConvertRect(lparg0, (HIViewRef)arg1, (HIViewRef)arg2);
+fail:
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIViewConvertRect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewConvertRegion
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewConvertRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewConvertRegion_FUNC);
+	rc = (jint)HIViewConvertRegion((RgnHandle)arg0, (HIViewRef)arg1, (HIViewRef)arg2);
+	OS_NATIVE_EXIT(env, that, HIViewConvertRegion_FUNC);
 	return rc;
 }
 #endif
@@ -6783,6 +7272,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewFindByID)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, HIViewFindByID_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewGetBounds
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetBounds)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewGetBounds_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIViewGetBounds((HIViewRef)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, HIViewGetBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewGetFeatures
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetFeatures)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewGetFeatures_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)HIViewGetFeatures((HIViewRef)arg0, (HIViewFeatures *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, HIViewGetFeatures_FUNC);
 	return rc;
 }
 #endif
@@ -6889,6 +7410,18 @@ fail:
 }
 #endif
 
+#ifndef NO_HIViewGetSuperview
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetSuperview)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewGetSuperview_FUNC);
+	rc = (jint)HIViewGetSuperview((HIViewRef)arg0);
+	OS_NATIVE_EXIT(env, that, HIViewGetSuperview_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIViewGetViewForMouseEvent
 JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetViewForMouseEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
@@ -6901,6 +7434,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetViewForMouseEvent)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, HIViewGetViewForMouseEvent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewIsDrawingEnabled
+JNIEXPORT jboolean JNICALL OS_NATIVE(HIViewIsDrawingEnabled)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewIsDrawingEnabled_FUNC);
+	rc = (jboolean)HIViewIsDrawingEnabled((HIViewRef)arg0);
+	OS_NATIVE_EXIT(env, that, HIViewIsDrawingEnabled_FUNC);
 	return rc;
 }
 #endif
@@ -6925,6 +7470,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewRemoveFromSuperview)
 	OS_NATIVE_ENTER(env, that, HIViewRemoveFromSuperview_FUNC);
 	rc = (jint)HIViewRemoveFromSuperview((HIViewRef)arg0);
 	OS_NATIVE_EXIT(env, that, HIViewRemoveFromSuperview_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewRender
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewRender)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewRender_FUNC);
+	rc = (jint)HIViewRender((HIViewRef)arg0);
+	OS_NATIVE_EXIT(env, that, HIViewRender_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewScrollRect
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewScrollRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jfloat arg2, jfloat arg3)
+{
+	CGRect _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewScrollRect_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIViewScrollRect((HIViewRef)arg0, lparg1, arg2, arg3);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, HIViewScrollRect_FUNC);
 	return rc;
 }
 #endif
@@ -9497,6 +10070,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetControlData__IIIILorg_eclipse_swt_internal_c
 fail:
 	if (arg4 && lparg4) setControlButtonContentInfoFields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlButtonContentInfo_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2
+JNIEXPORT jint JNICALL OS_NATIVE(SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	ControlEditTextSelectionRec _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2_FUNC);
+	if (arg4) if ((lparg4 = getControlEditTextSelectionRecFields(env, arg4, &_arg4)) == NULL) goto fail;
+	rc = (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)lparg4);
+fail:
+	if (arg4 && lparg4) setControlEditTextSelectionRecFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2_FUNC);
 	return rc;
 }
 #endif

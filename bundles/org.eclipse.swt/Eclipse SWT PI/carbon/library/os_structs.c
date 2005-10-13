@@ -706,6 +706,40 @@ void setControlButtonContentInfoFields(JNIEnv *env, jobject lpObject, ControlBut
 }
 #endif
 
+#ifndef NO_ControlEditTextSelectionRec
+typedef struct ControlEditTextSelectionRec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID selStart, selEnd;
+} ControlEditTextSelectionRec_FID_CACHE;
+
+ControlEditTextSelectionRec_FID_CACHE ControlEditTextSelectionRecFc;
+
+void cacheControlEditTextSelectionRecFields(JNIEnv *env, jobject lpObject)
+{
+	if (ControlEditTextSelectionRecFc.cached) return;
+	ControlEditTextSelectionRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ControlEditTextSelectionRecFc.selStart = (*env)->GetFieldID(env, ControlEditTextSelectionRecFc.clazz, "selStart", "S");
+	ControlEditTextSelectionRecFc.selEnd = (*env)->GetFieldID(env, ControlEditTextSelectionRecFc.clazz, "selEnd", "S");
+	ControlEditTextSelectionRecFc.cached = 1;
+}
+
+ControlEditTextSelectionRec *getControlEditTextSelectionRecFields(JNIEnv *env, jobject lpObject, ControlEditTextSelectionRec *lpStruct)
+{
+	if (!ControlEditTextSelectionRecFc.cached) cacheControlEditTextSelectionRecFields(env, lpObject);
+	lpStruct->selStart = (*env)->GetShortField(env, lpObject, ControlEditTextSelectionRecFc.selStart);
+	lpStruct->selEnd = (*env)->GetShortField(env, lpObject, ControlEditTextSelectionRecFc.selEnd);
+	return lpStruct;
+}
+
+void setControlEditTextSelectionRecFields(JNIEnv *env, jobject lpObject, ControlEditTextSelectionRec *lpStruct)
+{
+	if (!ControlEditTextSelectionRecFc.cached) cacheControlEditTextSelectionRecFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, ControlEditTextSelectionRecFc.selStart, (jshort)lpStruct->selStart);
+	(*env)->SetShortField(env, lpObject, ControlEditTextSelectionRecFc.selEnd, (jshort)lpStruct->selEnd);
+}
+#endif
+
 #ifndef NO_ControlFontStyleRec
 typedef struct ControlFontStyleRec_FID_CACHE {
 	int cached;
@@ -1466,6 +1500,647 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
 }
 #endif
 
+#ifndef NO_HIScrollBarTrackInfo
+typedef struct HIScrollBarTrackInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, enableState, pressState, viewsize;
+} HIScrollBarTrackInfo_FID_CACHE;
+
+HIScrollBarTrackInfo_FID_CACHE HIScrollBarTrackInfoFc;
+
+void cacheHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIScrollBarTrackInfoFc.cached) return;
+	HIScrollBarTrackInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIScrollBarTrackInfoFc.version = (*env)->GetFieldID(env, HIScrollBarTrackInfoFc.clazz, "version", "I");
+	HIScrollBarTrackInfoFc.enableState = (*env)->GetFieldID(env, HIScrollBarTrackInfoFc.clazz, "enableState", "B");
+	HIScrollBarTrackInfoFc.pressState = (*env)->GetFieldID(env, HIScrollBarTrackInfoFc.clazz, "pressState", "B");
+	HIScrollBarTrackInfoFc.viewsize = (*env)->GetFieldID(env, HIScrollBarTrackInfoFc.clazz, "viewsize", "F");
+	HIScrollBarTrackInfoFc.cached = 1;
+}
+
+HIScrollBarTrackInfo *getHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTrackInfo *lpStruct)
+{
+	if (!HIScrollBarTrackInfoFc.cached) cacheHIScrollBarTrackInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIScrollBarTrackInfoFc.version);
+	lpStruct->enableState = (*env)->GetByteField(env, lpObject, HIScrollBarTrackInfoFc.enableState);
+	lpStruct->pressState = (*env)->GetByteField(env, lpObject, HIScrollBarTrackInfoFc.pressState);
+	lpStruct->viewsize = (*env)->GetFloatField(env, lpObject, HIScrollBarTrackInfoFc.viewsize);
+	return lpStruct;
+}
+
+void setHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTrackInfo *lpStruct)
+{
+	if (!HIScrollBarTrackInfoFc.cached) cacheHIScrollBarTrackInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIScrollBarTrackInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetByteField(env, lpObject, HIScrollBarTrackInfoFc.enableState, (jbyte)lpStruct->enableState);
+	(*env)->SetByteField(env, lpObject, HIScrollBarTrackInfoFc.pressState, (jbyte)lpStruct->pressState);
+	(*env)->SetFloatField(env, lpObject, HIScrollBarTrackInfoFc.viewsize, (jfloat)lpStruct->viewsize);
+}
+#endif
+
+#ifndef NO_HIThemeAnimationFrameInfo
+typedef struct HIThemeAnimationFrameInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID index;
+} HIThemeAnimationFrameInfo_FID_CACHE;
+
+HIThemeAnimationFrameInfo_FID_CACHE HIThemeAnimationFrameInfoFc;
+
+void cacheHIThemeAnimationFrameInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeAnimationFrameInfoFc.cached) return;
+	HIThemeAnimationFrameInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeAnimationFrameInfoFc.index = (*env)->GetFieldID(env, HIThemeAnimationFrameInfoFc.clazz, "index", "I");
+	HIThemeAnimationFrameInfoFc.cached = 1;
+}
+
+HIThemeAnimationFrameInfo *getHIThemeAnimationFrameInfoFields(JNIEnv *env, jobject lpObject, HIThemeAnimationFrameInfo *lpStruct)
+{
+	if (!HIThemeAnimationFrameInfoFc.cached) cacheHIThemeAnimationFrameInfoFields(env, lpObject);
+	lpStruct->index = (*env)->GetIntField(env, lpObject, HIThemeAnimationFrameInfoFc.index);
+	return lpStruct;
+}
+
+void setHIThemeAnimationFrameInfoFields(JNIEnv *env, jobject lpObject, HIThemeAnimationFrameInfo *lpStruct)
+{
+	if (!HIThemeAnimationFrameInfoFc.cached) cacheHIThemeAnimationFrameInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeAnimationFrameInfoFc.index, (jint)lpStruct->index);
+}
+#endif
+
+#ifndef NO_HIThemeAnimationTimeInfo
+typedef struct HIThemeAnimationTimeInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID start, current;
+} HIThemeAnimationTimeInfo_FID_CACHE;
+
+HIThemeAnimationTimeInfo_FID_CACHE HIThemeAnimationTimeInfoFc;
+
+void cacheHIThemeAnimationTimeInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeAnimationTimeInfoFc.cached) return;
+	HIThemeAnimationTimeInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeAnimationTimeInfoFc.start = (*env)->GetFieldID(env, HIThemeAnimationTimeInfoFc.clazz, "start", "J");
+	HIThemeAnimationTimeInfoFc.current = (*env)->GetFieldID(env, HIThemeAnimationTimeInfoFc.clazz, "current", "J");
+	HIThemeAnimationTimeInfoFc.cached = 1;
+}
+
+HIThemeAnimationTimeInfo *getHIThemeAnimationTimeInfoFields(JNIEnv *env, jobject lpObject, HIThemeAnimationTimeInfo *lpStruct)
+{
+	if (!HIThemeAnimationTimeInfoFc.cached) cacheHIThemeAnimationTimeInfoFields(env, lpObject);
+	lpStruct->start = (*env)->GetLongField(env, lpObject, HIThemeAnimationTimeInfoFc.start);
+	lpStruct->current = (*env)->GetLongField(env, lpObject, HIThemeAnimationTimeInfoFc.current);
+	return lpStruct;
+}
+
+void setHIThemeAnimationTimeInfoFields(JNIEnv *env, jobject lpObject, HIThemeAnimationTimeInfo *lpStruct)
+{
+	if (!HIThemeAnimationTimeInfoFc.cached) cacheHIThemeAnimationTimeInfoFields(env, lpObject);
+	(*env)->SetLongField(env, lpObject, HIThemeAnimationTimeInfoFc.start, (jlong)lpStruct->start);
+	(*env)->SetLongField(env, lpObject, HIThemeAnimationTimeInfoFc.current, (jlong)lpStruct->current);
+}
+#endif
+
+#ifndef NO_HIThemeBackgroundDrawInfo
+typedef struct HIThemeBackgroundDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, state, kind;
+} HIThemeBackgroundDrawInfo_FID_CACHE;
+
+HIThemeBackgroundDrawInfo_FID_CACHE HIThemeBackgroundDrawInfoFc;
+
+void cacheHIThemeBackgroundDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeBackgroundDrawInfoFc.cached) return;
+	HIThemeBackgroundDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeBackgroundDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeBackgroundDrawInfoFc.clazz, "version", "I");
+	HIThemeBackgroundDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeBackgroundDrawInfoFc.clazz, "state", "I");
+	HIThemeBackgroundDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeBackgroundDrawInfoFc.clazz, "kind", "I");
+	HIThemeBackgroundDrawInfoFc.cached = 1;
+}
+
+HIThemeBackgroundDrawInfo *getHIThemeBackgroundDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeBackgroundDrawInfo *lpStruct)
+{
+	if (!HIThemeBackgroundDrawInfoFc.cached) cacheHIThemeBackgroundDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeBackgroundDrawInfoFc.version);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeBackgroundDrawInfoFc.state);
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeBackgroundDrawInfoFc.kind);
+	return lpStruct;
+}
+
+void setHIThemeBackgroundDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeBackgroundDrawInfo *lpStruct)
+{
+	if (!HIThemeBackgroundDrawInfoFc.cached) cacheHIThemeBackgroundDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeBackgroundDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemeBackgroundDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, HIThemeBackgroundDrawInfoFc.kind, (jint)lpStruct->kind);
+}
+#endif
+
+#ifndef NO_HIThemeButtonDrawInfo
+typedef struct HIThemeButtonDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, state, kind, value, adornment, time, frame;
+} HIThemeButtonDrawInfo_FID_CACHE;
+
+HIThemeButtonDrawInfo_FID_CACHE HIThemeButtonDrawInfoFc;
+
+void cacheHIThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeButtonDrawInfoFc.cached) return;
+	HIThemeButtonDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeButtonDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeButtonDrawInfoFc.clazz, "version", "I");
+	HIThemeButtonDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeButtonDrawInfoFc.clazz, "state", "I");
+	HIThemeButtonDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeButtonDrawInfoFc.clazz, "kind", "I");
+	HIThemeButtonDrawInfoFc.value = (*env)->GetFieldID(env, HIThemeButtonDrawInfoFc.clazz, "value", "I");
+	HIThemeButtonDrawInfoFc.adornment = (*env)->GetFieldID(env, HIThemeButtonDrawInfoFc.clazz, "adornment", "I");
+	HIThemeButtonDrawInfoFc.time = (*env)->GetFieldID(env, HIThemeButtonDrawInfoFc.clazz, "time", "Lorg/eclipse/swt/internal/carbon/HIThemeAnimationTimeInfo;");
+	HIThemeButtonDrawInfoFc.frame = (*env)->GetFieldID(env, HIThemeButtonDrawInfoFc.clazz, "frame", "Lorg/eclipse/swt/internal/carbon/HIThemeAnimationFrameInfo;");
+	HIThemeButtonDrawInfoFc.cached = 1;
+}
+
+HIThemeButtonDrawInfo *getHIThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeButtonDrawInfo *lpStruct)
+{
+	if (!HIThemeButtonDrawInfoFc.cached) cacheHIThemeButtonDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeButtonDrawInfoFc.version);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeButtonDrawInfoFc.state);
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeButtonDrawInfoFc.kind);
+	lpStruct->value = (*env)->GetIntField(env, lpObject, HIThemeButtonDrawInfoFc.value);
+	lpStruct->adornment = (*env)->GetIntField(env, lpObject, HIThemeButtonDrawInfoFc.adornment);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeButtonDrawInfoFc.time);
+	if (lpObject1 != NULL) getHIThemeAnimationTimeInfoFields(env, lpObject1, &lpStruct->animation.time);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeButtonDrawInfoFc.frame);
+	if (lpObject1 != NULL) getHIThemeAnimationFrameInfoFields(env, lpObject1, &lpStruct->animation.frame);
+	}
+	return lpStruct;
+}
+
+void setHIThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeButtonDrawInfo *lpStruct)
+{
+	if (!HIThemeButtonDrawInfoFc.cached) cacheHIThemeButtonDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeButtonDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemeButtonDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, HIThemeButtonDrawInfoFc.kind, (jint)lpStruct->kind);
+	(*env)->SetIntField(env, lpObject, HIThemeButtonDrawInfoFc.value, (jint)lpStruct->value);
+	(*env)->SetIntField(env, lpObject, HIThemeButtonDrawInfoFc.adornment, (jint)lpStruct->adornment);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeButtonDrawInfoFc.time);
+	if (lpObject1 != NULL) setHIThemeAnimationTimeInfoFields(env, lpObject1, &lpStruct->animation.time);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeButtonDrawInfoFc.frame);
+	if (lpObject1 != NULL) setHIThemeAnimationFrameInfoFields(env, lpObject1, &lpStruct->animation.frame);
+	}
+}
+#endif
+
+#ifndef NO_HIThemeFrameDrawInfo
+typedef struct HIThemeFrameDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, state, kind, isFocused;
+} HIThemeFrameDrawInfo_FID_CACHE;
+
+HIThemeFrameDrawInfo_FID_CACHE HIThemeFrameDrawInfoFc;
+
+void cacheHIThemeFrameDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeFrameDrawInfoFc.cached) return;
+	HIThemeFrameDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeFrameDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeFrameDrawInfoFc.clazz, "version", "I");
+	HIThemeFrameDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeFrameDrawInfoFc.clazz, "state", "I");
+	HIThemeFrameDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeFrameDrawInfoFc.clazz, "kind", "I");
+	HIThemeFrameDrawInfoFc.isFocused = (*env)->GetFieldID(env, HIThemeFrameDrawInfoFc.clazz, "isFocused", "Z");
+	HIThemeFrameDrawInfoFc.cached = 1;
+}
+
+HIThemeFrameDrawInfo *getHIThemeFrameDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeFrameDrawInfo *lpStruct)
+{
+	if (!HIThemeFrameDrawInfoFc.cached) cacheHIThemeFrameDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeFrameDrawInfoFc.version);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeFrameDrawInfoFc.state);
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeFrameDrawInfoFc.kind);
+	lpStruct->isFocused = (*env)->GetBooleanField(env, lpObject, HIThemeFrameDrawInfoFc.isFocused);
+	return lpStruct;
+}
+
+void setHIThemeFrameDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeFrameDrawInfo *lpStruct)
+{
+	if (!HIThemeFrameDrawInfoFc.cached) cacheHIThemeFrameDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeFrameDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemeFrameDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, HIThemeFrameDrawInfoFc.kind, (jint)lpStruct->kind);
+	(*env)->SetBooleanField(env, lpObject, HIThemeFrameDrawInfoFc.isFocused, (jboolean)lpStruct->isFocused);
+}
+#endif
+
+#ifndef NO_HIThemeGroupBoxDrawInfo
+typedef struct HIThemeGroupBoxDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, state, kind;
+} HIThemeGroupBoxDrawInfo_FID_CACHE;
+
+HIThemeGroupBoxDrawInfo_FID_CACHE HIThemeGroupBoxDrawInfoFc;
+
+void cacheHIThemeGroupBoxDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeGroupBoxDrawInfoFc.cached) return;
+	HIThemeGroupBoxDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeGroupBoxDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeGroupBoxDrawInfoFc.clazz, "version", "I");
+	HIThemeGroupBoxDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeGroupBoxDrawInfoFc.clazz, "state", "I");
+	HIThemeGroupBoxDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeGroupBoxDrawInfoFc.clazz, "kind", "I");
+	HIThemeGroupBoxDrawInfoFc.cached = 1;
+}
+
+HIThemeGroupBoxDrawInfo *getHIThemeGroupBoxDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeGroupBoxDrawInfo *lpStruct)
+{
+	if (!HIThemeGroupBoxDrawInfoFc.cached) cacheHIThemeGroupBoxDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeGroupBoxDrawInfoFc.version);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeGroupBoxDrawInfoFc.state);
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeGroupBoxDrawInfoFc.kind);
+	return lpStruct;
+}
+
+void setHIThemeGroupBoxDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeGroupBoxDrawInfo *lpStruct)
+{
+	if (!HIThemeGroupBoxDrawInfoFc.cached) cacheHIThemeGroupBoxDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeGroupBoxDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemeGroupBoxDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, HIThemeGroupBoxDrawInfoFc.kind, (jint)lpStruct->kind);
+}
+#endif
+
+#ifndef NO_HIThemeGrowBoxDrawInfo
+typedef struct HIThemeGrowBoxDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, kind, state, direction, size;
+} HIThemeGrowBoxDrawInfo_FID_CACHE;
+
+HIThemeGrowBoxDrawInfo_FID_CACHE HIThemeGrowBoxDrawInfoFc;
+
+void cacheHIThemeGrowBoxDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeGrowBoxDrawInfoFc.cached) return;
+	HIThemeGrowBoxDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeGrowBoxDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeGrowBoxDrawInfoFc.clazz, "version", "I");
+	HIThemeGrowBoxDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeGrowBoxDrawInfoFc.clazz, "kind", "I");
+	HIThemeGrowBoxDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeGrowBoxDrawInfoFc.clazz, "state", "I");
+	HIThemeGrowBoxDrawInfoFc.direction = (*env)->GetFieldID(env, HIThemeGrowBoxDrawInfoFc.clazz, "direction", "S");
+	HIThemeGrowBoxDrawInfoFc.size = (*env)->GetFieldID(env, HIThemeGrowBoxDrawInfoFc.clazz, "size", "I");
+	HIThemeGrowBoxDrawInfoFc.cached = 1;
+}
+
+HIThemeGrowBoxDrawInfo *getHIThemeGrowBoxDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeGrowBoxDrawInfo *lpStruct)
+{
+	if (!HIThemeGrowBoxDrawInfoFc.cached) cacheHIThemeGrowBoxDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeGrowBoxDrawInfoFc.version);
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeGrowBoxDrawInfoFc.kind);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeGrowBoxDrawInfoFc.state);
+	lpStruct->direction = (*env)->GetShortField(env, lpObject, HIThemeGrowBoxDrawInfoFc.direction);
+	lpStruct->size = (*env)->GetIntField(env, lpObject, HIThemeGrowBoxDrawInfoFc.size);
+	return lpStruct;
+}
+
+void setHIThemeGrowBoxDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeGrowBoxDrawInfo *lpStruct)
+{
+	if (!HIThemeGrowBoxDrawInfoFc.cached) cacheHIThemeGrowBoxDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeGrowBoxDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemeGrowBoxDrawInfoFc.kind, (jint)lpStruct->kind);
+	(*env)->SetIntField(env, lpObject, HIThemeGrowBoxDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetShortField(env, lpObject, HIThemeGrowBoxDrawInfoFc.direction, (jshort)lpStruct->direction);
+	(*env)->SetIntField(env, lpObject, HIThemeGrowBoxDrawInfoFc.size, (jint)lpStruct->size);
+}
+#endif
+
+#ifndef NO_HIThemePopupArrowDrawInfo
+typedef struct HIThemePopupArrowDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, state, orientation, size;
+} HIThemePopupArrowDrawInfo_FID_CACHE;
+
+HIThemePopupArrowDrawInfo_FID_CACHE HIThemePopupArrowDrawInfoFc;
+
+void cacheHIThemePopupArrowDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemePopupArrowDrawInfoFc.cached) return;
+	HIThemePopupArrowDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemePopupArrowDrawInfoFc.version = (*env)->GetFieldID(env, HIThemePopupArrowDrawInfoFc.clazz, "version", "I");
+	HIThemePopupArrowDrawInfoFc.state = (*env)->GetFieldID(env, HIThemePopupArrowDrawInfoFc.clazz, "state", "I");
+	HIThemePopupArrowDrawInfoFc.orientation = (*env)->GetFieldID(env, HIThemePopupArrowDrawInfoFc.clazz, "orientation", "S");
+	HIThemePopupArrowDrawInfoFc.size = (*env)->GetFieldID(env, HIThemePopupArrowDrawInfoFc.clazz, "size", "S");
+	HIThemePopupArrowDrawInfoFc.cached = 1;
+}
+
+HIThemePopupArrowDrawInfo *getHIThemePopupArrowDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemePopupArrowDrawInfo *lpStruct)
+{
+	if (!HIThemePopupArrowDrawInfoFc.cached) cacheHIThemePopupArrowDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemePopupArrowDrawInfoFc.version);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemePopupArrowDrawInfoFc.state);
+	lpStruct->orientation = (*env)->GetShortField(env, lpObject, HIThemePopupArrowDrawInfoFc.orientation);
+	lpStruct->size = (*env)->GetShortField(env, lpObject, HIThemePopupArrowDrawInfoFc.size);
+	return lpStruct;
+}
+
+void setHIThemePopupArrowDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemePopupArrowDrawInfo *lpStruct)
+{
+	if (!HIThemePopupArrowDrawInfoFc.cached) cacheHIThemePopupArrowDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemePopupArrowDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemePopupArrowDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetShortField(env, lpObject, HIThemePopupArrowDrawInfoFc.orientation, (jshort)lpStruct->orientation);
+	(*env)->SetShortField(env, lpObject, HIThemePopupArrowDrawInfoFc.size, (jshort)lpStruct->size);
+}
+#endif
+
+#ifndef NO_HIThemeSeparatorDrawInfo
+typedef struct HIThemeSeparatorDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, state;
+} HIThemeSeparatorDrawInfo_FID_CACHE;
+
+HIThemeSeparatorDrawInfo_FID_CACHE HIThemeSeparatorDrawInfoFc;
+
+void cacheHIThemeSeparatorDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeSeparatorDrawInfoFc.cached) return;
+	HIThemeSeparatorDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeSeparatorDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeSeparatorDrawInfoFc.clazz, "version", "I");
+	HIThemeSeparatorDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeSeparatorDrawInfoFc.clazz, "state", "I");
+	HIThemeSeparatorDrawInfoFc.cached = 1;
+}
+
+HIThemeSeparatorDrawInfo *getHIThemeSeparatorDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeSeparatorDrawInfo *lpStruct)
+{
+	if (!HIThemeSeparatorDrawInfoFc.cached) cacheHIThemeSeparatorDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeSeparatorDrawInfoFc.version);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeSeparatorDrawInfoFc.state);
+	return lpStruct;
+}
+
+void setHIThemeSeparatorDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeSeparatorDrawInfo *lpStruct)
+{
+	if (!HIThemeSeparatorDrawInfoFc.cached) cacheHIThemeSeparatorDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeSeparatorDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemeSeparatorDrawInfoFc.state, (jint)lpStruct->state);
+}
+#endif
+
+#ifndef NO_HIThemeTabDrawInfo
+typedef struct HIThemeTabDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, style, direction, size, adornment, kind, position;
+} HIThemeTabDrawInfo_FID_CACHE;
+
+HIThemeTabDrawInfo_FID_CACHE HIThemeTabDrawInfoFc;
+
+void cacheHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeTabDrawInfoFc.cached) return;
+	HIThemeTabDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeTabDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "version", "I");
+	HIThemeTabDrawInfoFc.style = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "style", "S");
+	HIThemeTabDrawInfoFc.direction = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "direction", "S");
+	HIThemeTabDrawInfoFc.size = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "size", "I");
+	HIThemeTabDrawInfoFc.adornment = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "adornment", "I");
+	HIThemeTabDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "kind", "I");
+	HIThemeTabDrawInfoFc.position = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "position", "I");
+	HIThemeTabDrawInfoFc.cached = 1;
+}
+
+HIThemeTabDrawInfo *getHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabDrawInfo *lpStruct)
+{
+	if (!HIThemeTabDrawInfoFc.cached) cacheHIThemeTabDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.version);
+	lpStruct->style = (*env)->GetShortField(env, lpObject, HIThemeTabDrawInfoFc.style);
+	lpStruct->direction = (*env)->GetShortField(env, lpObject, HIThemeTabDrawInfoFc.direction);
+	lpStruct->size = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.size);
+	lpStruct->adornment = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.adornment);
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.kind);
+	lpStruct->position = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.position);
+	return lpStruct;
+}
+
+void setHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabDrawInfo *lpStruct)
+{
+	if (!HIThemeTabDrawInfoFc.cached) cacheHIThemeTabDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetShortField(env, lpObject, HIThemeTabDrawInfoFc.style, (jshort)lpStruct->style);
+	(*env)->SetShortField(env, lpObject, HIThemeTabDrawInfoFc.direction, (jshort)lpStruct->direction);
+	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.size, (jint)lpStruct->size);
+	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.adornment, (jint)lpStruct->adornment);
+	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.kind, (jint)lpStruct->kind);
+	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.position, (jint)lpStruct->position);
+}
+#endif
+
+#ifndef NO_HIThemeTabPaneDrawInfo
+typedef struct HIThemeTabPaneDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, state, direction, size, kind, adornment;
+} HIThemeTabPaneDrawInfo_FID_CACHE;
+
+HIThemeTabPaneDrawInfo_FID_CACHE HIThemeTabPaneDrawInfoFc;
+
+void cacheHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeTabPaneDrawInfoFc.cached) return;
+	HIThemeTabPaneDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeTabPaneDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "version", "I");
+	HIThemeTabPaneDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "state", "I");
+	HIThemeTabPaneDrawInfoFc.direction = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "direction", "S");
+	HIThemeTabPaneDrawInfoFc.size = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "size", "I");
+	HIThemeTabPaneDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "kind", "I");
+	HIThemeTabPaneDrawInfoFc.adornment = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "adornment", "I");
+	HIThemeTabPaneDrawInfoFc.cached = 1;
+}
+
+HIThemeTabPaneDrawInfo *getHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabPaneDrawInfo *lpStruct)
+{
+	if (!HIThemeTabPaneDrawInfoFc.cached) cacheHIThemeTabPaneDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.version);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.state);
+	lpStruct->direction = (*env)->GetShortField(env, lpObject, HIThemeTabPaneDrawInfoFc.direction);
+	lpStruct->size = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.size);
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.kind);
+	lpStruct->adornment = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.adornment);
+	return lpStruct;
+}
+
+void setHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabPaneDrawInfo *lpStruct)
+{
+	if (!HIThemeTabPaneDrawInfoFc.cached) cacheHIThemeTabPaneDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetShortField(env, lpObject, HIThemeTabPaneDrawInfoFc.direction, (jshort)lpStruct->direction);
+	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.size, (jint)lpStruct->size);
+	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.kind, (jint)lpStruct->kind);
+	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.adornment, (jint)lpStruct->adornment);
+}
+#endif
+
+#ifndef NO_HIThemeTextInfo
+typedef struct HIThemeTextInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, state, fontID, horizontalFlushness, verticalFlushness, options, truncationPosition, truncationMaxLines, truncationHappened;
+} HIThemeTextInfo_FID_CACHE;
+
+HIThemeTextInfo_FID_CACHE HIThemeTextInfoFc;
+
+void cacheHIThemeTextInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeTextInfoFc.cached) return;
+	HIThemeTextInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeTextInfoFc.version = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "version", "I");
+	HIThemeTextInfoFc.state = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "state", "I");
+	HIThemeTextInfoFc.fontID = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "fontID", "S");
+	HIThemeTextInfoFc.horizontalFlushness = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "horizontalFlushness", "I");
+	HIThemeTextInfoFc.verticalFlushness = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "verticalFlushness", "I");
+	HIThemeTextInfoFc.options = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "options", "I");
+	HIThemeTextInfoFc.truncationPosition = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "truncationPosition", "I");
+	HIThemeTextInfoFc.truncationMaxLines = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "truncationMaxLines", "I");
+	HIThemeTextInfoFc.truncationHappened = (*env)->GetFieldID(env, HIThemeTextInfoFc.clazz, "truncationHappened", "Z");
+	HIThemeTextInfoFc.cached = 1;
+}
+
+HIThemeTextInfo *getHIThemeTextInfoFields(JNIEnv *env, jobject lpObject, HIThemeTextInfo *lpStruct)
+{
+	if (!HIThemeTextInfoFc.cached) cacheHIThemeTextInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeTextInfoFc.version);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeTextInfoFc.state);
+	lpStruct->fontID = (*env)->GetShortField(env, lpObject, HIThemeTextInfoFc.fontID);
+	lpStruct->horizontalFlushness = (*env)->GetIntField(env, lpObject, HIThemeTextInfoFc.horizontalFlushness);
+	lpStruct->verticalFlushness = (*env)->GetIntField(env, lpObject, HIThemeTextInfoFc.verticalFlushness);
+	lpStruct->options = (*env)->GetIntField(env, lpObject, HIThemeTextInfoFc.options);
+	lpStruct->truncationPosition = (*env)->GetIntField(env, lpObject, HIThemeTextInfoFc.truncationPosition);
+	lpStruct->truncationMaxLines = (*env)->GetIntField(env, lpObject, HIThemeTextInfoFc.truncationMaxLines);
+	lpStruct->truncationHappened = (*env)->GetBooleanField(env, lpObject, HIThemeTextInfoFc.truncationHappened);
+	return lpStruct;
+}
+
+void setHIThemeTextInfoFields(JNIEnv *env, jobject lpObject, HIThemeTextInfo *lpStruct)
+{
+	if (!HIThemeTextInfoFc.cached) cacheHIThemeTextInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeTextInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, HIThemeTextInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetShortField(env, lpObject, HIThemeTextInfoFc.fontID, (jshort)lpStruct->fontID);
+	(*env)->SetIntField(env, lpObject, HIThemeTextInfoFc.horizontalFlushness, (jint)lpStruct->horizontalFlushness);
+	(*env)->SetIntField(env, lpObject, HIThemeTextInfoFc.verticalFlushness, (jint)lpStruct->verticalFlushness);
+	(*env)->SetIntField(env, lpObject, HIThemeTextInfoFc.options, (jint)lpStruct->options);
+	(*env)->SetIntField(env, lpObject, HIThemeTextInfoFc.truncationPosition, (jint)lpStruct->truncationPosition);
+	(*env)->SetIntField(env, lpObject, HIThemeTextInfoFc.truncationMaxLines, (jint)lpStruct->truncationMaxLines);
+	(*env)->SetBooleanField(env, lpObject, HIThemeTextInfoFc.truncationHappened, (jboolean)lpStruct->truncationHappened);
+}
+#endif
+
+#ifndef NO_HIThemeTrackDrawInfo
+typedef struct HIThemeTrackDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, kind, bounds_x, bounds_y, bounds_width, bounds_height, min, max, value, reserved, attributes, enableState, filler1, scrollbar, slider, progress;
+} HIThemeTrackDrawInfo_FID_CACHE;
+
+HIThemeTrackDrawInfo_FID_CACHE HIThemeTrackDrawInfoFc;
+
+void cacheHIThemeTrackDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIThemeTrackDrawInfoFc.cached) return;
+	HIThemeTrackDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIThemeTrackDrawInfoFc.version = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "version", "I");
+	HIThemeTrackDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "kind", "S");
+	HIThemeTrackDrawInfoFc.bounds_x = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "bounds_x", "F");
+	HIThemeTrackDrawInfoFc.bounds_y = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "bounds_y", "F");
+	HIThemeTrackDrawInfoFc.bounds_width = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "bounds_width", "F");
+	HIThemeTrackDrawInfoFc.bounds_height = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "bounds_height", "F");
+	HIThemeTrackDrawInfoFc.min = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "min", "I");
+	HIThemeTrackDrawInfoFc.max = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "max", "I");
+	HIThemeTrackDrawInfoFc.value = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "value", "I");
+	HIThemeTrackDrawInfoFc.reserved = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "reserved", "I");
+	HIThemeTrackDrawInfoFc.attributes = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "attributes", "S");
+	HIThemeTrackDrawInfoFc.enableState = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "enableState", "B");
+	HIThemeTrackDrawInfoFc.filler1 = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "filler1", "B");
+	HIThemeTrackDrawInfoFc.scrollbar = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "scrollbar", "Lorg/eclipse/swt/internal/carbon/ScrollBarTrackInfo;");
+	HIThemeTrackDrawInfoFc.slider = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "slider", "Lorg/eclipse/swt/internal/carbon/SliderTrackInfo;");
+	HIThemeTrackDrawInfoFc.progress = (*env)->GetFieldID(env, HIThemeTrackDrawInfoFc.clazz, "progress", "Lorg/eclipse/swt/internal/carbon/ProgressTrackInfo;");
+	HIThemeTrackDrawInfoFc.cached = 1;
+}
+
+HIThemeTrackDrawInfo *getHIThemeTrackDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTrackDrawInfo *lpStruct)
+{
+	if (!HIThemeTrackDrawInfoFc.cached) cacheHIThemeTrackDrawInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HIThemeTrackDrawInfoFc.version);
+	lpStruct->kind = (ThemeTrackKind)(*env)->GetShortField(env, lpObject, HIThemeTrackDrawInfoFc.kind);
+	lpStruct->bounds.origin.x = (*env)->GetFloatField(env, lpObject, HIThemeTrackDrawInfoFc.bounds_x);
+	lpStruct->bounds.origin.y = (*env)->GetFloatField(env, lpObject, HIThemeTrackDrawInfoFc.bounds_y);
+	lpStruct->bounds.size.width = (*env)->GetFloatField(env, lpObject, HIThemeTrackDrawInfoFc.bounds_width);
+	lpStruct->bounds.size.height = (*env)->GetFloatField(env, lpObject, HIThemeTrackDrawInfoFc.bounds_height);
+	lpStruct->min = (*env)->GetIntField(env, lpObject, HIThemeTrackDrawInfoFc.min);
+	lpStruct->max = (*env)->GetIntField(env, lpObject, HIThemeTrackDrawInfoFc.max);
+	lpStruct->value = (*env)->GetIntField(env, lpObject, HIThemeTrackDrawInfoFc.value);
+	lpStruct->reserved = (*env)->GetIntField(env, lpObject, HIThemeTrackDrawInfoFc.reserved);
+	lpStruct->attributes = (ThemeTrackAttributes)(*env)->GetShortField(env, lpObject, HIThemeTrackDrawInfoFc.attributes);
+	lpStruct->enableState = (ThemeTrackEnableState)(*env)->GetByteField(env, lpObject, HIThemeTrackDrawInfoFc.enableState);
+	lpStruct->filler1 = (*env)->GetByteField(env, lpObject, HIThemeTrackDrawInfoFc.filler1);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeTrackDrawInfoFc.scrollbar);
+	if (lpObject1 != NULL) getScrollBarTrackInfoFields(env, lpObject1, &lpStruct->trackInfo.scrollbar);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeTrackDrawInfoFc.slider);
+	if (lpObject1 != NULL) getSliderTrackInfoFields(env, lpObject1, &lpStruct->trackInfo.slider);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeTrackDrawInfoFc.progress);
+	if (lpObject1 != NULL) getProgressTrackInfoFields(env, lpObject1, &lpStruct->trackInfo.progress);
+	}
+	return lpStruct;
+}
+
+void setHIThemeTrackDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTrackDrawInfo *lpStruct)
+{
+	if (!HIThemeTrackDrawInfoFc.cached) cacheHIThemeTrackDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIThemeTrackDrawInfoFc.version, (jint)lpStruct->version);
+	(*env)->SetShortField(env, lpObject, HIThemeTrackDrawInfoFc.kind, (jshort)lpStruct->kind);
+	(*env)->SetFloatField(env, lpObject, HIThemeTrackDrawInfoFc.bounds_x, (jfloat)lpStruct->bounds.origin.x);
+	(*env)->SetFloatField(env, lpObject, HIThemeTrackDrawInfoFc.bounds_y, (jfloat)lpStruct->bounds.origin.y);
+	(*env)->SetFloatField(env, lpObject, HIThemeTrackDrawInfoFc.bounds_width, (jfloat)lpStruct->bounds.size.width);
+	(*env)->SetFloatField(env, lpObject, HIThemeTrackDrawInfoFc.bounds_height, (jfloat)lpStruct->bounds.size.height);
+	(*env)->SetIntField(env, lpObject, HIThemeTrackDrawInfoFc.min, (jint)lpStruct->min);
+	(*env)->SetIntField(env, lpObject, HIThemeTrackDrawInfoFc.max, (jint)lpStruct->max);
+	(*env)->SetIntField(env, lpObject, HIThemeTrackDrawInfoFc.value, (jint)lpStruct->value);
+	(*env)->SetIntField(env, lpObject, HIThemeTrackDrawInfoFc.reserved, (jint)lpStruct->reserved);
+	(*env)->SetShortField(env, lpObject, HIThemeTrackDrawInfoFc.attributes, (jshort)lpStruct->attributes);
+	(*env)->SetByteField(env, lpObject, HIThemeTrackDrawInfoFc.enableState, (jbyte)lpStruct->enableState);
+	(*env)->SetByteField(env, lpObject, HIThemeTrackDrawInfoFc.filler1, (jbyte)lpStruct->filler1);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeTrackDrawInfoFc.scrollbar);
+	if (lpObject1 != NULL) setScrollBarTrackInfoFields(env, lpObject1, &lpStruct->trackInfo.scrollbar);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeTrackDrawInfoFc.slider);
+	if (lpObject1 != NULL) setSliderTrackInfoFields(env, lpObject1, &lpStruct->trackInfo.slider);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIThemeTrackDrawInfoFc.progress);
+	if (lpObject1 != NULL) setProgressTrackInfoFields(env, lpObject1, &lpStruct->trackInfo.progress);
+	}
+}
+#endif
+
 #ifndef NO_HMHelpContentRec
 typedef struct HMHelpContentRec_FID_CACHE {
 	int cached;
@@ -1900,6 +2575,37 @@ void setPointFields(JNIEnv *env, jobject lpObject, Point *lpStruct)
 }
 #endif
 
+#ifndef NO_ProgressTrackInfo
+typedef struct ProgressTrackInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID phase;
+} ProgressTrackInfo_FID_CACHE;
+
+ProgressTrackInfo_FID_CACHE ProgressTrackInfoFc;
+
+void cacheProgressTrackInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (ProgressTrackInfoFc.cached) return;
+	ProgressTrackInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ProgressTrackInfoFc.phase = (*env)->GetFieldID(env, ProgressTrackInfoFc.clazz, "phase", "B");
+	ProgressTrackInfoFc.cached = 1;
+}
+
+ProgressTrackInfo *getProgressTrackInfoFields(JNIEnv *env, jobject lpObject, ProgressTrackInfo *lpStruct)
+{
+	if (!ProgressTrackInfoFc.cached) cacheProgressTrackInfoFields(env, lpObject);
+	lpStruct->phase = (*env)->GetByteField(env, lpObject, ProgressTrackInfoFc.phase);
+	return lpStruct;
+}
+
+void setProgressTrackInfoFields(JNIEnv *env, jobject lpObject, ProgressTrackInfo *lpStruct)
+{
+	if (!ProgressTrackInfoFc.cached) cacheProgressTrackInfoFields(env, lpObject);
+	(*env)->SetByteField(env, lpObject, ProgressTrackInfoFc.phase, (jbyte)lpStruct->phase);
+}
+#endif
+
 #ifndef NO_RGBColor
 typedef struct RGBColor_FID_CACHE {
 	int cached;
@@ -1974,6 +2680,74 @@ void setRectFields(JNIEnv *env, jobject lpObject, Rect *lpStruct)
 	(*env)->SetShortField(env, lpObject, RectFc.left, (jshort)lpStruct->left);
 	(*env)->SetShortField(env, lpObject, RectFc.bottom, (jshort)lpStruct->bottom);
 	(*env)->SetShortField(env, lpObject, RectFc.right, (jshort)lpStruct->right);
+}
+#endif
+
+#ifndef NO_ScrollBarTrackInfo
+typedef struct ScrollBarTrackInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID viewsize, pressState;
+} ScrollBarTrackInfo_FID_CACHE;
+
+ScrollBarTrackInfo_FID_CACHE ScrollBarTrackInfoFc;
+
+void cacheScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (ScrollBarTrackInfoFc.cached) return;
+	ScrollBarTrackInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ScrollBarTrackInfoFc.viewsize = (*env)->GetFieldID(env, ScrollBarTrackInfoFc.clazz, "viewsize", "I");
+	ScrollBarTrackInfoFc.pressState = (*env)->GetFieldID(env, ScrollBarTrackInfoFc.clazz, "pressState", "B");
+	ScrollBarTrackInfoFc.cached = 1;
+}
+
+ScrollBarTrackInfo *getScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, ScrollBarTrackInfo *lpStruct)
+{
+	if (!ScrollBarTrackInfoFc.cached) cacheScrollBarTrackInfoFields(env, lpObject);
+	lpStruct->viewsize = (*env)->GetIntField(env, lpObject, ScrollBarTrackInfoFc.viewsize);
+	lpStruct->pressState = (*env)->GetByteField(env, lpObject, ScrollBarTrackInfoFc.pressState);
+	return lpStruct;
+}
+
+void setScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, ScrollBarTrackInfo *lpStruct)
+{
+	if (!ScrollBarTrackInfoFc.cached) cacheScrollBarTrackInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ScrollBarTrackInfoFc.viewsize, (jint)lpStruct->viewsize);
+	(*env)->SetByteField(env, lpObject, ScrollBarTrackInfoFc.pressState, (jbyte)lpStruct->pressState);
+}
+#endif
+
+#ifndef NO_SliderTrackInfo
+typedef struct SliderTrackInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID thumbDir, pressState;
+} SliderTrackInfo_FID_CACHE;
+
+SliderTrackInfo_FID_CACHE SliderTrackInfoFc;
+
+void cacheSliderTrackInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (SliderTrackInfoFc.cached) return;
+	SliderTrackInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SliderTrackInfoFc.thumbDir = (*env)->GetFieldID(env, SliderTrackInfoFc.clazz, "thumbDir", "B");
+	SliderTrackInfoFc.pressState = (*env)->GetFieldID(env, SliderTrackInfoFc.clazz, "pressState", "B");
+	SliderTrackInfoFc.cached = 1;
+}
+
+SliderTrackInfo *getSliderTrackInfoFields(JNIEnv *env, jobject lpObject, SliderTrackInfo *lpStruct)
+{
+	if (!SliderTrackInfoFc.cached) cacheSliderTrackInfoFields(env, lpObject);
+	lpStruct->thumbDir = (*env)->GetByteField(env, lpObject, SliderTrackInfoFc.thumbDir);
+	lpStruct->pressState = (*env)->GetByteField(env, lpObject, SliderTrackInfoFc.pressState);
+	return lpStruct;
+}
+
+void setSliderTrackInfoFields(JNIEnv *env, jobject lpObject, SliderTrackInfo *lpStruct)
+{
+	if (!SliderTrackInfoFc.cached) cacheSliderTrackInfoFields(env, lpObject);
+	(*env)->SetByteField(env, lpObject, SliderTrackInfoFc.thumbDir, (jbyte)lpStruct->thumbDir);
+	(*env)->SetByteField(env, lpObject, SliderTrackInfoFc.pressState, (jbyte)lpStruct->pressState);
 }
 #endif
 

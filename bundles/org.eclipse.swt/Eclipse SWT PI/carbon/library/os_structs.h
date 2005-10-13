@@ -203,6 +203,18 @@ void setControlButtonContentInfoFields(JNIEnv *env, jobject lpObject, ControlBut
 #define ControlButtonContentInfo_sizeof() 0
 #endif
 
+#ifndef NO_ControlEditTextSelectionRec
+void cacheControlEditTextSelectionRecFields(JNIEnv *env, jobject lpObject);
+ControlEditTextSelectionRec *getControlEditTextSelectionRecFields(JNIEnv *env, jobject lpObject, ControlEditTextSelectionRec *lpStruct);
+void setControlEditTextSelectionRecFields(JNIEnv *env, jobject lpObject, ControlEditTextSelectionRec *lpStruct);
+#define ControlEditTextSelectionRec_sizeof() sizeof(ControlEditTextSelectionRec)
+#else
+#define cacheControlEditTextSelectionRecFields(a,b)
+#define getControlEditTextSelectionRecFields(a,b,c) NULL
+#define setControlEditTextSelectionRecFields(a,b,c)
+#define ControlEditTextSelectionRec_sizeof() 0
+#endif
+
 #ifndef NO_ControlFontStyleRec
 void cacheControlFontStyleRecFields(JNIEnv *env, jobject lpObject);
 ControlFontStyleRec *getControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyleRec *lpStruct);
@@ -359,6 +371,174 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
 #define HICommand_sizeof() 0
 #endif
 
+#ifndef NO_HIScrollBarTrackInfo
+void cacheHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject);
+HIScrollBarTrackInfo *getHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTrackInfo *lpStruct);
+void setHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTrackInfo *lpStruct);
+#define HIScrollBarTrackInfo_sizeof() sizeof(HIScrollBarTrackInfo)
+#else
+#define cacheHIScrollBarTrackInfoFields(a,b)
+#define getHIScrollBarTrackInfoFields(a,b,c) NULL
+#define setHIScrollBarTrackInfoFields(a,b,c)
+#define HIScrollBarTrackInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeAnimationFrameInfo
+void cacheHIThemeAnimationFrameInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeAnimationFrameInfo *getHIThemeAnimationFrameInfoFields(JNIEnv *env, jobject lpObject, HIThemeAnimationFrameInfo *lpStruct);
+void setHIThemeAnimationFrameInfoFields(JNIEnv *env, jobject lpObject, HIThemeAnimationFrameInfo *lpStruct);
+#define HIThemeAnimationFrameInfo_sizeof() sizeof(HIThemeAnimationFrameInfo)
+#else
+#define cacheHIThemeAnimationFrameInfoFields(a,b)
+#define getHIThemeAnimationFrameInfoFields(a,b,c) NULL
+#define setHIThemeAnimationFrameInfoFields(a,b,c)
+#define HIThemeAnimationFrameInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeAnimationTimeInfo
+void cacheHIThemeAnimationTimeInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeAnimationTimeInfo *getHIThemeAnimationTimeInfoFields(JNIEnv *env, jobject lpObject, HIThemeAnimationTimeInfo *lpStruct);
+void setHIThemeAnimationTimeInfoFields(JNIEnv *env, jobject lpObject, HIThemeAnimationTimeInfo *lpStruct);
+#define HIThemeAnimationTimeInfo_sizeof() sizeof(HIThemeAnimationTimeInfo)
+#else
+#define cacheHIThemeAnimationTimeInfoFields(a,b)
+#define getHIThemeAnimationTimeInfoFields(a,b,c) NULL
+#define setHIThemeAnimationTimeInfoFields(a,b,c)
+#define HIThemeAnimationTimeInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeBackgroundDrawInfo
+void cacheHIThemeBackgroundDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeBackgroundDrawInfo *getHIThemeBackgroundDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeBackgroundDrawInfo *lpStruct);
+void setHIThemeBackgroundDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeBackgroundDrawInfo *lpStruct);
+#define HIThemeBackgroundDrawInfo_sizeof() sizeof(HIThemeBackgroundDrawInfo)
+#else
+#define cacheHIThemeBackgroundDrawInfoFields(a,b)
+#define getHIThemeBackgroundDrawInfoFields(a,b,c) NULL
+#define setHIThemeBackgroundDrawInfoFields(a,b,c)
+#define HIThemeBackgroundDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeButtonDrawInfo
+void cacheHIThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeButtonDrawInfo *getHIThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeButtonDrawInfo *lpStruct);
+void setHIThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeButtonDrawInfo *lpStruct);
+#define HIThemeButtonDrawInfo_sizeof() sizeof(HIThemeButtonDrawInfo)
+#else
+#define cacheHIThemeButtonDrawInfoFields(a,b)
+#define getHIThemeButtonDrawInfoFields(a,b,c) NULL
+#define setHIThemeButtonDrawInfoFields(a,b,c)
+#define HIThemeButtonDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeFrameDrawInfo
+void cacheHIThemeFrameDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeFrameDrawInfo *getHIThemeFrameDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeFrameDrawInfo *lpStruct);
+void setHIThemeFrameDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeFrameDrawInfo *lpStruct);
+#define HIThemeFrameDrawInfo_sizeof() sizeof(HIThemeFrameDrawInfo)
+#else
+#define cacheHIThemeFrameDrawInfoFields(a,b)
+#define getHIThemeFrameDrawInfoFields(a,b,c) NULL
+#define setHIThemeFrameDrawInfoFields(a,b,c)
+#define HIThemeFrameDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeGroupBoxDrawInfo
+void cacheHIThemeGroupBoxDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeGroupBoxDrawInfo *getHIThemeGroupBoxDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeGroupBoxDrawInfo *lpStruct);
+void setHIThemeGroupBoxDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeGroupBoxDrawInfo *lpStruct);
+#define HIThemeGroupBoxDrawInfo_sizeof() sizeof(HIThemeGroupBoxDrawInfo)
+#else
+#define cacheHIThemeGroupBoxDrawInfoFields(a,b)
+#define getHIThemeGroupBoxDrawInfoFields(a,b,c) NULL
+#define setHIThemeGroupBoxDrawInfoFields(a,b,c)
+#define HIThemeGroupBoxDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeGrowBoxDrawInfo
+void cacheHIThemeGrowBoxDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeGrowBoxDrawInfo *getHIThemeGrowBoxDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeGrowBoxDrawInfo *lpStruct);
+void setHIThemeGrowBoxDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeGrowBoxDrawInfo *lpStruct);
+#define HIThemeGrowBoxDrawInfo_sizeof() sizeof(HIThemeGrowBoxDrawInfo)
+#else
+#define cacheHIThemeGrowBoxDrawInfoFields(a,b)
+#define getHIThemeGrowBoxDrawInfoFields(a,b,c) NULL
+#define setHIThemeGrowBoxDrawInfoFields(a,b,c)
+#define HIThemeGrowBoxDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemePopupArrowDrawInfo
+void cacheHIThemePopupArrowDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemePopupArrowDrawInfo *getHIThemePopupArrowDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemePopupArrowDrawInfo *lpStruct);
+void setHIThemePopupArrowDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemePopupArrowDrawInfo *lpStruct);
+#define HIThemePopupArrowDrawInfo_sizeof() sizeof(HIThemePopupArrowDrawInfo)
+#else
+#define cacheHIThemePopupArrowDrawInfoFields(a,b)
+#define getHIThemePopupArrowDrawInfoFields(a,b,c) NULL
+#define setHIThemePopupArrowDrawInfoFields(a,b,c)
+#define HIThemePopupArrowDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeSeparatorDrawInfo
+void cacheHIThemeSeparatorDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeSeparatorDrawInfo *getHIThemeSeparatorDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeSeparatorDrawInfo *lpStruct);
+void setHIThemeSeparatorDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeSeparatorDrawInfo *lpStruct);
+#define HIThemeSeparatorDrawInfo_sizeof() sizeof(HIThemeSeparatorDrawInfo)
+#else
+#define cacheHIThemeSeparatorDrawInfoFields(a,b)
+#define getHIThemeSeparatorDrawInfoFields(a,b,c) NULL
+#define setHIThemeSeparatorDrawInfoFields(a,b,c)
+#define HIThemeSeparatorDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeTabDrawInfo
+void cacheHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeTabDrawInfo *getHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabDrawInfo *lpStruct);
+void setHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabDrawInfo *lpStruct);
+#define HIThemeTabDrawInfo_sizeof() sizeof(HIThemeTabDrawInfo)
+#else
+#define cacheHIThemeTabDrawInfoFields(a,b)
+#define getHIThemeTabDrawInfoFields(a,b,c) NULL
+#define setHIThemeTabDrawInfoFields(a,b,c)
+#define HIThemeTabDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeTabPaneDrawInfo
+void cacheHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeTabPaneDrawInfo *getHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabPaneDrawInfo *lpStruct);
+void setHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabPaneDrawInfo *lpStruct);
+#define HIThemeTabPaneDrawInfo_sizeof() sizeof(HIThemeTabPaneDrawInfo)
+#else
+#define cacheHIThemeTabPaneDrawInfoFields(a,b)
+#define getHIThemeTabPaneDrawInfoFields(a,b,c) NULL
+#define setHIThemeTabPaneDrawInfoFields(a,b,c)
+#define HIThemeTabPaneDrawInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeTextInfo
+void cacheHIThemeTextInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeTextInfo *getHIThemeTextInfoFields(JNIEnv *env, jobject lpObject, HIThemeTextInfo *lpStruct);
+void setHIThemeTextInfoFields(JNIEnv *env, jobject lpObject, HIThemeTextInfo *lpStruct);
+#define HIThemeTextInfo_sizeof() sizeof(HIThemeTextInfo)
+#else
+#define cacheHIThemeTextInfoFields(a,b)
+#define getHIThemeTextInfoFields(a,b,c) NULL
+#define setHIThemeTextInfoFields(a,b,c)
+#define HIThemeTextInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIThemeTrackDrawInfo
+void cacheHIThemeTrackDrawInfoFields(JNIEnv *env, jobject lpObject);
+HIThemeTrackDrawInfo *getHIThemeTrackDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTrackDrawInfo *lpStruct);
+void setHIThemeTrackDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTrackDrawInfo *lpStruct);
+#define HIThemeTrackDrawInfo_sizeof() sizeof(HIThemeTrackDrawInfo)
+#else
+#define cacheHIThemeTrackDrawInfoFields(a,b)
+#define getHIThemeTrackDrawInfoFields(a,b,c) NULL
+#define setHIThemeTrackDrawInfoFields(a,b,c)
+#define HIThemeTrackDrawInfo_sizeof() 0
+#endif
+
 #ifndef NO_HMHelpContentRec
 void cacheHMHelpContentRecFields(JNIEnv *env, jobject lpObject);
 HMHelpContentRec *getHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *lpStruct);
@@ -455,6 +635,18 @@ void setPointFields(JNIEnv *env, jobject lpObject, Point *lpStruct);
 #define Point_sizeof() 0
 #endif
 
+#ifndef NO_ProgressTrackInfo
+void cacheProgressTrackInfoFields(JNIEnv *env, jobject lpObject);
+ProgressTrackInfo *getProgressTrackInfoFields(JNIEnv *env, jobject lpObject, ProgressTrackInfo *lpStruct);
+void setProgressTrackInfoFields(JNIEnv *env, jobject lpObject, ProgressTrackInfo *lpStruct);
+#define ProgressTrackInfo_sizeof() sizeof(ProgressTrackInfo)
+#else
+#define cacheProgressTrackInfoFields(a,b)
+#define getProgressTrackInfoFields(a,b,c) NULL
+#define setProgressTrackInfoFields(a,b,c)
+#define ProgressTrackInfo_sizeof() 0
+#endif
+
 #ifndef NO_RGBColor
 void cacheRGBColorFields(JNIEnv *env, jobject lpObject);
 RGBColor *getRGBColorFields(JNIEnv *env, jobject lpObject, RGBColor *lpStruct);
@@ -477,6 +669,30 @@ void setRectFields(JNIEnv *env, jobject lpObject, Rect *lpStruct);
 #define getRectFields(a,b,c) NULL
 #define setRectFields(a,b,c)
 #define Rect_sizeof() 0
+#endif
+
+#ifndef NO_ScrollBarTrackInfo
+void cacheScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject);
+ScrollBarTrackInfo *getScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, ScrollBarTrackInfo *lpStruct);
+void setScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, ScrollBarTrackInfo *lpStruct);
+#define ScrollBarTrackInfo_sizeof() sizeof(ScrollBarTrackInfo)
+#else
+#define cacheScrollBarTrackInfoFields(a,b)
+#define getScrollBarTrackInfoFields(a,b,c) NULL
+#define setScrollBarTrackInfoFields(a,b,c)
+#define ScrollBarTrackInfo_sizeof() 0
+#endif
+
+#ifndef NO_SliderTrackInfo
+void cacheSliderTrackInfoFields(JNIEnv *env, jobject lpObject);
+SliderTrackInfo *getSliderTrackInfoFields(JNIEnv *env, jobject lpObject, SliderTrackInfo *lpStruct);
+void setSliderTrackInfoFields(JNIEnv *env, jobject lpObject, SliderTrackInfo *lpStruct);
+#define SliderTrackInfo_sizeof() sizeof(SliderTrackInfo)
+#else
+#define cacheSliderTrackInfoFields(a,b)
+#define getSliderTrackInfoFields(a,b,c) NULL
+#define setSliderTrackInfoFields(a,b,c)
+#define SliderTrackInfo_sizeof() 0
 #endif
 
 #ifndef NO_TXNBackground
