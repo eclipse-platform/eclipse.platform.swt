@@ -642,6 +642,11 @@ void drawBackground (int control, int context, float [] background) {
 	} else {
 		Rect rect = new Rect ();
 		OS.GetControlBounds (control, rect);
+		if (OS.HIVIEW) {
+			rect.right += rect.left;
+			rect.bottom += rect.top;
+			rect.left = rect.top = 0;
+		}
 		if (background != null) {
 			OS.RGBForeColor (toRGBColor (background));
 			OS.PaintRect (rect);
