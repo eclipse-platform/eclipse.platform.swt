@@ -650,6 +650,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			int y = (int) pt.y;
 			CGRect rect = new CGRect ();
 			OS.HIViewGetBounds (handle, rect);
+			int width = (int) rect.width;
 			if (width - x < 12) {
 				Event event = new Event ();
 				event.detail = SWT.ARROW;
