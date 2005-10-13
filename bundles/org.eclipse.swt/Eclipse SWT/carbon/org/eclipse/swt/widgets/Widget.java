@@ -627,7 +627,7 @@ void drawBackground (int control, int context) {
 }
 
 void drawBackground (int control, int context, float [] background) {
-	if (OS.HIVIEW && OS.VERSION >= 0x1040) {
+	if (OS.HIVIEW && (OS.VERSION >= 0x1040 || background != null)) {
 		CGRect rect = new CGRect ();
 		OS.HIViewGetBounds (control, rect);
 		if (background != null) {
