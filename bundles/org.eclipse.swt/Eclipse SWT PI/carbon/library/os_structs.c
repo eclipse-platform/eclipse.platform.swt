@@ -1901,7 +1901,7 @@ void setHIThemeSeparatorDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeSep
 typedef struct HIThemeTabDrawInfo_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID version, style, direction, size, adornment, kind, position;
+	jfieldID version, style, direction, size, adornment;
 } HIThemeTabDrawInfo_FID_CACHE;
 
 HIThemeTabDrawInfo_FID_CACHE HIThemeTabDrawInfoFc;
@@ -1915,8 +1915,6 @@ void cacheHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject)
 	HIThemeTabDrawInfoFc.direction = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "direction", "S");
 	HIThemeTabDrawInfoFc.size = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "size", "I");
 	HIThemeTabDrawInfoFc.adornment = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "adornment", "I");
-	HIThemeTabDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "kind", "I");
-	HIThemeTabDrawInfoFc.position = (*env)->GetFieldID(env, HIThemeTabDrawInfoFc.clazz, "position", "I");
 	HIThemeTabDrawInfoFc.cached = 1;
 }
 
@@ -1928,8 +1926,6 @@ HIThemeTabDrawInfo *getHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, H
 	lpStruct->direction = (*env)->GetShortField(env, lpObject, HIThemeTabDrawInfoFc.direction);
 	lpStruct->size = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.size);
 	lpStruct->adornment = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.adornment);
-	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.kind);
-	lpStruct->position = (*env)->GetIntField(env, lpObject, HIThemeTabDrawInfoFc.position);
 	return lpStruct;
 }
 
@@ -1941,8 +1937,6 @@ void setHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabDrawIn
 	(*env)->SetShortField(env, lpObject, HIThemeTabDrawInfoFc.direction, (jshort)lpStruct->direction);
 	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.size, (jint)lpStruct->size);
 	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.adornment, (jint)lpStruct->adornment);
-	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.kind, (jint)lpStruct->kind);
-	(*env)->SetIntField(env, lpObject, HIThemeTabDrawInfoFc.position, (jint)lpStruct->position);
 }
 #endif
 
@@ -1950,7 +1944,7 @@ void setHIThemeTabDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabDrawIn
 typedef struct HIThemeTabPaneDrawInfo_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID version, state, direction, size, kind, adornment;
+	jfieldID version, state, direction, size;
 } HIThemeTabPaneDrawInfo_FID_CACHE;
 
 HIThemeTabPaneDrawInfo_FID_CACHE HIThemeTabPaneDrawInfoFc;
@@ -1963,8 +1957,6 @@ void cacheHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject)
 	HIThemeTabPaneDrawInfoFc.state = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "state", "I");
 	HIThemeTabPaneDrawInfoFc.direction = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "direction", "S");
 	HIThemeTabPaneDrawInfoFc.size = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "size", "I");
-	HIThemeTabPaneDrawInfoFc.kind = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "kind", "I");
-	HIThemeTabPaneDrawInfoFc.adornment = (*env)->GetFieldID(env, HIThemeTabPaneDrawInfoFc.clazz, "adornment", "I");
 	HIThemeTabPaneDrawInfoFc.cached = 1;
 }
 
@@ -1975,8 +1967,6 @@ HIThemeTabPaneDrawInfo *getHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpO
 	lpStruct->state = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.state);
 	lpStruct->direction = (*env)->GetShortField(env, lpObject, HIThemeTabPaneDrawInfoFc.direction);
 	lpStruct->size = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.size);
-	lpStruct->kind = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.kind);
-	lpStruct->adornment = (*env)->GetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.adornment);
 	return lpStruct;
 }
 
@@ -1987,8 +1977,6 @@ void setHIThemeTabPaneDrawInfoFields(JNIEnv *env, jobject lpObject, HIThemeTabPa
 	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.state, (jint)lpStruct->state);
 	(*env)->SetShortField(env, lpObject, HIThemeTabPaneDrawInfoFc.direction, (jshort)lpStruct->direction);
 	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.size, (jint)lpStruct->size);
-	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.kind, (jint)lpStruct->kind);
-	(*env)->SetIntField(env, lpObject, HIThemeTabPaneDrawInfoFc.adornment, (jint)lpStruct->adornment);
 }
 #endif
 
