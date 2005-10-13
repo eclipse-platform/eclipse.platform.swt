@@ -224,21 +224,25 @@ public int getSelection () {
 	return value;
 }
 
-int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
-	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (!hasFocus ()) return result;
 	/*
 	* Bug in the Macintosh.  For some reason, when the slider
-	* is not ghosted, if the control is added to the window
-	* before the window is made visible, the user will not be
-	* able to drag the thumb to the end of the slider.  The
-	* fix to force the slider to be added after the window
-	* is visible by removing it and then adding it back.
-	* This is necessary every time the slider draws.
+	* is not ghosted, if the slider has keyboard focus, the
+	* user will not be able to drag the thumb to the maximum value
+	* of the slider.  The fix is to clear the focus temporarily
+	* and restore it after the thumb tracking is complety.
 	*/
-	int topHandle = topHandle ();
-	int parentHandle = parent.handle;
-	OS.HIViewRemoveFromSuperview (topHandle);
-	OS.HIViewAddSubview (parentHandle, topHandle);
+	display.ignoreFocus = true;
+	int window = OS.GetControlOwner (handle);
+	OS.ClearKeyboardFocus (window);
+	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	if (!isDisposed ()) {
+		OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart);
+	}
+	display.ignoreFocus = false;
 	return result;
 }
 
