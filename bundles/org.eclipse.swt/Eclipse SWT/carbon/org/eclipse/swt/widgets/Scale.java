@@ -227,7 +227,6 @@ public int getSelection () {
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (!hasFocus ()) return result;
 	/*
 	* Bug in the Macintosh.  For some reason, when the slider
 	* is not ghosted, if the slider has keyboard focus, the
@@ -235,6 +234,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	* of the slider.  The fix is to clear the focus temporarily
 	* and restore it after the thumb tracking is complety.
 	*/
+	if (!hasFocus ()) return result;
 	display.ignoreFocus = true;
 	int window = OS.GetControlOwner (handle);
 	OS.ClearKeyboardFocus (window);
