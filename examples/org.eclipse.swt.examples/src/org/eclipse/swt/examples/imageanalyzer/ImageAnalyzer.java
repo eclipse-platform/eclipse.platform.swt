@@ -65,6 +65,7 @@ public class ImageAnalyzer {
 	long loadTime = 0; // the time it took to load the current image
 	
 	static final int INDEX_DIGITS = 4;
+	static final int ALPHA_CHARS = 5;
 	static final int ALPHA_CONSTANT = 0;
 	static final int ALPHA_X = 1;
 	static final int ALPHA_Y = 2;
@@ -1349,18 +1350,34 @@ public class ImageAnalyzer {
 		if (x >= 0 && x < imageData.width && y >= 0 && y < imageData.height) {
 			int pixel = imageData.getPixel(x, y);
 			RGB rgb = imageData.palette.getRGB(pixel);
-
-
-			Object[] args = {new Integer(x),
-					     new Integer(y),
-					     new Integer(pixel),
-					     Integer.toHexString(pixel),
-					     rgb};
-			if (pixel == imageData.transparentPixel) {
-				statusLabel.setText(createMsg(bundle.getString("Color_at_trans"), args));
-			} else {
-				statusLabel.setText(createMsg(bundle.getString("Color_at"), args));
+			boolean hasAlpha = false;
+			int alphaValue = 0;
+			if (imageData.alphaData != null && imageData.alphaData.length > 0) {
+				hasAlpha = true;
+				alphaValue = imageData.getAlpha(x, y);
 			}
+			String rgbMessageFormat = bundle.getString(hasAlpha ? "RGBA" : "RGB");
+			Object[] rgbArgs = {
+					Integer.toString(rgb.red),
+					Integer.toString(rgb.green),
+					Integer.toString(rgb.blue),
+					Integer.toString(alphaValue)
+			};
+			Object[] rgbHexArgs = {
+					Integer.toHexString(rgb.red),
+					Integer.toHexString(rgb.green),
+					Integer.toHexString(rgb.blue),
+					Integer.toHexString(alphaValue)
+			};
+			Object[] args = {
+					new Integer(x),
+					new Integer(y),
+					new Integer(pixel),
+					Integer.toHexString(pixel),
+					createMsg(rgbMessageFormat, rgbArgs),
+					createMsg(rgbMessageFormat, rgbHexArgs),
+					(pixel == imageData.transparentPixel) ? bundle.getString("Color_at_transparent") : ""};
+			statusLabel.setText(createMsg(bundle.getString("Color_at"), args));
 		} else {
 			statusLabel.setText("");
 		}
@@ -1703,8 +1720,15 @@ public class ImageAnalyzer {
 		
 		// bold the first column all the way down
 		int index = 0;
-		while((index = data.indexOf(':', index+1)) != -1) 
-			dataText.setStyleRange(new StyleRange(index - INDEX_DIGITS, INDEX_DIGITS, dataText.getForeground(), dataText.getBackground(), SWT.BOLD));
+		while((index = data.indexOf(':', index+1)) != -1) {
+			int start = index - INDEX_DIGITS;
+			int length = INDEX_DIGITS;
+			if (Character.isLetter(data.charAt(index-1))) {
+				start = index - ALPHA_CHARS;
+				length = ALPHA_CHARS;
+			}
+			dataText.setStyleRange(new StyleRange(start, length, dataText.getForeground(), dataText.getBackground(), SWT.BOLD));
+		}
 
 		statusLabel.setText("");
 
@@ -1958,8 +1982,13 @@ public class ImageAnalyzer {
 		if (image == null) return "";
 		boolean truncated = false;
 		char[] dump = null;
+		byte[] alphas = imageData.alphaData;
 		try {
-			dump = new char[imageData.height * (6 + 3 * imageData.bytesPerLine + lineDelimiter.length())];
+			int length = imageData.height * (6 + 4 * imageData.bytesPerLine + lineDelimiter.length());
+			if (alphas != null && alphas.length > 0) {
+				length += imageData.height * (6 + 3 * imageData.width + lineDelimiter.length()) + 6 + lineDelimiter.length();
+			}
+			dump = new char[length];
 		} catch (OutOfMemoryError e) {
 			/* Too much data to dump - truncate. */
 			dump = new char[MAX_DUMP];
@@ -1983,8 +2012,42 @@ public class ImageAnalyzer {
 				dump[index++] = ' ';
 				if ((i + 1) % imageData.bytesPerLine == 0) {
 					dump[index++] = lineDelimiter.charAt(0);
-					if (lineDelimiter.length() > 1)
+					if (lineDelimiter.length() > 1) {
 						dump[index++] = lineDelimiter.charAt(1);
+					}
+				}
+			}
+			if (alphas != null && alphas.length > 0) {
+				dump[index++] = lineDelimiter.charAt(0);
+				if (lineDelimiter.length() > 1) {
+					dump[index++] = lineDelimiter.charAt(1);
+				}
+				System.arraycopy(new char[]{'A','l','p','h','a',':'}, 0, dump, index, 6);
+				index +=6;
+				dump[index++] = lineDelimiter.charAt(0);
+				if (lineDelimiter.length() > 1) {
+					dump[index++] = lineDelimiter.charAt(1);
+				}
+				for (int i = 0; i < alphas.length; i++) {
+					if (i % imageData.width == 0) {
+						int line = i / imageData.width;
+						dump[index++] = Character.forDigit(line / 1000 % 10, 10);
+						dump[index++] = Character.forDigit(line / 100 % 10, 10);
+						dump[index++] = Character.forDigit(line / 10 % 10, 10);
+						dump[index++] = Character.forDigit(line % 10, 10);
+						dump[index++] = ':';
+						dump[index++] = ' ';
+					}
+					byte b = alphas[i];
+					dump[index++] = Character.forDigit((b & 0xF0) >> 4, 16);
+					dump[index++] = Character.forDigit(b & 0x0F, 16);
+					dump[index++] = ' ';
+					if ((i + 1) % imageData.width == 0) {
+						dump[index++] = lineDelimiter.charAt(0);
+						if (lineDelimiter.length() > 1) {
+							dump[index++] = lineDelimiter.charAt(1);
+						}
+					}
 				}
 			}
 		} catch (IndexOutOfBoundsException e) {}
