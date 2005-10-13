@@ -300,9 +300,11 @@ public Rectangle getBounds () {
 		width = Math.min (width, rect.right - x);
 	}
 	int height = rect.bottom - rect.top;
-	OS.GetControlBounds (parent.handle, rect);
-	x -= rect.left;
-	y -= rect.top;
+	if (!OS.HIVIEW) {
+		OS.GetControlBounds (parent.handle, rect);
+		x -= rect.left;
+		y -= rect.top;
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -351,9 +353,11 @@ public Rectangle getBounds (int index) {
 		width = rect.right - rect2.left + 1;
 		height = rect2.bottom - rect2.top + 1;
 	}
-	OS.GetControlBounds (parent.handle, rect);
-	x -= rect.left;
-	y -= rect.top;
+	if (!OS.HIVIEW) {
+		OS.GetControlBounds (parent.handle, rect);
+		x -= rect.left;
+		y -= rect.top;
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -563,9 +567,11 @@ public Rectangle getImageBounds (int index) {
 		width += bounds.width;
 	}
 	int height = rect.bottom - rect.top + 1;
-	OS.GetControlBounds (parent.handle, rect);
-	x -= rect.left;
-	y -= rect.top;
+	if (!OS.HIVIEW) {
+		OS.GetControlBounds (parent.handle, rect);
+		x -= rect.left;
+		y -= rect.top;
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -770,7 +776,7 @@ void redraw (int propertyID) {
 		Rect rect = new Rect();
 		if (OS.GetDataBrowserItemPartBounds (parentHandle, id, propertyID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			Rect controlRect = new Rect ();
-			OS.GetControlBounds (parentHandle, controlRect);
+			if (!OS.HIVIEW) OS.GetControlBounds (parentHandle, controlRect);
 			int x = rect.left - controlRect.left;
 			int y = rect.top - controlRect.top - 1;
 			int width = rect.right - rect.left;

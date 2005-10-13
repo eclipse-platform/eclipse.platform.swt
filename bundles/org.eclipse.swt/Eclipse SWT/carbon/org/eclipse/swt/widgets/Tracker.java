@@ -193,20 +193,16 @@ Point adjustMoveCursor () {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	/*
-	 * Convert to screen coordinates iff needed
+	 * Convert to screen coordinates if needed
  	 */
 	if (parent != null) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (parent.handle, rect);
-		newX += rect.left; 
-		newY += rect.top; 
-		int window = OS.GetControlOwner (parent.handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		newX += rect.left; 
-		newY += rect.top; 
+		Point pt = parent.toDisplay (newX, newY);
+		newX = pt.x;
+		newY = pt.y;
 	}
 	CGPoint pt = new CGPoint ();
-	pt.x = newX;  pt.y = newY;
+	pt.x = newX;
+	pt.y = newY;
 	OS.CGWarpMouseCursorPosition (pt);
 	return new Point ((int) pt.x, (int) pt.y);
 }
@@ -231,21 +227,17 @@ Point adjustResizeCursor (boolean movePointer) {
 	}
 
 	/*
-	 * Convert to screen coordinates iff needed
+	 * Convert to screen coordinates if needed
  	 */
 	if (parent != null) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (parent.handle, rect);
-		newX += rect.left; 
-		newY += rect.top; 
-		int window = OS.GetControlOwner (parent.handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		newX += rect.left; 
-		newY += rect.top; 
+		Point pt = parent.toDisplay (newX, newY);
+		newX = pt.x;
+		newY = pt.y; 
 	}
 	if (movePointer) {
 		CGPoint pt = new CGPoint ();
-		pt.x = newX;  pt.y = newY;
+		pt.x = newX;
+		pt.y = newY;
 		OS.CGWarpMouseCursorPosition (pt);
 	}
 

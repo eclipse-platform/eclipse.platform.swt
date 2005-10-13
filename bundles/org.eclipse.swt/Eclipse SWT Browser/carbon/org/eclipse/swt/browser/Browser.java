@@ -158,13 +158,21 @@ public Browser(Composite parent, int style) {
 	 * to the HIView (after the top window is visible) to give Safari a chance to hook
 	 * events.
 	 */
-	OS.HIViewAddSubview(handle, webViewHandle);
+	int window = OS.GetControlOwner(handle);
+	if (OS.HIVIEW) {
+		int[] contentView = new int[1];
+		OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
+		OS.HIViewAddSubview(contentView[0], webViewHandle);
+		OS.HIViewChangeFeatures(webViewHandle, OS.kHIViewFeatureIsOpaque, 0);
+	} else {
+		OS.HIViewAddSubview(handle, webViewHandle);
+	}
 	OS.HIViewSetVisible(webViewHandle, true);	
 	if (getShell().isVisible()) {
 		int[] showEvent = new int[1];
 		OS.CreateEvent(0, OS.kEventClassWindow, OS.kEventWindowShown, 0.0, OS.kEventAttributeUserEvent, showEvent);
 		OS.SetEventParameter(showEvent[0], OS.kEventParamDirectObject, OS.typeWindowRef, 4, new int[] {OS.GetControlOwner(handle)});
-		OS.SendEventToEventTarget(showEvent[0], OS.GetWindowEventTarget(OS.GetControlOwner(handle)));
+		OS.SendEventToEventTarget(showEvent[0], OS.GetWindowEventTarget(window));
 		if (showEvent[0] != 0) OS.ReleaseEvent(showEvent[0]);
 	}
 
@@ -243,7 +251,14 @@ public Browser(Composite parent, int style) {
 					* and set its size to 0 in Hide and to restore its size in Show.
 					*/
 					CGRect bounds = new CGRect();
-					OS.HIViewGetFrame(handle, bounds);
+					if (OS.HIVIEW) {
+						OS.HIViewGetBounds(handle, bounds);
+						int[] contentView = new int[1];
+						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(handle)), OS.kHIViewWindowContentID(), contentView);
+						OS.HIViewConvertRect(bounds, handle, contentView[0]);
+					} else {
+						OS.HIViewGetFrame(handle, bounds);
+					}
 					/* 
 					* Bug in Safari.  For some reason, the web view will display incorrectly or
 					* blank depending on its contents, if its size is set to a value smaller than
@@ -268,7 +283,14 @@ public Browser(Composite parent, int style) {
 					* reposition the web view every time the Shell of the Browser is resized.
 					*/
 					CGRect bounds = new CGRect();
-					OS.HIViewGetFrame(handle, bounds);
+					if (OS.HIVIEW) {
+						OS.HIViewGetBounds(handle, bounds);
+						int[] contentView = new int[1];
+						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(handle)), OS.kHIViewWindowContentID(), contentView);
+						OS.HIViewConvertRect(bounds, handle, contentView[0]);
+					} else {
+						OS.HIViewGetFrame(handle, bounds);
+					}
 					/* 
 					* Bug in Safari.  For some reason, the web view will display incorrectly or
 					* blank depending on its contents, if its size is set to a value smaller than

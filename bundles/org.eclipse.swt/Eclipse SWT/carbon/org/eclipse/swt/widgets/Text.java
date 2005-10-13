@@ -17,6 +17,9 @@ import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
 import org.eclipse.swt.internal.carbon.TXNBackground;
 import org.eclipse.swt.internal.carbon.TXNLongRect;
+import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
+import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
+import org.eclipse.swt.internal.carbon.CFRange;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -42,6 +45,8 @@ public class Text extends Scrollable {
 	int txnObject, txnFrameID;
 	int textLimit = LIMIT;
 	char echoCharacter;
+	String hiddenText;
+	ControlEditTextSelectionRec selection;
 	/**
 	* The maximum number of characters that can be entered
 	* into a text widget.
@@ -213,9 +218,27 @@ public void append (String string) {
 		string = verifyText (string, charCount, charCount, null);
 		if (string == null) return;
 	}
-	setTXNText (OS.kTXNEndOffset, OS.kTXNEndOffset, string);
-	OS.TXNSetSelection (txnObject, OS.kTXNEndOffset, OS.kTXNEndOffset);
-	OS.TXNShowSelection (txnObject, false);
+	if (txnObject == 0) {
+		if (hasFocus ()) {
+			ControlEditTextSelectionRec selection = new ControlEditTextSelectionRec ();
+			selection.selStart = selection.selEnd = -1;
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
+			char [] buffer = new char [string.length ()];
+			string.getChars (0, buffer.length, buffer, 0);
+			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextInsertCFStringRefTag, 4, new int[] {ptr});
+			OS.CFRelease (ptr);
+		} else {
+			String newText = getText () + string;
+			setEditText (newText);
+			setSelection(newText.length ());
+		}
+	} else {
+		setTXNText (OS.kTXNEndOffset, OS.kTXNEndOffset, string);
+		OS.TXNSetSelection (txnObject, OS.kTXNEndOffset, OS.kTXNEndOffset);
+		OS.TXNShowSelection (txnObject, false);
+	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
 }
 
@@ -236,6 +259,24 @@ static int checkStyle (int style) {
 }
 
 int callFocusEventHandler (int nextHandler, int theEvent) {
+	if (OS.HIVIEW) {
+		short [] part = new short [1];
+		if (txnObject == 0) {
+			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+			if (part [0] == OS.kControlFocusNoPart) {
+				selection = new ControlEditTextSelectionRec ();
+				OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
+			}
+		}
+		int result = super.callFocusEventHandler (nextHandler, theEvent);
+		if (txnObject == 0) {
+			if (part [0] != OS.kControlFocusNoPart && selection != null) {
+				OS.SetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
+				selection = null;
+			}
+		}
+		return result;
+	}
 	return OS.noErr;
 }
 
@@ -249,17 +290,30 @@ int callFocusEventHandler (int nextHandler, int theEvent) {
  */
 public void clearSelection () {
 	checkWidget();
-	int [] oStartOffset = new int [1], oEndOffset = new int [1];
-	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-	OS.TXNSetSelection (txnObject, oStartOffset [0], oStartOffset [0]);
+	if (txnObject == 0) {
+		Point selection = getSelection ();
+		setSelection (selection.x);
+	} else {
+		int [] oStartOffset = new int [1], oEndOffset = new int [1];
+		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
+		OS.TXNSetSelection (txnObject, oStartOffset [0], oStartOffset [0]);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	TXNLongRect oTextRect = new TXNLongRect ();
-	OS.TXNGetRectBounds (txnObject, null, null, oTextRect);
-	int width = oTextRect.right - oTextRect.left;
-	int height = oTextRect.bottom - oTextRect.top;
+	int width, height;
+	if (txnObject == 0) {
+		Rect rect = new Rect ();
+		OS.GetBestControlRect (handle, rect, null);
+		width = rect.right - rect.left;
+		height = rect.bottom - rect.top;
+	} else {
+		TXNLongRect oTextRect = new TXNLongRect ();
+		OS.TXNGetRectBounds (txnObject, null, null, oTextRect);
+		width = oTextRect.right - oTextRect.left;
+		height = oTextRect.bottom - oTextRect.top;
+	}
 	if (width <= 0) width = DEFAULT_WIDTH;
 	if (height <= 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
@@ -271,13 +325,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	int ptr = OS.NewPtr (Rect.sizeof);
-	OS.TXNGetTXNObjectControls (txnObject, 1, new int [] {OS.kTXNMarginsTag}, new int [] {ptr});
-	Rect rect = new Rect ();
-	OS.memcpy (rect, ptr, Rect.sizeof);
-	OS.DisposePtr (ptr);
-	width += rect.left + rect.right;
-	height += rect.top + rect.bottom;
+	if (!OS.HIVIEW) {
+		int ptr = OS.NewPtr (Rect.sizeof);
+		OS.TXNGetTXNObjectControls (txnObject, 1, new int [] {OS.kTXNMarginsTag}, new int [] {ptr});
+		Rect rect = new Rect ();
+		OS.memcpy (rect, ptr, Rect.sizeof);
+		OS.DisposePtr (ptr);
+		width += rect.left + rect.right;
+		height += rect.top + rect.bottom;
+	}
 	int [] size = new int [1];
 	OS.GetThemeMetric(OS.kThemeMetricScrollBarWidth, size);
 	if (horizontalBar != null) height += size [0];
@@ -287,6 +343,13 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	y -= inset.top;
 	width += inset.left + inset.right;
 	height += inset.top + inset.bottom;
+	if (txnObject == 0) {
+		inset = getInset ();
+		x -= inset.left;
+		y -= inset.top;
+		width += inset.left + inset.right;
+		height += inset.top + inset.bottom;
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -303,85 +366,166 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
  */
 public void copy () {
 	checkWidget ();
-	OS.TXNCopy (txnObject);
+	if (txnObject == 0) {
+		Point selection = getSelection ();
+		if (selection.x == selection.y) return;
+		copy (getEditText (selection.x, selection.y - 1, true));	
+	} else {
+		OS.TXNCopy (txnObject);
+	}
+}
+
+void copy (char [] buffer) {
+	if (buffer.length == 0) return;
+	OS.ClearCurrentScrap ();
+	int [] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
 }
 
 void createHandle () {
-	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateUserPaneControl (window, null, features, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
+	if (OS.HIVIEW) {
+		int [] outControl = new int [1];
+		if ((style & SWT.MULTI) != 0 || ((style & SWT.BORDER) == 0)) {
+			if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+				int options = 0;
+				if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == (SWT.H_SCROLL | SWT.V_SCROLL)) options |= OS.kHIScrollViewOptionsAllowGrow;
+				if ((style & SWT.H_SCROLL) != 0) options |= OS.kHIScrollViewOptionsHorizScroll;
+				if ((style & SWT.V_SCROLL) != 0) options |= OS.kHIScrollViewOptionsVertScroll;
+				OS.HIScrollViewCreate (options, outControl);
+				if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+				scrolledHandle = outControl [0];
+				OS.HIViewSetVisible (scrolledHandle, true);
+			}
+			int iFrameOptions = OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
+			if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
+			if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
+			OS.HITextViewCreate (null, 0, iFrameOptions, outControl);
+			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+			handle = outControl [0];
+			OS.HIViewSetVisible (handle, true);
+			txnObject = OS.HITextViewGetTXNObject (handle);			
+			int ptr = OS.NewPtr (Rect.sizeof);
+			Rect rect = inset ();
+			OS.memcpy (ptr, rect, Rect.sizeof);
+			int [] tags = new int [] {
+				OS.kTXNDisableDragAndDropTag,
+				OS.kTXNIOPrivilegesTag,
+				OS.kTXNMarginsTag,
+				OS.kTXNJustificationTag,
+				OS.kTXNDoFontSubstitution,
+				OS.kTXNWordWrapStateTag,
+				OS.kTXNAutoScrollBehaviorTag,
+			};
+			int just = OS.kTXNFlushLeft;
+			if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
+			if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
+			int [] datas = new int [] {
+				1,
+				(style & SWT.READ_ONLY) != 0 ? 1 : 0,
+				ptr,
+				just,
+				1,
+				(style & SWT.WRAP) != 0 ? 0 : 1,
+				0,
+			};
+			OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
+			OS.DisposePtr (ptr);
+		} else {
+			int window = OS.GetControlOwner (parent.handle);
+			OS.CreateEditUnicodeTextControl (window, null, 0, (style & SWT.PASSWORD) != 0, null, outControl);
+			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+			handle = outControl [0];
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
+			if ((style & SWT.READ_ONLY) != 0) {
+				OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {1});
+			}
+			if ((style & (SWT.RIGHT | SWT.CENTER)) != 0) {
+				ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+				fontStyle.flags |= OS.kControlUseJustMask;
+				if ((style & SWT.CENTER) != 0) fontStyle.just = OS.teJustCenter;
+				if ((style & SWT.RIGHT) != 0) fontStyle.just = OS.teJustRight;
+				OS.SetControlFontStyle (handle, fontStyle);
+			}
+		}		
+	} else {
+		int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+		int [] outControl = new int [1];
+		int window = OS.GetControlOwner (parent.handle);
+		OS.CreateUserPaneControl (window, null, features, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		
+		/*
+		* Feature in the Macintosh.  The TXNObject is not a control but creates scroll
+		* bar controls to scroll the text.  These are created in the root and are not
+		* children of the user pane that is used to represent the TNXObject.  The fix
+		* is to embed the scroll bars in the user pane.
+		*/
+		int [] theRoot = new int [1];
+		OS.GetRootControl (window, theRoot);
+		short [] oldCount = new short [1];
+		OS.CountSubControls (theRoot [0], oldCount);	
+		
+		/* Create the TXNObject */
+		int iFrameOptions = OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
+		if ((style & SWT.H_SCROLL) != 0) iFrameOptions |= OS.kTXNWantHScrollBarMask;
+		if ((style & SWT.V_SCROLL) != 0) iFrameOptions |= OS.kTXNWantVScrollBarMask;
+		if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
+		if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
+		int [] oTXNObject = new int [1], oTXNFrameID = new int[1];
+		OS.TXNNewObject (0, window, null, iFrameOptions, OS.kTXNTextEditStyleFrameType, OS.kTXNUnicodeTextFile, OS.kTXNSystemDefaultEncoding, oTXNObject, oTXNFrameID, 0);
+		if (oTXNObject [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		txnObject = oTXNObject [0];
+		txnFrameID = oTXNFrameID [0];
+		
+		/* Embed the scroll bars in the user pane */
+		short [] newCount = new short [1];
+		OS.CountSubControls (theRoot [0], newCount);
+		int [] scrollBar = new int [1];
+		for (int i=newCount [0]; i>oldCount [0]; --i) {
+			OS.GetIndexedSubControl (theRoot [0], (short) i, scrollBar);
+			OS.HIViewRemoveFromSuperview (scrollBar [0]);
+			OS.HIViewAddSubview (handle, scrollBar [0]);
+		}
+		
+		/* Configure the TXNObject */
+		int ptr = OS.NewPtr (Rect.sizeof);
+		Rect rect = new Rect ();
+		if (hasBorder ()) {
+			OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
+		}
+		OS.memcpy (ptr, rect, Rect.sizeof);
+		int [] tags = new int [] {
+			OS.kTXNDisableDragAndDropTag,
+			OS.kTXNIOPrivilegesTag,
+			OS.kTXNMarginsTag,
+			OS.kTXNJustificationTag,
+			OS.kTXNDoFontSubstitution,
+		};
+		int just = OS.kTXNFlushLeft;
+		if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
+		if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
+		int [] datas = new int [] {
+			1,
+			(style & SWT.READ_ONLY) != 0 ? 1 : 0,
+			ptr,
+			just,
+			1,
+		};
+		OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
+		OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
+		OS.DisposePtr (ptr);
 	
-	/*
-	* Feature in the Macintosh.  The TXNObject is not a control but creates scroll
-	* bar controls to scroll the text.  These are created in the root and are not
-	* children of the user pane that is used to represent the TNXObject.  The fix
-	* is to embed the scroll bars in the user pane.
-	*/
-	int [] theRoot = new int [1];
-	OS.GetRootControl (window, theRoot);
-	short [] oldCount = new short [1];
-	OS.CountSubControls (theRoot [0], oldCount);	
-	
-	/* Create the TXNObject */
-	int iFrameOptions = OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
-	if ((style & SWT.H_SCROLL) != 0) iFrameOptions |= OS.kTXNWantHScrollBarMask;
-	if ((style & SWT.V_SCROLL) != 0) iFrameOptions |= OS.kTXNWantVScrollBarMask;
-	if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
-	if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
-	int [] oTXNObject = new int [1], oTXNFrameID = new int[1];
-	OS.TXNNewObject (0, window, null, iFrameOptions, OS.kTXNTextEditStyleFrameType, OS.kTXNUnicodeTextFile, OS.kTXNSystemDefaultEncoding, oTXNObject, oTXNFrameID, 0);
-	if (oTXNObject [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	txnObject = oTXNObject [0];
-	txnFrameID = oTXNFrameID [0];
-	
-	/* Embed the scroll bars in the user pane */
-	short [] newCount = new short [1];
-	OS.CountSubControls (theRoot [0], newCount);
-	int [] scrollBar = new int [1];
-	for (int i=newCount [0]; i>oldCount [0]; --i) {
-		OS.GetIndexedSubControl (theRoot [0], (short) i, scrollBar);
-		OS.HIViewRemoveFromSuperview (scrollBar [0]);
-		OS.HIViewAddSubview (handle, scrollBar [0]);
-	}
-	
-	/* Configure the TXNObject */
-	int ptr = OS.NewPtr (Rect.sizeof);
-	Rect rect = new Rect ();
-	if (hasBorder ()) {
-		OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
-	}
-	OS.memcpy (ptr, rect, Rect.sizeof);
-	int [] tags = new int [] {
-		OS.kTXNDisableDragAndDropTag,
-		OS.kTXNIOPrivilegesTag,
-		OS.kTXNMarginsTag,
-		OS.kTXNJustificationTag,
-		OS.kTXNDoFontSubstitution,
-	};
-	int just = OS.kTXNFlushLeft;
-	if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
-	if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
-	int [] datas = new int [] {
-		1,
-		(style & SWT.READ_ONLY) != 0 ? 1 : 0,
-		ptr,
-		just,
-		1,
-	};
-	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
-	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
-	OS.DisposePtr (ptr);
+		/*
+		* Bug in the Macintosh.  The caret height is too small until some text is set in the
+		* TXNObject.  The fix is to temporary change the text.
+		*/
+		char [] buffer = new char [] {' '};
+		OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 2, OS.kTXNStartOffset, OS.kTXNEndOffset);
+		OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
 
-	/*
-	* Bug in the Macintosh.  The caret height is too small until some text is set in the
-	* TXNObject.  The fix is to temporary change the text.
-	*/
-	char [] buffer = new char [] {' '};
-	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 2, OS.kTXNStartOffset, OS.kTXNEndOffset);
-	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
+	}
 }
 
 ScrollBar createScrollBar (int style) {
@@ -390,6 +534,7 @@ ScrollBar createScrollBar (int style) {
 
 void createWidget () {
 	super.createWidget ();
+	hiddenText = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar (PASSWORD);
 }
 
@@ -409,26 +554,38 @@ public void cut () {
 	checkWidget();
 	if ((style & SWT.READ_ONLY) != 0) return;
 	boolean cut = true;
+	char [] oldText = null;
 	Point oldSelection = getSelection ();
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		if (oldSelection.x != oldSelection.y) {
+			oldText = getEditText (oldSelection.x, oldSelection.y - 1, true);
 			String newText = verifyText ("", oldSelection.x, oldSelection.y, null);
 			if (newText == null) return;
 			if (newText.length () != 0) {
-				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
-				OS.TXNShowSelection (txnObject, false);
+				if (txnObject == 0) {
+					insertEditText (newText);
+				} else {
+					setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
+					OS.TXNShowSelection (txnObject, false);
+				}
 				cut = false;
 			}
 		}
 	}
 	if (cut) {
-		OS.TXNCut (txnObject);
-
-		/*
-		* Feature in the Macintosh.  When an empty string is set in the TXNObject,
-		* the font attributes are cleared.  The fix is to reset them.
-		*/
-		if (OS.TXNDataSize (txnObject) / 2 == 0) setFontStyle (font);
+		if (txnObject == 0) {
+			if (oldText == null) oldText = getEditText (oldSelection.x, oldSelection.y - 1, true);
+			copy (oldText);
+			insertEditText ("");
+		} else {
+			OS.TXNCut (txnObject);
+	
+			/*
+			* Feature in the Macintosh.  When an empty string is set in the TXNObject,
+			* the font attributes are cleared.  The fix is to reset them.
+			*/
+			if (OS.TXNDataSize (txnObject) / 2 == 0) setFontStyle (font);
+		}
 	}
 	Point newSelection = getSelection ();
 	if (!cut || !oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
@@ -442,13 +599,17 @@ Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
-void drawBackground (int control) {
-	drawFocus (control, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+void drawBackground (int control, int context) {
+	if (!OS.HIVIEW) {
+		drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+	}
 }
 
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
-	OS.TXNDraw (txnObject, 0);
-	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
+	if (!OS.HIVIEW) {
+		OS.TXNDraw (txnObject, 0);
+	}
+	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
 }
 
 /**
@@ -486,6 +647,10 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget();
+	if (txnObject == 0) {
+		//TODO - caret location for unicode text
+		return new Point (0, 0);
+	}
 	org.eclipse.swt.internal.carbon.Point oPoint = new org.eclipse.swt.internal.carbon.Point ();
 	int [] oStartOffset = new int [1], oEndOffset = new int [1];
 	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
@@ -509,7 +674,10 @@ public Point getCaretLocation () {
  * </ul>
  */
 public int getCaretPosition () {
-	checkWidget(); 
+	checkWidget();
+	if (txnObject == 0) {
+		return getSelection ().x;
+	}
 	int [] oStartOffset = new int [1], oEndOffset = new int [1];
 	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
 	return oStartOffset [0];
@@ -527,6 +695,9 @@ public int getCaretPosition () {
  */
 public int getCharCount () {
 	checkWidget ();
+	if (txnObject == 0) {
+		return getText ().length ();
+	}
 	return OS.TXNDataSize (txnObject) / 2;
 }
 
@@ -598,6 +769,11 @@ public boolean getEditable () {
 	return (style & SWT.READ_ONLY) == 0;
 }
 
+Rect getInset () {
+	if (txnObject != 0) return super.getInset ();
+	return display.spinnerInset;
+}
+
 /**
  * Returns the number of lines.
  *
@@ -610,6 +786,7 @@ public boolean getEditable () {
  */
 public int getLineCount () {
 	checkWidget();
+	if ((style & SWT.SINGLE) != 0) return 1;
 	int [] oLineTotal = new int [1];
 	OS.TXNGetLineCount (txnObject, oLineTotal);
 	return oLineTotal [0];
@@ -644,6 +821,24 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget();
+	if (txnObject == 0) {
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, new char[]{' '}, 1);
+		org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
+		if (font == null) {
+			OS.GetThemeTextDimensions (ptr, (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
+		} else {
+			int [] currentPort = new int [1];
+			OS.GetPort (currentPort);
+			OS.SetPortWindowPort (OS.GetControlOwner (handle));
+			OS.TextFont (font.id);
+			OS.TextFace (font.style);
+			OS.TextSize (font.size);
+			OS.GetThemeTextDimensions (ptr, (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
+			OS.SetPort (currentPort [0]);
+		}
+		OS.CFRelease (ptr);
+		return ioBounds.v;
+	} 
 	int [] oLineWidth = new int [1], oLineHeight = new int [1];
 	OS.TXNGetLineMetrics (txnObject, 0, oLineWidth, oLineHeight);
 	return OS.Fix2Long (oLineHeight [0]);
@@ -687,9 +882,20 @@ public int getOrientation () {
  */
 public Point getSelection () {
 	checkWidget();
-	int [] oStartOffset = new int [1], oEndOffset = new int [1];
-	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-	return new Point (oStartOffset [0], oEndOffset [0]);
+	if (txnObject == 0) {
+		ControlEditTextSelectionRec selection;
+		if (this.selection != null) {
+			selection = this.selection;
+		} else {
+			selection = new ControlEditTextSelectionRec ();
+			OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
+		}
+		return new Point (selection.selStart, selection.selEnd);
+	} else {
+		int [] oStartOffset = new int [1], oEndOffset = new int [1];
+		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
+		return new Point (oStartOffset [0], oEndOffset [0]);
+	}
 }
 
 /**
@@ -704,9 +910,14 @@ public Point getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	int [] oStartOffset = new int [1], oEndOffset = new int [1];
-	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-	return oEndOffset [0] - oStartOffset [0];
+	if (txnObject == 0) {
+		Point selection = getSelection ();
+		return selection.y - selection.x;
+	} else {
+		int [] oStartOffset = new int [1], oEndOffset = new int [1];
+		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
+		return oEndOffset [0] - oStartOffset [0];
+	}
 }
 
 /**
@@ -721,7 +932,13 @@ public int getSelectionCount () {
  */
 public String getSelectionText () {
 	checkWidget();
-	return getTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
+	if (txnObject == 0) {
+		Point selection = getSelection ();
+		if (selection.x == selection.y) return "";
+		return new String (getEditText (selection.x, selection.y - 1, true));
+	} else {
+		return getTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
+	}
 }
 
 /**
@@ -761,7 +978,11 @@ public int getTabs () {
  */
 public String getText () {
 	checkWidget();
-	return getTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset);
+	if (txnObject == 0) {
+		return new String (getEditText (0, -1, true));
+	} else {
+		return getTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset);
+	}
 }
 
 /**
@@ -784,11 +1005,40 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	if (!(start <= end && 0 <= end)) return "";
-	int length = OS.TXNDataSize (txnObject) / 2;
-	start = Math.max (0, start);
-	end = Math.min (end, length - 1);
-	return getTXNText (start, end + 1);
+	if (txnObject == 0) {
+		return new String (getEditText (start, end, true));
+	} else {
+		if (!(start <= end && 0 <= end)) return "";
+		int length = OS.TXNDataSize (txnObject) / 2;
+		start = Math.max (0, start);
+		end = Math.min (end, length - 1);
+		return getTXNText (start, end + 1);
+	}
+}
+
+char [] getEditText (int start, int end, boolean hidden) {
+	int [] ptr = new int [1];
+	int [] actualSize = new int [1];
+	int result = OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
+	if (result != OS.noErr) return new char [0];
+	int length = OS.CFStringGetLength (ptr [0]);
+	CFRange range = new CFRange ();
+	start = Math.min (Math.max (0, start), length);
+	range.location = start;
+	if (end == -1) {
+		range.length = Math.max (0, length - start);
+	} else {
+		end = Math.min (Math.max (0, end), length - 1);
+		range.length = Math.max (0, end - start + 1);
+	}
+	char [] buffer = new char [range.length];
+	if (hidden && (style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
+		hiddenText.getChars (range.location, range.location + range.length, buffer, 0);
+	} else {
+		OS.CFStringGetCharacters (ptr [0], range, buffer);
+	}
+	OS.CFRelease (ptr [0]);
+	return buffer;
 }
 
 /**
@@ -879,6 +1129,14 @@ String getTXNText (int iStartOffset, int iEndOffset) {
 }
 
 Rect inset () {
+	if (OS.HIVIEW) {
+		if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) == 0) {
+			Rect rect = new Rect ();
+			rect.left = rect.top = rect.right = rect.bottom = 1;
+			return rect; 
+		}
+		return new Rect ();
+	}
 	Rect rect = new Rect ();
 	int [] outMetric = new int [1];
 	if (drawFocusRing ()) {
@@ -922,67 +1180,105 @@ public void insert (String string) {
 		string = verifyText (string, selection.x, selection.y, null);
 		if (string == null) return;
 	}
-	setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, string);
-	OS.TXNShowSelection (txnObject, false);
+	if (txnObject == 0) {
+		insertEditText (string);
+	} else {
+		setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, string);
+		OS.TXNShowSelection (txnObject, false);
+	}
 	if (string.length () != 0) sendEvent (SWT.Modify);
+}
+
+void insertEditText (String string) {
+	if (hasFocus ()) {
+		char [] buffer = new char [string.length ()];
+		string.getChars (0, buffer.length, buffer, 0);
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextInsertCFStringRefTag, 4, new int[] {ptr});
+		OS.CFRelease (ptr);
+	} else {
+		Point selection = getSelection ();
+		String oldText = getText ();
+		String newText = oldText.substring (0, selection.x) + string + oldText.substring (selection.y);
+		setEditText (newText);
+		setSelection (selection.x + string.length ());
+	}
 }
 
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	OS.TXNFocus (txnObject, hasFocus ());
-	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncAlwaysActive);
+	if (!OS.HIVIEW) {
+		OS.TXNFocus (txnObject, hasFocus ());
+		OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncAlwaysActive);
+	}
 	return result;
 }
 
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	int [] attributes = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-	if ((attributes [0] & (OS.kControlBoundsChangePositionChanged | OS.kControlBoundsChangeSizeChanged)) != 0) setTXNBounds ();
+	if (!OS.HIVIEW) {
+		int [] attributes = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
+		if ((attributes [0] & (OS.kControlBoundsChangePositionChanged | OS.kControlBoundsChangeSizeChanged)) != 0) setTXNBounds ();
+	}
 	return result;
 }
 
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (!isEnabled ()) return OS.noErr;
-	int window = OS.GetControlOwner (handle);
-	OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
-	EventRecord iEvent = new EventRecord ();
-	OS.ConvertEventRefToEventRecord (theEvent, iEvent);
-	OS.TXNClick (txnObject, iEvent);
-	return OS.noErr;
+	if (!OS.HIVIEW) {
+		if (!isEnabled ()) return OS.noErr;
+		int window = OS.GetControlOwner (handle);
+		OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
+		EventRecord iEvent = new EventRecord ();
+		OS.ConvertEventRefToEventRecord (theEvent, iEvent);
+		OS.TXNClick (txnObject, iEvent);
+		return OS.noErr;
+	}
+	return result;
 }
 
 int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlDeactivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	OS.TXNFocus (txnObject, hasFocus());
-	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncWithFocus);
+	if (!OS.HIVIEW) {
+		OS.TXNFocus (txnObject, hasFocus());
+		OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncWithFocus);
+	}
 	return result;
 }
 
 int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
-	return OS.noErr;
+	if (!OS.HIVIEW) {
+		return OS.noErr;
+	}
+	return OS.eventNotHandledErr;
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	OS.TXNAdjustCursor (txnObject, 0);
-	return OS.noErr;
+	if (!OS.HIVIEW) {
+		OS.TXNAdjustCursor (txnObject, 0);
+		return OS.noErr;
+	}
+	return result;
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) {
-		short [] part = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		drawFocusClipped (handle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
-		OS.TXNDraw (txnObject, 0);
-		OS.TXNFocus (txnObject, part [0] != OS.kControlFocusNoPart);
+	if (!OS.HIVIEW) {
+		if (result == OS.noErr) {
+			short [] part = new short [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+			drawFocusClipped (handle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+			OS.TXNDraw (txnObject, 0);
+			OS.TXNFocus (txnObject, part [0] != OS.kControlFocusNoPart);
+		}
 	}
 	return result;
 }
@@ -1047,27 +1343,42 @@ public void paste () {
 	checkWidget();
 	if ((style & SWT.READ_ONLY) != 0) return;
 	boolean paste = true;
+	String oldText = null;
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		String oldText = getClipboardText ();
+		oldText = getClipboardText ();
 		if (oldText != null) {
 			Point selection = getSelection ();
 			String newText = verifyText (oldText, selection.x, selection.y, null);
 			if (newText == null) return;
 			if (!newText.equals (oldText)) {
-				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
-				OS.TXNShowSelection (txnObject, false);
+				if (txnObject == 0) {
+					insertEditText (newText);
+				} else {
+					setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
+					OS.TXNShowSelection (txnObject, false);
+				}
 				paste = false;
 			}
 		}
 	}
-	if (paste) OS.TXNPaste (txnObject);
+	if (paste) {
+		if (txnObject == 0) {
+			if (oldText == null) oldText = getClipboardText ();
+			insertEditText (oldText);
+		} else {
+			OS.TXNPaste (txnObject);
+		}
+	}
 	sendEvent (SWT.Modify);
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	OS.TXNDeleteObject (txnObject);
+	if (!OS.HIVIEW) {
+		OS.TXNDeleteObject (txnObject);
+	}
 	txnObject = txnFrameID = 0;
+	hiddenText = null;
 }
 
 /**
@@ -1151,18 +1462,20 @@ void resetVisibleRegion (int control) {
 	* kTXNVisibilityTag is not set causing pixel corruption.  The fix is
 	* to make the TXN frame small so that nothing is drawn.
 	*/
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	Rect inset = inset ();
-	rect.left += inset.left;
-	rect.top += inset.top;
-	rect.right -= inset.right;
-	if (OS.IsControlVisible (handle)) {
-		rect.bottom -= inset.bottom;
-	} else {
-		rect.bottom = rect.top;
+	if (!OS.HIVIEW) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (handle, rect);
+		Rect inset = inset ();
+		rect.left += inset.left;
+		rect.top += inset.top;
+		rect.right -= inset.right;
+		if (OS.IsControlVisible (handle)) {
+			rect.bottom -= inset.bottom;
+		} else {
+			rect.bottom = rect.top;
+		}
+		OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
 	}
-	OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
 }
 
 /**
@@ -1175,7 +1488,11 @@ void resetVisibleRegion (int control) {
  */
 public void selectAll () {
 	checkWidget();
-	OS.TXNSelectAll (txnObject);
+	if (txnObject == 0) {
+		setSelection (0, getCharCount ());
+	} else {
+		OS.TXNSelectAll (txnObject);
+	}
 }
 
 boolean sendKeyEvent (int type, Event event) {
@@ -1215,7 +1532,18 @@ boolean sendKeyEvent (int type, Event event) {
 	if (charCount - (end - start) + newText.length () > textLimit) {
 		return false;
 	}
-	if (newText != oldText) setTXNText (start, end, newText);
+	if (newText != oldText) {
+		if (txnObject == 0) {
+			String text = new String (getEditText (0, -1, false));
+			String leftText = text.substring (0, start);
+			String rightText = text.substring (end, text.length ());
+			setEditText (leftText + newText + rightText);
+			start += newText.length ();
+			setSelection (new Point (start, start));
+		} else {
+			setTXNText (start, end, newText);
+		}
+	}
 	/*
 	* Post the modify event so that the character will be inserted
 	* into the widget when the modify event is delivered.  Normally,
@@ -1227,20 +1555,31 @@ boolean sendKeyEvent (int type, Event event) {
 }
 
 void setBackground (float [] color) {
-	TXNBackground txnColor = new TXNBackground (); 
-	txnColor.bgType = OS.kTXNBackgroundTypeRGB;
-	int red = (short) (color == null ? 0xff : color [0] * 255);
-	int green = (short) (color == null ? 0xff : color [1] * 255);
-	int blue = (short) (color == null ? 0xff : color [2] * 255);
-	txnColor.bg_red = (short) (red << 8 | red);
-	txnColor.bg_green = (short) (green << 8 | green);
-	txnColor.bg_blue = (short) (blue << 8 | blue);
-	OS.TXNSetBackground (txnObject, txnColor);
+	if (txnObject == 0) {
+		super.setBackground (color);
+	} else {
+		TXNBackground txnColor = new TXNBackground (); 
+		txnColor.bgType = OS.kTXNBackgroundTypeRGB;
+		int red = (short) (color == null ? 0xff : color [0] * 255);
+		int green = (short) (color == null ? 0xff : color [1] * 255);
+		int blue = (short) (color == null ? 0xff : color [2] * 255);
+		txnColor.bg_red = (short) (red << 8 | red);
+		txnColor.bg_green = (short) (green << 8 | green);
+		txnColor.bg_blue = (short) (blue << 8 | blue);
+		OS.TXNSetBackground (txnObject, txnColor);
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	Rectangle bounds = null;
+	if (OS.HIVIEW && txnObject == 0 && resize) bounds = getBounds ();
 	int result = super.setBounds(x, y, width, height, move, resize, events);
-	if ((result & (RESIZED | MOVED)) != 0) setTXNBounds ();
+	if (bounds != null && (result & RESIZED) != 0) {
+		if (bounds.width == 0) showSelection ();
+	}
+	if (!OS.HIVIEW) {
+		if ((result & (RESIZED | MOVED)) != 0) setTXNBounds ();
+	}
 	return result;
 }
 
@@ -1291,8 +1630,26 @@ public void setDoubleClickEnabled (boolean doubleClick) {
 public void setEchoChar (char echo) {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) return;
+	if (txnObject == 0) {
+		if ((style & SWT.PASSWORD) == 0) {
+			String newText;
+			if (echo == '\0') {
+				newText = hiddenText;
+				hiddenText = "";
+			} else {
+				hiddenText = getText ();
+				char [] buffer = new char [hiddenText.length ()];
+				for (int i = 0; i < buffer.length; i++) buffer [i] = echo;
+				newText = new String (buffer);
+			}
+			Point selection = getSelection ();
+			setEditText (newText);
+			setSelection (selection);
+		}
+	} else {
+		OS.TXNEchoMode (txnObject, echo, 0, echo != '\0');
+	}
 	echoCharacter = echo;
-	OS.TXNEchoMode (txnObject, echo, 0, echo != '\0');
 }
 
 /**
@@ -1312,50 +1669,62 @@ public void setEditable (boolean editable) {
 	} else {
 		style |= SWT.READ_ONLY;
 	}
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNIOPrivilegesTag}, new int [] {((style & SWT.READ_ONLY) != 0) ? 1 : 0});
+	if (txnObject == 0) {
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {(byte) ((style & SWT.READ_ONLY) != 0 ? 1 : 0)});
+	} else {
+		OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNIOPrivilegesTag}, new int [] {((style & SWT.READ_ONLY) != 0) ? 1 : 0});
+	}
 }
 
 void setForeground (float [] color) {
-	int ptr2 = OS.NewPtr (OS.kTXNQDFontColorAttributeSize);
-	RGBColor rgb;
-	if (color == null) {	
-		rgb = new RGBColor ();
+	if (txnObject == 0) {
+		super.setForeground (color);
 	} else {
-		rgb = toRGBColor (color);
+		int ptr2 = OS.NewPtr (OS.kTXNQDFontColorAttributeSize);
+		RGBColor rgb;
+		if (color == null) {	
+			rgb = new RGBColor ();
+		} else {
+			rgb = toRGBColor (color);
+		}
+		OS.memcpy (ptr2, rgb, RGBColor.sizeof);
+		int [] attribs = new int [] {
+			OS.kTXNQDFontColorAttribute,
+			OS.kTXNQDFontColorAttributeSize,
+			ptr2,
+		};
+		int ptr1 = OS.NewPtr (attribs.length * 4);
+		OS.memcpy (ptr1, attribs, attribs.length * 4);
+		OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr1, 0, 0);
+		OS.DisposePtr (ptr1);
+		OS.DisposePtr (ptr2);
 	}
-	OS.memcpy (ptr2, rgb, RGBColor.sizeof);
-	int [] attribs = new int [] {
-		OS.kTXNQDFontColorAttribute,
-		OS.kTXNQDFontColorAttributeSize,
-		ptr2,
-	};
-	int ptr1 = OS.NewPtr (attribs.length * 4);
-	OS.memcpy (ptr1, attribs, attribs.length * 4);
-	OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr1, 0, 0);
-	OS.DisposePtr (ptr1);
-	OS.DisposePtr (ptr2);
 }
 
 void setFontStyle (Font font) {
-	int [] attribs = new int [] {
-		OS.kTXNQDFontSizeAttribute,
-		OS.kTXNQDFontSizeAttributeSize,
-		font == null ? OS.kTXNDefaultFontSize : OS.X2Fix (font.size),
-		OS.kTXNQDFontStyleAttribute,
-		OS.kTXNQDFontStyleAttributeSize,
-		font == null ? OS.kTXNDefaultFontStyle : font.style,
-		OS.kTXNQDFontFamilyIDAttribute,
-		OS.kTXNQDFontFamilyIDAttributeSize,
-		font == null ? OS.kTXNDefaultFontName : font.id,
-	};
-	int ptr = OS.NewPtr (attribs.length * 4);
-	OS.memcpy (ptr, attribs, attribs.length * 4);
-	boolean readOnly = (style & SWT.READ_ONLY) != 0;
-	int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
-	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
-	OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr, 0, 0);
-	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
-	OS.DisposePtr (ptr);
+	if (txnObject == 0) {
+		super.setFontStyle (font);
+	} else {
+		int [] attribs = new int [] {
+			OS.kTXNQDFontSizeAttribute,
+			OS.kTXNQDFontSizeAttributeSize,
+			font == null ? OS.kTXNDefaultFontSize : OS.X2Fix (font.size),
+			OS.kTXNQDFontStyleAttribute,
+			OS.kTXNQDFontStyleAttributeSize,
+			font == null ? OS.kTXNDefaultFontStyle : font.style,
+			OS.kTXNQDFontFamilyIDAttribute,
+			OS.kTXNQDFontFamilyIDAttributeSize,
+			font == null ? OS.kTXNDefaultFontName : font.id,
+		};
+		int ptr = OS.NewPtr (attribs.length * 4);
+		OS.memcpy (ptr, attribs, attribs.length * 4);
+		boolean readOnly = (style & SWT.READ_ONLY) != 0;
+		int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
+		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
+		OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr, 0, 0);
+		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
+		OS.DisposePtr (ptr);
+	}
 }
 
 /**
@@ -1434,11 +1803,23 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget();
-	int length = OS.TXNDataSize (txnObject) / 2;
-	int nStart = Math.min (Math.max (Math.min (start, end), 0), length);
-	int nEnd = Math.min (Math.max (Math.max (start, end), 0), length);
-	OS.TXNSetSelection (txnObject, nStart, nEnd);
-	OS.TXNShowSelection (txnObject, false);
+	if (txnObject == 0) {
+		int length = getCharCount ();
+		ControlEditTextSelectionRec selection = new ControlEditTextSelectionRec ();
+		selection.selStart = (short) Math.min (Math.max (Math.min (start, end), 0), length);
+		selection.selEnd = (short) Math.min (Math.max (Math.max (start, end), 0), length);
+		if (hasFocus ()) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
+		} else {
+			this.selection = selection;
+		}
+	} else {
+		int length = OS.TXNDataSize (txnObject) / 2;
+		int nStart = Math.min (Math.max (Math.min (start, end), 0), length);
+		int nEnd = Math.min (Math.max (Math.max (start, end), 0), length);
+		OS.TXNSetSelection (txnObject, nStart, nEnd);
+		OS.TXNShowSelection (txnObject, false);
+	}
 }
 
 /**
@@ -1519,10 +1900,24 @@ public void setText (String string) {
 		string = verifyText (string, 0, getCharCount (), null);
 		if (string == null) return;
 	}
-	setTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset, string);
-	OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
-	OS.TXNShowSelection (txnObject, false);
+	if (txnObject == 0) {
+		setEditText (string);
+	} else {
+		setTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset, string);
+		OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
+		OS.TXNShowSelection (txnObject, false);
+	}
 	sendEvent (SWT.Modify);
+}
+
+void setEditText (String string) {
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
+	OS.CFRelease (ptr);
+	if (selection != null) selection = null;
 }
 
 void setTXNBounds () {
@@ -1659,7 +2054,11 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget();
-	OS.TXNShowSelection (txnObject, false);
+	if (txnObject == 0) {
+		setSelection (getSelection());
+	} else {
+		OS.TXNShowSelection (txnObject, false);
+	}
 }
 
 int traversalCode (int key, int theEvent) {
@@ -1697,6 +2096,18 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	 */
 	sendEvent (SWT.Verify, event);
 	if (!event.doit || isDisposed ()) return null;
+	if (event.text != null) {
+		if (txnObject == 0 && (style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
+			if (!(hiddenText.length () - (end - start) + event.text.length () > textLimit)) {
+				String prefix = hiddenText.substring (0, start);
+				String sufix = hiddenText.substring(end, hiddenText.length ());
+				hiddenText = prefix + event.text + sufix;
+				char [] buffer = new char [event.text.length ()];
+				for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
+				event.text = new String (buffer);
+			}
+		}
+	}
 	return event.text;
 }
 

@@ -423,7 +423,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle () {
 	state |= CANVAS | GRAB | HIDDEN;
-	int attributes = OS.kWindowStandardHandlerAttribute; // | OS.kWindowCompositingAttribute;
+	int attributes = OS.kWindowStandardHandlerAttribute;
+	if (OS.HIVIEW) attributes |= OS.kWindowCompositingAttribute;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.CLOSE) != 0) attributes |= OS.kWindowCloseBoxAttribute;
 		if ((style & SWT.MIN) != 0) attributes |= OS.kWindowCollapseBoxAttribute;
@@ -461,8 +462,12 @@ void createHandle () {
 	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 //	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 	int [] theRoot = new int [1];
-	OS.CreateRootControl (shellHandle, theRoot);
-	OS.GetRootControl (shellHandle, theRoot);
+	if (OS.HIVIEW) {
+		OS.CreateRootControl (shellHandle, theRoot);
+		OS.GetRootControl (shellHandle, theRoot);
+	} else {
+		OS.HIViewFindByID (OS.HIViewGetRoot (shellHandle), OS.kHIViewWindowContentID (), theRoot);
+	}
 	if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 		createScrolledHandle (theRoot [0]);
@@ -524,8 +529,9 @@ void destroyWidget () {
 	} 
 }
 
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
-	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
+	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
+	
 	/*
 	* Bug in the Macintosh. In kEventWindowGetRegion, 
 	* Carbon assumes the origin of the Region is (0, 0)
@@ -543,26 +549,31 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	boolean limit = region.contains(rgnRect.right - 1, rgnRect.bottom - 1);
 	if (origin && limit) return;
 	
-	int[] context = new int [1];
-	int port = OS.GetWindowPort (shellHandle);
-	Rect portRect = new Rect ();
-	OS.GetPortBounds (port, portRect);
-	OS.QDBeginCGContext (port, context);
-	OS.CGContextScaleCTM (context [0], 1, -1);
-	OS.CGContextTranslateCTM (context [0], 0, portRect.top - portRect.bottom);
+	int port; 
+	int [] buffer;
+	if (!OS.HIVIEW) {
+		buffer = new int [1];
+		Rect portRect = new Rect ();
+		port = OS.GetWindowPort (shellHandle);
+		OS.GetPortBounds (port, portRect);
+		OS.QDBeginCGContext (port, buffer);
+		context = buffer [0];
+		OS.CGContextScaleCTM (context, 1, -1);
+		OS.CGContextTranslateCTM (context, 0, portRect.top - portRect.bottom);
+	}
 	CGRect cgRect = new CGRect ();
 	cgRect.width = 1;
 	cgRect.height = 1;
 	if (!origin) {
-		OS.CGContextClearRect (context [0], cgRect);
+		OS.CGContextClearRect (context, cgRect);
 	}
 	if (!limit) {
 		cgRect.x = rgnRect.right - 1;
 		cgRect.y = rgnRect.bottom - 1;
-		OS.CGContextClearRect (context [0], cgRect);
+		OS.CGContextClearRect (context, cgRect);
 	}
-	OS.CGContextSynchronize (context [0]);
-	OS.QDEndCGContext (port, context);
+	OS.CGContextSynchronize (context);
+	if (!OS.HIVIEW) OS.QDEndCGContext (port, buffer);
 }
 
 Composite findDeferredControl () {

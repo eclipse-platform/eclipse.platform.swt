@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGPoint;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -208,8 +209,8 @@ void createHandle () {
 	handle = outControl [0];
 }
 
-void drawBackground (int control) {
-	drawBackground (control, background);
+void drawBackground (int control, int context) {
+	drawBackground (control, context, background);
 }
 
 /**
@@ -342,10 +343,21 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		OS.GetGlobalMouse (outPt);
 		Rect rect = new Rect ();
 		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		int x = outPt.h - rect.left;
-		int y = outPt.v - rect.top;
-		OS.GetControlBounds (parent.handle, rect);
+		int x, y;
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			pt.x = outPt.h;
+			pt.y = outPt.v;
+			OS.HIViewConvertPoint (pt, 0, handle);
+			x = (int) pt.x;
+			y = (int) pt.y;
+			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+		} else {
+			OS.GetControlBounds (handle, rect);
+			x = outPt.h - rect.left;
+			y = outPt.v - rect.top;
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		}
 		x -= rect.left;
 		y -=  rect.top;
 		short [] button = new short [1];

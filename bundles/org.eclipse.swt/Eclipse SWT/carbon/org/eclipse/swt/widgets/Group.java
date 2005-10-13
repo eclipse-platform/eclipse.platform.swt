@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.Rect;
 
 /**
@@ -93,6 +94,29 @@ protected void checkSubclass () {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
+	if (OS.HIVIEW) {
+		CGRect oldBounds = new CGRect (), bounds = oldBounds;
+		OS.HIViewGetFrame (handle, oldBounds);
+		int MIN_SIZE = 100;
+		if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
+			OS.HIViewSetDrawingEnabled (handle, false);
+			bounds = new CGRect ();
+			bounds.width = bounds.height = 100;
+			OS.HIViewSetFrame (handle, bounds);
+		}
+		int rgnHandle = OS.NewRgn ();
+		OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+		Rect client = new Rect ();
+		OS.GetRegionBounds (rgnHandle, client);
+		OS.DisposeRgn (rgnHandle);
+		width += (int) bounds.width - (client.right - client.left);
+		height += (int) bounds.height - (client.bottom - client.top);
+		if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
+			OS.HIViewSetFrame (handle, oldBounds);
+			OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
+		}
+		return new Rectangle (-client.left, -client.top, width, height);
+	}
 	Rect bounds, oldBounds = new Rect ();
 	OS.GetControlBounds (handle, oldBounds);
 	boolean fixBounds = (oldBounds.right - oldBounds.left) < 100 || (oldBounds.bottom - oldBounds.top) < 100;
@@ -124,12 +148,20 @@ void createHandle () {
 	handle = outControl [0];
 }
 
-void drawBackground (int control) {
-	drawBackground (control, background);
+void drawBackground (int control, int context) {
+	drawBackground (control, context, background);
 }
 
 public Rectangle getClientArea () {
 	checkWidget();
+	if (OS.HIVIEW) {
+		int rgnHandle = OS.NewRgn ();
+		OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+		Rect client = new Rect ();
+		OS.GetRegionBounds (rgnHandle, client);
+		OS.DisposeRgn (rgnHandle);
+		return new Rectangle (client.left, client.top, client.right - client.left, client.bottom - client.top);
+	}
 	Rect bounds = new Rect ();
 	OS.GetControlBounds (handle, bounds);
 	int rgnHandle = OS.NewRgn ();
@@ -142,6 +174,10 @@ public Rectangle getClientArea () {
 	int width = Math.max (0, client.right - client.left);
 	int height = Math.max (0, text.length () == 0 ? bounds.bottom - bounds.top - 2*y : client.bottom - client.top);
 	return new Rectangle (x, y, width, height);
+}
+
+String getNameText () {
+	return getText ();
 }
 
 /**

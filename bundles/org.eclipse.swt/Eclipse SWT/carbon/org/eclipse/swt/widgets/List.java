@@ -15,6 +15,7 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGPoint;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -232,10 +233,22 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle (x, y, width, height);
 }
 
-boolean contains(int shellX, int shellY) {
-	Rect controlBounds = new Rect ();
-	OS.GetControlBounds (handle, controlBounds);
-	return getClientArea ().contains (shellX - controlBounds.left, shellY - controlBounds.top);
+boolean contains (int shellX, int shellY) {
+	int x, y;
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		int [] contentView = new int [1];
+		OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
+		OS.HIViewConvertPoint (pt, handle, contentView [0]);
+		x = shellX - (int) pt.x;
+		y = shellY - (int) pt.y;
+	} else {
+		Rect controlBounds = new Rect ();
+		OS.GetControlBounds (handle, controlBounds);
+		x = shellX - controlBounds.left;
+		y = shellY - controlBounds.top;
+	}
+	return getClientArea ().contains (x, y);
 }
 
 void createHandle () {
@@ -268,6 +281,7 @@ void createHandle () {
 	* it on a offscreen buffer to avoid flashes and then restoring it to
 	* size zero.
 	*/
+	if (OS.HIVIEW) OS.HIViewSetDrawingEnabled (handle, false);
 	int size = 50;
 	Rect rect = new Rect ();
 	rect.right = rect.bottom = (short) size;
@@ -286,6 +300,7 @@ void createHandle () {
 	OS.DisposePtr (data);
 	rect.right = rect.bottom = (short) 0;
 	OS.SetControlBounds (handle, rect);
+	if (OS.HIVIEW) OS.HIViewSetDrawingEnabled (handle, true);
 }
 
 void createWidget () {

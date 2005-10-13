@@ -533,16 +533,18 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
 	if (control != handle) return;
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return;
 
 	/* Retrieve the damage rect */
 	Rect rect = new Rect ();
 	OS.GetRegionBounds (visibleRgn, rect);
-	Rect bounds = new Rect ();
-	OS.GetControlBounds (handle, bounds);
-	OS.OffsetRect (rect, (short) -bounds.left, (short) -bounds.top);
+	if (!OS.HIVIEW) {
+		Rect bounds = new Rect ();
+		OS.GetControlBounds (handle, bounds);
+		OS.OffsetRect (rect, (short) -bounds.left, (short) -bounds.top);
+	}
 
 	/* Send paint event */
 	int [] port = new int [1];
@@ -713,8 +715,7 @@ public int getBorderWidth () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	Rect rect = getControlBounds (topHandle ());
-	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	return getControlBounds (topHandle ());
 }
 
 int getDrawCount (int control) {
@@ -804,8 +805,8 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget();
-	Rect rect = getControlBounds (topHandle ());
-	return new Point (rect.left, rect.top);
+	Rectangle rect = getControlBounds (topHandle ());
+	return new Point (rect.x, rect.y);
 }
 
 /**
@@ -944,8 +945,7 @@ public Shell getShell () {
  */
 public Point getSize () {
 	checkWidget();
-	Rect rect = getControlSize (topHandle ());
-	return new Point (rect.right - rect.left, rect.bottom - rect.top);
+	return getControlSize (topHandle ());
 }
 
 /**
@@ -1111,9 +1111,15 @@ public int internal_new_GC (GCData data) {
 		int window = OS.GetControlOwner (handle);
 		port = OS.GetWindowPort (window);
 	}
+	int context;
 	int [] buffer = new int [1];
-	OS.CreateCGContextForPort (port, buffer);
-	int context = buffer [0];
+	boolean isPaint = OS.HIVIEW && data != null && data.paintEvent != 0; 
+	if (isPaint) {
+		OS.GetEventParameter (data.paintEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
+	} else {
+		OS.CreateCGContextForPort (port, buffer);
+	}
+	context = buffer [0];
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	int visibleRgn = 0;
 	if (data != null && data.paintEvent != 0) {
@@ -1129,10 +1135,16 @@ public int internal_new_GC (GCData data) {
 	Rect portRect = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetPortBounds (port, portRect);
-	OS.ClipCGContextToRegion (context, portRect, visibleRgn);
-	int portHeight = portRect.bottom - portRect.top;
-	OS.CGContextScaleCTM (context, 1, -1);
-	OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
+	if (!isPaint) {
+		OS.ClipCGContextToRegion (context, portRect, visibleRgn);
+		int portHeight = portRect.bottom - portRect.top;
+		OS.CGContextScaleCTM (context, 1, -1);
+		OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
+	} else {
+		rect.right += rect.left;
+		rect.bottom += rect.top;
+		rect.left = rect.top = 0;
+	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -1193,6 +1205,8 @@ public void internal_dispose_GC (int context, GCData data) {
 				while (index < gcs.length && gcs [index] == null) index++;
 				if (index == gcs.length) gcs = null;
 			}
+		} else {
+			if (OS.HIVIEW) return;
 		}
 	}
 	
@@ -1378,14 +1392,25 @@ Decorations menuShell () {
 }
 
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
-	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+	int x, y;
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
-	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	int x = pt.h + rect.left;
-	int y = pt.v + rect.top;
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		x = (int) pt.x;
+		y = (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	} else {
+		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+		x = pt.h;
+		y = pt.v;
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	}
+	x += rect.left;
+	y += rect.top;
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
@@ -2025,17 +2050,26 @@ void sendFocusEvent (int type, boolean post) {
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int theEvent) {
 	if (!hooks (type) && !filters (type)) return true;
-	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
-	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	int x = pt.h - rect.left;
-	int y = pt.v - rect.top;
-	OS.GetControlBounds (handle, rect);
-	x -= rect.left;
-	y -= rect.top;
+	int x, y;
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		OS.HIViewConvertPoint (pt, 0, handle);
+		x = (int) pt.x;
+		y = (int) pt.y;
+	} else {
+		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+		Rect rect = new Rect ();
+		int window = OS.GetControlOwner (handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		x = pt.h - rect.left;
+		y = pt.v - rect.top;
+		OS.GetControlBounds (handle, rect);
+		x -= rect.left;
+		y -= rect.top;
+	}
 	int [] chord = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
 	int [] modifiers = new int [1];
@@ -2544,11 +2578,17 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--drawCount == 0) {
+			if (OS.HIVIEW) {
+				OS.HIViewSetDrawingEnabled (handle, true);
+			}
 			invalidateVisibleRegion (handle);
 			redrawWidget (handle, true);
 		}
 	} else {
 		if (drawCount == 0) {
+			if (OS.HIVIEW) {
+				OS.HIViewSetDrawingEnabled (handle, false);
+			}
 			invalidateVisibleRegion (handle);
 		}
 		drawCount++;
@@ -2697,19 +2737,23 @@ void setZOrder () {
 	int topHandle = topHandle ();
 	int parentHandle = parent.handle;
 	OS.HIViewAddSubview (parentHandle, topHandle);
-	//OS.EmbedControl (topHandle, parentHandle);
-	/* Place the child at (0, 0) in the parent */
-	Rect parentRect = new Rect ();
-	OS.GetControlBounds (parentHandle, parentRect);
-	Rect inset = getInset ();
-	Rect newBounds = new Rect ();
-	newBounds.left = (short) (parentRect.left + inset.left);
-	newBounds.top = (short) (parentRect.top + inset.top);
-	newBounds.right = (short) (newBounds.left - inset.right - inset.left);
-	newBounds.bottom = (short) (newBounds.top - inset.bottom - inset.top);
-	if (newBounds.bottom < newBounds.top) newBounds.bottom = newBounds.top;
-	if (newBounds.right < newBounds.left) newBounds.right = newBounds.left;
-	OS.SetControlBounds (topHandle, newBounds);
+	if (OS.HIVIEW) {
+		OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
+	} else {
+		//OS.EmbedControl (topHandle, parentHandle);
+		/* Place the child at (0, 0) in the parent */
+		Rect parentRect = new Rect ();
+		OS.GetControlBounds (parentHandle, parentRect);
+		Rect inset = getInset ();
+		Rect newBounds = new Rect ();
+		newBounds.left = (short) (parentRect.left + inset.left);
+		newBounds.top = (short) (parentRect.top + inset.top);
+		newBounds.right = (short) (newBounds.left - inset.right - inset.left);
+		newBounds.bottom = (short) (newBounds.top - inset.bottom - inset.top);
+		if (newBounds.bottom < newBounds.top) newBounds.bottom = newBounds.top;
+		if (newBounds.right < newBounds.left) newBounds.right = newBounds.left;
+		OS.SetControlBounds (topHandle, newBounds);
+	}
 }
 
 void setZOrder (Control control, boolean above) {
@@ -2753,12 +2797,24 @@ public Point toControl (int x, int y) {
 	checkWidget();
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
-	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, handle, 0);
+		x -= (int) pt.x;
+		y -= (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	} else {
+		OS.GetControlBounds (handle, rect);
+		x -= rect.left;
+		y -= rect.top;
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	}
+	x -= rect.left;
+	y -= rect.top;
 	Rect inset = getInset ();
-	x -= rect.left - inset.left;
-	y -= rect.top - inset.top;
-	OS.GetControlBounds (handle, rect);
-    return new Point (x - rect.left, y - rect.top);
+	x += inset.left;
+	y += inset.top;
+    return new Point (x, y);
 }
 
 /**
@@ -2802,13 +2858,25 @@ public Point toControl (Point point) {
 public Point toDisplay (int x, int y) {
 	checkWidget();
 	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	Rect inset = getInset ();
-	x += rect.left - inset.left;
-	y += rect.top - inset.top;
 	int window = OS.GetControlOwner (handle);
-	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-    return new Point (x + rect.left, y + rect.top);
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, handle, 0);
+		x += (int) pt.x;
+		y += (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	} else {
+		OS.GetControlBounds (handle, rect);
+		x += rect.left;
+		y += rect.top;
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	}
+	x += rect.left;
+	y += rect.top;
+	Rect inset = getInset ();
+	x -= inset.left;
+	y -= inset.top;
+    return new Point (x, y);
 }
 
 /**
@@ -3039,6 +3107,11 @@ public void update () {
 
 void update (boolean all) {
 //	checkWidget();
+	if (OS.HIVIEW) {
+		//TODO - not all
+		OS.HIViewRender (handle);
+		return;
+	}
 	if (!isDrawing (handle)) return;
 	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);

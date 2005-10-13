@@ -15,6 +15,10 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.carbon.HIThemeSeparatorDrawInfo;
+import org.eclipse.swt.internal.carbon.HIThemePopupArrowDrawInfo;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -289,11 +293,11 @@ void destroyWidget () {
 	}
 }
 
-void drawBackground (int control) {
-	drawBackground (control, parent.background);
+void drawBackground (int control, int context) {
+	drawBackground (control, context, parent.background);
 }
 
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
 	if (control == handle && (style & (SWT.DROP_DOWN | SWT.SEPARATOR)) != 0) {
 		int state;
 		if (OS.IsControlEnabled (control)) {
@@ -301,18 +305,39 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 		} else {
 			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
 		}
-		Rect rect = new Rect ();
-		OS.GetControlBounds (handle, rect);
-		if ((style & SWT.SEPARATOR) != 0 && this.control == null) {
-			rect.top += 2;
-			rect.bottom -= 2;
-			OS.DrawThemeSeparator (rect, state);
-		}
-		if ((style & SWT.DROP_DOWN) != 0) {
-			int height = rect.bottom - rect.top;
-			rect.top = (short) (rect.bottom - (height / 2) - 1);
-			rect.left = (short) (rect.right - ARROW_WIDTH);
-			OS.DrawThemePopupArrow (rect, (short) OS.kThemeArrowDown, (short) OS.kThemeArrow5pt, state, 0, 0);
+		if (OS.HIVIEW) {
+			CGRect rect = new CGRect ();
+			OS.HIViewGetBounds (handle, rect);
+			if ((style & SWT.SEPARATOR) != 0 && this.control == null) {
+				rect.y += 2;
+				rect.height -= 4;
+				HIThemeSeparatorDrawInfo info = new HIThemeSeparatorDrawInfo ();
+				info.state = state;
+				OS.HIThemeDrawSeparator (rect, info, context, OS.kHIThemeOrientationNormal);
+			}
+			if ((style & SWT.DROP_DOWN) != 0) {
+				rect.y = rect.height / 2 - 1;
+				rect.x = rect.width - ARROW_WIDTH;
+				HIThemePopupArrowDrawInfo info = new HIThemePopupArrowDrawInfo ();
+				info.state = state;
+				info.orientation = (short) OS.kThemeArrowDown;
+				info.size = (short) OS.kThemeArrow5pt;
+				OS.HIThemeDrawPopupArrow (rect, info, context, OS.kHIThemeOrientationNormal);
+			}			
+		} else {
+			Rect rect = new Rect ();
+			OS.GetControlBounds (handle, rect);
+			if ((style & SWT.SEPARATOR) != 0 && this.control == null) {
+				rect.top += 2;
+				rect.bottom -= 2;
+				OS.DrawThemeSeparator (rect, state);
+			}
+			if ((style & SWT.DROP_DOWN) != 0) {
+				int height = rect.bottom - rect.top;
+				rect.top = (short) (rect.bottom - (height / 2) - 1);
+				rect.left = (short) (rect.right - ARROW_WIDTH);
+				OS.DrawThemePopupArrow (rect, (short) OS.kThemeArrowDown, (short) OS.kThemeArrow5pt, state, 0, 0);
+			}
 		}
 	}
 }
@@ -330,8 +355,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	Rect rect = getControlBounds (handle);
-	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	return getControlBounds (handle);
 }
 
 /**
@@ -618,29 +642,46 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	
 	if ((style & SWT.DROP_DOWN) != 0) {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		int x = pt.h - rect.left;
-		int y = pt.v - rect.top;
-		OS.GetControlBounds (handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-		int width = rect.right - rect.left;
-		if (width - x < 12) {
-			x = rect.left;
-			y = rect.bottom;
-			OS.GetControlBounds (parent.handle, rect);
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+			OS.HIViewConvertPoint (pt, 0, parent.handle);
+			int x = (int) pt.x;
+			int y = (int) pt.y;
+			CGRect rect = new CGRect ();
+			OS.HIViewGetBounds (handle, rect);
+			if (width - x < 12) {
+				Event event = new Event ();
+				event.detail = SWT.ARROW;
+				event.x = x;
+				event.y = y;
+				postEvent (SWT.Selection, event);				
+			}
+		} else {
+			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+			Rect rect = new Rect ();
+			int window = OS.GetControlOwner (handle);
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			int x = pt.h - rect.left;
+			int y = pt.v - rect.top;
+			OS.GetControlBounds (handle, rect);
 			x -= rect.left;
 			y -= rect.top;
-			Event event = new Event ();
-			event.detail = SWT.ARROW;
-			event.x = x;
-			event.y = y;
-			postEvent (SWT.Selection, event);
+			int width = rect.right - rect.left;
+			if (width - x < 12) {
+				x = rect.left;
+				y = rect.bottom;
+				OS.GetControlBounds (parent.handle, rect);
+				x -= rect.left;
+				y -= rect.top;
+				Event event = new Event ();
+				event.detail = SWT.ARROW;
+				event.x = x;
+				event.y = y;
+				postEvent (SWT.Selection, event);
+			}
 		}
 	}
 	/*
@@ -661,10 +702,21 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		OS.GetGlobalMouse (outPt);
 		Rect rect = new Rect ();
 		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		int x = outPt.h - rect.left;
-		int y = outPt.v - rect.top;
-		OS.GetControlBounds (parent.handle, rect);
+		int x, y;
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			pt.x = outPt.h;
+			pt.y = outPt.v;
+			OS.HIViewConvertPoint (pt, 0, parent.handle);
+			x = (int) pt.x;
+			y = (int) pt.y;
+			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+		} else {
+			OS.GetControlBounds (parent.handle, rect);
+			x = outPt.h - rect.left;
+			y = outPt.v - rect.top;
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		}
 		x -= rect.left;
 		y -=  rect.top;
 		short [] button = new short [1];

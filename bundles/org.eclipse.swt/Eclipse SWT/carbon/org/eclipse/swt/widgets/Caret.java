@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGPoint;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -108,6 +109,14 @@ boolean drawCaret () {
 	OS.SetClip (visibleRgn);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (parentHandle, rect);
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		int [] contentView = new int [1];
+		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (parentHandle), contentView [0]);
+		rect.left += (int) pt.x;
+		rect.top += (int) pt.y;
+	}
 	int left = rect.left + x;
 	int top = rect.top + y;
 	if (image == null) {

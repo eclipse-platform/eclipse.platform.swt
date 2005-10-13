@@ -173,13 +173,13 @@ int defaultThemeFont () {
 	return OS.kThemePushButtonFont;
 }
 
-void drawBackground (int control) {
+void drawBackground (int control, int context) {
 	if ((style & SWT.SEPARATOR) != 0) {
-		drawBackground (control, background);
+		drawBackground (control, context, background);
 	}
 }
 
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
 	if (isImage && image != null) {
 		GCData data = new GCData ();
 		data.paintEvent = theEvent;
@@ -193,7 +193,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 		gc.drawImage (image, x, 0);
 		gc.dispose ();
 	}
-	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
 }
 
 /**

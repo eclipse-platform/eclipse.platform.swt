@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGRect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -138,29 +139,41 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 		}
 		gc.dispose ();
-		Rect bounds, oldBounds = new Rect ();
-		OS.GetControlBounds (handle, oldBounds);
-		boolean fixBounds = (oldBounds.right - oldBounds.left) < 100 || (oldBounds.bottom - oldBounds.top) < 100;
-		if (fixBounds) {
-			bounds = new Rect ();
-			bounds.right = bounds.bottom = 100;
-			OS.SetControlBounds (handle, bounds);
-		} else {
-			bounds = oldBounds;
-		}
-		Rect client = new Rect ();
-		OS.GetTabContentRect (handle, client);
-		if (fixBounds) OS.SetControlBounds (handle, oldBounds);
-		width += (bounds.right - bounds.left) - (client.right - client.left);
-		Rect inset = getInset ();
-		width += inset.left + inset.right;
-		size.x = Math.max (width, size.x);	
+		Rectangle trim = computeTrim (0, 0, width, 0);
+		size.x = Math.max (trim.width, size.x);
 	}
 	return size;
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
+	if (OS.HIVIEW) {
+		CGRect oldBounds = new CGRect (), bounds = oldBounds;
+		OS.HIViewGetFrame (handle, oldBounds);
+		int MIN_SIZE = 100;
+		if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
+			OS.HIViewSetDrawingEnabled (handle, false);
+			bounds = new CGRect ();
+			bounds.width = bounds.height = 100;
+			OS.HIViewSetFrame (handle, bounds);
+		}
+		Rect client = new Rect ();
+		OS.GetTabContentRect (handle, client);
+		if (oldBounds.width < MIN_SIZE || oldBounds.height < MIN_SIZE) {
+			OS.HIViewSetFrame (handle, oldBounds);
+			OS.HIViewSetDrawingEnabled (handle, drawCount == 0);
+		}
+		x -= client.left;
+		y -= client.top;
+		width += (int) bounds.width - (client.right - client.left);
+		height += (int) bounds.height - (client.bottom - client.top);
+		Rect inset = getInset ();
+		x -= inset.left;
+		y -= inset.top;
+		width += inset.left + inset.right;
+		height += inset.top + inset.bottom;
+		return new Rectangle (-client.left, -client.top, width, height);
+	}
 	Rect bounds, oldBounds = new Rect ();
 	OS.GetControlBounds (handle, oldBounds);
 	boolean fixBounds = (oldBounds.right - oldBounds.left) < 100 || (oldBounds.bottom - oldBounds.top) < 100;
@@ -255,6 +268,17 @@ void destroyItem (TabItem item) {
 
 public Rectangle getClientArea () {
 	checkWidget ();
+	if (OS.HIVIEW) {
+		Rect client = new Rect ();
+		if (OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null) != OS.noErr) {
+			return new Rectangle(0, 0, 0, 0);
+		}
+		int x = Math.max (0, client.left);
+		int y = Math.max (0, client.top);
+		int width = Math.max (0, client.right - client.left);
+		int height = Math.max (0, client.bottom - client.top);
+		return new Rectangle (x, y, width, height);
+	}
 	Rect bounds = new Rect ();
 	OS.GetControlBounds (handle, bounds);
 	Rect client = new Rect ();

@@ -18,6 +18,7 @@ import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewHeaderDesc;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGPoint;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -436,9 +437,21 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 boolean contains(int shellX, int shellY) {
-	Rect controlBounds = new Rect ();
-	OS.GetControlBounds (handle, controlBounds);
-	return getClientArea ().contains (shellX - controlBounds.left, shellY - controlBounds.top);
+	int x, y;
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		int [] contentView = new int [1];
+		OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
+		OS.HIViewConvertPoint (pt, handle, contentView [0]);
+		x = shellX - (int) pt.x;
+		y = shellY - (int) pt.y;
+	} else {
+		Rect controlBounds = new Rect ();
+		OS.GetControlBounds (handle, controlBounds);
+		x = shellX - controlBounds.left;
+		y = shellY - controlBounds.top;
+	}
+	return getClientArea ().contains (x, y);
 }
 
 void createHandle () {
@@ -492,6 +505,7 @@ void createHandle () {
 	* it on a offscreen buffer to avoid flashes and then restoring it to
 	* size zero.
 	*/
+	if (OS.HIVIEW) OS.HIViewSetDrawingEnabled (handle, false);
 	int size = 50;
 	Rect rect = new Rect ();
 	rect.right = rect.bottom = (short) size;
@@ -510,6 +524,7 @@ void createHandle () {
 	OS.DisposePtr (data);
 	rect.right = rect.bottom = (short) 0;
 	OS.SetControlBounds (handle, rect);
+	if (OS.HIVIEW) OS.HIViewSetDrawingEnabled (handle, true);
 }
 
 void createItem (TableColumn column, int index) {
@@ -864,7 +879,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		if (columnIndex == columnCount) return OS.noErr;
 	}
 	Rect controlRect = new Rect ();
-	OS.GetControlBounds (handle, controlRect);
+	if (!OS.HIVIEW) OS.GetControlBounds (handle, controlRect);
 	lastIndexOf = index;
 	TableItem item = _getItem (index);
 	if ((style & SWT.VIRTUAL) != 0) {
@@ -900,6 +915,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		data.port = port [0];
 		gc = GC.carbon_new (this, data);
 	}
+	OS.CGContextSaveGState (gc.handle);
 	int clip = OS.NewRgn ();
 	OS.GetClip (clip);
 	OS.OffsetRgn (clip, (short)-controlRect.left, (short)-controlRect.top);
@@ -955,6 +971,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc.setForeground (foreground);
 	}
 	gc.drawString (text, x, y + (height - extent.y) / 2, true);
+	OS.CGContextRestoreGState (gc.handle);
 	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
 }
@@ -1245,7 +1262,7 @@ public TableItem getItem (Point point) {
 	checkItems (true);
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
+	if (!OS.HIVIEW) OS.GetControlBounds (handle, rect);
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
 	//TODO - optimize
@@ -1539,10 +1556,24 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				if (!contains (pt.h, pt.v)) break;
 				String toolTipText = null;
 				int tagSide = OS.kHMAbsoluteCenterAligned;
-				OS.GetControlBounds (handle, rect);
+				int x, y;
+				if (OS.HIVIEW) {
+					CGPoint inPt = new CGPoint ();
+					int [] contentView = new int [1];
+					OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
+					OS.HIViewConvertPoint (inPt, handle, contentView [0]);
+					pt.h -= (int) inPt.x;
+					pt.v -= (int) inPt.y;
+					windowLeft += (int) inPt.x;
+					windowTop += (int) inPt.y;
+					x = pt.h;
+					y = pt.v;
+				} else {
+					OS.GetControlBounds (handle, rect);
+					x = pt.h - rect.left;
+					y = pt.v - rect.top;
+				}
 				int headerHeight = getHeaderHeight ();
-				int x = pt.h - rect.left;
-				int y = pt.v - rect.top;
 				if (headerHeight != 0 && (0 <= y && y < headerHeight) ) {
 					int startX = 0;
 					for (int i = 0; i < columnCount; i++) {

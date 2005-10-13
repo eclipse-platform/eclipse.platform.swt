@@ -84,6 +84,30 @@ public Composite (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
+	if (OS.HIVIEW) {
+		short [] buffer = new short [1];
+		OS.CountSubControls (handle, buffer);
+		int count = buffer [0];
+		Control [] children = new Control [count];
+		int i = 0, j = 0;
+		int child = OS.HIViewGetFirstSubview (handle);
+		while (i < count) {
+			if (child != 0) {
+				Widget widget = display.getWidget (child);
+				if (widget != null && widget != this) {
+					if (widget instanceof Control) {
+						children [j++] = (Control) widget;
+					}
+				}
+			}
+			child = OS.HIViewGetNextView (child);
+			i++;
+		}
+		if (j == count) return children;
+		Control [] newChildren = new Control [j];
+		System.arraycopy (children, 0, newChildren, 0, j);
+		return newChildren;
+	}
 	short [] count = new short [1];
 	OS.CountSubControls (handle, count);
 	if (count [0] == 0) return new Control [0];
@@ -253,21 +277,21 @@ void createScrolledHandle (int parentHandle) {
 	handle = outControl [0];
 }
 
-void drawBackground (int control) {
+void drawBackground (int control, int context) {
 	if (control == scrolledHandle) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-			drawFocus (control, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+			drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 		} else {
 			if (hasBorder ()) {
-				drawFocus (control, false, hasBorder (), getParentBackground (), inset ());
+				drawFocus (control, context, false, hasBorder (), getParentBackground (), inset ());
 			} else {
-				drawBackground (control, getParentBackground ());
+				drawBackground (control, context, getParentBackground ());
 			}
 		}
 	} else {
 		if ((state & CANVAS) != 0) {
 			if ((style & SWT.NO_BACKGROUND) == 0) {
-				drawBackground (control, background);
+				drawBackground (control, context, background);
 			}	
 		}
 	}
@@ -470,7 +494,11 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 				if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 					short [] part = new short [1];
 					OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-					drawFocusClipped (scrolledHandle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+					if (OS.HIVIEW) {
+						OS.HIViewSetNeedsDisplay (scrolledHandle, true);
+					} else {
+						drawFocusClipped (scrolledHandle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+					}
 				}
 			}
 		}
@@ -904,11 +932,6 @@ public void setTabList (Control [] tabList) {
 		tabList = newList;
 	} 
 	this.tabList = tabList;
-}
-
-void setZOrder () {
-	super.setZOrder ();
-	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
 }
 
 int traversalCode (int key, int theEvent) {

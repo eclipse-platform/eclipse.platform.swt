@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
  
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -346,8 +345,7 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-	Rect rect = getControlSize (handle);
-	return new Point (rect.right - rect.left, rect.bottom - rect.top);
+	return getControlSize (handle);
 }
 
 /**
@@ -402,12 +400,14 @@ int getVisibleRegion (int control, boolean clipChildren) {
 
 void hookEvents () {
 	super.hookEvents ();
-	int controlProc = display.controlProc;
-	int [] mask = new int [] {
-		OS.kEventClassControl, OS.kEventControlDraw,
-	};
-	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+	if (!OS.HIVIEW) {
+		int controlProc = display.controlProc;
+		int [] mask = new int [] {
+			OS.kEventClassControl, OS.kEventControlDraw,
+		};
+		int controlTarget = OS.GetControlEventTarget (handle);
+		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+	}
 }
 
 

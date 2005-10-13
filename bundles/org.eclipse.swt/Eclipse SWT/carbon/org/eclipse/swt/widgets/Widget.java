@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.HIThemeFrameDrawInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
@@ -212,16 +213,18 @@ void calculateVisibleRegion (int control, int visibleRgn, boolean clipChildren) 
 		int tempControl = control, lastControl = 0;
 		while (tempControl != root) {
 			OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
+			if (OS.HIVIEW) OS.HIViewConvertRegion (tempRgn, tempControl, root);
 			OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
 			if (OS.EmptyRgn (visibleRgn)) break;
 			if (clipChildren || tempControl != control) {
 				OS.CountSubControls (tempControl, count);
 				for (int i = 0; i < count [0]; i++) {
-					OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
+					OS.GetIndexedSubControl (tempControl, (short)(OS.HIVIEW ? count [0] - i : i + 1), outControl);
 					int child = outControl [0];
 					if (child == lastControl) break;
 					if (!OS.IsControlVisible (child)) continue;
 					OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
+					if (OS.HIVIEW) OS.HIViewConvertRegion (tempRgn, child, root);
 					OS.UnionRgn (tempRgn, childRgn, childRgn);
 				}
 			}
@@ -619,47 +622,85 @@ public void dispose () {
 	release (true);
 }
 
-void drawBackground (int control) {
+void drawBackground (int control, int context) {
 	/* Do nothing */
 }
 
-void drawBackground (int control, float [] background) {
-	Rect rect = new Rect ();
-	OS.GetControlBounds (control, rect);
-	if (background != null) {
-		OS.RGBForeColor (toRGBColor (background));
-		OS.PaintRect (rect);
+void drawBackground (int control, int context, float [] background) {
+	if (OS.HIVIEW && OS.VERSION >= 0x1040) {
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (control, rect);
+		if (background != null) {
+			int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+			OS.CGContextSetFillColorSpace (context, colorspace);
+			OS.CGContextSetFillColor (context, background);
+			OS.CGColorSpaceRelease (colorspace);
+		} else {
+			OS.HIThemeSetFill (OS.kThemeBrushDialogBackgroundActive, 0, context, OS.kHIThemeOrientationNormal);
+		}
+		OS.CGContextFillRect (context, rect);
 	} else {
-		OS.SetThemeBackground((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
-		OS.EraseRect (rect);
+		Rect rect = new Rect ();
+		OS.GetControlBounds (control, rect);
+		if (background != null) {
+			OS.RGBForeColor (toRGBColor (background));
+			OS.PaintRect (rect);
+		} else {
+			OS.SetThemeBackground((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
+			OS.EraseRect (rect);
+		}
 	}
 }
 
-void drawFocus (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
-	drawBackground (control, background);
-	Rect rect = new Rect ();
-	OS.GetControlBounds (control, rect);
-	rect.left += inset.left;
-	rect.top += inset.top;
-	rect.right -= inset.right;
-	rect.bottom -= inset.bottom;
-	int state;
-	if (OS.IsControlEnabled (control)) {
-		state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
+	drawBackground (control, context, background);
+	if (OS.HIVIEW) {
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (control, rect);
+		rect.x += inset.left;
+		rect.y += inset.top;
+		rect.width -= inset.right + inset.left;
+		rect.height -= inset.bottom + inset.top;
+		int state;
+		if (OS.IsControlEnabled (control)) {
+			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		} else {
+			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+		}
+		if (hasBorder) {
+			HIThemeFrameDrawInfo info = new HIThemeFrameDrawInfo ();
+			info.state = state;
+			info.kind = OS.kHIThemeFrameTextFieldSquare;
+			info.isFocused = hasFocus;
+			OS.HIThemeDrawFrame (rect, info, context, OS.kHIThemeOrientationNormal);
+		} else {
+			OS.HIThemeDrawFocusRect (rect, hasFocus, context, OS.kHIThemeOrientationNormal);
+		}
 	} else {
-		state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
-	}
-	if (hasFocus) {
-		if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
-		OS.DrawThemeFocusRect (rect, true);
-	} else {
-		/*
-		* This code is intentionaly commented.
-		*  
-		* NOTE: the focus ring is erased by drawBackground() above. 
-		*/
-//		OS.DrawThemeFocusRect (rect, false);
-		if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
+		Rect rect = new Rect ();
+		OS.GetControlBounds (control, rect);
+		rect.left += inset.left;
+		rect.top += inset.top;
+		rect.right -= inset.right;
+		rect.bottom -= inset.bottom;
+		int state;
+		if (OS.IsControlEnabled (control)) {
+			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		} else {
+			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+		}
+		if (hasFocus) {
+			if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
+			OS.DrawThemeFocusRect (rect, true);
+		} else {
+			/*
+			* This code is intentionaly commented.
+			*  
+			* NOTE: the focus ring is erased by drawBackground() above. 
+			*/
+	//		OS.DrawThemeFocusRect (rect, false);
+			if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
+		}
 	}
 }
 
@@ -674,14 +715,14 @@ void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, float[]
 		int oldClip = OS.NewRgn ();
 		OS.GetClip (oldClip);
 		OS.SetClip (visibleRgn);
-		drawFocus (control, hasFocus, hasBorder, background, inset);
+		drawFocus (control, 0, hasFocus, hasBorder, background, inset);
 		OS.SetClip (oldClip);
 		OS.SetPort (currentPort [0]);
 	}
 	OS.DisposeRgn (visibleRgn);
 }
 
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
 }
 
 void error (int code) {
@@ -704,7 +745,17 @@ int fixMnemonic (char [] buffer) {
 	return j;
 }
 
-Rect getControlBounds (int control) {
+Rectangle getControlBounds (int control) {
+	if (OS.HIVIEW) {
+		CGRect rect = new CGRect ();
+		OS.HIViewGetFrame (control, rect);
+		Rect inset = getInset ();
+		rect.x -= inset.left;
+		rect.y -= inset.top;
+		rect.width += inset.right + inset.left;
+		rect.height += inset.bottom + inset.top;
+		return new Rectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
+	}
 	Rect rect = new Rect();
 	OS.GetControlBounds (control, rect);
 	int window = OS.GetControlOwner (control);
@@ -722,10 +773,15 @@ Rect getControlBounds (int control) {
 	rect.top -= inset.top;
 	rect.right += inset.right;
 	rect.bottom += inset.bottom;
-	return rect;
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
-Rect getControlSize (int control) {
+Point getControlSize (int control) {
+	if (OS.HIVIEW) {
+		CGRect rect = new CGRect ();
+		OS.HIViewGetFrame (control, rect);
+		return new Point ((int) rect.width, (int) rect.height);
+	}
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
 	Rect inset = getInset ();
@@ -733,7 +789,7 @@ Rect getControlSize (int control) {
 	rect.top -= inset.top;
 	rect.right += inset.right;
 	rect.bottom += inset.bottom;
-	return rect;
+	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
 /**
@@ -990,27 +1046,36 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	if (getDrawCount (theControl [0]) > 0) return OS.noErr;
 	int [] region = new int [1];	
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
-	int visibleRgn = getVisibleRegion (theControl [0], true);
-	OS.SectRgn(region [0], visibleRgn, visibleRgn);
-	if (!OS.EmptyRgn (visibleRgn)) {
-		int [] port = new int [1];
-		OS.GetPort (port);
-		OS.LockPortBits (port [0]);
-//		OS.QDSetDirtyRegion (port, visibleRgn);
-		int oldClip = OS.NewRgn ();
-		OS.GetClip (oldClip);
-		OS.SetClip (visibleRgn);
-		drawBackground (theControl [0]);
+	if (OS.HIVIEW) {
+		int[] context = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+		int visibleRgn = region [0];
+		drawBackground (theControl [0], context [0]);
 		callPaintEventHandler (theControl [0], region [0], visibleRgn, theEvent, nextHandler);
-		drawWidget (theControl [0], region [0], visibleRgn, theEvent);
-		OS.SetClip (oldClip);
-		OS.DisposeRgn (oldClip);
-		OS.UnlockPortBits (port [0]);
+		drawWidget (theControl [0], context [0], region [0], visibleRgn, theEvent);
+	} else {
+		if (getDrawCount (theControl [0]) > 0) return OS.noErr;
+		int visibleRgn = getVisibleRegion (theControl [0], true);
+		OS.SectRgn(region [0], visibleRgn, visibleRgn);
+		if (!OS.EmptyRgn (visibleRgn)) {
+			int [] port = new int [1];
+			OS.GetPort (port);
+			OS.LockPortBits (port [0]);
+//			OS.QDSetDirtyRegion (port, visibleRgn);
+			int oldClip = OS.NewRgn ();
+			OS.GetClip (oldClip);
+			OS.SetClip (visibleRgn);
+			drawBackground (theControl [0], 0);
+			callPaintEventHandler (theControl [0], region [0], visibleRgn, theEvent, nextHandler);
+			drawWidget (theControl [0], 0, region [0], visibleRgn, theEvent);
+			OS.SetClip (oldClip);
+			OS.DisposeRgn (oldClip);
+			OS.UnlockPortBits (port [0]);
+		}
+		OS.DisposeRgn (visibleRgn);
 	}
-	OS.DisposeRgn (visibleRgn);
 	return OS.noErr;
 }
 
@@ -1259,7 +1324,32 @@ void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
 
+void redrawChildren (int control) {
+	int child = OS.HIViewGetFirstSubview (control);
+	while (child != 0) {
+		OS.HIViewSetNeedsDisplay (child, true);
+		redrawChildren (child);
+		child = OS.HIViewGetNextView (child);
+	}
+}
+
+void redrawChildren (int control, int rgn) {
+	int child = OS.HIViewGetFirstSubview (control);
+	while (child != 0) {
+		OS.HIViewConvertRegion(rgn, control, child);
+		OS.HIViewSetNeedsDisplayInRegion (child, rgn, true);
+		redrawChildren (child, rgn);
+		OS.HIViewConvertRegion(rgn, child, control);
+		child = OS.HIViewGetNextView (child);
+	}
+}
+
 void redrawWidget (int control, boolean children) {
+	if (OS.HIVIEW) {
+		OS.HIViewSetNeedsDisplay (control, true);
+		if (children) redrawChildren (control);
+		return;
+	}
 	if (!isDrawing (control)) return;
 	int window = OS.GetControlOwner (control);
 	int visibleRgn = getVisibleRegion (control, !children);
@@ -1268,6 +1358,16 @@ void redrawWidget (int control, boolean children) {
 }
 
 void redrawWidget (int control, int x, int y, int width, int height, boolean children) {
+	if (OS.HIVIEW) {
+		int rectRgn = OS.NewRgn ();
+		Rect rect = new Rect ();
+		OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
+		OS.RectRgn (rectRgn, rect);
+		OS.HIViewSetNeedsDisplayInRegion (control, rectRgn, true);
+		if (children) redrawChildren (control, rectRgn);
+		OS.DisposeRgn (rectRgn);
+		return;
+	}
 	if (!isDrawing (control)) return;
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
@@ -1484,64 +1584,93 @@ boolean sendKeyEvent (int type, Event event) {
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	/* Compute the old bounds */
-	Rect oldBounds = new Rect ();
-	OS.GetControlBounds (control, oldBounds);
-	int [] theRoot = new int [1];
-	int window = OS.GetControlOwner (control);
-	OS.GetRootControl (window, theRoot);
-	int [] parentHandle = new int [1];
-	OS.GetSuperControl (control, parentHandle);
-	Rect parentRect = new Rect ();
-	if (parentHandle [0] != theRoot [0]) {
-		OS.GetControlBounds (parentHandle [0], parentRect);
-		OS.OffsetRect (oldBounds, (short) -parentRect.left, (short) -parentRect.top);
-	}
-	Rect inset = getInset ();
-	oldBounds.left -= inset.left;
-	oldBounds.top -= inset.top;
-	oldBounds.right += inset.right;
-	oldBounds.bottom += inset.bottom;
+	boolean sameOrigin = true, sameExtent = true;
+	if (OS.HIVIEW) {
+		CGRect oldBounds = new CGRect ();
+		OS.HIViewGetFrame (control, oldBounds);
+		Rect inset = getInset ();
+		oldBounds.x -= inset.left;
+		oldBounds.y -= inset.top;
+		oldBounds.width += inset.left + inset.right;
+		oldBounds.height += inset.top + inset.bottom;
+		if (!move) {
+			x = (int) oldBounds.x;
+			y = (int) oldBounds.y;
+		}
+		if (!resize) {
+			width = (int) oldBounds.width;
+			height = (int) oldBounds.height;
+		}
+		CGRect newBounds = new CGRect ();
+		newBounds.x = x + inset.left;
+		newBounds.y = y + inset.top;
+		newBounds.width = width - inset.right - inset.left;
+		newBounds.height = height - inset.bottom - inset.top;
+		sameOrigin = newBounds.x == oldBounds.x && newBounds.y == oldBounds.y;
+		sameExtent = newBounds.width == oldBounds.width && newBounds.height == oldBounds.height;
+		if (sameOrigin && sameExtent) return 0;
+		OS.HIViewSetFrame (control, newBounds);
+		invalidateVisibleRegion (control);
+	} else {
+		/* Compute the old bounds */
+		Rect oldBounds = new Rect ();
+		OS.GetControlBounds (control, oldBounds);
+		int [] theRoot = new int [1];
+		int window = OS.GetControlOwner (control);
+		OS.GetRootControl (window, theRoot);
+		int [] parentHandle = new int [1];
+		OS.GetSuperControl (control, parentHandle);
+		Rect parentRect = new Rect ();
+		if (parentHandle [0] != theRoot [0]) {
+			OS.GetControlBounds (parentHandle [0], parentRect);
+			OS.OffsetRect (oldBounds, (short) -parentRect.left, (short) -parentRect.top);
+		}
+		Rect inset = getInset ();
+		oldBounds.left -= inset.left;
+		oldBounds.top -= inset.top;
+		oldBounds.right += inset.right;
+		oldBounds.bottom += inset.bottom;
+		
+		/* Compute the new bounds */
+		if (!move) {
+			x = oldBounds.left;
+			y = oldBounds.top;
+		}
+		if (!resize) {
+			width = oldBounds.right - oldBounds.left;
+			height = oldBounds.bottom - oldBounds.top;
+		}	
+		Rect newBounds = new Rect ();
+		newBounds.left = (short) (parentRect.left + x + inset.left);
+		newBounds.top = (short) (parentRect.top + y + inset.top);
+		newBounds.right = (short) (newBounds.left + width - inset.right - inset.left);
+		newBounds.bottom = (short) (newBounds.top + height - inset.bottom - inset.top);	
+		if (newBounds.bottom < newBounds.top) newBounds.bottom = newBounds.top;
+		if (newBounds.right < newBounds.left) newBounds.right = newBounds.left;
 	
-	/* Compute the new bounds */
-	if (!move) {
-		x = oldBounds.left;
-		y = oldBounds.top;
-	}
-	if (!resize) {
-		width = oldBounds.right - oldBounds.left;
-		height = oldBounds.bottom - oldBounds.top;
-	}	
-	Rect newBounds = new Rect ();
-	newBounds.left = (short) (parentRect.left + x + inset.left);
-	newBounds.top = (short) (parentRect.top + y + inset.top);
-	newBounds.right = (short) (newBounds.left + width - inset.right - inset.left);
-	newBounds.bottom = (short) (newBounds.top + height - inset.bottom - inset.top);	
-	if (newBounds.bottom < newBounds.top) newBounds.bottom = newBounds.top;
-	if (newBounds.right < newBounds.left) newBounds.right = newBounds.left;
-
-	/* Get bounds again, since the one above is in SWT coordinates */
-	OS.GetControlBounds (control, oldBounds);
+		/* Get bounds again, since the one above is in SWT coordinates */
+		OS.GetControlBounds (control, oldBounds);
+		
+		/* Check if anything changed */
+		sameOrigin = newBounds.left == oldBounds.left && newBounds.top == oldBounds.top;
+		sameExtent = (newBounds.right - newBounds.left) == (oldBounds.right - oldBounds.left) && (newBounds.bottom - newBounds.top) == (oldBounds.bottom - oldBounds.top);
+		if (sameOrigin && sameExtent) return 0;
 	
-	/* Check if anything changed */
-	boolean sameOrigin = newBounds.left == oldBounds.left && newBounds.top == oldBounds.top;
-	boolean sameExtent = (newBounds.right - newBounds.left) == (oldBounds.right - oldBounds.left) && (newBounds.bottom - newBounds.top) == (oldBounds.bottom - oldBounds.top);
-	if (sameOrigin && sameExtent) return 0;
-
-	/* Apply changes and invalidate appropriate rectangles */
-	int tempRgn = 0;
-	boolean visible = OS.IsControlVisible (control);
-	if (visible) {
-		tempRgn = OS.NewRgn ();
-		OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
-		invalWindowRgn (window, tempRgn);
-	}
-	OS.SetControlBounds (control, newBounds);
-	invalidateVisibleRegion (control);
-	if (visible) {
-		OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
-		invalWindowRgn (window, tempRgn);
-		OS.DisposeRgn(tempRgn);
+		/* Apply changes and invalidate appropriate rectangles */
+		int tempRgn = 0;
+		boolean visible = OS.IsControlVisible (control);
+		if (visible) {
+			tempRgn = OS.NewRgn ();
+			OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
+			invalWindowRgn (window, tempRgn);
+		}
+		OS.SetControlBounds (control, newBounds);
+		invalidateVisibleRegion (control);
+		if (visible) {
+			OS.GetControlRegion (control, (short) OS.kControlStructureMetaPart, tempRgn);
+			invalWindowRgn (window, tempRgn);
+			OS.DisposeRgn(tempRgn);
+		}
 	}
 	
 	/* Send events */
@@ -1836,37 +1965,48 @@ boolean setKeyState (Event event, int type, int theEvent) {
 }
 
 void setVisible (int control, boolean visible) {
-	int visibleRgn = 0;
-	boolean drawing = getDrawCount (control) == 0;
-	if (drawing && !visible) visibleRgn = getVisibleRegion (control, false);
-	OS.SetControlVisibility (control, visible, false);
-	invalidateVisibleRegion (control);
-	if (drawing && visible) visibleRgn = getVisibleRegion (control, false);
-	if (drawing) {
-		int window = OS.GetControlOwner (control);
-		invalWindowRgn (window, visibleRgn);
-		OS.DisposeRgn (visibleRgn);
+	if (OS.HIVIEW) {
+		OS.HIViewSetVisible (control, visible);
+		invalidateVisibleRegion (control);
+	} else {
+		int visibleRgn = 0;
+		boolean drawing = getDrawCount (control) == 0;
+		if (drawing && !visible) visibleRgn = getVisibleRegion (control, false);
+		OS.SetControlVisibility (control, visible, false);
+		invalidateVisibleRegion (control);
+		if (drawing && visible) visibleRgn = getVisibleRegion (control, false);
+		if (drawing) {
+			int window = OS.GetControlOwner (control);
+			invalWindowRgn (window, visibleRgn);
+			OS.DisposeRgn (visibleRgn);
+		}
 	}
 }
 
 void setZOrder (int control, int otheControl, boolean above) {
-	int inOp = above ?  OS.kHIViewZOrderBelow :  OS.kHIViewZOrderAbove;
-	int oldRgn = 0;
-	boolean drawing = isDrawing (control);
-	if (drawing) oldRgn = getVisibleRegion (control, false);
-	OS.HIViewSetZOrder (control, inOp, otheControl);
-	invalidateVisibleRegion (control);
-	if (drawing) {
-		int newRgn = getVisibleRegion (control, false);
-		if (above) {
-			OS.DiffRgn (newRgn, oldRgn, newRgn);
-		} else {
-			OS.DiffRgn (oldRgn, newRgn, newRgn);
+	if (OS.HIVIEW) {
+		int inOp = above ?  OS.kHIViewZOrderAbove :  OS.kHIViewZOrderBelow;
+		OS.HIViewSetZOrder (control, inOp, otheControl);
+		invalidateVisibleRegion (control);
+	} else {
+		int inOp = above ?  OS.kHIViewZOrderBelow :  OS.kHIViewZOrderAbove;
+		int oldRgn = 0;
+		boolean drawing = isDrawing (control);
+		if (drawing) oldRgn = getVisibleRegion (control, false);
+		OS.HIViewSetZOrder (control, inOp, otheControl);
+		invalidateVisibleRegion (control);
+		if (drawing) {
+			int newRgn = getVisibleRegion (control, false);
+			if (above) {
+				OS.DiffRgn (newRgn, oldRgn, newRgn);
+			} else {
+				OS.DiffRgn (oldRgn, newRgn, newRgn);
+			}
+			int window = OS.GetControlOwner (control);
+			invalWindowRgn (window, newRgn);
+			OS.DisposeRgn (oldRgn);
+			OS.DisposeRgn (newRgn);
 		}
-		int window = OS.GetControlOwner (control);
-		invalWindowRgn (window, newRgn);
-		OS.DisposeRgn (oldRgn);
-		OS.DisposeRgn (newRgn);
 	}
 }
 

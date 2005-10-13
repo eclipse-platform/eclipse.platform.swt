@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -143,8 +144,8 @@ void createHandle () {
 	handle = outControl [0];
 }
 
-void drawBackground (int control) {
-	drawBackground (control, background);
+void drawBackground (int control, int context) {
+	drawBackground (control, context, background);
 }
 
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
@@ -185,20 +186,30 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (isDisposed ()) return result;
 	if (!event.doit) return result;
 	
-	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+	int offsetX, offsetY;
 	int window = OS.GetControlOwner (handle);
-	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	int offsetX = pt.h - rect.left;
-	int offsetY = pt.v - rect.top;
-	OS.GetControlBounds (handle, rect);
-	offsetX -= rect.left;
-	offsetY -= rect.top;
-	
-	int port = OS.GetWindowPort (window);
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		OS.HIViewConvertPoint (pt, 0, handle);
+		offsetX = (int) pt.x;
+		offsetY = (int) pt.y;		
+	} else {
+		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		offsetX = pt.h - rect.left;
+		offsetY = pt.v - rect.top;
+		OS.GetControlBounds (handle, rect);
+		offsetX -= rect.left;
+		offsetY -= rect.top;
+	}
+
+	int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
+	CGPoint pt = new CGPoint ();
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	while (outResult [0] != OS.kMouseTrackingMouseUp) {
 		OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
@@ -206,9 +217,19 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			case OS.kMouseTrackingMouseDown:
 			case OS.kMouseTrackingMouseUp:
 			case OS.kMouseTrackingMouseDragged: {
-				OS.GetControlBounds (parent.handle, rect);
-				int x = outPt.h - rect.left;
-				int y = outPt.v - rect.top;				
+				int x, y;
+				if (OS.HIVIEW) {
+					OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+					pt.x = outPt.h - rect.left;
+					pt.y = outPt.v - rect.top;
+					OS.HIViewConvertPoint (pt, 0, parent.handle);
+					x = (int) pt.x;
+					y = (int) pt.y;
+				} else {
+					OS.GetControlBounds (parent.handle, rect);
+					x = outPt.h - rect.left;
+					y = outPt.v - rect.top;
+				}
 				int newX = startX, newY = startY;
 				if ((style & SWT.VERTICAL) != 0) {
 					int clientWidth = rect.right - rect.left;

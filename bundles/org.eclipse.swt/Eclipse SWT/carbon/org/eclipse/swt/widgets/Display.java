@@ -995,10 +995,21 @@ void dragDetect (Control control) {
 			dragging = true;
 			Rect rect = new Rect ();
 			int window = OS.GetControlOwner (control.handle);
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			int x = dragMouseStart.h - rect.left;
-			int y = dragMouseStart.v - rect.top;
-			OS.GetControlBounds (control.handle, rect);
+			int x, y;
+			if (OS.HIVIEW) {
+				CGPoint pt = new CGPoint ();
+				pt.x = dragMouseStart.h;
+				pt.y = dragMouseStart.v;
+				OS.HIViewConvertPoint (pt, 0, control.handle);
+				x = (int) pt.x;
+				y = (int) pt.y;
+				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+			} else {
+				OS.GetControlBounds (control.handle, rect);
+				x = dragMouseStart.h - rect.left;
+				y = dragMouseStart.v - rect.top;
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			}
 			x -= rect.left;
 			y -= rect.top;
 			Event event = new Event ();
@@ -2399,27 +2410,46 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
+	Rect rect = new Rect ();
 	if (from != null) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (from.handle, rect);
-		Rect inset = from.getInset ();
-		point.x += rect.left - inset.left; 
-		point.y += rect.top - inset.top;
 		int window = OS.GetControlOwner (from.handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.HIViewConvertPoint (pt, from.handle, 0);
+			point.x += (int) pt.x;
+			point.y += (int) pt.y;
+			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+		} else {
+			OS.GetControlBounds (from.handle, rect);
+			point.x += rect.left;
+			point.y += rect.top;
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		}
 		point.x += rect.left;
 		point.y += rect.top;
+		Rect inset = from.getInset ();
+		point.x -= inset.left; 
+		point.y -= inset.top;
 	}
 	if (to != null) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (to.handle, rect);
-		Rect inset = to.getInset ();
-		point.x -= rect.left - inset.left; 
-		point.y -= rect.top - inset.top;
 		int window = OS.GetControlOwner (to.handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.HIViewConvertPoint (pt, to.handle, 0);
+			point.x -= (int) pt.x;
+			point.y -= (int) pt.y;
+			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+		} else {
+			OS.GetControlBounds (to.handle, rect);
+			point.x -= rect.left;
+			point.y -= rect.top;
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		}
 		point.x -= rect.left;
 		point.y -= rect.top;
+		Rect inset = to.getInset ();
+		point.x += inset.left; 
+		point.y += inset.top;
 	}
 	return point;
 }
@@ -2509,27 +2539,46 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rectangle = new Rectangle (x, y, width, height);
+	Rect rect = new Rect ();
 	if (from != null) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (from.handle, rect);
-		Rect inset = from.getInset ();
-		rectangle.x += rect.left - inset.left; 
-		rectangle.y += rect.top - inset.top;
 		int window = OS.GetControlOwner (from.handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.HIViewConvertPoint (pt, from.handle, 0);
+			rectangle.x += (int) pt.x;
+			rectangle.y += (int) pt.y;
+			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+		} else {
+			OS.GetControlBounds (from.handle, rect);
+			rectangle.x += rect.left;
+			rectangle.y += rect.top;
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		}
 		rectangle.x += rect.left;
 		rectangle.y += rect.top;
+		Rect inset = from.getInset ();
+		rectangle.x -= inset.left; 
+		rectangle.y -= inset.top;
 	}
 	if (to != null) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (to.handle, rect);
-		Rect inset = to.getInset ();
-		rectangle.x -= rect.left - inset.left; 
-		rectangle.y -= rect.top - inset.top;
 		int window = OS.GetControlOwner (to.handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.HIViewConvertPoint (pt, to.handle, 0);
+			rectangle.x -= (int) pt.x;
+			rectangle.y -= (int) pt.y;
+			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+		} else {
+			OS.GetControlBounds (to.handle, rect);
+			rectangle.x -= rect.left;
+			rectangle.y -= rect.top;
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		}
 		rectangle.x -= rect.left;
 		rectangle.y -= rect.top;
+		Rect inset = to.getInset ();
+		rectangle.x += inset.left; 
+		rectangle.y += inset.top;
 	}
 	return rectangle;
 }
@@ -2586,29 +2635,54 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			CGPoint inPoint = new CGPoint ();
 			inPoint.x = where.h - windowRect.left;
 			inPoint.y = where.v - windowRect.top;
-			int [] theRoot = new int [1];
-			OS.GetRootControl (theWindow [0], theRoot);
-			int [] theControl = new int [1];
-			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-			while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
-				OS.GetSuperControl (theControl [0], theControl);
-			}
-			Widget widget = null;
-			boolean consume = false;
-			if (theControl [0] == 0) theControl [0] = theRoot [0];
-			do {
-				widget = getWidget (theControl [0]);
-				if (widget != null) {
-					if (widget.isEnabled ()) break;
-					consume = true;
+			if (OS.HIVIEW) {
+				int [] buffer = new int [1];
+				OS.HIViewGetViewForMouseEvent (OS.HIViewGetRoot (theWindow [0]), theEvent, buffer);
+				int view = buffer [0];
+				while (view != 0 && !OS.IsControlEnabled (view)) {	
+					view = OS.HIViewGetSuperview (view);
 				}
-				OS.GetSuperControl (theControl [0], theControl);
-			} while (theControl [0] != 0);
-			if (theControl [0] == 0) widget = getWidget (theRoot [0]);
-			if (widget != null) {
-				if (widget.contains ((int) inPoint.x, (int) inPoint.y)) {
-					int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
-					return consume ? OS.noErr : result;
+				Widget widget = null;
+				boolean consume = false;
+				do {
+					widget = getWidget (view);
+					if (widget != null) {
+						if (widget.isEnabled ()) break;
+						consume = true;
+					}
+					view = OS.HIViewGetSuperview (view);
+				} while (view != 0);
+				if (widget != null) {
+					if (widget.contains ((int) inPoint.x, (int) inPoint.y)) {
+						int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
+						return consume ? OS.noErr : result;
+					}
+				}
+			} else {
+				int [] theRoot = new int [1];
+				OS.GetRootControl (theWindow [0], theRoot);
+				int [] theControl = new int [1];
+				OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+				while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
+					OS.GetSuperControl (theControl [0], theControl);
+				}
+				Widget widget = null;
+				boolean consume = false;
+				if (theControl [0] == 0) theControl [0] = theRoot [0];
+				do {
+					widget = getWidget (theControl [0]);
+					if (widget != null) {
+						if (widget.isEnabled ()) break;
+						consume = true;
+					}
+					OS.GetSuperControl (theControl [0], theControl);
+				} while (theControl [0] != 0);
+				if (theControl [0] == 0) widget = getWidget (theRoot [0]);
+				if (widget != null) {
+					if (widget.contains ((int) inPoint.x, (int) inPoint.y)) {
+						int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
+						return consume ? OS.noErr : result;
+					}
 				}
 			}
 			break;
@@ -3128,6 +3202,7 @@ boolean runGrabs () {
 	Rect rect = new Rect ();
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
+	CGPoint pt = new CGPoint ();
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	grabbing = true;
 	mouseUpControl = null;
@@ -3139,7 +3214,7 @@ boolean runGrabs () {
 			int oldState = OS.GetCurrentEventButtonState ();
 			int handle = grabControl.handle;
 			int window = OS.GetControlOwner (handle);
-			int port = OS.GetWindowPort (window);
+			int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
 			OS.TrackMouseLocationWithOptions (port, OS.kTrackMouseLocationOptionDontConsumeMouseUp, 50 / 1000.0, outPt, outModifiers, outResult);
 			int type = 0, button = 0;
 			switch ((int) outResult [0]) {
@@ -3181,9 +3256,20 @@ boolean runGrabs () {
 			}
 			boolean events = type != 0;
 			if (type != 0) {
-				OS.GetControlBounds (handle, rect);
-				int x = outPt.h - rect.left;
-				int y = outPt.v - rect.top;
+				int x = outPt.h;
+				int y = outPt.v;
+				if (OS.HIVIEW) {
+					OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+					pt.x = x - rect.left;
+					pt.y = y - rect.top;
+					OS.HIViewConvertPoint (pt, 0, handle);
+					x = (int) pt.x;
+					y = (int) pt.y;
+				} else {
+					OS.GetControlBounds (handle, rect);
+					x -= rect.left;
+					y -= rect.top;
+				}
 				int chord = OS.GetCurrentEventButtonState ();
 				if (grabControl != null && !grabControl.isDisposed ()) {
 					if (type == SWT.MouseUp) {

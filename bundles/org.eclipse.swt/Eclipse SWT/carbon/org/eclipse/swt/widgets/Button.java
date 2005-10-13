@@ -15,6 +15,7 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.ThemeButtonDrawInfo;
 
 import org.eclipse.swt.*;
@@ -292,7 +293,7 @@ int defaultThemeFont () {
 	return OS.kThemePushButtonFont;
 }
 
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
 	if (OS.VERSION < 0x1040 && isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
 		Rect bounds = new Rect(), content = new Rect();
 		OS.GetControlBounds (handle, bounds);
@@ -315,7 +316,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 		gc.drawImage (image, x, y);
 		gc.dispose ();
 	}
-	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
 }
 
 /**
@@ -445,10 +446,21 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		OS.GetGlobalMouse (outPt);
 		Rect rect = new Rect ();
 		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		int x = outPt.h - rect.left;
-		int y = outPt.v - rect.top;
-		OS.GetControlBounds (parent.handle, rect);
+		int x, y;
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			pt.x = outPt.h;
+			pt.y = outPt.v;
+			OS.HIViewConvertPoint (pt, 0, handle);
+			x = (int) pt.x;
+			y = (int) pt.y;
+			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+		} else {
+			OS.GetControlBounds (handle, rect);
+			x = outPt.h - rect.left;
+			y = outPt.v - rect.top;
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		}
 		x -= rect.left;
 		y -=  rect.top;
 		short [] button = new short [1];

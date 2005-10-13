@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGPoint;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -165,14 +166,14 @@ void createWidget () {
 	//TODO accessibility
 }
 
-void drawBackground (int control) {
-	drawBackground (control, background);
+void drawBackground (int control, int context) {
+	drawBackground (control, context, background);
 	if (!hasFocus () || !drawFocusRing () || focusIndex == -1) return;
 	int [] outMetric = new int [1];
 	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
 	outMetric[0]--;
 	Rect r = new Rect (), bounds = new Rect();
-	OS.GetControlBounds (control, bounds);
+	if (!OS.HIVIEW) OS.GetControlBounds (control, bounds);
 	Rectangle [] rects = getRectangles (focusIndex);
 	for (int i = 0; i < rects.length; i++) {
 		Rectangle rect = rects [i];
@@ -184,7 +185,7 @@ void drawBackground (int control) {
 	}
 }
 
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
+void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
 	GCData data = new GCData ();
 	data.paintEvent = theEvent;
 	data.visibleRgn = visibleRgn;
@@ -200,7 +201,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	if ((state & DISABLED) != 0) gc.setForeground (disabledColor);
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	gc.dispose ();
-	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
+	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
 }
 
 void enableWidget (boolean enabled) {
@@ -281,17 +282,26 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int [] clickCount = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
 	if (button [0] == 1 && clickCount [0] == 1) {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		int x = pt.h - rect.left;
-		int y = pt.v - rect.top;
-		OS.GetControlBounds (handle, rect);
-		x -= rect.left;
-		y -= rect.top;
+		int x, y;
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+			OS.HIViewConvertPoint (pt, 0, handle);
+			x = (int) pt.x;
+			y = (int) pt.y;
+		} else {
+			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+			Rect rect = new Rect ();
+			int window = OS.GetControlOwner (handle);
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			x = pt.h - rect.left;
+			y = pt.v - rect.top;
+			OS.GetControlBounds (handle, rect);
+			x -= rect.left;
+			y -= rect.top;
+		}
 		int offset = layout.getOffset (x, y, null);
 		int oldSelectionX = selection.x;
 		int oldSelectionY = selection.y;
@@ -320,9 +330,11 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	}
 	
 	int window = OS.GetControlOwner (handle);
-	int port = OS.GetWindowPort (window);
+	int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
+	CGPoint pt = new CGPoint ();
+	Rect rect = new Rect ();
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	while (outResult [0] != OS.kMouseTrackingMouseUp) {
 		OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
@@ -332,13 +344,22 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			case OS.kMouseTrackingMouseDragged: {
 				int chord = OS.GetCurrentEventButtonState ();
 				if ((chord & 0x01) != 0) {
-					Rect rect = new Rect ();
-					OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-					int x = outPt.h;
-					int y = outPt.v;
-					OS.GetControlBounds (handle, rect);
-					x -= rect.left;
-					y -= rect.top;
+					int x, y;
+					if (OS.HIVIEW) {
+						OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+						pt.x = outPt.h - rect.left;
+						pt.y = outPt.v - rect.top;
+						OS.HIViewConvertPoint (pt, 0, handle);
+						x = (int) pt.x;
+						y = (int) pt.y;
+					} else {
+						OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+						x = outPt.h;
+						y = outPt.v;
+						OS.GetControlBounds (handle, rect);
+						x -= rect.left;
+						y -= rect.top;
+					}
 					int oldSelection = selection.y;
 					selection.y = layout.getOffset (x, y, null);
 					if (selection.y != oldSelection) {
@@ -366,17 +387,26 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseMoved (nextHandler, theEvent, userData);
-	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
-	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	int x = pt.h - rect.left;
-	int y = pt.v - rect.top;
-	OS.GetControlBounds (handle, rect);
-	x -= rect.left;
-	y -= rect.top;
+	int x, y;
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		OS.HIViewConvertPoint (pt, 0, handle);
+		x = (int) pt.x;
+		y = (int) pt.y;
+	} else {
+		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+		Rect rect = new Rect ();
+		int window = OS.GetControlOwner (handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		x = pt.h - rect.left;
+		y = pt.v - rect.top;
+		OS.GetControlBounds (handle, rect);
+		x -= rect.left;
+		y -= rect.top;
+	}
 	for (int j = 0; j < offsets.length; j++) {
 		Rectangle [] rects = getRectangles (j);
 		for (int i = 0; i < rects.length; i++) {
@@ -397,17 +427,26 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	if (button [0] == 1) {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		int x = pt.h - rect.left;
-		int y = pt.v - rect.top;
-		OS.GetControlBounds (handle, rect);
-		x -= rect.left;
-		y -= rect.top;
+		int x, y;
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+			OS.HIViewConvertPoint (pt, 0, handle);
+			x = (int) pt.x;
+			y = (int) pt.y;
+		} else {
+			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+			Rect rect = new Rect ();
+			int window = OS.GetControlOwner (handle);
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			x = pt.h - rect.left;
+			y = pt.v - rect.top;
+			OS.GetControlBounds (handle, rect);
+			x -= rect.left;
+			y -= rect.top;
+		}
 		Rectangle [] rects = getRectangles (focusIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rectangle = rects [i];

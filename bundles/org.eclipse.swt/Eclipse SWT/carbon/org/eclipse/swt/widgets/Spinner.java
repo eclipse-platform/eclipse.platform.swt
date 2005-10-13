@@ -352,11 +352,11 @@ void deregister () {
 	display.removeWidget(buttonHandle);
 }
 
-void drawBackground (int control) {
+void drawBackground (int control, int context) {
 	if (control == textHandle) {
-		drawBackground (control, background);
+		drawBackground (control, context, background);
 	} else {
-		drawBackground (control, getParentBackground ());
+		drawBackground (control, context, getParentBackground ());
 	}
 }
 

@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -118,12 +119,22 @@ ScrollBar createScrollBar (int style) {
 }
 
 ScrollBar createStandardBar (int style) {
+	int parentHandle = scrolledHandle != 0 ? scrolledHandle : handle;
 	short [] count = new short [1];
-	OS.CountSubControls (handle, count);
+	OS.CountSubControls (parentHandle, count);
 	if (count [0] == 0) return null;
 	int [] outControl = new int [1];
-	int index = (style & SWT.H_SCROLL) != 0 ? 1 : 2;
-	int status = OS.GetIndexedSubControl (handle, (short)index, outControl);
+	int index;
+	if (OS.HIVIEW) {
+		if (parentHandle == handle) {
+			index = (style & SWT.H_SCROLL) != 0 ? 2 : 1;
+		} else {
+			index = (style & SWT.H_SCROLL) != 0 ? 2 : 3;
+		}
+	} else {
+		index = (style & SWT.H_SCROLL) != 0 ? 1 : 2;
+	}
+	int status = OS.GetIndexedSubControl (parentHandle, (short)index, outControl);
 	if (status != OS.noErr) return null;
 	ScrollBar bar = new ScrollBar ();
 	bar.parent = this;
@@ -301,6 +312,7 @@ void resetVisibleRegion (int control) {
 
 void resizeClientArea () {
 	if (scrolledHandle == 0) return;
+	if ((state & CANVAS) == 0) return;
 	int vWidth = 0, hHeight = 0;
 	int [] outMetric = new int [1];
 	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
@@ -308,11 +320,21 @@ void resizeClientArea () {
 	boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
 	if (isVisibleHBar) hHeight = outMetric [0];
 	if (isVisibleVBar) vWidth = outMetric [0];
-	Rect rect = new Rect ();
-	OS.GetControlBounds (scrolledHandle, rect);
+	int width, height;
+	if (OS.HIVIEW) {
+		CGRect rect = new CGRect (); 
+		OS.HIViewGetBounds (scrolledHandle, rect);
+		width = (int) rect.width;
+		height = (int) rect.height;
+	} else {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (scrolledHandle, rect);
+		width = rect.right - rect.left;
+		height = rect.bottom - rect.top;
+	}
 	Rect inset = inset ();
-	int width = Math.max (0, rect.right - rect.left - vWidth - inset.left - inset.right);
-	int height = Math.max (0, rect.bottom - rect.top - hHeight - inset.top - inset.bottom);
+	width = Math.max (0, width - vWidth - inset.left - inset.right);
+	height = Math.max (0, height - hHeight - inset.top - inset.bottom);
 	setBounds (handle, inset.left, inset.top, width, height, true, true, false);
 	if (isVisibleHBar) {
 		setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
@@ -365,6 +387,11 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	sendEvent (SWT.Resize);
 	return true;
+}
+
+void setZOrder () {
+	super.setZOrder ();
+	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
 }
 
 int topHandle () {

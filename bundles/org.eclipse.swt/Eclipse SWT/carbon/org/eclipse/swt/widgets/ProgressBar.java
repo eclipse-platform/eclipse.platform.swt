@@ -99,8 +99,8 @@ void createHandle () {
 	handle = outControl [0];
 }
 
-void drawBackground (int control) {
-	drawBackground (control, background);
+void drawBackground (int control, int context) {
+	drawBackground (control, context, background);
 }
 
 /**

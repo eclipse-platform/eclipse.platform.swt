@@ -306,13 +306,26 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 
 		/* Calculate src and dest rectangles/regions */
 		Rect rect = new Rect();
-		OS.GetControlBounds(data.control, rect);		
+		OS.GetControlBounds(data.control, rect);
+		int convertX = 0, convertY = 0;
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			int[] contentView = new int[1];
+			OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
+			OS.HIViewConvertPoint(pt, OS.HIViewGetSuperview(data.control), contentView[0]);
+			convertX = rect.left + (int) pt.x;
+			convertY = rect.top + (int) pt.y;
+			rect.left += (int) pt.x;
+			rect.top += (int) pt.y;
+			rect.right += (int) pt.x;
+			rect.bottom += (int) pt.y;
+		}
 		Rect srcRect = new Rect();
 		int left = rect.left + srcX;
 		int top = rect.top + srcY;
 		OS.SetRect(srcRect, (short)left, (short)top, (short)(left + width), (short)(top + height));
 		int srcRgn = OS.NewRgn();
-		OS.RectRgn(srcRgn, srcRect);		
+		OS.RectRgn(srcRgn, srcRect);
 		OS.SectRect(rect, srcRect, srcRect);
 		Rect destRect = new Rect ();
 		OS.SetRect(destRect, srcRect.left, srcRect.top, srcRect.right, srcRect.bottom);
@@ -371,7 +384,12 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 			OS.DiffRgn(srcRgn, destRgn, srcRgn);
 			OS.UnionRgn(srcRgn, invalRgn, invalRgn);
 			OS.SectRgn(data.visibleRgn, invalRgn, invalRgn);
-			OS.InvalWindowRgn(window, invalRgn);
+			if (OS.HIVIEW) {
+				OS.OffsetRgn(invalRgn, (short)-convertX, (short)-convertY);
+				OS.HIViewSetNeedsDisplayInRegion(data.control, invalRgn, true);
+			} else {
+				OS.InvalWindowRgn(window, invalRgn);
+			}
 			OS.DisposeRgn(invalRgn);
 		}
 		
@@ -1745,9 +1763,9 @@ public void getClipping(Region region) {
 	if (data.paintEvent != 0 && data.visibleRgn != 0) {
 		if (bounds == null) bounds = new Rect();
 		OS.GetControlBounds(data.control, bounds);
-		OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
+		if (!(OS.HIVIEW && data.paintEvent != 0)) OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
 		OS.SectRgn(data.visibleRgn, clipping, clipping);
-		OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
+		if (!(OS.HIVIEW && data.paintEvent != 0)) OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
 	}
 }
 
@@ -2440,6 +2458,12 @@ void setCGClipping () {
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.GetPortBounds(port, portRect);
 	OS.GetControlBounds(data.control, rect);
+	boolean isPaint = OS.HIVIEW && data.paintEvent != 0;
+	if (isPaint) {
+		rect.right += rect.left;
+		rect.bottom += rect.top;
+		rect.left = rect.top = 0;
+	}
 	if (data.clipRgn != 0) {
 		int rgn = OS.NewRgn();
 		OS.CopyRgn(data.clipRgn, rgn);
