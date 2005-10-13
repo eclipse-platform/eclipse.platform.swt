@@ -20,7 +20,7 @@ public class OS extends Platform {
 		Library.loadLibrary ("swt-pi");
 	}
 	
-	public static final boolean HIVIEW = false;
+	public static final boolean HIVIEW = true;
 	public static final int VERSION;
 	static {
 		int [] response = new int [1];
