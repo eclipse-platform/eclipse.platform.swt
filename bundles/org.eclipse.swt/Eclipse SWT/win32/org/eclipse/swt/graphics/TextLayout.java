@@ -1530,6 +1530,7 @@ StyleItem[] merge (int items, int itemCount) {
 	int count = 0, start = 0, end = segmentsText.length(), itemIndex = 0, styleIndex = 0;
 	StyleItem[] runs = new StyleItem[itemCount + styles.length];
 	SCRIPT_ITEM scriptItem = new SCRIPT_ITEM();
+	boolean linkBefore = false;
 	while (start < end) {
 		StyleItem item = new StyleItem();
 		item.start = start;
@@ -1537,6 +1538,10 @@ StyleItem[] merge (int items, int itemCount) {
 		runs[count++] = item;
 		OS.MoveMemory(scriptItem, items + itemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 		item.analysis = scriptItem.a;
+		if (linkBefore) {
+			item.analysis.fLinkBefore = true;
+			linkBefore = false;
+		}
 		scriptItem.a = new SCRIPT_ANALYSIS();
 		OS.MoveMemory(scriptItem, items + (itemIndex + 1) * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 		int itemLimit = scriptItem.iCharPos;
@@ -1544,6 +1549,10 @@ StyleItem[] merge (int items, int itemCount) {
 		if (styleLimit <= itemLimit) {
 			styleIndex++;
 			start = styleLimit;
+			if (start < itemLimit) {
+				item.analysis.fLinkAfter = true;
+				linkBefore = true;
+			}
 		}
 		if (itemLimit <= styleLimit) {
 			itemIndex++;
