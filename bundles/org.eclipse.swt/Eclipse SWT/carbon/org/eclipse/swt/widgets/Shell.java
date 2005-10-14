@@ -817,6 +817,12 @@ void invalidateVisibleRegion (int control) {
 }
 
 void invalWindowRgn (int window, int rgn) {
+	if (OS.HIVIEW) {
+		display.needsPaint = true;
+		if (invalRgn == 0) invalRgn = OS.NewRgn();
+		OS.UnionRgn (rgn, invalRgn, invalRgn);
+		return;
+	}
 	/*
 	* Bug in the Macintosh.  InvalidWindowRgn() will not invalidate
 	* the window when it is called from the default kEventWindowUpdate

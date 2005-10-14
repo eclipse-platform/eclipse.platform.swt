@@ -495,7 +495,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 					short [] part = new short [1];
 					OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 					if (OS.HIVIEW) {
-						OS.HIViewSetNeedsDisplay (scrolledHandle, true);
+						redrawWidget (scrolledHandle, false);
 					} else {
 						drawFocusClipped (scrolledHandle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 					}

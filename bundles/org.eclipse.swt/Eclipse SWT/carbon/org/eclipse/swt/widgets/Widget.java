@@ -1054,12 +1054,15 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] region = new int [1];	
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
 	if (OS.HIVIEW) {
+		boolean oldInPaint = display.inPaint;
+		display.inPaint = true;
 		int[] context = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
 		int visibleRgn = region [0];
 		drawBackground (theControl [0], context [0]);
 		callPaintEventHandler (theControl [0], region [0], visibleRgn, theEvent, nextHandler);
 		drawWidget (theControl [0], context [0], region [0], visibleRgn, theEvent);
+		display.inPaint = oldInPaint;
 	} else {
 		if (getDrawCount (theControl [0]) > 0) return OS.noErr;
 		int visibleRgn = getVisibleRegion (theControl [0], true);
@@ -1351,8 +1354,21 @@ void redrawChildren (int control, int rgn) {
 
 void redrawWidget (int control, boolean children) {
 	if (OS.HIVIEW) {
-		OS.HIViewSetNeedsDisplay (control, true);
-		if (children) redrawChildren (control);
+		if (display.inPaint) {
+			int rgn = OS.NewRgn ();
+			Rect rect = new Rect ();
+			OS.GetControlBounds (control, rect);
+			rect.right += rect.left;
+			rect.bottom += rect.top;
+			rect.top = rect.left = 0;
+			OS.RectRgn (rgn, rect);
+			OS.HIViewConvertRegion (rgn, control, 0);
+			invalWindowRgn (0, rgn);
+			OS.DisposeRgn (rgn);
+		} else {
+			OS.HIViewSetNeedsDisplay (control, true);
+			if (children) redrawChildren (control);
+		}
 		return;
 	}
 	if (!isDrawing (control)) return;
@@ -1364,13 +1380,18 @@ void redrawWidget (int control, boolean children) {
 
 void redrawWidget (int control, int x, int y, int width, int height, boolean children) {
 	if (OS.HIVIEW) {
-		int rectRgn = OS.NewRgn ();
+		int rgn = OS.NewRgn ();
 		Rect rect = new Rect ();
 		OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
-		OS.RectRgn (rectRgn, rect);
-		OS.HIViewSetNeedsDisplayInRegion (control, rectRgn, true);
-		if (children) redrawChildren (control, rectRgn);
-		OS.DisposeRgn (rectRgn);
+		OS.RectRgn (rgn, rect);
+		if (display.inPaint) {
+			OS.HIViewConvertRegion (rgn, control, 0);
+			invalWindowRgn (0, rgn);
+		} else {
+			OS.HIViewSetNeedsDisplayInRegion (control, rgn, true);
+			if (children) redrawChildren (control, rgn);
+		}
+		OS.DisposeRgn (rgn);
 		return;
 	}
 	if (!isDrawing (control)) return;

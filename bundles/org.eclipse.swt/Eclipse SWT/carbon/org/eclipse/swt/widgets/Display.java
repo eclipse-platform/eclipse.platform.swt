@@ -117,6 +117,8 @@ public class Display extends Device {
 	int queue, lastModifiers;
 	boolean closing;
 	
+	boolean inPaint, needsPaint;
+
 	/* Deferred dispose window */
 	int disposeWindow;
 
@@ -2822,6 +2824,7 @@ public boolean readAndDispatch () {
 			runAsyncMessages (false);
 		}
 	}
+	events |= runPaint ();
 	if (events) {
 		runDeferredEvents ();
 		return true;
@@ -3284,6 +3287,24 @@ boolean runGrabs () {
 	} finally {
 		grabbing = false;
 		grabControl = null;
+	}
+	return true;
+}
+
+boolean runPaint () {
+	if (!needsPaint) return false;
+	needsPaint = false;
+	for (int i = 0; i < widgetTable.length; i++) {
+		Widget widget = widgetTable [i];
+		if (widget != null && widget instanceof Shell) {
+			Shell shell = (Shell) widget;
+			if (shell.invalRgn != 0) {
+				int invalRgn = shell.invalRgn;
+				shell.invalRgn = 0;
+				shell.redrawChildren (OS.HIViewGetRoot (shell.shellHandle), invalRgn);
+				OS.DisposeRgn (invalRgn);
+			}
+		}
 	}
 	return true;
 }
