@@ -2699,11 +2699,9 @@ public void setItemCount (int count) {
 	count = Math.max (0, count);
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (count == itemCount) return;
+	setDeferResize (true);
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
-	if (!isVirtual) {
-		setRedraw (false);
-		setDeferResize (true);
-	}	
+	if (!isVirtual) setRedraw (false);
 	int index = count;
 	while (index < itemCount) {
 		TableItem item = items [index];
@@ -2739,10 +2737,8 @@ public void setItemCount (int count) {
 			items [i] = new TableItem (this, SWT.NONE, i, true);
 		}
 	}
-	if (!isVirtual) {
-		setRedraw (true);
-		setDeferResize (false);
-	}
+	if (!isVirtual) setRedraw (true);
+	setDeferResize (false);
 }
 
 void setItemHeight () {
