@@ -549,8 +549,8 @@ void drawWidget (int control, int context, int damageRgn, int visibleRgn, int th
 	boolean limit = region.contains(rgnRect.right - 1, rgnRect.bottom - 1);
 	if (origin && limit) return;
 	
-	int port; 
-	int [] buffer;
+	int port = 0; 
+	int [] buffer = null;
 	if (!OS.HIVIEW) {
 		buffer = new int [1];
 		Rect portRect = new Rect ();
