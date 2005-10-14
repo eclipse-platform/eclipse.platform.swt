@@ -1984,7 +1984,7 @@ public class ImageAnalyzer {
 		char[] dump = null;
 		byte[] alphas = imageData.alphaData;
 		try {
-			int length = imageData.height * (6 + 4 * imageData.bytesPerLine + lineDelimiter.length());
+			int length = imageData.height * (6 + 3 * imageData.bytesPerLine + lineDelimiter.length());
 			if (alphas != null && alphas.length > 0) {
 				length += imageData.height * (6 + 3 * imageData.width + lineDelimiter.length()) + 6 + lineDelimiter.length();
 			}
