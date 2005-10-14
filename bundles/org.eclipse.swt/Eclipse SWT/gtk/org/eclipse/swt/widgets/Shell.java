@@ -567,6 +567,13 @@ void createHandle (int index) {
 	//TEMPORARY CODE
 	if ((style & SWT.ON_TOP) == 0) modal |= (parent != null && (parent.style & bits) != 0);
 	OS.gtk_window_set_modal (shellHandle, modal);
+	/*
+	* Feature in GTK.  Realizing the shell triggers a size allocate event,
+	* which may be confused for a resize event from the window manager if
+	* received too late.  The fix is to realize the window during creation
+	* to avoid confusion.
+	*/
+	OS.gtk_widget_realize (shellHandle);
 }
 
 Composite findDeferredControl () {
