@@ -645,17 +645,17 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		if (OS.HIVIEW) {
 			CGPoint pt = new CGPoint ();
 			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-			OS.HIViewConvertPoint (pt, 0, parent.handle);
-			int x = (int) pt.x;
-			int y = (int) pt.y;
+			OS.HIViewConvertPoint (pt, 0, handle);
 			CGRect rect = new CGRect ();
 			OS.HIViewGetBounds (handle, rect);
+			int x = (int) pt.x;
 			int width = (int) rect.width;
 			if (width - x < 12) {
+				OS.HIViewConvertPoint (pt, handle, parent.handle);
 				Event event = new Event ();
 				event.detail = SWT.ARROW;
-				event.x = x;
-				event.y = y;
+				event.x = (int) pt.x;
+				event.y = (int) pt.y;
 				postEvent (SWT.Selection, event);				
 			}
 		} else {
