@@ -1106,11 +1106,9 @@ void hookEvents () {
  */
 public int internal_new_GC (GCData data) {
 	checkWidget();
+	int window = OS.GetControlOwner (handle);
 	int port = data != null ? data.port : 0;
-	if (port == 0) {
-		int window = OS.GetControlOwner (handle);
-		port = OS.GetWindowPort (window);
-	}
+	if (port == 0) port = OS.GetWindowPort (window);
 	int context;
 	int [] buffer = new int [1];
 	boolean isPaint = OS.HIVIEW && data != null && data.paintEvent != 0; 
@@ -1135,15 +1133,25 @@ public int internal_new_GC (GCData data) {
 	Rect portRect = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetPortBounds (port, portRect);
-	if (!isPaint) {
+	if (isPaint) {
+		rect.right += rect.left;
+		rect.bottom += rect.top;
+		rect.left = rect.top = 0;
+	} else {
+		if (OS.HIVIEW) {
+			int [] contentView = new int [1];
+			OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+			CGPoint pt = new CGPoint ();
+			OS.HIViewConvertPoint (pt, handle, contentView [0]);
+			rect.left += (int) pt.x;
+			rect.top += (int) pt.y;
+			rect.right += (int) pt.x;
+			rect.bottom += (int) pt.y;
+		}
 		OS.ClipCGContextToRegion (context, portRect, visibleRgn);
 		int portHeight = portRect.bottom - portRect.top;
 		OS.CGContextScaleCTM (context, 1, -1);
 		OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
-	} else {
-		rect.right += rect.left;
-		rect.bottom += rect.top;
-		rect.left = rect.top = 0;
 	}
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
