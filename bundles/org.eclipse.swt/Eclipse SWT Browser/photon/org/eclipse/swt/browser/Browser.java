@@ -165,6 +165,10 @@ public Browser(Composite parent, int style) {
 	OS.PtRealizeWidget(webHandle);
 }
 
+public static void clearSessions () {
+	// TODO
+}
+
 static int webProc(int handle, int data, int info) {
 	Display display = Display.getCurrent();
 	int parent = OS.PtWidgetParent (handle);
