@@ -1142,7 +1142,7 @@ public int internal_new_GC (GCData data) {
 			int [] contentView = new int [1];
 			OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
 			CGPoint pt = new CGPoint ();
-			OS.HIViewConvertPoint (pt, handle, contentView [0]);
+			OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
 			rect.left += (int) pt.x;
 			rect.top += (int) pt.y;
 			rect.right += (int) pt.x;
