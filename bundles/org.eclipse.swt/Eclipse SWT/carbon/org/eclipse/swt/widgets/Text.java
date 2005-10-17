@@ -20,6 +20,8 @@ import org.eclipse.swt.internal.carbon.TXNLongRect;
 import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -302,24 +304,65 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	int width, height;
+	int width = 0, height = 0;
 	if (txnObject == 0) {
 		Rect rect = new Rect ();
 		OS.GetBestControlRect (handle, rect, null);
 		width = rect.right - rect.left;
 		height = rect.bottom - rect.top;
 	} else {
-		TXNLongRect oTextRect = new TXNLongRect ();
-		OS.TXNGetRectBounds (txnObject, null, null, oTextRect);
-		width = oTextRect.right - oTextRect.left;
-		height = oTextRect.bottom - oTextRect.top;
+		if (OS.VERSION >= 0x1030) {
+			if ((style & SWT.WRAP) != 0) {
+				int [] oDataHandle = new int [1];
+				OS.TXNGetData (txnObject, OS.kTXNStartOffset, OS.kTXNEndOffset, oDataHandle);
+				if (oDataHandle [0] != 0) {
+					int length = OS.GetHandleSize (oDataHandle [0]);
+					if (length != 0) {
+						int [] ptr = new int [1];
+						OS.HLock (oDataHandle [0]);
+						OS.memcpy (ptr, oDataHandle [0], 4);
+						int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);
+						if (str != 0) {
+							float [] w = new float [1], h = new float [1];
+							HIThemeTextInfo info = new HIThemeTextInfo ();
+							info.state = OS.kThemeStateActive;
+							if (font != null) {
+								OS.TextFont (font.id);
+								OS.TextFace (font.style);
+								OS.TextSize (font.size);
+								info.fontID = (short) OS.kThemeCurrentPortFont; 
+							} else {
+								info.fontID = (short) defaultThemeFont ();
+							}
+							OS.HIThemeGetTextDimensions (str, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
+							OS.CFRelease (str);
+							width = (int) w [0];
+							height = (int) h [0];
+						}
+						OS.HUnlock (oDataHandle[0]);
+					}
+					OS.DisposeHandle (oDataHandle[0]);
+				}
+			} else {
+				CGRect rect = new CGRect ();
+				OS.TXNGetHIRect (txnObject, OS.kTXNTextRectKey, rect);
+				width = (int) rect.width;
+				height = (int) rect.height;
+			}
+		} else {
+			TXNLongRect oTextRect = new TXNLongRect ();
+			OS.TXNGetRectBounds (txnObject, null, null, oTextRect);
+			width = oTextRect.right - oTextRect.left;
+			height = oTextRect.bottom - oTextRect.top;
+		}
 	}
 	if (width <= 0) width = DEFAULT_WIDTH;
 	if (height <= 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
-	width = trim.width;  height = trim.height;
+	width = trim.width;
+	height = trim.height;
 	return new Point (width, height);
 }
 
@@ -1105,11 +1148,19 @@ public int getTopIndex () {
 public int getTopPixel () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 0;
-	Rect oViewRect = new Rect ();
-	TXNLongRect oDestinationRect = new TXNLongRect ();
-	TXNLongRect oTextRect = new TXNLongRect ();
-	OS.TXNGetRectBounds (txnObject, oViewRect, oDestinationRect, oTextRect);
-	return oDestinationRect.top - oTextRect.top;
+	if (OS.VERSION >= 0x1030) {
+		CGRect rect = new CGRect ();
+		OS.TXNGetHIRect (txnObject, OS.kTXNDestinationRectKey, rect);
+		int destY = (int) rect.y;
+		OS.TXNGetHIRect (txnObject, OS.kTXNTextRectKey, rect);
+		return destY - (int) rect.y;
+	} else {
+		Rect oViewRect = new Rect ();
+		TXNLongRect oDestinationRect = new TXNLongRect ();
+		TXNLongRect oTextRect = new TXNLongRect ();
+		OS.TXNGetRectBounds (txnObject, oViewRect, oDestinationRect, oTextRect);
+		return oDestinationRect.top - oTextRect.top;
+	}
 }
 
 String getTXNText (int iStartOffset, int iEndOffset) {

@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.ControlKind;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -123,24 +124,29 @@ ScrollBar createStandardBar (int style) {
 	short [] count = new short [1];
 	OS.CountSubControls (parentHandle, count);
 	if (count [0] == 0) return null;
+	int barHandle = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
 	int [] outControl = new int [1];
-	int index;
-	if (OS.HIVIEW) {
-		if (parentHandle == handle) {
-			index = (style & SWT.H_SCROLL) != 0 ? 2 : 1;
-		} else {
-			index = (style & SWT.H_SCROLL) != 0 ? 2 : 3;
+	ControlKind kind = new ControlKind ();
+	for (int i = 0; i < count [0]; i++) {
+		OS.GetIndexedSubControl (parentHandle, (short) (i + 1), outControl);		
+		OS.GetControlKind (outControl [0], kind);
+		if (kind.kind == OS.kControlKindScrollBar) {
+			Point point = getControlSize (outControl [0]);
+			if ((style & SWT.H_SCROLL) != 0) {
+				if (point.y == outMetric [0]) barHandle = outControl [0];
+			} else {
+				if (point.x == outMetric [0]) barHandle = outControl [0];
+			}
 		}
-	} else {
-		index = (style & SWT.H_SCROLL) != 0 ? 1 : 2;
 	}
-	int status = OS.GetIndexedSubControl (parentHandle, (short)index, outControl);
-	if (status != OS.noErr) return null;
+	if (barHandle == 0) return null;
 	ScrollBar bar = new ScrollBar ();
 	bar.parent = this;
 	bar.style = style;
 	bar.display = display;
-	bar.handle = outControl [0];
+	bar.handle = barHandle;
 	bar.register ();
 	bar.hookEvents ();
 	return bar;
