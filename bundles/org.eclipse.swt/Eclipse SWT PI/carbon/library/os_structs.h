@@ -227,6 +227,18 @@ void setControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyl
 #define ControlFontStyleRec_sizeof() 0
 #endif
 
+#ifndef NO_ControlKind
+void cacheControlKindFields(JNIEnv *env, jobject lpObject);
+ControlKind *getControlKindFields(JNIEnv *env, jobject lpObject, ControlKind *lpStruct);
+void setControlKindFields(JNIEnv *env, jobject lpObject, ControlKind *lpStruct);
+#define ControlKind_sizeof() sizeof(ControlKind)
+#else
+#define cacheControlKindFields(a,b)
+#define getControlKindFields(a,b,c) NULL
+#define setControlKindFields(a,b,c)
+#define ControlKind_sizeof() 0
+#endif
+
 #ifndef NO_ControlTabEntry
 void cacheControlTabEntryFields(JNIEnv *env, jobject lpObject);
 ControlTabEntry *getControlTabEntryFields(JNIEnv *env, jobject lpObject, ControlTabEntry *lpStruct);

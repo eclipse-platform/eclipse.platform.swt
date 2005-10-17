@@ -188,6 +188,7 @@ public class OS extends Platform {
 	public static final int kControlHandlesTracking = 1 << 5;
 	public static final int kControlIconTransformTag = ('t'<<24) + ('r'<<16) + ('f'<<8) + 'm';
 	public static final int kControlIndicatorPart = 129;
+	public static final int kControlKindScrollBar = ('s'<<24) + ('b'<<16) + ('a'<<8) + 'r';
 	public static final int kControlMsgApplyTextColor = 30;
 	public static final int kControlMsgSetUpBackground = 23;
 	public static final int kControlPageDownPart = 23;
@@ -628,6 +629,11 @@ public class OS extends Platform {
 	public static final int kSystemIconsCreator = ('m'<<24) + ('a'<<16) + ('c'<<8) + 's';
 	public static final int kSymbolLigaturesOffSelector = 17;
 	public static final int kControlSliderDoesNotPoint = 2;
+	public static final int kTXNViewRectKey = 0;
+	public static final int kTXNDestinationRectKey = 1;
+	public static final int kTXNTextRectKey = 2;
+	public static final int kTXNVerticalScrollBarRectKey = 3;
+	public static final int kTXNHorizontalScrollBarRectKey = 4;
 	public static final int kTXNAlwaysWrapAtViewEdgeMask = 1 << 11;
 	public static final int kTXNBackgroundTypeRGB = 1;
 	public static final int kTXNDefaultFontSize = 0x000C0000;
@@ -902,6 +908,7 @@ public static final native int CFNumberFormatterCopyProperty(int formatter, int 
 public static final native int CFNumberFormatterCreate(int alloc, int locale, int style);
 public static final native int CFStringCreateWithBytes(int alloc, byte[] bytes, int numBytes, int encoding, boolean isExternalRepresentation);
 public static final native int CFStringCreateWithCharacters(int alloc, char[] chars, int numChars);
+public static final native int CFStringCreateWithCharacters(int alloc, int chars, int numChars);
 public static final native int CFStringGetBytes(int theString, CFRange range, int encoding, byte lossByte, boolean isExternalRepresentation, byte[] buffer, int maxBufLen, int[] usedBufLen);
 public static final native void CFStringGetCharacters(int theString, CFRange range, char[] buffer);
 public static final native int CFStringGetLength(int theString);
@@ -1174,6 +1181,7 @@ public static final native int GetControlData(int inControl, short inPart, int i
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, ControlEditTextSelectionRec inBuffer, int[] outActualSize);
 public static final native int GetControlEventTarget(int cHandle);
 public static final native int GetControlFeatures(int inControl, int[] outFeatures);
+public static final native int GetControlKind(int inControl, ControlKind kind);
 public static final native int GetControlOwner(int cHandle);
 public static final native int GetControlProperty(int control, int  propertyCreator, int propertyTag, int bufferSize, int[] actualSize,  int[] propertyBuffer);
 public static final native int GetControlReference(int cHandle);
@@ -1329,6 +1337,7 @@ public static final native int HIThemeDrawTextBox(int inString, CGRect inBounds,
 public static final native int HIThemeDrawTrack(HIThemeTrackDrawInfo inDrawInfo, CGRect inGhostRect, int inContext, int inOrientation);
 public static final native int HIThemeGetButtonBackgroundBounds(CGRect inBounds, HIThemeButtonDrawInfo inDrawInfo, CGRect outBounds);
 public static final native int HIThemeGetButtonContentBounds(CGRect inBounds, HIThemeButtonDrawInfo inDrawInfo, CGRect outBounds);
+public static final native int HIThemeGetTextDimensions(int inString, float inWidth, HIThemeTextInfo inTextInfo, float[] outWidth, float[] outHeight, float[] outBaseline);
 public static final native boolean HIThemeHitTestScrollBarArrows(CGRect inScrollBarBounds, HIScrollBarTrackInfo inTrackInfo, boolean inIsHoriz, CGPoint inPtHit, CGRect outTrackBounds, short[] outPartCode);
 public static final native boolean HIThemeHitTestTrack(HIThemeTrackDrawInfo inDrawInfo, CGPoint inMousePoint, short[] outPartHit);
 public static final native int HIThemeSetFill(int inBrush, int inInfo, int inContext, int inOrientation);
@@ -1653,6 +1662,7 @@ public static final native int TXNGetData(int txHandle, int startOffset, int end
 public static final native int TXNGetLineCount(int txHandle, int[] lineTotal);
 public static final native int TXNGetLineMetrics(int iTXNObject, int iLineNumber, int [] oLineWidth, int [] oLineHeight);
 public static final native int TXNGetTXNObjectControls(int iTXNObject, int iControlCount, int [] iControlTags, int [] oControlData);
+public static final native int TXNGetHIRect(int iTXNObject, int iTXNRectKey, CGRect oRectangle);
 public static final native int TXNGetRectBounds(int iTXNObject, Rect oViewRect, TXNLongRect oDestinationRect, TXNLongRect oTextRect);
 public static final native void TXNGetSelection(int txHandle, int[] startOffset, int[] endOffset);
 public static final native void TXNGetViewRect (int iTXNObject, Rect oViewRect);

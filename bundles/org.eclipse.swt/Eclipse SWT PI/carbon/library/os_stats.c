@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 888;
-int OS_nativeFunctionCallCount[888];
+int OS_nativeFunctionCount = 892;
+int OS_nativeFunctionCallCount[892];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -78,7 +78,8 @@ char * OS_nativeFunctionNames[] = {
 	"CFNumberFormatterCreate",
 	"CFRelease",
 	"CFStringCreateWithBytes",
-	"CFStringCreateWithCharacters",
+	"CFStringCreateWithCharacters__III",
+	"CFStringCreateWithCharacters__I_3CI",
 	"CFStringGetBytes",
 	"CFStringGetCharacters",
 	"CFStringGetLength",
@@ -352,6 +353,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetControlData__ISII_3S_3I",
 	"GetControlEventTarget",
 	"GetControlFeatures",
+	"GetControlKind",
 	"GetControlOwner",
 	"GetControlProperty",
 	"GetControlReference",
@@ -505,6 +507,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIThemeDrawTrack",
 	"HIThemeGetButtonBackgroundBounds",
 	"HIThemeGetButtonContentBounds",
+	"HIThemeGetTextDimensions",
 	"HIThemeHitTestScrollBarArrows",
 	"HIThemeHitTestTrack",
 	"HIThemeSetFill",
@@ -830,6 +833,7 @@ char * OS_nativeFunctionNames[] = {
 	"TXNEchoMode",
 	"TXNFocus",
 	"TXNGetData",
+	"TXNGetHIRect",
 	"TXNGetLineCount",
 	"TXNGetLineMetrics",
 	"TXNGetRectBounds",

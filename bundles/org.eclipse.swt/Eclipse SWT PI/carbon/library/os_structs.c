@@ -804,6 +804,40 @@ void setControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyl
 }
 #endif
 
+#ifndef NO_ControlKind
+typedef struct ControlKind_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID signature, kind;
+} ControlKind_FID_CACHE;
+
+ControlKind_FID_CACHE ControlKindFc;
+
+void cacheControlKindFields(JNIEnv *env, jobject lpObject)
+{
+	if (ControlKindFc.cached) return;
+	ControlKindFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ControlKindFc.signature = (*env)->GetFieldID(env, ControlKindFc.clazz, "signature", "I");
+	ControlKindFc.kind = (*env)->GetFieldID(env, ControlKindFc.clazz, "kind", "I");
+	ControlKindFc.cached = 1;
+}
+
+ControlKind *getControlKindFields(JNIEnv *env, jobject lpObject, ControlKind *lpStruct)
+{
+	if (!ControlKindFc.cached) cacheControlKindFields(env, lpObject);
+	lpStruct->signature = (*env)->GetIntField(env, lpObject, ControlKindFc.signature);
+	lpStruct->kind = (*env)->GetIntField(env, lpObject, ControlKindFc.kind);
+	return lpStruct;
+}
+
+void setControlKindFields(JNIEnv *env, jobject lpObject, ControlKind *lpStruct)
+{
+	if (!ControlKindFc.cached) cacheControlKindFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ControlKindFc.signature, (jint)lpStruct->signature);
+	(*env)->SetIntField(env, lpObject, ControlKindFc.kind, (jint)lpStruct->kind);
+}
+#endif
+
 #ifndef NO_ControlTabEntry
 typedef struct ControlTabEntry_FID_CACHE {
 	int cached;

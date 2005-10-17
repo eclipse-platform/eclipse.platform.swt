@@ -963,18 +963,30 @@ fail:
 }
 #endif
 
-#ifndef NO_CFStringCreateWithCharacters
-JNIEXPORT jint JNICALL OS_NATIVE(CFStringCreateWithCharacters)
+#ifndef NO_CFStringCreateWithCharacters__III
+JNIEXPORT jint JNICALL OS_NATIVE(CFStringCreateWithCharacters__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFStringCreateWithCharacters__III_FUNC);
+	rc = (jint)CFStringCreateWithCharacters((CFAllocatorRef)arg0, (const UniChar *)arg1, (CFIndex)arg2);
+	OS_NATIVE_EXIT(env, that, CFStringCreateWithCharacters__III_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFStringCreateWithCharacters__I_3CI
+JNIEXPORT jint JNICALL OS_NATIVE(CFStringCreateWithCharacters__I_3CI)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
 {
 	jchar *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CFStringCreateWithCharacters_FUNC);
+	OS_NATIVE_ENTER(env, that, CFStringCreateWithCharacters__I_3CI_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jint)CFStringCreateWithCharacters((CFAllocatorRef)arg0, (const UniChar *)lparg1, (CFIndex)arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, CFStringCreateWithCharacters_FUNC);
+	OS_NATIVE_EXIT(env, that, CFStringCreateWithCharacters__I_3CI_FUNC);
 	return rc;
 }
 #endif
@@ -4635,6 +4647,22 @@ fail:
 }
 #endif
 
+#ifndef NO_GetControlKind
+JNIEXPORT jint JNICALL OS_NATIVE(GetControlKind)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	ControlKind _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetControlKind_FUNC);
+	if (arg1) if ((lparg1 = getControlKindFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)GetControlKind((ControlRef)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) setControlKindFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, GetControlKind_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetControlOwner
 JNIEXPORT jint JNICALL OS_NATIVE(GetControlOwner)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -7066,6 +7094,31 @@ fail:
 	if (arg1 && lparg1) setHIThemeButtonDrawInfoFields(env, arg1, lparg1);
 	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, HIThemeGetButtonContentBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeGetTextDimensions
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetTextDimensions)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jobject arg2, jfloatArray arg3, jfloatArray arg4, jfloatArray arg5)
+{
+	HIThemeTextInfo _arg2, *lparg2=NULL;
+	jfloat *lparg3=NULL;
+	jfloat *lparg4=NULL;
+	jfloat *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetTextDimensions_FUNC);
+	if (arg2) if ((lparg2 = getHIThemeTextInfoFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetFloatArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetFloatArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetFloatArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)HIThemeGetTextDimensions((CFStringRef)arg0, arg1, lparg2, lparg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseFloatArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseFloatArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseFloatArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) setHIThemeTextInfoFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, HIThemeGetTextDimensions_FUNC);
 	return rc;
 }
 #endif
@@ -11373,6 +11426,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(TXNGetData)
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, TXNGetData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TXNGetHIRect
+JNIEXPORT jint JNICALL OS_NATIVE(TXNGetHIRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	CGRect _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, TXNGetHIRect_FUNC);
+	if (arg2) if ((lparg2 = getCGRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)TXNGetHIRect((TXNObject)arg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setCGRectFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, TXNGetHIRect_FUNC);
 	return rc;
 }
 #endif
