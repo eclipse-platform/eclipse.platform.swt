@@ -451,6 +451,7 @@ boolean contains(int shellX, int shellY) {
 		x = shellX - controlBounds.left;
 		y = shellY - controlBounds.top;
 	}
+	if (y < getHeaderHeight ()) return false;
 	return getClientArea ().contains (x, y);
 }
 
