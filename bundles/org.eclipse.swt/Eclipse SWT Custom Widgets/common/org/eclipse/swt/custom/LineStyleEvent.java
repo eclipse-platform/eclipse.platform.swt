@@ -57,5 +57,7 @@ public LineStyleEvent(StyledTextEvent e) {
 	lineOffset = e.detail;
 	lineText = e.text;
 	styles = e.styles;
+	alignment = -1;
+	indent = -1;
 }
 }
