@@ -312,42 +312,35 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = rect.bottom - rect.top;
 	} else {
 		if (OS.VERSION >= 0x1030) {
-			if ((style & SWT.WRAP) != 0) {
-				int [] oDataHandle = new int [1];
-				OS.TXNGetData (txnObject, OS.kTXNStartOffset, OS.kTXNEndOffset, oDataHandle);
-				if (oDataHandle [0] != 0) {
-					int length = OS.GetHandleSize (oDataHandle [0]);
-					if (length != 0) {
-						int [] ptr = new int [1];
-						OS.HLock (oDataHandle [0]);
-						OS.memcpy (ptr, oDataHandle [0], 4);
-						int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);
-						if (str != 0) {
-							float [] w = new float [1], h = new float [1];
-							HIThemeTextInfo info = new HIThemeTextInfo ();
-							info.state = OS.kThemeStateActive;
-							if (font != null) {
-								OS.TextFont (font.id);
-								OS.TextFace (font.style);
-								OS.TextSize (font.size);
-								info.fontID = (short) OS.kThemeCurrentPortFont; 
-							} else {
-								info.fontID = (short) defaultThemeFont ();
-							}
-							OS.HIThemeGetTextDimensions (str, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
-							OS.CFRelease (str);
-							width = (int) w [0];
-							height = (int) h [0];
+			int [] oDataHandle = new int [1];
+			OS.TXNGetData (txnObject, OS.kTXNStartOffset, OS.kTXNEndOffset, oDataHandle);
+			if (oDataHandle [0] != 0) {
+				int length = OS.GetHandleSize (oDataHandle [0]);
+				if (length != 0) {
+					int [] ptr = new int [1];
+					OS.HLock (oDataHandle [0]);
+					OS.memcpy (ptr, oDataHandle [0], 4);
+					int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);
+					if (str != 0) {
+						float [] w = new float [1], h = new float [1];
+						HIThemeTextInfo info = new HIThemeTextInfo ();
+						info.state = OS.kThemeStateActive;
+						if (font != null) {
+							OS.TextFont (font.id);
+							OS.TextFace (font.style);
+							OS.TextSize (font.size);
+							info.fontID = (short) OS.kThemeCurrentPortFont; 
+						} else {
+							info.fontID = (short) defaultThemeFont ();
 						}
-						OS.HUnlock (oDataHandle[0]);
+						OS.HIThemeGetTextDimensions (str, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
+						OS.CFRelease (str);
+						width = (int) w [0];
+						height = (int) h [0];
 					}
-					OS.DisposeHandle (oDataHandle[0]);
+					OS.HUnlock (oDataHandle[0]);
 				}
-			} else {
-				CGRect rect = new CGRect ();
-				OS.TXNGetHIRect (txnObject, OS.kTXNTextRectKey, rect);
-				width = (int) rect.width;
-				height = (int) rect.height;
+				OS.DisposeHandle (oDataHandle[0]);
 			}
 		} else {
 			TXNLongRect oTextRect = new TXNLongRect ();
@@ -453,24 +446,20 @@ void createHandle () {
 			OS.memcpy (ptr, rect, Rect.sizeof);
 			int [] tags = new int [] {
 				OS.kTXNDisableDragAndDropTag,
+				OS.kTXNDoFontSubstitution,
 				OS.kTXNIOPrivilegesTag,
 				OS.kTXNMarginsTag,
 				OS.kTXNJustificationTag,
-				OS.kTXNDoFontSubstitution,
-				OS.kTXNWordWrapStateTag,
-				OS.kTXNAutoScrollBehaviorTag,
 			};
 			int just = OS.kTXNFlushLeft;
 			if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
 			if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
 			int [] datas = new int [] {
 				1,
+				1,
 				(style & SWT.READ_ONLY) != 0 ? 1 : 0,
 				ptr,
 				just,
-				1,
-				(style & SWT.WRAP) != 0 ? 0 : 1,
-				0,
 			};
 			OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 			OS.DisposePtr (ptr);
