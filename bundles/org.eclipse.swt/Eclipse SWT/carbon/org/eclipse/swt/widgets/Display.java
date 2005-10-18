@@ -2638,10 +2638,13 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			inPoint.x = where.h - windowRect.left;
 			inPoint.y = where.v - windowRect.top;
 			if (OS.HIVIEW) {
+				int root = OS.HIViewGetRoot (theWindow [0]);
 				int [] buffer = new int [1];
-				OS.HIViewGetViewForMouseEvent (OS.HIViewGetRoot (theWindow [0]), theEvent, buffer);
+				OS.HIViewGetViewForMouseEvent (root, theEvent, buffer);
 				int view = buffer [0];
-				while (view != 0 && !OS.IsControlEnabled (view)) {	
+				OS.HIViewFindByID (root, OS.kHIViewWindowContentID (), buffer);
+				int contentView = buffer [0]; 
+				while (view != contentView && !OS.IsControlEnabled (view)) {	
 					view = OS.HIViewGetSuperview (view);
 				}
 				Widget widget = null;
@@ -2653,7 +2656,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 						consume = true;
 					}
 					view = OS.HIViewGetSuperview (view);
-				} while (view != 0);
+				} while (view != contentView);
 				if (widget != null) {
 					if (widget.contains ((int) inPoint.x, (int) inPoint.y)) {
 						int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
