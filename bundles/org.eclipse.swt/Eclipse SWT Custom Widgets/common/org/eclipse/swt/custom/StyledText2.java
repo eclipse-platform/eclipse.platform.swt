@@ -111,7 +111,6 @@ public class StyledText2 extends Canvas {
 	int verticalScrollOffset = 0;		// pixel based
 	int horizontalScrollOffset = 0;		// pixel based
 	int topIndex = 0;					// top visible line
-	int lastPaintTopIndex = -1;
 	int topOffset = 0;					// offset of first character in top line
 	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new visible lines during Resize callback
 	int clientAreaWidth = 0;			// the client area width. Needed during Resize callback to determine if line wrap needs to be recalculated
@@ -164,13 +163,11 @@ public class StyledText2 extends Canvas {
 	int lineIndent;
 
 	final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
-	final static boolean DOUBLE_BUFFER;
 	static {
 		String platform = SWT.getPlatform();
 		IS_CARBON = "carbon".equals(platform);
 		IS_GTK = "gtk".equals(platform);
 		IS_MOTIF = "motif".equals(platform);
-		DOUBLE_BUFFER = !IS_CARBON;
 	}
 
 	/**
@@ -1416,7 +1413,7 @@ public class StyledText2 extends Canvas {
  * @see #getStyle
  */
 public StyledText2(Composite parent, int style) {
-	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
+	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED));
 	// set the bg/fg in the OS to ensure that these are the same as StyledText, necessary
 	// for ensuring that the bg/fg the IME box uses is the same as what StyledText uses
 	super.setForeground(getForeground());
@@ -3111,40 +3108,6 @@ void doWordPrevious() {
 		doSelectionWordPrevious();
 	}
 }
-/**
- * Draws the specified rectangle.
- * Draw directly without invalidating the affected area.
- * <p>
- *
- * @param x the x position
- * @param y the y position
- * @param width the width
- * @param height the height
- */
-void draw(int x, int y, int width, int height) {
-	Caret caret = getCaret();
-	boolean caretVisible = false;
-	if (caret != null) {
-		caretVisible = caret.getVisible();
-		caret.setVisible(false);
-	}
-	int startLine = getLineIndex(y);
-	int endY = y + height;
-	int paintY = getLinePixel(startLine);
-	int paintX = getClientArea().x + leftMargin - horizontalScrollOffset;
-	int lineCount = isSingleLine() ? 1 : content.getLineCount();
-	GC gc = new GC(this);
-	Color background = getBackground();
-	Color foreground = getForeground();
-	for (int i = startLine; paintY < endY && i < lineCount; i++) {
-		String line = content.getLine(i);
-		paintY += renderer.drawLine(line, i, paintX, paintY, gc, background, foreground, false);
-	}
-	gc.dispose();
-	if (caret != null) {
-		caret.setVisible(caretVisible);
-	}
-}
 /** 
  * Ends the autoscroll process.
  */
@@ -4730,11 +4693,7 @@ void internalRedrawRange(int start, int length, boolean clearBackground) {
 	rect.x += leftMargin - horizontalScrollOffset;
 	rect.y += getLinePixel(firstLine);
 	if (fullLineRedraw) rect.width = clientArea.width - leftMargin - rightMargin;	
-	if (clearBackground) {
-		super.redraw(rect.x, rect.y, rect.width, rect.height, false);
-	} else {
-		draw(rect.x, rect.y, rect.width, rect.height);
-	}
+	super.redraw(rect.x, rect.y, rect.width, rect.height, false);
 	
 	int lineCount = lastLine - firstLine + 1;
 	if (lineCount > 1) {
@@ -4743,11 +4702,7 @@ void internalRedrawRange(int start, int length, boolean clearBackground) {
 		// redraw center lines
 		if (lineCount > 2) {
 			rect.y += rect.height;
-			if (clearBackground) {
-				super.redraw(0, rect.y, clientArea.width, lastLineTop - rect.y, false);
-			} else {
-				draw(0, rect.y, clientArea.width, lastLineTop - rect.y);
-			}
+			super.redraw(0, rect.y, clientArea.width, lastLineTop - rect.y, false);
 		}
 
 		// redraw last line 
@@ -4772,13 +4727,10 @@ void internalRedrawRange(int start, int length, boolean clearBackground) {
 			rect.x += leftMargin - horizontalScrollOffset;
 			rect.y += lastLineTop;
 			if (fullLineRedraw) rect.width = clientArea.width - leftMargin - rightMargin;
-			if (clearBackground) {
-				super.redraw(rect.x, rect.y, rect.width, rect.height, false);
-			} else {
-				draw(rect.x, rect.y, rect.width, rect.height);
-			}
+			super.redraw(rect.x, rect.y, rect.width, rect.height, false);
 		}
 	}
+	if (clearBackground) update();
 }
 /** 
  * Frees resources.
@@ -5037,12 +4989,29 @@ void handleMouseUp(Event event) {
  * @param event paint event
  */
 void handlePaint(Event event) {
-	// Check if there is work to do
-	if (event.height == 0) return;
+	if (event.width == 0 || event.height == 0) return;
+	Rectangle clientArea = getClientArea();
+	if (clientArea.width == 0 || clientArea.height == 0) return;
+	
 	int startLine = getLineIndex(event.y);
-	int startY = getLinePixel(startLine);
-	int renderHeight = event.y + event.height - startY;
-	performPaint(event.gc, startLine, startY, renderHeight);
+	int y = getLinePixel(startLine);
+	int endY = event.y + event.height;
+	GC gc = event.gc;
+	Color background = getBackground();
+	Color foreground = getForeground();
+	if (endY > 0) {
+		int lineCount = isSingleLine() ? 1 : content.getLineCount();
+		int x = clientArea.x + leftMargin - horizontalScrollOffset;
+		for (int i = startLine; y < endY && i < lineCount; i++) {
+			String line = content.getLine(i);
+			y += renderer.drawLine(line, i, x, y, gc, background, foreground, true);
+		}
+		if (y < endY) {
+			gc.setBackground(background);
+			gc.fillRectangle(0, y, clientArea.width, endY - y);
+		}
+	}
+	clearMargin(gc, background, clientArea, 0);
 }	
 /**
  * Recalculates the scroll bars. Rewraps all lines when in word 
@@ -5107,9 +5076,7 @@ void handleResize(Event event) {
  * <p>
  */
 void handleTextChanged(TextChangedEvent event) {
-	lineCache.textChanged(lastTextChangeStart, 
-		lastTextChangeNewLineCount, 
-		lastTextChangeReplaceLineCount);
+	lineCache.textChanged(lastTextChangeStart, lastTextChangeNewLineCount, lastTextChangeReplaceLineCount);
 	setScrollBars(true);
 	// update selection/caret location after styles have been changed.
 	// otherwise any text measuring could be incorrect
@@ -5118,61 +5085,26 @@ void handleTextChanged(TextChangedEvent event) {
 	// selection redraw would be flushed during scroll which is wrong.
 	// in some cases new text would be drawn in scroll source area even 
 	// though the intent is to scroll it.
-	// fixes 1GB93QT
-	updateSelection(
-		lastTextChangeStart, 
-		lastTextChangeReplaceCharCount, 
-		lastTextChangeNewCharCount);
+	updateSelection(lastTextChangeStart, lastTextChangeReplaceCharCount, lastTextChangeNewCharCount);
 		
+	Rectangle clientArea = getClientArea();
+	int firstLine = content.getLineAtOffset(lastTextChangeStart);
+	int lastLine = firstLine + lastTextChangeNewLineCount;
+	int firstLineTop = getLinePixel(firstLine);
+	int newLastLineBottom = getLinePixel(lastLine + 1);
+	if (newLastLineBottom != lastLineBottom) {
+		//TODO fails if margin != 0
+		scroll(0, newLastLineBottom, 0, lastLineBottom, clientArea.width, clientArea.height - newLastLineBottom, true);
+	}
+	super.redraw(0, firstLineTop, clientArea.width, newLastLineBottom - firstLineTop, false);
+	if (newLastLineBottom == lastLineBottom) {		
+		update();
+	}
 	if (lastTextChangeReplaceLineCount > 0) {
-		// Only check for unused space when lines are deleted.
-		// Fixes 1GFL4LY
-		// Scroll up so that empty lines below last text line are used.
-		// Fixes 1GEYJM0
 		claimBottomFreeSpace();
 	}
 	if (lastTextChangeReplaceCharCount > 0) {
-		// fixes bug 8273
 		claimRightFreeSpace();
-	}
-	boolean directDraw;
-	if (isFixedLineHeight()) {
-		directDraw = lastTextChangeNewLineCount == 0 && lastTextChangeReplaceLineCount == 0;
-	} else {
-		int lastLine = content.getLineAtOffset(lastTextChangeStart) + lastTextChangeNewLineCount;
-		int newLineBottom = getLinePixel(lastLine + 1);
-		directDraw = lastLineBottom == newLineBottom;
-		if (!directDraw) {
-			//TODO use scroll() instead of redraw()
-			int firstLine = content.getLineAtOffset(lastTextChangeStart);
-			int firstLineTop = Math.max(getLinePixel(firstLine), topMargin);
-			Rectangle clientArea = getClientArea();
-			super.redraw(clientArea.x, firstLineTop, clientArea.width, clientArea.height - firstLineTop, false);
-		}
-	}
-	// do direct drawing if the text change is confined to a single line.
-	// optimization and fixes bug 13999. see also handleTextChanging.
-	if (directDraw) {
-		int startLine = content.getLineAtOffset(lastTextChangeStart);
-		int startY = getLinePixel(startLine);
-		int height = lineCache.getLineHeight(startLine);
-		if (DOUBLE_BUFFER) {
-			Caret caret = getCaret();
-			boolean caretVisible = false;
-			if (caret != null) {
-				caretVisible = caret.getVisible();
-				caret.setVisible(false);
-			}
-			GC gc = new GC(this);
-			performPaint(gc, startLine, startY, height);
-			gc.dispose();
-			if (caret != null) {
-				caret.setVisible(caretVisible);
-			}
-		} else {
-			super.redraw(0, startY, getClientArea().width, height, false);
-			update();
-		}
 	}
 }
 /**
@@ -5197,17 +5129,9 @@ void handleTextChanging(TextChangingEvent event) {
 	lastTextChangeNewCharCount = event.newCharCount;
 	lastTextChangeReplaceLineCount = event.replaceLineCount;
 	lastTextChangeReplaceCharCount = event.replaceCharCount;
-	if (isFixedLineHeight()) {
-		boolean isMultiLineChange = event.replaceLineCount > 0 || event.newLineCount > 0;			
-		if (isMultiLineChange) {			
-			int firstLine = content.getLineAtOffset(event.start);
-			int textChangeY = getLinePixel(firstLine);
-			redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
-		}
-	} else {
-		int lastLine = content.getLineAtOffset(event.start) + event.replaceLineCount;
-		lastLineBottom = getLinePixel(lastLine + 1);
-	}
+	int lastLine = content.getLineAtOffset(event.start) + event.replaceLineCount;
+	lastLineBottom = getLinePixel(lastLine + 1);
+
 	// notify default line styler about text change
 	if (defaultLineStyler != null) {
 		defaultLineStyler.textChanging(event);
@@ -5611,70 +5535,6 @@ public void paste(){
 		sendKeyEvent(event);
 	}
 }
-/**
- * Render the specified area.  Broken out as its own method to support
- * direct drawing.
- * <p>
- *
- * @param gc GC to render on 
- * @param startLine first line to render
- * @param startY y pixel location to start rendering at
- * @param renderHeight renderHeight widget area that needs to be filled with lines
- */
-void performPaint(GC gc, int startLine, int startY, int renderHeight)	{
-	Rectangle clientArea = getClientArea();
-	
-	// Check if there is work to do. We never want to try and create 
-	// an Image with 0 width or 0 height.
-	if (clientArea.width == 0) {
-		return;
-	}
-	Color background = getBackground();
-	if (renderHeight > 0) {
-		// renderHeight will be negative when only top margin needs redrawing
-		Color foreground = getForeground();
-		int lineCount = content.getLineCount();
-		int gcStyle = isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
-		if (isSingleLine()) {
-			lineCount = 1;
-		}
-		int paintY, paintHeight;
-		Image lineBuffer;
-		GC lineGC;
-		boolean doubleBuffer = DOUBLE_BUFFER && lastPaintTopIndex == topIndex;
-		lastPaintTopIndex = topIndex;
-		if (doubleBuffer) {
-			paintY = 0;
-			paintHeight = renderHeight;
-			lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
-			lineGC = new GC(lineBuffer, gcStyle);
-			lineGC.setFont(getFont());
-			lineGC.setForeground(foreground);
-			lineGC.setBackground(background);
-		} else {
-			paintY = startY;
-			paintHeight = startY + renderHeight;
-			lineBuffer = null;
-			lineGC = gc;
-		}
-		int paintX = clientArea.x + leftMargin - horizontalScrollOffset;
-		for (int i = startLine; paintY < paintHeight && i < lineCount; i++) {
-			String line = content.getLine(i);
-			paintY += renderer.drawLine(line, i, paintX, paintY, lineGC, background, foreground, true);
-		}
-		if (paintY < paintHeight) {
-			lineGC.setBackground(background);
-			lineGC.fillRectangle(0, paintY, clientArea.width, paintHeight - paintY);
-		}
-		if (doubleBuffer) {
-			clearMargin(lineGC, background, clientArea, startY);
-			gc.drawImage(lineBuffer, 0, startY);
-			lineGC.dispose();
-			lineBuffer.dispose();
-		}
-	}
-	clearMargin(gc, background, clientArea, 0);
-}
 /** 
  * Prints the widget's text to the default printer.
  *
@@ -5808,55 +5668,6 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 		int firstLine = getLineIndex(y);
 		int lastLine = getLineIndex(y + height);
 		resetCache(firstLine, lastLine - firstLine + 1);
-	}
-}
-/**
- * Fixes the widget to display a text change.
- * Bit blitting and redrawing is done as necessary.
- * <p>
- *
- * @param y y location of the text change
- * @param newLineCount number of new lines.
- * @param replacedLineCount number of replaced lines.
- */
-void redrawMultiLineChange(int y, int newLineCount, int replacedLineCount) {
-	Rectangle clientArea = getClientArea();
-	int lineCount = newLineCount - replacedLineCount;
-	int sourceY;
-	int destinationY;
-	if (lineCount > 0) {
-		sourceY = Math.max(0, y + lineHeight);
-		destinationY = sourceY + lineCount * lineHeight;
-	} else {
-		destinationY = Math.max(0, y + lineHeight);
-		sourceY = destinationY - lineCount * lineHeight;
-	}
-	scroll(
-		0, destinationY,			// destination x, y
-		0, sourceY,					// source x, y
-		clientArea.width, clientArea.height, true);
-	// Always redrawing causes the bottom line to flash when a line is
-	// deleted. This is because SWT merges the paint area of the scroll
-	// with the paint area of the redraw call below.
-	// To prevent this we could call update after the scroll. However,
-	// adding update can cause even more flash if the client does other 
-	// redraw/update calls (ie. for syntax highlighting).
-	// We could also redraw only when a line has been added or when 
-	// contents has been added to a line. This would require getting 
-	// line index info from the content and is not worth the trouble
-	// (the flash is only on the bottom line and minor).
-	// Specifying the NO_MERGE_PAINTS style bit prevents the merged 
-	// redraw but could cause flash/slowness elsewhere.
-	if (y + lineHeight > 0 && y <= clientArea.height) {
-		// redraw first changed line in case a line was split/joined
-		super.redraw(0, y, clientArea.width, lineHeight, true);
-	}
-	if (newLineCount > 0) {
-		int redrawStartY = y + lineHeight;
-		int redrawHeight = newLineCount * lineHeight;
-		if (redrawStartY + redrawHeight > 0 && redrawStartY <= clientArea.height) {
-			super.redraw(0, redrawStartY, clientArea.width, redrawHeight, true);
-		}
 	}
 }
 /** 
@@ -7642,7 +7453,6 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 		// move selection to keep same text selected
 		setSelection(selection.x + newLength - replacedLength, selection.y - selection.x, true);
 	}
-	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
 }
 }
