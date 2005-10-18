@@ -3138,7 +3138,7 @@ void draw(int x, int y, int width, int height) {
 	Color foreground = getForeground();
 	for (int i = startLine; paintY < endY && i < lineCount; i++) {
 		String line = content.getLine(i);
-		paintY += renderer.drawLine(line, i, paintX, paintY, 0, gc, background, foreground, false);
+		paintY += renderer.drawLine(line, i, paintX, paintY, gc, background, foreground, false);
 	}
 	gc.dispose();
 	if (caret != null) {
@@ -5638,14 +5638,13 @@ void performPaint(GC gc, int startLine, int startY, int renderHeight)	{
 		if (isSingleLine()) {
 			lineCount = 1;
 		}
-		int paintY, lineY, paintHeight;
+		int paintY, paintHeight;
 		Image lineBuffer;
 		GC lineGC;
 		boolean doubleBuffer = DOUBLE_BUFFER && lastPaintTopIndex == topIndex;
 		lastPaintTopIndex = topIndex;
 		if (doubleBuffer) {
 			paintY = 0;
-			lineY = startY;
 			paintHeight = renderHeight;
 			lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
 			lineGC = new GC(lineBuffer, gcStyle);
@@ -5654,7 +5653,6 @@ void performPaint(GC gc, int startLine, int startY, int renderHeight)	{
 			lineGC.setBackground(background);
 		} else {
 			paintY = startY;
-			lineY = 0;
 			paintHeight = startY + renderHeight;
 			lineBuffer = null;
 			lineGC = gc;
@@ -5662,7 +5660,7 @@ void performPaint(GC gc, int startLine, int startY, int renderHeight)	{
 		int paintX = clientArea.x + leftMargin - horizontalScrollOffset;
 		for (int i = startLine; paintY < paintHeight && i < lineCount; i++) {
 			String line = content.getLine(i);
-			paintY += renderer.drawLine(line, i, paintX, paintY, lineY, lineGC, background, foreground, true);
+			paintY += renderer.drawLine(line, i, paintX, paintY, lineGC, background, foreground, true);
 		}
 		if (paintY < paintHeight) {
 			lineGC.setBackground(background);

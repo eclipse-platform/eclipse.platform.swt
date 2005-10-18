@@ -236,6 +236,9 @@ void drawLine(int paintX, int paintY, GC gc, Color foreground, Color background,
 int getBaseline() {
 	return ascent;
 }
+int getLineEndSpace() {
+	return lineEndSpaceWidth;
+}
 /**
  * Returns the text segments that should be treated as if they 
  * had a different direction than the surrounding text.
