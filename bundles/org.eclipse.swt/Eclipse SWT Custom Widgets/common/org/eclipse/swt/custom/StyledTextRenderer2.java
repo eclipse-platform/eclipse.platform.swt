@@ -194,7 +194,7 @@ int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color wi
 					}
 				}
 			}
-			y += lineBounds.height;
+			y += lineBounds.height + layout.getSpacing();
 		}
 	}
 	gc.setForeground(widgetForeground);
@@ -204,10 +204,30 @@ int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color wi
 	} else {
 		int start = Math.max(0, selectionStart - lineOffset);
 		int end = Math.min(lineLength, selectionEnd - lineOffset);
-		Color selectionFk = styledText.getSelectionForeground();
-		Color selectionBk = styledText.getSelectionBackground();
-		layout.draw(gc, paintX, paintY, start, end - 1, selectionFk, selectionBk);
+		Color selectionFg = styledText.getSelectionForeground();
+		Color selectionBg = styledText.getSelectionBackground();
+		layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg);
 	}
+	
+	//place the objects
+	event = styledText.sendLineEvent(StyledText2.LineGetStyle, lineOffset, line);
+	if (event != null && event.styles != null) {
+		StyleRange[] styles = event.styles;
+		for (int i = 0; i < styles.length; i++) {
+			StyleRange range = styles[i];
+			int start = range.start;
+			if (lineOffset <= start && start < lineOffset + lineLength) {
+				EmbeddedObject object = range.object;
+				 if (object != null) {
+					 int offset = start - lineOffset;
+					 Point point = layout.getLocation(offset, false);
+					 FontMetrics metrics = layout.getLineMetrics(layout.getLineIndex(offset));
+					 range.object.draw(gc, point.x + paintX, point.y + paintY, metrics.getAscent(), metrics.getDescent());
+				 }
+			}
+		}
+	}
+	
 	int height = layout.getBounds().height;
 	disposeTextLayout(layout);
 	return height;
@@ -223,7 +243,7 @@ void drawLine(int paintX, int paintY, GC gc, Color foreground, Color background,
 		for (int i = 0; i < lineCount; i++) {
 			Rectangle rect = layout.getLineBounds(i);
 			rect.x += paintX;
-			rect.y += paintY;
+			rect.y += paintY + layout.getSpacing();
 			gc.fillRectangle(rect);
 		}
 	}
@@ -238,28 +258,6 @@ int getBaseline() {
 }
 int getLineEndSpace() {
 	return lineEndSpaceWidth;
-}
-/**
- * Returns the text segments that should be treated as if they 
- * had a different direction than the surrounding text.
- * </p>
- *
- * @param lineOffset offset of the first character in the line. 
- * 	0 based from the beginning of the document.
- * @param line text of the line to specify bidi segments for
- * @return text segments that should be treated as if they had a
- * 	different direction than the surrounding text. Only the start 
- * 	index of a segment is specified, relative to the start of the 
- * 	line. Always starts with 0 and ends with the line length. 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the segment indices returned 
- * 		by the listener do not start with 0, are not in ascending order,
- * 		exceed the line length or have duplicates</li>
- * </ul>
- */
-private int[] getBidiSegments(int lineOffset, String lineText) {
-	if (styledText == null || !styledText.isBidi()) return null;
-	return styledText.getBidiSegments(lineOffset, lineText);
 }
 /**
  *  Returns the Font for a StyleRange
@@ -315,22 +313,6 @@ int getAverageCharWidth () {
 	return averageCharWidth;
 }
 /**
- * Returns the line style data for the given line or null if there is 
- * none. If there is a LineStyleListener but it does not set any styles, 
- * the StyledTextEvent.styles field will be initialized to an empty 
- * array.
- * </p>
- * 
- * @param lineOffset offset of the line start relative to the start of 
- * 	the content.
- * @param line line to get line styles for
- * @return line style data for the given line. Styles may start before 
- * 	line start and end after line end
- */
-private StyledTextEvent getLineStyleData(int lineOffset, String line) {
-	return styledText != null ? styledText.getLineStyleData(lineOffset, line) : null;
-}
-/**
  *
  */
 private int getOrientation () {
@@ -359,10 +341,29 @@ int getWidth () {
 	return styledText != null ? styledText.getWrapWidth() : -1;
 }
 TextLayout getTextLayout(String line, int lineOffset) {
-	int[] bidiSegments = getBidiSegments(lineOffset, line);
-	StyledTextEvent event = getLineStyleData(lineOffset, line);
-	StyleRange[] styles = event != null ? event.styles : null;
-	return getTextLayout(line, lineOffset, bidiSegments, styles);
+	StyleRange[] styles = null;
+	int indent = styledText.lineIndent;
+	int spacing = styledText.lineSpacing;
+	int alignment = styledText.alignment;
+	boolean justify = styledText.justify;
+	int[] segments = styledText.getBidiSegments(lineOffset, line);
+	StyledTextEvent event = styledText.getLineStyleData(lineOffset, line);
+	if (event != null) {
+		styles = event.styles;
+		if (event.alignment != -1) {
+			alignment = event.alignment & (SWT.CENTER | SWT.LEFT | SWT.RIGHT);
+		}
+		if (event.indent != -1) {
+			indent = event.indent;
+		}
+		justify |= event.justify;
+	}
+	TextLayout layout = getTextLayout(line, lineOffset, segments, styles);
+	layout.setAlignment(alignment);
+	layout.setJustify(justify);
+	layout.setIndent(indent);
+	layout.setSpacing(spacing);
+	return layout;
 }
 /**
  *  Returns TextLayout given a line, a list of styles, and a list of bidi segments 
@@ -398,6 +399,11 @@ TextLayout getTextLayout(String line, int lineOffset, int[] bidiSegments, StyleR
 			TextStyle textStyle = new TextStyle(getFont(style), style.foreground, style.background);
 			textStyle.underline = style.underline;
 			textStyle.strikeout = style.strikeout;
+			textStyle.rise = style.rise;
+			EmbeddedObject object = style.object;
+			if (object != null) {
+				textStyle.metrics = new GlyphMetrics(object.getAscent(), object.getDescent(), object.getAdvance());
+			}
 			layout.setStyle(textStyle, start, end - 1);
 			lastOffset = Math.max(lastOffset, end);
 		}

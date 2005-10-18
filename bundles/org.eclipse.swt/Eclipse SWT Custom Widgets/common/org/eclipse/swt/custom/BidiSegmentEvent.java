@@ -58,11 +58,20 @@ import org.eclipse.swt.events.*;
  * </pre>
  */
 public class BidiSegmentEvent extends TypedEvent {
-	/** line start offset */
+	
+	/** 
+	 * line start offset 
+	 */
 	public int lineOffset;
-	/** line text */			
+	
+	/** 
+	 * line text 
+	 */			
 	public String lineText;
-	/** bidi segments, see above */
+	
+	/** 
+	 * bidi segments, see above 
+	 */
 	public int[] segments;
 		
 	static final long serialVersionUID = 3257846571587547957L;

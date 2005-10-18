@@ -60,6 +60,22 @@ public class StyleRange implements CloneableCompatibility {
 	 */
 	public Font font;
 	
+	/*
+	 * API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
+	 * 
+	 * baseline rise
+	 *
+	 */
+	public int rise;
+	
+	/*
+	 * API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
+	 * 
+	 * embedded object
+	 *
+	 */
+	public EmbeddedObject object;
+	
 public StyleRange() {
 }
 
@@ -147,9 +163,11 @@ public boolean isUnstyled() {
 	if (foreground != null) return false;
 	if (background != null) return false;
 	if (font != null) return false;
+	if (object != null) return false;
 	if (fontStyle != SWT.NORMAL) return false;
 	if (underline) return false;
 	if (strikeout) return false;
+	if (rise != 0) return false;
 	return true;
 }
 
@@ -178,9 +196,15 @@ public boolean similarTo(StyleRange style) {
 	} else if (style.font != null) {
 		return false; 
 	}
+	if (object != null) {
+		if (!object.equals(style.object)) return false;
+	} else if (style.object != null) {
+		return false; 
+	}
 	if (fontStyle != style.fontStyle) return false;
 	if (underline != style.underline) return false;
 	if (strikeout != style.strikeout) return false;
+	if (rise != style.rise) return false;
 	return true;
 }
 
@@ -193,8 +217,10 @@ public boolean similarTo(StyleRange style) {
 public Object clone() {
  	StyleRange style = new StyleRange(start, length, foreground, background, fontStyle);
  	style.font = font;
+ 	style.object = object;
  	style.underline = underline;
  	style.strikeout = strikeout;
+ 	style.rise = rise; 	
 	return style;
 }
 

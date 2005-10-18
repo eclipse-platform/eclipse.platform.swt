@@ -16,10 +16,40 @@ import org.eclipse.swt.events.*;
  * This event is sent when a line is about to be drawn.
  */
 public class LineStyleEvent extends TypedEvent {
-	public int lineOffset;			// line start offset 
-	public String lineText;			// line text
-	public StyleRange[] styles;		// array of StyleRanges
+	
+	/**
+	 * line start offset
+	 */
+	public int lineOffset;
+	
+	/**
+	 * line text
+	 */
+	public String lineText;
+	
+	/**
+	 * line styles
+	 */
+	public StyleRange[] styles;
 
+	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
+	 *  
+	 * line alignment (output)
+	 */
+	public int alignment;
+
+	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
+	 *  
+	 * line indent (output)
+	 */
+	public int indent;
+
+	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
+	 *  
+	 * line justification (output)
+	 */
+	public boolean justify;
+	
 	static final long serialVersionUID = 3906081274027192884L;
 	
 public LineStyleEvent(StyledTextEvent e) {

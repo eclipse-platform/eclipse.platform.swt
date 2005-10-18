@@ -19,6 +19,9 @@ import org.eclipse.swt.widgets.*;
 class StyledTextEvent extends Event {
 	// used by LineStyleEvent
 	StyleRange[] styles;		
+	int alignment;
+	int indent;
+	boolean justify;
 	// used by LineBackgroundEvent
 	Color lineBackground;
 	// used by BidiSegmentEvent

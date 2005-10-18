@@ -17,9 +17,21 @@ import org.eclipse.swt.graphics.*;
  * This event is sent when a line is about to be drawn.
  */
 public class LineBackgroundEvent extends TypedEvent {
-	public int lineOffset;			// line start offset 
-	public String lineText;			// line text
-	public Color lineBackground;	// line background color
+	
+	/**
+	 * line start offset
+	 */
+	public int lineOffset;
+	
+	/**
+	 * line text
+	 */
+	public String lineText;
+	
+	/**
+	 * line background color
+	 */
+	public Color lineBackground; 
 	
 	static final long serialVersionUID = 3978711687853324342L;
 	
