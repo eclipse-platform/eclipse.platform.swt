@@ -70,6 +70,7 @@ public final class GCData {
 	public int control;
 	public int port;
 	public Rect portRect;
-	public Rect controlRect;	
+	public Rect controlRect;
+	public Rect insetRect;
 	public boolean updateClip;
 }

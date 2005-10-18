@@ -186,15 +186,31 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (data.control != 0) {
-		int[] offscreen = new int[1];
-		OS.HIViewCreateOffscreenImage(data.control, 0, null, offscreen);
-		copyArea(image, x, y, offscreen[0]);
-		if (offscreen[0] != 0) OS.CGImageRelease(offscreen[0]);
-	} else if (data.image != null) {
+	if (data.image != null) {
 		copyArea(image, x, y, data.image.handle);
-	} else if (data.window != 0) {
+	} else if (data.window != 0 || data.control != 0) {
 		int imageHandle = image.handle;
+		if (data.control != 0) {
+			Rect rect = new Rect ();
+			int window = OS.GetControlOwner (data.control);
+			if (OS.HIVIEW) {
+				CGPoint pt = new CGPoint ();
+				OS.HIViewConvertPoint (pt, data.control, 0);
+				x += (int) pt.x;
+				y += (int) pt.y;
+				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+			} else {
+				OS.GetControlBounds (data.control, rect);
+				x += rect.left;
+				y += rect.top;
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			}
+			x += rect.left;
+			y += rect.top;
+			rect = data.insetRect;
+			x -= rect.left;
+			y -= rect.top;
+		}
 		CGRect rect = new CGRect();
 		rect.x = x;
 		rect.y = y;

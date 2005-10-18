@@ -1167,6 +1167,7 @@ public int internal_new_GC (GCData data) {
 		data.control = handle;
 		data.portRect = portRect;
 		data.controlRect = rect;
+		data.insetRect = getInset ();
 	
 		if (data.paintEvent == 0) {
 			if (gcs == null) gcs = new GCData [4];
