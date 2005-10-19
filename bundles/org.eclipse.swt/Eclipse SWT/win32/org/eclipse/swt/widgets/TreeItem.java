@@ -617,7 +617,7 @@ public Color getForeground (int index) {
  * the <code>CHECK style, return false.
  * <p>
  *
- * @return the grayed state
+ * @return the grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
