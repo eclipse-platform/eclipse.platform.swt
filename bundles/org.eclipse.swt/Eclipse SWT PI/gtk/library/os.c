@@ -10477,6 +10477,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1event)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1accessible
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1widget_1get_1accessible)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1accessible_FUNC);
+	rc = (jint)gtk_widget_get_accessible((GtkWidget *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1accessible_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1child_1visible
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1get_1child_1visible)
 	(JNIEnv *env, jclass that, jint arg0)

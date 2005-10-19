@@ -137,6 +137,18 @@ JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
 }
 #endif
 
+#ifndef NO__1atk_1object_1add_1relationship
+JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1object_1add_1relationship)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1object_1add_1relationship_FUNC);
+	rc = (jboolean)atk_object_add_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
+	ATK_NATIVE_EXIT(env, that, _1atk_1object_1add_1relationship_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1atk_1object_1factory_1create_1accessible
 JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1object_1factory_1create_1accessible)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -171,6 +183,18 @@ JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1object_1initialize)
 }
 #endif
 
+#ifndef NO__1atk_1object_1ref_1relation_1set
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1object_1ref_1relation_1set)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1object_1ref_1relation_1set_FUNC);
+	rc = (jint)atk_object_ref_relation_set((AtkObject *)arg0);
+	ATK_NATIVE_EXIT(env, that, _1atk_1object_1ref_1relation_1set_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1atk_1registry_1get_1factory
 JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1registry_1get_1factory)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -190,6 +214,40 @@ JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1registry_1set_1factory_1type)
 	ATK_NATIVE_ENTER(env, that, _1atk_1registry_1set_1factory_1type_FUNC);
 	atk_registry_set_factory_type((AtkRegistry *)arg0, (GType)arg1, (GType)arg2);
 	ATK_NATIVE_EXIT(env, that, _1atk_1registry_1set_1factory_1type_FUNC);
+}
+#endif
+
+#ifndef NO__1atk_1relation_1set_1get_1n_1relations
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1relation_1set_1get_1n_1relations)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1relation_1set_1get_1n_1relations_FUNC);
+	rc = (jint)atk_relation_set_get_n_relations((AtkRelationSet *)arg0);
+	ATK_NATIVE_EXIT(env, that, _1atk_1relation_1set_1get_1n_1relations_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1atk_1relation_1set_1get_1relation
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1relation_1set_1get_1relation)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1relation_1set_1get_1relation_FUNC);
+	rc = (jint)atk_relation_set_get_relation((AtkRelationSet *)arg0, arg1);
+	ATK_NATIVE_EXIT(env, that, _1atk_1relation_1set_1get_1relation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1atk_1relation_1set_1remove
+JNIEXPORT void JNICALL ATK_NATIVE(_1atk_1relation_1set_1remove)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	ATK_NATIVE_ENTER(env, that, _1atk_1relation_1set_1remove_FUNC);
+	atk_relation_set_remove((AtkRelationSet *)arg0, (AtkRelation *)arg1);
+	ATK_NATIVE_EXIT(env, that, _1atk_1relation_1set_1remove_FUNC);
 }
 #endif
 

@@ -21,6 +21,7 @@ public class ATK extends OS {
 	}
 	
 	/** Constants */
+	public static final int ATK_RELATION_LABELLED_BY = 4;
 	public static final int ATK_ROLE_CHECK_BOX = 7;
 	public static final int ATK_ROLE_COMBO_BOX = 11;
 	public static final int ATK_ROLE_DIALOG = 16;
@@ -176,11 +177,29 @@ public static final int /*long*/ atk_object_factory_get_accessible_type (int /*l
 		lock.unlock();
 	}
 }
+public static final native boolean _atk_object_add_relationship (int /*long*/ object, int relationship, int /*long*/ target);
+public static final boolean atk_object_add_relationship (int /*long*/ object, int relationship, int /*long*/ target) {
+	lock.lock();
+	try {
+		return _atk_object_add_relationship(object, relationship, target);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _atk_object_initialize (int /*long*/ accessible, int /*long*/ data);
 public static final void atk_object_initialize (int /*long*/ accessible, int /*long*/ data) {
 	lock.lock();
 	try {
 		_atk_object_initialize(accessible, data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _atk_object_ref_relation_set (int /*long*/ accessible);
+public static final int /*long*/ atk_object_ref_relation_set (int /*long*/ accessible) {
+	lock.lock();
+	try {
+		return _atk_object_ref_relation_set(accessible);
 	} finally {
 		lock.unlock();
 	}
@@ -199,6 +218,33 @@ public static final void atk_registry_set_factory_type (int /*long*/ registry, i
 	lock.lock();
 	try {
 		_atk_registry_set_factory_type(registry, type, factory_type);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _atk_relation_set_get_n_relations (int /*long*/ set);
+public static final int atk_relation_set_get_n_relations (int /*long*/ set) {
+	lock.lock();
+	try {
+		return _atk_relation_set_get_n_relations(set);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _atk_relation_set_get_relation (int /*long*/ set, int i);
+public static final int /*long*/ atk_relation_set_get_relation (int /*long*/ set, int i) {
+	lock.lock();
+	try {
+		return _atk_relation_set_get_relation (set, i);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _atk_relation_set_remove (int /*long*/ set, int /*long*/ relation);
+public static final void atk_relation_set_remove (int /*long*/ set, int /*long*/ relation) {
+	lock.lock();
+	try {
+		_atk_relation_set_remove (set, relation);
 	} finally {
 		lock.unlock();
 	}

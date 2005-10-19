@@ -1458,7 +1458,7 @@ public void setVisible (boolean visible) {
 }
 
 void setZOrder (Control sibling, boolean above) {
-	 setZOrder (sibling, above, false);
+	 setZOrder (sibling, above, false, false);
 }
 
 int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {

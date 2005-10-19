@@ -412,6 +412,10 @@ void hookEvents () {
 	}
 }
 
+boolean isDescribedByLabel () {
+	return false;
+}
+
 boolean mnemonicHit (char key) {
 	if (labelHandle == 0) return false;
 	boolean result = super.mnemonicHit (labelHandle, key);

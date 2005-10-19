@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int ATK_nativeFunctionCount = 38;
-int ATK_nativeFunctionCallCount[38];
+int ATK_nativeFunctionCount = 43;
+int ATK_nativeFunctionCallCount[43];
 char * ATK_nativeFunctionNames[] = {
 	"AtkObjectFactoryClass_1sizeof",
 	"AtkObjectFactory_1sizeof",
@@ -31,11 +31,16 @@ char * ATK_nativeFunctionNames[] = {
 	"_1GTK_1ACCESSIBLE",
 	"_1atk_1focus_1tracker_1notify",
 	"_1atk_1get_1default_1registry",
+	"_1atk_1object_1add_1relationship",
 	"_1atk_1object_1factory_1create_1accessible",
 	"_1atk_1object_1factory_1get_1accessible_1type",
 	"_1atk_1object_1initialize",
+	"_1atk_1object_1ref_1relation_1set",
 	"_1atk_1registry_1get_1factory",
 	"_1atk_1registry_1set_1factory_1type",
+	"_1atk_1relation_1set_1get_1n_1relations",
+	"_1atk_1relation_1set_1get_1relation",
+	"_1atk_1relation_1set_1remove",
 	"_1atk_1state_1set_1add_1state",
 	"_1atk_1state_1set_1new",
 	"_1call__II",

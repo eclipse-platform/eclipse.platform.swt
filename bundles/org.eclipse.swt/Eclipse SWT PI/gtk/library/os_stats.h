@@ -824,6 +824,7 @@ typedef enum {
 	_1gtk_1widget_1create_1pango_1layout__I_3B_FUNC,
 	_1gtk_1widget_1destroy_FUNC,
 	_1gtk_1widget_1event_FUNC,
+	_1gtk_1widget_1get_1accessible_FUNC,
 	_1gtk_1widget_1get_1child_1visible_FUNC,
 	_1gtk_1widget_1get_1default_1direction_FUNC,
 	_1gtk_1widget_1get_1default_1style_FUNC,

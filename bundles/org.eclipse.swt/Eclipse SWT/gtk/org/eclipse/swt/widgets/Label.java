@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.accessibility.gtk.ATK;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -92,6 +93,15 @@ static int checkStyle (int style) {
 		return checkBits (style, SWT.SHADOW_OUT, SWT.SHADOW_IN, SWT.SHADOW_NONE, 0, 0, 0);
 	} 
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
+}
+
+void addRelation (Control control) {
+	if (!control.isDescribedByLabel ()) return;
+	int /*long*/ accessible = OS.gtk_widget_get_accessible (labelHandle);
+	int /*long*/ controlAccessible = OS.gtk_widget_get_accessible (control.handle);
+	if (accessible != 0 && controlAccessible != 0) {
+		ATK.atk_object_add_relationship (controlAccessible, ATK.ATK_RELATION_LABELLED_BY, accessible);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -271,6 +281,10 @@ void hookEvents () {
 	if (labelHandle != 0) {
 		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
 	}
+}
+
+boolean isDescribedByLabel () {
+	return false;
 }
 
 boolean mnemonicHit (char key) {

@@ -7109,6 +7109,15 @@ public static final boolean gtk_widget_event(int /*long*/ widget, int /*long*/ e
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_widget_get_accessible (int /*long*/ widget);
+public static final int /*long*/ gtk_widget_get_accessible (int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_widget_get_accessible(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _gtk_widget_get_child_visible (int /*long*/ widget);
 public static final boolean gtk_widget_get_child_visible (int /*long*/ widget) {
 	lock.lock();

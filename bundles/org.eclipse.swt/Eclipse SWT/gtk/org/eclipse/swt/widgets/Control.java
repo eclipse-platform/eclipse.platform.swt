@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.accessibility.gtk.ATK;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -745,6 +746,14 @@ public void setSize (int width, int height) {
 	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true);
 }
 
+/*
+ * Answers a boolean indicating whether a Label that precedes the receiver in
+ * a layout should be read by screen readers as the recevier's label.
+ */
+boolean isDescribedByLabel () {
+	return true;
+}
+
 /**
  * Moves the receiver above the specified control in the
  * drawing order. If the argument is null, then the receiver
@@ -1170,6 +1179,9 @@ public void addPaintListener(PaintListener listener) {
 	addListener(SWT.Paint,typedListener);
 }
 
+void addRelation (Control control) {
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when traversal events occur, by sending it
@@ -1388,6 +1400,22 @@ public void removePaintListener(PaintListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Paint, listener);
+}
+
+/*
+ * Remove "Labelled by" relations from the receiver.
+ */
+void removeRelation () {
+	if (!isDescribedByLabel ()) return;		/* there will not be any */
+	int /*long*/ accessible = OS.gtk_widget_get_accessible (handle);
+	if (accessible == 0) return;
+	int /*long*/ set = ATK.atk_object_ref_relation_set (accessible);
+	int count = ATK.atk_relation_set_get_n_relations (set);
+	for (int i = 0; i < count; i++) {
+		int /*long*/ relation = ATK.atk_relation_set_get_relation (set, 0);
+		ATK.atk_relation_set_remove (set, relation);
+	}
+	OS.g_object_unref (set);
 }
 
 /**
@@ -1741,6 +1769,7 @@ public Shell getShell() {
 	checkWidget();
 	return _getShell();
 }
+
 Shell _getShell() {
 	return parent._getShell();
 }
@@ -2377,6 +2406,26 @@ void redrawWidget (int x, int y, int width, int height, boolean all) {
 	rect.width = width;
 	rect.height = height;
 	OS.gdk_window_invalidate_rect (window, rect, all);
+}
+
+void release (boolean destroy) {
+	Control next = null, previous = null;
+	if (destroy && parent != null) {
+		Control[] children = parent._getChildren ();
+		int index = 0;
+		while (index < children.length) {
+			if (children [index] == this) break;
+			index++;
+		}
+		if (0 < index && (index + 1) < children.length) {
+			next = children [index + 1];
+			previous = children [index - 1];
+		}
+	}
+	super.release (destroy);
+	if (destroy) {
+		if (previous != null) previous.addRelation (next);
+	}
 }
 
 void releaseHandle () {
@@ -3042,10 +3091,42 @@ public void setVisible (boolean visible) {
 }
 
 void setZOrder (Control sibling, boolean above) {
-	 setZOrder (sibling, above, true);
+	 setZOrder (sibling, above, true, true);
 }
 
-void setZOrder (Control sibling, boolean above, boolean fixChildren) {
+void setZOrder (Control sibling, boolean above, boolean fixChildren, boolean fixRelations) {
+	int index = 0, siblingIndex = 0, oldNextIndex = -1;
+	Control[] children = null;
+	if (fixRelations) {
+		/* determine the receiver's and sibling's indexes in the parent */
+		children = parent._getChildren ();
+		while (index < children.length) {
+			if (children [index] == this) break;
+			index++;
+		}
+		if (sibling != null) {
+			while (siblingIndex < children.length) {
+				if (children [siblingIndex] == sibling) break;
+				siblingIndex++;
+			}
+		}
+		/* remove "Labelled by" relationships that will no longer be valid */
+		removeRelation ();
+		if (index + 1 < children.length) {
+			oldNextIndex = index + 1;
+			children [oldNextIndex].removeRelation ();
+		}
+		if (sibling != null) {
+			if (above) {
+				sibling.removeRelation ();
+			} else {
+				if (siblingIndex + 1 < children.length) {
+					children [siblingIndex + 1].removeRelation ();
+				}
+			}
+		}
+	}
+
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ siblingHandle = sibling != null ? sibling.topHandle () : 0;
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
@@ -3104,6 +3185,39 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 	}
 	/*  Make sure that the parent internal windows are on the bottom of the stack	*/
 	if (!above && fixChildren) 	parent.fixZOrder ();
+
+	if (fixRelations) {
+		/* determine the receiver's new index in the parent */
+		if (sibling != null) {
+			if (above) {
+				index = siblingIndex - (index < siblingIndex ? 1 : 0);
+			} else {
+				index = siblingIndex + (siblingIndex < index ? 1 : 0);
+			}
+		} else {
+			if (above) {
+				index = 0;
+			} else {
+				index = children.length - 1;
+			}
+		}
+
+		/* add new "Labelled by" relations as needed */
+		children = parent._getChildren ();
+		if (0 < index) {
+			children [index - 1].addRelation (this);
+		}
+		if (index + 1 < children.length) {
+			addRelation (children [index + 1]);
+		}
+		if (oldNextIndex != -1) {
+			if (oldNextIndex <= index) oldNextIndex--;
+			/* the last two conditions below ensure that duplicate relations are not hooked */
+			if (0 < oldNextIndex && oldNextIndex != index && oldNextIndex != index + 1) {
+				children [oldNextIndex - 1].addRelation (children [oldNextIndex]);
+			}
+		}
+	}
 }
 
 boolean showMenu (int x, int y) {
