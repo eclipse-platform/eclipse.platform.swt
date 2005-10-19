@@ -1121,7 +1121,8 @@ public Point getLocation (int offset, boolean trailing) {
 			int end = run.start + run.length;
 			if (run.start <= offset && offset < end) {
 				if (run.style != null && run.style.metrics != null) {
-					if (trailing) width += run.width;
+					GlyphMetrics metrics = run.style.metrics;
+					width += metrics.width * (offset - run.start + (trailing ? 1 : 0));
 					result = new Point(width, lineY[line]);
 				} else if (run.tab) {
 					if (trailing || (offset == length)) width += run.width;
@@ -1303,13 +1304,22 @@ public int getOffset (int x, int y, int[] trailing) {
 		StyleItem run = lineRuns[i];
 		if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
 		if (width + run.width > x) {
+			int xRun = x - width;
+			if (run.style != null && run.style.metrics != null) {
+				GlyphMetrics metrics = run.style.metrics;
+				if (metrics.width > 0) {
+					if (trailing != null) {
+						trailing[0] = (xRun % metrics.width < metrics.width / 2) ? 0 : 1;
+					}
+					return untranslateOffset(run.start + xRun / metrics.width);
+				}
+			}
 			if (run.tab) {
 				if (trailing != null) trailing[0] = x < (width + run.width / 2) ? 0 : 1;
 				return untranslateOffset(run.start);
 			}
 			int cChars = run.length;
 			int cGlyphs = run.glyphCount;
-			int xRun = x - width;
 			int[] piCP = new int[1];
 			int[] piTrailing = new int[1];
 			if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
