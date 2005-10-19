@@ -1106,7 +1106,9 @@ public void open () {
 	bringToTop (false);
 	setVisible (true);
 	if (isDisposed ()) return;
-	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+	if (active) {
+		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+	}
 }
 
 void register () {
