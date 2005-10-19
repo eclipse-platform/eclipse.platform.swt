@@ -938,6 +938,16 @@ public int getOffset (int x, int y, int[] trailing) {
 		StyleItem run = lineRuns[i];
 		if (run.lineBreak && !run.softBreak) return run.start;
 		if (width + run.width > x) {
+			if (run.style != null && run.style.metrics != null) {
+				int xRun = x - width;
+				GlyphMetrics metrics = run.style.metrics;
+				if (metrics.width > 0) {
+					if (trailing != null) {
+						trailing[0] = (xRun % metrics.width < metrics.width / 2) ? 0 : 1;
+					}
+					return run.start + xRun / metrics.width;
+				}
+			}
 			if (run.tab) {
 				if (trailing != null) {
 					trailing[0] = x < (width + run.width / 2) ? 0 : 1; 
