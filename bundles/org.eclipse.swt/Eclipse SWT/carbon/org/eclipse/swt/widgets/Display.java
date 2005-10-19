@@ -732,6 +732,7 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 					Widget widget = getWidget (userData);
 					if (widget != null) return widget.commandProc (nextHandler, theEvent, userData);
 				} else {
+					int result = OS.eventNotHandledErr;
 					int menuRef = command.menu_menuRef;
 					short menuID = OS.GetMenuID (menuRef);
 					Menu menu = getMenu (menuID);
@@ -753,10 +754,11 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 							item = menu.getItem (command.menu_menuItemIndex - 1);
 						}
 						if (item != null) {
-							return item.kEventProcessCommand (nextHandler, theEvent, userData);
+							result = item.kEventProcessCommand (nextHandler, theEvent, userData);
 						}
 					}
 					OS.HiliteMenu ((short) 0);
+					return result;
 				}
 			}
 		}
