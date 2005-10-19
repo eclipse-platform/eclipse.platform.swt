@@ -1090,6 +1090,7 @@ public class StyledText2 extends Canvas {
 		int maxWidth;					// maximum line width of all measured lines
 		int maxWidthLineIndex;			// index of the widest line
 		boolean idleRunning;
+		boolean disposed;
 				
 	/** 
 	 * Creates a new <code>ContentWidthCache</code> and allocates space 
@@ -1161,6 +1162,7 @@ public class StyledText2 extends Canvas {
 		if (idleRunning) return;
 		Runnable runnable = new Runnable() {
 			public void run() {
+				if (disposed) return;
 				int computeLines = 200, i;
 				for (i = 0; i < lineCount && computeLines > 0; i++) {
 					if (lineHeight[i] == -1 || lineWidth[i] == -1) {
@@ -1184,6 +1186,13 @@ public class StyledText2 extends Canvas {
 		Display display = styledText.getDisplay();
 		display.asyncExec(runnable);
 		idleRunning = true;
+	}
+	void dispose() {
+		if (disposed) return;
+		disposed = true;
+		lineWidth = null;
+		lineHeight = null;
+		styledText = null;
 	}
 	/**
 	 * Grows the <code>lineWidth</code> array to accomodate new line width
@@ -4742,6 +4751,10 @@ void handleDispose(Event event) {
 
 	clipboard.dispose();
 	ibeamCursor.dispose();
+	if (lineCache != null) {
+		lineCache.dispose();
+		lineCache = null;
+	}
 	if (renderer != null) {
 		renderer.dispose();
 		renderer = null;
@@ -4772,7 +4785,6 @@ void handleDispose(Event event) {
 	selectionBackground = null;
 	selectionForeground = null;
 	textChangeListener = null;
-	lineCache = null;
 	ibeamCursor = null;
 	selection = null;
 	doubleClickSelection = null;
@@ -6004,6 +6016,7 @@ void reset() {
 		removeLineStyleListener(defaultLineStyler);
 		installDefaultLineStyler();
 	}
+	lineCache.dispose();
 	lineCache = new LineCache (this);
 	lineCache.calculateClientArea();
 	if (verticalBar != null) {
@@ -6312,16 +6325,16 @@ void setCaretLocation() {
 }
 void setCaretLocation(Point location, int direction) {
 	Caret caret = getCaret();
-	if (caret != null) {		
+	if (caret != null) {
+		int caretHeight = lineHeight;
 		if (!isFixedLineHeight()) {
 			int caretLine = content.getLineAtOffset(caretOffset);
 			int lineOffset = content.getOffsetAtLine(caretLine);
 			String text = content.getLine(caretLine);
 			TextLayout layout = renderer.getTextLayout(text, lineOffset);
 			int lineInParagraph = layout.getLineIndex(caretOffset - lineOffset);
-			int caretHeight = layout.getLineBounds(lineInParagraph).height - lineSpacing;
+			caretHeight = layout.getLineBounds(lineInParagraph).height - lineSpacing;
 			renderer.disposeTextLayout(layout);
-			caret.setSize(0, caretHeight);
 			if (caretHeight != lineHeight) {
 				direction = SWT.DEFAULT;
 			}
@@ -6338,7 +6351,7 @@ void setCaretLocation(Point location, int direction) {
 		if (updateImage && imageDirection == SWT.RIGHT) {
 			location.x -= (caret.getSize().x - 1);
 		}
-		caret.setLocation(location);
+		caret.setBounds(location.x, location.y, 0, caretHeight);
 		getAccessible().textCaretMoved(getCaretOffset());
 		if (direction != caretDirection) {
 			caretDirection = direction;
