@@ -104,7 +104,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, moved, drawing, reshape, update, activate, disposed, opened;
+	boolean resized, moved, drawing, reshape, update, activate, active, disposed, opened;
 	int invalRgn;
 	Control lastActive;
 	Region region;
@@ -856,22 +856,25 @@ public boolean isVisible () {
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	/*
-	* Bug in the Macintosh.  Despite the that a window has scope
-	* kWindowActivationScopeNone, it gets kEventWindowActivated
-	* events but does not get kEventWindowDeactivated events.  The
-	* fix is to ignore kEventWindowActivated events.
-	*/
-	int [] outScope = new int [1];
-	OS.GetWindowActivationScope (shellHandle, outScope); 
-	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
-	display.setMenuBar (menuBar);
-	if (menuBar != null) OS.DrawMenuBar ();
-	activate = true;
-	sendEvent (SWT.Activate);
-	if (isDisposed ()) return result;
-	restoreFocus ();
-	activate = false;
+	if (!active) {
+		active = true;
+		/*
+		* Bug in the Macintosh.  Despite the that a window has scope
+		* kWindowActivationScopeNone, it gets kEventWindowActivated
+		* events but does not get kEventWindowDeactivated events.  The
+		* fix is to ignore kEventWindowActivated events.
+		*/
+		int [] outScope = new int [1];
+		OS.GetWindowActivationScope (shellHandle, outScope); 
+		if (outScope [0] == OS.kWindowActivationScopeNone) return result;
+		display.setMenuBar (menuBar);
+		if (menuBar != null) OS.DrawMenuBar ();
+		activate = true;
+		sendEvent (SWT.Activate);
+		if (isDisposed ()) return result;
+		restoreFocus ();
+		activate = false;
+	}
 	return result;
 }
 
@@ -921,25 +924,28 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	//TEMPORARY CODE - should be send, but causes a GP
-	Display display = this.display;
-	postEvent (SWT.Deactivate);
-	if (isDisposed ()) return result;
-	saveFocus ();
-	if (savedFocus != null) {
-		/*
-		* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
-		* the control that has focus gets two kEventControlSetFocus
-		* events indicating that focus was lost.  The fix is to ignore
-		* both of these and send the focus lost event explicitly.
-		*/
-		display.ignoreFocus = true;
-		OS.ClearKeyboardFocus (shellHandle);
-		display.ignoreFocus = false;
+	if (active) {
+		active = false;
 		//TEMPORARY CODE - should be send, but causes a GP
-		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, true);
+		Display display = this.display;
+		postEvent (SWT.Deactivate);
+		if (isDisposed ()) return result;
+		saveFocus ();
+		if (savedFocus != null) {
+			/*
+			* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
+			* the control that has focus gets two kEventControlSetFocus
+			* events indicating that focus was lost.  The fix is to ignore
+			* both of these and send the focus lost event explicitly.
+			*/
+			display.ignoreFocus = true;
+			OS.ClearKeyboardFocus (shellHandle);
+			display.ignoreFocus = false;
+			//TEMPORARY CODE - should be send, but causes a GP
+			if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, true);
+		}
+		display.setMenuBar (null);
 	}
-	display.setMenuBar (null);
 	return result;
 }
 
