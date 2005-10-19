@@ -179,7 +179,7 @@ public class Display extends Device {
 	boolean dragging, mouseMoved;
 	
 	/* Insets */
-	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset, spinnerInset;
+	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset, editTextInset;
 	
 	/* Fonts */
 	boolean smallFonts;
@@ -2029,7 +2029,7 @@ void initializeInsets () {
 	OS.DisposeControl (outControl [0]);
 	
 	OS.CreateEditUnicodeTextControl (0, rect, 0, false, null, outControl);
-	spinnerInset = computeInset (outControl [0]);
+	editTextInset = computeInset (outControl [0]);
 	OS.DisposeControl (outControl [0]);
 	
 	CGRect cgRect = new CGRect ();

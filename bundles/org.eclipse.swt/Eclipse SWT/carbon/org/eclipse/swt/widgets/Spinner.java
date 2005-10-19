@@ -556,7 +556,7 @@ void hookEvents () {
 }
 
 Rect inset () {
-	return display.spinnerInset;
+	return display.editTextInset;
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {

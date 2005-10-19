@@ -810,7 +810,7 @@ public boolean getEditable () {
 
 Rect getInset () {
 	if (txnObject != 0) return super.getInset ();
-	return display.spinnerInset;
+	return display.editTextInset;
 }
 
 /**
