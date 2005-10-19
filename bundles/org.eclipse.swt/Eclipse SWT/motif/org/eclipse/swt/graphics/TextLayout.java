@@ -835,9 +835,14 @@ public Point getLocation (int offset, boolean trailing) {
 					if (trailing || offset == length) width += run.width;
 				} else {
 					if (trailing) offset++;
-					char[] chars = new char[offset - run.start];
-					text.getChars(run.start, offset, chars, 0);
-					width += stringWidth(run, chars);
+					if (run.style != null && run.style.metrics != null) {
+						GlyphMetrics metrics = run.style.metrics;
+						width += metrics.width * (offset - run.start);
+					} else {
+						char[] chars = new char[offset - run.start];
+						text.getChars(run.start, offset, chars, 0);
+						width += stringWidth(run, chars);
+					}
 				}
 				result = new Point(width, lineY[line]);
 				break;
@@ -1253,7 +1258,7 @@ void place (StyleItem run) {
 	if (run.length == 0) return;
 	if (run.style != null && run.style.metrics != null) {
 		GlyphMetrics glyphMetrics = run.style.metrics;
-		run.width = glyphMetrics.width;
+		run.width = glyphMetrics.width * run.length;
 		run.baseline = glyphMetrics.ascent;
 		run.height = glyphMetrics.ascent + glyphMetrics.descent;
 	} else {

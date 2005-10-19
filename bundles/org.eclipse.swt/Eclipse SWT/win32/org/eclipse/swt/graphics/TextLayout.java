@@ -771,7 +771,10 @@ public Rectangle getBounds (int start, int end) {
 		int runTrail = run.x + run.width;
 		if (run.start <= start && start < runEnd) {
 			int cx = 0;
-			if (!run.tab) {
+			if (run.style != null && run.style.metrics != null) {
+				GlyphMetrics metrics = run.style.metrics;
+				cx = metrics.width * (start - run.start);
+			} else if (!run.tab) {
 				int[] piX = new int[1];
 				int advances = run.justify != 0 ? run.justify : run.advances;
 				OS.ScriptCPtoX(start - run.start, false, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
@@ -785,7 +788,10 @@ public Rectangle getBounds (int start, int end) {
 		}
 		if (run.start <= end && end < runEnd) {
 			int cx = run.width;
-			if (!run.tab) {
+			if (run.style != null && run.style.metrics != null) {
+				GlyphMetrics metrics = run.style.metrics;
+				cx = metrics.width * (end - run.start + 1);
+			} else if (!run.tab) {
 				int[] piX = new int[1];
 				int advances = run.justify != 0 ? run.justify : run.advances;
 				OS.ScriptCPtoX(end - run.start, true, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
