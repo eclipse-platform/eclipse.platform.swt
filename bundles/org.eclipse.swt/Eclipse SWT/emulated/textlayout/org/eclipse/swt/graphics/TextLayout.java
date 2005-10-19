@@ -791,11 +791,16 @@ public Point getLocation (int offset, boolean trailing) {
 					if (trailing || offset == length) width += run.width;
 				} else {
 					if (trailing) offset++;
-					String string = text.substring(run.start, offset);
-					GC gc = new GC (device);
-					gc.setFont(getItemFont(run));
-					width += gc.stringExtent(string).x;
-					gc.dispose();
+					if (run.style != null && run.style.metrics != null) {
+						GlyphMetrics metrics = run.style.metrics;
+						width += metrics.width * (offset - run.start);
+					} else {
+						String string = text.substring(run.start, offset);
+						GC gc = new GC (device);
+						gc.setFont(getItemFont(run));
+						width += gc.stringExtent(string).x;
+						gc.dispose();
+					}
 				}
 				result = new Point(width, lineY[line]);
 				break;
@@ -1213,7 +1218,7 @@ void place (GC gc, StyleItem run) {
 		GlyphMetrics metrics = run.style.metrics;
 		run.ascent = metrics.ascent;
 		run.descent = metrics.descent;
-		run.width = metrics.width;
+		run.width = metrics.width * run.length;
 	} else {
 		String string = text.substring(run.start, run.start + run.length);
 		Point extent = gc.stringExtent(string);
