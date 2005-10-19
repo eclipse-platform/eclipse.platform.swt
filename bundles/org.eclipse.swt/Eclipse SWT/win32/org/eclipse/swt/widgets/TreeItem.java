@@ -1289,10 +1289,10 @@ public void setForeground (int index, Color color){
 }
 
 /**
- * Sets the grayed state of the receiver.
- * <p>
+ * Sets the grayed state of the checkbox for this item.  This state change 
+ * only applies if the Tree was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state
+ * @param grayed the new grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
