@@ -2384,12 +2384,14 @@ public void setSelection (TreeItem [] items) {
 	deselectAll ();
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	int count = 0;
 	int[] ids = new int [length];
 	for (int i=0; i<length; i++) {
-		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (items [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		ids [i] = items [i].id;
-		showItem (items [i], false);
+		if (items [i] != null) {
+			if (items [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			ids [count++] = items [i].id;
+			showItem (items [i], false);
+		}
 	}
 	ignoreSelect = true;
 	/*
@@ -2407,12 +2409,12 @@ public void setSelection (TreeItem [] items) {
 		OS.GetDataBrowserSelectionFlags (handle, selectionFlags);
 		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0] & ~OS.kDataBrowserNeverEmptySelectionSet);
 	}
-	OS.SetDataBrowserSelectedItems (handle, ids.length, ids, OS.kDataBrowserItemsAssign);
+	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	if ((style & SWT.SINGLE) != 0) {
 		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
 	}
 	ignoreSelect = false;
-	if (length > 0) showItem (items [0], true);
+	if (length > 0 && items [0] != null) showItem (items [0], true);
 }
 
 /**
