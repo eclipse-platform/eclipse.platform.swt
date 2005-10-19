@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
@@ -339,6 +340,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 						height = (int) h [0];
 					}
 					OS.HUnlock (oDataHandle[0]);
+				} else {
+					Font font = getFont ();
+					FontInfo info = new FontInfo ();
+					OS.FetchFontInfo (font.id, font.size, font.style, info);
+					int fontHeight = info.ascent + info.descent;
+					height = fontHeight;
 				}
 				OS.DisposeHandle (oDataHandle[0]);
 			}
