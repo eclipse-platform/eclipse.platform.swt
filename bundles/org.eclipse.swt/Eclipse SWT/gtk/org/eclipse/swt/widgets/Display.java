@@ -1581,15 +1581,19 @@ Rectangle getWorkArea() {
 	int[] actualFormat = new int[1];
 	int[] actualLength = new int[1];
 	int /*long*/[] data = new int /*long*/[1];
-	int values [] = new int [4];
 	if (!OS.gdk_property_get (OS.GDK_ROOT_PARENT (), atom, OS.GDK_NONE, 0, 16, 0, actualType, actualFormat, actualLength, data)) {
 		return null;
 	}
 	Rectangle result = null;
 	if (data [0] != 0) {
-		if (actualLength [0] >= 16) {
+		if (actualLength [0] == 16) {
+			int values [] = new int [4];
 			OS.memmove (values, data[0], 16);
 			result = new Rectangle (values [0],values [1],values [2],values [3]);
+		} else if (actualLength [0] == 32) {
+			long values [] = new long [4];
+			OS.memmove (values, data[0], 32);
+			result = new Rectangle ((int)values [0],(int)values [1],(int)values [2],(int)values [3]);			
 		}
 		OS.g_free (data [0]);
 	}
