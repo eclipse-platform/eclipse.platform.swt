@@ -2027,11 +2027,19 @@ void initializeInsets () {
 	OS.CreateTabsControl (0, rect, (short)OS.kControlTabSizeLarge, (short)OS.kControlTabDirectionSouth, (short) 0, 0, outControl);
 	tabFolderSouthInset = computeInset (outControl [0]);
 	OS.DisposeControl (outControl [0]);
-	
-	OS.CreateEditUnicodeTextControl (0, rect, 0, false, null, outControl);
-	editTextInset = computeInset (outControl [0]);
-	OS.DisposeControl (outControl [0]);
-	
+
+	/* For some reason, this code calculates insets too big. */
+//	OS.CreateEditUnicodeTextControl (0, rect, 0, false, null, outControl);
+//	editTextInset = computeInset (outControl [0]);
+//	OS.DisposeControl (outControl [0]);	
+	editTextInset = new Rect ();
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	int inset = outMetric [0]; 
+	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+	inset += outMetric [0];
+	editTextInset.left = editTextInset.top = editTextInset.right = editTextInset.bottom = (short) inset;
+
 	CGRect cgRect = new CGRect ();
 	cgRect.width = cgRect.height = 200;
 	int inAttributes = OS.kHIComboBoxAutoCompletionAttribute | OS.kHIComboBoxAutoSizeListAttribute;

@@ -44,6 +44,8 @@ public class Spinner extends Composite {
 	int pageIncrement = 10;
 	int digits = 0;
 	
+	static int GAP = 3;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -258,7 +260,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	height += inset.top + inset.bottom;
 	int [] outMetric = new int [1];
 	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsWidth, outMetric);
-	width += outMetric [0];
+	width += outMetric [0] + GAP;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -735,7 +737,7 @@ void resetVisibleRegion (int control) {
 void resizeClientArea () {
 	int [] outMetric = new int [1];
 	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsWidth, outMetric);
-	int buttonWidth = outMetric [0];
+	int buttonWidth = outMetric [0] + GAP;
 	OS.GetThemeMetric (OS.kThemeMetricLittleArrowsHeight, outMetric);
 	int buttonHeight = outMetric [0];	
 	Rect rect = new Rect ();
@@ -745,7 +747,7 @@ void resizeClientArea () {
 	int height = Math.max (0, rect.bottom - rect.top - inset.top - inset.bottom);
 	buttonHeight = Math.min (buttonHeight, rect.bottom - rect.top);
 	setBounds (textHandle, inset.left, inset.top, width, height, true, true, false);
-	setBounds (buttonHandle, inset.left + inset.right + width, inset.top + (height - buttonHeight) / 2, buttonWidth, buttonHeight, true, true, false);
+	setBounds (buttonHandle, inset.left + inset.right + width + GAP, inset.top + (height - buttonHeight) / 2, buttonWidth, buttonHeight, true, true, false);
 }
 
 boolean sendKeyEvent (int type, Event event) {
@@ -986,6 +988,7 @@ void setSelection (int value, boolean notify) {
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlData (textHandle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 	OS.CFRelease (ptr);
+	redrawWidget (textHandle, false);
 	sendEvent (SWT.Modify);
 	if (notify) postEvent (SWT.Selection);
 }
