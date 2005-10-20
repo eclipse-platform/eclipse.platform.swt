@@ -354,7 +354,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							String string = text.substring(run.start, run.start + run.length);
 							gc.drawString(string, drawX, drawRunY, true);
 							if (run.style != null && run.style.underline) {
-								int underlineY = drawRunY + run.ascent + 1;
+								int underlineY = drawRunY + run.ascent + 1 - run.style.rise;
 								gc.drawLine (drawX, underlineY, drawX + run.width, underlineY);								
 							}
 							if (run.style != null && run.style.strikeout) {
@@ -376,7 +376,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							if (!(run.style != null && run.style.metrics != null)) {
 								gc.drawString(string, drawX, drawRunY, true);
 								if (run.style != null && run.style.underline) {
-									int underlineY = drawRunY + run.ascent + 1;
+									int underlineY = drawRunY + run.ascent + 1 - run.style.rise;
 									gc.drawLine (drawX, underlineY, drawX + run.width, underlineY);
 								}
 								if (run.style != null && run.style.strikeout) {
@@ -398,7 +398,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 									gc.setForeground(selectionForeground);
 									gc.drawString(string, selX, drawRunY, true);
 									if (run.style != null && run.style.underline) {
-										int underlineY = drawRunY + run.ascent + 1;
+										int underlineY = drawRunY + run.ascent + 1 - run.style.rise;
 										gc.drawLine (selX, underlineY, selX + selWidth, underlineY);								
 									}
 									if (run.style != null && run.style.strikeout) {
