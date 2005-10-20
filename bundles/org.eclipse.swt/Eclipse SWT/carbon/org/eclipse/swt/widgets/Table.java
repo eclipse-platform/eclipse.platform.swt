@@ -424,8 +424,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		int [] outMetric = new int [1];
 		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
 		border += outMetric [0];
-		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
-		border += outMetric [0];
 	}
 	Rect rect = new Rect ();
 	OS.GetDataBrowserScrollBarInset (handle, rect);
@@ -1020,9 +1018,6 @@ public Rectangle getClientArea () {
 		int [] outMetric = new int [1];
 		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
 		border += outMetric [0];
-		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
-		border += outMetric [0];
-		border = 3;
 	}
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);

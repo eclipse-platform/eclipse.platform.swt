@@ -38,8 +38,6 @@ static String[] excludeTests = {
 	"test_setDoubleClickEnabledZ(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
 	"test_setTabsI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
 	"test_setTopIndexI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_setSelection$Lorg_eclipse_swt_widgets_TreeItem(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree)",
-	"test_setTopItemLorg_eclipse_swt_widgets_TreeItem(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree)",
 	"test_clearSelection(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"test_copy(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
