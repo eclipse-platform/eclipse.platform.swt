@@ -348,6 +348,7 @@ public void test_cut() {
 }
 
 public void test_getCaretLineNumber() {
+	text.setBounds(0, 0, 500, 500);
 	assertTrue(":a:", text.getCaretLineNumber() == 0);
 	text.setText("Line0\r\n");
 	assertTrue(":b:", text.getCaretLineNumber() == 0);
@@ -482,6 +483,7 @@ public void test_getEditable() {
 }
 
 public void test_getLineCount() {
+	text.setBounds(0, 0, 500, 500);
 	assertEquals(1, text.getLineCount());
 	text.append("dddasd" + delimiterString);
 	assertEquals(2, text.getLineCount());
@@ -672,6 +674,7 @@ public void test_getTopPixel() {
 }
 
 public void test_insertLjava_lang_String() {
+	text.setBounds(0, 0, 500, 500);
 	try {
 		text.insert(null);
 		fail("No exception thrown for string == null");
