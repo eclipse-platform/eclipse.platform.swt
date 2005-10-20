@@ -166,10 +166,9 @@ public void test_copyAreaIIIIII() {
 	int destY = 50;
 
 	gc.setBackground(white);
-	gc.setForeground(white);
 	gc.fillRectangle(image.getBounds());
-	gc.setForeground(blue);
-	gc.drawLine(5, 0, 10, 0);
+	gc.setBackground(blue);
+	gc.fillRectangle(5, 0, 6, 1);
 	gc.copyArea(0, 0, width, height, destX, destY);
 
 	ImageData imageData = image.getImageData();
@@ -191,10 +190,9 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	RGB blueRGB = getRealRGB(blue);
 	
 	gc.setBackground(white);
-	gc.setForeground(white);
 	gc.fillRectangle(image.getBounds());
-	gc.setForeground(blue);
-	gc.drawLine(5, 0, 10, 0);
+	gc.setBackground(blue);
+	gc.fillRectangle(5, 0, 6, 1);
 	Image image = new Image(display, 12, 12);
 	gc.copyArea(image, 0, 0);
 	ImageData imageData = image.getImageData();
