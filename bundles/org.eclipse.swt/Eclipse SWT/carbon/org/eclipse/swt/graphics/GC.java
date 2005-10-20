@@ -310,8 +310,16 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  		rect.y = destY;
  		rect.width = width;
 		rect.height = height;
-		//NOT DONE - transparency
- 		OS.CGContextDrawImage(handle, rect, data.image.handle);
+		int h = OS.CGImageGetHeight(data.image.handle);
+		int bpr = OS.CGImageGetBytesPerRow(data.image.handle);
+		int provider = OS.CGDataProviderCreateWithData(0, data.image.data, bpr * h, 0);
+		if (provider != 0) {
+			int colorspace = device.colorspace;
+			int img = OS.CGImageCreate(width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, true, 0);
+			OS.CGDataProviderRelease(provider);
+			OS.CGContextDrawImage(handle, rect, img);
+			OS.CGImageRelease(img);
+		}
  		OS.CGContextRestoreGState(handle);
  		return;
 	}
