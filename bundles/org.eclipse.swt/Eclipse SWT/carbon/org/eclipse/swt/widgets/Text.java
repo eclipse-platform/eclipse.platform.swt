@@ -48,6 +48,7 @@ public class Text extends Scrollable {
 	int txnObject, txnFrameID;
 	int textLimit = LIMIT;
 	char echoCharacter;
+	boolean doubleClick;
 	String hiddenText;
 	ControlEditTextSelectionRec selection;
 	/**
@@ -573,6 +574,7 @@ ScrollBar createScrollBar (int style) {
 
 void createWidget () {
 	super.createWidget ();
+	doubleClick = true;
 	hiddenText = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar (PASSWORD);
 }
@@ -767,8 +769,7 @@ String getClipboardText () {
  */
 public boolean getDoubleClickEnabled () {
 	checkWidget();
-	//NOT DONE
-    return true;
+    return doubleClick;
 }
 
 /**
@@ -1306,6 +1307,17 @@ int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (!doubleClick) {
+		int [] clickCount = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
+		if (clickCount [0] > 1) return OS.noErr;
+	}
+	return result;
+}
+
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -1650,7 +1662,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
  */
 public void setDoubleClickEnabled (boolean doubleClick) {
 	checkWidget();
-	//NOT DONE
+	this.doubleClick = doubleClick;
 }
 
 /**
