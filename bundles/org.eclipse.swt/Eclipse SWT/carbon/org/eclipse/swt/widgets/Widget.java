@@ -785,7 +785,10 @@ Point getControlSize (int control) {
 	if (OS.HIVIEW) {
 		CGRect rect = new CGRect ();
 		OS.HIViewGetFrame (control, rect);
-		return new Point ((int) rect.width, (int) rect.height);
+		Rect inset = getInset ();
+		int width = (int) rect.width + inset.left + inset.right;
+		int height = (int) rect.height + inset.top + inset.bottom;
+		return new Point (width, height);
 	}
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
