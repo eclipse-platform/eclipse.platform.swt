@@ -609,12 +609,12 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						int newPen = hasSelection && fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.BS_SOLID, 1, fg);
 						int oldPen = OS.SelectObject(hdc, newPen);
 						if (run.style.underline) {
-							int underlineY = drawY + baseline + 1;
+							int underlineY = drawY + baseline + 1 - run.style.rise;
 							OS.MoveToEx(hdc, drawX, underlineY, 0);
 							OS.LineTo(hdc, drawX + run.width, underlineY);
 						}
 						if (run.style.strikeout) {
-							int strikeoutY = drawRunY + run.leading + run.ascent / 2;
+							int strikeoutY = drawRunY + run.leading + (run.ascent - run.style.rise) / 2;
 							OS.MoveToEx(hdc, drawX, strikeoutY, 0);
 							OS.LineTo(hdc, drawX + run.width, strikeoutY);	
 						}
@@ -642,12 +642,12 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						if ((run.style != null) && (run.style.underline || run.style.strikeout)) {							
 							int oldPen = OS.SelectObject(hdc, selPen);
 							if (run.style.underline) {
-								int underlineY = drawY + baseline + 1;
+								int underlineY = drawY + baseline + 1 - run.style.rise;
 								OS.MoveToEx(hdc, rect.left, underlineY, 0);
 								OS.LineTo(hdc, rect.right, underlineY);
 							}
 							if (run.style.strikeout) {
-								int strikeoutY = drawRunY + run.leading + run.ascent / 2;
+								int strikeoutY = drawRunY + run.leading + (run.ascent - run.style.rise) / 2;
 								OS.MoveToEx(hdc, rect.left, strikeoutY, 0);
 								OS.LineTo(hdc, rect.right, strikeoutY);	
 							}
