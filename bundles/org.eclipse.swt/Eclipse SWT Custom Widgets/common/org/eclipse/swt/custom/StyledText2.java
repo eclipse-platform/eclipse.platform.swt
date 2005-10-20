@@ -6333,7 +6333,7 @@ void setCaretLocation(Point location, int direction) {
 			String text = content.getLine(caretLine);
 			TextLayout layout = renderer.getTextLayout(text, lineOffset);
 			int lineInParagraph = layout.getLineIndex(caretOffset - lineOffset);
-			caretHeight = layout.getLineBounds(lineInParagraph).height - lineSpacing;
+			caretHeight = layout.getLineBounds(lineInParagraph).height;
 			renderer.disposeTextLayout(layout);
 			if (caretHeight != lineHeight) {
 				direction = SWT.DEFAULT;
