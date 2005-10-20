@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 892;
-int OS_nativeFunctionCallCount[892];
+int OS_nativeFunctionCount = 893;
+int OS_nativeFunctionCallCount[893];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -907,6 +907,7 @@ char * OS_nativeFunctionNames[] = {
 	"memcpy___3C_3BI",
 	"memcpy___3FII",
 	"memcpy___3III",
+	"memcpy___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I",
 	"memset",
 	"strlen",
 };

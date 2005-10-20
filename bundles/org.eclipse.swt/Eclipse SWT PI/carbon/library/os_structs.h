@@ -731,6 +731,18 @@ void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct);
 #define TXNLongRect_sizeof() 0
 #endif
 
+#ifndef NO_TXNTab
+void cacheTXNTabFields(JNIEnv *env, jobject lpObject);
+TXNTab *getTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct);
+void setTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct);
+#define TXNTab_sizeof() sizeof(TXNTab)
+#else
+#define cacheTXNTabFields(a,b)
+#define getTXNTabFields(a,b,c) NULL
+#define setTXNTabFields(a,b,c)
+#define TXNTab_sizeof() 0
+#endif
+
 #ifndef NO_ThemeButtonDrawInfo
 void cacheThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject);
 ThemeButtonDrawInfo *getThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct);

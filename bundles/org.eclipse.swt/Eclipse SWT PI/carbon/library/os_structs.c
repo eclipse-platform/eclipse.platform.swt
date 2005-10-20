@@ -2853,6 +2853,43 @@ void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
 }
 #endif
 
+#ifndef NO_TXNTab
+typedef struct TXNTab_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID value, tabType, filler;
+} TXNTab_FID_CACHE;
+
+TXNTab_FID_CACHE TXNTabFc;
+
+void cacheTXNTabFields(JNIEnv *env, jobject lpObject)
+{
+	if (TXNTabFc.cached) return;
+	TXNTabFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TXNTabFc.value = (*env)->GetFieldID(env, TXNTabFc.clazz, "value", "S");
+	TXNTabFc.tabType = (*env)->GetFieldID(env, TXNTabFc.clazz, "tabType", "B");
+	TXNTabFc.filler = (*env)->GetFieldID(env, TXNTabFc.clazz, "filler", "B");
+	TXNTabFc.cached = 1;
+}
+
+TXNTab *getTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct)
+{
+	if (!TXNTabFc.cached) cacheTXNTabFields(env, lpObject);
+	lpStruct->value = (*env)->GetShortField(env, lpObject, TXNTabFc.value);
+	lpStruct->tabType = (*env)->GetByteField(env, lpObject, TXNTabFc.tabType);
+	lpStruct->filler = (*env)->GetByteField(env, lpObject, TXNTabFc.filler);
+	return lpStruct;
+}
+
+void setTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct)
+{
+	if (!TXNTabFc.cached) cacheTXNTabFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, TXNTabFc.value, (jshort)lpStruct->value);
+	(*env)->SetByteField(env, lpObject, TXNTabFc.tabType, (jbyte)lpStruct->tabType);
+	(*env)->SetByteField(env, lpObject, TXNTabFc.filler, (jbyte)lpStruct->filler);
+}
+#endif
+
 #ifndef NO_ThemeButtonDrawInfo
 typedef struct ThemeButtonDrawInfo_FID_CACHE {
 	int cached;

@@ -23,6 +23,7 @@ import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
+import org.eclipse.swt.internal.carbon.TXNTab;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -46,7 +47,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Text extends Scrollable {
 	int txnObject, txnFrameID;
-	int textLimit = LIMIT;
+	int textLimit = LIMIT, tabs = 8;
 	char echoCharacter;
 	boolean doubleClick;
 	String hiddenText;
@@ -862,22 +863,7 @@ public String getLineDelimiter () {
 public int getLineHeight () {
 	checkWidget();
 	if (txnObject == 0) {
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, new char[]{' '}, 1);
-		org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-		if (font == null) {
-			OS.GetThemeTextDimensions (ptr, (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
-		} else {
-			int [] currentPort = new int [1];
-			OS.GetPort (currentPort);
-			OS.SetPortWindowPort (OS.GetControlOwner (handle));
-			OS.TextFont (font.id);
-			OS.TextFace (font.style);
-			OS.TextSize (font.size);
-			OS.GetThemeTextDimensions (ptr, (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
-			OS.SetPort (currentPort [0]);
-		}
-		OS.CFRelease (ptr);
-		return ioBounds.v;
+		return measureSpace ().v;
 	} 
 	int [] oLineWidth = new int [1], oLineHeight = new int [1];
 	OS.TXNGetLineMetrics (txnObject, 0, oLineWidth, oLineHeight);
@@ -998,8 +984,7 @@ public String getSelectionText () {
  */
 public int getTabs () {
 	checkWidget();
-	//NOT DONE
-	return 8;
+	return tabs;
 }
 
 /**
@@ -1384,6 +1369,25 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	return result;
+}
+
+org.eclipse.swt.internal.carbon.Point measureSpace () {
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, new char[]{' '}, 1);
+	org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
+	if (font == null) {
+		OS.GetThemeTextDimensions (ptr, (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
+	} else {
+		int [] currentPort = new int [1];
+		OS.GetPort (currentPort);
+		OS.SetPortWindowPort (OS.GetControlOwner (handle));
+		OS.TextFont (font.id);
+		OS.TextFace (font.style);
+		OS.TextSize (font.size);
+		OS.GetThemeTextDimensions (ptr, (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
+		OS.SetPort (currentPort [0]);
+	}
+	OS.CFRelease (ptr);
+	return ioBounds;
 }
 
 /**
@@ -1934,7 +1938,15 @@ public void setSelection (Point selection) {
  */
 public void setTabs (int tabs) {
 	checkWidget();
-	//NOT DONE
+	if (this.tabs == tabs) return;
+	if (txnObject == 0) return;
+	this.tabs = tabs;
+	TXNTab tab = new TXNTab ();
+	tab.value = (short) (measureSpace ().h * tabs);
+	int [] tags = new int [] {OS.kTXNTabSettingsTag};
+	int [] datas = new int [1];
+	OS.memcpy (datas, tab, TXNTab.sizeof);
+	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 }
 
 /**

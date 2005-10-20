@@ -113,6 +113,7 @@ public class OS extends Platform {
 	public static final int kATSUseLineHeight = 0x7FFFFFFF;
 	public static final int kATSUSizeTag = 262;
 	public static final int kATSUToTextEnd = 0xFFFFFFFF;
+	public static final int kAvailBoundsChangedForDock = 1 << 0;
 	public static final int kCFAllocatorDefault = 0;
 	public static final int kCFNumberFormatterDecimalStyle = 1;
 	public static final int kCFURLPOSIXPathStyle = 0;
@@ -308,8 +309,10 @@ public class OS extends Platform {
 	public static final int kDragTrackingLeaveWindow = 4;
 	public static final int kDragTrackingLeaveHandler = 5;
 	public static final int kEventAppleEvent = 1;
+	public static final int kEventAppAvailableWindowBoundsChanged = 110;
 	public static final int kEventAttributeUserEvent = 1 << 0;
 	public static final int kEventClassAppleEvent = ('e'<<24) + ('p'<<16) + ('p'<<8) + 'c';
+	public static final int kEventClassApplication = ('a'<<24) + ('p'<<16) + ('p'<<8) + 'l';
 	public static final int kEventClassCommand = ('c'<<24) + ('m'<<16) + ('d'<<8) + 's';
 	public static final int kEventClassControl = ('c'<<24) + ('n'<<16) + ('t'<<8) + 'l';
 	public static final int kEventClassFont= ('f'<<24) + ('o'<<16) + ('n'<<8) + 't';
@@ -394,6 +397,7 @@ public class OS extends Platform {
 	public static final int kEventParamMouseWheelDelta = ('m'<<24) + ('w'<<16) + ('d'<<8) + 'l';
 	public static final int kEventParamPreviousBounds = ('p'<<24) + ('r'<<16) + ('c'<<8) + 't';
 	public static final int kEventParamOriginalBounds = ('o'<<24) + ('r'<<16) + ('c'<<8) + 't';
+	public static final int kEventParamReason =  ('w'<<24) + ('h'<<16) + ('y'<<8) + '?';
 	public static final int kEventParamRgnHandle =  ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
 	public static final int kEventParamTextInputSendText = ('t'<<24) + ('s'<<16) + ('t'<<8) + 'x';
 	public static final int kEventParamTextInputSendKeyboardEvent = ('t'<<24) + ('s'<<16) + ('k'<<8) + 'e';
@@ -663,6 +667,7 @@ public class OS extends Platform {
 	public static final int kTXNSingleLineOnlyMask = 1 << 14;
 	public static final int kTXNStartOffset = 0;
 	public static final int kTXNSystemDefaultEncoding = 0;
+	public static final int kTXNTabSettingsTag = ('t'<<24) + ('a'<<16) + ('b'<<8) + 's';
 	public static final int kTXNTextEditStyleFrameType = 1;
 	public static final int kTXNUnicodeTextData = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
 	public static final int kTXNUnicodeTextFile = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
@@ -1728,6 +1733,7 @@ public static final native void memcpy(char[] dest, byte[] src, int size);
 public static final native void memcpy(byte[] dest, char[] src, int size);
 public static final native void memcpy(int dest, EventRecord src, int size);
 public static final native void memcpy(int dest, ATSUTab src, int size);
+public static final native void memcpy(int[] dest, TXNTab src, int size);
 public static final native void memcpy(float[] dest, int src, int size);
 public static final native void memset(int dest, int value, int size);
 public static final native int strlen(int ptr);

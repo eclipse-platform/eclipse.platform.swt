@@ -911,6 +911,7 @@ typedef enum {
 	memcpy___3C_3BI_FUNC,
 	memcpy___3FII_FUNC,
 	memcpy___3III_FUNC,
+	memcpy___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I_FUNC,
 	memset_FUNC,
 	strlen_FUNC,
 } OS_FUNCS;

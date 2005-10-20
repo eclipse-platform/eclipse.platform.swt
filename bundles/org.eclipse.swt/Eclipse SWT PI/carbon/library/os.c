@@ -12624,6 +12624,36 @@ fail:
 }
 #endif
 
+#ifndef NO_memcpy___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I
+JNIEXPORT void JNICALL OS_NATIVE(memcpy___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I)
+	(JNIEnv *env, jclass that, jintArray arg0, jobject arg1, jint arg2)
+{
+	jint *lparg0=NULL;
+	TXNTab _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memcpy___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I_FUNC);
+	if (arg1) if ((lparg1 = getTXNTabFields(env, arg1, &_arg1)) == NULL) goto fail;
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	}
+	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	} else
+#endif
+	{
+		if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	}
+	OS_NATIVE_EXIT(env, that, memcpy___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I_FUNC);
+}
+#endif
+
 #ifndef NO_memset
 JNIEXPORT void JNICALL OS_NATIVE(memset)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
