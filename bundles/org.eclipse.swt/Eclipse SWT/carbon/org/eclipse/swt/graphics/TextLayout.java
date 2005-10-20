@@ -255,124 +255,115 @@ void checkLayout() {
 void computeRuns() {
 	if (breaks != null) return;
 	int textLength = text.length();
-	if (textLength != 0) {
-		char[] chars = new char[textLength + 1];
-		text.getChars(0, textLength, chars, 1);
-		chars[0] = ZWS;
-		int breakCount = 1;
-		for (int i = 0; i < chars.length; i++) {
-			char c = chars[i];
-			if (c == '\n' || c == '\r') {
-				breakCount++;
-			}
+	char[] chars = new char[textLength + 1];
+	text.getChars(0, textLength, chars, 1);
+	chars[0] = ZWS;
+	int breakCount = 1;
+	for (int i = 0; i < chars.length; i++) {
+		char c = chars[i];
+		if (c == '\n' || c == '\r') {
+			breakCount++;
 		}
-		hardBreaks = new int [breakCount];
-		breakCount = 0;
-		for (int i = 0; i < chars.length; i++) {
-			char c = chars[i];
-			if (c == '\n' || c == '\r') {
-				chars[i] = ZWS;
-				hardBreaks[breakCount++] = i;
-			}
-		}
-		hardBreaks[breakCount] = translateOffset(textLength);
-		int newTextPtr = OS.NewPtr(chars.length * 2);
-		OS.memcpy(newTextPtr, chars, chars.length * 2);
-		OS.ATSUSetTextPointerLocation(layout, newTextPtr, 0, chars.length, chars.length);
-		OS.ATSUSetTransientFontMatching(layout, true);
-		if (textPtr != 0) OS.DisposePtr(textPtr);
-		textPtr = newTextPtr;
-	}	
-	int[] buffer = new int[1];
-	int length = translateOffset(textLength);
-	if (textLength != 0) {
-		for (int i = 0; i < styles.length - 1; i++) {
-			StyleItem run = styles[i];
-			run.createStyle(font);
-			int start = translateOffset(run.start);
-			int runLength = translateOffset(styles[i + 1].start) - start;
-			OS.ATSUSetRunStyle(layout, run.atsuStyle, start, runLength);
-		}
-		if (indent >= 0) {
-			int ptr = OS.NewPtr(4);
-			buffer[0] = OS.Long2Fix(indent);
-			OS.memcpy(ptr, buffer, 4);
-			int[] tags = new int[]{OS.kATSUImposeWidthTag};
-			int[] sizes = new int[]{4};
-			int[] values = new int[]{ptr};
-			OS.ATSUCreateStyle(buffer);
-			indentStyle = buffer[0];
-			OS.ATSUSetAttributes(indentStyle, tags.length, tags, sizes, values);
-			OS.DisposePtr(ptr);
-			OS.ATSUSetRunStyle(layout, indentStyle, 0, 1);
-			for (int i = 0; i < hardBreaks.length-1; i++) {
-				int offset = hardBreaks[i];
-				OS.ATSUSetRunStyle(layout, indentStyle, offset, 1);
-			}
-		}
-		OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
-		int wrapWidth = buffer[0];
-		for (int i=0, start=0; i<hardBreaks.length; i++) {
-			int hardBreak = hardBreaks[i];
-			buffer[0] = 0;
-			if (wrapWidth != 0) OS.ATSUBatchBreakLines(layout, start, hardBreak - start, wrapWidth, buffer);
-			OS.ATSUSetSoftLineBreak(layout, hardBreak);
-			start = hardBreak;
-		}
-		OS.ATSUGetSoftLineBreaks(layout, 0, OS.kATSUToTextEnd, 0, null, buffer);
-		int count = buffer[0];
-		breaks = new int[count];
-		OS.ATSUGetSoftLineBreaks(layout, 0, OS.kATSUToTextEnd, count, breaks, null);
-	} else {
-		breaks = new int[1];
 	}
+	hardBreaks = new int [breakCount];
+	breakCount = 0;
+	for (int i = 0; i < chars.length; i++) {
+		char c = chars[i];
+		if (c == '\n' || c == '\r') {
+			chars[i] = ZWS;
+			hardBreaks[breakCount++] = i;
+		}
+	}
+	hardBreaks[breakCount] = translateOffset(textLength);
+	int newTextPtr = OS.NewPtr(chars.length * 2);
+	OS.memcpy(newTextPtr, chars, chars.length * 2);
+	OS.ATSUSetTextPointerLocation(layout, newTextPtr, 0, chars.length, chars.length);
+	OS.ATSUSetTransientFontMatching(layout, true);
+	if (textPtr != 0) OS.DisposePtr(textPtr);
+	textPtr = newTextPtr;
+
+	int[] buffer = new int[1];
+	for (int i = 0; i < styles.length - 1; i++) {
+		StyleItem run = styles[i];
+		run.createStyle(font);
+		//set the defaut font in the ZWS when text is empty fixes text metrics
+		int start = textLength != 0 ? translateOffset(run.start) : 0;
+		int runLength = translateOffset(styles[i + 1].start) - start;
+		OS.ATSUSetRunStyle(layout, run.atsuStyle, start, runLength);
+	}
+	int ptr = OS.NewPtr(4);
+	buffer[0] = OS.Long2Fix(indent);
+	OS.memcpy(ptr, buffer, 4);
+	int[] tags = new int[]{OS.kATSUImposeWidthTag};
+	int[] sizes = new int[]{4};
+	int[] values = new int[]{ptr};
+	OS.ATSUCreateStyle(buffer);
+	indentStyle = buffer[0];
+	OS.ATSUSetAttributes(indentStyle, tags.length, tags, sizes, values);
+	OS.DisposePtr(ptr);
+	OS.ATSUSetRunStyle(layout, indentStyle, 0, 1);
+	for (int i = 0; i < hardBreaks.length-1; i++) {
+		int offset = hardBreaks[i];
+		OS.ATSUSetRunStyle(layout, indentStyle, offset, 1);
+	}
+	OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
+	int wrapWidth = buffer[0];
+	for (int i=0, start=0; i<hardBreaks.length; i++) {
+		int hardBreak = hardBreaks[i];
+		buffer[0] = 0;
+		if (wrapWidth != 0) OS.ATSUBatchBreakLines(layout, start, hardBreak - start, wrapWidth, buffer);
+		OS.ATSUSetSoftLineBreak(layout, hardBreak);
+		start = hardBreak;
+	}
+	OS.ATSUGetSoftLineBreaks(layout, 0, OS.kATSUToTextEnd, 0, null, buffer);
+	int count = buffer[0];
+	breaks = new int[count];
+	OS.ATSUGetSoftLineBreaks(layout, 0, OS.kATSUToTextEnd, count, breaks, null);
 	int lineCount = breaks.length;
 	lineX = new int[lineCount];
 	lineWidth = new int[lineCount];
 	lineHeight = new int[lineCount];
 	lineAscent = new int[lineCount];
-	if (length != 0) {
-		ATSTrapezoid trapezoid = new ATSTrapezoid();
-		for (int i=0, start=0; i<lineCount; i++) {
-			if (ascent != -1) {
-				int ptr = OS.NewPtr(4);
-				buffer[0] = OS.kATSUseLineHeight;
-				OS.memcpy(ptr, buffer, 4);
-				int[] tags = new int[]{OS.kATSULineAscentTag};
-				int[] sizes = new int[]{4};
-				int[] values = new int[]{ptr};
-				OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
-				OS.ATSUGetLineControl(layout, start, OS.kATSULineAscentTag, 4, buffer, null);
-				buffer[0] = OS.Long2Fix(Math.max(ascent, OS.Fix2Long(buffer[0])));
-				OS.memcpy(ptr, buffer, 4);
-				OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
-				OS.DisposePtr(ptr);
-			}
-			if (descent != -1) {
-				int ptr = OS.NewPtr(4);
-				buffer[0] = OS.kATSUseLineHeight;
-				OS.memcpy(ptr, buffer, 4);
-				int[] tags = new int[]{OS.kATSULineDescentTag};
-				int[] sizes = new int[]{4};
-				int[] values = new int[]{ptr};
-				OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
-				OS.ATSUGetLineControl(layout, start, OS.kATSULineDescentTag, 4, buffer, null);
-				buffer[0] = OS.Long2Fix(Math.max(descent, OS.Fix2Long(buffer[0])));
-				OS.memcpy(ptr, buffer, 4);
-				OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
-				OS.DisposePtr(ptr);
-			}
-			int lineBreak = breaks[i];
-			int lineLength = lineBreak - start;
-			OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineLength, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-			lineX[i] = OS.Fix2Long(trapezoid.lowerLeft_x);
-			lineAscent[i] = -OS.Fix2Long(trapezoid.upperRight_y);
-			if (lineLength != 0) {
-				lineWidth[i] = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
-			}
-			lineHeight[i] = OS.Fix2Long(trapezoid.lowerRight_y) + lineAscent[i] + spacing;
-			start = lineBreak;
+	ATSTrapezoid trapezoid = new ATSTrapezoid();
+	for (int i=0, start=0; i<lineCount; i++) {
+		if (ascent != -1) {
+			ptr = OS.NewPtr(4);
+			buffer[0] = OS.kATSUseLineHeight;
+			OS.memcpy(ptr, buffer, 4);
+			tags = new int[]{OS.kATSULineAscentTag};
+			sizes = new int[]{4};
+			values = new int[]{ptr};
+			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
+			OS.ATSUGetLineControl(layout, start, OS.kATSULineAscentTag, 4, buffer, null);
+			buffer[0] = OS.Long2Fix(Math.max(ascent, OS.Fix2Long(buffer[0])));
+			OS.memcpy(ptr, buffer, 4);
+			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
+			OS.DisposePtr(ptr);
 		}
+		if (descent != -1) {
+			ptr = OS.NewPtr(4);
+			buffer[0] = OS.kATSUseLineHeight;
+			OS.memcpy(ptr, buffer, 4);
+			tags = new int[]{OS.kATSULineDescentTag};
+			sizes = new int[]{4};
+			values = new int[]{ptr};
+			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
+			OS.ATSUGetLineControl(layout, start, OS.kATSULineDescentTag, 4, buffer, null);
+			buffer[0] = OS.Long2Fix(Math.max(descent, OS.Fix2Long(buffer[0])));
+			OS.memcpy(ptr, buffer, 4);
+			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
+			OS.DisposePtr(ptr);
+		}
+		int lineBreak = breaks[i];
+		int lineLength = lineBreak - start;
+		OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineLength, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+		lineX[i] = OS.Fix2Long(trapezoid.lowerLeft_x);
+		lineAscent[i] = -OS.Fix2Long(trapezoid.upperRight_y);
+		if (lineLength != 0) {
+			lineWidth[i] = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
+		}
+		lineHeight[i] = OS.Fix2Long(trapezoid.lowerRight_y) + lineAscent[i] + spacing;
+		start = lineBreak;
 	}
 }
 
@@ -1603,7 +1594,6 @@ public String toString () {
  *  Translate a client offset to an internal offset
  */
 int translateOffset (int offset) {
-	if (text.length() == 0) return 0;
 	return offset + 1;
 }
 
