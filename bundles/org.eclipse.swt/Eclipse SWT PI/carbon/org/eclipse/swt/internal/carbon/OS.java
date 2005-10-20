@@ -320,6 +320,7 @@ public class OS extends Platform {
 	public static final int kEventClassKeyboard = ('k'<<24) + ('e'<<16) + ('y'<<8) + 'b';
 	public static final int kEventClassMenu = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
 	public static final int kEventClassMouse = ('m'<<24) + ('o'<<16) + ('u'<<8) + 's';
+	public static final int kEventClassScrollable = ('s'<<24) + ('c'<<16) + ('r'<<8) + 'l';
 	public static final int kEventClassTextInput = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kEventClassWindow = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int kEventControlApplyBackground = 5;
@@ -396,6 +397,7 @@ public class OS extends Platform {
 	public static final int kEventParamMouseWheelAxis = ('m'<<24) + ('w'<<16) + ('a'<<8) + 'x';
 	public static final int kEventParamMouseWheelDelta = ('m'<<24) + ('w'<<16) + ('d'<<8) + 'l';
 	public static final int kEventParamPreviousBounds = ('p'<<24) + ('r'<<16) + ('c'<<8) + 't';
+	public static final int kEventParamOrigin = ('o'<<24) + ('r'<<16) + ('g'<<8) + 'n';
 	public static final int kEventParamOriginalBounds = ('o'<<24) + ('r'<<16) + ('c'<<8) + 't';
 	public static final int kEventParamReason =  ('w'<<24) + ('h'<<16) + ('y'<<8) + '?';
 	public static final int kEventParamRgnHandle =  ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
@@ -411,6 +413,7 @@ public class OS extends Platform {
 	public static final int kEventRawKeyRepeat = 2;
 	public static final int kEventRawKeyUp = 3;
 	public static final int kEventRawKeyModifiersChanged = 4;
+	public static final int kEventScrollableScrollTo = 10;
 	public static final int kEventTextInputUnicodeForKeyEvent = 2;
 	public static final int kEventWindowActivated = 5;
 	public static final int kEventWindowBoundsChanged = 27;
@@ -1606,6 +1609,7 @@ public static final native int SetEventLoopTimerNextFireTime(int inTimer, double
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, char[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, short[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, int[] inDataPtr);
+public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, CGPoint inDataPtr);
 public static final native int SetFontInfoForSelection(int iStyleType, int iNumStyles, int iStyles, int iFPEventTarget);
 public static final native int SetFrontProcess(int[] psn);
 public static final native int SetFrontProcessWithOptions(int[] psn, int inOptions);

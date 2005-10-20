@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 893;
-int OS_nativeFunctionCallCount[893];
+int OS_nativeFunctionCount = 894;
+int OS_nativeFunctionCallCount[894];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -772,6 +772,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetDragItemFlavorData",
 	"SetDragSendProc",
 	"SetEventLoopTimerNextFireTime",
+	"SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_CGPoint_2",
 	"SetEventParameter__IIII_3C",
 	"SetEventParameter__IIII_3I",
 	"SetEventParameter__IIII_3S",

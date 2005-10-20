@@ -24,6 +24,7 @@ import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
 import org.eclipse.swt.internal.carbon.TXNTab;
+import org.eclipse.swt.internal.carbon.CGPoint;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -2092,22 +2093,18 @@ public void setTextLimit (int limit) {
 public void setTopIndex (int index) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	//NOT DONE
-//	Rect oViewRect = new Rect ();
-//	TXNLongRect oDestinationRect = new TXNLongRect ();
-//	TXNLongRect oTextRect = new TXNLongRect ();
-//	OS.TXNGetRectBounds (txnObject, oViewRect, oDestinationRect, oTextRect);
-//	int topPixel = oDestinationRect.top - oTextRect.top;
-//	int [] oOffset = new int [1];
-//	org.eclipse.swt.internal.carbon.Point iPoint = new org.eclipse.swt.internal.carbon.Point ();
-//	OS.SetPt (iPoint, (short)0, (short)(-topPixel + (index * getLineHeight ())));
-//	OS.TXNPointToOffset (txnObject, iPoint, oOffset);
-//	System.out.println (oOffset [0]);
-//	int [] oStartOffset = new int [1], oEndOffset = new int [1];
-//	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-//	OS.TXNSetSelection (txnObject, oOffset [0], oOffset [0]);
-//	OS.TXNShowSelection (txnObject, false);
-//	OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
+	if (OS.HIVIEW) {
+		int[] event = new int[1];
+		OS.CreateEvent (0, OS.kEventClassScrollable, OS.kEventScrollableScrollTo, 0.0, 0, event);
+		if (event [0] != 0) {
+			int lineHeight = getLineHeight ();
+			CGPoint pt = new CGPoint ();
+			pt.y = lineHeight * Math.min(getLineCount (), index);
+			OS.SetEventParameter (event[0], OS.kEventParamOrigin, OS.typeHIPoint, CGPoint.sizeof, pt);
+			OS.SendEventToEventTarget (event[0], OS.GetControlEventTarget (handle));
+			OS.ReleaseEvent (event[0]);
+		}
+	}
 }
 
 /**
