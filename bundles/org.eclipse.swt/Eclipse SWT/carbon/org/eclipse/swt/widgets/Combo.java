@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
 import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CFRange;
@@ -59,6 +60,7 @@ public class Combo extends Composite {
 	int menuHandle;
 	int textLimit = LIMIT;
 	String lastText = "";
+	ControlEditTextSelectionRec selection;
 
 	/**
 	 * the operating system limit for the number of characters
@@ -270,6 +272,26 @@ public void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
+int callFocusEventHandler (int nextHandler, int theEvent) {
+	short [] part = new short [1];
+	if ((style & SWT.READ_ONLY) == 0) {
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+		if (part [0] == OS.kControlFocusNoPart) {
+			selection = new ControlEditTextSelectionRec ();
+			OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
+		}
+	}
+	int result = super.callFocusEventHandler (nextHandler, theEvent);
+	if ((style & SWT.READ_ONLY) == 0) {
+		if (part [0] != OS.kControlFocusNoPart && selection != null) {
+			OS.SetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
+			selection = null;
+		}
+	}
+	return result;
+}
+
+
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -340,10 +362,9 @@ protected void checkSubclass () {
 public void clearSelection () {
 	checkWidget();
 	if ((style & SWT.READ_ONLY) == 0) {
-		short [] selection = new short [2];
-		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection, null);
-		selection [1] = selection [0];
-		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection);
+		Point selection = getSelection ();
+		selection.y = selection.x;
+		setSelection (selection);
 	}
 }
 
@@ -735,9 +756,14 @@ public Point getSelection () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		return new Point (0, getCharCount ());
 	} else {
-		short [] selection = new short [2];
-		OS.GetControlData (handle, (short) OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection, null);
-		return new Point (selection [0], selection [1]);
+		ControlEditTextSelectionRec selection;
+		if (this.selection != null) {
+			selection = this.selection;
+		} else {
+			selection = new ControlEditTextSelectionRec ();
+			OS.GetControlData (handle, (short) OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection, null);
+		}
+		return new Point (selection.selStart, selection.selEnd);
 	}
 }
 
@@ -1515,8 +1541,16 @@ public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) == 0) {
-		short [] s = new short [] {(short)selection.x, (short)selection.y};
-		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s);
+		int length = getCharCount ();
+		int start = selection.x, end = selection.y;
+		ControlEditTextSelectionRec sel = new ControlEditTextSelectionRec ();
+		sel.selStart = (short) Math.min (Math.max (Math.min (start, end), 0), length);
+		sel.selEnd = (short) Math.min (Math.max (Math.max (start, end), 0), length);
+		if (hasFocus ()) {
+			OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, sel);
+		} else {
+			this.selection = sel;
+		}
 	}
 }
 
@@ -1568,6 +1602,7 @@ void setText (String string, boolean notify) {
 		lastText = string;
 		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 		OS.CFRelease (ptr);
+		selection = null;
 		if (notify) sendEvent (SWT.Modify);
 	}
 }
