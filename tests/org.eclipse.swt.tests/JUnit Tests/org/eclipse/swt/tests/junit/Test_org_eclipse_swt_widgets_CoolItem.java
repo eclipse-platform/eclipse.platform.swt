@@ -89,12 +89,9 @@ public void test_computeSizeII() {
 	button.setText("foo");
 
 	Point size = coolItem.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	Point size2 = coolItem.computeSize(0, 0);
-	assertEquals(size, size2);
-	
 	coolItem.setControl(button);
-	size2 = coolItem.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	assertTrue(size2.x > size.x);
+	Point size2 = coolItem.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	assertTrue(size2.x == size.x);
 
 	size = coolItem.computeSize(50, 25);
 	size2 = coolItem.computeSize(100, 25);
