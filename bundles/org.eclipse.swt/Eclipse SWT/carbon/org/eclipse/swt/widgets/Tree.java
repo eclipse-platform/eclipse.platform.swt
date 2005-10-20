@@ -755,9 +755,11 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
 	}
 	if (selected && (style & SWT.FULL_SELECTION) != 0) {
-		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-		int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
-		gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top);
+		if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
+			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+			int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+			gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top);
+		}
 	}
 	int rectRgn = OS.NewRgn ();
 	OS.RectRgn (rectRgn, rect);
@@ -789,8 +791,10 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	if (selected) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		if (columnIndex == 0 && (style & SWT.FULL_SELECTION) == 0) {
-			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-			gc.fillRectangle (x - 1, y, extent.x + 2, itemRect.bottom - itemRect.top);
+			if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
+				gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+				gc.fillRectangle (x - 1, y, extent.x + 2, itemRect.bottom - itemRect.top);
+			}
 		}
 	} else {
 		Color foreground = item.getForeground (columnIndex);
