@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,18 +11,19 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Virtual Table example snippet: create a table with 1,000,000 items (lazy)
+ * Virtual Table example snippet: create a table with 1,000,000 items (lazy, page size 64)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- */
+ */ 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 
-public class Snippet144 {
+public class Snippet201 {
 
-static final int COUNT = 1000000;
+static final int PAGE_SIZE = 64;
+static final int COUNT = 100000;
 
 public static void main(String[] args) {
 	Display display = new Display ();
@@ -33,8 +34,12 @@ public static void main(String[] args) {
 		public void handleEvent (Event event) {
 			TableItem item = (TableItem) event.item;
 			int index = table.indexOf (item);
-			item.setText ("Item " + index);
-			System.out.println (item.getText ());
+			int start = Math.max (0, index - PAGE_SIZE + 1);
+			int end = Math.min (table.getItemCount (), index + PAGE_SIZE);
+			for (int i=start; i<end; i++) {
+				item = table.getItem (i);
+				item.setText ("Item " + i);
+			}
 		}
 	});
 	table.setLayoutData (new RowData (200, 200));
@@ -46,7 +51,7 @@ public static void main(String[] args) {
 			long t1 = System.currentTimeMillis ();
 			table.setItemCount (COUNT);
 			long t2 = System.currentTimeMillis ();
-			label.setText ("Items: " + COUNT + ", Time: " + (t2 - t1) + " (ms)");
+			label.setText ("Items: " + COUNT + ", Time: " + (t2 - t1) + " (ms) [page=" + PAGE_SIZE + "]");
 			shell.layout ();
 		}
 	});
