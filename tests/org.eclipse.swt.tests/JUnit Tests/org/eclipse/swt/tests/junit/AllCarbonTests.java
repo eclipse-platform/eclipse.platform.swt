@@ -23,7 +23,6 @@ public class AllCarbonTests extends TestSuite {
  * Tests not run because they consistently fail
  */
 static String[] excludeTests = {
-	"test_setActive(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Shell)",
 	"test_postLorg_eclipse_swt_widgets_Event(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)",
 	"test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Font)",
 	"test_getBoundsI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TableItem)",
