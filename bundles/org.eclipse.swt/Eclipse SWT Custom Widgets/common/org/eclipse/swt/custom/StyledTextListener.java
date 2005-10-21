@@ -48,6 +48,7 @@ public void handleEvent(Event e) {
 			((StyledTextEvent) e).alignment = lineStyleEvent.alignment;
 			((StyledTextEvent) e).indent = lineStyleEvent.indent;
 			((StyledTextEvent) e).justify = lineStyleEvent.justify;
+			((StyledTextEvent) e).bullet = lineStyleEvent.bullet;
 			break;
 		case StyledText.VerifyKey:
 			VerifyEvent verifyEvent = new VerifyEvent(e);

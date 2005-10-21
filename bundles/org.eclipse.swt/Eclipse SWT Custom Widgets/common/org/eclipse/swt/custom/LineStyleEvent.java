@@ -34,21 +34,27 @@ public class LineStyleEvent extends TypedEvent {
 
 	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
 	 *  
-	 * line alignment (output)
+	 * line alignment (input, output)
 	 */
 	public int alignment;
 
 	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
 	 *  
-	 * line indent (output)
+	 * line indent (input, output)
 	 */
 	public int indent;
 
 	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
 	 *  
-	 * line justification (output)
+	 * line justification (input, output)
 	 */
 	public boolean justify;
+	
+	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
+	 *  
+	 * line bullet (input)
+	 */
+	public EmbeddedObject.Bullet bullet;
 	
 	static final long serialVersionUID = 3906081274027192884L;
 	
@@ -57,7 +63,8 @@ public LineStyleEvent(StyledTextEvent e) {
 	lineOffset = e.detail;
 	lineText = e.text;
 	styles = e.styles;
-	alignment = -1;
-	indent = -1;
+	alignment = e.alignment;
+	indent = e.indent;
+	justify = e.justify;
 }
 }

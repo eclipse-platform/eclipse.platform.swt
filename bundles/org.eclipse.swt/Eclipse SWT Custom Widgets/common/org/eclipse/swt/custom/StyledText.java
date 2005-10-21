@@ -3668,7 +3668,7 @@ public Color getLineBackground(int index) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (!userLineBackground) {
-		lineBackground = defaultLineStyler.getLineBackground(index);
+		lineBackground = defaultLineStyler.getLineBackground(index, null);
 	}
 	return lineBackground;
 }
@@ -4999,7 +4999,7 @@ void handleDispose(Event event) {
 		rightCaretBitmap = null;
 	}
 	if (defaultLineStyler != null) {
-		defaultLineStyler.release();
+		defaultLineStyler.dispose();
 		defaultLineStyler = null;
 	}
 	if (isBidiCaret()) {

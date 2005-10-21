@@ -20,7 +20,21 @@ class DefaultLineStyler implements LineStyleListener, LineBackgroundListener {
 	int styleCount = 0;	// the number of styles	
 	int lineExpandExp = 1; 	// the expansion exponent, used to increase the lines array exponentially
 	int lineCount = 0;
-	Color lineBackgrounds[];
+	LineInfo lines[];
+	
+	final static int BACKGROUND = 1 << 0;
+	final static int ALIGNMENT = 1 << 1;
+	final static int INDENT = 1 << 2;
+	final static int JUSTIFY = 1 << 3;
+	
+	class LineInfo {
+		int flags;
+		Color background;
+		int alignment;
+		int indent;
+		boolean justify;
+		EmbeddedObject object;
+	}
 	
 /** 
  * Creates a new default line styler.
@@ -31,7 +45,7 @@ class DefaultLineStyler implements LineStyleListener, LineBackgroundListener {
 public DefaultLineStyler(StyledTextContent content) {
 	this.content = content;
 	lineCount = content.getLineCount();
-	lineBackgrounds = new Color[lineCount];
+	lines = new LineInfo[lineCount];
 }
 /** 
  * Inserts a style at the given location.
@@ -196,30 +210,6 @@ void clearStyle(StyleRange clearStyle) {
 	}
 	deleteStyles(deleteStyle, deleteCount);
 }
-/**
- * Increases the <code>linebackgrounds</code> array to accomodate new line background
- * information.
- * <p>
- *
- * @param numLines the number to increase the array by
- */
-void expandLinesBy(int numLines) {
-	int size = lineBackgrounds.length;
-	if (size - lineCount >= numLines) return;
-	Color[] newLines = new Color[size + Math.max(Compatibility.pow2(lineExpandExp), numLines)];
-	System.arraycopy(lineBackgrounds, 0, newLines, 0, size);
-	lineBackgrounds = newLines;
-	lineExpandExp++;
-}
-/** 
- * Deletes the style at <code>index</code>.
- * <p>
- *
- * @param index	the index of the style to be deleted
- */
-void deleteStyle(int index) {
-	deleteStyles(index, 1);
-}
 /** 
  * Delete count styles starting at <code>index</code>.
  * <p>
@@ -256,7 +246,9 @@ StyleRange [] getStyleRanges() {
  */
 public void lineGetBackground(LineBackgroundEvent event) {
 	int lineIndex = content.getLineAtOffset(event.lineOffset);
-	event.lineBackground = lineBackgrounds[lineIndex];
+	if (lines[lineIndex] != null) {
+		event.lineBackground = lines[lineIndex].background;
+	}
 }
 /**
  * Handles the get line style information callback.
@@ -291,6 +283,13 @@ public void lineGetStyle(LineStyleEvent event) {
 	}
 	event.styles = new StyleRange[lineStyles.size()];
 	lineStyles.copyInto(event.styles);
+	int lineIndex = content.getLineAtOffset(lineStart);
+	LineInfo info = lines[lineIndex];
+	if (info != null) {
+		if ((info.flags & ALIGNMENT) != 0) event.alignment = info.alignment;
+		if ((info.flags & INDENT) != 0) event.indent = info.indent;
+		if ((info.flags & JUSTIFY) != 0) event.justify = info.justify;
+	}
 }
 /** 
  * Searches for the first style in the <code>start</code> - <code>end</code> range.
@@ -316,17 +315,40 @@ int searchForStyle(int start, int end) {
 	}
 	return high;
 }
-/** 
- * Updates the line background colors to reflect a new color.  Called by StyledText.
- * <p>
- *
- * @param startLine index of the first line to color
- * @param count number of lines to color starting at startLine
- * @param background the background color for the lines
- */ 
+void setLineAlignment(int startLine, int count, int alignment) {
+	for (int i = startLine; i < startLine + count; i++) {
+		if (lines[i] == null) {
+			lines[i] = new LineInfo();
+		}
+		lines[i].flags |= ALIGNMENT;
+		lines[i].alignment = alignment;
+	}
+}
 void setLineBackground(int startLine, int count, Color background) {
 	for (int i = startLine; i < startLine + count; i++) {
-		lineBackgrounds[i] = background;
+		if (lines[i] == null) {
+			lines[i] = new LineInfo();
+		}
+		lines[i].flags |= BACKGROUND;
+		lines[i].background = background;
+	}
+}
+void setLineIndent(int startLine, int count, int indent) {
+	for (int i = startLine; i < startLine + count; i++) {
+		if (lines[i] == null) {
+			lines[i] = new LineInfo();
+		}
+		lines[i].flags |= INDENT;
+		lines[i].indent = indent;
+	}
+}
+void setLineJustify(int startLine, int count, boolean justify) {
+	for (int i = startLine; i < startLine + count; i++) {
+		if (lines[i] == null) {
+			lines[i] = new LineInfo();
+		}
+		lines[i].flags |= JUSTIFY;
+		lines[i].justify = justify;
 	}
 }
 /** 
@@ -413,7 +435,7 @@ void setStyleRange(StyleRange newStyle) {
 					styles[i] = newStyle;
 					added = true;
 				} else {
-					deleteStyle(i);
+					deleteStyles(i, 1);
 					i--;
 				}
 			} else {
@@ -506,20 +528,26 @@ public void textChanging(TextChangingEvent event) {
  */
 void linesChanging(int start, int delta) {
 	if (delta == 0) return;
-	boolean inserting = delta > 0;
-	if (inserting) {
+	if (delta > 0) {
 		// shift the lines down to make room for new lines
-		expandLinesBy(delta);
+		int size = lines.length;
+		if (size - lineCount < delta) {
+			LineInfo[] newLines = new LineInfo[size + Math.max(Compatibility.pow2(lineExpandExp), delta)];
+			System.arraycopy(lines, 0, newLines, 0, size);
+			lines = newLines;
+			lineExpandExp++;
+		}
+		
 		for (int i = lineCount-1; i >= start; i--) {
-			lineBackgrounds[i + delta]=lineBackgrounds[i];
+			lines[i + delta] = lines[i];
 		}
 		for (int i = start; i < start + delta; i++) {
-			lineBackgrounds[i] = null;
+			lines[i] = null;
 		}
 	} else {
 		// shift up the lines
 		for (int i = start - delta; i < lineCount; i++) {
-			lineBackgrounds[i + delta] = lineBackgrounds[i];
+			lines[i + delta] = lines[i];
 		}
 	}
 	lineCount += delta;
@@ -626,16 +654,33 @@ Point getOverlappingStyles(int start, int length) {
 	}
 	return new Point(high, count);
 }
-/** 
- * Returns the background color of a line.  Called by StyledText.  It is safe to return 
- * the existing Color object since the colors are set and managed by the client.
- * <p>
- *
- * @param index	the line index
- * @return the background color of the line at the given index
- */ 
-Color getLineBackground(int index) {
-	return lineBackgrounds[index];
+int getLineAlignment(int index, int defaultAlignment) {
+	LineInfo info = lines[index];
+	if (info != null && (info.flags & ALIGNMENT) != 0) {
+		return info.alignment;
+	}
+	return  defaultAlignment;
+}
+Color getLineBackground(int index, Color defaultBackground) {
+	LineInfo info = lines[index];
+	if (info != null && (info.flags & BACKGROUND) != 0) {
+		return info.background;
+	}
+	return  defaultBackground;
+}
+int getLineIndent(int index, int defaultIndent) {
+	LineInfo info = lines[index];
+	if (info != null && (info.flags & INDENT) != 0) {
+		return info.indent;
+	}
+	return  defaultIndent;
+}
+boolean getLineJustify(int index, boolean defaultJustify) {
+	LineInfo info = lines[index];
+	if (info != null && (info.flags & JUSTIFY) != 0) {
+		return info.justify;
+	}
+	return defaultJustify;
 }
 /** 
  * Returns the style for the character at <code>offset</code>.  Called by StyledText.  
@@ -677,7 +722,9 @@ StyleRange[] getStyleRangesFor(int offset, int length) {
 	}
 	return ranges;
 }
-void release () {
+void dispose () {
 	styles = null;
+	lines = null;
+	content = null;
 }
 }

@@ -350,13 +350,9 @@ TextLayout getTextLayout(String line, int lineOffset) {
 	StyledTextEvent event = styledText.getLineStyleData(lineOffset, line);
 	if (event != null) {
 		styles = event.styles;
-		if (event.alignment != -1) {
-			alignment = event.alignment & (SWT.CENTER | SWT.LEFT | SWT.RIGHT);
-		}
-		if (event.indent != -1) {
-			indent = event.indent;
-		}
-		justify |= event.justify;
+		alignment = event.alignment & (SWT.CENTER | SWT.LEFT | SWT.RIGHT);
+		indent = event.indent;
+		justify = event.justify;
 	}
 	TextLayout layout = getTextLayout(line, lineOffset, segments, styles);
 	layout.setAlignment(alignment);

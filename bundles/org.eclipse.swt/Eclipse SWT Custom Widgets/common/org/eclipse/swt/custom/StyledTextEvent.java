@@ -22,6 +22,7 @@ class StyledTextEvent extends Event {
 	int alignment;
 	int indent;
 	boolean justify;
+	EmbeddedObject.Bullet bullet;
 	// used by LineBackgroundEvent
 	Color lineBackground;
 	// used by BidiSegmentEvent

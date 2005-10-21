@@ -24,17 +24,17 @@ import org.eclipse.swt.widgets.*;
  *
  * @see StyledText
  */
-public interface EmbeddedObject {
-	public int getAscent();
-	public int getDescent();
-	public int getAdvance();
-	public void draw(GC gc, int x, int y, int ascent, int descent);
+public abstract class EmbeddedObject {
+	public abstract int getAscent();
+	public abstract int getDescent();
+	public abstract int getAdvance();
+	public abstract void draw(GC gc, int x, int y, int ascent, int descent);
 
 	/**
 	 * Helper class to embedded a Control in a StyledText
 	 * 
 	 */
-	public class EmbeddedControl implements EmbeddedObject {
+	public class EmbeddedControl extends EmbeddedObject {
 		Control control;
 		int alignment;
 		
@@ -83,7 +83,7 @@ public interface EmbeddedObject {
 	 * Helper class to embedded a Image in a StyledText
 	 * 
 	 */
-	public class EmbeddedImage implements EmbeddedObject {
+	public class EmbeddedImage extends EmbeddedObject {
 		Image image;
 		int alignment;
 		
@@ -125,6 +125,32 @@ public interface EmbeddedObject {
 					gc.drawImage(image, x, y + ascent + descent - getAscent());
 					break;
 			}
+		}
+	}
+	
+	/**
+	 * 
+	 * 
+	 *
+	 */	
+	public class Bullet extends EmbeddedObject {
+		
+		/**
+		 * @param style bullet image, check mark image, number, roman, 
+		 */		
+		public Bullet(int style, int level, int index) {
+			
+		}
+		public int getAscent() {			
+			return 0;
+		}
+		public int getDescent() {
+			return 0;
+		}
+		public int getAdvance() {
+			return 0;
+		}
+		public void draw(GC gc, int x, int y, int ascent, int descent) {
 		}
 	}
 }

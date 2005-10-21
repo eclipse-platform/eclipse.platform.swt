@@ -1492,7 +1492,19 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
 	StyledTextListener typedListener = new StyledTextListener(extendedModifyListener);
 	addListener(ExtendedModify, typedListener);
 }
-public void setAlignment (int alignment) {
+/**
+ * Sets the default alignment of the receiver
+ * <p>
+ * 
+ * @param alignment alignment 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @see #setLineAlignment(int, int, int) 
+ * @since 3.2
+ */
+public void setAlignment(int alignment) {
 	checkWidget();
 	alignment &= (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	if (alignment == 0 || this.alignment == alignment);	
@@ -2055,6 +2067,22 @@ public void copy(int clipboardType) {
 			}
 		}
 	}
+}
+/**
+ * Returns the default alignment of the receiver
+ * <p>
+ * 
+ * @return the alignment
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul> 
+ * @see #getLineAlignment(int)
+ * @since 3.2
+ */
+public int getAlignment() {
+	checkWidget();
+	return alignment;
 }
 /**
  * Returns a string that uses only the line delimiter specified by the 
@@ -3334,6 +3362,33 @@ public int getHorizontalPixel() {
 	checkWidget();
 	return horizontalScrollOffset;
 }
+/**
+ * Returns the default indent of the receiver
+ * <p>
+ * 
+ * @return the line indent
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @see #getLineIndent(int)
+ * @since 3.2
+ */
+public int getIndent() {
+	checkWidget();
+	return lineIndent;
+}
+/**
+ * Returns the default justify of the receiver
+ * 
+ * @return justify
+ * 
+ * @since 3.2
+ */
+public boolean getJustify() {
+	checkWidget();
+	return justify;
+}
 /** 
  * Returns the action assigned to the key.
  * Returns SWT.NULL if there is no action associated with the key.
@@ -3369,6 +3424,30 @@ public int getKeyBinding(int key) {
 public int getCharCount() {
 	checkWidget();
 	return content.getCharCount();
+}
+/**
+ * Returns the alignment of the line at the given index.
+ * <p>
+ * 
+ * @param index the index of the line
+ * @return the line alignment
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
+ * </ul>
+ * @see #getAlignment()
+ * @since 3.2
+ */
+public int getLineAlignment(int index) {
+	checkWidget();
+	if (index < 0 || index > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	return defaultLineStyler.getLineAlignment(index, alignment);
 }
 /**
  * Returns the line at the specified offset in the text
@@ -3416,7 +3495,7 @@ public Color getLineBackground(int index) {
 	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	return !userLineBackground ? defaultLineStyler.getLineBackground(index) : null;
+	return userLineBackground ? null : defaultLineStyler.getLineBackground(index, null);
 }
 /**
  * Returns the line background data for the given line or null if 
@@ -3487,6 +3566,69 @@ public String getLineDelimiter() {
 public int getLineHeight() {
 	checkWidget();
 	return lineHeight;
+}
+/**
+ * Returns the indent of the line at the given index.
+ * <p>
+ * 
+ * @param index the index of the line
+ * @return the line indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
+ * </ul>
+ * @see #getIndent()
+ * @since 3.2
+ */
+public int getLineIndent(int index) {
+	checkWidget();
+	if (index < 0 || index > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	return defaultLineStyler.getLineIndent(index, lineIndent);	
+}
+/**
+ * Returns the justify of the line at the given index.
+ * <p>
+ * 
+ * @param index the index of the line
+ * @return the line justify
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
+ * </ul>
+ * @see #getJustify()
+ * @since 3.2
+ */
+public boolean getLineJustify(int index) {
+	checkWidget();
+	if (index < 0 || index > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	return defaultLineStyler.getLineJustify(index, justify);
+}
+/**
+ * Returns the line spacing of the receiver
+ * <p>
+ * 
+ * @return the line spacing 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.2
+ */
+public int getLineSpacing() {
+	checkWidget();
+	return lineSpacing;
 }
 /**
  * Returns the line style data for the given line or null if there is 
@@ -4776,7 +4918,7 @@ void handleDispose(Event event) {
 		rightCaretBitmap = null;
 	}
 	if (defaultLineStyler != null) {
-		defaultLineStyler.release();
+		defaultLineStyler.dispose();
 		defaultLineStyler = null;
 	}
 	if (isBidiCaret()) {
@@ -5409,10 +5551,28 @@ public void invokeAction(int action) {
 	}
 }
 /**
+ * Returns whether or not the given lines are visible.
+ * <p>
+ *
+ * @return true if any of the lines is visible
+ * false if none of the lines is visible
+ */
+boolean isAreaVisible(int firstLine, int lastLine) {
+	int partialTopIndex = getPartialTopIndex();
+	int partialBottomIndex = getPartialBottomIndex();
+	return !(firstLine > partialBottomIndex || lastLine < partialTopIndex);
+}
+/**
  * Temporary until SWT provides this
  */
 boolean isBidi() {
 	return IS_GTK || BidiUtil.isBidiPlatform() || isMirrored;
+}
+boolean isBidiCaret() {
+	return BidiUtil.isBidiPlatform();
+}
+boolean isFixedLineHeight() {
+	return fixedLineHeight;
 }
 /**
  * Returns whether the given offset is inside a multi byte line delimiter.
@@ -5440,18 +5600,6 @@ boolean isLineDelimiter(int offset) {
  */
 boolean isMirrored() {
 	return isMirrored;
-}
-/**
- * Returns whether or not the given lines are visible.
- * <p>
- *
- * @return true if any of the lines is visible
- * false if none of the lines is visible
- */
-boolean isAreaVisible(int firstLine, int lastLine) {
-	int partialTopIndex = getPartialTopIndex();
-	int partialBottomIndex = getPartialBottomIndex();
-	return !(firstLine > partialBottomIndex || lastLine < partialTopIndex);
 }
 /**
  * Returns whether the widget can have only one line.
@@ -5681,6 +5829,26 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 		int lastLine = getLineIndex(y + height);
 		resetCache(firstLine, lastLine - firstLine + 1);
 	}
+}
+void redrawLines(int startLine, int lineCount) {
+	// do nothing if redraw range is completely invisible	
+	int partialBottomIndex = getPartialBottomIndex();
+	if (startLine > partialBottomIndex || startLine + lineCount - 1 < topIndex) {
+		return;
+	}
+	// only redraw visible lines
+	if (startLine < topIndex) {
+		lineCount -= topIndex - startLine;
+		startLine = topIndex;
+	}
+	if (startLine + lineCount - 1 > partialBottomIndex) {
+		lineCount = partialBottomIndex - startLine + 1;
+	}
+	startLine -= topIndex;
+	int redrawTop = getLinePixel(startLine);
+	int redrawBottom = getLinePixel(startLine + lineCount);
+	int redrawWidth = getClientArea().width - leftMargin - rightMargin; 
+	super.redraw(leftMargin, redrawTop, redrawWidth, redrawBottom - redrawTop, true);
 }
 /** 
  * Redraws the specified text range.
@@ -5929,7 +6097,7 @@ public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
 	defaultLineStyler.replaceStyleRanges(start, length, ranges);
 	for (int i = 0; i < ranges.length; i++) {
 		StyleRange range = ranges[i];
-		if (range != null && range.font != null) {
+		if (range != null && (range.font != null || range.rise != 0)) {
 			if (!isFixedLineHeight()) {
 				lineCache.setAllLinesDefaultHeight();
 			}
@@ -6214,6 +6382,9 @@ StyledTextEvent sendLineEvent(int eventType, int lineOffset, String line) {
 		event = new StyledTextEvent(content);		
 		event.detail = lineOffset;
 		event.text = line;
+		event.alignment = alignment;
+		event.indent = lineIndent;
+		event.justify = justify;
 		notifyListeners(eventType, event);
 	}
 	return event;
@@ -6507,9 +6678,6 @@ public void setEditable(boolean editable) {
 	checkWidget();
 	this.editable = editable;
 }
-void setLineHeightVariable () {
-	fixedLineHeight = false;
-}
 /**
  * Sets a new font to render text with.
  * <p>
@@ -6631,12 +6799,70 @@ public void setHorizontalPixel(int pixel) {
 	}
 	scrollHorizontal(pixel - horizontalScrollOffset, true);
 }
+/**
+ * Sets the default indent of the receiver
+ * <p>
+ * 
+ * @param lineIndent line indent
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul> 
+ * @see #setLineIndent(int, int, int)
+ * @since 3.2
+ */
+public void setIndent(int lineIndent) {
+	checkWidget();
+	if (this.lineIndent == lineIndent || lineIndent < 0) return;
+	this.lineIndent = lineIndent;
+	setCaretLocation();
+	super.redraw();	
+}
+/**
+ * Set the default justify of the receiver
+ * 
+ * @param justify
+ * 
+ * @since 3.2
+ */
 public void setJustify(boolean justify) {
 	checkWidget();
 	if (this.justify == justify) return;
 	this.justify = justify;
 	setCaretLocation();
 	super.redraw();	
+}
+/**
+ * Sets the alignment of the specified lines.
+ * <p>
+ *  
+ * @param startLine first line the alignment is applied to, 0 based
+ * @param lineCount number of lines the alignment applies to.
+ * @param alignment line alignment
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the specified line range is invalid</li>
+ * </ul>
+ * @see #setAlignment(int)
+ * @since 3.2
+ */
+public void setLineAlignment(int startLine, int lineCount, int alignment) {
+	checkWidget();
+	if (userLineStyle) return;
+	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+
+	defaultLineStyler.setLineAlignment(startLine, lineCount, alignment);
+	redrawLines(startLine, lineCount);
+	int caretLine = getCaretLine();
+	if (startLine <= caretLine && caretLine < startLine + lineCount) {
+		setCaretLocation();
+	}
 }
 /** 
  * Sets the background color of the specified lines.
@@ -6672,42 +6898,93 @@ public void setJustify(boolean justify) {
  * </ul>
  */
 public void setLineBackground(int startLine, int lineCount, Color background) {
-	checkWidget();
-	
-	// this API can not be used if the client is providing the line background
-	if (userLineBackground) {
-		return;
-	}
+	checkWidget();	
+	if (userLineBackground) return;	
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	
 	defaultLineStyler.setLineBackground(startLine, lineCount, background);
-	// do nothing if redraw range is completely invisible	
-	int partialBottomIndex = getPartialBottomIndex();
-	if (startLine > partialBottomIndex || startLine + lineCount - 1 < topIndex) {
-		return;
-	}
-	// only redraw visible lines
-	if (startLine < topIndex) {
-		lineCount -= topIndex - startLine;
-		startLine = topIndex;
-	}
-	if (startLine + lineCount - 1 > partialBottomIndex) {
-		lineCount = partialBottomIndex - startLine + 1;
-	}
-	startLine -= topIndex;
-	int redrawTop = getLinePixel(startLine);
-	int redrawBottom = getLinePixel(startLine + lineCount);
-	int redrawWidth = getClientArea().width - leftMargin - rightMargin; 
-	super.redraw(leftMargin, redrawTop, redrawWidth, redrawBottom - redrawTop, true);
+	redrawLines(startLine, lineCount);
 }
-public void setLineIndent(int lineIndent) {
+void setLineHeightVariable () {
+	fixedLineHeight = false;
+}
+/**
+ * Sets the indent of the specified lines.
+ * <p>
+ *  
+ * @param startLine first line the indent is applied to, 0 based
+ * @param lineCount number of lines the indent applies to.
+ * @param indent line indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the specified line range is invalid</li>
+ * </ul>
+ * @see #setIndent(int)
+ * @since 3.2
+ */
+public void setLineIndent(int startLine, int lineCount, int indent) {
 	checkWidget();
-	if (this.lineIndent == lineIndent || lineIndent < 0) return;
-	this.lineIndent = lineIndent;
-	setCaretLocation();
-	super.redraw();	
+	if (userLineStyle) return;
+	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+
+	defaultLineStyler.setLineIndent(startLine, lineCount, indent);
+	redrawLines(startLine, lineCount);
+	int caretLine = getCaretLine();
+	if (startLine <= caretLine && caretLine < startLine + lineCount) {
+		setCaretLocation();
+	}
 }
+/**
+ * Sets the justify of the specified lines.
+ * <p>
+ *  
+ * @param startLine first line the justify is applied to, 0 based
+ * @param lineCount number of lines the justify applies to.
+ * @param indent line indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the specified line range is invalid</li>
+ * </ul>
+ * @see #setJustify(boolean)
+ * @since 3.2
+ */
+public void setLineJustify(int startLine, int lineCount, boolean justify) {
+	checkWidget();
+	if (userLineStyle) return;
+	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+
+	defaultLineStyler.setLineJustify(startLine, lineCount, justify);
+	redrawLines(startLine, lineCount);
+	int caretLine = getCaretLine();
+	if (startLine <= caretLine && caretLine < startLine + lineCount) {
+		setCaretLocation();
+	}
+}
+/**
+ * Sets the line spacing of the receiver
+ * <p>
+ * 
+ * @param lineSpacing line spacing
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.2
+ */
 public void setLineSpacing(int lineSpacing) {
 	checkWidget();
 	if (this.lineSpacing == lineSpacing || lineSpacing < 0) return;
@@ -7060,7 +7337,7 @@ public void setStyleRange(StyleRange range) {
 	}
 	defaultLineStyler.setStyleRange(range);	
 	if (range != null) {
-		if (range.font != null) {
+		if (range.font != null || range.rise != 0) {
 			if (!isFixedLineHeight()) {
 				lineCache.setAllLinesDefaultHeight();
 			}
@@ -7132,7 +7409,7 @@ public void setStyleRanges(StyleRange[] ranges) {
 		
 		for (int i = 0; i < ranges.length; i++) {
 			StyleRange range = ranges[i];
-			if (range != null && range.font != null) {
+			if (range != null && (range.font != null  || range.rise != 0)) {
 				if (!isFixedLineHeight()) {
 					lineCache.setAllLinesDefaultHeight();
 				}
@@ -7422,12 +7699,6 @@ public void showSelection() {
 		// will not be visible
 		showLocation(endPos);
 	}
-}
-boolean isBidiCaret() {
-	return BidiUtil.isBidiPlatform();
-}
-boolean isFixedLineHeight() {
-	return fixedLineHeight;
 }
 /**
  * Updates the selection and caret position depending on the text change.
