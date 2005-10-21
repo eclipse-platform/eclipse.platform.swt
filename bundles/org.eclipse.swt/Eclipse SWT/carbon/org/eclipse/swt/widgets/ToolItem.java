@@ -49,7 +49,7 @@ public class ToolItem extends Item {
 	Image hotImage, disabledImage;
 	String toolTipText;
 	Control control;
-	boolean tracking;
+	boolean tracking, selection;
 
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
@@ -294,6 +294,23 @@ void destroyWidget () {
 }
 
 void drawBackground (int control, int context) {
+	if (OS.HIVIEW) {
+		if (control == handle && getSelection ()) {
+			CGRect rect = new CGRect();
+			OS.HIViewGetBounds (handle, rect);
+			OS.CGContextSaveGState (context);
+			OS.CGContextSetFillColor (context, new float[]{0.1f, 0.1f, 0.1f, 0.1f});
+			OS.CGContextFillRect (context, rect);
+			OS.CGContextSetStrokeColor (context, new float[]{0.2f, 0.2f, 0.2f, 0.2f});
+			rect.x += 0.5f;
+			rect.y += 0.5f;
+			rect.width -= 1;
+			rect.height -= 1;
+			OS.CGContextStrokeRect (context, rect);
+			OS.CGContextRestoreGState (context);
+		}
+		return;
+	}
 	drawBackground (control, context, parent.background);
 }
 
@@ -471,6 +488,9 @@ public ToolBar getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
+	if (OS.HIVIEW) {
+		return selection;
+	}
 	short [] transform = new short [1];
  	OS.GetControlData (iconHandle, (short) OS.kControlEntireControl, OS.kControlIconTransformTag, 2, transform, null);
   	return (transform [0] & OS.kTransformSelected) != 0;
@@ -914,12 +934,11 @@ public void setControl (Control control) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
+	if ((state & DISABLED) == 0 && enabled) return;
 	if (enabled) {
-		if ((state & DISABLED) == 0) return;
 		state &= ~DISABLED;
 		OS.EnableControl (handle);
 	} else {
-		if ((state & DISABLED) != 0) return;
 		state |= DISABLED;
 		OS.DisableControl (handle);
 	}
@@ -1025,10 +1044,14 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	int transform = selected ? OS.kTransformSelected : 0;
-	OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
-	if (image == null) {
-		OS.SetControlData (labelHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
+	if (OS.HIVIEW) {
+		this.selection = selected;
+	} else {
+		int transform = selected ? OS.kTransformSelected : 0;
+		OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
+		if (image == null) {
+			OS.SetControlData (labelHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
+		}
 	}
 	redrawWidget (handle, true);
 }
