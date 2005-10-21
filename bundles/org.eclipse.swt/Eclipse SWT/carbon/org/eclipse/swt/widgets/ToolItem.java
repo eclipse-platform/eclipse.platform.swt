@@ -19,6 +19,7 @@ import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.HIThemeSeparatorDrawInfo;
 import org.eclipse.swt.internal.carbon.HIThemePopupArrowDrawInfo;
+import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -43,7 +44,7 @@ import org.eclipse.swt.graphics.*;
 public class ToolItem extends Item {
 	int handle, iconHandle, labelHandle;
 	int cIcon, labelCIcon;
-	int visibleRgn;
+	int visibleRgn, partCode;
 	int width = DEFAULT_SEPARATOR_WIDTH;
 	ToolBar parent;
 	Image hotImage, disabledImage;
@@ -137,6 +138,24 @@ public ToolItem (ToolBar parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
+int actionProc (int theControl, int partCode) {
+	if (OS.HIVIEW && text.length () > 0) {
+		this.partCode = partCode;
+		if (theControl == labelHandle) {
+			if (image != null && iconHandle != 0) {
+				int transform = partCode != 0 ? OS.kTransformSelected : 0;
+				OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
+				redrawWidget (iconHandle, false);
+			}
+			redrawWidget (labelHandle, false);		
+		}
+		if (theControl == iconHandle) {
+			redrawWidget (labelHandle, false);
+		}
+	}
+	return OS.noErr;
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected, by sending
@@ -170,6 +189,36 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection,typedListener);
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	if (OS.HIVIEW && control == labelHandle && partCode != 0) {
+		HIThemeTextInfo info = new HIThemeTextInfo ();
+		info.state = OS.kThemeStatePressed;
+		Font font = parent.font;
+		if (font != null) {
+			OS.TextFont (font.id);
+			OS.TextFace (font.style);
+			OS.TextSize (font.size);
+			info.fontID = (short) OS.kThemeCurrentPortFont; 
+		} else {
+			info.fontID = (short) parent.defaultThemeFont ();
+		}
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (labelHandle, rect);
+		int [] context = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+		int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+		OS.CGContextSetFillColorSpace (context [0], colorspace);
+		OS.CGColorSpaceRelease (colorspace);
+		OS.CGContextSetFillColor (context [0], parent.foreground != null ? parent.foreground : new float []{0, 0, 0, 1});
+		int [] ptr = new int [1];
+		OS.GetControlData (labelHandle, (short) 0, OS.kControlStaticTextCFStringTag, 4, ptr, null);
+		OS.HIThemeDrawTextBox (ptr [0], rect, info, context [0], OS.kHIThemeOrientationNormal);
+		OS.CFRelease (ptr [0]);
+		return OS.noErr;
+	}
+	return super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+}
+
 static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.DROP_DOWN, 0);
 }
@@ -201,8 +250,8 @@ int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor)
 	return OS.eventNotHandledErr;
 }
 
-Point computeSize (GC gc) {
-	checkWidget();
+Point computeSize () {
+//	checkWidget();
 	int width = 0, height = 0;
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((parent.style & SWT.HORIZONTAL) != 0) {
@@ -220,8 +269,7 @@ Point computeSize (GC gc) {
 		if (text.length () != 0 || image != null) {
 			int stringWidth = 0, stringHeight = 0;
 			if (text.length () != 0) {
-				int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
-				Point size = gc.textExtent (text, flags);
+				Point size = textExtent ();
 				stringWidth = size.x;
 				stringHeight = size.y;
 			}
@@ -265,7 +313,11 @@ void createHandle () {
 		OS.CreateIconControl(window, null, inContent, false, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		iconHandle = outControl [0];
-		OS.CreateIconControl(window, null, inContent, false, outControl);
+		if (OS.HIVIEW) {
+			OS.CreateStaticTextControl (window, null, 0, null, outControl);
+		} else {
+			OS.CreateIconControl (window, null, inContent, false, outControl);		
+		}
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = outControl [0];
 	}
@@ -589,17 +641,20 @@ void hookEvents () {
 	int [] mask2 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
+		OS.kEventClassControl, OS.kEventControlHitTest,
 		OS.kEventClassControl, OS.kEventControlTrack,
 	};
 	if (iconHandle != 0) {
 		controlTarget = OS.GetControlEventTarget (iconHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, iconHandle, null);
 		OS.SetControlColorProc (iconHandle, colorProc);
+		if (OS.HIVIEW) OS.SetControlAction (iconHandle, display.actionProc);
 	}
 	if (labelHandle != 0) {
 		controlTarget = OS.GetControlEventTarget (labelHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, labelHandle, null);
 		OS.SetControlColorProc (labelHandle, colorProc);
+		if (OS.HIVIEW) OS.SetControlAction (labelHandle, display.actionProc);
 	}
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
@@ -649,6 +704,24 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	}
 	if ((style & SWT.CHECK) != 0) setSelection (!getSelection ());
 	postEvent (SWT.Selection);
+	return OS.eventNotHandledErr;
+}
+
+int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
+	if (OS.HIVIEW) {
+		int [] theControl = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+		if (theControl [0] == labelHandle) {
+			CGRect rect = new CGRect ();
+			OS.HIViewGetBounds (labelHandle, rect);
+			CGPoint pt = new CGPoint ();
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+			if (OS.CGRectContainsPoint (rect, pt) != 0) {
+				OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{(short)1});
+				return OS.noErr;
+			}
+		}
+	}
 	return OS.eventNotHandledErr;
 }
 
@@ -719,6 +792,14 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	tracking = false;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
 	if (tracking) {
+		if (OS.HIVIEW && text.length () > 0) {
+			partCode = 0;
+			if (labelHandle != 0) redrawWidget (labelHandle, false);
+			if (image != null && iconHandle != 0) {
+				OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short) 0});
+				redrawWidget (iconHandle, false);
+			}
+		}
 		org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 		OS.GetGlobalMouse (outPt);
 		Rect rect = new Rect ();
@@ -840,20 +921,19 @@ void setBackground (float [] color) {
 	parent.setBackground (handle, color);
 	if (labelHandle != 0) {
 		parent.setBackground (labelHandle, color);
-		updateText (false);
+		if (!OS.HIVIEW) updateText (false);
 	}
 	if (iconHandle != 0) parent.setBackground (iconHandle, color);
 }
 
-void setBounds (int x, int y, int width, int height, GC gc) {
+void setBounds (int x, int y, int width, int height) {
 	setBounds (handle, x, y, width, height, true, true, false);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int space = 0;
 	int inset = 3;
 	int stringWidth = 0, stringHeight = 0;
 	if (text.length () != 0) {
-		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
-		Point size = gc.textExtent (text, flags);
+		Point size = textExtent ();
 		stringWidth = size.x;
 		stringHeight = size.y;
 	}
@@ -945,16 +1025,18 @@ public void setEnabled (boolean enabled) {
 }
 
 void setFontStyle (Font font) {
-	/* This code is intentionaly commented. */
-//	parent.setFontStyle (labelHandle, font);
-	updateText (false);
+	if (OS.HIVIEW) {
+		parent.setFontStyle (labelHandle, font);
+	} else {
+		updateText (false);
+	}
 }
 
 void setForeground (float [] color) {
 	parent.setForeground (handle, color);
 	if (labelHandle != 0) {
 		parent.setForeground (labelHandle, color);
-		updateText (false);
+		if (!OS.HIVIEW) updateText (false);
 	}
 	if (iconHandle != 0) parent.setForeground (iconHandle, color);
 }
@@ -1086,7 +1168,18 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	updateText (true);
+	if (OS.HIVIEW) {
+		char [] buffer = new char [text.length ()];
+		text.getChars (0, buffer.length, buffer, 0);
+		int length = fixMnemonic (buffer);
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		OS.SetControlData (labelHandle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
+		OS.CFRelease (ptr);
+		redrawWidget (labelHandle, false);
+	} else {
+		updateText (true);
+	}
 }
 
 /**
@@ -1194,6 +1287,34 @@ void updateText (boolean layout) {
 	if (layout) {
 		redrawWidget (labelHandle, false);
 		parent.relayout();
+	}
+}
+
+Point textExtent () {
+	if (OS.HIVIEW) {
+		float [] w = new float [1], h = new float [1];
+		HIThemeTextInfo info = new HIThemeTextInfo ();
+		info.state = OS.kThemeStateActive;
+		Font font = parent.font;
+		if (font != null) {
+			OS.TextFont (font.id);
+			OS.TextFace (font.style);
+			OS.TextSize (font.size);
+			info.fontID = (short) OS.kThemeCurrentPortFont; 
+		} else {
+			info.fontID = (short) parent.defaultThemeFont ();
+		}
+		int [] ptr = new int [1];
+		OS.GetControlData (labelHandle, (short) 0, OS.kControlStaticTextCFStringTag, 4, ptr, null);
+		OS.HIThemeGetTextDimensions (ptr [0], 0, info, w, h, null);
+		OS.CFRelease (ptr [0]);
+		return new Point ((int) w [0], (int) h [0]);
+	} else {
+		GC gc = new GC (parent);
+		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
+		Point size = gc.textExtent (text, flags);
+		gc.dispose ();
+		return size;		
 	}
 }
 

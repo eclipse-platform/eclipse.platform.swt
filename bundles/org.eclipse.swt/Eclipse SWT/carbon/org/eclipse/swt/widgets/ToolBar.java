@@ -137,7 +137,7 @@ void createItem (ToolItem item, int index) {
 	item.createWidget ();
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	if (parent.font != null) item.setFontStyle (parent.font);
+	item.setFontStyle (parent.font != null ? parent.font : parent.defaultFont ());
 	relayout ();
 }
 
@@ -148,7 +148,6 @@ void createWidget () {
 }
 
 int defaultThemeFont () {
-	if (display.smallFonts) return OS.kThemeSmallSystemFont;
 	return OS.kThemeToolbarFont;
 }
 
@@ -320,10 +319,9 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 	int maxX = 0, rows = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
 	int itemHeight = 0;
-	GC gc = new GC(this);
 	Point [] sizes = new Point [itemCount];
 	for (int i=0; i<itemCount; i++) {
-		Point size = sizes [i] = items [i].computeSize (gc);
+		Point size = sizes [i] = items [i].computeSize ();
 		itemHeight = Math.max (itemHeight, size.y);
 	}
 	for (int i=0; i<itemCount; i++) {
@@ -335,7 +333,7 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 			y += ySpacing + itemHeight;
 		}
 		if (resize) {
-			item.setBounds (x, y, size.x, itemHeight, gc);
+			item.setBounds (x, y, size.x, itemHeight);
 			boolean visible = x + size.x <= width && y + itemHeight <= height;
 			item.setVisible (item.handle, visible);
 			Control control = item.control;
@@ -347,7 +345,6 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 		x += xSpacing + size.x;
 		maxX = Math.max (maxX, x);
 	}
-	gc.dispose();
 	
 	//TODO - tempporary code
 	if (resize) invalidateVisibleRegion (handle);
@@ -362,10 +359,9 @@ int [] layoutVertical (int width, int height, boolean resize) {
 	int maxY = 0, cols = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
 	int itemWidth = 0;
-	GC gc = new GC(this);
 	Point [] sizes = new Point [itemCount];
 	for (int i=0; i<itemCount; i++) {
-		Point size = sizes [i] = items [i].computeSize (gc);
+		Point size = sizes [i] = items [i].computeSize ();
 		itemWidth = Math.max (itemWidth, size.x);
 	}
 	for (int i=0; i<itemCount; i++) {
@@ -377,7 +373,7 @@ int [] layoutVertical (int width, int height, boolean resize) {
 			y = marginHeight;
 		}
 		if (resize) {
-			item.setBounds (x, y, itemWidth, size.y, gc);
+			item.setBounds (x, y, itemWidth, size.y);
 			boolean visible = x + itemWidth <= width && y + size.y <= height;
 			item.setVisible (item.handle, visible);
 			Control control = item.control;
@@ -389,7 +385,6 @@ int [] layoutVertical (int width, int height, boolean resize) {
 		y += ySpacing + size.y;
 		maxY = Math.max (maxY, y);
 	}
-	gc.dispose();
 	
 	//TODO - tempporary code
 	if (resize) invalidateVisibleRegion (handle);
