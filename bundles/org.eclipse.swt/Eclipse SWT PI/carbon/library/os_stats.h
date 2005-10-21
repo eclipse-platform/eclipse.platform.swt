@@ -210,6 +210,7 @@ typedef enum {
 	CGPointApplyAffineTransform_FUNC,
 	CGPostKeyboardEvent_FUNC,
 	CGPostMouseEvent_FUNC,
+	CGRectContainsPoint_FUNC,
 	CGShadingCreateAxial_FUNC,
 	CGShadingCreateRadial_FUNC,
 	CGShadingRelease_FUNC,

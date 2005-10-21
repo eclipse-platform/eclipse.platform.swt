@@ -334,6 +334,7 @@ public class OS extends Platform {
 	public static final int kControlFocusNextPart = -1;
 	public static final int kEventControlGetFocusPart = 8;
 	public static final int kEventControlHit = 1;
+	public static final int kEventControlHitTest = 3;
 	public static final int kEventControlSetCursor = 11;
 	public static final int kEventControlSetFocusPart = 7;
 	public static final int kEventParamControlSubControl = ('c'<<24) + ('s'<<16) + ('u'<<8) + 'b';
@@ -690,6 +691,7 @@ public class OS extends Platform {
 	public static final int kThemeArrowCursor = 0;
 	public static final int kThemeArrowDown = 1;
 	public static final int kThemeArrow5pt = 1;
+	public static final int kThemeBevelButtonSmall = 8;
 	public static final int kThemeBrushDialogBackgroundActive = 1;
 	public static final int kThemeBrushDocumentWindowBackground = 15;
 	public static final int kThemeBrushPrimaryHighlightColor = -3;
@@ -1043,6 +1045,7 @@ public static final native void CGPatternRelease (int pattern);
 public static final native void CGPointApplyAffineTransform (CGPoint point, float[] t, CGPoint result);
 public static final native int CGPostMouseEvent(CGPoint mouseCursorPosition, boolean updateMouseCursorPosition, int buttonCount, boolean mouseButtonDown, boolean mouseButtonDown2, boolean mouseButtonDown3);
 public static final native int CGPostKeyboardEvent(int keyChar, int virtualKey, boolean keyDown);
+public static final native int CGRectContainsPoint(CGRect rect, CGPoint point);
 public static final native int CGShadingCreateAxial (int colorspace, CGPoint start, CGPoint end, int function, boolean extendStart, boolean extendEnd);
 public static final native int CGShadingCreateRadial (int colorspace, CGPoint start, float startRadius, CGPoint end, float endRadius, int function, boolean extendStart, boolean extendEnd);
 public static final native void CGShadingRelease (int shading);

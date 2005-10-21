@@ -2395,6 +2395,25 @@ fail:
 }
 #endif
 
+#ifndef NO_CGRectContainsPoint
+JNIEXPORT jint JNICALL OS_NATIVE(CGRectContainsPoint)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	CGRect _arg0, *lparg0=NULL;
+	CGPoint _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGRectContainsPoint_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getCGPointFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)CGRectContainsPoint(*lparg0, *lparg1);
+fail:
+	if (arg1 && lparg1) setCGPointFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, CGRectContainsPoint_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGShadingCreateAxial
 JNIEXPORT jint JNICALL OS_NATIVE(CGShadingCreateAxial)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jint arg3, jboolean arg4, jboolean arg5)
