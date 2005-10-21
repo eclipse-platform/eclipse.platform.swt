@@ -3229,6 +3229,15 @@ public static final void gdk_window_set_cursor(int /*long*/ window, int /*long*/
 		lock.unlock();
 	}
 }
+public static final native void _gdk_window_set_debug_updates(boolean setting);
+public static final void gdk_window_set_debug_updates(boolean setting) {	
+	lock.lock();
+	try {
+		_gdk_window_set_debug_updates(setting);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gdk_window_set_decorations(int /*long*/ window, int decorations);
 public static final void gdk_window_set_decorations(int /*long*/ window, int decorations) {
 	lock.lock();

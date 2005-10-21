@@ -386,6 +386,7 @@ typedef enum {
 	_1gdk_1window_1set_1accept_1focus_FUNC,
 	_1gdk_1window_1set_1back_1pixmap_FUNC,
 	_1gdk_1window_1set_1cursor_FUNC,
+	_1gdk_1window_1set_1debug_1updates_FUNC,
 	_1gdk_1window_1set_1decorations_FUNC,
 	_1gdk_1window_1set_1events_FUNC,
 	_1gdk_1window_1set_1icon_FUNC,

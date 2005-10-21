@@ -1436,7 +1436,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XReconfigureWMWindow)
 	if (arg4) if ((lparg4 = getXWindowChangesFields(env, arg4, &_arg4)) == NULL) goto fail;
 	rc = (jint)XReconfigureWMWindow((Display *)arg0, (Window)arg1, arg2, arg3, lparg4);
 fail:
-	if (arg4 && lparg4) setXWindowChangesFields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, _1XReconfigureWMWindow_FUNC);
 	return rc;
 }
@@ -1495,7 +1494,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderCreatePicture)
 		}
 	}
 fail:
-	if (arg4 && lparg4) setXRenderPictureAttributesFields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, _1XRenderCreatePicture_FUNC);
 	return rc;
 }
@@ -3059,7 +3057,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1colormap_1free_1colors)
 	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
 	gdk_colormap_free_colors((GdkColormap *)arg0, (GdkColor *)lparg1, (gint)arg2);
 fail:
-	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1colormap_1free_1colors_FUNC);
 }
 #endif
@@ -3082,7 +3079,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1colormap_1query_1color)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1colormap_1query_1color_FUNC);
-	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 	gdk_colormap_query_color((GdkColormap *)arg0, (gulong)arg1, (GdkColor *)lparg2);
 fail:
 	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
@@ -3124,8 +3121,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1cursor_1new_1from_1pixmap)
 	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
 	rc = (jint)gdk_cursor_new_from_pixmap((GdkPixmap *)arg0, (GdkPixmap *)arg1, (GdkColor *)lparg2, (GdkColor *)lparg3, (gint)arg4, (gint)arg5);
 fail:
-	if (arg3 && lparg3) setGdkColorFields(env, arg3, lparg3);
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixmap_FUNC);
 	return rc;
 }
@@ -3192,8 +3187,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1layout_1with_1colors)
 	if (arg6) if ((lparg6 = getGdkColorFields(env, arg6, &_arg6)) == NULL) goto fail;
 	gdk_draw_layout_with_colors((GdkDrawable *)arg0, (GdkGC *)arg1, (gint)arg2, (gint)arg3, (PangoLayout *)arg4, lparg5, lparg6);
 fail:
-	if (arg6 && lparg6) setGdkColorFields(env, arg6, lparg6);
-	if (arg5 && lparg5) setGdkColorFields(env, arg5, lparg5);
 	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1layout_1with_1colors_FUNC);
 }
 #endif
@@ -4232,7 +4225,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1region_1rectangle)
 	if (arg0) if ((lparg0 = getGdkRectangleFields(env, arg0, &_arg0)) == NULL) goto fail;
 	rc = (jint)gdk_region_rectangle(lparg0);
 fail:
-	if (arg0 && lparg0) setGdkRectangleFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1region_1rectangle_FUNC);
 	return rc;
 }
@@ -4345,7 +4337,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1screen_1get_1monitor_1geometry)
 {
 	GdkRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1monitor_1geometry_FUNC);
-	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 /*
 	gdk_screen_get_monitor_geometry((GdkScreen *)arg0, arg1, lparg2);
 */
@@ -4583,7 +4575,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1begin_1paint_1rect)
 	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
 	gdk_window_begin_paint_rect((GdkWindow *)arg0, (GdkRectangle *)lparg1);
 fail:
-	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1begin_1paint_1rect_FUNC);
 }
 #endif
@@ -4658,7 +4649,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1get_1frame_1extents)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1get_1frame_1extents_FUNC);
-	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 	gdk_window_get_frame_extents((GdkWindow *)arg0, (GdkRectangle *)lparg1);
 fail:
 	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
@@ -4772,7 +4763,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1invalidate_1rect)
 	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
 	gdk_window_invalidate_rect((GdkWindow *)arg0, (GdkRectangle *)lparg1, (gboolean)arg2);
 fail:
-	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1invalidate_1rect_FUNC);
 }
 #endif
@@ -4829,7 +4819,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1window_1new)
 	if (arg1) if ((lparg1 = getGdkWindowAttrFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jint)gdk_window_new((GdkWindow *)arg0, lparg1, arg2);
 fail:
-	if (arg1 && lparg1) setGdkWindowAttrFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1new_FUNC);
 	return rc;
 }
@@ -4938,6 +4927,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1cursor)
 	OS_NATIVE_ENTER(env, that, _1gdk_1window_1set_1cursor_FUNC);
 	gdk_window_set_cursor((GdkWindow *)arg0, (GdkCursor *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1set_1cursor_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1window_1set_1debug_1updates
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1set_1debug_1updates)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1set_1debug_1updates_FUNC);
+	gdk_window_set_debug_updates((gboolean)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1set_1debug_1updates_FUNC);
 }
 #endif
 
@@ -5347,7 +5346,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1size)
 	jint *lparg5=NULL;
 	jint *lparg6=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1renderer_1get_1size_FUNC);
-	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
@@ -5529,7 +5528,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1get_1current_1color)
 {
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1get_1current_1color_FUNC);
-	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 	gtk_color_selection_get_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
 fail:
 	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
@@ -5546,7 +5545,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1set_1current_1color)
 	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
 	gtk_color_selection_set_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
 fail:
-	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1set_1current_1color_FUNC);
 }
 #endif
@@ -6936,7 +6934,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1im_1context_1set_1cursor_1location)
 	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
 	gtk_im_context_set_cursor_location((GtkIMContext *)arg0, (GdkRectangle *)lparg1);
 fail:
-	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1im_1context_1set_1cursor_1location_FUNC);
 }
 #endif
@@ -7327,7 +7324,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1list_1store_1set__IIILorg_eclipse_swt_in
 	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 fail:
-	if (arg3 && lparg3) setGdkColorFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, _1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 }
 #endif
@@ -7682,7 +7678,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1focus)
 	gtk_paint_focus((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8, arg9);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
-	if (arg3 && lparg3) setGdkRectangleFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1focus_FUNC);
 }
 #endif
@@ -7699,7 +7694,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1handle)
 	gtk_paint_handle((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10, arg11);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
-	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1handle_FUNC);
 }
 #endif
@@ -8772,7 +8766,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1get_1iter_1location)
 	GdkRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1text_1view_1get_1iter_1location_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 	gtk_text_view_get_iter_location((GtkTextView *)arg0, (const GtkTextIter *)lparg1, (GdkRectangle *)lparg2);
 fail:
 	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
@@ -8804,7 +8798,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1text_1view_1get_1visible_1rect)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1text_1view_1get_1visible_1rect_FUNC);
-	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 	gtk_text_view_get_visible_rect((GtkTextView *)arg0, (GdkRectangle *)lparg1);
 fail:
 	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
@@ -9596,7 +9590,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1store_1set__IIILorg_eclipse_swt_in
 	if (arg3) if ((lparg3 = getGdkColorFields(env, arg3, &_arg3)) == NULL) goto fail;
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 fail:
-	if (arg3 && lparg3) setGdkColorFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
 }
 #endif
@@ -9697,7 +9690,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1cell_1get_1size)
 	jint *lparg4=NULL;
 	jint *lparg5=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1cell_1get_1size_FUNC);
-	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -10027,7 +10020,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1cell_1area)
 {
 	GdkRectangle _arg3, *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1cell_1area_FUNC);
-	if (arg3) if ((lparg3 = getGdkRectangleFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = &_arg3) == NULL) goto fail;
 	gtk_tree_view_get_cell_area((GtkTreeView *)arg0, (GtkTreePath *)arg1, (GtkTreeViewColumn *)arg2, (GdkRectangle *)lparg3);
 fail:
 	if (arg3 && lparg3) setGdkRectangleFields(env, arg3, lparg3);
@@ -10155,7 +10148,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1visible_1rect)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1visible_1rect_FUNC);
-	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 	gtk_tree_view_get_visible_rect((GtkTreeView *)arg0, lparg1);
 fail:
 	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
@@ -10689,7 +10682,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1base)
 	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
 	gtk_widget_modify_base((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
 fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1base_FUNC);
 }
 #endif
@@ -10703,7 +10695,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1bg)
 	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
 	gtk_widget_modify_bg((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
 fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1bg_FUNC);
 }
 #endif
@@ -10717,7 +10708,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1fg)
 	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
 	gtk_widget_modify_fg((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
 fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1fg_FUNC);
 }
 #endif
@@ -10751,7 +10741,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1modify_1text)
 	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
 	gtk_widget_modify_text((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
 fail:
-	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1modify_1text_FUNC);
 }
 #endif
@@ -10919,7 +10908,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1size_1allocate)
 	if (arg1) if ((lparg1 = getGtkAllocationFields(env, arg1, &_arg1)) == NULL) goto fail;
 	gtk_widget_size_allocate((GtkWidget *)arg0, (GtkAllocation *)lparg1);
 fail:
-	if (arg1 && lparg1) setGtkAllocationFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1size_1allocate_FUNC);
 }
 #endif
@@ -10930,7 +10918,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1size_1request)
 {
 	GtkRequisition _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1size_1request_FUNC);
-	if (arg1) if ((lparg1 = getGtkRequisitionFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 	gtk_widget_size_request((GtkWidget *)arg0, (GtkRequisition *)lparg1);
 fail:
 	if (arg1 && lparg1) setGtkRequisitionFields(env, arg1, lparg1);
@@ -11185,7 +11173,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1geometry_1hints)
 	if (arg2) if ((lparg2 = getGdkGeometryFields(env, arg2, &_arg2)) == NULL) goto fail;
 	gtk_window_set_geometry_hints((GtkWindow *)arg0, (GtkWidget *)arg1, lparg2, arg3);
 fail:
-	if (arg2 && lparg2) setGdkGeometryFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1geometry_1hints_FUNC);
 }
 #endif
@@ -11366,8 +11353,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1shape_1new)
 	if (arg1) if ((lparg1 = getPangoRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jint)pango_attr_shape_new(lparg0, lparg1);
 fail:
-	if (arg1 && lparg1) setPangoRectangleFields(env, arg1, lparg1);
-	if (arg0 && lparg0) setPangoRectangleFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1attr_1shape_1new_FUNC);
 	return rc;
 }
@@ -11971,7 +11956,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1index_1to_1pos)
 {
 	PangoRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1index_1to_1pos_FUNC);
-	if (arg2) if ((lparg2 = getPangoRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 	pango_layout_index_to_pos((PangoLayout*)arg0, arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setPangoRectangleFields(env, arg2, lparg2);
@@ -12008,8 +11993,8 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1iter_1get_1line_1extents)
 	PangoRectangle _arg1, *lparg1=NULL;
 	PangoRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1iter_1get_1line_1extents_FUNC);
-	if (arg1) if ((lparg1 = getPangoRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getPangoRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 	pango_layout_iter_get_line_extents((PangoLayoutIter*)arg0, lparg1, lparg2);
 fail:
 	if (arg2 && lparg2) setPangoRectangleFields(env, arg2, lparg2);
@@ -12061,8 +12046,8 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1line_1get_1extents)
 	PangoRectangle _arg1, *lparg1=NULL;
 	PangoRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1line_1get_1extents_FUNC);
-	if (arg1) if ((lparg1 = getPangoRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getPangoRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
 	pango_layout_line_get_extents((PangoLayoutLine*)arg0, (PangoRectangle *)lparg1, (PangoRectangle *)lparg2);
 fail:
 	if (arg2 && lparg2) setPangoRectangleFields(env, arg2, lparg2);
