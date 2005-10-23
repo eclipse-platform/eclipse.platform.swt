@@ -1420,7 +1420,7 @@ public void setVisible (boolean visible) {
 		display.dispatchEvents = null;
 		if (isDisposed ()) return;
 		if (!iconic) {
-			update (true);
+			update (true, true);
 			if (isDisposed ()) return;
 			adjustTrim ();
 		}

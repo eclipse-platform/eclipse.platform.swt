@@ -191,7 +191,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 		dragging = true;
 		lastX = event.x;
 		lastY = event.y;
-		parent.update (true);
+		parent.update (true, (style & SWT.SMOOTH) == 0);
 		drawBand (event.x, event.y, width, height);
 		if ((style & SWT.SMOOTH) != 0) {
 			setBounds (event.x, event.y, width, height);
@@ -364,7 +364,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 		lastX = event.x;
 		lastY = event.y;
 	}
-	parent.update (true);
+	parent.update (true, (style & SWT.SMOOTH) == 0);
 	drawBand (lastX, lastY, width, height);
 	if ((style & SWT.SMOOTH) != 0) {
 		setBounds (lastX, lastY, width, height);

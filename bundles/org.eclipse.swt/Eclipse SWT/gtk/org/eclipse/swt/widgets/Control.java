@@ -3492,15 +3492,15 @@ boolean traverseMnemonic (char key) {
  */
 public void update () {
 	checkWidget ();
-	update (false);
+	update (false, true);
 }
 
-void update (boolean all) {
+void update (boolean all, boolean flush) {
 //	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return; 
 	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
 	int /*long*/ window = paintWindow ();
-	display.flushExposes (window, all);
+	if (flush) display.flushExposes (window, all);
 	OS.gdk_window_process_updates (window, all);
 }
 
