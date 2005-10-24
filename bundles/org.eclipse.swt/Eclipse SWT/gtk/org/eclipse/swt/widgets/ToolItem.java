@@ -602,14 +602,12 @@ boolean hasFocus () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int /*long*/ windowProc2 = display.windowProc2;
-	int /*long*/ windowProc3 = display.windowProc3;
-	OS.g_signal_connect (handle, OS.clicked, windowProc2, CLICKED);
-	OS.g_signal_connect (handle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
-	OS.g_signal_connect (handle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
-	if (labelHandle != 0) OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
+	OS.g_signal_connect_closure (handle, OS.clicked, display.closures [CLICKED], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
+	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
 
-	OS.g_signal_connect (handle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
 
 	/*
 	* Feature in GTK.  Usually, GTK widgets propagate all events to their
@@ -626,12 +624,12 @@ void hookEvents () {
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
 	OS.gtk_widget_add_events (handle, mask);
-	OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
-	OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
-	OS.g_signal_connect (handle, OS.event_after, windowProc3, EVENT_AFTER);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT_AFTER], 0, display.closures[EVENT_AFTER], false);
 
 	int /*long*/ topHandle = topHandle ();
-	OS.g_signal_connect_after (topHandle, OS.map, windowProc2, MAP);
+	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.closures [MAP], true);
 }
 
 /**

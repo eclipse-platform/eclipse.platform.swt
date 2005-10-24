@@ -1076,6 +1076,15 @@ public static final int /*long*/ GTK_TYPE_FIXED() {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _GTK_TYPE_WIDGET();
+public static final int /*long*/ GTK_TYPE_WIDGET() {
+	lock.lock();
+	try {
+		return _GTK_TYPE_WIDGET();
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _GTK_WIDGET_FLAGS(int /*long*/ wid);
 public static final int GTK_WIDGET_FLAGS(int /*long*/ wid) {
 	lock.lock();
@@ -1234,6 +1243,33 @@ public static final int /*long*/ PANGO_TYPE_FONT_DESCRIPTION() {
 	lock.lock();
 	try {
 		return _PANGO_TYPE_FONT_DESCRIPTION();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _g_cclosure_new(int /*long*/ callback_func, int /*long*/ user_data, int /*long*/ destroy_data);
+public static final int /*long*/ g_cclosure_new(int /*long*/ callback_func, int /*long*/ user_data, int /*long*/ destroy_data) {
+	lock.lock();
+	try {
+		return _g_cclosure_new(callback_func, user_data, destroy_data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _g_closure_ref(int /*long*/ closure);
+public static final int /*long*/ g_closure_ref(int /*long*/ closure) {
+	lock.lock();
+	try {
+		return _g_closure_ref(closure);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _g_closure_unref(int /*long*/ closure);
+public static final void g_closure_unref(int /*long*/ closure) {
+	lock.lock();
+	try {
+		_g_closure_unref(closure);
 	} finally {
 		lock.unlock();
 	}
@@ -1658,6 +1694,24 @@ public static final int g_signal_connect(int /*long*/ instance, byte[] detailed_
 	lock.lock();
 	try {
 		return _g_signal_connect(instance, detailed_signal, proc, data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _g_signal_connect_closure(int /*long*/ instance, byte[] detailed_signal, int /*long*/ closure, boolean after);
+public static final int g_signal_connect_closure(int /*long*/ instance, byte[] detailed_signal, int /*long*/ closure, boolean after) {
+	lock.lock();
+	try {
+		return _g_signal_connect_closure(instance, detailed_signal, closure, after);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _g_signal_connect_closure_by_id(int /*long*/ instance, int signal_id, int detail, int /*long*/ closure, boolean after);
+public static final int g_signal_connect_closure_by_id(int /*long*/ instance, int signal_id, int detail, int /*long*/ closure, boolean after) {
+	lock.lock();
+	try {
+		return _g_signal_connect_closure_by_id(instance, signal_id, detail, closure, after);
 	} finally {
 		lock.unlock();
 	}

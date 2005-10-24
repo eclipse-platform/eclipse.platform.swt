@@ -373,9 +373,9 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 void hookEvents () {
 	super.hookEvents ();
 	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-		OS.g_signal_connect (handle, OS.change_value, display.windowProc5, CHANGE_VALUE);
+		OS.g_signal_connect_closure (handle, OS.change_value, display.closures [CHANGE_VALUE], false);
 	}
-	OS.g_signal_connect (adjustmentHandle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
+	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.closures [VALUE_CHANGED], false);
 }
 
 /**

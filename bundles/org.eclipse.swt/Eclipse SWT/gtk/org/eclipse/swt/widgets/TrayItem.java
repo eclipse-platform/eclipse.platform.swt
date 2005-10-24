@@ -230,8 +230,8 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 void hookEvents () {
 	int eventMask = OS.GDK_BUTTON_PRESS_MASK;
 	OS.gtk_widget_add_events (handle, eventMask);
-	OS.g_signal_connect (handle, OS.button_press_event, display.windowProc3, BUTTON_PRESS_EVENT);
-	OS.g_signal_connect (imageHandle, OS.size_allocate, display.windowProc3, SIZE_ALLOCATE);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+	OS.g_signal_connect_closure_by_id (imageHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
  }
 
 /**

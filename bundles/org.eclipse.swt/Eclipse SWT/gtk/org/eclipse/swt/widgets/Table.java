@@ -1726,10 +1726,10 @@ void hideFirstColumn () {
 void hookEvents () {
 	super.hookEvents ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection(handle);
-	OS.g_signal_connect (selection, OS.changed, display.windowProc2, CHANGED);
-	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, ROW_ACTIVATED);
+	OS.g_signal_connect_closure (selection, OS.changed, display.closures [CHANGED], false);
+	OS.g_signal_connect_closure (handle, OS.row_activated, display.closures [ROW_ACTIVATED], false);
 	if (checkRenderer != 0) {
-		OS.g_signal_connect (checkRenderer, OS.toggled, display.windowProc3, TOGGLED);
+		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.closures [TOGGLED], false);
 	}
 }
 

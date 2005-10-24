@@ -1053,6 +1053,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1TYPE_1FIXED)
 }
 #endif
 
+#ifndef NO__1GTK_1TYPE_1WIDGET
+JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1TYPE_1WIDGET)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1TYPE_1WIDGET_FUNC);
+	rc = (jint)GTK_TYPE_WIDGET;
+	OS_NATIVE_EXIT(env, that, _1GTK_1TYPE_1WIDGET_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1WIDGET_1FLAGS
 JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1WIDGET_1FLAGS)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1781,6 +1793,40 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XWarpPointer)
 }
 #endif
 
+#ifndef NO__1g_1cclosure_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1cclosure_1new)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1cclosure_1new_FUNC);
+	rc = (jint)g_cclosure_new((GCallback)arg0, (gpointer)arg1, (GClosureNotify)arg2);
+	OS_NATIVE_EXIT(env, that, _1g_1cclosure_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1closure_1ref
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1closure_1ref)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1closure_1ref_FUNC);
+	rc = (jint)g_closure_ref((GClosure *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1closure_1ref_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1closure_1unref
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1closure_1unref)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1closure_1unref_FUNC);
+	g_closure_unref((GClosure *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1closure_1unref_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1filename_1from_1uri
 JNIEXPORT jint JNICALL OS_NATIVE(_1g_1filename_1from_1uri)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -2427,6 +2473,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1connect_1after)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, _1g_1signal_1connect_1after_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1signal_1connect_1closure
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1connect_1closure)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jboolean arg3)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1signal_1connect_1closure_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)g_signal_connect_closure((gpointer)arg0, (const gchar *)lparg1, (GClosure *)arg2, (gboolean)arg3);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1signal_1connect_1closure_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1signal_1connect_1closure_1by_1id
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1connect_1closure_1by_1id)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jboolean arg4)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1signal_1connect_1closure_1by_1id_FUNC);
+	rc = (jint)g_signal_connect_closure_by_id((gpointer)arg0, (guint)arg1, (GQuark)arg2, (GClosure *)arg3, (gboolean)arg4);
+	OS_NATIVE_EXIT(env, that, _1g_1signal_1connect_1closure_1by_1id_FUNC);
 	return rc;
 }
 #endif

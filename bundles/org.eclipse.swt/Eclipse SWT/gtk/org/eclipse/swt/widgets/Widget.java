@@ -96,57 +96,62 @@ public abstract class Widget {
 	/* GTK signals data */
 	static final int ACTIVATE = 1;
 	static final int BUTTON_PRESS_EVENT = 2;
-	static final int BUTTON_RELEASE_EVENT = 3;
-	static final int CHANGED = 4;
-	static final int CHANGE_VALUE = 5;
-	static final int CLICKED = 6;
-	static final int COMMIT = 7;
-	static final int CONFIGURE_EVENT = 8;
-	static final int DELETE_EVENT = 9;
-	static final int DELETE_RANGE = 10;
-	static final int DELETE_TEXT = 11;
-	static final int ENTER_NOTIFY_EVENT = 12;
-	static final int EVENT = 13;
-	static final int EVENT_AFTER = 14;
-	static final int EXPAND_COLLAPSE_CURSOR_ROW = 15;
-	static final int EXPOSE_EVENT = 16;
-	static final int FOCUS = 17;
-	static final int FOCUS_IN_EVENT = 18;
-	static final int FOCUS_OUT_EVENT = 19;
-	static final int GRAB_FOCUS = 20;
-	static final int HIDE = 21;
-	static final int INPUT = 22;
-	static final int INSERT_TEXT = 23;
-	static final int KEY_PRESS_EVENT = 24;
-	static final int KEY_RELEASE_EVENT = 25;
-	static final int LEAVE_NOTIFY_EVENT = 26;
-	static final int MAP = 27;
-	static final int MAP_EVENT = 28;
-	static final int MNEMONIC_ACTIVATE = 29;
-	static final int MOTION_NOTIFY_EVENT = 30;
-	static final int MOVE_FOCUS = 31;
-	static final int OUTPUT = 32;
-	static final int POPUP_MENU = 33;
-	static final int PREEDIT_CHANGED = 34;
-	static final int REALIZE = 35;
-	static final int ROW_ACTIVATED = 36;
-	static final int SCROLL_CHILD = 37;
-	static final int SCROLL_EVENT = 38;
-	static final int SELECT = 39;
-	static final int SHOW = 40;
-	static final int SHOW_HELP = 41;
-	static final int SIZE_ALLOCATE = 42;
-	static final int STYLE_SET = 43;
-	static final int SWITCH_PAGE = 44;
-	static final int TEST_COLLAPSE_ROW = 45;
-	static final int TEST_EXPAND_ROW = 46;
-	static final int TOGGLED = 47;
-	static final int UNMAP = 48;
-	static final int UNMAP_EVENT = 49;
-	static final int UNREALIZE = 50;
-	static final int VALUE_CHANGED = 51;
-	static final int VISIBILITY_NOTIFY_EVENT = 52;
-	static final int WINDOW_STATE_EVENT = 53;
+	static final int BUTTON_PRESS_EVENT_INVERSE = 3;
+	static final int BUTTON_RELEASE_EVENT = 4;
+	static final int BUTTON_RELEASE_EVENT_INVERSE = 5;
+	static final int CHANGED = 6;
+	static final int CHANGE_VALUE = 7;
+	static final int CLICKED = 8;
+	static final int COMMIT = 9;
+	static final int CONFIGURE_EVENT = 10;
+	static final int DELETE_EVENT = 11;
+	static final int DELETE_RANGE = 12;
+	static final int DELETE_TEXT = 13;
+	static final int ENTER_NOTIFY_EVENT = 14;
+	static final int EVENT = 15;
+	static final int EVENT_AFTER = 16;
+	static final int EXPAND_COLLAPSE_CURSOR_ROW = 17;
+	static final int EXPOSE_EVENT = 18;
+	static final int EXPOSE_EVENT_INVERSE = 19;
+	static final int FOCUS = 20;
+	static final int FOCUS_IN_EVENT = 21;
+	static final int FOCUS_OUT_EVENT = 22;
+	static final int GRAB_FOCUS = 23;
+	static final int HIDE = 24;
+	static final int INPUT = 25;
+	static final int INSERT_TEXT = 26;
+	static final int KEY_PRESS_EVENT = 27;
+	static final int KEY_RELEASE_EVENT = 28;
+	static final int LEAVE_NOTIFY_EVENT = 29;
+	static final int MAP = 30;
+	static final int MAP_EVENT = 31;
+	static final int MNEMONIC_ACTIVATE = 32;
+	static final int MOTION_NOTIFY_EVENT = 33;
+	static final int MOTION_NOTIFY_EVENT_INVERSE = 34;
+	static final int MOVE_FOCUS = 35;
+	static final int OUTPUT = 36;
+	static final int POPUP_MENU = 37;
+	static final int PREEDIT_CHANGED = 38;
+	static final int REALIZE = 39;
+	static final int ROW_ACTIVATED = 40;
+	static final int SCROLL_CHILD = 41;
+	static final int SCROLL_EVENT = 42;
+	static final int SELECT = 43;
+	static final int SHOW = 44;
+	static final int SHOW_HELP = 45;
+	static final int SIZE_ALLOCATE = 46;
+	static final int STYLE_SET = 47;
+	static final int SWITCH_PAGE = 48;
+	static final int TEST_COLLAPSE_ROW = 49;
+	static final int TEST_EXPAND_ROW = 50;
+	static final int TOGGLED = 51;
+	static final int UNMAP = 52;
+	static final int UNMAP_EVENT = 53;
+	static final int UNREALIZE = 54;
+	static final int VALUE_CHANGED = 55;
+	static final int VISIBILITY_NOTIFY_EVENT = 56;
+	static final int WINDOW_STATE_EVENT = 57;
+	static final int LAST_SIGNAL = 58;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -1368,7 +1373,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
-		case -EXPOSE_EVENT: {
+		case EXPOSE_EVENT_INVERSE: {
 			GdkEventExpose gdkEvent = new GdkEventExpose ();
 			OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
 			int /*long*/ paintWindow = paintWindow();
@@ -1376,9 +1381,9 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 			if (window != paintWindow) return 0;
 			return (state & OBSCURED) != 0 ? 1 : 0;
 		}
-		case -BUTTON_PRESS_EVENT:
-		case -BUTTON_RELEASE_EVENT:
-		case -MOTION_NOTIFY_EVENT: {
+		case BUTTON_PRESS_EVENT_INVERSE:
+		case BUTTON_RELEASE_EVENT_INVERSE:
+		case MOTION_NOTIFY_EVENT_INVERSE: {
 			return 1;
 		}
 		case BUTTON_PRESS_EVENT: return gtk_button_press_event (handle, arg0);

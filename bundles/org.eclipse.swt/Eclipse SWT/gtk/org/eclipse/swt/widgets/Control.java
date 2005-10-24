@@ -141,20 +141,17 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
-	int /*long*/ windowProc2 = display.windowProc2;
-	int /*long*/ windowProc3 = display.windowProc3;
-	
 	/* Connect the keyboard signals */
 	int /*long*/ focusHandle = focusHandle ();
 	int focusMask = OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK | OS.GDK_FOCUS_CHANGE_MASK;
 	OS.gtk_widget_add_events (focusHandle, focusMask);
-	OS.g_signal_connect (focusHandle, OS.popup_menu, windowProc2, POPUP_MENU);
-	OS.g_signal_connect (focusHandle, OS.show_help, windowProc3, SHOW_HELP);
-	OS.g_signal_connect (focusHandle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
-	OS.g_signal_connect (focusHandle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
-	OS.g_signal_connect (focusHandle, OS.focus, windowProc3, FOCUS);
-	OS.g_signal_connect (focusHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
-	OS.g_signal_connect (focusHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
+	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [POPUP_MENU], 0, display.closures [POPUP_MENU], false);
+	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [SHOW_HELP], 0, display.closures [SHOW_HELP], false);
+	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.closures [KEY_PRESS_EVENT], false);
+	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_RELEASE_EVENT], 0, display.closures [KEY_RELEASE_EVENT], false);
+	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS], 0, display.closures [FOCUS], false);
+	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.closures [FOCUS_IN_EVENT], false);
+	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
 
 	/* Connect the mouse signals */
 	int /*long*/ eventHandle = eventHandle ();
@@ -162,12 +159,12 @@ void hookEvents () {
 		OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_ENTER_NOTIFY_MASK |
 		OS.GDK_LEAVE_NOTIFY_MASK;
 	OS.gtk_widget_add_events (eventHandle, eventMask);
-	OS.g_signal_connect (eventHandle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
-	OS.g_signal_connect (eventHandle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
-	OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
-	OS.g_signal_connect (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
-	OS.g_signal_connect (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
-	OS.g_signal_connect (eventHandle, OS.scroll_event, windowProc3, SCROLL_EVENT);	
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [SCROLL_EVENT], 0, display.closures [SCROLL_EVENT], false);
 	/*
 	* Feature in GTK.  Events such as mouse move are propagate up
 	* the widget hierarchy and are seen by the parent.  This is the
@@ -179,35 +176,35 @@ void hookEvents () {
 	* lightweight widgets.
 	*/
 	int /*long*/ blockHandle = fixedHandle != 0 ? fixedHandle : eventHandle;
-	OS.g_signal_connect_after (blockHandle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
-	OS.g_signal_connect_after (blockHandle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
-	OS.g_signal_connect_after (blockHandle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+	OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT_INVERSE], true);
+	OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT_INVERSE], true);
+	OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT_INVERSE], true);
 
 	/* Connect the event_after signal for both key and mouse */
-	OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
+	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
 	if (focusHandle != eventHandle) {
-		OS.g_signal_connect (focusHandle, OS.event_after, windowProc3, EVENT_AFTER);
+		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
 	}
 	
 	/* Connect the paint signal */
 	int /*long*/ paintHandle = paintHandle ();
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
-	OS.g_signal_connect (paintHandle, OS.expose_event, windowProc3, -EXPOSE_EVENT);
-	OS.g_signal_connect (paintHandle, OS.visibility_notify_event, windowProc3, VISIBILITY_NOTIFY_EVENT);
-	OS.g_signal_connect_after (paintHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [VISIBILITY_NOTIFY_EVENT], 0, display.closures [VISIBILITY_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT], true);
 
 	/* Connect the Input Method signals */
-	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
-	OS.g_signal_connect (handle, OS.unrealize, windowProc2, UNREALIZE);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [REALIZE], 0, display.closures [REALIZE], true);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [UNREALIZE], 0, display.closures [UNREALIZE], false);
 	int /*long*/ imHandle = imHandle ();
 	if (imHandle != 0) {
-		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
-		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);
+		OS.g_signal_connect_closure (imHandle, OS.commit, display.closures [COMMIT], false);
+		OS.g_signal_connect_closure (imHandle, OS.preedit_changed, display.closures [PREEDIT_CHANGED], false);
 	}
 	
 	int /*long*/ topHandle = topHandle ();
-	OS.g_signal_connect_after (topHandle, OS.map, windowProc2, MAP);
+	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.closures [MAP], true);
 }
 
 int /*long*/ hoverProc (int /*long*/ widget) {

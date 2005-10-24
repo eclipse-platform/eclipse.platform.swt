@@ -133,7 +133,7 @@ void createHandle (int index) {
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect (handle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
+	OS.g_signal_connect_closure (handle, OS.value_changed, display.closures [VALUE_CHANGED], false);
 }
 
 /**

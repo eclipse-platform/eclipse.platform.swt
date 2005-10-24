@@ -1200,24 +1200,20 @@ int /*long*/ gtk_popup_menu (int /*long*/ widget) {
 
 void hookEvents () {
 	super.hookEvents();
-	int /*long*/ windowProc2 = display.windowProc2;
-	int /*long*/ windowProc3 = display.windowProc3;
-	int /*long*/ windowProc4 = display.windowProc4;
-	int /*long*/ windowProc5 = display.windowProc5;
 	if ((style & SWT.SINGLE) != 0) {
-		OS.g_signal_connect_after (handle, OS.changed, windowProc2, CHANGED);
-		OS.g_signal_connect (handle, OS.insert_text, windowProc5, INSERT_TEXT);
-		OS.g_signal_connect (handle, OS.delete_text, windowProc4, DELETE_TEXT);
-		OS.g_signal_connect (handle, OS.activate, windowProc2, ACTIVATE);
-		OS.g_signal_connect (handle, OS.grab_focus, windowProc2, GRAB_FOCUS);
+		OS.g_signal_connect_closure (handle, OS.changed, display.closures [CHANGED], true);
+		OS.g_signal_connect_closure (handle, OS.insert_text, display.closures [INSERT_TEXT], false);
+		OS.g_signal_connect_closure (handle, OS.delete_text, display.closures [DELETE_TEXT], false);
+		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
+		OS.g_signal_connect_closure (handle, OS.grab_focus, display.closures [GRAB_FOCUS], false);
 	} else {
-		OS.g_signal_connect (bufferHandle, OS.changed, windowProc2, CHANGED);
-		OS.g_signal_connect (bufferHandle, OS.insert_text, windowProc5, INSERT_TEXT);
-		OS.g_signal_connect (bufferHandle, OS.delete_range, windowProc4, DELETE_RANGE);
+		OS.g_signal_connect_closure (bufferHandle, OS.changed, display.closures [CHANGED], false);
+		OS.g_signal_connect_closure (bufferHandle, OS.insert_text, display.closures [INSERT_TEXT], false);
+		OS.g_signal_connect_closure (bufferHandle, OS.delete_range, display.closures [DELETE_RANGE], false);
 	}
 	int /*long*/ imContext = imContext ();
 	if (imContext != 0) {
-		OS.g_signal_connect (imContext, OS.commit, windowProc3, COMMIT);
+		OS.g_signal_connect_closure (imContext, OS.commit, display.closures [COMMIT], false);
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);

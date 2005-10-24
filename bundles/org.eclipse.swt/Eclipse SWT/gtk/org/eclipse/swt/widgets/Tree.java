@@ -1715,13 +1715,13 @@ void hideFirstColumn () {
 void hookEvents () {
 	super.hookEvents ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection(handle);
-	OS.g_signal_connect (selection, OS.changed, display.windowProc2, CHANGED);
-	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, ROW_ACTIVATED);
-	OS.g_signal_connect (handle, OS.test_expand_row, display.windowProc4, TEST_EXPAND_ROW);
-	OS.g_signal_connect (handle, OS.test_collapse_row, display.windowProc4, TEST_COLLAPSE_ROW);
-	OS.g_signal_connect (handle, OS.expand_collapse_cursor_row, display.windowProc5, EXPAND_COLLAPSE_CURSOR_ROW);
+	OS.g_signal_connect_closure (selection, OS.changed, display.closures [CHANGED], false);
+	OS.g_signal_connect_closure (handle, OS.row_activated, display.closures [ROW_ACTIVATED], false);
+	OS.g_signal_connect_closure (handle, OS.test_expand_row, display.closures [TEST_EXPAND_ROW], false);
+	OS.g_signal_connect_closure (handle, OS.test_collapse_row, display.closures [TEST_COLLAPSE_ROW], false);
+	OS.g_signal_connect_closure (handle, OS.expand_collapse_cursor_row, display.closures [EXPAND_COLLAPSE_CURSOR_ROW], false);
 	if (checkRenderer != 0) {
-		OS.g_signal_connect (checkRenderer, OS.toggled, display.windowProc3, TOGGLED);
+		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.closures [TOGGLED], false);
 	}
 }
 

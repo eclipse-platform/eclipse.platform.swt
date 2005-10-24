@@ -754,8 +754,8 @@ int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long
 void hookEvents () {
 	super.hookEvents();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection(handle);
-	OS.g_signal_connect (selection, OS.changed, display.windowProc2, CHANGED);
-	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, ROW_ACTIVATED);
+	OS.g_signal_connect_closure (selection, OS.changed, display.closures [CHANGED], false);
+	OS.g_signal_connect_closure (handle, OS.row_activated, display.closures [ROW_ACTIVATED], false);
 }
 
 /**

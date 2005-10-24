@@ -593,11 +593,9 @@ int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 
 void hookEvents () {
 	super.hookEvents ();
-	int /*long*/ windowProc2 = display.windowProc2;
-	int /*long*/ windowProc3 = display.windowProc3;
-	OS.g_signal_connect (handle, OS.show, windowProc2, SHOW);
-	OS.g_signal_connect (handle, OS.hide, windowProc2, HIDE);
-	OS.g_signal_connect (handle, OS.show_help, windowProc3, SHOW_HELP);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW], 0, display.closures [SHOW], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [HIDE], 0, display.closures [HIDE], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.closures [SHOW_HELP], false);
 }
 
 /**

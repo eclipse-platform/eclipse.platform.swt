@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1017;
-int OS_nativeFunctionCallCount[1017];
+int OS_nativeFunctionCount = 1023;
+int OS_nativeFunctionCallCount[1023];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -109,6 +109,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1STOCK_1CANCEL",
 	"_1GTK_1STOCK_1OK",
 	"_1GTK_1TYPE_1FIXED",
+	"_1GTK_1TYPE_1WIDGET",
 	"_1GTK_1WIDGET_1FLAGS",
 	"_1GTK_1WIDGET_1HAS_1DEFAULT",
 	"_1GTK_1WIDGET_1HAS_1FOCUS",
@@ -157,6 +158,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1XTestFakeKeyEvent",
 	"_1XTestFakeMotionEvent",
 	"_1XWarpPointer",
+	"_1g_1cclosure_1new",
+	"_1g_1closure_1ref",
+	"_1g_1closure_1unref",
 	"_1g_1filename_1from_1uri",
 	"_1g_1filename_1from_1utf8",
 	"_1g_1filename_1to_1uri",
@@ -205,6 +209,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1set_1prgname",
 	"_1g_1signal_1connect",
 	"_1g_1signal_1connect_1after",
+	"_1g_1signal_1connect_1closure",
+	"_1g_1signal_1connect_1closure_1by_1id",
 	"_1g_1signal_1emit_1by_1name__I_3B",
 	"_1g_1signal_1emit_1by_1name__I_3BI",
 	"_1g_1signal_1emit_1by_1name__I_3BII",

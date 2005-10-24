@@ -406,9 +406,9 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 
 void hookEvents () {
 	super.hookEvents();
-	OS.g_signal_connect (handle, OS.clicked, display.windowProc2, CLICKED);
+	OS.g_signal_connect_closure (handle, OS.clicked, display.closures [CLICKED], false);
 	if (labelHandle != 0) {
-		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
+		OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
 	}
 }
 

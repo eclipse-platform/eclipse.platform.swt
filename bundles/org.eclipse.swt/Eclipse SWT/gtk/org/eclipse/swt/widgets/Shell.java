@@ -586,19 +586,17 @@ boolean hasBorder () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int /*long*/ shellMapProc = display.shellMapProc;
-	int /*long*/ windowProc3 = display.windowProc3;
-	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, MAP_EVENT);
-	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, UNMAP_EVENT);
-	OS.g_signal_connect (shellHandle, OS.window_state_event, windowProc3, WINDOW_STATE_EVENT);
-	OS.g_signal_connect (shellHandle, OS.size_allocate, windowProc3, SIZE_ALLOCATE);
-	OS.g_signal_connect (shellHandle, OS.configure_event, windowProc3, CONFIGURE_EVENT);
-	OS.g_signal_connect (shellHandle, OS.delete_event, windowProc3, DELETE_EVENT);
-	OS.g_signal_connect (shellHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
-	OS.g_signal_connect (shellHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
-	OS.g_signal_connect (shellHandle, OS.map_event, shellMapProc, 0);
-	OS.g_signal_connect (shellHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
-	OS.g_signal_connect (shellHandle, OS.move_focus, windowProc3, MOVE_FOCUS);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.closures [MAP_EVENT], false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [UNMAP_EVENT], 0, display.closures [UNMAP_EVENT], false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.closures [WINDOW_STATE_EVENT], false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.closures [CONFIGURE_EVENT], false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [DELETE_EVENT], 0, display.closures [DELETE_EVENT], false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.closures [FOCUS_IN_EVENT], false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.closures [MOVE_FOCUS], false);
 }
 
 public boolean isEnabled () {

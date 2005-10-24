@@ -111,6 +111,9 @@ public class Display extends Device {
 	static String APP_NAME = "SWT";
 	static final String DISPATCH_EVENT_KEY = "org.eclipse.swt.internal.gtk.dispatchEvent";
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
+	int /*long*/ [] closures;
+	int [] signalIds;
+	int /*long*/ shellMapProcClosure;
 
 	/* Widget Table */
 	int freeSlot;
@@ -2053,22 +2056,124 @@ protected void init () {
 }
 
 void initializeCallbacks () {
+	closures = new int /*long*/ [Widget.LAST_SIGNAL];
+	signalIds = new int [Widget.LAST_SIGNAL];
+
+	/* Cache signals for GtkWidget */
+	signalIds [Widget.BUTTON_PRESS_EVENT] = OS.g_signal_lookup (OS.button_press_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.BUTTON_RELEASE_EVENT] = OS.g_signal_lookup (OS.button_release_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.CONFIGURE_EVENT] = OS.g_signal_lookup (OS.configure_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.DELETE_EVENT] = OS.g_signal_lookup (OS.delete_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.ENTER_NOTIFY_EVENT] = OS.g_signal_lookup (OS.enter_notify_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.EVENT] = OS.g_signal_lookup (OS.event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.EVENT_AFTER] = OS.g_signal_lookup (OS.event_after, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.EXPOSE_EVENT] = OS.g_signal_lookup (OS.expose_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.FOCUS] = OS.g_signal_lookup (OS.focus, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.FOCUS_IN_EVENT] = OS.g_signal_lookup (OS.focus_in_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.FOCUS_OUT_EVENT] = OS.g_signal_lookup (OS.focus_out_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.GRAB_FOCUS] = OS.g_signal_lookup (OS.grab_focus, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.HIDE] = OS.g_signal_lookup (OS.hide, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.KEY_PRESS_EVENT] = OS.g_signal_lookup (OS.key_press_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.KEY_RELEASE_EVENT] = OS.g_signal_lookup (OS.key_release_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.LEAVE_NOTIFY_EVENT] = OS.g_signal_lookup (OS.leave_notify_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.MAP] = OS.g_signal_lookup (OS.map, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.MAP_EVENT] = OS.g_signal_lookup (OS.map_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.MNEMONIC_ACTIVATE] = OS.g_signal_lookup (OS.mnemonic_activate, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.MOTION_NOTIFY_EVENT] = OS.g_signal_lookup (OS.motion_notify_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.POPUP_MENU] = OS.g_signal_lookup (OS.popup_menu, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.REALIZE] = OS.g_signal_lookup (OS.realize, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.SCROLL_EVENT] = OS.g_signal_lookup (OS.scroll_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.SHOW] = OS.g_signal_lookup (OS.show, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.SHOW_HELP] = OS.g_signal_lookup (OS.show_help, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.SIZE_ALLOCATE] = OS.g_signal_lookup (OS.size_allocate, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.STYLE_SET] = OS.g_signal_lookup (OS.style_set, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.UNMAP] = OS.g_signal_lookup (OS.unmap, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.UNMAP_EVENT] = OS.g_signal_lookup (OS.unmap_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.UNREALIZE] = OS.g_signal_lookup (OS.realize, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.VISIBILITY_NOTIFY_EVENT] = OS.g_signal_lookup (OS.visibility_notify_event, OS.GTK_TYPE_WIDGET ());
+	signalIds [Widget.WINDOW_STATE_EVENT] = OS.g_signal_lookup (OS.window_state_event, OS.GTK_TYPE_WIDGET ());
+
 	windowCallback2 = new Callback (this, "windowProc", 2);
 	windowProc2 = windowCallback2.getAddress ();
 	if (windowProc2 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		
+
+	closures [Widget.ACTIVATE] = OS.g_cclosure_new (windowProc2, Widget.ACTIVATE, 0);
+	closures [Widget.CHANGED] = OS.g_cclosure_new (windowProc2, Widget.CHANGED, 0);
+	closures [Widget.CLICKED] = OS.g_cclosure_new (windowProc2, Widget.CLICKED, 0);
+	closures [Widget.HIDE] = OS.g_cclosure_new (windowProc2, Widget.HIDE, 0);
+	closures [Widget.GRAB_FOCUS] = OS.g_cclosure_new (windowProc2, Widget.GRAB_FOCUS, 0);
+	closures [Widget.MAP] = OS.g_cclosure_new (windowProc2, Widget.MAP, 0);
+	closures [Widget.OUTPUT] = OS.g_cclosure_new (windowProc2, Widget.OUTPUT, 0);
+	closures [Widget.POPUP_MENU] = OS.g_cclosure_new (windowProc2, Widget.POPUP_MENU, 0);
+	closures [Widget.PREEDIT_CHANGED] = OS.g_cclosure_new (windowProc2, Widget.PREEDIT_CHANGED, 0);
+	closures [Widget.REALIZE] = OS.g_cclosure_new (windowProc2, Widget.REALIZE, 0);
+	closures [Widget.SELECT] = OS.g_cclosure_new (windowProc2, Widget.SELECT, 0);
+	closures [Widget.SHOW] = OS.g_cclosure_new (windowProc2, Widget.SHOW, 0);
+	closures [Widget.VALUE_CHANGED] = OS.g_cclosure_new (windowProc2, Widget.VALUE_CHANGED, 0);
+	closures [Widget.UNMAP] = OS.g_cclosure_new (windowProc2, Widget.UNMAP, 0);
+	closures [Widget.UNREALIZE] = OS.g_cclosure_new (windowProc2, Widget.UNREALIZE, 0);
+
 	windowCallback3 = new Callback (this, "windowProc", 3);
 	windowProc3 = windowCallback3.getAddress ();
 	if (windowProc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);	
-	
+
+	closures [Widget.BUTTON_PRESS_EVENT] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT, 0);
+	closures [Widget.BUTTON_PRESS_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_PRESS_EVENT_INVERSE, 0);
+	closures [Widget.BUTTON_RELEASE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_RELEASE_EVENT, 0);
+	closures [Widget.BUTTON_RELEASE_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.BUTTON_RELEASE_EVENT_INVERSE, 0);
+	closures [Widget.COMMIT] = OS.g_cclosure_new (windowProc3, Widget.COMMIT, 0);
+	closures [Widget.CONFIGURE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.CONFIGURE_EVENT, 0);
+	closures [Widget.DELETE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.DELETE_EVENT, 0);
+	closures [Widget.ENTER_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.ENTER_NOTIFY_EVENT, 0);
+	closures [Widget.EVENT] = OS.g_cclosure_new (windowProc3, Widget.EVENT, 0);
+	closures [Widget.EVENT_AFTER] = OS.g_cclosure_new (windowProc3, Widget.EVENT_AFTER, 0);
+	closures [Widget.EXPOSE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.EXPOSE_EVENT, 0);
+	closures [Widget.EXPOSE_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.EXPOSE_EVENT_INVERSE, 0);
+	closures [Widget.FOCUS] = OS.g_cclosure_new (windowProc3, Widget.FOCUS, 0);
+	closures [Widget.FOCUS_IN_EVENT] = OS.g_cclosure_new (windowProc3, Widget.FOCUS_IN_EVENT, 0);
+	closures [Widget.FOCUS_OUT_EVENT] = OS.g_cclosure_new (windowProc3, Widget.FOCUS_OUT_EVENT, 0);
+	closures [Widget.KEY_PRESS_EVENT] = OS.g_cclosure_new (windowProc3, Widget.KEY_PRESS_EVENT, 0);
+	closures [Widget.KEY_RELEASE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.KEY_RELEASE_EVENT, 0);
+	closures [Widget.INPUT] = OS.g_cclosure_new (windowProc3, Widget.INPUT, 0);
+	closures [Widget.LEAVE_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.LEAVE_NOTIFY_EVENT, 0);
+	closures [Widget.MAP_EVENT] = OS.g_cclosure_new (windowProc3, Widget.MAP_EVENT, 0);
+	closures [Widget.MNEMONIC_ACTIVATE] = OS.g_cclosure_new (windowProc3, Widget.MNEMONIC_ACTIVATE, 0);
+	closures [Widget.MOTION_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT, 0);
+	closures [Widget.MOTION_NOTIFY_EVENT_INVERSE] = OS.g_cclosure_new (windowProc3, Widget.MOTION_NOTIFY_EVENT_INVERSE, 0);
+	closures [Widget.MOVE_FOCUS] = OS.g_cclosure_new (windowProc3, Widget.MOVE_FOCUS, 0);
+	closures [Widget.SCROLL_EVENT] = OS.g_cclosure_new (windowProc3, Widget.SCROLL_EVENT, 0);
+	closures [Widget.SHOW_HELP] = OS.g_cclosure_new (windowProc3, Widget.SHOW_HELP, 0);
+	closures [Widget.SIZE_ALLOCATE] = OS.g_cclosure_new (windowProc3, Widget.SIZE_ALLOCATE, 0);
+	closures [Widget.STYLE_SET] = OS.g_cclosure_new (windowProc3, Widget.STYLE_SET, 0);
+	closures [Widget.TOGGLED] = OS.g_cclosure_new (windowProc3, Widget.TOGGLED, 0);	
+	closures [Widget.UNMAP_EVENT] = OS.g_cclosure_new (windowProc3, Widget.UNMAP_EVENT, 0);
+	closures [Widget.VISIBILITY_NOTIFY_EVENT] = OS.g_cclosure_new (windowProc3, Widget.VISIBILITY_NOTIFY_EVENT, 0);
+	closures [Widget.WINDOW_STATE_EVENT] = OS.g_cclosure_new (windowProc3, Widget.WINDOW_STATE_EVENT, 0);
+
 	windowCallback4 = new Callback (this, "windowProc", 4);
 	windowProc4 = windowCallback4.getAddress ();
 	if (windowProc4 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);	
-	
+
+	closures [Widget.DELETE_RANGE] = OS.g_cclosure_new (windowProc4, Widget.DELETE_RANGE, 0);
+	closures [Widget.DELETE_TEXT] = OS.g_cclosure_new (windowProc4, Widget.DELETE_TEXT, 0);
+	closures [Widget.ROW_ACTIVATED] = OS.g_cclosure_new (windowProc4, Widget.ROW_ACTIVATED, 0);
+	closures [Widget.SCROLL_CHILD] = OS.g_cclosure_new (windowProc4, Widget.SCROLL_CHILD, 0);
+	closures [Widget.SWITCH_PAGE] = OS.g_cclosure_new (windowProc4, Widget.SWITCH_PAGE, 0);
+	closures [Widget.TEST_COLLAPSE_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_COLLAPSE_ROW, 0);
+	closures [Widget.TEST_EXPAND_ROW] = OS.g_cclosure_new (windowProc4, Widget.TEST_EXPAND_ROW, 0);
+
 	windowCallback5 = new Callback (this, "windowProc", 5);
 	windowProc5 = windowCallback5.getAddress ();
 	if (windowProc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
+	closures [Widget.CHANGE_VALUE] = OS.g_cclosure_new (windowProc5, Widget.CHANGE_VALUE, 0);
+	closures [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = OS.g_cclosure_new (windowProc5, Widget.EXPAND_COLLAPSE_CURSOR_ROW, 0);
+	closures [Widget.INSERT_TEXT] = OS.g_cclosure_new (windowProc5, Widget.INSERT_TEXT, 0);
+
+	for (int i = 0; i < Widget.LAST_SIGNAL; i++) {
+		if (closures [i] != 0) OS.g_closure_ref (closures [i]);
+	}
+
 	timerCallback = new Callback (this, "timerProc", 1);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2092,7 +2197,10 @@ void initializeCallbacks () {
 	shellMapCallback = new Callback(this, "shellMapProc", 3);
 	shellMapProc = shellMapCallback.getAddress();
 	if (shellMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+
+	shellMapProcClosure = OS.g_cclosure_new (shellMapProc, 0, 0);
+	OS.g_closure_ref (shellMapProcClosure);
+
 	treeSelectionCallback = new Callback(this, "treeSelectionProc", 4);
 	treeSelectionProc = treeSelectionCallback.getAddress();
 	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2742,6 +2850,12 @@ void releaseDisplay () {
 	caretCallback.dispose ();
 	caretCallback = null;
 	
+	/* Release closures */
+	for (int i = 0; i < Widget.LAST_SIGNAL; i++) {
+		if (closures [i] != 0) OS.g_closure_unref (closures [i]);
+	}
+	if (shellMapProcClosure != 0) OS.g_closure_unref (shellMapProcClosure);
+
 	/* Dispose the timer callback */
 	if (timerIds != null) {
 		for (int i=0; i<timerIds.length; i++) {

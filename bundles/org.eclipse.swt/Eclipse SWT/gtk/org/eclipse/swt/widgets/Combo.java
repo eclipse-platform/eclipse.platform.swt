@@ -498,14 +498,10 @@ boolean hasFocus () {
 void hookEvents () {
 	//TODO - fix multiple enter/exit
 	super.hookEvents ();
-	int /*long*/ windowProc2 = display.windowProc2;
-	int /*long*/ windowProc3 = display.windowProc3;
-	int /*long*/ windowProc4 = display.windowProc4;
-	int /*long*/ windowProc5 = display.windowProc5;
-	OS.g_signal_connect_after (entryHandle, OS.changed, windowProc2, CHANGED);
-	OS.g_signal_connect (entryHandle, OS.insert_text, windowProc5, INSERT_TEXT);
-	OS.g_signal_connect (entryHandle, OS.delete_text, windowProc4, DELETE_TEXT);
-	OS.g_signal_connect (entryHandle, OS.activate, windowProc2, ACTIVATE);
+	OS.g_signal_connect_closure (entryHandle, OS.changed, display.closures [CHANGED], true);
+	OS.g_signal_connect_closure (entryHandle, OS.insert_text, display.closures [INSERT_TEXT], false);
+	OS.g_signal_connect_closure (entryHandle, OS.delete_text, display.closures [DELETE_TEXT], false);
+	OS.g_signal_connect_closure (entryHandle, OS.activate, display.closures [ACTIVATE], false);
 	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK |
 		OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_ENTER_NOTIFY_MASK |
 		OS.GDK_LEAVE_NOTIFY_MASK;
@@ -515,11 +511,11 @@ void hookEvents () {
 		if (eventHandle != 0) {
 			/* Connect the mouse signals */
 			OS.gtk_widget_add_events (eventHandle, eventMask);
-			OS.g_signal_connect (eventHandle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
-			OS.g_signal_connect (eventHandle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
-			OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
-			OS.g_signal_connect (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
-			OS.g_signal_connect (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT], false);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
 			/*
 			* Feature in GTK.  Events such as mouse move are propagated up
 			* the widget hierarchy and are seen by the parent.  This is the
@@ -527,19 +523,19 @@ void hookEvents () {
 			* hook a signal after and stop the propagation using a negative
 			* event number to distinguish this case.
 			*/
-			OS.g_signal_connect_after (eventHandle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
-			OS.g_signal_connect_after (eventHandle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
-			OS.g_signal_connect_after (eventHandle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT_INVERSE], true);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT_INVERSE], true);
+			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT_INVERSE], true);
 
 			/* Connect the event_after signal for both key and mouse */
 			if (eventHandle != entryHandle) {
-				OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
+				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
 			}
 		}
 	}
 	int /*long*/ imContext = imContext ();
 	if (imContext != 0) {
-		OS.g_signal_connect (imContext, OS.commit, windowProc3, COMMIT);
+		OS.g_signal_connect_closure (imContext, OS.commit, display.closures [COMMIT], false);
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 		int blockMask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		OS.g_signal_handlers_block_matched (imContext, blockMask, id, 0, 0, 0, entryHandle);

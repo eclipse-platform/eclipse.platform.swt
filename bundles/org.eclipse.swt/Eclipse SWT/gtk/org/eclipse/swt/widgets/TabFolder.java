@@ -407,7 +407,7 @@ int /*long*/ gtk_switch_page (int /*long*/ widget, int /*long*/ page, int /*long
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect (handle, OS.switch_page, display.windowProc4, SWITCH_PAGE);
+	OS.g_signal_connect_closure (handle, OS.switch_page, display.closures [SWITCH_PAGE], false);
 }
 
 /**
