@@ -1974,42 +1974,35 @@ void clearSelection(boolean sendEvent) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	boolean singleLine = (getStyle() & SWT.SINGLE) != 0;
-	int count = singleLine ? 1 : content.getLineCount();
-	int width = wHint;
-	//TODO rewrite computeSize
-	if (wHint == SWT.DEFAULT) {
-//		LineCache computeLineCache = lineCache;
-//		if (wordWrap) {
-//			// set non-wrapping content width calculator. Ensures ideal line width 
-//			// that does not required wrapping. Fixes bug 31195.
-//			computeLineCache = new ContentWidthCache(this, logicalContent);
-//			if (!singleLine) {
-//				count = logicalContent.getLineCount();
-//			}
-//		}
-//		// Only calculate what can actually be displayed.
-//		// Do this because measuring each text line is a 
-//		// time-consuming process.
-//		int visibleCount = Math.min (count, getDisplay().getBounds().height / lineHeight);
-//		computeLineCache.calculate(0, visibleCount);
-//		width = computeLineCache.getWidth() + leftMargin + rightMargin;
-//	} else if (wordWrap && !singleLine) {
-//		// calculate to wrap to width hint. Fixes bug 20377. 
-//		// don't wrap live content. Fixes bug 38344.
-//		WrappedContent2 wrappedContent = new WrappedContent2(renderer, logicalContent);
-//		wrappedContent.wrapLines(width);
-//		count = wrappedContent.getLineCount();
-	}
-	int height;
-	if (hHint != SWT.DEFAULT) {
-		height = hHint;
-	} else {
-		height = count * lineHeight + topMargin + bottomMargin;
+	int lineCount = singleLine ? 1 : content.getLineCount();
+	int width = 0;
+	int height = 0;
+	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		Display display = getDisplay();
+		int maxHeight = display.getClientArea().height;
+		int lineIndex = 0;
+		while (lineIndex < lineCount && height < maxHeight) {
+			int lineOffset = content.getOffsetAtLine(lineIndex);
+			String line = content.getLine(lineIndex);
+			TextLayout layout = renderer.getTextLayout(line, lineOffset);
+			if (wordWrap) {
+				layout.setWidth(wHint);
+			}
+			Rectangle rect = layout.getBounds();
+			height += rect.height;
+			width = Math.max(width, rect.width);
+			renderer.disposeTextLayout(layout);
+			lineIndex++;
+		}
 	}
 	// Use default values if no text is defined.
-	if (width == 0)	width = DEFAULT_WIDTH;
-	if (height == 0) height = singleLine ? lineHeight : DEFAULT_HEIGHT;
-	Rectangle rect = computeTrim(0, 0, width, height);
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	int wTrim = leftMargin + rightMargin + getCaretWidth();
+	int hTrim = topMargin + bottomMargin;
+	Rectangle rect = computeTrim(0, 0, width + wTrim, height + hTrim);
 	return new Point (rect.width, rect.height);
 }
 /**
@@ -5230,7 +5223,7 @@ void handleResize(Event event) {
 				renderer.disposeTextLayout(layout);
 				partialHeight += newHeight - height;
 				if (partialHeight < 0) partialHeight = 0;
-			}			
+			}
 			lineCache.reset(0, content.getLineCount(), true);
 			verticalScrollOffset = -1;
 			lineCache.calculateIdle();
