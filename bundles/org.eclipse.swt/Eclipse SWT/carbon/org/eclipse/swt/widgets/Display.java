@@ -352,22 +352,43 @@ int appearanceProc (int theAppleEvent, int reply, int handlerRefcon) {
 }
 
 int appleEventProc (int nextHandler, int theEvent, int userData) {
-	int [] aeEventID = new int [1];
-	if (OS.GetEventParameter (theEvent, OS.kEventParamAEEventID, OS.typeType, null, 4, null, aeEventID) == OS.noErr) {
-		if (aeEventID [0] == OS.kAEQuitApplication) {
-			Event event = new Event ();
-			sendEvent (SWT.Close, event);
-			if (event.doit) {
-				/*
-				* When the application is closing, no SWT program can continue
-				* to run.  In order to avoid running code after the display has
-				* been disposed, exit from Java.
-				*/
-				dispose ();
-				System.exit (0);
+	int eventClass = OS.GetEventClass (theEvent);
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventClass) {
+		case OS.kEventClassApplication: 
+			switch (eventKind) {
+				case OS.kEventAppAvailableWindowBoundsChanged: {
+					/* Reset the dock image in case the dock has been restarted */
+					if (dockImage != 0) {
+						int [] reason = new int [1];
+						OS.GetEventParameter (theEvent, OS.kEventParamReason, OS.typeUInt32, null, 4, null, reason);
+						if (reason [0] == OS.kAvailBoundsChangedForDock) {
+							OS.SetApplicationDockTileImage (dockImage);
+						}
+					}
+					break;
+				}
 			}
-			return OS.userCanceledErr;
-		}
+			break;
+		case OS.kEventClassAppleEvent:
+			int [] aeEventID = new int [1];
+			if (OS.GetEventParameter (theEvent, OS.kEventParamAEEventID, OS.typeType, null, 4, null, aeEventID) == OS.noErr) {
+				if (aeEventID [0] == OS.kAEQuitApplication) {
+					Event event = new Event ();
+					sendEvent (SWT.Close, event);
+					if (event.doit) {
+						/*
+						* When the application is closing, no SWT program can continue
+						* to run.  In order to avoid running code after the display has
+						* been disposed, exit from Java.
+						*/
+						dispose ();
+						System.exit (0);
+					}
+					return OS.userCanceledErr;
+				}
+			}
+			break;
 	}
 	return OS.eventNotHandledErr;
 }
@@ -1984,6 +2005,7 @@ void initializeCallbacks () {
 	};
 	OS.InstallEventHandler (appTarget, mouseProc, mask2.length / 2, mask2, 0, null);
 	int [] mask3 = new int[] {
+		OS.kEventClassApplication, OS.kEventAppAvailableWindowBoundsChanged,
 		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
 	};
 	OS.InstallEventHandler (appTarget, appleEventProc, mask3.length / 2, mask3, 0, null);
