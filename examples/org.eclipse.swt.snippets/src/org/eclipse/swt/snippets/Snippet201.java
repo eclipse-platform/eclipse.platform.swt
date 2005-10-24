@@ -34,8 +34,8 @@ public static void main(String[] args) {
 		public void handleEvent (Event event) {
 			TableItem item = (TableItem) event.item;
 			int index = table.indexOf (item);
-			int start = Math.max (0, index - PAGE_SIZE + 1);
-			int end = Math.min (table.getItemCount (), index + PAGE_SIZE);
+			int start = Math.max (0, index - PAGE_SIZE / 2);
+			int end = Math.min (table.getItemCount (), index + PAGE_SIZE / 2);
 			for (int i=start; i<end; i++) {
 				item = table.getItem (i);
 				item.setText ("Item " + i);
