@@ -39,7 +39,11 @@ esac
 
 # Determine which CPU type we are building for
 if [ "${MODEL}" = "" ]; then
-	MODEL=`uname -p`
+	if uname -p > /dev/null 2>&1; then
+		MODEL=`uname -p`
+	else
+		MODEL=`uname -m`
+	fi
 fi
 case $MODEL in
 	"x86_64")
