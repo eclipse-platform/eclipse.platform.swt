@@ -152,8 +152,12 @@ public abstract class EmbeddedObject {
 		}
 		public void draw(GC gc, int x, int y, int ascent, int descent) {
 			gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
-			int height = Math.max(6, Math.min(10, ascent / 2));			 
-			gc.setAntialias(SWT.ON);
+			int height = Math.max(6, Math.min(10, ascent / 2));
+			gc.setAdvanced(true);
+			if (gc.getAdvanced()) {
+				gc.setAntialias(SWT.ON);
+			}
+			if ((height & 1) == 0) height++;
 			gc.fillOval(x + 50 - height - 4, y + ascent  - height, height, height);
 			gc.setAdvanced(false);  
 		}
