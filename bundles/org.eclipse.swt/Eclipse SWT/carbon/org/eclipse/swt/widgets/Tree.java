@@ -1791,7 +1791,7 @@ int itemNotificationProc (int browser, int id, int message) {
 		case OS.kDataBrowserContainerClosing: {
 
 			int ptr = OS.NewHandle (0);
-			if (OS.GetDataBrowserItems (handle, id, true, OS.kDataBrowserItemAnyState, ptr) == OS.noErr) {
+			if (OS.GetDataBrowserItems (handle, id, false, OS.kDataBrowserItemAnyState, ptr) == OS.noErr) {
 				int count = OS.GetHandleSize (ptr) / 4;
 				visibleCount -= count;
 			}
