@@ -475,7 +475,6 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 			}
 			if (draw) {
 				drawRectangles (window, rectsToErase, true);
-				update ();
 				drawRectangles (window, rectangles, false);
 			}
 			Point cursorPos = adjustResizeCursor (orientationInit);
@@ -520,7 +519,6 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 			}
 			if (draw) {
 				drawRectangles (window, rectsToErase, true);
-				update ();
 				drawRectangles (window, rectangles, false);
 			}
 		}
@@ -616,7 +614,6 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			}
 			if (draw) {
 				drawRectangles (window, rectsToErase, true);
-				update ();
 				drawRectangles (window, rectangles, false);
 			}
 			cursorPos = adjustResizeCursor (true);
@@ -659,7 +656,6 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			}
 			if (draw) {
 				drawRectangles (window, rectsToErase, true);
-				update ();
 				drawRectangles (window, rectangles, false);
 			}
 			cursorPos = adjustMoveCursor ();
@@ -710,7 +706,6 @@ public boolean open () {
 	tracking = true;
 	window = display.createOverlayWindow ();
 	OS.ShowWindow (window);
-	update ();
 	drawRectangles (window, rectangles, false);
 	
 	/*
@@ -783,7 +778,6 @@ public boolean open () {
 		}
 	}
 	if (!isDisposed()) {
-		update ();
 		drawRectangles (window, rectangles, true);
 	}
 	OS.DisposeWindow (window);
@@ -1033,13 +1027,4 @@ public void setStippled (boolean stippled) {
 	this.stippled = stippled;
 }
 
-void update () {
-	if (parent != null) {
-		if (parent.isDisposed ()) return;
-		Shell shell = parent.getShell ();
-		shell.update (true);
-	} else {
-		display.update ();
-	}
-}
 }
