@@ -58,7 +58,7 @@ public class Tree extends Composite {
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded;
 	Rectangle imageBounds;
 	TreeItem showItem;
-	int lastHittest;
+	int lastHittest, visibleCount;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
 	static final int GRID_WIDTH = 1;
@@ -501,6 +501,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 			items [id] = null;
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
+		visibleCount++;
 	} else {	
 		/*
 		* Bug in the Macintosh.  When the first child of a tree item is
@@ -670,6 +671,7 @@ void destroyItem (TreeItem item) {
 		if (OS.RemoveDataBrowserItems (handle, parentID, 1, new int[] {item.id}, 0) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
+		visibleCount--;
 		ignoreExpand = false;
 	}
 	boolean hasChild = false;
@@ -693,6 +695,7 @@ void destroyItem (TreeItem item) {
 	//TEMPORARY CODE
 	releaseItem (item, false);
 	setScrollWidth ();
+	fixScrollBar ();
 }
 
 int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
@@ -804,6 +807,21 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.CGContextRestoreGState (gc.handle);
 	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
+}
+
+void fixScrollBar () {
+	/*
+	* Bug in the Macintosh. For some reason, the data browser does not update
+	* the vertical scrollbar when it is scrolled to the bottom and items are
+	* removed.  The fix is to check if the scrollbar value is bigger the
+	* maximum number of visible items and clamp it when needed.
+	*/
+	int [] top = new int [1], left = new int [1];
+	OS.GetDataBrowserScrollPosition (handle, top, left);
+	int maximum = Math.max (0, getItemHeight () * visibleCount - getClientArea ().height);
+	if (top [0] > maximum) {
+		OS.SetDataBrowserScrollPosition (handle, maximum, left [0]);
+	}
 }
 
 int getCheckColumnWidth () {
@@ -1771,6 +1789,14 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}
 		case OS.kDataBrowserContainerClosing: {
+
+			int ptr = OS.NewHandle (0);
+			if (OS.GetDataBrowserItems (handle, id, true, OS.kDataBrowserItemAnyState, ptr) == OS.noErr) {
+				int count = OS.GetHandleSize (ptr) / 4;
+				visibleCount -= count;
+			}
+			OS.DisposeHandle (ptr);
+
 			/*
 			* Bug in the Macintosh.  For some reason, if the selected sub items of an item
 			* get a kDataBrowserItemDeselected notificaton when the item is collapsed, a
@@ -1778,7 +1804,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			* fix is to deselect these items ignoring kDataBrowserItemDeselected and then
 			* issue a selection event.
 			*/
-			int ptr = OS.NewHandle (0);
+			ptr = OS.NewHandle (0);
 			if (OS.GetDataBrowserItems (handle, id, true, OS.kDataBrowserItemIsSelected, ptr) == OS.noErr) {
 				int count = OS.GetHandleSize (ptr) / 4;
 				if (count > 0) {
@@ -1825,6 +1851,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				sendEvent (SWT.Collapse, event);
 			}
 			setScrollWidth ();
+			fixScrollBar ();
 			break;
 		}
 		case OS.kDataBrowserContainerOpened: {
@@ -1852,6 +1879,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				}
 			}
 			OS.AddDataBrowserItems (handle, id, ids.length, ids, OS.kDataBrowserItemNoProperty);
+			visibleCount += ids.length;
 			setScrollWidth (newItems, false);
 			break;
 		}
@@ -2026,6 +2054,7 @@ public void removeAll () {
 	ignoreExpand = false;
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	anchorFirst = anchorLast = 0;
+	visibleCount = 0;
 	setScrollWidth ();
 }
 

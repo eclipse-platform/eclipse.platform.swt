@@ -864,7 +864,11 @@ void destroyItem (TableItem item) {
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-	if (itemCount == 0) setTableEmpty ();
+	if (itemCount == 0) {
+		setTableEmpty ();
+	} else {
+		fixScrollBar ();
+	}
 }
 
 int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
@@ -977,6 +981,21 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.CGContextRestoreGState (gc.handle);
 	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
+}
+
+void fixScrollBar () {
+	/*
+	* Bug in the Macintosh. For some reason, the data browser does not update
+	* the vertical scrollbar when it is scrolled to the bottom and items are
+	* removed.  The fix is to check if the scrollbar value is bigger the
+	* maximum number of visible items and clamp it when needed.
+	*/
+	int [] top = new int [1], left = new int [1];
+	OS.GetDataBrowserScrollPosition (handle, top, left);
+	int maximum = Math.max (0, getItemHeight () * itemCount - getClientArea ().height);
+	if (top [0] > maximum) {
+		OS.SetDataBrowserScrollPosition (handle, maximum, left [0]);
+	}
 }
 
 void fixSelection (int index, boolean add) {
@@ -2041,7 +2060,11 @@ public void remove (int index) {
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-	if (itemCount == 0) setTableEmpty ();
+	if (itemCount == 0) {
+		setTableEmpty ();
+	} else {
+		fixScrollBar ();
+	}
 }
 
 /**
@@ -2138,7 +2161,6 @@ public void removeAll () {
 	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
-	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	setTableEmpty ();
 }
 
@@ -2503,6 +2525,7 @@ public void setItemCount (int count) {
 	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
+	fixScrollBar ();
 	setRedraw (true);
 }
 
@@ -2830,6 +2853,7 @@ public void setSortDirection  (int direction) {
 }
 
 void setTableEmpty () {
+	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	itemCount = anchorFirst = anchorLast = 0;
 	items = new TableItem [4];
 	if (imageBounds != null) {
