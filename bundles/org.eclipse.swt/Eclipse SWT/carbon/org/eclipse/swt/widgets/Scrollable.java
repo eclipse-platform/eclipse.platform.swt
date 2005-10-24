@@ -358,9 +358,11 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 			Event event = new Event ();
 		    event.detail = wheelDelta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
 			bar.sendEvent (SWT.Selection, event);
-//			Display display = getDisplay ();
-//			display.update ();
-			update ();
+			if (!OS.HIVIEW) {
+//				Display display = getDisplay ();
+//				display.update ();
+				update ();
+			}
 			return true;
 		}
 	}

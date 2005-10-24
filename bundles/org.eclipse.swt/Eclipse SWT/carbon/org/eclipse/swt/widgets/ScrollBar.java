@@ -171,7 +171,7 @@ int actionProc (int theControl, int partCode) {
 	}
 	OS.SetControl32BitValue (handle, value);
 	sendEvent (SWT.Selection, event);
-	parent.update (true);
+	if (!OS.HIVIEW) parent.update (true);
 	return 0;
 }
 

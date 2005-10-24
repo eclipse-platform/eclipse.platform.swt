@@ -371,7 +371,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 						}
 						Rectangle rectangle = layout.getBounds (oldSelection, newSelection);
 						redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
-						update ();
+						if (!OS.HIVIEW) update ();
 					}
 				}
 				break;

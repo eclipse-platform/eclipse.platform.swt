@@ -3224,8 +3224,7 @@ boolean runGrabs () {
 	mouseUpControl = null;
 	try {
 		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
-			//TEMPORARY CODE
-			grabControl.getShell().update (true);
+			if (!OS.HIVIEW) grabControl.getShell().update (true);
 			lastModifiers = OS.GetCurrentEventKeyModifiers ();
 			int oldState = OS.GetCurrentEventButtonState ();
 			int handle = grabControl.handle;

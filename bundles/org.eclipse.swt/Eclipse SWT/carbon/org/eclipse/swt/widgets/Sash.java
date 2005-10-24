@@ -248,7 +248,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				if (event.doit) {
 					setBounds (event.x, event.y, width, height);
 					if (isDisposed ()) return result;
-					parent.update (true);
+					if (!OS.HIVIEW) parent.update (true);
 				}
 				break;
 			}
