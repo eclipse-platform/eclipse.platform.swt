@@ -171,6 +171,9 @@ public boolean isUnstyled() {
 	return true;
 }
 
+boolean isVariableLineHeight() {
+	return font != null || object != null || rise != 0;
+}
 /**
  * Compares the specified object to this StyleRange and answer if the two 
  * are similar. The object must be an instance of StyleRange and have the

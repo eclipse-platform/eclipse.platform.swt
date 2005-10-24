@@ -34,7 +34,7 @@ public abstract class EmbeddedObject {
 	 * Helper class to embedded a Control in a StyledText
 	 * 
 	 */
-	public class EmbeddedControl extends EmbeddedObject {
+	public static class EmbeddedControl extends EmbeddedObject {
 		Control control;
 		int alignment;
 		
@@ -83,7 +83,7 @@ public abstract class EmbeddedObject {
 	 * Helper class to embedded a Image in a StyledText
 	 * 
 	 */
-	public class EmbeddedImage extends EmbeddedObject {
+	public static class EmbeddedImage extends EmbeddedObject {
 		Image image;
 		int alignment;
 		
@@ -133,7 +133,7 @@ public abstract class EmbeddedObject {
 	 * 
 	 *
 	 */	
-	public class Bullet extends EmbeddedObject {
+	public static class Bullet extends EmbeddedObject {
 		
 		/**
 		 * @param style bullet image, check mark image, number, roman, 
@@ -142,15 +142,20 @@ public abstract class EmbeddedObject {
 			
 		}
 		public int getAscent() {			
-			return 0;
+			return 8;
 		}
 		public int getDescent() {
 			return 0;
 		}
 		public int getAdvance() {
-			return 0;
+			return 50;
 		}
 		public void draw(GC gc, int x, int y, int ascent, int descent) {
+			gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
+			int height = Math.max(6, Math.min(10, ascent / 2));			 
+			gc.setAntialias(SWT.ON);
+			gc.fillOval(x + 50 - height - 4, y + ascent  - height, height, height);
+			gc.setAdvanced(false);  
 		}
 	}
 }

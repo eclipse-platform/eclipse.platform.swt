@@ -26,6 +26,7 @@ class DefaultLineStyler implements LineStyleListener, LineBackgroundListener {
 	final static int ALIGNMENT = 1 << 1;
 	final static int INDENT = 1 << 2;
 	final static int JUSTIFY = 1 << 3;
+	final static int BULLET = 1 << 4;
 	
 	class LineInfo {
 		int flags;
@@ -33,7 +34,7 @@ class DefaultLineStyler implements LineStyleListener, LineBackgroundListener {
 		int alignment;
 		int indent;
 		boolean justify;
-		EmbeddedObject object;
+		EmbeddedObject.Bullet bullet;
 	}
 	
 /** 
@@ -289,6 +290,7 @@ public void lineGetStyle(LineStyleEvent event) {
 		if ((info.flags & ALIGNMENT) != 0) event.alignment = info.alignment;
 		if ((info.flags & INDENT) != 0) event.indent = info.indent;
 		if ((info.flags & JUSTIFY) != 0) event.justify = info.justify;
+		if ((info.flags & BULLET) != 0) event.bullet = info.bullet;
 	}
 }
 /** 
@@ -349,6 +351,15 @@ void setLineJustify(int startLine, int count, boolean justify) {
 		}
 		lines[i].flags |= JUSTIFY;
 		lines[i].justify = justify;
+	}
+}
+void setLineBullet(int startLine, int count, EmbeddedObject.Bullet bullet) {
+	for (int i = startLine; i < startLine + count; i++) {
+		if (lines[i] == null) {
+			lines[i] = new LineInfo();
+		}
+		lines[i].flags |= BULLET;
+		lines[i].bullet = bullet;
 	}
 }
 /** 
@@ -681,6 +692,13 @@ boolean getLineJustify(int index, boolean defaultJustify) {
 		return info.justify;
 	}
 	return defaultJustify;
+}
+EmbeddedObject.Bullet getLineBullet(int index, EmbeddedObject.Bullet defaultBullet) {
+	LineInfo info = lines[index];
+	if (info != null && (info.flags & BULLET) != 0) {
+		return info.bullet;
+	}
+	return defaultBullet;
 }
 /** 
  * Returns the style for the character at <code>offset</code>.  Called by StyledText.  

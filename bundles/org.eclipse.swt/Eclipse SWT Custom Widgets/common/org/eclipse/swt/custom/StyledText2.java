@@ -1642,7 +1642,7 @@ public void addLineStyleListener(LineStyleListener listener) {
 	if (isFixedLineHeight()) {
 		lineCache.setAllLinesDefaultHeight();
 	}
-	setLineHeightVariable();
+	setVariableLineHeight();
 	StyledTextListener typedListener = new StyledTextListener(listener);
 	addListener(LineGetStyle, typedListener);	
 }
@@ -3496,6 +3496,29 @@ public Color getLineBackground(int index) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	return userLineBackground ? null : defaultLineStyler.getLineBackground(index, null);
+}
+/**
+ * Returns the bullet of the line at the given index.
+ * <p>
+ * 
+ * @param index the index of the line
+ * @return the line bullet
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
+ * </ul>
+ * @since 3.2
+ */
+public EmbeddedObject.Bullet getLineBullet(int index) {
+	checkWidget();
+	if (index < 0 || index > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	return defaultLineStyler.getLineBullet(index, null);	
 }
 /**
  * Returns the line background data for the given line or null if 
@@ -6097,11 +6120,11 @@ public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
 	defaultLineStyler.replaceStyleRanges(start, length, ranges);
 	for (int i = 0; i < ranges.length; i++) {
 		StyleRange range = ranges[i];
-		if (range != null && (range.font != null || range.rise != 0)) {
+		if (range.isVariableLineHeight()) {
 			if (!isFixedLineHeight()) {
 				lineCache.setAllLinesDefaultHeight();
 			}
-			setLineHeightVariable();
+			setVariableLineHeight();
 			break;
 		}
 	}
@@ -6426,7 +6449,7 @@ public void setWordWrap(boolean wrap) {
 	if ((getStyle() & SWT.SINGLE) != 0) return;
 	if (wordWrap == wrap) return;
 	wordWrap = wrap;
-	setLineHeightVariable();
+	setVariableLineHeight();
 	resetCache(0, content.getLineCount());
 	horizontalScrollOffset = 0;
 	ScrollBar horizontalBar = getHorizontalBar();
@@ -6907,7 +6930,38 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
 	defaultLineStyler.setLineBackground(startLine, lineCount, background);
 	redrawLines(startLine, lineCount);
 }
-void setLineHeightVariable () {
+/**
+ * Sets the bullet of the specified lines.
+ * <p>
+ *  
+ * @param startLine first line the bullet is applied to, 0 based
+ * @param lineCount number of lines the bullet applies to.
+ * @param indent line indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_ARGUMENT when the specified line range is invalid</li>
+ * </ul>
+ * @since 3.2
+ */
+public void setLineBullet(int startLine, int lineCount, EmbeddedObject.Bullet bullet) {
+	checkWidget();
+	if (userLineStyle) return;
+	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+
+	defaultLineStyler.setLineBullet(startLine, lineCount, bullet);
+	redrawLines(startLine, lineCount);
+	int caretLine = getCaretLine();
+	if (startLine <= caretLine && caretLine < startLine + lineCount) {
+		setCaretLocation();
+	}
+}
+void setVariableLineHeight () {
 	fixedLineHeight = false;
 }
 /**
@@ -6989,7 +7043,7 @@ public void setLineSpacing(int lineSpacing) {
 	checkWidget();
 	if (this.lineSpacing == lineSpacing || lineSpacing < 0) return;
 	this.lineSpacing = lineSpacing;	
-	setLineHeightVariable();
+	setVariableLineHeight();
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
 	super.redraw();
@@ -7337,11 +7391,11 @@ public void setStyleRange(StyleRange range) {
 	}
 	defaultLineStyler.setStyleRange(range);	
 	if (range != null) {
-		if (range.font != null || range.rise != 0) {
+		if (range.isVariableLineHeight()) {
 			if (!isFixedLineHeight()) {
 				lineCache.setAllLinesDefaultHeight();
 			}
-			setLineHeightVariable();
+			setVariableLineHeight();
 		}
 		int firstLine = content.getLineAtOffset(range.start);
 		int lastLine = content.getLineAtOffset(range.start + range.length);
@@ -7409,11 +7463,11 @@ public void setStyleRanges(StyleRange[] ranges) {
 		
 		for (int i = 0; i < ranges.length; i++) {
 			StyleRange range = ranges[i];
-			if (range != null && (range.font != null  || range.rise != 0)) {
+			if (range.isVariableLineHeight()) {
 				if (!isFixedLineHeight()) {
 					lineCache.setAllLinesDefaultHeight();
 				}
-				setLineHeightVariable();
+				setVariableLineHeight();
 				break;
 			}
 		}

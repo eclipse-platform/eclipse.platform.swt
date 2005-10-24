@@ -211,19 +211,27 @@ int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color wi
 	
 	//place the objects
 	event = styledText.sendLineEvent(StyledText2.LineGetStyle, lineOffset, line);
-	if (event != null && event.styles != null) {
+	if (event != null) {
+		EmbeddedObject bullet = event.bullet;
+		if (bullet != null) {
+			FontMetrics metrics = layout.getLineMetrics(0);
+			bullet.draw(gc, paintX, paintY, metrics.getAscent(), metrics.getDescent());
+		}
+		
 		StyleRange[] styles = event.styles;
-		for (int i = 0; i < styles.length; i++) {
-			StyleRange range = styles[i];
-			int start = range.start;
-			if (lineOffset <= start && start < lineOffset + lineLength) {
-				EmbeddedObject object = range.object;
-				 if (object != null) {
-					 int offset = start - lineOffset;
-					 Point point = layout.getLocation(offset, false);
-					 FontMetrics metrics = layout.getLineMetrics(layout.getLineIndex(offset));
-					 range.object.draw(gc, point.x + paintX, point.y + paintY, metrics.getAscent(), metrics.getDescent());
-				 }
+		if (styles != null) {
+			for (int i = 0; i < styles.length; i++) {
+				StyleRange range = styles[i];
+				int start = range.start;
+				if (lineOffset <= start && start < lineOffset + lineLength) {
+					EmbeddedObject object = range.object;
+					 if (object != null) {
+						 int offset = start - lineOffset;
+						 Point point = layout.getLocation(offset, false);
+						 FontMetrics metrics = layout.getLineMetrics(layout.getLineIndex(offset));
+						 range.object.draw(gc, point.x + paintX, point.y + paintY, metrics.getAscent(), metrics.getDescent());
+					 }
+				}
 			}
 		}
 	}
@@ -353,6 +361,9 @@ TextLayout getTextLayout(String line, int lineOffset) {
 		alignment = event.alignment & (SWT.CENTER | SWT.LEFT | SWT.RIGHT);
 		indent = event.indent;
 		justify = event.justify;
+		if (event.bullet != null) {
+			indent += event.bullet.getAdvance();
+		}
 	}
 	TextLayout layout = getTextLayout(line, lineOffset, segments, styles);
 	layout.setAlignment(alignment);
