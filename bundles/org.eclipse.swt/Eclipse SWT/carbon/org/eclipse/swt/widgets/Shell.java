@@ -443,11 +443,11 @@ void createHandle () {
 	}
 	int windowClass = OS.kDocumentWindowClass;
 	if ((style & (SWT.CLOSE | SWT.TITLE)) == 0) windowClass = OS.kSheetWindowClass;
-//	if ((style & (SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-//		if ((style & SWT.CLOSE) == 0)  {
-//			windowClass = (style & SWT.TITLE) != 0 ? OS.kMovableModalWindowClass : OS.kModalWindowClass;
-//		}
-//	}
+	if ((style & (SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL | SWT.SYSTEM_MODAL)) != 0) {
+		if ((style & (SWT.CLOSE | SWT.MAX | SWT.MIN)) == 0)  {
+			windowClass = (style & SWT.TITLE) != 0 ? OS.kMovableModalWindowClass : OS.kModalWindowClass;
+		}
+	}
 	Monitor monitor = getMonitor ();
 	Rectangle rect = monitor.getClientArea ();
 	int width = rect.width * 5 / 8;
