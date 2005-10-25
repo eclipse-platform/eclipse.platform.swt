@@ -121,6 +121,7 @@ public class Display extends Device {
 
 	/* Deferred dispose window */
 	int disposeWindow;
+	int [] disposeWindowList;
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -531,6 +532,25 @@ void addWidget (int handle, Widget widget) {
 	freeSlot = indexTable [oldSlot];
 	indexTable [oldSlot] = -2;
 	widgetTable [oldSlot] = widget;
+}
+
+void addDisposeWindow (int window) {
+	if (disposeWindowList == null) disposeWindowList = new int [4];
+	int length = disposeWindowList.length;
+	for (int i=0; i<length; i++) {
+		if (disposeWindowList [i] == window) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (disposeWindowList [index] == 0) break;
+		index++;
+	}
+	if (index == length) {
+		int [] newList = new int [length + 4];
+		System.arraycopy (disposeWindowList, 0, newList, 0, length);
+		disposeWindowList = newList;
+	}
+	disposeWindowList [index] = window;
 }
 
 /**
@@ -1051,6 +1071,21 @@ int drawItemProc (int browser, int item, int property, int itemState, int theRec
 	Widget widget = getWidget (browser);
 	if (widget != null) return widget.drawItemProc (browser, item, property, itemState, theRect, gdDepth, colorDevice);
 	return OS.noErr;
+}
+
+void disposeWindows () {
+	if (disposeWindow != 0) {
+		OS.DisposeWindow (disposeWindow);
+		disposeWindow = 0;
+	}
+	if (disposeWindowList != null) {
+		for (int i = 0; i < disposeWindowList.length; i++) {
+			if (disposeWindowList [i] != 0) {
+				OS.DisposeWindow (disposeWindowList [i]);
+			}
+		}
+		disposeWindowList = null;
+	}
 }
 
 void error (int code) {
@@ -2927,6 +2962,8 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	disposeWindows ();
+
 	actionCallback.dispose ();
 	appleEventCallback.dispose ();
 	caretCallback.dispose ();
@@ -3672,10 +3709,7 @@ void setMenuBar (Menu menu) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
-	if (disposeWindow != 0) {
-		OS.DisposeWindow (disposeWindow);
-		disposeWindow = 0;
-	}
+	disposeWindows ();
 	if (eventTable != null && eventTable.hooks (SWT.Settings)) {
 		RGBColor color = new RGBColor ();
 		int status = OS.noErr, depth = getDepth ();

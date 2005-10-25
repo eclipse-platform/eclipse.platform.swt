@@ -104,7 +104,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, moved, drawing, reshape, update, activate, active, disposed, opened;
+	boolean resized, moved, drawing, reshape, update, deactivate, activate, active, disposed, opened;
 	int invalRgn;
 	Control lastActive;
 	Region region;
@@ -521,11 +521,20 @@ void destroyWidget () {
 	* causes a segment fault when an application is exiting.  This
 	* seems to happen to large applications.  The fix is to avoid
 	* calling HideWindow() when a shell is about to be disposed.
+	* 
+	* Bug in the Macintosh.  Disposing a window from kEventWindowDeactivated
+	* causes a segment fault. The fix is to defer disposing the window until
+	* the event loop becomes idle.
 	*/
-//	OS.HideWindow (shellHandle);
+	Display display = this.display;
+	if (deactivate) OS.HideWindow (shellHandle);
 	releaseHandle ();
 	if (theWindow != 0) {
-		OS.DisposeWindow (theWindow);
+		if (deactivate) {
+			display.addDisposeWindow (theWindow);
+		} else {
+			OS.DisposeWindow (theWindow);
+		}
 	} 
 }
 
@@ -925,10 +934,10 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if (active) {
+		deactivate = true;
 		active = false;
-		//TEMPORARY CODE - should be send, but causes a GP
 		Display display = this.display;
-		postEvent (SWT.Deactivate);
+		sendEvent (SWT.Deactivate);
 		if (isDisposed ()) return result;
 		saveFocus ();
 		if (savedFocus != null) {
@@ -941,10 +950,10 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 			display.ignoreFocus = true;
 			OS.ClearKeyboardFocus (shellHandle);
 			display.ignoreFocus = false;
-			//TEMPORARY CODE - should be send, but causes a GP
-			if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, true);
+			if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, false);
 		}
 		display.setMenuBar (null);
+		deactivate = false;
 	}
 	return result;
 }
