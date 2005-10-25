@@ -5095,7 +5095,7 @@ void handleMouseDown(Event event) {
 	mouseDoubleClick = false;
 	
 	//force focus (object support)
-	setFocus();
+	forceFocus();
 	
 	if (event.button == 2) {
 		String text = (String)getClipboardContent(DND.SELECTION_CLIPBOARD);
@@ -7387,6 +7387,7 @@ public void setStyleRange(StyleRange range) {
 		if (range.isVariableLineHeight()) {
 			if (!isFixedLineHeight()) {
 				lineCache.setAllLinesDefaultHeight();
+				//TODO DOESN'T SET PARTIAL HEIGHT
 			}
 			setVariableLineHeight();
 		}
