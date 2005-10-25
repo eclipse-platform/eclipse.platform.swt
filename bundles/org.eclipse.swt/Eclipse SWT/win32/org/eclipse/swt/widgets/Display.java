@@ -2159,9 +2159,7 @@ protected void init () {
 	OS.RegisterClass (lpWndClass);
 
 	/* Register the SWT drop shadow window class */
-	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		lpWndClass.style |= OS.CS_DROPSHADOW;
-	}
+	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) lpWndClass.style |= OS.CS_DROPSHADOW;
 	byteCount = windowShadowClass.length () * TCHAR.sizeof;
 	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
