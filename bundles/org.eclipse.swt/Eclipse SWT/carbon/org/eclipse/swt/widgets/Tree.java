@@ -52,10 +52,11 @@ public class Tree extends Composite {
 	TreeItem [] items;
 	TreeColumn [] columns;
 	TreeColumn sortColumn;
+	int [] childIds;
 	GC paintGC;
 	int clickCount, sortDirection;
 	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
-	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded;
+	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll;
 	Rectangle imageBounds;
 	TreeItem showItem;
 	int lastHittest, visibleCount;
@@ -99,6 +100,135 @@ public class Tree extends Composite {
  */
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+int _getId () {
+	return _getIds (1) [0];
+}
+
+int [] _getIds (int count) {
+	int [] newIds = new int [count];
+	int index = 0;
+	if ((style & SWT.VIRTUAL) == 0) {
+		for (int i=0; i<items.length; i++) {
+			if (items [i] == null) {
+				newIds [index++] = i + 1;
+				if (index == count) return newIds;
+			}
+		}
+		int next = items.length;
+		while (index < count) {
+			newIds [index++] = next + 1;
+			next++;
+		}
+		return newIds;
+	}
+	
+	boolean [] reserved = new boolean [items.length];
+	if (childIds != null) {
+		for (int i=0; i<childIds.length; i++) {
+			int usedId = childIds [i]; 
+			if (usedId != 0) {
+				if (usedId > reserved.length) {
+					boolean [] newReserved = new boolean [usedId + 4];
+					System.arraycopy (reserved, 0, newReserved, 0, reserved.length);
+					reserved = newReserved;
+				}
+				reserved [usedId - 1] = true;
+			}
+		}
+	}
+	for (int i=0; i<items.length; i++) {
+		if (items [i] != null) {
+			reserved [i] = true;
+			int [] ids =  items [i].childIds;
+			if (ids != null) {
+				for (int j=0; j<ids.length; j++) {
+					int usedId = ids [j];
+					if (usedId != 0) {
+						if (usedId > reserved.length) {
+							boolean [] newReserved = new boolean [usedId + 4];
+							System.arraycopy (reserved, 0, newReserved, 0, reserved.length);
+							reserved = newReserved;
+						}
+						reserved [usedId - 1] = true;
+					}
+				}
+			}
+		}
+	}
+	for (int i=0; i<reserved.length; i++) {
+		if (!reserved [i]) {
+			if (index >= newIds.length) {
+				System.out.println("bad");
+			}
+			newIds [index++] = i + 1;
+			if (index == count) return newIds;
+		}
+	}
+	int next = reserved.length;
+	while (index < count) {
+		newIds [index++] = next + 1;
+		next++;
+	}
+	return newIds;
+}
+
+TreeItem _getItem (int id, boolean create) {
+	if (id < 1) return null;
+	TreeItem item = id - 1 < items.length ? items [id - 1] : null;
+	if (item != null ||  (style & SWT.VIRTUAL) == 0 || !create) return item;
+	if (childIds != null) {
+		for (int i=0; i<childIds.length; i++) {
+			if (childIds [i] == id) {
+				return _getItem (null, i);
+			}
+		}
+	}
+	for (int i=0; i<items.length; i++) {
+		TreeItem parentItem = items [i];
+		if (parentItem != null && parentItem.childIds != null) {
+			int [] ids = parentItem.childIds;
+			for (int j=0; j<ids.length; j++) {
+				if (ids [j] == id) {
+					return _getItem (parentItem, j);
+				}
+			}
+		}
+	}
+	return null;
+}
+
+TreeItem _getItem (TreeItem parentItem, int index) {
+	int count = getItemCount (parentItem);
+	if (index < 0 || index >= count) return null;
+	int [] ids = parentItem == null ? childIds : parentItem.childIds;
+	if (ids == null || index >= ids.length) {
+		int [] newIds = new int [index + 4];
+		if (ids != null) System.arraycopy(ids, 0, newIds, 0, ids.length);
+		ids = newIds;
+		if (parentItem == null) {
+			childIds = ids;
+		} else {
+			parentItem.childIds = ids;
+		}
+	}
+	int id = ids [index];
+	if (id == 0) {
+		id = _getId ();
+		ids [index] = id;
+	}
+	if (id > items.length) {
+		TreeItem [] newItems = new TreeItem [id + 4];
+		System.arraycopy(items, 0, newItems, 0, items.length);
+		items = newItems;
+	}
+	TreeItem item = items [id - 1]; 
+	if (item != null || (style & SWT.VIRTUAL) == 0) return item;
+	item = new TreeItem (this, parentItem, SWT.NONE, index, false);
+	item.id = id;
+	items [id - 1] = item;
+	return item;
 }
 
 /**
@@ -163,13 +293,16 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
-int calculateWidth (TreeItem [] items, GC gc) {
+int calculateWidth (int [] ids, GC gc) {
+	if (ids == null) return 0;
 	int width = 0;
-	for (int i = 0; i < items.length; i++) {
-		TreeItem item = items [i];
-		width = Math.max (width, item.calculateWidth (0, gc));
-		if (item._getExpanded ()) {
-			width = Math.max (width, calculateWidth (item.getItems (), gc));
+	for (int i=0; i<ids.length; i++) {
+		TreeItem item = _getItem (ids [i], false);
+		if (item != null) {
+			width = Math.max (width, item.calculateWidth (0, gc));
+			if (item._getExpanded ()) {
+				width = Math.max (width, calculateWidth (item.childIds, gc));
+			}
 		}
 	}
 	return width;
@@ -220,12 +353,96 @@ static int checkStyle (int style) {
 	* widget that Windows creates.
 	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
-	style &= ~SWT.VIRTUAL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+void clear (TreeItem parentItem, int index, boolean all) {
+	int [] ids = parentItem == null ? childIds : parentItem.childIds;
+	TreeItem item = _getItem (ids [index], false);
+	if (item != null) {
+		item.clear();
+		if (all) {
+			clearAll (item, true);
+		} else {
+			int container = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
+			OS.UpdateDataBrowserItems (handle, container, 1, new int[] {item.id}, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+		}
+	}
+}
+
+void clearAll (TreeItem parentItem, boolean all) {
+	boolean update = !inClearAll;
+	inClearAll = true;
+	int count = getItemCount (parentItem);
+	if (count == 0) return;
+	int [] ids = parentItem == null ? childIds : parentItem.childIds;
+	for (int i=0; i<count; i++) {
+		TreeItem item = _getItem (ids [i], false);
+		if (item != null) {
+			item.clear ();
+			if (all) clearAll (item, true);
+		}
+	}
+	if (update) {
+		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+		inClearAll = false;
+	}
+}
+
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attributes of the item are set to the default
+ * value.  If the tree was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+public void clear (int index, boolean all) {
+	checkWidget ();
+	int count = getItemCount (null);
+	if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+	clear (null, index, all);
+}
+
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attribues of the items are set to their default values. If the
+ * tree was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ * 
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+public void clearAll (boolean all) {
+	checkWidget ();
+	clearAll (null, all);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -239,9 +456,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		} else {
 			int columnWidth = 0;
 			GC gc = new GC (this);
-			TreeItem [] items = getItems (null);
 			for (int i=0; i<items.length; i++) {
-				columnWidth = Math.max (columnWidth, items [i].calculateWidth (0, gc));
+				TreeItem item = items [i];
+				if (item != null && item.parentItem == null) {
+					columnWidth = Math.max (columnWidth, items [i].calculateWidth (0, gc));
+				}
 			}
 			gc.dispose ();
 			width += columnWidth + getInsetWidth (column_id, true);
@@ -464,41 +683,35 @@ void createItem (TreeColumn column, int index) {
 }
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {
-	int count = 0;
-	int id = items.length;
-	for (int i=0; i<items.length; i++) {
-		if (items [i] == null) {
-			if (id == items.length) id = i;
-		} else {
-			if (items [i].parentItem == parentItem) count++;
-		}
-	}
+	int count = getItemCount (parentItem);
 	if (index == -1) index = count;
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	item.index = index;
-	if (index != count) {
-		for (int i=0; i<items.length; i++) {
-			if (items [i] != null && items [i].parentItem == parentItem) {
-				if (items [i].index >= item.index) items [i].index++;
-			}
-		}
-	}
-	if (id == items.length) {
-		TreeItem [] newItems = new TreeItem [items.length + 4];
+	int id = _getId ();
+	if (id > items.length) {
+		TreeItem [] newItems = new TreeItem [id + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	items [id] = item;
-	item.id = id + 1;
-	int parentID = OS.kDataBrowserNoItem;
-	boolean expanded = true;
-	if (parentItem != null) {
-		parentID = parentItem.id;
-		expanded = parentItem.getExpanded ();
+	item.id = id;
+	items [id - 1] = item;
+	int [] ids = parentItem == null ? childIds : parentItem.childIds;
+	if (ids == null || index >= ids.length) {
+		int [] newIds = new int [index + 4];
+		if (ids != null) System.arraycopy (ids, 0, newIds, 0, ids.length);
+		ids = newIds;
+		if (parentItem == null) {
+			childIds = ids;
+		} else {
+			parentItem.childIds = ids;
+		}
 	}
-	if (expanded) {
-		if (OS.AddDataBrowserItems (handle, parentID, 1, new int[] {item.id}, OS.kDataBrowserItemNoProperty) != OS.noErr) {
-			items [id] = null;
+	System.arraycopy (ids, index, ids, index + 1, ids.length - index - 1);
+	ids [index] = id;
+	if (parentItem == null || parentItem.getExpanded ()) {
+		int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
+		if (OS.AddDataBrowserItems (handle, parentID, 1, new int [] {item.id}, OS.kDataBrowserItemNoProperty) != OS.noErr) {
+			items [id - 1] = null;
+			System.arraycopy (ids, index+1, ids, index, ids.length - index);
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 		visibleCount++;
@@ -666,41 +879,30 @@ void destroyItem (TreeColumn column) {
 void destroyItem (TreeItem item) {
 	TreeItem parentItem = item.parentItem;
 	if (parentItem == null || parentItem.getExpanded ()) {
-		int parentID = parentItem == null ? OS.kDataBrowserNoItem : item.parentItem.id;
+		int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 		ignoreExpand = true;
-		if (OS.RemoveDataBrowserItems (handle, parentID, 1, new int[] {item.id}, 0) != OS.noErr) {
+		if (OS.RemoveDataBrowserItems (handle, parentID, 1, new int [] {item.id}, 0) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
 		visibleCount--;
 		ignoreExpand = false;
-	}
-	boolean hasChild = false;
-	for (int i=0; i<items.length; i++) {
-		TreeItem child = items [i];
-		if (child != null && child != item && child.parentItem == parentItem) {
-			if (child.index >= item.index) {
-				--child.index;
-				hasChild = true;
-			}
-		}
 	}
 	/*
 	* Bug in the Macintosh.  When the last child of a tree item is
 	* removed and the parent is not expanded, the parent does not
 	* redraw to remove the expander.  The fix is to force a redraw.
 	*/
-	if (hasChild && parentItem != null && !parentItem.getExpanded ()) {
+	if (parentItem != null && !parentItem.getExpanded () && parentItem.itemCount > 0) {
 		parentItem.redraw (OS.kDataBrowserNoItem);
 	}
 	//TEMPORARY CODE
 	releaseItem (item, false);
-	setScrollWidth ();
+	setScrollWidth (true);
 	fixScrollBar ();
 }
 
 int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
-	int index = id - 1;
-	if (!(0 <= index && index < items.length)) return OS.noErr;
+	if (id < 0) return OS.noErr;
 	int columnIndex = 0;
 	if (columnCount > 0) {
 		for (columnIndex=0; columnIndex<columnCount; columnIndex++) {
@@ -710,7 +912,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	Rect controlRect = new Rect ();
 	if (!OS.HIVIEW) OS.GetControlBounds (handle, controlRect);
-	TreeItem item = items [index];
+	TreeItem item = _getItem (id, true);
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (!item.cached) {
 			if (!checkData (item, false)) return OS.noErr;
@@ -1108,17 +1310,9 @@ int getInsetWidth (int column_id, boolean leftInset) {
  */
 public TreeItem getItem (int index) {
 	checkWidget ();
-	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	int i = 0;
-	TreeItem item = null;
-	while (item == null && i < items.length) {
-		TreeItem next = items [i++];
-		if (next != null && next.parentItem == null &&  next.index == index) {
-			item = next;
-		}
-	}
-	if (item == null) error (SWT.ERROR_INVALID_RANGE);
-	return item;
+	int count = getItemCount (null);
+	if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+	return _getItem (null, index);
 }
 
 /**
@@ -1179,13 +1373,15 @@ public int getItemCount () {
 	return getItemCount (null);
 }
 
-int getItemCount (TreeItem item) {
-	checkWidget ();
-	int count = 0;
-	for (int i=0; i<items.length; i++) {
-		if (items [i] != null && items [i].parentItem == item) count++;
+int getItemCount (TreeItem parentItem) {
+	if (parentItem == null) {
+		int [] count = new int [1];
+		if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemAnyState, count) == OS.noErr) {
+			return count [0];
+		}
+		return 0;
 	}
-	return count;
+	return parentItem.itemCount;
 }
 
 /**
@@ -1230,17 +1426,12 @@ public TreeItem [] getItems () {
 	return getItems (null);
 }
 
-TreeItem [] getItems (TreeItem item) {
+TreeItem [] getItems (TreeItem parentItem) {
 	if (items == null) return new TreeItem [0];
-	int count = 0;
-	for (int i=0; i<items.length; i++) {
-		if (items [i] != null && items [i].parentItem == item) count++;
-	}
+	int count = getItemCount (parentItem);
 	TreeItem [] result = new TreeItem [count];
-	for (int i=0; i<items.length; i++) {
-		if (items [i] != null && items [i].parentItem == item) {
-			result [items [i].index] = items [i];			
-		}
+	for (int i=0; i<count; i++) {
+		result [i] = _getItem (parentItem, i);
 	}
 	return result;
 }
@@ -1315,15 +1506,17 @@ public TreeItem [] getSelection () {
 	}
 	int count = OS.GetHandleSize (ptr) / 4;
 	TreeItem [] result = new TreeItem [count];
-	OS.HLock (ptr);
-	int [] start = new int [1];
-	OS.memcpy (start, ptr, 4);
-	int [] id = new int [1];
-	for (int i=0; i<count; i++) {
-		OS.memcpy (id, start [0] + (i * 4), 4);
-		result [i] = items [id [0] - 1];
+	if (count > 0) {
+		OS.HLock (ptr);
+		int [] start = new int [1];
+		OS.memcpy (start, ptr, 4);
+		int [] id = new int [1];
+		for (int i=0; i<count; i++) {
+			OS.memcpy (id, start [0] + (i * 4), 4);
+			result [i] = _getItem (id [0], true);
+		}
+		OS.HUnlock (ptr);
 	}
-	OS.HUnlock (ptr);
 	OS.DisposeHandle (ptr);
 	return result;
 }
@@ -1480,20 +1673,21 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 					TreeItem item = null;
 					TreeColumn column = null;
 					for (int i=0; i<items.length && item == null; i++) {
-						if (items [i] != null) {
+						TreeItem nextItem = items [i];
+						if (nextItem != null) {
 							if (columnCount == 0) {
-								if (OS.GetDataBrowserItemPartBounds (handle, items [i].id, column_id, OS.kDataBrowserPropertyContentPart, rect) == OS.noErr) {
+								if (OS.GetDataBrowserItemPartBounds (handle, nextItem.id, column_id, OS.kDataBrowserPropertyContentPart, rect) == OS.noErr) {
 									if (OS.PtInRect (pt, rect)) {
-										item = items [i];
+										item = nextItem;
 										break;
 									}
 								}
 							} else {
 								for (int j = 0; j < columnCount; j++) {
 									column = columns [j];
-									if (OS.GetDataBrowserItemPartBounds (handle, items [i].id, column.id, OS.kDataBrowserPropertyContentPart, rect) == OS.noErr) {
+									if (OS.GetDataBrowserItemPartBounds (handle, nextItem.id, column.id, OS.kDataBrowserPropertyContentPart, rect) == OS.noErr) {
 										if (OS.PtInRect (pt, rect)) {
-											item = items [i];
+											item = nextItem;
 											columnIndex = j;
 											break;
 										}
@@ -1635,26 +1829,38 @@ public int indexOf (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parentItem != null) return -1;
-	return item.index;
+	return _indexOf (null, item);
+}
+
+int _indexOf (TreeItem parentItem, TreeItem item) {
+	int [] ids = parentItem == null ? childIds : parentItem.childIds;
+	if (ids != null) {
+		for (int i=0; i<ids.length; i++) {
+			if (ids [i] == item.id) return i;
+		}
+	}
+	return -1;
 }
 
 int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
-	int index1 = itemOne - 1;
-	if (!(0 <= index1 && index1 < items.length)) return OS.noErr;
-	int index2 = itemTwo - 1;
-	if (!(0 <= index2 && index2 < items.length)) return OS.noErr;
+	if (!(0 < itemOne && itemOne <= items.length)) return OS.noErr;
+	if (!(0 < itemTwo && itemTwo <= items.length)) return OS.noErr;
+	TreeItem item1 = items [itemOne - 1];
+	TreeItem item2 = items [itemTwo - 1];
+	if (item1 == null || item2 == null) return OS.noErr;
+	int index1 = _indexOf (item1.parentItem, item1);
+	int index2 = _indexOf (item2.parentItem , item2);
 	if (sortDirection == SWT.DOWN && sortColumn != null) {
-		return items [index1].index > items [index2].index ? 1 : 0;
+		return index1 > index2 ? 1 : 0;
 	}
-	return items [index1].index < items [index2].index ? 1 : 0;
+	return index1 < index2 ? 1 : 0;
 }
 
 int itemDataProc (int browser, int id, int property, int itemData, int setValue) {
-	int index = id - 1;
-	if (!(0 <= index && index < items.length)) return OS.noErr;
-	TreeItem item = items [index];
+	if (!(0 < id && id <= items.length)) return OS.noErr;
 	switch (property) {
 		case CHECK_COLUMN_ID: {
+			TreeItem item = _getItem (id, true);
 			if (setValue != 0) {
 				item.checked = !item.checked;
 				if (item.checked && item.grayed) {
@@ -1682,11 +1888,9 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 			break;
 		}
 		case OS.kDataBrowserItemIsContainerProperty: {
-			for (int i=0; i<items.length; i++) {
-				if (items [i] != null && items [i].parentItem == item) {
-					OS.SetDataBrowserItemDataBooleanValue (itemData, true);
-					break;
-				}
+			TreeItem item = _getItem (id, true);
+			if (item.itemCount > 0) {
+				OS.SetDataBrowserItemDataBooleanValue (itemData, true);
 			}
 			break;
 		}
@@ -1743,9 +1947,7 @@ int itemNotificationProc (int browser, int id, int message) {
 		}
 		return OS.noErr;
 	}
-	int index = id - 1;
-	if (!(0 <= index && index < items.length)) return OS.noErr;
-	TreeItem item = items [index];
+	if (!(0 < id && id <= items.length)) return OS.noErr;
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
 		case OS.kDataBrowserItemDeselected: {
@@ -1776,7 +1978,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				anchorFirst = first [0];
 				anchorLast = last [0];
 				Event event = new Event ();
-				event.item = item;
+				event.item = _getItem (id, true);
 				postEvent (SWT.Selection, event);
 			}
 			break;
@@ -1784,12 +1986,11 @@ int itemNotificationProc (int browser, int id, int message) {
 		case OS.kDataBrowserItemDoubleClicked: {
 			wasSelected = true;
 			Event event = new Event ();
-			event.item = item;
+			event.item = _getItem (id, true);
 			postEvent (SWT.DefaultSelection, event);
 			break;
 		}
 		case OS.kDataBrowserContainerClosing: {
-
 			int ptr = OS.NewHandle (0);
 			if (OS.GetDataBrowserItems (handle, id, false, OS.kDataBrowserItemAnyState, ptr) == OS.noErr) {
 				int count = OS.GetHandleSize (ptr) / 4;
@@ -1816,10 +2017,10 @@ int itemNotificationProc (int browser, int id, int message) {
 					OS.HUnlock (ptr);
 					ignoreSelect = true;
 					/*
-					* Bug in the Macintosh.  When the DataBroswer selection flags includes
+					* Bug in the Macintosh.  When the DataBrowser selection flags includes
 					* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
-				  * two items are selected when SetDataBrowserSelectedItems() is called
-				  * with kDataBrowserItemsAssign to assign a new seletion despite the fact
+					* two items are selected when SetDataBrowserSelectedItems() is called
+					* with kDataBrowserItemsAssign to assign a new seletion despite the fact
 					* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
 					* restore kDataBrowserNeverEmptySelectionSet around each call to
 					* SetDataBrowserSelectedItems().
@@ -1836,7 +2037,7 @@ int itemNotificationProc (int browser, int id, int message) {
 					}
 					ignoreSelect = false;
 					Event event = new Event ();
-					event.item = item;
+					event.item = _getItem (id, true);
 					sendEvent (SWT.Selection, event);
 				}
 			}
@@ -1844,17 +2045,28 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}
 		case OS.kDataBrowserContainerClosed: {
+			TreeItem item = _getItem (id, true);
+			int [] ids = item.childIds;
+			if (ids != null) {
+				for (int i=0; i<item.itemCount; i++) {
+					int childId = ids [i];
+					if (childId != 0) {
+						if (childId > items.length || items [childId - 1] == null) ids [i] = 0;
+					}
+				}
+			}
 			wasExpanded = true;
 			if (!ignoreExpand) {
 				Event event = new Event ();
 				event.item = item;
 				sendEvent (SWT.Collapse, event);
 			}
-			setScrollWidth ();
+			setScrollWidth (true);
 			fixScrollBar ();
 			break;
 		}
 		case OS.kDataBrowserContainerOpened: {
+			TreeItem item = _getItem (id, true);
 			wasExpanded = true;
 			if (!ignoreExpand) {
 				Event event = new Event ();
@@ -1866,21 +2078,20 @@ int itemNotificationProc (int browser, int id, int message) {
 					item.state &= ~EXPANDING;
 				}
 			}
-			int count = 0;
-			for (int i=0; i<items.length; i++) {
-				if (items [i] != null && items [i].parentItem == item) count++;
+			int newIdCount = 0;
+			for (int i=0; i<item.itemCount; i++) {
+				if (item.childIds [i] == 0) newIdCount++;
 			}
-			TreeItem [] newItems = new TreeItem [count];
-			int [] ids = new int [count];
-			for (int i=0; i<items.length; i++) {
-				if (items [i] != null && items [i].parentItem == item) {
-					ids [items [i].index] = items [i].id;
-					newItems [items [i].index] = items [i];
+			if (newIdCount > 0) {
+				int [] newIds = _getIds (newIdCount);
+				int index = 0;
+				for (int i=0; i<item.itemCount; i++) {
+					if (item.childIds [i] == 0) item.childIds [i] = newIds [index++];   
 				}
 			}
-			OS.AddDataBrowserItems (handle, id, ids.length, ids, OS.kDataBrowserItemNoProperty);
-			visibleCount += ids.length;
-			setScrollWidth (newItems, false);
+			OS.AddDataBrowserItems (handle, id, item.itemCount, item.childIds, OS.kDataBrowserItemNoProperty);
+			visibleCount += item.itemCount;
+			setScrollWidth (false);
 			break;
 		}
 	}
@@ -1942,10 +2153,9 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	}
 	if (!wasSelected && !wasExpanded) {
 		if (OS.IsDataBrowserItemSelected (handle, lastHittest)) {
-			int index = lastHittest - 1;
-			if (0 <= index && index < items.length) {
+			if (0 < lastHittest && lastHittest <= items.length) {
 				Event event = new Event ();
-				event.item = items [index];
+				event.item = _getItem (lastHittest, true);
 				postEvent (SWT.Selection, event);
 			}
 		}
@@ -1995,31 +2205,47 @@ void releaseItem (TreeItem item, boolean release) {
 	int id = item.id;
 	if (release) item.release (false);
 	items [id - 1] = null;
+	TreeItem parentItem = item.parentItem;
+	int [] ids = parentItem == null ? childIds : parentItem.childIds;
+	int index = -1;
+	for (int i = 0; i < ids.length; i++) {
+		if (ids [i] == id) {
+			index = i; break;
+		}
+	}
+	if (index != -1) {
+		System.arraycopy(ids, 0, ids, 0, index);
+		System.arraycopy(ids, index+1, ids, index, ids.length - index - 1);
+		ids [ids.length -1] = 0;
+	}
+	if (parentItem != null) {
+		parentItem.itemCount--;
+		if (parentItem.itemCount == 0) parentItem.childIds = null;
+	}
 }
 
-void releaseItems (TreeItem [] nodes) {
-	for (int i=0; i<nodes.length; i++) {
-		TreeItem item = nodes [i];
-		TreeItem [] sons = item.getItems ();
-		if (sons.length != 0) {
-			releaseItems (sons);
-		}
-		if (!isDisposed ()) {
-			releaseItem (item, true);
+void releaseItems (int [] ids) {
+	if (ids == null) return;
+	for (int i=ids.length-1; i>= 0; i--) {
+		TreeItem item = _getItem (ids [i], false);
+		if (item != null) {
+			releaseItems (item.childIds);
+			if (!isDisposed ()) {
+				releaseItem (item, true);
+			}
 		}
 	}
 }
 
 void releaseChildren (boolean destroy) {
-	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
-			if (item != null && !item.isDisposed ()) {
-				item.release (false);
-			}
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.release (false);
 		}
-		items = null;
 	}
+	items = null;
+	childIds = null;
 	if (columns != null) {
 		for (int i=0; i<columnCount; i++) {
 			TreeColumn column = columns [i];
@@ -2047,6 +2273,7 @@ public void removeAll () {
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
 	items = new TreeItem [4];
+	childIds = null;
 	ignoreExpand = true;
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -2055,7 +2282,7 @@ public void removeAll () {
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	anchorFirst = anchorLast = 0;
 	visibleCount = 0;
-	setScrollWidth ();
+	setScrollWidth (true);
 }
 
 /**
@@ -2270,7 +2497,7 @@ void setFontStyle (Font font) {
 		TreeItem item = items [i];
 		if (item != null) item.width = -1;
 	}
-	setScrollWidth ();
+	setScrollWidth (true);
 }
 
 /**
@@ -2299,6 +2526,105 @@ public void setHeaderVisible (boolean show) {
 		OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) (show ? headerHeight : 0));
 		invalidateVisibleRegion (handle);
 	}
+}
+
+/**
+ * Sets the number of items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
+public void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	setItemCount (null, count);
+}
+
+void setItemCount (TreeItem parentItem, int count) {
+	int itemCount = getItemCount (parentItem);
+	if (count == itemCount) return;
+	setRedraw (false);
+	int [] top = new int [1], left = new int [1];
+    OS.GetDataBrowserScrollPosition (handle, top, left);
+    DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (handle, callbacks);
+	callbacks.v1_itemNotificationCallback = 0;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
+	int[] ids = parentItem == null ? childIds : parentItem.childIds;
+	if (count < itemCount) {
+		int index = count;
+		while (index < ids.length) {
+			int id = ids [index];
+			TreeItem item = _getItem (id, false);
+			if (item != null) item.release (false);
+			if (parentItem == null || parentItem.getExpanded ()) {
+				if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, new int [] {id}, 0) != OS.noErr) {
+					break;
+				}
+			}
+			index++;
+		}
+		if (index < ids.length) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		//TODO - move shrink to paint event
+		// shrink items array
+		int lastIndex = items.length;
+		for (int i=items.length; i>0; i--) {
+			if (items [i-1] != null) {
+				lastIndex = i;
+				break;
+			}
+		}
+		if (lastIndex < items.length - 4) {
+			int length = Math.max (4, (lastIndex + 3) / 4 * 4);
+			TreeItem [] newItems = new TreeItem [length];
+			System.arraycopy(items, 0, newItems, 0, Math.min(items.length, lastIndex));
+		}
+	}
+	
+	if (parentItem != null) parentItem.itemCount = count;
+	int length = Math.max (4, (count + 3) / 4 * 4);
+	int [] newIds = new int [length];
+	if (ids != null) {
+		System.arraycopy (ids, 0, newIds, 0, Math.min (count, itemCount));
+	}
+	ids = newIds;
+	if (parentItem == null) {
+		childIds = newIds;
+	} else {
+		parentItem.childIds = newIds;
+	}
+	
+	if (count > itemCount) {
+		if ((getStyle() & SWT.VIRTUAL) == 0) {
+			int delta = Math.max (4, (count - itemCount + 3) / 4 * 4);
+			TreeItem [] newItems = new TreeItem [items.length + delta];
+			System.arraycopy (items, 0, newItems, 0, items.length);
+			items = newItems;
+			for (int i=itemCount; i<count; i++) {
+				items [i] = new TreeItem (parentItem, SWT.NONE, i);
+			}
+		} else {
+			if (parentItem == null || parentItem.getExpanded ()) {
+				int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
+				int [] addIds = _getIds (count - itemCount);
+				if (OS.AddDataBrowserItems (handle, parentID, addIds.length, addIds, OS.kDataBrowserItemNoProperty) != OS.noErr) {
+					error (SWT.ERROR_ITEM_NOT_ADDED);
+				}
+				System.arraycopy (addIds, 0, ids, itemCount, addIds.length);
+			}
+		}
+	}
+	
+	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
+	setRedraw (true);
+	if (itemCount == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
 }
 
 void setItemHeight (Image image) {
@@ -2344,12 +2670,8 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) {
-		setScrollWidth ();
+		setScrollWidth (true);
 	}
-}
-
-void setScrollWidth () {
-	setScrollWidth (getItems (null), true);
 }
 
 boolean setScrollWidth (TreeItem item) {
@@ -2370,11 +2692,11 @@ boolean setScrollWidth (TreeItem item) {
 	return false;
 }
 
-boolean setScrollWidth (TreeItem [] items, boolean set) {
+boolean setScrollWidth (boolean set) {
 	if (ignoreRedraw || drawCount != 0) return false;
-	if (columnCount != 0) return false;
+	if (columnCount != 0 || childIds == null) return false;
 	GC gc = new GC (this);
-	int newWidth = calculateWidth (items, gc);
+	int newWidth = calculateWidth (childIds, gc);
 	gc.dispose ();
 	newWidth += getInsetWidth (column_id, false);
 	if (!set) {
@@ -2443,7 +2765,16 @@ public void setSelection (TreeItem [] items) {
 		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
 	}
 	ignoreSelect = false;
-	if (length > 0 && items [0] != null) showItem (items [0], true);
+	if (length > 0) {
+		int index = -1;
+		for (int i=0; i<items.length; i++) {
+			if (items [i] != null) {
+				index = i;
+				break;
+			}
+		}
+		if (index != -1) showItem (items [index], true);
+	}
 }
 
 /**

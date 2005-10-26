@@ -41,8 +41,10 @@ public class TreeItem extends Item {
 	Color[] cellForeground, cellBackground;
 	Font font;
 	Font[] cellFont;
-	int id, index = -1, width = -1;
-
+	int id, width = -1;
+	int itemCount = 0;
+	int [] childIds;
+	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
@@ -74,9 +76,7 @@ public class TreeItem extends Item {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style) {
-	super (parent, style);
-	this.parent = parent;
-	parent.createItem (this, null, -1);
+	this (checkNull (parent), null, style, -1, true);
 }
 
 /**
@@ -111,10 +111,7 @@ public TreeItem (Tree parent, int style) {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style, int index) {
-	super (parent, style);
-	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	this.parent = parent;
-	parent.createItem (this, null, index);
+	this (checkNull (parent), null, style, checkIndex (index), true);
 }
 
 /**
@@ -148,10 +145,7 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	super (checkNull (parentItem).parent, style);
-	parent = parentItem.parent;
-	this.parentItem = parentItem;
-	parent.createItem (this, parentItem, -1);
+	this (checkNull (parentItem).parent, parentItem, style, -1, true);
 }
 
 /**
@@ -186,15 +180,20 @@ public TreeItem (TreeItem parentItem, int style) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style, int index) {
-	super (checkNull (parentItem).parent, style);
-	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	parent = parentItem.parent;
+	this (checkNull (parentItem).parent, parentItem, style, checkIndex (index), true);
+}
+
+TreeItem (Tree parent, TreeItem parentItem, int style, int index, boolean create) {
+	super (parent, style);
+	this.parent = parent;
 	this.parentItem = parentItem;
-	parent.createItem (this, parentItem, index);
+	if (create) {
+		parent.createItem (this, parentItem, index);
+		if (parentItem != null) parentItem.itemCount++;
+	}
 }
 
 boolean _getExpanded () {
-	checkWidget ();
 	int [] state = new int [1];
 	OS.GetDataBrowserItemState (parent.handle, id, state);
 	return (state [0] & OS.kDataBrowserContainerIsOpen) != 0;
@@ -203,6 +202,16 @@ boolean _getExpanded () {
 static TreeItem checkNull (TreeItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return item;
+}
+
+static Tree checkNull (Tree parent) {
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return parent;
+}
+
+static int checkIndex (int index) {
+	if (index < 0) SWT.error (SWT.ERROR_INVALID_RANGE);
+	return index;
 }
 
 int calculateWidth (int index, GC gc) {
@@ -218,6 +227,72 @@ int calculateWidth (int index, GC gc) {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+void clear () {
+	cached = false;
+	text = "";
+	image = null;
+	strings = null;
+	images = null;
+	checked = grayed = false;
+	foreground = background = null;
+	cellForeground = cellBackground = null;
+	font = null;
+	cellFont = null;
+}
+
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attributes of the item are set to the default
+ * value.  If the tree was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+public void clear (int index, boolean all) {
+	checkWidget ();
+	int count = parent.getItemCount (this);
+	if (index < 0 || index >= count) SWT.error (SWT.ERROR_INVALID_RANGE);
+	parent.clear (this, index, all);
+}
+
+
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attribues of the items are set to their default values. If the
+ * tree was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ * 
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+public void clearAll (boolean all) {
+	checkWidget ();
+	parent.clearAll (this, all);
 }
 
 void destroyWidget () {
@@ -503,7 +578,7 @@ public boolean getGrayed () {
 }
 
 public Image getImage () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return super.getImage ();
 }
@@ -523,7 +598,7 @@ public Image getImage () {
  * @since 3.1
  */
 public Image getImage (int index) {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
 	if (images != null) {
@@ -548,7 +623,7 @@ public Image getImage (int index) {
  * @since 3.1
  */
 public Rectangle getImageBounds (int index) {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
@@ -594,17 +669,8 @@ public Rectangle getImageBounds (int index) {
  */
 public TreeItem getItem (int index) {
 	checkWidget ();
-	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	int i = 0;
-	TreeItem item = null;
-	while (item == null && i < parent.items.length) {
-		TreeItem next = parent.items [i++];
-		if (next != null && next.parentItem == this &&  next.index == index) {
-			item = next;
-		}
-	}
-	if (item == null) error (SWT.ERROR_INVALID_RANGE);
-	return item;
+	if (index < 0 || index >= itemCount) error (SWT.ERROR_INVALID_RANGE);
+	return parent._getItem (this, index);
 }
 
 /**
@@ -646,6 +712,13 @@ public TreeItem [] getItems () {
 	return parent.getItems (this);
 }
 
+String getNameText () {
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (!cached) return "*virtual*"; //$NON-NLS-1$
+	}
+	return super.getNameText ();
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Tree</code>.
  *
@@ -679,7 +752,7 @@ public TreeItem getParentItem () {
 }
 
 public String getText () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return super.getText ();
 }
@@ -699,7 +772,7 @@ public String getText () {
  * @since 3.1
  */
 public String getText (int index) {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getText ();
 	if (strings != null) {
@@ -736,7 +809,7 @@ public int indexOf (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parentItem != this) return -1;
-	return item.index;
+	return parent._indexOf (this, item);
 }
 
 void redraw (int propertyID) {
@@ -788,7 +861,7 @@ void redraw (int propertyID) {
 
 void releaseChildren (boolean destroy) {
 	if (destroy) {
-		parent.releaseItems (getItems ());
+		parent.releaseItems (childIds);
 	}
 	super.releaseChildren (destroy);
 }
@@ -796,7 +869,6 @@ void releaseChildren (boolean destroy) {
 void releaseHandle () {
 	super.releaseHandle ();
 	parentItem = null;
-	index = -1;
 	id = 0;
 	parent = null;
 }
@@ -823,10 +895,9 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	TreeItem [] items = parent.items;
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed () && item.parentItem == this) {
+	for (int i=itemCount - 1; i >= 0; i--) {
+		TreeItem item = parent._getItem (childIds [i], false);
+		if (item != null && !item.isDisposed ()) {
 			item.dispose ();
 		}
 	}
@@ -858,6 +929,7 @@ public void setBackground (Color color) {
 	if (background == color) return;
 	if (background != null && background.equals (color)) return;
 	background = color;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -893,6 +965,7 @@ public void setBackground (int index, Color color) {
 	if (cellBackground [index] == color) return;
 	if (cellBackground [index] != null && cellBackground [index].equals (color)) return;
 	cellBackground [index] = color;
+	cached = true; 
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -912,6 +985,7 @@ public void setChecked (boolean checked) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.checked == checked) return;
 	this.checked = checked;
+	cached = true;
 	redraw (Tree.CHECK_COLUMN_ID);
 }
 
@@ -935,6 +1009,7 @@ public void setExpanded (boolean expanded) {
 		OS.CloseDataBrowserContainer (parent.handle, id);
 	}
 	parent.ignoreExpand = false;
+	cached = true;
 }
 
 /**
@@ -962,6 +1037,7 @@ public void setFont (Font font) {
 	if (this.font == font) return;
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -997,6 +1073,7 @@ public void setFont (int index, Font font) {
 	if (cellFont [index] == font) return;
 	if (cellFont [index] != null && cellFont [index].equals (font)) return;
 	cellFont [index] = font;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -1028,6 +1105,7 @@ public void setForeground (Color color) {
 	if (foreground == color) return;
 	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -1063,6 +1141,7 @@ public void setForeground (int index, Color color){
 	if (cellForeground [index] == color) return;
 	if (cellForeground [index] != null && cellForeground [index].equals (color)) return;
 	cellForeground [index] = color;
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -1082,6 +1161,7 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
+	cached = true;
 	redraw (Tree.CHECK_COLUMN_ID);
 }
 
@@ -1102,7 +1182,7 @@ public void setGrayed (boolean grayed) {
  * @since 3.1
  */
 public void setImage (Image [] images) {
-	checkWidget();
+	checkWidget ();
 	if (images == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<images.length; i++) {
 		setImage (i, images [i]);
@@ -1126,12 +1206,10 @@ public void setImage (Image [] images) {
  * @since 3.1
  */
 public void setImage (int index, Image image) {
-	checkWidget();
+	checkWidget ();
 	if (image != null && image.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int itemIndex = this.index;
-	if (itemIndex == -1) return;
 	if (parent.imageBounds == null && image != null) {
 		parent.setItemHeight (image);
 	}
@@ -1151,12 +1229,31 @@ public void setImage (int index, Image image) {
 		images [index] = image;	
 	}
 	if (index == 0) parent.setScrollWidth (this);
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
 public void setImage (Image image) {
 	checkWidget ();
 	setImage (0, image);
+}
+
+/**
+ * Sets the number of items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
+public void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	parent.setItemCount (this, count);
 }
 
 /**
@@ -1175,7 +1272,7 @@ public void setImage (Image image) {
  * @since 3.1
  */
 public void setText (String [] strings) {
-	checkWidget();
+	checkWidget ();
 	if (strings == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<strings.length; i++) {
 		String string = strings [i];
@@ -1200,7 +1297,7 @@ public void setText (String [] strings) {
  * @since 3.1
  */
 public void setText (int index, String string) {
-	checkWidget();
+	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == 0) {
 		if (string.equals (text)) return;
@@ -1214,11 +1311,12 @@ public void setText (int index, String string) {
 		strings [index] = string;
 	}
 	if (index == 0) parent.setScrollWidth (this);
+	cached = true;
 	redraw (OS.kDataBrowserNoItem);
 }
 
 public void setText (String string) {
-	checkWidget();
+	checkWidget ();
 	setText (0, string);
 }
 

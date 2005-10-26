@@ -316,20 +316,22 @@ public void pack () {
 		width += parent.headerHeight;
 		if (text.length () != 0) width += parent.getGap ();
 	}
-	if ((parent.style & SWT.VIRTUAL) == 0) {
-		int index = parent.indexOf (this);
-		width = Math.max (width, calculateWidth(parent.getItems (null), index, gc, width));
-	}
+	int index = parent.indexOf (this);
+	width = Math.max (width, calculateWidth (parent.childIds, index, gc, width));
+
 	gc.dispose ();
 	setWidth (width + parent.getInsetWidth (id, true));
 }
 
-int calculateWidth (TreeItem[] items, int index, GC gc, int width) {
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		width = Math.max (width, item.calculateWidth (index, gc));
-		if (item.getExpanded ()) {
-			width = Math.max (width, calculateWidth(parent.getItems(item), index, gc, width));
+int calculateWidth (int[] ids, int index, GC gc, int width) {
+	if (ids == null) return width;
+	for (int i=0; i<ids.length; i++) {
+		TreeItem item = parent._getItem (ids [i], false);;
+		if (item != null) {
+			width = Math.max (width, item.calculateWidth (index, gc));
+			if (item.getExpanded ()) {
+				width = Math.max (width, calculateWidth (item.childIds, index, gc, width));
+			}
 		}
 	}
 	return width;
