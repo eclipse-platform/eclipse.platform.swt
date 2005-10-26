@@ -383,7 +383,6 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	* 
 	* NOTE:  The DefWindowProc() must be called in order to
 	* broadcast WM_UPDATEUISTATE message to the children.
-	* 
 	*/
 	if ((state & TRANSPARENT) != 0) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
