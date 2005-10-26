@@ -284,8 +284,12 @@ public void setAlignment (int alignment) {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
 		bits &= ~(OS.SS_LEFTNOWORDWRAP | OS.SS_CENTER | OS.SS_RIGHT);
-		if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) {
-			bits |= OS.SS_LEFTNOWORDWRAP;
+		if ((style & SWT.LEFT) != 0) {
+			if ((style & SWT.WRAP) != 0) {
+				bits |= OS.SS_LEFT;
+			} else {
+				bits |= OS.SS_LEFTNOWORDWRAP;
+			}
 		}
 		if ((style & SWT.CENTER) != 0) bits |= OS.SS_CENTER;
 		if ((style & SWT.RIGHT) != 0) bits |= OS.SS_RIGHT;
@@ -363,8 +367,12 @@ public void setText (String string) {
 	text = string;
 	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int newBits = oldBits & ~OS.SS_OWNERDRAW;
-	if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) {
-		newBits |= OS.SS_LEFTNOWORDWRAP;
+	if ((style & SWT.LEFT) != 0) {
+		if ((style & SWT.WRAP) != 0) {
+			newBits |= OS.SS_LEFT;
+		} else {
+			newBits |= OS.SS_LEFTNOWORDWRAP;
+		}
 	}
 	if ((style & SWT.CENTER) != 0) newBits |= OS.SS_CENTER;
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.SS_RIGHT;
@@ -385,6 +393,9 @@ int widgetExtStyle () {
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.SS_NOTIFY;
 	if ((style & SWT.SEPARATOR) != 0) return bits | OS.SS_OWNERDRAW;
+	if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) {
+		if ((style & SWT.WRAP) != 0) bits |= OS.SS_EDITCONTROL;
+	} 
 	if ((style & SWT.CENTER) != 0) return bits | OS.SS_CENTER;
 	if ((style & SWT.RIGHT) != 0) return bits | OS.SS_RIGHT;
 	if ((style & SWT.WRAP) != 0) return bits | OS.SS_LEFT;
@@ -423,7 +434,8 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* Note that SS_LEFTNOWORDWRAP does not have the
 	* problem.  The fix is to force the redraw.
 	*/
-	if ((style & (SWT.WRAP | SWT.CENTER | SWT.RIGHT)) != 0) {
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.SS_LEFTNOWORDWRAP) == 0) {
 		OS.InvalidateRect (handle, null, true);
 		return result;
 	}

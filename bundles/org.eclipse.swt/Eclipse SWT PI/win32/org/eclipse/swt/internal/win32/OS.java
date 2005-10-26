@@ -288,6 +288,7 @@ public class OS extends Platform {
 	public static final int CDRF_NOTIFYPOSTERASE = 0x00000040;
 	public static final int CDRF_NOTIFYPOSTPAINT = 0x00000010;
 	public static final int CDRF_NOTIFYSUBITEMDRAW = 0x00000020;
+	public static final int CDRF_SKIPDEFAULT = 0x04;
 	public static final int CFE_AUTOCOLOR = 0x40000000;
 	public static final int CFE_ITALIC = 0x2;
 	public static final int CFE_STRIKEOUT = 0x8;
@@ -1124,6 +1125,7 @@ public class OS extends Platform {
 	public static final int SS_BITMAP = 0xe;
 	public static final int SS_CENTER = 0x1;
 	public static final int SS_CENTERIMAGE = 0x200;
+	public static final int SS_EDITCONTROL = 0x2000;
 	public static final int SS_ICON = 0x3;
 	public static final int SS_LEFT = 0x0;
 	public static final int SS_LEFTNOWORDWRAP = 0xc;
