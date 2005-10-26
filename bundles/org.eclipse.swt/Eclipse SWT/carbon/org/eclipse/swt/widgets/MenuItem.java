@@ -529,6 +529,29 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+/*public*/ void select () {
+	checkWidget ();
+	Menu menu = parent, menuParent;
+	while (menu.cascade != null && (menuParent = menu.cascade.parent) != null) {
+		if ((menuParent.style & SWT.BAR) != 0) break;
+		menu = menuParent;
+	}
+	if (menu == null) return;
+	OS.HiliteMenu (OS.GetMenuID (menu.handle));
+	int[] event = new int[1];
+	OS.CreateEvent (0, OS.kEventClassCommand, OS.kEventProcessCommand, 0.0, 0, event);
+	if (event [0] != 0) {
+		int parentHandle = parent.handle;
+		HICommand command = new HICommand ();
+		command.attributes = OS.kHICommandFromMenu;
+		command.menu_menuRef = parentHandle;
+		command.menu_menuItemIndex = (short) (parent.indexOf (this) + 1);
+		OS.SetEventParameter (event [0], OS.kEventParamDirectObject, OS.typeHICommand, HICommand.sizeof, command);
+		OS.SendEventToEventTarget (event [0], OS.GetApplicationEventTarget ());
+		OS.ReleaseEvent (event [0]);
+	}
+}
+
 void selectRadio () {
 	int index = 0;
 	MenuItem [] items = parent.getItems ();

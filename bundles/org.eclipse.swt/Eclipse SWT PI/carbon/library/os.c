@@ -10722,6 +10722,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_HICommand_2
+JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_HICommand_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	HICommand _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_HICommand_2_FUNC);
+	if (arg4) if ((lparg4 = getHICommandFields(env, arg4, &_arg4)) == NULL) goto fail;
+	rc = (jint)SetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (UInt32)arg3, (const void *)lparg4);
+fail:
+	if (arg4 && lparg4) setHICommandFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_HICommand_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetEventParameter__IIII_3C
 JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3C)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4)

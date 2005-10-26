@@ -1609,6 +1609,7 @@ public static final native int SetDragInputProc(int theDrag, int inputProc, int 
 public static final native int SetDragItemFlavorData (int theDrag, int theItemRef, int theType, byte[] dataPtr, int dataSize, int dataOffset);
 public static final native int SetDragSendProc(int theDrag, int sendProc, int dragSendRefCon);
 public static final native int SetEventLoopTimerNextFireTime(int inTimer, double inNextFire);
+public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, HICommand inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, char[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, short[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, int[] inDataPtr);

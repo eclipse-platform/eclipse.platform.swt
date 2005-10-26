@@ -778,6 +778,7 @@ typedef enum {
 	SetDragSendProc_FUNC,
 	SetEventLoopTimerNextFireTime_FUNC,
 	SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_CGPoint_2_FUNC,
+	SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_HICommand_2_FUNC,
 	SetEventParameter__IIII_3C_FUNC,
 	SetEventParameter__IIII_3I_FUNC,
 	SetEventParameter__IIII_3S_FUNC,
