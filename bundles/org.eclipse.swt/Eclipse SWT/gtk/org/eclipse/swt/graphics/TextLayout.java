@@ -42,6 +42,7 @@ public final class TextLayout extends Resource {
 	String text;
 	int ascent, descent;
 	int[] segments;
+	int[] tabs;
 	StyleItem[] styles;
 	int /*long*/ layout, context, attrList;
 	int[] invalidOffsets;
@@ -1023,19 +1024,6 @@ public TextStyle getStyle (int offset) {
  */
 public int[] getTabs() {
 	checkLayout();
-	int /*long*/ tabArray = OS.pango_layout_get_tabs(layout);
-	if (tabArray == 0) return null;
-	int nTabs = OS.pango_tab_array_get_size(tabArray);
-	int[] tabs = new int[nTabs];
-	if (nTabs > 0) {
-		int /*long*/[] locations = new int /*long*/[1];
-		OS.pango_tab_array_get_tabs(tabArray, null, locations);
-		if (locations[0] != 0) {
-			OS.memmove(tabs, locations[0], nTabs * 4);
-			OS.g_free(locations[0]);
-		}
-	}
-	OS.pango_tab_array_free(tabArray);
 	return tabs;
 }
 
@@ -1387,6 +1375,17 @@ public void setStyle (TextStyle style, int start, int end) {
  */
 public void setTabs(int[] tabs) {
 	checkLayout();
+	if (this.tabs == null && tabs == null) return;
+	if (this.tabs!= null && tabs != null) {
+		if (this.tabs.length == tabs.length) {
+			int i;
+			for (i = 0; i <tabs.length; i++) {
+				if (this.tabs[i] != tabs[i]) break;
+			}
+			if (i == tabs.length) return;
+		}
+	}
+	this.tabs = tabs;
 	if (tabs == null) {
 		OS.pango_layout_set_tabs(layout, device.emptyTab);
 	} else {
