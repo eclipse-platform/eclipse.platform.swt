@@ -25,6 +25,8 @@ import org.lwjgl.LWJGLException;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
+ * 
+ * @since 3.2
  */
 public class Snippet195 {
 	static void drawTorus(float r, float R, int nsides, int rings) {

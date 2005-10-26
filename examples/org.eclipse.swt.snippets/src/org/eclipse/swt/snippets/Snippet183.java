@@ -15,6 +15,8 @@ package org.eclipse.swt.snippets;
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
+ * 
+ * @since 3.1
  */
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
