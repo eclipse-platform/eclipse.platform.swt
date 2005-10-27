@@ -325,7 +325,7 @@ protected void checkSubclass () {
  * 
  * @since 3.2
  */
-/*public*/ void clear (int index, boolean all) {
+public void clear (int index, boolean all) {
 	checkWidget ();
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
@@ -370,7 +370,7 @@ void clear (int hItem, TVITEM tvItem) {
  * 
  * @since 3.2
  */
-/*public*/ void clearAll (boolean all) {
+public void clearAll (boolean all) {
 	checkWidget ();
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	if (hItem == 0) return;
@@ -2158,7 +2158,7 @@ public void setInsertMark (TreeItem item, boolean before) {
  *
  * @since 3.2
  */
-/*public*/ void setItemCount (int count) {
+public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);

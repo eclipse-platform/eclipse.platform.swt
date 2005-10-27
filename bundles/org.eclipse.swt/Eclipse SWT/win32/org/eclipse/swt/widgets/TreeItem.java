@@ -270,7 +270,7 @@ void clear () {
  * 
  * @since 3.2
  */
-/*public*/ void clear (int index, boolean all) {
+public void clear (int index, boolean all) {
 	checkWidget ();
 	int hwnd = parent.handle;
 	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
@@ -304,7 +304,7 @@ void clear () {
  * 
  * @since 3.2
  */
-/*public*/ void clearAll (boolean all) {
+public void clearAll (boolean all) {
 	checkWidget ();
 	int hwnd = parent.handle;
 	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
@@ -1450,7 +1450,7 @@ public void setText (String [] strings) {
  *
  * @since 3.2
  */
-/*public*/ void setItemCount (int count) {
+public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	int hwnd = parent.handle;
