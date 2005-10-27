@@ -386,7 +386,7 @@ void clear () {
 		}
 	}
 }
-/*public*/ void clear (int index, boolean recursive) {
+public void clear (int index, boolean recursive) {
 	checkWidget ();
 	if (!(0 <= index && index < items.length)) error (SWT.ERROR_INVALID_RANGE);
 	TreeItem item = items [index];
@@ -439,7 +439,7 @@ void clear () {
 		parent.redrawItem (item.availableIndex, false);
 	}
 }
-/*public*/ void clearAll (boolean recursive) {
+public void clearAll (boolean recursive) {
 	clearAll (recursive, true);
 }
 void clearAll (boolean recursive, boolean doVisualUpdate) {
@@ -2372,7 +2372,7 @@ public void setImage (int columnIndex, Image value) {
 
 	redrawItem ();
 }
-/*public*/ void setItemCount (int count) {
+public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (count == items.length) return;

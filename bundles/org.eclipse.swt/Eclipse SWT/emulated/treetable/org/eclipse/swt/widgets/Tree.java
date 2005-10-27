@@ -263,7 +263,7 @@ boolean checkData (TreeItem item, boolean redraw) {
 static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
-/*public*/ void clear (int index, boolean recursive) {
+public void clear (int index, boolean recursive) {
 	checkWidget ();
 	if (!(0 <= index && index < items.length)) error (SWT.ERROR_INVALID_RANGE);
 	TreeItem item = items [index];
@@ -315,7 +315,7 @@ static int checkStyle (int style) {
 		redrawItem (item.availableIndex, false);
 	}
 }
-/*public*/ void clearAll (boolean recursive) {
+public void clearAll (boolean recursive) {
 	checkWidget ();
 	if (items.length == 0) return;
 	
@@ -3307,7 +3307,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 		redrawItem (item.availableIndex, true);
 	}
 }
-/*public*/ void setItemCount (int count) {
+public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (count == items.length) return;
