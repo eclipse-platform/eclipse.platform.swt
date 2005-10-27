@@ -239,12 +239,12 @@ void clear () {
 	cellFont = null;
 }
 
-/*public*/ void clear (int index, boolean all) {
+public void clear (int index, boolean all) {
 	checkWidget ();
 	parent.clear (handle, index, all);
 }
 
-/*public*/ void clearAll (boolean all) {
+public void clearAll (boolean all) {
 	checkWidget ();
 	parent.clearAll (all, handle);
 }
@@ -1387,7 +1387,7 @@ public void setImage (Image [] images) {
 	}
 }
 
-/*public*/ void setItemCount (int count) {
+public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	parent.setItemCount (handle, count);

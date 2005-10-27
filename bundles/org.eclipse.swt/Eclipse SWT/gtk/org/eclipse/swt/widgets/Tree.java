@@ -279,7 +279,7 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	return width;
 }
 
-/*public*/ void clear(int index, boolean all) {
+public void clear(int index, boolean all) {
 	checkWidget ();
 	clear (0, index, all);
 }
@@ -297,7 +297,7 @@ void clear (int /*long*/ parentIter, int index, boolean all) {
 	OS.g_free (iter);
 }
 
-/*public*/ void clearAll (boolean all) {
+public void clearAll (boolean all) {
 	checkWidget ();
 	clearAll (all, 0);
 }
@@ -2137,7 +2137,7 @@ void setItemCount (int /*long*/ parentIter, int count) {
 	modelChanged = true;
 }
 
-/*public*/ void setItemCount (int count) {
+public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	setItemCount (0, count);
