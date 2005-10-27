@@ -159,9 +159,6 @@ int [] _getIds (int count) {
 	}
 	for (int i=0; i<reserved.length; i++) {
 		if (!reserved [i]) {
-			if (index >= newIds.length) {
-				System.out.println("bad");
-			}
 			newIds [index++] = i + 1;
 			if (index == count) return newIds;
 		}
@@ -1843,10 +1840,8 @@ int _indexOf (TreeItem parentItem, TreeItem item) {
 }
 
 int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
-	if (!(0 < itemOne && itemOne <= items.length)) return OS.noErr;
-	if (!(0 < itemTwo && itemTwo <= items.length)) return OS.noErr;
-	TreeItem item1 = items [itemOne - 1];
-	TreeItem item2 = items [itemTwo - 1];
+	TreeItem item1 = _getItem (itemOne, false);
+	TreeItem item2 = _getItem (itemTwo, false);
 	if (item1 == null || item2 == null) return OS.noErr;
 	int index1 = _indexOf (item1.parentItem, item1);
 	int index2 = _indexOf (item2.parentItem , item2);
@@ -1857,7 +1852,6 @@ int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
 }
 
 int itemDataProc (int browser, int id, int property, int itemData, int setValue) {
-	if (!(0 < id && id <= items.length)) return OS.noErr;
 	switch (property) {
 		case CHECK_COLUMN_ID: {
 			TreeItem item = _getItem (id, true);
@@ -1947,7 +1941,6 @@ int itemNotificationProc (int browser, int id, int message) {
 		}
 		return OS.noErr;
 	}
-	if (!(0 < id && id <= items.length)) return OS.noErr;
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
 		case OS.kDataBrowserItemDeselected: {
@@ -2045,20 +2038,19 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}
 		case OS.kDataBrowserContainerClosed: {
-			TreeItem item = _getItem (id, true);
-			int [] ids = item.childIds;
+			TreeItem parentItem = _getItem (id, true);
+			if (parentItem == null) break; // can happen when removing all items
+			int [] ids = parentItem.childIds;
 			if (ids != null) {
-				for (int i=0; i<item.itemCount; i++) {
-					int childId = ids [i];
-					if (childId != 0) {
-						if (childId > items.length || items [childId - 1] == null) ids [i] = 0;
-					}
+				for (int i=0; i<parentItem.itemCount; i++) {
+					TreeItem item = _getItem (ids [i], false); 
+					if (item == null) ids [i] = 0;
 				}
 			}
 			wasExpanded = true;
 			if (!ignoreExpand) {
 				Event event = new Event ();
-				event.item = item;
+				event.item = parentItem;
 				sendEvent (SWT.Collapse, event);
 			}
 			setScrollWidth (true);
