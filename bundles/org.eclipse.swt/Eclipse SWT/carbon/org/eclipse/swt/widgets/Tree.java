@@ -704,11 +704,11 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	}
 	System.arraycopy (ids, index, ids, index + 1, ids.length - index - 1);
 	ids [index] = id;
-	if (parentItem == null || parentItem.getExpanded ()) {
+	if (parentItem == null || (parentItem.getExpanded () && parentItem.itemCount > 0)) {
 		int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 		if (OS.AddDataBrowserItems (handle, parentID, 1, new int [] {item.id}, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 			items [id - 1] = null;
-			System.arraycopy (ids, index+1, ids, index, ids.length - index);
+			System.arraycopy (ids, index+1, ids, index, ids.length - index - 1);
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 		visibleCount++;
