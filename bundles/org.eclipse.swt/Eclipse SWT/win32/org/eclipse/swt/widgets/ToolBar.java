@@ -395,9 +395,7 @@ void enableWidget (boolean enabled) {
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null) {
-			if ((item.style & (SWT.CHECK | SWT.RADIO)) != 0) {
-				item.updateImages (enabled && item.getEnabled ());
-			}
+			item.updateImages (enabled && item.getEnabled ());
 		}
 	}
 }
