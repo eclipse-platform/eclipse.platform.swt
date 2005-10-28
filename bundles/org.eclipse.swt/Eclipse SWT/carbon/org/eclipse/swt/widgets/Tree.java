@@ -200,16 +200,6 @@ TreeItem _getItem (TreeItem parentItem, int index) {
 	int count = getItemCount (parentItem);
 	if (index < 0 || index >= count) return null;
 	int [] ids = parentItem == null ? childIds : parentItem.childIds;
-	if (ids == null || index >= ids.length) {
-		int [] newIds = new int [index + 4];
-		if (ids != null) System.arraycopy(ids, 0, newIds, 0, ids.length);
-		ids = newIds;
-		if (parentItem == null) {
-			childIds = ids;
-		} else {
-			parentItem.childIds = ids;
-		}
-	}
 	int id = ids [index];
 	if (id == 0) {
 		id = _getId ();
@@ -692,8 +682,8 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	item.id = id;
 	items [id - 1] = item;
 	int [] ids = parentItem == null ? childIds : parentItem.childIds;
-	if (ids == null || index >= ids.length) {
-		int [] newIds = new int [index + 4];
+	if (ids == null || count + 1 > ids.length) {
+		int [] newIds = new int [count + 4];
 		if (ids != null) System.arraycopy (ids, 0, newIds, 0, ids.length);
 		ids = newIds;
 		if (parentItem == null) {
@@ -2209,7 +2199,7 @@ void releaseItem (TreeItem item, boolean release) {
 	if (index != -1) {
 		System.arraycopy(ids, 0, ids, 0, index);
 		System.arraycopy(ids, index+1, ids, index, ids.length - index - 1);
-		ids [ids.length -1] = 0;
+		ids [ids.length - 1] = 0;
 	}
 	if (parentItem != null) {
 		parentItem.itemCount--;
