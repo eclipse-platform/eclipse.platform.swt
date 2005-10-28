@@ -3774,9 +3774,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 					fixSelection = true;
 					tvItem.stateMask = OS.TVIS_SELECTED;
 					int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, lpht.hItem);
-					int hLast = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, lpht.hItem);
 					int hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, lpht.hItem);
-					while (hNext != 0 && hNext != hLast) {
+					while (hNext != 0) {
 						tvItem.hItem = hNext;
 						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 						if ((tvItem.state & OS.TVIS_SELECTED) != 0) deselected = true;
