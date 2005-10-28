@@ -341,11 +341,11 @@ public class Display extends Device {
 	/* This code is intentionally commented.
 	 * ".class" can not be used on CLDC.
 	 */
-	/*static {
-		String name = Display.class.getName ();
-		int index = name.lastIndexOf ('.');
-		PACKAGE_NAME = name.substring (0, index + 1);
-	}*/
+//	static {
+//		String name = Display.class.getName ();
+//		int index = name.lastIndexOf ('.');
+//		PACKAGE_NAME = name.substring (0, index + 1);
+//	}
 
 	/*
 	* In order to support CLDC, .class cannot be used because
@@ -759,10 +759,10 @@ protected void create (DeviceData data) {
 }
 
 synchronized void createDisplay (DeviceData data) {
-	/* This code is intentionally commented.
+	/* Required for g_main_context_wakeup */
 	if (!OS.g_thread_supported ()) {
 		OS.g_thread_init (0);
-	}*/
+	}
 	OS.gtk_set_locale();
 	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
