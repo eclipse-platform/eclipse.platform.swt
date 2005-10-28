@@ -3,8 +3,8 @@
 
 	<target name="init">
 		<property name="plugin" value="org.eclipse.swt"/>
-		<property name="version.suffix" value="_3.1.0"/>
-		<property name="full.name" value="${plugin}${version.suffix}"/>
+		<property name="version.suffix" value="3.1.0"/>
+		<property name="full.name" value="${plugin}_${version.suffix}"/>
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
 		<property name="plugin.destination" value="${basedir}"/>
 		<property name="build.result.folder" value="${basedir}"/>
@@ -25,6 +25,7 @@
 		<copy todir="${destination.temp.folder}/${full.name}">
 			<fileset dir="${basedir}" includes="plugin.properties,about.html,META-INF/" />
 		</copy>
+		<eclipse.versionReplacer path="${destination.temp.folder}/${full.name}" version="${version.suffix}"/>
 	</target>
 
 	<target name="build.jars" />
