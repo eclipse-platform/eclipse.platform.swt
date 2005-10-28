@@ -3153,7 +3153,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1colormap_1query_1color)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, _1gdk_1colormap_1query_1color_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
 	gdk_colormap_query_color((GdkColormap *)arg0, (gulong)arg1, (GdkColor *)lparg2);
 fail:
 	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
