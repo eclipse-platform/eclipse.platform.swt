@@ -704,7 +704,8 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	}
 	System.arraycopy (ids, index, ids, index + 1, ids.length - index - 1);
 	ids [index] = id;
-	if (parentItem == null || (parentItem.getExpanded () && parentItem.itemCount > 0)) {
+	if (parentItem != null) parentItem.itemCount++;
+	if (parentItem == null || (parentItem.getExpanded ())) {
 		int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 		if (OS.AddDataBrowserItems (handle, parentID, 1, new int [] {item.id}, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 			items [id - 1] = null;
@@ -718,7 +719,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 		* added and the parent is not expanded, the parent does not
 		* redraw to show the expander.  The fix is to force a redraw.
 		*/
-		if (count == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
+		if (parentItem != null && parentItem.itemCount == 1) parentItem.redraw (OS.kDataBrowserNoItem);
 	}
 }
 

@@ -187,10 +187,7 @@ TreeItem (Tree parent, TreeItem parentItem, int style, int index, boolean create
 	super (parent, style);
 	this.parent = parent;
 	this.parentItem = parentItem;
-	if (create) {
-		parent.createItem (this, parentItem, index);
-		if (parentItem != null) parentItem.itemCount++;
-	}
+	if (create) parent.createItem (this, parentItem, index);
 }
 
 boolean _getExpanded () {
