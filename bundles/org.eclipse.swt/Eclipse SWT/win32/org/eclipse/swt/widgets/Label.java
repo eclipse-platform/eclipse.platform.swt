@@ -41,6 +41,7 @@ public class Label extends Control {
 	String text = "";
 	Image image;
 	static final int MARGIN = 4;
+	static final boolean IMAGE_AND_TEXT;
 	static final int LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
@@ -119,35 +120,45 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width += border * 2; height += border * 2;
 		return new Point (width, height);
 	}
-	if (image != null) {
-		Rectangle rect = image.getBounds();
-		width = rect.width;
-		if (text.length () != 0) width += MARGIN;
-		height = rect.height;
-	}
-	int hDC = OS.GetDC (handle);
-	int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-	int oldFont = OS.SelectObject (hDC, newFont);
-	int length = OS.GetWindowTextLength (handle);
-	if (length == 0) {
-		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-		OS.GetTextMetrics (hDC, tm);
-		height = Math.max (height, tm.tmHeight);
-	} else {
-		RECT rect = new RECT ();
-		int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_EXPANDTABS;
-		if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
-			flags |= OS.DT_WORDBREAK;
-			rect.right = wHint;
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	boolean hasImage = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW, hasText = true;
+	if (hasImage) {
+		if (image != null) {
+			Rectangle rect = image.getBounds();
+			width += rect.width;
+			height += rect.height;
+			if (IMAGE_AND_TEXT) {
+				if (text.length () != 0) width += MARGIN;
+			} else {
+				hasText = false;
+			}
 		}
-		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-		OS.GetWindowText (handle, buffer, length + 1);
-		OS.DrawText (hDC, buffer, length, rect, flags);
-		width += rect.right - rect.left;
-		height = Math.max (height, rect.bottom - rect.top);
 	}
-	if (newFont != 0) OS.SelectObject (hDC, oldFont);
-	OS.ReleaseDC (handle, hDC);
+	if (hasText) {
+		int hDC = OS.GetDC (handle);
+		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		int oldFont = OS.SelectObject (hDC, newFont);
+		int length = OS.GetWindowTextLength (handle);
+		if (length == 0) {
+			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+			OS.GetTextMetrics (hDC, tm);
+			height = Math.max (height, tm.tmHeight);
+		} else {
+			RECT rect = new RECT ();
+			int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_EXPANDTABS;
+			if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+				flags |= OS.DT_WORDBREAK;
+				rect.right = wHint;
+			}
+			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+			OS.GetWindowText (handle, buffer, length + 1);
+			OS.DrawText (hDC, buffer, length, rect, flags);
+			width += rect.right - rect.left;
+			height = Math.max (height, rect.bottom - rect.top);
+		}
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	width += border * 2;
@@ -159,9 +170,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* this trim.
 	*/
 	if (OS.IsWinCE) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		boolean isOwnerDraw = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW;
-		if (!isOwnerDraw) width += 2;
+		if (!hasImage) width += 2;
 	}
 	return new Point (width, height);
 }
@@ -365,8 +374,8 @@ public void setText (String string) {
 	*/
 	if (string.equals (text)) return;
 	text = string;
-	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
-	if (image == null) {
+	if (image == null || !IMAGE_AND_TEXT) {
+		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 		newBits &= ~OS.SS_OWNERDRAW;
 		if ((style & SWT.LEFT) != 0) {
 			if ((style & SWT.WRAP) != 0) {
@@ -377,9 +386,7 @@ public void setText (String string) {
 		}
 		if ((style & SWT.CENTER) != 0) newBits |= OS.SS_CENTER;
 		if ((style & SWT.RIGHT) != 0) newBits |= OS.SS_RIGHT;
-		if (oldBits != newBits) {
-			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		}
+		if (oldBits != newBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 	}
 	string = Display.withCrLf (string);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
