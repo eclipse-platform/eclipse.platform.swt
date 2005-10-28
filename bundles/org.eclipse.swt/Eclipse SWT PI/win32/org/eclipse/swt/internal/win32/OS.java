@@ -220,6 +220,7 @@ public class OS extends Platform {
 	public static final int BS_LEFT = 0x100;
 	public static final int BS_NOTIFY = 0x4000;
 	public static final int BS_OWNERDRAW = 0xb;
+	public static final int BS_PATTERN = 0x3;
 	public static final int BS_PUSHBUTTON = 0x0;
 	public static final int BS_PUSHLIKE = 0x1000;
 	public static final int BS_RADIOBUTTON = 0x4;
@@ -1394,6 +1395,8 @@ public class OS extends Platform {
 	public static final int UDS_AUTOBUDDY = 0x0010;
 	public static final int UDS_WRAP = 0x0001;
 	public static final int UIS_INITIALIZE = 3;
+	public static final int UISF_HIDEACCEL = 0x2;
+	public static final int UISF_HIDEFOCUS = 0x1;
 	public static final String UPDOWN_CLASS = "msctls_updown32"; //$NON-NLS-1$
 	public static final int USP_E_SCRIPT_NOT_IN_FONT = 0x80040200;
 	public static final int VERTRES = 0xa;
@@ -1553,6 +1556,7 @@ public class OS extends Platform {
 	public static final int WM_QUERYENDSESSION = 0x11;
 	public static final int WM_QUERYNEWPALETTE = 0x30f;
 	public static final int WM_QUERYOPEN = 0x13;
+	public static final int WM_QUERYUISTATE = 0x129;
 	public static final int WM_RBUTTONDBLCLK = 0x206;
 	public static final int WM_RBUTTONDOWN = 0x204;
 	public static final int WM_RBUTTONUP = 0x205;

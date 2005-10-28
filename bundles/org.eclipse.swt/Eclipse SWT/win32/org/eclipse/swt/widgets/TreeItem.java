@@ -876,7 +876,8 @@ void redraw () {
 	* full selection, redraw only the text.  This is
 	* an optimization to reduce flashing.
 	*/
-	boolean full = (parent.style & SWT.FULL_SELECTION) != 0;
+	int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+	boolean full = (bits & OS.TVS_FULLROWSELECT) != 0;
 	if (!full) {
 		int hwndHeader = parent.hwndHeader;
 		if (hwndHeader != 0) {

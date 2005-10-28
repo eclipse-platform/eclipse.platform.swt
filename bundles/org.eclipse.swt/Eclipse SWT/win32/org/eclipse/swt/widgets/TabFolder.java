@@ -307,7 +307,8 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 }
 
 Control findThemeControl () {
-	return background == -1 ? this : super.findThemeControl ();	
+	/* On Windows, it is not possible to change the background of this control */
+	return this;	
 }
 
 public Rectangle getClientArea () {

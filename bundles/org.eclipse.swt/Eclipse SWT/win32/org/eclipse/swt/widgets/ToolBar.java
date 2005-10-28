@@ -1113,16 +1113,27 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				child.postEvent (SWT.Selection, event);
 			}
 			break;
-		case OS.NM_CUSTOMDRAW:			
-			if (findThemeControl() == null && background == -1) break;
+		case OS.NM_CUSTOMDRAW:
+			if (background == -1 && backgroundImage == null) {
+				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+					if (findThemeControl () == null) break;
+				}
+			}
 			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
+//			if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
+//				if (!OS.IsWinCE && OS.WindowFromDC (nmcd.hdc) == handle) break;
+//			}
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREERASE:
+				case OS.CDDS_PREERASE: {
 					return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
-				case OS.CDDS_POSTERASE:
-					drawBackground (nmcd.hdc);
-					return null;
+				}
+				case OS.CDDS_POSTERASE: {
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+					drawBackground (nmcd.hdc, rect);
+					break;
+				}
 			}
 			break;
 		case OS.TBN_HOTITEMCHANGE:

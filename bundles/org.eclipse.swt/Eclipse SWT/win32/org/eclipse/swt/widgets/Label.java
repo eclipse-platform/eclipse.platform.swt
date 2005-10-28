@@ -40,6 +40,7 @@ import org.eclipse.swt.graphics.*;
 public class Label extends Control {
 	String text = "";
 	Image image;
+	static final int MARGIN = 4;
 	static final int LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
@@ -105,8 +106,7 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 0, height = 0;
-	int border = getBorderWidth ();
+	int width = 0, height = 0, border = getBorderWidth ();
 	if ((style & SWT.SEPARATOR) != 0) {
 		int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
 		if ((style & SWT.HORIZONTAL) != 0) {
@@ -119,49 +119,49 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width += border * 2; height += border * 2;
 		return new Point (width, height);
 	}
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	boolean isImage = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW;
-	if (isImage) {
-		if (image != null) {
-			Rectangle rect = image.getBounds();
-			width = rect.width;
-			height = rect.height;
-		}
+	if (image != null) {
+		Rectangle rect = image.getBounds();
+		width = rect.width;
+		if (text.length () != 0) width += MARGIN;
+		height = rect.height;
+	}
+	int hDC = OS.GetDC (handle);
+	int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	int oldFont = OS.SelectObject (hDC, newFont);
+	int length = OS.GetWindowTextLength (handle);
+	if (length == 0) {
+		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+		OS.GetTextMetrics (hDC, tm);
+		height = Math.max (height, tm.tmHeight);
 	} else {
-		int hDC = OS.GetDC (handle);
-		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		int oldFont = OS.SelectObject (hDC, newFont);
 		RECT rect = new RECT ();
 		int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_EXPANDTABS;
 		if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
 			flags |= OS.DT_WORDBREAK;
 			rect.right = wHint;
 		}
-		int length = OS.GetWindowTextLength (handle);
 		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 		OS.GetWindowText (handle, buffer, length + 1);
 		OS.DrawText (hDC, buffer, length, rect, flags);
-		width = rect.right - rect.left;
-		height = rect.bottom - rect.top;
-		if (height == 0) {
-			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-			OS.GetTextMetrics (hDC, tm);
-			height = tm.tmHeight;
-		}
-		if (newFont != 0) OS.SelectObject (hDC, oldFont);
-		OS.ReleaseDC (handle, hDC);
+		width += rect.right - rect.left;
+		height = Math.max (height, rect.bottom - rect.top);
 	}
+	if (newFont != 0) OS.SelectObject (hDC, oldFont);
+	OS.ReleaseDC (handle, hDC);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	width += border * 2; height += border * 2;
+	width += border * 2;
+	height += border * 2;
 	/* 
 	* Feature in WinCE PPC.  Text labels have a trim
 	* of one pixel wide on the right and left side.
-	* The fix is to increase the size.
+	* The fix is to increase the width to include
+	* this trim.
 	*/
 	if (OS.IsWinCE) {
-		//TEST ME
-		if (!isImage) width += 2;
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		boolean isOwnerDraw = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW;
+		if (!isOwnerDraw) width += 2;
 	}
 	return new Point (width, height);
 }
@@ -365,19 +365,21 @@ public void setText (String string) {
 	*/
 	if (string.equals (text)) return;
 	text = string;
-	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int newBits = oldBits & ~OS.SS_OWNERDRAW;
-	if ((style & SWT.LEFT) != 0) {
-		if ((style & SWT.WRAP) != 0) {
-			newBits |= OS.SS_LEFT;
-		} else {
+	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+	if (image == null) {
+		newBits &= ~OS.SS_OWNERDRAW;
+		if ((style & SWT.LEFT) != 0) {
+			if ((style & SWT.WRAP) != 0) {
+				newBits |= OS.SS_LEFT;
+			} else {
 			newBits |= OS.SS_LEFTNOWORDWRAP;
+			}
 		}
-	}
-	if ((style & SWT.CENTER) != 0) newBits |= OS.SS_CENTER;
-	if ((style & SWT.RIGHT) != 0) newBits |= OS.SS_RIGHT;
-	if (oldBits != newBits) {
-		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		if ((style & SWT.CENTER) != 0) newBits |= OS.SS_CENTER;
+		if ((style & SWT.RIGHT) != 0) newBits |= OS.SS_RIGHT;
+		if (oldBits != newBits) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		}
 	}
 	string = Display.withCrLf (string);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
@@ -450,16 +452,19 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	* foreground and background.  If any drawing happens in
 	* WM_CTLCOLORBTN, it overwrites the contents of the control.
 	* The fix is draw the static without drawing the background
-	* and avoid the group window proc.
+	* and avoid the static window proc.
 	*/
-	if ((state & TRANSPARENT) != 0) {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-			Control control = findThemeControl ();
-			if (control != null) {
-				OS.InvalidateRect (handle, null, false);
-				return LRESULT.ZERO;
+	boolean redraw = backgroundImage != null;
+	if (!redraw) {
+		if ((state & TRANSPARENT) != 0) {
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				redraw = findThemeControl () != null;
 			}
 		}
+	}
+	if (redraw) {
+		OS.InvalidateRect (handle, null, false);
+		return LRESULT.ZERO;
 	}
 	return result;
 }
@@ -483,28 +488,59 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 			OS.DrawEdge (struct.hDC, rect, flags, OS.BF_RIGHT);
 		}
 	} else {
-		if (image != null) {
-			GCData data = new GCData();
-			data.device = display;
-			GC gc = GC.win32_new (struct.hDC, data);
-			int width = struct.right - struct.left;
-			int height = struct.bottom - struct.top;
-			if (width != 0 && height != 0) {
-				int x = 0, y = 0;
-				if ((style & SWT.CENTER) != 0) {
-					Rectangle rect = image.getBounds ();
-					x = Math.max (0, (width - rect.width) / 2);
-				} else {
-					if ((style & SWT.RIGHT) != 0) {
-						Rectangle rect = image.getBounds ();
-						x = width - rect.width;
-					}
-				}
-				Image drawnImage = getEnabled () ? image : new Image (display, image, SWT.IMAGE_DISABLE);
-				gc.drawImage (drawnImage, x, y);
-				if (drawnImage != image) drawnImage.dispose ();
+		int width = struct.right - struct.left;
+		int height = struct.bottom - struct.top;
+		if (width != 0 && height != 0) {
+			int imageWidth = 0, imageHeight = 0;
+			if (image != null) {
+				Rectangle rect = image.getBounds ();
+				imageWidth = rect.width;
+				imageHeight = rect.height;
 			}
-			gc.dispose ();
+			RECT rect = null;
+			TCHAR buffer = null;
+			int textWidth = 0, textHeight = 0, flags = 0;
+			if (text.length () != 0) {
+				rect = new RECT ();
+				flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_EXPANDTABS;
+				if ((style & SWT.LEFT) != 0) flags |= OS.DT_LEFT;
+				if ((style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
+				if ((style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
+				if ((style & SWT.WRAP) != 0) {
+					flags |= OS.DT_WORDBREAK;
+					rect.right = Math.max (0, width - imageWidth - MARGIN);
+				}
+				buffer = new TCHAR (getCodePage (), text, true);
+				OS.DrawText (struct.hDC, buffer, -1, rect, flags);
+				textWidth = rect.right - rect.left;
+				textHeight = rect.bottom - rect.top;
+			}
+			int x = 0;
+			if ((style & SWT.CENTER) != 0) {
+				x = Math.max (0, (width - imageWidth - textWidth - MARGIN) / 2);
+			} else {
+				if ((style & SWT.RIGHT) != 0) {
+					x = width - imageWidth - textWidth - MARGIN;
+				}
+			}
+			if (image != null) {
+				GCData data = new GCData();
+				data.device = display;
+				GC gc = GC.win32_new (struct.hDC, data);
+				Image drawnImage = getEnabled () ? image : new Image (display, image, SWT.IMAGE_DISABLE);
+				gc.drawImage (drawnImage, x, Math.max (0, (height - imageHeight) / 2));
+				if (drawnImage != image) drawnImage.dispose ();
+				gc.dispose ();
+				x += imageWidth + MARGIN;
+			}
+			if (text.length () != 0) {
+				flags &= ~OS.DT_CALCRECT;
+				rect.left = x;
+				rect.right += rect.left;
+				rect.top = Math.max (0, (height - textHeight) / 2);
+				rect.bottom += rect.top;
+				OS.DrawText (struct.hDC, buffer, -1, rect, flags);
+			}
 		}
 
 	}

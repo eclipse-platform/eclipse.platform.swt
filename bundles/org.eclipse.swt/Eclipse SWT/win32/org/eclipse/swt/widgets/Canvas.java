@@ -159,23 +159,41 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		}
 	}
 	int deltaX = destX - x, deltaY = destY - y;
-	int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
-	/*
-	* Feature in Windows.  If any child in the widget tree partially
-	* intersects the scrolling rectangle, Windows moves the child
-	* and copies the bits that intersect the scrolling rectangle but
-	* does not redraw the child.
-	* 
-	* Feature in Windows.  When any child in the widget tree does not
-	* intersect the scrolling rectangle but the parent does intersect,
-	* Windows does not move the child.  This is the documented (but
-	* strange) Windows behavior.
-	* 
-	* The fix is to not use SW_SCROLLCHILDREN and move the children
-	* explicitly after scrolling.  
-	*/
-//	if (all) flags |= OS.SW_SCROLLCHILDREN;
-	OS.ScrollWindowEx (handle, deltaX, deltaY, sourceRect, null, 0, null, flags);
+	if (backgroundImage != null) {
+		if (OS.IsWinCE) {
+			OS.InvalidateRect (handle, sourceRect, true);
+		} else {
+			int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+			if (all) flags |= OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (handle, sourceRect, 0, flags);
+		}
+		OS.OffsetRect (sourceRect, deltaX, deltaY);
+		if (OS.IsWinCE) {
+			OS.InvalidateRect (handle, sourceRect, true);
+		} else {
+			int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+			if (all) flags |= OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (handle, sourceRect, 0, flags);
+		}
+	} else {
+		int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
+		/*
+		* Feature in Windows.  If any child in the widget tree partially
+		* intersects the scrolling rectangle, Windows moves the child
+		* and copies the bits that intersect the scrolling rectangle but
+		* does not redraw the child.
+		* 
+		* Feature in Windows.  When any child in the widget tree does not
+		* intersect the scrolling rectangle but the parent does intersect,
+		* Windows does not move the child.  This is the documented (but
+		* strange) Windows behavior.
+		* 
+		* The fix is to not use SW_SCROLLCHILDREN and move the children
+		* explicitly after scrolling.  
+		*/
+//		if (all) flags |= OS.SW_SCROLLCHILDREN;
+		OS.ScrollWindowEx (handle, deltaX, deltaY, sourceRect, null, 0, null, flags);
+	}
 	if (all) {
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {

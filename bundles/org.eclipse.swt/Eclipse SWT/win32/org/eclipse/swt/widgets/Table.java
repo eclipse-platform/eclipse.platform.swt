@@ -109,6 +109,38 @@ TableItem _getItem (int index) {
 	return items [index] = new TableItem (this, SWT.NONE, -1, false);
 }
 
+void _setBackgroundImage (Image image) {
+	super._setBackgroundImage (image);
+	int pixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+	if (image != null) {
+		if (pixel != OS.CLR_NONE) {
+			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
+			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
+		}
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.LVS_EX_FULLROWSELECT;
+			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
+		}
+	} else {
+		if (pixel == OS.CLR_NONE) {
+			pixel = background != -1 ? background : defaultBackground ();
+			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
+			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
+			if ((style & SWT.CHECK) != 0) setCheckboxImageListColor ();
+		}
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.LVS_EX_FULLROWSELECT;
+			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+		}
+	}
+	/*
+	* Feature in Windows.  When the background color is
+	* changed, the table does not redraw until the next
+	* WM_PAINT.  The fix is to force a redraw.
+	*/
+	OS.InvalidateRect (handle, null, true);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending
@@ -156,32 +188,10 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 			return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
 		}
 	}
+	int topIndex = 0;
 	boolean checkSelection = false, checkActivate = false;
 	switch (msg) {
-		case OS.WM_CHAR:
-		case OS.WM_IME_CHAR:
-		case OS.WM_KEYUP:
-		case OS.WM_SYSCHAR:
-		case OS.WM_SYSKEYDOWN:
-		case OS.WM_SYSKEYUP:
-		case OS.WM_LBUTTONDBLCLK:
-		case OS.WM_LBUTTONUP:
-		case OS.WM_MBUTTONDBLCLK:
-		case OS.WM_MBUTTONUP:
-		case OS.WM_MOUSEHOVER:
-		case OS.WM_MOUSELEAVE:
-		case OS.WM_MOUSEMOVE:
-//		case OS.WM_MOUSEWHEEL:
-		case OS.WM_RBUTTONDBLCLK:
-		case OS.WM_RBUTTONUP:
-		case OS.WM_XBUTTONDBLCLK:
-		case OS.WM_XBUTTONUP:
-		case OS.WM_LBUTTONDOWN:
-		case OS.WM_MBUTTONDOWN:
-		case OS.WM_RBUTTONDOWN:
-		case OS.WM_XBUTTONDOWN:
-			checkSelection = true;
-			break;
+		/* Keyboard messages */
 		/*
 		* Feature in Windows.  Windows sends LVN_ITEMACTIVATE from WM_KEYDOWN
 		* instead of WM_CHAR.  This means that application code that expects
@@ -191,7 +201,52 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		*/
 		case OS.WM_KEYDOWN:
 			checkSelection = checkActivate = true;
-			break;
+			//FALL THROUGH
+		case OS.WM_CHAR:
+		case OS.WM_IME_CHAR:
+		case OS.WM_KEYUP:
+		case OS.WM_SYSCHAR:
+		case OS.WM_SYSKEYDOWN:
+		case OS.WM_SYSKEYUP:
+			checkSelection = true;
+			//FALL THROUGH
+			
+		/* Scroll messages */
+		case OS.WM_HSCROLL:
+		case OS.WM_VSCROLL:
+			
+		/* Resize messages */
+		case OS.WM_WINDOWPOSCHANGED:
+			if (backgroundImage != null && drawCount == 0) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+			}
+			//FALL THROUGH
+			
+		/* Mouse messages */
+		case OS.WM_LBUTTONDBLCLK:
+		case OS.WM_LBUTTONDOWN:
+		case OS.WM_LBUTTONUP:
+		case OS.WM_MBUTTONDBLCLK:
+		case OS.WM_MBUTTONDOWN:
+		case OS.WM_MBUTTONUP:
+		case OS.WM_MOUSEHOVER:
+		case OS.WM_MOUSELEAVE:
+		case OS.WM_MOUSEMOVE:
+		case OS.WM_MOUSEWHEEL:
+		case OS.WM_RBUTTONDBLCLK:
+		case OS.WM_RBUTTONDOWN:
+		case OS.WM_RBUTTONUP:
+		case OS.WM_XBUTTONDBLCLK:
+		case OS.WM_XBUTTONDOWN:
+		case OS.WM_XBUTTONUP:
+			
+		/* Other messages */
+		case OS.WM_SETFONT:
+		case OS.WM_TIMER: {
+			if (backgroundImage != null) {
+				topIndex = OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
+			}
+		}
 	}
 	boolean oldSelected = wasSelected;
 	if (checkSelection) wasSelected = false;
@@ -206,6 +261,58 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 			postEvent (SWT.Selection, event);
 		}
 		wasSelected = oldSelected;
+	}
+	switch (msg) {
+		/* Keyboard messages */
+		case OS.WM_KEYDOWN:
+		case OS.WM_CHAR:
+		case OS.WM_IME_CHAR:
+		case OS.WM_KEYUP:
+		case OS.WM_SYSCHAR:
+		case OS.WM_SYSKEYDOWN:
+		case OS.WM_SYSKEYUP:
+
+		/* Scroll messages */
+		case OS.WM_HSCROLL:
+		case OS.WM_VSCROLL:
+			
+		/* Resize messages */
+		case OS.WM_WINDOWPOSCHANGED:
+			if (backgroundImage != null && drawCount == 0) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.InvalidateRect (handle, null, true);
+				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+				if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
+			}
+			//FALL THROUGH
+			
+		/* Mouse messages */
+		case OS.WM_LBUTTONDBLCLK:
+		case OS.WM_LBUTTONDOWN:
+		case OS.WM_LBUTTONUP:
+		case OS.WM_MBUTTONDBLCLK:
+		case OS.WM_MBUTTONDOWN:
+		case OS.WM_MBUTTONUP:
+		case OS.WM_MOUSEHOVER:
+		case OS.WM_MOUSELEAVE:
+		case OS.WM_MOUSEMOVE:
+		case OS.WM_MOUSEWHEEL:
+		case OS.WM_RBUTTONDBLCLK:
+		case OS.WM_RBUTTONDOWN:
+		case OS.WM_RBUTTONUP:
+		case OS.WM_XBUTTONDBLCLK:
+		case OS.WM_XBUTTONDOWN:
+		case OS.WM_XBUTTONUP:
+
+		/* Other messages */
+		case OS.WM_SETFONT:
+		case OS.WM_TIMER: {
+			if (backgroundImage != null) {
+				if (topIndex != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
+					OS.InvalidateRect (handle, null, true);
+				}
+			}
+		}
 	}
 	return code;
 }
@@ -2382,6 +2489,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 void setBackgroundPixel (int pixel) {
 	if (background == pixel) return;
 	background = pixel;
+	if (backgroundImage != null) return;
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 	OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
@@ -3975,7 +4083,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
-	if (background == -1) {
+	if (background == -1 && backgroundImage == null) {
 		int pixel = defaultBackground ();
 		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
@@ -4125,14 +4233,28 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 		case OS.NM_CUSTOMDRAW: {
-			if (!customDraw) break;
+			if (!customDraw) {
+				if (backgroundImage == null) break;
+			}
 			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hdr.hwndFrom == hwndHeader) break;
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREPAINT: return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
-				case OS.CDDS_ITEMPREPAINT: return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
+				case OS.CDDS_PREPAINT: {
+//					if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
+//						if (!OS.IsWinCE && OS.WindowFromDC (nmcd.hdc) == handle) break;
+//					}
+					if (backgroundImage != null) {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						fillBackground (nmcd.hdc, backgroundImage, rect);
+					}
+					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
+				}
+				case OS.CDDS_ITEMPREPAINT: {
+					return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
+				}
 				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM: {
 					TableItem item = _getItem (nmcd.dwItemSpec);
 					int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
@@ -4159,7 +4281,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					OS.SelectObject (nmcd.hdc, hFont);
 					if (OS.IsWindowEnabled (handle)) {
 						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-						nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+						if (backgroundImage == null) {
+							nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+						}
 						OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 					}
 					return new LRESULT (OS.CDRF_NEWFONT);

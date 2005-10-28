@@ -109,6 +109,15 @@ public class Shell extends Decorations {
 	Region region;
 	static final int DialogProc;
 	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
+	final static int [] SYSTEM_COLORS = {
+		OS.COLOR_BTNFACE,
+		OS.COLOR_WINDOW,
+		OS.COLOR_BTNTEXT,
+		OS.COLOR_WINDOWTEXT,
+		OS.COLOR_HIGHLIGHT,
+		OS.COLOR_SCROLLBAR,
+	};
+	final static int BRUSHES_SIZE = 32;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, DialogClass, lpWndClass);
@@ -514,31 +523,54 @@ void enableWidget (boolean enabled) {
 	}
 }
 
-int findBrush (int pixel) {
-	if (pixel == OS.GetSysColor (OS.COLOR_BTNFACE)) {
-		return OS.GetSysColorBrush (OS.COLOR_BTNFACE);
+int findBrush (int value, int lbStyle) {
+	if (lbStyle == OS.BS_SOLID) {
+		for (int i=0; i<SYSTEM_COLORS.length; i++) {
+			if (value == OS.GetSysColor (SYSTEM_COLORS [i])) {
+				return OS.GetSysColorBrush (SYSTEM_COLORS [i]);
+			}
+		}
 	}
-	if (pixel == OS.GetSysColor (OS.COLOR_WINDOW)) {
-		return OS.GetSysColorBrush (OS.COLOR_WINDOW);
-	}
-	if (brushes == null) brushes = new int [4];
+	if (brushes == null) brushes = new int [BRUSHES_SIZE];
 	LOGBRUSH logBrush = new LOGBRUSH ();
 	for (int i=0; i<brushes.length; i++) {
 		int hBrush = brushes [i];
 		if (hBrush == 0) break;
 		OS.GetObject (hBrush, LOGBRUSH.sizeof, logBrush);
-		if (logBrush.lbColor == pixel) return hBrush;
+		switch (logBrush.lbStyle) {
+			case OS.BS_SOLID:
+				if (lbStyle == OS.BS_SOLID) {
+					if (logBrush.lbColor == value) return hBrush;
+				}
+				break;
+			case OS.BS_PATTERN:
+				if (lbStyle == OS.BS_PATTERN) {
+					if (logBrush.lbHatch == value) return hBrush;
+				}
+				break;
+		}
 	}
 	int length = brushes.length;
 	int hBrush = brushes [--length];
 	if (hBrush != 0) OS.DeleteObject (hBrush);
 	System.arraycopy (brushes, 0, brushes, 1, length);
-	brushes [0] = hBrush = OS.CreateSolidBrush (pixel);
-	return hBrush;
+	switch (lbStyle) {
+		case OS.BS_SOLID:
+			hBrush = OS.CreateSolidBrush (value);
+			break;
+		case OS.BS_PATTERN:
+			hBrush = OS.CreatePatternBrush (value);
+			break;
+	}
+	return brushes [0] = hBrush;
 }
 
 Cursor findCursor () {
 	return cursor;
+}
+
+Control findImageControl (Image image) {
+	return backgroundImage == image ? this : null;
 }
 
 Control findThemeControl () {

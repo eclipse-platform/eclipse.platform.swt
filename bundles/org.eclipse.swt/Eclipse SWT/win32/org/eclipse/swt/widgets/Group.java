@@ -189,6 +189,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle () {
 	super.createHandle ();
+	state |= DRAW_BACKGROUND;
 	state &= ~CANVAS;
 }
 
@@ -384,15 +385,18 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	* NOTE:  The DefWindowProc() must be called in order to
 	* broadcast WM_UPDATEUISTATE message to the children.
 	*/
-	if ((state & TRANSPARENT) != 0) {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-			Control control = findThemeControl ();
-			if (control != null) {
-				OS.InvalidateRect (handle, null, false);
-				int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
-				return new LRESULT (code);
+	boolean redraw = backgroundImage != null;
+	if (!redraw) {
+		if ((state & TRANSPARENT) != 0) {
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				redraw = findThemeControl () != null;
 			}
 		}
+	}
+	if (redraw) {
+		OS.InvalidateRect (handle, null, false);
+		int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+		return new LRESULT (code);
 	}
 	return result;
 }

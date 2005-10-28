@@ -360,6 +360,12 @@ void destroyItem (CoolItem item) {
 }
 
 void drawThemeBackground (int hDC, int hwnd, RECT rect) {
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (background == -1 && (style & SWT.FLAT) != 0) {
+			fillBackground (hDC, defaultBackground (), rect);
+			return;
+		}
+	}
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
@@ -406,7 +412,7 @@ int getMargin (int index) {
 
 Control findThemeControl () {
 	if ((style & SWT.FLAT) != 0) return this;
-	return background == -1 ? this : super.findThemeControl ();
+	return background == -1 && backgroundImage == null ? this : super.findThemeControl ();
 }
 
 /**
@@ -998,8 +1004,6 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (result != null) return result;
-		
 	/*
 	* Feature in Windows.  For some reason, Windows
 	* does not fully erase the area that the cool bar
@@ -1012,12 +1016,12 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* WM_ERASEBKGND.  Therefore it is essential to run
 	* the cool bar window proc after the background has
 	* been erased.
-	* 
-	* On XP, this work around is unnecessary because
-	* the background is drawn using NM_CUSTOMDRAW.
 	*/
-	if (OS.COMCTL32_MAJOR < 6) drawBackground (wParam);
-	return null;
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		drawBackground (wParam);
+		return null;
+	}
+	return result;
 }
 
 LRESULT WM_NOTIFY (int wParam, int lParam) {
@@ -1154,12 +1158,12 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			* in WM_ERASEBKGND.
 			*/
 			if (OS.COMCTL32_MAJOR < 6) break;
-			if (background != -1 || (style & SWT.FLAT) != 0) {
+			if (background != -1 || backgroundImage != null || (style & SWT.FLAT) != 0) {
 				NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 				OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
 				switch (nmcd.dwDrawStage) {
 					case OS.CDDS_PREERASE:
-						return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
+						return new LRESULT (OS.CDRF_SKIPDEFAULT | OS.CDRF_NOTIFYPOSTERASE);
 					case OS.CDDS_POSTERASE:
 						drawBackground (nmcd.hdc);
 						break;

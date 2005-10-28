@@ -168,7 +168,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state |= TRANSPARENT;
+	state |= TRANSPARENT | DRAW_BACKGROUND;
 	OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 0, 100);
 	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, 10);
 	OS.SendMessage (handle, OS.TBM_SETTICFREQ, 10, 0);
@@ -424,18 +424,22 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	* results.  The fix is to send a fake WM_SIZE to force it
 	* to redraw every time there is a WM_PAINT.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		Control control = findThemeControl ();
-		if (control != null) {
-			boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-			if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-			ignoreResize = true;
-			OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
-			ignoreResize = false;
-			if (redraw) {
-				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-				OS.InvalidateRect (handle, null, true);
-			}
+	boolean fixPaint = backgroundImage != null;
+	if (!fixPaint) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			Control control = findThemeControl ();
+			fixPaint = control != null;
+		}
+	}
+	if (fixPaint) {
+		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		ignoreResize = true;
+		OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
+		ignoreResize = false;
+		if (redraw) {
+			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.InvalidateRect (handle, null, true);
 		}
 	}
 	return super.WM_PAINT (wParam, lParam);
