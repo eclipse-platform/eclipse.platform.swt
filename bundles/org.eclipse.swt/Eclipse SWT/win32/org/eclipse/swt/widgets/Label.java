@@ -41,7 +41,7 @@ public class Label extends Control {
 	String text = "";
 	Image image;
 	static final int MARGIN = 4;
-	static final boolean IMAGE_AND_TEXT;
+	static final boolean IMAGE_AND_TEXT = false;
 	static final int LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
