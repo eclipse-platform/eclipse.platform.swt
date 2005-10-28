@@ -633,19 +633,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 		bits |= width & 0xFFFF;
 	}
-	if (hHint != SWT.DEFAULT) bits |= hHint << 16;
-	int result = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, -1, bits);
-	int width = result & 0xFFFF, height = result >> 16;
-	
-	/*
-	* Feature in Windows.  The height returned by LVM_APPROXIMATEVIEWRECT
-	* includes the trim plus the height of the items plus one extra row.
-	* The fix is to subtract the height of one row from the result height.
-	*/
+	int result = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, -1, bits | 0xFFFF0000);
+	int width = result & 0xFFFF;
 	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-	height -= (oneItem >> 16) - (empty >> 16);
-	
+	int itemHeight = (oneItem >> 16) - (empty >> 16);
+	int height = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0) * itemHeight;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
