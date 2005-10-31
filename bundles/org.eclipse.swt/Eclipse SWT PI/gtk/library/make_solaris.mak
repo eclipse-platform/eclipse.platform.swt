@@ -46,7 +46,7 @@ GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthrea
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
-AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -s -static-libgcc
+AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -G -s
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0` -latk-1.0 -lgtk-x11-2.0
@@ -55,7 +55,7 @@ GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-
 GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
 
 GLXCFLAGS = 
-GLXLIBS = -shared -fPIC -L/usr/X11R6/lib -lGL -lGLU -lm
+GLXLIBS = -G -K PIC -L/usr/X11R6/lib -lGL -lGLU -lm
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
@@ -77,7 +77,7 @@ MOZILLACFLAGS = -O \
 	-I$(GECKO_SDK)/string/include \
 	-I$(GECKO_SDK)/embed_base/include \
 	-I$(GECKO_SDK)/embedstring/include
-MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic \
+MOZILLALIBS = -G -s -Wl,--version-script=mozilla_exports -Bsymbolic \
 	-L$(GECKO_SDK)/embedstring/bin -lembedstring \
 	-L$(GECKO_SDK)/embed_base/bin -lembed_base_s \
 	-L$(GECKO_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
@@ -93,16 +93,16 @@ GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
-CFLAGS = -O -Wall \
+CFLAGS = -O \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
 		-DSOLARIS -DGTK -DCDE \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/solaris \
-		-fPIC \
+		-K PIC \
 		${SWT_PTR_CFLAGS} \
 		-I$(CDE_HOME)/include
-LIBS = -shared -fPIC -s -static-libgcc
+LIBS = -G -K PIC -s
 
 
 all: make_swt make_atk make_awt make_cde
