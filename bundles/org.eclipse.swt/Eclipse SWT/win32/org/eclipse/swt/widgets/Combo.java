@@ -1309,6 +1309,7 @@ void setForegroundPixel (int pixel) {
 public void setItem (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 	remove (index);
 	/*
 	* It is possible (but unlikely), that application
@@ -1318,6 +1319,9 @@ public void setItem (int index, String string) {
 	*/
 	if (isDisposed ()) return;
 	add (string, index);
+	if (selection != -1) {
+		OS.SendMessage (handle, OS.CB_SETCURSEL, selection, 0);
+	}
 }
 
 /**
