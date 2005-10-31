@@ -532,6 +532,10 @@ public Point getCaretLocation () {
 	if (caretPos == -1) {
 		caretPos = 0;
 		if (position >= OS.GetWindowTextLength (handle)) {
+			int cp = getCodePage ();
+			int [] start = new int [1], end = new int [1];
+			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+			OS.SendMessage (handle, OS.EM_SETSEL, position, position);
 			/*
 			* Feature in Windows.  When an edit control with ES_MULTILINE
 			* style that does not have the WS_VSCROLL style is full (i.e.
@@ -544,12 +548,13 @@ public Point getCaretLocation () {
 			* handler from WM_CHAR.
 			*/
 			ignoreCharacter = ignoreModify = true;
-			int cp = getCodePage ();
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
 			caretPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, position, 0);
 			OS.SendMessage (handle, OS.EM_SETSEL, position, position + 1);
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
 			ignoreCharacter = ignoreModify = false;
+			OS.SendMessage (handle, OS.EM_SETSEL, start [0], start [0]);
+			OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 		}
 	}
 	return new Point ((short) (caretPos & 0xFFFF), (short) (caretPos >> 16));
