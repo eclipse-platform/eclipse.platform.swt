@@ -623,12 +623,15 @@ public void clearAll () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (fixScrollWidth) setScrollWidth (null, true);
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	RECT rect = new RECT ();					
+	OS.GetWindowRect (hwndHeader, rect);
+	int height = rect.bottom - rect.top;
 	int bits = 0;
 	if (wHint != SWT.DEFAULT) {
 		bits |= wHint & 0xFFFF;
 	} else {
 		int width = 0;
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			width += OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, i, 0);
@@ -640,7 +643,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 	int itemHeight = (oneItem >> 16) - (empty >> 16);
-	int height = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0) * itemHeight;
+	height += OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0) * itemHeight;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
