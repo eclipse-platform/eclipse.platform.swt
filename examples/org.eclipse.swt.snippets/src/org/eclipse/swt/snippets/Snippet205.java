@@ -29,7 +29,7 @@ public class Snippet205 {
 public static void main(String[] args) {
 	Display display = new Display();
 	final Shell shell = new Shell(display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
-	shell.setText("Embedding Objects in StyledText");
+	shell.setText("Embedding objects in text");
 	final Image[] images = {new Image(display, 32, 32), new Image(display, 20, 40), new Image(display, 40, 20)};
 	int[] colors  = {SWT.COLOR_BLUE, SWT.COLOR_MAGENTA, SWT.COLOR_GREEN};
 	for (int i = 0; i < images.length; i++) {
