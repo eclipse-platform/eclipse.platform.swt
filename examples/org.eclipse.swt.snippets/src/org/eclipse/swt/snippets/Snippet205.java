@@ -29,6 +29,7 @@ public class Snippet205 {
 public static void main(String[] args) {
 	Display display = new Display();
 	final Shell shell = new Shell(display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
+	shell.setText("Embedding Objects in StyledText");
 	final Image[] images = {new Image(display, 32, 32), new Image(display, 20, 40), new Image(display, 40, 20)};
 	int[] colors  = {SWT.COLOR_BLUE, SWT.COLOR_MAGENTA, SWT.COLOR_GREEN};
 	for (int i = 0; i < images.length; i++) {
@@ -38,17 +39,24 @@ public static void main(String[] args) {
 		gc.dispose();
 	}
 	
-	String text = "Embedded Images test, the first image is blue: \uFFFC, the second one if magenta: \uFFFC, and last one green: \uFFFC.";
-	final int[] offsets = {47, 77, 100};
+	final Button button = new Button(shell, SWT.PUSH);
+	button.setText("Button");
+	button.pack();
+	String text = "Here is some text with a blue image \uFFFC, a magenta image \uFFFC, a green image \uFFFC, and a button: \uFFFC.";
+	final int[] imageOffsets = {36, 55, 72};
 	final TextLayout layout = new TextLayout(display);
 	layout.setText(text);
 	for (int i = 0; i < images.length; i++) {
 		Rectangle bounds = images[i].getBounds();
-		TextStyle imageStyle = new TextStyle (null, null, null);
-		imageStyle.metrics = new GlyphMetrics (bounds.height, 0, bounds.width); 
-		layout.setStyle(imageStyle, offsets[i], offsets[i]);
+		TextStyle imageStyle = new TextStyle(null, null, null);
+		imageStyle.metrics = new GlyphMetrics(bounds.height, 0, bounds.width); 
+		layout.setStyle(imageStyle, imageOffsets[i], imageOffsets[i]);
 	}
-
+	Rectangle bounds = button.getBounds();
+	TextStyle buttonStyle = new TextStyle(null, null, null);
+	buttonStyle.metrics = new GlyphMetrics(bounds.height, 0, bounds.width); 
+	final int buttonOffset = text.length() - 2;
+	layout.setStyle(buttonStyle, buttonOffset, buttonOffset);
 	
 	shell.addListener(SWT.Paint, new Listener() {
 		public void handleEvent(Event event) {
@@ -57,13 +65,18 @@ public static void main(String[] args) {
 			layout.setWidth(shell.getClientArea().width - 2 * margin.x);
 			layout.draw(event.gc, margin.x, margin.y);
 			for (int i = 0; i < images.length; i++) {
-				int offset = offsets[i];
+				int offset = imageOffsets[i];
 				int lineIndex = layout.getLineIndex(offset);
 				FontMetrics lineMetrics = layout.getLineMetrics(lineIndex);
 				Point point = layout.getLocation(offset, false);
 				GlyphMetrics glyphMetrics = layout.getStyle(offset).metrics;
 				gc.drawImage(images[i], point.x + margin.x, point.y + margin.y + lineMetrics.getAscent() - glyphMetrics.ascent);
 			}
+			int lineIndex = layout.getLineIndex(buttonOffset);
+			FontMetrics lineMetrics = layout.getLineMetrics(lineIndex);
+			Point point = layout.getLocation(buttonOffset, false);
+			GlyphMetrics glyphMetrics = layout.getStyle(buttonOffset).metrics;
+			button.setLocation(point.x + margin.x, point.y + margin.y + lineMetrics.getAscent() - glyphMetrics.ascent);
 		}
 	});
 
@@ -75,6 +88,6 @@ public static void main(String[] args) {
 	for (int i = 0; i < images.length; i++) {
 		images[i].dispose();
 	}
-	display.dispose ();
+	display.dispose();
 }
 }

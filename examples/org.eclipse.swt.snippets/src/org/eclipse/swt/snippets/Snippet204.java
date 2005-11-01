@@ -28,9 +28,9 @@ public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
 	FontData data = display.getSystemFont().getFontData()[0];
-	Font font = new Font (display, data.getName(), 24, SWT.NORMAL);
-	Font smallFont = new Font (display, data.getName(), 8, SWT.NORMAL);
-	GC gc = new GC (shell);
+	Font font = new Font(display, data.getName(), 24, SWT.NORMAL);
+	Font smallFont = new Font(display, data.getName(), 8, SWT.NORMAL);
+	GC gc = new GC(shell);
 	gc.setFont(smallFont);
 	FontMetrics smallMetrics = gc.getFontMetrics();
 	final int smallBaseline = smallMetrics.getAscent() + smallMetrics.getLeading();
@@ -40,20 +40,20 @@ public static void main(String[] args) {
 	gc.dispose();
 	
 	final TextLayout layout0 = new TextLayout(display);
-	layout0.setText ("SubscriptScriptSuperscript");
+	layout0.setText("SubscriptScriptSuperscript");
 	layout0.setFont(font);
-	TextStyle subscript0 = new TextStyle (smallFont, null, null);
-	TextStyle superscript0 = new TextStyle (smallFont, null, null);
+	TextStyle subscript0 = new TextStyle(smallFont, null, null);
+	TextStyle superscript0 = new TextStyle(smallFont, null, null);
 	superscript0.rise = baseline - smallBaseline;
 	layout0.setStyle(subscript0, 0, 8);
 	layout0.setStyle(superscript0, 15, 25);
 		
 	final TextLayout layout1 = new TextLayout(display);
-	layout1.setText ("SubscriptScriptSuperscript");
+	layout1.setText("SubscriptScriptSuperscript");
 	layout1.setFont(font);
-	TextStyle subscript1 = new TextStyle (smallFont, null, null);
+	TextStyle subscript1 = new TextStyle(smallFont, null, null);
 	subscript1.rise = -smallBaseline;
-	TextStyle superscript1 = new TextStyle (smallFont, null, null);
+	TextStyle superscript1 = new TextStyle(smallFont, null, null);
 	superscript1.rise = baseline;
 	layout1.setStyle(subscript1, 0, 8);
 	layout1.setStyle(superscript1, 15, 25);
@@ -95,8 +95,8 @@ public static void main(String[] args) {
 	}
 	layout0.dispose();
 	layout1.dispose();
-	smallFont.dispose ();
-	font.dispose ();
-	display.dispose ();
+	smallFont.dispose();
+	font.dispose();
+	display.dispose();
 }
 }
