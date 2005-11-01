@@ -201,27 +201,23 @@ static TreeItem checkNull (TreeItem item) {
 static int findPrevious (Tree parent, int index) {
 	if (parent == null) return 0;
 	if (index < 0) SWT.error (SWT.ERROR_INVALID_RANGE);
-	int hItem = OS.TVI_FIRST;
-	if (index != 0) {
-		int hwnd = parent.handle;
-		int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		hItem = parent.findItem (hFirstItem, index - 1);
-		if (hItem == 0) SWT.error (SWT.ERROR_INVALID_RANGE);
-	}
+	if (index == 0) return OS.TVI_FIRST;
+	int hwnd = parent.handle;
+	int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	int hItem = parent.findItem (hFirstItem, index - 1);
+	if (hItem == 0) SWT.error (SWT.ERROR_INVALID_RANGE);
 	return hItem;
 }
 
 static int findPrevious (TreeItem parentItem, int index) {
 	if (parentItem == null) return 0;
 	if (index < 0) SWT.error (SWT.ERROR_INVALID_RANGE);
+	if (index == 0) return OS.TVI_FIRST;
 	Tree parent = parentItem.parent;
-	int hItem = OS.TVI_FIRST, hParent = parentItem.handle;
-	if (index != 0) {
-		int hwnd = parent.handle;
-		int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-		hItem = parent.findItem (hFirstItem, index - 1);
-		if (hItem == 0) SWT.error (SWT.ERROR_INVALID_RANGE);
-	}
+	int hwnd = parent.handle, hParent = parentItem.handle;
+	int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+	int hItem = parent.findItem (hFirstItem, index - 1);
+	if (hItem == 0) SWT.error (SWT.ERROR_INVALID_RANGE);
 	return hItem;
 }
 

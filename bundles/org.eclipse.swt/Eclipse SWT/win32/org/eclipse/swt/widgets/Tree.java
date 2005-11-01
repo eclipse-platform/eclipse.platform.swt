@@ -1202,8 +1202,11 @@ void enableWidget (boolean enabled) {
 int findIndex (int hFirstItem, int hItem) {
 	if (hFirstItem == 0) return -1;
 	if (hFirstItem == hFirstIndexOf) {
-		if (hFirstIndexOf == hItem) return 0;
 		if (hLastIndexOf == hItem) return lastIndexOf;
+		if (hFirstIndexOf == hItem) {
+			hLastIndexOf = hFirstIndexOf;
+			return lastIndexOf = 0;
+		}
 		int hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
 		if (hPrevItem == hItem) {
 			hLastIndexOf = hPrevItem;
@@ -1260,8 +1263,11 @@ Widget findItem (int id) {
 int findItem (int hFirstItem, int index) {
 	if (hFirstItem == 0) return 0;
 	if (hFirstItem == hFirstIndexOf) {
-		if (index == 0) return hFirstItem;
 		if (lastIndexOf == index) return hLastIndexOf;
+		if (index == 0) {
+			lastIndexOf = 0;
+			return hLastIndexOf = hFirstIndexOf;
+		}
 		if (lastIndexOf - 1 == index) {
 			--lastIndexOf;
 			return hLastIndexOf = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
