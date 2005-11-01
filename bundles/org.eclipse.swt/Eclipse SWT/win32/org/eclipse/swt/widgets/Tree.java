@@ -1202,11 +1202,11 @@ void enableWidget (boolean enabled) {
 int findIndex (int hFirstItem, int hItem) {
 	if (hFirstItem == 0) return -1;
 	if (hFirstItem == hFirstIndexOf) {
-		if (hLastIndexOf == hItem) return lastIndexOf;
 		if (hFirstIndexOf == hItem) {
 			hLastIndexOf = hFirstIndexOf;
 			return lastIndexOf = 0;
 		}
+		if (hLastIndexOf == hItem) return lastIndexOf;
 		int hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
 		if (hPrevItem == hItem) {
 			hLastIndexOf = hPrevItem;
@@ -1263,11 +1263,11 @@ Widget findItem (int id) {
 int findItem (int hFirstItem, int index) {
 	if (hFirstItem == 0) return 0;
 	if (hFirstItem == hFirstIndexOf) {
-		if (lastIndexOf == index) return hLastIndexOf;
 		if (index == 0) {
 			lastIndexOf = 0;
 			return hLastIndexOf = hFirstIndexOf;
 		}
+		if (lastIndexOf == index) return hLastIndexOf;
 		if (lastIndexOf - 1 == index) {
 			--lastIndexOf;
 			return hLastIndexOf = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
@@ -4463,10 +4463,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			TreeItem item = _getItem (lptvdi.hItem, lptvdi.lParam);
 			if (item == null) break;
 			if (item.isDisposed ()) break;
-			if ((style & SWT.VIRTUAL) != 0) {
-				if (!item.cached) {
+			if (!item.cached) {
+				if ((style & SWT.VIRTUAL) != 0) {
 					if (!checkData (item, false)) break;
 				}
+				item.cached = true;
 			}
 			int index = 0;
 			if (hwndHeader != 0) {
