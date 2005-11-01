@@ -208,13 +208,13 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		case OS.WM_SYSCHAR:
 		case OS.WM_SYSKEYDOWN:
 		case OS.WM_SYSKEYUP:
-			checkSelection = true;
 			//FALL THROUGH
 			
 		/* Scroll messages */
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL:
-			
+			//FALL THROUGH
+						
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
 			if (backgroundImage != null && drawCount == 0) {
@@ -239,6 +239,8 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		case OS.WM_XBUTTONDBLCLK:
 		case OS.WM_XBUTTONDOWN:
 		case OS.WM_XBUTTONUP:
+			checkSelection = true;
+			//FALL THROUGH
 			
 		/* Other messages */
 		case OS.WM_SETFONT:
