@@ -273,14 +273,7 @@ final class GIFFileFormat extends FileFormat {
 			delayTime = (controlBlock[1] & 0xFF) | ((controlBlock[2] & 0xFF) << 8);
 			// Store the transparent color.
 			if ((bitField & 0x01) != 0) {
-				int colorIndex = controlBlock[3] & 0xFF;
-				/* Work around: a customer has a GIF that specifies an
-				 * invalid color index that is larger than the number
-				 * of entries in the palette. Detect this case, and
-				 * ignore the specified color index. */
-				if (colorIndex <= 1 << defaultDepth) {
-					transparentPixel = colorIndex;
-				}
+				transparentPixel = controlBlock[3] & 0xFF;
 			} else {
 				transparentPixel = -1;
 			}
@@ -362,6 +355,13 @@ final class GIFFileFormat extends FileFormat {
 			// No local palette.
 			depth = defaultDepth;
 			palette = defaultPalette;
+		}
+		/* Work around: a customer has a GIF that specifies an
+		 * invalid index for the transparent pixel that is larger
+		 * than the number of entries in the palette. Detect this
+		 * case, and ignore the specified color index. */
+		if (transparentPixel > 1 << depth) {
+			transparentPixel = -1;
 		}
 		// Promote depth to next highest supported value.
 		if (!(depth == 1 || depth == 4 || depth == 8)) {

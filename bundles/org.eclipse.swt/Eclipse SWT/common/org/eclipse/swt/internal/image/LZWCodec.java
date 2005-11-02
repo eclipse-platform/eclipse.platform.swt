@@ -61,8 +61,6 @@ void decode() {
 		} else {
 			code = c;
 			if (code >= currentSlot) {
-				if (code > currentSlot)
-					SWT.error(SWT.ERROR_INVALID_IMAGE);
 				code = oc;
 				stack[stackIndex] = fc;
 				stackIndex++;
