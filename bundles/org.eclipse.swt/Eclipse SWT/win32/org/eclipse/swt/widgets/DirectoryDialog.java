@@ -226,7 +226,7 @@ public String open () {
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = false;
 	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
 	if (OS.COMCTL32_MAJOR < 6) display.runMessages = oldRunMessages;
-	OS.SetErrorMode(oldErrorMode);
+	OS.SetErrorMode (oldErrorMode);
 	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
