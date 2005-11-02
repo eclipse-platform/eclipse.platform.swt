@@ -296,11 +296,13 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_SYSCHAR:
 		case OS.WM_SYSKEYDOWN:
 		case OS.WM_SYSKEYUP:
+			//FALL THROUGH
 			
 		/* Scroll messages */
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL:
-
+			//FALL THROUGH
+			
 		/* Resize messages */
 		case OS.WM_SIZE:
 			if (backgroundImage != null && drawCount == 0) {
@@ -325,6 +327,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_XBUTTONDBLCLK:
 		case OS.WM_XBUTTONDOWN:
 		case OS.WM_XBUTTONUP:
+			//FALL THROUGH
 			
 		/* Other messages */
 		case OS.WM_SETFONT:
@@ -346,10 +349,12 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_SYSCHAR:
 		case OS.WM_SYSKEYDOWN:
 		case OS.WM_SYSKEYUP:
-
+			//FALL THROUGH
+			
 		/* Scroll messages */
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL:
+			//FALL THROUGH
 			
 		/* Resize messages */
 		case OS.WM_SIZE:
@@ -377,6 +382,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_XBUTTONDBLCLK:
 		case OS.WM_XBUTTONDOWN:
 		case OS.WM_XBUTTONUP:
+			//FALL THROUGH
 			
 		/* Other messages */
 		case OS.WM_SETFONT:

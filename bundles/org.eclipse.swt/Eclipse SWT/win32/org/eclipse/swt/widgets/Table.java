@@ -200,7 +200,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		* caused by WM_KEYDOWN and send SWT.DefaultSelection from WM_CHAR.
 		*/
 		case OS.WM_KEYDOWN:
-			checkSelection = checkActivate = true;
+			checkActivate = true;
 			//FALL THROUGH
 		case OS.WM_CHAR:
 		case OS.WM_IME_CHAR:
@@ -273,10 +273,12 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		case OS.WM_SYSCHAR:
 		case OS.WM_SYSKEYDOWN:
 		case OS.WM_SYSKEYUP:
-
+			//FALL THROUGH
+			
 		/* Scroll messages */
 		case OS.WM_HSCROLL:
 		case OS.WM_VSCROLL:
+			//FALL THROUGH
 			
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
@@ -305,7 +307,8 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		case OS.WM_XBUTTONDBLCLK:
 		case OS.WM_XBUTTONDOWN:
 		case OS.WM_XBUTTONUP:
-
+			//FALL THROUGH
+			
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
