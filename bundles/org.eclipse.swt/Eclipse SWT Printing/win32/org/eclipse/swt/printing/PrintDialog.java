@@ -246,7 +246,11 @@ public PrinterData open() {
 		}
 	}
 	PrinterData data = null;
+	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
+	Object oldValue = display.getData(key);
+	display.setData(key, new Boolean(true));
 	boolean success = OS.PrintDlg(pd);
+	display.setData(key, oldValue);
 	if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		for (int i=0; i<shells.length; i++) {
 			if (shells[i] != null && !shells[i].isDisposed ()) {
