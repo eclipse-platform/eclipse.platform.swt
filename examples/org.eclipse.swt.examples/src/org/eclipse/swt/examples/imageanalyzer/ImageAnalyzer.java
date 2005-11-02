@@ -797,7 +797,6 @@ public class ImageAnalyzer {
 
 	void menuOpenFile() {
 		animate = false; // stop any animation in progress
-		resetScaleCombos();
 		
 		// Get the user to choose an image file.
 		FileDialog fileChooser = new FileDialog(shell, SWT.OPEN);
@@ -842,7 +841,6 @@ public class ImageAnalyzer {
 				// Display the first image in the file.
 				imageDataIndex = 0;
 				displayImage(imageDataArray[imageDataIndex]);
-				resetScrollBars();
 			}
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
@@ -857,7 +855,6 @@ public class ImageAnalyzer {
 	
 	void menuOpenURL() {
 		animate = false; // stop any animation in progress
-		resetScaleCombos();
 		
 		// Get the user to choose an image URL.
 		TextPrompter textPrompter = new TextPrompter(shell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
@@ -900,7 +897,6 @@ public class ImageAnalyzer {
 				// Display the first image.
 				imageDataIndex = 0;
 				displayImage(imageDataArray[imageDataIndex]);
-				resetScrollBars();
 			}
 		} catch (Exception e) {
 			showErrorDialog(bundle.getString("Loading_lc"), urlname, e);
@@ -1187,8 +1183,6 @@ public class ImageAnalyzer {
 	void menuReopen() {
 		if (currentName == null) return;
 		animate = false; // stop any animation in progress
-		resetScrollBars();
-		resetScaleCombos();
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
@@ -1613,6 +1607,7 @@ public class ImageAnalyzer {
 	}
 
 	void displayImage(ImageData newImageData) {
+		resetScaleCombos();
 		if (incremental && incrementalThread != null) {
 			// Tell the incremental thread to stop drawing.
 			synchronized (this) {
@@ -1701,7 +1696,6 @@ public class ImageAnalyzer {
 		}
 		repeatCountLabel.setText(string);
 
-
 		if (imageData.palette.isDirect) {
 			string = bundle.getString("Palette_direct");
 		} else {
@@ -1733,6 +1727,7 @@ public class ImageAnalyzer {
 		statusLabel.setText("");
 
 		// Redraw both canvases.
+		resetScrollBars();
 		paletteCanvas.redraw();
 		imageCanvas.redraw();
 	}
