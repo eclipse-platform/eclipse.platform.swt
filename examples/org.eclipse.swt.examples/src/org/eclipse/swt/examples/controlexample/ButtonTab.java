@@ -23,8 +23,8 @@ import org.eclipse.swt.events.*;
 class ButtonTab extends AlignableTab {
 
 	/* Example widgets and groups that contain them */
-	Button button1, button2, button3, button4, button5, button6;
-	Group textButtonGroup, imageButtonGroup;
+	Button button1, button2, button3, button4, button5, button6, button7, button8, button9;
+	Group textButtonGroup, imageButtonGroup, imagetextButtonGroup;
 
 	/* Alignment widgets added to the "Control" group */
 	Button upButton, downButton;
@@ -83,6 +83,14 @@ class ButtonTab extends AlignableTab {
 		gridLayout.numColumns = 3;
 		imageButtonGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		imageButtonGroup.setText (ControlExample.getResourceString("Image_Buttons"));
+
+		/* Create a group for the image and text buttons */
+		imagetextButtonGroup = new Group(exampleGroup, SWT.NONE);
+		gridLayout = new GridLayout();
+		imagetextButtonGroup.setLayout(gridLayout);
+		gridLayout.numColumns = 3;
+		imagetextButtonGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		imagetextButtonGroup.setText (ControlExample.getResourceString("Image_Text_Buttons"));
 	}
 	
 	/**
@@ -121,6 +129,15 @@ class ButtonTab extends AlignableTab {
 		button5.setImage(instance.images[ControlExample.ciOpenFolder]);
 		button6 = new Button(imageButtonGroup, style);
 		button6.setImage(instance.images[ControlExample.ciTarget]);
+		button7 = new Button(imagetextButtonGroup, style);
+		button7.setText(ControlExample.getResourceString("One"));
+		button7.setImage(instance.images[ControlExample.ciClosedFolder]);
+		button8 = new Button(imagetextButtonGroup, style);
+		button8.setText(ControlExample.getResourceString("Two"));
+		button8.setImage(instance.images[ControlExample.ciOpenFolder]);
+		button9 = new Button(imagetextButtonGroup, style);
+		button9.setText(ControlExample.getResourceString("Three"));
+		button9.setImage(instance.images[ControlExample.ciTarget]);
 	}
 	
 	/**
@@ -150,7 +167,7 @@ class ButtonTab extends AlignableTab {
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {
-		return new Control [] {button1, button2, button3, button4, button5, button6};
+		return new Control [] {button1, button2, button3, button4, button5, button6, button7, button8, button9};
 	}
 	
 	/**
@@ -184,6 +201,9 @@ class ButtonTab extends AlignableTab {
 		button4.setAlignment (alignment);
 		button5.setAlignment (alignment);
 		button6.setAlignment (alignment);
+		button7.setAlignment (alignment);
+		button8.setAlignment (alignment);
+		button9.setAlignment (alignment);
 	}
 	
 	/**
