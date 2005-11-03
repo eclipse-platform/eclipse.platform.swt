@@ -356,10 +356,9 @@ final class GIFFileFormat extends FileFormat {
 			depth = defaultDepth;
 			palette = defaultPalette;
 		}
-		/* Work around: a customer has a GIF that specifies an
+		/* Work around: Ignore the case where a GIF specifies an
 		 * invalid index for the transparent pixel that is larger
-		 * than the number of entries in the palette. Detect this
-		 * case, and ignore the specified color index. */
+		 * than the number of entries in the palette. */
 		if (transparentPixel > 1 << depth) {
 			transparentPixel = -1;
 		}
