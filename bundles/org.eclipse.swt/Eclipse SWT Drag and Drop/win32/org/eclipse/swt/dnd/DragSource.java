@@ -274,7 +274,12 @@ private void drag() {
 	
 	int[] pdwEffect = new int[1];
 	int operations = opToOs(getStyle());
+	Display display = control.getDisplay();
+	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
+	Object oldValue = display.getData(key);
+	display.setData(key, new Boolean(true));
 	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
+	display.setData(key, oldValue);
 	int operation = osToOp(pdwEffect[0]);
 	if (dataEffect == DND.DROP_MOVE) {
 		operation = (operation == DND.DROP_NONE || operation == DND.DROP_COPY) ? DND.DROP_TARGET_MOVE : DND.DROP_MOVE;
