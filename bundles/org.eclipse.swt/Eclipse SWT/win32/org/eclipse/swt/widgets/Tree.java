@@ -3089,10 +3089,12 @@ public void showColumn (TreeColumn column) {
 			OS.MapWindowPoints (hwndParent, handle, rect, 2);
 			RECT itemRect = new RECT ();
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-			POINT pt = new POINT ();
-			pt.x = itemRect.right;
-			pt.y = rect.top;
-			if (!OS.PtInRect (rect, pt)) {
+			boolean scroll = itemRect.left < rect.left;
+			if (!scroll) {
+				int width = Math.min (rect.right - rect.left, itemRect.right - itemRect.left);
+				scroll = itemRect.left + width > rect.right;
+			}
+			if (scroll) {
 				SCROLLINFO info = new SCROLLINFO ();
 				info.cbSize = SCROLLINFO.sizeof;
 				info.fMask = OS.SIF_POS;

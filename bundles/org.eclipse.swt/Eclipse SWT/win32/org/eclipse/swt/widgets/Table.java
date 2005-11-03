@@ -3403,27 +3403,27 @@ public void showColumn (TableColumn column) {
 	* the width of the first. The left edge of the second column is
 	* also used as the right edge of the first.
 	*/
-	RECT rect = new RECT ();
-	rect.left = OS.LVIR_BOUNDS;
+	RECT itemRect = new RECT ();
+	itemRect.left = OS.LVIR_BOUNDS;
 	if (index == 0) {
-		rect.top = 1;
-		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
-		rect.right = rect.left;
+		itemRect.top = 1;
+		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, itemRect);
+		itemRect.right = itemRect.left;
 		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-		rect.left = rect.right - width;
+		itemRect.left = itemRect.right - width;
 	} else {
-		rect.top = index;
-		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
+		itemRect.top = index;
+		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, itemRect);
 	}
-	RECT area = new RECT ();
-	OS.GetClientRect (handle, area);
-	if (rect.left < area.left) {
-		int dx = rect.left - area.left;
+	RECT rect = new RECT ();
+	OS.GetClientRect (handle, rect);
+	if (itemRect.left < rect.left) {
+		int dx = itemRect.left - rect.left;
 		OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
 	} else {
-		int width = Math.min (area.right - area.left, rect.right - rect.left);
-		if (rect.left + width > area.right) {
-			int dx = rect.left + width - area.right;
+		int width = Math.min (rect.right - rect.left, itemRect.right - itemRect.left);
+		if (itemRect.left + width > rect.right) {
+			int dx = itemRect.left + width - rect.right;
 			OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
 		}
 	}
