@@ -341,6 +341,12 @@ public void pack () {
 		TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
 		if (item != null) {
 			if (index == 0) {
+				if ((parent.style & SWT.VIRTUAL) == 0 && !item.cached) {
+					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+					tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+					OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+					tvItem.mask = OS.TVIF_PARAM;
+				}
 				rect.left = item.handle;
 				if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
 					columnWidth = Math.max (columnWidth, rect.right);
