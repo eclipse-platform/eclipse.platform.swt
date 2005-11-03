@@ -845,6 +845,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NORESIZE | OS.TBSTYLE_TOOLTIPS | OS.TBSTYLE_CUSTOMERASE;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) bits |= OS.TBSTYLE_TRANSPARENT;
 	if ((style & SWT.SHADOW_OUT) == 0) bits |= OS.CCS_NODIVIDER;
 	if ((style & SWT.WRAP) != 0) bits |= OS.TBSTYLE_WRAPABLE;
 	if ((style & SWT.FLAT) != 0) bits |= OS.TBSTYLE_FLAT;
@@ -923,6 +924,23 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
 	if (result != null) return result;
 	return LRESULT.ZERO;
+}
+
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	/*
+	* Bug in Windows.  For some reason, NM_CUSTOMDRAW with
+	* CDDS_PREERASE and CDDS_POSTERASE is never sent for
+	* versions of Windows earlier than XP.  The fix is to
+	* draw the background in WM_ERASEBKGND;
+	*/
+	if (background != -1 || backgroundImage != null) {
+		if (OS.COMCTL32_MAJOR < 6) {
+			drawBackground (wParam);
+			return LRESULT.ONE;
+		}
+	}
+	return result;
 }
 
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
@@ -1112,8 +1130,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		case OS.NM_CUSTOMDRAW:
-			if (background == -1 && backgroundImage == null) {
-				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.COMCTL32_MAJOR < 6) break;
+			if (OS.IsAppThemed ()) {
+				if (background == -1 && backgroundImage == null) {
 					if (findThemeControl () == null) break;
 				}
 			}
@@ -1124,13 +1143,20 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 //			}
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREERASE: {
-					return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
-				}
-				case OS.CDDS_POSTERASE: {
-					RECT rect = new RECT ();
-					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-					drawBackground (nmcd.hdc, rect);
-					break;
+					/*
+					* Bug in Windows.  When a tool bar does not have the style
+					* TBSTYLE_FLAT, the rectangle to be erased in CDDS_PREERASE
+					* is empty.  The fix is to draw the whole client area.
+					*/
+					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+					if ((bits & OS.TBSTYLE_FLAT) == 0) {
+						drawBackground (nmcd.hdc);
+					} else {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						drawBackground (nmcd.hdc, rect);
+					}
+					return new LRESULT (OS.CDRF_SKIPDEFAULT);
 				}
 			}
 			break;
