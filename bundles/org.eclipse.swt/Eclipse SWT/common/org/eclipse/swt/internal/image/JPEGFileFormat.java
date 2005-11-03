@@ -1475,6 +1475,7 @@ ImageData[] loadFromByteStream() {
 				}
 			}
 		}
+		dataUnits = null; // release memory
 	}
 	ImageData imageData = createImageData();
 	if (progressive && loader.hasListeners()) {
