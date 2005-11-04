@@ -1210,6 +1210,11 @@ public CTabItem [] getItems() {
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
 }
+/*
+ * Return the lowercase of the first non-'&' character following
+ * an '&' character in the given string. If there are no '&'
+ * characters in the given string, return '\0'.
+ */
 char _findMnemonic (String string) {
 	if (string == null) return '\0';
 	int index = 0;
@@ -1217,10 +1222,23 @@ char _findMnemonic (String string) {
 	do {
 		while (index < length && string.charAt (index) != '&') index++;
 		if (++index >= length) return '\0';
-		if (string.charAt (index) != '&') return string.charAt (index);
+		if (string.charAt (index) != '&') return Character.toLowerCase (string.charAt (index));
 		index++;
 	} while (index < length);
  	return '\0';
+}
+String stripMnemonic (String string) {
+	int index = 0;
+	int length = string.length ();
+	do {
+		while ((index < length) && (string.charAt (index) != '&')) index++;
+		if (++index >= length) return string;
+		if (string.charAt (index) != '&') {
+			return string.substring(0, index-1) + string.substring(index, length);
+		}
+		index++;
+	} while (index < length);
+ 	return string;
 }
 /**
  * Returns <code>true</code> if the receiver is minimized.
@@ -1546,11 +1564,7 @@ void initAccessible() {
 			String name = null;
 			int childID = e.childID;
 			if (childID >= 0 && childID < items.length) {
-				name = items[childID].getText();
-				int index = name.indexOf('&');
-				if (index > 0) {
-					name = name.substring(0, index) + name.substring(index + 1);
-				}
+				name = stripMnemonic(items[childID].getText());
 			} else if (childID == items.length + CHEVRON_CHILD_ID) {
 				name = SWT.getMessage("SWT_ShowList"); //$NON-NLS-1$
 			} else if (childID == items.length + MINIMIZE_CHILD_ID) {
@@ -1616,7 +1630,6 @@ void initAccessible() {
 			e.childID = childID;
 		}
 
-		
 		public void getLocation(AccessibleControlEvent e) {
 			Rectangle location = null;
 			int childID = e.childID;
@@ -1856,7 +1869,7 @@ boolean onMnemonic (Event event) {
 		if (items[i] != null) {
 			char mnemonic = _findMnemonic (items[i].getText ());
 			if (mnemonic != '\0') {
-				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+				if (Character.toLowerCase (key) == mnemonic) {
 					setSelection(i, true);
 					return true;
 				}

@@ -5448,8 +5448,30 @@ void handleVerticalScroll(Event event) {
 void initializeAccessible() {
 	final Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
+		public void getName (AccessibleEvent e) {
+			String name = null;
+			Label label = getAssociatedLabel ();
+			if (label != null) {
+				name = stripMnemonic (label.getText());
+			}
+			e.result = name;
+		}
 		public void getHelp(AccessibleEvent e) {
 			e.result = getToolTipText();
+		}
+		public void getKeyboardShortcut(AccessibleEvent e) {
+			String shortcut = null;
+			Label label = getAssociatedLabel ();
+			if (label != null) {
+				String text = label.getText ();
+				if (text != null) {
+					char mnemonic = _findMnemonic (text);
+					if (mnemonic != '\0') {
+						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
+					}
+				}
+			}
+			e.result = shortcut;
 		}
 	});
 	accessible.addAccessibleTextListener(new AccessibleTextAdapter() {
@@ -5483,6 +5505,51 @@ void initializeAccessible() {
 			accessible.setFocus(ACC.CHILDID_SELF);
 		}
 	});
+}
+/* 
+ * Return the Label immediately preceding the receiver in the z-order, 
+ * or null if none. 
+ */
+Label getAssociatedLabel () {
+	Control[] siblings = getParent ().getChildren ();
+	for (int i = 0; i < siblings.length; i++) {
+		if (siblings [i] == StyledText.this) {
+			if (i > 0 && siblings [i-1] instanceof Label) {
+				return (Label) siblings [i-1];
+			}
+		}
+	}
+	return null;
+}
+String stripMnemonic (String string) {
+	int index = 0;
+	int length = string.length ();
+	do {
+		while ((index < length) && (string.charAt (index) != '&')) index++;
+		if (++index >= length) return string;
+		if (string.charAt (index) != '&') {
+			return string.substring(0, index-1) + string.substring(index, length);
+		}
+		index++;
+	} while (index < length);
+ 	return string;
+}
+/*
+ * Return the lowercase of the first non-'&' character following
+ * an '&' character in the given string. If there are no '&'
+ * characters in the given string, return '\0'.
+ */
+char _findMnemonic (String string) {
+	if (string == null) return '\0';
+	int index = 0;
+	int length = string.length ();
+	do {
+		while (index < length && string.charAt (index) != '&') index++;
+		if (++index >= length) return '\0';
+		if (string.charAt (index) != '&') return Character.toLowerCase (string.charAt (index));
+		index++;
+	} while (index < length);
+ 	return '\0';
 }
 /** 
  * Initializes the fonts used to render font styles.

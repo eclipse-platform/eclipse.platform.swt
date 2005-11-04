@@ -416,6 +416,23 @@ void dropDown (boolean drop) {
 	popup.setVisible (true);
 	list.setFocus ();
 }
+/*
+ * Return the lowercase of the first non-'&' character following
+ * an '&' character in the given string. If there are no '&'
+ * characters in the given string, return '\0'.
+ */
+char _findMnemonic (String string) {
+	if (string == null) return '\0';
+	int index = 0;
+	int length = string.length ();
+	do {
+		while (index < length && string.charAt (index) != '&') index++;
+		if (++index >= length) return '\0';
+		if (string.charAt (index) != '&') return Character.toLowerCase (string.charAt (index));
+		index++;
+	} while (index < length);
+ 	return '\0';
+}
 /* 
  * Return the Label immediately preceding the receiver in the z-order, 
  * or null if none. 
@@ -519,17 +536,6 @@ public int getItemHeight () {
 public String [] getItems () {
 	checkWidget ();
 	return list.getItems ();
-}
-char getMnemonic (String string) {
-	int index = 0;
-	int length = string.length ();
-	do {
-		while ((index < length) && (string.charAt (index) != '&')) index++;
-		if (++index >= length) return '\0';
-		if (string.charAt (index) != '&') return string.charAt (index);
-		index++;
-	} while (index < length);
- 	return '\0';
 }
 /**
  * Returns a <code>Point</code> whose x coordinate is the start
@@ -728,7 +734,7 @@ void initAccessible() {
 			if (label != null) {
 				String text = label.getText ();
 				if (text != null) {
-					char mnemonic = getMnemonic (text);
+					char mnemonic = _findMnemonic (text);
 					if (mnemonic != '\0') {
 						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
 					}

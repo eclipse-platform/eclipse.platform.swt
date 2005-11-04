@@ -176,7 +176,11 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
 	gc.drawLine(x, y, x+w-1, y);
 	gc.drawLine(x, y, x,     y+h-1);
 }
-
+/*
+ * Return the lowercase of the first non-'&' character following
+ * an '&' character in the given string. If there are no '&'
+ * characters in the given string, return '\0'.
+ */
 char _findMnemonic (String string) {
 	if (string == null) return '\0';
 	int index = 0;
@@ -184,12 +188,11 @@ char _findMnemonic (String string) {
 	do {
 		while (index < length && string.charAt (index) != '&') index++;
 		if (++index >= length) return '\0';
-		if (string.charAt (index) != '&') return string.charAt (index);
+		if (string.charAt (index) != '&') return Character.toLowerCase (string.charAt (index));
 		index++;
 	} while (index < length);
  	return '\0';
 }
-
 /**
  * Returns the alignment.
  * The alignment style (LEFT, CENTER or RIGHT) is returned.
@@ -300,10 +303,6 @@ private void initAccessible() {
 		public void getState(AccessibleControlEvent e) {
 			e.detail = ACC.STATE_READONLY;
 		}
-		
-		public void getValue(AccessibleControlEvent e) {
-			e.result = getText();
-		}
 	});
 }
 void onDispose(DisposeEvent event) {
@@ -317,7 +316,7 @@ void onDispose(DisposeEvent event) {
 void onMnemonic(TraverseEvent event) {
 	char mnemonic = _findMnemonic(text);
 	if (mnemonic == '\0') return;
-	if (Character.toUpperCase(event.character) != Character.toUpperCase(mnemonic)) return;
+	if (Character.toLowerCase(event.character) != mnemonic) return;
 	Composite control = this.getParent();
 	while (control != null) {
 		Control [] children = control.getChildren();
