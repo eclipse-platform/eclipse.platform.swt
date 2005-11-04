@@ -51,7 +51,7 @@ public class Tree extends Composite {
 	boolean dragStarted, gestureCompleted, insertAfter, shrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
-	boolean linesVisible, customDraw, printClient;
+	boolean linesVisible, customDraw, printClient, painted;
 	int headerToolTipHandle;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
@@ -335,6 +335,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 			if (backgroundImage != null) {
 				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 			}
+			break;
 		}
 	}
 	int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
@@ -393,7 +394,12 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 				}
 			}
 			updateScrollBar ();
+			break;
 		}
+		
+		case OS.WM_PAINT:
+			painted = true;
+			break;
 	}
 	return code;
 }
@@ -4475,7 +4481,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if ((style & SWT.VIRTUAL) != 0) {
 					if (!checkData (item, false)) break;
 				}
-				item.cached = true;
+				if (painted) item.cached = true;
 			}
 			int index = 0;
 			if (hwndHeader != 0) {
