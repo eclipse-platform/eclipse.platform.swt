@@ -1183,15 +1183,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 					event.width = rect.right - rect.left;
 					event.height = rect.bottom - rect.top;
 					event.count = count - 1 - i;
-					/*
-					* It is possible (but unlikely), that application
-					* code could have disposed the widget in the paint
-					* event.  If this happens, attempt to give back the
-					* paint GC anyways because this is a scarce Windows
-					* resource.
-					*/
 					sendEvent (SWT.Paint, event);
-					if (isDisposed ()) break;
 				}
 			} else {
 				if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
