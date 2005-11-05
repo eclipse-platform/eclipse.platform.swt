@@ -636,7 +636,9 @@ public void setEnabled (boolean enabled) {
 		state |= DISABLED;
 	}
 	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
-	if (image != null) updateImages (enabled && parent.getEnabled ());
+	if ((style & SWT.SEPARATOR) == 0) {
+		if (image != null) updateImages (enabled && parent.getEnabled ());
+	}
 }
 
 /**
@@ -745,7 +747,7 @@ public void setSelection (boolean selected) {
 	* BTNS_CHECK or BTNS_CHECKGROUP is selected and then
 	* disabled, the item does not draw using the disabled
 	* image.  The fix is to use the disabled image in all
-	* image lists.
+	* image lists for the item.
 	* 
 	* NOTE: This means that the image list must be updated
 	* when the selection changes in a disabled tool item.
@@ -858,6 +860,7 @@ public void setWidth (int width) {
 }
 
 void updateImages (boolean enabled) {
+	if ((style & SWT.SEPARATOR) != 0) return;
 	int hwnd = parent.handle;
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;

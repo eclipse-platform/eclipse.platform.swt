@@ -390,12 +390,19 @@ void enableWidget (boolean enabled) {
 	* BTNS_CHECK or BTNS_CHECKGROUP is selected and then
 	* disabled, the item does not draw using the disabled
 	* image.  The fix is to use the disabled image in all
-	* image lists.
+	* image lists for the item.
+	* 
+	* Feature in Windows.  When a tool bar is disabled,
+	* the text draws disabled but the images do not.
+	* The fix is to use the disabled image in all image
+	* lists for all items.
 	*/
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
 		if (item != null) {
-			item.updateImages (enabled && item.getEnabled ());
+			if ((item.style & SWT.SEPARATOR) == 0) {
+				item.updateImages (enabled && item.getEnabled ());
+			}
 		}
 	}
 }
