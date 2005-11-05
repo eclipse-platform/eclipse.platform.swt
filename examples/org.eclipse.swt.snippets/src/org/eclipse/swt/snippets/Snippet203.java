@@ -36,7 +36,7 @@ public static void main(String[] args) {
 	final TextLayout[] layouts = new TextLayout[texts.length];
 	for (int i = 0; i < layouts.length; i++) {
 		TextLayout layout = new TextLayout(display);
-		layout.setText(texts[0]);
+		layout.setText(texts[i]);
 		layout.setIndent(30);
 		layout.setJustify(true);
 		layout.setAlignment(alignments[i]);		
