@@ -1999,6 +1999,7 @@ int itemNotificationProc (int browser, int id, int message) {
 					OS.memcpy (start, ptr, 4);
 					OS.memcpy (ids, start [0], count * 4);
 					OS.HUnlock (ptr);
+					boolean oldIgnore = ignoreSelect;
 					ignoreSelect = true;
 					/*
 					* Bug in the Macintosh.  When the DataBrowser selection flags includes
@@ -2019,10 +2020,12 @@ int itemNotificationProc (int browser, int id, int message) {
 					if ((style & SWT.SINGLE) != 0) {
 						OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
 					}
-					ignoreSelect = false;
-					Event event = new Event ();
-					event.item = _getItem (id, true);
-					sendEvent (SWT.Selection, event);
+					ignoreSelect = oldIgnore;
+					if (!ignoreSelect) {
+						Event event = new Event ();
+						event.item = _getItem (id, true);
+						sendEvent (SWT.Selection, event);
+					}
 				}
 			}
 			OS.DisposeHandle (ptr);
@@ -2258,10 +2261,12 @@ public void removeAll () {
 	items = new TreeItem [4];
 	childIds = null;
 	ignoreExpand = true;
+	ignoreSelect = true;
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	ignoreExpand = false;
+	ignoreSelect = false;
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	anchorFirst = anchorLast = 0;
 	visibleCount = 0;
