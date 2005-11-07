@@ -162,6 +162,7 @@ typedef enum {
 	_1XTestFakeKeyEvent_FUNC,
 	_1XTestFakeMotionEvent_FUNC,
 	_1XWarpPointer_FUNC,
+	_1atk_1object_1add_1relationship_FUNC,
 	_1g_1cclosure_1new_FUNC,
 	_1g_1closure_1ref_FUNC,
 	_1g_1closure_1unref_FUNC,

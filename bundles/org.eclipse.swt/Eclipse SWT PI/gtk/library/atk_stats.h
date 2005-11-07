@@ -35,7 +35,6 @@ typedef enum {
 	_1GTK_1ACCESSIBLE_FUNC,
 	_1atk_1focus_1tracker_1notify_FUNC,
 	_1atk_1get_1default_1registry_FUNC,
-	_1atk_1object_1add_1relationship_FUNC,
 	_1atk_1object_1factory_1create_1accessible_FUNC,
 	_1atk_1object_1factory_1get_1accessible_1type_FUNC,
 	_1atk_1object_1initialize_FUNC,

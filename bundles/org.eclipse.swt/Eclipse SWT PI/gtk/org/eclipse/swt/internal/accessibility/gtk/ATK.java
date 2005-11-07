@@ -177,15 +177,6 @@ public static final int /*long*/ atk_object_factory_get_accessible_type (int /*l
 		lock.unlock();
 	}
 }
-public static final native boolean _atk_object_add_relationship (int /*long*/ object, int relationship, int /*long*/ target);
-public static final boolean atk_object_add_relationship (int /*long*/ object, int relationship, int /*long*/ target) {
-	lock.lock();
-	try {
-		return _atk_object_add_relationship(object, relationship, target);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native void _atk_object_initialize (int /*long*/ accessible, int /*long*/ data);
 public static final void atk_object_initialize (int /*long*/ accessible, int /*long*/ data) {
 	lock.lock();

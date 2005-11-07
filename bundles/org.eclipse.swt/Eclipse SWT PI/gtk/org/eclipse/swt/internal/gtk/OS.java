@@ -35,6 +35,7 @@ public class OS extends Platform {
 	}
 
 	/** Constants */
+	public static final int ATK_RELATION_LABELLED_BY = 4;
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
 	public static final int G_SIGNAL_MATCH_ID = 1 << 0;
 	public static final int GDK_2BUTTON_PRESS = 0x5;
@@ -242,6 +243,8 @@ public class OS extends Platform {
 	public static final int GTK_FILE_CHOOSER_ACTION_SAVE = 1;
 	public static final int GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER = 2;
 	public static final int GTK_HAS_FOCUS = 1 << 12;
+	public static final int GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
+	public static final int GTK_ICON_SIZE_LARGE_TOOLBAR = 3;
 	public static final int GTK_ICON_SIZE_DIALOG = 6;
 	public static final int GTK_JUSTIFY_CENTER = 0x2;
 	public static final int GTK_JUSTIFY_LEFT = 0x0;
@@ -8571,6 +8574,15 @@ public static final void pango_tab_array_set_tab(int /*long*/ tab_array, int tab
 	lock.lock();
 	try {
 		_pango_tab_array_set_tab(tab_array, tab_index, alignment, location);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _atk_object_add_relationship (int /*long*/ object, int relationship, int /*long*/ target);
+public static final boolean atk_object_add_relationship (int /*long*/ object, int relationship, int /*long*/ target) {
+	lock.lock();
+	try {
+		return _atk_object_add_relationship(object, relationship, target);
 	} finally {
 		lock.unlock();
 	}

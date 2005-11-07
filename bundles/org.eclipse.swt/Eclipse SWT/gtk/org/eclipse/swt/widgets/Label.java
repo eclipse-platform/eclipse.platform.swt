@@ -13,7 +13,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.accessibility.gtk.ATK;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -100,7 +99,7 @@ void addRelation (Control control) {
 	int /*long*/ accessible = OS.gtk_widget_get_accessible (labelHandle);
 	int /*long*/ controlAccessible = OS.gtk_widget_get_accessible (control.handle);
 	if (accessible != 0 && controlAccessible != 0) {
-		ATK.atk_object_add_relationship (controlAccessible, ATK.ATK_RELATION_LABELLED_BY, accessible);
+		OS.atk_object_add_relationship (controlAccessible, OS.ATK_RELATION_LABELLED_BY, accessible);
 	}
 }
 

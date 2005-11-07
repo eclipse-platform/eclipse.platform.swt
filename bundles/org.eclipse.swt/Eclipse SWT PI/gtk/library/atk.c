@@ -137,18 +137,6 @@ JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
 }
 #endif
 
-#ifndef NO__1atk_1object_1add_1relationship
-JNIEXPORT jboolean JNICALL ATK_NATIVE(_1atk_1object_1add_1relationship)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	jboolean rc = 0;
-	ATK_NATIVE_ENTER(env, that, _1atk_1object_1add_1relationship_FUNC);
-	rc = (jboolean)atk_object_add_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
-	ATK_NATIVE_EXIT(env, that, _1atk_1object_1add_1relationship_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1atk_1object_1factory_1create_1accessible
 JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1object_1factory_1create_1accessible)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

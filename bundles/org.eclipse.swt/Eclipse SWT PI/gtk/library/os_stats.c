@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1023;
-int OS_nativeFunctionCallCount[1023];
+int OS_nativeFunctionCount = 1024;
+int OS_nativeFunctionCallCount[1024];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -158,6 +158,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XTestFakeKeyEvent",
 	"_1XTestFakeMotionEvent",
 	"_1XWarpPointer",
+	"_1atk_1object_1add_1relationship",
 	"_1g_1cclosure_1new",
 	"_1g_1closure_1ref",
 	"_1g_1closure_1unref",
