@@ -2260,13 +2260,11 @@ public void removeAll () {
 	}
 	items = new TreeItem [4];
 	childIds = null;
-	ignoreExpand = true;
-	ignoreSelect = true;
+	ignoreExpand = ignoreSelect = true;
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
-	ignoreExpand = false;
-	ignoreSelect = false;
+	ignoreExpand = ignoreSelect = false;
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	anchorFirst = anchorLast = 0;
 	visibleCount = 0;
