@@ -435,7 +435,15 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	if ((style & SWT.SEPARATOR) != 0) {
 		OS.InvalidateRect (handle, null, true);
 		return result;
-	}		
+	}
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW) {
+		if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) {
+			return result;
+		}
+		OS.InvalidateRect (handle, null, true);
+		return result;
+	}
 	/*
 	* Bug in Windows.  For some reason, a label with
 	* style SS_LEFT, SS_CENTER or SS_RIGHT does not
@@ -443,8 +451,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* Note that SS_LEFTNOWORDWRAP does not have the
 	* problem.  The fix is to force the redraw.
 	*/
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & OS.SS_LEFTNOWORDWRAP) == 0) {
+	if ((bits & OS.SS_LEFTNOWORDWRAP) != OS.SS_LEFTNOWORDWRAP) {
 		OS.InvalidateRect (handle, null, true);
 		return result;
 	}
