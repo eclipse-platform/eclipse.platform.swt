@@ -4076,6 +4076,11 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					return LRESULT.ONE;
 				}
 				ignoreColumnMove = true;
+				switch (hdr.code) {
+					case OS.HDN_DIVIDERDBLCLICKW:
+					case OS.HDN_DIVIDERDBLCLICKA:
+						if (column != null) column.pack ();
+				}
 				break;
 			}
 			case OS.NM_RELEASEDCAPTURE: {
