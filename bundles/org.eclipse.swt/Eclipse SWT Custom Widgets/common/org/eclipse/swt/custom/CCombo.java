@@ -440,7 +440,7 @@ char _findMnemonic (String string) {
 Label getAssociatedLabel () {
 	Control[] siblings = getParent ().getChildren ();
 	for (int i = 0; i < siblings.length; i++) {
-		if (siblings [i] == CCombo.this) {
+		if (siblings [i] == this) {
 			if (i > 0 && siblings [i-1] instanceof Label) {
 				return (Label) siblings [i-1];
 			}
