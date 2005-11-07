@@ -3194,19 +3194,22 @@ public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	if (key.equals (ADD_WIDGET_KEY)) {
-		Object [] data = (Object [])value;
-		int /*long*/ handle = ((LONG)data [0]).value;
-		Widget widget = (Widget)data [1];
-		if (widget == null) removeWidget (handle);
-		else addWidget (handle, widget);
-	}
-	
 	if (key.equals (DISPATCH_EVENT_KEY)) {
 		if (value == null || value instanceof int []) {
 			dispatchEvents = (int []) value;
 			if (value == null) putGdkEvents ();
 			return;
+		}
+	}
+	
+	if (key.equals (ADD_WIDGET_KEY)) {
+		Object [] data = (Object []) value;
+		int /*long*/ handle = ((LONG) data [0]).value;
+		Widget widget = (Widget) data [1];
+		if (widget != null) {
+			addWidget (handle, widget);
+		} else {
+			removeWidget (handle);
 		}
 	}
 
