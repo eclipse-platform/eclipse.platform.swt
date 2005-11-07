@@ -15,9 +15,21 @@ import org.eclipse.swt.widgets.Event;
 
 /**
  * Instances of this class are sent as a result of
- * keys being pressed and released on the keyboard
- *
+ * keys being pressed and released on the keyboard.
+ * <p>
+ * When a key listener is added to a control, the control
+ * is expected to take part in widget traversal.  By default,
+ * all traversal keys (such as the tab key and so on) are
+ * delivered to the control.  In order for a control to take
+ * part in traversal, it should listen for traversal events.
+ * Otherwise, the user can traverse into a control but not
+ * out.  Note that native controls such as table and tree
+ * implement key traversal in the operating system.  It is
+ * not necessary to add traveral listeners for these controls,
+ * unless you want to override the default traveral.
+ * </p>
  * @see KeyListener
+ * @see TraverseListener
  */
 
 public class KeyEvent extends TypedEvent {
