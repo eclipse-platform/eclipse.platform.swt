@@ -6929,7 +6929,7 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
  *  
  * @param startLine first line the bullet is applied to, 0 based
  * @param lineCount number of lines the bullet applies to.
- * @param indent line indent
+ * @param bullet bullet description
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -6995,7 +6995,7 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
  *  
  * @param startLine first line the justify is applied to, 0 based
  * @param lineCount number of lines the justify applies to.
- * @param indent line indent
+ * @param justify true if the text will be expanded to fill the full width
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

@@ -90,7 +90,7 @@ public abstract class EmbeddedObject {
 		/**
 		 * 
 		 * 
-		 * @param control the control
+		 * @param image the image
 		 * @param alignment the vertical alignment for the control
 		 * SWT.TOP == top of the line
 		 * SWT.CENTER == baseline
