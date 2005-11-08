@@ -121,20 +121,21 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		return new Point (width, height);
 	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	boolean hasImage = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW, hasText = true;
-	if (hasImage) {
+	boolean drawText = text.length () != 0;
+	boolean drawImage = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW;
+	if (drawImage) {
 		if (image != null) {
 			Rectangle rect = image.getBounds();
 			width += rect.width;
 			height += rect.height;
 			if (IMAGE_AND_TEXT) {
-				if (text.length () != 0) width += MARGIN;
+				if (drawText) width += MARGIN;
 			} else {
-				hasText = false;
+				drawText = false;
 			}
 		}
 	}
-	if (hasText) {
+	if (drawText) {
 		int hDC = OS.GetDC (handle);
 		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		int oldFont = OS.SelectObject (hDC, newFont);
@@ -148,7 +149,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_EXPANDTABS;
 			if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
 				flags |= OS.DT_WORDBREAK;
-				rect.right = wHint;
+				rect.right = Math.max (0, wHint - width);
 			}
 			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 			OS.GetWindowText (handle, buffer, length + 1);
@@ -169,9 +170,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* The fix is to increase the width to include
 	* this trim.
 	*/
-	if (OS.IsWinCE) {
-		if (!hasImage) width += 2;
-	}
+	if (OS.IsWinCE && !drawImage) width += 2;
 	return new Point (width, height);
 }
 
@@ -438,9 +437,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW) {
-		if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) {
-			return result;
-		}
 		OS.InvalidateRect (handle, null, true);
 		return result;
 	}
@@ -505,8 +501,11 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		int width = struct.right - struct.left;
 		int height = struct.bottom - struct.top;
 		if (width != 0 && height != 0) {
+			boolean drawImage = image != null;
+			boolean drawText = IMAGE_AND_TEXT && text.length () != 0;
+			int margin = drawText && drawImage ? MARGIN : 0;
 			int imageWidth = 0, imageHeight = 0;
-			if (image != null) {
+			if (drawImage) {
 				Rectangle rect = image.getBounds ();
 				imageWidth = rect.width;
 				imageHeight = rect.height;
@@ -514,7 +513,7 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 			RECT rect = null;
 			TCHAR buffer = null;
 			int textWidth = 0, textHeight = 0, flags = 0;
-			if (text.length () != 0) {
+			if (drawText) {
 				rect = new RECT ();
 				flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_EXPANDTABS;
 				if ((style & SWT.LEFT) != 0) flags |= OS.DT_LEFT;
@@ -522,7 +521,7 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 				if ((style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
 				if ((style & SWT.WRAP) != 0) {
 					flags |= OS.DT_WORDBREAK;
-					rect.right = Math.max (0, width - imageWidth - MARGIN);
+					rect.right = Math.max (0, width - imageWidth - margin);
 				}
 				buffer = new TCHAR (getCodePage (), text, true);
 				OS.DrawText (struct.hDC, buffer, -1, rect, flags);
@@ -531,13 +530,13 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 			}
 			int x = 0;
 			if ((style & SWT.CENTER) != 0) {
-				x = Math.max (0, (width - imageWidth - textWidth - MARGIN) / 2);
+				x = Math.max (0, (width - imageWidth - textWidth - margin) / 2);
 			} else {
 				if ((style & SWT.RIGHT) != 0) {
-					x = width - imageWidth - textWidth - MARGIN;
+					x = width - imageWidth - textWidth - margin;
 				}
 			}
-			if (image != null) {
+			if (drawImage) {
 				GCData data = new GCData();
 				data.device = display;
 				GC gc = GC.win32_new (struct.hDC, data);
@@ -545,9 +544,9 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 				gc.drawImage (drawnImage, x, Math.max (0, (height - imageHeight) / 2));
 				if (drawnImage != image) drawnImage.dispose ();
 				gc.dispose ();
-				x += imageWidth + MARGIN;
+				x += imageWidth + margin;
 			}
-			if (text.length () != 0) {
+			if (drawText) {
 				flags &= ~OS.DT_CALCRECT;
 				rect.left = x;
 				rect.right += rect.left;
