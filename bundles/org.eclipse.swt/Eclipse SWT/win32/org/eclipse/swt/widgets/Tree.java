@@ -4192,7 +4192,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-						rect.right = itemRect.right;
+						rect.right = Math.max (rect.right, itemRect.right);
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, itemRect);
 						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
 						rect.left = itemRect.right - gridWidth;
