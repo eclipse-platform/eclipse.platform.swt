@@ -138,11 +138,11 @@ void _setBackgroundImage (Image image) {
 	* Feature in Windows.  If TVM_SETBKCOLOR is never
 	* used to set the background color of a tree, the
 	* background color of the lines and the plus/minus
-	* will not be drawn using the default background
-	* color, not the HBRUSH returned from WM_CTLCOLOR.
-	* The fix is to set the background color to the 
-	* default (when it is already the default) to make
-	* Windows use the brush.
+	* will be drawn using the default background color,
+	* not the HBRUSH returned from WM_CTLCOLOR.  The fix
+	* is to set the background color to the default (when
+	* it is already the default) to make Windows use the
+	* brush.
 	*/
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0) == -1) {
