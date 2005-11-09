@@ -158,6 +158,12 @@ void _setImage (Image image) {
 		} else {
 			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
 		}
+		/*
+		* Bug in Windows.  Under certain cirumstances yet to be
+		* isolated, BCM_SETIMAGELIST does not redraw the control
+		* when a new image is set.  The fix is to force a redraw.
+		*/
+		OS.InvalidateRect (handle, null, true);
 	} else {
 		if (image2 != null) image2.dispose ();
 		image2 = null;
@@ -516,6 +522,12 @@ void enableWidget (boolean enabled) {
 			}
 			buttonImageList.himl = imageList.getHandle ();
 			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+			/*
+			* Bug in Windows.  Under certain cirumstances yet to be
+			* isolated, BCM_SETIMAGELIST does not redraw the control
+			* when an image is set.  The fix is to force a redraw.
+			*/
+			OS.InvalidateRect (handle, null, true);
 		}
 	}
 }
