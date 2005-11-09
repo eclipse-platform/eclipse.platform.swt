@@ -47,9 +47,9 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	int headerToolTipHandle, lastIndexOf, lastWidth, sortDirection, resizeCount;
+	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreColumnMove, ignoreColumnResize;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	boolean wasSelected, wasResized;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
@@ -126,7 +126,7 @@ void _setBackgroundImage (Image image) {
 			pixel = background != -1 ? background : defaultBackground ();
 			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
-			if ((style & SWT.CHECK) != 0) setCheckboxImageListColor ();
+			if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
 		}
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			int bits = OS.LVS_EX_FULLROWSELECT;
@@ -701,7 +701,7 @@ void createHandle () {
 		int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 		int width = (oneItem >> 16) - (empty >> 16), height = width;
-		setCheckboxImageList (width, height);
+		setCheckboxImageList (width, height, false);
 		OS.SendMessage (handle, OS. LVM_SETCALLBACKMASK, OS.LVIS_STATEIMAGEMASK, 0);
 	}
 
@@ -981,6 +981,7 @@ void createItem (TableItem item, int index) {
 
 void createWidget () {
 	super.createWidget ();
+	itemHeight = -1;
 	items = new TableItem [4];
 	columns = new TableColumn [4];
 	/*
@@ -1323,7 +1324,7 @@ void destroyItem (TableItem item) {
 	setDeferResize (false);
 }
 
-void fixCheckboxImageList () {
+void fixCheckboxImageList (boolean fixScroll) {
 	/*
 	* Bug in Windows.  When the state image list is larger than the
 	* image list, Windows incorrectly positions the state images.  When
@@ -1340,7 +1341,69 @@ void fixCheckboxImageList () {
 	int [] stateCx = new int [1], stateCy = new int [1];
 	OS.ImageList_GetIconSize (hStateList, stateCx, stateCy);
 	if (cx [0] == stateCx [0] && cy [0] == stateCy [0]) return;
-	setCheckboxImageList (cx [0], cy [0]);
+	setCheckboxImageList (cx [0], cy [0], fixScroll);
+}
+
+void fixCheckboxImageListColor (boolean fixScroll) {
+	if ((style & SWT.CHECK) == 0) return;
+	int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+	if (hStateList == 0) return;
+	int [] cx = new int [1], cy = new int [1];
+	OS.ImageList_GetIconSize (hStateList, cx, cy);
+	setCheckboxImageList (cx [0], cy [0], fixScroll);
+}
+
+void fixItemHeight (boolean fixScroll) {
+	/*
+	* Bug in Windows.  When both a header and grid lines are
+	* displayed, the grid lines do not take into account the
+	* height of the header and draw in the wrong place.  The
+	* fix is to set the height of the table items to be the
+	* height of the header so that the lines draw in the right
+	* place.  The height of a table item is the maximum of the
+	* height of the font or the height of image list.
+	*
+	* NOTE: In version 5.80 of COMCTL32.DLL, the bug is fixed.
+	*/
+	if (itemHeight != -1) return;
+	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) return;
+	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
+	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
+	if ((bits & OS.LVS_NOCOLUMNHEADER) != 0) return;
+	/*
+	* Bug in Windows.  Making any change to an item that
+	* changes the item height of a table while the table
+	* is scrolled can cause the lines to draw incorrectly.
+	* This happens even when the lines are not currently
+	* visible and are shown afterwards.  The fix is to
+	* save the top index, scroll to the top of the table
+	* and then restore the original top index.
+	*/
+	int topIndex = getTopIndex ();
+	if (fixScroll && topIndex != 0) {
+		setRedraw (false);
+		setTopIndex (0);
+	}
+	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+	if (hOldList != 0) return;
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	RECT rect = new RECT ();
+	OS.GetWindowRect (hwndHeader, rect);
+	int height = rect.bottom - rect.top - 1;
+	int hImageList = OS.ImageList_Create (1, height, 0, 0, 0);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+	fixCheckboxImageList (false);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
+	if (headerImageList != null) {
+		int hHeaderImageList = headerImageList.getHandle ();
+		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+	}
+	OS.ImageList_Destroy (hImageList);
+	if (fixScroll && topIndex != 0) {
+		setTopIndex (topIndex);
+		setRedraw (true);
+	}
 }
 
 int getBackgroundPixel () {
@@ -1860,17 +1923,22 @@ int imageIndex (Image image) {
 		* and then restore the original top index.
 		*/
 		int topIndex = getTopIndex ();
-		setRedraw (false);
-		setTopIndex (0);
+		if (topIndex != 0) {
+			setRedraw (false);
+			setTopIndex (0);
+		}
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 		if (headerImageList != null) {
 			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			int hHeaderImageList = headerImageList.getHandle ();
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
-		setTopIndex (topIndex);
-		fixCheckboxImageList ();
-		setRedraw (true);
+		fixCheckboxImageList (false);
+		if (itemHeight != -1) setItemHeight (false);
+		if (topIndex != 0) {
+			setTopIndex (topIndex);
+			setRedraw (true);
+		}
 		return index;
 	}
 	int index = imageList.indexOf (image);
@@ -2501,7 +2569,7 @@ void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 	OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
-	if ((style & SWT.CHECK) != 0) setCheckboxImageListColor ();
+	if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
 	/*
 	* Feature in Windows.  When the background color is
 	* changed, the table does not redraw until the next
@@ -2627,16 +2695,7 @@ void setDeferResize (boolean defer) {
 	}
 }
 
-void setCheckboxImageListColor () {
-	if ((style & SWT.CHECK) == 0) return;
-	int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	if (hStateList == 0) return;
-	int [] cx = new int [1], cy = new int [1];
-	OS.ImageList_GetIconSize (hStateList, cx, cy);
-	setCheckboxImageList (cx [0], cy [0]);
-}
-
-void setCheckboxImageList (int width, int height) {
+void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 4;
 	int flags = ImageList.COLOR_FLAGS;
@@ -2689,9 +2748,27 @@ void setCheckboxImageList (int width, int height) {
 		OS.ImageList_AddMasked (hStateList, hBitmap, clrBackground);
 	}
 	OS.DeleteObject (hBitmap);
+	/*
+	* Bug in Windows.  Making any change to an item that
+	* changes the item height of a table while the table
+	* is scrolled can cause the lines to draw incorrectly.
+	* This happens even when the lines are not currently
+	* visible and are shown afterwards.  The fix is to
+	* save the top index, scroll to the top of the table
+	* and then restore the original top index.
+	*/
+	int topIndex = getTopIndex ();
+	if (fixScroll && topIndex != 0) {
+		setRedraw (false);
+		setTopIndex (0);
+	}
 	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hStateList);
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
+	if (fixScroll && topIndex != 0) {
+		setTopIndex (topIndex);
+		setRedraw (true);
+	}
 }
 
 void setFocusIndex (int index) {
@@ -2721,12 +2798,24 @@ public void setFont (Font font) {
 	* and then restore the original top index.
 	*/
 	int topIndex = getTopIndex ();
-	setRedraw (false);
-	setTopIndex (0);
+	if (topIndex != 0) {
+		setRedraw (false);
+		setTopIndex (0);
+	}
+	if (itemHeight != -1) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.LVS_OWNERDRAWFIXED);
+	}
 	super.setFont (font);
-	setTopIndex (topIndex);
+	if (itemHeight != -1) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits & ~OS.LVS_OWNERDRAWFIXED);
+	}
 	setScrollWidth (null, true);
-	setRedraw (true);
+	if (topIndex != 0) {
+		setTopIndex (topIndex);
+		setRedraw (true);
+	}
 	
 	/*
 	* Bug in Windows.  Setting the font will cause the table
@@ -2735,11 +2824,6 @@ public void setFont (Font font) {
 	*/
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
 	OS.InvalidateRect (hwndHeader, null, true);
-	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
-	bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
-	if ((bits & OS.LVS_NOCOLUMNHEADER) != 0) return;
-	setItemHeight ();
 }
 
 void setForegroundPixel (int pixel) {
@@ -2788,12 +2872,30 @@ public void setHeaderVisible (boolean show) {
 	* save and restore the top index causing the table to scroll
 	* to the new location.
 	*/
-	int topIndex = getTopIndex ();
+	int oldIndex = getTopIndex ();
 	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	setTopIndex (topIndex);
+	
+	/*
+	* Bug in Windows.  Making any change to an item that
+	* changes the item height of a table while the table
+	* is scrolled can cause the lines to draw incorrectly.
+	* This happens even when the lines are not currently
+	* visible and are shown afterwards.  The fix is to
+	* save the top index, scroll to the top of the table
+	* and then restore the original top index.
+	*/
+	int newIndex = getTopIndex ();
+	if (newIndex != 0) {
+		setRedraw (false);
+		setTopIndex (0);
+	}
 	if (show) {
 		int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-		if ((bits & OS.LVS_EX_GRIDLINES) != 0) setItemHeight ();
+		if ((bits & OS.LVS_EX_GRIDLINES) != 0) fixItemHeight (false);
+	}
+	setTopIndex (oldIndex);
+	if (newIndex != 0) {
+		setRedraw (true);
 	}
 	updateHeaderToolTips ();
 }
@@ -2857,34 +2959,88 @@ public void setItemCount (int count) {
 	setDeferResize (false);
 }
 
-void setItemHeight () {
+/**
+ * Sets the height of the area which would be used to
+ * display <em>one</em> of the items in the tree.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+void setItemHeight (boolean fixScroll) {
 	/*
-	* Bug in Windows.  When both a header and grid lines are
-	* displayed, the grid lines do not take into account the
-	* height of the header and draw in the wrong place.  The
-	* fix is to set the height of the table items to be the
-	* height of the header so that the lines draw in the right
-	* place.  The height of a table item is the maximum of the
-	* height of the font or the height of image list.
-	*
-	* NOTE: In version 5.80 of COMCTL32.DLL, the bug is fixed.
+	* Bug in Windows.  Making any change to an item that
+	* changes the item height of a table while the table
+	* is scrolled can cause the lines to draw incorrectly.
+	* This happens even when the lines are not currently
+	* visible and are shown afterwards.  The fix is to
+	* save the top index, scroll to the top of the table
+	* and then restore the original top index.
 	*/
-	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) return;
-	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
-	if (hOldList != 0) return;
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	RECT rect = new RECT ();
-	OS.GetWindowRect (hwndHeader, rect);
-	int height = rect.bottom - rect.top - 1;
-	int hImageList = OS.ImageList_Create (1, height, 0, 0, 0);
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-	fixCheckboxImageList ();
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-	if (headerImageList != null) {
-		int hHeaderImageList = headerImageList.getHandle ();
-		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+	int topIndex = getTopIndex ();
+	if (fixScroll && topIndex != 0) {
+		setRedraw (false);
+		setTopIndex (0);
 	}
-	OS.ImageList_Destroy (hImageList);
+	if (itemHeight == -1) {
+		/*
+		* Feature in Windows.  Windows has no API to restore the
+		* defualt item height for a table.  The fix is to use
+		* WM_SEFONT which recomputes and assigns the default item
+		* height.
+		*/
+		int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+	} else {
+		/*
+		* Feature in Windows.  Window has no API to set the item
+		* height for a table.  The fix is to set temporarily set
+		* LVS_OWNERDRAWFIXED then resize the table, causing a
+		* WM_MEASUREITEM to be sent, then clear LVS_OWNERDRAWFIXED.
+		*/
+		forceResize ();
+		RECT rect = new RECT ();
+		OS.GetWindowRect (handle, rect);
+		int width = rect.right - rect.left, height = rect.bottom - rect.top;
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.LVS_OWNERDRAWFIXED);
+		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
+		ignoreResize = true;
+		SetWindowPos (handle, 0 , 0, 0, width, height + 1, flags);
+		SetWindowPos (handle, 0 , 0, 0, width, height, flags);
+		ignoreResize = false;
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	}
+	if (fixScroll && topIndex != 0) {
+		setTopIndex (topIndex);
+		setRedraw (true);
+	}
+}
+
+/**
+ * Sets the height of the area which would be used to
+ * display <em>one</em> of the items in the table.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+/*public*/ void setItemHeight (int itemHeight) {
+	checkWidget ();
+	if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
+	this.itemHeight = itemHeight;
+	setItemHeight (true);
+	setScrollWidth (null, true);
 }
 
 /**
@@ -2909,7 +3065,7 @@ public void setLinesVisible (boolean show) {
 	if (show) {
 		newBits = OS.LVS_EX_GRIDLINES;
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
-		if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) setItemHeight ();
+		if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) fixItemHeight (true);
 	}
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_GRIDLINES, newBits);
 }
@@ -3274,36 +3430,27 @@ public void setSortDirection (int direction) {
 
 void setTableEmpty () {
 	if (imageList != null) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (columnCount == 1 && columns [0] == null) columnCount = 0;
-		int i = 0;
-		while (i < columnCount) {
-			TableColumn column = columns [i];
-			if (column.getImage () != null) break;
-			i++;
+		/*
+		* Bug in Windows.  When LVM_SETIMAGELIST is used to remove the
+		* image list by setting it to NULL, the item width and height
+		* is not changed and space is reserved for icons despite the
+		* fact that there are none.  The fix is to set the image list
+		* to be very small before setting it to NULL.  This causes
+		* Windows to reserve the smallest possible space when an image
+		* list is removed.
+		*/
+		int hImageList = OS.ImageList_Create (1, 1, 0, 0, 0);
+		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
+		if (headerImageList != null) {
+			int hHeaderImageList = headerImageList.getHandle ();
+			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
-		if (i == columnCount) {
-			/*
-			* Bug in Windows.  When LVM_SETIMAGELIST is used to remove the
-			* image list by setting it to NULL, the item width and height
-			* is not changed and space is reserved for icons despite the
-			* fact that there are none.  The fix is to set the image list
-			* to be very small before setting it to NULL.  This causes
-			* Windows to reserve the smallest possible space when an image
-			* list is removed.
-			*/
-			int hImageList = OS.ImageList_Create (1, 1, 0, 0, 0);
-			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
-			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-			if (headerImageList != null) {
-				int hHeaderImageList = headerImageList.getHandle ();
-				OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
-			}
-			OS.ImageList_Destroy (hImageList);
-			display.releaseImageList (imageList);
-			imageList = null;
-		}
+		OS.ImageList_Destroy (hImageList);
+		display.releaseImageList (imageList);
+		imageList = null;
+		if (itemHeight != -1) setItemHeight (false);
 	}
 	if ((style & SWT.VIRTUAL) != 0) customDraw = false;
 	items = new TableItem [4];
@@ -4081,6 +4228,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
+	if (ignoreResize) return null;
 	if (resizeCount != 0) {
 		wasResized = true;
 		return null;
@@ -4096,7 +4244,7 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
 	}
-	if ((style & SWT.CHECK) != 0) setCheckboxImageListColor ();
+	if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
 	return result;
 }
 
@@ -4148,7 +4296,21 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	}
 	return result;
 }
-	
+
+LRESULT wmMeasureChild (int wParam, int lParam) {
+	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
+	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
+	if (itemHeight == -1) {
+		int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
+		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
+		struct.itemHeight = (oneItem >> 16) - (empty >> 16);
+	} else {
+		struct.itemHeight = itemHeight;
+	}
+	OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
+	return null;
+}
+
 LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
