@@ -2372,6 +2372,25 @@ void setItemCount (int count, int hParent, int hItem) {
 }
 
 /**
+ * Sets the height of the area which would be used to
+ * display <em>one</em> of the items in the tree.
+ *
+ * @return the height of one item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+/*public*/ void setItemHeight (int itemHeight) {
+	checkWidget ();
+	if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
+	OS.SendMessage (handle, OS.TVM_SETITEMHEIGHT, itemHeight, 0);
+}
+
+/**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
  * <p>
@@ -3320,7 +3339,7 @@ void unsubclass () {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS;
+	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS | OS.TVS_NONEVENHEIGHT;
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		bits |= OS.TVS_FULLROWSELECT;
 	} else {

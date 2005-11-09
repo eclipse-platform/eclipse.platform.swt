@@ -787,6 +787,7 @@ public class OS extends Platform {
 	public static final int LVS_NOCOLUMNHEADER = 0x4000;
 	public static final int LVS_NOSCROLL = 0x2000;
 	public static final int LVS_OWNERDATA = 0x1000;
+	public static final int LVS_OWNERDRAWFIXED = 0x400;
 	public static final int LVS_REPORT = 0x1;
 	public static final int LVS_SHAREIMAGELISTS = 0x40;
 	public static final int LVS_SHOWSELALWAYS = 0x8;
