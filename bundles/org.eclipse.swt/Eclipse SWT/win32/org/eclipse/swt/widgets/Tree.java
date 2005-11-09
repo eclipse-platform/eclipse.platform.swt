@@ -552,6 +552,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	RECT rect = new RECT ();
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	while (hItem != 0) {
+		if ((style & SWT.VIRTUAL) == 0 && !painted) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+			tvItem.hItem = hItem;
+			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		}
 		rect.left = hItem;
 		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
 			width = Math.max (width, rect.right);
