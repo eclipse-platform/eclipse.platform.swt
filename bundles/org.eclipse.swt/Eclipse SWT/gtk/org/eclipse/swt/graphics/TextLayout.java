@@ -337,6 +337,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			}
 			OS.gdk_draw_layout_with_colors(gc.data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
 			gc.setClipping(clipping);
+			clipping.dispose();
 		}
 	}
 }
