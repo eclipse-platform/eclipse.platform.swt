@@ -27,6 +27,7 @@ public class Snippet204 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
+	shell.setText("Modify Rise");
 	FontData data = display.getSystemFont().getFontData()[0];
 	Font font = new Font(display, data.getName(), 24, SWT.NORMAL);
 	Font smallFont = new Font(display, data.getName(), 8, SWT.NORMAL);

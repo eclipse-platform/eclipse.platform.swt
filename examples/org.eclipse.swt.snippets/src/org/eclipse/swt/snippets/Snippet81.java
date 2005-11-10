@@ -45,9 +45,17 @@ public static void main(String[] args) {
 		return;
 	}
 		
+	printTypeInfo(auto);
+	
+	auto.dispose();
+	shell.dispose();
+
+}
+
+private static void printTypeInfo(OleAutomation auto) {
 	TYPEATTR typeattr = auto.getTypeInfoAttributes();
 	if (typeattr != null) {		
-		if (typeattr.cFuncs > 0) System.out.println("Functions for "+progID+" :\n");
+		if (typeattr.cFuncs > 0) System.out.println("Functions :\n");
 		for (int i = 0; i < typeattr.cFuncs; i++) {			
 			OleFunctionDescription data = auto.getFunctionDescription(i);
 			String argList = "";
@@ -64,7 +72,7 @@ public static void main(String[] args) {
 			                    +"\n\tHelp File   : "+data.helpFile+"\n");
 		}
 		
-		if (typeattr.cVars > 0) System.out.println("\n\nVariables for "+progID+" :\n");
+		if (typeattr.cVars > 0) System.out.println("\n\nVariables  :\n");
 		for (int i = 0; i < typeattr.cVars; i++) {
 			OlePropertyDescription data = auto.getPropertyDescription(i);
 			System.out.println("PROPERTY (id = "+data.id+") :"
@@ -72,10 +80,6 @@ public static void main(String[] args) {
 			                    +"\n\tType : "+getTypeName(data.type)+"\n");
 		}
 	}
-	
-	auto.dispose();
-	shell.dispose();
-
 }
 private static String getTypeName(int type) {
 	switch (type) {
