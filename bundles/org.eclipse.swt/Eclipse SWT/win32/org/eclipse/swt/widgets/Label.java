@@ -121,7 +121,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		return new Point (width, height);
 	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	boolean drawText = text.length () != 0;
+	boolean drawText = true;
 	boolean drawImage = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW;
 	if (drawImage) {
 		if (image != null) {
@@ -129,7 +129,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width += rect.width;
 			height += rect.height;
 			if (IMAGE_AND_TEXT) {
-				if (drawText) width += MARGIN;
+				if (text.length () != 0) width += MARGIN;
 			} else {
 				drawText = false;
 			}
