@@ -138,6 +138,9 @@ public final class TextLayout extends Resource {
 		width = ascent = descent = x = 0;
 		lineBreak = softBreak = false;		
 	}
+	public String toString () {
+		return "StyleItem {" + start + ", " + style + "}";
+	}
 	}
 
 /**	 
@@ -1374,6 +1377,38 @@ public int getPreviousOffset (int offset, int movement) {
 }
 
 /**
+ * Gets the ranges of text that are associated with a <code>TextStyle</code>.
+ *
+ * @return the ranges, an array of offsets representing the start and end of each
+ * text style. 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #getStyles()
+ * 
+ * @since 3.2
+ */
+public int[] getRanges () {
+	checkLayout();
+	int[] result = new int[styles.length * 2];
+	int count = 0;
+	for (int i=0; i<styles.length - 1; i++) {
+		if (styles[i].style != null) {
+			result[count++] = styles[i].start;
+			result[count++] = styles[i + 1].start - 1;
+		}
+	}
+	if (count != result.length) {
+		int[] newResult = new int[count];
+		System.arraycopy(result, 0, newResult, 0, count);
+		result = newResult;
+	}
+	return result;
+}
+
+/**
  * Returns the text segments offsets of the receiver.
  *
  * @return the text segments offsets
@@ -1452,6 +1487,36 @@ public TextStyle getStyle (int offset) {
 		}
 	}
 	return null;
+}
+
+/**
+ * Gets all styles of the receiver.
+ *
+ * @return the styles
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #getRanges()
+ * 
+ * @since 3.2
+ */
+public TextStyle[] getStyles () {
+	checkLayout();
+	TextStyle[] result = new TextStyle[styles.length];
+	int count = 0;
+	for (int i=0; i<styles.length; i++) {
+		if (styles[i].style != null) {
+			result[count++] = styles[i].style;
+		}
+	}
+	if (count != result.length) {
+		TextStyle[] newResult = new TextStyle[count];
+		System.arraycopy(result, 0, newResult, 0, count);
+		result = newResult;
+	}
+	return result;
 }
 
 /**
@@ -1873,7 +1938,7 @@ public void setStyle (TextStyle style, int start, int end) {
 	int high = styles.length;
 	while (high - low > 1) {
 		int index = (high + low) / 2;
-		if (start <= styles[index].start) {
+		if (styles[index + 1].start > start) {
 			high = index;
 		} else {
 			low = index;
@@ -1890,42 +1955,47 @@ public void setStyle (TextStyle style, int start, int end) {
 		}
 	}
 	freeRuns();
-	int count = 0, i;
-	StyleItem[] newStyles = new StyleItem[styles.length + 2];
-	for (i = 0; i < styles.length; i++) {
-		StyleItem item = styles[i];
-		if (item.start >= start) break;
-		newStyles[count++] = item;
+	int modifyStart = high;
+	int modifyEnd = modifyStart;
+	while (modifyEnd < styles.length) {
+		if (styles[modifyEnd + 1].start > end) break;
+		modifyEnd++;
 	}
-	StyleItem newItem = new StyleItem();
-	newItem.start = start;
-	newItem.style = style;
-	newStyles[count++] = newItem;
-	if (styles[i].start > end) {
-		newItem = new StyleItem();
-		newItem.start = end + 1;
-		newItem.style = styles[i -1].style;
-		newStyles[count++] = newItem;
-	} else {
-		for (; i<styles.length; i++) {
-			StyleItem item = styles[i];
-			if (item.start > end) break;
+	if (modifyStart == modifyEnd) {
+		int styleStart = styles[modifyStart].start; 
+		int styleEnd = styles[modifyEnd + 1].start - 1;
+		if (styleStart == start && styleEnd == end) {
+			styles[modifyStart].style = style;
+			return;
 		}
-		if (end != styles[i].start - 1) {
-			i--;
-			styles[i].start = end + 1;
+		if (styleStart != start && styleEnd != end) {
+			StyleItem[] newStyles = new StyleItem[styles.length + 2];
+			System.arraycopy(styles, 0, newStyles, 0, modifyStart + 1);
+			StyleItem item = new StyleItem();
+			item.start = start;
+			item.style = style;
+			newStyles[modifyStart + 1] = item;	
+			item = new StyleItem();
+			item.start = end + 1;
+			item.style = styles[modifyStart].style;
+			newStyles[modifyStart + 2] = item;
+			System.arraycopy(styles, modifyEnd + 1, newStyles, modifyEnd + 3, styles.length - modifyEnd - 1);
+			styles = newStyles;
+			return;
 		}
 	}
-	for (; i<styles.length; i++) {
-		StyleItem item = styles[i];
-		if (item.start > end) newStyles[count++] = item;
-	}
-	if (newStyles.length != count) {
-		styles = new StyleItem[count];
-		System.arraycopy(newStyles, 0, styles, 0, count);
-	} else {
-		styles = newStyles;
-	}
+	if (start == styles[modifyStart].start) modifyStart--;
+	if (end == styles[modifyEnd + 1].start - 1) modifyEnd++;
+	int newLength = styles.length + 1 - (modifyEnd - modifyStart - 1);
+	StyleItem[] newStyles = new StyleItem[newLength];
+	System.arraycopy(styles, 0, newStyles, 0, modifyStart + 1);	
+	StyleItem item = new StyleItem();
+	item.start = start;
+	item.style = style;
+	newStyles[modifyStart + 1] = item;
+	styles[modifyEnd].start = end + 1;
+	System.arraycopy(styles, modifyEnd, newStyles, modifyStart + 2, styles.length - modifyEnd);
+	styles = newStyles;
 }
 
 /**
@@ -1975,7 +2045,7 @@ public void setText (String text) {
 	this.text = text;
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
-	styles[1] = new StyleItem();	
+	styles[1] = new StyleItem();
 	styles[1].start = text.length();
 }
 
