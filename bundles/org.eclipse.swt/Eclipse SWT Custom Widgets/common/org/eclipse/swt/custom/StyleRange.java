@@ -14,7 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.CloneableCompatibility;
 
-public class StyleRange implements CloneableCompatibility {
+public class StyleRange extends TextStyle implements CloneableCompatibility {
 	
 	/**
 	 * the start offset of the range. zero-based from the document start
@@ -27,56 +27,16 @@ public class StyleRange implements CloneableCompatibility {
 	public int length;
 
 	/**
-	 * the foreground of the range
-	 */
-	public Color foreground;
-	
-	/**
-	 * the background of the range
-	 */
-	public Color background;
-	
-	/**
-	 * the underline flag of the range
-	 */
-	public boolean underline;
-	
-	/**
-	 * the strikeout flag of the range
-	 */
-	public boolean strikeout;
-	
-	/**
 	 * the font style of the range. It may be a combination of
 	 * SWT.NORMAL, SWT.ITALIC or SWT.BOLD
+	 * 
+	 * Note: the font style is not used if the <code>font</code> attribute
+	 * is set
 	 */
 	public int fontStyle = SWT.NORMAL;
 	
-	/*
-	 * API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
-	 * 
-	 * the font of the range, when set the fontStyle flag is ignored
-	 *
-	 */
-	public Font font;
-	
-	/*
-	 * API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
-	 * 
-	 * baseline rise
-	 *
-	 */
-	public int rise;
-	
-	/*
-	 * API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
-	 * 
-	 * embedded object
-	 *
-	 */
-	public EmbeddedObject object;
-	
 public StyleRange() {
+	super(null, null, null);
 }
 
 /** 
@@ -89,10 +49,9 @@ public StyleRange() {
  * @param background background color of the style, null if none
  */
 public StyleRange(int start, int length, Color foreground, Color background) {
+	super(null, foreground, background);
 	this.start = start;
 	this.length = length;
-	this.foreground = foreground;
-	this.background = background;
 }
 
 /** 
@@ -106,10 +65,7 @@ public StyleRange(int start, int length, Color foreground, Color background) {
  * @param fontStyle font style of the style, may be SWT.NORMAL, SWT.ITALIC or SWT.BOLD
  */
 public StyleRange(int start, int length, Color foreground, Color background, int fontStyle) {
-	this.start = start;
-	this.length = length;
-	this.foreground = foreground;
-	this.background = background;
+	this(start, length, foreground, background);
 	this.fontStyle = fontStyle;
 }
 
@@ -145,13 +101,11 @@ public boolean equals(Object object) {
  * @see #equals(Object)
  */
 public int hashCode() {
-	int code = start + length;
-	if (foreground != null) code += foreground.hashCode();
-	if (background != null) code += background.hashCode();
-	if (font != null) code += font.hashCode();
-	return code + fontStyle;
+	return super.hashCode() ^ fontStyle;
 }
-
+boolean isVariableHeight() {
+	return font != null || metrics != null || rise != 0;
+}
 /**
  * Returns whether or not the receiver is unstyled (i.e., does not have any 
  * style attributes specified).
@@ -160,20 +114,18 @@ public int hashCode() {
  * @return true if the receiver is unstyled, false otherwise.
  */
 public boolean isUnstyled() {
+	//BAD
+	if (font != null) return false;
+	if (rise != 0) return false;
+	if (metrics != null) return false;
 	if (foreground != null) return false;
 	if (background != null) return false;
-	if (font != null) return false;
-	if (object != null) return false;
 	if (fontStyle != SWT.NORMAL) return false;
 	if (underline) return false;
 	if (strikeout) return false;
-	if (rise != 0) return false;
 	return true;
 }
 
-boolean isVariableLineHeight() {
-	return font != null || object != null || rise != 0;
-}
 /**
  * Compares the specified object to this StyleRange and answer if the two 
  * are similar. The object must be an instance of StyleRange and have the
@@ -184,30 +136,8 @@ boolean isVariableLineHeight() {
  * @return true if the objects are similar, false otherwise
  */
 public boolean similarTo(StyleRange style) {
-	if (foreground != null) {
-		if (!foreground.equals(style.foreground)) return false;
-	} else if (style.foreground != null) {
-		return false;
-	}
-	if (background != null) {
-		if (!background.equals(style.background)) return false;
-	} else if (style.background != null) {
-		return false; 
-	}
-	if (font != null) {
-		if (!font.equals(style.font)) return false;
-	} else if (style.font != null) {
-		return false; 
-	}
-	if (object != null) {
-		if (!object.equals(style.object)) return false;
-	} else if (style.object != null) {
-		return false; 
-	}
+	if (!super.equals(style)) return false;
 	if (fontStyle != style.fontStyle) return false;
-	if (underline != style.underline) return false;
-	if (strikeout != style.strikeout) return false;
-	if (rise != style.rise) return false;
 	return true;
 }
 
@@ -218,13 +148,11 @@ public boolean similarTo(StyleRange style) {
  * @return a shallow copy of this StyleRange
  */	
 public Object clone() {
- 	StyleRange style = new StyleRange(start, length, foreground, background, fontStyle);
- 	style.font = font;
- 	style.object = object;
- 	style.underline = underline;
- 	style.strikeout = strikeout;
- 	style.rise = rise; 	
-	return style;
+	try {
+		return super.clone();
+	} catch (CloneNotSupportedException e) {
+		return null;
+	}
 }
 
 /**
@@ -235,29 +163,29 @@ public Object clone() {
  */
 public String toString() {
 	StringBuffer buffer = new StringBuffer();
-	buffer.append(start + "," + length + " fg:" + foreground + " bg:" + background);
-	if (font != null) {
-		buffer.append(" font:");
-		FontData fontData = font.getFontData()[0];
-		buffer.append(fontData);
-	} else {
-		buffer.append(" fStyle:");
-		switch (fontStyle) {
-			case SWT.BOLD:
-				buffer.append("bold");
-				break;
-			case SWT.ITALIC:
-				buffer.append("italic");
-				break;
-			case SWT.BOLD | SWT.ITALIC:
-				buffer.append("bold-italic");
-				break;
-			default:
-				buffer.append("normal");
-		}
+	buffer.append("StyleRange {");
+	buffer.append(start);
+	buffer.append(", ");
+	buffer.append(length);
+	buffer.append(", fontStyle=");
+	switch (fontStyle) {
+		case SWT.BOLD:
+			buffer.append("bold");
+			break;
+		case SWT.ITALIC:
+			buffer.append("italic");
+			break;
+		case SWT.BOLD | SWT.ITALIC:
+			buffer.append("bold-italic");
+			break;
+		default:
+			buffer.append("normal");
 	}
-	if (underline) buffer.append(" underline");
-	if (strikeout) buffer.append(" strikeout");
+	String str = super.toString();
+	int index = str.indexOf('{');
+	str = str.substring(index + 1);
+	if (str.length() > 1) buffer.append(", ");
+	buffer.append(str);
 	return buffer.toString();
 }
 }

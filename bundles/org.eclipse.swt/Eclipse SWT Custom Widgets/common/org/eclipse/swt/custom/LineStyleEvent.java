@@ -18,43 +18,44 @@ import org.eclipse.swt.events.*;
 public class LineStyleEvent extends TypedEvent {
 	
 	/**
-	 * line start offset
+	 * line start offset (input)
 	 */
 	public int lineOffset;
 	
 	/**
-	 * line text
+	 * line text (input)
 	 */
 	public String lineText;
 	
 	/**
-	 * line styles
+	 * line ranges (output)
+	 */
+	public int[] ranges;
+	
+	/**
+	 * line styles (output)
 	 */
 	public StyleRange[] styles;
 
-	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
-	 *  
+	/** 
 	 * line alignment (input, output)
 	 */
 	public int alignment;
 
-	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
-	 *  
+	/**
 	 * line indent (input, output)
 	 */
 	public int indent;
 
-	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
-	 *  
+	/** 
 	 * line justification (input, output)
 	 */
 	public boolean justify;
-	
-	/* API UNDER CONSTRUCTION - DO NOT USE THIS FIELD
-	 *  
-	 * line bullet (input)
+
+	/**
+	 * line bullet (output)
 	 */
-	public EmbeddedObject.Bullet bullet;
+	Bullet bullet;
 	
 	static final long serialVersionUID = 3906081274027192884L;
 	
@@ -62,9 +63,8 @@ public LineStyleEvent(StyledTextEvent e) {
 	super(e);
 	lineOffset = e.detail;
 	lineText = e.text;
-	styles = e.styles;
 	alignment = e.alignment;
-	indent = e.indent;
 	justify = e.justify;
+	indent = e.indent;
 }
 }

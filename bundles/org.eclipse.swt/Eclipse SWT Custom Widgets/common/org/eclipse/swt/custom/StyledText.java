@@ -94,6 +94,7 @@ public class StyledText extends Canvas {
 	static final int VerifyKey = 3005;
 	static final int TextChanged = 3006;
 	static final int LineGetSegments = 3007;
+	static final int PaintObject = 3008;
 	
 	Color selectionBackground;	// selection background color
 	Color selectionForeground;	// selection foreground color
@@ -1584,6 +1585,2093 @@ public class StyledText extends Canvas {
 		}
 	}
 	}
+	
+	static class DefaultLineStyler implements LineStyleListener, LineBackgroundListener {
+		StyledTextContent content;
+		StyleRange styles[] = new StyleRange[0];
+		int styleCount = 0;	// the number of styles	
+		int lineExpandExp = 1; 	// the expansion exponent, used to increase the lines array exponentially
+		int lineCount = 0;
+		LineInfo lines[];
+		
+		final static int BACKGROUND = 1 << 0;
+		final static int ALIGNMENT = 1 << 1;
+		final static int INDENT = 1 << 2;
+		final static int JUSTIFY = 1 << 3;
+		final static int BULLET = 1 << 4;
+		
+		class LineInfo {
+			int flags;
+			Color background;
+			int alignment;
+			int indent;
+			boolean justify;
+		}
+		
+	/** 
+	 * Creates a new default line styler.
+	 * <p>
+	 *
+	 * @param content the text to which the styles apply
+	 */
+	public DefaultLineStyler(StyledTextContent content) {
+		this.content = content;
+		lineCount = content.getLineCount();
+		lines = new LineInfo[lineCount];
+	}
+	/** 
+	 * Inserts a style at the given location.
+	 * <p>
+	 *
+	 * @param style	the new style
+	 * @param index	the index at which to insert the style (the new style
+	 * 	will reside at this index)
+	 *
+	 */
+	void insertStyle(StyleRange style, int index) {
+		insertStyles(new StyleRange[] {style}, index);
+	}
+	/** 
+	 * Insert the styles at the given location.
+	 * <p>
+	 *
+	 * @param insertStyles	the new styles
+	 * @param index	the index at which to insert the styles (the first new style
+	 * 	will reside at this index)
+	 *
+	 */
+	void insertStyles(StyleRange[] insertStyles, int index) {
+		int size = styles.length;
+		int insertCount = insertStyles.length;
+		int spaceNeeded = styleCount + insertCount - size;
+		if (spaceNeeded > 0) {
+			StyleRange[] newStyles = new StyleRange[size + spaceNeeded];
+			System.arraycopy(styles, 0, newStyles, 0, size);
+			styles = newStyles;
+		}
+		// shift the styles down to make room for the new styles
+		System.arraycopy(styles, index, styles, index + insertCount, styleCount - index);
+		// add the new styles
+		System.arraycopy(insertStyles, 0, styles, index, insertCount);
+		styleCount = styleCount + insertCount;
+	}
+	/** 
+	 * Inserts a style, merging it with adjacent styles if possible.
+	 * <p>
+	 *
+	 * @param style	the new style
+	 * @param index	the index at which to insert the style (the new style
+	 * 	will reside at this index)
+	 * @return true if the style was inserted, false if the style was merged with an adjacent 
+	 * 	style
+	 */
+	boolean insertMergeStyle(StyleRange style, int index) {
+		if (mergeStyleBefore(style, index)) return false;
+		if (mergeStyleAfter(style, index)) return false;
+		insertStyle(style, index);
+		return true;
+	}
+	/** 
+	 * Merges the style with the style before it if possible.
+	 * <p>
+	 *
+	 * @param style	the new style
+	 * @param index	the index at which to attempt the merge.
+	 * @return true if the style was merged, false otherwise
+	 */
+	boolean mergeStyleBefore(StyleRange style, int index) {
+		// see if the style is similar to the style before it and merge the
+		// styles if possible
+		if (index > 0) {
+			StyleRange previous = styles[index - 1];
+			if (style.similarTo(previous)) {
+				// the start of style needs to be in the range of the previous style
+				// and the end of style needs to be < the start of the next style
+				int previousEnd = previous.start + previous.length;
+				if ((style.start <= previousEnd) && (style.start >= previous.start)) {
+					int styleEnd = style.start + style.length;
+					if ((index == styleCount) || (styleEnd <= styles[index].start)) {
+						previous.length = style.start + style.length - previous.start;
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	/** 
+	 * Merges the style with the style after it if possible.
+	 * <p>
+	 *
+	 * @param style	the new style
+	 * @param index	the index at which to attempt the merge.
+	 * @return true if the style was merged, false otherwise
+	 */
+	boolean mergeStyleAfter(StyleRange style, int index) {
+		// see if the style is similar to the style that will be after it and 
+		// merge the styles if possible
+		if (index < styleCount) {
+			StyleRange next = styles[index];
+			if (style.similarTo(next)) {
+				// the end of style needs to be in the range of the next style and
+				// the start of style needs to be > the end of the previous style
+				int styleEnd = style.start + style.length;
+				int nextEnd = next.start + next.length;
+				if ((styleEnd <= nextEnd) && (styleEnd >= next.start)) {
+					if ((index == 0) || (style.start >= styles[index - 1].start + styles[index - 1].length)) {
+						next.length = next.start + next.length - style.start;
+						next.start = style.start;
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	/** 
+	 * Removes style information that is defined for the range of text in <code>clearStyle</code>.
+	 * <p>
+	 *
+	 * @param clearStyle the style information to use for clearing 
+	 */ 
+	void clearStyle(StyleRange clearStyle) {
+		Point pt = getOverlappingStyles(clearStyle.start, clearStyle.length);
+		int clearStyleEnd = clearStyle.start + clearStyle.length - 1;
+		
+		// no overlapped styles exist
+		if ((pt == null) || (pt.y == 0)) return; 
+
+		// the newStyle overlaps one or more of the existing styles
+		// pt.x is the index of the first overlapped style, pt.y is the number of overlapped
+		// styles
+		int count = 0;
+		int deleteStyle = -1;
+		int deleteCount = 0;
+		for (int i = pt.x; count < pt.y; i++) {
+			StyleRange overlap = styles[i];
+			int overlapEnd = overlap.start + overlap.length - 1;
+			if (overlap.start < clearStyle.start) {
+				if (overlapEnd <= clearStyleEnd) {
+					// the end of overlap needs to be cleared
+					overlap.length = clearStyle.start - overlap.start;
+				} else {
+					// middle of overlap needs to be cleared, this will
+					// cause overlap to be broken into two
+					StyleRange endStyle = (StyleRange)overlap.clone();
+					endStyle.start = clearStyleEnd + 1;
+					endStyle.length = overlapEnd - clearStyleEnd;
+					overlap.length = clearStyle.start - overlap.start;
+					insertStyle(endStyle, i + 1);
+					break;
+				}
+			} else {
+				if (overlapEnd <= clearStyleEnd) {	
+					// entire overlap needs to be cleared
+					if (deleteStyle == -1) {
+						deleteStyle = i;
+					}
+					deleteCount++;
+				} else {
+					// beginning of overlap needs to be cleared
+					overlap.start = clearStyleEnd + 1;
+					overlap.length = overlapEnd - overlap.start + 1;
+					break;
+				}
+			}
+			count++;
+		}
+		deleteStyles(deleteStyle, deleteCount);
+	}
+	/** 
+	 * Delete count styles starting at <code>index</code>.
+	 * <p>
+	 *
+	 * @param index	the index of the style to be deleted
+	 * @param count	the number of styles to be deleted
+	 */
+	void deleteStyles(int index, int count) {
+		if ((count == 0) || (index < 0)) return;
+		// shift the styles up 
+		System.arraycopy(styles, index + count, styles, index, styleCount - (index + count));
+		for (int i=0; i<count; i++) {
+			styles[styleCount - i - 1] = null;
+		}
+		styleCount = styleCount - count;
+	}
+	/** 
+	 * Returns the styles that are defined.
+	 * <p>
+	 *
+	 * @return the copied array of styles
+	 */
+	StyleRange [] getStyleRanges() {
+		StyleRange[] newStyles = new StyleRange[styleCount];
+		System.arraycopy(styles, 0, newStyles, 0, styleCount);
+		return newStyles;
+	}
+	/**
+	 * Handles the get line background color callback.
+	 * <p>
+	 *
+	 * @param event the lineOffset line number (input), lineText line text (input),
+	 * and background line background color (output)
+	 */
+	public void lineGetBackground(LineBackgroundEvent event) {
+		int lineIndex = content.getLineAtOffset(event.lineOffset);
+		if (lines[lineIndex] != null) {
+			event.lineBackground = lines[lineIndex].background;
+		}
+	}
+	/**
+	 * Handles the get line style information callback.
+	 * <p>
+	 *
+	 * @param event the lineOffset line number (input), lineText line text (input),
+	 * and styles array of StyleRanges, need to be in order (output)
+	 */
+	public void lineGetStyle(LineStyleEvent event) {
+		int lineStart = event.lineOffset;
+		int lineEnd = lineStart + event.lineText.length();
+
+		int high = searchForStyle(lineStart, lineEnd);
+		StyleRange style = null;
+		Vector lineStyles = new Vector();
+
+		// index will represent a style that 
+		// -- starts after the line (end processing)
+		// -- ends before the line (continue processing)
+		// -- starts before the line, ends in the line (add range)
+		// -- starts in the line, ends in the line (add range)
+		// -- starts in the line, ends after the line (add range)
+		// -- starts before the line, ends after the line (add range)
+		for (int index = high; index < styleCount; index++) {
+			style = styles[index];
+			if (style.start > lineEnd) {
+				// style starts after the line, end looping 
+				break;
+			}
+			int styleEnd = style.start + style.length - 1;
+			if (styleEnd >= lineStart) lineStyles.addElement(style);
+		}
+		event.styles = new StyleRange[lineStyles.size()];
+		lineStyles.copyInto(event.styles);
+		int lineIndex = content.getLineAtOffset(lineStart);
+		LineInfo info = lines[lineIndex];
+		if (info != null) {
+			if ((info.flags & ALIGNMENT) != 0) event.alignment = info.alignment;
+			if ((info.flags & INDENT) != 0) event.indent = info.indent;
+			if ((info.flags & JUSTIFY) != 0) event.justify = info.justify;
+		}
+	}
+	/** 
+	 * Searches for the first style in the <code>start</code> - <code>end</code> range.
+	 * <p>
+	 *
+	 * @return the index of the first style that overlaps the input range  
+	 */
+	int searchForStyle(int start, int end) {
+		int high = styleCount;
+		int low = -1;
+		int index = high;
+		// find the index of the first style for the given range, use a binary search
+		while (high - low > 1) {
+			index = (high + low) / 2;
+			StyleRange style = styles[index];
+			int styleEnd = style.start + style.length - 1;
+			if (start <= style.start || end <= styleEnd || (start > style.start && styleEnd >= start && styleEnd < end)) {
+				high = index;			
+			}
+			else {
+				low = index;
+			}
+		}
+		return high;
+	}
+	void setLineAlignment(int startLine, int count, int alignment) {
+		for (int i = startLine; i < startLine + count; i++) {
+			if (lines[i] == null) {
+				lines[i] = new LineInfo();
+			}
+			lines[i].flags |= ALIGNMENT;
+			lines[i].alignment = alignment;
+		}
+	}
+	void setLineBackground(int startLine, int count, Color background) {
+		for (int i = startLine; i < startLine + count; i++) {
+			if (lines[i] == null) {
+				lines[i] = new LineInfo();
+			}
+			lines[i].flags |= BACKGROUND;
+			lines[i].background = background;
+		}
+	}
+	void setLineIndent(int startLine, int count, int indent) {
+		for (int i = startLine; i < startLine + count; i++) {
+			if (lines[i] == null) {
+				lines[i] = new LineInfo();
+			}
+			lines[i].flags |= INDENT;
+			lines[i].indent = indent;
+		}
+	}
+	void setLineJustify(int startLine, int count, boolean justify) {
+		for (int i = startLine; i < startLine + count; i++) {
+			if (lines[i] == null) {
+				lines[i] = new LineInfo();
+			}
+			lines[i].flags |= JUSTIFY;
+			lines[i].justify = justify;
+		}
+	}
+	/** 
+	 * Update the styles to reflect the new style.  <code>newStyle</code> will 
+	 * replace any old style for the range.  When this method is called, the 
+	 * DefaultLineStyler may merge the new style with an existing style (if possible).
+	 * Called by StyledText when a style is added.  Called by StyledText.
+	 * <p>
+	 *
+	 * @param newStyle the new style information.
+	 */ 
+	void setStyleRange(StyleRange newStyle) {
+		if (newStyle == null) {
+			styles = new StyleRange[0];
+			styleCount = 0;
+			return;
+		}
+		if (newStyle.length == 0) return;
+		if (newStyle.isUnstyled()) {
+			clearStyle(newStyle);
+			return;
+		}
+		
+		Point pt = getOverlappingStyles(newStyle.start, newStyle.length);
+		int newStyleEnd = newStyle.start + newStyle.length - 1;
+		
+		// no styles exist
+		if (pt == null) {
+			insertStyle(newStyle, 0);
+			return;
+		}
+		
+		// newStyle does not overlap any other styles
+		if (pt.y == 0) {
+			insertMergeStyle(newStyle, pt.x);
+			return;
+		} 
+
+		// the newStyle overlaps one or more of the existing styles
+		boolean added = false; // indicates whether or not the new style has been added
+		int count = 0;
+		// pt.x is the index of the first overlapped style, pt.y is the number of overlapped
+		// styles
+		for (int i = pt.x; count < pt.y; i++) {
+			StyleRange overlap = styles[i];
+			int overlapEnd = overlap.start + overlap.length - 1;
+			if (overlap.start < newStyle.start) {
+				if (overlapEnd <= newStyleEnd) {
+					// the end of overlap needs to be replaced by newStyle
+					if (newStyle.similarTo(overlap)) {
+						// update overlap to accomodate the new style
+						overlap.length = newStyle.start + newStyle.length - overlap.start;
+					} else {
+						overlap.length = newStyle.start - overlap.start;
+						// see if newStyle can be merged with the style after overlap, if so,
+						// processing is done
+						if (mergeStyleAfter(newStyle, i + 1)) break;
+						// otherwise, insert the newStyle, newStyle may still overlap other
+						// styles after it so continue processing	
+						insertStyle(newStyle, i + 1);
+						i++;
+					}
+					added = true;
+				} else {
+					// middle of overlap needs to be replaced by newStyle, this will
+					// cause overlap to be broken into two
+					if (newStyle.similarTo(overlap)) break;
+					StyleRange endStyle = (StyleRange)overlap.clone();
+					endStyle.start = newStyleEnd + 1;
+					endStyle.length = overlapEnd - newStyleEnd;
+					overlap.length = newStyle.start - overlap.start;
+					insertStyle(newStyle, i + 1);
+					i++;
+					insertStyle(endStyle, i + 1);
+					// when newStyle overlaps the middle of a style, this implies that
+					// processing is done (no more overlapped styles)
+					break;
+				}
+			} else {
+				if (overlapEnd <= newStyleEnd) {	
+					// overlap will be replaced by the newStyle, make sure newStyle
+					// hasn't already been added, if it has just delete overlap
+					if (!added) {
+						styles[i] = newStyle;
+						added = true;
+					} else {
+						deleteStyles(i, 1);
+						i--;
+					}
+				} else {
+					// beginning of overlap needs to be replaced by newStyle
+					overlap.start = newStyleEnd + 1;
+					overlap.length = overlapEnd - overlap.start + 1;
+					if (!added) {
+						insertMergeStyle(newStyle, i);
+					}
+					// when newStyle overlaps only the beginning of a style, this implies 
+					// that processing is done (no more overlapped styles)
+					break;
+				}
+			}
+			count++;
+		}
+	}
+	/** 
+	 * Replace the styles for the given range.
+	 *
+	 * @param start the initial style range to replace
+	 * @param length the number of ranges to replace
+	 * @param ranges the new styles, must be in order and non-overlapping
+	 */
+	void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
+		clearStyle(new StyleRange(start, length, null, null));
+		// find insert point
+		int high = styleCount;
+		int low = -1;
+		int index = high;
+		while (high - low > 1) {
+			index = (high + low) / 2;
+			StyleRange style = styles[index];
+			if (start <= style.start) {
+				high = index;			
+			}
+			else {
+				low = index;
+			}
+		}
+		insertStyles(ranges, high);
+	}
+	/** 
+	 * Sets the array of styles and discards old styles.  Called by StyledText.
+	 * <p>
+	 *
+	 * @param styles the new styles, must be in order and non-overlapping
+	 */
+	void setStyleRanges(StyleRange[] styles) {
+		this.styles = new StyleRange[styles.length];
+		System.arraycopy(styles, 0, this.styles, 0, styles.length);
+		styleCount = styles.length;
+	}
+	/** 
+	 * Updates the style ranges and line backgrounds to reflect a pending text 
+	 * change.
+	 * Called by StyledText when a TextChangingEvent is received.
+	 * <p>
+	 *
+	 * @param event	the event with the text change information
+	 */  
+	public void textChanging(TextChangingEvent event) {
+		int startLine = content.getLineAtOffset(event.start);
+		int startLineOffset = content.getOffsetAtLine(startLine);
+		
+		textChanging(event.start, -event.replaceCharCount);
+		textChanging(event.start, event.newCharCount);
+		
+		if (event.replaceCharCount == content.getCharCount()) {
+			// all text is going to be replaced, clear line backgrounds
+			linesChanging(0, -lineCount);
+			linesChanging(0, content.getLineCount() - event.replaceLineCount + event.newLineCount);
+			return;
+		}
+
+		if (event.start != startLineOffset) {
+			startLine = startLine + 1;
+		}
+				
+		linesChanging(startLine, -event.replaceLineCount);
+		linesChanging(startLine, event.newLineCount);
+	}
+	/*
+	 * Updates the line backgrounds to reflect a pending text change.
+	 * <p>
+	 *
+	 * @param start	the starting line of the change that is about to take place
+	 * @param delta	the number of lines in the change, > 0 indicates lines inserted,
+	 * 	< 0 indicates lines deleted
+	 */
+	void linesChanging(int start, int delta) {
+		if (delta == 0) return;
+		if (delta > 0) {
+			// shift the lines down to make room for new lines
+			int size = lines.length;
+			if (size - lineCount < delta) {
+				LineInfo[] newLines = new LineInfo[size + Math.max(Compatibility.pow2(lineExpandExp), delta)];
+				System.arraycopy(lines, 0, newLines, 0, size);
+				lines = newLines;
+				lineExpandExp++;
+			}
+			
+			for (int i = lineCount-1; i >= start; i--) {
+				lines[i + delta] = lines[i];
+			}
+			for (int i = start; i < start + delta; i++) {
+				lines[i] = null;
+			}
+		} else {
+			// shift up the lines
+			for (int i = start - delta; i < lineCount; i++) {
+				lines[i + delta] = lines[i];
+			}
+		}
+		lineCount += delta;
+	}
+	/*
+	 * Updates the style ranges to reflect a text change.
+	 * <p>
+	 *
+	 * @param start	the starting offset of the change that is about to 
+	 *	take place
+	 * @param delta	the length of the change, > 0 indicates text inserted,
+	 * 	< 0 indicates text deleted
+	 */
+	void textChanging(int start, int delta) {
+		if (delta == 0) return;
+		StyleRange style;
+		// find the index of the first style for the given offset, use a binary search
+		// to find the index
+		int end;
+		int deleteStart = -1;
+		int deleteCount = 0;
+		boolean inserting = delta > 0;
+		if (inserting) {
+			end = (start + delta) - 1;
+		} else {
+			end = (start - delta) - 1;
+		}
+		int high = searchForStyle(start, end);
+		int index;
+		// update the styles that are in the affected range
+		for (index = high; index < styleCount; index++) {
+			style = styles[index];
+			if (inserting) {
+				if (style.start >= start) break;
+				// in the insert case only one style range will be directly affected,
+				// it will need to be split into two and then the newStyle inserted
+				StyleRange beforeStyle = (StyleRange)style.clone();
+				beforeStyle.length = start - style.start;
+				style.start = start;
+				style.length = style.length - beforeStyle.length;
+				if (beforeStyle.length != 0) insertStyle(beforeStyle, index);
+				index++;
+				break;
+			} else {
+				int styleEnd = style.start + style.length - 1;
+				if (style.start > end) break;
+				// in the delete case, any style that overlaps the change range will be
+				// affected
+				if (style.start < start) {
+					if (styleEnd <= end) {
+						// style starts before change range, ends in change range
+						style.length = start - style.start;
+					} else {
+						// style starts before change range, ends after change range
+						style.length = style.length + delta;
+						index++;
+						break;
+					}
+				} else {
+					if (styleEnd <= end) {
+						// style starts in change range, ends in change range
+						if (deleteStart == -1)	{
+							deleteStart = index;
+						} 
+						deleteCount++;
+					} else {
+						// style starts in change range, ends after change range
+						style.start = start;
+						style.length = styleEnd - end;
+						index++;
+						break;
+					}
+				}	
+			}
+		}
+		deleteStyles(deleteStart, deleteCount);
+		// change the offsets of the styles after the affected styles
+		for (int i = index - deleteCount; i < styleCount; i++) {
+			style = styles[i];
+			style.start = style.start + delta;
+		}
+	}
+	/** 
+	 * Returns the indexes of the styles that overlap the given range.  Styles that partially
+	 * or fully overlap the range will be returned.
+	 * <p>
+	 *
+	 * @return Point where x is the index of the starting overlap style, y is the number of
+	 * 	styles that overlap the range
+	 */ 
+	Point getOverlappingStyles(int start, int length) {	
+		StyleRange style;
+		if (styleCount == 0) return null;
+		// find the index of the first style for the given offset, use a binary search
+		// to find the index
+		int end = start + length - 1;
+		int high = searchForStyle(start, end);
+		int count = 0;
+		for (int index = high; index < styleCount; index++) {
+			style = styles[index];
+			int styleEnd = style.start + style.length - 1;
+			if (style.start > end) break;
+			if (styleEnd >= start) count++;	
+		}
+		return new Point(high, count);
+	}
+	int getLineAlignment(int index, int defaultAlignment) {
+		LineInfo info = lines[index];
+		if (info != null && (info.flags & ALIGNMENT) != 0) {
+			return info.alignment;
+		}
+		return  defaultAlignment;
+	}
+	Color getLineBackground(int index, Color defaultBackground) {
+		LineInfo info = lines[index];
+		if (info != null && (info.flags & BACKGROUND) != 0) {
+			return info.background;
+		}
+		return  defaultBackground;
+	}
+	int getLineIndent(int index, int defaultIndent) {
+		LineInfo info = lines[index];
+		if (info != null && (info.flags & INDENT) != 0) {
+			return info.indent;
+		}
+		return  defaultIndent;
+	}
+	boolean getLineJustify(int index, boolean defaultJustify) {
+		LineInfo info = lines[index];
+		if (info != null && (info.flags & JUSTIFY) != 0) {
+			return info.justify;
+		}
+		return defaultJustify;
+	}
+	/** 
+	 * Returns the style for the character at <code>offset</code>.  Called by StyledText.  
+	 * Returns a new style.  Does not return the existing style.
+	 * <p>
+	 *
+	 * @param offset the character position in the text
+	 * @return a cloned StyleRange with start == offset and length == 1 if a style is
+	 * 	specified or null if no style is specified
+	 */ 
+	StyleRange getStyleRangeAtOffset(int offset) {
+		if (styleCount == 0) return null;
+		Point pt = getOverlappingStyles(offset, 1);
+		if (pt == null || pt.y == 0) return null;
+		StyleRange newStyle = (StyleRange)styles[pt.x].clone();
+		newStyle.start = offset;
+		newStyle.length = 1;
+		return newStyle;
+	}
+	/** 
+	 * Returns the styles for the given range. Returns the existing styles,
+	 * so be careful not to modify the return value.  Styles are not cloned
+	 * in order to make this method as efficient as possible. 
+	 * <p>
+	 *
+	 * @param offset the start position of the text range
+	 * @param length the length of the text range
+	 * @return a StyleRange array or null if no styles are specified for the text
+	 * 	range
+	 */ 
+	StyleRange[] getStyleRangesFor(int offset, int length) {
+		if (styleCount == 0) return null;
+		Point pt = getOverlappingStyles(offset, length);
+		if (pt == null || pt.y == 0) return null;
+		StyleRange[] ranges = new StyleRange[pt.y];
+		for (int i = 0; i < pt.y; i++) {
+			StyleRange newStyle = styles[pt.x + i];
+			ranges[i] = newStyle;
+		}
+		return ranges;
+	}
+	void dispose () {
+		styles = null;
+		lines = null;
+		content = null;
+	}
+	}
+	
+	/**
+	 * A StyledTextRenderer renders the content of a StyledText widget.
+	 * Subclasses can provide a different device (e.g., Display, Printer) 
+	 * to render on and implement abstract methods to return resources 
+	 * created on that device.
+	 */
+	static abstract class StyledTextRenderer {
+		private Device device;					// device to render on
+		protected Font regularFont, boldFont, italicFont, boldItalicFont;
+		private int tabWidth;					// width in pixels of a tab character
+		private int ascent, descent;
+		private int lineEndSpaceWidth;			// width in pixels of the space used to represent line delimiters
+		
+	/**
+	 * Creates an instance of <class>StyledTextRenderer</class>.
+	 * </p>
+	 * @param device Device to render on
+	 * @param regularFont Font to use for regular text
+	 * @param leftMargin margin to the left of the text
+	 */
+	StyledTextRenderer(Device device, Font regularFont) {
+		this.device = device;
+		this.regularFont = regularFont;
+	}
+	/**
+	 * Calculates the line height and space width.
+	 */
+	void calculateLineHeight() {
+		GC gc = getGC();
+		lineEndSpaceWidth = gc.stringExtent(" ").x;	
+		
+		// don't assume that bold and normal fonts have the same height
+		// fixes bug 41773
+		Font originalFont = gc.getFont();
+		FontMetrics metrics = gc.getFontMetrics();
+		ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
+		descent = Math.max(descent, metrics.getDescent());
+		gc.setFont(getFont(SWT.BOLD));
+		metrics = gc.getFontMetrics();
+		ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
+		descent = Math.max(descent, metrics.getDescent());
+		gc.setFont(getFont(SWT.ITALIC));
+		metrics = gc.getFontMetrics();
+		ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
+		descent = Math.max(descent, metrics.getDescent());
+		gc.setFont(getFont(SWT.BOLD | SWT.ITALIC));
+		metrics = gc.getFontMetrics();
+		ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
+		descent = Math.max(descent, metrics.getDescent());
+		gc.setFont(originalFont);
+		disposeGC(gc);
+		
+		// clear the font cache
+		if (boldFont != null) boldFont.dispose();
+		if (italicFont != null) italicFont.dispose();
+		if (boldItalicFont != null) boldItalicFont.dispose();
+		boldFont = italicFont = boldItalicFont = null;
+	}
+	/**
+	 * Disposes the resource created by the receiver.
+	 */
+	void dispose() {
+		if (boldFont != null) boldFont.dispose();
+		if (italicFont != null) italicFont.dispose();
+		if (boldItalicFont != null) boldItalicFont.dispose();
+		boldFont = italicFont = boldItalicFont = null;
+	}
+	/**
+	 * Dispose the specified GC.
+	 * Allows subclasses to reuse GCs.
+	 * </p>
+	 * @param gc GC to dispose.
+	 */
+	protected abstract void disposeGC(GC gc);
+	/** 
+	 * Draws a line of text at the specified location.
+	 * </p>
+	 *
+	 * @param line the line to draw
+	 * @param lineIndex	index of the line to draw
+	 * @param paintY y location to draw at
+	 * @param gc GC to draw on
+	 * @param widgetBackground the widget background color. 
+	 * 	Used as the default rendering color.
+	 * @param widgetForeground the widget foreground color. 
+	 * 	Used as the default rendering color. 
+	 * @param clearBackground true if the line background should be drawn
+	 * explicitly.
+	 */
+	void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackground, Color widgetForeground, boolean clearBackground) {
+		int lineOffset = getContent().getOffsetAtLine(lineIndex);
+		int lineLength = line.length();
+		Point selection = getSelection();
+		int selectionStart = selection.x;
+		int selectionEnd = selection.y;
+		int leftMargin = getLeftMargin();
+		Color lineBackground = null;
+		TextLayout layout = getTextLayout(line, lineOffset);
+		Rectangle client = getClientArea();
+		StyledTextEvent event = getLineBackgroundData(lineOffset, line);
+		if (event != null) {
+			lineBackground = event.lineBackground;
+		}
+		if (lineBackground == null) {
+			lineBackground = widgetBackground;
+		}
+		
+		if (clearBackground &&
+			(!isFullLineSelection() || 
+			 selectionStart > lineOffset || 
+			 selectionEnd <= lineOffset + lineLength)) {
+			// draw background if full selection is off or if line is not 
+			// completely selected
+			gc.setBackground(lineBackground);
+			gc.setForeground(lineBackground);
+			gc.fillRectangle(client.x + leftMargin, paintY, client.width, ascent + descent);
+		}
+		int paintX = client.x + leftMargin - getHorizontalPixel();
+		if (selectionStart != selectionEnd) {
+			Rectangle rect = layout.getLineBounds(0);
+			drawLineBreakSelection(line, lineOffset, paintX + rect.x + rect.width, paintY, gc);
+		}
+		gc.setForeground(widgetForeground);
+		gc.setBackground(lineBackground);
+		
+		if (selectionStart == selectionEnd || (selectionEnd <= lineOffset && selectionStart > lineOffset + lineLength - 1)) {
+			layout.draw(gc, paintX, paintY);
+		} else {
+			int start = Math.max(0, selectionStart - lineOffset);
+			int end = Math.min(lineLength, selectionEnd - lineOffset);
+			layout.draw(gc, paintX, paintY, start, end - 1, getSelectionForeground(), getSelectionBackground());
+		}
+		disposeTextLayout(layout);
+	}
+	/** 
+	 * Draws the background of the line selection.
+	 * Implemented by subclasses for optional selection rendering.
+	 * </p>
+	 *
+	 * @param line the line to draw
+	 * @param lineOffset offset of the first character in the line.
+	 * 	Relative to the start of the document.
+	 * @param styles line styles
+	 * @param paintY y location to draw at
+	 * @param gc GC to draw on
+	 * @param bidi the bidi object to use for measuring and rendering 	text in bidi
+	 * locales. null when not in bidi mode.
+	 */
+	protected abstract void drawLineBreakSelection(String line, int lineOffset, int paintX, int paintY, GC gc);
+
+	/**
+	 * Returns the visible client area that can be used for rendering.
+	 * </p>
+	 * @return the visible client area that can be used for rendering.
+	 */
+	protected abstract Rectangle getClientArea();
+	/**
+	 * Returns the <class>StyledTextContent</class> to use for line offset
+	 * calculations.
+	 * </p>
+	 * @return the <class>StyledTextContent</class> to use for line offset
+	 * calculations.
+	 */
+	protected abstract StyledTextContent getContent();
+	int getBaseline() {
+		return ascent;
+	}
+	/**
+	 * Returns the text segments that should be treated as if they 
+	 * had a different direction than the surrounding text.
+	 * </p>
+	 *
+	 * @param lineOffset offset of the first character in the line. 
+	 * 	0 based from the beginning of the document.
+	 * @param line text of the line to specify bidi segments for
+	 * @return text segments that should be treated as if they had a
+	 * 	different direction than the surrounding text. Only the start 
+	 * 	index of a segment is specified, relative to the start of the 
+	 * 	line. Always starts with 0 and ends with the line length. 
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the segment indices returned 
+	 * 		by the listener do not start with 0, are not in ascending order,
+	 * 		exceed the line length or have duplicates</li>
+	 * </ul>
+	 */
+	protected abstract int[] getBidiSegments(int lineOffset, String lineText);
+	/**
+	 *  Returns the Font according with the given style
+	 */
+	Font getFont(int style) {
+		switch (style) {
+			case SWT.BOLD:
+				if (boldFont != null) return boldFont;
+				return boldFont = new Font(device, getFontData(style));
+			case SWT.ITALIC:
+				if (italicFont != null) return italicFont;
+				return italicFont = new Font(device, getFontData(style));
+			case SWT.BOLD | SWT.ITALIC:
+				if (boldItalicFont != null) return boldItalicFont;
+				return boldItalicFont = new Font(device, getFontData(style));
+			default:
+				return regularFont;
+		}
+	}
+	FontData[] getFontData(int style) {
+		FontData[] fontDatas = regularFont.getFontData();
+		for (int i = 0; i < fontDatas.length; i++) {
+			fontDatas[i].setStyle(style);
+		}
+		return fontDatas;
+	}
+	/**
+	 * Returns the GC to use for rendering and measuring.
+	 * Allows subclasses to reuse GCs.
+	 * </p>
+	 * @return the GC to use for rendering and measuring.
+	 */
+	protected abstract GC getGC();
+	/**
+	 * Returns the horizontal scroll position.
+	 * </p>
+	 * @return the horizontal scroll position.
+	 */
+	protected abstract int getHorizontalPixel();
+	protected int getLeftMargin() {
+		return 0;
+	}
+	/**
+	 * Returns the width in pixels of the space used to represent line delimiters.
+	 * @return the width in pixels of the space used to represent line delimiters.
+	 */
+	int getLineEndSpaceWidth() {
+		return lineEndSpaceWidth;
+	}
+	/**
+	 * Returns the line background data for the given line or null if 
+	 * there is none. 
+	 * </p>
+	 * @param lineOffset offset of the line start relative to the start
+	 * 	of the content.
+	 * @param line line to get line background data for
+	 * @return line background data for the given line. may return null
+	 */
+	protected abstract StyledTextEvent getLineBackgroundData(int lineOffset, String line);
+	/**
+	 * Returns the height in pixels of a line.
+	 * </p>
+	 * @return the height in pixels of a line.
+	 */
+	int getLineHeight() {
+		return ascent + descent;
+	}
+	/**
+	 * Returns the line style data for the specified line.
+	 * The lineOffset and line may specify a segment of a logical line stored
+	 * in the <class>StyledTextContent</class> of the widget.
+	 * The returned styles are guaranteed to be at least partially on the
+	 * segment.
+	 * </p>
+	 * @param event the styles for the logical line
+	 * @param lineOffset offset of the line start relative to the start of 
+	 * 	the content.
+	 * @param line line to get line styles for
+	 * @return line style data for the given line segment. Styles may start 
+	 * 	before line start and end after line end but are guaranteed to be at 
+	 * 	least partially on the line.
+	 */
+	StyledTextEvent getLineStyleData(StyledTextEvent event, int lineOffset, String line) {
+		if (event.styles != null && getWordWrap()) {
+			event.styles = getVisualLineStyleData(event.styles, lineOffset, line.length());
+		}
+		if (event.styles == null) {
+			event.styles = new StyleRange[0];
+		}
+		return event;
+	}
+	/**
+	 * Returns the line style data for the given line or null if there is 
+	 * none. If there is a LineStyleListener but it does not set any styles, 
+	 * the StyledTextEvent.styles field will be initialized to an empty 
+	 * array.
+	 * </p>
+	 * 
+	 * @param lineOffset offset of the line start relative to the start of 
+	 * 	the content.
+	 * @param line line to get line styles for
+	 * @return line style data for the given line. Styles may start before 
+	 * 	line start and end after line end
+	 */
+	protected abstract StyledTextEvent getLineStyleData(int lineOffset, String line);
+	/**
+	 *
+	 */
+	protected abstract int getOrientation ();
+	/**
+	*
+	*/
+	protected int getRightMargin() {
+		return 0;
+	}
+	/**
+	 *
+	 */
+	protected abstract Color getSelectionForeground();
+	/**
+	 *
+	 */
+	protected abstract Color getSelectionBackground();
+	/**
+	 * Returns the widget selection.
+	 * Implemented by subclasses for optional selection rendering.
+	 * </p>
+	 * @return the widget selection.
+	 */
+	protected abstract Point getSelection();
+	/**
+	 * Returns styles for the specified visual (wrapped) line.
+	 * </p>
+	 * 
+	 * @param logicalStyles the styles for a logical (unwrapped) line
+	 * @param lineOffset offset of the visual line
+	 * @param lineLength length of the visual line
+	 * @return styles in the logicalStyles array that are at least 
+	 * 	partially on the specified visual line.
+	 */
+	StyleRange[] getVisualLineStyleData(StyleRange[] logicalStyles, int lineOffset, int lineLength) {
+		int lineEnd = lineOffset + lineLength;
+		int oldStyleCount = logicalStyles.length;
+		int newStyleCount = 0;
+		
+		for (int i = 0; i < oldStyleCount; i++) {
+			StyleRange style = logicalStyles[i];
+			if (style.start < lineEnd && style.start + style.length > lineOffset) {
+				newStyleCount++;
+			}
+		}
+		if (newStyleCount != oldStyleCount) {
+			StyleRange[] newStyles = new StyleRange[newStyleCount];
+			for (int i = 0, j = 0; i < oldStyleCount; i++) {
+				StyleRange style = logicalStyles[i];
+				if (style.start < lineEnd && style.start + style.length > lineOffset) {
+					newStyles[j++] = logicalStyles[i];						
+				}
+			}
+			logicalStyles = newStyles;
+		}
+		return logicalStyles;
+	}
+	/**
+	 * Returns the word wrap state.
+	 * </p>
+	 * @return true=word wrap is on. false=no word wrap, lines may extend 
+	 * 	beyond the right side of the client area.
+	 */
+	protected abstract boolean getWordWrap();
+	/**
+	 * Returns whether the widget was created with the SWT.FULL_SELECTION style.
+	 * Implemented by subclasses for optional selection rendering.
+	 * </p>
+	 * @return true=the widget is running in full line selection mode, 
+	 * 	false=otherwise
+	 */
+	protected abstract boolean isFullLineSelection();
+	/**
+	 * Calculates the width in pixel of a tab character
+	 * </p>
+	 * @param tabLength number of space characters represented by a tab character.
+	 */
+	void setTabLength(int tabLength) {
+		GC gc = getGC();
+		StringBuffer tabBuffer = new StringBuffer(tabLength);
+		for (int i = 0; i < tabLength; i++) {
+			tabBuffer.append(' ');
+		}
+		tabWidth = gc.stringExtent(tabBuffer.toString()).x;
+		disposeGC(gc);
+	}
+	/**
+	 *  Returns TextLayout given a line index and an array of styles 
+	 */
+	TextLayout getTextLayout(String line, int lineOffset) {
+		TextLayout layout = createTextLayout(lineOffset);
+		layout.setFont(regularFont);
+		layout.setAscent(ascent);
+		layout.setDescent(descent);
+		layout.setText(line);
+		layout.setOrientation(getOrientation());
+		layout.setSegments(getBidiSegments(lineOffset, line));
+		layout.setTabs(new int[]{tabWidth});
+		int length = line.length();
+		StyledTextEvent event = getLineStyleData(lineOffset, line);
+		StyleRange[] styles = event != null ? event.styles : null;
+		int lastOffset = 0;
+		if (styles != null) {
+			for (int styleIndex = 0; styleIndex < styles.length; styleIndex++) {
+				StyleRange style = styles[styleIndex];
+				if (style.isUnstyled()) continue;
+				int start, end;
+				if (lineOffset > style.start) {
+					start = 0;
+					end = Math.min (length, style.length - lineOffset + style.start);
+				} else {
+					start = style.start - lineOffset;
+					end = Math.min(length, start + style.length);
+				}
+				if (start >= length) break;
+				if (lastOffset < start) {
+					layout.setStyle(null, lastOffset, start - 1);	
+				}
+				TextStyle textStyle = new TextStyle(getFont(style.fontStyle), style.foreground, style.background);
+				textStyle.underline = style.underline;
+				textStyle.strikeout = style.strikeout;
+				layout.setStyle(textStyle, start, end - 1);
+				lastOffset = Math.max(lastOffset, end);
+			}
+		}
+		if (lastOffset < length) layout.setStyle(null, lastOffset, length);
+		return layout;
+	}
+	TextLayout createTextLayout(int lineOffset) {
+		return new TextLayout(device);
+	}
+	void disposeTextLayout (TextLayout layout) {
+		layout.dispose();
+	}
+	}
+
+	static class DisplayRenderer extends StyledTextRenderer {
+		private StyledText parent;			// used to get content and styles during rendering
+		private int topIndex = -1;
+		private TextLayout[] layouts;
+		
+	/**
+	 * Creates an instance of <class>DisplayRenderer</class>.
+	 * </p>
+	 * @param device Device to render on
+	 * @param regularFont Font to use for regular text
+	 * @param parent <class>StyledText</class> widget to render
+	 * @param tabLength length in characters of a tab character
+	 */
+	DisplayRenderer(Device device, Font regularFont, StyledText parent, int tabLength) {
+		super(device, regularFont);
+		this.parent = parent;
+		calculateLineHeight();
+		setTabLength(tabLength);
+	}
+	void dispose() {
+		super.dispose();
+		if (layouts != null) {
+			for (int i = 0; i < layouts.length; i++) {
+				TextLayout layout = layouts[i];
+				if (layout != null) super.disposeTextLayout(layout);
+			}
+			topIndex = -1;
+			layouts = null;
+		}
+	}
+	/**
+	 * Dispose the specified GC.
+	 * </p>
+	 * @param gc GC to dispose.
+	 */
+	protected void disposeGC(GC gc) {
+		gc.dispose();
+	}
+	/** 
+	 * Draws the line delimiter selection if the selection extends beyond the given line.
+	 * </p>
+	 *
+	 * @param line the line to draw
+	 * @param lineOffset offset of the first character in the line.
+	 * 	Relative to the start of the document.
+	 * @param paintX x location to draw at
+	 * @param paintY y location to draw at
+	 * @param gc GC to draw on
+	 */
+	protected void drawLineBreakSelection(String line, int lineOffset, int paintX, int paintY, GC gc) {
+		Point selection = parent.internalGetSelection();
+		int lineLength = line.length();
+		int selectionStart = Math.max(0, selection.x - lineOffset);
+		int selectionEnd = selection.y - lineOffset;
+		int lineEndSpaceWidth = getLineEndSpaceWidth();
+		int lineHeight = getLineHeight();
+		
+		if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength || selectionEnd <= lineLength) {
+			return;
+		}
+		
+		gc.setBackground(parent.getSelectionBackground());
+		gc.setForeground(parent.getSelectionForeground());
+		if ((parent.getStyle() & SWT.FULL_SELECTION) != 0) {
+			Rectangle rect = getClientArea();
+			gc.fillRectangle(paintX, paintY, rect.width - paintX, lineHeight);
+		} else {
+			boolean isWrappedLine = false;
+			if (parent.internalGetWordWrap()) {
+				StyledTextContent content = getContent();
+				int lineEnd = lineOffset + lineLength;
+				int lineIndex = content.getLineAtOffset(lineEnd);
+
+				// is the start offset of the next line the same as the end 
+				// offset of this line?
+				if (lineIndex < content.getLineCount() - 1 &&
+					content.getOffsetAtLine(lineIndex + 1) == lineEnd) {
+					isWrappedLine = true;
+				}
+			}
+			if (!isWrappedLine) {
+				// render the line break selection
+				gc.fillRectangle(paintX, paintY, lineEndSpaceWidth, lineHeight);
+			}
+		}	
+	}
+	/**
+	 * Returns the text segments that should be treated as if they 
+	 * had a different direction than the surrounding text.
+	 * </p>
+	 *
+	 * @param lineOffset offset of the first character in the line. 
+	 * 	0 based from the beginning of the document.
+	 * @param lineText text of the line to specify bidi segments for
+	 * @return text segments that should be treated as if they had a
+	 * 	different direction than the surrounding text. Only the start 
+	 * 	index of a segment is specified, relative to the start of the 
+	 * 	line. Always starts with 0 and ends with the line length. 
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the segment indices returned 
+	 * 		by the listener do not start with 0, are not in ascending order,
+	 * 		exceed the line length or have duplicates</li>
+	 * </ul>
+	 */
+	protected int[] getBidiSegments(int lineOffset, String lineText) {
+		if (!parent.isBidi()) return null;
+		return parent.getBidiSegments(lineOffset, lineText);
+	}
+	/**
+	 * Returns the visible client area that can be used for rendering.
+	 * </p>
+	 * @return the visible client area that can be used for rendering.
+	 */
+	protected Rectangle getClientArea() {
+		return parent.getClientArea();
+	}
+	/**
+	 * Returns the <class>StyledTextContent</class> to use for line offset
+	 * calculations.
+	 * </p>
+	 * @return the <class>StyledTextContent</class> to use for line offset
+	 * calculations.
+	 */
+	protected StyledTextContent getContent() {
+		return parent.internalGetContent();
+	}
+	/**
+	 * Returns a new GC to use for rendering and measuring.
+	 * When the GC is no longer used it needs to be disposed by 
+	 * calling disposeGC.
+	 * </p>
+	 * @return the GC to use for rendering and measuring.
+	 * @see #disposeGC
+	 */
+	protected GC getGC() {
+		return new GC(parent);
+	}
+	/**
+	 * Returns the horizontal scroll position.
+	 * </p>
+	 * @return the horizontal scroll position.
+	 */
+	protected int getHorizontalPixel() {
+		return parent.internalGetHorizontalPixel();
+	}
+	protected int getLeftMargin() {
+		return parent.leftMargin;
+	}
+	/**
+	 * @see StyledTextRenderer#getLineBackgroundData
+	 */
+	protected StyledTextEvent getLineBackgroundData(int lineOffset, String line) {
+		return parent.getLineBackgroundData(lineOffset, line);
+	}
+	/**
+	 * @see StyledTextRenderer#getLineStyleData
+	 */
+	protected StyledTextEvent getLineStyleData(int lineOffset, String line) {
+		StyledTextEvent logicalLineEvent = parent.getLineStyleData(lineOffset, line);
+		if (logicalLineEvent != null) {
+			logicalLineEvent = getLineStyleData(logicalLineEvent, lineOffset, line);
+		}
+		return logicalLineEvent;
+	}
+	protected  int getOrientation () {
+		return parent.getOrientation();
+	}
+	protected int getRightMargin() {
+		return parent.rightMargin;
+	}
+	protected Color getSelectionBackground() {
+		return parent.getSelectionBackground();
+	}
+	protected Color getSelectionForeground() {
+		return parent.getSelectionForeground();
+	}
+	/**
+	 * @see StyledTextRenderer#getSelection
+	 */
+	protected Point getSelection() {
+		return parent.internalGetSelection();
+	}
+	/**
+	 * @see StyledTextRenderer#getWordWrap
+	 */
+	protected boolean getWordWrap() {
+		return parent.getWordWrap();
+	}
+	/**
+	 * @see StyledTextRenderer#isFullLineSelection
+	 */
+	protected boolean isFullLineSelection() {
+		return (parent.getStyle() & SWT.FULL_SELECTION) != 0;
+	}
+	TextLayout createTextLayout(int lineOffset) {
+		if (!parent.internalGetWordWrap()) {
+			int lineIndex = getContent().getLineAtOffset(lineOffset);
+			updateTopIndex();
+			if (layouts != null) {
+				int layoutIndex = lineIndex - topIndex;
+				if (0 <= layoutIndex && layoutIndex < layouts.length) {
+					TextLayout layout = layouts[layoutIndex];
+					if (layout != null) return layout;
+					return layouts[layoutIndex] = super.createTextLayout(lineIndex); 
+				}
+			}
+		}
+		return super.createTextLayout(lineOffset);
+	}
+	void disposeTextLayout (TextLayout layout) {
+		if (layouts != null) {
+			for (int i=0; i<layouts.length; i++) {
+				if (layouts[i] == layout) return;
+			}
+		}
+		super.disposeTextLayout(layout);
+	}
+	void updateTopIndex() {
+		int verticalIncrement = parent.getVerticalIncrement();
+		int topIndex = verticalIncrement == 0 ? 0 : parent.verticalScrollOffset / verticalIncrement;
+		int newLength = Math.max(1 , parent.getPartialBottomIndex() - topIndex + 1);
+		if (layouts == null || topIndex != this.topIndex || newLength != layouts.length) {
+			TextLayout[] newLayouts = new TextLayout[newLength];
+			if (layouts != null) {
+				for(int i=0; i<layouts.length; i++) {
+					TextLayout layout = layouts[i];
+					if (layout != null) {
+						int layoutIndex = (i + this.topIndex) - topIndex;
+						if (0 <= layoutIndex && layoutIndex < newLayouts.length) {
+							newLayouts[layoutIndex] = layout;
+						} else {
+							super.disposeTextLayout(layout);
+						}
+					}
+				}
+			}
+			this.topIndex = topIndex;
+			layouts = newLayouts;
+		}
+	}
+	}
+
+	static class PrintRenderer extends StyledTextRenderer {
+		StyledTextContent logicalContent;		// logical, unwrapped, content
+		WrappedContent content;					// wrapped content
+		Rectangle clientArea;					// printer client area
+		GC gc;									// printer GC, there can be only one GC for each printer device
+		Hashtable lineBackgrounds;				// line background colors used during rendering
+		Hashtable lineStyles;					// line styles colors used during rendering
+		Hashtable bidiSegments;			 		// bidi segments used during rendering on bidi platforms
+		
+	/**
+	 * Creates an instance of <class>PrintRenderer</class>.
+	 * </p>
+	 * @param device Device to render on
+	 * @param regularFont Font to use for regular text.
+	 * @param gc printer GC to use for rendering. There can be only one GC for 
+	 * 	each printer device at any given time.
+	 * @param logicalContent StyledTextContent to print.
+	 * @param lineBackgrounds line background colors to use during rendering.
+	 * @param lineStyles line styles colors to use during rendering.
+	 * @param bidiSegments bidi segments to use during rendering on bidi platforms.
+	 * @param leftMargin margin to the left of the text.
+	 * @param tabLength length in characters of a tab character
+	 * @param clientArea the printer client area.
+	 */
+	PrintRenderer(
+			Device device, Font regularFont, GC gc, 
+			StyledTextContent logicalContent, Hashtable lineBackgrounds, 
+			Hashtable lineStyles, Hashtable bidiSegments,
+			int tabLength, Rectangle clientArea) {
+		super(device, regularFont);
+		this.logicalContent = logicalContent;
+		this.lineBackgrounds = lineBackgrounds;
+		this.lineStyles = lineStyles;
+		this.bidiSegments = bidiSegments;	
+		this.clientArea = clientArea;	
+		this.gc = gc;
+		calculateLineHeight();
+		setTabLength(tabLength);
+		content = new WrappedContent(this, logicalContent);
+		// wrapLines requires tab width to be known	
+		content.wrapLines();
+	}
+	/**
+	 * Disposes the resource created by the receiver.
+	 */
+	protected void dispose() {
+		content = null;
+		super.dispose();
+	}
+	/**
+	 * Do nothing. PrintRenderer does not create GCs.
+	 * @see StyledTextRenderer#disposeGC
+	 */
+	protected void disposeGC(GC gc) {
+	}
+	/** 
+	 * Do not print the selection.
+	 * @see StyledTextRenderer#drawLineSelectionBackground
+	 */
+	protected void drawLineBreakSelection(String line, int lineOffset, int paintX, int paintY, GC gc) {
+	}
+	/**
+	 * Returns from cache the text segments that should be treated as 
+	 * if they had a different direction than the surrounding text.
+	 * <p>
+	 * Use cached data.
+	 * </p>
+	 *
+	 * @param lineOffset offset of the first character in the line. 
+	 * 	0 based from the beginning of the document.
+	 * @param line text of the line to specify bidi segments for
+	 * @return text segments that should be treated as if they had a
+	 * 	different direction than the surrounding text. Only the start 
+	 * 	index of a segment is specified, relative to the start of the 
+	 * 	line. Always starts with 0 and ends with the line length. 
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_INVALID_ARGUMENT - if the segment indices returned 
+	 * 		by the listener do not start with 0, are not in ascending order,
+	 * 		exceed the line length or have duplicates</li>
+	 * </ul>
+	 */
+	protected int[] getBidiSegments(int lineOffset, String lineText) {
+		int lineLength = lineText.length();
+		int logicalLineOffset = getLogicalLineOffset(lineOffset);
+		int[] segments = (int []) bidiSegments.get(new Integer(logicalLineOffset));
+		
+		if (segments == null) {
+			segments = new int[] {0, lineLength};
+		} else {
+			// cached bidi segments are for logical lines.
+			// make sure that returned segments match requested line since
+			// line wrapping may require either entire or part of logical 
+			// line bidi segments
+			int logicalLineIndex = logicalContent.getLineAtOffset(lineOffset);
+			int logicalLineLength = logicalContent.getLine(logicalLineIndex).length();
+			
+			if (lineOffset != logicalLineOffset || lineLength != logicalLineLength) {
+				int lineOffsetDelta = lineOffset - logicalLineOffset;
+				int newSegmentCount = 0;
+				int[] newSegments = new int[segments.length];
+				
+				for (int i = 0; i < segments.length; i++) {
+					newSegments[i] = Math.max(0, segments[i] - lineOffsetDelta);
+					if (newSegments[i] > lineLength) {
+						newSegments[i] = lineLength;
+						newSegmentCount++;
+						break;
+					}
+					if (i == 0 || newSegments[i] > 0) {
+						newSegmentCount++;
+					}
+				}
+				segments = new int[newSegmentCount];
+				for (int i = 0, newIndex = 0; i < newSegments.length && newIndex < newSegmentCount; i++) {
+					if (i == 0 || newSegments[i] > 0) {
+						segments[newIndex++] = newSegments[i];
+					}
+				}
+			}
+		}
+		return segments;
+	}
+	/**
+	 * Returns the printer client area.
+	 * </p>
+	 * @return the visible client area that can be used for rendering.
+	 * @see StyledTextRenderer#getClientArea
+	 */
+	protected Rectangle getClientArea() {
+		return clientArea;
+	}
+	/**
+	 * Returns the <class>StyledTextContent</class> to use for line offset
+	 * calculations.
+	 * This is the wrapped content, calculated in the constructor from the 
+	 * logical printing content.
+	 * </p>
+	 * @return the <class>StyledTextContent</class> to use for line offset
+	 * calculations.
+	 */
+	protected StyledTextContent getContent() {
+		return content;
+	}
+	/**
+	 * Returns the printer GC to use for rendering and measuring.
+	 * There can be only one GC for each printer device at any given
+	 * time.
+	 * </p>
+	 * @return the printer GC to use for rendering and measuring.
+	 */
+	protected GC getGC() {
+		return gc;
+	}
+	/**
+	 * Returns 0. Scrolling does not affect printing. Text is wrapped
+	 * for printing.
+	 * </p>
+	 * @return 0
+	 * @see StyledTextRenderer#getHorizontalPixel
+	 */
+	protected int getHorizontalPixel() {
+		return 0;
+	}
+	/**
+	 * Returns the start offset of the line at the given offset.
+	 * </p>
+	 * @param visualLineOffset an offset that may be anywhere within a 
+	 * 	line.
+	 * @return the start offset of the line at the given offset, 
+	 * 	relative to the start of the document.
+	 */
+	private int getLogicalLineOffset(int visualLineOffset) {
+		int logicalLineIndex = logicalContent.getLineAtOffset(visualLineOffset);
+		return logicalContent.getOffsetAtLine(logicalLineIndex);
+	}
+	protected  int getOrientation () {
+		int mask = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+		return gc.getStyle() & mask;
+	}
+	protected Color getSelectionBackground() {
+		return null;
+	}
+	protected Color getSelectionForeground() {
+		return null;
+	}
+	/**
+	 * Return cached line background data.
+	 * @see StyledTextRenderer#getLineBackgroundData
+	 */
+	protected StyledTextEvent getLineBackgroundData(int lineOffset, String line) {
+		int logicalLineOffset = getLogicalLineOffset(lineOffset);
+		return (StyledTextEvent) lineBackgrounds.get(new Integer(logicalLineOffset));
+	}
+	/**
+	 * Return cached line style background data.
+	 * @see StyledTextRenderer#getLineStyleData
+	 */
+	protected StyledTextEvent getLineStyleData(int lineOffset, String line) {
+		int logicalLineOffset = getLogicalLineOffset(lineOffset);
+		StyledTextEvent logicalLineEvent = (StyledTextEvent) lineStyles.get(new Integer(logicalLineOffset));
+		
+		if (logicalLineEvent != null) {
+			StyledTextEvent clone = new StyledTextEvent((StyledTextContent) logicalLineEvent.data);
+			clone.detail = logicalLineEvent.detail;
+			clone.styles = logicalLineEvent.styles;
+			clone.text = logicalLineEvent.text;
+			logicalLineEvent = getLineStyleData(clone, lineOffset, line);
+		}
+		return logicalLineEvent;
+	}
+	/** 
+	 * Selection is not printed.
+	 * </p>
+	 * @return Point(0,0)
+	 * @see StyledTextRenderer#getSelection
+	 */
+	protected Point getSelection() {
+		return new Point(0, 0);
+	}
+	/**
+	 * Printed content is always wrapped.
+	 * </p>
+	 * @return true
+	 * @see StyledTextRenderer#getWordWrap
+	 */
+	protected boolean getWordWrap() {
+		return true;
+	}
+	/**
+	 * Selection is not printed. Returns false.
+	 * <p>
+	 * @return false
+	 * @see StyledTextRenderer#isFullLineSelection
+	 */
+	protected boolean isFullLineSelection() {
+		return false;
+	}
+	}
+	
+	/**
+	 * An instance of class <code>WrappedContent</code> is used by 
+	 * StyledText to display wrapped lines. Lines are wrapped at word 
+	 * breaks which are marked by a space character. Trailing space 
+	 * behind words is kept on the current line.
+	 * If the last remaining word on a line can not be fully displayed 
+	 * the line is wrapped character by character.
+	 * WrappedContent wraps a StyledTextContent which provides the line
+	 * data. The start offset and length of wrapped lines is calculated
+	 * and updated based on recalculation requests and text changes.
+	 * <p>
+	 * All public methods in this class implement the 
+	 * <code>StyledTextContent</code> interface. Package visible 
+	 * methods are internal API for use by <code>StyledText</code>.
+	 * </p>
+	 */
+	static class WrappedContent implements StyledTextContent {
+	    final static int LINE_OFFSET = 0; 	// index of line offset in visualLines array
+	    final static int LINE_LENGTH = 1; 	// index of line lenght in visualLines array
+		    
+	    StyledTextRenderer renderer;
+		StyledTextContent logicalContent;
+		int[][] visualLines; 				 // start and length of each visual line
+		int visualLineCount = 0;
+
+	/**
+	 * Create a new instance.
+	 * 
+	 * @param renderer <class>StyledTextRenderer</class> that renders 
+	 * 	the lines wrapped by the new instance.
+	 * @param logicalContent StyledTextContent that provides the line 
+	 * 	data.
+	 */
+	WrappedContent(StyledTextRenderer renderer, StyledTextContent logicalContent) {
+	    this.renderer = renderer;
+	    this.logicalContent = logicalContent;
+	}
+	/**
+	 * @see StyledTextContent#addTextChangeListener(TextChangeListener)
+	 */
+	public void addTextChangeListener(TextChangeListener listener) {
+	    logicalContent.addTextChangeListener(listener);
+	}
+	/**
+	 * Grow the lines array to at least the specified size.
+	 * <p>
+	 * 
+	 * @param numLines number of elements that the array should have
+	 * 	at a minimum
+	 */
+	private void ensureSize(int numLines) {
+		int size = visualLines.length;
+		if (size >= numLines) {
+			return;
+		}
+		int[][] newLines = new int[Math.max(size * 2, numLines)][2];
+		System.arraycopy(visualLines, 0, newLines, 0, size);
+		visualLines = newLines;
+		resetVisualLines(size, visualLines.length - size);	
+	}
+	/**
+	 * @see StyledTextContent#getCharCount()
+	 */
+	public int getCharCount() {
+	    return logicalContent.getCharCount();
+	}
+	/**
+	 * @return the visual (wrapped) line at the specified index
+	 * @see StyledTextContent#getLine(int)
+	 */
+	public String getLine(int lineIndex) {
+		String line;
+		
+		// redirect call to logical content if there are no wrapped lines
+		if (visualLineCount == 0) {
+			line = logicalContent.getLine(lineIndex);
+		}
+		else {
+			if (lineIndex >= visualLineCount || lineIndex < 0) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}		
+			line = logicalContent.getTextRange(visualLines[lineIndex][LINE_OFFSET], visualLines[lineIndex][LINE_LENGTH]);
+		}
+	    return line;
+	}
+	/**
+	 * Returns the visual (wrapped) line at given offset.
+	 * <p>
+	 * The offset is ambiguous if it identifies the end of a visual line and 
+	 * there is another visual line below. In this case the end of the visual
+	 * line has the same offset as the beginning of the next visual line 
+	 * since the visual line break is not represented by any character in the
+	 * logical line.
+	 * In this ambiguous case the offset is assumed to represent the end of a
+	 * visual line and the index of the first visual line is returned.
+	 * </p>
+	 * 
+	 * @param offset offset of the desired line. 
+	 * @return the index of the visual (wrapped) line at the specified offset
+	 * @see StyledTextContent#getLineAtOffset(int)
+	 */
+	public int getLineAtOffset(int offset) {
+		int lastLine = visualLineCount - 1;
+		int lastChar;
+
+		// redirect call to logical content if there are no wrapped lines
+		if (visualLineCount == 0) {
+			return logicalContent.getLineAtOffset(offset);
+		}
+		// can't use getCharCount to get the number of characters since this
+		// method is called in textChanged, when the logicalContent used by
+		// getCharCount has already changed. at that point the visual lines
+		// have not been updated yet and we thus need to use the old character
+		// count which is only available in the visual content.
+		lastChar = visualLines[lastLine][LINE_OFFSET] + visualLines[lastLine][LINE_LENGTH];
+		if (offset < 0 || (offset > 0 && offset > lastChar)) {
+		    SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+		// if last line and the line is not empty you can ask for 
+		// a position that doesn't exist (the one to the right of the 
+		// last character) - for inserting
+		if (offset == lastChar) {
+			return lastLine;
+		}
+
+		int high = visualLineCount;
+		int low = -1;
+		int index = visualLineCount;
+		while (high - low > 1) {
+			index = (high + low) / 2;
+			int lineStart = visualLines[index][LINE_OFFSET];
+			if (offset >= lineStart) {
+				int lineEnd = lineStart + visualLines[index][LINE_LENGTH];
+			    low = index;			
+			    if (offset <= lineEnd) {
+			    	break;
+			    }
+			} 
+			else {
+				high = index;
+			}
+		}
+		if (low > 0 && offset == visualLines[low - 1][LINE_OFFSET] + visualLines[low - 1][LINE_LENGTH]) {
+			// end of a visual line/beginning of next visual line is ambiguous 
+			// (they have the same offset). always return the first visual line
+			low--;
+		}
+		return low;
+	}
+	/**
+	 * @return the number of visual (wrapped) lines
+	 * @see StyledTextContent#getLineCount()
+	 */
+	public int getLineCount() {
+		int lineCount = visualLineCount;
+		
+		// redirect call to logical content if there are no wrapped lines
+		if (visualLineCount == 0) {
+			lineCount = logicalContent.getLineCount();
+		}
+	    return lineCount;
+	}
+	/**
+	 * @see StyledTextContent#getLineDelimiter()
+	 */
+	public String getLineDelimiter() {
+	    return logicalContent.getLineDelimiter();
+	}
+	/**
+	 * @return the start offset of the visual (wrapped) line at the given 
+	 * 	index
+	 * @see StyledTextContent#getOffsetAtLine(int)
+	 */
+	public int getOffsetAtLine(int lineIndex) {
+		int offset;
+		
+		// redirect call to logical content if there are no wrapped lines
+		if (visualLineCount == 0) {
+			offset = logicalContent.getOffsetAtLine(lineIndex);
+		}
+		else {
+			if (lineIndex >= visualLineCount || lineIndex < 0) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
+			offset = visualLines[lineIndex][LINE_OFFSET];
+		}
+	    return offset;
+	}
+	/**
+	 * @see StyledTextContent#getTextRange(int, int)
+	 */
+	public String getTextRange(int start, int length) {
+	    return logicalContent.getTextRange(start, length);
+	}
+	/**
+	 * Returns the number of visual (wrapped) lines.
+	 * 
+	 * @return the number of visual (wrapped) lines
+	 */
+	int getVisualLineCount() {
+		return visualLineCount;	
+	}
+	/**
+	 * @see StyledTextContent#removeTextChangeListener(TextChangeListener)
+	 */
+	public void removeTextChangeListener(TextChangeListener listener) {
+	    logicalContent.removeTextChangeListener(listener);
+	}
+	/**
+	 * Reset the visual (wrapped) lines in the specified range.
+	 * If the range specifies partial logical lines (e.g., startLine is
+	 * the second of two visual lines) it is extended to reset all visual 
+	 * lines of a logical line.
+	 * Following the reset the logical lines in the reset visual range are 
+	 * rewrapped.
+	 * <p>
+	 * 
+	 * @param startLine index of the first visual line 
+	 * @param lineCount number of visual lines
+	 */
+	void reset(int startLine, int lineCount) {
+	    if (lineCount <= 0 || visualLineCount == 0) {
+	        return;
+		}       
+		reset(startLine, lineCount, true);
+	}
+	/**
+	 * Reset the visual (wrapped) lines in the specified range.
+	 * If the range specifies partial logical lines (e.g., startLine is
+	 * the second of two visual lines) it is extended to reset all visual 
+	 * lines of a logical line.
+	 * <p>
+	 * 
+	 * @param startLine index of the first visual line 
+	 * @param lineCount number of visual lines
+	 * @param wrap true=rewrap the logical lines in the reset visual range 
+	 * 	false=don't rewrap lines. Visual lines will be left in an inconsistent
+	 * 	state since there will be a range of unwrapped and unknown lines.
+	 * @return the first visual line that was reset
+	 */
+	private int reset(int startLine, int lineCount, boolean wrap) {
+	    if (lineCount <= 0) {
+	        return startLine;
+		}       
+	    // make sure that all visual lines of the first logical line are 
+	    // being reset. visualFirstLine is the first visual line of the 
+	    // first logical line that has at least one visual line reset.
+		int visualFirstLineOffset = getOffsetAtLine(startLine);
+	    int logicalFirstLine = logicalContent.getLineAtOffset(visualFirstLineOffset);
+	    int logicalFirstLineOffset = logicalContent.getOffsetAtLine(logicalFirstLine);
+	    int visualFirstLine = getLineAtOffset(logicalFirstLineOffset);
+
+	    lineCount += startLine - visualFirstLine;
+	    startLine = visualFirstLine;
+	        
+	    // make sure that all visual lines of the last logical line are 
+	    // being reset.
+		int lastLine = startLine + lineCount - 1;
+	    int lastLineEnd = visualLines[lastLine][LINE_OFFSET] + visualLines[lastLine][LINE_LENGTH];
+	    int logicalEndLine = 0;
+	        
+	    while (lastLine < visualLineCount - 1 && lastLineEnd == visualLines[lastLine + 1][LINE_OFFSET]) {
+	    	lastLine++;
+	    	lastLineEnd = visualLines[lastLine][LINE_OFFSET] + visualLines[lastLine][LINE_LENGTH];
+	    }
+	    if (wrap) {
+			if (lastLine == visualLineCount - 1) {
+				logicalEndLine = logicalContent.getLineCount();
+			}
+			else {
+				logicalEndLine = logicalContent.getLineAtOffset(visualLines[lastLine + 1][LINE_OFFSET]);
+			}
+	    }
+	    lineCount = lastLine - startLine + 1;
+		resetVisualLines(startLine, lineCount);
+		visualLineCount -= lineCount;
+		if (wrap) {
+		    // always recalculate line wrap immediately after a reset 
+		    // because the content always needs to be in a usable state.
+		    // i.e., there must not be any reset but unwrapped lines
+		    wrapLineRange(logicalFirstLine, logicalEndLine, startLine);
+		}
+		return startLine;
+	}
+	/**
+	 * Reset the visual (wrapped) lines in the specified range.
+	 * <p>
+	 * 
+	 * @param startLine index of the first visual line 
+	 * @param lineCount number of visual lines
+	 */
+	private void resetVisualLines(int startLine, int lineCount) {
+	    int endLine = startLine + lineCount;
+
+		for (int i = startLine; i < endLine; i++) {
+			visualLines[i] = new int[] {-1, -1};		
+		}
+	}
+	/**
+	 * @see StyledTextContent#replaceTextRange(int, int, String)
+	 */
+	public void replaceTextRange(int start, int replaceLength, String text) {
+		logicalContent.replaceTextRange(start, replaceLength, text);
+	}
+	/**
+	 * @see StyledTextContent#setText(String)
+	 */
+	public void setText(String text) {
+	    logicalContent.setText(text);
+	}
+	/**
+	 * Set the line wrap data for the specified visual (wrapped) line.
+	 * <p>
+	 * 
+	 * @param visualLineIndex index of the visual line
+	 * @param visualLineOffset start offset of the visual line, relative 
+	 * 	to the start of the document
+	 * @param visualLineLength length of the visual line
+	 */
+	private void setVisualLine(int visualLineIndex, int visualLineOffset, int visualLineLength) {
+		ensureSize(visualLineCount + 1);
+		// is the space for the visual line already taken? can happen if 
+		// there are more visual lines for a given logical line than before
+		if (visualLines[visualLineIndex][LINE_OFFSET] != -1) {
+			System.arraycopy(visualLines, visualLineIndex, visualLines, visualLineIndex + 1, visualLineCount - visualLineIndex);
+			visualLines[visualLineIndex] = new int[2];
+		}
+		visualLines[visualLineIndex][LINE_OFFSET] = visualLineOffset;
+		visualLines[visualLineIndex][LINE_LENGTH] = visualLineLength;
+		visualLineCount++;
+	}
+	/** 
+	 * Recalculates the line wrap for the lines affected by the 
+	 * text change.
+	 * <p>
+	 *
+	 * @param startOffset	the start offset of the text change
+	 * @param newLineCount the number of inserted lines
+	 * @param replaceLineCount the number of deleted lines
+	 * @param newCharCount the number of new characters
+	 * @param replaceCharCount the number of deleted characters
+	 */  
+	void textChanged(int startOffset, int newLineCount, int replaceLineCount, int newCharCount, int replaceCharCount) {
+		// do nothing if there are no wrapped lines
+		if (visualLineCount == 0) {
+			return;
+		}
+		int logicalStartLine = logicalContent.getLineAtOffset(startOffset);
+		int visualStartLine = getLineAtOffset(startOffset);
+		int visualReplaceLastLine = visualLineCount - 1;
+		int textChangeDelta = newCharCount - replaceCharCount;
+			
+		if (replaceLineCount > 0) {	
+			visualReplaceLastLine = getLineAtOffset(startOffset + replaceCharCount);
+		    // at the start of a visual line/end of the previous visual line?
+			if ((visualReplaceLastLine == 0 || 
+			    visualLines[visualReplaceLastLine][LINE_OFFSET] == visualLines[visualReplaceLastLine - 1][LINE_OFFSET] + visualLines[visualReplaceLastLine - 1][LINE_LENGTH]) &&
+			    visualReplaceLastLine != visualLineCount - 1) {
+				visualReplaceLastLine++;
+			}		
+			visualStartLine = reset(visualStartLine, visualReplaceLastLine - visualStartLine + 1, false);
+		}
+		else {
+			visualStartLine = reset(visualStartLine, 1, false);
+		}
+		visualReplaceLastLine = wrapLineRange(logicalStartLine, logicalStartLine + 1 + newLineCount, visualStartLine);
+		for (int i = visualReplaceLastLine; i < visualLineCount; i++) {
+			visualLines[i][LINE_OFFSET] += textChangeDelta;
+		}
+	}
+	/**
+	 * Wrap the logical lines in the given range at the current client 
+	 * area width of the StyledText widget
+	 * <p>
+	 * 
+	 * @param startLine first logical line to wrap
+	 * @param endLine line after last logical line 
+	 * @param visualLineIndex visual (wrapped) line index that startLine
+	 * 	corresponds to.
+	 * @return index of the line following the last wrapped line
+	 */
+	private int wrapLineRange(int startLine, int endLine, int visualLineIndex) {
+		int emptyLineCount = 0;
+			
+		int width = renderer.getClientArea().width - renderer.getLeftMargin() - renderer.getRightMargin();
+		visualLineIndex = wrapLineRange(startLine, endLine, visualLineIndex, width);
+		// is there space left for more visual lines? can happen if there are fewer
+		// visual lines for a given logical line than before
+		for (int i = visualLineIndex; i < visualLines.length; i++, emptyLineCount++) {
+		    if (visualLines[i][LINE_OFFSET] != -1) {
+		        break;
+		    }
+		}
+		if (emptyLineCount > 0) {
+			int copyLineCount = visualLineCount - visualLineIndex;
+			System.arraycopy(visualLines, visualLineIndex + emptyLineCount, visualLines, visualLineIndex, copyLineCount);
+			resetVisualLines(visualLineIndex + copyLineCount, emptyLineCount);
+		}
+		return visualLineIndex;
+	}
+	/**
+	 * Wrap the lines in the given range. Skip lines that have already 
+	 * been wrapped.
+	 * <p>
+	 * 
+	 * @param startLine first logical line to wrap
+	 * @param endLine line after last logical line 
+	 * @param visualLineIndex visual (wrapped) line index that startLine
+	 * 	corresponds to.
+	 * @param width line width to wrap at
+	 * @return index of last wrapped line
+	 */
+	private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int width) {
+		// if there are no wrapped lines and the width is 0 the widget has
+		// not been made visible/sized yet. don't wrap until the widget size 
+		// is known.
+		if (visualLineCount == 0 && width == 0) {
+			return visualLineIndex;
+		}
+
+		for (int i = startLine; i < endLine; i++) {
+		    String line = logicalContent.getLine(i);
+	   	    int lineOffset = logicalContent.getOffsetAtLine(i);
+	   	    int lineLength = line.length();
+	   		if (lineLength == 0) {
+				setVisualLine(visualLineIndex, lineOffset, 0);
+				visualLineIndex++;
+				continue;
+	   		}
+			TextLayout layout = renderer.getTextLayout(line, lineOffset);
+			layout.setWidth(Math.max(1, width));
+			int[] offsets = layout.getLineOffsets();
+			for (int j = 0; j < offsets.length - 1; j++) {
+				setVisualLine(visualLineIndex++, lineOffset + offsets[j], offsets[j+1] - offsets[j]);
+			}
+			renderer.disposeTextLayout(layout); 
+		}
+		return visualLineIndex;
+	}
+	/**
+	 * Wrap all logical lines at the current client area width of the 
+	 * StyledText widget
+	 */
+	void wrapLines() {
+		int width = renderer.getClientArea().width - renderer.getLeftMargin() - renderer.getRightMargin();
+		wrapLines(width);
+	}
+	/**
+	 * Wrap all logical lines at the given width.
+	 * <p>
+	 * 
+	 * @param width width to wrap lines at
+	 */
+	void wrapLines(int width) {
+	    int lineCount = logicalContent.getLineCount();
+
+		visualLineCount = 0;
+		visualLines = new int[lineCount][2];
+		resetVisualLines(0, visualLines.length);		
+		wrapLineRange(0, lineCount, 0, width);	
+	}
+	}
+
 
 /**
  * Constructs a new instance of this class given its parent
