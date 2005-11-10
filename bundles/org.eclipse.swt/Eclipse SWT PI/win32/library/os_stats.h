@@ -367,6 +367,7 @@ typedef enum {
 	LoadStringA_FUNC,
 	LoadStringW_FUNC,
 	LocalFree_FUNC,
+	MCIWndRegisterClass_FUNC,
 	MapVirtualKeyA_FUNC,
 	MapVirtualKeyW_FUNC,
 	MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I_FUNC,

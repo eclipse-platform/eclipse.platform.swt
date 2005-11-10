@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 657;
-int OS_nativeFunctionCallCount[657];
+int OS_nativeFunctionCount = 658;
+int OS_nativeFunctionCallCount[658];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -363,6 +363,7 @@ char * OS_nativeFunctionNames[] = {
 	"LoadStringA",
 	"LoadStringW",
 	"LocalFree",
+	"MCIWndRegisterClass",
 	"MapVirtualKeyA",
 	"MapVirtualKeyW",
 	"MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I",
