@@ -2826,6 +2826,7 @@ public static final native int MapVirtualKeyW (int uCode, int uMapType);
 public static final native int MapVirtualKeyA (int uCode, int uMapType);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, POINT lpPoints, int cPoints);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, RECT lpPoints, int cPoints);
+public static final native boolean MCIWndRegisterClass (int hInstance);
 public static final native boolean MessageBeep (int uType);
 public static final native int MessageBoxW (int hWnd, char [] lpText, char [] lpCaption, int uType);
 public static final native int MessageBoxA (int hWnd, byte [] lpText, byte [] lpCaption, int uType);

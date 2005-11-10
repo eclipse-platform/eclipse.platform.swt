@@ -31,6 +31,7 @@
 #include <usp10.h>
 #include <uxtheme.h>
 #include <winable.h>
+#include <vfw.h>
 #endif // _WIN32_WCE
 
 #if defined(WIN32_PLATFORM_PSPC) || defined(WIN32_PLATFORM_WFSP)
@@ -273,6 +274,7 @@
 #define NO_LoadLibraryA
 #define NO_LoadStringA
 #define NO_MapVirtualKeyA
+#define NO_MCIWndRegisterClass
 #define NO_MessageBoxA
 #define NO_MonitorFromWindow
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I

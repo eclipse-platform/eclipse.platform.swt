@@ -5452,6 +5452,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LocalFree)
 }
 #endif
 
+#ifndef NO_MCIWndRegisterClass
+JNIEXPORT jboolean JNICALL OS_NATIVE(MCIWndRegisterClass)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, MCIWndRegisterClass_FUNC);
+	rc = (jboolean)MCIWndRegisterClass((HINSTANCE)arg0);
+	OS_NATIVE_EXIT(env, that, MCIWndRegisterClass_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_MapVirtualKeyA
 JNIEXPORT jint JNICALL OS_NATIVE(MapVirtualKeyA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
