@@ -1163,7 +1163,8 @@ public void drawText (String string, int x, int y, int flags) {
 	boolean mode = true;
 	switch (data.textAntialias) {
 		case SWT.DEFAULT:
-			if (data.window == 0 && data.control == 0) mode = false;
+			/* Printer is off by default */
+			if (data.window == 0 && data.control == 0 && data.image == null) mode = false;
 			break;
 		case SWT.OFF: mode = false; break;
 	}
@@ -2270,7 +2271,7 @@ public void setAntialias(int antialias) {
 	switch (antialias) {
 		case SWT.DEFAULT:
 			/* Printer is off by default */
-			if (data.window == 0 && data.control == 0) mode = false;
+			if (data.window == 0 && data.control == 0 && data.image == null) mode = false;
 			break;
 		case SWT.OFF: mode = false; break;
 		case SWT.ON: mode = true; break;
