@@ -31,7 +31,7 @@ public class Snippet208 {
 public static void main (String [] args) {
 	PaletteData palette = new PaletteData(0xff, 0xff00, 0xff0000);	
 	
-	// ImageData showing variations of Hue	
+	// ImageData showing variations of hue	
 	ImageData hueData = new ImageData(360, 100, 24, palette);	
 	float hue = 0;
 	for (int x = 0; x < hueData.width; x++) {
@@ -43,22 +43,22 @@ public static void main (String [] args) {
 	}
 
 	// ImageData showing saturation on x axis and brightness on y axis
-	ImageData saturationData = new ImageData(360, 360, 24, palette);
+	ImageData saturationBrightnessData = new ImageData(360, 360, 24, palette);
 	float saturation = 0f;
 	float brightness = 1f;
-	for (int x = 0; x < saturationData.width; x++) {
+	for (int x = 0; x < saturationBrightnessData.width; x++) {
 		brightness = 1f;
-		for (int y = 0; y < saturationData.height; y++) {
+		for (int y = 0; y < saturationBrightnessData.height; y++) {
 			int pixel = palette.getPixel(new RGB(360f, saturation, brightness));	
-			saturationData.setPixel(x, y, pixel);
-			brightness -= 1f / saturationData.height;
+			saturationBrightnessData.setPixel(x, y, pixel);
+			brightness -= 1f / saturationBrightnessData.height;
 		}
-		saturation += 1f / saturationData.width;
+		saturation += 1f / saturationBrightnessData.width;
 	}
 		
 	Display display = new Display();
 	Image hueImage = new Image(display, hueData);
-	Image saturationImage = new Image(display, saturationData);
+	Image saturationImage = new Image(display, saturationBrightnessData);
 	Shell shell = new Shell(display);
 	shell.setText("Hue, Saturation, Brightness");
 	GridLayout gridLayout = new GridLayout(2, false);
@@ -66,18 +66,18 @@ public static void main (String [] args) {
 	gridLayout.marginWidth = gridLayout.marginHeight = 16;
 	shell.setLayout(gridLayout);		
 	
-	
-	Label hueImageLabel = new Label(shell, SWT.CENTER);
-	hueImageLabel.setImage(hueImage);
+	Label label = new Label(shell, SWT.CENTER);
+	label.setImage(hueImage);
 	GridData data = new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1);
-	data.widthHint = hueData.width;
-	data.heightHint = hueData.height;
-	hueImageLabel.setLayoutData(data);	
+	label.setLayoutData(data);	
 	
-	Label label = new Label(shell, SWT.CENTER); //spacer
+	label = new Label(shell, SWT.CENTER); //spacer
 	label = new Label(shell, SWT.CENTER);
 	label.setText("Hue");
 	data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
+	label.setLayoutData(data);
+	label = new Label(shell, SWT.CENTER); //spacer
+	data = new GridData(SWT.CENTER, SWT.CENTER, false, false, 2, 1);
 	label.setLayoutData(data);
 	
 	label = new Label(shell, SWT.LEFT);
@@ -85,12 +85,10 @@ public static void main (String [] args) {
 	data = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 	label.setLayoutData(data);
 	
-	Label saturationImageLabel = new Label(shell, SWT.CENTER);
-	saturationImageLabel.setImage(saturationImage);
+	label = new Label(shell, SWT.CENTER);
+	label.setImage(saturationImage);
 	data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-	data.widthHint = saturationData.width;
-	data.heightHint = saturationData.height;
-	saturationImageLabel.setLayoutData (data);
+	label.setLayoutData (data);
 	
 	label = new Label(shell, SWT.CENTER); //spacer
 	label = new Label(shell, SWT.CENTER);
