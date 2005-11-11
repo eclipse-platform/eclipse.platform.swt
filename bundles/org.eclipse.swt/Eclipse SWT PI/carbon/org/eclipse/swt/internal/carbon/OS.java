@@ -25,7 +25,7 @@ public class OS extends Platform {
 	static {
 		int [] response = new int [1];
 		OS.Gestalt (OS.gestaltSystemVersion, response);
-		VERSION  = response [0] & 0xffff;
+		VERSION = response [0] & 0xffff;
 		HIVIEW = VERSION >= 0x1030;
 	}
 
