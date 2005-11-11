@@ -32,7 +32,7 @@ class DialogTab extends Tab {
 	Button abortButton, ignoreButton;
 	Button iconErrorButton, iconInformationButton, iconQuestionButton;
 	Button iconWarningButton, iconWorkingButton;
-	Button modelessButton, primaryModalButton, applicationModalButton, systemModalButton;
+	Button primaryModalButton, applicationModalButton, systemModalButton;
 	Button saveButton, openButton, multiButton;
 
 	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc", "*"};
@@ -309,8 +309,6 @@ class DialogTab extends Tab {
 		modalStyleGroup.setText (ControlExample.getResourceString("Modal_Styles"));
 	
 		/* Create the modal style buttons */
-		modelessButton = new Button (modalStyleGroup, SWT.RADIO);
-		modelessButton.setText ("SWT.MODELESS");
 		primaryModalButton = new Button (modalStyleGroup, SWT.RADIO);
 		primaryModalButton.setText ("SWT.PRIMARY_MODAL");
 		applicationModalButton = new Button (modalStyleGroup, SWT.RADIO);
@@ -379,7 +377,6 @@ class DialogTab extends Tab {
 		openButton.setSelection (true);
 		multiButton.setEnabled (false);
 		iconInformationButton.setSelection (true);
-		modelessButton.setSelection (true);
 	}
 	
 	/**
