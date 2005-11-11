@@ -23,8 +23,7 @@ public interface PaintObjectListener extends SWTEventListener {
  * <li>event.ascent the line ascent (input)</li>
  * <li>event.descent the line descent (input)</li>
  * <li>event.gc the gc (input)</li>
- * <li>event.start the start offset (input)</li>
- * <li>event.length the length (input)</li>
+ * <li>event.style the style (input)</li>
  * </ul>
  *
  * @param event the given event
