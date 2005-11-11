@@ -5113,7 +5113,7 @@ void handleTextChanged(TextChangedEvent event) {
 	// though the intent is to scroll it.
 	updateSelection(lastTextChangeStart, lastTextChangeReplaceCharCount, lastTextChangeNewCharCount);
 	if (newLastLineBottom == lastLineBottom) {		
-		//update();
+		update();
 	}
 	if (lastTextChangeReplaceLineCount > 0) {
 		claimBottomFreeSpace();
@@ -6064,25 +6064,22 @@ void reset() {
 	verticalScrollOffset = 0;
 	horizontalScrollOffset = 0;	
 	resetSelection();
-	renderer.setContent(content); 
-	renderer.calculateClientArea();
+	renderer.setContent(content);
 	if (verticalBar != null) {
 		verticalBar.setSelection(0);
 	}
 	if (horizontalBar != null) {
 		horizontalBar.setSelection(0);	
 	}
-	setScrollBars(true);
+	resetCache(0, 0);
 	setCaretLocation();
 	super.redraw();
 }
 void resetCache(int firstLine, int count) {
-	if (isFixedLineHeight()) {
-		renderer.reset(firstLine, count);
-		renderer.calculateClientArea();
-		setScrollBars(true);
-	} else {
-		renderer.reset(firstLine, count);
+	renderer.reset(firstLine, count);
+	renderer.calculateClientArea();
+	setScrollBars(true);
+	if (!isFixedLineHeight()) {
 		if (topIndex > firstLine) {
 			verticalScrollOffset = -1;
 		}
