@@ -543,7 +543,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	Bullet bullet = null;
 	int[] ranges = null;
 	StyleRange[] styles = null;
-	int rangeStart = 0;
+	int rangeStart = 0, styleCount;
 	StyledTextEvent event = null;
 	if (styledText != null) {
 		event = styledText.getLineStyleData(lineOffset, line);
@@ -559,6 +559,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		bullet = event.bullet;
 		ranges = event.ranges;
 		styles = event.styles;
+		styleCount = styles.length;
 	} else {
 		if (lines != null) {
 			LineInfo info = lines[lineIndex];
@@ -572,6 +573,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		}
 		ranges = this.ranges;
 		styles = this.styles;
+		styleCount = this.styleCount;
 		if (ranges != null) {
 			rangeStart = getRangeIndex(lineOffset, -1, styleCount << 1);
 		} else {
