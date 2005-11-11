@@ -48,6 +48,8 @@ class StyledTextRenderer {
 	StyleRange[] styles;
 	
 	final static int GROW = 32;
+	final static int IDLE_TIME = 50;
+	final static int CACHE_SIZE = 128;
 	
 	final static int BACKGROUND = 1 << 0;
 	final static int ALIGNMENT = 1 << 1;
@@ -78,7 +80,6 @@ class StyledTextRenderer {
 		}
 	}
 	
-	private static final int CACHE_SIZE = 128; //text layout cache size
 	
 StyledTextRenderer(Device device, StyledText styledText) {
 	this.device = device;
@@ -119,11 +120,12 @@ void calculateIdle () {
 	Runnable runnable = new Runnable() {
 		public void run() {
 			if (styledText == null) return;
-			int computeLines = 200, i;
-			for (i = 0; i < lineCount && computeLines > 0; i++) {
+			int i;
+			long start = System.currentTimeMillis();
+			for (i = 0; i < lineCount; i++) {
 				if (lineHeight[i] == -1 || lineWidth[i] == -1) {
 					calculate(i, 1);
-					computeLines--;
+					if (System.currentTimeMillis() - start > IDLE_TIME) break;
 				}
 			}
 			if (i < lineCount) {
