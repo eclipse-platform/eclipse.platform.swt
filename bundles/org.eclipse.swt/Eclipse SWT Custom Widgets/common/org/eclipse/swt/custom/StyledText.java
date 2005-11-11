@@ -5576,7 +5576,7 @@ void modifyContent(Event event, boolean updateCaret) {
 		}
 	}
 }
-void paintObject (GC gc, int x, int y, int ascent, int descent, GlyphMetrics metrics, int start, int length) {
+void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style) {
 	if (isListening(PaintObject)) {
 		StyledTextEvent event = new StyledTextEvent (content) ;
 		event.gc = gc;
@@ -5584,10 +5584,8 @@ void paintObject (GC gc, int x, int y, int ascent, int descent, GlyphMetrics met
 		event.y = y;
 		event.ascent = ascent;
 		event.descent = descent;
-		event.metrics = metrics;
+		event.style = style;
 //		event.bullet = bullet;		
-		event.start = start;
-		event.length = length;
 		notifyListeners(PaintObject, event);
 	}
 }

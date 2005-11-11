@@ -39,9 +39,7 @@ class StyledTextEvent extends Event {
 	int ascent;
 	int descent;
 	GC gc;
-	GlyphMetrics metrics;
-	int start;
-	int length;
+	StyleRange style;
 
 StyledTextEvent (StyledTextContent content) {
 	super();

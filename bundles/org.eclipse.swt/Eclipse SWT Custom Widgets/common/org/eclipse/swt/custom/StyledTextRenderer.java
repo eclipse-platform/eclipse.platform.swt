@@ -275,14 +275,16 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	TextStyle[] styles = layout.getStyles();
 	int[] ranges = null;
 	for (int i = 0; i < styles.length; i++) {
-		GlyphMetrics glyphMetrics = styles[i].metrics;
-		if (glyphMetrics != null) {
+		if (styles[i].metrics != null) {
 			if (ranges == null) ranges = layout.getRanges();
 			int start = ranges[i << 1];
 			int length = ranges[(i << 1) + 1] - start;
 			Point point = layout.getLocation(start, false);
 			FontMetrics metrics = layout.getLineMetrics(layout.getLineIndex(start));
-			styledText.paintObject(gc, point.x + paintX, point.y + paintY, metrics.getAscent(), metrics.getDescent(), glyphMetrics, start + lineOffset, length);
+			StyleRange style = (StyleRange)((StyleRange)styles[i]).clone();
+			style.start = start + lineOffset;
+			style.length = length;
+			styledText.paintObject(gc, point.x + paintX, point.y + paintY, metrics.getAscent(), metrics.getDescent(), style);
 		}
 	}
 	int height = layout.getBounds().height;

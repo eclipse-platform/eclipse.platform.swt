@@ -46,19 +46,9 @@ public class PaintObjectEvent extends TypedEvent {
 	public int descent;
 	
 	/**
-	 * the GlyphMetrics
+	 * the StyleRange
 	 */
-	public GlyphMetrics metrics;
-	
-	/**
-	 * the start offset
-	 */
-	public int start;
-
-	/**
-	 * the length
-	 */
-	public int length;
+	public StyleRange style;
 	
 //	public Bullet bullet;
 	
@@ -71,9 +61,7 @@ public PaintObjectEvent(StyledTextEvent e) {
 	y = e.y;
 	ascent = e.ascent;
 	descent = e.descent;
-	metrics = e.metrics;
-	start = e.start;
-	length = e.length;
+	style = e.style;
 //	bullet = e.bullet;
 }
 }
