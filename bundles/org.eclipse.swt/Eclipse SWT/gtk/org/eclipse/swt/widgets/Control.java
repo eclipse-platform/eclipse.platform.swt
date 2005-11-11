@@ -208,19 +208,9 @@ void hookEvents () {
 }
 
 int /*long*/ hoverProc (int /*long*/ widget) {
-	if(!hooks (SWT.MouseHover) && !filters (SWT.MouseHover)) return 0;
-	Event event = new Event ();
 	int [] x = new int [1], y = new int [1], mask = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, mask);
-	event.x = x [0];
-	event.y = y [0];
-	int /*long*/ eventHandle = eventHandle ();
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
-	OS.gdk_window_get_origin (window, x, y);
-	event.x -= x [0];
-	event.y -= y [0];
-	setInputState (event, mask [0]);
-	postEvent (SWT.MouseHover, event);
+	sendMouseEvent (SWT.MouseHover, 0, /*time*/0, x [0], y [0], false, mask [0]);
 	return 0;
 }
 
@@ -1819,7 +1809,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	display.dragging = false;
 	int button = gdkEvent.button;
 	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
-	sendMouseEvent (type, button, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state, event);
+	sendMouseEvent (type, button, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state);
 	int result = 0;
 	if ((state & MENU) != 0) {
 		if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
@@ -1856,7 +1846,7 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 	int button = gdkEvent.button;
 	if (button == -6) button = 4;
 	if (button == -7) button = 5;
-	sendMouseEvent (SWT.MouseUp, button, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state, event);
+	sendMouseEvent (SWT.MouseUp, button, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state);
 	return 0;
 }
 
@@ -1877,7 +1867,7 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL && gdkEvent.mode != OS.GDK_CROSSING_UNGRAB) return 0;
 	if ((gdkEvent.state & (OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK)) != 0) return 0;
 	if (gdkEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state, event);
+	sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state);
 	return 0;
 }
 
@@ -1999,7 +1989,7 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL && gdkEvent.mode != OS.GDK_CROSSING_UNGRAB) return 0;
 	if ((gdkEvent.state & (OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK)) != 0) return 0;
 	if (gdkEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseExit, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state, event);
+	sendMouseEvent (SWT.MouseExit, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state);
 	return 0;
 }
 
@@ -2053,7 +2043,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 		y = pointer_y [0];
 		state = mask [0];
 	}
-	sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state, event);
+	sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state);
 	return 0;
 }
 
@@ -2084,20 +2074,20 @@ int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
 	switch (gdkEvent.direction) {
 		case OS.GDK_SCROLL_UP:
-			if (!sendMouseEvent (SWT.MouseWheel, 0, 3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state, eventPtr)) {
+			if (!sendMouseEvent (SWT.MouseWheel, 0, 3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state)) {
 				return 1;
 			}
 			break;
 		case OS.GDK_SCROLL_DOWN:
-			if (!sendMouseEvent (SWT.MouseWheel, 0, -3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state, eventPtr)) {
+			if (!sendMouseEvent (SWT.MouseWheel, 0, -3, SWT.SCROLL_LINE, true, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state)) {
 				return 1;
 			}
 			break;
 		case OS.GDK_SCROLL_LEFT:
-			sendMouseEvent (SWT.MouseDown, 4, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state, eventPtr);
+			sendMouseEvent (SWT.MouseDown, 4, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state);
 			break;
 		case OS.GDK_SCROLL_RIGHT:
-			sendMouseEvent (SWT.MouseDown, 5, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state, eventPtr);
+			sendMouseEvent (SWT.MouseDown, 5, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state);
 			break;
 	}
 	return 0;
@@ -2500,11 +2490,11 @@ boolean sendHelpEvent (int /*long*/ helpType) {
 	return false;
 }
 
-boolean sendMouseEvent (int type, int button, int time, double x, double y, boolean is_hint, int state, int /*long*/ eventPtr) {
-	return sendMouseEvent (type, button, 0, 0, false, time, x, y, is_hint, state, eventPtr);
+boolean sendMouseEvent (int type, int button, int time, double x, double y, boolean is_hint, int state) {
+	return sendMouseEvent (type, button, 0, 0, false, time, x, y, is_hint, state);
 }
 
-boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, double x, double y, boolean is_hint, int state, int /*long*/ eventPtr) {
+boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, double x, double y, boolean is_hint, int state) {
 	if(!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	event.time = time;
