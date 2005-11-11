@@ -1367,7 +1367,6 @@ public void addLineStyleListener(LineStyleListener listener) {
 		setStyleRanges(0, 0, null, null, true);
 		renderer.clearLineStyle(0, content.getLineCount());
 	}
-	setVariableLineHeight();
 	addListener(LineGetStyle, new StyledTextListener(listener));
 }
 /**	 
@@ -6819,7 +6818,9 @@ void setLineBullet(int startLine, int lineCount, Bullet bullet) {
 	}
 }
 void setVariableLineHeight () {
+	if (!fixedLineHeight) return;
 	fixedLineHeight = false;
+	renderer.calculateIdle();
 }
 /**
  * Sets the indent of the specified lines.
@@ -7312,10 +7313,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 			variableHeight |= styles[i].isVariableHeight();
 			lastOffset = rangeStart + rangeLength;
 		}
-		if (variableHeight) {
-			setVariableLineHeight();
-			//TODO Init idle ?
-		}
+		if (variableHeight) setVariableLineHeight();
 	}
 	int rangeStart = start, rangeEnd = end;
 	if (styles != null && styles.length > 0) {

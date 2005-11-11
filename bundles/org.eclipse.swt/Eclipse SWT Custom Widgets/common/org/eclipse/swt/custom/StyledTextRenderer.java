@@ -562,6 +562,15 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		ranges = event.ranges;
 		styles = event.styles;
 		styleCount = styles.length;
+		if (styledText.isFixedLineHeight()) {
+			for (int i = 0; i < styleCount; i++) {
+				if (styles[i].isVariableHeight()) {
+					styledText.setVariableLineHeight();
+					styledText.redraw();
+					break;
+				}
+			}
+		}
 	} else {
 		if (lines != null) {
 			LineInfo info = lines[lineIndex];
