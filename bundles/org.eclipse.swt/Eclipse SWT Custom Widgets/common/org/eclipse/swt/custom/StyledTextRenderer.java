@@ -684,36 +684,35 @@ void setContent(StyledTextContent content) {
 	reset(0, lineCount);
 }
 void setFont(Font font, int tabs) {
-	StringBuffer tabBuffer = new StringBuffer(tabs);
-	for (int i = 0; i < tabs; i++) {
-		tabBuffer.append(' ');
-	}
 	TextLayout layout = new TextLayout(device);
 	layout.setFont(regularFont);
-	layout.setText(tabBuffer.toString());
-	tabWidth = layout.getBounds().width;
 	if (font != null && !font.equals(regularFont)) {
 		if (boldFont != null) boldFont.dispose();
 		if (italicFont != null) italicFont.dispose();
 		if (boldItalicFont != null) boldItalicFont.dispose();
 		boldFont = italicFont = boldItalicFont = null;
-		regularFont = font;	
-	
+		regularFont = font;
 		layout.setText("    ");
+		layout.setFont(font);
 		layout.setStyle(new TextStyle(getFont(SWT.NORMAL), null, null), 0, 0);
 		layout.setStyle(new TextStyle(getFont(SWT.BOLD), null, null), 1, 1);
 		layout.setStyle(new TextStyle(getFont(SWT.ITALIC), null, null), 2, 2);
 		layout.setStyle(new TextStyle(getFont(SWT.BOLD | SWT.ITALIC), null, null), 3, 3);
 		FontMetrics metrics = layout.getLineMetrics(0);
-		ascent = metrics.getAscent();
+		ascent = metrics.getAscent() + metrics.getLeading();
 		descent = metrics.getDescent();
 		lineEndSpaceWidth = layout.getBounds(0, 0).width;
-		
 		boldFont.dispose();
 		italicFont.dispose();
 		boldItalicFont.dispose();
 		boldFont = italicFont = boldItalicFont = null;
 	}
+	StringBuffer tabBuffer = new StringBuffer(tabs);
+	for (int i = 0; i < tabs; i++) {
+		tabBuffer.append(' ');
+	}
+	layout.setText(tabBuffer.toString());
+	tabWidth = layout.getBounds().width;
 	layout.dispose();
 }
 void setLineAlignment(int startLine, int count, int alignment) {
