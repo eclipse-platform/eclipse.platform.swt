@@ -2895,6 +2895,7 @@ void updateLayout (boolean all) {
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	Shell shell = getShell ();
+	if ((shell.style & SWT.ON_TOP) != 0) shell.forceActive ();
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);

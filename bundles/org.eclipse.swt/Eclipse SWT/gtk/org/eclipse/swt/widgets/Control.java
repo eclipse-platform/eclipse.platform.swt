@@ -1810,6 +1810,7 @@ public boolean getVisible () {
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	Shell shell = _getShell ();
+	if ((shell.style & SWT.ON_TOP) != 0) shell.forceActive ();
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
