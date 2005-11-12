@@ -1125,7 +1125,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	if (resize) {
 		width = Math.max (1, Math.max (minWidth, width - trimWidth ()));
 		height = Math.max (1, Math.max (minHeight, height - trimHeight ()));
-		OS.gtk_window_resize (shellHandle, width, height);
+		if ((style & SWT.RESIZE) != 0) OS.gtk_window_resize (shellHandle, width, height);
 		boolean changed = width != oldWidth || height != oldHeight;
 		if (changed) {
 			oldWidth = width;
@@ -1232,7 +1232,7 @@ void setInitialBounds () {
 	Rectangle rect = monitor.getClientArea ();
 	int width = rect.width * 5 / 8;
 	int height = rect.height * 5 / 8;
-	OS.gtk_window_resize (shellHandle, width, height);
+	if ((style & SWT.RESIZE) != 0) OS.gtk_window_resize (shellHandle, width, height);
 	resizeBounds (width, height, false);
 }
 
@@ -1456,7 +1456,14 @@ public void setVisible (boolean visible) {
 }
 
 void setZOrder (Control sibling, boolean above) {
-	 setZOrder (sibling, above, false, false);
+	/*
+	* Bug in GTK+.  Changing the toplevel window Z-order causes
+	* X to send a resize event.  Before the shell is mapped, these
+	* resize events always have a size of 200x200, causing extra
+	* layout work to occur.  The fix is to modify the Z-order only
+	* if the shell has already been mapped at least once.
+	*/
+	if (mapped) setZOrder (sibling, above, false, false);
 }
 
 int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
