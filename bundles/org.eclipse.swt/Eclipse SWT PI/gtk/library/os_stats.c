@@ -18,10 +18,12 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1024;
-int OS_nativeFunctionCallCount[1024];
+int OS_nativeFunctionCount = 1028;
+int OS_nativeFunctionCallCount[1028];
 char * OS_nativeFunctionNames[] = {
 	"Call",
+	"GDK_1EVENT_1TYPE",
+	"GDK_1EVENT_1WINDOW",
 	"GDK_1WINDOWING_1X11",
 	"GInterfaceInfo_1sizeof",
 	"GPollFD_1sizeof",
@@ -95,6 +97,8 @@ char * OS_nativeFunctionNames[] = {
 	"XRenderPictureAttributes_1sizeof",
 	"XVisibilityEvent_1sizeof",
 	"XWindowChanges_1sizeof",
+	"X_1EVENT_1TYPE",
+	"X_1EVENT_1WINDOW",
 	"_1Call",
 	"_1GDK_1DISPLAY",
 	"_1GDK_1PIXMAP_1XID",

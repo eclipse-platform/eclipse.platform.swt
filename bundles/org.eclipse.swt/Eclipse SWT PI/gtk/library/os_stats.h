@@ -26,6 +26,8 @@ extern char* OS_nativeFunctionNames[];
 
 typedef enum {
 	Call_FUNC,
+	GDK_1EVENT_1TYPE_FUNC,
+	GDK_1EVENT_1WINDOW_FUNC,
 	GDK_1WINDOWING_1X11_FUNC,
 	GInterfaceInfo_1sizeof_FUNC,
 	GPollFD_1sizeof_FUNC,
@@ -99,6 +101,8 @@ typedef enum {
 	XRenderPictureAttributes_1sizeof_FUNC,
 	XVisibilityEvent_1sizeof_FUNC,
 	XWindowChanges_1sizeof_FUNC,
+	X_1EVENT_1TYPE_FUNC,
+	X_1EVENT_1WINDOW_FUNC,
 	_1Call_FUNC,
 	_1GDK_1DISPLAY_FUNC,
 	_1GDK_1PIXMAP_1XID_FUNC,

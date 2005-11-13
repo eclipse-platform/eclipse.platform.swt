@@ -31,6 +31,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(Call)
 }
 #endif
 
+#ifndef NO_GDK_1EVENT_1TYPE
+JNIEXPORT jint JNICALL OS_NATIVE(GDK_1EVENT_1TYPE)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GDK_1EVENT_1TYPE_FUNC);
+	rc = (jint)GDK_EVENT_TYPE((GdkEvent *)arg0);
+	OS_NATIVE_EXIT(env, that, GDK_1EVENT_1TYPE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GDK_1EVENT_1WINDOW
+JNIEXPORT jint JNICALL OS_NATIVE(GDK_1EVENT_1WINDOW)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GDK_1EVENT_1WINDOW_FUNC);
+	rc = (jint)GDK_EVENT_WINDOW((GdkEventAny *)arg0);
+	OS_NATIVE_EXIT(env, that, GDK_1EVENT_1WINDOW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GInterfaceInfo_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GInterfaceInfo_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -881,6 +905,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(XWindowChanges_1sizeof)
 	OS_NATIVE_ENTER(env, that, XWindowChanges_1sizeof_FUNC);
 	rc = (jint)XWindowChanges_sizeof();
 	OS_NATIVE_EXIT(env, that, XWindowChanges_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_X_1EVENT_1TYPE
+JNIEXPORT jint JNICALL OS_NATIVE(X_1EVENT_1TYPE)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, X_1EVENT_1TYPE_FUNC);
+	rc = (jint)X_EVENT_TYPE((XEvent *)arg0);
+	OS_NATIVE_EXIT(env, that, X_1EVENT_1TYPE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_X_1EVENT_1WINDOW
+JNIEXPORT jint JNICALL OS_NATIVE(X_1EVENT_1WINDOW)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, X_1EVENT_1WINDOW_FUNC);
+	rc = (jint)X_EVENT_WINDOW((XAnyEvent *)arg0);
+	OS_NATIVE_EXIT(env, that, X_1EVENT_1WINDOW_FUNC);
 	return rc;
 }
 #endif

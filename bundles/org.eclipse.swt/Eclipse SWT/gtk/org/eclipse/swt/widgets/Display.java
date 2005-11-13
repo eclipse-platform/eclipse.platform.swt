@@ -104,7 +104,6 @@ public class Display extends Device {
 	boolean wake;
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback, filterCallback;
-	GdkEventAny gdkEvent = new GdkEventAny ();
 	int /*long*/ eventProc, filterProc, windowProc2, windowProc3, windowProc4, windowProc5;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
@@ -647,8 +646,8 @@ static synchronized void checkDisplay (Thread thread, boolean multiple) {
 }
 
 int /*long*/ checkIfEventProc (int /*long*/ display, int /*long*/ xEvent, int /*long*/ userData) {
-	OS.memmove (exposeEvent, xEvent, XExposeEvent.sizeof);
-	switch (exposeEvent.type) {
+	int type = OS.X_EVENT_TYPE (xEvent);
+	switch (type) {
 		case OS.VisibilityNotify:
 		case OS.Expose:
 		case OS.GraphicsExpose:
@@ -656,7 +655,7 @@ int /*long*/ checkIfEventProc (int /*long*/ display, int /*long*/ xEvent, int /*
 		default:
 			return 0;
 	}
-	int /*long*/ window = OS.gdk_window_lookup (exposeEvent.window);
+	int /*long*/ window = OS.gdk_window_lookup (OS.X_EVENT_WINDOW (xEvent));
 	if (window == 0) return 0;
 	if (flushWindow != 0) {
 		if (flushAll) {
@@ -669,7 +668,8 @@ int /*long*/ checkIfEventProc (int /*long*/ display, int /*long*/ xEvent, int /*
 			if (window != flushWindow) return 0;
 		}
 	}
-	switch (exposeEvent.type) {
+	OS.memmove (exposeEvent, xEvent, XExposeEvent.sizeof);
+	switch (type) {
 		case OS.Expose:
 		case OS.GraphicsExpose: {
 			flushRect.x = exposeEvent.x;
@@ -1006,8 +1006,8 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != 0) lastEventTime = time;
 
-	OS.memmove (gdkEvent, event, GdkEventAny.sizeof);
-	switch (gdkEvent.type) {
+	int eventType = OS.GDK_EVENT_TYPE (event);
+	switch (eventType) {
 		case OS.GDK_BUTTON_PRESS:
 		case OS.GDK_KEY_PRESS:
 			lastUserEventTime = time;
@@ -1016,7 +1016,7 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	if (dispatchEvents != null) {
 		dispatch = false;
 		for (int i = 0; i < dispatchEvents.length; i++) {
-			if (gdkEvent.type == dispatchEvents [i]) {
+			if (eventType == dispatchEvents [i]) {
 				dispatch = true;
 				break;
 			}
@@ -1029,7 +1029,7 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 
 	Control control = null;
 	int /*long*/ window = 0;
-	switch (gdkEvent.type) {
+	switch (eventType) {
 		case OS.GDK_ENTER_NOTIFY:
 		case OS.GDK_LEAVE_NOTIFY:
 		case OS.GDK_BUTTON_PRESS:
@@ -1037,7 +1037,7 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		case OS.GDK_3BUTTON_PRESS:
 		case OS.GDK_BUTTON_RELEASE: 
 		case OS.GDK_MOTION_NOTIFY:  {
-			window = gdkEvent.window;
+			window = OS.GDK_EVENT_WINDOW (event);
 			int /*long*/ [] user_data = new int /*long*/ [1];
 			do {
 				OS.gdk_window_get_user_data (window, user_data);

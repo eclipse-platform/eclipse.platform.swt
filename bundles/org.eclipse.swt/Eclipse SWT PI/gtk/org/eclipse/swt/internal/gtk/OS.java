@@ -534,6 +534,10 @@ public static final native void GTK_WIDGET_SET_X(int /*long*/ widget, int x);
 public static final native void GTK_WIDGET_SET_Y(int /*long*/ widget, int y);
 public static final native int GTK_WIDGET_REQUISITION_WIDTH(int /*long*/ widget);
 public static final native int GTK_WIDGET_REQUISITION_HEIGHT(int /*long*/ widget);
+public static final native int GDK_EVENT_TYPE(int /*long*/ event);
+public static final native int /*long*/ GDK_EVENT_WINDOW(int /*long*/ event);
+public static final native int X_EVENT_TYPE(int /*long*/ xevent);
+public static final native int /*long*/ X_EVENT_WINDOW(int /*long*/ xevent);
 
 /** X11 Native methods and constants */
 public static final int Above = 0;
@@ -8209,8 +8213,8 @@ public static final int /*long*/ pango_language_from_string(byte[] language) {
 		lock.unlock();
 	}
 }
-public static final native void _pango_layout_context_changed (int /*long*/ layout);
-public static final void pango_layout_context_changed (int /*long*/ layout) {
+public static final native void _pango_layout_context_changed(int /*long*/ layout);
+public static final void pango_layout_context_changed(int /*long*/ layout) {
 	lock.lock();
 	try {
 		_pango_layout_context_changed(layout);

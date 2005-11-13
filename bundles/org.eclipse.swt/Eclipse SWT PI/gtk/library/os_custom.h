@@ -76,6 +76,10 @@
 #define GTK_WIDGET_SET_Y(arg0, arg1) (arg0)->allocation.y = arg1
 #define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width
 #define GTK_WIDGET_REQUISITION_HEIGHT(arg0) (arg0)->requisition.height
+#define GDK_EVENT_TYPE(arg0) (arg0)->type
+#define GDK_EVENT_WINDOW(arg0) (arg0)->window
+#define X_EVENT_TYPE(arg0) (arg0)->type
+#define X_EVENT_WINDOW(arg0) (arg0)->window
 #define g_list_data(arg0) (arg0)->data
 #define g_slist_data(arg0) (arg0)->data
 #define g_list_set_next(arg0, arg1) (arg0)->next = arg1
