@@ -547,7 +547,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	Bullet bullet = null;
 	int[] ranges = null;
 	StyleRange[] styles = null;
-	int rangeStart = 0, styleCount;
+	int rangeStart = 0, styleCount = 0;
 	StyledTextEvent event = null;
 	if (styledText != null) {
 		event = styledText.getLineStyleData(lineOffset, line);
@@ -563,13 +563,16 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		bullet = event.bullet;
 		ranges = event.ranges;
 		styles = event.styles;
-		styleCount = styles.length;
-		if (styledText.isFixedLineHeight()) {
-			for (int i = 0; i < styleCount; i++) {
-				if (styles[i].isVariableHeight()) {
-					styledText.setVariableLineHeight();
-					styledText.redraw();
-					break;
+		if (styles != null) {
+			styleCount = styles.length;
+			if (styledText.isFixedLineHeight()) {
+				for (int i = 0; i < styleCount; i++) {
+					if (styles[i].isVariableHeight()) {
+						styledText.verticalScrollOffset = -1;
+						styledText.setVariableLineHeight();
+						styledText.redraw();
+						break;
+					}
 				}
 			}
 		}
@@ -845,6 +848,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		for (int i = 0; i < newRanges.length; i += 2) {
 			int newStart = newRanges[i];
 			int newEnd = newStart + newRanges[i + 1];
+			if (newStart == newEnd) continue;
 			int modifyLast = 0, mergeCount = 0;
 			while (modifyEnd < rangeCount) {
 				if (newStart >= ranges[modifyStart] + ranges[modifyStart + 1]) modifyStart += 2;
@@ -911,6 +915,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		for (int i = 0; i < newStyles.length; i++) {
 			int newStart = newStyles[i].start;
 			int newEnd = newStart + newStyles[i].length;
+			if (newStart == newEnd) continue;
 			int modifyLast = 0, mergeCount = 0;
 			while (modifyEnd < styleCount) {
 				if (newStart >= styles[modifyStart].start + styles[modifyStart].length) modifyStart++;
