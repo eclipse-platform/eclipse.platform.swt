@@ -1232,7 +1232,9 @@ void setInitialBounds () {
 	Rectangle rect = monitor.getClientArea ();
 	int width = rect.width * 5 / 8;
 	int height = rect.height * 5 / 8;
-	if ((style & SWT.RESIZE) != 0) OS.gtk_window_resize (shellHandle, width, height);
+	if ((style & SWT.RESIZE) != 0) {
+		OS.gtk_window_resize (shellHandle, width, height);
+	}
 	resizeBounds (width, height, false);
 }
 
