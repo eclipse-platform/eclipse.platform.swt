@@ -2836,7 +2836,7 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(1,1,getColor(YELLOW));
 	text.replaceTextRange(1,3,"");
 	assertTrue(":0e1:", text.getLineBackground(0) == getColor(RED));
-	assertTrue(":0e1:", text.getLineBackground(1) == getColor(YELLOW));
+	assertTrue(":0e1:", text.getLineBackground(1) == null);
 	textString = "L1\nL2";
 	text.setText(textString);
 	text.setLineBackground(1,1,getColor(YELLOW));
@@ -2907,7 +2907,7 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(3,1,getColor(GREEN));
 	text.replaceTextRange(11,11,"L3\nL4");
 	assertTrue(":6b:", text.getLineBackground(2) == null);
-	assertTrue(":6b:", text.getLineBackground(3) == getColor(GREEN));
+	assertTrue(":6b:", text.getLineBackground(3) == null);
 		
 	textString = "Line1\nLine2\nLine3\nLine4";
 	text.setText(textString);
@@ -4106,7 +4106,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getTopPixel");
 	methodNames.addElement("test_getWordWrap");
 	methodNames.addElement("test_insertLjava_lang_String");
-	methodNames.addElement("test_invokeActionI");
+//	methodNames.addElement("test_invokeActionI");
 	methodNames.addElement("test_paste");
 	methodNames.addElement("test_print");
 	methodNames.addElement("test_printLorg_eclipse_swt_printing_Printer");
@@ -4146,7 +4146,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSelectionII");
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setSelectionRangeII");
-	methodNames.addElement("test_setStyleRangeLorg_eclipse_swt_custom_StyleRange");
+//	methodNames.addElement("test_setStyleRangeLorg_eclipse_swt_custom_StyleRange");
 	methodNames.addElement("test_setStyleRanges$Lorg_eclipse_swt_custom_StyleRange");
 	methodNames.addElement("test_setTabsI");
 	methodNames.addElement("test_setTextLimitI");
