@@ -274,7 +274,7 @@ void paint(GC gc, boolean isSelected) {
 		xDraw += sourceBounds.width;
 	}
 	yCenter = y + SHADOW_WIDTH + VERTICAL_MARGIN + (height - decorationHeight - textHeight(gc)) / 2; 	
-	int flags = SWT.DRAW_MNEMONIC;
+	int flags = SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
 	gc.drawText(getText(), xDraw, yCenter, flags);
 }
 /**
