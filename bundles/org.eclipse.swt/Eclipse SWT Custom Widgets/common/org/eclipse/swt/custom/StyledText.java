@@ -6676,7 +6676,7 @@ public void setHorizontalPixel(int pixel) {
  * Sets the default indent of the receiver
  * <p>
  * 
- * @param lineIndent line indent
+ * @param indent line indent
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6859,7 +6859,7 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
  *  
  * @param startLine first line the justify is applied to, 0 based
  * @param lineCount number of lines the justify applies to.
- * @param indent line indent
+ * @param justify true if lines should be justified
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
