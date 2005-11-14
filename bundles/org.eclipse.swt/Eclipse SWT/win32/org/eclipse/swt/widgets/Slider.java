@@ -650,7 +650,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 }
  
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
-	
 	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
 	* style for the scroll bar to decide that focus
