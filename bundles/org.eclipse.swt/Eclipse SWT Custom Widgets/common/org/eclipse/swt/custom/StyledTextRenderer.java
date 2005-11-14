@@ -532,8 +532,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				layout = layouts[layoutIndex];
 				if (layout != null) {
 					if (lineWidth[lineIndex] != -1) return layout;
+				} else {
+					layout = layouts[layoutIndex] = new TextLayout(device);
 				}
-				layout = layouts[layoutIndex] = new TextLayout(device);
 			}
 		}
 	}
