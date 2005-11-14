@@ -53,17 +53,16 @@ import org.eclipse.swt.events.*;
  * </ul>
  * </p><p>
  * The <em>modality</em> of an instance may be specified using
- * style bits. The type of modality specified determines whether
- * or not input is blocked for other shells in the system. The
- * <code>MODELESS</code> style allows input to any other shell.
- * For example, top-level shells are typically modeless. The
- * <code>PRIMARY_MODAL</code> style lets an instance block input
- * to its parent. The <code>APPLICATION_MODAL</code> style lets
- * an instance block input to every other shell in the application.
- * The <code>SYSTEM_MODAL</code> style lets an instance block
- * input to all other application shells, including the desktop.
+ * style bits. The modality style bits are used to determine
+ * whether input is blocked for other shells on the display.
+ * The <code>PRIMARY_MODAL</code> style allows an instance block
+ * input to its parent. The <code>APPLICATION_MODAL</code> style
+ * allows an instance block input to every other shell in the
+ * display. The <code>SYSTEM_MODAL</code> style allows an instance
+ * to block input to all shells, including shells belonging to
+ * different applications.
  * </p><p>
- * Note: The styles supported by this class must be treated
+ * Note: The styles supported by this class are treated
  * as <em>HINT</em>s, since the window manager for the
  * desktop on which the instance is visible has ultimate
  * control over the appearance and behavior of decorations
