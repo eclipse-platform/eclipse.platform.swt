@@ -18,47 +18,31 @@ import org.eclipse.swt.graphics.*;
 class ImageList {
 	int handle, style, refCount;
 	Image [] images;
-	static final int COLOR_FLAGS;
-	static {
-		if (OS.IsWinCE) {
-			COLOR_FLAGS = OS.ILC_COLOR;
-		} else {
-			int flags = 0;
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-				flags |= OS.ILC_COLOR32;
-			} else {
-				int hDC = OS.GetDC (0);
-				int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
-				int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
-				OS.ReleaseDC (0, hDC);
-				int depth = bits * planes;
-				switch (depth) {
-					case 4:
-						flags |= OS.ILC_COLOR4;
-						break;
-					case 8:
-						flags |= OS.ILC_COLOR8;
-						break;
-					case 16:
-						flags |= OS.ILC_COLOR16;
-						break;
-					case 24:
-						flags |= OS.ILC_COLOR24;
-						break;
-					case 32:
-						flags |= OS.ILC_COLOR32;
-						break;
-					default:
-						flags |= OS.ILC_COLOR;
-				}
-			}
-			COLOR_FLAGS = flags;
-		}
-	}
-	
+
 public ImageList (int style) {
 	this.style = style;
-	int flags = COLOR_FLAGS | OS.ILC_MASK;
+	int flags = OS.ILC_MASK;
+	if (OS.IsWinCE) {
+		flags |= OS.ILC_COLOR;
+	} else {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			flags |= OS.ILC_COLOR32;
+		} else {
+			int hDC = OS.GetDC (0);
+			int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
+			int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
+			OS.ReleaseDC (0, hDC);
+			int depth = bits * planes;
+			switch (depth) {
+				case 4: flags |= OS.ILC_COLOR4; break;
+				case 8: flags |= OS.ILC_COLOR8; break;
+				case 16: flags |= OS.ILC_COLOR16; break;
+				case 24: flags |= OS.ILC_COLOR24; break;
+				case 32: flags |= OS.ILC_COLOR32; break;
+				default: flags |= OS.ILC_COLOR; break;
+			}
+		}
+	}
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	handle = OS.ImageList_Create (32, 32, flags, 16, 16);
 	images = new Image [4];

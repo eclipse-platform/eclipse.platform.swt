@@ -2594,11 +2594,31 @@ public void setColumnOrder (int [] order) {
 
 void setCheckboxImageList () {
 	if ((style & SWT.CHECK) == 0) return;
-	int count = 5;
+	int count = 5, flags = 0;
+	if (OS.IsWinCE) {
+		flags |= OS.ILC_COLOR;
+	} else {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			flags |= OS.ILC_COLOR32;
+		} else {
+			int hDC = OS.GetDC (handle);
+			int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
+			int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
+			OS.ReleaseDC (handle, hDC);
+			int depth = bits * planes;
+			switch (depth) {
+				case 4: flags |= OS.ILC_COLOR4; break;
+				case 8: flags |= OS.ILC_COLOR8; break;
+				case 16: flags |= OS.ILC_COLOR16; break;
+				case 24: flags |= OS.ILC_COLOR24; break;
+				case 32: flags |= OS.ILC_COLOR32; break;
+				default: flags |= OS.ILC_COLOR; break;
+			}
+			flags |= OS.ILC_MASK;
+		}
+	}
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	int height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0), width = height;
-	int flags = ImageList.COLOR_FLAGS;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;	
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
 	int hStateList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);
