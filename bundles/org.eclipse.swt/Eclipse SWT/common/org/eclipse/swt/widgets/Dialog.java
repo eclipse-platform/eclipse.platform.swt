@@ -66,8 +66,8 @@ import org.eclipse.swt.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles APPLICATION_MODAL, PRIMARY_MODAL, and SYSTEM_MODAL 
- * may be specified.
+ * Note: Only one of the styles APPLICATION_MODAL, PRIMARY_MODAL,
+ * and SYSTEM_MODAL may be specified.
  * </p>
  * 
  * @see Shell
@@ -116,6 +116,10 @@ public Dialog (Shell parent) {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
+ * 
+ * @see SWT#PRIMARY_MODAL
+ * @see SWT#APPLICATION_MODAL
+ * @see SWT#SYSTEM_MODAL
  */
 public Dialog (Shell parent, int style) {
 	checkParent (parent);
