@@ -2613,6 +2613,16 @@ void setItemCount (TreeItem parentItem, int count) {
 	if (itemCount == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
 }
 
+/*public*/ void setItemHeight (int itemHeight) {
+	checkWidget ();
+	if (itemHeight < -1) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (itemHeight == -1) {
+		//TODO - reset item height, ensure other API's such as setFont don't do this
+	} else {
+		OS.SetDataBrowserTableViewRowHeight (handle, (short) itemHeight);
+	}
+}
+
 void setItemHeight (Image image) {
 	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
 	if (bounds == null) return;
