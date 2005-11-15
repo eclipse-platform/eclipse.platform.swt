@@ -270,7 +270,6 @@ public void dispose() {
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) Cairo.cairo_destroy(cairo);
 	data.cairo = 0;
-	data.matrix = data.inverseMatrix = null;
 
 	/* Free resources */
 	int /*long*/ clipRgn = data.clipRgn;
@@ -2017,7 +2016,12 @@ public void getClipping(Region region) {
 		OS.gdk_region_union_with_rect(hRegion, rect);
 	} else {
 		OS.gdk_region_union(hRegion, clipRgn);
-		if (!isIdentity(data.matrix)) return;
+		int /*long*/ cairo = data.cairo;
+		if (cairo != 0) {
+			double[] matrix = new double[]{1, 0, 0, 1, 0, 0};
+			Cairo.cairo_get_matrix(cairo, matrix);
+			if (!isIdentity(matrix)) return;
+		}
 	}
 	if (data.damageRgn != 0) {
 		OS.gdk_region_intersect(hRegion, data.damageRgn);
@@ -2328,8 +2332,7 @@ public void getTransform(Transform transform) {
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		double[] matrix = data.matrix;
-		Cairo.cairo_matrix_init(transform.handle, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+		Cairo.cairo_get_matrix(cairo, transform.handle);
 	} else {
 		transform.setElements(1, 0, 0, 1, 0, 0);
 	}
@@ -2411,8 +2414,6 @@ void initCairo() {
 	data.device.checkCairo();
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) return;
-	data.matrix = new double[]{1, 0, 0, 1, 0, 0};
-	data.inverseMatrix = new double[]{1, 0, 0, 1, 0, 0};
 	int /*long*/ xDisplay = OS.GDK_DISPLAY();
 	int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
 	int /*long*/ xDrawable = 0;
@@ -2562,7 +2563,6 @@ public void setAdvanced(boolean advanced) {
 		int /*long*/ cairo = data.cairo;
 		if (cairo != 0) Cairo.cairo_destroy(cairo);
 		data.cairo = 0;
-		data.matrix = data.inverseMatrix = null;
 		data.interpolation = SWT.DEFAULT;
 		data.backgroundPattern = data.foregroundPattern = null;
 		setClipping(0);
@@ -3378,21 +3378,17 @@ public void setTransform(Transform transform) {
 	if (data.cairo == 0 && transform == null) return;
 	initCairo();
 	int /*long*/ cairo = data.cairo;
-	Cairo.cairo_transform(cairo, data.inverseMatrix);
 	if (transform != null) {
-		Cairo.cairo_transform(cairo, transform.handle);
-		double[] matrix = transform.handle;
-		Cairo.cairo_matrix_init(data.matrix, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
-		Cairo.cairo_matrix_init(data.matrix, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
-		Cairo.cairo_matrix_invert(data.inverseMatrix);
+		Cairo.cairo_set_matrix(cairo, transform.handle);
 	} else {
-		Cairo.cairo_matrix_init_identity(data.matrix);
-		Cairo.cairo_matrix_init_identity(data.inverseMatrix);
+		Cairo.cairo_identity_matrix(cairo);
 	}
 	//TODO - round off problems
 	int /*long*/ clipRgn = data.clipRgn;
 	if (clipRgn != 0) {
-		double[] matrix = data.inverseMatrix;
+		double[] matrix = new double[]{1, 0, 0, 1, 0, 0};
+		Cairo.cairo_get_matrix(cairo, matrix);
+		Cairo.cairo_matrix_invert(matrix);
 		int /*long*/ newRgn = OS.gdk_region_new();
 		int[] nRects = new int[1];
 		int /*long*/[] rects = new int /*long*/[1];
