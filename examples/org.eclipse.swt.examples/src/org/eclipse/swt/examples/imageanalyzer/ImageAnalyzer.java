@@ -812,6 +812,7 @@ public class ImageAnalyzer {
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
+		ImageLoader oldLoader = loader;
 		try {
 			loader = new ImageLoader();
 			if (incremental) {
@@ -844,8 +845,10 @@ public class ImageAnalyzer {
 			}
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
+			loader = oldLoader;
 		} catch (SWTError e) {
 			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
+			loader = oldLoader;
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
@@ -866,6 +869,7 @@ public class ImageAnalyzer {
 		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
 		shell.setCursor(waitCursor);
 		imageCanvas.setCursor(waitCursor);
+		ImageLoader oldLoader = loader;
 		try {
 			URL url = new URL(urlname);
 			InputStream stream = url.openStream();
@@ -900,6 +904,7 @@ public class ImageAnalyzer {
 			}
 		} catch (Exception e) {
 			showErrorDialog(bundle.getString("Loading_lc"), urlname, e);
+			loader = oldLoader;
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
