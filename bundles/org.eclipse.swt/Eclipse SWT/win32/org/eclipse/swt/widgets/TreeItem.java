@@ -404,7 +404,7 @@ public Rectangle getBounds (int index) {
 //TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 	if (!getText && !getImage) return new RECT ();
-	if ((parent.style & SWT.VIRTUAL) == 0 && !cached) {
+	if ((parent.style & SWT.VIRTUAL) == 0 && !cached && !parent.painted) {
 		int hwnd = parent.handle;
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
@@ -1143,7 +1143,9 @@ public void setFont (Font font){
 	* to be clipped.  The fix is to reset the text, causing
 	* Windows to compute the new bounds using the new font.
 	*/
-	if ((parent.style & SWT.VIRTUAL) == 0 && !cached) return;
+	if ((parent.style & SWT.VIRTUAL) == 0 && !cached && !parent.painted) {
+		return;
+	}
 	if (this != parent.currentItem) {
 		int hwnd = parent.handle;
 		TVITEM tvItem = new TVITEM ();
@@ -1202,7 +1204,9 @@ public void setFont (int index, Font font) {
 	* Windows to compute the new bounds using the new font.
 	*/
 	if (index == 0) {
-		if ((parent.style & SWT.VIRTUAL) == 0 && !cached) return;
+		if ((parent.style & SWT.VIRTUAL) == 0 && !cached && !parent.painted) {
+			return;
+		}
 		if (this != parent.currentItem) {
 			int hwnd = parent.handle;
 			TVITEM tvItem = new TVITEM ();
@@ -1395,7 +1399,9 @@ public void setImage (int index, Image image) {
 	parent.imageIndex (image, index);
 	
 	if (index == 0) {
-		if ((parent.style & SWT.VIRTUAL) == 0 && !cached) return;
+		if ((parent.style & SWT.VIRTUAL) == 0 &&!cached && !parent.painted) {
+			return;
+		}
 		if (this != parent.currentItem) {
 			int hwnd = parent.handle;
 			TVITEM tvItem = new TVITEM ();
@@ -1498,7 +1504,9 @@ public void setText (int index, String string) {
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (index == 0) {
-		if ((parent.style & SWT.VIRTUAL) == 0 && !cached) return;
+		if ((parent.style & SWT.VIRTUAL) == 0 && !cached && !parent.painted) {
+			return;
+		}
 		if (this != parent.currentItem) {
 			int hwnd = parent.handle;
 			TVITEM tvItem = new TVITEM ();

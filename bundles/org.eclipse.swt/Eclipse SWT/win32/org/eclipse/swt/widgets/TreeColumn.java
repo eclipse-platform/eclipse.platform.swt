@@ -341,7 +341,7 @@ public void pack () {
 		TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
 		if (item != null) {
 			if (index == 0) {
-				if ((parent.style & SWT.VIRTUAL) == 0 && !item.cached) {
+				if ((parent.style & SWT.VIRTUAL) == 0 && !item.cached && !parent.painted) {
 					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
 					tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 					OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
