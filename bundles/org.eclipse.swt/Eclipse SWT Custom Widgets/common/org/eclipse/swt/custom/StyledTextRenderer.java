@@ -1078,7 +1078,7 @@ void updateRanges(int start, int replaceCharCount, int newCharCount) {
 					System.arraycopy(styles, 0, newStyles, 0, styleCount);
 					styles = newStyles;
 				}
-				System.arraycopy(ranges, modifyStart + 2, ranges, modifyStart + 4, rangeCount - modifyStart + 2);
+				System.arraycopy(ranges, modifyStart + 2, ranges, modifyStart + 4, rangeCount - (modifyStart + 2));
 				System.arraycopy(styles, (modifyStart + 2) >> 1, styles, (modifyStart + 4) >> 1, styleCount - ((modifyStart + 2) >> 1));
 				ranges[modifyStart + 3] = ranges[modifyStart] + ranges[modifyStart + 1] - end;
 				ranges[modifyStart + 2] = start + newCharCount;
@@ -1127,7 +1127,7 @@ void updateRanges(int start, int replaceCharCount, int newCharCount) {
 					System.arraycopy(styles, 0, newStyles, 0, styleCount);
 					styles = newStyles;
 				}
-				System.arraycopy(styles, modifyStart + 1, styles, modifyStart + 2, styleCount - modifyStart + 1);
+				System.arraycopy(styles, modifyStart + 1, styles, modifyStart + 2, styleCount - (modifyStart + 1));
 				styles[modifyStart + 1] = (StyleRange)styles[modifyStart].clone();
 				styles[modifyStart + 1].length = styles[modifyStart].start + styles[modifyStart].length - end;
 				styles[modifyStart + 1].start = start + newCharCount;
