@@ -73,7 +73,7 @@ class ButtonTab extends AlignableTab {
 		GridLayout gridLayout = new GridLayout ();
 		textButtonGroup.setLayout(gridLayout);
 		gridLayout.numColumns = 3;
-		textButtonGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		textButtonGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textButtonGroup.setText (ControlExample.getResourceString("Text_Buttons"));
 	
 		/* Create a group for the image buttons */
@@ -81,7 +81,7 @@ class ButtonTab extends AlignableTab {
 		gridLayout = new GridLayout();
 		imageButtonGroup.setLayout(gridLayout);
 		gridLayout.numColumns = 3;
-		imageButtonGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		imageButtonGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageButtonGroup.setText (ControlExample.getResourceString("Image_Buttons"));
 
 		/* Create a group for the image and text buttons */
@@ -89,7 +89,7 @@ class ButtonTab extends AlignableTab {
 		gridLayout = new GridLayout();
 		imagetextButtonGroup.setLayout(gridLayout);
 		gridLayout.numColumns = 3;
-		imagetextButtonGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		imagetextButtonGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imagetextButtonGroup.setText (ControlExample.getResourceString("Image_Text_Buttons"));
 	}
 	

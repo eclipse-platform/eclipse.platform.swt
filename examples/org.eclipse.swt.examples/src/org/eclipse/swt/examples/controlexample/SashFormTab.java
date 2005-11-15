@@ -57,7 +57,7 @@ class SashFormTab extends Tab {
 		/* Create a group for the sashform widget */
 		sashFormGroup = new Group (exampleGroup, SWT.NONE);
 		sashFormGroup.setLayout (new GridLayout ());
-		sashFormGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		sashFormGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		sashFormGroup.setText ("SashForm");
 	}
 	void createExampleWidgets () {

@@ -38,7 +38,8 @@ class CanvasTab extends Tab {
 	Group canvasGroup;
 
 	/* Style widgets added to the "Style" group */
-	Button horizontalButton, verticalButton, noBackgroundButton, noFocusButton, noMergePaintsButton, noRedrawResizeButton;
+	Button horizontalButton, verticalButton, noBackgroundButton, noFocusButton, 
+	noMergePaintsButton, noRedrawResizeButton, doubleBufferedButton;
 
 	/* Other widgets added to the "Other" group */
 	Button caretButton, fillDamageButton;
@@ -83,7 +84,7 @@ class CanvasTab extends Tab {
 		/* Create a group for the canvas widget */
 		canvasGroup = new Group (exampleGroup, SWT.NONE);
 		canvasGroup.setLayout (new GridLayout ());
-		canvasGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		canvasGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		canvasGroup.setText ("Canvas");
 	}
 	
@@ -101,6 +102,7 @@ class CanvasTab extends Tab {
 		if (noFocusButton.getSelection ()) style |= SWT.NO_FOCUS;
 		if (noMergePaintsButton.getSelection ()) style |= SWT.NO_MERGE_PAINTS;
 		if (noRedrawResizeButton.getSelection ()) style |= SWT.NO_REDRAW_RESIZE;
+		if (doubleBufferedButton.getSelection ()) style |= SWT.DOUBLE_BUFFERED;
 
 		/* Create the example widgets */
 		paintCount = 0; cx = 0; cy = 0;
@@ -167,6 +169,8 @@ class CanvasTab extends Tab {
 		noMergePaintsButton.setText ("SWT.NO_MERGE_PAINTS");
 		noRedrawResizeButton = new Button (styleGroup, SWT.CHECK);
 		noRedrawResizeButton.setText ("SWT.NO_REDRAW_RESIZE");
+		doubleBufferedButton = new Button (styleGroup, SWT.CHECK);
+		doubleBufferedButton.setText ("SWT.DOUBLE_BUFFERED");
 	}
 
 	/**
@@ -297,6 +301,7 @@ class CanvasTab extends Tab {
 		noFocusButton.setSelection ((canvas.getStyle () & SWT.NO_FOCUS) != 0);
 		noMergePaintsButton.setSelection ((canvas.getStyle () & SWT.NO_MERGE_PAINTS) != 0);
 		noRedrawResizeButton.setSelection ((canvas.getStyle () & SWT.NO_REDRAW_RESIZE) != 0);
+		doubleBufferedButton.setSelection ((canvas.getStyle () & SWT.DOUBLE_BUFFERED) != 0);
 		setCaret ();
 	}
 }

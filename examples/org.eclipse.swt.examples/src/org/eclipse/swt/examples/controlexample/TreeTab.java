@@ -197,13 +197,13 @@ class TreeTab extends ScrollableTab {
 		/* Create a group for the text tree */
 		treeGroup = new Group (exampleGroup, SWT.NONE);
 		treeGroup.setLayout (new GridLayout ());
-		treeGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		treeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		treeGroup.setText ("Tree");
 	
 		/* Create a group for the image tree */
 		imageTreeGroup = new Group (exampleGroup, SWT.NONE);
 		imageTreeGroup.setLayout (new GridLayout ());
-		imageTreeGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		imageTreeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageTreeGroup.setText (ControlExample.getResourceString("Tree_With_Images"));
 	}
 	

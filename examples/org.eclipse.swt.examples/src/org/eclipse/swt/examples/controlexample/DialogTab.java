@@ -392,7 +392,7 @@ class DialogTab extends Tab {
 		 */
 		resultGroup = new Group (exampleGroup, SWT.NONE);
 		resultGroup.setLayout (new GridLayout ());
-		resultGroup.setLayoutData (new GridData (GridData.FILL_BOTH));
+		resultGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		resultGroup.setText (ControlExample.getResourceString("Dialog_Result"));
 	}
 	

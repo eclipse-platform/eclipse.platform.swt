@@ -60,7 +60,7 @@ class GroupTab extends Tab {
 		/* Create a group for the Group */
 		groupGroup = new Group (exampleGroup, SWT.NONE);
 		groupGroup.setLayout (new GridLayout ());
-		groupGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		groupGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		groupGroup.setText ("Group");
 	}
 	

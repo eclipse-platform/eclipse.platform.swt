@@ -303,7 +303,7 @@ class CTabFolderTab extends Tab {
 		/* Create a group for the CTabFolder */
 		tabFolderGroup = new Group (exampleGroup, SWT.NONE);
 		tabFolderGroup.setLayout (new GridLayout ());
-		tabFolderGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		tabFolderGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		tabFolderGroup.setText ("CTabFolder");
 	}
 	

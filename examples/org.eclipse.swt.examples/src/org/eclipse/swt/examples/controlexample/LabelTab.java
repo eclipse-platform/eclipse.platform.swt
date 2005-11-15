@@ -42,7 +42,7 @@ class LabelTab extends AlignableTab {
 		GridLayout gridLayout = new GridLayout ();
 		textLabelGroup.setLayout (gridLayout);
 		gridLayout.numColumns = 3;
-		textLabelGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		textLabelGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textLabelGroup.setText (ControlExample.getResourceString("Text_Labels"));
 	
 		/* Create a group for the image labels */
@@ -50,7 +50,7 @@ class LabelTab extends AlignableTab {
 		gridLayout = new GridLayout ();
 		imageLabelGroup.setLayout (gridLayout);
 		gridLayout.numColumns = 3;
-		imageLabelGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		imageLabelGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageLabelGroup.setText (ControlExample.getResourceString("Image_Labels"));
 	}
 	

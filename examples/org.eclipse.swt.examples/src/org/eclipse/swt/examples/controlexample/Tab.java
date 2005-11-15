@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
 abstract class Tab {
 	/* Common control buttons */
 	Button borderButton, enabledButton, visibleButton;
-	Button preferredButton, tooSmallButton, smallButton, largeButton, fillButton;
+	Button preferredButton, tooSmallButton, smallButton, largeButton, fillHButton, fillVButton;
 
 	/* Common groups and composites */
 	Composite tabFolderPage;
@@ -374,7 +374,7 @@ abstract class Tab {
 	void createExampleGroup () {
 		exampleGroup = new Group (tabFolderPage, SWT.NONE);
 		exampleGroup.setLayout (new GridLayout ());
-		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, false));
+		exampleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 	}
 	
 	/**
@@ -751,13 +751,14 @@ abstract class Tab {
 		smallButton.setText (SMALL_SIZE + " X " + SMALL_SIZE);
 		largeButton = new Button (sizeGroup, SWT.RADIO);
 		largeButton.setText (LARGE_SIZE + " X " + LARGE_SIZE);
-		fillButton = new Button (sizeGroup, SWT.RADIO);
-		fillButton.setText (ControlExample.getResourceString("Fill"));
-	
+		fillHButton = new Button (sizeGroup, SWT.CHECK);
+		fillHButton.setText (ControlExample.getResourceString("Fill_X"));
+		fillVButton = new Button (sizeGroup, SWT.CHECK);
+		fillVButton.setText (ControlExample.getResourceString("Fill_Y"));
+		
 		/* Add the listeners */
 		SelectionAdapter selectionListener = new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
-				if (!((Button) event.widget).getSelection ()) return;
 				setExampleWidgetSize ();
 			}
 		};
@@ -765,7 +766,8 @@ abstract class Tab {
 		tooSmallButton.addSelectionListener(selectionListener);
 		smallButton.addSelectionListener(selectionListener);
 		largeButton.addSelectionListener(selectionListener);
-		fillButton.addSelectionListener(selectionListener);
+		fillHButton.addSelectionListener(selectionListener);
+		fillVButton.addSelectionListener(selectionListener);
 	
 		/* Set the default state */
 		preferredButton.setSelection (true);
@@ -1093,14 +1095,11 @@ abstract class Tab {
 		if (largeButton.getSelection()) size = LARGE_SIZE;
 		Control [] controls = getExampleWidgets ();
 		for (int i=0; i<controls.length; i++) {
-			GridData gridData; 
-			if (fillButton.getSelection()) {
-				gridData = new GridData (GridData.FILL_BOTH);
-			} else {
-				gridData = new GridData ();
-				gridData.widthHint = size;
-				gridData.heightHint = size;
-			}
+			GridData gridData = new GridData(size, size); 
+			gridData.grabExcessHorizontalSpace = fillHButton.getSelection();
+			gridData.grabExcessVerticalSpace = fillVButton.getSelection();
+			gridData.horizontalAlignment = fillHButton.getSelection() ? SWT.FILL : SWT.LEFT;
+			gridData.verticalAlignment = fillVButton.getSelection() ? SWT.FILL : SWT.TOP;
 			controls [i].setLayoutData (gridData);
 		}
 		tabFolderPage.layout (controls);

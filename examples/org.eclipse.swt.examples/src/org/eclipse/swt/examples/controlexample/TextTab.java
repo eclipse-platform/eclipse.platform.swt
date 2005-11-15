@@ -41,7 +41,7 @@ class TextTab extends ScrollableTab {
 		/* Create a group for the text widget */
 		textGroup = new Group (exampleGroup, SWT.NONE);
 		textGroup.setLayout (new GridLayout ());
-		textGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		textGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textGroup.setText ("Text");
 	}
 	

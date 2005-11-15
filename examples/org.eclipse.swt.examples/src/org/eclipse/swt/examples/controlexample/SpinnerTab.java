@@ -54,7 +54,7 @@ class SpinnerTab extends RangeTab {
 		/* Create a group for the spinner */
 		spinnerGroup = new Group (exampleGroup, SWT.NONE);
 		spinnerGroup.setLayout (new GridLayout ());
-		spinnerGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		spinnerGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		spinnerGroup.setText ("Spinner");
 	}
 	

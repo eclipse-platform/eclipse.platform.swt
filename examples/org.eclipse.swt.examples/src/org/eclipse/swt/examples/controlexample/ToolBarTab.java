@@ -44,19 +44,19 @@ class ToolBarTab extends Tab {
 		/* Create a group for the image tool bar */
 		imageToolBarGroup = new Group (exampleGroup, SWT.NONE);
 		imageToolBarGroup.setLayout (new GridLayout ());
-		imageToolBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		imageToolBarGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageToolBarGroup.setText (ControlExample.getResourceString("Image_ToolBar"));
 	
 		/* Create a group for the text tool bar */
 		textToolBarGroup = new Group (exampleGroup, SWT.NONE);
 		textToolBarGroup.setLayout (new GridLayout ());
-		textToolBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		textToolBarGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textToolBarGroup.setText (ControlExample.getResourceString("Text_ToolBar"));
 		
 		/* Create a group for the image and text tool bar */
 		imageTextToolBarGroup = new Group (exampleGroup, SWT.NONE);
 		imageTextToolBarGroup.setLayout (new GridLayout ());
-		imageTextToolBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		imageTextToolBarGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		imageTextToolBarGroup.setText (ControlExample.getResourceString("ImageText_ToolBar"));
 	}
 	

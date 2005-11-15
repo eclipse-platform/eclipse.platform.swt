@@ -78,7 +78,7 @@ class StyledTextTab extends ScrollableTab {
 		/* Create a group for the styled text widget */
 		styledTextGroup = new Group (exampleGroup, SWT.NONE);
 		styledTextGroup.setLayout (new GridLayout ());
-		styledTextGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		styledTextGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		styledTextGroup.setText ("StyledText");
 	}
 	

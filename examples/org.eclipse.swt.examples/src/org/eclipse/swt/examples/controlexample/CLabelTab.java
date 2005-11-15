@@ -43,7 +43,7 @@ class CLabelTab extends AlignableTab {
 		GridLayout gridLayout = new GridLayout ();
 		textLabelGroup.setLayout (gridLayout);
 		gridLayout.numColumns = 3;
-		textLabelGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		textLabelGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		textLabelGroup.setText (ControlExample.getResourceString("Custom_Labels"));
 	}
 	

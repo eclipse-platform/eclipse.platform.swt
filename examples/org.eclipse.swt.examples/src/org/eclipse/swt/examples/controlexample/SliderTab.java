@@ -51,13 +51,13 @@ class SliderTab extends RangeTab {
 		/* Create a group for the slider */
 		sliderGroup = new Group (exampleGroup, SWT.NONE);
 		sliderGroup.setLayout (new GridLayout ());
-		sliderGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		sliderGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		sliderGroup.setText ("Slider");
 	
 		/* Create a group for the scale */
 		scaleGroup = new Group (exampleGroup, SWT.NONE);
 		scaleGroup.setLayout (new GridLayout ());
-		scaleGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		scaleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		scaleGroup.setText ("Scale");
 	
 	}

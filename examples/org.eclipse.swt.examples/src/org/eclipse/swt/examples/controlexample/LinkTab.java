@@ -36,7 +36,7 @@ class LinkTab extends Tab {
 		/* Create a group for the list */
 		linkGroup = new Group (exampleGroup, SWT.NONE);
 		linkGroup.setLayout (new GridLayout ());
-		linkGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		linkGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		linkGroup.setText ("Link");
 	}
 	
