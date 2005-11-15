@@ -7268,9 +7268,8 @@ public void setSelectionForeground (Color color) {
  * </ul>
  */
 public void setSelection(int start, int end) {
-	// checkWidget test done in setSelectionRange
 	setSelectionRange(start, end - start);
-//	showSelection();
+	showSelection();
 }
 /** 
  * Sets the selection. 
