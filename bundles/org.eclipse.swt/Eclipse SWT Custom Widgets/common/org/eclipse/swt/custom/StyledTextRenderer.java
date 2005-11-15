@@ -842,7 +842,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 			System.arraycopy(newStyles, 0, styles, styleCount, newStyles.length);
 			styleCount += newStyles.length;
 			return;
-		}		
+		}
 		int modifyEnd = modifyStart;
 		int[] mergeRanges = new int[6];
 		StyleRange[] mergeStyles = new StyleRange[3];
@@ -914,8 +914,9 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		int modifyEnd = modifyStart;
 		StyleRange[] mergeStyles = new StyleRange[3];
 		for (int i = 0; i < newStyles.length; i++) {
-			int newStart = newStyles[i].start;
-			int newEnd = newStart + newStyles[i].length;
+			StyleRange newStyle = newStyles[i], style; 
+			int newStart = newStyle.start;
+			int newEnd = newStart + newStyle.length;
 			if (newStart == newEnd) continue;
 			int modifyLast = 0, mergeCount = 0;
 			while (modifyEnd < styleCount) {
@@ -923,16 +924,20 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 				if (styles[modifyEnd].start + styles[modifyEnd].length > newEnd) break;
 				modifyEnd++;
 			}
-			if (styles[modifyStart].start < newStart && newStart < styles[modifyStart].start + styles[modifyStart].length) {
-				StyleRange style = mergeStyles[mergeCount++] = (StyleRange)styles[modifyStart].clone();
+			style = styles[modifyStart];
+			if (style.start < newStart && newStart < style.start + style.length) {
+				style = mergeStyles[mergeCount++] = (StyleRange)style.clone();
 				style.length = newStart - style.start;
 			}
-			mergeStyles[mergeCount++] = newStyles[i];
-			if (modifyEnd < styleCount && styles[modifyEnd].start < newEnd && newEnd < styles[modifyEnd].start + styles[modifyEnd].length) {
-				StyleRange style = mergeStyles[mergeCount++] = (StyleRange)styles[modifyEnd].clone();
-				style.start = newEnd;
-				style.length = styles[modifyEnd].start + styles[modifyEnd].length - newEnd;
-				modifyLast = 1;
+			mergeStyles[mergeCount++] = newStyle;
+			if (modifyEnd < styleCount) {
+				style = styles[modifyEnd];
+				if (style.start < newEnd && newEnd < style.start + style.length) {
+					style = mergeStyles[mergeCount++] = (StyleRange)style.clone();
+					style.length += style.start - newEnd;
+					style.start = newEnd;
+					modifyLast = 1;
+				}
 			}
 			modifyEnd += modifyLast;
 			int grow = mergeCount - (modifyEnd - modifyStart);
