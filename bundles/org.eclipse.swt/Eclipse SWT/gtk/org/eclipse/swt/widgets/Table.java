@@ -578,7 +578,7 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	/*
 	* Feature in GTK.  When a tree view column contains only one activatable
 	* cell renderer such as a toggle renderer, mouse clicks anywhere in a cell
-	* activate that renderer. The workaround is to set a second  cell renderer
+	* activate that renderer. The workaround is to set a second cell renderer
 	* to be activatable.
 	*/
 	if ((style & SWT.CHECK) != 0 && check) {
