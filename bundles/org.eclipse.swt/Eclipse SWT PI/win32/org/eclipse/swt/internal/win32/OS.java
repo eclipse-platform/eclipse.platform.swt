@@ -1002,6 +1002,7 @@ public class OS extends Platform {
 	public static final int RBBS_USECHEVRON = 0x00000200;
 	public static final int RBBS_VARIABLEHEIGHT = 0x40;
 	public static final int RBN_FIRST = 0xfffffcc1;
+	public static final int RBN_BEGINDRAG = RBN_FIRST - 4;
 	public static final int RBN_CHILDSIZE = RBN_FIRST - 8;
 	public static final int RBN_CHEVRONPUSHED = RBN_FIRST - 10;
 	public static final int RBN_HEIGHTCHANGE = 0xfffffcc1;

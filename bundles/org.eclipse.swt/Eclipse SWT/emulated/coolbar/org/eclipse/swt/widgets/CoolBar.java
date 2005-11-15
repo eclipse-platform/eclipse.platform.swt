@@ -41,11 +41,12 @@ public class CoolBar extends Composite {
 	Cursor hoverCursor, dragCursor;
 	CoolItem dragging = null;
 	int mouseXOffset, itemXOffset;
-	static final int ROW_SPACING = 2;
-	static final int CLICK_DISTANCE = 3;
-
 	boolean isLocked = false;
 	boolean inDispose = false;
+	boolean inDragDetect = false;
+	static final int ROW_SPACING = 2;
+	static final int CLICK_DISTANCE = 3;
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -88,6 +89,7 @@ public CoolBar (Composite parent, int style) {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose:      		onDispose(event);        	break;
+				case SWT.DragDetect:    	onDragDetect(event);		break;
 				case SWT.MouseDown:    		onMouseDown(event);			break;
 				case SWT.MouseExit:    		onMouseExit();      		break;
 				case SWT.MouseMove:    		onMouseMove(event); 		break;
@@ -100,6 +102,7 @@ public CoolBar (Composite parent, int style) {
 	};
 	int[] events = new int[] { 
 		SWT.Dispose, 
+		SWT.DragDetect,
 		SWT.MouseDown,
 		SWT.MouseExit, 
 		SWT.MouseMove, 
@@ -575,19 +578,28 @@ void onDispose(Event event) {
 	hoverCursor.dispose();
 	dragCursor.dispose();
 }
-void onMouseDown(Event event) {
-	if (isLocked || event.button != 1) return;
-	fixEvent(event);
-	dragging = getGrabbedItem(event.x, event.y);
-	if (dragging != null) {
-		mouseXOffset = event.x;
-		itemXOffset = mouseXOffset - dragging.internalGetBounds().x;
-		setCursor(dragCursor);
+void onDragDetect(Event event) {
+	if (inDragDetect) return;
+	inDragDetect = true;
+	notifyListeners(SWT.DragDetect, event);
+	event.type = SWT.None;
+	inDragDetect = false;
+	if (!isLocked && event.doit) {
+		fixEvent(event);
+		dragging = getGrabbedItem(event.x, event.y);
+		if (dragging != null) {
+			mouseXOffset = event.x;
+			itemXOffset = mouseXOffset - dragging.internalGetBounds().x;
+			setCursor(dragCursor);
+		}
+		fixEvent(event);
 	}
-	fixEvent(event);
 }
 void onMouseExit() {
 	if (dragging == null) setCursor(null);
+}
+void onMouseDown(Event event) {
+	dragging = null;
 }
 void onMouseMove(Event event) {
 	if (isLocked) return;

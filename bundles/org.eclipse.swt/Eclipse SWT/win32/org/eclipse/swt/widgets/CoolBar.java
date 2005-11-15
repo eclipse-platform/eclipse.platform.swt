@@ -1099,7 +1099,16 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
-		case OS.RBN_CHILDSIZE:
+		case OS.RBN_BEGINDRAG: {
+			int pos = OS.GetMessagePos ();
+			POINT pt = new POINT ();
+			pt.x = (short) (pos & 0xFFFF);
+			pt.y = (short) (pos >> 16); 
+			OS.ScreenToClient (handle, pt);
+			if (!sendDragEvent (pt.x, pt.y)) return LRESULT.ONE;
+			break;
+		}
+		case OS.RBN_CHILDSIZE: {
 			/*
 			* Bug in Windows.  When Windows sets the size of the rebar band
 			* child and the child is a combo box, the size of the drop down
@@ -1121,7 +1130,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 			}
 			break;
-		case OS.RBN_HEIGHTCHANGE:
+		}
+		case OS.RBN_HEIGHTCHANGE: {
 			if (!ignoreResize) {
 				Point size = getSize ();
 				int border = getBorderWidth ();
@@ -1133,7 +1143,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 			}
 			break;
-		case OS.RBN_CHEVRONPUSHED:
+		}
+		case OS.RBN_CHEVRONPUSHED: {
 			NMREBARCHEVRON lpnm = new NMREBARCHEVRON ();
 			OS.MoveMemory (lpnm, lParam, NMREBARCHEVRON.sizeof);
 			CoolItem item = items [lpnm.wID];
@@ -1150,7 +1161,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				item.postEvent (SWT.Selection, event);
 			}
 			break;
-		case OS.NM_CUSTOMDRAW:
+		}
+		case OS.NM_CUSTOMDRAW: {
 			/*
 			* Bug in Windows.  On versions of Windows prior to XP,
 			* drawing the background color in NM_CUSTOMDRAW erases
@@ -1170,6 +1182,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 			}
 			break;
+		}
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }
