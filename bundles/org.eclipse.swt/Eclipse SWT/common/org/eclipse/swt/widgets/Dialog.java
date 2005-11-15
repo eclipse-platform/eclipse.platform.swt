@@ -50,9 +50,9 @@ import org.eclipse.swt.*;
  * </pre></code>
  * <p>
  * Note: The <em>modality</em> styles supported by this class
- * must be treated as <em>HINT</em>s, because not all are
- * supported by every subclass on every platform. If a modality style
- * is not supported, it is "upgraded" to a more restrictive modality
+ * are treated as <em>HINT</em>s, because not all are supported
+ * by every subclass on every platform. If a modality style is
+ * not supported, it is "upgraded" to a more restrictive modality
  * style that is supported.  For example, if <code>PRIMARY_MODAL</code>
  * is not supported by a particular dialog, it would be upgraded to 
  * <code>APPLICATION_MODAL</code>. In addition, as is the case
