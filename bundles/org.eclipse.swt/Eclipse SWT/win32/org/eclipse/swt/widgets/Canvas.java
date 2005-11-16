@@ -233,7 +233,7 @@ public void setCaret (Caret caret) {
 	Caret newCaret = caret;
 	Caret oldCaret = this.caret;
 	this.caret = newCaret;
-	if (isFocusControl ()) {
+	if (hasFocus ()) {
 		if (oldCaret != null) oldCaret.killFocus ();
 		if (newCaret != null) {
 			if (newCaret.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
