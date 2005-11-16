@@ -38,7 +38,7 @@ import org.eclipse.swt.graphics.*;
 public class CoolBar extends Composite {
 	CoolItem[][] items = new CoolItem[0][0];
 	CoolItem[] originalItems = new CoolItem[0];
-	Cursor hoverCursor, dragCursor;
+	Cursor hoverCursor, dragCursor, cursor;
 	CoolItem dragging = null;
 	int mouseXOffset, itemXOffset;
 	boolean isLocked = false;
@@ -118,6 +118,10 @@ public CoolBar (Composite parent, int style) {
 private static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
 	return (style | SWT.NO_REDRAW_RESIZE) & ~(SWT.V_SCROLL | SWT.H_SCROLL);
+}
+void _setCursor (Cursor cursor) {
+	if (this.cursor != null) return;
+	super.setCursor (cursor);
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
@@ -577,6 +581,7 @@ void onDispose(Event event) {
 	}
 	hoverCursor.dispose();
 	dragCursor.dispose();
+	cursor = null;
 }
 void onDragDetect(Event event) {
 	if (inDragDetect) return;
@@ -590,13 +595,13 @@ void onDragDetect(Event event) {
 		if (dragging != null) {
 			mouseXOffset = event.x;
 			itemXOffset = mouseXOffset - dragging.internalGetBounds().x;
-			setCursor(dragCursor);
+			_setCursor(dragCursor);
 		}
 		fixEvent(event);
 	}
 }
 void onMouseExit() {
-	if (dragging == null) setCursor(null);
+	if (dragging == null) _setCursor(null);
 }
 void onMouseDown(Event event) {
 	dragging = null;
@@ -622,15 +627,15 @@ void onMouseMove(Event event) {
 		mouseXOffset = event.x;		
 	} else {
 		if (grabbed != null) {
-			setCursor(hoverCursor);
+			_setCursor(hoverCursor);
 		} else {
-			setCursor(null);	
+			_setCursor(null);	
 		}
 	}
 	fixEvent(event);
 }
 void onMouseUp(Event event) {
-	setCursor(null);
+	_setCursor(null);
 	dragging = null;
 }
 void onMouseDoubleClick(Event event) {
@@ -639,7 +644,7 @@ void onMouseDoubleClick(Event event) {
 	fixEvent(event);
 	CoolItem target = getGrabbedItem(event.x, event.y);
 	if (target == null) {
-		setCursor(null);
+		_setCursor(null);
 	} else {
 		Point location = findItem(target);
 		int row = location.y;
@@ -685,7 +690,7 @@ void onMouseDoubleClick(Event event) {
 				target.requestedWidth = maxSize;
 				layoutItems();
 			}
-			setCursor(hoverCursor);
+			_setCursor(hoverCursor);
 		}
 	}
 	fixEvent(event);
@@ -1092,6 +1097,10 @@ public void setWrapIndices (int[] indices) {
 		}
 	}
 	relayout();
+}
+public void setCursor (Cursor cursor) {
+	checkWidget ();
+	super.setCursor (this.cursor = cursor);
 }
 /**
  * Sets the receiver's item order, wrap indices, and item sizes
