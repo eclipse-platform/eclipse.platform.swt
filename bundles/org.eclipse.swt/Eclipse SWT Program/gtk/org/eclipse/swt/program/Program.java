@@ -107,14 +107,14 @@ static int getDesktop(final Display display) {
 			});
 			/* Check for libgnomevfs-2 version 2.4 */
 			byte[] libgnomevfs = Converter.wcsToMbcs(null, "libgnomevfs-2.so.0", true);
-			int /*long*/ libgnomevfs_handle = GNOME.dlopen(libgnomevfs, 1);
+			int /*long*/ libgnomevfs_handle = OS.dlopen(libgnomevfs, 1);
 			if (libgnomevfs_handle != 0) {
 				byte[] gnome_vfs_url_show = Converter.wcsToMbcs(null, "gnome_vfs_url_show", true);
-				int /*long*/ gnome_vfs_url_show_handle = GNOME.dlsym(libgnomevfs_handle, gnome_vfs_url_show);
+				int /*long*/ gnome_vfs_url_show_handle = OS.dlsym(libgnomevfs_handle, gnome_vfs_url_show);
 				if (gnome_vfs_url_show_handle != 0) {
 					desktop = DESKTOP_GNOME_24;
 				}
-				GNOME.dlclose(libgnomevfs_handle);
+				OS.dlclose(libgnomevfs_handle);
 			}
 		}
 	}

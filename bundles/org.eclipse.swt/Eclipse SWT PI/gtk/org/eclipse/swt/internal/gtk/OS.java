@@ -1254,6 +1254,33 @@ public static final int /*long*/ PANGO_TYPE_FONT_DESCRIPTION() {
 		lock.unlock();
 	}
 }
+public static final native int _dlclose(int /*long*/ handle);
+public static final int dlclose(int /*long*/ handle) {
+	lock.lock();
+	try {
+		return _dlclose(handle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _dlopen(byte[] filename, int flag);
+public static final int /*long*/ dlopen(byte[] filename, int flag) {
+	lock.lock();
+	try {
+		return _dlopen(filename, flag);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _dlsym(int /*long*/ handle, byte[] symbol);
+public static final int /*long*/ dlsym(int /*long*/ handle, byte[] symbol) {
+	lock.lock();
+	try {
+		return _dlsym(handle, symbol);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _g_cclosure_new(int /*long*/ callback_func, int /*long*/ user_data, int /*long*/ destroy_data);
 public static final int /*long*/ g_cclosure_new(int /*long*/ callback_func, int /*long*/ user_data, int /*long*/ destroy_data) {
 	lock.lock();
