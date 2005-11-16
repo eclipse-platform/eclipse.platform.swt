@@ -833,16 +833,9 @@ void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle, OS.None);
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
-//	Shell shell = parent.getShell ();
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	if (xEvent.button == 1) {
-		if (!set && (style & SWT.RADIO) == 0) {
-			setDrawPressed (!set);
-		}
-	}
-	
 	/*
 	* Forward the mouse event to the parent.
 	* This is necessary so that mouse listeners
@@ -856,33 +849,17 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	xEvent.window = OS.XtWindow (parent.handle);
 	xEvent.x += argList [1];  xEvent.y += argList [3];
 	OS.memmove (call_data, xEvent, XButtonEvent.sizeof);
-	parent.XButtonPress (w, client_data, call_data, continue_to_dispatch);
-
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-//	if (!shell.isDisposed()) {
-//		shell.setActiveControl (parent);
-//	}
-	return 0;
+	int result = parent.XButtonPress (w, client_data, call_data, continue_to_dispatch);
+	xEvent.x -= argList [1];  xEvent.y -= argList [3];
+	if (result == 0 && xEvent.button == 1) {
+		if (!set) setDrawPressed (!set);
+	}
+	return result;
 }
 int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
 	display.hideToolTip(); 
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	if (xEvent.button == 1) {
-		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		int width = argList [1], height = argList [3];
-		if (0 <= xEvent.x && xEvent.x < width && 0 <= xEvent.y && xEvent.y < height) {
-			click (xEvent.x > width - 12, xEvent.state);
-		}
-		setDrawPressed(set);
-	}
-
 	/*
 	* Forward the mouse event to the parent.
 	* This is necessary so that mouse listeners
@@ -896,9 +873,18 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 	xEvent.window = OS.XtWindow (parent.handle);
 	xEvent.x += argList [1];  xEvent.y += argList [3];
 	OS.memmove (call_data, xEvent, XButtonEvent.sizeof);
-	parent.XButtonRelease (w, client_data, call_data, continue_to_dispatch);
-
-	return 0;
+	int result = parent.XButtonRelease (w, client_data, call_data, continue_to_dispatch);
+	xEvent.x -= argList [1];  xEvent.y -= argList [3];
+	if (result == 0 && xEvent.button == 1) {
+		int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+		OS.XtGetValues (handle, argList2, argList2.length / 2);
+		int width = argList2 [1], height = argList2 [3];
+		if (0 <= xEvent.x && xEvent.x < width && 0 <= xEvent.y && xEvent.y < height) {
+			click (xEvent.x > width - 12, xEvent.state);
+		}
+		setDrawPressed (set);
+	}
+	return result;
 }
 int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
 	XCrossingEvent xEvent = new XCrossingEvent ();
@@ -1131,8 +1117,10 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	*/
 //	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
 //	parent.XPointerMotion (w, client_data, call_data, continue_to_dispatch);
-	parent.sendMouseEvent (SWT.MouseMove, xEvent);
-
+	if (!parent.sendMouseEvent (SWT.MouseMove, xEvent)) {
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+		return 1;
+	}
 	return 0;
 }
 }

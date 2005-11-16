@@ -465,33 +465,33 @@ public int getWidth () {
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
-	GdkEventButton gdkEvent = new GdkEventButton();
-	OS.memmove(gdkEvent, event, GdkEventButton.sizeof);
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	double x = gdkEvent.x;
-	gdkEvent.x += OS.GTK_WIDGET_X(handle);
+	gdkEvent.x += OS.GTK_WIDGET_X (handle);
 	double y = gdkEvent.y;
-	gdkEvent.y += OS.GTK_WIDGET_Y(handle);
-	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
-	parent.gtk_button_press_event (widget, event);
+	gdkEvent.y += OS.GTK_WIDGET_Y (handle);
+	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+	int /*long*/ result = parent.gtk_button_press_event (widget, event);
 	gdkEvent.x = x;
 	gdkEvent.y = y;
-	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
-	return 0;
+	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+	return result;
 }
 
 int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
-	GdkEventButton gdkEvent = new GdkEventButton();
-	OS.memmove(gdkEvent, event, GdkEventButton.sizeof);
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	double x = gdkEvent.x;
-	gdkEvent.x += OS.GTK_WIDGET_X(handle);
+	gdkEvent.x += OS.GTK_WIDGET_X (handle);
 	double y = gdkEvent.y;
-	gdkEvent.y += OS.GTK_WIDGET_Y(handle);
-	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
-	parent.gtk_button_release_event (widget, event);
+	gdkEvent.y += OS.GTK_WIDGET_Y (handle);
+	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+	int /*long*/ result = parent.gtk_button_release_event (widget, event);
 	gdkEvent.x = x;
 	gdkEvent.y = y;
 	OS.memmove(event, gdkEvent, GdkEventButton.sizeof);
-	return 0;
+	return result;
 }
 
 int /*long*/ gtk_clicked (int /*long*/ widget) {

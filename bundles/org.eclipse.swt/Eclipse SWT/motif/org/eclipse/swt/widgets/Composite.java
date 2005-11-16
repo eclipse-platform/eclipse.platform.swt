@@ -1121,6 +1121,7 @@ void updateLayout (boolean all) {
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
 
 	/* Set focus for a canvas with no children */
 	if ((state & CANVAS) != 0) {

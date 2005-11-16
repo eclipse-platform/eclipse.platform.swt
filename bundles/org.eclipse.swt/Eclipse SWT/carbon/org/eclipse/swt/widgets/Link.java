@@ -277,6 +277,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	int [] clickCount = new int [1];
@@ -387,6 +388,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseMoved (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	int x, y;
 	if (OS.HIVIEW) {
 		CGPoint pt = new CGPoint ();
@@ -423,6 +425,7 @@ int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseUp (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	if (focusIndex == -1) return result;
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);

@@ -1057,11 +1057,7 @@ void dragDetect (Control control) {
 			}
 			x -= rect.left;
 			y -= rect.top;
-			Event event = new Event ();
-			event.x = x;
-			event.y = y;
-			//control.postEvent (SWT.DragDetect, event);
-			control.sendEvent (SWT.DragDetect, event);
+			control.sendDragEvent (x, y);
 			dragMouseStart = null;
 		}
 	}
@@ -2770,13 +2766,12 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 int mouseHoverProc (int id, int handle) {
 	mouseHoverID = 0;
 	mouseMoved = false;
-	if (currentControl == null) return 0;
-	if (!currentControl.isDisposed ()) {
+	if (currentControl != null && !currentControl.isDisposed ()) {
 		//OPTIMIZE - use OS calls
 		int chord = OS.GetCurrentEventButtonState ();
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
 		Point pt = currentControl.toControl (getCursorLocation ());
-		currentControl.sendMouseEvent (SWT.MouseHover, (short)0, chord, (short)pt.x, (short)pt.y, modifiers, true);
+		currentControl.sendMouseEvent (SWT.MouseHover, (short)0, true, chord, (short)pt.x, (short)pt.y, modifiers);
 	}
 	return 0;
 }
@@ -3184,7 +3179,7 @@ boolean runEnterExit () {
 			int chord = OS.GetCurrentEventButtonState ();
 			int modifiers = OS.GetCurrentEventKeyModifiers ();
 			Point pt = currentControl.toControl (where.h, where.v);
-			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers, true);
+			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, true, chord, (short)pt.x, (short)pt.y, modifiers);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			mouseHoverID = 0;
 			mouseMoved = false;
@@ -3196,7 +3191,7 @@ boolean runEnterExit () {
 			int chord = OS.GetCurrentEventButtonState ();
 			int modifiers = OS.GetCurrentEventKeyModifiers ();
 			Point pt = currentControl.toControl (where.h, where.v);
-			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)pt.x, (short)pt.y, modifiers, true);
+			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, true, chord, (short)pt.x, (short)pt.y, modifiers);
 		}
 	}
 	if (control != null && mouseMoved) {
@@ -3349,7 +3344,7 @@ boolean runGrabs () {
 					if (type == SWT.MouseUp) {
 						mouseUpControl = grabControl;
 					} else {
-						grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0], true);
+						grabControl.sendMouseEvent (type, (short)button, true, chord, (short)x, (short)y, outModifiers [0]);
 					}
 				}
 			}

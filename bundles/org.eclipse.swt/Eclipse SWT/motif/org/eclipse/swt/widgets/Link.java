@@ -486,6 +486,7 @@ int traversalCode (int key, XKeyEvent event) {
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	if (xEvent.button == 1) {
@@ -518,7 +519,8 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	return result;
 }
 int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
-	int result = super.XButtonRelease(w, client_data, call_data, continue_to_dispatch);
+	int result = super.XButtonRelease (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
 	if (focusIndex == -1) return result;
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
@@ -629,6 +631,7 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 }
 int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XPointerMotion (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, call_data, XMotionEvent.sizeof);
 	if ((xEvent.state & OS.Button1Mask) != 0) {

@@ -1480,17 +1480,11 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	int [] clickCount = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-	sendMouseEvent (SWT.MouseDown, button [0], 0, 0, false, theEvent);
-	if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, false, theEvent);
-	if ((state & GRAB) != 0) display.grabControl = this;
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
+	int result = sendMouseEvent (SWT.MouseDown, button [0], 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	if (isDisposed ()) return OS.noErr;
+	if (clickCount [0] == 2) {
+		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+		if (isDisposed ()) return OS.noErr;
 	}
 	if (hooks (SWT.DragDetect)) {
 		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
@@ -1499,27 +1493,35 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		display.dragMouseStart = pt;
 		display.dragging = false;
 	}
-	return OS.eventNotHandledErr;
+	if ((state & GRAB) != 0) display.grabControl = this;
+	if (!shell.isDisposed ()) shell.setActiveControl (this);
+	return result;
 }
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if ((state & CANVAS) == 0) {
-		if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent);
-		display.dragDetect (this);
+		if (isEnabledModal ()) {
+			int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+			if (isDisposed ()) return OS.noErr;
+			display.dragDetect (this);
+			if (isDisposed ()) return OS.noErr;
+			return result;
+		}
 	}
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent);
+	if (isEnabledModal ()) {
+		return sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	}
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	sendMouseEvent (SWT.MouseUp, button [0], 0, 0, false, theEvent);
-	return OS.eventNotHandledErr;
+	return sendMouseEvent (SWT.MouseUp, button [0], 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 }
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
@@ -1534,9 +1536,7 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 		if (!control.sendMouseEvent (SWT.MouseWheel, (short) 0, wheelDelta [0], SWT.SCROLL_LINE, true, theEvent)) {
 			break;
 		}
-		if (control.sendMouseWheel (wheelAxis [0], wheelDelta [0])) {
-			break;
-		}
+		if (control.sendMouseWheel (wheelAxis [0], wheelDelta [0])) break;
 		if (control == this) {
 			/*
 			* Feature in the Macintosh.  For some reason, the kEventMouseWheelMoved
@@ -1545,7 +1545,7 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 			* in the handler chain.
 			*/
 			state |= IGNORE_WHEEL;
-			int result = OS.CallNextEventHandler(nextHandler, theEvent);
+			int result = OS.CallNextEventHandler (nextHandler, theEvent);
 			state &= ~IGNORE_WHEEL;
 			if (result == OS.noErr) break;
 		}
@@ -2019,6 +2019,15 @@ void resetVisibleRegion (int control) {
 	}
 }
 
+boolean sendDragEvent (int x, int y) {
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.DragDetect, event);
+	if (isDisposed ()) return false;
+	return event.doit;
+}
+
 void sendFocusEvent (int type, boolean post) {
 	Display display = this.display;
 	Shell shell = getShell ();
@@ -2083,15 +2092,16 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	return sendMouseEvent (type, button, count, detail, chord [0], (short) x, (short) y, modifiers [0], send);
+	return sendMouseEvent (type, button, count, detail, send, chord [0], (short) x, (short) y, modifiers [0]);
 }
 
-boolean sendMouseEvent (int type, short button, int chord, short x, short y, int modifiers, boolean send) {
+boolean sendMouseEvent (int type, short button, boolean send, int chord, short x, short y, int modifiers) {
 	if (!hooks (type) && !filters (type)) return true;
-	return sendMouseEvent (type, button, 0, 0, chord, x, y, modifiers, send);
+	return sendMouseEvent (type, button, 0, 0, send, chord, x, y, modifiers);
 }
 
-boolean sendMouseEvent (int type, short button, int count, int detail, int chord, short x, short y, int modifiers, boolean send) {
+boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
+//	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	switch (button) {
 		case 1: event.button = 1; break;
@@ -2105,8 +2115,14 @@ boolean sendMouseEvent (int type, short button, int count, int detail, int chord
 	event.count = count;
 	event.detail = detail;
 	setInputState (event, type, chord, modifiers);
-	sendEvent (type, event, send);
-	return event.doit;
+	if (send) {
+		sendEvent (type, event);
+		if (isDisposed ()) return false;
+	} else {
+		postEvent (type, event);
+	}
+//	return event.doit;
+	return true;
 }
 
 boolean sendMouseWheel (short wheelAxis, int wheelDelta) {

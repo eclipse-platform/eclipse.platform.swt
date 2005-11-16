@@ -1718,6 +1718,14 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
 }
+boolean sendDragEvent (int x, int y) {
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.DragDetect, event);
+	if (isDisposed ()) return false;
+	return event.doit;
+}
 void sendHelpEvent (int callData) {
 	Control control = this;
 	while (control != null) {
@@ -1733,9 +1741,10 @@ boolean sendMouseEvent (int type) {
 	int xDisplay = OS.XtDisplay (handle), xWindow = OS.XtWindow (handle);
 	int [] windowX = new int [1], windowY = new int [1], mask = new int [1], unused = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, windowX, windowY, mask);
-	return sendMouseEvent (type, 0, 0, 0, false, 0, windowX [0], windowY [0], mask [0]);
+	return sendMouseEvent (type, 0, 0, 0, true, 0, windowX [0], windowY [0], mask [0]);
 }
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, int x, int y, int state) {
+//	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	event.time = time;
 	event.button = button;
@@ -1750,22 +1759,37 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	} else {
 		postEvent (type, event);
 	}
-	return event.doit;
+//	return event.doit;
+	return true;
 }
 boolean sendMouseEvent (int type, XButtonEvent xEvent) {
+	if (!hooks (type) && !filters (type)) return true;
 	int count = 0, detail = 0, button = xEvent.button;
-	boolean send = false;
+	short [] x_root = new short [1], y_root = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
 	switch (button) {
 		case 4:
 		case 5:
 			/* Use MouseDown button 4 and 5 to emulated MouseWheel */
 			if (type != SWT.MouseDown) return false;
+			count = button == 4 ? 3 : -3;
 			detail = SWT.SCROLL_LINE;
-			count = button == 4 ? 3 : - 3;
 			type = SWT.MouseWheel;
 			button = 0;
-			send = true;
-			break;
+			Control control = this;
+			Shell shell = getShell ();
+			do {
+				if (!control.sendMouseEvent (type, button, count, detail, true, xEvent.time, x, y, xEvent.state)) {
+					return false;
+				}
+				if (control == shell) break;
+				control = control.parent;
+				OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, x_root, y_root);
+				x = xEvent.x_root - x_root [0];
+				y = xEvent.y_root - y_root [0];			
+			} while (control != null);
+			return true;
 		case 6:
 			button = 4;
 			break;
@@ -1773,41 +1797,21 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 			button = 5;
 			break;
 	}
-	if (!hooks (type) && !filters (type)) return true;
-	short [] x_root = new short [1], y_root = new short [1];
-	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
-	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	if (type == SWT.MouseWheel) {
-		Control control = this;
-		Shell shell = getShell ();
-		do {
-			if (!control.sendMouseEvent (type, button, count, detail, send, xEvent.time, x, y, xEvent.state)) {
-				return false;
-			}
-			if (control == shell) break;
-			control = control.parent;
-			OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, x_root, y_root);
-			x = xEvent.x_root - x_root [0];
-			y = xEvent.y_root - y_root [0];			
-		} while (control != null);
-	} else {
-		sendMouseEvent (type, button, count, detail, send, xEvent.time, x, y, xEvent.state);
-	}
-	return true;	
+	return sendMouseEvent (type, button, count, detail, true, xEvent.time, x, y, xEvent.state);
 }
 boolean sendMouseEvent (int type, XCrossingEvent xEvent) {
 	if (!hooks (type) && !filters (type)) return true;
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
+	return sendMouseEvent (type, 0, 0, 0, true, xEvent.time, x, y, xEvent.state);
 }
 boolean sendMouseEvent (int type, XMotionEvent xEvent) {
 	if (!hooks (type) && !filters (type)) return true;
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
+	return sendMouseEvent (type, 0, 0, 0, true, xEvent.time, x, y, xEvent.state);
 }
 /**
  * Sets the receiver's background color to the color specified
@@ -2894,44 +2898,38 @@ void updateLayout (boolean all) {
 	/* Do nothing */
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Display display = this.display;
+	display.hideToolTip ();
 	Shell shell = getShell ();
 	if ((shell.style & SWT.ON_TOP) != 0) shell.forceActive ();
-	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	if (!sendMouseEvent (SWT.MouseDown, xEvent)) {
-		OS.memmove (continue_to_dispatch, new int [1], 4);
-		return 1;
-	}
+	boolean dispatch = sendMouseEvent (SWT.MouseDown, xEvent);
+	if (isDisposed ()) return 1;
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
-		Event event = new Event ();
-		event.x = xEvent.x;
-		event.y = xEvent.y;
-		postEvent (SWT.DragDetect, event);
+		sendDragEvent (xEvent.x, xEvent.y);
+		if (isDisposed ()) return 1;
 	}
 	if (xEvent.button == 3) {
 		if (menu != null || hooks (SWT.MenuDetect)) {
 			if (!isFocusControl ()) setFocus ();
 		}
 		showMenu (xEvent.x_root, xEvent.y_root);
+		if (isDisposed ()) return 1;
 	}
 	int clickTime = display.getDoubleClickTime ();
 	int lastTime = display.lastTime, eventTime = xEvent.time;
 	int lastButton = display.lastButton, eventButton = xEvent.button;
 	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-		sendMouseEvent (SWT.MouseDoubleClick, xEvent);
+		dispatch = sendMouseEvent (SWT.MouseDoubleClick, xEvent);
+		// widget could be disposed at this point
 	}
 	display.lastTime = eventTime == 0 ? 1 : eventTime;
 	display.lastButton = eventButton;
-	
-	/* 
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
+	if (!shell.isDisposed ()) shell.setActiveControl (this);
+	if (!dispatch) {
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+		return 1;
 	}
 	return 0;
 }
@@ -2951,7 +2949,10 @@ int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatc
 	if (xEvent.mode != OS.NotifyNormal && xEvent.mode != OS.NotifyUngrab) return 0;
 	if ((xEvent.state & (OS.Button1Mask | OS.Button2Mask | OS.Button3Mask)) != 0) return 0;
 	if (xEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseEnter, xEvent);
+	if (!sendMouseEvent (SWT.MouseEnter, xEvent)) {
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+		return 1;
+	}
 	return 0;
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
@@ -3124,7 +3125,10 @@ int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatc
 	if (xEvent.mode != OS.NotifyNormal && xEvent.mode != OS.NotifyUngrab) return 0;
 	if ((xEvent.state & (OS.Button1Mask | OS.Button2Mask | OS.Button3Mask)) != 0) return 0;
 	if (xEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseExit, xEvent);
+	if (!sendMouseEvent (SWT.MouseExit, xEvent)) {
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+		return 1;
+	}
 	return 0;
 }
 int XmNhelpCallback (int w, int client_data, int call_data) {
@@ -3135,7 +3139,10 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	display.addMouseHoverTimeOut (handle);
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, call_data, XMotionEvent.sizeof);
-	sendMouseEvent (SWT.MouseMove, xEvent);
+	if (!sendMouseEvent (SWT.MouseMove, xEvent)) {
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+		return 1;
+	}
 	return 0;
 }
 }

@@ -2181,7 +2181,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 		int chord = OS.GetCurrentEventButtonState ();
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
-		sendMouseEvent (SWT.MouseUp, button [0], chord, (short)x, (short)y, modifiers, false);
+		sendMouseEvent (SWT.MouseUp, button [0], true, chord, (short)x, (short)y, modifiers);
 	}
 	wasSelected = wasExpanded = false;
 	return result;

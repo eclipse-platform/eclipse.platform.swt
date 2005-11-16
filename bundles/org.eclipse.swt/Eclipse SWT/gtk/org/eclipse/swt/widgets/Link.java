@@ -271,6 +271,7 @@ public String getText () {
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_button_press_event (widget, event);	
+	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.button == 1 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
@@ -308,6 +309,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_button_release_event (widget, event);
+	if (result != 0) return result;
 	if (focusIndex == -1) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -412,6 +414,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_motion_notify_event (widget, event);
+	if (result != 0) return result;
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
 	int x = (int) gdkEvent.x;

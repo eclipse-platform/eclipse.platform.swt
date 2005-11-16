@@ -513,6 +513,7 @@ public Control [] getTabList () {
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_button_press_event (widget, event);
+	if (result != 0) return result;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 			GdkEventButton gdkEvent = new GdkEventButton ();
