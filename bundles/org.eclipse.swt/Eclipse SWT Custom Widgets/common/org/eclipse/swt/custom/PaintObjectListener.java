@@ -26,8 +26,11 @@ public interface PaintObjectListener extends SWTEventListener {
  * <li>event.style the style (input)</li>
  * </ul>
  *
- * @param event the given event
+ * @param event the event
+ * 
  * @see PaintObjectEvent
+ * @see StyledText#addPaintObjectListener(PaintObjectListener)
+ * 
  * @since 3.2
  */
 public void paintObject(PaintObjectEvent event);

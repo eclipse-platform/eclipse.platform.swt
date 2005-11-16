@@ -34,6 +34,12 @@ public class LineStyleEvent extends TypedEvent {
 	
 	/**
 	 * line styles (output)
+	 * 
+	 * Note: Because a StyleRange includes the start and length, the
+	 * same instance cannot occur multiple times in the array of styles.
+	 * If the same style attributes, such as font and color, occur in
+	 * multiple StyleRanges, <code>ranges</code> can be used to share
+	 * styles and reduce memory usage.
 	 */
 	public StyleRange[] styles;
 

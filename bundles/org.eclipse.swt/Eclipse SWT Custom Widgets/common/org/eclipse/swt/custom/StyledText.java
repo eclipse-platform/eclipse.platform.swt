@@ -1232,74 +1232,6 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
 	addListener(ExtendedModify, typedListener);
 }
 /**
- * Sets the default alignment of the receiver
- * <p>
- * 
- * @param alignment alignment 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @see #setLineAlignment(int, int, int) 
- * @since 3.2
- */
-public void setAlignment(int alignment) {
-	checkWidget();
-	alignment &= (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	if (alignment == 0 || this.alignment == alignment);	
-	this.alignment = alignment;
-	resetCache(0, content.getLineCount());
-	setCaretLocation();
-	super.redraw();
-}
-/** 
- * Maps a key to an action.
- * One action can be associated with N keys. However, each key can only 
- * have one action (key:action is N:1 relation).
- * <p>
- *
- * @param key a key code defined in SWT.java or a character. 
- * 	Optionally ORd with a state mask.  Preferred state masks are one or more of
- *  SWT.MOD1, SWT.MOD2, SWT.MOD3, since these masks account for modifier platform 
- *  differences.  However, there may be cases where using the specific state masks
- *  (i.e., SWT.CTRL, SWT.SHIFT, SWT.ALT, SWT.COMMAND) makes sense.
- * @param action one of the predefined actions defined in ST.java. 
- * 	Use SWT.NULL to remove a key binding.
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setKeyBinding(int key, int action) {
-	checkWidget();
-	int modifierValue = key & SWT.MODIFIER_MASK;
-	char keyChar = (char)(key & SWT.KEY_MASK);
-	if (Compatibility.isLetter(keyChar)) {
-		// make the keybinding case insensitive by adding it
-		// in its upper and lower case form
-		char ch = Character.toUpperCase(keyChar);
-		int newKey = ch | modifierValue;
-		if (action == SWT.NULL) {
-			keyActionMap.remove(new Integer(newKey));
-		} else {
-		 	keyActionMap.put(new Integer(newKey), new Integer(action));
-		}
-		ch = Character.toLowerCase(keyChar);
-		newKey = ch | modifierValue;
-		if (action == SWT.NULL) {
-			keyActionMap.remove(new Integer(newKey));
-		} else {
-		 	keyActionMap.put(new Integer(newKey), new Integer(action));
-		}
-	} else {
-		if (action == SWT.NULL) {
-			keyActionMap.remove(new Integer(key));
-		} else {
-		 	keyActionMap.put(new Integer(key), new Integer(action));
-		}
-	}		
-}
-/**
  * Adds a bidirectional segment listener. A BidiSegmentEvent is sent 
  * whenever a line of text is measured or rendered. The user can 
  * specify text ranges in the line that should be treated as if they 
@@ -1404,7 +1336,11 @@ public void addModifyListener(ModifyListener modifyListener) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
+ * 
  * @since 3.2
+ * 
+ * @see PaintObjectListener
+ * @sse PaintObjectEvent
  */
 public void addPaintObjectListener(PaintObjectListener listener) {
 	checkWidget();
@@ -1795,15 +1731,18 @@ public void copy(int clipboardType) {
 	}
 }
 /**
- * Returns the default alignment of the receiver
+ * Returns the alignment of the widget.
  * <p>
  * 
  * @return the alignment
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul> 
+ * </ul>
+ *  
  * @see #getLineAlignment(int)
+ * 
  * @since 3.2
  */
 public int getAlignment() {
@@ -3000,14 +2939,18 @@ public Color getBackground() {
 	return background;
 }
 /**
- * Returns the baseline, in pixels. 
- * 
+ * Returns the baseline, in pixels.
+ *  
+ * Note: this API should not be used if a StyleRange attribute causes lines to 
+ * have different heights (i.e. different fonts, rise, etc). 
+ *
  * @return baseline the baseline
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @since 3.0
+ * 
  * @see #getBaseline(int)
  */
 public int getBaseline() {
@@ -3015,17 +2958,20 @@ public int getBaseline() {
 	return renderer.getBaseline();
 }
 /**
- * Returns the baseline at the offset, in pixels. 
+ * Returns the baseline at the given offset, in pixels. 
  *
  * @param offset the offset
+ * 
  * @return baseline the baseline
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (< 0 or > getCharCount())</li> 
- * </ul> 
+ * </ul>
+ *  
  * @since 3.2
  */
 public int getBaseline(int offset) {
@@ -3231,15 +3177,18 @@ public int getHorizontalPixel() {
 	return horizontalScrollOffset;
 }
 /**
- * Returns the default indent of the receiver
+ * Returns the line indentation of the widget.
  * <p>
  * 
- * @return the line indent
+ * @return the line indentation
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *  
  * @see #getLineIndent(int)
+ * 
  * @since 3.2
  */
 public int getIndent() {
@@ -3247,9 +3196,17 @@ public int getIndent() {
 	return indent;
 }
 /**
- * Returns the default justify of the receiver
+ * Returns whether the widget justify lines.
+ * <p>
  * 
- * @return justify
+ * @return whether lines are justified
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *  
+ * @see #getLineJustify(int)
  * 
  * @since 3.2
  */
@@ -3298,6 +3255,7 @@ public int getCharCount() {
  * <p>
  * 
  * @param index the index of the line
+ * 
  * @return the line alignment
  * 
  * @exception SWTException <ul>
@@ -3307,7 +3265,9 @@ public int getCharCount() {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
  * </ul>
+ * 
  * @see #getAlignment()
+ * 
  * @since 3.2
  */
 public int getLineAlignment(int index) {
@@ -3370,6 +3330,7 @@ public Color getLineBackground(int index) {
  * <p>
  * 
  * @param index the index of the line
+ * 
  * @return the line bullet
  * 
  * @exception SWTException <ul>
@@ -3379,6 +3340,7 @@ public Color getLineBackground(int index) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
  * </ul>
+ * 
  * @since 3.2
  */
 Bullet getLineBullet(int index) {
@@ -3448,6 +3410,8 @@ public String getLineDelimiter() {
 /**
  * Returns the line height.
  * <p>
+ * Note: this API should not be used if a StyleRange attribute causes lines to 
+ * have different heights (i.e. different fonts, rise, etc). 
  *
  * @return line height in pixel.
  * @exception SWTException <ul>
@@ -3461,11 +3425,12 @@ public int getLineHeight() {
 	return renderer.getLineHeight();
 }
 /**
- * Returns the line height at the given offset
- * <p>
+ * Returns the line height at the given offset.
  *
- * @param offset the offset 
- * @return line height in pixel.
+ * @param offset the offset
+ *  
+ * @return line height in pixels
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3473,6 +3438,7 @@ public int getLineHeight() {
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_INVALID_RANGE when the offset is outside the valid range (< 0 or > getCharCount())</li> 
  * </ul> 
+ * 
  * @since 3.2
  */
 public int getLineHeight(int offset) {
@@ -3489,11 +3455,12 @@ public int getLineHeight(int offset) {
 	return height;
 }
 /**
- * Returns the indent of the line at the given index.
+ * Returns the indentation of the line at the given index.
  * <p>
  * 
  * @param index the index of the line
- * @return the line indent
+ * 
+ * @return the line indentation
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3502,7 +3469,9 @@ public int getLineHeight(int offset) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
  * </ul>
+ * 
  * @see #getIndent()
+ * 
  * @since 3.2
  */
 public int getLineIndent(int index) {
@@ -3513,11 +3482,12 @@ public int getLineIndent(int index) {
 	return isListening(LineGetStyle) ? 0 : renderer.getLineIndent(index, indent);
 }
 /**
- * Returns the justify of the line at the given index.
+ * Returns wheter the line at the given index is justified.
  * <p>
  * 
  * @param index the index of the line
- * @return the line justify
+ * 
+ * @return whether the line is justified 
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3526,7 +3496,9 @@ public int getLineIndent(int index) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT when the index is invalid</li>
  * </ul>
+ * 
  * @see #getJustify()
+ * 
  * @since 3.2
  */
 public boolean getLineJustify(int index) {
@@ -3537,14 +3509,16 @@ public boolean getLineJustify(int index) {
 	return isListening(LineGetStyle) ? false : renderer.getLineJustify(index, justify);	
 }
 /**
- * Returns the line spacing of the receiver
+ * Returns the line spacing of the widget.
  * <p>
  * 
- * @return the line spacing 
+ * @return the line spacing
+ *  
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
  * @since 3.2
  */
 public int getLineSpacing() {
@@ -3862,10 +3836,15 @@ String getPlatformDelimitedText(TextWriter writer) {
 	return writer.toString();
 }
 /**
- * Returns the ranges.
+ * Returns the ranges of text that have an associated StyleRange.
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
+ * <p>
+ * The ranges array contains start and length pairs.  Each pair refers to
+ * the corresponding style in the styles array.  For example, the pair
+ * that starts at ranges[n] with length ranges[n+1] uses the style
+ * at styles[n/2] returned by <code>getStyleRanges(int, int, boolean)</code>.
  * <p>
  *
  * @param start the start offset of the style ranges to return
@@ -3879,6 +3858,8 @@ String getPlatformDelimitedText(TextWriter writer) {
  * </ul>
  * 
  * @since 3.2
+ * 
+ * @see #getStyleRanges(int, int, boolean)
  */
 public int[] getRanges(int start, int length) {
 	checkWidget();
@@ -4157,17 +4138,25 @@ public StyleRange getStyleRangeAtOffset(int offset) {
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * <p>
+ * Note: Because a StyleRange includes the start and length, the
+ * same instance cannot occur multiple times in the array of styles.
+ * If the same style attributes, such as font and color, occur in
+ * multiple StyleRanges, <code>getStyleRanges(boolean)</code>
+ * can be used to get the styles without the ranges.
+ * </p>
  *
  * @return the styles or an empty array if a LineStyleListener has been set.
-  *
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #getStyleRanges(boolean)
  */
 public StyleRange[] getStyleRanges() {
 	checkWidget();
-	return getStyleRanges(0, content.getCharCount (), true);
+	return getStyleRanges(0, content.getCharCount(), true);
 }
 /**
  * Returns the styles.
@@ -4175,8 +4164,15 @@ public StyleRange[] getStyleRanges() {
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * <p>
- *
- * @param includeRanges 
+ * Note: When <code>includeRanges</code> is true, the start and length
+ * fields of each StyleRange will be valid, however the StyleRange
+ * objects may need to be cloned. When <code>includeRanges</code> is
+ * false, <code>getRanges(int, int)</code> can be used to get the
+ * associated ranges.
+ * </p>
+ * 
+ * @param includeRanges whether the start and length field of the StyleRanges should be set.
+ * 
  * @return the styles or an empty array if a LineStyleListener has been set.
  * 
  * @exception SWTException <ul>
@@ -4185,17 +4181,26 @@ public StyleRange[] getStyleRanges() {
  * </ul>
  * 
  * @since 3.2
+ * 
+ * @see #getRanges(int, int)
+ * @see #setStyleRanges(int[], StyleRange[])
  */
 public StyleRange[] getStyleRanges(boolean includeRanges) {
 	checkWidget();
-	return getStyleRanges(0, content.getCharCount (), includeRanges);
+	return getStyleRanges(0, content.getCharCount(), includeRanges);
 }
 /**
  * Returns the styles for the given text range.
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
- * 
+ * <p>
+ * Note: Because the StyleRange includes the start and length, the
+ * same instance cannot occur multiple times in the array of styles.
+ * If the same style attributes, such as font and color, occur in
+ * multiple StyleRanges, <code>getStyleRanges(int, int, boolean)</code>
+ * can be used to get the styles without the ranges.
+ * </p>
  * @param start the start offset of the style ranges to return
  * @param length the number of style ranges to return
  *
@@ -4212,6 +4217,8 @@ public StyleRange[] getStyleRanges(boolean includeRanges) {
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_INVALID_RANGE when start and/or end are outside the widget content</li> 
  * </ul>
+ * 
+ * @see #getStyleRanges(int, int, boolean)
  * 
  * @since 3.0
  */
@@ -4224,10 +4231,17 @@ public StyleRange[] getStyleRanges(int start, int length) {
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
+ * <p>
+ * Note: When <code>includeRanges</code> is true, the start and length
+ * fields of each StyleRange will be valid, however the StyleRange
+ * objects may need to be cloned. When <code>includeRanges</code> is
+ * false, <code>getRanges(int, int)</code> can be used to get the
+ * associated ranges.
+ * </p>
  * 
  * @param start the start offset of the style ranges to return
  * @param length the number of style ranges to return
- * @param includeRanges
+ * @param includeRanges whether the start and length field of the StyleRanges should be set.
  *
  * @return the styles or an empty array if a LineStyleListener has 
  *  been set.  The returned styles will reflect the given range.  The first 
@@ -4244,6 +4258,9 @@ public StyleRange[] getStyleRanges(int start, int length) {
  * </ul>
  * 
  * @since 3.2
+ * 
+ * @see #getRanges(int, int)
+ * @see #setStyleRanges(int[], StyleRange[])
  */
 public StyleRange[] getStyleRanges(int start, int length, boolean includeRanges) {
 	checkWidget();
@@ -6100,6 +6117,13 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
  * effectively deletes the styles in the given range and then adds the
  * the new styles. 
  * <p>
+ * Note: Because a StyleRange includes the start and length, the
+ * same instance cannot occur multiple times in the array of styles.
+ * If the same style attributes, such as font and color, occur in
+ * multiple StyleRanges, <code>setStyleRanges(int, int, int[], StyleRange[])</code>
+ * can be used to share styles and reduce memory usage.
+ * </p>
+ * <p>
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * </p>
@@ -6118,7 +6142,10 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
  *   <li>ERROR_INVALID_RANGE when either start or end is outside the valid range (0 <= offset <= getCharCount())</li> 
  *   <li>ERROR_NULL_ARGUMENT when ranges is null</li>
  * </ul>
+ * 
  * @since 2.0
+ * 
+ * @see #setStyleRanges(int, int, int[], StyleRange[])
  */
 public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
 	checkWidget();
@@ -6414,27 +6441,37 @@ void sendSelectionEvent() {
 	notifyListeners(SWT.Selection, event);
 }
 /**
- * Sets whether the widget wraps lines.
- * This overrides the creation style bit SWT.WRAP.
+ * Sets the alignment of the widget. The argument should be one of <code>SWT.LEFT</code>, 
+ * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>. The alignment applies for all lines.  
  * <p>
- *
- * @param wrap true=widget wraps lines, false=widget does not wrap lines
- * @since 2.0
+ * 
+ * @param alignment the new alignment
+ *  
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setLineAlignment(int, int, int)
+ *  
+ * @since 3.2
  */
-public void setWordWrap(boolean wrap) {
+public void setAlignment(int alignment) {
 	checkWidget();
-	if ((getStyle() & SWT.SINGLE) != 0) return;
-	if (wordWrap == wrap) return;
-	wordWrap = wrap;
-	setVariableLineHeight();
+	alignment &= (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	if (alignment == 0 || this.alignment == alignment);	
+	this.alignment = alignment;
 	resetCache(0, content.getLineCount());
-	horizontalScrollOffset = 0;
-	ScrollBar horizontalBar = getHorizontalBar();
-	if (horizontalBar != null) {
-		horizontalBar.setVisible(!wordWrap);
-	}
-	setScrollBars(true);
 	setCaretLocation();
+	super.redraw();
+}
+/**
+ * @see org.eclipse.swt.widgets.Control#setBackground
+ */
+public void setBackground(Color color) {
+	checkWidget();
+	background = color;
+	super.setBackground(getBackground());
 	super.redraw();
 }
 /**
@@ -6455,15 +6492,6 @@ public void setCaret(Caret caret) {
 	if (caret != null) {
 		setCaretLocation();
 	}
-}
-/**
- * @see org.eclipse.swt.widgets.Control#setBackground
- */
-public void setBackground(Color color) {
-	checkWidget();
-	background = color;
-	super.setBackground(getBackground());
-	super.redraw();
 }
 /**
  * Sets the BIDI coloring mode.  When true the BIDI text display
@@ -6800,15 +6828,20 @@ public void setHorizontalPixel(int pixel) {
 	scrollHorizontal(pixel - horizontalScrollOffset, true);
 }
 /**
- * Sets the default indent of the receiver
+ * Sets the line indentation of the widget.
+ * It is the amount of blank space, in pixels, at the beginning of each line. 
+ * When a line wraps in several lines only first one is indented. 
  * <p>
  * 
- * @param indent line indent
+ * @param indent the new indent
+ *  
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul> 
+ * </ul>
+ * 
  * @see #setLineIndent(int, int, int)
+ *  
  * @since 3.2
  */
 public void setIndent(int indent) {
@@ -6820,10 +6853,18 @@ public void setIndent(int indent) {
 	super.redraw();	
 }
 /**
- * Set the default justify of the receiver
+ * Sets whether the widget should justify lines.  
+ * <p>
  * 
- * @param justify
+ * @param justify whether lines should be justified
+ *  
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  * 
+ * @see #setLineJustify(int, int, boolean)
+ *  
  * @since 3.2
  */
 public void setJustify(boolean justify) {
@@ -6834,10 +6875,72 @@ public void setJustify(boolean justify) {
 	setCaretLocation();
 	super.redraw();	
 }
-/**
- * Sets the alignment of the specified lines.
+/** 
+ * Maps a key to an action.
+ * One action can be associated with N keys. However, each key can only 
+ * have one action (key:action is N:1 relation).
  * <p>
- *  
+ *
+ * @param key a key code defined in SWT.java or a character. 
+ * 	Optionally ORd with a state mask.  Preferred state masks are one or more of
+ *  SWT.MOD1, SWT.MOD2, SWT.MOD3, since these masks account for modifier platform 
+ *  differences.  However, there may be cases where using the specific state masks
+ *  (i.e., SWT.CTRL, SWT.SHIFT, SWT.ALT, SWT.COMMAND) makes sense.
+ * @param action one of the predefined actions defined in ST.java. 
+ * 	Use SWT.NULL to remove a key binding.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setKeyBinding(int key, int action) {
+	checkWidget();
+	int modifierValue = key & SWT.MODIFIER_MASK;
+	char keyChar = (char)(key & SWT.KEY_MASK);
+	if (Compatibility.isLetter(keyChar)) {
+		// make the keybinding case insensitive by adding it
+		// in its upper and lower case form
+		char ch = Character.toUpperCase(keyChar);
+		int newKey = ch | modifierValue;
+		if (action == SWT.NULL) {
+			keyActionMap.remove(new Integer(newKey));
+		} else {
+		 	keyActionMap.put(new Integer(newKey), new Integer(action));
+		}
+		ch = Character.toLowerCase(keyChar);
+		newKey = ch | modifierValue;
+		if (action == SWT.NULL) {
+			keyActionMap.remove(new Integer(newKey));
+		} else {
+		 	keyActionMap.put(new Integer(newKey), new Integer(action));
+		}
+	} else {
+		if (action == SWT.NULL) {
+			keyActionMap.remove(new Integer(key));
+		} else {
+		 	keyActionMap.put(new Integer(key), new Integer(action));
+		}
+	}		
+}
+/**
+ * Sets the alignment of the specified lines. The argument should be one of <code>SWT.LEFT</code>, 
+ * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>.
+ * <p>
+ * Should not be called if a LineStyleListener has been set since the listener 
+ * maintains the line attributes.
+ * <p>
+ * All line attributes are maintained relative to the line text, not the 
+ * line index that is specified in this method call.
+ * During text changes, when entire lines are inserted or removed, the line 
+ * attributes that are associated with the lines after the change 
+ * will "move" with their respective text. An entire line is defined as 
+ * extending from the first character on a line to the last and including the 
+ * line delimiter. 
+ * <p>
+ * When two lines are joined by deleting a line delimiter, the top line 
+ * attributes take precedence and the attributes of the bottom line are deleted. 
+ * For all other text changes line attributes will remain unchanged. 
+ *   
  * @param startLine first line the alignment is applied to, 0 based
  * @param lineCount number of lines the alignment applies to.
  * @param alignment line alignment
@@ -6872,21 +6975,23 @@ public void setLineAlignment(int startLine, int lineCount, int alignment) {
  * The background color is drawn for the width of the widget. All
  * line background colors are discarded when setText is called.
  * The text background color if defined in a StyleRange overlays the 
- * line background color. Should not be called if a LineBackgroundListener 
- * has been set since the listener maintains the line backgrounds.
+ * line background color. 
  * <p>
- * Line background colors are maintained relative to the line text, not the 
+ * Should not be called if a LineBackgroundListener has been set since the 
+ * listener maintains the line backgrounds.
+ * <p>
+ * All line attributes are maintained relative to the line text, not the 
  * line index that is specified in this method call.
  * During text changes, when entire lines are inserted or removed, the line 
- * background colors that are associated with the lines after the change 
+ * attributes that are associated with the lines after the change 
  * will "move" with their respective text. An entire line is defined as 
  * extending from the first character on a line to the last and including the 
  * line delimiter. 
  * </p>
  * <p>
  * When two lines are joined by deleting a line delimiter, the top line 
- * background takes precedence and the color of the bottom line is deleted. 
- * For all other text changes line background colors will remain unchanged. 
+ * attributes take precedence and the attributes of the bottom line are deleted. 
+ * For all other text changes line attributes will remain unchanged. 
  * </p>
  * 
  * @param startLine first line the color is applied to, 0 based
@@ -6916,7 +7021,21 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
 /**
  * Sets the bullet of the specified lines.
  * <p>
- *  
+ * Should not be called if a LineStyleListener has been set since the listener 
+ * maintains the line attributes.
+ * <p>
+ * All line attributes are maintained relative to the line text, not the 
+ * line index that is specified in this method call.
+ * During text changes, when entire lines are inserted or removed, the line 
+ * attributes that are associated with the lines after the change 
+ * will "move" with their respective text. An entire line is defined as 
+ * extending from the first character on a line to the last and including the 
+ * line delimiter. 
+ * <p>
+ * When two lines are joined by deleting a line delimiter, the top line 
+ * attributes take precedence and the attributes of the bottom line are deleted. 
+ * For all other text changes line attributes will remain unchanged. 
+ *
  * @param startLine first line the bullet is applied to, 0 based
  * @param lineCount number of lines the bullet applies to.
  * @param indent line indent
@@ -6953,7 +7072,21 @@ void setVariableLineHeight () {
 /**
  * Sets the indent of the specified lines.
  * <p>
- *  
+ * Should not be called if a LineStyleListener has been set since the listener 
+ * maintains the line attributes.
+ * <p>
+ * All line attributes are maintained relative to the line text, not the 
+ * line index that is specified in this method call.
+ * During text changes, when entire lines are inserted or removed, the line 
+ * attributes that are associated with the lines after the change 
+ * will "move" with their respective text. An entire line is defined as 
+ * extending from the first character on a line to the last and including the 
+ * line delimiter. 
+ * <p>
+ * When two lines are joined by deleting a line delimiter, the top line 
+ * attributes take precedence and the attributes of the bottom line are deleted. 
+ * For all other text changes line attributes will remain unchanged. 
+ *
  * @param startLine first line the indent is applied to, 0 based
  * @param lineCount number of lines the indent applies to.
  * @param indent line indent
@@ -6986,6 +7119,20 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
 /**
  * Sets the justify of the specified lines.
  * <p>
+ * Should not be called if a LineStyleListener has been set since the listener 
+ * maintains the line attributes.
+ * <p>
+ * All line attributes are maintained relative to the line text, not the 
+ * line index that is specified in this method call.
+ * During text changes, when entire lines are inserted or removed, the line 
+ * attributes that are associated with the lines after the change 
+ * will "move" with their respective text. An entire line is defined as 
+ * extending from the first character on a line to the last and including the 
+ * line delimiter. 
+ * <p>
+ * When two lines are joined by deleting a line delimiter, the top line 
+ * attributes take precedence and the attributes of the bottom line are deleted. 
+ * For all other text changes line attributes will remain unchanged. 
  *  
  * @param startLine first line the justify is applied to, 0 based
  * @param lineCount number of lines the justify applies to.
@@ -7017,10 +7164,10 @@ public void setLineJustify(int startLine, int lineCount, boolean justify) {
 	}
 }
 /**
- * Sets the line spacing of the receiver
+ * Sets the line spacing of the widget. The line spacing applies for all lines.
  * <p>
  * 
- * @param lineSpacing line spacing
+ * @param lineSpacing the line spacing
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -7373,45 +7520,95 @@ public void setStyleRange(StyleRange range) {
 		setStyleRanges(0, 0, null, null, true);
 	}
 }
-/**
- * Sets an arrays of styles in the receiver.
- * 
+/** 
+ * Clears the styles in the range specified by <code>start</code> and 
+ * <code>length</code> and adds the new styles.
+ * The ranges array contains start and length pairs.  Each pair refers to
+ * the corresponding style in the styles array.  For example, the pair
+ * that starts at ranges[n] with length ranges[n+1] uses the style
+ * at styles[n/2].  The range fields within each StyleRange is ignored.
+ * If ranges or styles is null, the specified range is cleared.
  * <p>
- * @param start
- * @param length
- * @param ranges
- * @param styles
+ * Note: It is expected that the same instance of a StyleRange will occur
+ * multiple times within the styles array, reducing memory usage.
+ * </p>
+ * <p>
+ * Should not be called if a LineStyleListener has been set since the 
+ * listener maintains the styles.
+ * </p>
+ *
+ * @param start offset of first character where styles will be deleted
+ * @param length length of the range to delete styles in
+ * @param ranges the array of ranges.  The ranges must not overlap and must be in order.
+ * @param styles the array of StyleRanges.  The range fields within the StyleRange is unused.
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when an element in the styles array is null</li>
+ *    <li>ERROR_INVALID_RANGE when the number of ranges and style do not match (ranges.length * 2 == styles.length)</li> 
+ *    <li>ERROR_INVALID_RANGE when a range is outside the valid range (> getCharCount() or less than zero)</li> 
+ *    <li>ERROR_INVALID_RANGE when a range overlaps</li> 
+ * </ul>
+ * 
  * @since 3.2 
  */
 public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles) {
 	checkWidget();
 	if (isListening(LineGetStyle)) return;
-	setStyleRanges(start, length, ranges, styles, false);
+	if (ranges == null || styles == null) {
+		setStyleRanges(start, length, null, null, false);
+	} else {
+		setStyleRanges(start, length, ranges, styles, false);
+	}
 }
-/**
- * Sets an arrays of styles in the receiver.
- * 
+/** 
+ * Sets styles to be used for rendering the widget content. All styles 
+ * in the widget will be replaced with the given set of ranges and styles.
+ * The ranges array contains start and length pairs.  Each pair refers to
+ * the corresponding style in the styles array.  For example, the pair
+ * that starts at ranges[n] with length ranges[n+1] uses the style
+ * at styles[n/2].  The range fields within each StyleRange is ignored.
+ * If either argument is null, the styles are cleared.
  * <p>
- * @param ranges
- * @param styles
+ * Note: It is expected that the same instance of a StyleRange will occur
+ * multiple times within the styles array, reducing memory usage.
+ * </p>
+ * <p>
+ * Should not be called if a LineStyleListener has been set since the 
+ * listener maintains the styles.
+ * </p>
+ *
+ * @param ranges the array of ranges.  The ranges must not overlap and must be in order.
+ * @param styles the array of StyleRanges.  The range fields within the StyleRange is unused.
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when an element in the styles array is null</li>
+ *    <li>ERROR_INVALID_RANGE when the number of ranges and style do not match (ranges.length * 2 == styles.length)</li> 
+ *    <li>ERROR_INVALID_RANGE when a range is outside the valid range (> getCharCount() or less than zero)</li> 
+ *    <li>ERROR_INVALID_RANGE when a range overlaps</li> 
+ * </ul>
+ * 
  * @since 3.2 
  */
 public void setStyleRanges(int[] ranges, StyleRange[] styles) {
 	checkWidget();
 	if (isListening(LineGetStyle)) return;
-	setStyleRanges(0, 0, ranges, styles, true);
+	if (ranges == null || styles == null) {
+		setStyleRanges(0, 0, null, null, true);
+	} else {
+		setStyleRanges(0, 0, ranges, styles, true);
+	}
 }
 void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, boolean reset) {
 	int charCount = content.getCharCount();
-	int end = start + length; // -1 TODO ?
+	int end = start + length;
 	if (start > end || start < 0) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
@@ -7502,6 +7699,13 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
  * Sets styles to be used for rendering the widget content. All styles 
  * in the widget will be replaced with the given set of styles.
  * <p>
+ * Note: Because a StyleRange includes the start and length, the
+ * same instance cannot occur multiple times in the array of styles.
+ * If the same style attributes, such as font and color, occur in
+ * multiple StyleRanges, <code>setStyleRanges(int[], StyleRange[])</code>
+ * can be used to share styles and reduce memory usage.
+ * </p>
+ * <p>
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * </p>
@@ -7517,6 +7721,8 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
  *    <li>ERROR_NULL_ARGUMENT when the list of ranges is null</li>
  *    <li>ERROR_INVALID_RANGE when the last of the style ranges is outside the valid range (> getCharCount())</li> 
  * </ul>
+ * 
+ * @see #setStyleRanges(int[], StyleRange[])
  */
 public void setStyleRanges(StyleRange[] ranges) {
 	checkWidget();
@@ -7691,6 +7897,30 @@ public void setTopPixel(int pixel) {
 		}
 	}
 	scrollVertical(pixel - getVerticalScrollOffset(), true);
+}
+/**
+ * Sets whether the widget wraps lines.
+ * This overrides the creation style bit SWT.WRAP.
+ * <p>
+ *
+ * @param wrap true=widget wraps lines, false=widget does not wrap lines
+ * @since 2.0
+ */
+public void setWordWrap(boolean wrap) {
+	checkWidget();
+	if ((getStyle() & SWT.SINGLE) != 0) return;
+	if (wordWrap == wrap) return;
+	wordWrap = wrap;
+	setVariableLineHeight();
+	resetCache(0, content.getLineCount());
+	horizontalScrollOffset = 0;
+	ScrollBar horizontalBar = getHorizontalBar();
+	if (horizontalBar != null) {
+		horizontalBar.setVisible(!wordWrap);
+	}
+	setScrollBars(true);
+	setCaretLocation();
+	super.redraw();
 }
 /**
  * Scrolls the specified location into view.
