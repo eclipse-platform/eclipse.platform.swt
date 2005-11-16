@@ -1465,7 +1465,6 @@ void calculateTopIndex(int delta) {
 		// visible but at least some of the widget client area is visible.
 		// Fixes bug 15088.
 		if (topIndex > 0) {
-			int clientAreaHeight = getClientArea().height;
 			if (clientAreaHeight > 0) {
 				int bottomPixel = getVerticalScrollOffset() + clientAreaHeight;
 				int fullLineTopPixel = topIndex * verticalIncrement;
@@ -1546,16 +1545,16 @@ static int checkStyle(int style) {
  * deleted lines.
  */
 void claimBottomFreeSpace() {
+	int clientAreaHeight = this.clientAreaHeight - topMargin - bottomMargin;
 	if (isFixedLineHeight()) {
 		int lineHeight = renderer.getLineHeight();
-		int newVerticalOffset = Math.max(0, content.getLineCount() * lineHeight - getClientArea().height);
+		int newVerticalOffset = Math.max(0, content.getLineCount() * lineHeight - clientAreaHeight);
 		if (newVerticalOffset < getVerticalScrollOffset()) {
 			// Scroll up so that empty lines below last text line are used.
 			// Fixes 1GEYJM0
 			scrollVertical(newVerticalOffset - getVerticalScrollOffset(), true);
 		}
-	} else {	
-		int clientAreaHeight = getClientArea().height;
+	} else {
 		int bottomIndex = getPartialBottomIndex();
 		int height = getLinePixel(bottomIndex + 1);
 		if (clientAreaHeight > height) {
@@ -1586,35 +1585,12 @@ void claimBottomFreeSpace() {
  * Scrolls text to the right to use new space made available by a resize.
  */
 void claimRightFreeSpace() {
-	int newHorizontalOffset = Math.max(0, renderer.getWidth() - (getClientArea().width - leftMargin - rightMargin));
+	int newHorizontalOffset = Math.max(0, renderer.getWidth() - (clientAreaWidth - leftMargin - rightMargin));
 	if (newHorizontalOffset < horizontalScrollOffset) {			
 		// item is no longer drawn past the right border of the client area
 		// align the right end of the item with the right border of the 
 		// client area (window is scrolled right).
 		scrollHorizontal(newHorizontalOffset - horizontalScrollOffset, true);					
-	}
-}
-/**
- * Clears the widget margin.
- * 
- * @param gc GC to render on
- * @param background background color to use for clearing the margin
- * @param clientArea widget client area dimensions
- */
-void clearMargin(GC gc, Color background, Rectangle clientArea, int y) {
-	// clear the margin background
-	gc.setBackground(background);
-	if (topMargin > 0) {
-		gc.fillRectangle(0, -y, clientArea.width, topMargin);
-	}
-	if (bottomMargin > 0) {
-		gc.fillRectangle(0, clientArea.height - bottomMargin - y, clientArea.width, bottomMargin);
-	}
-	if (leftMargin > 0) {
-		gc.fillRectangle(0, -y, leftMargin, clientArea.height);
-	}
-	if (rightMargin > 0) {
-		gc.fillRectangle(clientArea.width - rightMargin, -y, rightMargin, clientArea.height);
 	}
 }
 /**
@@ -1940,15 +1916,14 @@ public void cut(){
  * Otherwise, we've moved back into the widget so end autoscrolling.
  */
 void doAutoScroll(Event event) {
-	Rectangle area = getClientArea();	
-	if (event.y > area.height) {
-		doAutoScroll(SWT.DOWN, event.y - area.height);
+	if (event.y > clientAreaHeight) {
+		doAutoScroll(SWT.DOWN, event.y - clientAreaHeight);
 	} else if (event.y < 0) {
 		doAutoScroll(SWT.UP, -event.y);
 	} else if (event.x < leftMargin && !wordWrap) {
 		doAutoScroll(ST.COLUMN_PREVIOUS, leftMargin - event.x);
-	} else if (event.x > area.width - leftMargin - rightMargin && !wordWrap) {
-		doAutoScroll(ST.COLUMN_NEXT, event.x - (area.width - leftMargin - rightMargin));
+	} else if (event.x > clientAreaWidth - leftMargin - rightMargin && !wordWrap) {
+		doAutoScroll(ST.COLUMN_NEXT, event.x - (clientAreaWidth - leftMargin - rightMargin));
 	} else {
 		endAutoScroll();
 	}
@@ -2229,12 +2204,12 @@ void doLineDown(boolean select) {
 			lineIndex--;
 		}
 		Rectangle bounds = layout.getLineBounds(lineIndex); 
-		renderer.disposeTextLayout(layout);
 		lastLine = caretLine == lineCount - 1 && lineIndex == layoutLineCount - 1;
 		y += bounds.y + bounds.height;
 		if (lineIndex == layoutLineCount - 1) {
 			y += layout.getSpacing();
 		}
+		renderer.disposeTextLayout(layout);
 	} else {
 		lastLine = caretLine == content.getLineCount() - 1;
 		y += renderer.getLineHeight(caretLine);
@@ -2379,8 +2354,8 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	// Is the mouse within the left client area border or on 
 	// a different line? If not the autoscroll selection 
 	// could be incorrectly reset. Fixes 1GKM3XS
-	if (0 <= y && y < getClientArea().height && 
-		(0 <= x && x < getClientArea().width || wordWrap ||	
+	if (0 <= y && y < clientAreaHeight && 
+		(0 <= x && x < clientAreaWidth || wordWrap ||	
 		newCaretLine != content.getLineAtOffset(caretOffset))) {
 		if (newCaretOffset != caretOffset || caretAlignment != oldCaretAlignment) {
 			caretOffset = newCaretOffset;
@@ -2428,7 +2403,7 @@ int doMouseWordSelect(int x, int newCaretOffset, int line) {
 	} else if (newCaretOffset > selectionAnchor && selectionAnchor == selection.y) {
 		selectionAnchor = doubleClickSelection.x;
 	}
-	if (0 <= x && x < getClientArea().width) {
+	if (0 <= x && x < clientAreaWidth) {
 		int wordOffset;
 		// find the previous/next word
 		if (caretOffset == selection.x) {
@@ -2474,13 +2449,14 @@ void doPageDown(boolean select, int height) {
 			}
 			// scroll one page down or to the bottom
 			int verticalMaximum = lineCount * getVerticalIncrement();
-			int pageSize = getClientArea().height;
-			int scrollOffset = getVerticalScrollOffset() + scrollLines * getVerticalIncrement();
+			int pageSize = clientAreaHeight;
+			int verticalScrollOffset = getVerticalScrollOffset();
+			int scrollOffset = verticalScrollOffset + scrollLines * getVerticalIncrement();
 			if (scrollOffset + pageSize > verticalMaximum) {
 				scrollOffset = verticalMaximum - pageSize;
 			}
-			if (scrollOffset > getVerticalScrollOffset()) {
-				scrollVertical(scrollOffset - getVerticalScrollOffset(), true);
+			if (scrollOffset > verticalScrollOffset) {
+				scrollVertical(scrollOffset - verticalScrollOffset, true);
 			}
 		}
 	} else {
@@ -2610,9 +2586,10 @@ void doPageUp(boolean select, int height) {
 			if (select) {
 				doSelection(ST.COLUMN_PREVIOUS);
 			}
-			int scrollOffset = Math.max(0, getVerticalScrollOffset() - scrollLines * getVerticalIncrement());
-			if (scrollOffset < getVerticalScrollOffset()) {
-				scrollVertical(scrollOffset - getVerticalScrollOffset(), true);
+			int verticalScrollOffset = getVerticalScrollOffset();
+			int scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
+			if (scrollOffset < verticalScrollOffset) {
+				scrollVertical(scrollOffset - verticalScrollOffset, true);
 			}
 		}
 	} else {
@@ -3019,11 +2996,11 @@ int getBottomIndex() {
 		if (lineHeight != 0) {
 			// calculate the number of lines that are fully visible
 			int partialTopLineHeight = topIndex * lineHeight - getVerticalScrollOffset();
-			lineCount = (getClientArea().height - partialTopLineHeight) / lineHeight;
+			lineCount = (clientAreaHeight - partialTopLineHeight) / lineHeight;
 		}
 		bottomIndex = Math.min(content.getLineCount() - 1, topIndex + Math.max(0, lineCount - 1));
 	} else {
-		int clientAreaHeight = getClientArea().height - bottomMargin;
+		int clientAreaHeight = this.clientAreaHeight - bottomMargin;
 		bottomIndex = getLineIndex(clientAreaHeight);
 		if (bottomIndex > 0) {
 			int linePixel = getLinePixel(bottomIndex);
@@ -3387,7 +3364,7 @@ public int getLineCount() {
 int getLineCountWhole() {
 	if (isFixedLineHeight()) {
 		int lineHeight = renderer.getLineHeight();
-		return lineHeight != 0 ? getClientArea().height / lineHeight : 1;
+		return lineHeight != 0 ? clientAreaHeight / lineHeight : 1;
 	}
 	return getBottomIndex() - topIndex + 1;
 }
@@ -3694,7 +3671,7 @@ public int getOffsetAtLocation(Point point) {
 	if (point.y + getVerticalScrollOffset() < 0 || point.x + horizontalScrollOffset < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int bottomIndex = getLineIndex(getClientArea().height);
+	int bottomIndex = getLineIndex(clientAreaHeight);
 	int height = getLinePixel(bottomIndex) + renderer.getLineHeight(bottomIndex);
 	if (point.y > height) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);		
@@ -3790,10 +3767,10 @@ public int getOrientation () {
 int getPartialBottomIndex() {
 	if (isFixedLineHeight()) {
 		int lineHeight = renderer.getLineHeight();
-		int partialLineCount = Compatibility.ceil(getClientArea().height, lineHeight);
+		int partialLineCount = Compatibility.ceil(clientAreaHeight, lineHeight);
 		return Math.min(content.getLineCount(), topIndex + partialLineCount) - 1;
 	}
-	return getLineIndex(getClientArea().height - bottomMargin);
+	return getLineIndex(clientAreaHeight - bottomMargin);
 }
 /** 
  * Returns the index of the first partially visible line.
@@ -4499,7 +4476,7 @@ int getCaretLine() {
 }
 int getWrapWidth () {
 	if (wordWrap && !isSingleLine()) {
-		int width = getClientArea().width - leftMargin - rightMargin;
+		int width = clientAreaWidth - leftMargin - rightMargin;
 		return width > 0 ? width : 1;
 	}
 	return -1;
@@ -4755,66 +4732,6 @@ void installListeners() {
 		});
 	}
 }
-
-void internalRedrawRange1(int start, int length, boolean clearBackground) {
-	if (length <= 0) return;
-	int end = start + length - 1;
-	int firstLine = content.getLineAtOffset(start);
-	int lastLine = content.getLineAtOffset(end);
-	int partialBottomIndex = getPartialBottomIndex();
-	int partialTopIndex = getPartialTopIndex();
-	if (firstLine > partialBottomIndex || lastLine < partialTopIndex) {
-		return;
-	}
-	int lineOffset = content.getOffsetAtLine(firstLine);
-	if (partialTopIndex > firstLine) {
-		firstLine = partialTopIndex;
-		start = lineOffset;
-	}
-	if (partialBottomIndex < lastLine) {
-		lastLine = partialBottomIndex;
-		end = content.getOffsetAtLine(lastLine) + content.getLine(lastLine).length();
-	}
-	Rectangle clientArea = getClientArea();	
-	TextLayout firstLayout = renderer.getTextLayout(firstLine), lastLayout;
-	start = Math.min(firstLayout.getText().length() - 1, start - lineOffset);
-	if (firstLine == lastLine) {
-		end = Math.min(firstLayout.getText().length() - 1, end - lineOffset);
-		if (!wordWrap || firstLayout.getLineIndex(start) == firstLayout.getLineIndex(end)) {
-			Rectangle rect = firstLayout.getBounds(start, end);
-			rect.x += leftMargin - horizontalScrollOffset;
-			rect.y += getLinePixel(firstLine);
-			super.redraw(rect.x, rect.y, rect.width, rect.height, false);
-			return;
-		}
-		lastLayout = firstLayout;
-	} else {
-		lineOffset = content.getOffsetAtLine(lastLine);
-		lastLayout = renderer.getTextLayout(lastLine);
-		end = Math.min(lastLayout.getText().length() - 1, end - lineOffset);
-	}
-	int[] firstOffsets = firstLayout.getLineOffsets();
-	int[] lastOffsets = firstLayout == lastLayout ? firstOffsets : lastLayout.getLineOffsets();
-	Rectangle firstRect;
-	if (firstLayout.getText().length() != 0) {
-		firstRect = firstLayout.getBounds(start, firstOffsets[firstLayout.getLineIndex(start + 1)] - 1);
-	} else {
-		firstRect = firstLayout.getBounds();
-	}
-	firstRect.x += leftMargin - horizontalScrollOffset;
-	firstRect.y += getLinePixel(firstLine);
-	firstRect.width = clientArea.x + clientArea.width - firstRect.x;
-		
-	Rectangle lastRect = lastLayout.getBounds(lastOffsets[lastLayout.getLineIndex(end)], end);
-	lastRect.x += leftMargin - horizontalScrollOffset;
-	lastRect.y += getLinePixel(lastLine);
-
-	super.redraw(firstRect.x, firstRect.y, firstRect.width, firstRect.height, false);
-	super.redraw(lastRect.x, lastRect.y, lastRect.width, lastRect.height, false);
-	super.redraw(clientArea.x, firstRect.y + firstRect.height, clientArea.width, lastRect.y - (firstRect.y + firstRect.height), false);
-	// TODO - clearBackground
-
-}
 /** 
  * Redraws the specified text range.
  * <p>
@@ -4841,7 +4758,6 @@ void internalRedrawRange(int start, int length) {
 		lastLine = partialBottomIndex;
 		end = content.getOffsetAtLine(lastLine) + content.getLine(lastLine).length();
 	}
-	Rectangle clientArea = getClientArea();
 	boolean fullSelection = (getStyle() & SWT.FULL_SELECTION) != 0;
 	
 	//redraw first line from start to end
@@ -4851,14 +4767,14 @@ void internalRedrawRange(int start, int length) {
 	rect.y += getLinePixel(firstLine);
 	if (end - lineOffset >= layout.getText().length()) {
 		if (fullSelection) {
-			rect.width = clientArea.width;
+			rect.width = clientAreaWidth;
 		} else {
 			rect.width += renderer.getLineEndSpace();
 		}
 	} else {
 		if (wordWrap && fullSelection) {
 			if (layout.getLineIndex(start - lineOffset) != layout.getLineIndex(end - lineOffset)) {
-				rect.width = clientArea.width;
+				rect.width = clientAreaWidth;
 			}
 		}
 	}
@@ -4872,7 +4788,7 @@ void internalRedrawRange(int start, int length) {
 		int lastLineY = getLinePixel(lastLine);
 		if (lineCount > 2) {
 			rect.y += rect.height;
-			super.redraw(0, rect.y, clientArea.width, lastLineY - rect.y, false);
+			super.redraw(0, rect.y, clientAreaWidth, lastLineY - rect.y, false);
 		}
 
 		// redraw last line from zero to end
@@ -4883,14 +4799,14 @@ void internalRedrawRange(int start, int length) {
 		rect.y += lastLineY;
 		if (end - lineOffset >= layout.getText().length()) {
 			if (fullSelection) {
-				rect.width = clientArea.width;
+				rect.width = clientAreaWidth;
 			} else {
 				rect.width += renderer.getLineEndSpace();
 			}
 		} else {
 			if (wordWrap && fullSelection) {
 				if (0 != layout.getLineIndex(end - lineOffset)) {
-					rect.width = clientArea.width;
+					rect.width = clientAreaWidth;
 				}
 			}
 		}
@@ -5150,9 +5066,8 @@ void handleMouseUp(Event event) {
  */
 void handlePaint(Event event) {
 	if (event.width == 0 || event.height == 0) return;
-	Rectangle clientArea = getClientArea();
-	if (clientArea.width == 0 || clientArea.height == 0) return;
-	
+	if (clientAreaWidth == 0 || clientAreaHeight == 0) return;
+
 	int startLine = getLineIndex(event.y);
 	int y = getLinePixel(startLine);
 	int endY = event.y + event.height;
@@ -5161,17 +5076,30 @@ void handlePaint(Event event) {
 	Color foreground = getForeground();
 	if (endY > 0) {
 		int lineCount = isSingleLine() ? 1 : content.getLineCount();
-		int x = clientArea.x + leftMargin - horizontalScrollOffset;
+		int x = leftMargin - horizontalScrollOffset;
 		for (int i = startLine; y < endY && i < lineCount; i++) {
 			y += renderer.drawLine(i, x, y, gc, background, foreground);
 		}
 		if (y < endY) {
 			gc.setBackground(background);
-			gc.fillRectangle(0, y, clientArea.width, endY - y);
+			gc.fillRectangle(0, y, clientAreaWidth, endY - y);
 		}
 	}
-	clearMargin(gc, background, clientArea, 0);
-}	
+	// fill the margin background
+	gc.setBackground(background);
+	if (topMargin > 0) {
+		gc.fillRectangle(0, -y, clientAreaWidth, topMargin);
+	}
+	if (bottomMargin > 0) {
+		gc.fillRectangle(0, clientAreaHeight - bottomMargin - y, clientAreaWidth, bottomMargin);
+	}
+	if (leftMargin > 0) {
+		gc.fillRectangle(0, -y, leftMargin, clientAreaHeight);
+	}
+	if (rightMargin > 0) {
+		gc.fillRectangle(clientAreaWidth - rightMargin, -y, rightMargin, clientAreaHeight);
+	}
+}
 /**
  * Recalculates the scroll bars. Rewraps all lines when in word 
  * wrap mode.
@@ -5238,10 +5166,7 @@ void handleTextChanged(TextChangedEvent event) {
 	int lastLine = firstLine + lastTextChangeNewLineCount;
 	int firstLineTop = getLinePixel(firstLine);
 	int newLastLineBottom = getLinePixel(lastLine + 1);
-	if (newLastLineBottom != lastLineBottom) {
-		//TODO fails if margin != 0
-		scroll(0, newLastLineBottom, 0, lastLineBottom, clientAreaWidth, clientAreaHeight, true);
-	}
+	scrollText(lastLineBottom, newLastLineBottom);
 	super.redraw(0, firstLineTop, clientAreaWidth, newLastLineBottom - firstLineTop, false);
 	// update selection/caret location after styles have been changed.
 	// otherwise any text measuring could be incorrect
@@ -5287,10 +5212,7 @@ void handleTextChanging(TextChangingEvent event) {
 	int srcY = getLinePixel(lineIndex + event.replaceLineCount + 1);
 	int destY = getLinePixel(lineIndex + 1) + event.newLineCount * renderer.getLineHeight();
 	lastLineBottom = destY;
-	if (destY != srcY) {
-		//TODO fails if margin != 0
-		scroll(0, destY, 0, srcY, clientAreaWidth, clientAreaHeight, true);
-	}
+	scrollText(srcY, destY);
 
 	renderer.textChanging(event);
 	
@@ -5909,7 +5831,7 @@ void redrawLines(int startLine, int lineCount) {
 	startLine -= topIndex;
 	int redrawTop = getLinePixel(startLine);
 	int redrawBottom = getLinePixel(startLine + lineCount);
-	int redrawWidth = getClientArea().width - leftMargin - rightMargin; 
+	int redrawWidth = clientAreaWidth - leftMargin - rightMargin; 
 	super.redraw(leftMargin, redrawTop, redrawWidth, redrawBottom - redrawTop, true);
 }
 /** 
@@ -6298,12 +6220,11 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
  * horizontally and vertically at the same time.
  */
 void scroll(int hscroll, int vscroll) {	
-	Rectangle clientArea = getClientArea();
 	if (hscroll > 0 || vscroll > 0) {
 		int sourceX = leftMargin + hscroll;
 		int sourceY = topMargin + vscroll;
-		int scrollWidth = clientArea.width - sourceX - rightMargin;
-		int scrollHeight = clientArea.height - sourceY - bottomMargin;
+		int scrollWidth = clientAreaWidth - sourceX - rightMargin;
+		int scrollHeight = clientAreaHeight - sourceY - bottomMargin;
 		scroll(
 			leftMargin, topMargin, 						// destination x, y
 			sourceX, sourceY,							// source x, y
@@ -6324,8 +6245,8 @@ void scroll(int hscroll, int vscroll) {
 	} else {
 		int destinationX = leftMargin - hscroll;
 		int destinationY = topMargin - vscroll;
-		int scrollWidth = clientArea.width - destinationX - rightMargin;
-		int scrollHeight = clientArea.height - destinationY - bottomMargin;
+		int scrollWidth = clientAreaWidth - destinationX - rightMargin;
+		int scrollHeight = clientAreaHeight - destinationY - bottomMargin;
 		scroll(
 			destinationX, destinationY,					// destination x, y
 			leftMargin, topMargin,						// source x, y
@@ -6358,6 +6279,29 @@ void scroll(int hscroll, int vscroll) {
 	int oldColumnX = columnX;
 	setCaretLocation();
 	columnX = oldColumnX;
+}
+void scrollText(int srcY, int destY) {
+	if (srcY == destY) return;
+	int deltaY = destY - srcY;
+	int scrollWidth = clientAreaWidth - leftMargin - rightMargin, scrollHeight;
+	if (deltaY > 0) {
+		scrollHeight = clientAreaHeight - srcY - bottomMargin;
+	} else {
+		scrollHeight = clientAreaHeight - destY - bottomMargin;
+	}
+	scroll(leftMargin, destY, leftMargin, srcY, scrollWidth, scrollHeight, true);
+	if ((0 < srcY + scrollHeight) && (topMargin > srcY)) {
+		super.redraw(leftMargin, deltaY, scrollWidth, topMargin, false);
+	}
+	if ((0 < destY + scrollHeight) && (topMargin > destY)) {
+		super.redraw(leftMargin, 0, scrollWidth, topMargin, false);
+	}
+	if ((clientAreaHeight - bottomMargin < srcY + scrollHeight) && (clientAreaHeight > srcY)) {
+		super.redraw(leftMargin, clientAreaHeight - bottomMargin + deltaY, scrollWidth, bottomMargin, false);
+	}
+	if ((clientAreaHeight - bottomMargin < destY + scrollHeight) && (clientAreaHeight > destY)) {
+		super.redraw(leftMargin, clientAreaHeight - bottomMargin, scrollWidth, bottomMargin, false);
+	}
 }
 /** 
  * Selects all the text.
@@ -6764,7 +6708,6 @@ public void setForeground(Color color) {
  */
 public void setHorizontalIndex(int offset) {
 	checkWidget();
-	int clientAreaWidth = getClientArea().width;
 	if (getCharCount() == 0) {
 		return;
 	}	
@@ -6815,7 +6758,6 @@ public void setHorizontalPixel(int pixel) {
 	// offset will be checked in resize handler.
 	// don't use isVisible since width is known even if widget 
 	// is temporarily invisible
-	int clientAreaWidth = getClientArea().width;
 	if (clientAreaWidth > 0) {
 		int width = renderer.getWidth();
 		// prevent scrolling if the content fits in the client area.
@@ -7248,7 +7190,6 @@ public void setOrientation(int orientation) {
  */
 void setScrollBars(boolean vertical) {
 	int inactive = 1;
-	Rectangle clientArea = getClientArea();
 	if (vertical || !isFixedLineHeight()) {
 		ScrollBar verticalBar = getVerticalBar();
 		if (verticalBar != null) {
@@ -7256,14 +7197,14 @@ void setScrollBars(boolean vertical) {
 			// only set the real values if the scroll bar can be used 
 			// (ie. because the thumb size is less than the scroll maximum)
 			// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
-			if (clientArea.height < maximum) {
+			if (clientAreaHeight < maximum) {
 				verticalBar.setValues(
 					verticalBar.getSelection(),
 					verticalBar.getMinimum(),
 					maximum,
-					clientArea.height,				// thumb size
+					clientAreaHeight,				// thumb size
 					verticalBar.getIncrement(),
-					clientArea.height);				// page size
+					clientAreaHeight);				// page size
 			} else if (verticalBar.getThumb() != inactive || verticalBar.getMaximum() != inactive) {
 				verticalBar.setValues(
 					verticalBar.getSelection(),
@@ -7281,14 +7222,14 @@ void setScrollBars(boolean vertical) {
 		// only set the real values if the scroll bar can be used 
 		// (ie. because the thumb size is less than the scroll maximum)
 		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
-		if (clientArea.width < maximum) {
+		if (clientAreaWidth < maximum) {
 			horizontalBar.setValues(
 				horizontalBar.getSelection(),
 				horizontalBar.getMinimum(),
 				maximum,
-				clientArea.width - leftMargin - rightMargin,	// thumb size
+				clientAreaWidth - leftMargin - rightMargin,	// thumb size
 				horizontalBar.getIncrement(),
-				clientArea.width - leftMargin - rightMargin);	// page size
+				clientAreaWidth - leftMargin - rightMargin);	// page size
 		} else if (horizontalBar.getThumb() != inactive || horizontalBar.getMaximum() != inactive) {
 			horizontalBar.setValues(
 				horizontalBar.getSelection(),
@@ -7515,7 +7456,11 @@ public void setStyleRange(StyleRange range) {
 	checkWidget();
 	if (isListening(LineGetStyle)) return;
 	if (range != null) {
-		setStyleRanges(range.start, 0, null, new StyleRange[]{range}, false);
+		if (range.isUnstyled()) {
+			renderer.updateRanges(range.start, range.length, range.length);
+		} else {
+			setStyleRanges(range.start, 0, null, new StyleRange[]{range}, false);
+		}
 	} else {
 		setStyleRanges(0, 0, null, null, true);
 	}
@@ -7676,21 +7621,21 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 		int partialTopIndex = getPartialTopIndex();
 		int partialBottomIndex = getPartialBottomIndex();
 		if (!(lineStart > partialBottomIndex || lineEnd < partialTopIndex)) {
-			Rectangle rect = getClientArea();
+			int y = 0;
+			int height = clientAreaHeight;
 			if (partialTopIndex <= lineStart && lineStart <= partialBottomIndex) {
-				int lineTop = Math.max(rect.y, getLinePixel(lineStart));
-				rect.y = lineTop;
-				rect.height -= lineTop;
-			} 
+				int lineTop = Math.max(y, getLinePixel(lineStart));
+				y = lineTop;
+				height -= lineTop;
+			}
 			if (partialTopIndex <= lineEnd && lineEnd <= partialBottomIndex) {
 				int newLastLineBottom = getLinePixel(lineEnd + 1);
-				if (!isFixedLineHeight() && lastLineBottom != newLastLineBottom) {
-					//TODO fails if margin != 0
-					scroll(0, newLastLineBottom, 0, lastLineBottom, rect.width, rect.height - newLastLineBottom, true);
+				if (!isFixedLineHeight()) {
+					scrollText(lastLineBottom, newLastLineBottom);
 				}
-				rect.height = newLastLineBottom - rect.y;
+				height = newLastLineBottom - y;
 			}
-			super.redraw(rect.x, rect.y, rect.width, rect.height, false);		
+			super.redraw(0, y, clientAreaWidth, height, false);		
 		}
 	}
 	setCaretLocation();
@@ -7882,7 +7827,7 @@ public void setTopPixel(int pixel) {
 	}	
 	if (pixel < 0) pixel = 0;
 	int lineCount = content.getLineCount();
-	int height = getClientArea().height;
+	int height = clientAreaHeight;
 	if (isFixedLineHeight()) {
 		int maxTopPixel = Math.max(0, lineCount * getVerticalIncrement() - height);
 		if (pixel > maxTopPixel) pixel = maxTopPixel;
@@ -7935,11 +7880,10 @@ public void setWordWrap(boolean wrap) {
  *	not scrolled. 	
  */
 boolean showLocation(Point point) {
-	Rectangle clientArea = getClientArea();
-	int clientAreaWidth = clientArea.width - leftMargin;
+	int clientAreaWidth = this.clientAreaWidth - leftMargin;
 	int horizontalIncrement = clientAreaWidth / 4;
 	boolean scrolled = false;
-	if (clientAreaWidth != 0) {
+	if (clientAreaWidth > 0) {
 		if (point.x < leftMargin) {
 			// always make 1/4 of a page visible
 			point.x = Math.max(-horizontalScrollOffset, point.x - horizontalIncrement);	
@@ -7950,11 +7894,11 @@ boolean showLocation(Point point) {
 			scrolled = scrollHorizontal(point.x - clientAreaWidth, true);
 		}
 	}
-	if (clientArea.height != 0) {
+	if (clientAreaHeight > 0) {
 		if (point.y < topMargin) {
 			scrolled = scrollVertical(point.y - topMargin, true);
-		} else if (point.y >= clientArea.height - bottomMargin) {
-			scrolled = scrollVertical(point.y - clientArea.height + bottomMargin, true);
+		} else if (point.y >= clientAreaHeight - bottomMargin) {
+			scrolled = scrollVertical(point.y - clientAreaHeight + bottomMargin, true);
 		}
 	}
 	return scrolled;
@@ -8011,7 +7955,7 @@ public void showSelection() {
 	//TODO endPos.y should be the bottom of the line not the top
 	
 	// can the selection be fully displayed within the widget's visible width?
-	int w = getClientArea().width;
+	int w = clientAreaWidth;
 	boolean selectionFits = rightToLeft ? startPos.x - endPos.x <= w : endPos.x - startPos.x <= w;
 	if (selectionFits) {
 		// show as much of the selection as possible by first showing
