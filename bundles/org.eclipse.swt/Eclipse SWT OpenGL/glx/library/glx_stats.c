@@ -14,9 +14,10 @@
 
 #ifdef NATIVE_STATS
 
-int GLX_nativeFunctionCount = 22;
-int GLX_nativeFunctionCallCount[22];
+int GLX_nativeFunctionCount = 23;
+int GLX_nativeFunctionCallCount[23];
 char * GLX_nativeFunctionNames[] = {
+	"XVisualInfo_1sizeof",
 	"glGetIntegerv",
 	"glViewport",
 	"glXChooseVisual",

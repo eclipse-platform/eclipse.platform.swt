@@ -15,6 +15,18 @@
 
 #define GLX_NATIVE(func) Java_org_eclipse_swt_internal_opengl_glx_GLX_##func
 
+#ifndef NO_XVisualInfo_1sizeof
+JNIEXPORT jint JNICALL GLX_NATIVE(XVisualInfo_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	GLX_NATIVE_ENTER(env, that, XVisualInfo_1sizeof_FUNC);
+	rc = (jint)XVisualInfo_sizeof();
+	GLX_NATIVE_EXIT(env, that, XVisualInfo_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_glGetIntegerv
 JNIEXPORT void JNICALL GLX_NATIVE(glGetIntegerv)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)

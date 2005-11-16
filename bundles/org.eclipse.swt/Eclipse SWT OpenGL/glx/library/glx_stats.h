@@ -21,6 +21,7 @@ extern char* GLX_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	XVisualInfo_1sizeof_FUNC,
 	glGetIntegerv_FUNC,
 	glViewport_FUNC,
 	glXChooseVisual_FUNC,

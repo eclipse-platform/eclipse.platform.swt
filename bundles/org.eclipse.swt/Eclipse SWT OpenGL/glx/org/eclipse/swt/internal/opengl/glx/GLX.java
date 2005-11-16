@@ -200,6 +200,8 @@ public class GLX {
 	* GL bits 
 	*/
 	public static final int GL_VIEWPORT = 0x0BA2;
+	
+public static final native int XVisualInfo_sizeof();
 
 public static final native void glGetIntegerv(int pname, int[] params);
 public static final native void glViewport(int x, int y, int width, int height);

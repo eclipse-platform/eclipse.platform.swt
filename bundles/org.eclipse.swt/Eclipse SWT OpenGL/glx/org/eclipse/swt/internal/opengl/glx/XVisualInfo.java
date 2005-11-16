@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.opengl.glx;
 
 public class XVisualInfo {
-	public int visual;
+	public int /*long*/ visual;
 	public int visualid;
 	public int screen;
 	public int depth;
@@ -19,5 +19,5 @@ public class XVisualInfo {
 	public int red_mask, green_mask, blue_mask;
 	public int colormap_size;
 	public int bits_per_rgb;
-	public static final int sizeof = 40;
+	public static final int sizeof = GLX.XVisualInfo_sizeof();
 }
