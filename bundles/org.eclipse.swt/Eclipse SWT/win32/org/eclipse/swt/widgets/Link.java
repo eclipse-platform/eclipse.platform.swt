@@ -734,6 +734,7 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (focusIndex != -1) setFocus ();
 		int x = lParam & 0xFFFF;
@@ -771,6 +772,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (focusIndex == -1) return result;
 		int x = lParam & 0xFFFF;

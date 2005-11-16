@@ -1941,8 +1941,11 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	* when double clicking behavior is disabled by not
 	* calling the window proc.
 	*/
+	LRESULT result = null;
 	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+	if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
+		result = LRESULT.ZERO;
+	}
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	if (!doubleClick) return LRESULT.ZERO;
 		
@@ -1961,16 +1964,19 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	if (start [0] == end [0]) {
 		int length = OS.GetWindowTextLength (handle);
 		if (length == start [0]) {
-			int result = OS.SendMessage (handle, OS.EM_LINELENGTH, length, 0);
-			if (result == 0) return LRESULT.ZERO;
+			int code = OS.SendMessage (handle, OS.EM_LINELENGTH, length, 0);
+			if (code == 0) return LRESULT.ZERO;
 		}
 	}
-	return null;
+	return result;
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (!OS.IsPPC) return super.WM_LBUTTONDOWN (wParam, lParam);
-	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+	LRESULT result = null;
+	if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+		result = LRESULT.ZERO;
+	}
 	/*
 	* Note: On WinCE PPC, only attempt to recognize the gesture for
 	* a context menu when the control contains a valid menu or there
@@ -1996,9 +2002,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			return LRESULT.ONE;
 		}
 	}
-	int result = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT WM_PASTE (int wParam, int lParam) {

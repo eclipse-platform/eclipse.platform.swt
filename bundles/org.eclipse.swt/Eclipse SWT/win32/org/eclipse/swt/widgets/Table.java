@@ -2500,7 +2500,10 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	sendMouseEvent (type, button, handle, msg, wParam, lParam);
+	if (!sendMouseEvent (type, button, handle, msg, wParam, lParam)) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		return LRESULT.ZERO;
+	}
 
 	/*
 	* Force the table to have focus so that when the user
@@ -3915,7 +3918,10 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	pinfo.y = (short) (lParam >> 16);
 	int index = OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+	if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		return LRESULT.ZERO;
+	}
 	if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	
@@ -3950,6 +3956,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* mouse capture.
 	*/
 	LRESULT result = sendMouseDownEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
 
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
@@ -4203,8 +4210,9 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 	pinfo.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 3, handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
-	if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
+	if (sendMouseEvent (SWT.MouseDoubleClick, 3, handle, OS.WM_RBUTTONDBLCLK, wParam, lParam)) {
+		if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
+	}
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	return LRESULT.ZERO;
 }
@@ -4487,10 +4495,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				pt.x = (short) (pos & 0xFFFF);
 				pt.y = (short) (pos >> 16); 
 				OS.ScreenToClient (handle, pt);
-				Event event = new Event ();
-				event.x = pt.x;
-				event.y = pt.y;
-				postEvent (SWT.DragDetect, event);
+				sendDragEvent (pt.x, pt.y);
 			}
 			break;
 		}

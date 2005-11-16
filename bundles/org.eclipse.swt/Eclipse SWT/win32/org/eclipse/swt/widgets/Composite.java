@@ -964,6 +964,7 @@ LRESULT WM_GETFONT (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
 
 	/* Set focus for a canvas with no children */
 	if ((state & CANVAS) != 0) {

@@ -890,6 +890,15 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
+boolean sendDragEvent (int x, int y) {
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.DragDetect, event);
+	if (isDisposed ()) return false;
+	return event.doit;
+}
+
 void sendEvent (Event event) {
 	Display display = event.display;
 	if (!display.filterEvent (event)) {
@@ -936,7 +945,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 }
 
 boolean sendMouseEvent (int type, int button, int hwnd, int msg, int wParam, int lParam) {
-	return sendMouseEvent (type, button, 0, 0, false, hwnd, msg, wParam, lParam);
+	return sendMouseEvent (type, button, 0, 0, true, hwnd, msg, wParam, lParam);
 }
 
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int hwnd, int msg, int wParam, int lParam) {
@@ -955,7 +964,8 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	} else {
 		postEvent (type, event);
 	}
-	return event.doit;
+//	return event.doit;
+	return true;
 }
 
 /**
@@ -1665,14 +1675,19 @@ LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
 	* pairs will not see the second mouse down.  The
 	* fix is to send a mouse down event.
 	*/
+	LRESULT result = null;
 	sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 1, hwnd, OS.WM_LBUTTONDBLCLK, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+	if (sendMouseEvent (SWT.MouseDoubleClick, 1, hwnd, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDBLCLK, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
+	LRESULT result = null;
 	boolean dragging = false, mouseDown = true;
 	boolean dragDetect = hooks (SWT.DragDetect);
 	if (dragDetect) {
@@ -1693,8 +1708,11 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 		}
 	}
-	sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);	
+	if (sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));	
+	} else {
+		result = LRESULT.ZERO;
+	}
 	if (OS.IsPPC) {
 		/*
 		* Note: On WinCE PPC, only attempt to recognize the gesture for
@@ -1720,10 +1738,7 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
 	}
 	if (dragging) {
-		Event event = new Event ();
-		event.x = (short) (lParam & 0xFFFF);
-		event.y = (short) (lParam >> 16);
-		postEvent (SWT.DragDetect, event);
+		sendDragEvent ((short) (lParam & 0xFFFF), (short) (lParam >> 16));
 	} else {
 		if (dragDetect) {
 			/*
@@ -1751,17 +1766,21 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 			}
 		}
 	}
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmLButtonUp (int hwnd, int wParam, int lParam) {
-	sendMouseEvent (SWT.MouseUp, 1, hwnd, OS.WM_LBUTTONUP, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_LBUTTONUP, wParam, lParam);
+	LRESULT result = null;
+	if (sendMouseEvent (SWT.MouseUp, 1, hwnd, OS.WM_LBUTTONUP, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONUP, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmMButtonDblClk (int hwnd, int wParam, int lParam) {
@@ -1778,32 +1797,46 @@ LRESULT wmMButtonDblClk (int hwnd, int wParam, int lParam) {
 	* pairs will not see the second mouse down.  The
 	* fix is to send a mouse down event.
 	*/
+	LRESULT result = null;
 	sendMouseEvent (SWT.MouseDown, 2, hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 2, hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam);
+	if (sendMouseEvent (SWT.MouseDoubleClick, 2, hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmMButtonDown (int hwnd, int wParam, int lParam) {
-	sendMouseEvent (SWT.MouseDown, 2, hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
+	LRESULT result = null;
+	if (sendMouseEvent (SWT.MouseDown, 2, hwnd, OS.WM_MBUTTONDOWN, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_MBUTTONDOWN, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
-	sendMouseEvent (SWT.MouseUp, 2, hwnd, OS.WM_MBUTTONUP, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_MBUTTONUP, wParam, lParam);
+	LRESULT result = null;
+	if (sendMouseEvent (SWT.MouseUp, 2, hwnd, OS.WM_MBUTTONUP, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_MBUTTONUP, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmMouseHover (int hwnd, int wParam, int lParam) {
-	sendMouseEvent (SWT.MouseHover, 0, hwnd, OS.WM_MOUSEHOVER, wParam, lParam);
+	if (!sendMouseEvent (SWT.MouseHover, 0, hwnd, OS.WM_MOUSEHOVER, wParam, lParam)) {
+		return LRESULT.ZERO;
+	}
 	return null;
 }
 
@@ -1815,11 +1848,14 @@ LRESULT wmMouseLeave (int hwnd, int wParam, int lParam) {
 	pt.y = (short) (pos >> 16); 
 	OS.ScreenToClient (hwnd, pt);
 	lParam = pt.x | (pt.y << 16);
-	sendMouseEvent (SWT.MouseExit, 0, hwnd, OS.WM_MOUSELEAVE, wParam, lParam);
+	if (!sendMouseEvent (SWT.MouseExit, 0, hwnd, OS.WM_MOUSELEAVE, wParam, lParam)) {
+		return LRESULT.ZERO;
+	}
 	return null;
 }
 
 LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
+	LRESULT result = null;
 	int pos = OS.GetMessagePos ();
 	if (pos != display.lastMouse || display.captureChanged) {
 		if (!OS.IsWinCE) {
@@ -1859,11 +1895,13 @@ LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
 		}
 		if (pos != display.lastMouse) {
 			display.lastMouse = pos;
-			sendMouseEvent (SWT.MouseMove, 0, hwnd, OS.WM_MOUSEMOVE, wParam, lParam);
+			if (!sendMouseEvent (SWT.MouseMove, 0, hwnd, OS.WM_MOUSEMOVE, wParam, lParam)) {
+				result = LRESULT.ZERO;
+			}
 		}
 	} 
 	display.captureChanged = false;
-	return null;
+	return result;
 }
 
 LRESULT wmMouseWheel (int hwnd, int wParam, int lParam) {
@@ -1985,28 +2023,42 @@ LRESULT wmRButtonDblClk (int hwnd, int wParam, int lParam) {
 	* pairs will not see the second mouse down.  The
 	* fix is to send a mouse down event.
 	*/
+	LRESULT result = null;
 	sendMouseEvent (SWT.MouseDown, 3, hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 3, hwnd, OS.WM_RBUTTONDBLCLK, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_RBUTTONDBLCLK, wParam, lParam);
+	if (sendMouseEvent (SWT.MouseDoubleClick, 3, hwnd, OS.WM_RBUTTONDBLCLK, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_RBUTTONDBLCLK, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmRButtonDown (int hwnd, int wParam, int lParam) {
-	sendMouseEvent (SWT.MouseDown, 3, hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
+	LRESULT result = null;
+	if (sendMouseEvent (SWT.MouseDown, 3, hwnd, OS.WM_RBUTTONDOWN, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_RBUTTONDOWN, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
-	sendMouseEvent (SWT.MouseUp, 3, hwnd, OS.WM_RBUTTONUP, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_RBUTTONUP, wParam, lParam);
+	LRESULT result = null;
+	if (sendMouseEvent (SWT.MouseUp, 3, hwnd, OS.WM_RBUTTONUP, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_RBUTTONUP, wParam, lParam));
+	} else {
+		/* Call the DefWindowProc() to support WM_CONTEXTMENU */
+		OS.DefWindowProc (hwnd, OS.WM_RBUTTONUP, wParam, lParam);
+		result = LRESULT.ZERO;
+	}
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmSetFocus (int hwnd, int wParam, int lParam) {
@@ -2167,30 +2219,42 @@ LRESULT wmXButtonDblClk (int hwnd, int wParam, int lParam) {
 	* pairs will not see the second mouse down.  The
 	* fix is to send a mouse down event.
 	*/
+	LRESULT result = null;
 	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
 	sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, button, hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam);
+	if (sendMouseEvent (SWT.MouseDoubleClick, button, hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
+	LRESULT result = null;
 	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
-	sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_XBUTTONDOWN, wParam, lParam);
+	if (sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_XBUTTONDOWN, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT wmXButtonUp (int hwnd, int wParam, int lParam) {
+	LRESULT result = null;
 	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
-	sendMouseEvent (SWT.MouseUp, button, hwnd, OS.WM_XBUTTONUP, wParam, lParam);
-	int result = callWindowProc (hwnd, OS.WM_XBUTTONUP, wParam, lParam);
+	if (sendMouseEvent (SWT.MouseUp, button, hwnd, OS.WM_XBUTTONUP, wParam, lParam)) {
+		result = new LRESULT (callWindowProc (hwnd, OS.WM_XBUTTONUP, wParam, lParam));
+	} else {
+		result = LRESULT.ZERO;
+	}
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
-	return new LRESULT (result);
+	return result;
 }
 }

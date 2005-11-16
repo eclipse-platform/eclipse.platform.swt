@@ -259,6 +259,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
 
 	/* Compute the banding rectangle */
 	int hwndTrack = parent.handle;
@@ -312,6 +313,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
 
 	/* Compute the banding rectangle */
 	if (!dragging) return result;

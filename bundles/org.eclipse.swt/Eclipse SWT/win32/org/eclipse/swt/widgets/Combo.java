@@ -1806,6 +1806,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	*/
 	int oldSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
 	if ((style & SWT.READ_ONLY) == 0) {
 		int newSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 		if (oldSelection != newSelection) {

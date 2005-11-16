@@ -662,7 +662,9 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	int newBits = oldBits & ~OS.WS_TABSTOP;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);	
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
+	if (isDisposed ()) return LRESULT.ZERO;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+	if (result == LRESULT.ZERO) return result;
 	
 	/*
 	* Feature in Windows.  Windows runs a modal message loop
@@ -672,8 +674,10 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	* release the automatic capture.
 	*/
 	if (!OS.IsWinCE) {
-		sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+		if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
+			return LRESULT.ZERO;
+		}
 	}
 	return result;
 }
@@ -691,7 +695,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	int newBits = oldBits & ~OS.WS_TABSTOP;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
+	if (isDisposed ()) return LRESULT.ZERO;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+	if (result == LRESULT.ZERO) return result;
 
 	/*
 	* Feature in Windows.  Windows runs a modal message loop
@@ -701,8 +707,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* release the automatic capture.
 	*/	
 	if (!OS.IsWinCE) {
-		sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+		if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
+			return LRESULT.ONE;
+		}
 	}
 	return result;
 }

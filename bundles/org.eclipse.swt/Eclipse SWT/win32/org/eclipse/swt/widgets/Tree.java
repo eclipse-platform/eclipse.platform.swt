@@ -3776,7 +3776,10 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 		if ((style & SWT.CHECK) != 0) {
 			if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
 				sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-				sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+				if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
+					if (OS.GetCapture () != handle) OS.SetCapture (handle);
+					return LRESULT.ZERO;
+				}
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
 				TVITEM tvItem = new TVITEM ();
 				tvItem.hItem = lpht.hItem;
@@ -3807,6 +3810,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 		}
 	}
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
+	if (result == LRESULT.ZERO) return result;
 	if (lpht.hItem != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.TVS_FULLROWSELECT) != 0 || (lpht.flags & OS.TVHT_ONITEM) != 0) {
@@ -3834,7 +3838,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	lpht.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem == 0 || (lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
-		sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+		if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			return LRESULT.ZERO;
+		}
 		boolean fixSelection = false, deselected = false;
 		if (lpht.hItem != 0 && (style & SWT.MULTI) != 0) {
 			int hSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
@@ -3880,7 +3887,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
 		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
-			sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+			if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+				return LRESULT.ZERO;
+			}
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			TVITEM tvItem = new TVITEM ();
 			tvItem.hItem = lpht.hItem;
@@ -3943,7 +3953,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	}
 
 	/* Do the selection */
-	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+	if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		return LRESULT.ZERO;
+	}
 	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
 	int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
@@ -4083,10 +4096,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* issue a fake mouse up.
 	*/
 	if (dragStarted) {
-		Event event = new Event ();
-		event.x = (short) (lParam & 0xFFFF);
-		event.y = (short) (lParam >> 16);
-		postEvent (SWT.DragDetect, event);
+		sendDragEvent ((short) (lParam & 0xFFFF), (short) (lParam >> 16));
 	} else {
 		sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
 	}
@@ -4304,7 +4314,10 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	* WM_RBUTTONUP.  The fix is to avoid calling the window proc for
 	* the tree.
 	*/
-	sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
+	if (!sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam)) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		return LRESULT.ZERO;
+	}
 	/*
 	* This code is intentionally commented.
 	*/
