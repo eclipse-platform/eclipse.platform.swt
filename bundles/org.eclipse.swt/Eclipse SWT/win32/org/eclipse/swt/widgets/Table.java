@@ -3791,6 +3791,26 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 //					if (result != null) return result.value;
 //					break;
 //				}
+				case OS.WM_CAPTURECHANGED:
+					/*
+					* Bug in Windows.  When the capture changes during a
+					* header drag, Windows does not redraw the header item
+					* such that the header remains pressed.  For example,
+					* when focus is assigned to a push button, the mouse is
+					* pressed (but not released), then the SPACE key is
+					* pressed to activate the button, the capture changes,
+					* the header not notified and NM_RELEASEDCAPTURE is not
+					* sent.  The fix is to redraw the header when the capture
+					* changes to another control.
+					* 
+					* This does not happen on XP.
+					*/
+					if (OS.COMCTL32_MAJOR < 6) {
+						if (lParam != 0 && lParam != hwndHeader) {
+							OS.InvalidateRect (hwndHeader, null, true);
+						}
+					}
+					break;
 				case OS.WM_NOTIFY: {
 					NMHDR hdr = new NMHDR ();
 					OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
