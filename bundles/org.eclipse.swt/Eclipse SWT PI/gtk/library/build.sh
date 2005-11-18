@@ -70,6 +70,32 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' ]; then
 	fi
 fi
 
+if [ `pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "YES" ]; then
+	echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
+	MAKE_GNOME=make_gnome
+else
+	echo "libgnome-2.0 and libgnomeui-2.0 not found, program support for GNOME will not be compiled."
+fi
+
+if [ `pkg-config --exists cairo && echo YES` = "YES" ]; then
+	echo "Cairo found, compiling SWT support for the cairo graphics library."
+	MAKE_CAIRO=make_cairo
+else
+	echo "Cairo not found, the cairo JNI library will not be compiled."
+fi
+
+if [ "${GECKO_INCLUDES}" = "" -a "${GECKO_LIBS}" = "" ]; then
+	if [ `pkg-config --exists mozilla-xpcom && echo YES` = "YES" ]; then
+		GECKO_INCLUDES=`pkg-config --cflags mozilla-xpcom`
+		GECKO_LIBS=`pkg-config --libs mozilla-xpcom`
+		export GECKO_INCLUDES
+		export GECKO_LIBS
+		MAKE_MOZILLA=make_mozilla
+	else
+		echo "Mozilla/XPCOM libraries not found, Mozilla embedding support will not be compiled."
+	fi
+fi
+
 # Find AWT if available
 if [ "${AWT_LIB_PATH}" = "" ]; then
 	if [ -d ${JAVA_HOME}/jre/lib/${AWT_ARCH} ]; then
@@ -81,9 +107,17 @@ if [ "${AWT_LIB_PATH}" = "" ]; then
 	fi
 fi
 
+if [ -f ${AWT_LIB_PATH}/libjawt.so ]; then
+	MAKE_AWT=make_awt
+else
+	echo "libjawt.so not found, the SWT/AWT integration library will not be compiled."
+fi
+
 # Announce our target
 echo "Building SWT/GTK+ for $SWT_OS $SWT_ARCH"
-OUTPUT_DIR=../../../org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
-export OUTPUT_DIR
+if [ "${OUTPUT_DIR}" = "" ]; then
+	OUTPUT_DIR=../../../org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
+	export OUTPUT_DIR
+fi
 
-make -f $MAKEFILE ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+make -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
