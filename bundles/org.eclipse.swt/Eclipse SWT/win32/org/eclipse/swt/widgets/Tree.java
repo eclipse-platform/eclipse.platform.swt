@@ -4537,7 +4537,22 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			NMTVDISPINFO lptvdi = new NMTVDISPINFO ();
 			OS.MoveMemory (lptvdi, lParam, NMTVDISPINFO.sizeof);
 			if ((style & SWT.VIRTUAL) != 0) {
-				if (lptvdi.lParam == -1) {
+				/*
+				* Feature in Windows.  When a new tree item is inserted
+				* using TVM_INSERTITEM, a TVN_GETDISPINFO is sent before
+				* TVM_INSERTITEM returns and before the item is added to
+				* the items array.  The fix is to check for null.
+				* 
+				* NOTE: This only happens on XP with the version 6.00 of
+				* COMCTL32.DLL.
+				*/
+				boolean checkVisible = true;
+				if (items != null && lptvdi.lParam != -1) {
+					if (items [lptvdi.lParam] != null && items [lptvdi.lParam].cached) {
+						checkVisible = false;
+					}
+				}
+				if (checkVisible) {
 					if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 					RECT itemRect = new RECT ();
 					itemRect.left = lptvdi.hItem;

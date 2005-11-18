@@ -353,6 +353,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	Rect rect = new Rect();
 	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [0].id;
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect) != OS.noErr) {
@@ -467,7 +468,6 @@ public boolean getChecked () {
  */
 public boolean getExpanded () {
 	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return (state & EXPANDING) != 0 ? false : _getExpanded ();
 }
 
@@ -683,7 +683,6 @@ public TreeItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getItemCount (this);
 }
 
@@ -705,7 +704,6 @@ public int getItemCount () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getItems (this);
 }
 
