@@ -30,6 +30,9 @@ package org.eclipse.swt.internal.mozilla;
 import org.eclipse.swt.internal.*;
 
 public class XPCOM extends Platform {
+//	static {
+//		Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
+//	}
 	
 	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
 	public static final String CONTENT_MAYBETEXT = "application/x-vnd.mozilla.maybe-text"; //$NON-NLS-1$

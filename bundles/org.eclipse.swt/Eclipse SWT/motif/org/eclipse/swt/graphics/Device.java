@@ -76,6 +76,8 @@ public abstract class Device implements Drawable {
 
 	boolean useXRender;
 
+	static boolean CAIRO_LOADED;
+
 	/* Parsing Tables */
 	int tabPointer, crPointer;
 	/**
@@ -193,8 +195,22 @@ public Device(DeviceData data) {
 }
 
 void checkCairo() {
+	if (CAIRO_LOADED) return;
 	try {
+		/* Check if cairo is available on the system */
+		byte[] buffer = Converter.wcsToMbcs(null, "libcairo.so.2", true);
+		int /*long*/ libcairo = OS.dlopen(buffer, OS.RTLD_LAZY);
+		if (libcairo != 0) {
+			OS.dlclose(libcairo);
+		} else {
+			try {
+				System.loadLibrary("cairo-swt");
+			} catch (UnsatisfiedLinkError e) {
+				/* Ignore problems loading the fallback library */
+			}
+		}
 		Class.forName("org.eclipse.swt.internal.cairo.Cairo");
+		CAIRO_LOADED = true;
 	} catch (Throwable t) {
 		SWT.error(SWT.ERROR_NO_GRAPHICS_LIBRARY, t, " [Cairo required]");
 	}

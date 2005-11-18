@@ -171,6 +171,7 @@ public class OS extends Platform {
 	public static final int ReparentNotify = 21;
 	public static final int ResizeRedirectMask = 1 << 18;
 	public static final int RevertToParent = 0x2;
+	public static final int RTLD_LAZY = 1; 
 	public static final int SelectionClear = 29;
 	public static final int SelectionNotify = 31;
 	public static final int SelectionRequest = 30;
@@ -726,6 +727,34 @@ public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, i
 	lock.lock();
 	try {
 		return _XRenderFindVisualFormat(display, visual);
+	} finally {
+		lock.unlock();
+	}
+}
+
+public static final native int _dlclose(int /*long*/ handle);
+public static final int dlclose(int /*long*/ handle) {
+	lock.lock();
+	try {
+		return _dlclose(handle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _dlopen(byte[] filename, int flag);
+public static final int /*long*/ dlopen(byte[] filename, int flag) {
+	lock.lock();
+	try {
+		return _dlopen(filename, flag);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _dlsym(int /*long*/ handle, byte[] symbol);
+public static final int /*long*/ dlsym(int /*long*/ handle, byte[] symbol) {
+	lock.lock();
+	try {
+		return _dlsym(handle, symbol);
 	} finally {
 		lock.unlock();
 	}

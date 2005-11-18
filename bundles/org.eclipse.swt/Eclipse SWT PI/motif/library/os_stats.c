@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 461;
-int OS_nativeFunctionCallCount[461];
+int OS_nativeFunctionCount = 464;
+int OS_nativeFunctionCallCount[464];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -413,6 +413,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1XtWindowToWidget",
 	"_1_1XmSetMenuTraversal",
 	"_1applicationShellWidgetClass",
+	"_1dlclose",
+	"_1dlopen",
+	"_1dlsym",
 	"_1overrideShellWidgetClass",
 	"_1shellWidgetClass",
 	"_1topLevelShellWidgetClass",

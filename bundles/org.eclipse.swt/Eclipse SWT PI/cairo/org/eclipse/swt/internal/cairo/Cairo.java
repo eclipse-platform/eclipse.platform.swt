@@ -21,22 +21,9 @@
 package org.eclipse.swt.internal.cairo;
 
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.gtk.*;
 
 public class Cairo {
 	static {
-		// Check if cairo is available on the system.
-		byte[] libcairo = Converter.wcsToMbcs(null, "libcairo.so.2", true);
-		int /*long*/ libcairo_handle = OS.dlopen(libcairo, 1);
-		if (libcairo_handle != 0) {
-			OS.dlclose(libcairo_handle);
-		} else {
-			try {
-				System.loadLibrary("cairo-swt");
-			} catch (UnsatisfiedLinkError e) {
-				// Ignore problems loading the fallback library.
-			}
-		}
 		Library.loadLibrary("swt-cairo");
 	}
 
