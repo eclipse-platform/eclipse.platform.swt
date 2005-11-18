@@ -12,7 +12,6 @@
 <target name="build_gtk_lib" depends="init">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
-		<arg line="make_mozilla"/>
 		<arg line="install"/>
 	</exec>
 	<eclipse.refreshLocal resource="org.eclipse.swt.gtk.linux.x86" depth="infinite" />
