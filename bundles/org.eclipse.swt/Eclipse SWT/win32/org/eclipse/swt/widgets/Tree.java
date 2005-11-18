@@ -2773,7 +2773,7 @@ void setScrollWidth () {
 		OS.GetClientRect (hwndParent, rect);
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
 		info.nMax = width;
-		info.nPage = rect.right - rect.left;
+		info.nPage = rect.right - rect.left + 1;
 		OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
 		info.fMask = OS.SIF_POS;
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
