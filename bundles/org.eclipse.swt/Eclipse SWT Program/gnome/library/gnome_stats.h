@@ -26,6 +26,9 @@ extern char* GNOME_nativeFunctionNames[];
 
 typedef enum {
 	GnomeVFSMimeApplication_1sizeof_FUNC,
+	_1dlclose_FUNC,
+	_1dlopen_FUNC,
+	_1dlsym_FUNC,
 	_1g_1free_FUNC,
 	_1g_1list_1append_FUNC,
 	_1g_1list_1free_FUNC,

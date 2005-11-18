@@ -18,10 +18,13 @@
 
 #ifdef NATIVE_STATS
 
-int GNOME_nativeFunctionCount = 22;
-int GNOME_nativeFunctionCallCount[22];
+int GNOME_nativeFunctionCount = 25;
+int GNOME_nativeFunctionCallCount[25];
 char * GNOME_nativeFunctionNames[] = {
 	"GnomeVFSMimeApplication_1sizeof",
+	"_1dlclose",
+	"_1dlopen",
+	"_1dlsym",
 	"_1g_1free",
 	"_1g_1list_1append",
 	"_1g_1list_1free",
