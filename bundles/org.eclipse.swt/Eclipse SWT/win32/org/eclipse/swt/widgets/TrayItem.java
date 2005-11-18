@@ -113,7 +113,6 @@ protected void checkSubclass () {
 }
 
 void createWidget () {
-	if (OS.IsWinCE) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id = display.nextTrayId++;
@@ -126,6 +125,23 @@ void createWidget () {
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
+}
+
+/**
+ * Returns the receiver's parent, which must be a <code>Tray</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public Tray getParent () {
+	checkWidget ();
+	return parent;
 }
 
 /**
@@ -218,7 +234,6 @@ void releaseWidget () {
 	if (image2 != null) image2.dispose ();
 	image2 = null;
 	toolTipText = null;
-	if (OS.IsWinCE) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
@@ -268,7 +283,6 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
-	if (OS.IsWinCE) return;
 	if (image2 != null) image2.dispose ();
 	image2 = null;
 	int hIcon = 0;
@@ -307,12 +321,10 @@ public void setImage (Image image) {
 public void setToolTipText (String value) {
 	checkWidget ();
 	toolTipText = value;
-	if (OS.IsWinCE) return;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
 	/*
-	* Note that the size of the szTip field is different
-	* in version 5.0 of shell32.dll.
+	* Note that the size of the szTip field is different in version 5.0 of shell32.dll.
 	*/
 	int length = OS.SHELL32_MAJOR < 5 ? 64 : 128;
 	if (OS.IsUnicode) {
@@ -355,27 +367,25 @@ public void setVisible (boolean visible) {
 		if (isDisposed ()) return;
 	}
 	this.visible = visible;
-	if (!OS.IsWinCE) {
-		NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-		iconData.cbSize = NOTIFYICONDATA.sizeof;
-		iconData.uID = id;
-		iconData.hWnd = display.hwndMessage;
-		if (OS.SHELL32_MAJOR < 5) {
-			if (visible) {
-				iconData.uFlags = OS.NIF_MESSAGE;
-				iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-				OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
-				setImage (image);
-				setToolTipText (toolTipText);
-			} else {
-				OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
-			}
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	iconData.cbSize = NOTIFYICONDATA.sizeof;
+	iconData.uID = id;
+	iconData.hWnd = display.hwndMessage;
+	if (OS.SHELL32_MAJOR < 5) {
+		if (visible) {
+			iconData.uFlags = OS.NIF_MESSAGE;
+			iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
+			OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+			setImage (image);
+			setToolTipText (toolTipText);
 		} else {
-			iconData.uFlags = OS.NIF_STATE;
-			iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
-			iconData.dwStateMask = OS.NIS_HIDDEN;
-			OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+			OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
 		}
+	} else {
+		iconData.uFlags = OS.NIF_STATE;
+		iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
+		iconData.dwStateMask = OS.NIS_HIDDEN;
+		OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 	}
 	if (!visible) sendEvent (SWT.Hide);
 }

@@ -111,6 +111,23 @@ void destroyWidget () {
 }
 
 /**
+ * Returns the receiver's parent, which must be a <code>Tray</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public Tray getParent () {
+	checkWidget ();
+	return parent;
+}
+
+/**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
  *
