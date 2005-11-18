@@ -252,9 +252,15 @@ public String open () {
 	* does not run for GetSaveFileName() or GetOpenFileName().  The
 	* fix is to allow async messages to run in the WH_FOREGROUNDIDLE
 	* hook instead.
+	* 
+	* Bug in Windows 98.  For some reason, when certain operating
+	* system calls such as Shell_NotifyIcon(), GetOpenFileName()
+	* and GetSaveFileName() are made during the WH_FOREGROUNDIDLE
+	* hook, Windows hangs.  The fix is to disallow async messages
+	* during WH_FOREGROUNDIDLE.
 	*/
 	boolean oldRunMessagesInIdle = display.runMessagesInIdle;
-	display.runMessagesInIdle = true;
+	display.runMessagesInIdle = !OS.IsWin95;
 	/*
 	* Open the dialog.  If the open fails due to an invalid
 	* file name, use an empty file name and open it again.
