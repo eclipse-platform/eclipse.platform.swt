@@ -422,7 +422,9 @@ void createColumn (TableColumn column, int index) {
 	/* Set the search column whenever the model changes */
 	if ((style & SWT.VIRTUAL) != 0) {
 		/* Disable searching when using VIRTUAL */
-		OS.gtk_tree_view_set_search_column (handle, -1);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1);
+		}
 	} else {
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
 		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
@@ -464,7 +466,9 @@ void createHandle (int index) {
 			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 		}
 		/* Disable searching when using VIRTUAL */
-		OS.gtk_tree_view_set_search_column (handle, -1);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1);
+		}
 	}
 }
 
@@ -839,7 +843,9 @@ void destroyItem (TableColumn column) {
 	/* Set the search column whenever the model changes */
 	if ((style & SWT.VIRTUAL) != 0) {
 		/* Disable searching when using VIRTUAL */
-		OS.gtk_tree_view_set_search_column (handle, -1);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1);
+		}
 	} else {
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
 		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
@@ -2133,7 +2139,9 @@ public void removeAll () {
 	/* Set the search column whenever the model changes */
 	if ((style & SWT.VIRTUAL) != 0) {
 		/* Disable searching when using VIRTUAL */
-		OS.gtk_tree_view_set_search_column (handle, -1);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1);
+		}
 	} else {
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
 		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
