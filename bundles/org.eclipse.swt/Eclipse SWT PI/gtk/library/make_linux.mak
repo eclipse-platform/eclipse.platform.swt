@@ -61,12 +61,13 @@ GLXLIBS = -shared -fPIC -L/usr/X11R6/lib -lGL -lGLU -lm
 #NATIVE_STATS = -DNATIVE_STATS
 
 MOZILLACFLAGS = -O \
+	-DSWT_VERSION=$(SWT_VERSION) \
+	$(NATIVE_STATS) \
 	-DXPCOM_GLUE=1 \
 	-DMOZILLA_STRICT_API=1 \
 	-fno-rtti \
 	-fno-exceptions \
 	-Wall \
-	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
 	-Wno-non-virtual-dtor \
 	-fPIC \
 	-I. \
@@ -98,7 +99,7 @@ CFLAGS = -O -Wall \
 LIBS = -shared -fPIC -s
 
 
-all: make_swt make_atk make_gnome make_awt make_glx
+all: make_swt make_atk make_gnome make_glx
 
 #
 # SWT libs
