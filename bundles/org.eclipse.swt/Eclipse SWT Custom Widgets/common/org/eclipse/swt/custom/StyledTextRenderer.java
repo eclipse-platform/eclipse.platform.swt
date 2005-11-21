@@ -246,7 +246,7 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 			Rectangle lineBounds = layout.getLineBounds(lineCount - 1);
 			int x = paintX + lineBounds.x + lineBounds.width;
 			if (fullSelection) {
-				gc.fillRectangle(x, paintY + lineBounds.y, client.width - x, lineBounds.height);
+				gc.fillRectangle(x, paintY + lineBounds.y, client.width - styledText.rightMargin - x, lineBounds.height);
 			} else {
 				gc.fillRectangle(x, paintY + lineBounds.y, lineEndSpaceWidth, lineBounds.height);
 			}
@@ -901,17 +901,11 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 	} else {
 		int start = newStyles[0].start;
 		int modifyStart = getRangeIndex(start, -1, styleCount);
+		int modifyEnd = modifyStart;
 		if (modifyStart == styleCount) {
-			if (newStyles.length + styleCount >= styles.length) {
-				StyleRange[] tmpStyles = new StyleRange[styles.length + newStyles.length];
-				System.arraycopy(styles, 0, tmpStyles, 0, styles.length);
-				styles = tmpStyles;
-			}
-			System.arraycopy(newStyles, 0, styles, styleCount, newStyles.length);
-			styleCount += newStyles.length;
+			addMerge(newStyles, newStyles.length, modifyStart, modifyEnd);
 			return;
 		}
-		int modifyEnd = modifyStart;
 		StyleRange[] mergeStyles = new StyleRange[3];
 		for (int i = 0; i < newStyles.length; i++) {
 			StyleRange newStyle = newStyles[i], style; 
@@ -939,25 +933,48 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 					modifyLast = 1;
 				}
 			}
-			modifyEnd += modifyLast;
-			int grow = mergeCount - (modifyEnd - modifyStart);
-			if (styleCount + grow >= styles.length) {
-				StyleRange[] tmpStyles = new StyleRange[styles.length + grow + GROW];
-				System.arraycopy(styles, 0, tmpStyles, 0, modifyStart);
-				if (styleCount > modifyEnd) {
-					System.arraycopy(styles, modifyEnd, tmpStyles, modifyStart + mergeCount, styleCount - modifyEnd);
-				}
-				styles = tmpStyles;
-			} else {
-				if (styleCount > modifyEnd) {
-					System.arraycopy(styles, modifyEnd, styles, modifyStart + mergeCount, styleCount - modifyEnd);
-				}
-			}
-			System.arraycopy(mergeStyles, 0, styles, modifyStart, mergeCount);
-			styleCount += grow;
-			modifyStart = modifyEnd = modifyEnd + grow - modifyLast;
-		}	
+			int grow = addMerge(mergeStyles, mergeCount, modifyStart, modifyEnd + modifyLast);
+			modifyStart = modifyEnd += grow;
+		}
 	}
+}
+int addMerge(StyleRange[] mergeStyles, int mergeCount, int modifyStart, int modifyEnd) {
+	int grow = mergeCount - (modifyEnd - modifyStart);
+	StyleRange endStyle = null;
+	if (modifyEnd < styleCount) endStyle = styles[modifyEnd];
+	if (styleCount + grow >= styles.length) {
+		StyleRange[] tmpStyles = new StyleRange[styles.length + grow + GROW];
+		System.arraycopy(styles, 0, tmpStyles, 0, modifyStart);
+		if (styleCount > modifyEnd) {
+			System.arraycopy(styles, modifyEnd, tmpStyles, modifyStart + mergeCount, styleCount - modifyEnd);
+		}
+		styles = tmpStyles;
+	} else {
+		if (styleCount > modifyEnd) {
+			System.arraycopy(styles, modifyEnd, styles, modifyStart + mergeCount, styleCount - modifyEnd);
+		}
+	}
+	int j = modifyStart;
+	for (int i = 0; i < mergeCount; i++) {
+		StyleRange newStyle = mergeStyles[i], style;
+		if (j > 0 && (style = styles[j - 1]).start + style.length == newStyle.start && newStyle.similarTo(style)) {
+			style.length += newStyle.length;
+		} else {
+			styles[j++] = newStyle;
+		}
+	}
+	StyleRange style = styles[j - 1];
+	if (endStyle != null && style.start + style.length == endStyle.start && endStyle.similarTo(style)) {
+		style.length += endStyle.length;
+		modifyEnd++;
+		mergeCount++;
+	}
+	if (styleCount > modifyEnd) {
+		System.arraycopy(styles, modifyStart + mergeCount, styles, j, styleCount - modifyEnd);
+	}
+	grow = (j - modifyStart) - (modifyEnd - modifyStart);
+	styleCount += grow;
+	return grow;
 }
 void textChanging(TextChangingEvent event) {
 	int start = event.start;
