@@ -1946,7 +1946,9 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
 		result = LRESULT.ZERO;
 	}
-	if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	}
 	if (!doubleClick) return LRESULT.ZERO;
 		
 	/*
@@ -1974,6 +1976,8 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (OS.IsPPC) {
 		LRESULT result = null;
+		Display display = this.display;
+		display.captureChanged = false;
 		boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 		/*
 		* Note: On WinCE PPC, only attempt to recognize the gesture for
@@ -2005,7 +2009,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		} else {
 			result = LRESULT.ZERO;
 		}
-		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
 		return result;
 	}
 	 return super.WM_LBUTTONDOWN (wParam, lParam);

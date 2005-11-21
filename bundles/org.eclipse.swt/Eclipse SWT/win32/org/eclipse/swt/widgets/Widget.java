@@ -1676,13 +1676,17 @@ LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
 	* fix is to send a mouse down event.
 	*/
 	LRESULT result = null;
+	Display display = this.display;
+	display.captureChanged = false;
 	sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
 	if (sendMouseEvent (SWT.MouseDoubleClick, 1, hwnd, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDBLCLK, wParam, lParam));
 	} else {
 		result = LRESULT.ZERO;
 	}
-	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	}
 	return result;
 }
 
@@ -1708,6 +1712,8 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 		}
 	}
+	Display display = this.display;
+	display.captureChanged = false;
 	if (sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));	
 	} else {
@@ -1735,7 +1741,9 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 		}
 	}
 	if (mouseDown) {
-		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+		}
 	}
 	if (dragging) {
 		sendDragEvent ((short) (lParam & 0xFFFF), (short) (lParam >> 16));
@@ -1798,24 +1806,32 @@ LRESULT wmMButtonDblClk (int hwnd, int wParam, int lParam) {
 	* fix is to send a mouse down event.
 	*/
 	LRESULT result = null;
+	Display display = this.display;
+	display.captureChanged = false;
 	sendMouseEvent (SWT.MouseDown, 2, hwnd, OS.WM_MBUTTONDOWN, wParam, lParam);
 	if (sendMouseEvent (SWT.MouseDoubleClick, 2, hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_MBUTTONDBLCLK, wParam, lParam));
 	} else {
 		result = LRESULT.ZERO;
 	}
-	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	}
 	return result;
 }
 
 LRESULT wmMButtonDown (int hwnd, int wParam, int lParam) {
 	LRESULT result = null;
+	Display display = this.display;
+	display.captureChanged = false;
 	if (sendMouseEvent (SWT.MouseDown, 2, hwnd, OS.WM_MBUTTONDOWN, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_MBUTTONDOWN, wParam, lParam));
 	} else {
 		result = LRESULT.ZERO;
 	}
-	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	}
 	return result;
 }
 
@@ -2024,24 +2040,32 @@ LRESULT wmRButtonDblClk (int hwnd, int wParam, int lParam) {
 	* fix is to send a mouse down event.
 	*/
 	LRESULT result = null;
+	Display display = this.display;
+	display.captureChanged = false;
 	sendMouseEvent (SWT.MouseDown, 3, hwnd, OS.WM_RBUTTONDOWN, wParam, lParam);
 	if (sendMouseEvent (SWT.MouseDoubleClick, 3, hwnd, OS.WM_RBUTTONDBLCLK, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_RBUTTONDBLCLK, wParam, lParam));
 	} else {
 		result = LRESULT.ZERO;
 	}
-	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	}
 	return result;
 }
 
 LRESULT wmRButtonDown (int hwnd, int wParam, int lParam) {
 	LRESULT result = null;
+	Display display = this.display;
+	display.captureChanged = false;
 	if (sendMouseEvent (SWT.MouseDown, 3, hwnd, OS.WM_RBUTTONDOWN, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_RBUTTONDOWN, wParam, lParam));
 	} else {
 		result = LRESULT.ZERO;
 	}
-	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	}
 	return result;
 }
 
@@ -2220,6 +2244,8 @@ LRESULT wmXButtonDblClk (int hwnd, int wParam, int lParam) {
 	* fix is to send a mouse down event.
 	*/
 	LRESULT result = null;
+	Display display = this.display;
+	display.captureChanged = false;
 	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
 	sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam);
 	if (sendMouseEvent (SWT.MouseDoubleClick, button, hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam)) {
@@ -2227,19 +2253,25 @@ LRESULT wmXButtonDblClk (int hwnd, int wParam, int lParam) {
 	} else {
 		result = LRESULT.ZERO;
 	}
-	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	}
 	return result;
 }
 
 LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
 	LRESULT result = null;
+	Display display = this.display;
+	display.captureChanged = false;
 	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
 	if (sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_XBUTTONDOWN, wParam, lParam));
 	} else {
 		result = LRESULT.ZERO;
 	}
-	if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != hwnd) OS.SetCapture (hwnd);
+	}
 	return result;
 }
 

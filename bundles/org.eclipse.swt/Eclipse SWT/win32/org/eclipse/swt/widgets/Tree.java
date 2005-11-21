@@ -3795,12 +3795,18 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	if (lpht.hItem != 0) {
 		if ((style & SWT.CHECK) != 0) {
 			if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
+				Display display = this.display;
+				display.captureChanged = false;
 				sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 				if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
-					if (OS.GetCapture () != handle) OS.SetCapture (handle);
+					if (!display.captureChanged && !isDisposed ()) {
+						if (OS.GetCapture () != handle) OS.SetCapture (handle);
+					}
 					return LRESULT.ZERO;
 				}
-				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+				if (!display.captureChanged && !isDisposed ()) {
+					if (OS.GetCapture () != handle) OS.SetCapture (handle);
+				}
 				TVITEM tvItem = new TVITEM ();
 				tvItem.hItem = lpht.hItem;
 				tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
@@ -3858,8 +3864,12 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	lpht.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem == 0 || (lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
+		Display display = this.display;
+		display.captureChanged = false;
 		if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
-			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			if (!display.captureChanged && !isDisposed ()) {
+				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			}
 			return LRESULT.ZERO;
 		}
 		boolean fixSelection = false, deselected = false;
@@ -3891,7 +3901,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = true;
 		int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = false;
-		if (dragStarted && OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (dragStarted) {
+			if (!display.captureChanged && !isDisposed ()) {
+				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			}
+		}
 		if (deselected) {
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_PARAM;
@@ -3907,11 +3921,17 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
 		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
+			Display display = this.display;
+			display.captureChanged = false;
 			if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
-				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+				if (!display.captureChanged && !isDisposed ()) {
+					if (OS.GetCapture () != handle) OS.SetCapture (handle);
+				}
 				return LRESULT.ZERO;
 			}
-			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			if (!display.captureChanged && !isDisposed ()) {
+				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			}
 			TVITEM tvItem = new TVITEM ();
 			tvItem.hItem = lpht.hItem;
 			tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
@@ -3973,15 +3993,23 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	}
 
 	/* Do the selection */
+	Display display = this.display;
+	display.captureChanged = false;
 	if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
-		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
 		return LRESULT.ZERO;
 	}
 	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
 	int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	ignoreDeselect = ignoreSelect = false;
-	if (dragStarted && OS.GetCapture () != handle) OS.SetCapture (handle);
+	if (dragStarted) {
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
+	}
 	int hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 
 	/*
@@ -4334,8 +4362,12 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	* WM_RBUTTONUP.  The fix is to avoid calling the window proc for
 	* the tree.
 	*/
+	Display display = this.display;
+	display.captureChanged = false;
 	if (!sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam)) {
-		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
 		return LRESULT.ZERO;
 	}
 	/*

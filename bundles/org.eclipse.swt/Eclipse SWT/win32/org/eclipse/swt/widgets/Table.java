@@ -2500,8 +2500,12 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
+	Display display = this.display;
+	display.captureChanged = false;
 	if (!sendMouseEvent (type, button, handle, msg, wParam, lParam)) {
-		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
 		return LRESULT.ZERO;
 	}
 
@@ -2523,7 +2527,9 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	* case and avoid calling the window proc.
 	*/
 	if (pinfo.iItem == -1) {
-		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
 		return LRESULT.ZERO;
 	}
 	
@@ -2550,7 +2556,9 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	dragStarted = false;
 	int code = callWindowProc (handle, msg, wParam, lParam, forceSelect);
 	if (dragStarted) {
-		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
 	} else {
 		int flags = OS.LVHT_ONITEMLABEL | OS.LVHT_ONITEMICON;
 		boolean fakeMouseUp = (pinfo.flags & flags) != 0;
@@ -3937,13 +3945,19 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
 	int index = OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
+	Display display = this.display;
+	display.captureChanged = false;
 	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 	if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
-		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
 		return LRESULT.ZERO;
 	}
 	if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
-	if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	}
 	
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
@@ -4229,11 +4243,15 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
+	Display display = this.display;
+	display.captureChanged = false;
 	sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
 	if (sendMouseEvent (SWT.MouseDoubleClick, 3, handle, OS.WM_RBUTTONDBLCLK, wParam, lParam)) {
 		if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
 	}
-	if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	if (!display.captureChanged && !isDisposed ()) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	}
 	return LRESULT.ZERO;
 }
 
