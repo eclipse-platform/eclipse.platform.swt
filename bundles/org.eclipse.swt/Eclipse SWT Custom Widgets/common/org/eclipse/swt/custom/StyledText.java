@@ -5183,9 +5183,10 @@ void handleResize(Event event) {
 		claimRightFreeSpace();
 	}
 	claimBottomFreeSpace();
-	if (oldHeight != clientAreaHeight || wordWrap) {
-		calculateTopIndex(0);
-	}
+	//TODO FIX TOP INDEX DURING RESIZE
+//	if (oldHeight != clientAreaHeight || wordWrap) {
+//		calculateTopIndex(0);
+//	}
 }
 /**
  * Updates the caret position and selection and the scroll bars to reflect 
