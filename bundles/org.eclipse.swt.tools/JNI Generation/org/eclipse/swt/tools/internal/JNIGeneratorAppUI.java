@@ -796,35 +796,40 @@ void createParametersPanel(Composite panel) {
 	paramEditorLt.addListener(SWT.Traverse, paramListListener);
 
 	paramsLt.addListener(SWT.MouseDown, new Listener() {
-		public void handleEvent(Event e) {
-			if (e.button != 1) return;
-			Point pt = new Point(e.x, e.y);
-			TableItem item = paramsLt.getItem(pt);
-			if (item == null) return;
-			int column = -1;
-			for (int i = 0; i < paramsLt.getColumnCount(); i++) {
-				if (item.getBounds(i).contains(pt)) {
-					column = i;
-					break;
-				}				
-			}
-			if (column == -1) return;
-			ParameterData data = (ParameterData)item.getData();
-			if (column == PARAM_CAST_COLUMN) {
-				paramTextEditor.setColumn(column);
-				paramTextEditor.setItem(item);
-				paramEditorTx.setText(data.getCast());
-				paramEditorTx.selectAll();
-				paramEditorTx.setVisible(true);
-				paramEditorTx.setFocus();
-			} else if (column == PARAM_FLAGS_COLUMN) {
-				paramListEditor.setColumn(column);
-				paramListEditor.setItem(item);
-				paramEditorLt.setSelection(data.getFlags());
-				floater.setLocation(paramsLt.toDisplay(e.x, e.y));
-				floater.setVisible(true);
-				paramEditorLt.setFocus();
-			}
+		public void handleEvent(final Event e) {
+			e.display.asyncExec (new Runnable () {
+				public void run () {
+					if (paramsLt.isDisposed ()) return;
+					if (e.button != 1) return;
+					Point pt = new Point(e.x, e.y);
+					TableItem item = paramsLt.getItem(pt);
+					if (item == null) return;
+					int column = -1;
+					for (int i = 0; i < paramsLt.getColumnCount(); i++) {
+						if (item.getBounds(i).contains(pt)) {
+							column = i;
+							break;
+						}				
+					}
+					if (column == -1) return;
+					ParameterData data = (ParameterData)item.getData();
+					if (column == PARAM_CAST_COLUMN) {
+						paramTextEditor.setColumn(column);
+						paramTextEditor.setItem(item);
+						paramEditorTx.setText(data.getCast());
+						paramEditorTx.selectAll();
+						paramEditorTx.setVisible(true);
+						paramEditorTx.setFocus();
+					} else if (column == PARAM_FLAGS_COLUMN) {
+						paramListEditor.setColumn(column);
+						paramListEditor.setItem(item);
+						paramEditorLt.setSelection(data.getFlags());
+						floater.setLocation(paramsLt.toDisplay(e.x, e.y));
+						floater.setVisible(true);
+						paramEditorLt.setFocus();
+					}
+				}
+			});
 		}
 	});
 }
