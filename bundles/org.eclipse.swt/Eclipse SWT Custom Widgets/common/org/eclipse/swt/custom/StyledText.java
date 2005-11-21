@@ -1165,7 +1165,7 @@ public class StyledText extends Canvas {
  * @see #getStyle
  */
 public StyledText(Composite parent, int style) {
-	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED));
+	super(parent, checkStyle(style));
 	// set the bg/fg in the OS to ensure that these are the same as StyledText, necessary
 	// for ensuring that the bg/fg the IME box uses is the same as what StyledText uses
 	super.setForeground(getForeground());
@@ -1530,6 +1530,8 @@ static int checkStyle(int style) {
 			style &= ~SWT.H_SCROLL;
 		}
 	}
+	style |= SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED;
+	if (!IS_GTK) style |= SWT.NO_BACKGROUND;
 	return style;
 }
 /**
