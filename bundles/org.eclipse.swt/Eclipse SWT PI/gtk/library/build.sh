@@ -70,34 +70,37 @@ if [ ${MODEL} = 'x86_64' -o ${MODEL} = 'ppc64' -o ${MODEL} = 'ia64' ]; then
 	fi
 fi
 
-if [ `pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "YES" ]; then
+if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES" ]; then
 	echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
 	MAKE_GNOME=make_gnome
 else
-	echo "libgnome-2.0 and libgnomeui-2.0 not found, program support for GNOME will not be compiled."
+	echo "libgnome-2.0 and libgnomeui-2.0 not found:"
+	echo "    *** SWT Program support for GNOME will not be compiled."
 fi
 
-if [ `pkg-config --exists cairo && echo YES` = "YES" ]; then
+if [ x`pkg-config --exists cairo && echo YES` = "xYES" ]; then
 	echo "Cairo found, compiling SWT support for the cairo graphics library."
 	MAKE_CAIRO=make_cairo
 else
-	echo "Cairo not found, the cairo JNI library will not be compiled."
+	echo "Cairo not found:"
+	echo "    *** Advanced graphics support using cairo will not be compiled."
 fi
 
-if [ "${GECKO_INCLUDES}" = "" -a "${GECKO_LIBS}" = "" ]; then
-	if [ `pkg-config --exists mozilla-xpcom && echo YES` = "YES" ]; then
+if [ -z "${GECKO_INCLUDES}" -a -z "${GECKO_LIBS}" ]; then
+	if [ x`pkg-config --exists mozilla-xpcom && echo YES` = "xYES" ]; then
 		GECKO_INCLUDES=`pkg-config --cflags mozilla-xpcom`
 		GECKO_LIBS=`pkg-config --libs mozilla-xpcom`
 		export GECKO_INCLUDES
 		export GECKO_LIBS
 		MAKE_MOZILLA=make_mozilla
 	else
-		echo "Mozilla/XPCOM libraries not found, Mozilla embedding support will not be compiled."
+		echo "Mozilla/XPCOM libraries not found:"
+		echo "    *** Mozilla embedding support will not be compiled."
 	fi
 fi
 
 # Find AWT if available
-if [ "${AWT_LIB_PATH}" = "" ]; then
+if [ -z "${AWT_LIB_PATH}" ]; then
 	if [ -d ${JAVA_HOME}/jre/lib/${AWT_ARCH} ]; then
 		AWT_LIB_PATH=${JAVA_HOME}/jre/lib/${AWT_ARCH}
 		export AWT_LIB_PATH
@@ -115,7 +118,7 @@ fi
 
 # Announce our target
 echo "Building SWT/GTK+ for $SWT_OS $SWT_ARCH"
-if [ "${OUTPUT_DIR}" = "" ]; then
+if [ "x${OUTPUT_DIR}" = "x" ]; then
 	OUTPUT_DIR=../../../org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
 	export OUTPUT_DIR
 fi
