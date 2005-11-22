@@ -33,6 +33,17 @@
 	<target name="build.sources" />
 	<target name="gather.logs" />
 
+	<target name="copy.classpath" unless="haveclasspath">
+		<copy file=".classpath_${osgi.ws}" tofile=".classpath"/>
+		<eclipse.refreshLocal resource="." depth="infinite"/>
+	</target>
+
+	<target name="setup.classpath">
+		<available file=".classpath" property="haveclasspath"/>
+		<antcall target="copy.classpath"/>
+		<copy file=".project_normal" tofile=".project" overwrite="yes"/>
+	</target>
+
 	<target name="clean" depends="init">
 	</target>
    
