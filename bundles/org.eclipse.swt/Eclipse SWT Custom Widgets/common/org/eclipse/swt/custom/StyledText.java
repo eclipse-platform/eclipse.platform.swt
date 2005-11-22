@@ -7702,7 +7702,7 @@ public void setStyleRanges(StyleRange[] ranges) {
 public void setTabs(int tabs) {
 	checkWidget();	
 	tabLength = tabs;
-	renderer.setFont(getFont(), tabs);
+	renderer.setFont(null, tabs);
 	if (caretOffset > 0) {
 		caretOffset = 0;
 		showCaret();

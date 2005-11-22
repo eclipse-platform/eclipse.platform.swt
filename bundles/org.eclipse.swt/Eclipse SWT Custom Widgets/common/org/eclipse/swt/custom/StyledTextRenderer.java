@@ -705,7 +705,7 @@ void setContent(StyledTextContent content) {
 void setFont(Font font, int tabs) {
 	TextLayout layout = new TextLayout(device);
 	layout.setFont(regularFont);
-	if (font != regularFont) {
+	if (font != null) {
 		if (boldFont != null) boldFont.dispose();
 		if (italicFont != null) italicFont.dispose();
 		if (boldItalicFont != null) boldItalicFont.dispose();
