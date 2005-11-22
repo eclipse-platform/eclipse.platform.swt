@@ -85,6 +85,96 @@ StyledTextRenderer(Device device, StyledText styledText) {
 	this.device = device;
 	this.styledText = styledText;
 }
+int addMerge(int[] mergeRanges, StyleRange[] mergeStyles, int mergeCount, int modifyStart, int modifyEnd) {
+	int rangeCount = styleCount << 1;
+	StyleRange endStyle = null;
+	int endStart = 0, endLength = 0;
+	if (modifyEnd < rangeCount) {
+		endStyle = styles[modifyEnd >> 1];
+		endStart = ranges[modifyEnd];
+		endLength = ranges[modifyEnd + 1];
+	}
+	int grow = mergeCount - (modifyEnd - modifyStart);
+	if (rangeCount + grow >= ranges.length) {
+		int[] tmpRanges = new int[ranges.length + grow + (GROW << 1)];
+		System.arraycopy(ranges, 0, tmpRanges, 0, modifyStart);
+		StyleRange[] tmpStyles = new StyleRange[styles.length + (grow >> 1) + GROW];
+		System.arraycopy(styles, 0, tmpStyles, 0, modifyStart >> 1);
+		if (rangeCount > modifyEnd) {
+			System.arraycopy(ranges, modifyEnd, tmpRanges, modifyStart + mergeCount, rangeCount - modifyEnd);
+			System.arraycopy(styles, modifyEnd >> 1, tmpStyles, (modifyStart + mergeCount) >> 1, styleCount - (modifyEnd >> 1));
+		}
+		ranges = tmpRanges;
+		styles = tmpStyles;
+	} else {
+		if (rangeCount > modifyEnd) {
+			System.arraycopy(ranges, modifyEnd, ranges, modifyStart + mergeCount, rangeCount - modifyEnd);
+			System.arraycopy(styles, modifyEnd >> 1, styles, (modifyStart + mergeCount) >> 1, styleCount - (modifyEnd >> 1));
+		}
+	}
+	
+	int j = modifyStart;	
+	for (int i = 0; i < mergeCount; i += 2) {
+		if (j > 0 && ranges[j - 2] + ranges[j - 1] == mergeRanges[i] && mergeStyles[i >> 1].similarTo(styles[(j - 2) >> 1])) {
+			ranges[j - 1] += mergeRanges[i + 1];
+		} else {
+			styles[j >> 1] = mergeStyles[i >> 1];
+			ranges[j++] = mergeRanges[i];
+			ranges[j++] = mergeRanges[i + 1];
+		}
+	}
+	if (endStyle != null && ranges[j - 2] + ranges[j - 1] == endStart && endStyle.similarTo(styles[(j - 2) >> 1])) {
+		ranges[j - 1] += endLength;
+		modifyEnd += 2;
+		mergeCount += 2;
+	}
+	if (rangeCount > modifyEnd) {
+		System.arraycopy(ranges, modifyStart + mergeCount, ranges, j, rangeCount - modifyEnd);
+		System.arraycopy(styles, (modifyStart + mergeCount) >> 1, styles, j >> 1, styleCount - (modifyEnd >> 1));
+	}
+	grow = (j - modifyStart) - (modifyEnd - modifyStart);
+	styleCount += grow >> 1;
+	return grow;
+}
+int addMerge(StyleRange[] mergeStyles, int mergeCount, int modifyStart, int modifyEnd) {
+	int grow = mergeCount - (modifyEnd - modifyStart);
+	StyleRange endStyle = null;
+	if (modifyEnd < styleCount) endStyle = styles[modifyEnd];
+	if (styleCount + grow >= styles.length) {
+		StyleRange[] tmpStyles = new StyleRange[styles.length + grow + GROW];
+		System.arraycopy(styles, 0, tmpStyles, 0, modifyStart);
+		if (styleCount > modifyEnd) {
+			System.arraycopy(styles, modifyEnd, tmpStyles, modifyStart + mergeCount, styleCount - modifyEnd);
+		}
+		styles = tmpStyles;
+	} else {
+		if (styleCount > modifyEnd) {
+			System.arraycopy(styles, modifyEnd, styles, modifyStart + mergeCount, styleCount - modifyEnd);
+		}
+	}
+	
+	int j = modifyStart;
+	for (int i = 0; i < mergeCount; i++) {
+		StyleRange newStyle = mergeStyles[i], style;
+		if (j > 0 && (style = styles[j - 1]).start + style.length == newStyle.start && newStyle.similarTo(style)) {
+			style.length += newStyle.length;
+		} else {
+			styles[j++] = newStyle;
+		}
+	}
+	StyleRange style = styles[j - 1];
+	if (endStyle != null && style.start + style.length == endStyle.start && endStyle.similarTo(style)) {
+		style.length += endStyle.length;
+		modifyEnd++;
+		mergeCount++;
+	}
+	if (styleCount > modifyEnd) {
+		System.arraycopy(styles, modifyStart + mergeCount, styles, j, styleCount - modifyEnd);
+	}
+	grow = (j - modifyStart) - (modifyEnd - modifyStart);
+	styleCount += grow;
+	return grow;
+}
 void calculate(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;
 	if (startLine < 0 || endLine > lineWidth.length) {
@@ -829,21 +919,11 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		int start = newRanges[0];
 		int rangeCount = styleCount << 1;
 		int modifyStart = getRangeIndex(start, -1, rangeCount);
+		int modifyEnd = modifyStart;
 		if (modifyStart == rangeCount) {
-			if (newStyles.length + styleCount >= styles.length) {
-				int[] tmpRanges = new int[ranges.length + newRanges.length];
-				System.arraycopy(ranges, 0, tmpRanges, 0, ranges.length);
-				ranges = tmpRanges;
-				StyleRange[] tmpStyles = new StyleRange[styles.length + newStyles.length];
-				System.arraycopy(styles, 0, tmpStyles, 0, styles.length);
-				styles = tmpStyles;
-			}
-			System.arraycopy(newRanges, 0, ranges, rangeCount, newRanges.length);
-			System.arraycopy(newStyles, 0, styles, styleCount, newStyles.length);
-			styleCount += newStyles.length;
+			addMerge(newRanges, newStyles, newRanges.length, modifyStart, modifyEnd);
 			return;
 		}
-		int modifyEnd = modifyStart;
 		int[] mergeRanges = new int[6];
 		StyleRange[] mergeStyles = new StyleRange[3];
 		for (int i = 0; i < newRanges.length; i += 2) {
@@ -873,31 +953,10 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 				mergeCount += 2;
 				modifyLast = 2;
 			}
-			modifyEnd += modifyLast;
-			int grow = mergeCount - (modifyEnd - modifyStart);
-			if (rangeCount + grow >= ranges.length) {
-				int[] tmpRanges = new int[ranges.length + grow + (GROW << 1)];
-				System.arraycopy(ranges, 0, tmpRanges, 0, modifyStart);
-				StyleRange[] tmpStyles = new StyleRange[styles.length + (grow >> 1) + GROW];
-				System.arraycopy(styles, 0, tmpStyles, 0, modifyStart >> 1);
-				if (rangeCount > modifyEnd) {
-					System.arraycopy(ranges, modifyEnd, tmpRanges, modifyStart + mergeCount, rangeCount - modifyEnd);
-					System.arraycopy(styles, modifyEnd >> 1, tmpStyles, (modifyStart + mergeCount) >> 1, styleCount - (modifyEnd >> 1));
-				}
-				ranges = tmpRanges;
-				styles = tmpStyles;
-			} else {
-				if (rangeCount > modifyEnd) {
-					System.arraycopy(ranges, modifyEnd, ranges, modifyStart + mergeCount, rangeCount - modifyEnd);
-					System.arraycopy(styles, modifyEnd >> 1, styles, (modifyStart + mergeCount) >> 1, styleCount - (modifyEnd >> 1));
-				}
-			}
-			System.arraycopy(mergeRanges, 0, ranges, modifyStart, mergeCount);
-			System.arraycopy(mergeStyles, 0, styles, modifyStart >> 1, mergeCount >> 1);
+			int grow = addMerge(mergeRanges, mergeStyles, mergeCount, modifyStart, modifyEnd + modifyLast);
 			rangeCount += grow;
-			styleCount += grow >> 1;
-			modifyStart = modifyEnd = modifyEnd + grow - modifyLast;
-		}		
+			modifyStart = modifyEnd += grow;
+		}
 	} else {
 		int start = newStyles[0].start;
 		int modifyStart = getRangeIndex(start, -1, styleCount);
@@ -937,44 +996,6 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 			modifyStart = modifyEnd += grow;
 		}
 	}
-}
-int addMerge(StyleRange[] mergeStyles, int mergeCount, int modifyStart, int modifyEnd) {
-	int grow = mergeCount - (modifyEnd - modifyStart);
-	StyleRange endStyle = null;
-	if (modifyEnd < styleCount) endStyle = styles[modifyEnd];
-	if (styleCount + grow >= styles.length) {
-		StyleRange[] tmpStyles = new StyleRange[styles.length + grow + GROW];
-		System.arraycopy(styles, 0, tmpStyles, 0, modifyStart);
-		if (styleCount > modifyEnd) {
-			System.arraycopy(styles, modifyEnd, tmpStyles, modifyStart + mergeCount, styleCount - modifyEnd);
-		}
-		styles = tmpStyles;
-	} else {
-		if (styleCount > modifyEnd) {
-			System.arraycopy(styles, modifyEnd, styles, modifyStart + mergeCount, styleCount - modifyEnd);
-		}
-	}
-	int j = modifyStart;
-	for (int i = 0; i < mergeCount; i++) {
-		StyleRange newStyle = mergeStyles[i], style;
-		if (j > 0 && (style = styles[j - 1]).start + style.length == newStyle.start && newStyle.similarTo(style)) {
-			style.length += newStyle.length;
-		} else {
-			styles[j++] = newStyle;
-		}
-	}
-	StyleRange style = styles[j - 1];
-	if (endStyle != null && style.start + style.length == endStyle.start && endStyle.similarTo(style)) {
-		style.length += endStyle.length;
-		modifyEnd++;
-		mergeCount++;
-	}
-	if (styleCount > modifyEnd) {
-		System.arraycopy(styles, modifyStart + mergeCount, styles, j, styleCount - modifyEnd);
-	}
-	grow = (j - modifyStart) - (modifyEnd - modifyStart);
-	styleCount += grow;
-	return grow;
 }
 void textChanging(TextChangingEvent event) {
 	int start = event.start;
