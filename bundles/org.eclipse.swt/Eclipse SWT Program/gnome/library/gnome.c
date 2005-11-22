@@ -31,50 +31,6 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(GnomeVFSMimeApplication_1sizeof)
 }
 #endif
 
-#ifndef NO__1dlclose
-JNIEXPORT jint JNICALL GNOME_NATIVE(_1dlclose)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, _1dlclose_FUNC);
-	rc = (jint)dlclose((void *)arg0);
-	GNOME_NATIVE_EXIT(env, that, _1dlclose_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1dlopen
-JNIEXPORT jint JNICALL GNOME_NATIVE(_1dlopen)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
-{
-	jbyte *lparg0=NULL;
-	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, _1dlopen_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)dlopen((const char *)lparg0, arg1);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GNOME_NATIVE_EXIT(env, that, _1dlopen_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1dlsym
-JNIEXPORT jint JNICALL GNOME_NATIVE(_1dlsym)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	jint rc = 0;
-	GNOME_NATIVE_ENTER(env, that, _1dlsym_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)dlsym((void *)arg0, (const char *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	GNOME_NATIVE_EXIT(env, that, _1dlsym_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1g_1free
 JNIEXPORT void JNICALL GNOME_NATIVE(_1g_1free)
 	(JNIEnv *env, jclass that, jint arg0)
