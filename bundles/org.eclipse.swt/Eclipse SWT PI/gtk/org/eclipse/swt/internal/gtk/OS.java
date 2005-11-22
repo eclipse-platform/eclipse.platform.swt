@@ -349,6 +349,7 @@ public class OS extends Platform {
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	public static final int PANGO_WRAP_WORD = 0;
 	public static final int PANGO_WRAP_WORD_CHAR = 2;
+	public static final int RTLD_LAZY = 1;
 	public static final int XA_CARDINAL = 6;
 	public static final int XA_WINDOW = 33;
 	
@@ -7508,6 +7509,15 @@ public static final void gtk_widget_set_state(int /*long*/ widget, int state) {
 	lock.lock();
 	try {
 		_gtk_widget_set_state(widget, state);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_widget_set_style(int /*long*/ widget, int /*long*/ style);
+public static final void gtk_widget_set_style(int /*long*/ widget, int /*long*/ style) {
+	lock.lock();
+	try {
+		_gtk_widget_set_style(widget, style);
 	} finally {
 		lock.unlock();
 	}

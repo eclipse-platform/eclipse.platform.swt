@@ -181,6 +181,11 @@ protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
 
+int /*long*/ childStyle () {
+	if (scrolledHandle != 0) return 0;
+	return super.childStyle ();
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -1115,6 +1120,7 @@ void showWidget () {
 		OS.gtk_widget_show (socketHandle);
 		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
 	}
+	if (scrolledHandle == 0) fixStyle (handle);
 }
 
 boolean translateMnemonic (Event event, Control control) {

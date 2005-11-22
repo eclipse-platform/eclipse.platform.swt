@@ -475,6 +475,10 @@ void checkOpen () {
 	if (!opened) resized = false;
 }
 
+int /*long*/ childStyle () {
+	return 0;
+}
+
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on
@@ -661,6 +665,9 @@ void fixShell (Shell newShell, Control control) {
 		control.setToolTipText (this, null);
 		control.setToolTipText (newShell, toolTipText);
 	}
+}
+
+void fixStyle (int /*long*/ handle) {
 }
 
 void forceResize () {

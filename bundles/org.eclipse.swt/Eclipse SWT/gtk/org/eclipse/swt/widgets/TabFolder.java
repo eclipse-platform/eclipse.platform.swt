@@ -93,6 +93,11 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+int /*long*/ childStyle () {
+	OS.gtk_widget_realize (handle);
+	return OS.gtk_widget_get_style (handle);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending

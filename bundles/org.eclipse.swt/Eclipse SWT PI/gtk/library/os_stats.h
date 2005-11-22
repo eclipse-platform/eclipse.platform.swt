@@ -874,6 +874,7 @@ typedef enum {
 	_1gtk_1widget_1set_1sensitive_FUNC,
 	_1gtk_1widget_1set_1size_1request_FUNC,
 	_1gtk_1widget_1set_1state_FUNC,
+	_1gtk_1widget_1set_1style_FUNC,
 	_1gtk_1widget_1shape_1combine_1mask_FUNC,
 	_1gtk_1widget_1show_FUNC,
 	_1gtk_1widget_1show_1now_FUNC,

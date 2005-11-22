@@ -128,6 +128,21 @@ void fixFocus (Control focusControl) {
 	OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
 }
 
+void fixStyle (int /*long*/ handle) {
+	/*
+	* Feature in GTK.  Some GTK themes apply a different background to
+	* the contents of a GtkNotebook.  However, in an SWT TabFolder, the
+	* children are not parented below the GtkNotebook widget, and usually
+	* have their own GtkFixed.  The fix is to look up the correct style
+	* for a child of a GtkNotebook and apply it to any GtkFixed widgets
+	* that are direct children of an SWT TabFolder.
+	*/
+	int /*long*/ childStyle = parent.childStyle ();
+	if (childStyle != 0) {
+		OS.gtk_widget_set_style (handle, childStyle);
+	}
+}
+
 int /*long*/ focusHandle () {
 	return handle;
 }
@@ -302,6 +317,10 @@ void checkBuffered () {
 
 void checkBorder () {
 	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
+}
+
+int /*long*/ childStyle () {
+	return parent.childStyle ();
 }
 
 void createWidget (int index) {
@@ -3226,6 +3245,7 @@ void showWidget () {
 	if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
 		if (fixedHandle != 0) OS.gtk_widget_show (fixedHandle);
 	}
+	if (fixedHandle != 0) fixStyle (fixedHandle);
 }
 
 void sort (int [] items) {

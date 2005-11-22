@@ -699,6 +699,11 @@ public void setText (String string) {
 	redraw ();
 }
 
+void showWidget () {
+	super.showWidget ();
+	fixStyle (handle);
+}
+
 int traversalCode (int key, GdkEventKey event) {
 	if (offsets.length == 0) return 0;
 	int bits = super.traversalCode (key, event);

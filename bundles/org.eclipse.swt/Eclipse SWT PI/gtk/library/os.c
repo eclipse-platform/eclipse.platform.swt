@@ -11047,6 +11047,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1state)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1set_1style
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1style)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1style_FUNC);
+	gtk_widget_set_style((GtkWidget *)arg0, (GtkStyle *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1style_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1shape_1combine_1mask
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1shape_1combine_1mask)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
