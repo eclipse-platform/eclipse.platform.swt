@@ -123,4 +123,8 @@ if [ "x${OUTPUT_DIR}" = "x" ]; then
 	export OUTPUT_DIR
 fi
 
-make -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+if [ "x${1}" = "xclean" ]; then
+	make -f $MAKEFILE clean
+else
+	make -f $MAKEFILE all $MAKE_GNOME $MAKE_CAIRO $MAKE_AWT $MAKE_MOZILLA ${1} ${2} ${3} ${4} ${5} ${6} ${7} ${8} ${9}
+fi
