@@ -459,35 +459,40 @@ void createClassesPanel(Composite panel) {
 	classEditorLt.addListener(SWT.Traverse, classesListListener);
 
 	classesLt.addListener(SWT.MouseDown, new Listener() {
-		public void handleEvent(Event e) {
-			if (e.button != 1) return;
-			Point pt = new Point(e.x, e.y);
-			TableItem item = classesLt.getItem(pt);
-			if (item == null) return;
-			int column = -1;
-			for (int i = 0; i < classesLt.getColumnCount(); i++) {
-				if (item.getBounds(i).contains(pt)) {
-					column = i;
-					break;
-				}				
-			}
-			if (column == -1) return;
-			ClassData data = (ClassData)item.getData();
-			if (column == CLASS_EXCLUDE_COLUMN) {
-				classTextEditor.setColumn(column);
-				classTextEditor.setItem(item);
-				classEditorTx.setText(data.getExclude());
-				classEditorTx.selectAll();
-				classEditorTx.setVisible(true);
-				classEditorTx.setFocus();
-			} else if (column == CLASS_FLAGS_COLUMN) {
-				classListEditor.setColumn(column);
-				classListEditor.setItem(item);
-				classEditorLt.setSelection(data.getFlags());
-				floater.setLocation(classesLt.toDisplay(e.x, e.y));
-				floater.setVisible(true);
-				classEditorLt.setFocus();
-			}
+		public void handleEvent(final Event e) {
+			e.display.asyncExec (new Runnable () {
+				public void run () {
+					if (classesLt.isDisposed ()) return;
+					if (e.button != 1) return;
+					Point pt = new Point(e.x, e.y);
+					TableItem item = classesLt.getItem(pt);
+					if (item == null) return;
+					int column = -1;
+					for (int i = 0; i < classesLt.getColumnCount(); i++) {
+						if (item.getBounds(i).contains(pt)) {
+							column = i;
+							break;
+						}				
+					}
+					if (column == -1) return;
+					ClassData data = (ClassData)item.getData();
+					if (column == CLASS_EXCLUDE_COLUMN) {
+						classTextEditor.setColumn(column);
+						classTextEditor.setItem(item);
+						classEditorTx.setText(data.getExclude());
+						classEditorTx.selectAll();
+						classEditorTx.setVisible(true);
+						classEditorTx.setFocus();
+					} else if (column == CLASS_FLAGS_COLUMN) {
+						classListEditor.setColumn(column);
+						classListEditor.setItem(item);
+						classEditorLt.setSelection(data.getFlags());
+						floater.setLocation(classesLt.toDisplay(e.x, e.y));
+						floater.setVisible(true);
+						classEditorLt.setFocus();
+					}
+				}
+			});
 		}
 	});
 }
@@ -624,70 +629,75 @@ void createMembersPanel(Composite panel) {
 	memberEditorLt.addListener(SWT.Traverse, memberListListener);
 	
 	membersLt.addListener(SWT.MouseDown, new Listener() {
-		public void handleEvent(Event e) {
-			if (e.button != 1) return;
-			Point pt = new Point(e.x, e.y);
-			TableItem item = membersLt.getItem(pt);
-			if (item == null) return;
-			int column = -1;
-			for (int i = 0; i < membersLt.getColumnCount(); i++) {
-				if (item.getBounds(i).contains(pt)) {
-					column = i;
-					break;
-				}				
-			}
-			if (column == -1) return;
-			ItemData itemData = (ItemData)item.getData();
-			if (itemData instanceof FieldData) {
-				FieldData data = (FieldData)itemData;
-				if (column == FIELD_CAST_COLUMN || column == FIELD_ACCESSOR_COLUMN || column == FIELD_EXCLUDE_COLUMN) {
-					memberTextEditor.setColumn(column);
-					memberTextEditor.setItem(item);
-					String text = "";
-					switch (column) {
-						case FIELD_CAST_COLUMN: text = data.getCast(); break;
-						case FIELD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
-						case FIELD_EXCLUDE_COLUMN: text = data.getExclude(); break;
+		public void handleEvent(final Event e) {
+			e.display.asyncExec (new Runnable () {
+				public void run () {
+					if (membersLt.isDisposed ()) return;
+					if (e.button != 1) return;
+					Point pt = new Point(e.x, e.y);
+					TableItem item = membersLt.getItem(pt);
+					if (item == null) return;
+					int column = -1;
+					for (int i = 0; i < membersLt.getColumnCount(); i++) {
+						if (item.getBounds(i).contains(pt)) {
+							column = i;
+							break;
+						}				
 					}
-					memberEditorTx.setText(text);
-					memberEditorTx.selectAll();
-					memberEditorTx.setVisible(true);
-					memberEditorTx.setFocus();
-				} else if (column == FIELD_FLAGS_COLUMN) {
-					memberListEditor.setColumn(column);
-					memberListEditor.setItem(item);
-					memberEditorLt.setItems(FieldData.getAllFlags());
-					memberEditorLt.setSelection(data.getFlags());
-					floater.setLocation(membersLt.toDisplay(e.x, e.y));
-					floater.pack();
-					floater.setVisible(true);
-					memberEditorLt.setFocus();
-				}
-			} else if (itemData instanceof MethodData) {
-				MethodData data = (MethodData)itemData;
-				if (column == METHOD_EXCLUDE_COLUMN || column == METHOD_ACCESSOR_COLUMN) {
-					memberTextEditor.setColumn(column);
-					memberTextEditor.setItem(item);
-					String text = "";
-					switch (column) {
-						case METHOD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
-						case METHOD_EXCLUDE_COLUMN: text = data.getExclude(); break;
+					if (column == -1) return;
+					ItemData itemData = (ItemData)item.getData();
+					if (itemData instanceof FieldData) {
+						FieldData data = (FieldData)itemData;
+						if (column == FIELD_CAST_COLUMN || column == FIELD_ACCESSOR_COLUMN || column == FIELD_EXCLUDE_COLUMN) {
+							memberTextEditor.setColumn(column);
+							memberTextEditor.setItem(item);
+							String text = "";
+							switch (column) {
+								case FIELD_CAST_COLUMN: text = data.getCast(); break;
+								case FIELD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
+								case FIELD_EXCLUDE_COLUMN: text = data.getExclude(); break;
+							}
+							memberEditorTx.setText(text);
+							memberEditorTx.selectAll();
+							memberEditorTx.setVisible(true);
+							memberEditorTx.setFocus();
+						} else if (column == FIELD_FLAGS_COLUMN) {
+							memberListEditor.setColumn(column);
+							memberListEditor.setItem(item);
+							memberEditorLt.setItems(FieldData.getAllFlags());
+							memberEditorLt.setSelection(data.getFlags());
+							floater.setLocation(membersLt.toDisplay(e.x, e.y));
+							floater.pack();
+							floater.setVisible(true);
+							memberEditorLt.setFocus();
+						}
+					} else if (itemData instanceof MethodData) {
+						MethodData data = (MethodData)itemData;
+						if (column == METHOD_EXCLUDE_COLUMN || column == METHOD_ACCESSOR_COLUMN) {
+							memberTextEditor.setColumn(column);
+							memberTextEditor.setItem(item);
+							String text = "";
+							switch (column) {
+								case METHOD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
+								case METHOD_EXCLUDE_COLUMN: text = data.getExclude(); break;
+							}
+							memberEditorTx.setText(text);
+							memberEditorTx.selectAll();
+							memberEditorTx.setVisible(true);
+							memberEditorTx.setFocus();
+						} else if (column == METHOD_FLAGS_COLUMN) {
+							memberListEditor.setColumn(column);
+							memberListEditor.setItem(item);
+							memberEditorLt.setItems(MethodData.getAllFlags());
+							memberEditorLt.setSelection(data.getFlags());
+							floater.setLocation(membersLt.toDisplay(e.x, e.y));
+							floater.pack();
+							floater.setVisible(true);
+							memberEditorLt.setFocus();
+						}
 					}
-					memberEditorTx.setText(text);
-					memberEditorTx.selectAll();
-					memberEditorTx.setVisible(true);
-					memberEditorTx.setFocus();
-				} else if (column == METHOD_FLAGS_COLUMN) {
-					memberListEditor.setColumn(column);
-					memberListEditor.setItem(item);
-					memberEditorLt.setItems(MethodData.getAllFlags());
-					memberEditorLt.setSelection(data.getFlags());
-					floater.setLocation(membersLt.toDisplay(e.x, e.y));
-					floater.pack();
-					floater.setVisible(true);
-					memberEditorLt.setFocus();
 				}
-			}
+			});
 		}
 	});
 }
