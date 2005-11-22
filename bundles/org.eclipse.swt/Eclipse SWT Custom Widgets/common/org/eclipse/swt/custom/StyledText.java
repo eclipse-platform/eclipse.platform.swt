@@ -3747,7 +3747,7 @@ int getOffsetAtPoint(int x, int y, int lineIndex) {
 	caretAlignment = OFFSET_LEADING;
 	if (trailing[0] != 0) {
 		int lineInParagraph = layout.getLineIndex(offsetInLine + trailing[0]);
-		//bad when offsetInLine + trailing == length, maybe the problem only shows with bidi
+		//TODO handle bidi text
 		int lineStart = layout.getLineOffsets()[lineInParagraph];
 		if (offsetInLine + trailing[0] == lineStart) {
 			offsetInLine += trailing[0];

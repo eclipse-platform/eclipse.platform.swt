@@ -697,7 +697,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setSegments(segments);
 	layout.setWidth(width);
 	layout.setSpacing(lineSpacing);
-	layout.setTabs(new int[]{tabWidth});	
+	layout.setTabs(new int[]{tabWidth});
 	layout.setIndent(indent);
 	layout.setAlignment(alignment);
 	layout.setJustify(justify);
