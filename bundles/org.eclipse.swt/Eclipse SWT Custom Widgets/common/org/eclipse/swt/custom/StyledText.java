@@ -1180,7 +1180,8 @@ public StyledText(Composite parent, int style) {
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) != 0) {
 		leftMargin = topMargin = rightMargin = bottomMargin = 2;
 	}
-	alignment = SWT.LEFT;
+	alignment = style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	if (alignment == 0) alignment = SWT.LEFT;
 	clipboard = new Clipboard(display);
 	installDefaultContent();
 	renderer = new StyledTextRenderer(getDisplay(), this);
