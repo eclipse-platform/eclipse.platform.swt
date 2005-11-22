@@ -1339,7 +1339,7 @@ public void addModifyListener(ModifyListener modifyListener) {
  * @since 3.2
  * 
  * @see PaintObjectListener
- * @sse PaintObjectEvent
+ * @see PaintObjectEvent
  */
 public void addPaintObjectListener(PaintObjectListener listener) {
 	checkWidget();
