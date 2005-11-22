@@ -71,22 +71,22 @@ public class Snippet209 {
 		final GLContext context = GLDrawableFactory.getFactory().createExternalGLContext();
 		GLContext.setCurrent(context);
         
-        canvas.addListener(SWT.Resize, new Listener() {
-        	public void handleEvent(Event event) {
-        		Rectangle bounds = canvas.getBounds();
-        		float fAspect = (float) bounds.width / (float) bounds.height;
+		canvas.addListener(SWT.Resize, new Listener() {
+			public void handleEvent(Event event) {
+				Rectangle bounds = canvas.getBounds();
+				float fAspect = (float) bounds.width / (float) bounds.height;
 				canvas.setCurrent();
 				GLContext.setCurrent(context);
 				GL gl = context.getGL ();
-        		gl.glViewport(0, 0, bounds.width, bounds.height);
-        		gl.glMatrixMode(GL.GL_PROJECTION);
-        		gl.glLoadIdentity();
-        		GLU glu = new GLU();
-        		glu.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
-        		gl.glMatrixMode(GL.GL_MODELVIEW);
-        		gl.glLoadIdentity();
-        	}
-        });
+				gl.glViewport(0, 0, bounds.width, bounds.height);
+				gl.glMatrixMode(GL.GL_PROJECTION);
+				gl.glLoadIdentity();
+				GLU glu = new GLU();
+				glu.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
+				gl.glMatrixMode(GL.GL_MODELVIEW);
+				gl.glLoadIdentity();
+			}
+		});
 
 		GL gl = context.getGL ();
 		gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -100,8 +100,8 @@ public class Snippet209 {
 		shell.setSize(640, 480);
 		shell.open();
 
-	    display.asyncExec(new Runnable() {
-	    	int rot = 0;
+		display.asyncExec(new Runnable() {
+			int rot = 0;
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();
