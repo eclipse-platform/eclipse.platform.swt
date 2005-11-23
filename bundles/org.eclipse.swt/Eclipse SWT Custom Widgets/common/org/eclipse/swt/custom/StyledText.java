@@ -1715,6 +1715,22 @@ int getAvailableHeightAbove(int height) {
 	}
 	return Math.min(height, maxHeight);
 }
+int getAvailableHeightBellow(int height) {
+	int partialBottomIndex = getPartialBottomIndex();
+	int topY = getLinePixel(partialBottomIndex);
+	int lineHeight = renderer.getLineHeight(partialBottomIndex);
+	int availableHeight = 0;
+	int clientAreaHeight = this.clientAreaHeight - topMargin - bottomMargin;
+	if (topY + lineHeight > clientAreaHeight) {
+		availableHeight = lineHeight - (clientAreaHeight - topY);
+	}
+	int lineIndex = partialBottomIndex + 1;
+	int lineCount = content.getLineCount();
+	while (height > availableHeight && lineIndex < lineCount) {
+		availableHeight += renderer.getLineHeight(lineIndex++);
+	}
+	return Math.min(height, availableHeight);
+}
 /**
  * Returns a string that uses only the line delimiter specified by the 
  * StyledTextContent implementation.
@@ -2442,16 +2458,17 @@ void doPageDown(boolean select, int height) {
 	} else {
 		int lineCount = content.getLineCount();
 		int caretLine = getCaretLine();
-		int partialBottomIndex = getPartialBottomIndex();
-		int topY = getLinePixel(partialBottomIndex);
-		int lineHeight = renderer.getLineHeight(partialBottomIndex);
+		int lineIndex, lineHeight;
 		if (height == -1) {
+			lineIndex = getPartialBottomIndex();
+			int topY = getLinePixel(lineIndex);
+			lineHeight = renderer.getLineHeight(lineIndex);
 			height = topY;
 			if (topY + lineHeight <= clientAreaHeight) {
 				height += lineHeight;
 			} else {
 				if (wordWrap) {
-					TextLayout layout = renderer.getTextLayout(partialBottomIndex);
+					TextLayout layout = renderer.getTextLayout(lineIndex);
 					int y = clientAreaHeight - topY;
 					for (int i = 0; i < layout.getLineCount(); i++) {
 						Rectangle bounds = layout.getLineBounds(i);
@@ -2464,7 +2481,7 @@ void doPageDown(boolean select, int height) {
 				}
 			}
 		} else {
-			int lineIndex = getLineIndex(height);
+			lineIndex = getLineIndex(height);
 			int topLineY = getLinePixel(lineIndex);
 			if (wordWrap) {
 				TextLayout layout = renderer.getTextLayout(lineIndex);
@@ -2480,14 +2497,6 @@ void doPageDown(boolean select, int height) {
 			} else {
 				height = topLineY + renderer.getLineHeight(lineIndex);
 			}
-		}
-		int availableHeight = 0;
-		if (topY + lineHeight > clientAreaHeight) {
-			availableHeight = lineHeight - (clientAreaHeight - topY);
-		}
-		int lineIndex = partialBottomIndex + 1;
-		while (height > availableHeight && lineIndex < lineCount) {
-			availableHeight += renderer.getLineHeight(lineIndex++);
 		}
 		int caretHeight = height;
 		if (wordWrap) {
@@ -2505,7 +2514,7 @@ void doPageDown(boolean select, int height) {
 		}
 		caretOffset = getOffsetAtPoint(columnX, caretHeight, lineIndex);
 		if (select) doSelection(ST.COLUMN_NEXT);
-		height = Math.min(height, availableHeight);
+		height = getAvailableHeightBellow(height);
 		scrollVertical(height, true);
 		if (height == 0) setCaretLocation();
 	}	
@@ -7844,21 +7853,18 @@ public void setTopPixel(int pixel) {
 	if (pixel < 0) pixel = 0;
 	int lineCount = content.getLineCount();
 	int height = clientAreaHeight - topMargin - bottomMargin;
+	int verticalOffset = getVerticalScrollOffset();
 	if (isFixedLineHeight()) {
 		int maxTopPixel = Math.max(0, lineCount * getVerticalIncrement() - height);
 		if (pixel > maxTopPixel) pixel = maxTopPixel;
+		pixel -= verticalOffset; 
 	} else {
-		int verticalOffset = getVerticalScrollOffset();
-		if (pixel > verticalOffset) {
-			int lineIndex = topIndex;
-			int maxTopPixel = verticalOffset + getLinePixel(lineIndex) - height;
-			while (maxTopPixel < pixel && lineIndex < lineCount) {
-				maxTopPixel += renderer.getLineHeight(lineIndex++);
-			}
-			if (pixel > maxTopPixel) pixel = maxTopPixel;
+		pixel -= verticalOffset;
+		if (pixel > 0) {
+			pixel = getAvailableHeightBellow(pixel);
 		}
 	}
-	scrollVertical(pixel - getVerticalScrollOffset(), true);
+	scrollVertical(pixel, true);
 }
 /**
  * Sets whether the widget wraps lines.
