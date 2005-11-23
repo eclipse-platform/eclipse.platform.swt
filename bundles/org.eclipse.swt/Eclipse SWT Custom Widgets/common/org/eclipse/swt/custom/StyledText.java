@@ -7816,15 +7816,24 @@ public void setTopIndex(int topIndex) {
 	if (getCharCount() == 0) {
 		return;
 	}
-	int lineCount = content.getLineCount();
-	//TODO broken for variable line height
-	int pageSize = Math.max(1, Math.min(lineCount, getLineCountWhole()));
-	if (topIndex < 0) {
-		topIndex = 0;
-	} else if (topIndex > lineCount - pageSize) {
-		topIndex = lineCount - pageSize;
-	}
-	int pixel = getLinePixel(topIndex);
+	int lineCount = content.getLineCount(), pixel;
+	if (isFixedLineHeight()) {
+		int pageSize = Math.max(1, Math.min(lineCount, getLineCountWhole()));
+		if (topIndex < 0) {
+			topIndex = 0;
+		} else if (topIndex > lineCount - pageSize) {
+			topIndex = lineCount - pageSize;
+		}
+		pixel = getLinePixel(topIndex);
+	} else {
+		topIndex = Math.max(0, Math.min(lineCount - 1, topIndex));
+		pixel = getLinePixel(topIndex);
+		if (pixel > 0) {
+			pixel = getAvailableHeightBellow(pixel);
+		} else {
+			pixel = getAvailableHeightAbove(pixel);
+		}
+	} 
 	scrollVertical(pixel, true);
 }
 /**
