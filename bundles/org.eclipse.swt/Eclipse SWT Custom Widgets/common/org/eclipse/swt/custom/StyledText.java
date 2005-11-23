@@ -6169,6 +6169,7 @@ void reset() {
 	ScrollBar horizontalBar = getHorizontalBar();
 	caretOffset = 0;
 	topIndex = 0;
+	topIndexY = 0;
 	verticalScrollOffset = 0;
 	horizontalScrollOffset = 0;	
 	resetSelection();
