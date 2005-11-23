@@ -69,14 +69,13 @@ public class Snippet209 {
 
 		canvas.setCurrent();
 		final GLContext context = GLDrawableFactory.getFactory().createExternalGLContext();
-		GLContext.setCurrent(context);
-        
+
 		canvas.addListener(SWT.Resize, new Listener() {
 			public void handleEvent(Event event) {
 				Rectangle bounds = canvas.getBounds();
 				float fAspect = (float) bounds.width / (float) bounds.height;
 				canvas.setCurrent();
-				GLContext.setCurrent(context);
+				context.makeCurrent();
 				GL gl = context.getGL ();
 				gl.glViewport(0, 0, bounds.width, bounds.height);
 				gl.glMatrixMode(GL.GL_PROJECTION);
@@ -85,9 +84,11 @@ public class Snippet209 {
 				glu.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
 				gl.glMatrixMode(GL.GL_MODELVIEW);
 				gl.glLoadIdentity();
+				context.release();
 			}
 		});
 
+		context.makeCurrent();
 		GL gl = context.getGL ();
 		gl.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		gl.glColor3f(1.0f, 0.0f, 0.0f);
@@ -95,6 +96,7 @@ public class Snippet209 {
 		gl.glClearDepth(1.0);
 		gl.glLineWidth(2);
 		gl.glEnable(GL.GL_DEPTH_TEST);
+		context.release();
 
 		shell.setText("SWT/JOGL Example");
 		shell.setSize(640, 480);
@@ -105,7 +107,7 @@ public class Snippet209 {
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();
-					GLContext.setCurrent(context);
+					context.makeCurrent();
 					GL gl = context.getGL ();
 					gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 					gl.glClearColor(.3f, .5f, .8f, 1.0f);
@@ -119,6 +121,7 @@ public class Snippet209 {
 					gl.glColor3f(0.9f, 0.9f, 0.9f);
 					drawTorus(gl, 1, 1.9f + ((float) Math.sin((0.004f * frot))), 15, 15);
 					canvas.swapBuffers();
+					context.release();
 					display.asyncExec(this);
 				}
 			}
