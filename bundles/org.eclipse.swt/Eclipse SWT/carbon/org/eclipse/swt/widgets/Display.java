@@ -2883,7 +2883,7 @@ public boolean readAndDispatch () {
 		* there is a wake message.
 		*
 		* NOTE:  This is not the correct behavior.  Operating system
-		* message are supposed to have priority over async messages.
+		* messages are supposed to have priority over async messages.
 		*/
 		if (eventClass == WAKE_CLASS && eventKind == WAKE_KIND) {
 			runAsyncMessages (false);
