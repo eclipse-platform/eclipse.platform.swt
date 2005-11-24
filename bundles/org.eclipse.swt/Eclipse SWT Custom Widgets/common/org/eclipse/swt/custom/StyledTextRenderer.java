@@ -46,6 +46,10 @@ class StyledTextRenderer {
 	int[] ranges;
 	int styleCount;	
 	StyleRange[] styles;
+	StyleRange[] stylesSet;
+	int stylesSetCount = 0;
+	
+	final static boolean NEW_DB = true;
 	
 	final static int GROW = 32;
 	final static int IDLE_TIME = 50;
@@ -58,7 +62,7 @@ class StyledTextRenderer {
 	final static int BULLET = 1 << 4;
 	final static int SEGMENTS = 1 << 5;
 	
-	class LineInfo {
+	static class LineInfo {
 		int flags;
 		Color background;
 		int alignment;
@@ -79,7 +83,6 @@ class StyledTextRenderer {
 			segments = info.segments;
 		}
 	}
-	
 	
 StyledTextRenderer(Device device, StyledText styledText) {
 	this.device = device;
@@ -757,9 +760,10 @@ void reset() {
 		layouts = null;
 	}
 	topIndex = -1;
-	styleCount = lineCount = 0;
+	stylesSetCount = styleCount = lineCount = 0;
 	ranges = null;
 	styles = null;
+	stylesSet = null;
 	lines = null;
 	lineWidth = null;
 	lineHeight = null;
@@ -886,11 +890,38 @@ void setLineSegments(int startLine, int count, int[] segments) {
 }
 void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 	if (newStyles == null) {
-		styleCount = 0;
+		stylesSetCount = styleCount = 0;
 		ranges = null;
 		styles = null;
+		stylesSet = null;
 		return;
-	}	
+	}
+	if (newRanges == null && NEW_DB) {
+		newRanges = new int[newStyles.length << 1];		
+		StyleRange[] tmpStyles = new StyleRange[newStyles.length];
+		if (stylesSet == null) stylesSet = new StyleRange[4];
+		for (int i = 0, j = 0; i < newStyles.length; i++) {
+			StyleRange newStyle = newStyles[i];
+			newRanges[j++] = newStyle.start;
+			newRanges[j++] = newStyle.length;
+			int index = 0;
+			while (index < stylesSetCount) {
+				if (stylesSet[index].similarTo(newStyle)) break;
+				index++;
+			}
+			if (index == stylesSetCount) {
+				if (stylesSetCount == stylesSet.length) {
+					StyleRange[] tmpStylesSet = new StyleRange[stylesSetCount + 4];
+					System.arraycopy(stylesSet, 0, tmpStylesSet, 0, stylesSetCount);
+					stylesSet = tmpStylesSet;
+				}
+				stylesSet[stylesSetCount++] = newStyle;
+			}
+			tmpStyles[i] = stylesSet[index];
+		}
+		newStyles = tmpStyles;
+	}
+	
 	if (styleCount == 0) {
 		if (newRanges != null) {
 			ranges = new int[newRanges.length];
