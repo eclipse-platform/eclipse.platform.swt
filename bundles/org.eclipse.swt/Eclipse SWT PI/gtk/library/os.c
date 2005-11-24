@@ -5444,7 +5444,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1arrow_1new)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1arrow_1new_FUNC);
-	rc = (jint)gtk_arrow_new((GtkArrowType)arg0, (GtkArrowType)arg1);
+	rc = (jint)gtk_arrow_new((GtkArrowType)arg0, (GtkShadowType)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1arrow_1new_FUNC);
 	return rc;
 }
@@ -5455,7 +5455,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1arrow_1set)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1arrow_1set_FUNC);
-	gtk_arrow_set((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkArrowType)arg2);
+	gtk_arrow_set((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkShadowType)arg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1arrow_1set_FUNC);
 }
 #endif
