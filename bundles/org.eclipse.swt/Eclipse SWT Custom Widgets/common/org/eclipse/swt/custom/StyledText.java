@@ -3853,6 +3853,37 @@ String getPlatformDelimitedText(TextWriter writer) {
 	return writer.toString();
 }
 /**
+ * Returns all the ranges of text that have an associated StyleRange.
+ * Returns an empty array if a LineStyleListener has been set. 
+ * Should not be called if a LineStyleListener has been set since the 
+ * listener maintains the styles.
+ * <p>
+ * The ranges array contains start and length pairs.  Each pair refers to
+ * the corresponding style in the styles array.  For example, the pair
+ * that starts at ranges[n] with length ranges[n+1] uses the style
+ * at styles[n/2] returned by <code>getStyleRanges(int, int, boolean)</code>.
+ * <p>
+ * 
+ * @return the ranges or an empty array if a LineStyleListener has been set.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ * 
+ * @see #getStyleRanges(boolean)
+ */
+public int[] getRanges() {
+	checkWidget();
+	if (!isListening(LineGetStyle)) {
+		int[] ranges = renderer.getRanges(0, content.getCharCount());
+		if (ranges != null) return ranges;
+	}
+	return new int[0];
+}
+/**
  * Returns the ranges of text that have an associated StyleRange.
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
@@ -3873,6 +3904,9 @@ String getPlatformDelimitedText(TextWriter writer) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_RANGE if start or length are outside the widget content</li> 
+ * </ul> 
  * 
  * @since 3.2
  * 
