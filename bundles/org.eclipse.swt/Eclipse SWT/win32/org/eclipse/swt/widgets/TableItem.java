@@ -942,10 +942,12 @@ public void setImage (int index, Image image) {
 	if (image != null && image.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	Image oldImage = null;
 	if (index == 0) {
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (this.image)) return;
 		}
+		oldImage = this.image;
 		super.setImage (image);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
@@ -955,6 +957,7 @@ public void setImage (int index, Image image) {
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (images [index])) return;
 		}
+		oldImage = images [index];
 		images [index] = image;
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -963,7 +966,8 @@ public void setImage (int index, Image image) {
 	parent.imageIndex (image);
 	
 	if (index == 0) parent.setScrollWidth (this, false);
-	redraw (index, false, true);
+	boolean drawText = (image == null && oldImage != null) || (image != null && oldImage == null);
+	redraw (index, drawText, true);
 }
 
 public void setImage (Image image) {
