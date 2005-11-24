@@ -1130,6 +1130,16 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		if ((style & (SWT.NO_MERGE_PAINTS | SWT.DOUBLE_BUFFERED)) != 0) {
 			sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
 			if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
+				if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+					if ((OS.GetLayout (gc.handle) & OS.LAYOUT_RTL) != 0) {
+						int nBytes = OS.GetRegionData (sysRgn, 0, null);
+						int [] lpRgnData = new int [nBytes / 4];
+						OS.GetRegionData (sysRgn, nBytes, lpRgnData);
+						int newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
+						OS.DeleteObject (sysRgn);
+						sysRgn = newSysRgn;
+					}
+				}
 				if (OS.IsWinNT) {
 					POINT pt = new POINT();
 					OS.MapWindowPoints (0, handle, pt, 1);
