@@ -28,11 +28,12 @@ class TableTab extends ScrollableTab {
 	/* Other widgets added to the "Other" group */
 	Button multipleColumns, moveableColumns, headerVisibleButton, linesVisibleButton;
 	
-	/* Controls and resources added to the "Colors" group */
+	/* Controls and resources added to the "Colors and Fonts" group */
 	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
 	Color itemForegroundColor, itemBackgroundColor;
 	Image itemForegroundImage, itemBackgroundImage;
 	Font itemFont;
+	boolean setItemFont = false, setItemForeground = false, setItemBackground = false;
 	
 	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
 									   ControlExample.getResourceString("TableTitle_1"),
@@ -61,10 +62,10 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
-	 * Creates the "Colors" group.
+	 * Creates the "Colors and Fonts" group.
 	 */
-	void createColorGroup () {
-		super.createColorGroup();
+	void createColorAndFontGroup () {
+		super.createColorAndFontGroup();
 		
 		itemGroup = new Group (colorGroup, SWT.NONE);
 		itemGroup.setText (ControlExample.getResourceString ("Table_Item_Colors"));
@@ -101,6 +102,7 @@ class TableTab extends ScrollableTab {
 				if (rgb == null) return;
 				oldColor = itemForegroundColor;
 				itemForegroundColor = new Color (event.display, rgb);
+				setItemForeground = true;
 				setItemForeground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -115,6 +117,7 @@ class TableTab extends ScrollableTab {
 				if (rgb == null) return;
 				oldColor = itemBackgroundColor;
 				itemBackgroundColor = new Color (event.display, rgb);
+				setItemBackground = true;
 				setItemBackground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -128,6 +131,7 @@ class TableTab extends ScrollableTab {
 				if (fontData == null) return;
 				oldFont = itemFont;
 				itemFont = new Font (event.display, fontData);
+				setItemFont = true;
 				setItemFont ();
 				setExampleWidgetSize ();
 				if (oldFont != null) oldFont.dispose ();
@@ -347,7 +351,6 @@ class TableTab extends ScrollableTab {
 		Font oldFont = font;
 		itemFont = null;
 		setItemFont ();
-		setExampleWidgetSize ();
 		if (oldFont != null) oldFont.dispose();
 	}
 	
@@ -355,8 +358,10 @@ class TableTab extends ScrollableTab {
 	 * Sets the background color of TableItem [0].
 	 */
 	void setItemBackground () {
-		table1.getItem (0).setBackground (itemBackgroundColor);
-		/* Set the background button's color to match the color just set. */
+		if (setItemBackground) {
+			table1.getItem (0).setBackground (itemBackgroundColor);
+		}
+		/* Set the background button's color to match the background color of the item. */
 		Color color = itemBackgroundColor;
 		if (color == null) color = table1.getItem (0).getBackground ();
 		drawImage (itemBackgroundImage, color);
@@ -367,8 +372,10 @@ class TableTab extends ScrollableTab {
 	 * Sets the foreground color of TableItem [0].
 	 */
 	void setItemForeground () {
-		table1.getItem (0).setForeground (itemForegroundColor);
-		/* Set the foreground button's color to match the color just set. */
+		if (setItemForeground) {
+			table1.getItem (0).setForeground (itemForegroundColor);
+		}
+		/* Set the foreground button's color to match the foreground color of the item. */
 		Color color = itemForegroundColor;
 		if (color == null) color = table1.getItem (0).getForeground ();
 		drawImage (itemForegroundImage, color);
@@ -380,6 +387,7 @@ class TableTab extends ScrollableTab {
 	 */
 	void setItemFont () {
 		if (instance.startup) return;
+		if (!setItemFont) return;
 		table1.getItem (0).setFont (itemFont);
 		packColumns ();
 	}
@@ -389,6 +397,7 @@ class TableTab extends ScrollableTab {
 	 */
 	void setExampleWidgetFont () {
 		super.setExampleWidgetFont();
+		if (!setFont) return;
 		packColumns ();
 	}
 	

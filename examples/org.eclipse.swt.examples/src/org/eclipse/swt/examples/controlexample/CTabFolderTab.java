@@ -37,6 +37,7 @@ class CTabFolderTab extends Tab {
 	Image foregroundSelectionImage, backgroundSelectionImage;
 	Color foregroundSelectionColor, backgroundSelectionColor;
 	Font itemFont;
+	boolean setItemFont = false, setSelectionForeground = false, setSelectionBackground = false;
 	
 	/* Other widgets added to the "Other" group */
 	Button simpleTabButton, singleTabButton, imageButton, showMinButton, showMaxButton, unselectedCloseButton, unselectedImageButton;
@@ -49,35 +50,28 @@ class CTabFolderTab extends Tab {
 	}
 	
 	/**
-	 * Creates the "Fonts" group.
+	 * Creates the "Colors and Fonts" group.
 	 */
-	void createColorGroup () {
+	void createColorAndFontGroup () {
 		/* Create the group */
 		colorGroup = new Group(controlGroup, SWT.NONE);
 		colorGroup.setLayout (new GridLayout (2, false));
 		colorGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		colorGroup.setText (ControlExample.getResourceString ("Colors"));
-		
 		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
 		foregroundButton = new Button (colorGroup, SWT.PUSH);
-		
 		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
 		backgroundButton = new Button (colorGroup, SWT.PUSH);
-		
 		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Selection_Foreground_Color"));
 		foregroundSelectionButton = new Button (colorGroup, SWT.PUSH);
-		
 		new Label (colorGroup, SWT.NONE).setText (ControlExample.getResourceString ("Selection_Background_Color"));
 		backgroundSelectionButton = new Button (colorGroup, SWT.PUSH);
-		
 		fontButton = new Button (colorGroup, SWT.PUSH);
 		fontButton.setText(ControlExample.getResourceString("Font"));
 		fontButton.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false, 2, 1));
-	
 		itemFontButton = new Button (colorGroup, SWT.PUSH);
 		itemFontButton.setText(ControlExample.getResourceString("Item_Font"));
 		itemFontButton.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false, 2, 1));
-		
 		Button defaultsButton = new Button (colorGroup, SWT.PUSH);
 		defaultsButton.setText(ControlExample.getResourceString("Defaults"));
 
@@ -90,8 +84,6 @@ class CTabFolderTab extends Tab {
 		Display display = shell.getDisplay ();
 		foregroundImage = new Image (display, imageSize, imageSize);
 		backgroundImage = new Image (display, imageSize, imageSize);
-		foregroundSelectionImage = new Image (display, imageSize, imageSize);
-		backgroundSelectionImage = new Image (display, imageSize, imageSize);
 
 		/* Add listeners to set the colors and font */
 		foregroundButton.setImage(foregroundImage); // sets the size of the button
@@ -107,6 +99,7 @@ class CTabFolderTab extends Tab {
 				if (rgb == null) return;
 				oldColor = foregroundColor; // save old foreground color to dispose when done
 				foregroundColor = new Color (event.display, rgb);
+				setForeground = true;
 				setExampleWidgetForeground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -124,40 +117,7 @@ class CTabFolderTab extends Tab {
 				if (rgb == null) return;
 				oldColor = backgroundColor; // save old background color to dispose when done
 				backgroundColor = new Color (event.display, rgb);
-				setExampleWidgetBackground ();
-				if (oldColor != null) oldColor.dispose ();
-			}
-		});
-		foregroundSelectionButton.setImage(foregroundSelectionImage); // sets the size of the button
-		foregroundSelectionButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				Color oldColor = foregroundSelectionColor;
-				if (oldColor == null) {
-					Control [] controls = getExampleWidgets ();
-					if (controls.length > 0) oldColor = controls [0].getForeground ();
-				}
-				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
-				RGB rgb = colorDialog.open();
-				if (rgb == null) return;
-				oldColor = foregroundSelectionColor; // save old foreground color to dispose when done
-				foregroundSelectionColor = new Color (event.display, rgb);
-				setExampleWidgetForeground ();
-				if (oldColor != null) oldColor.dispose ();
-			}
-		});
-		backgroundSelectionButton.setImage(backgroundSelectionImage); // sets the size of the button
-		backgroundSelectionButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				Color oldColor = backgroundSelectionColor;
-				if (oldColor == null) {
-					Control [] controls = getExampleWidgets ();
-					if (controls.length > 0) oldColor = controls [0].getBackground (); // seed dialog with current color
-				}
-				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB());
-				RGB rgb = colorDialog.open();
-				if (rgb == null) return;
-				oldColor = backgroundSelectionColor; // save old background color to dispose when done
-				backgroundSelectionColor = new Color (event.display, rgb);
+				setBackground = true;
 				setExampleWidgetBackground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -174,35 +134,17 @@ class CTabFolderTab extends Tab {
 				if (fontData == null) return;
 				oldFont = font; // dispose old font when done
 				font = new Font (event.display, fontData);
+				setFont = true;
 				setExampleWidgetFont ();
 				setExampleWidgetSize ();
 				if (oldFont != null) oldFont.dispose ();
 			}
 		});
-	
-
-		/* Add listeners to set the colors and font */
-		itemFontButton.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				Font oldFont = itemFont;
-				if (oldFont == null) oldFont = tabFolder1.getItem (0).getFont ();
-				fontDialog.setFontList(oldFont.getFontData());
-				FontData fontData = fontDialog.open ();
-				if (fontData == null) return;
-				oldFont = itemFont;
-				itemFont = new Font (event.display, fontData);
-				setItemFont ();
-				setExampleWidgetSize ();
-				if (oldFont != null) oldFont.dispose ();
-			}
-		});
-		
 		defaultsButton.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
 				resetColorsAndFonts ();
 			}
 		});
-		
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent event) {
 				if (foregroundImage != null) foregroundImage.dispose();
@@ -213,6 +155,63 @@ class CTabFolderTab extends Tab {
 				foregroundColor = null;
 				backgroundColor = null;
 				font = null;				
+			}
+		});
+		foregroundSelectionImage = new Image (display, imageSize, imageSize);
+		backgroundSelectionImage = new Image (display, imageSize, imageSize);
+		foregroundSelectionButton.setImage(foregroundSelectionImage); // sets the size of the button
+		foregroundSelectionButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = foregroundSelectionColor;
+				if (oldColor == null) {
+					Control [] controls = getExampleWidgets ();
+					if (controls.length > 0) oldColor = controls [0].getForeground ();
+				}
+				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
+				RGB rgb = colorDialog.open();
+				if (rgb == null) return;
+				oldColor = foregroundSelectionColor; // save old foreground color to dispose when done
+				foregroundSelectionColor = new Color (event.display, rgb);
+				setSelectionForeground = true;
+				setSelectionForeground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		backgroundSelectionButton.setImage(backgroundSelectionImage); // sets the size of the button
+		backgroundSelectionButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = backgroundSelectionColor;
+				if (oldColor == null) {
+					Control [] controls = getExampleWidgets ();
+					if (controls.length > 0) oldColor = controls [0].getBackground (); // seed dialog with current color
+				}
+				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB());
+				RGB rgb = colorDialog.open();
+				if (rgb == null) return;
+				oldColor = backgroundSelectionColor; // save old background color to dispose when done
+				backgroundSelectionColor = new Color (event.display, rgb);
+				setSelectionBackground = true;
+				setSelectionBackground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		itemFontButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				Font oldFont = itemFont;
+				if (oldFont == null) oldFont = tabFolder1.getItem (0).getFont ();
+				fontDialog.setFontList(oldFont.getFontData());
+				FontData fontData = fontDialog.open ();
+				if (fontData == null) return;
+				oldFont = itemFont;
+				itemFont = new Font (event.display, fontData);
+				setItemFont = true;
+				setItemFont ();
+				setExampleWidgetSize ();
+				if (oldFont != null) oldFont.dispose ();
+			}
+		});
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
 				if (foregroundSelectionImage != null) foregroundSelectionImage.dispose();
 				if (backgroundSelectionImage != null) backgroundSelectionImage.dispose();
 				if (foregroundSelectionColor != null) foregroundSelectionColor.dispose();
@@ -424,48 +423,21 @@ class CTabFolderTab extends Tab {
 	 * TreeItems to default settings.
 	 */
 	void resetColorsAndFonts () {
+		super.resetColorsAndFonts ();
 		Color oldColor = foregroundSelectionColor;
 		foregroundSelectionColor = null;
+		setSelectionForeground ();
 		if (oldColor != null) oldColor.dispose();
 		oldColor = backgroundSelectionColor;
 		backgroundSelectionColor = null;
+		setSelectionBackground ();
 		if (oldColor != null) oldColor.dispose();
 		Font oldFont = itemFont;
 		itemFont = null;
+		setItemFont ();
 		if (oldFont != null) oldFont.dispose();
-		super.resetColorsAndFonts ();
 	}
 	
-	void setExampleWidgetForeground () {
-		if (foregroundSelectionButton == null || tabFolder1 == null) return;
-		tabFolder1.setSelectionForeground(foregroundSelectionColor);
-		// Set the foreground button's color to match the color just set.
-		Color color = foregroundSelectionColor;
-		if (color == null) color = tabFolder1.getSelectionForeground ();
-		drawImage (foregroundSelectionImage, color);
-		foregroundSelectionButton.setImage (foregroundSelectionImage);
-		super.setExampleWidgetForeground();
-	}
-	
-	void setExampleWidgetBackground () {
-		if (backgroundSelectionButton == null || tabFolder1 == null) return;
-		tabFolder1.setSelectionBackground(backgroundSelectionColor);
-		// Set the background button's color to match the color just set.
-		Color color = backgroundSelectionColor;
-		if (color == null) color = tabFolder1.getSelectionBackground ();
-		drawImage (backgroundSelectionImage, color);
-		backgroundSelectionButton.setImage (backgroundSelectionImage);
-		super.setExampleWidgetBackground();
-	}
-	void setExampleWidgetFont () {
-		if (instance.startup) return;
-		if (itemFontButton == null) return; // no font button on this tab
-		CTabItem[] items = tabFolder1.getItems();
-		if (items.length > 0) {
-			items[0].setFont(itemFont);
-		}
-		super.setExampleWidgetFont();
-	}
 	/**
 	 * Sets the state of the "Example" widgets.
 	 */
@@ -478,6 +450,9 @@ class CTabFolderTab extends Tab {
 		setMaximizeVisible();
 		setUnselectedCloseVisible();
 		setUnselectedImageVisible();
+		setSelectionBackground ();
+		setSelectionForeground ();
+		setItemFont ();
 		setExampleWidgetSize();
 	}
 	
@@ -540,10 +515,39 @@ class CTabFolderTab extends Tab {
 		setExampleWidgetSize();
 	}
 	/**
+	 * Sets the background color of CTabItem 0.
+	 */
+	void setSelectionBackground () {
+		if (setSelectionBackground) {
+			tabFolder1.setSelectionBackground(backgroundSelectionColor);
+		}
+		// Set the backgroundSelection button's color to match the background color of the selection.
+		Color color = backgroundSelectionColor;
+		if (color == null) color = tabFolder1.getSelectionBackground ();
+		drawImage (backgroundSelectionImage, color);
+		backgroundSelectionButton.setImage (backgroundSelectionImage);
+	}
+	
+	/**
+	 * Sets the foreground color of CTabItem 0.
+	 */
+	void setSelectionForeground () {
+		if (setSelectionForeground) {
+			tabFolder1.setSelectionForeground(foregroundSelectionColor);
+		}
+		// Set the foregroundSelection button's color to match the foreground color of the selection.
+		Color color = foregroundSelectionColor;
+		if (color == null) color = tabFolder1.getSelectionForeground ();
+		drawImage (foregroundSelectionImage, color);
+		foregroundSelectionButton.setImage (foregroundSelectionImage);
+	}
+	
+	/**
 	 * Sets the font of CTabItem 0.
 	 */
 	void setItemFont () {
 		if (instance.startup) return;
+		if (!setItemFont) return;
 		tabFolder1.getItem (0).setFont (itemFont);
 		setExampleWidgetSize();
 	}

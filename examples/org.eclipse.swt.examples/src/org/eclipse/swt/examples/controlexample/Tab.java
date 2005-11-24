@@ -57,11 +57,12 @@ abstract class Tab {
 	Group orientationGroup;
 	Button rtlButton, ltrButton, defaultOrietationButton;
 
-	/* Controls and resources for the "Colors" group */
+	/* Controls and resources for the "Colors & Fonts" group */
 	Button foregroundButton, backgroundButton, fontButton;
 	Image foregroundImage, backgroundImage;
 	Color foregroundColor, backgroundColor;
 	Font font;
+	boolean setFont = false, setForeground = false, setBackground = false;
 
 	/* Event logging variables and controls */
 	Text eventConsole;
@@ -122,7 +123,7 @@ abstract class Tab {
 		createOtherGroup ();
 		createSetGetGroup();
 		createSizeGroup ();
-		createColorGroup ();
+		createColorAndFontGroup ();
 		if (RTL_SUPPORT_ENABLE) {
 			createOrientationGroup ();
 		}
@@ -193,11 +194,11 @@ abstract class Tab {
 	}
 	
 	/**
-	 * Creates the "Colors" group. This is typically
+	 * Creates the "Colors and Fonts" group. This is typically
 	 * a child of the "Control" group. Subclasses override
-	 * this method to customize and set system colors.
+	 * this method to customize color and font settings.
 	 */
-	void createColorGroup () {
+	void createColorAndFontGroup () {
 		/* Create the group */
 		colorGroup = new Group(controlGroup, SWT.NONE);
 		colorGroup.setLayout (new GridLayout (2, false));
@@ -209,20 +210,19 @@ abstract class Tab {
 		backgroundButton = new Button (colorGroup, SWT.PUSH);
 		fontButton = new Button (colorGroup, SWT.PUSH);
 		fontButton.setText(ControlExample.getResourceString("Font"));
-		fontButton.setLayoutData(new GridData (GridData.HORIZONTAL_ALIGN_FILL));
+		fontButton.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
 		Button defaultsButton = new Button (colorGroup, SWT.PUSH);
 		defaultsButton.setText(ControlExample.getResourceString("Defaults"));
 
 		Shell shell = controlGroup.getShell ();
-		final ColorDialog foregroundDialog = new ColorDialog (shell);
-		final ColorDialog backgroundDialog = new ColorDialog (shell);
+		final ColorDialog colorDialog = new ColorDialog (shell);
 		final FontDialog fontDialog = new FontDialog (shell);
 
 		/* Create images to display current colors */
 		int imageSize = 12;
 		Display display = shell.getDisplay ();
 		foregroundImage = new Image (display, imageSize, imageSize);
-		backgroundImage = new Image (display, imageSize, imageSize);	
+		backgroundImage = new Image (display, imageSize, imageSize);
 
 		/* Add listeners to set the colors and font */
 		foregroundButton.setImage(foregroundImage); // sets the size of the button
@@ -233,11 +233,12 @@ abstract class Tab {
 					Control [] controls = getExampleWidgets ();
 					if (controls.length > 0) oldColor = controls [0].getForeground ();
 				}
-				if (oldColor != null) foregroundDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
-				RGB rgb = foregroundDialog.open();
+				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
+				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
 				oldColor = foregroundColor; // save old foreground color to dispose when done
 				foregroundColor = new Color (event.display, rgb);
+				setForeground = true;
 				setExampleWidgetForeground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -250,11 +251,12 @@ abstract class Tab {
 					Control [] controls = getExampleWidgets ();
 					if (controls.length > 0) oldColor = controls [0].getBackground (); // seed dialog with current color
 				}
-				if (oldColor != null) backgroundDialog.setRGB(oldColor.getRGB());
-				RGB rgb = backgroundDialog.open();
+				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB());
+				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
 				oldColor = backgroundColor; // save old background color to dispose when done
 				backgroundColor = new Color (event.display, rgb);
+				setBackground = true;
 				setExampleWidgetBackground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -271,6 +273,7 @@ abstract class Tab {
 				if (fontData == null) return;
 				oldFont = font; // dispose old font when done
 				font = new Font (event.display, fontData);
+				setFont = true;
 				setExampleWidgetFont ();
 				setExampleWidgetSize ();
 				if (oldFont != null) oldFont.dispose ();
@@ -1032,10 +1035,12 @@ abstract class Tab {
 	void setExampleWidgetBackground () {
 		if (backgroundButton == null) return; // no background button on this tab
 		Control [] controls = getExampleWidgets ();
-		for (int i = 0; i < controls.length; i++) {
-			controls[i].setBackground (backgroundColor);
+		if (setBackground) {
+			for (int i = 0; i < controls.length; i++) {
+				controls[i].setBackground (backgroundColor);
+			}
 		}
-		// Set the background button's color to match the color just set.
+		// Set the background button's color to match the background color of the example widget(s).
 		Color color = backgroundColor;
 		if (controls.length == 0) return;
 		if (color == null) color = controls [0].getBackground ();
@@ -1059,10 +1064,10 @@ abstract class Tab {
 	void setExampleWidgetFont () {
 		if (instance.startup) return;
 		if (fontButton == null) return; // no font button on this tab
+		if (!setFont) return;
 		Control [] controls = getExampleWidgets ();
 		for (int i = 0; i < controls.length; i++) {
-			Control control = controls[i];
-			control.setFont(font);
+			controls[i].setFont(font);
 		}
 	}
 	
@@ -1072,10 +1077,12 @@ abstract class Tab {
 	void setExampleWidgetForeground () {
 		if (foregroundButton == null) return; // no foreground button on this tab
 		Control [] controls = getExampleWidgets ();
-		for (int i = 0; i < controls.length; i++) {
-			controls[i].setForeground (foregroundColor);
+		if (setForeground) {
+			for (int i = 0; i < controls.length; i++) {
+				controls[i].setForeground (foregroundColor);
+			}
 		}
-		// Set the foreground button's color to match the color just set.
+		// Set the foreground button's color to match the foreground color of the example widget(s).
 		Color color = foregroundColor;
 		if (controls.length == 0) return;
 		if (color == null) color = controls [0].getForeground ();

@@ -29,12 +29,13 @@ class TreeTab extends ScrollableTab {
 	/* Other widgets added to the "Other" group */
 	Button multipleColumns, moveableColumns, headerVisibleButton, linesVisibleButton;
 	
-	/* Controls and resources added to the "Colors" group */
+	/* Controls and resources added to the "Colors and Fonts" group */
 	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
 	Color itemForegroundColor, itemBackgroundColor;
 	Image itemForegroundImage, itemBackgroundImage;
 	Font itemFont;
-	
+	boolean setItemFont = false, setItemForeground = false, setItemBackground = false;
+
 	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
 		   ControlExample.getResourceString("TableTitle_1"),
 		   ControlExample.getResourceString("TableTitle_2"),
@@ -62,10 +63,10 @@ class TreeTab extends ScrollableTab {
 	}
 
 	/**
-	 * Creates the "Colors" group.
+	 * Creates the "Colors and Fonts" group.
 	 */
-	void createColorGroup () {
-		super.createColorGroup();
+	void createColorAndFontGroup () {
+		super.createColorAndFontGroup();
 		
 		itemGroup = new Group (colorGroup, SWT.NONE);
 		itemGroup.setText (ControlExample.getResourceString ("Tree_Item_Colors"));
@@ -102,6 +103,7 @@ class TreeTab extends ScrollableTab {
 				if (rgb == null) return;
 				oldColor = itemForegroundColor;
 				itemForegroundColor = new Color (event.display, rgb);
+				setItemForeground = true;
 				setItemForeground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -116,6 +118,7 @@ class TreeTab extends ScrollableTab {
 				if (rgb == null) return;
 				oldColor = itemBackgroundColor;
 				itemBackgroundColor = new Color (event.display, rgb);
+				setItemBackground = true;
 				setItemBackground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -129,6 +132,7 @@ class TreeTab extends ScrollableTab {
 				if (fontData == null) return;
 				oldFont = itemFont;
 				itemFont = new Font (event.display, fontData);
+				setItemFont = true;
 				setItemFont ();
 				setExampleWidgetSize ();
 				if (oldFont != null) oldFont.dispose ();
@@ -413,7 +417,6 @@ class TreeTab extends ScrollableTab {
 		Font oldFont = font;
 		itemFont = null;
 		setItemFont ();
-		setExampleWidgetSize ();
 		if (oldFont != null) oldFont.dispose();
 	}
 	
@@ -438,9 +441,11 @@ class TreeTab extends ScrollableTab {
 	 * Sets the background color of the Node 1 TreeItems.
 	 */
 	void setItemBackground () {
-		textNode1.setBackground (itemBackgroundColor);
-		imageNode1.setBackground (itemBackgroundColor);
-		/* Set the background button's color to match the color just set. */
+		if (setItemBackground) {
+			textNode1.setBackground (itemBackgroundColor);
+			imageNode1.setBackground (itemBackgroundColor);
+		}
+		/* Set the background button's color to match the background color of the item. */
 		Color color = itemBackgroundColor;
 		if (color == null) color = textNode1.getBackground ();
 		drawImage (itemBackgroundImage, color);
@@ -451,9 +456,11 @@ class TreeTab extends ScrollableTab {
 	 * Sets the foreground color of the Node 1 TreeItems.
 	 */
 	void setItemForeground () {
-		textNode1.setForeground (itemForegroundColor);
-		imageNode1.setForeground (itemForegroundColor);
-		/* Set the foreground button's color to match the color just set. */
+		if (setItemForeground) {
+			textNode1.setForeground (itemForegroundColor);
+			imageNode1.setForeground (itemForegroundColor);
+		}
+		/* Set the foreground button's color to match the foreground color of the item. */
 		Color color = itemForegroundColor;
 		if (color == null) color = textNode1.getForeground ();
 		drawImage (itemForegroundImage, color);
@@ -465,10 +472,22 @@ class TreeTab extends ScrollableTab {
 	 */
 	void setItemFont () {
 		if (instance.startup) return;
+		if (!setItemFont) return;
 		textNode1.setFont (itemFont);
 		imageNode1.setFont (itemFont);
+		packColumns (tree1);
 	}
 
+	/**
+	 * Sets the font of the "Example" widgets.
+	 */
+	void setExampleWidgetFont () {
+		super.setExampleWidgetFont();
+		if (!setFont) return;
+		packColumns (tree1);
+		packColumns (tree2);
+	}
+	
 	/**
 	 * Sets the header visible state of the "Example" widgets.
 	 */
