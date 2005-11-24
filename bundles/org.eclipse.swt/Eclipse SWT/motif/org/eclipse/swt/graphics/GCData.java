@@ -44,7 +44,6 @@ public final class GCData {
 	public int interpolation = SWT.DEFAULT;
 
 	public int /*long*/ cairo;
-	public double[] matrix, inverseMatrix;
 
 	public String string;
 	public int stringWidth = -1;
