@@ -1872,6 +1872,7 @@ LRESULT wmMouseLeave (int hwnd, int wParam, int lParam) {
 
 LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
 	LRESULT result = null;
+	Display display = this.display;
 	int pos = OS.GetMessagePos ();
 	if (pos != display.lastMouse || display.captureChanged) {
 		if (!OS.IsWinCE) {
