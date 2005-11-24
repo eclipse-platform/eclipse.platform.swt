@@ -207,8 +207,8 @@ public Rectangle getClientArea () {
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 	int x = CLIENT_INSET, y = tm.tmHeight;
-	int width = rect.right - CLIENT_INSET * 2;
-	int height = rect.bottom - y - CLIENT_INSET;
+	int width = Math.max (0, rect.right - CLIENT_INSET * 2);
+	int height = Math.max (0, rect.bottom - y - CLIENT_INSET);
 	return new Rectangle (x, y, width, height);
 }
 

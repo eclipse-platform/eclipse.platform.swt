@@ -455,7 +455,7 @@ public Rectangle getClientArea () {
 			int hwndCB = menuBar.hwndCB;
 			int height = OS.CommandBar_Height (hwndCB);
 			rect.y += height;
-			rect.height -= height;
+			rect.height = Math.max (0, rect.height - height);
 		}
 		return rect;
 	}

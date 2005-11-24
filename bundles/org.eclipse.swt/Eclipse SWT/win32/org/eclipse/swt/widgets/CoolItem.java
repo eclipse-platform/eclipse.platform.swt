@@ -262,7 +262,7 @@ Rectangle getClientArea () {
 		OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 		width = width - rbBand.cxHeader + 1;
 	}
-	return new Rectangle (x, y, width, height);
+	return new Rectangle (x, y, Math.max (0, width), Math.max (0, height));
 }
 
 /**
