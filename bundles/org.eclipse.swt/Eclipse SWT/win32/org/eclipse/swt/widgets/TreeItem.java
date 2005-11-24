@@ -187,7 +187,7 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	this (checkNull (parentItem).parent, style, parentItem.handle, findPrevious (parentItem, index), 0);
 }
 
-public TreeItem (Tree parent, int style, int hParent, int hInsertAfter, int hItem) {
+TreeItem (Tree parent, int style, int hParent, int hInsertAfter, int hItem) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, hParent, hInsertAfter, hItem);
