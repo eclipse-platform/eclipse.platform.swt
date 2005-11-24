@@ -2753,14 +2753,20 @@ public void getClipping (Region region) {
 			OS.CombineRgn (region.handle, metaRgn, region.handle, OS.RGN_AND);
 		}
 		OS.DeleteObject(metaRgn);
-		int flags = 0;
-		if (OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-			flags = OS.GetLayout(handle);
-		}
 		int hwnd = data.hwnd;
-		if (hwnd != 0 && data.ps != null && (flags & OS.LAYOUT_RTL) == 0) {
+		if (hwnd != 0 && data.ps != null) {
 			int sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
 			if (OS.GetRandomRgn (handle, sysRgn, OS.SYSRGN) == 1) {
+				if (OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+					if ((OS.GetLayout(handle) & OS.LAYOUT_RTL) != 0) {
+						int nBytes = OS.GetRegionData (sysRgn, 0, null);
+						int [] lpRgnData = new int [nBytes / 4];
+						OS.GetRegionData (sysRgn, nBytes, lpRgnData);
+						int newSysRgn = OS.ExtCreateRegion(new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
+						OS.DeleteObject(sysRgn);
+						sysRgn = newSysRgn;
+					}
+				}
 				if (OS.IsWinNT) {
 					OS.MapWindowPoints(0, hwnd, pt, 1);
 					OS.OffsetRgn(sysRgn, pt.x, pt.y);
