@@ -1,4 +1,3 @@
-package org.eclipse.swt.snippets;
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -9,6 +8,16 @@ package org.eclipse.swt.snippets;
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.swt.snippets;
+
+/*
+ * SWT OpenGL snippet: use JOGL to draw to an SWT GLCanvas
+ *
+ * For a list of all SWT example snippets see
+ * http://www.eclipse.org/swt/snippets/
+ * 
+ * @since 3.2
+ */
 import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -21,14 +30,6 @@ import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.glu.GLU;
 
-/*
- * SWT OpenGL snippet: use JOGL to draw to an SWT GLCanvas
- *
- * For a list of all SWT example snippets see
- * http://www.eclipse.org/swt/snippets/
- * 
- * @since 3.2
- */
 public class Snippet209 {
 	static void drawTorus(GL gl, float r, float R, int nsides, int rings) {
 		float ringDelta = 2.0f * (float) Math.PI / rings;

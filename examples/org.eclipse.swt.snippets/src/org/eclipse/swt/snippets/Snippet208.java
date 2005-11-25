@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-//package org.eclipse.swt.snippets;
+package org.eclipse.swt.snippets;
 
 /*
  * Change hue, saturation and brightness of a color
@@ -18,9 +18,6 @@
  * 
  * @since 3.2
  */
-
-package org.eclipse.swt.snippets;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
