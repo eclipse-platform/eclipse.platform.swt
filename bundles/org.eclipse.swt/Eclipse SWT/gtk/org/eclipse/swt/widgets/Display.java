@@ -798,7 +798,7 @@ synchronized void createDisplay (DeviceData data) {
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
 	OS.g_set_prgname (buffer);
 	OS.gdk_set_program_class (buffer);
-	byte [] flatStyle = Converter.wcsToMbcs (null, "style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*swt-toolbar-flat*\" style : highest \"swt-flat\"", true);
+	byte [] flatStyle = Converter.wcsToMbcs (null, "style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*.swt-toolbar-flat\" style : highest \"swt-flat\"", true);
 	OS.gtk_rc_parse_string (flatStyle);
 
 	/* Initialize the hidden shell */
