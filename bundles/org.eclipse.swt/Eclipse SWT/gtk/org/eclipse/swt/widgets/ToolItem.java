@@ -180,8 +180,8 @@ void createHandle (int index) {
 		OS.gtk_container_add (boxHandle, labelHandle);
 		if ((parent.style & SWT.VERTICAL) != 0) {
 			// Align text and images to the left
-			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, 0);
-			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 2, 0);
+			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, OS.GTK_PACK_START);
+			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 2, OS.GTK_PACK_START);
 		}
 	}
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
