@@ -163,7 +163,7 @@ public DragSource(Control control, int style) {
 			}
 			if (event.type == SWT.DragDetect) {
 				if (!DragSource.this.isDisposed()) {
-					DragSource.this.drag();
+					DragSource.this.drag(event);
 				}
 			}
 		}
@@ -316,7 +316,7 @@ int convertProcCallback(int widget, int pSelection, int pTarget, int pType_retur
 	OS.memmove(pFormat_return, new int[]{8}, 4);
 	return 0;
 }
-void drag() {
+void drag(Event dragEvent) {
 	moveRequested = false;
 	// Current event must be a Button Press event
 	Display display = control.getDisplay ();
@@ -326,6 +326,8 @@ void drag() {
 
 	DNDEvent event = new DNDEvent();
 	event.widget = this;	
+	event.x = dragEvent.x;
+	event.y = dragEvent.y;
 	event.time = xEvent.time;
 	event.doit = true;
 	notifyListeners(DND.DragStart, event);

@@ -269,6 +269,8 @@ void drag(Event dragEvent) {
 	moveData = false;	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;	
+	event.x = dragEvent.x;
+	event.y = dragEvent.y;
 	event.time = dragEvent.time;
 	event.doit = true;
 	notifyListeners(DND.DragStart, event);
