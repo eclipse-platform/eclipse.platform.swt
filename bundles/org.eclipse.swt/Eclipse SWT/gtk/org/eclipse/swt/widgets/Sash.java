@@ -378,7 +378,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 
 int /*long*/ gtk_realize (int /*long*/ widget) {
 	setCursor (cursor != null ? cursor.handle : 0);
-	return 0;
+	return super.gtk_realize (widget);
 }
 
 void hookEvents () {
