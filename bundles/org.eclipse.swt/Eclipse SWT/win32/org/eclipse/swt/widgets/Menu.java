@@ -555,12 +555,12 @@ void destroyItem (MenuItem item) {
 			if (info.dwItemData != item.id) {
 				error (SWT.ERROR_ITEM_NOT_REMOVED);
 			}	
-			if (!OS.RemoveMenu (handle, index, OS.MF_BYPOSITION)) {
+			if (!OS.DeleteMenu (handle, index, OS.MF_BYPOSITION)) {
 				error (SWT.ERROR_ITEM_NOT_REMOVED);
 			}
 		}
 	} else {
-		if (!OS.RemoveMenu (handle, item.id, OS.MF_BYCOMMAND)) {
+		if (!OS.DeleteMenu (handle, item.id, OS.MF_BYCOMMAND)) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
 	}
