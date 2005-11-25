@@ -235,8 +235,8 @@ void computeRuns () {
 		lineRuns[lineRunCount++] = run;
 		lineWidth += run.width;
 		if (run.style != null ) {
-			int runAscent = 0;
-			int runDescent = 0;
+			int runAscent = defaultAscent;
+			int runDescent = defaultDescent;
 			if (run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
 				runAscent = metrics.ascent;
