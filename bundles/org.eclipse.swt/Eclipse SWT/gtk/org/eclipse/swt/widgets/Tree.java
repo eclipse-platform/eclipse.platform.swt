@@ -1078,6 +1078,9 @@ public boolean getHeaderVisible () {
  */
 public TreeItem getItem (int index) {
 	checkWidget();
+	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	return _getItem (0, index);
 }
 

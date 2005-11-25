@@ -772,6 +772,9 @@ public int getItemCount () {
  */
 public TreeItem getItem (int index) {
 	checkWidget();
+	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle)))  {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	return  parent._getItem (handle, index);
 }
 
