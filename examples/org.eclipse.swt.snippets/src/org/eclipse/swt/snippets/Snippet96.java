@@ -82,6 +82,12 @@ public static void main(String[] args) {
 					}
 				}
 			});
+			// close the text editor when the user tabs away
+			text.addFocusListener(new FocusAdapter() {
+				public void focusLost(FocusEvent e) {
+					text.dispose();
+				}
+			});
 			editor.setEditor(text);
 			text.setFocus();
 		}
@@ -98,6 +104,41 @@ public static void main(String[] args) {
 			}
 		}
 	});
+	// When the user double clicks in the TableCursor, pop up a text editor so that 
+	// they can change the text of the cell
+	cursor.addMouseListener(new MouseAdapter() {
+		public void mouseDoubleClick(MouseEvent e) {
+			final Text text = new Text(cursor, SWT.NONE);
+			TableItem row = cursor.getRow();
+			int column = cursor.getColumn();
+			text.setText(row.getText(column));
+			text.addKeyListener(new KeyAdapter() {
+				public void keyPressed(KeyEvent e) {
+					// close the text editor and copy the data over 
+					// when the user hits "ENTER"
+					if (e.character == SWT.CR) {
+						TableItem row = cursor.getRow();
+						int column = cursor.getColumn();
+						row.setText(column, text.getText());
+						text.dispose();
+					}
+					// close the text editor when the user hits "ESC"
+					if (e.character == SWT.ESC) {
+						text.dispose();
+					}
+				}
+			});
+			// close the text editor when the user clicks away
+			text.addFocusListener(new FocusAdapter() {
+				public void focusLost(FocusEvent e) {
+					text.dispose();
+				}
+			});
+			editor.setEditor(text);
+			text.setFocus();
+		}
+	});
+	
 	// Show the TableCursor when the user releases the "SHIFT" or "CTRL" key.
 	// This signals the end of the multiple selection task.
 	table.addKeyListener(new KeyAdapter() {
