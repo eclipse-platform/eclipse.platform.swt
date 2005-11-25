@@ -107,7 +107,7 @@ public static void main(String[] args) {
 	// When the user double clicks in the TableCursor, pop up a text editor so that 
 	// they can change the text of the cell
 	cursor.addMouseListener(new MouseAdapter() {
-		public void mouseDoubleClick(MouseEvent e) {
+		public void mouseDown(MouseEvent e) {
 			final Text text = new Text(cursor, SWT.NONE);
 			TableItem row = cursor.getRow();
 			int column = cursor.getColumn();
