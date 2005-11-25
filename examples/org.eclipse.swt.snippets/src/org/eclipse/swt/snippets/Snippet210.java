@@ -1,0 +1,87 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.snippets;
+
+/*
+ * Dragging text in a StyledText widget
+ *
+ * For a list of all SWT example snippets see
+ * http://www.eclipse.org/swt/snippets/
+ * 
+ * @since 3.2
+ */ 
+import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+
+public class Snippet210 {
+	static String string = "A drag source is the provider of data in a Drag and Drop data transfer as well as "+
+                           "the originator of the Drag and Drop operation. The data provided by the drag source "+
+                           "may be transferred to another location in the same widget, to a different widget "+
+                           "within the same application, or to a different application altogether. For example, "+
+                           "you can drag text from your application and drop it on an email application, or you "+
+                           "could drag an item in a tree and drop it below a different node in the same tree.";
+
+public static void main (String [] args) {
+	final Display display = new Display ();
+	Shell shell = new Shell (display);
+	shell.setLayout(new FillLayout());
+	int style = SWT.MULTI | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
+	final StyledText text = new StyledText(shell, style);
+	text.setText(string);
+	DragSource source = new DragSource(text, DND.DROP_COPY | DND.DROP_MOVE);
+	source.setTransfer(new Transfer[] {TextTransfer.getInstance()});
+	source.addDragListener(new DragSourceAdapter() {
+		public void dragStart(DragSourceEvent e) {
+			Point selection = text.getSelection();
+			int offset = text.getOffsetAtLocation(new Point(e.x, e.y));
+			e.doit = offset > selection.x && offset < selection.y;
+		}
+		public void dragSetData(DragSourceEvent e) {
+			Point selection = text.getSelection();
+			if (selection.x != selection.y) {
+				e.data = text.getText(selection.x, selection.y);
+			}
+		}
+		public void dragFinished(DragSourceEvent e) {
+			if (e.detail == DND.DROP_MOVE) {
+				text.insert("");
+			}
+		}
+	});
+	
+	final Label label = new Label(shell, SWT.BORDER | SWT.WRAP);
+	label.setText("Drop Target");
+	DropTarget target = new DropTarget(label, DND.DROP_DEFAULT | DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
+	target.setTransfer(new Transfer[] {TextTransfer.getInstance()});
+	target.addDropListener(new DropTargetAdapter() {
+		public void dragEnter(DropTargetEvent event) {
+			if (event.detail == DND.DROP_DEFAULT)
+				event.detail = DND.DROP_COPY;
+		}
+		public void dragOperationChanged(DropTargetEvent event) {
+			if (event.detail == DND.DROP_DEFAULT)
+				event.detail = DND.DROP_COPY;
+		}
+		public void drop(DropTargetEvent event) {
+			label.setText((String)event.data);
+		}
+	});
+	shell.open ();
+	while (!shell.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+	display.dispose ();
+}
+}
