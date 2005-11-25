@@ -194,6 +194,36 @@ public void test_getItemHeight() {
 	assertTrue(":b: Item height is 0", tree.getItemHeight() > 0);	
 }
 
+public void test_getItemI() {
+	int number = 15;
+	TreeItem[] items = new TreeItem[number];
+	for (int i = 0; i < number; i++)
+		items[i] = new TreeItem(tree, 0);
+
+	for (int i = 0; i < number; i++)
+		assertEquals("i=" + i, items[i], tree.getItem(i));
+	try {
+		tree.getItem(number);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	try {
+		tree.getItem(number+1);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	try {
+		tree.getItem(-1);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+}
+
 public void test_getItemLorg_eclipse_swt_graphics_Point() {
 	warnUnimpl("Test test_getItemLorg_eclipse_swt_graphics_Point not written");
 }
@@ -636,6 +666,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getHeaderVisible");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
+	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getLinesVisible");
@@ -682,6 +713,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getHeaderVisible")) test_getHeaderVisible();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
+	else if (getName().equals("test_getItemI")) test_getItemI();
 	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getLinesVisible")) test_getLinesVisible();

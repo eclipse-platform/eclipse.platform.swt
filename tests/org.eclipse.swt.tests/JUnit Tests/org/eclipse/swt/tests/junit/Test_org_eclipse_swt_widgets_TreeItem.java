@@ -638,6 +638,36 @@ public void test_getImageI() {
 	// tested in test_setImageILorg_eclipse_swt_graphics_Image
 }
 
+public void test_getItemI() {
+	int number = 15;
+	TreeItem[] items = new TreeItem[number];
+	for (int i = 0; i < number; i++)
+		items[i] = new TreeItem(treeItem, 0);
+
+	for (int i = 0; i < number; i++)
+		assertEquals("i=" + i, items[i], treeItem.getItem(i));
+	try {
+		treeItem.getItem(number);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	try {
+		treeItem.getItem(number+1);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	try {
+		treeItem.getItem(-1);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+}
+
 public void test_getItemCount() {
 	for (int i = 0; i < 10; i++) {
 		assertEquals(i, treeItem.getItemCount());
@@ -1146,6 +1176,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getGrayed");
 	methodNames.addElement("test_getImageBoundsI");
 	methodNames.addElement("test_getImageI");
+	methodNames.addElement("test_getItemI");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getParent");
@@ -1187,6 +1218,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getGrayed")) test_getGrayed();
 	else if (getName().equals("test_getImageBoundsI")) test_getImageBoundsI();
 	else if (getName().equals("test_getImageI")) test_getImageI();
+	else if (getName().equals("test_getItemI"))  test_getItemI();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getParent")) test_getParent();
