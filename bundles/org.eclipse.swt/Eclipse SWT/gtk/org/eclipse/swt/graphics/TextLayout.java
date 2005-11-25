@@ -459,7 +459,7 @@ public Rectangle getBounds(int start, int end) {
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int /*long*/ linesRegion = OS.gdk_region_new();
 	if (linesRegion == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int lineStart = 0, lineEnd = 0;
+	int lineEnd = 0;
 	do {
 		OS.pango_layout_iter_get_line_extents(iter, null, pangoRect);
 		if (OS.pango_layout_iter_next_line(iter)) {
@@ -467,15 +467,13 @@ public Rectangle getBounds(int start, int end) {
 		} else {
 			lineEnd = strlen;
 		}
-		if (lineStart <= byteStart || byteEnd <= lineEnd) {
-			rect.x = OS.PANGO_PIXELS(pangoRect.x);
-			rect.y = OS.PANGO_PIXELS(pangoRect.y);
-			rect.width = OS.PANGO_PIXELS(pangoRect.width);
-			rect.height = OS.PANGO_PIXELS(pangoRect.height);
-			OS.gdk_region_union_with_rect(linesRegion, rect);
-		}
-		lineStart = lineEnd + 1;
-	} while (lineStart <= byteEnd);
+		if (byteStart > lineEnd) continue;
+		rect.x = OS.PANGO_PIXELS(pangoRect.x);
+		rect.y = OS.PANGO_PIXELS(pangoRect.y);
+		rect.width = OS.PANGO_PIXELS(pangoRect.width);
+		rect.height = OS.PANGO_PIXELS(pangoRect.height);
+		OS.gdk_region_union_with_rect(linesRegion, rect);
+	} while (lineEnd + 1 <= byteEnd);
 	OS.gdk_region_intersect(clipRegion, linesRegion);
 	OS.gdk_region_destroy(linesRegion);
 	OS.pango_layout_iter_free(iter);
