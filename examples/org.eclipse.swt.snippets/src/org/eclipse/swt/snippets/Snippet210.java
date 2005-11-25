@@ -51,7 +51,7 @@ public static void main (String [] args) {
 		public void dragSetData(DragSourceEvent e) {
 			Point selection = text.getSelection();
 			if (selection.x != selection.y) {
-				e.data = text.getText(selection.x, selection.y);
+				e.data = text.getText(selection.x, selection.y-1);
 			}
 		}
 		public void dragFinished(DragSourceEvent e) {
