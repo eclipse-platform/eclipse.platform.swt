@@ -44,6 +44,19 @@ public class DragSourceEvent extends TypedEvent {
  	 */
  	public boolean doit;
 
+	/**
+	 * In dragStart, the x coordinate of the position the mouse went down 
+	 * to start the drag.
+	 * @since 3.2
+	 */
+ 	public int x;
+ 	/**
+	 * In dragStart, the y coordinate of the position the mouse went down 
+	 * to start the drag.
+	 * @since 3.2
+	 */
+ 	public int y;
+ 	
  	/**
 	 * The type of data requested.
 	 * Data provided in the data field must be of the same type.
@@ -64,6 +77,8 @@ public DragSourceEvent(DNDEvent e) {
 	this.detail = e.detail;
 	this.doit = e.doit;
 	this.dataType = e.dataType;
+	this.x = e.x;
+	this.y = e.y;
 }
 void updateEvent(DNDEvent e) {
 	e.widget = this.widget;
@@ -72,5 +87,7 @@ void updateEvent(DNDEvent e) {
 	e.detail = this.detail;
 	e.doit = this.doit;
 	e.dataType = this.dataType;
+	e.x = this.x;
+	e.y = this.y;
 }
 }

@@ -150,6 +150,7 @@ public class StyledText extends Canvas {
 	Caret defaultCaret = null;
 	boolean updateCaretDirection = true;
 	boolean fixedLineHeight;
+	boolean dragDetect, dragging;
 	
 	int alignment;
 	boolean justify;
@@ -1915,6 +1916,17 @@ public void cut(){
 		}
 		doDelete();
 	}
+}
+boolean detectDrag(int x, int y, int button) {
+	if (!isListening(SWT.DragDetect)) return false;
+	if (IS_MOTIF) {
+		if (button != 2) return false;
+	} else {
+		if (button != 1) return false;
+	}
+	if (selection.x == selection.y) return false;
+	int offset = getOffsetAtPoint(x, y);
+	return offset > selection.x && offset < selection.y;
 }
 /** 
  * A mouse move event has occurred.  See if we should start autoscrolling.  If
@@ -4777,6 +4789,7 @@ void installListeners() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose: handleDispose(event); break;
+				case SWT.DragDetect: handleDragDetect(event); break;
 				case SWT.KeyDown: handleKeyDown(event); break;
 				case SWT.KeyUp: handleKeyUp(event); break;
 				case SWT.MouseDown: handleMouseDown(event); break;
@@ -4790,6 +4803,7 @@ void installListeners() {
 		}		
 	};
 	addListener(SWT.Dispose, listener);
+	// do not hook SWT.DragDetect until required
 	addListener(SWT.KeyDown, listener);
 	addListener(SWT.KeyUp, listener);
 	addListener(SWT.MouseDown, listener);
@@ -4944,6 +4958,9 @@ void handleDispose(Event event) {
 	foreground = null;
 	clipboard = null;
 }
+void handleDragDetect(Event event) {
+	dragging = true;
+}
 /** 
  * Scrolls the widget horizontally.
  */
@@ -5083,12 +5100,20 @@ void handleMouseDoubleClick(Event event) {
  * pressed.
  */
 void handleMouseDown(Event event) {
-	mouseDown = true;
 	mouseDoubleClick = false;
 	
 	//force focus (object support)
 	forceFocus();
 	
+	dragging = false;
+	removeListener(SWT.DragDetect, listener);
+	dragDetect = detectDrag(event.x, event.y, event.button);
+	if (dragDetect) {
+		addListener(SWT.DragDetect, listener);
+		return;
+	}	
+	
+	mouseDown = true;	
 	if (event.button == 2) {
 		String text = (String)getClipboardContent(DND.SELECTION_CLIPBOARD);
 		if (text != null && text.length() > 0) {
@@ -5128,6 +5153,14 @@ void handleMouseUp(Event event) {
 	mouseDown = false;
 	mouseDoubleClick = false;
 	endAutoScroll();
+	if (dragDetect) {
+		removeListener(SWT.DragDetect, listener);
+		if (!dragging) {
+			boolean select = (event.stateMask & SWT.MOD2) != 0;
+			doMouseLocationChange(event.x, event.y, select);
+		}
+	}
+	dragDetect = dragging = false;
 	if (event.button == 1) {
 		try {
 			if (selection.y - selection.x > 0) {

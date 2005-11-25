@@ -158,7 +158,7 @@ public DragSource(Control control, int style) {
 			}
 			if (event.type == SWT.DragDetect) {
 				if (!DragSource.this.isDisposed()) {
-					DragSource.this.drag();
+					DragSource.this.drag(event);
 				}
 			}
 		}
@@ -264,9 +264,11 @@ private void disposeCOMInterfaces() {
 	iDataObject = null;
 }
 
-private void drag() {
+private void drag(Event dragEvent) {
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
+	event.x = dragEvent.x;
+	event.y = dragEvent.y;
 	event.time = OS.GetMessageTime();
 	event.doit = true;
 	notifyListeners(DND.DragStart,event);
