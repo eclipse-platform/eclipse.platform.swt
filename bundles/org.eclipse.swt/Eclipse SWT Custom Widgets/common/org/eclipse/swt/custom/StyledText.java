@@ -2994,7 +2994,7 @@ public int getBaseline() {
  */
 public int getBaseline(int offset) {
 	checkWidget();
-	if (!(0 <= offset && offset < content.getCharCount())) {
+	if (!(0 <= offset && offset <= content.getCharCount())) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
 	if (isFixedLineHeight()) {
@@ -3483,7 +3483,7 @@ public int getLineHeight() {
  */
 public int getLineHeight(int offset) {
 	checkWidget();
-	if (!(0 <= offset && offset < content.getCharCount())) {
+	if (!(0 <= offset && offset <= content.getCharCount())) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
 	if (isFixedLineHeight()) {
