@@ -104,7 +104,6 @@ static String getNameFromId(int id) {
 	int maxSize = 128;
 	TCHAR buffer = new TCHAR(0, maxSize);
 	int size = COM.GetClipboardFormatName(id, buffer, maxSize);
-	String type = null;
 	if (size != 0) {
 		name = buffer.toString(0, size);
 	} else {
