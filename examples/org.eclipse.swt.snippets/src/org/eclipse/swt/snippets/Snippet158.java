@@ -12,6 +12,8 @@ package org.eclipse.swt.snippets;
  
 /*
  * Drag and Drop example snippet: determine native data types available (motif only)
+ * NOTE: This snippet uses internal SWT packages that are
+ * subject to change without notice.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
