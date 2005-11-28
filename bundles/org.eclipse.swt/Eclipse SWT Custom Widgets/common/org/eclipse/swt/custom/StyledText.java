@@ -6568,15 +6568,15 @@ void setCaretLocation() {
 void setCaretLocation(Point location, int direction) {
 	Caret caret = getCaret();
 	if (caret != null) {
+		boolean isDefaultCaret = caret == defaultCaret;
 		int lineHeight = renderer.getLineHeight();
 		int caretHeight = lineHeight;
-		if (!isFixedLineHeight()) {
+		if (!isFixedLineHeight() && isDefaultCaret) {
 			caretHeight = getBoundsAtOffset(caretOffset).height;
 			if (caretHeight != lineHeight) {
 				direction = SWT.DEFAULT;
 			}
 		}
-		boolean updateImage = caret == defaultCaret;
 		int imageDirection = direction;
 		if (isMirrored()) {
 			if (imageDirection == SWT.LEFT) {
@@ -6585,14 +6585,18 @@ void setCaretLocation(Point location, int direction) {
 				imageDirection = SWT.LEFT;
 			}
 		}
-		if (updateImage && imageDirection == SWT.RIGHT) {
+		if (isDefaultCaret && imageDirection == SWT.RIGHT) {
 			location.x -= (caret.getSize().x - 1);
 		}
-		caret.setBounds(location.x, location.y, 0, caretHeight);
+		if (isDefaultCaret) {
+			caret.setBounds(location.x, location.y, 0, caretHeight);
+		} else {
+			caret.setLocation(location);
+		}
 		getAccessible().textCaretMoved(getCaretOffset());
 		if (direction != caretDirection) {
 			caretDirection = direction;
-			if (updateImage) {
+			if (isDefaultCaret) {
 				if (imageDirection == SWT.DEFAULT) {
 					defaultCaret.setImage(null);
 				} else if (imageDirection == SWT.LEFT) {
