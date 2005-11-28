@@ -27,7 +27,7 @@ public class Snippet211 {
 
 	static String text = 
 		"You can set any font you want in a range. You can also set a baseline rise and all other old features" + 
-		" like background and foreground, mix them anyway you want. Totally awesome.";
+		" like background and foreground, and mix them any way you want. Totally awesome.";
 	
 	public static void main(String [] args) {
 		Display display = new Display();
