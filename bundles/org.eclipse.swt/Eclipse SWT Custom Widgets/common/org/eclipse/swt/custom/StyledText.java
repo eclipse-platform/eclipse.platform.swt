@@ -3001,9 +3001,10 @@ public int getBaseline(int offset) {
 		return renderer.getBaseline();
 	}
 	int lineIndex = content.getLineAtOffset(offset);
+	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	TextLayout layout = renderer.getTextLayout(lineIndex);
-	int lineInParagraph = layout.getLineIndex(offset - lineOffset);
+	int lineInParagraph = layout.getLineIndex(Math.min(offset - lineOffset, line.length()));
 	int baseline = layout.getLineMetrics(lineInParagraph).getAscent();
 	renderer.disposeTextLayout(layout);
 	return baseline;
@@ -3490,9 +3491,10 @@ public int getLineHeight(int offset) {
 		return renderer.getLineHeight();
 	}
 	int lineIndex = content.getLineAtOffset(offset);
+	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	TextLayout layout = renderer.getTextLayout(lineIndex);
-	int lineInParagraph = layout.getLineIndex(offset - lineOffset);
+	int lineInParagraph = layout.getLineIndex(Math.min(offset - lineOffset, line.length()));
 	int height = layout.getLineBounds(lineInParagraph).height;
 	renderer.disposeTextLayout(layout);
 	return height;
