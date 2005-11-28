@@ -49,7 +49,8 @@ class StyledTextRenderer {
 	StyleRange[] stylesSet;
 	int stylesSetCount = 0;
 	
-	final static boolean NEW_DB = true;
+	final static boolean COMPACT_STYLES = true;
+	final static boolean MERGE_STYLES = true;
 	
 	final static int GROW = 32;
 	final static int IDLE_TIME = 50;
@@ -115,27 +116,31 @@ int addMerge(int[] mergeRanges, StyleRange[] mergeStyles, int mergeCount, int mo
 			System.arraycopy(styles, modifyEnd >> 1, styles, (modifyStart + mergeCount) >> 1, styleCount - (modifyEnd >> 1));
 		}
 	}
-	
-	int j = modifyStart;	
-	for (int i = 0; i < mergeCount; i += 2) {
-		if (j > 0 && ranges[j - 2] + ranges[j - 1] == mergeRanges[i] && mergeStyles[i >> 1].similarTo(styles[(j - 2) >> 1])) {
-			ranges[j - 1] += mergeRanges[i + 1];
-		} else {
-			styles[j >> 1] = mergeStyles[i >> 1];
-			ranges[j++] = mergeRanges[i];
-			ranges[j++] = mergeRanges[i + 1];
+	if (MERGE_STYLES) {
+		int j = modifyStart;	
+		for (int i = 0; i < mergeCount; i += 2) {
+			if (j > 0 && ranges[j - 2] + ranges[j - 1] == mergeRanges[i] && mergeStyles[i >> 1].similarTo(styles[(j - 2) >> 1])) {
+				ranges[j - 1] += mergeRanges[i + 1];
+			} else {
+				styles[j >> 1] = mergeStyles[i >> 1];
+				ranges[j++] = mergeRanges[i];
+				ranges[j++] = mergeRanges[i + 1];
+			}
 		}
+		if (endStyle != null && ranges[j - 2] + ranges[j - 1] == endStart && endStyle.similarTo(styles[(j - 2) >> 1])) {
+			ranges[j - 1] += endLength;
+			modifyEnd += 2;
+			mergeCount += 2;
+		}
+		if (rangeCount > modifyEnd) {
+			System.arraycopy(ranges, modifyStart + mergeCount, ranges, j, rangeCount - modifyEnd);
+			System.arraycopy(styles, (modifyStart + mergeCount) >> 1, styles, j >> 1, styleCount - (modifyEnd >> 1));
+		}
+		grow = (j - modifyStart) - (modifyEnd - modifyStart);
+	} else {
+		System.arraycopy(mergeRanges, 0, ranges, modifyStart, mergeCount);
+		System.arraycopy(mergeStyles, 0, styles, modifyStart >> 1, mergeCount >> 1);
 	}
-	if (endStyle != null && ranges[j - 2] + ranges[j - 1] == endStart && endStyle.similarTo(styles[(j - 2) >> 1])) {
-		ranges[j - 1] += endLength;
-		modifyEnd += 2;
-		mergeCount += 2;
-	}
-	if (rangeCount > modifyEnd) {
-		System.arraycopy(ranges, modifyStart + mergeCount, ranges, j, rangeCount - modifyEnd);
-		System.arraycopy(styles, (modifyStart + mergeCount) >> 1, styles, j >> 1, styleCount - (modifyEnd >> 1));
-	}
-	grow = (j - modifyStart) - (modifyEnd - modifyStart);
 	styleCount += grow >> 1;
 	return grow;
 }
@@ -155,26 +160,29 @@ int addMerge(StyleRange[] mergeStyles, int mergeCount, int modifyStart, int modi
 			System.arraycopy(styles, modifyEnd, styles, modifyStart + mergeCount, styleCount - modifyEnd);
 		}
 	}
-	
-	int j = modifyStart;
-	for (int i = 0; i < mergeCount; i++) {
-		StyleRange newStyle = mergeStyles[i], style;
-		if (j > 0 && (style = styles[j - 1]).start + style.length == newStyle.start && newStyle.similarTo(style)) {
-			style.length += newStyle.length;
-		} else {
-			styles[j++] = newStyle;
+	if (MERGE_STYLES) {
+		int j = modifyStart;
+		for (int i = 0; i < mergeCount; i++) {
+			StyleRange newStyle = mergeStyles[i], style;
+			if (j > 0 && (style = styles[j - 1]).start + style.length == newStyle.start && newStyle.similarTo(style)) {
+				style.length += newStyle.length;
+			} else {
+				styles[j++] = newStyle;
+			}
 		}
+		StyleRange style = styles[j - 1];
+		if (endStyle != null && style.start + style.length == endStyle.start && endStyle.similarTo(style)) {
+			style.length += endStyle.length;
+			modifyEnd++;
+			mergeCount++;
+		}
+		if (styleCount > modifyEnd) {
+			System.arraycopy(styles, modifyStart + mergeCount, styles, j, styleCount - modifyEnd);
+		}
+		grow = (j - modifyStart) - (modifyEnd - modifyStart);
+	} else {
+		System.arraycopy(mergeStyles, 0, styles, modifyStart, mergeCount);
 	}
-	StyleRange style = styles[j - 1];
-	if (endStyle != null && style.start + style.length == endStyle.start && endStyle.similarTo(style)) {
-		style.length += endStyle.length;
-		modifyEnd++;
-		mergeCount++;
-	}
-	if (styleCount > modifyEnd) {
-		System.arraycopy(styles, modifyStart + mergeCount, styles, j, styleCount - modifyEnd);
-	}
-	grow = (j - modifyStart) - (modifyEnd - modifyStart);
 	styleCount += grow;
 	return grow;
 }
@@ -896,7 +904,7 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		stylesSet = null;
 		return;
 	}
-	if (newRanges == null && NEW_DB) {
+	if (newRanges == null && COMPACT_STYLES) {
 		newRanges = new int[newStyles.length << 1];		
 		StyleRange[] tmpStyles = new StyleRange[newStyles.length];
 		if (stylesSet == null) stylesSet = new StyleRange[4];
@@ -947,14 +955,16 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		}
 	}
 	if (ranges != null) {
-		int start = newRanges[0];
 		int rangeCount = styleCount << 1;
+		int start = newRanges[0];
+		int end = newRanges[newRanges.length - 2] + newRanges[newRanges.length - 1];
 		int modifyStart = getRangeIndex(start, -1, rangeCount);
-		int modifyEnd = modifyStart;
-		if (modifyStart == rangeCount) {
+		int modifyEnd = getRangeIndex(end, modifyStart - 1, rangeCount);
+		if (modifyStart == modifyEnd) {
 			addMerge(newRanges, newStyles, newRanges.length, modifyStart, modifyEnd);
 			return;
 		}
+		modifyEnd = modifyStart;
 		int[] mergeRanges = new int[6];
 		StyleRange[] mergeStyles = new StyleRange[3];
 		for (int i = 0; i < newRanges.length; i += 2) {
@@ -990,12 +1000,14 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		}
 	} else {
 		int start = newStyles[0].start;
+		int end = newStyles[newStyles.length - 1].start + newStyles[newStyles.length - 1].length;
 		int modifyStart = getRangeIndex(start, -1, styleCount);
-		int modifyEnd = modifyStart;
-		if (modifyStart == styleCount) {
-			addMerge(newStyles, newStyles.length, modifyStart, modifyEnd);
+		int modifyEnd = getRangeIndex(end, modifyStart - 1, styleCount);
+		if (modifyStart == modifyEnd) {
+			addMerge(newStyles, newStyles.length, modifyStart, modifyStart);
 			return;
 		}
+		modifyEnd = modifyStart;
 		StyleRange[] mergeStyles = new StyleRange[3];
 		for (int i = 0; i < newStyles.length; i++) {
 			StyleRange newStyle = newStyles[i], style; 
