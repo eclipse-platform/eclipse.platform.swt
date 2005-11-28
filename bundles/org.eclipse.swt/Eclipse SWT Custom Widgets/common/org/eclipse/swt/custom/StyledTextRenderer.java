@@ -957,11 +957,15 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 	if (ranges != null) {
 		int rangeCount = styleCount << 1;
 		int start = newRanges[0];
-		int end = newRanges[newRanges.length - 2] + newRanges[newRanges.length - 1];
-		int modifyStart = getRangeIndex(start, -1, rangeCount);
-		int modifyEnd = getRangeIndex(end, modifyStart - 1, rangeCount);
-		if (modifyStart == modifyEnd) {
-			addMerge(newRanges, newStyles, newRanges.length, modifyStart, modifyEnd);
+		int modifyStart = getRangeIndex(start, -1, rangeCount), modifyEnd;
+		boolean fastInsert = modifyStart == rangeCount;
+		if (!fastInsert) {
+			int end = newRanges[newRanges.length - 2] + newRanges[newRanges.length - 1];
+			modifyEnd = getRangeIndex(end, modifyStart - 1, rangeCount);
+			fastInsert = modifyStart == modifyEnd && ranges[modifyStart] >= end;
+		}
+		if (fastInsert) {
+			addMerge(newRanges, newStyles, newRanges.length, modifyStart, modifyStart);
 			return;
 		}
 		modifyEnd = modifyStart;
@@ -1000,10 +1004,14 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		}
 	} else {
 		int start = newStyles[0].start;
-		int end = newStyles[newStyles.length - 1].start + newStyles[newStyles.length - 1].length;
-		int modifyStart = getRangeIndex(start, -1, styleCount);
-		int modifyEnd = getRangeIndex(end, modifyStart - 1, styleCount);
-		if (modifyStart == modifyEnd) {
+		int modifyStart = getRangeIndex(start, -1, styleCount), modifyEnd;
+		boolean fastInsert = modifyStart == styleCount;
+		if (!fastInsert) {
+			int end = newStyles[newStyles.length - 1].start + newStyles[newStyles.length - 1].length;
+			modifyEnd = getRangeIndex(end, modifyStart - 1, styleCount);
+			fastInsert = modifyStart == modifyEnd && styles[modifyStart].start >= end;
+		}
+		if (fastInsert) {
 			addMerge(newStyles, newStyles.length, modifyStart, modifyStart);
 			return;
 		}
