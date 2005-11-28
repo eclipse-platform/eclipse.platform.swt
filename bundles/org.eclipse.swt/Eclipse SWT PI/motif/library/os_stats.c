@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 464;
-int OS_nativeFunctionCallCount[464];
+int OS_nativeFunctionCount = 467;
+int OS_nativeFunctionCallCount[467];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -154,7 +154,10 @@ char * OS_nativeFunctionNames[] = {
 	"_1XSetRegion",
 	"_1XSetStipple",
 	"_1XSetSubwindowMode",
+	"_1XSetTSOrigin",
+	"_1XSetTile",
 	"_1XSetWMNormalHints",
+	"_1XSetWindowBackgroundPixmap",
 	"_1XShapeCombineMask",
 	"_1XShapeCombineRegion",
 	"_1XSubtractRegion",

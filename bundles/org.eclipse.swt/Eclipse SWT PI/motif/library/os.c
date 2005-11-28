@@ -1924,6 +1924,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XSetSubwindowMode)
 }
 #endif
 
+#ifndef NO__1XSetTSOrigin
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetTSOrigin)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1XSetTSOrigin_FUNC);
+	XSetTSOrigin((Display *)arg0, (GC)arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, _1XSetTSOrigin_FUNC);
+}
+#endif
+
+#ifndef NO__1XSetTile
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetTile)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1XSetTile_FUNC);
+	XSetTile((Display *)arg0, (GC)arg1, (Pixmap)arg2);
+	OS_NATIVE_EXIT(env, that, _1XSetTile_FUNC);
+}
+#endif
+
 #ifndef NO__1XSetWMNormalHints
 JNIEXPORT void JNICALL OS_NATIVE(_1XSetWMNormalHints)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -1935,6 +1955,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XSetWMNormalHints)
 fail:
 	if (arg2 && lparg2) setXSizeHintsFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1XSetWMNormalHints_FUNC);
+}
+#endif
+
+#ifndef NO__1XSetWindowBackgroundPixmap
+JNIEXPORT void JNICALL OS_NATIVE(_1XSetWindowBackgroundPixmap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1XSetWindowBackgroundPixmap_FUNC);
+	XSetWindowBackgroundPixmap((Display *)arg0, (Window)arg1, (Pixmap)arg2);
+	OS_NATIVE_EXIT(env, that, _1XSetWindowBackgroundPixmap_FUNC);
 }
 #endif
 

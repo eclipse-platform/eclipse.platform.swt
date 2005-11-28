@@ -95,6 +95,7 @@ public class OS extends Platform {
 	public static final int Expose = 12;
 	public static final int ExposureMask = 1 << 15;
 	public static final int FillStippled = 0x2;
+	public static final int FillTiled = 0x1;
 	public static final int FocusChangeMask = 1 << 21;
 	public static final int FocusIn = 9;
 	public static final int FocusOut = 10;
@@ -106,6 +107,10 @@ public class OS extends Platform {
 	public static final int GCFunction = 0x1;
 	public static final int GCJoinStyle = 1 << 7;
 	public static final int GCLineWidth = 0x10;
+	public static final int GCFillStyle = 1<<8;
+	public static final int GCTile = 1<<10;
+	public static final int GCTileStipXOrigin	= 1<<12;
+	public static final int GCTileStipYOrigin	= 1<<13;
 	public static final int GXand = 0x1;
 	public static final int GXcopy = 0x3;
 	public static final int GXxor = 0x6;
@@ -158,6 +163,7 @@ public class OS extends Platform {
 	public static final int NotifyNormal = 0x0;
 	public static final int NotifyGrab = 0x1;
 	public static final int NotifyUngrab = 0x2;
+	public static final int ParentRelative = 1;
 	public static final int PMinSize = 1 << 4;
 	public static final int PMaxSize = 1 << 5;
 	public static final int PPosition = 1 << 2;
@@ -407,6 +413,7 @@ public class OS extends Platform {
 	public static final int XmNarrowSize = malloc ("arrowSize", 2);
 	public static final int XmNarrowSpacing = malloc ("arrowSpacing", 2);
 	public static final int XmNbackground = malloc ("background", 4);
+	public static final int XmNbackgroundPixmap = malloc ("backgroundPixmap", 4);
 	public static final int XmNblendModel = malloc ("blendModel", 1);
 	public static final int XmNblinkRate = malloc ("blinkRate", 4);
 	public static final int XmNborderColor = malloc ("borderColor", 4);
@@ -1892,6 +1899,33 @@ public static final void XSetSubwindowMode(int display, int gc, int subwindow_mo
 	lock.lock();
 	try {
 		_XSetSubwindowMode(display, gc, subwindow_mode);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetTile(int display, int gc, int pixmap);
+public static final void XSetTile(int display, int gc, int pixmap) {
+	lock.lock();
+	try {
+		_XSetTile(display, gc, pixmap);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetTSOrigin(int display, int gc, int ts_x_origin, int ts_y_origin);
+public static final void XSetTSOrigin(int display, int gc, int ts_x_origin, int ts_y_origin) {
+	lock.lock();
+	try {
+		_XSetTSOrigin(display, gc, ts_x_origin, ts_y_origin);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XSetWindowBackgroundPixmap(int display, int w, int pixmap);
+public static final void XSetWindowBackgroundPixmap(int display, int w, int pixmap) {
+	lock.lock();
+	try {
+		_XSetWindowBackgroundPixmap(display, w, pixmap);
 	} finally {
 		lock.unlock();
 	}

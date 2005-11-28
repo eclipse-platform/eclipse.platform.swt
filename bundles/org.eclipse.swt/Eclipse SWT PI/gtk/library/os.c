@@ -3907,6 +3907,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1subwindow)
 }
 #endif
 
+#ifndef NO__1gdk_1gc_1set_1tile
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1tile)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1tile_FUNC);
+	gdk_gc_set_tile((GdkGC *)arg0, (GdkPixmap *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1tile_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1gc_1set_1ts_1origin
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1ts_1origin)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1gc_1set_1ts_1origin_FUNC);
+	gdk_gc_set_ts_origin((GdkGC *)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, _1gdk_1gc_1set_1ts_1origin_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1gc_1set_1values
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1gc_1set_1values)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -11145,6 +11165,25 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1style_1get__I_3B_3JI_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1translate_1coordinates
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1widget_1translate_1coordinates)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1translate_1coordinates_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jboolean)gtk_widget_translate_coordinates((GtkWidget *)arg0, (GtkWidget *)arg1, arg2, arg3, lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1translate_1coordinates_FUNC);
+	return rc;
 }
 #endif
 

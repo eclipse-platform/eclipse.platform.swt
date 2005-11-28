@@ -206,6 +206,7 @@ public class OS extends Platform {
 	public static final int GDK_SHIFT_MASK = 0x1;
 	public static final int GDK_SIZING = 0x78;
 	public static final int GDK_STIPPLED = 0x2;
+	public static final int GDK_TILED = 0x1;
 	public static final int GDK_Shift_L = 0xffe1;
 	public static final int GDK_Shift_R = 0xffe2;
 	public static final int GDK_SCROLL = 31;
@@ -2567,6 +2568,24 @@ public static final void gdk_gc_set_subwindow(int /*long*/ gc, int /*long*/ mode
 	lock.lock();
 	try {
 		_gdk_gc_set_subwindow(gc, mode);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gdk_gc_set_tile(int /*long*/ gc, int /*long*/ tile);
+public static final void gdk_gc_set_tile(int /*long*/ gc, int /*long*/ tile) {
+	lock.lock();
+	try {
+		_gdk_gc_set_tile(gc, tile);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gdk_gc_set_ts_origin(int /*long*/ gc, int x, int y);
+public static final void gdk_gc_set_ts_origin(int /*long*/ gc, int x, int y) {
+	lock.lock();
+	try {
+		_gdk_gc_set_ts_origin(gc, x, y);
 	} finally {
 		lock.unlock();
 	}
@@ -7581,6 +7600,15 @@ public static final void gtk_widget_style_get(int /*long*/ widget, byte[] proper
 	lock.lock();
 	try {
 		_gtk_widget_style_get(widget, property_name, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _gtk_widget_translate_coordinates(int /*long*/ src_widget, int /*long*/ dest_widget, int src_x, int src_y, int[] dest_x, int[] dest_y);
+public static final boolean gtk_widget_translate_coordinates(int /*long*/ src_widget, int /*long*/ dest_widget, int src_x, int src_y, int[] dest_x, int[] dest_y) {
+	lock.lock();
+	try {
+		return _gtk_widget_translate_coordinates(src_widget, dest_widget, src_x, src_y, dest_x, dest_y);
 	} finally {
 		lock.unlock();
 	}

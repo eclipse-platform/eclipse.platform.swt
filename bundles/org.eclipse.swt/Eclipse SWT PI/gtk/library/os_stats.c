@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1032;
-int OS_nativeFunctionCallCount[1032];
+int OS_nativeFunctionCount = 1035;
+int OS_nativeFunctionCallCount[1035];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -309,6 +309,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1gc_1set_1line_1attributes",
 	"_1gdk_1gc_1set_1stipple",
 	"_1gdk_1gc_1set_1subwindow",
+	"_1gdk_1gc_1set_1tile",
+	"_1gdk_1gc_1set_1ts_1origin",
 	"_1gdk_1gc_1set_1values",
 	"_1gdk_1keyboard_1ungrab",
 	"_1gdk_1keymap_1get_1default",
@@ -878,6 +880,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1size_1request",
 	"_1gtk_1widget_1style_1get__I_3B_3II",
 	"_1gtk_1widget_1style_1get__I_3B_3JI",
+	"_1gtk_1widget_1translate_1coordinates",
 	"_1gtk_1widget_1unrealize",
 	"_1gtk_1window_1activate_1default",
 	"_1gtk_1window_1add_1accel_1group",
