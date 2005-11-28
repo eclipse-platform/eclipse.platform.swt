@@ -2994,11 +2994,10 @@ public int getBaseline() {
  */
 public int getBaseline(int offset) {
 	checkWidget();
-	int count = content.getCharCount();
-	if (!(0 <= offset && offset <= count)) {
+	if (!(0 <= offset && offset <= content.getCharCount())) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
-	if (isFixedLineHeight() || offset == count) {
+	if (isFixedLineHeight()) {
 		return renderer.getBaseline();
 	}
 	int lineIndex = content.getLineAtOffset(offset);
@@ -3484,11 +3483,10 @@ public int getLineHeight() {
  */
 public int getLineHeight(int offset) {
 	checkWidget();
-	int count = content.getCharCount();
-	if (!(0 <= offset && offset <= count)) {
+	if (!(0 <= offset && offset <= content.getCharCount())) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
-	if (isFixedLineHeight() || offset == count) {
+	if (isFixedLineHeight()) {
 		return renderer.getLineHeight();
 	}
 	int lineIndex = content.getLineAtOffset(offset);
