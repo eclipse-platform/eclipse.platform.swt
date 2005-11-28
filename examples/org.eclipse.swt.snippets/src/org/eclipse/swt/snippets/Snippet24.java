@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * example snippet: detect CR in a text or combo control (default selelection)
+ * example snippet: detect CR in a text or combo control (default selection)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
