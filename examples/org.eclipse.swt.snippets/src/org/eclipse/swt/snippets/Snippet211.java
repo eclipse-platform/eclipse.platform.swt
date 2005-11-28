@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.custom.*;
 
 /*
- * SWT StyledText snippet: Shows how to use rise and font with StyleRange. 
+ * SWT StyledText snippet: use rise and font with StyleRange. 
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

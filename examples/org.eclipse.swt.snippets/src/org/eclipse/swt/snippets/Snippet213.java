@@ -15,9 +15,8 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.custom.*;
 
 /*
- * SWT StyledText snippet: Shows how to use indent, alignment and justify.
+ * SWT StyledText snippet: use indent, alignment and justify.
  * 
- *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  * 

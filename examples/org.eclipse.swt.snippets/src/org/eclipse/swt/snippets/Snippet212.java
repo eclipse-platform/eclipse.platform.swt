@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.custom.*;
 
 /*
- * SWT StyledText snippet: Shows how to embedded images in StyledText. 
+ * SWT StyledText snippet: embed images in a StyledText.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -18,8 +18,8 @@ public class Snippet212 {
 	
 	static StyledText styledText;
 	static String text = 
-		"This snippet shows how to embedded images to StyledText, here is one: \uFFFC, and here is another: \uFFFC. Use the add button" +
-		" to add an image from your filesystem to StyledText at current caret offset.";
+		"This snippet shows how to embed images in a StyledText. Here is one: \uFFFC, and here is another: \uFFFC. Use the add button" +
+		" to add an image from your filesystem to the StyledText at the current caret offset.";
 	static Image[] images;
 	static int[] offsets;
 
