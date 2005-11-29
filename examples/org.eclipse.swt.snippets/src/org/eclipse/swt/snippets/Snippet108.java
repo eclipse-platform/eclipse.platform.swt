@@ -18,6 +18,7 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
 public class Snippet108 {
@@ -30,9 +31,19 @@ public static void main (String [] args) {
 	Text text = new Text (shell, SWT.BORDER);
 	text.setLayoutData (new RowData (100, SWT.DEFAULT));
 	Button ok = new Button (shell, SWT.PUSH);
-	ok.setText ("Ok");
+	ok.setText ("OK");
+	ok.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			System.out.println("OK");
+		}
+	});
 	Button cancel = new Button (shell, SWT.PUSH);
 	cancel.setText ("Cancel");
+	cancel.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			System.out.println("Cancel");
+		}
+	});
 	shell.setDefaultButton (cancel);
 	shell.setLayout (new RowLayout ());
 	shell.pack ();
