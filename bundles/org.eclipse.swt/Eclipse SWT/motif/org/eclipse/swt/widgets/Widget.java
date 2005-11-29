@@ -58,19 +58,22 @@ public abstract class Widget {
 	static final int CANVAS = 1<<1;
 	static final int KEYED_DATA = 1<<2;
 	static final int FOCUS_FORCED = 1<<3;
+	static final int BACKGROUND = 1<<4;
+	static final int FOREGROUND = 1<<5;
+	static final int PARENT_BACKGROUND = 1<<6;
 	
 	/* A layout was requested on this widget */
-	static final int LAYOUT_NEEDED	= 1<<4;
+	static final int LAYOUT_NEEDED	= 1<<7;
 	
 	/* The preferred size of a child has changed */
-	static final int LAYOUT_CHANGED = 1<<5;
+	static final int LAYOUT_CHANGED = 1<<8;
 	
 	/* A layout was requested in this widget hierachy */
-	static final int LAYOUT_CHILD = 1<<6;
+	static final int LAYOUT_CHILD = 1<<9;
 
 	/* More global state flags */
-	static final int RELEASED = 1<<7;
-	static final int DISPOSE_SENT = 1<<8;
+	static final int RELEASED = 1<<10;
+	static final int DISPOSE_SENT = 1<<11;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;

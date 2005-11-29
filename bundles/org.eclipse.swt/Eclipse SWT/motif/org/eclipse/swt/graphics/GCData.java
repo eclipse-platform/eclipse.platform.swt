@@ -31,6 +31,7 @@ public final class GCData {
 	public int drawable;
 	public int foreground = -1;
 	public int background = -1;
+	public Image backgroundImage;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public Font font;

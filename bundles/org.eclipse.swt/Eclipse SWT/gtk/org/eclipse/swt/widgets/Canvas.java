@@ -70,6 +70,13 @@ public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
 
+public void drawBackground (GC gc, int x, int y, int width, int height) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	super.drawBackground (gc, x, y, width, height);
+}
+
 /**
  * Returns the caret.
  * <p>
@@ -119,10 +126,10 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-void redrawWidget (int x, int y, int width, int height, boolean all) {
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	super.redrawWidget (x, y, width, height, all);
+	super.redrawWidget (x, y, width, height, redrawAll, all, trim);
 	if (isFocus) caret.setFocus ();
 }
 
@@ -181,46 +188,53 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (copyRect.width != 0 && copyRect.height != 0) {
 		update ();
 	}
-//	GC gc = new GC (this);
-//	gc.copyArea (x, y, width, height, destX, destY);
-//	gc.dispose ();
-	int /*long*/ gdkGC = OS.gdk_gc_new (window);
-	OS.gdk_gc_set_exposures (gdkGC, true);
-	OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
-	OS.g_object_unref (gdkGC);
-	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
-	if (disjoint) {
-		GdkRectangle rect = new GdkRectangle ();
-		rect.x = x;
-		rect.y = y;
-		rect.width = width;
-		rect.height = height;
-		OS.gdk_region_union_with_rect (invalidateRegion, rect);
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	if (control.backgroundImage != null) {
+		redrawWidget (x, y, width, height, false, false, false);
+		redrawWidget (destX, destY, width, height, false, false, false);
 	} else {
-		GdkRectangle rect = new GdkRectangle ();
-		if (deltaX != 0) {
-			int newX = destX - deltaX;
-			if (deltaX < 0) newX = destX + width;
-			rect.x = newX;
+//		GC gc = new GC (this);
+//		gc.copyArea (x, y, width, height, destX, destY);
+//		gc.dispose ();
+		int /*long*/ gdkGC = OS.gdk_gc_new (window);
+		OS.gdk_gc_set_exposures (gdkGC, true);
+		OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
+		OS.g_object_unref (gdkGC);
+		boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
+		if (disjoint) {
+			GdkRectangle rect = new GdkRectangle ();
+			rect.x = x;
 			rect.y = y;
-			rect.width = Math.abs(deltaX);
+			rect.width = width;
 			rect.height = height;
 			OS.gdk_region_union_with_rect (invalidateRegion, rect);
-		}
-		if (deltaY != 0) {
-			int newY = destY - deltaY;
-			if (deltaY < 0) newY = destY + height;
-			rect.x = x;
-			rect.y = newY;
-			rect.width = width;
-			rect.height = Math.abs(deltaY);
-			OS.gdk_region_union_with_rect (invalidateRegion, rect);
-		}
-	}	
-	OS.gdk_window_invalidate_region(window, invalidateRegion, all);
-	OS.gdk_region_destroy (visibleRegion);
-	OS.gdk_region_destroy (copyRegion);
-	OS.gdk_region_destroy (invalidateRegion);
+		} else {
+			GdkRectangle rect = new GdkRectangle ();
+			if (deltaX != 0) {
+				int newX = destX - deltaX;
+				if (deltaX < 0) newX = destX + width;
+				rect.x = newX;
+				rect.y = y;
+				rect.width = Math.abs(deltaX);
+				rect.height = height;
+				OS.gdk_region_union_with_rect (invalidateRegion, rect);
+			}
+			if (deltaY != 0) {
+				int newY = destY - deltaY;
+				if (deltaY < 0) newY = destY + height;
+				rect.x = x;
+				rect.y = newY;
+				rect.width = width;
+				rect.height = Math.abs(deltaY);
+				OS.gdk_region_union_with_rect (invalidateRegion, rect);
+			}
+		}	
+		OS.gdk_window_invalidate_region(window, invalidateRegion, all);
+		OS.gdk_region_destroy (visibleRegion);
+		OS.gdk_region_destroy (copyRegion);
+		OS.gdk_region_destroy (invalidateRegion);
+	}
 	if (all) {
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {

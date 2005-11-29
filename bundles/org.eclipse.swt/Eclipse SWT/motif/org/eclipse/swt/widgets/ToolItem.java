@@ -193,8 +193,9 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateDrawnButton (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int pixel = parent.getBackgroundPixel ();
-	setBackgroundPixel (pixel);
+	Control control = parent.findBackgroundControl ();
+	if (control == null) control = parent;
+	setBackgroundPixel (parent.getBackgroundPixel ());
 }
 
 void click (boolean dropDown, int state) {
@@ -284,6 +285,18 @@ Point computeSize (GC gc) {
 		height = DEFAULT_HEIGHT;
 	}
 	return new Point (width, height);
+}
+void createWidget (int index) {
+	super.createWidget (index);
+	int topHandle = topHandle ();
+	if (OS.XtIsRealized (topHandle)) {
+		/*
+		* Make sure that the widget has been properly realized
+		* because the widget was created after the parent
+		* has been realized.
+		*/
+		realizeChildren ();
+	}
 }
 void destroyWidget () {
 	parent.destroyItem (this);
@@ -504,12 +517,20 @@ public boolean isEnabled () {
 void manageChildren () {
 	OS.XtManageChild (handle);
 }
+void realizeChildren () {
+	if ((parent.state & PARENT_BACKGROUND) != 0) {
+		setParentBackground ();
+	}
+}
 void redraw () {
 	int display = OS.XtDisplay (handle);
 	if (display == 0) return;
 	int window = OS.XtWindow (handle);
 	if (window == 0) return;
 	OS.XClearArea (display, window, 0, 0, 0, 0, true);
+}
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren, boolean trim) {
+	redrawHandle (x, y, width, height, redrawAll, handle);
 }
 void releaseHandle () {
 	super.releaseHandle ();
@@ -715,6 +736,9 @@ public void setImage (Image image) {
 	super.setImage (image);
 	parent.relayout();
 	redraw ();
+}
+void setParentBackground () {
+	parent.setParentBackground (handle);
 }
 boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
@@ -1073,7 +1097,7 @@ int XmNexposureCallback (int w, int client_data, int call_data) {
 		textX -= 6;  imageX -=6;
 	}
 	if (textWidth > 0) {
-		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
 		gc.drawText(text, textX, textY, flags);
 	}
 	if (imageWidth > 0) gc.drawImage(currentImage, imageX, imageY);

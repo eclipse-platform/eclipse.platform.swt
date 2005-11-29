@@ -296,9 +296,11 @@ void drawRectangles (Rectangle [] rects, boolean stippled) {
 	if (parent != null) {
 		xWindow = OS.XtWindow (parent.handle);
 		if (xWindow == 0) return;
-		int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0};
-		OS.XtGetValues (parent.handle, argList, argList.length / 2);
-		color = argList [1] ^ argList [3];
+		int foreground = parent.getForegroundPixel ();
+		Control control = parent.findBackgroundControl ();
+		if (control == null) control = parent;
+		int background = control.getBackgroundPixel ();
+		color = foreground ^ background;
 	}
 	int gc = OS.XCreateGC (xDisplay, xWindow, 0, null);
 	OS.XSetForeground (xDisplay, gc, color);

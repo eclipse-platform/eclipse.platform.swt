@@ -306,6 +306,29 @@ void deregister () {
 	if (socketHandle != 0) display.removeWidget (socketHandle);
 }
 
+void drawBackground (GC gc, int x, int y, int width, int height) {
+	int gdkGC = gc.handle;
+	GdkGCValues values = new GdkGCValues ();
+	OS.gdk_gc_get_values (gdkGC, values);
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	if (control.backgroundImage != null) {
+		Point pt = display.map (this, control, 0, 0);
+		OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
+		OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
+		OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
+		gc.fillRectangle (x, y, width, height);
+		OS.gdk_gc_set_fill (gdkGC, values.fill);
+		OS.gdk_gc_set_ts_origin (gdkGC, values.ts_x_origin, values.ts_y_origin);
+	} else {
+		gc.setBackground (control.getBackground ());
+		gc.fillRectangle (x, y, width, height);
+		GdkColor color = new GdkColor ();
+		color.pixel = values.background_pixel;
+		OS.gdk_gc_set_background (gdkGC, color);
+	}
+}
+
 void enableWidget (boolean enabled) {
 	if ((state & CANVAS) != 0) return;
 	super.enableWidget (enabled);
@@ -628,11 +651,12 @@ int /*long*/ gtk_scroll_child (int /*long*/ widget, int /*long*/ scrollType, int
 }
 
 int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
+	int result = super.gtk_style_set (widget, previousStyle);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
 	}
-	return 0;
+	return result;
 }
 
 boolean hasBorder () {
@@ -646,7 +670,7 @@ void hookEvents () {
 		if (scrolledHandle != 0) {
 			OS.g_signal_connect_closure (scrolledHandle, OS.scroll_child, display.closures [SCROLL_CHILD], false);
 		}
-		if ((style & SWT.NO_BACKGROUND) != 0) {
+		if ((state & PARENT_BACKGROUND) == 0 && (style & SWT.NO_BACKGROUND) != 0) {
 			OS.g_signal_connect_closure_by_id (handle, display.signalIds [STYLE_SET], 0, display.closures [STYLE_SET], false);
 		}
 	}
@@ -940,6 +964,18 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 int /*long*/ parentingHandle () {
 	if ((state & CANVAS) != 0) return handle;
 	return fixedHandle != 0 ? fixedHandle : handle;
+}
+
+void redrawChildren () {
+	super.redrawChildren ();
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		Control child = children [i];
+		if ((child.state & PARENT_BACKGROUND) != 0) {
+			child.redrawWidget (0, 0, 0, 0, true, false, true);
+			child.redrawChildren ();
+		}
+	}
 }
 
 void register () {

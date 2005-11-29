@@ -293,6 +293,28 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	return true;
 }
 
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
+	super.redrawWidget (x, y, width, height, redrawAll, all, trim);
+	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
+	if (!trim) return;
+	int /*long*/ topHandle = topHandle (), paintHandle = paintHandle ();
+	if (topHandle == paintHandle) return;
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle);
+	GdkRectangle rect = new GdkRectangle ();
+	if (redrawAll) {
+		rect.width = OS.GTK_WIDGET_WIDTH (topHandle);
+		rect.height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	} else {
+		int [] destX = new int [1], destY = new int [1];
+		OS.gtk_widget_translate_coordinates (paintHandle, topHandle, x, y, destX, destY);
+		rect.x = destX [0];
+		rect.y = destY [0];
+		rect.width = width;
+		rect.height = height;
+	}
+	OS.gdk_window_invalidate_rect (window, rect, all);
+}
+
 void register () {
 	super.register ();
 	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);

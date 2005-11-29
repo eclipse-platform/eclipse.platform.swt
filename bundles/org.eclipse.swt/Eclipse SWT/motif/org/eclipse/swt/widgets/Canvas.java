@@ -70,6 +70,12 @@ Canvas () {
 public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
+public void drawBackground (GC gc, int x, int y, int width, int height) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	super.drawBackground (gc, x, y, width, height);
+}
 /**
  * Returns the caret.
  * <p>
@@ -95,10 +101,10 @@ public Caret getCaret () {
 Caret getIMCaret () {
 	return caret;
 }
-void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren, boolean trim) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	super.redrawWidget (x, y, width, height, redrawAll, allChildren);
+	super.redrawWidget (x, y, width, height, redrawAll, allChildren, trim);
 	if (isFocus) caret.setFocus ();
 }
 
@@ -155,22 +161,29 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		}
 		OS.XtFree (xEvent);
 	}
-	int xGC = OS.XCreateGC (xDisplay, xWindow, 0, null);
-	OS.XCopyArea (xDisplay, xWindow, xWindow, xGC, x, y, width, height, destX, destY);
-	OS.XFreeGC (xDisplay, xGC);
-	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
-	if (disjoint) {
-		OS.XClearArea (xDisplay, xWindow, x, y, width, height, true);
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	if (control.backgroundImage != null) {
+		redrawWidget (x, y, width, height, false, false, false);
+		redrawWidget (destX, destY, width, height, false, false, false);
 	} else {
-		if (deltaX != 0) {
-			int newX = destX - deltaX;
-			if (deltaX < 0) newX = destX + width;
-			OS.XClearArea (xDisplay, xWindow, newX, y, Math.abs (deltaX), height, true);
-		}
-		if (deltaY != 0) {
-			int newY = destY - deltaY;
-			if (deltaY < 0) newY = destY + height;
-			OS.XClearArea (xDisplay, xWindow, x, newY, width, Math.abs (deltaY), true);
+		int xGC = OS.XCreateGC (xDisplay, xWindow, 0, null);
+		OS.XCopyArea (xDisplay, xWindow, xWindow, xGC, x, y, width, height, destX, destY);
+		OS.XFreeGC (xDisplay, xGC);
+		boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
+		if (disjoint) {
+			OS.XClearArea (xDisplay, xWindow, x, y, width, height, true);
+		} else {
+			if (deltaX != 0) {
+				int newX = destX - deltaX;
+				if (deltaX < 0) newX = destX + width;
+				OS.XClearArea (xDisplay, xWindow, newX, y, Math.abs (deltaX), height, true);
+			}
+			if (deltaY != 0) {
+				int newY = destY - deltaY;
+				if (deltaY < 0) newY = destY + height;
+				OS.XClearArea (xDisplay, xWindow, x, newY, width, Math.abs (deltaY), true);
+			}
 		}
 	}
 	if (all) {

@@ -181,6 +181,11 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY, 
 	if (deltaX == 0 && deltaY == 0) return;
 	int xDisplay = data.display;
 	int xDrawable = data.drawable;
+	if (data.backgroundImage != null && paint) {
+		OS.XClearArea (xDisplay, xDrawable, x, y, width, height, true);
+		OS.XClearArea (xDisplay, xDrawable, destX, destY, width, height, true);
+		return;
+	}
 	if (data.image == null && paint) OS.XSetGraphicsExposures (xDisplay, handle, true);
 	OS.XCopyArea(xDisplay, xDrawable, xDrawable, handle, x, y, width, height, destX, destY);
 	if (data.image == null && paint) {

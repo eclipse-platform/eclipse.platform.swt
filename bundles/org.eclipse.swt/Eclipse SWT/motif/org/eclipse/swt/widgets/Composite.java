@@ -284,6 +284,33 @@ void deregister () {
 	super.deregister ();
 	if (focusHandle != 0) display.removeWidget (focusHandle);
 }
+void drawBackground (GC gc, int x, int y, int width, int height) {
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int xGC = gc.handle;
+	XGCValues values = new XGCValues();
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	if (control.backgroundImage != null) {
+		OS.XGetGCValues (xDisplay, xGC, OS.GCFillStyle | OS.GCTile | OS.GCTileStipXOrigin | OS.GCTileStipYOrigin, values);
+		short [] root_x = new short [1], root_y = new short [1];
+		OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
+		short [] control_x = new short [1], control_y = new short [1];
+		OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
+		int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
+		OS.XSetFillStyle (xDisplay, xGC, OS.FillTiled);
+		OS.XSetTSOrigin (xDisplay, xGC, -tileX, -tileY);
+		OS.XSetTile (xDisplay, xGC, control.backgroundImage.pixmap);
+		gc.fillRectangle (x, y, width, height);
+		OS.XSetFillStyle (xDisplay, xGC, values.fill_style);
+		OS.XSetTSOrigin (xDisplay, xGC, values.ts_x_origin, values.ts_y_origin);
+	} else {
+		OS.XGetGCValues (xDisplay, xGC, OS.GCBackground, values);
+		gc.setBackground (control.getBackground ());
+		gc.fillRectangle (x, y, width, height);
+		OS.XSetBackground (xDisplay, xGC, values.background);
+	}
+}
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : parent.findDeferredControl ();
 }
@@ -798,18 +825,29 @@ void realizeChildren () {
 		}
 	}
 }
+void redrawChildren () {
+	super.redrawChildren ();
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		Control child = children [i];
+		if ((child.state & PARENT_BACKGROUND) != 0) {
+			child.redrawWidget (0, 0, 0, 0, true, false, true);
+			child.redrawChildren ();
+		}
+	}
+}
 void register () {
 	super.register ();
 	if (focusHandle != 0) display.addWidget (focusHandle, this);
 }
-void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
-	super.redrawWidget (x, y, width, height, redrawAll, allChildren);
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren, boolean trim) {
+	super.redrawWidget (x, y, width, height, redrawAll, allChildren, trim);
 	if (!allChildren) return;
 	Control [] children = _getChildren ();
 	for (int i = 0; i < children.length; i++) {
 		Control child = children [i];
 		Point location = child.getClientLocation ();
-		child.redrawWidget (x - location.x, y - location.y, width, height, redrawAll, allChildren);
+		child.redrawWidget (x - location.x, y - location.y, width, height, redrawAll, allChildren, true);
 	}
 }
 void release (boolean destroy) {
@@ -1045,6 +1083,11 @@ public void setTabList (Control [] tabList) {
 	} 
 	this.tabList = tabList;
 }
+void setParentBackground () {
+	super.setParentBackground ();	
+	if (scrolledHandle != 0) setParentBackground (scrolledHandle);
+	if (formHandle != 0) setParentBackground (formHandle);
+}
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	boolean changed = super.setScrollBarVisible (bar, visible);
 	if (changed && layout != null) {
@@ -1200,7 +1243,8 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 		gc.setBackground (getBackground ());
 		gc.setFont (getFont ());
 		if ((style & SWT.NO_BACKGROUND) != 0) {
-			paintGC.copyArea(image, 0, 0);
+			/* This code is intentionaly commented because it is really slow to copy bits from the screen */
+//			paintGC.copyArea(image, 0, 0);
 		} else {
 			gc.fillRectangle(0, 0, width, height);
 		}

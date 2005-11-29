@@ -757,6 +757,9 @@ void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	enableHandle (enabled, shellHandle);
 }
+Control findBackgroundControl () {
+	return (state & BACKGROUND) != 0 || backgroundImage != null ? this : null;
+}
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
 }

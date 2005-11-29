@@ -45,6 +45,7 @@ public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	Cursor cursor;
 	Menu menu;
+	Image backgroundImage;
 	Font font;
 	String toolTipText;
 	Object layoutData;
@@ -218,6 +219,10 @@ void hookEvents () {
 		OS.g_signal_connect_closure (imHandle, OS.preedit_changed, display.closures [PREEDIT_CHANGED], false);
 	}
 	
+	if ((state & PARENT_BACKGROUND) != 0) {
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [STYLE_SET], 0, display.closures [STYLE_SET], false);
+	}
+
 	int /*long*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.closures [MAP], true);
 }
@@ -616,6 +621,10 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	}
 	int result = 0;
 	if (move && !sameOrigin) {
+		Control control = findBackgroundControl ();
+		if (control != null && control.backgroundImage != null) {
+			if (isVisible ()) redrawWidget (0, 0, 0, 0, true, true, true);
+		}
 		sendEvent (SWT.Move);
 		result |= MOVED;
 	}
@@ -1457,6 +1466,11 @@ boolean filterKey (int keyval, int /*long*/ event) {
 	return false;
 }
 
+Control findBackgroundControl () {
+	if ((state & BACKGROUND) != 0 || backgroundImage != null) return this;
+	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
+}
+
 Menu [] findMenus (Control control) {
 	if (menu != null && this != control) return new Menu [] {menu};
 	return new Menu [0];
@@ -1538,11 +1552,20 @@ boolean forceFocus (int /*long*/ focusHandle) {
  */
 public Color getBackground () {
 	checkWidget();
-	return Color.gtk_new (display, getBackgroundColor ());
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	return Color.gtk_new (display, control.getBackgroundColor ());
 }
 
 GdkColor getBackgroundColor () {
 	return getBgColor ();
+}
+
+public Image getBackgroundImage () {
+	checkWidget ();
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	return control.backgroundImage;
 }
 
 GdkColor getBgColor () {
@@ -2071,6 +2094,13 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 		OS.gtk_im_context_set_client_window (imHandle, window);
 	}
+	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
+		setParentBackground ();
+	}
+	if (backgroundImage != null) {
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		if (window != 0) OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
+	}
 	return 0;
 }
 
@@ -2093,6 +2123,17 @@ int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
 int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 	if (!hasFocus ()) return 0;
 	return sendHelpEvent (helpType) ? 1 : 0;
+}
+
+int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
+	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
+		setParentBackground ();
+	}
+	if (backgroundImage != null) {
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		if (window != 0) OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
+	}
+	return 0;
 }
 
 int /*long*/ gtk_unrealize (int /*long*/ widget) {
@@ -2150,8 +2191,10 @@ public int /*long*/ internal_new_GC (GCData data) {
 		}
 		data.drawable = window;
 		data.device = display;
-		data.background = getBackgroundColor ();
 		data.foreground = getForegroundColor ();
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		data.background = control.getBackgroundColor ();
 		data.font = font != null ? font.handle : defaultFont (); 
 	}	
 	return gdkGC;
@@ -2342,10 +2385,7 @@ void redraw (boolean all) {
 //	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
 	forceResize ();
-	int /*long*/ paintHandle = paintHandle ();
-	int width = OS.GTK_WIDGET_WIDTH (paintHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (paintHandle);
-	redrawWidget (0, 0, width, height, all);
+	redrawWidget (0, 0, 0, 0, true, all, false);
 }
 
 /**
@@ -2380,17 +2420,26 @@ void redraw (boolean all) {
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
-	redrawWidget (x, y, width, height, all);
+	redrawWidget (x, y, width, height, false, all, false);
 }
 
-void redrawWidget (int x, int y, int width, int height, boolean all) {
+void redrawChildren () {
+}
+
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
 	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
 	int /*long*/ window = paintWindow ();
 	GdkRectangle rect = new GdkRectangle ();
-	rect.x = x;
-	rect.y = y;
-	rect.width = width;
-	rect.height = height;
+	if (redrawAll) {
+		int /*long*/ widget = paintHandle ();
+		rect.width = OS.GTK_WIDGET_WIDTH (widget);
+		rect.height = OS.GTK_WIDGET_HEIGHT (widget);
+	} else {
+		rect.x = x;
+		rect.y = y;
+		rect.width = width;
+		rect.height = height;
+	}
 	OS.gdk_window_invalidate_rect (window, rect, all);
 }
 
@@ -2567,6 +2616,7 @@ public void setBackground (Color color) {
 			state |= BACKGROUND;
 		}
 		setBackgroundColor (gdkColor);
+		redrawChildren ();
 	}
 }
 
@@ -2586,8 +2636,27 @@ void setBackgroundColor (int /*long*/ handle, GdkColor color) {
 	OS.gtk_rc_style_set_color_flags (style, index, flags);
 	OS.gtk_widget_modify_style (handle, style);
 }
+
 void setBackgroundColor (GdkColor color) {
-	setBackgroundColor(handle, color);
+	setBackgroundColor (handle, color);
+}
+
+public void setBackgroundImage (Image image) {
+	checkWidget ();
+	if (image != null && image.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image == backgroundImage) return;
+	this.backgroundImage = image;
+	if (backgroundImage != null) {
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		if (window != 0) {
+			OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
+		}
+		redrawWidget (0, 0, 0, 0, true, false, false);
+	} else {
+		int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
+		OS.gtk_widget_modify_style (handle, style);
+	}
+	redrawChildren ();
 }
 
 /**
@@ -2926,6 +2995,15 @@ public boolean setParent (Composite parent) {
 	this.parent = parent;
 	setZOrder (null, false);
 	return true;
+}
+
+void setParentBackground () {
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
+	if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, true);
+	if (fixedHandle != 0) {
+		window = OS.GTK_WIDGET_WINDOW (fixedHandle);
+		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, true);
+	}
 }
 
 boolean setRadioSelection (boolean value) {

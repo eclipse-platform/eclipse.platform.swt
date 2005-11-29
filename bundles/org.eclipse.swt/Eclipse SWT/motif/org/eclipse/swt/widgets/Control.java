@@ -41,6 +41,7 @@ public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	Cursor cursor;
 	Menu menu;
+	Image backgroundImage;
 	Font font;
 	String toolTipText;
 	Object layoutData;
@@ -509,6 +510,10 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 void enableWidget (boolean enabled) {
 	enableHandle (enabled, handle);
 }
+Control findBackgroundControl () {
+	if ((state & BACKGROUND) != 0 || backgroundImage != null) return this;
+	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
+}
 char findMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();
@@ -624,7 +629,15 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget();
-	return Color.motif_new (display, getXColor (getBackgroundPixel ()));
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	return Color.motif_new (display, getXColor (control.getBackgroundPixel ()));
+}
+public Image getBackgroundImage () {
+	checkWidget ();
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	return control.backgroundImage;
 }
 int getBackgroundPixel () {
 	int [] argList = {OS.XmNbackground, 0};
@@ -1112,8 +1125,6 @@ public int internal_new_GC (GCData data) {
 	int xGC = OS.XCreateGC (xDisplay, xWindow, 0, null);
 	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.XSetGraphicsExposures (xDisplay, xGC, false);
-	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNcolormap, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
@@ -1122,10 +1133,15 @@ public int internal_new_GC (GCData data) {
 		data.device = display;
 		data.display = xDisplay;
 		data.drawable = xWindow;
-		data.foreground = argList [1];
-		data.background = argList [3];
+		data.foreground = getForegroundPixel ();
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		data.background = control.getBackgroundPixel ();
+		data.backgroundImage = control.backgroundImage;
 		data.font = font;
-		data.colormap = argList [5];
+		int [] argList = {OS.XmNcolormap, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		data.colormap = argList [1];
 	}
 	return xGC;
 }
@@ -1396,15 +1412,19 @@ void propagateWidget (boolean enabled) {
 }
 void realizeChildren () {
 	if (isEnabled ()) {
-		if (cursor == null) return;
-		int xWindow = OS.XtWindow (handle);
-		if (xWindow == 0) return;
-		int xDisplay = OS.XtDisplay (handle);
-		if (xDisplay == 0) return;
-		OS.XDefineCursor (xDisplay, xWindow, cursor.handle);
-		OS.XFlush (xDisplay);
+		if (cursor != null) {
+			int xWindow = OS.XtWindow (handle);
+			if (xWindow == 0) return;
+			int xDisplay = OS.XtDisplay (handle);
+			if (xDisplay == 0) return;
+			OS.XDefineCursor (xDisplay, xWindow, cursor.handle);
+			OS.XFlush (xDisplay);
+		}
 	} else {
 		propagateWidget (false);
+	}
+	if ((state & PARENT_BACKGROUND) != 0) {
+		setParentBackground ();
 	}
 }
 /**
@@ -1427,7 +1447,7 @@ void realizeChildren () {
  */
 public void redraw () {
 	checkWidget();
-	redrawWidget (0, 0, 0, 0, true, false);
+	redrawWidget (0, 0, 0, 0, true, false, false);
 }
 /**
  * Causes the rectangular area of the receiver specified by
@@ -1461,10 +1481,12 @@ public void redraw () {
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	if (width > 0 && height > 0) {
-		redrawWidget (x, y, width, height, false, all);
+		redrawWidget (x, y, width, height, false, all, false);
 	}
 }
-void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
+void redrawChildren () {
+}
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren, boolean trim) {
 	redrawHandle (x, y, width, height, redrawAll, handle);
 }
 void releaseHandle () {
@@ -1831,11 +1853,32 @@ boolean sendMouseEvent (int type, XMotionEvent xEvent) {
 public void setBackground (Color color) {
 	checkWidget();
 	if (color == null) {
+		state &= ~BACKGROUND;
 		setBackgroundPixel (defaultBackground ());
 	} else {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		state |= BACKGROUND;
 		setBackgroundPixel (color.handle.pixel);
 	}
+	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
+		setParentBackground ();
+		redrawWidget (0, 0, 0, 0, true, false, false);
+	}
+	redrawChildren ();
+}
+public void setBackgroundImage (Image image) {
+	checkWidget ();
+	if (image != null && image.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image == backgroundImage) return;
+	this.backgroundImage = image;
+	int pixmap = image != null ? image.pixmap : OS.XmUNSPECIFIED_PIXMAP;
+	int [] argList = {OS.XmNbackgroundPixmap, pixmap};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
+		setParentBackground ();
+		redrawWidget (0, 0, 0, 0, true, false, false);
+	}
+	redrawChildren ();
 }
 void setBackgroundPixel (int pixel) {
 	int [] argList = {OS.XmNforeground, 0, OS.XmNhighlightColor, 0};
@@ -1870,7 +1913,13 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		}
 		OS.XtConfigureWidget (topHandle, x, y, width, height, argList [9]);
 		updateIM ();
-		if (!sameOrigin) sendEvent (SWT.Move);
+		if (!sameOrigin) {
+			Control control = findBackgroundControl ();
+			if (control != null && control.backgroundImage != null) {
+				if (isVisible ()) redrawWidget (0, 0, 0, 0, true, true, true);
+			}
+			sendEvent (SWT.Move);
+		}
 		if (!sameExtent) sendEvent (SWT.Resize);
 		return true;
 	}
@@ -1879,6 +1928,10 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		OS.XtGetValues (topHandle, argList, argList.length / 2);
 		if (x == (short) argList [1] && y == (short) argList [3]) return false;
 		OS.XtMoveWidget (topHandle, x, y);
+		Control control = findBackgroundControl ();
+		if (control != null && control.backgroundImage != null) {
+			if (isVisible ()) redrawWidget (0, 0, 0, 0, true, true, true);
+		}
 		sendEvent (SWT.Move);
 		return true;
 	}
@@ -2136,9 +2189,11 @@ public void setFont (Font font) {
 public void setForeground (Color color) {
 	checkWidget();
 	if (color == null) {
+		state &= ~FOREGROUND;
 		setForegroundPixel (defaultForeground ());
 	} else {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		state |= FOREGROUND;
 		setForegroundPixel (color.handle.pixel);
 	}
 }
@@ -2252,6 +2307,16 @@ public boolean setParent (Composite parent) {
 	checkWidget();
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	return false;
+}
+void setParentBackground () {
+	setParentBackground (handle);
+}
+void setParentBackground (int widget) {
+	int xDisplay = OS.XtDisplay (widget);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (widget);
+	if (xWindow == 0) return;
+	OS.XSetWindowBackgroundPixmap (xDisplay, xWindow, OS.ParentRelative);
 }
 void setParentTraversal () {
 	/*

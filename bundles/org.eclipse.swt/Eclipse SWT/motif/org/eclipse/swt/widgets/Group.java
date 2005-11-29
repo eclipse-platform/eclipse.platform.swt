@@ -245,8 +245,8 @@ void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	propagateHandle (enabled, labelHandle, OS.None);
 }
-void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
-	super.redrawWidget (x, y, width, height, redrawAll, allChildren);
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren, boolean trim) {
+	super.redrawWidget (x, y, width, height, redrawAll, allChildren, trim);
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (handle, (short) x, (short) y, root_x, root_y);
 	short [] label_x = new short [1], label_y = new short [1];
@@ -272,6 +272,10 @@ void setForegroundPixel (int pixel) {
 	int [] argList = {OS.XmNforeground, pixel};
 	OS.XtSetValues (labelHandle, argList, argList.length / 2);
 	super.setForegroundPixel (pixel);
+}
+void setParentBackground () {
+	super.setParentBackground ();
+	if (labelHandle != 0) setParentBackground (labelHandle);
 }
 /**
  * Sets the receiver's text, which is the string that will
