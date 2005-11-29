@@ -307,7 +307,7 @@ void deregister () {
 }
 
 void drawBackground (GC gc, int x, int y, int width, int height) {
-	int gdkGC = gc.handle;
+	int /*long*/ gdkGC = gc.handle;
 	GdkGCValues values = new GdkGCValues ();
 	OS.gdk_gc_get_values (gdkGC, values);
 	Control control = findBackgroundControl ();
@@ -651,7 +651,7 @@ int /*long*/ gtk_scroll_child (int /*long*/ widget, int /*long*/ scrollType, int
 }
 
 int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
-	int result = super.gtk_style_set (widget, previousStyle);
+	int /*long*/ result = super.gtk_style_set (widget, previousStyle);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
