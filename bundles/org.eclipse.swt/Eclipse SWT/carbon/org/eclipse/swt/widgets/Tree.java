@@ -2547,11 +2547,13 @@ void setItemCount (TreeItem parentItem, int count) {
 		int index = count;
 		while (index < ids.length) {
 			int id = ids [index];
-			TreeItem item = _getItem (id, false);
-			if (item != null) item.release (false);
-			if (parentItem == null || parentItem.getExpanded ()) {
-				if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, new int [] {id}, 0) != OS.noErr) {
-					break;
+			if (id != 0) {
+				TreeItem item = _getItem (id, false);
+				if (item != null) item.release (false);	
+				if (parentItem == null || parentItem.getExpanded ()) {
+					if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, new int [] {id}, 0) != OS.noErr) {
+						break;
+					}
 				}
 			}
 			index++;
