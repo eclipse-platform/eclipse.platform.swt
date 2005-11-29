@@ -201,7 +201,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~(CANVAS | TRANSPARENT);
+	state &= ~(CANVAS | THEME_BACKGROUND);
 	
 	/*
 	* Feature in Windows.  When the control is created,
@@ -362,8 +362,11 @@ void destroyItem (CoolItem item) {
 void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if (background == -1 && (style & SWT.FLAT) != 0) {
-			fillBackground (hDC, defaultBackground (), rect);
-			return;
+			Control control = findBackgroundControl ();
+			if (control != null && control.backgroundImage != null) {
+				fillBackground (hDC, control.getBackgroundPixel (), rect);
+				return;
+			}
 		}
 	}
 	RECT rect2 = new RECT ();
@@ -373,6 +376,11 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 	OS.SetWindowOrgEx (hDC, -rect2.left, -rect2.top, lpPoint);
 	OS.SendMessage (handle, OS.WM_PRINT, hDC, OS.PRF_CLIENT | OS.PRF_ERASEBKGND);
 	OS.SetWindowOrgEx (hDC, lpPoint.x, lpPoint.y, null);
+}
+
+Control findThemeControl () {
+	if ((style & SWT.FLAT) != 0) return this;
+	return background == -1 && backgroundImage == null ? this : super.findThemeControl ();
 }
 
 int getMargin (int index) {
@@ -408,11 +416,6 @@ int getMargin (int index) {
 		}
 	}
 	return margin;
-}
-
-Control findThemeControl () {
-	if ((style & SWT.FLAT) != 0) return this;
-	return background == -1 && backgroundImage == null ? this : super.findThemeControl ();
 }
 
 /**
@@ -716,8 +719,6 @@ void removeControl (Control control) {
 }
 
 void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
-	background = pixel;
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.RB_SETBKCOLOR, 0, pixel);
 	setItemColors (OS.SendMessage (handle, OS.RB_GETTEXTCOLOR, 0, 0), pixel);
@@ -737,8 +738,6 @@ void setBackgroundPixel (int pixel) {
 }
 
 void setForegroundPixel (int pixel) {
-	if (foreground == pixel) return;
-	foreground = pixel;
 	if (pixel == -1) pixel = defaultForeground ();
 	OS.SendMessage (handle, OS.RB_SETTEXTCOLOR, 0, pixel);
 	setItemColors (pixel, OS.SendMessage (handle, OS.RB_GETBKCOLOR, 0, 0));
@@ -1170,7 +1169,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			* in WM_ERASEBKGND.
 			*/
 			if (OS.COMCTL32_MAJOR < 6) break;
-			if (background != -1 || backgroundImage != null || (style & SWT.FLAT) != 0) {
+			if (findBackgroundControl () != null || (style & SWT.FLAT) != 0) {
 				NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 				OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
 				switch (nmcd.dwDrawStage) {

@@ -230,7 +230,9 @@ void _setImage (Image image) {
 						OS.SelectObject (srcHdc, oldSrcBitmap);
 						OS.DeleteDC (srcHdc);
 					} else {
-						int newBrush = OS.CreateSolidBrush (getBackgroundPixel ());
+						Control control = findBackgroundControl ();
+						if (control == null) control = this;
+						int newBrush = OS.CreateSolidBrush (control.getBackgroundPixel ());
 						int oldBrush = OS.SelectObject (dstHdc, newBrush);
 						OS.PatBlt (dstHdc, 0, 0, rect.width, rect.height, OS.PATCOPY);
 						OS.DrawIconEx (dstHdc, 0, 0, hImage, 0, 0, 0, 0, OS.DI_NORMAL);
@@ -459,7 +461,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state |= TRANSPARENT;
+	state |= THEME_BACKGROUND;
 	if (OS.COMCTL32_MAJOR >= 6) {
 		if ((style & SWT.RADIO) != 0) state |= DRAW_BACKGROUND;
 	}

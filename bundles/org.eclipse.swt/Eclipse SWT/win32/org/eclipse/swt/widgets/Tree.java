@@ -119,65 +119,26 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
-int _getBackgroundPixel () {
-	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOW);
-	int pixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
-	if (pixel == -1) return OS.GetSysColor (OS.COLOR_WINDOW);
-	return pixel;
-}
-
 TreeItem _getItem (int hItem, int id) {
 	if ((style & SWT.VIRTUAL) == 0) return items [id];
 	return id != -1 ? items [id] : new TreeItem (this, SWT.NONE, -1, -1, hItem);
 }
 
-void _setBackgroundImage (Image image) {
-	super._setBackgroundImage (image);
-
-	/*
-	* Feature in Windows.  If TVM_SETBKCOLOR is never
-	* used to set the background color of a tree, the
-	* background color of the lines and the plus/minus
-	* will be drawn using the default background color,
-	* not the HBRUSH returned from WM_CTLCOLOR.  The fix
-	* is to set the background color to the default (when
-	* it is already the default) to make Windows use the
-	* brush.
-	*/
-	if (OS.COMCTL32_MAJOR < 6) {
-		if (OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0) == -1) {
-			OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
-		}
-	}
-
-	//FIXME - images do not draw properly with TVS_FULLROWSELECT
-	if ((style & SWT.FULL_SELECTION) != 0) {
-		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE), oldBits = newBits;
-		if (image == null) {
-			newBits |= OS.TVS_FULLROWSELECT;
-		} else {
-			newBits &= ~OS.TVS_FULLROWSELECT;
-		}
-		if (newBits != oldBits) {
-			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-			OS.InvalidateRect (handle, null, true);
-		}
-	}
-}
-
-void _setBackgroundPixel (int pixel) {
-	/*
-	* Bug in Windows.  When TVM_SETBKCOLOR is used more
-	* than once to set the background color of a tree,
-	* the background color of the lines and the plus/minus
-	* does not change to the new color.  The fix is to set
-	* the background color to the default before setting
-	* the new color.
-	*/
+void _setBackgroundPixel (int newPixel) {
 	int oldPixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
-	if (oldPixel != -1) OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
-	OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, pixel);
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	if (oldPixel != newPixel) {
+		/*
+		* Bug in Windows.  When TVM_SETBKCOLOR is used more
+		* than once to set the background color of a tree,
+		* the background color of the lines and the plus/minus
+		* does not change to the new color.  The fix is to set
+		* the background color to the default before setting
+		* the new color.
+		*/
+		if (oldPixel != -1) OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+		OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, newPixel);
+		if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	}
 }
 
 /**
@@ -305,7 +266,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 			
 		/* Resize messages */
 		case OS.WM_SIZE:
-			if (backgroundImage != null && drawCount == 0) {
+			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			}
 			//FALL THROUGH
@@ -332,7 +293,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
-			if (backgroundImage != null) {
+			if (findImageControl () != null) {
 				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 			}
 			break;
@@ -359,7 +320,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 			
 		/* Resize messages */
 		case OS.WM_SIZE:
-			if (backgroundImage != null && drawCount == 0) {
+			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 				if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
@@ -388,7 +349,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
-			if (backgroundImage != null) {
+			if (findImageControl () != null) {
 				if (hItem != OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0)) {
 					OS.InvalidateRect (handle, null, true);
 				}
@@ -584,7 +545,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~(CANVAS | TRANSPARENT);
+	state &= ~(CANVAS | THEME_BACKGROUND);
 	
 	/*
 	* Feature in Windows.  In version 5.8 of COMCTL32.DLL,
@@ -1212,8 +1173,9 @@ void enableWidget (boolean enabled) {
 	* The fix is to set the default background color while the tree
 	* is disabled and restore it when enabled.
 	*/
-	if (background != -1) {
-		_setBackgroundPixel (enabled ? background : -1);
+	Control control = findBackgroundControl ();
+	if (control != null) {
+		_setBackgroundPixel (enabled ? control.getBackgroundPixel () : -1);
 	}
 	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
 }
@@ -1333,20 +1295,6 @@ int findItem (int hFirstItem, int index) {
 	return 0;
 }
 
-int getBackgroundPixel () {
-	if (!OS.IsWinCE) return _getBackgroundPixel ();
-	/*
-	* Feature in Windows.  When a tree is given a background color
-	* using TVM_SETBKCOLOR and the tree is disabled, Windows draws
-	* the tree using the background color rather than the disabled
-	* colors.  This is different from the table which draws grayed.
-	* The fix is to set the default background color while the tree
-	* is disabled and restore it when enabled.
-	*/
-	if (!OS.IsWindowEnabled (handle) && background != -1) return background;
-	return _getBackgroundPixel ();
-}
-
 /*
 * Not currently used.
 */
@@ -1359,13 +1307,6 @@ TreeItem getFocusItem () {
 	tvItem.hItem = hItem;
 	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 	return _getItem (tvItem.hItem, tvItem.lParam);
-}
-
-int getForegroundPixel () {
-	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOWTEXT);
-	int pixel = OS.SendMessage (handle, OS.TVM_GETTEXTCOLOR, 0, 0);
-	if (pixel == -1) return OS.GetSysColor (OS.COLOR_WINDOWTEXT);
-	return pixel;
 }
 
 /**
@@ -2473,9 +2414,45 @@ public void selectAll () {
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 }
 
+void setBackgroundImage (int hBitmap) {
+	if (hBitmap != 0) {
+		/*
+		* Feature in Windows.  If TVM_SETBKCOLOR is never
+		* used to set the background color of a tree, the
+		* background color of the lines and the plus/minus
+		* will be drawn using the default background color,
+		* not the HBRUSH returned from WM_CTLCOLOR.  The fix
+		* is to set the background color to the default (when
+		* it is already the default) to make Windows use the
+		* brush.
+		*/
+		if (OS.COMCTL32_MAJOR < 6) {
+			if (OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0) == -1) {
+				OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+			}
+		}
+		OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+	} else {
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		if (control.backgroundImage == null) {
+			setBackgroundPixel (control.getBackgroundPixel ());
+		}
+	}
+	if ((style & SWT.FULL_SELECTION) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if (hBitmap != 0) {
+			bits &= ~OS.TVS_FULLROWSELECT;
+		} else {
+			bits |= OS.TVS_FULLROWSELECT;
+		}
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		OS.InvalidateRect (handle, null, true);
+	}
+}
+
 void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
-	background = pixel;
+	if (findImageControl () != null) return;
 	/*
 	* Feature in Windows.  When a tree is given a background color
 	* using TVM_SETBKCOLOR and the tree is disabled, Windows draws
@@ -2626,7 +2603,9 @@ void setCheckboxImageList () {
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	int clrBackground = _getBackgroundPixel ();
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	int clrBackground = control.getBackgroundPixel ();
 	int hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
@@ -2671,9 +2650,13 @@ void setCheckboxImageList () {
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
 }
 
+public void setFont (Font font) {
+	checkWidget ();
+	super.setFont (font);
+	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+}
+
 void setForegroundPixel (int pixel) {
-	if (foreground == pixel) return;
-	foreground = pixel;
 	OS.SendMessage (handle, OS.TVM_SETTEXTCOLOR, 0, pixel);
 }
 
@@ -3582,7 +3565,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (backgroundImage != null) return LRESULT.ONE;
+	if (findImageControl () != null) return LRESULT.ONE;
 	return result;
 }
 
@@ -4274,7 +4257,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, itemRect);
 						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
 						rect.left = itemRect.right - gridWidth;
-						if (backgroundImage != null) {
+						if (findImageControl () != null) {
 							OS.InvalidateRect (handle, rect, true);
 						} else {
 							HDITEM oldItem = new HDITEM ();
@@ -4432,7 +4415,8 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		}
 		shrink = false;
 	}
-	if (backgroundImage != null) {
+	Control control = findImageControl ();
+	if (control != null) {
 		GC gc = null;
 		int paintDC = 0;
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -4459,7 +4443,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		int hDC = OS.CreateCompatibleDC (paintDC);
 		int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
 		int hOldBitmap = OS.SelectObject (hDC, hBitmap);
-		fillBackground (hDC, backgroundImage, rect);
+		fillImageBackground (hDC, control, rect);
 		int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
 		OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
 		OS.SelectObject (hDC, hOldBitmap);
@@ -4540,13 +4524,9 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 }
 
 LRESULT wmColorChild (int wParam, int lParam) {
-	if (backgroundImage != null) {
+	if (findImageControl () != null) {
 		if (OS.COMCTL32_MAJOR < 6) {
-			//FIXME - TEMPORARY CODE
-			state |= TRANSPARENT;
-			LRESULT result = super.wmColorChild (wParam, lParam);
-			state &= ~TRANSPARENT;
-			return result;
+			return super.wmColorChild (wParam, lParam);
 		}
 		return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
 	}
@@ -4660,7 +4640,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.NM_CUSTOMDRAW: {
 			if (hdr.hwndFrom == hwndHeader) break;
 			if (!customDraw) {
-				if (backgroundImage == null) break;
+				if (findImageControl () == null) break;
 			}
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
@@ -4797,7 +4777,15 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 							int clrTextBk = item.cellBackground != null ? item.cellBackground [0] : -1;
 							if (clrTextBk == -1) clrTextBk = item.background;
-							nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+							if (clrTextBk == -1) {
+								Control control = findBackgroundControl ();
+								if (control == null) control = this;
+								if (control.backgroundImage == null) {
+									nmcd.clrTextBk = control.getBackgroundPixel ();
+								}
+							} else {
+								nmcd.clrTextBk = clrTextBk;
+							}
 							OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 						}
 					}
@@ -4823,7 +4811,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					int hDC = nmcd.hdc;
 					OS.RestoreDC (hDC, -1);
 					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-					if (backgroundImage != null) OS.SetBkMode (hDC, OS.TRANSPARENT);
+					if (findImageControl () != null) OS.SetBkMode (hDC, OS.TRANSPARENT);
 					boolean useColor = OS.IsWindowEnabled (handle);
 					if (useColor) {
 						if ((bits & OS.TVS_FULLROWSELECT) != 0) {
@@ -4904,7 +4892,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						if (i == 0) {
 							drawItem = false;
 							if (useColor) {
-								if (backgroundImage != null) {
+								Control control = findImageControl ();
+								if (control != null) {
 									/*
 									* Feature in Windows.  When the mouse is pressed in a
 									* single select tree, the previous item is no longer
@@ -4936,7 +4925,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 											drawItem = true;
 											int right = Math.min (rect.right, width);
 											OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
-											fillBackground (hDC, backgroundImage, rect);
+											fillImageBackground (hDC, control, rect);
 											if (handle == OS.GetFocus ()) {
 												int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 												if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
@@ -4966,8 +4955,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								}
 							}
 							if (clrTextBk != -1) {
-								if (backgroundImage != null) {
-									fillBackground (hDC, backgroundImage, rect);
+								Control control = findImageControl ();
+								if (control != null) {
+									fillImageBackground (hDC, control, rect);
 								} else {
 									fillBackground (hDC, clrTextBk, rect);
 								}
@@ -5150,7 +5140,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.TVN_ITEMEXPANDEDA:
 		case OS.TVN_ITEMEXPANDEDW: {
-			if (backgroundImage != null && drawCount == 0) {
+			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 			}
@@ -5169,7 +5159,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.TVN_ITEMEXPANDINGA:
 		case OS.TVN_ITEMEXPANDINGW: {
-			if (backgroundImage != null && drawCount == 0) {
+			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			}
 			/*

@@ -236,29 +236,8 @@ void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
-		state |= TRANSPARENT;
+		state |= THEME_BACKGROUND;
 	}
-}
-
-/*public*/ void drawBackground (GC gc, int id, int x, int y, int width, int height) {
-	checkWidget ();
-	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	int pixel = -1;
-	switch (id) {
-		case SWT.COLOR_LIST_BACKGROUND:
-			pixel = OS.GetSysColor (OS.COLOR_WINDOW);
-			break;
-		case SWT.COLOR_INFO_BACKGROUND:
-			pixel = OS.GetSysColor (OS.COLOR_INFOBK);
-			break;
-		case SWT.COLOR_WIDGET_BACKGROUND:
-			pixel = OS.GetSysColor (OS.COLOR_3DFACE);
-			break;
-	}
-	RECT rect = new RECT ();
-	OS.SetRect (rect, x, y, x + width, y + height);
-	drawBackground (gc.handle, rect, pixel);
 }
 
 Composite findDeferredControl () {
@@ -890,6 +869,26 @@ boolean translateTraversal (MSG msg) {
 	return super.translateTraversal (msg);
 }
 
+void updateBackgroundColor () {
+	super.updateBackgroundColor ();
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		if ((children [i].state & PARENT_BACKGROUND) != 0) {
+			children [i].updateBackgroundColor ();
+		}
+	}
+}
+
+void updateBackgroundImage () {
+	super.updateBackgroundImage ();
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		if ((children [i].state & PARENT_BACKGROUND) != 0) {
+			children [i].updateBackgroundImage ();
+		}
+	}
+}
+
 void updateFont (Font oldFont, Font newFont) {
 	super.updateFont (oldFont, newFont);
 	Control [] children = _getChildren ();
@@ -1316,12 +1315,8 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 				}
 			}
 		}
-		if (backgroundImage != null) {
-			redrawChildren ();
-		} else {
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-				if (findThemeControl () != null) redrawChildren ();
-			}
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (findThemeControl () != null) redrawChildren ();
 		}
 	}
 

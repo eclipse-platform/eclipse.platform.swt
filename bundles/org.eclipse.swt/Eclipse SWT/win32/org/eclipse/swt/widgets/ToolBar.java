@@ -941,7 +941,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* versions of Windows earlier than XP.  The fix is to
 	* draw the background in WM_ERASEBKGND;
 	*/
-	if (background != -1 || backgroundImage != null) {
+	if (findBackgroundControl () != null) {
 		if (OS.COMCTL32_MAJOR < 6) {
 			drawBackground (wParam);
 			return LRESULT.ONE;
@@ -1139,8 +1139,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.NM_CUSTOMDRAW:
 			if (OS.COMCTL32_MAJOR < 6) break;
 			if (OS.IsAppThemed ()) {
-				if (background == -1 && backgroundImage == null) {
-					if (findThemeControl () == null) break;
+				if (findBackgroundControl () == null && findThemeControl () == null) {
+					break;
 				}
 			}
 			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();

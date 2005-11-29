@@ -98,11 +98,6 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
-void _setBackgroundImage (Image image) {
-	backgroundImage = image;
-	redrawChildren ();
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -545,23 +540,41 @@ void drawBackground (int hDC, RECT rect) {
 }
 
 void drawBackground (int hDC, RECT rect, int pixel) {
-	if (backgroundImage != null) {
-		fillBackground (hDC, backgroundImage, rect);
-	} else {
-		if (background == -1) {
-			if ((state & TRANSPARENT) != 0) {
-				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-					Control control = findThemeControl ();
-					if (control != null) {
-						fillBackground (hDC, control, rect);
-						return;
-					}
+	Control control = findBackgroundControl ();
+	if (control != null) {
+		if (control.backgroundImage != null) {
+			fillImageBackground (hDC, control, rect);
+			return;
+		}
+		pixel = control.getBackgroundPixel ();
+	}
+	if (pixel == -1) {
+		if ((state & THEME_BACKGROUND) != 0) {
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				control = findThemeControl ();
+				if (control != null) {
+					fillThemeBackground (hDC, control, rect);
+					return;
 				}
 			}
 		}
-		if (pixel == -1) pixel = getBackgroundPixel ();
-		fillBackground (hDC, pixel, rect);
 	}
+	if (pixel == -1) pixel = getBackgroundPixel ();
+	fillBackground (hDC, pixel, rect);
+}
+
+void drawImageBackground (int hDC, int hwnd, int hBitmap, RECT rect) {
+	RECT rect2 = new RECT ();
+	OS.GetClientRect (hwnd, rect2);
+	OS.MapWindowPoints (hwnd, handle, rect2, 2);
+	int hBrush = findBrush (hBitmap, OS.BS_PATTERN);
+	POINT lpPoint = new POINT ();
+	OS.GetWindowOrgEx (hDC, lpPoint);
+	OS.SetBrushOrgEx (hDC, -rect2.left - lpPoint.x, -rect2.top - lpPoint.y, lpPoint);
+	int hOldBrush = OS.SelectObject (hDC, hBrush);
+	OS.PatBlt (hDC, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+	OS.SetBrushOrgEx (hDC, lpPoint.x, lpPoint.y, null);
+	OS.SelectObject (hDC, hOldBrush);
 }
 
 void drawThemeBackground (int hDC, int hwnd, RECT rect) {
@@ -570,30 +583,6 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 
 void enableWidget (boolean enabled) {
 	OS.EnableWindow (handle, enabled);
-}
-
-void fillBackground (int hDC, Control control, RECT rect) {
-	if (control == null) return;
-	control.drawThemeBackground (hDC, handle, rect);
-}
-
-void fillBackground (int hDC, Image image, RECT rect) {
-	Control control = findImageControl (image);
-	if (control != null) {
-		int hwnd = control.handle;
-		int hBitmap = image.handle;
-		RECT rect2 = new RECT ();
-		OS.GetClientRect (handle, rect2);
-		OS.MapWindowPoints (handle, hwnd, rect2, 2);
-		int hBrush = findBrush (hBitmap, OS.BS_PATTERN);
-		POINT lpPoint = new POINT ();
-		OS.GetWindowOrgEx (hDC, lpPoint);
-		OS.SetBrushOrgEx (hDC, -rect2.left - lpPoint.x, -rect2.top - lpPoint.y, lpPoint);
-		int hOldBrush = OS.SelectObject (hDC, hBrush);
-		OS.PatBlt (hDC, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
-		OS.SetBrushOrgEx (hDC, lpPoint.x, lpPoint.y, null);
-		OS.SelectObject (hDC, hOldBrush);
-	}
 }
 
 void fillBackground (int hDC, int pixel, RECT rect) {
@@ -605,12 +594,24 @@ void fillBackground (int hDC, int pixel, RECT rect) {
 	OS.FillRect (hDC, rect, findBrush (pixel, OS.BS_SOLID));
 }
 
-Control findImageControl (Image image) {
-	if (backgroundImage != null && backgroundImage == image) {
-		Control control = parent.findImageControl (image);
-		return control == null ? this : control;
+void fillImageBackground (int hDC, Control control, RECT rect) {
+	if (control != null) {
+		Image image = control.backgroundImage;
+		if (image != null) {
+			control.drawImageBackground (hDC, handle, image.handle, rect);
+		}
 	}
-	return null;
+}
+
+void fillThemeBackground (int hDC, Control control, RECT rect) {
+	if (control != null) {
+		control.drawThemeBackground (hDC, handle, rect);
+	}
+}
+
+Control findBackgroundControl () {
+	if (background != -1 || backgroundImage != null) return this;
+	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
 }
 
 int findBrush (int value, int lbStyle) {
@@ -620,6 +621,11 @@ int findBrush (int value, int lbStyle) {
 Cursor findCursor () {
 	if (cursor != null) return cursor;
 	return parent.findCursor ();
+}
+
+Control findImageControl () {
+	Control control = findBackgroundControl ();
+	return control != null && control.backgroundImage != null ? control : null;
 }
 
 Control findThemeControl () {
@@ -759,8 +765,11 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget ();
-	return Color.win32_new (display, getBackgroundPixel ());
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	return Color.win32_new (display, control.getBackgroundPixel ());
 }
+
 /**
  * Returns the receiver's background image.
  *
@@ -773,14 +782,15 @@ public Color getBackground () {
  * 
  * @since 3.2
  */
-/*public*/ Image getBackgroundImage () {
+public Image getBackgroundImage () {
 	checkWidget ();
-	return backgroundImage;
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	return control.backgroundImage;
 }
 
 int getBackgroundPixel () {
-	if (background == -1) return defaultBackground ();
-	return background;
+	return background != -1 ? background :  defaultBackground ();
 }
 
 /**
@@ -916,8 +926,7 @@ public Color getForeground () {
 }
 
 int getForegroundPixel () {
-	if (foreground == -1) return defaultForeground ();
-	return foreground;
+	return foreground != -1 ? foreground : defaultForeground ();
 }
 
 /**
@@ -1192,7 +1201,9 @@ public int internal_new_GC (GCData data) {
 		}
 		data.device = display;
 		data.foreground = getForegroundPixel ();
-		data.background = getBackgroundPixel ();
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		data.background = control.getBackgroundPixel ();
 		data.hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	}
 	return hDC;
@@ -1627,15 +1638,18 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 
 boolean redrawChildren () {
 	if (!OS.IsWindowVisible (handle)) return false;
-	if (backgroundImage != null) {
-		OS.InvalidateRect (handle, null, true);
-		return true;
-	} else {
-		if ((state & TRANSPARENT) != 0 && background == -1) {
+	Control control = findBackgroundControl ();
+	if (control == null) {
+		if ((state & THEME_BACKGROUND) != 0) {
 			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 				OS.InvalidateRect (handle, null, true);
 				return true;
 			}
+		}
+	} else {
+		if (control.backgroundImage != null) {
+			OS.InvalidateRect (handle, null, true);
+			return true;
 		}
 	}
 	return false;
@@ -1969,7 +1983,9 @@ public void setBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
-	setBackgroundPixel (pixel);
+	if (pixel == background) return;
+	background = pixel;
+	updateBackgroundColor ();
 }
 
 /**
@@ -1990,19 +2006,29 @@ public void setBackground (Color color) {
  * 
  * @since 3.2
  */
-/*public*/ void setBackgroundImage (Image image) {
+public void setBackgroundImage (Image image) {
 	checkWidget ();
 	if (image != null) {
 		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (image.type != SWT.BITMAP) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (backgroundImage == image) return;
-	_setBackgroundImage (image);
+	backgroundImage = image;
+	Shell shell = getShell ();
+	shell.releaseBrushes ();
+	updateBackgroundImage ();
+}
+
+void setBackgroundImage (int hBitmap) {
+	if (OS.IsWinCE) {
+		OS.InvalidateRect (handle, null, true);
+	} else {
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
 }
 
 void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
-	background = pixel;
 	if (OS.IsWinCE) {
 		OS.InvalidateRect (handle, null, true);
 	} else {
@@ -2048,7 +2074,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	int topHandle = topHandle ();
 	if (defer && parent != null) {
 		forceResize ();
-		if (backgroundImage != null && OS.GetWindow (handle, OS.GW_CHILD) == 0) {
+		if (findImageControl () != null && OS.GetWindow (handle, OS.GW_CHILD) == 0) {
 			flags |= OS.SWP_NOCOPYBITS;
 		}
 		WINDOWPOS [] lpwp = parent.lpwp;
@@ -2286,12 +2312,12 @@ public void setForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
+	if (pixel == foreground) return;
+	foreground = pixel;
 	setForegroundPixel (pixel);
 }
 
 void setForegroundPixel (int pixel) {
-	if (foreground == pixel) return;
-	foreground = pixel;
 	OS.InvalidateRect (handle, null, true);
 }
 
@@ -3029,6 +3055,18 @@ void update (boolean all) {
 	}
 }
 
+void updateBackgroundColor () {
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	setBackgroundPixel (control.background);
+}
+
+void updateBackgroundImage () {
+	Control control = findBackgroundControl ();
+	Image image = control != null ? control.backgroundImage : backgroundImage;
+	setBackgroundImage (image != null ? image.handle : 0);
+}
+
 void updateFont (Font oldFont, Font newFont) {
 	if (getFont ().equals (oldFont)) setFont (newFont);
 }
@@ -3317,9 +3355,9 @@ LRESULT WM_ENTERIDLE (int wParam, int lParam) {
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	if ((state & DRAW_BACKGROUND) != 0) {
-		if (backgroundImage != null) return LRESULT.ONE;
+		if (findImageControl () != null) return LRESULT.ONE;
 	}
-	if ((state & TRANSPARENT) != 0) {
+	if ((state & THEME_BACKGROUND) != 0) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 			if (findThemeControl () != null) return LRESULT.ONE;
 		}
@@ -3642,10 +3680,10 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 }
 
 LRESULT WM_MOVE (int wParam, int lParam) {
-	if (backgroundImage != null) {
-		redrawChildren ();
+	if (findImageControl () != null) {
+		if (this != getShell ()) redrawChildren ();
 	} else {
-		if ((state & TRANSPARENT) != 0) {
+		if ((state & THEME_BACKGROUND) != 0) {
 			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 				if (OS.IsWindowVisible (handle)) {
 					if (findThemeControl () != null) redrawChildren ();
@@ -3963,49 +4001,47 @@ LRESULT WM_XBUTTONUP (int wParam, int lParam) {
 }
 
 LRESULT wmColorChild (int wParam, int lParam) {
-	Control control = null;
-	if (backgroundImage != null) {
-		if ((state & TRANSPARENT) != 0) {
-			control = findImageControl (backgroundImage);
-		}
-	}
-	if (foreground == -1 && background == -1 && control == null) {
-		if ((state & TRANSPARENT) != 0) {
+	Control control = findBackgroundControl ();
+	if (control == null) {
+		if ((state & THEME_BACKGROUND) != 0) {
 			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 				control = findThemeControl ();
+				if (control != null) {
+					RECT rect = new RECT ();
+					OS.GetClientRect (handle, rect);
+					OS.SetTextColor (wParam, getForegroundPixel ());
+					OS.SetBkColor (wParam, getBackgroundPixel ());
+					fillThemeBackground (wParam, control, rect);
+					OS.SetBkMode (wParam, OS.TRANSPARENT);
+					return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+				}
 			}
 		}
-		if (control == null) return null;
+		if (foreground == -1) return null;
 	}
-	int forePixel = foreground, backPixel = background;
-	if (forePixel == -1) forePixel = defaultForeground ();
-	if (backPixel == -1) backPixel = defaultBackground ();
+	if (control == null) control = this;
+	int forePixel = control.getForegroundPixel ();
+	int backPixel = control.getBackgroundPixel ();
 	OS.SetTextColor (wParam, forePixel);
 	OS.SetBkColor (wParam, backPixel);
-	if (control != null) {
+	if (control.backgroundImage != null) {
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
-		if (backgroundImage != null) {
-			int hwnd = control.handle;
-			int hBitmap = backgroundImage.handle;
-			OS.MapWindowPoints (handle, hwnd, rect, 2);
-			POINT lpPoint = new POINT ();
-			OS.GetWindowOrgEx (wParam, lpPoint);
-			OS.SetBrushOrgEx (wParam, -rect.left - lpPoint.x, -rect.top - lpPoint.y, lpPoint);
-			int hBrush = findBrush (hBitmap, OS.BS_PATTERN);
-			if ((state & DRAW_BACKGROUND) != 0) {
-				int hOldBrush = OS.SelectObject (wParam, hBrush);
-				OS.MapWindowPoints (hwnd, handle, rect, 2);
-				OS.PatBlt (wParam, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
-				OS.SelectObject (wParam, hOldBrush);
-			}
-			OS.SetBkMode (wParam, OS.TRANSPARENT);
-			return new LRESULT (hBrush);
-		} else {
-			fillBackground (wParam, control, rect);
-			OS.SetBkMode (wParam, OS.TRANSPARENT);
-			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+		int hwnd = control.handle;
+		int hBitmap = control.backgroundImage.handle;
+		OS.MapWindowPoints (handle, hwnd, rect, 2);
+		POINT lpPoint = new POINT ();
+		OS.GetWindowOrgEx (wParam, lpPoint);
+		OS.SetBrushOrgEx (wParam, -rect.left - lpPoint.x, -rect.top - lpPoint.y, lpPoint);
+		int hBrush = findBrush (hBitmap, OS.BS_PATTERN);
+		if ((state & DRAW_BACKGROUND) != 0) {
+			int hOldBrush = OS.SelectObject (wParam, hBrush);
+			OS.MapWindowPoints (hwnd, handle, rect, 2);
+			OS.PatBlt (wParam, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+			OS.SelectObject (wParam, hOldBrush);
 		}
+		OS.SetBkMode (wParam, OS.TRANSPARENT);
+		return new LRESULT (hBrush);
 	}
 	return new LRESULT (findBrush (backPixel, OS.BS_SOLID));
 }

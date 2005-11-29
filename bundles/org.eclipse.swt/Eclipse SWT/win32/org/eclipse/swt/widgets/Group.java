@@ -385,9 +385,9 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	* NOTE:  The DefWindowProc() must be called in order to
 	* broadcast WM_UPDATEUISTATE message to the children.
 	*/
-	boolean redraw = backgroundImage != null;
+	boolean redraw = findImageControl () != null;
 	if (!redraw) {
-		if ((state & TRANSPARENT) != 0) {
+		if ((state & THEME_BACKGROUND) != 0) {
 			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 				redraw = findThemeControl () != null;
 			}

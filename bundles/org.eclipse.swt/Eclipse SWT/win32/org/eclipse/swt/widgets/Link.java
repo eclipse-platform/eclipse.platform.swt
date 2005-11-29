@@ -172,7 +172,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state |= TRANSPARENT;
+	state |= THEME_BACKGROUND;
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout = new TextLayout (display);
 		linkColor = new Color (display, LINK_FOREGROUND);

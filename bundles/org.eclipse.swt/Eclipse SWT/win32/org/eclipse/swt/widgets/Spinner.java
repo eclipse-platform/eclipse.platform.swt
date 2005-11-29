@@ -114,7 +114,7 @@ protected void checkSubclass () {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~(CANVAS | TRANSPARENT);
+	state &= ~(CANVAS | THEME_BACKGROUND);
 	int hInstance = OS.GetModuleHandle (null);
 	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
 	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL | OS.WS_CLIPSIBLINGS;
@@ -741,7 +741,6 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 }
 
 void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
 	super.setBackgroundPixel (pixel);
 	OS.InvalidateRect (hwndText, null, true);
 }
@@ -780,7 +779,6 @@ public void setDigits (int value) {
 }
 
 void setForegroundPixel (int pixel) {
-	if (foreground == pixel) return;
 	super.setForegroundPixel (pixel);
 	OS.InvalidateRect (hwndText, null, true);
 }

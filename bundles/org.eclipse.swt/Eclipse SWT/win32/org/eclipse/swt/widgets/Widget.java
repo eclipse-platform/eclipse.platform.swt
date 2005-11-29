@@ -67,12 +67,13 @@ public abstract class Widget {
 	static final int LAYOUT_CHILD = 1<<7;
 
 	/* Background flags */
-	static final int TRANSPARENT = 1<<8;
+	static final int THEME_BACKGROUND = 1<<8;
 	static final int DRAW_BACKGROUND = 1<<9;
+	static final int PARENT_BACKGROUND = 1<<10;
 	
 	/* Dispose and release flags */
-	static final int RELEASED		= 1<<10;
-	static final int DISPOSE_SENT	= 1<<11;
+	static final int RELEASED		= 1<<11;
+	static final int DISPOSE_SENT	= 1<<12;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;

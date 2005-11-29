@@ -109,38 +109,6 @@ TableItem _getItem (int index) {
 	return items [index] = new TableItem (this, SWT.NONE, -1, false);
 }
 
-void _setBackgroundImage (Image image) {
-	super._setBackgroundImage (image);
-	int pixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
-	if (image != null) {
-		if (pixel != OS.CLR_NONE) {
-			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
-			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
-		}
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			int bits = OS.LVS_EX_FULLROWSELECT;
-			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
-		}
-	} else {
-		if (pixel == OS.CLR_NONE) {
-			pixel = background != -1 ? background : defaultBackground ();
-			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
-			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
-			if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
-		}
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			int bits = OS.LVS_EX_FULLROWSELECT;
-			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
-		}
-	}
-	/*
-	* Feature in Windows.  When the background color is
-	* changed, the table does not redraw until the next
-	* WM_PAINT.  The fix is to force a redraw.
-	*/
-	OS.InvalidateRect (handle, null, true);
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending
@@ -217,7 +185,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 						
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
-			if (backgroundImage != null && drawCount == 0) {
+			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			}
 			//FALL THROUGH
@@ -245,7 +213,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
-			if (backgroundImage != null) {
+			if (findImageControl () != null) {
 				topIndex = OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0);
 			}
 		}
@@ -282,7 +250,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 			
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
-			if (backgroundImage != null && drawCount == 0) {
+			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
@@ -312,7 +280,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		/* Other messages */
 		case OS.WM_SETFONT:
 		case OS.WM_TIMER: {
-			if (backgroundImage != null) {
+			if (findImageControl () != null) {
 				if (topIndex != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
 					OS.InvalidateRect (handle, null, true);
 				}
@@ -664,7 +632,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~(CANVAS | TRANSPARENT);
+	state &= ~(CANVAS | THEME_BACKGROUND);
 	
 	/* Get the header window proc */
 	if (HeaderProc == 0) {
@@ -1406,12 +1374,6 @@ void fixItemHeight (boolean fixScroll) {
 	}
 }
 
-int getBackgroundPixel () {
-	int color = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
-	if (color == OS.CLR_NONE) return defaultBackground ();
-	return color;
-}
-
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -1537,17 +1499,6 @@ public TableColumn [] getColumns () {
 int getFocusIndex () {
 //	checkWidget ();
 	return OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
-}
-
-int getForegroundPixel () {
-	int pixel = OS.SendMessage (handle, OS.LVM_GETTEXTCOLOR, 0, 0);
-	/*
-	* The Windows table control uses CLR_DEFAULT to indicate
-	* that it is using the default foreground color.  This
-	* is undocumented.
-	*/
-	if (pixel == OS.CLR_DEFAULT) return defaultForeground ();
-	return pixel;
 }
 
 /**
@@ -2573,20 +2524,48 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	return new LRESULT (code);
 }
 
-void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
-	background = pixel;
-	if (backgroundImage != null) return;
-	if (pixel == -1) pixel = defaultBackground ();
-	OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
-	OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
-	if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
-	/*
-	* Feature in Windows.  When the background color is
-	* changed, the table does not redraw until the next
-	* WM_PAINT.  The fix is to force a redraw.
-	*/
-	OS.InvalidateRect (handle, null, true);
+void setBackgroundImage (int hBitmap) {
+	if (hBitmap != 0) {
+		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
+		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
+		/*
+		* Feature in Windows.  When the background color is changed,
+		* the table does not redraw until the next WM_PAINT.  The fix
+		* is to force a redraw.
+		*/
+		OS.InvalidateRect (handle, null, true);
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.LVS_EX_FULLROWSELECT;
+			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
+		}
+	} else {
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		if (control.backgroundImage == null) {
+			setBackgroundPixel (control.getBackgroundPixel ());
+		}
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.LVS_EX_FULLROWSELECT;
+			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+		}
+	}
+}
+
+void setBackgroundPixel (int newPixel) {
+	if (findImageControl () != null) return;
+	int oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+	if (oldPixel != newPixel) {
+		if (newPixel == -1) newPixel = defaultBackground ();
+		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, newPixel);
+		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
+		if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
+		/*
+		* Feature in Windows.  When the background color is
+		* changed, the table does not redraw until the next
+		* WM_PAINT.  The fix is to force a redraw.
+		*/
+		OS.InvalidateRect (handle, null, true);
+	}
 }
 
 void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
@@ -2735,7 +2714,9 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	int clrBackground = getBackgroundPixel ();
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	int clrBackground = control.getBackgroundPixel ();
 	int hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
@@ -2854,8 +2835,6 @@ public void setFont (Font font) {
 }
 
 void setForegroundPixel (int pixel) {
-	if (foreground == pixel) return;
-	foreground = pixel;
 	/*
 	* The Windows table control uses CLR_DEFAULT to indicate
 	* that it is using the default foreground color.  This
@@ -4301,7 +4280,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
-	if (background == -1 && backgroundImage == null) {
+	if (findBackgroundControl () == null) {
 		int pixel = defaultBackground ();
 		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
@@ -4466,7 +4445,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) {
-				if (backgroundImage == null) break;
+				if (findImageControl () == null) break;
 			}
 			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hdr.hwndFrom == hwndHeader) break;
@@ -4477,10 +4456,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 //					if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
 //						if (!OS.IsWinCE && OS.WindowFromDC (nmcd.hdc) == handle) break;
 //					}
-					if (backgroundImage != null) {
+					Control control = findImageControl ();
+					if (control != null) {
 						RECT rect = new RECT ();
 						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-						fillBackground (nmcd.hdc, backgroundImage, rect);
+						fillImageBackground (nmcd.hdc, control, rect);
 					}
 					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
 				}
@@ -4513,8 +4493,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					OS.SelectObject (nmcd.hdc, hFont);
 					if (OS.IsWindowEnabled (handle)) {
 						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-						if (backgroundImage == null) {
-							nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+						if (clrTextBk == -1) {
+							Control control = findBackgroundControl ();
+							if (control == null) control = this;
+							if (control.backgroundImage == null) {
+								nmcd.clrTextBk = control.getBackgroundPixel ();
+							}
+						} else {
+							nmcd.clrTextBk = clrTextBk;
 						}
 						OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 					}

@@ -153,8 +153,8 @@ void destroyWidget () {
 public Color getBackground () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int pixel = (background == -1) ? parent.getBackgroundPixel() : background;
-	return Color.win32_new (display, pixel);
+	if (background == -1) return parent.getBackground ();
+	return Color.win32_new (display, background);
 }
 
 /**
@@ -377,8 +377,8 @@ public Font getFont (int index) {
 public Color getForeground () {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int pixel = (foreground == -1) ? parent.getForegroundPixel () : foreground;
-	return Color.win32_new (display, pixel);
+	if (foreground == -1) return parent.getForeground ();
+	return Color.win32_new (display, foreground);
 }
 
 /**

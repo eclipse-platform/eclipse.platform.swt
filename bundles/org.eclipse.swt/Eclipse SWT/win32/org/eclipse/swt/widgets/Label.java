@@ -176,7 +176,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state |= TRANSPARENT;
+	state |= THEME_BACKGROUND;
 }
 
 /**
@@ -464,9 +464,9 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	* The fix is draw the static without drawing the background
 	* and avoid the static window proc.
 	*/
-	boolean redraw = backgroundImage != null;
+	boolean redraw = findImageControl () != null;
 	if (!redraw) {
-		if ((state & TRANSPARENT) != 0) {
+		if ((state & THEME_BACKGROUND) != 0) {
 			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 				redraw = findThemeControl () != null;
 			}

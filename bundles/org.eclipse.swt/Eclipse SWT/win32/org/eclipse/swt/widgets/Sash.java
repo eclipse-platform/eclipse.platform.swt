@@ -112,7 +112,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 
 void createHandle () {
 	super.createHandle ();
-	state |= TRANSPARENT;
+	state |= THEME_BACKGROUND;
 }
 
 static int checkStyle (int style) {

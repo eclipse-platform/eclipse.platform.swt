@@ -80,12 +80,13 @@ public Canvas (Composite parent, int style) {
 */
 void clearArea (int x, int y, int width, int height) {
 	checkWidget ();
-	if (OS.IsWindowVisible (handle)) return;
-	RECT rect = new RECT ();
-	OS.SetRect (rect, x, y, x + width, y + height);
-	int hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
-	drawBackground (hDC, rect);
-	OS.ReleaseDC (handle, hDC);
+	if (OS.IsWindowVisible (handle)) {
+		RECT rect = new RECT ();
+		OS.SetRect (rect, x, y, x + width, y + height);
+		int hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
+		drawBackground (hDC, rect);
+		OS.ReleaseDC (handle, hDC);
+	}
 }
 
 /**
@@ -117,6 +118,15 @@ void releaseChildren (boolean destroy) {
 		caret = null;
 	}
 	super.releaseChildren (destroy);
+}
+
+public void drawBackground (GC gc, int x, int y, int width, int height) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	RECT rect = new RECT ();
+	OS.SetRect (rect, x, y, x + width, y + height);
+	drawBackground (gc.handle, rect);
 }
 
 /**
@@ -159,7 +169,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		}
 	}
 	int deltaX = destX - x, deltaY = destY - y;
-	if (backgroundImage != null) {
+	if (findImageControl () != null) {
 		if (OS.IsWinCE) {
 			OS.InvalidateRect (handle, sourceRect, true);
 		} else {

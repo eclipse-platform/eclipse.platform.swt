@@ -247,7 +247,7 @@ void createItem (TabItem item, int index) {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~(CANVAS | TRANSPARENT);
+	state &= ~(CANVAS | THEME_BACKGROUND);
 	
 	/* Enable the flat look for tab folders on PPC */
 	if (OS.IsPPC) {
@@ -307,7 +307,7 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 }
 
 Control findThemeControl () {
-	/* On Windows, it is not possible to change the background of this control */
+	/* It is not possible to change the background of this control */
 	return this;	
 }
 

@@ -435,7 +435,7 @@ public void copy () {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~(CANVAS | TRANSPARENT);
+	state &= ~(CANVAS | THEME_BACKGROUND);
 
 	/* Get the text and list window procs */
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -1224,7 +1224,6 @@ public void select (int index) {
 }
 
 void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
 	super.setBackgroundPixel (pixel);
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
@@ -1280,7 +1279,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 }
 
 void setForegroundPixel (int pixel) {
-	if (foreground == pixel) return;
 	super.setForegroundPixel (pixel);
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);

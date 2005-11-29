@@ -579,12 +579,12 @@ int findBrush (int value, int lbStyle) {
 	return brushes [0] = hBrush;
 }
 
-Cursor findCursor () {
-	return cursor;
+Control findBackgroundControl () {
+	return background != -1 || backgroundImage != null ? this : null;
 }
 
-Control findImageControl (Image image) {
-	return backgroundImage == image ? this : null;
+Cursor findCursor () {
+	return cursor;
 }
 
 Control findThemeControl () {
@@ -892,6 +892,15 @@ public void open () {
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
+void releaseBrushes () {
+	if (brushes != null) {
+		for (int i=0; i<brushes.length; i++) {
+			if (brushes [i] != 0) OS.DeleteObject (brushes [i]);
+		}
+	}
+	brushes = null;
+}
+
 void releaseChildren (boolean destroy) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -914,6 +923,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	releaseBrushes ();
 	activeMenu = null;
 	display.clearModal (this);
 	if (lpstrTip != 0) {
@@ -922,13 +932,6 @@ void releaseWidget () {
 	}
 	lpstrTip = 0;
 	toolTipHandle = 0;
-	if (brushes != null) {
-		for (int i=0; i<brushes.length; i++) {
-			int hBrush = brushes [i];
-			if (hBrush != 0) OS.DeleteObject (hBrush);
-		}
-	}
-	brushes = null;
 	if (OS.IsDBLocale) {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
