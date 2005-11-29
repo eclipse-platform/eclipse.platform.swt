@@ -356,9 +356,9 @@ void deregister () {
 
 void drawBackground (int control, int context) {
 	if (control == textHandle) {
-		drawBackground (control, context, background);
+		fillBackground (control, context, null);
 	} else {
-		drawBackground (control, context, getParentBackground ());
+		parent.fillBackground (control, context, null);
 	}
 }
 

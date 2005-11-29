@@ -585,6 +585,10 @@ void drawWidget (int control, int context, int damageRgn, int visibleRgn, int th
 	if (!OS.HIVIEW) OS.QDEndCGContext (port, buffer);
 }
 
+Control findBackgroundControl () {
+	return background != null || backgroundImage != null ? this : null;
+}
+
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
 }

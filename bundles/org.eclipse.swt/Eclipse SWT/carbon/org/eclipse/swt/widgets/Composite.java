@@ -279,19 +279,22 @@ void createScrolledHandle (int parentHandle) {
 
 void drawBackground (int control, int context) {
 	if (control == scrolledHandle) {
+		Composite parent = this;
+		Shell shell = getShell ();
+		if (shell != this) parent = this.parent;
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-			drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+			parent.drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), inset ());
 		} else {
 			if (hasBorder ()) {
-				drawFocus (control, context, false, hasBorder (), getParentBackground (), inset ());
+				parent.drawFocus (control, context, false, hasBorder (), inset ());
 			} else {
-				drawBackground (control, context, getParentBackground ());
+				parent.fillBackground (control, context, null);
 			}
 		}
 	} else {
 		if ((state & CANVAS) != 0) {
 			if ((style & SWT.NO_BACKGROUND) == 0) {
-				drawBackground (control, context, background);
+				fillBackground (control, context, null);
 			}	
 		}
 	}

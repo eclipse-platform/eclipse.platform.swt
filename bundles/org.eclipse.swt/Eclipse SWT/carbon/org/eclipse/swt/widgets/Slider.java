@@ -212,7 +212,7 @@ void createHandle () {
 }
 
 void drawBackground (int control, int context) {
-	drawBackground (control, context, background);
+	fillBackground (control, context, null);
 }
 
 /**

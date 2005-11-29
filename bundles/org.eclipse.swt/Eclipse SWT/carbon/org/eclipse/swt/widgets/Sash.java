@@ -145,7 +145,7 @@ void createHandle () {
 }
 
 void drawBackground (int control, int context) {
-	drawBackground (control, context, background);
+	fillBackground (control, context, null);
 }
 
 int kEventControlClick (int nextHandler, int theEvent, int userData) {

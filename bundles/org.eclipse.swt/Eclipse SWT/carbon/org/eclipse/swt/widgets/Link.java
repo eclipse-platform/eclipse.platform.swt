@@ -167,7 +167,7 @@ void createWidget () {
 }
 
 void drawBackground (int control, int context) {
-	drawBackground (control, context, background);
+	fillBackground (control, context, null);
 	if (!hasFocus () || !drawFocusRing () || focusIndex == -1) return;
 	int [] outMetric = new int [1];
 	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);

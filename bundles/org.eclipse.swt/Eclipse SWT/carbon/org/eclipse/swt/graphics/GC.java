@@ -166,6 +166,28 @@ public static GC carbon_new(Drawable drawable, GCData data) {
 	return gc;
 }
 
+/**	 
+ * Invokes platform specific functionality to wrap a graphics context.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param context the Quartz context.
+ * @param data the data for the receiver.
+ *
+ * @return a new <code>GC</code>
+ */
+public static GC carbon_new(int context, GCData data) {
+	GC gc = new GC();
+	gc.device = data.device;
+	gc.init(null, data, context);
+	return gc;
+}
+
 /**
  * Copies a rectangular area of the receiver at the specified
  * position into the image, which must be of type <code>SWT.BITMAP</code>.
@@ -489,7 +511,7 @@ public void dispose() {
 	if (backPattern != 0) OS.CGPatternRelease(backPattern);
 	
 	/* Dispose the GC */
-	drawable.internal_dispose_GC(handle, data);
+	if (drawable != null) drawable.internal_dispose_GC(handle, data);
 
 	data.clipRgn = data.atsuiStyle = data.stringPtr = data.layout = data.tabs = data.forePattern = data.backPattern = 0;
 	drawable = null;

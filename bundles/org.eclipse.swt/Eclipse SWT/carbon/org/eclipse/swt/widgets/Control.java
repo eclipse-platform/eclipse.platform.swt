@@ -12,9 +12,11 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
+import org.eclipse.swt.internal.carbon.HIThemeFrameDrawInfo;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -59,6 +61,7 @@ public abstract class Control extends Widget implements Drawable {
 	int drawCount, visibleRgn;
 	Menu menu;
 	float [] foreground, background;
+	Image backgroundImage;
 	Font font;
 	Cursor cursor;
 	GCData gcs[];
@@ -525,6 +528,76 @@ void destroyWidget () {
 	}
 }
 
+void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, Rect inset) {
+	fillBackground (control, context, null);
+	if (OS.HIVIEW) {
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (control, rect);
+		rect.x += inset.left;
+		rect.y += inset.top;
+		rect.width -= inset.right + inset.left;
+		rect.height -= inset.bottom + inset.top;
+		int state;
+		if (OS.IsControlEnabled (control)) {
+			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		} else {
+			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+		}
+		if (hasBorder) {
+			HIThemeFrameDrawInfo info = new HIThemeFrameDrawInfo ();
+			info.state = state;
+			info.kind = OS.kHIThemeFrameTextFieldSquare;
+			info.isFocused = hasFocus;
+			OS.HIThemeDrawFrame (rect, info, context, OS.kHIThemeOrientationNormal);
+		} else {
+			OS.HIThemeDrawFocusRect (rect, hasFocus, context, OS.kHIThemeOrientationNormal);
+		}
+	} else {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (control, rect);
+		rect.left += inset.left;
+		rect.top += inset.top;
+		rect.right -= inset.right;
+		rect.bottom -= inset.bottom;
+		int state;
+		if (OS.IsControlEnabled (control)) {
+			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		} else {
+			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+		}
+		if (hasFocus) {
+			if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
+			OS.DrawThemeFocusRect (rect, true);
+		} else {
+			/*
+			* This code is intentionaly commented.
+			*  
+			* NOTE: the focus ring is erased by drawBackground() above. 
+			*/
+	//		OS.DrawThemeFocusRect (rect, false);
+			if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
+		}
+	}
+}
+
+void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
+	int visibleRgn = getVisibleRegion (control, true);
+	if (!OS.EmptyRgn (visibleRgn)) {
+		int [] currentPort = new int [1];
+		OS.GetPort (currentPort);
+		int window = OS.GetControlOwner (control);
+		int port = OS.GetWindowPort (window);
+		OS.SetPort (port);
+		int oldClip = OS.NewRgn ();
+		OS.GetClip (oldClip);
+		OS.SetClip (visibleRgn);
+		drawFocus (control, 0, hasFocus, hasBorder, inset);
+		OS.SetClip (oldClip);
+		OS.SetPort (currentPort [0]);
+	}
+	OS.DisposeRgn (visibleRgn);
+}
+
 boolean drawFocusRing () {
 	return !display.noFocusRing || getShell ().parent != null;
 }
@@ -574,9 +647,79 @@ void enableWidget (boolean enabled) {
 	}
 }
 
+void fillBackground (int control, int context, Rectangle bounds) {
+	if (OS.HIVIEW) {
+		OS.CGContextSaveGState (context);
+		CGRect rect = new CGRect ();
+		if (bounds != null) {
+			rect.x = bounds.x;
+			rect.y = bounds.y;
+			rect.width = bounds.width;
+			rect.height = bounds.height;
+		} else {
+			OS.HIViewGetBounds (control, rect);
+		}
+		Control widget = findBackgroundControl ();
+		if (widget != null && widget.backgroundImage != null) {
+			CGPoint pt = new CGPoint();
+			OS.HIViewConvertPoint (pt, control, widget.handle);
+			OS.CGContextTranslateCTM (context, -pt.x, -pt.y);
+			Pattern pattern = new Pattern (display, widget.backgroundImage);
+			GCData data = new GCData ();
+			data.device = display;
+			data.background = widget.getBackgroundColor ().handle;
+			GC gc = GC.carbon_new (context, data);
+			gc.setBackgroundPattern (pattern);
+			gc.fillRectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
+			gc.dispose ();
+			pattern.dispose();
+		} else if (widget != null && widget.background != null) {
+			int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+			OS.CGContextSetFillColorSpace (context, colorspace);
+			OS.CGContextSetFillColor (context, widget.background);
+			OS.CGColorSpaceRelease (colorspace);
+			OS.CGContextFillRect (context, rect);
+		} else {
+			if (OS.VERSION >= 0x1040) {
+				OS.HIThemeSetFill (OS.kThemeBrushDialogBackgroundActive, 0, context, OS.kHIThemeOrientationNormal);
+				OS.CGContextFillRect (context, rect);
+			} else {
+				Rect rect1 = new Rect ();
+				rect1.left = (short) rect.x;
+				rect1.top = (short) rect.y;
+				rect1.right = (short) (rect.x + rect.width);
+				rect1.bottom = (short) (rect.y + rect.height);
+				OS.SetThemeBackground ((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
+				OS.EraseRect (rect1);
+			}
+		}
+		OS.CGContextRestoreGState (context);
+	} else {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (control, rect);
+		if (OS.HIVIEW) {
+			rect.right += rect.left;
+			rect.bottom += rect.top;
+			rect.left = rect.top = 0;
+		}
+		if (background != null) {
+			OS.RGBForeColor (toRGBColor (background));
+			OS.PaintRect (rect);
+		} else {
+			OS.SetThemeBackground((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
+			OS.EraseRect (rect);
+		}
+	}
+}
+
 Cursor findCursor () {
 	if (cursor != null) return cursor;
 	return parent.findCursor ();
+}
+
+Control findBackgroundControl () {
+	if (backgroundImage != null || background != null) return this;
+	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
 }
 
 void fixFocus (Control focusControl) {
@@ -680,9 +823,20 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget();
-	//NOT DONE - get default colors
-	if (background == null) return defaultBackground ();
-	return Color.carbon_new (display, background);
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	return control.getBackgroundColor ();
+}
+
+Color getBackgroundColor () {
+	return background != null ? Color.carbon_new (display, background) : defaultBackground ();
+}
+
+public Image getBackgroundImage () {
+	checkWidget();
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	return control.backgroundImage;
 }
 
 /**
@@ -770,9 +924,11 @@ public Font getFont () {
  */
 public Color getForeground () {
 	checkWidget();
-	//NOT DONE - get default colors
-	if (foreground == null) return defaultForeground ();
-	return Color.carbon_new (display, foreground);
+	return getForegroundColor ();
+}
+
+Color getForegroundColor () {
+	return foreground != null ? Color.carbon_new (display, foreground) : defaultForeground ();
 }
 
 /**
@@ -1160,8 +1316,10 @@ public int internal_new_GC (GCData data) {
 		}
 		data.device = display;
 		data.thread = display.thread;
-		data.background = background != null ? background : defaultBackground ().handle;
-		data.foreground = foreground != null ? foreground : defaultForeground ().handle;
+		data.foreground = getForegroundColor ().handle;
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		data.background = control.getBackgroundColor ().handle;
 		data.font = font != null ? font : defaultFont ();
 		data.visibleRgn = visibleRgn;
 		data.control = handle;
@@ -2152,6 +2310,14 @@ public void setBackground (Color color) {
 	}
 	background = color != null ? color.handle : null;
 	setBackground (background);
+	redrawWidget (handle, false);
+}
+
+public void setBackgroundImage (Image image) {
+	checkWidget();
+	if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image == backgroundImage) return;
+	backgroundImage = image;
 	redrawWidget (handle, false);
 }
 

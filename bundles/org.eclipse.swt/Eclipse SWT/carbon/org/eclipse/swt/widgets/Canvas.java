@@ -73,6 +73,15 @@ public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
 
+public void drawBackground (GC gc, int x, int y, int width, int height) {
+	checkWidget ();
+	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	control.fillBackground (handle, gc.handle, new Rectangle (x, y, width, height));
+}
+
 /**
  * Returns the caret.
  * <p>
@@ -179,9 +188,15 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (sourceRect.intersects (clientRect)) {
 		update (all);
 	}
-    GC gc = new GC (this);
-    gc.copyArea (x, y, width, height, destX, destY);
-    gc.dispose ();
+	Control control = findBackgroundControl ();
+	if (control != null && control.backgroundImage != null) {
+		redrawWidget (handle, x, y, width, height, false);
+		redrawWidget (handle, destX, destY, width, height, false);
+	} else {
+	    GC gc = new GC (this);
+	    gc.copyArea (x, y, width, height, destX, destY);
+	    gc.dispose ();
+	}
     if (all) {
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {

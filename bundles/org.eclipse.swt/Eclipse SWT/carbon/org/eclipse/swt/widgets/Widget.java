@@ -13,7 +13,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.HIThemeFrameDrawInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
@@ -67,19 +66,20 @@ public abstract class Widget {
 	static final int RESIZED          = 1 << 7;
 	static final int EXPANDING        = 1 << 8;
 	static final int IGNORE_WHEEL     = 1 << 9;
+	static final int PARENT_BACKGROUND = 1 << 10;
 	
 	/* A layout was requested on this widget */
-	static final int LAYOUT_NEEDED	= 1<<10;
+	static final int LAYOUT_NEEDED	= 1<<11;
 	
 	/* The preferred size of a child has changed */
-	static final int LAYOUT_CHANGED = 1<<11;
+	static final int LAYOUT_CHANGED = 1<<12;
 	
 	/* A layout was requested in this widget hierachy */
-	static final int LAYOUT_CHILD = 1<<12;
+	static final int LAYOUT_CHILD = 1<<13;
 
 	/* More global state flags */
-	static final int RELEASED = 1<<13;
-	static final int DISPOSE_SENT = 1<<14;
+	static final int RELEASED = 1<<14;
+	static final int DISPOSE_SENT = 1<<15;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -625,107 +625,6 @@ public void dispose () {
 
 void drawBackground (int control, int context) {
 	/* Do nothing */
-}
-
-void drawBackground (int control, int context, float [] background) {
-	if (OS.HIVIEW && (OS.VERSION >= 0x1040 || background != null)) {
-		CGRect rect = new CGRect ();
-		OS.HIViewGetBounds (control, rect);
-		if (background != null) {
-			int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
-			OS.CGContextSetFillColorSpace (context, colorspace);
-			OS.CGContextSetFillColor (context, background);
-			OS.CGColorSpaceRelease (colorspace);
-		} else {
-			OS.HIThemeSetFill (OS.kThemeBrushDialogBackgroundActive, 0, context, OS.kHIThemeOrientationNormal);
-		}
-		OS.CGContextFillRect (context, rect);
-	} else {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (control, rect);
-		if (OS.HIVIEW) {
-			rect.right += rect.left;
-			rect.bottom += rect.top;
-			rect.left = rect.top = 0;
-		}
-		if (background != null) {
-			OS.RGBForeColor (toRGBColor (background));
-			OS.PaintRect (rect);
-		} else {
-			OS.SetThemeBackground((short) OS.kThemeBrushDialogBackgroundActive, (short) 0, true);
-			OS.EraseRect (rect);
-		}
-	}
-}
-
-void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
-	drawBackground (control, context, background);
-	if (OS.HIVIEW) {
-		CGRect rect = new CGRect ();
-		OS.HIViewGetBounds (control, rect);
-		rect.x += inset.left;
-		rect.y += inset.top;
-		rect.width -= inset.right + inset.left;
-		rect.height -= inset.bottom + inset.top;
-		int state;
-		if (OS.IsControlEnabled (control)) {
-			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		} else {
-			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
-		}
-		if (hasBorder) {
-			HIThemeFrameDrawInfo info = new HIThemeFrameDrawInfo ();
-			info.state = state;
-			info.kind = OS.kHIThemeFrameTextFieldSquare;
-			info.isFocused = hasFocus;
-			OS.HIThemeDrawFrame (rect, info, context, OS.kHIThemeOrientationNormal);
-		} else {
-			OS.HIThemeDrawFocusRect (rect, hasFocus, context, OS.kHIThemeOrientationNormal);
-		}
-	} else {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (control, rect);
-		rect.left += inset.left;
-		rect.top += inset.top;
-		rect.right -= inset.right;
-		rect.bottom -= inset.bottom;
-		int state;
-		if (OS.IsControlEnabled (control)) {
-			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
-		} else {
-			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
-		}
-		if (hasFocus) {
-			if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
-			OS.DrawThemeFocusRect (rect, true);
-		} else {
-			/*
-			* This code is intentionaly commented.
-			*  
-			* NOTE: the focus ring is erased by drawBackground() above. 
-			*/
-	//		OS.DrawThemeFocusRect (rect, false);
-			if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
-		}
-	}
-}
-
-void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
-	int visibleRgn = getVisibleRegion (control, true);
-	if (!OS.EmptyRgn (visibleRgn)) {
-		int [] currentPort = new int [1];
-		OS.GetPort (currentPort);
-		int window = OS.GetControlOwner (control);
-		int port = OS.GetWindowPort (window);
-		OS.SetPort (port);
-		int oldClip = OS.NewRgn ();
-		OS.GetClip (oldClip);
-		OS.SetClip (visibleRgn);
-		drawFocus (control, 0, hasFocus, hasBorder, background, inset);
-		OS.SetClip (oldClip);
-		OS.SetPort (currentPort [0]);
-	}
-	OS.DisposeRgn (visibleRgn);
 }
 
 void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {

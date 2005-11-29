@@ -164,7 +164,7 @@ void destroyItem (ToolItem item) {
 }
 
 void drawBackground (int control, int context) {
-	drawBackground (control, context, background);
+	fillBackground (control, context, null);
 }
 
 void enableWidget (boolean enabled) {

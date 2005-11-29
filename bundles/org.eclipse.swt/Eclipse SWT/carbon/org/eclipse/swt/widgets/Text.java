@@ -644,7 +644,7 @@ Color defaultForeground () {
 
 void drawBackground (int control, int context) {
 	if (!OS.HIVIEW) {
-		drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+		parent.drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), inset ());
 	}
 }
 

@@ -209,7 +209,7 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
 		OS.CGContextSetFillColorSpace (context [0], colorspace);
 		OS.CGColorSpaceRelease (colorspace);
-		OS.CGContextSetFillColor (context [0], parent.foreground != null ? parent.foreground : new float []{0, 0, 0, 1});
+		OS.CGContextSetFillColor (context [0], parent.getForegroundColor ().handle);
 		int [] ptr = new int [1];
 		OS.GetControlData (labelHandle, (short) 0, OS.kControlStaticTextCFStringTag, 4, ptr, null);
 		OS.HIThemeDrawTextBox (ptr [0], rect, info, context [0], OS.kHIThemeOrientationNormal);
@@ -363,7 +363,7 @@ void drawBackground (int control, int context) {
 		}
 		return;
 	}
-	drawBackground (control, context, parent.background);
+	parent.fillBackground (control, context, null);
 }
 
 void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
