@@ -6359,7 +6359,9 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 				scroll(leftMargin, topMargin, leftMargin, sourceY, scrollWidth, scrollHeight, true);
 			}
 			if (sourceY > scrollHeight) {
-				super.redraw(leftMargin, topMargin + scrollHeight, scrollWidth, pixels - scrollHeight, true);
+				int redrawY = Math.max(0, topMargin + scrollHeight);
+				int redrawHeight = Math.min(clientAreaHeight, pixels - scrollHeight);
+				super.redraw(leftMargin, redrawY, scrollWidth, redrawHeight, true);
 			}
 		} else {
 			int destinationY = topMargin - pixels;
@@ -6368,7 +6370,9 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 				scroll(leftMargin, destinationY, leftMargin, topMargin, scrollWidth, scrollHeight, true);
 			}
 			if (destinationY > scrollHeight) {
-				super.redraw(leftMargin, topMargin + scrollHeight, scrollWidth, -pixels - scrollHeight, true);	
+				int redrawY = Math.max(0, topMargin + scrollHeight);
+				int redrawHeight = Math.min(clientAreaHeight, -pixels - scrollHeight);
+				super.redraw(leftMargin, redrawY, scrollWidth, redrawHeight, true);
 			}
 		}
 		verticalScrollOffset += pixels;
