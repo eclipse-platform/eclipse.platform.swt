@@ -1597,24 +1597,23 @@ void clearSelection(boolean sendEvent) {
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	boolean singleLine = (getStyle() & SWT.SINGLE) != 0;
-	int lineCount = singleLine ? 1 : content.getLineCount();
+	int lineCount = (getStyle() & SWT.SINGLE) != 0 ? 1 : content.getLineCount();
 	int width = 0;
 	int height = 0;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 		Display display = getDisplay();
 		int maxHeight = display.getClientArea().height;
-		int lineIndex = 0;
-		while (lineIndex < lineCount && height < maxHeight) {
+		for (int lineIndex = 0; lineIndex < lineCount; lineIndex++) {
 			TextLayout layout = renderer.getTextLayout(lineIndex);
-			if (wordWrap) {
-				layout.setWidth(wHint == 0 ? 1 : wHint);
-			}
+			if (wordWrap) layout.setWidth(wHint == 0 ? 1 : wHint);
 			Rectangle rect = layout.getBounds();
 			height += rect.height;
 			width = Math.max(width, rect.width);
 			renderer.disposeTextLayout(layout);
-			lineIndex++;
+			if (isFixedLineHeight() && height < maxHeight) break;
+		}
+		if (isFixedLineHeight()) {
+			height = lineCount * renderer.getLineHeight();
 		}
 	}
 	// Use default values if no text is defined.
