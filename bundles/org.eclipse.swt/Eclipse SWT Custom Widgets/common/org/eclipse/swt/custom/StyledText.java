@@ -1709,7 +1709,7 @@ int getAvailableHeightAbove(int height) {
 		if (topIndexY > 0) {
 			maxHeight += renderer.getLineHeight(lineIndex--);
 		}
-		while (height > maxHeight && lineIndex > 0) {
+		while (height > maxHeight && lineIndex >= 0) {
 			maxHeight += renderer.getLineHeight(lineIndex--);
 		}
 	}
@@ -5258,6 +5258,7 @@ void handleResize(Event event) {
 			super.redraw();
 		}
 		if (oldHeight != clientAreaHeight) {
+			if (oldHeight == 0) topIndexY = 0;
 			setScrollBars(true);
 		}
 		setCaretLocation();
@@ -6346,11 +6347,12 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 	if (pixels == 0) {
 		return false;
 	}
-	ScrollBar verticalBar = getVerticalBar();
-	if (verticalBar != null && adjustScrollBar) {
-		verticalBar.setSelection(getVerticalScrollOffset() + pixels);
-	}
 	if (verticalScrollOffset != -1) {
+		verticalScrollOffset += pixels;
+		ScrollBar verticalBar = getVerticalBar();
+		if (verticalBar != null && adjustScrollBar) {
+			verticalBar.setSelection(verticalScrollOffset);
+		}
 		int scrollWidth = clientAreaWidth - leftMargin - rightMargin;
 		if (pixels > 0) {
 			int sourceY = topMargin + pixels;
@@ -6375,7 +6377,6 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 				super.redraw(leftMargin, redrawY, scrollWidth, redrawHeight, true);
 			}
 		}
-		verticalScrollOffset += pixels;
 		calculateTopIndex(pixels);
 	} else {
 		calculateTopIndex(pixels);
