@@ -11,6 +11,30 @@
 
 #include "gdip.h"
 
+#ifndef NO_BitmapData
+void cacheBitmapDataFields(JNIEnv *env, jobject lpObject);
+BitmapData *getBitmapDataFields(JNIEnv *env, jobject lpObject, BitmapData *lpStruct);
+void setBitmapDataFields(JNIEnv *env, jobject lpObject, BitmapData *lpStruct);
+#define BitmapData_sizeof() sizeof(BitmapData)
+#else
+#define cacheBitmapDataFields(a,b)
+#define getBitmapDataFields(a,b,c) NULL
+#define setBitmapDataFields(a,b,c)
+#define BitmapData_sizeof() 0
+#endif
+
+#ifndef NO_ColorPalette
+void cacheColorPaletteFields(JNIEnv *env, jobject lpObject);
+ColorPalette *getColorPaletteFields(JNIEnv *env, jobject lpObject, ColorPalette *lpStruct);
+void setColorPaletteFields(JNIEnv *env, jobject lpObject, ColorPalette *lpStruct);
+#define ColorPalette_sizeof() sizeof(ColorPalette)
+#else
+#define cacheColorPaletteFields(a,b)
+#define getColorPaletteFields(a,b,c) NULL
+#define setColorPaletteFields(a,b,c)
+#define ColorPalette_sizeof() 0
+#endif
+
 #ifndef NO_GdiplusStartupInput
 void cacheGdiplusStartupInputFields(JNIEnv *env, jobject lpObject);
 GdiplusStartupInput *getGdiplusStartupInputFields(JNIEnv *env, jobject lpObject, GdiplusStartupInput *lpStruct);

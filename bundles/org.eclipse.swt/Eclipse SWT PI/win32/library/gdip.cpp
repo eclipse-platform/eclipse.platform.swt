@@ -17,6 +17,84 @@ extern "C" {
 
 #define Gdip_NATIVE(func) Java_org_eclipse_swt_internal_gdip_Gdip_##func
 
+#ifndef NO_BitmapData_1delete
+JNIEXPORT void JNICALL Gdip_NATIVE(BitmapData_1delete)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	Gdip_NATIVE_ENTER(env, that, BitmapData_1delete_FUNC);
+	delete (BitmapData *)arg0;
+	Gdip_NATIVE_EXIT(env, that, BitmapData_1delete_FUNC);
+}
+#endif
+
+#ifndef NO_BitmapData_1new
+JNIEXPORT jint JNICALL Gdip_NATIVE(BitmapData_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, BitmapData_1new_FUNC);
+	rc = (jint)new BitmapData();
+	Gdip_NATIVE_EXIT(env, that, BitmapData_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Bitmap_1GetHBITMAP
+JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1GetHBITMAP)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Bitmap_1GetHBITMAP_FUNC);
+	if (arg2) if ((lparg2 = env->GetIntArrayElements(arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((Bitmap*)arg0)->GetHBITMAP(*(Color*)arg1, (HBITMAP*)lparg2);
+fail:
+	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
+	Gdip_NATIVE_EXIT(env, that, Bitmap_1GetHBITMAP_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Bitmap_1GetHICON
+JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1GetHICON)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Bitmap_1GetHICON_FUNC);
+	if (arg1) if ((lparg1 = env->GetIntArrayElements(arg1, NULL)) == NULL) goto fail;
+	rc = (jint)((Bitmap*)arg0)->GetHICON((HICON*)lparg1);
+fail:
+	if (arg1 && lparg1) env->ReleaseIntArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, Bitmap_1GetHICON_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Bitmap_1LockBits
+JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1LockBits)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Bitmap_1LockBits_FUNC);
+	rc = (jint)((Bitmap*)arg0)->LockBits((Rect*)arg1, arg2, (PixelFormat)arg3, (BitmapData*)arg4);
+	Gdip_NATIVE_EXIT(env, that, Bitmap_1LockBits_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Bitmap_1UnlockBits
+JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1UnlockBits)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Bitmap_1UnlockBits_FUNC);
+	rc = (jint)((Bitmap*)arg0)->UnlockBits((BitmapData*)arg1);
+	Gdip_NATIVE_EXIT(env, that, Bitmap_1UnlockBits_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Bitmap_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(Bitmap_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -59,6 +137,22 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__IIIII)
 	Gdip_NATIVE_ENTER(env, that, Bitmap_1new__IIIII_FUNC);
 	rc = (jint)new Bitmap(arg0, arg1, arg2, (PixelFormat)arg3, (BYTE *)arg4);
 	Gdip_NATIVE_EXIT(env, that, Bitmap_1new__IIIII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Bitmap_1new___3CZ
+JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new___3CZ)
+	(JNIEnv *env, jclass that, jcharArray arg0, jboolean arg1)
+{
+	jchar *lparg0=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Bitmap_1new___3CZ_FUNC);
+	if (arg0) if ((lparg0 = env->GetCharArrayElements(arg0, NULL)) == NULL) goto fail;
+	rc = (jint)new Bitmap((WCHAR*)lparg0, arg1);
+fail:
+	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
+	Gdip_NATIVE_EXIT(env, that, Bitmap_1new___3CZ_FUNC);
 	return rc;
 }
 #endif
@@ -1079,6 +1173,42 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)
 }
 #endif
 
+#ifndef NO_Image_1GetPalette
+JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPalette)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Image_1GetPalette_FUNC);
+	rc = (jint)((Image*)arg0)->GetPalette((ColorPalette*)arg1, arg2);
+	Gdip_NATIVE_EXIT(env, that, Image_1GetPalette_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Image_1GetPaletteSize
+JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPaletteSize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Image_1GetPaletteSize_FUNC);
+	rc = (jint)((Image*)arg0)->GetPaletteSize();
+	Gdip_NATIVE_EXIT(env, that, Image_1GetPaletteSize_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Image_1GetPixelFormat
+JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPixelFormat)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Image_1GetPixelFormat_FUNC);
+	rc = (jint)((Image*)arg0)->GetPixelFormat();
+	Gdip_NATIVE_EXIT(env, that, Image_1GetPixelFormat_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Image_1GetWidth
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetWidth)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1279,6 +1409,34 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1new)
 	rc = (jint)new Matrix((REAL)arg0, (REAL)arg1, (REAL)arg2, (REAL)arg3, (REAL)arg4, (REAL)arg5);
 	Gdip_NATIVE_EXIT(env, that, Matrix_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2II
+JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	BitmapData _arg0, *lparg0=NULL;
+	Gdip_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2II_FUNC);
+	if (arg0) if ((lparg0 = getBitmapDataFields(env, arg0, &_arg0)) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID*)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setBitmapDataFields(env, arg0, lparg0);
+	Gdip_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2II_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II
+JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	ColorPalette _arg0, *lparg0=NULL;
+	Gdip_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II_FUNC);
+	if (arg0) if ((lparg0 = getColorPaletteFields(env, arg0, &_arg0)) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID*)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setColorPaletteFields(env, arg0, lparg0);
+	Gdip_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II_FUNC);
 }
 #endif
 

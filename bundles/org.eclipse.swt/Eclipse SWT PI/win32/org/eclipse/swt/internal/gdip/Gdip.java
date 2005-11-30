@@ -48,6 +48,7 @@ public class Gdip extends Platform {
     public static final int FontStyleBoldItalic = 3;
     public static final int FontStyleUnderline = 4;
     public static final int FontStyleStrikeout = 8;
+    public static final int PaletteFlagsHasAlpha = 0x0001;
     public static final int FlushIntentionFlush = 0;
     public static final int FlushIntentionSync = 1;
     public static final int HotkeyPrefixNone = 0;
@@ -119,7 +120,6 @@ public class Gdip extends Platform {
     public static final int StringFormatFlagsNoWrap = 0x00001000;
     public static final int StringFormatFlagsLineLimit = 0x00002000;
     public static final int StringFormatFlagsNoClip = 0x00004000;
-
     public static final int TextRenderingHintSystemDefault = 0;
     public static final int TextRenderingHintSingleBitPerPixelGridFit = 1;
     public static final int TextRenderingHintSingleBitPerPixel = 2;
@@ -140,7 +140,14 @@ public static final native void GdiplusShutdown(int[] token);
 public static final native int Bitmap_new(int hbm, int hpal);
 public static final native int Bitmap_new(int hicon);
 public static final native int Bitmap_new(int width, int height, int stride, int format, int scan0);
+public static final native int Bitmap_new(char[] filename, boolean useIcm);
 public static final native void Bitmap_delete(int bitmap);
+public static final native int Bitmap_GetHBITMAP(int bitmap, int colorBackground, int[] hbmReturn);
+public static final native int Bitmap_GetHICON(int bitmap, int[] hicon);
+public static final native int BitmapData_new();
+public static final native void BitmapData_delete(int bitmapData);
+public static final native int Bitmap_LockBits(int bitmap, int rect, int flags, int pixelFormat, int lockedBitmapData);
+public static final native int Bitmap_UnlockBits(int bitmap, int lockedBitmapData);
 public static final native int Brush_Clone(int brush);
 public static final native int Brush_GetType(int brush);
 public static final native int Color_new(int argb);
@@ -215,8 +222,11 @@ public static final native boolean GraphicsPath_IsVisible(int path, float x, flo
 public static final native int GraphicsPath_SetFillMode(int path, int fillmode);
 public static final native int GraphicsPath_StartFigure(int path);
 public static final native int HatchBrush_new(int hatchStyle, int foreColor, int backColor);
+public static final native int Image_GetPixelFormat(int bitmap);
 public static final native int Image_GetWidth(int image);
 public static final native int Image_GetHeight(int image);
+public static final native int Image_GetPalette(int image, int palette, int size);
+public static final native int Image_GetPaletteSize(int image);
 public static final native int ImageAttributes_new();
 public static final native void ImageAttributes_delete(int attrib);
 public static final native int ImageAttributes_SetWrapMode(int attrib, int wrap);
@@ -239,6 +249,8 @@ public static final native int Matrix_TransformPoints(int matrix, PointF pts, in
 public static final native int Matrix_TransformPoints(int matrix, float[] pts, int count);
 public static final native int Matrix_Translate(int matrix, float offsetX, float offsetY, int order);
 public static final native int Matrix_SetElements(int matrix, float m11, float m12, float m21, float m22, float dx, float dy);
+public static final native void MoveMemory(ColorPalette Destination, int SourcePtr, int Length);
+public static final native void MoveMemory(BitmapData Destination, int SourcePtr, int Length);
 public static final native int PathGradientBrush_new(int path);
 public static final native void PathGradientBrush_delete(int brush);
 public static final native int PathGradientBrush_SetCenterColor(int brush, int color);

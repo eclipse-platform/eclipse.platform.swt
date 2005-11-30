@@ -12,6 +12,95 @@
 #include "swt.h"
 #include "gdip_structs.h"
 
+#ifndef NO_BitmapData
+typedef struct BitmapData_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID Width, Height, Stride, PixelFormat, Scan0, Reserved;
+} BitmapData_FID_CACHE;
+
+BitmapData_FID_CACHE BitmapDataFc;
+
+void cacheBitmapDataFields(JNIEnv *env, jobject lpObject)
+{
+	if (BitmapDataFc.cached) return;
+	BitmapDataFc.clazz = env->GetObjectClass(lpObject);
+	BitmapDataFc.Width = env->GetFieldID(BitmapDataFc.clazz, "Width", "I");
+	BitmapDataFc.Height = env->GetFieldID(BitmapDataFc.clazz, "Height", "I");
+	BitmapDataFc.Stride = env->GetFieldID(BitmapDataFc.clazz, "Stride", "I");
+	BitmapDataFc.PixelFormat = env->GetFieldID(BitmapDataFc.clazz, "PixelFormat", "I");
+	BitmapDataFc.Scan0 = env->GetFieldID(BitmapDataFc.clazz, "Scan0", "I");
+	BitmapDataFc.Reserved = env->GetFieldID(BitmapDataFc.clazz, "Reserved", "I");
+	BitmapDataFc.cached = 1;
+}
+
+BitmapData *getBitmapDataFields(JNIEnv *env, jobject lpObject, BitmapData *lpStruct)
+{
+	if (!BitmapDataFc.cached) cacheBitmapDataFields(env, lpObject);
+	lpStruct->Width = env->GetIntField(lpObject, BitmapDataFc.Width);
+	lpStruct->Height = env->GetIntField(lpObject, BitmapDataFc.Height);
+	lpStruct->Stride = env->GetIntField(lpObject, BitmapDataFc.Stride);
+	lpStruct->PixelFormat = (PixelFormat)env->GetIntField(lpObject, BitmapDataFc.PixelFormat);
+	lpStruct->Scan0 = (void*)env->GetIntField(lpObject, BitmapDataFc.Scan0);
+	lpStruct->Reserved = (UINT_PTR)env->GetIntField(lpObject, BitmapDataFc.Reserved);
+	return lpStruct;
+}
+
+void setBitmapDataFields(JNIEnv *env, jobject lpObject, BitmapData *lpStruct)
+{
+	if (!BitmapDataFc.cached) cacheBitmapDataFields(env, lpObject);
+	env->SetIntField(lpObject, BitmapDataFc.Width, (jint)lpStruct->Width);
+	env->SetIntField(lpObject, BitmapDataFc.Height, (jint)lpStruct->Height);
+	env->SetIntField(lpObject, BitmapDataFc.Stride, (jint)lpStruct->Stride);
+	env->SetIntField(lpObject, BitmapDataFc.PixelFormat, (jint)lpStruct->PixelFormat);
+	env->SetIntField(lpObject, BitmapDataFc.Scan0, (jint)lpStruct->Scan0);
+	env->SetIntField(lpObject, BitmapDataFc.Reserved, (jint)lpStruct->Reserved);
+}
+#endif
+
+#ifndef NO_ColorPalette
+typedef struct ColorPalette_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID Flags, Count, Entries;
+} ColorPalette_FID_CACHE;
+
+ColorPalette_FID_CACHE ColorPaletteFc;
+
+void cacheColorPaletteFields(JNIEnv *env, jobject lpObject)
+{
+	if (ColorPaletteFc.cached) return;
+	ColorPaletteFc.clazz = env->GetObjectClass(lpObject);
+	ColorPaletteFc.Flags = env->GetFieldID(ColorPaletteFc.clazz, "Flags", "I");
+	ColorPaletteFc.Count = env->GetFieldID(ColorPaletteFc.clazz, "Count", "I");
+	ColorPaletteFc.Entries = env->GetFieldID(ColorPaletteFc.clazz, "Entries", "[I");
+	ColorPaletteFc.cached = 1;
+}
+
+ColorPalette *getColorPaletteFields(JNIEnv *env, jobject lpObject, ColorPalette *lpStruct)
+{
+	if (!ColorPaletteFc.cached) cacheColorPaletteFields(env, lpObject);
+	lpStruct->Flags = env->GetIntField(lpObject, ColorPaletteFc.Flags);
+	lpStruct->Count = env->GetIntField(lpObject, ColorPaletteFc.Count);
+	{
+	jintArray lpObject1 = (jintArray)env->GetObjectField(lpObject, ColorPaletteFc.Entries);
+	env->GetIntArrayRegion(lpObject1, 0, sizeof(lpStruct->Entries) / 4, (jint *)lpStruct->Entries);
+	}
+	return lpStruct;
+}
+
+void setColorPaletteFields(JNIEnv *env, jobject lpObject, ColorPalette *lpStruct)
+{
+	if (!ColorPaletteFc.cached) cacheColorPaletteFields(env, lpObject);
+	env->SetIntField(lpObject, ColorPaletteFc.Flags, (jint)lpStruct->Flags);
+	env->SetIntField(lpObject, ColorPaletteFc.Count, (jint)lpStruct->Count);
+	{
+	jintArray lpObject1 = (jintArray)env->GetObjectField(lpObject, ColorPaletteFc.Entries);
+	env->SetIntArrayRegion(lpObject1, 0, sizeof(lpStruct->Entries) / 4, (jint *)lpStruct->Entries);
+	}
+}
+#endif
+
 #ifndef NO_GdiplusStartupInput
 typedef struct GdiplusStartupInput_FID_CACHE {
 	int cached;
