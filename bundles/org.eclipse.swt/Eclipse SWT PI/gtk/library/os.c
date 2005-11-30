@@ -4143,6 +4143,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1new)
 }
 #endif
 
+#ifndef NO__1gdk_1pixbuf_1new_1from_1file
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1new_1from_1file)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1new_1from_1file_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)gdk_pixbuf_new_from_file((const char *)lparg0, (GError**)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1new_1from_1file_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1pixbuf_1render_1pixmap_1and_1mask
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1render_1pixmap_1and_1mask)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jint arg3)

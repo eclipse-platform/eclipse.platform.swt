@@ -332,6 +332,7 @@ typedef enum {
 	_1gdk_1pixbuf_1get_1rowstride_FUNC,
 	_1gdk_1pixbuf_1get_1width_FUNC,
 	_1gdk_1pixbuf_1new_FUNC,
+	_1gdk_1pixbuf_1new_1from_1file_FUNC,
 	_1gdk_1pixbuf_1render_1pixmap_1and_1mask_FUNC,
 	_1gdk_1pixbuf_1render_1to_1drawable_FUNC,
 	_1gdk_1pixbuf_1render_1to_1drawable_1alpha_FUNC,

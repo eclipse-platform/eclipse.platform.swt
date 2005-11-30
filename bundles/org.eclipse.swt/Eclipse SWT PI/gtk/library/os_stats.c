@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1035;
-int OS_nativeFunctionCallCount[1035];
+int OS_nativeFunctionCount = 1036;
+int OS_nativeFunctionCallCount[1036];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -328,6 +328,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1pixbuf_1get_1rowstride",
 	"_1gdk_1pixbuf_1get_1width",
 	"_1gdk_1pixbuf_1new",
+	"_1gdk_1pixbuf_1new_1from_1file",
 	"_1gdk_1pixbuf_1render_1pixmap_1and_1mask",
 	"_1gdk_1pixbuf_1render_1to_1drawable",
 	"_1gdk_1pixbuf_1render_1to_1drawable_1alpha",
