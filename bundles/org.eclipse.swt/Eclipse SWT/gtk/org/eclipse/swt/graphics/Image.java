@@ -11,9 +11,11 @@
 package org.eclipse.swt.graphics;
 
  
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
+
 import java.io.*;
  
 /**
@@ -521,6 +523,60 @@ public Image(Device device, InputStream stream) {
 public Image(Device device, String filename) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	try {
+		int length = filename.length ();
+		char [] chars = new char [length];
+		filename.getChars (0, length, chars, 0);
+		byte [] buffer = Converter.wcsToMbcs(null, chars, true);
+		int /*long*/ pixbuf = OS.gdk_pixbuf_new_from_file(buffer, null);
+		if (pixbuf != 0) {
+			int /*long*/ [] pixmap_return = new int /*long*/ [1];
+			OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
+			this.type = SWT.BITMAP;
+			this.pixmap = pixmap_return[0];
+			if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
+			if (hasAlpha) {
+				int width = OS.gdk_pixbuf_get_width(pixbuf);
+				int height = OS.gdk_pixbuf_get_height(pixbuf);
+				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+				int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+				byte[] line = new byte[stride];
+				alphaData = new byte[width * height];
+				for (int y = 0; y < height; y++) {
+					OS.memmove(line, pixels + (y * stride), stride);
+					for (int x = 0; x < width; x++) {
+						alphaData[y*width+x] = line[x*4 + 3];
+					}
+				}
+				if (device.useXRender) {
+					mask = OS.gdk_pixmap_new(0, width, height, 8);
+					if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+					GdkImage gdkImage = new GdkImage();
+					int /*long*/ imagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
+					OS.memmove(gdkImage, imagePtr);
+					if (gdkImage.bpl == width) {
+						OS.memmove(gdkImage.mem, alphaData, alphaData.length);
+					} else {
+						line = new byte[gdkImage.bpl];
+						for (int y = 0; y < height; y++) {
+							System.arraycopy(alphaData, width * y, line, 0, width);
+							OS.memmove(gdkImage.mem + (gdkImage.bpl * y), line, gdkImage.bpl);
+						}
+					}
+					int /*long*/ gc = OS.gdk_gc_new(mask);
+					if (gc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+					OS.gdk_draw_image(mask, gc, imagePtr, 0, 0, 0, 0, width, height);
+					OS.g_object_unref(imagePtr);
+					OS.g_object_unref(gc);
+				}
+			}
+			OS.g_object_unref (pixbuf);
+			return;
+		}
+	} catch (SWTException e) {}
 	init(device, new ImageData(filename));
 	if (device.tracking) device.new_Object(this);
 }
