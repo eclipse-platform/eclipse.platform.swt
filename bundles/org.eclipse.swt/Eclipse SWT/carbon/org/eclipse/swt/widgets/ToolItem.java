@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
+import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -314,7 +315,10 @@ void createHandle () {
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		iconHandle = outControl [0];
 		if (OS.HIVIEW) {
-			OS.CreateStaticTextControl (window, null, 0, null, outControl);
+			ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+			fontStyle.flags = (short) OS.kControlUseThemeFontIDMask;
+			fontStyle.font = (short) parent.defaultThemeFont ();
+			OS.CreateStaticTextControl (window, null, 0, fontStyle, outControl);
 		} else {
 			OS.CreateIconControl (window, null, inContent, false, outControl);		
 		}

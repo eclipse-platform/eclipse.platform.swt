@@ -137,7 +137,6 @@ void createItem (ToolItem item, int index) {
 	item.createWidget ();
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	item.setFontStyle (parent.font != null ? parent.font : parent.defaultFont ());
 	relayout ();
 }
 
@@ -148,7 +147,8 @@ void createWidget () {
 }
 
 int defaultThemeFont () {
-	return OS.kThemeToolbarFont;
+	if (display.smallFonts) return OS.kThemeToolbarFont;
+	return OS.kThemeSystemFont;
 }
 
 void destroyItem (ToolItem item) {
