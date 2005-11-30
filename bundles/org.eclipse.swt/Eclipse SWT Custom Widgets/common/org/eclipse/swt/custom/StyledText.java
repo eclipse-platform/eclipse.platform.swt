@@ -1610,7 +1610,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += rect.height;
 			width = Math.max(width, rect.width);
 			renderer.disposeTextLayout(layout);
-			if (isFixedLineHeight() && height < maxHeight) break;
+			if (isFixedLineHeight() && height > maxHeight) break;
 		}
 		if (isFixedLineHeight()) {
 			height = lineCount * renderer.getLineHeight();
