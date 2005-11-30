@@ -6348,10 +6348,9 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 		return false;
 	}
 	if (verticalScrollOffset != -1) {
-		verticalScrollOffset += pixels;
 		ScrollBar verticalBar = getVerticalBar();
 		if (verticalBar != null && adjustScrollBar) {
-			verticalBar.setSelection(verticalScrollOffset);
+			verticalBar.setSelection(verticalScrollOffset + pixels);
 		}
 		int scrollWidth = clientAreaWidth - leftMargin - rightMargin;
 		if (pixels > 0) {
@@ -6377,6 +6376,7 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 				super.redraw(leftMargin, redrawY, scrollWidth, redrawHeight, true);
 			}
 		}
+		verticalScrollOffset += pixels;
 		calculateTopIndex(pixels);
 	} else {
 		calculateTopIndex(pixels);
