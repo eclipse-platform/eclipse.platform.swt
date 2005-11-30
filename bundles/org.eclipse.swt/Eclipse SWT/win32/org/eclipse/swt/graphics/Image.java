@@ -14,6 +14,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+
 import java.io.*;
 
 /**
@@ -682,8 +683,81 @@ public Image (Device device, InputStream stream) {
 public Image (Device device, String filename) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	try {
+		device.checkGDIP();
+		int length = filename.length();
+		char[] chars = new char[length+1];
+		filename.getChars(0, length, chars, 0);
+		int bitmap = Gdip.Bitmap_new(chars, false);
+		if (bitmap != 0) {
+			if (filename.toLowerCase().endsWith(".ico")) {
+				int[] hicon = new int[1];
+				Gdip.Bitmap_GetHICON(bitmap, hicon);
+				this.type = SWT.ICON;
+				this.handle = hicon[0];
+			} else {
+				int[] hBitmap = new int[1];
+				int color = Gdip.Color_new(0);
+				if (color == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				Gdip.Bitmap_GetHBITMAP(bitmap, color, hBitmap);			
+				this.type = SWT.BITMAP;
+				this.handle = hBitmap[0];
+				if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				int pixelFormat = Gdip.Image_GetPixelFormat(bitmap);
+				switch (pixelFormat) {
+					case Gdip.PixelFormat32bppARGB:
+						int lockedBitmapData = Gdip.BitmapData_new();
+						if (lockedBitmapData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+						Gdip.Bitmap_LockBits(bitmap, 0, 0, pixelFormat, lockedBitmapData);
+						BitmapData bitmapData = new BitmapData();
+						Gdip.MoveMemory(bitmapData, lockedBitmapData, BitmapData.sizeof);
+						int stride = bitmapData.Stride;
+						int width = bitmapData.Width;
+						int height = bitmapData.Height;
+						int pixels = bitmapData.Scan0;
+						byte[] line = new byte[stride];
+		 		 		alphaData = new byte[width * height];
+		 		 		for (int y = 0; y < height; y++) {
+		 		 			OS.MoveMemory(line, pixels + (y * stride), stride);
+		 		 		 	for (int x = 0; x < width; x++) {
+		 		 		 		alphaData[y*width+x] = line[x*4 + 3];
+		 		 		 	}
+		 		 		}
+		 		 		Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
+						Gdip.BitmapData_delete(lockedBitmapData);
+						break;
+					case Gdip.PixelFormat1bppIndexed:
+					case Gdip.PixelFormat4bppIndexed:
+					case Gdip.PixelFormat8bppIndexed:
+						int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
+						int hHeap = OS.GetProcessHeap();
+						int palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
+						if (palette == 0) SWT.error(SWT.ERROR_NO_HANDLES); 
+						Gdip.Image_GetPalette(bitmap, palette, paletteSize);
+						ColorPalette colorPalette = new ColorPalette();
+						Gdip.MoveMemory(colorPalette, palette, ColorPalette.sizeof);
+						if ((colorPalette.Flags & Gdip.PaletteFlagsHasAlpha) != 0) { 
+							int[] entries = new int[colorPalette.Count];
+							OS.MoveMemory(entries, palette + 8, entries.length * 4);
+							for (int i = 0; i < entries.length; i++) {
+								if (((entries[i] >> 24) & 0xFF) == 0) {
+									transparentPixel = i;
+								}
+							}
+						}
+						OS.HeapFree(hHeap, 0, palette);
+						break;
+				}			
+				Gdip.Color_delete(color);
+			}
+			Gdip.Bitmap_delete(bitmap);
+			return;
+		}
+	} catch (SWTException e) {}
 	init(device, new ImageData(filename));
-	if (device.tracking) device.new_Object(this);	
+	if(device.tracking) device.new_Object(this);
 }
 
 /** 
