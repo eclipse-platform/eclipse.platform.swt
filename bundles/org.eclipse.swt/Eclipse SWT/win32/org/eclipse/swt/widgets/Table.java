@@ -696,7 +696,7 @@ void createHandle () {
 	* the column is inserted.
 	*/
 	LVCOLUMN lvColumn = new LVCOLUMN ();
-	lvColumn.mask = OS.LVCF_TEXT;
+	lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_WIDTH;
 	int hHeap = OS.GetProcessHeap ();
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 	lvColumn.pszText = pszText;
@@ -945,6 +945,9 @@ void createItem (TableItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
 	setDeferResize (false);
+	
+	/* Resize to show the first item */
+	if (count == 0) setScrollWidth (item, false);
 }
 
 void createWidget () {
@@ -3180,10 +3183,8 @@ boolean setScrollWidth (TableItem item, boolean force) {
 	* LVM_SETCOLUMNWIDTH with LVSCW_AUTOSIZE.
 	*/
 	if (count == 1 && columns [0] == null) {
-		int newWidth = 0;
+		int newWidth = 0, imageIndent = 0, index = 0;
 		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-		int index = 0;
-		int imageIndent = 0;
 		while (index < count) {
 			String string = null;
 			int font = -1;
@@ -3219,6 +3220,20 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			}
 			if (item != null) break;
 			index++;
+		}
+		/*
+		* Bug in Windows.  When the width of the first column is
+		* small but not zero, Windows draws '...' outside of the
+		* bounds of the text.  This is strange, but only causes
+		* roblems when the item is selected.  In this case, Windows
+		* clears the '...' but doesn't redraw it when the item is
+		* deselected, causing pixel corruption.  The fix is to ensure
+		* that the column is at least wide enough to draw a single
+		* space.
+		*/
+		if (newWidth == 0) {
+			TCHAR buffer = new TCHAR (getCodePage (), " ", true);
+			newWidth = Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
 		}
 		int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 		if (hStateList != 0) {
@@ -4551,8 +4566,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (pnmlv.iItem == -1) {
 						wasSelected = true;
 					} else {
-						boolean oldSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
-						boolean newSelected = (pnmlv.uOldState & OS.LVIS_SELECTED) != 0;
+						boolean oldSelected = (pnmlv.uOldState & OS.LVIS_SELECTED) != 0;
+						boolean newSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
 						if (oldSelected != newSelected) wasSelected = true;
 					}
 				}
