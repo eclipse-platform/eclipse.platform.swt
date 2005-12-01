@@ -96,6 +96,7 @@ static int checkStyle (int style) {
 
 void addRelation (Control control) {
 	if (!control.isDescribedByLabel ()) return;
+	if (labelHandle == 0) return;
 	int /*long*/ accessible = OS.gtk_widget_get_accessible (labelHandle);
 	int /*long*/ controlAccessible = OS.gtk_widget_get_accessible (control.handle);
 	if (accessible != 0 && controlAccessible != 0) {
