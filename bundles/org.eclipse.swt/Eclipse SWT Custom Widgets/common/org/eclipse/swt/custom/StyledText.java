@@ -3584,9 +3584,13 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 	return sendLineEvent(LineGetStyle, lineOffset, line);
 }
 /**
- * Returns the top pixel, relative to the client area, for a line.
- * @param lineIndex, the line index, the max value is lineCount. When
- * lineIndex == lineCount it returns the bottomPixel of the last line 
+ * Returns the top pixel, relative to the client area, of a given line.
+ * Clamps out of ranges index.
+ *  
+ * @param lineIndex the line index, the max value is lineCount. if
+ * lineIndex == lineCount it returns the bottomPixel of the last line.
+ * It means this function can be used to retrive the bottom pixel of any line. 
+ *  
  */
 int getLinePixel(int lineIndex) {
 	int lineCount = content.getLineCount();
@@ -3615,6 +3619,7 @@ int getLinePixel(int lineIndex) {
 }
 /**
  * Returns the line index for a y, relative to the client area.
+ * The line index returned is always in the range 0..lineCount - 1.
  */
 int getLineIndex(int y) {
 	y -= topMargin;
