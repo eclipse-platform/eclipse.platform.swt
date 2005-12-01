@@ -697,19 +697,34 @@ public Image (Device device, String filename) {
 				Gdip.Bitmap_GetHICON(bitmap, hicon);
 				this.type = SWT.ICON;
 				this.handle = hicon[0];
+				if (this.handle == 0) {
+					Gdip.Bitmap_delete(bitmap);
+					SWT.error(SWT.ERROR_INVALID_IMAGE);
+				}
 			} else {
-				int[] hBitmap = new int[1];
 				int color = Gdip.Color_new(0);
-				if (color == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				if (color == 0) {
+					Gdip.Bitmap_delete(bitmap);
+					SWT.error(SWT.ERROR_NO_HANDLES);
+				}
+				int[] hBitmap = new int[1];
 				Gdip.Bitmap_GetHBITMAP(bitmap, color, hBitmap);			
 				this.type = SWT.BITMAP;
 				this.handle = hBitmap[0];
-				if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				if (this.handle == 0) {
+					Gdip.Bitmap_delete(bitmap);
+					Gdip.Color_delete(color);
+					SWT.error(SWT.ERROR_INVALID_IMAGE);
+				}
 				int pixelFormat = Gdip.Image_GetPixelFormat(bitmap);
 				switch (pixelFormat) {
 					case Gdip.PixelFormat32bppARGB:
 						int lockedBitmapData = Gdip.BitmapData_new();
-						if (lockedBitmapData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+						if (lockedBitmapData == 0) {
+							Gdip.Bitmap_delete(bitmap);
+							Gdip.Color_delete(color);
+							SWT.error(SWT.ERROR_NO_HANDLES);
+						}
 						Gdip.Bitmap_LockBits(bitmap, 0, 0, pixelFormat, lockedBitmapData);
 						BitmapData bitmapData = new BitmapData();
 						Gdip.MoveMemory(bitmapData, lockedBitmapData, BitmapData.sizeof);
@@ -734,7 +749,11 @@ public Image (Device device, String filename) {
 						int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
 						int hHeap = OS.GetProcessHeap();
 						int palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
-						if (palette == 0) SWT.error(SWT.ERROR_NO_HANDLES); 
+						if (palette == 0) {
+							Gdip.Bitmap_delete(bitmap);
+							Gdip.Color_delete(color);
+							SWT.error(SWT.ERROR_NO_HANDLES); 
+						}
 						Gdip.Image_GetPalette(bitmap, palette, paletteSize);
 						ColorPalette colorPalette = new ColorPalette();
 						Gdip.MoveMemory(colorPalette, palette, ColorPalette.sizeof);
@@ -749,6 +768,10 @@ public Image (Device device, String filename) {
 						}
 						OS.HeapFree(hHeap, 0, palette);
 						break;
+					default:
+						Gdip.Bitmap_delete(bitmap);
+						Gdip.Color_delete(color);
+						SWT.error(SWT.ERROR_INVALID_IMAGE);
 				}			
 				Gdip.Color_delete(color);
 			}
