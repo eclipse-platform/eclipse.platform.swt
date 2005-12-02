@@ -229,6 +229,7 @@ protected void layout (Composite composite, boolean flushCache) {
 Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int width, boolean flushCache) {
 	int count = 0;
 	Control [] children = composite.getChildren ();
+	if (children.length == 0) new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
 		RowData data = (RowData) control.getLayoutData ();
@@ -333,6 +334,7 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 Point layoutVertical (Composite composite, boolean move, boolean wrap, int height, boolean flushCache) {
 	int count = 0;
 	Control [] children = composite.getChildren ();
+	if (children.length == 0) new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
 		RowData data = (RowData) control.getLayoutData ();
