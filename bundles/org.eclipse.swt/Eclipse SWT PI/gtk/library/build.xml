@@ -24,7 +24,7 @@
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="install"/>
 	</exec>
-	<eclipse.refreshLocal resource="org.eclipse.swt.gtk.linux.x86" depth="infinite" />
+	<eclipse.refreshLocal resource="org.eclipse.swt.gtk.linux.ppc" depth="infinite" />
 </target>
 
 <!-- Build swt.so for Solaris GTK (no Mozilla) -->
