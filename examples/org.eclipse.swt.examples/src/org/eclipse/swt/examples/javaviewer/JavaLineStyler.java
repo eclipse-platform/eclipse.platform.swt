@@ -288,7 +288,7 @@ public class JavaScanner {
 				}
 				return OTHER;
 			case '\'':	// char const
-				character: for(;;) {
+				for(;;) {
 					c= read();
 					switch (c) {
 						case '\'':
@@ -303,7 +303,7 @@ public class JavaScanner {
 				}
 
 			case '"':	// string
-				string: for (;;) {
+				for (;;) {
 					c= read();
 					switch (c) {
 						case '"':
