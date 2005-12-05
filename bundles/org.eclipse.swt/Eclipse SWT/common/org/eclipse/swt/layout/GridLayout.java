@@ -190,11 +190,11 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	if (numColumns < 1) {
 		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	}
-	int count = 0;
 	Control [] children = composite.getChildren ();
 	if (children.length == 0) {
 		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	}
+	int count = 0;
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
 		GridData data = (GridData) control.getLayoutData ();
