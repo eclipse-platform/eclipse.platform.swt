@@ -191,9 +191,6 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	}
 	Control [] children = composite.getChildren ();
-	if (children.length == 0) {
-		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
-	}
 	int count = 0;
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
@@ -201,6 +198,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		if (data == null || !data.exclude) {
 			children [count++] = children [i];
 		} 
+	}
+	if (count == 0) {
+		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	}
 	for (int i=0; i<count; i++) {
 		Control child = children [i];

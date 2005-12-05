@@ -228,9 +228,6 @@ protected void layout (Composite composite, boolean flushCache) {
 
 Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int width, boolean flushCache) {
 	Control [] children = composite.getChildren ();
-	if (children.length == 0) {
-		new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
-	}
 	int count = 0;
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
@@ -238,6 +235,9 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		if (data == null || !data.exclude) {
 			children [count++] = children [i];
 		} 
+	}
+	if (count == 0) {
+		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	}
 	int childWidth = 0, childHeight = 0, maxHeight = 0;
 	if (!pack) {
@@ -335,9 +335,6 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 
 Point layoutVertical (Composite composite, boolean move, boolean wrap, int height, boolean flushCache) {
 	Control [] children = composite.getChildren ();
-	if (children.length == 0) {
-		new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
-	}
 	int count = 0;
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
@@ -345,6 +342,9 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		if (data == null || !data.exclude) {
 			children [count++] = children [i];
 		} 
+	}
+	if (count == 0) {
+		return new Point (marginLeft + marginWidth * 2 + marginRight, marginTop + marginHeight * 2 + marginBottom);
 	}
 	int childWidth = 0, childHeight = 0, maxWidth = 0;
 	if (!pack) {
