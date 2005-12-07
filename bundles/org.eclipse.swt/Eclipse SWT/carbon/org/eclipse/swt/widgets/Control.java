@@ -1639,10 +1639,10 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	int [] clickCount = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-	int result = sendMouseEvent (SWT.MouseDown, button [0], 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	int result = sendMouseEvent (SWT.MouseDown, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 	if (isDisposed ()) return OS.noErr;
 	if (clickCount [0] == 2) {
-		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 		if (isDisposed ()) return OS.noErr;
 	}
 	if (hooks (SWT.DragDetect)) {
@@ -1660,7 +1660,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if ((state & CANVAS) == 0) {
 		if (isEnabledModal ()) {
-			int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+			int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 			if (isDisposed ()) return OS.noErr;
 			display.dragDetect (this);
 			if (isDisposed ()) return OS.noErr;
@@ -1672,7 +1672,7 @@ int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 	if (isEnabledModal ()) {
-		return sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+		return sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 	}
 	return OS.eventNotHandledErr;
 }
@@ -1680,7 +1680,7 @@ int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	return sendMouseEvent (SWT.MouseUp, button [0], 0, 0, true, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	return sendMouseEvent (SWT.MouseUp, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 }
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
@@ -2182,6 +2182,7 @@ boolean sendDragEvent (int x, int y) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
+	//postEvent (SWT.DragDetect, event); 
 	sendEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
 	return event.doit;
@@ -2280,8 +2281,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 	} else {
 		postEvent (type, event);
 	}
-//	return event.doit;
-	return true;
+	return event.doit;
 }
 
 boolean sendMouseWheel (short wheelAxis, int wheelDelta) {

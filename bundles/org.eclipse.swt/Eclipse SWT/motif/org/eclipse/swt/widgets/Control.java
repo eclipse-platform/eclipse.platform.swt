@@ -1744,7 +1744,7 @@ boolean sendDragEvent (int x, int y) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
-	sendEvent (SWT.DragDetect, event);
+	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
 	return event.doit;
 }
@@ -1763,7 +1763,7 @@ boolean sendMouseEvent (int type) {
 	int xDisplay = OS.XtDisplay (handle), xWindow = OS.XtWindow (handle);
 	int [] windowX = new int [1], windowY = new int [1], mask = new int [1], unused = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, windowX, windowY, mask);
-	return sendMouseEvent (type, 0, 0, 0, true, 0, windowX [0], windowY [0], mask [0]);
+	return sendMouseEvent (type, 0, 0, 0, false, 0, windowX [0], windowY [0], mask [0]);
 }
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, int x, int y, int state) {
 //	if (!hooks (type) && !filters (type)) return true;
@@ -1781,28 +1781,25 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	} else {
 		postEvent (type, event);
 	}
-//	return event.doit;
-	return true;
+	return event.doit;
 }
 boolean sendMouseEvent (int type, XButtonEvent xEvent) {
-	if (!hooks (type) && !filters (type)) return true;
-	int count = 0, detail = 0, button = xEvent.button;
-	short [] x_root = new short [1], y_root = new short [1];
-	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
-	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
+	int button = xEvent.button;
 	switch (button) {
 		case 4:
 		case 5:
 			/* Use MouseDown button 4 and 5 to emulated MouseWheel */
-			if (type != SWT.MouseDown) return false;
-			count = button == 4 ? 3 : -3;
-			detail = SWT.SCROLL_LINE;
+			if (type != SWT.MouseDown) return true;
 			type = SWT.MouseWheel;
-			button = 0;
+			if (!hooks (type) && !filters (type)) return true;
+			short [] x_root = new short [1], y_root = new short [1];
+			OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+			int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
+			int count = button == 4 ? 3 : -3;
 			Control control = this;
 			Shell shell = getShell ();
 			do {
-				if (!control.sendMouseEvent (type, button, count, detail, true, xEvent.time, x, y, xEvent.state)) {
+				if (!control.sendMouseEvent (type, 0, count, SWT.SCROLL_LINE, true, xEvent.time, x, y, xEvent.state)) {
 					return false;
 				}
 				if (control == shell) break;
@@ -1819,21 +1816,25 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 			button = 5;
 			break;
 	}
-	return sendMouseEvent (type, button, count, detail, true, xEvent.time, x, y, xEvent.state);
+	if (!hooks (type) && !filters (type)) return true;
+	short [] x_root = new short [1], y_root = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
+	return sendMouseEvent (type, button, 0, 0, false, xEvent.time, x, y, xEvent.state);
 }
 boolean sendMouseEvent (int type, XCrossingEvent xEvent) {
 	if (!hooks (type) && !filters (type)) return true;
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	return sendMouseEvent (type, 0, 0, 0, true, xEvent.time, x, y, xEvent.state);
+	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
 }
 boolean sendMouseEvent (int type, XMotionEvent xEvent) {
 	if (!hooks (type) && !filters (type)) return true;
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	return sendMouseEvent (type, 0, 0, 0, true, xEvent.time, x, y, xEvent.state);
+	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
 }
 /**
  * Sets the receiver's background color to the color specified
