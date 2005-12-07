@@ -1377,14 +1377,7 @@ public ImageData getImageData() {
 			width = bm.bmWidth;
 			height = bm.bmHeight;
 			/* Find out whether this is a DIB or a DDB. */
-			boolean isDib = false;
-			DIBSECTION dib = null;
-			if (bm.bmBits != 0) {
-				/* Only use DIB if image is top-down. */
-				dib = new DIBSECTION();
-				OS.GetObject(handle, DIBSECTION.sizeof, dib);
-				if (dib.biHeight < 0) isDib = true; 
-			}
+			boolean isDib = (bm.bmBits != 0);
 			/* Get the HDC for the device */
 			int hDC = device.internal_new_GC(null);
 
@@ -1412,9 +1405,12 @@ public ImageData getImageData() {
 						memGC.data.hNullBitmap = hOldBitmap;
 					}
 					isDib = true;
-					dib = new DIBSECTION();
-					OS.GetObject(handle, DIBSECTION.sizeof, dib);
 				}
+			}
+			DIBSECTION dib = null;
+			if (isDib) {
+				dib = new DIBSECTION();
+				OS.GetObject(handle, DIBSECTION.sizeof, dib);
 			}
 			/* Calculate number of colors */
 			int numColors = 0;
@@ -1470,7 +1466,19 @@ public ImageData getImageData() {
 					/* get image data from the temporary DIB */
 					OS.MoveMemory(data, dib.bmBits, imageSize);
 				} else {
-					OS.MoveMemory(data, bm.bmBits, imageSize);
+					if (dib.biHeight < 0) {
+						OS.MoveMemory(data, bm.bmBits, imageSize);
+					} else {
+						int stride = dib.bmWidthBytes;
+						int offset = 0;
+						byte[] scanline = new byte[dib.bmWidthBytes];
+						for (int i = 0; i < dib.biHeight; i++) {
+							int cur = dib.bmBits + dib.biHeight * stride - (i + 1) * stride;
+							OS.MoveMemory(scanline, cur, dib.bmWidthBytes);
+							System.arraycopy(scanline, 0, data, offset, dib.bmWidthBytes);
+							offset += stride;
+						}
+					}
 				}
 			} else {
 				int hHeap = OS.GetProcessHeap();
