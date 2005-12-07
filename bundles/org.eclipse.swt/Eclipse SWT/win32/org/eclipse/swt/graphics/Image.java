@@ -768,10 +768,6 @@ public Image (Device device, String filename) {
 						}
 						OS.HeapFree(hHeap, 0, palette);
 						break;
-					default:
-						Gdip.Bitmap_delete(bitmap);
-						Gdip.Color_delete(color);
-						SWT.error(SWT.ERROR_INVALID_IMAGE);
 				}			
 				Gdip.Color_delete(color);
 			}
@@ -1381,7 +1377,14 @@ public ImageData getImageData() {
 			width = bm.bmWidth;
 			height = bm.bmHeight;
 			/* Find out whether this is a DIB or a DDB. */
-			boolean isDib = (bm.bmBits != 0);
+			boolean isDib = false;
+			DIBSECTION dib = null;
+			if (bm.bmBits != 0) {
+				/* Only use DIB if image is top-down. */
+				dib = new DIBSECTION();
+				OS.GetObject(handle, DIBSECTION.sizeof, dib);
+				if (dib.biHeight < 0) isDib = true; 
+			}
 			/* Get the HDC for the device */
 			int hDC = device.internal_new_GC(null);
 
@@ -1409,12 +1412,9 @@ public ImageData getImageData() {
 						memGC.data.hNullBitmap = hOldBitmap;
 					}
 					isDib = true;
+					dib = new DIBSECTION();
+					OS.GetObject(handle, DIBSECTION.sizeof, dib);
 				}
-			}
-			DIBSECTION dib = null;
-			if (isDib) {
-				dib = new DIBSECTION();
-				OS.GetObject(handle, DIBSECTION.sizeof, dib);
 			}
 			/* Calculate number of colors */
 			int numColors = 0;
