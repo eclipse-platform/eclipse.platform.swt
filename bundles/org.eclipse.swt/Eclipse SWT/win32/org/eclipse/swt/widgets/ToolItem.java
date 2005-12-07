@@ -519,7 +519,7 @@ void selectRadio () {
 
 /**
  * Sets the control that is used to fill the bounds of
- * the item when the items is a <code>SEPARATOR</code>.
+ * the item when the item is a <code>SEPARATOR</code>.
  *
  * @param control the new control
  *
