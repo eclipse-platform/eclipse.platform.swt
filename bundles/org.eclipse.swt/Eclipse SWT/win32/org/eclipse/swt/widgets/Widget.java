@@ -895,7 +895,7 @@ boolean sendDragEvent (int x, int y) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
-	sendEvent (SWT.DragDetect, event);
+	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
 	return event.doit;
 }
@@ -946,7 +946,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 }
 
 boolean sendMouseEvent (int type, int button, int hwnd, int msg, int wParam, int lParam) {
-	return sendMouseEvent (type, button, 0, 0, true, hwnd, msg, wParam, lParam);
+	return sendMouseEvent (type, button, 0, 0, false, hwnd, msg, wParam, lParam);
 }
 
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int hwnd, int msg, int wParam, int lParam) {
@@ -965,8 +965,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	} else {
 		postEvent (type, event);
 	}
-//	return event.doit;
-	return true;
+	return event.doit;
 }
 
 /**

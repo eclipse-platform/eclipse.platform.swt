@@ -2501,7 +2501,7 @@ boolean sendDragEvent (int x, int y) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
-	sendEvent (SWT.DragDetect, event);
+	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
 	return event.doit;
 }
@@ -2547,7 +2547,7 @@ boolean sendHelpEvent (int /*long*/ helpType) {
 }
 
 boolean sendMouseEvent (int type, int button, int time, double x, double y, boolean is_hint, int state) {
-	return sendMouseEvent (type, button, 0, 0, true, time, x, y, is_hint, state);
+	return sendMouseEvent (type, button, 0, 0, false, time, x, y, is_hint, state);
 }
 
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, double x, double y, boolean is_hint, int state) {
@@ -2574,8 +2574,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	} else {
 		postEvent (type, event);
 	}
-//	return event.doit;
-	return true;
+	return event.doit;
 }
 
 /**
