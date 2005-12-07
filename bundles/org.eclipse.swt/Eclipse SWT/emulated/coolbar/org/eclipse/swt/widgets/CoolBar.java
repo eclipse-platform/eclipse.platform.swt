@@ -43,7 +43,6 @@ public class CoolBar extends Composite {
 	int mouseXOffset, itemXOffset;
 	boolean isLocked = false;
 	boolean inDispose = false;
-	boolean inDragDetect = false;
 	static final int ROW_SPACING = 2;
 	static final int CLICK_DISTANCE = 3;
 	
@@ -89,7 +88,6 @@ public CoolBar (Composite parent, int style) {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose:      		onDispose(event);        	break;
-				case SWT.DragDetect:    	onDragDetect(event);		break;
 				case SWT.MouseDown:    		onMouseDown(event);			break;
 				case SWT.MouseExit:    		onMouseExit();      		break;
 				case SWT.MouseMove:    		onMouseMove(event); 		break;
@@ -102,7 +100,6 @@ public CoolBar (Composite parent, int style) {
 	};
 	int[] events = new int[] { 
 		SWT.Dispose, 
-		SWT.DragDetect,
 		SWT.MouseDown,
 		SWT.MouseExit, 
 		SWT.MouseMove, 
@@ -583,28 +580,19 @@ void onDispose(Event event) {
 	dragCursor.dispose();
 	cursor = null;
 }
-void onDragDetect(Event event) {
-	if (inDragDetect) return;
-	inDragDetect = true;
-	notifyListeners(SWT.DragDetect, event);
-	event.type = SWT.None;
-	inDragDetect = false;
-	if (!isLocked && event.doit) {
-		fixEvent(event);
-		dragging = getGrabbedItem(event.x, event.y);
-		if (dragging != null) {
-			mouseXOffset = event.x;
-			itemXOffset = mouseXOffset - dragging.internalGetBounds().x;
-			_setCursor(dragCursor);
-		}
-		fixEvent(event);
+void onMouseDown(Event event) {
+	if (isLocked || event.button != 1) return;
+	fixEvent(event);
+	dragging = getGrabbedItem(event.x, event.y);
+	if (dragging != null) {
+		mouseXOffset = event.x;
+		itemXOffset = mouseXOffset - dragging.internalGetBounds().x;
+		setCursor(dragCursor);
 	}
+	fixEvent(event);
 }
 void onMouseExit() {
 	if (dragging == null) _setCursor(null);
-}
-void onMouseDown(Event event) {
-	dragging = null;
 }
 void onMouseMove(Event event) {
 	if (isLocked) return;
