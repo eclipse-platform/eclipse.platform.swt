@@ -45,14 +45,14 @@ public class DragSourceEvent extends TypedEvent {
  	public boolean doit;
 
 	/**
-	 * In dragStart, the x coordinate of the position the mouse went down 
-	 * to start the drag.
+	 * In dragStart, the x coordinate (relative to the control) of the 
+	 * position the mouse went down to start the drag.
 	 * @since 3.2
 	 */
  	public int x;
  	/**
-	 * In dragStart, the y coordinate of the position the mouse went down 
-	 * to start the drag.
+	 * In dragStart, the y coordinate (relative to the control) of the 
+	 * position the mouse went down to start the drag .
 	 * @since 3.2
 	 */
  	public int y;
