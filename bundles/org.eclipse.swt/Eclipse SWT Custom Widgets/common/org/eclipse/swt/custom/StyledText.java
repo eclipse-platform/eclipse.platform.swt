@@ -7567,11 +7567,12 @@ public void setStyleRange(StyleRange range) {
 	checkWidget();
 	if (isListening(LineGetStyle)) return;
 	if (range != null) {
-		if (range.isUnstyled()) {
-			renderer.updateRanges(range.start, range.length, range.length);
-		} else {
+		//FIXME - optimize this case?
+//		if (range.isUnstyled()) {
+//			renderer.updateRanges(range.start, range.length, range.length);
+//		} else {
 			setStyleRanges(range.start, 0, null, new StyleRange[]{range}, false);
-		}
+//		}
 	} else {
 		setStyleRanges(0, 0, null, null, true);
 	}
