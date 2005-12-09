@@ -494,6 +494,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	if (cursor != lastCursor) {
 		ungrab ();
 		grabbed = grab ();
+		lastCursor = cursor;
 	}
 	return gtk_mouse (OS.GDK_MOTION_NOTIFY, widget, eventPtr);
 }
