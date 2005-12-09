@@ -42,7 +42,7 @@ public class Composite extends Scrollable {
 	Layout layout;
 	Control [] tabList;
 	int cornerHandle;
-	int layoutCount = 0;
+	int layoutCount, backgroundMode;
 	
 Composite () {
 	/* Do nothing */
@@ -438,6 +438,11 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 		return clip_tile;
 	}
 	return widget_tile;
+}
+
+public int getBackgroundMode () {
+	checkWidget ();
+	return backgroundMode;
 }
 
 /**
@@ -917,6 +922,12 @@ void resizeClientArea (int width, int height, boolean events) {
 	if (events) {
 		sendEvent (SWT.Resize);
 	}
+}
+
+public void setBackgroundMode (int mode) {
+	checkWidget ();
+	backgroundMode = mode;
+	//NOT IMPLEMENTED
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
