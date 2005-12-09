@@ -51,7 +51,7 @@ public class Composite extends Scrollable {
 	int font;
 	WINDOWPOS [] lpwp;
 	Control [] tabList;
-	int layoutCount = 0;
+	int layoutCount, backgroundMode;
 	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
 	
 /**
@@ -288,6 +288,16 @@ void fixTabList (Control control) {
 		}
 	}
 	tabList = newList;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * 
+ * @since 3.2
+ */
+public int getBackgroundMode () {
+	checkWidget ();
+	return backgroundMode;
 }
 
 /**
@@ -702,6 +712,20 @@ void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
 	}
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * 
+ * @since 3.2
+ */
+public void setBackgroundMode (int mode) {
+	checkWidget ();
+	backgroundMode = mode;
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		children [i].updateBackgroundMode (mode);
+	}
+}
+
 boolean setFixedFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
@@ -886,6 +910,15 @@ void updateBackgroundImage () {
 		if ((children [i].state & PARENT_BACKGROUND) != 0) {
 			children [i].updateBackgroundImage ();
 		}
+	}
+}
+
+void updateBackgroundMode (int mode) {
+	if (backgroundMode != SWT.INHERIT_NONE) return;
+	super.updateBackgroundMode (mode);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		children [i].updateBackgroundMode (mode);
 	}
 }
 

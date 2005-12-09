@@ -343,6 +343,20 @@ int borderHandle () {
 	return handle;
 }
 
+void checkBackground () {
+	Shell shell = getShell ();
+	Composite control = parent;
+	do {
+		int mode = control.backgroundMode;
+		if (mode != 0) {
+			updateBackgroundMode (mode);
+			return;
+		}
+		if (control == shell) break;
+		control = control.parent;
+	} while (control != null);
+}
+
 void checkBorder () {
 	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
 }
@@ -502,6 +516,7 @@ void createWidget () {
 	setDefaultFont ();
 	checkMirrored ();
 	checkBorder ();
+	checkBackground ();
 }
 
 int defaultBackground () {
@@ -3065,6 +3080,33 @@ void updateBackgroundImage () {
 	Control control = findBackgroundControl ();
 	Image image = control != null ? control.backgroundImage : backgroundImage;
 	setBackgroundImage (image != null ? image.handle : 0);
+}
+
+void updateBackgroundMode (int mode) {
+	Control control = null;
+	switch (mode) {
+		case SWT.INHERIT_NONE:
+			if ((state & PARENT_BACKGROUND) == 0) return;
+			control = findBackgroundControl ();
+			state &= ~PARENT_BACKGROUND;
+			break;
+		case SWT.INHERIT_DEFAULT:
+			if ((state & THEME_BACKGROUND) == 0) break;
+			//FALL THROUGH
+		case SWT.INHERIT_FORCE:
+			if ((state & PARENT_BACKGROUND) != 0) return;
+			state |= PARENT_BACKGROUND;
+			control = findBackgroundControl ();
+			break;
+	}
+	if (control == null) return;
+	if (control.backgroundImage != null) {
+		Shell shell = getShell ();
+		shell.releaseBrushes ();
+		updateBackgroundImage ();		
+	} else {
+		updateBackgroundColor ();
+	}
 }
 
 void updateFont (Font oldFont, Font newFont) {

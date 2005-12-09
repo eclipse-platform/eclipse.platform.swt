@@ -433,6 +433,10 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
+void checkBackground () {
+	/* Do nothing */
+}
+
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on
