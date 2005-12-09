@@ -440,7 +440,7 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 	return widget_tile;
 }
 
-public int getBackgroundMode () {
+/*public*/ int getBackgroundMode () {
 	checkWidget ();
 	return backgroundMode;
 }
@@ -924,7 +924,7 @@ void resizeClientArea (int width, int height, boolean events) {
 	}
 }
 
-public void setBackgroundMode (int mode) {
+/*public*/ void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
 	//NOT IMPLEMENTED

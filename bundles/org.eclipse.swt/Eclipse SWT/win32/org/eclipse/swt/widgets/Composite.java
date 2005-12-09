@@ -295,7 +295,7 @@ void fixTabList (Control control) {
  * 
  * @since 3.2
  */
-public int getBackgroundMode () {
+/*public*/ int getBackgroundMode () {
 	checkWidget ();
 	return backgroundMode;
 }
@@ -717,7 +717,7 @@ void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
  * 
  * @since 3.2
  */
-public void setBackgroundMode (int mode) {
+/*public*/ void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
 	Control [] children = _getChildren ();
