@@ -1070,7 +1070,7 @@ public class SWT {
 	/**
 	 * Style constant for no background behavior (value is 1&lt;&lt;18).
 	 * <p>
-	 * By default, before a widget paints, the client area is filled with the current background color.
+	 * By default, before a widget paints, the client area is filled with the current background.
 	 * When this style is specified, the background is not filled, and the application is responsible
 	 * for filling every pixel of the client area.
 	 * This style might be used as an alternative to "double-buffering" in order to reduce flicker.
@@ -2046,6 +2046,27 @@ public class SWT {
 	 */
 	public static final int SAVE = 1 << 13;
 
+	/**
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+	 * 
+	 * @since 3.2
+	 */
+	public static final int INHERIT_NONE = 0;
+	
+	/**
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+	 * 
+	 * @since 3.2
+	 */
+	public static final int INHERIT_DEFAULT = 1;
+	
+	/**
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+	 * 
+	 * @since 3.2
+	 */
+	public static final int INHERIT_FORCE = 2;
+	
 	/**
 	 * Default color white (value is 1).
 	 */
