@@ -210,7 +210,7 @@ public class Display extends Device {
 
 	/* Drag Detect */
 	int dragStartX,dragStartY;
-	boolean dragging;
+	boolean dragging, dragOverride;
 	
 	/* System Resources */
 	Font systemFont;

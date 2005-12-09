@@ -1458,6 +1458,14 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
+boolean dragDetect (int x, int y) {
+	return hooks (SWT.DragDetect);
+}
+
+boolean dragOverride () {
+	return false;
+}
+
 boolean filterKey (int keyval, int /*long*/ event) {
 	int /*long*/ imHandle = imHandle ();
 	if (imHandle != 0) {
@@ -1849,10 +1857,14 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	if ((shell.style & SWT.ON_TOP) != 0) shell.forceActive ();
 	display.dragStartX = (int) gdkEvent.x;
 	display.dragStartY = (int) gdkEvent.y;
-	display.dragging = false;
+	display.dragging = display.dragOverride = false;
 	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
 	int /*long*/ result = sendMouseEvent (type, gdkEvent.button, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 	if (isDisposed ()) return 1;
+	if (gdkEvent.button == 1 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
+		display.dragOverride = dragOverride () && dragDetect (display.dragStartX, display.dragStartY);
+		if (display.dragOverride) result = 1;
+	}
 	if ((state & MENU) != 0) {
 		if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
 			if (showMenu ((int)gdkEvent.x_root, (int)gdkEvent.y_root)) {
@@ -2048,9 +2060,9 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
-	if (hooks (SWT.DragDetect)) {
-		if (!display.dragging) {
-			if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
+	if (!display.dragging) {
+		if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
+			if (dragDetect (display.dragStartX, display.dragStartY)) {
 				if (OS.gtk_drag_check_threshold (handle, display.dragStartX, display.dragStartY, (int) gdkEvent.x, (int) gdkEvent.y)) {
 					display.dragging = true;
 					sendDragEvent (display.dragStartX, display.dragStartY);
@@ -2072,7 +2084,9 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 		y = pointer_y [0];
 		state = mask [0];
 	}
-	return sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
+	int result = sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
+	if (display.dragOverride) result = 1;
+	return result;
 }
 
 int /*long*/ gtk_popup_menu (int /*long*/ widget) {

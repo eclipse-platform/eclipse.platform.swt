@@ -414,6 +414,44 @@ void deregister () {
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
+boolean dragDetect (int x, int y) {
+	int start = 0, end = 0;
+	if ((style & SWT.SINGLE) != 0) {
+		int [] s = new int [1], e = new int [1];
+		OS.gtk_editable_get_selection_bounds (handle, s, e);
+		start = s [0]; end = e [0];
+	} else {
+		byte [] s =  new byte [ITER_SIZEOF], e =  new byte [ITER_SIZEOF];
+		OS.gtk_text_buffer_get_selection_bounds (bufferHandle, s, e);
+		start = OS.gtk_text_iter_get_offset (s);
+		end = OS.gtk_text_iter_get_offset (e);
+	}
+	if (start == end) return false;
+	if (end < start) {
+		int temp = end;
+		end = start;
+		start = temp;
+	}
+	int offset = -1;
+	if ((style & SWT.SINGLE) != 0) {
+		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+		int [] index = new int [1];
+		int [] trailing = new int [1];
+		OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
+		int /*long*/ ptr = OS.pango_layout_get_text (layout);
+		offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]);
+	} else {
+		byte [] position = new byte [ITER_SIZEOF];
+		OS.gtk_text_view_get_iter_at_location (handle, position, x, y);
+		offset =  OS.gtk_text_iter_get_offset (position);
+	}
+	return offset > start && offset < end;
+}
+
+boolean dragOverride () {
+	return true;
+}
+
 boolean filterKey (int keyval, int /*long*/ event) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != lastEventTime) {
@@ -954,6 +992,38 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 		}
 	}
 	return result;
+}
+
+int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
+	if (display.dragOverride && !display.dragging) {
+		GdkEventButton gdkEvent = new GdkEventButton ();
+		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+		int x = (int)gdkEvent.x, y = (int)gdkEvent.y;
+		
+		int offset;
+		if ((style & SWT.SINGLE) != 0) {
+			int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+			int [] index = new int [1];
+			int [] trailing = new int [1];
+			OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
+			int /*long*/ ptr = OS.pango_layout_get_text (layout);
+			offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]);
+		} else {
+			byte [] position = new byte [ITER_SIZEOF];
+			OS.gtk_text_view_get_iter_at_location (handle, position, x, y);
+			offset = OS.gtk_text_iter_get_offset (position);
+		}
+		if ((style & SWT.SINGLE) != 0) {
+			OS.gtk_editable_set_position (handle, offset);
+		} else {
+			byte [] position =  new byte [ITER_SIZEOF];
+			OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, offset);
+			OS.gtk_text_buffer_place_cursor (bufferHandle, position);
+			int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
+			OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+		}
+	}
+	return super.gtk_button_release_event (widget, event);
 }
 
 int /*long*/ gtk_changed (int /*long*/ widget) {
