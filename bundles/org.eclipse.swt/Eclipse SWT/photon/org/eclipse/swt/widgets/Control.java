@@ -41,6 +41,7 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	Object layoutData;
 	String toolTipText;
+	Image backgroundImage;
 	int toolTipHandle;
 	Accessible accessible;
 	
@@ -604,6 +605,11 @@ public Color getBackground () {
 	int [] args = {OS.Pt_ARG_FILL_COLOR, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return Color.photon_new (display, args [1]);
+}
+
+public Image getBackgroundImage () {
+	checkWidget ();
+	return backgroundImage;
 }
 
 /**
@@ -2139,6 +2145,17 @@ public void setBackground (Color color) {
 		pixel = color.handle;
 	}
 	setBackgroundPixel (pixel);
+}
+
+public void setBackgroundImage (Image image) {
+	checkWidget ();
+	if (image != null) {
+		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (image.type != SWT.BITMAP) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (backgroundImage == image) return;
+	backgroundImage = image;
+	//NOT IMPLEMENTED
 }
 
 void setBackgroundPixel (int pixel) {
