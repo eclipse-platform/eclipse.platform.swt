@@ -401,6 +401,14 @@ public void dispose () {
 	release (true);
 }
 
+boolean dragDetect (int x, int y) {
+	return hooks (SWT.DragDetect);
+}
+
+boolean dragOverride () {
+	return false;
+}
+
 /**
  * Does whatever widget specific cleanup is required, and then
  * uses the code in <code>SWTError.error</code> to handle the error.
@@ -1693,7 +1701,9 @@ LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
 LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 	LRESULT result = null;
 	boolean dragging = false, mouseDown = true;
-	boolean dragDetect = hooks (SWT.DragDetect);
+	int x = (short) (lParam & 0xFFFF);
+	int y = (short) (lParam >> 16);
+	boolean dragDetect = dragDetect (x, y);
 	if (dragDetect) {
 		if (!OS.IsWinCE) {
 			/*
@@ -1705,8 +1715,8 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 			* of the mouse and capture the mouse accordingly.
 			*/
 			POINT pt = new POINT ();
-			pt.x = (short) (lParam & 0xFFFF);
-			pt.y = (short) (lParam >> 16);
+			pt.x = x;
+			pt.y = y;
 			OS.ClientToScreen (hwnd, pt);
 			dragging = OS.DragDetect (hwnd, pt);
 			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
@@ -1714,7 +1724,9 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 	}
 	Display display = this.display;
 	display.captureChanged = false;
-	if (sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+	boolean dragOverride = dragging && dragOverride ();
+	boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
+	if (dispatch && !dragOverride) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));	
 	} else {
 		result = LRESULT.ZERO;
@@ -1728,8 +1740,6 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 		Menu menu = getMenu ();
 		boolean hasMenu = menu != null && !menu.isDisposed ();
 		if (hasMenu || hooks (SWT.MenuDetect)) {
-			int x = (short) (lParam & 0xFFFF);
-			int y = (short) (lParam >> 16);
 			SHRGINFO shrg = new SHRGINFO ();
 			shrg.cbSize = SHRGINFO.sizeof;
 			shrg.hwndClient = hwnd;

@@ -415,6 +415,24 @@ int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
+boolean dragDetect (int x, int y) {
+	if (hooks (SWT.DragDetect)) {
+		int [] start = new int [1], end = new int [1];
+		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+		if (start[0] < end[0]) {
+			int pt = x | y << 16;
+			int charFromPos = OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, pt);
+			int position = charFromPos & 0xFFFF;
+			return position > start [0] && position < end [0];
+		}
+	}
+	return false;
+}
+
+boolean dragOverride () {
+	return true;
+}
+
 void fixAlignment () {
 	/*
 	* Feature in Windows.  When the edit control is not
