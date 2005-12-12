@@ -488,6 +488,7 @@ void createWidget () {
 	super.createWidget ();
 	checkBuffered ();
 	setDefaultFont ();
+	setBackground ();
 	setZOrder ();
 }
 
@@ -2286,6 +2287,28 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 
 boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 	return false;
+}
+
+void setBackground () {
+	Shell shell = getShell ();
+	if (this == shell) return;
+	Composite composite = parent;
+	do {
+		int mode = composite.backgroundMode;
+		if (mode != 0) {
+			if (mode == SWT.INHERIT_DEFAULT) {
+				Control control = this;
+				do {
+					if ((control.state & THEME_BACKGROUND) == 0) return;
+					control = control.parent;
+				} while (control != composite);
+			}
+			state |= PARENT_BACKGROUND;					
+			return;
+		}
+		if (composite == shell) break;
+		composite = composite.parent;
+	} while (true);
 }
 
 /**

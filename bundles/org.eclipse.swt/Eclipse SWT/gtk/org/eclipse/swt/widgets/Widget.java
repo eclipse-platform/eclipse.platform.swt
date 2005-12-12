@@ -74,21 +74,22 @@ public abstract class Widget {
 	static final int HIDDEN = 1<<11;
 	static final int FOREGROUND = 1<<12;
 	static final int BACKGROUND = 1<<13;
-	static final int PARENT_BACKGROUND = 1<<14;
-	static final int FONT = 1<<15;
+	static final int FONT = 1<<14;
+	static final int PARENT_BACKGROUND = 1<<15;
+	static final int THEME_BACKGROUND = 1<<16;
 	
 	/* A layout was requested on this widget */
-	static final int LAYOUT_NEEDED	= 1<<16;
+	static final int LAYOUT_NEEDED	= 1<<17;
 	
 	/* The preferred size of a child has changed */
-	static final int LAYOUT_CHANGED = 1<<17;
+	static final int LAYOUT_CHANGED = 1<<18;
 	
 	/* A layout was requested in this widget hierachy */
-	static final int LAYOUT_CHILD = 1<<18;
+	static final int LAYOUT_CHILD = 1<<19;
 
 	/* More global state flags */
-	static final int RELEASED = 1<<19;
-	static final int DISPOSE_SENT = 1<<20;
+	static final int RELEASED = 1<<20;
+	static final int DISPOSE_SENT = 1<<21;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -372,6 +373,7 @@ void createHandle (int index) {
 void createWidget (int index) {
 	createHandle (index);
 	setOrientation ();
+	setBackground ();
 	hookEvents ();
 	register ();
 }
@@ -1311,6 +1313,9 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 		if (!isNull) return false;
 	}
 	return setInputState (event, keyEvent.state);
+}
+
+void setBackground () {
 }
 
 void setOrientation () {

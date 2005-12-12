@@ -123,7 +123,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= GRAB;
+	state |= GRAB | THEME_BACKGROUND;
 	super.createHandle (parent.handle);
 }
 

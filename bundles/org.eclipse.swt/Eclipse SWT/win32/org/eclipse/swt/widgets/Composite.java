@@ -295,7 +295,7 @@ void fixTabList (Control control) {
  * 
  * @since 3.2
  */
-/*public*/ int getBackgroundMode () {
+public int getBackgroundMode () {
 	checkWidget ();
 	return backgroundMode;
 }
@@ -717,13 +717,9 @@ void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
  * 
  * @since 3.2
  */
-/*public*/ void setBackgroundMode (int mode) {
+public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		children [i].updateBackgroundMode (mode);
-	}
 }
 
 boolean setFixedFocus () {
@@ -910,15 +906,6 @@ void updateBackgroundImage () {
 		if ((children [i].state & PARENT_BACKGROUND) != 0) {
 			children [i].updateBackgroundImage ();
 		}
-	}
-}
-
-void updateBackgroundMode (int mode) {
-	if (backgroundMode != SWT.INHERIT_NONE) return;
-	super.updateBackgroundMode (mode);
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		children [i].updateBackgroundMode (mode);
 	}
 }
 

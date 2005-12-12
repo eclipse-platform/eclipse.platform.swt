@@ -150,7 +150,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= GRAB;
+	state |= GRAB | THEME_BACKGROUND;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	if ((style & SWT.SEPARATOR) != 0) {

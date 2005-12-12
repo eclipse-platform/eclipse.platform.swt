@@ -132,6 +132,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
+	state |= THEME_BACKGROUND;
 	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);

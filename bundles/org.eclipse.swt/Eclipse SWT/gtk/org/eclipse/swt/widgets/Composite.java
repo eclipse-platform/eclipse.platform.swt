@@ -43,7 +43,7 @@ public class Composite extends Scrollable {
 	int /*long*/ imHandle, socketHandle;
 	Layout layout;
 	Control[] tabList;
-	int layoutCount = 0;
+	int layoutCount, backgroundMode;
 
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 
@@ -229,8 +229,9 @@ Control [] computeTabList () {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER)) != 0;
-	createHandle (index, true, scrolled);
+	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
+	if (!scrolled) state |= THEME_BACKGROUND;
+	createHandle (index, true, scrolled || (style & SWT.BORDER) != 0);
 }
 
 void createHandle (int index, boolean fixed, boolean scrolled) {
@@ -417,6 +418,11 @@ boolean forceFocus (int /*long*/ focusHandle) {
 	boolean result = super.forceFocus (focusHandle);
 	if (socketHandle != 0) OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
 	return result;
+}
+
+public int getBackgroundMode () {
+	checkWidget ();
+	return backgroundMode;
 }
 
 /**
@@ -1014,6 +1020,11 @@ void removeControl (Control control) {
 void resizeHandle (int width, int height) {
 	super.resizeHandle (width, height);
 	if (socketHandle != 0) OS.gtk_widget_set_size_request (socketHandle, width, height);
+}
+
+public void setBackgroundMode (int mode) {
+	checkWidget ();
+	backgroundMode = mode;
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {

@@ -141,6 +141,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
+	state |= THEME_BACKGROUND;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateGroupBoxControl (window, null, 0, true, outControl);

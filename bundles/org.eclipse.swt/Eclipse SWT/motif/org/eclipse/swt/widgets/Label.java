@@ -227,6 +227,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 void createHandle (int index) {
+	state |= THEME_BACKGROUND;
 	int parentHandle = parent.handle;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
 	if ((style & SWT.SEPARATOR) != 0) {

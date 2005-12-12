@@ -2155,7 +2155,6 @@ public void setBackgroundImage (Image image) {
 	}
 	if (backgroundImage == image) return;
 	backgroundImage = image;
-	//NOT IMPLEMENTED
 }
 
 void setBackgroundPixel (int pixel) {

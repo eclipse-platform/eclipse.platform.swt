@@ -67,19 +67,20 @@ public abstract class Widget {
 	static final int EXPANDING        = 1 << 8;
 	static final int IGNORE_WHEEL     = 1 << 9;
 	static final int PARENT_BACKGROUND = 1 << 10;
+	static final int THEME_BACKGROUND = 1 << 11;
 	
 	/* A layout was requested on this widget */
-	static final int LAYOUT_NEEDED	= 1<<11;
+	static final int LAYOUT_NEEDED	= 1<<12;
 	
 	/* The preferred size of a child has changed */
-	static final int LAYOUT_CHANGED = 1<<12;
+	static final int LAYOUT_CHANGED = 1<<13;
 	
 	/* A layout was requested in this widget hierachy */
-	static final int LAYOUT_CHILD = 1<<13;
+	static final int LAYOUT_CHILD = 1<<14;
 
 	/* More global state flags */
-	static final int RELEASED = 1<<14;
-	static final int DISPOSE_SENT = 1<<15;
+	static final int RELEASED = 1<<15;
+	static final int DISPOSE_SENT = 1<<16;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;

@@ -44,7 +44,7 @@ public class Composite extends Scrollable {
 	public int embeddedHandle;
 	int focusHandle, damagedRegion, clientWindow;
 	Control [] tabList;
-	int layoutCount = 0;
+	int layoutCount, backgroundMode;
 	
 	static byte [] _XEMBED_INFO = Converter.wcsToMbcs (null, "_XEMBED_INFO", true);
 	static byte[] _XEMBED = Converter.wcsToMbcs (null, "_XEMBED", true);
@@ -223,6 +223,7 @@ protected void checkSubclass () {
 void createHandle (int index) {
 	state |= CANVAS;
 	boolean scroll = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
+	if (!scroll) state |= THEME_BACKGROUND;
 	createHandle (index, parent.handle, scroll);
 }
 void createHandle (int index, int parentHandle, boolean scrolled) {
@@ -377,6 +378,10 @@ boolean fowardKeyEvent (int event) {
 	OS.XtFree (newEvent);
 	display.setWarnings (warnings);
 	return true;
+}
+public int getBackgroundMode () {
+	checkWidget ();
+	return backgroundMode;
 }
 /**
  * Returns a (possibly empty) array containing the receiver's children.
@@ -923,6 +928,10 @@ void sendClientEvent (int time, int message, int detail, int data1, int data2) {
 	OS.XSync (xDisplay, false);
 	OS.XtFree (event);
 	display.setWarnings (warnings);
+}
+public void setBackgroundMode (int mode) {
+	checkWidget ();
+	backgroundMode = mode;
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);

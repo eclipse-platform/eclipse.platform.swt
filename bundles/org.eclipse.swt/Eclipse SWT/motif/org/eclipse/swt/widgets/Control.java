@@ -1836,6 +1836,27 @@ boolean sendMouseEvent (int type, XMotionEvent xEvent) {
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
 	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
 }
+void setBackground () {
+	Shell shell = getShell ();
+	if (this == shell) return;
+	Composite composite = parent;
+	do {
+		int mode = composite.backgroundMode;
+		if (mode != 0) {
+			if (mode == SWT.INHERIT_DEFAULT) {
+				Control control = this;
+				do {
+					if ((control.state & THEME_BACKGROUND) == 0) return;
+					control = control.parent;
+				} while (control != composite);
+			}
+			state |= PARENT_BACKGROUND;
+			return;
+		}
+		if (composite == shell) break;
+		composite = composite.parent;
+	} while (true);
+}
 /**
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the control

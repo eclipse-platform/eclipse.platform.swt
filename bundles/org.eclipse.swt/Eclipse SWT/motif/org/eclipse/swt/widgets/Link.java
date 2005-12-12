@@ -133,6 +133,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 void createHandle (int index) {
+	state |= THEME_BACKGROUND;
 	int [] argList = {
 		OS.XmNancestorSensitive, 1,
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,

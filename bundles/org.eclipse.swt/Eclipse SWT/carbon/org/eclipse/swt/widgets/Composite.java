@@ -43,7 +43,7 @@ public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
 	int scrolledVisibleRgn, siblingsVisibleRgn;
-	int layoutCount = 0;
+	int layoutCount, backgroundMode;
 
 Composite () {
 	/* Do nothing */
@@ -247,7 +247,9 @@ Control [] computeTabList () {
 
 void createHandle () {
 	state |= CANVAS | GRAB;
-	if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
+	if (!scrolled)  state |= THEME_BACKGROUND;
+	if (scrolled || (style & SWT.BORDER) != 0) {
 		createScrolledHandle (parent.handle);
 	} else {
 		createHandle (parent.handle);
@@ -333,6 +335,11 @@ void fixTabList (Control control) {
 		}
 	}
 	tabList = newList;
+}
+
+public int getBackgroundMode () {
+	checkWidget ();
+	return backgroundMode;
 }
 
 /**
@@ -813,6 +820,11 @@ void resetVisibleRegion (int control) {
 		siblingsVisibleRgn = 0;
 	}
 	super.resetVisibleRegion (control);
+}
+
+public void setBackgroundMode (int mode) {
+	checkWidget ();
+	backgroundMode = mode;
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {

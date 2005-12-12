@@ -224,6 +224,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
+	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 				
