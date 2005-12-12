@@ -114,7 +114,7 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * the image was created using GDI+
 	 */
-	boolean gdiPlus = false;
+	boolean gdiPlus;
 	
 	/**
 	 * specifies the default scanline padding
