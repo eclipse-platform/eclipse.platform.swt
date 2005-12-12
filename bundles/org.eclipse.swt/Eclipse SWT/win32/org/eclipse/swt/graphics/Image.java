@@ -112,6 +112,11 @@ public final class Image extends Resource implements Drawable {
 	ImageData data;
 	
 	/**
+	 * the image was created using GDI+
+	 */
+	boolean gdiPlus = false;
+	
+	/**
 	 * specifies the default scanline padding
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
@@ -772,6 +777,7 @@ public Image (Device device, String filename) {
 				Gdip.Color_delete(color);
 			}
 			Gdip.Bitmap_delete(bitmap);
+			gdiPlus = true;
 			return;
 		}
 	} catch (SWTException e) {}
@@ -1466,7 +1472,7 @@ public ImageData getImageData() {
 					/* get image data from the temporary DIB */
 					OS.MoveMemory(data, dib.bmBits, imageSize);
 				} else {
-					if (dib.biHeight < 0) {
+					if (!gdiPlus) {
 						OS.MoveMemory(data, bm.bmBits, imageSize);
 					} else {
 						int stride = dib.bmWidthBytes;
