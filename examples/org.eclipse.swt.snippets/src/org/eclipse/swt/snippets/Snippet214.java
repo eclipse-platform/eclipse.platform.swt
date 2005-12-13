@@ -15,7 +15,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 /*
- * Control example snippet: set a gradient background
+ * Control example snippet: set a background image
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
