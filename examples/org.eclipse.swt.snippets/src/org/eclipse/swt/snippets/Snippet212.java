@@ -39,21 +39,10 @@ public class Snippet212 {
 		styledText = new StyledText(shell, SWT.WRAP | SWT.BORDER);
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		styledText.setText(text);
-		images = new Image[2];
-		images[0] = new Image(display, 30, 30);
-		GC gc = new GC(images[0]);
-		gc.setBackground(display.getSystemColor(SWT.COLOR_RED));
-		gc.fillRectangle(images[0].getBounds());
-		gc.dispose();
-		ImageData imageData = new ImageData (50, 20, 32, new PaletteData(0xff0000, 0xff00, 0xff));
-		//use alpha to allow the text selection to show thru
-		for (int y = 0; y < imageData.height; y++) {
-			for (int x = 0; x < imageData.width; x++) {				
-				imageData.setPixel(x, y, 0xff00);
-				imageData.setAlpha(x, y, x << 2);
-			}
-		}
-		images[1] = new Image(display, imageData);
+		images = new Image[] {
+			display.getSystemImage(SWT.ICON_QUESTION),
+			display.getSystemImage(SWT.ICON_INFORMATION),
+		};
 		offsets = new int[2];
 		int lastOffset = 0;
 		for (int i = 0; i < offsets.length; i++) {
