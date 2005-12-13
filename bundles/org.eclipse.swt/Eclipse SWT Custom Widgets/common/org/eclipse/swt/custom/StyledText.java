@@ -6526,7 +6526,7 @@ void sendSelectionEvent() {
 public void setAlignment(int alignment) {
 	checkWidget();
 	alignment &= (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	if (alignment == 0 || this.alignment == alignment);	
+	if (alignment == 0 || this.alignment == alignment) return;
 	this.alignment = alignment;
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
