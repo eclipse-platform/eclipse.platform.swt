@@ -43,9 +43,9 @@ public class Snippet212 {
 			display.getSystemImage(SWT.ICON_QUESTION),
 			display.getSystemImage(SWT.ICON_INFORMATION),
 		};
-		offsets = new int[2];
+		offsets = new int[images.length];
 		int lastOffset = 0;
-		for (int i = 0; i < offsets.length; i++) {
+		for (int i = 0; i < images.length; i++) {
 			int offset = text.indexOf("\uFFFC", lastOffset);
 			offsets[i] = offset;
 			addImage(images[i], offset);
