@@ -18,8 +18,9 @@ public class Snippet212 {
 	
 	static StyledText styledText;
 	static String text = 
-		"This snippet shows how to embed images in a StyledText. Here is one: \uFFFC, and here is another: \uFFFC. Use the add button" +
-		" to add an image from your filesystem to the StyledText at the current caret offset.";
+		"This snippet shows how to embed images in a StyledText.\n"+
+		"Here is one: \uFFFC, and here is another: \uFFFC."+
+		"Use the add button to add an image from your filesystem to the StyledText at the current caret offset.";
 	static Image[] images;
 	static int[] offsets;
 
@@ -52,7 +53,7 @@ public class Snippet212 {
 			lastOffset = offset + 1;
 		}
 		
-		// use a verify listener to keep the offsets up to data
+		// use a verify listener to keep the offsets up to date
 		styledText.addVerifyListener(new VerifyListener()  {
 			public void verifyText(VerifyEvent e) {
 				int start = e.start;
