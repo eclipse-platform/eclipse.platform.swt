@@ -1223,6 +1223,14 @@ public void select (int index) {
 	}
 }
 
+void setBackgroundImage (int hBitmap) {
+	super.setBackgroundImage (hBitmap);
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
+}
+
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);

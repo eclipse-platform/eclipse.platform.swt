@@ -740,6 +740,11 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	return false;
 }
 
+void setBackgroundImage (int hBitmap) {
+	super.setBackgroundImage (hBitmap);
+	OS.InvalidateRect (hwndText, null, true);
+}
+
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	OS.InvalidateRect (hwndText, null, true);
