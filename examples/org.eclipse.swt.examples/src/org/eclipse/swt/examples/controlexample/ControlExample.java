@@ -27,11 +27,17 @@ public class ControlExample {
 	private TabFolder tabFolder;
 	Image images[];
 
-	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2;
+	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2, ciBackground = 3;
 	static final String[] imageLocations = {
 		"closedFolder.gif",
 		"openFolder.gif",
-		"target.gif" };
+		"target.gif",
+		"backgroundImage.png"};
+	static final int[] imageTypes = {
+		SWT.ICON,
+		SWT.ICON,
+		SWT.ICON,
+		SWT.BITMAP};
 
 	boolean startup = true;
 
@@ -157,8 +163,12 @@ public class ControlExample {
 					for (int i = 0; i < imageLocations.length; ++i) {
 						InputStream sourceStream = clazz.getResourceAsStream(imageLocations[i]);
 						ImageData source = new ImageData(sourceStream);
-						ImageData mask = source.getTransparencyMask();
-						images[i] = new Image(null, source, mask);
+						if (imageTypes[i] == SWT.ICON) {
+							ImageData mask = source.getTransparencyMask();
+							images[i] = new Image(null, source, mask);
+						} else {
+							images[i] = new Image(null, source);
+						}
 						try {
 							sourceStream.close();
 						} catch (IOException e) {

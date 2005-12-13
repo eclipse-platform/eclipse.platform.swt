@@ -104,6 +104,7 @@ class ShellTab extends Tab {
 		currentShell.setSize (300, 100);
 		currentShell.setText (ControlExample.getResourceString("Title") + shellCount);
 		if (imageButton.getSelection()) currentShell.setImage(instance.images[ControlExample.ciTarget]);
+		if (backgroundImageButton.getSelection()) currentShell.setBackgroundImage(instance.images[ControlExample.ciBackground]);
 		hookListeners (currentShell);
 		currentShell.open ();
 		shellCount++;
@@ -193,7 +194,9 @@ class ShellTab extends Tab {
 		/* Create the 'other' buttons */
 		imageButton = new Button (otherGroup, SWT.CHECK);
 		imageButton.setText (ControlExample.getResourceString("Image"));
-
+		backgroundImageButton = new Button(otherGroup, SWT.CHECK);
+		backgroundImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
+	
 		/* Create the "create" and "closeAll" buttons */
 		createButton = new Button (controlGroup, SWT.NONE);
 		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
@@ -233,6 +236,7 @@ class ShellTab extends Tab {
 		/* Set the default state */
 		noParentButton.setSelection (true);
 		modelessButton.setSelection (true);
+		backgroundImageButton.setSelection(false);
 	}
 	
 	/**

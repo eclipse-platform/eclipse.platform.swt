@@ -37,7 +37,7 @@ import org.eclipse.swt.events.*;
  */
 abstract class Tab {
 	/* Common control buttons */
-	Button borderButton, enabledButton, visibleButton;
+	Button borderButton, enabledButton, visibleButton, backgroundImageButton;
 	Button preferredButton, tooSmallButton, smallButton, largeButton, fillHButton, fillVButton;
 
 	/* Common groups and composites */
@@ -59,7 +59,7 @@ abstract class Tab {
 
 	/* Controls and resources for the "Colors & Fonts" group */
 	Button foregroundButton, backgroundButton, fontButton;
-	Image foregroundImage, backgroundImage;
+	Image foregroundImage, backgroundImage, backgroundImageImage;
 	Color foregroundColor, backgroundColor;
 	Font font;
 	boolean setFont = false, setForeground = false, setBackground = false;
@@ -291,6 +291,8 @@ abstract class Tab {
 				if (foregroundColor != null) foregroundColor.dispose();
 				if (backgroundColor != null) backgroundColor.dispose();
 				if (font != null) font.dispose();
+				foregroundImage = null;
+				backgroundImage = null;
 				foregroundColor = null;
 				backgroundColor = null;
 				font = null;				
@@ -314,6 +316,8 @@ abstract class Tab {
 		enabledButton.setText(ControlExample.getResourceString("Enabled"));
 		visibleButton = new Button(otherGroup, SWT.CHECK);
 		visibleButton.setText(ControlExample.getResourceString("Visible"));
+		backgroundImageButton = new Button(otherGroup, SWT.CHECK);
+		backgroundImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
 	
 		/* Add the listeners */
 		enabledButton.addSelectionListener (new SelectionAdapter () {
@@ -326,10 +330,16 @@ abstract class Tab {
 				setExampleWidgetVisibility ();
 			}
 		});
+		backgroundImageButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setExampleWidgetBackgroundImage ();
+			}
+		});
 	
 		/* Set the default state */
 		enabledButton.setSelection(true);
 		visibleButton.setSelection(true);
+		backgroundImageButton.setSelection(false);
 	}
 	
 	/**
@@ -1122,6 +1132,7 @@ abstract class Tab {
 		setExampleWidgetVisibility ();
 		setExampleWidgetBackground ();
 		setExampleWidgetForeground ();
+		setExampleWidgetBackgroundImage ();
 		setExampleWidgetFont ();
 		setExampleWidgetSize ();
 		//TEMPORARY CODE
@@ -1138,6 +1149,16 @@ abstract class Tab {
 		Control [] controls = getExampleWidgets ();
 		for (int i=0; i<controls.length; i++) {
 			controls [i].setVisible (visibleButton.getSelection ());
+		}
+	}
+
+	/**
+	 * Sets the background image of the "Example" widgets.
+	 */
+	void setExampleWidgetBackgroundImage () {
+		Control [] controls = getExampleWidgets ();
+		for (int i=0; i<controls.length; i++) {
+			controls [i].setBackgroundImage (backgroundImageButton.getSelection () ? instance.images[ControlExample.ciBackground] : null);
 		}
 	}
 }
