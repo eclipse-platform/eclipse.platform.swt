@@ -1717,9 +1717,9 @@ void initAccessible() {
 			} else if (childID == items.length + CHEVRON_CHILD_ID) {
 				state = showChevron ? ACC.STATE_NORMAL : ACC.STATE_INVISIBLE;
 			} else if (childID == items.length + MINIMIZE_CHILD_ID) {
-				state = showMin ? ACC.STATE_NORMAL : ACC.STATE_INVISIBLE;;
+				state = showMin ? ACC.STATE_NORMAL : ACC.STATE_INVISIBLE;
 			} else if (childID == items.length + MAXIMIZE_CHILD_ID) {
-				state = showMax ? ACC.STATE_NORMAL : ACC.STATE_INVISIBLE;;
+				state = showMax ? ACC.STATE_NORMAL : ACC.STATE_INVISIBLE;
 			}
 			e.detail = state;
 		}
