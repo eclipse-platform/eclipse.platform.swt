@@ -27,6 +27,11 @@ public class Snippet214 {
 	public static void main(String [] args) {
 		final Display display = new Display ();
 		final Shell shell = new Shell (display);
+		/*
+		 * TEMPORARY CODE - this may change for 3.2
+		 * Note:  setBackgroundMode() must be called
+		 * before any child is created
+		 */
 		shell.setBackgroundMode (SWT.INHERIT_DEFAULT);
 		FillLayout layout1 = new FillLayout (SWT.VERTICAL);
 		layout1.marginWidth = layout1.marginHeight = 10;
