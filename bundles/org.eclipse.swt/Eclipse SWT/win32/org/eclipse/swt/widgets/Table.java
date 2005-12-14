@@ -1496,9 +1496,6 @@ public TableColumn [] getColumns () {
 	return result;
 }
 
-/*
-* Not currently used.
-*/
 int getFocusIndex () {
 //	checkWidget ();
 	return OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);

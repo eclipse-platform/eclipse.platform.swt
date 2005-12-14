@@ -234,9 +234,6 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-/*
-* Not currently used.
-*/
 Rectangle getClientArea () {
 	checkWidget ();
 	int index = parent.indexOf (this);

@@ -1295,9 +1295,6 @@ int findItem (int hFirstItem, int index) {
 	return 0;
 }
 
-/*
-* Not currently used.
-*/
 TreeItem getFocusItem () {
 //	checkWidget ();
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);

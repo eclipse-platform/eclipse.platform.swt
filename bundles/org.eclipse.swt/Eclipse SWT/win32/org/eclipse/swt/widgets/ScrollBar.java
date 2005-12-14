@@ -194,9 +194,6 @@ public void destroyWidget () {
 	releaseHandle ();
 }
 
-/*
-* Not currently used.
-*/
 Rectangle getBounds () {
 //	checkWidget ();
 	parent.forceResize ();

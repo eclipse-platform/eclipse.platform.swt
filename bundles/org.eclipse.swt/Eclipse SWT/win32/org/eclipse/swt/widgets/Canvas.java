@@ -75,9 +75,6 @@ public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
 
-/*
-* Not currently used.
-*/
 void clearArea (int x, int y, int width, int height) {
 	checkWidget ();
 	if (OS.IsWindowVisible (handle)) {
