@@ -2805,6 +2805,7 @@ public boolean post (Event event) {
 						} else {
 							inputs.wVk = OS.VkKeyScan ((short) wcsToMbcs (key, 0));
 							if (inputs.wVk == -1) return false;
+							inputs.wVk &= 0xFF;
 						}
 					}
 				}
