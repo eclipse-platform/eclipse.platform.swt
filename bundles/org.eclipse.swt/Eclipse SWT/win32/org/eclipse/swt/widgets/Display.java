@@ -158,9 +158,11 @@ public class Display extends Device {
 	int foregroundIdleProc, idleHook;
 	
 	/* Message Hook and Embedding */
+	boolean ignoreNextKey;
 	Callback getMsgCallback, embeddedCallback;
 	int getMsgProc, msgHook, embeddedHwnd, embeddedProc;
 	static final String AWT_WINDOW_CLASS = "SunAwtWindow";
+	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -2490,14 +2492,55 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
 			Control control = findControl (keyMsg.hwnd);
 			if (control != null) {
-				keyMsg.hwnd = control.handle;
-				int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
-				do {
-					if (!(consumed |= filterMessage (keyMsg))) {
-						OS.TranslateMessage (keyMsg);
-						consumed |= OS.DispatchMessage (keyMsg) == 1;	
-					}
-				} while (OS.PeekMessage (keyMsg, keyMsg.hwnd, OS.WM_KEYFIRST, OS.WM_KEYLAST, flags));
+				/*
+				* Feature in Windows.  When the user types an accent key such
+				* as ^ in order to get an accented character on a German keyboard,
+				* calling TranslateMessage(), ToUnicode() or ToAscii() consumes
+				* the key.  This means that a subsequent call to TranslateMessage()
+				* will see a regular key rather than the accented key.  The fix
+				* is to use MapVirtualKey() and VkKeyScan () to detect an accent
+				* and avoid calls to TranslateMessage().
+				*/
+				boolean accentKey = false;
+				switch (keyMsg.message) {
+					case OS.WM_KEYDOWN:
+					case OS.WM_SYSKEYDOWN:
+						if (!OS.IsWinCE) {
+							/* 
+							* Bug in Windows. The high bit in the result of MapVirtualKey() on
+							* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
+							* They should both be bit 32.  The fix is to test the right bit.
+							*/
+							int mapKey = OS.MapVirtualKey (keyMsg.wParam, 2);
+							accentKey = (mapKey & (OS.IsWinNT ? 0x80000000 : 0x8000)) != 0;
+							if (!accentKey) {
+								for (int i=0; i<ACCENTS.length; i++) {
+									int value = OS.VkKeyScan (ACCENTS [i]);
+									if (value != -1 && (value & 0xFF) == keyMsg.wParam) {
+										int state = value >> 8;
+										if ((OS.GetKeyState (OS.VK_SHIFT) < 0) != ((state & 0x1) != 0)) break;
+										if ((OS.GetKeyState (OS.VK_CONTROL) < 0) != ((state & 0x2) != 0)) break;
+										if ((OS.GetKeyState (OS.VK_MENU) < 0) != ((state & 0x4) != 0)) break;
+										accentKey = true;
+									}
+								}
+							}
+						}
+				}
+				if (!accentKey && !ignoreNextKey) {
+					keyMsg.hwnd = control.handle;
+					int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+					do {
+						if (!(consumed |= filterMessage (keyMsg))) {
+							OS.TranslateMessage (keyMsg);
+							consumed |= OS.DispatchMessage (keyMsg) == 1;	
+						}
+					} while (OS.PeekMessage (keyMsg, keyMsg.hwnd, OS.WM_KEYFIRST, OS.WM_KEYLAST, flags));
+				}
+				switch (keyMsg.message) {
+					case OS.WM_KEYDOWN:
+					case OS.WM_SYSKEYDOWN: ignoreNextKey = accentKey;
+				}
 			}
 			if (consumed) {
 				int hHeap = OS.GetProcessHeap ();
