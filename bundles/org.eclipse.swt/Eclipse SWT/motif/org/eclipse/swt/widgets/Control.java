@@ -504,6 +504,12 @@ Font defaultFont () {
 int defaultForeground () {
 	return display.defaultForeground;
 }
+boolean dragDetect (int x, int y) {
+	return hooks (SWT.DragDetect);
+}
+boolean dragOverride () {
+	return false;
+}
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
@@ -2993,9 +2999,13 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	boolean dispatch = sendMouseEvent (SWT.MouseDown, xEvent);
 	if (isDisposed ()) return 1;
-	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
-		sendDragEvent (xEvent.x, xEvent.y);
-		if (isDisposed ()) return 1;
+	if (xEvent.button == 2) {
+		boolean dragDetect = dragDetect (xEvent.x, xEvent.y);
+		if (dragDetect) {
+			sendDragEvent (xEvent.x, xEvent.y);
+			if (isDisposed ()) return 1;
+		}
+		if (dragOverride () && dragDetect) return 1;
 	}
 	if (xEvent.button == 3) {
 		if (menu != null || hooks (SWT.MenuDetect)) {

@@ -430,6 +430,19 @@ Font defaultFont () {
 int defaultForeground () {
 	return display.textForeground;
 }
+boolean dragDetect (int x, int y) {
+	if (hooks (SWT.DragDetect)) {
+		int [] start = new int [1], end = new int [1];
+		OS.XmTextGetSelectionPosition (handle, start, end);
+		if (start [0] == end [0]) return false;
+		int pos = OS.XmTextXYToPos(handle, (short) x, (short) y);
+		return pos > start [0] && pos < end [0];
+	}
+	return false;
+}
+boolean dragOverride () {
+	return true;
+}
 /**
  * Returns the line number of the caret.
  * <p>
@@ -692,7 +705,7 @@ public int getOrientation () {
  * Indexing is zero based.  The range of a selection is from
  * 0..N where N is the number of characters in the widget.
  * </p>
- *
+ * 
  * @return a point representing the selection start and end
  *
  * @exception SWTException <ul>

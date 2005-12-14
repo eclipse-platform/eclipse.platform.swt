@@ -4380,6 +4380,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XmTextShowPosition)
 }
 #endif
 
+#ifndef NO__1XmTextXYToPos
+JNIEXPORT jint JNICALL OS_NATIVE(_1XmTextXYToPos)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XmTextXYToPos_FUNC);
+	rc = (jint)XmTextXYToPos((Widget)arg0, (Position)arg1, (Position)arg2);
+	OS_NATIVE_EXIT(env, that, _1XmTextXYToPos_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XmUpdateDisplay
 JNIEXPORT void JNICALL OS_NATIVE(_1XmUpdateDisplay)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -3469,6 +3469,15 @@ public static final void XmTextShowPosition(int widget, int position) {
 		lock.unlock();
 	}
 }
+public static final native int _XmTextXYToPos(int widget, short x, short y);
+public static final int XmTextXYToPos(int widget, short x, short y) {
+	lock.lock();
+	try {
+		return _XmTextXYToPos(widget, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _XmUpdateDisplay(int widget);
 public static final void XmUpdateDisplay(int widget) {
 	lock.lock();

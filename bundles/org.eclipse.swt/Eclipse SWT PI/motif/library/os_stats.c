@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 467;
-int OS_nativeFunctionCallCount[467];
+int OS_nativeFunctionCount = 468;
+int OS_nativeFunctionCallCount[468];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -328,6 +328,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XmTextSetSelection",
 	"_1XmTextSetString",
 	"_1XmTextShowPosition",
+	"_1XmTextXYToPos",
 	"_1XmUpdateDisplay",
 	"_1XmWidgetGetDisplayRect",
 	"_1XmbTextListToTextProperty",

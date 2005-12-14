@@ -332,6 +332,7 @@ typedef enum {
 	_1XmTextSetSelection_FUNC,
 	_1XmTextSetString_FUNC,
 	_1XmTextShowPosition_FUNC,
+	_1XmTextXYToPos_FUNC,
 	_1XmUpdateDisplay_FUNC,
 	_1XmWidgetGetDisplayRect_FUNC,
 	_1XmbTextListToTextProperty_FUNC,
