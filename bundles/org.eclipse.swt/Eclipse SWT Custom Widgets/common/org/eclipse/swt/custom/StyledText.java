@@ -565,6 +565,7 @@ public class StyledText extends Canvas {
 		if (background != null) {
 			Rectangle rect = layout.getBounds();
 			gc.setBackground(background);
+			//FIXME - draw the background of the widget, not the background color
 			gc.fillRectangle(paintX, paintY, rect.width, rect.height);
 			
 //			int lineCount = layout.getLineCount();
