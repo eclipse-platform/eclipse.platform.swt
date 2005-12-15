@@ -114,23 +114,12 @@ void _setImage (Image image) {
 		imageList = null;
 		if (image != null) {
 			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
-			imageList.add (image); //PBS_NORMAL
-			/*
-			* Bug in Windows.  When BCM_SETIMAGELIST is used to assign
-			* an image list with each of the button states, and the button
-			* has the style BS_CHECKBOX or BS_RADIOBUTTON, when the user
-			* drags the mouse in and out of the button when the state is
-			* set, the button draws using a blank image.  The fix is to
-			* set the complete image list only when the button is disabled.
-			*/
-			if (!OS.IsWindowEnabled (handle)) {
-				imageList.add (image); //PBS_HOT
-				imageList.add (image); //PBS_PRESSED
+			if (OS.IsWindowEnabled (handle)) {
+				imageList.add (image);
+			} else {
 				if (disabledImage != null) disabledImage.dispose ();
 				disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
-				imageList.add (disabledImage); //PBS_DISABLED
-				imageList.add (image); //PBS_DEFAULTED
-				imageList.add (image); //PBS_STYLUSHOT
+				imageList.add (disabledImage);
 			}
 			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
 			buttonImageList.himl = imageList.getHandle ();
@@ -512,15 +501,12 @@ void enableWidget (boolean enabled) {
 			OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
 			if (imageList != null) imageList.dispose ();
 			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
-			imageList.add (image); //PBS_NORMAL
-			if (!OS.IsWindowEnabled (handle)) {
-				imageList.add (image); //PBS_HOT
-				imageList.add (image); //PBS_PRESSED
+			if (OS.IsWindowEnabled (handle)) {
+				imageList.add (image);
+			} else {
 				if (disabledImage != null) disabledImage.dispose ();
 				disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
-				imageList.add (disabledImage); //PBS_DISABLED
-				imageList.add (image); //PBS_DEFAULTED
-				imageList.add (image); //PBS_STYLUSHOT
+				imageList.add (disabledImage);
 			}
 			buttonImageList.himl = imageList.getHandle ();
 			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
