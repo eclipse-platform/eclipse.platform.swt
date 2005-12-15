@@ -565,7 +565,6 @@ public class StyledText extends Canvas {
 		if (background != null) {
 			Rectangle rect = layout.getBounds();
 			gc.setBackground(background);
-			//FIXME - draw the background of the widget, not the background color
 			gc.fillRectangle(paintX, paintY, rect.width, rect.height);
 			
 //			int lineCount = layout.getLineCount();
@@ -1171,21 +1170,7 @@ public StyledText(Composite parent, int style) {
 	// set the bg/fg in the OS to ensure that these are the same as StyledText, necessary
 	// for ensuring that the bg/fg the IME box uses is the same as what StyledText uses
 	super.setForeground(getForeground());
-
-	//FIXME - TEMPORARY CODE
-	boolean setBackground = true;
-	Shell shell = getShell();
-	Composite composite = parent;
-	do {
-		if (composite.getBackgroundMode() != SWT.INHERIT_NONE) {
-			setBackground = false;
-			break;
-		}
-		if (composite == shell) break;
-		composite = composite.getParent();
-	} while (true);
-	if (setBackground) super.setBackground(getBackground());
-
+	super.setBackground(getBackground());
 	Display display = getDisplay();
 	isMirrored = (super.getStyle() & SWT.MIRRORED) != 0;
 	fixedLineHeight = true;
@@ -5237,32 +5222,22 @@ void handlePaint(Event event) {
 		}
 		if (y < endY) {
 			gc.setBackground(background);
-			//FIXME - TEMPORARY CODE
-			//gc.fillRectangle(0, y, clientAreaWidth, endY - y);
-			drawBackground (gc, 0, y, clientAreaWidth, endY - y);
+			gc.fillRectangle(0, y, clientAreaWidth, endY - y);
 		}
 	}
 	// fill the margin background
 	gc.setBackground(background);
 	if (topMargin > 0) {
-		//FIXME - TEMPORARY CODE
-		//gc.fillRectangle(0, 0, clientAreaWidth, topMargin);
-		drawBackground (gc, 0, 0, clientAreaWidth, topMargin);
+		gc.fillRectangle(0, 0, clientAreaWidth, topMargin);
 	}
 	if (bottomMargin > 0) {
-		//FIXME - TEMPORARY CODE
-		//gc.fillRectangle(0, clientAreaHeight - bottomMargin, clientAreaWidth, bottomMargin);
-		drawBackground (gc, 0, clientAreaHeight - bottomMargin, clientAreaWidth, bottomMargin);
+		gc.fillRectangle(0, clientAreaHeight - bottomMargin, clientAreaWidth, bottomMargin);
 	}
 	if (leftMargin > 0) {
-		//FIXME - TEMPORARY CODE
-		//gc.fillRectangle(0, 0, leftMargin, clientAreaHeight);
-		drawBackground (gc, 0, 0, leftMargin, clientAreaHeight);
+		gc.fillRectangle(0, 0, leftMargin, clientAreaHeight);
 	}
 	if (rightMargin > 0) {
-		//FIXME - TEMPORARY CODE
-		//gc.fillRectangle(clientAreaWidth - rightMargin, 0, rightMargin, clientAreaHeight);
-		drawBackground (gc, clientAreaWidth - rightMargin, 0, rightMargin, clientAreaHeight);
+		gc.fillRectangle(clientAreaWidth - rightMargin, 0, rightMargin, clientAreaHeight);
 	}
 }
 /**

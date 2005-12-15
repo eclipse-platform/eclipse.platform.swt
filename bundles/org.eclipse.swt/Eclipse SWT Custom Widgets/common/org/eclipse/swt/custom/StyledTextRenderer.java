@@ -323,9 +323,7 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	if (!fullSelection || selectionStart > lineOffset || selectionEnd <= lineOffset + lineLength) {
 		// draw background if full selection is off or if line is not completely selected
 		gc.setBackground(lineBackground);
-		//FIXME - TEMPORARY CODE
-		//gc.fillRectangle(client.x, paintY, client.width, layout.getBounds().height);
-		styledText.drawBackground(gc, client.x, paintY, client.width, layout.getBounds().height);
+		gc.fillRectangle(client.x, paintY, client.width, layout.getBounds().height);
 	}
 	if (selectionStart != selectionEnd) {
 		int y = paintY;
