@@ -168,22 +168,23 @@ String openChooserDialog () {
 	String answer = null;
 	int response = OS.gtk_dialog_run (handle);	
 	if (response == OS.GTK_RESPONSE_OK) {
-		int /*long*/ folder = OS.gtk_file_chooser_get_current_folder (handle);
-		if (folder != 0) {
-			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (folder, -1, null, null, null);
+		int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
+		if (path != 0) {
+			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
+			OS.g_free (path);
 			if (utf8Ptr != 0) {
 				int /*long*/ [] items_written = new int /*long*/ [1];
 				int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+				OS.g_free (utf8Ptr);
 				if (utf16Ptr != 0) {
 					int clength = (int)/*64*/items_written [0];
 					char [] chars = new char [clength];
 					OS.memmove (chars, utf16Ptr, clength * 2);
-					filterPath = answer = new String (chars);
 					OS.g_free (utf16Ptr);
+					answer = new String (chars);
+					filterPath = answer.substring (answer.lastIndexOf (SEPARATOR) + 1);
 				}
-				OS.g_free (utf8Ptr);
 			}
-			OS.g_free (folder);
 		}
 	}
 	OS.gtk_widget_destroy (handle);
