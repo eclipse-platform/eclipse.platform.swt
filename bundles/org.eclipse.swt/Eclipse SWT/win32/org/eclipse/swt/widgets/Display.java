@@ -2512,16 +2512,18 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 							* They should both be bit 32.  The fix is to test the right bit.
 							*/
 							int mapKey = OS.MapVirtualKey (keyMsg.wParam, 2);
-							accentKey = (mapKey & (OS.IsWinNT ? 0x80000000 : 0x8000)) != 0;
-							if (!accentKey) {
-								for (int i=0; i<ACCENTS.length; i++) {
-									int value = OS.VkKeyScan (ACCENTS [i]);
-									if (value != -1 && (value & 0xFF) == keyMsg.wParam) {
-										int state = value >> 8;
-										if ((OS.GetKeyState (OS.VK_SHIFT) < 0) != ((state & 0x1) != 0)) break;
-										if ((OS.GetKeyState (OS.VK_CONTROL) < 0) != ((state & 0x2) != 0)) break;
-										if ((OS.GetKeyState (OS.VK_MENU) < 0) != ((state & 0x4) != 0)) break;
-										accentKey = true;
+							if (mapKey != 0) {
+								accentKey = (mapKey & (OS.IsWinNT ? 0x80000000 : 0x8000)) != 0;
+								if (!accentKey) {
+									for (int i=0; i<ACCENTS.length; i++) {
+										int value = OS.VkKeyScan (ACCENTS [i]);
+										if (value != -1 && (value & 0xFF) == keyMsg.wParam) {
+											int state = value >> 8;
+											if ((OS.GetKeyState (OS.VK_SHIFT) < 0) != ((state & 0x1) != 0)) break;
+											if ((OS.GetKeyState (OS.VK_CONTROL) < 0) != ((state & 0x2) != 0)) break;
+											if ((OS.GetKeyState (OS.VK_MENU) < 0) != ((state & 0x4) != 0)) break;
+											accentKey = true;
+										}
 									}
 								}
 							}
