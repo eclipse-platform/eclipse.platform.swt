@@ -411,6 +411,9 @@ public Rectangle getBounds() {
 	int wrapWidth = OS.pango_layout_get_width(layout);
 	int width = OS.PANGO_PIXELS(wrapWidth != -1 ? wrapWidth : w[0]);
 	int height = OS.PANGO_PIXELS(h[0]);
+	if (ascent != -1 && descent != -1) {
+		height = Math.max (height, ascent + descent);
+	}
 	return new Rectangle(0, 0, width, height);
 }
 
@@ -599,6 +602,9 @@ public Rectangle getLineBounds(int lineIndex) {
 	int y = OS.PANGO_PIXELS(rect.y);
 	int width = OS.PANGO_PIXELS(rect.width);
 	int height = OS.PANGO_PIXELS(rect.height);
+	if (ascent != -1 && descent != -1) {
+		height = Math.max (height, ascent + descent);
+	}
 	return new Rectangle(x, y, width, height);
 }
 
@@ -687,8 +693,8 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		ascent = -rect.y;
 		descent = rect.height - ascent;
 	}
-	ascent = OS.PANGO_PIXELS(ascent);
-	descent = OS.PANGO_PIXELS(descent);
+	ascent = Math.max(this.ascent, OS.PANGO_PIXELS(ascent));
+	descent = Math.max(this.descent, OS.PANGO_PIXELS(descent));
 	return FontMetrics.gtk_new(ascent, descent, 0, 0, ascent + descent);
 }
 
