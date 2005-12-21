@@ -722,6 +722,11 @@ public void setImage (Image image) {
  * pull down menu. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pull down
  * menu is platform specific.
+ * <p>
+ * Note: Disposing of a menu item that has a pull down menu
+ * will dispose of the menu.  To avoid this behavior, set the
+ * menu to null before the menu item is disposed.
+ * </p>
  *
  * @param menu the new pull down menu
  *
