@@ -299,6 +299,11 @@ private void drag(Event dragEvent) {
 	dataEffect = DND.DROP_NONE;
 }
 
+/* 
+ * EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc)
+ * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc 
+ * must be incremented before returning.  Caller is responsible for releasing ppenumFormatetc.
+ */
 private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
@@ -453,6 +458,10 @@ private int QueryGetData(int pFormatetc) {
 	return COM.DV_E_FORMATETC;
 }
 
+/* QueryInterface([in] riid, [out] ppvObject)
+ * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
+ * must be incremented before returning.  Caller is responsible for releasing ppvObject.
+ */
 private int QueryInterface(int riid, int ppvObject) {
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
