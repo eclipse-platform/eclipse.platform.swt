@@ -52,12 +52,13 @@ public class Accessible {
 	Accessible(Control control) {
 		this.control = control;
 		int[] ppvObject = new int[1];
+		/* CreateStdAccessibleObject([in] hwnd, [in] idObject, [in] riidInterface, [out] ppvObject).
+		 * AddRef has already been called on ppvObject by the callee and must be released by the caller.
+		 */
 		int result = COM.CreateStdAccessibleObject(control.handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
-		if (ppvObject[0] == 0) return;
 		if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 		iaccessible = new IAccessible(ppvObject[0]);
-		iaccessible.AddRef();
-		
+	
 		objIAccessible = new COMObject(new int[] {2,0,0,1,3,5,8,1,1,5,5,5,5,5,5,5,6,5,1,1,5,5,8,6,3,4,5,5}) {
 			public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 			public int method1(int[] args) {return AddRef();}
@@ -223,8 +224,9 @@ public class Accessible {
 	 * </p>
 	 */
 	public void internal_dispose_Accessible() {
-		if (iaccessible != null)
+		if (iaccessible != null) {
 			iaccessible.Release();
+		}
 		iaccessible = null;
 		Release();
 	}
@@ -242,6 +244,10 @@ public class Accessible {
 	public int internal_WM_GETOBJECT (int wParam, int lParam) {
 		if (objIAccessible == null) return 0;
 		if (lParam == COM.OBJID_CLIENT) {
+			/* LresultFromObject([in] riid, [in] wParam, [in] pAcc)
+			 * The argument pAcc is owned by the caller so reference count does not
+			 * need to be incremented.
+			 */
 			return COM.LresultFromObject(COM.IIDIAccessible, wParam, objIAccessible.getAddress());
 		}
 		return 0;
@@ -414,39 +420,43 @@ public class Accessible {
 		// not an MSAA event
 	}
 	
-	int QueryInterface(int arg1, int arg2) {
+	/* QueryInterface([in] iid, [out] ppvObject)
+	 * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
+	 * must be incremented before returning.  Caller is responsible for releasing ppvObject.
+	 */
+	int QueryInterface(int iid, int ppvObject) {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 		GUID guid = new GUID();
-		COM.MoveMemory(guid, arg1, GUID.sizeof);
+		COM.MoveMemory(guid, iid, GUID.sizeof);
 
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			COM.MoveMemory(ppvObject, new int[] { objIAccessible.getAddress()}, 4);
 			AddRef();
 			return COM.S_OK;
 		}
 
 		if (COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
-			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			COM.MoveMemory(ppvObject, new int[] { objIAccessible.getAddress()}, 4);
 			AddRef();
 			return COM.S_OK;
 		}
 
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
-			COM.MoveMemory(arg2, new int[] { objIAccessible.getAddress()}, 4);
+			COM.MoveMemory(ppvObject, new int[] { objIAccessible.getAddress()}, 4);
 			AddRef();
 			return COM.S_OK;
 		}
 
 		if (COM.IsEqualGUID(guid, COM.IIDIEnumVARIANT)) {
-			COM.MoveMemory(arg2, new int[] { objIEnumVARIANT.getAddress()}, 4);
+			COM.MoveMemory(ppvObject, new int[] { objIEnumVARIANT.getAddress()}, 4);
 			AddRef();
 			enumIndex = 0;
 			return COM.S_OK;
 		}
 
-		int[] ppvObject = new int[1];
-		int result = iaccessible.QueryInterface(guid, ppvObject);
-		COM.MoveMemory(arg2, ppvObject, 4);
+		int[] ppv = new int[1];
+		int result = iaccessible.QueryInterface(guid, ppv);
+		COM.MoveMemory(ppvObject, ppv, 4);
 		return result;
 	}
 
@@ -552,6 +562,10 @@ public class Accessible {
 		return code;
 	}
 
+	/* get_accChild([in] varChild, [out] ppdispChild)
+	 * Ownership of ppdispChild transfers from callee to caller so reference count on ppdispChild 
+	 * must be incremented before returning.  The caller is responsible for releasing ppdispChild.
+	 */
 	int get_accChild(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int ppdispChild) {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
@@ -569,6 +583,7 @@ public class Accessible {
 		}
 		Accessible accessible = event.accessible;
 		if (accessible != null) {
+			accessible.AddRef();
 			COM.MoveMemory(ppdispChild, new int[] { accessible.objIAccessible.getAddress() }, 4);
 			return COM.S_OK;
 		}
@@ -697,6 +712,10 @@ public class Accessible {
 		return COM.S_OK;
 	}
 	
+	/* get_accFocus([out] int pvarChild)
+	 * Ownership of pvarChild transfers from callee to caller so reference count on pvarChild 
+	 * must be incremented before returning.  The caller is responsible for releasing pvarChild.
+	 */
 	int get_accFocus(int pvarChild) {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 
@@ -722,6 +741,7 @@ public class Accessible {
 		}
 		Accessible accessible = event.accessible;
 		if (accessible != null) {
+			accessible.AddRef();
 			COM.MoveMemory(pvarChild, new short[] { COM.VT_DISPATCH }, 2);
 			COM.MoveMemory(pvarChild + 8, new int[] { accessible.objIAccessible.getAddress() }, 4);
 			return COM.S_OK;
@@ -732,6 +752,7 @@ public class Accessible {
 			return COM.S_FALSE;
 		}
 		if (childID == ACC.CHILDID_SELF) {
+			AddRef();
 			COM.MoveMemory(pvarChild, new short[] { COM.VT_DISPATCH }, 2);
 			COM.MoveMemory(pvarChild + 8, new int[] { objIAccessible.getAddress() }, 4);
 			return COM.S_OK;
@@ -851,6 +872,10 @@ public class Accessible {
 		return COM.S_OK;
 	}
 	
+	/* get_accParent([out] ppdispParent)
+	 * Ownership of ppdispParent transfers from callee to caller so reference count on ppdispParent 
+	 * must be incremented before returning.  The caller is responsible for releasing ppdispParent.
+	 */
 	int get_accParent(int ppdispParent) {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 		// Currently, we don't let the application override this. Forward to the proxy.
@@ -898,6 +923,10 @@ public class Accessible {
 		return COM.S_OK;
 	}
 	
+	/* get_accSelection([out] pvarChildren)
+	 * Ownership of pvarChildren transfers from callee to caller so reference count on pvarChildren 
+	 * must be incremented before returning.  The caller is responsible for releasing pvarChildren.
+	 */
 	int get_accSelection(int pvarChildren) {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 
@@ -926,6 +955,7 @@ public class Accessible {
 		}
 		Accessible accessible = event.accessible;
 		if (accessible != null) {
+			accessible.AddRef();
 			COM.MoveMemory(pvarChildren, new short[] { COM.VT_DISPATCH }, 2);
 			COM.MoveMemory(pvarChildren + 8, new int[] { accessible.objIAccessible.getAddress() }, 4);
 			return COM.S_OK;
@@ -936,12 +966,14 @@ public class Accessible {
 			return COM.S_FALSE;
 		}
 		if (childID == ACC.CHILDID_MULTIPLE) {
+			AddRef();
 			COM.MoveMemory(pvarChildren, new short[] { COM.VT_UNKNOWN }, 2);
 			/* Should return an IEnumVARIANT for this... so the next line is wrong... need better API here... */
 			COM.MoveMemory(pvarChildren + 8, new int[] { objIAccessible.getAddress() }, 4);
 			return COM.S_OK;
 		}
 		if (childID == ACC.CHILDID_SELF) {
+			AddRef();
 			COM.MoveMemory(pvarChildren, new short[] { COM.VT_DISPATCH }, 2);
 			COM.MoveMemory(pvarChildren + 8, new int[] { objIAccessible.getAddress() }, 4);
 			return COM.S_OK;
@@ -1068,6 +1100,11 @@ public class Accessible {
 	 * The number of elements actually retrieved is returned in pceltFetched 
 	 * (unless the caller passed in NULL for that parameter).
 	 */
+	 
+	 /* Next([in] celt, [out] rgvar, [in, out] pceltFetched)
+	 * Ownership of rgvar transfers from callee to caller so reference count on rgvar 
+	 * must be incremented before returning.  The caller is responsible for releasing rgvar.
+	 */
 	int Next(int celt, int rgvar, int pceltFetched) {
 		/* If there are no listeners, query the proxy for
 		 * its IEnumVariant, and get the Next items from it.
@@ -1079,6 +1116,7 @@ public class Accessible {
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
 			int[] celtFetched = new int[1];
 			code = ienumvariant.Next(celt, rgvar, celtFetched);
+			ienumvariant.Release();
 			COM.MoveMemory(pceltFetched, celtFetched, 4);
 			return code;
 		}
@@ -1119,9 +1157,10 @@ public class Accessible {
 					COM.MoveMemory(rgvar + i * 16, new short[] { COM.VT_I4 }, 2);
 					COM.MoveMemory(rgvar + i * 16 + 8, new int[] { item }, 4);
 				} else {
-					int address = ((Accessible) nextItem).objIAccessible.getAddress();
+					Accessible accessible = (Accessible) nextItem;
+					accessible.AddRef();
 					COM.MoveMemory(rgvar + i * 16, new short[] { COM.VT_DISPATCH }, 2);
-					COM.MoveMemory(rgvar + i * 16 + 8, new int[] { address }, 4);
+					COM.MoveMemory(rgvar + i * 16 + 8, new int[] { accessible.objIAccessible.getAddress() }, 4);
 				}
 			}
 			if (pceltFetched != 0)
@@ -1145,6 +1184,7 @@ public class Accessible {
 			if (code != COM.S_OK) return code;
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
 			code = ienumvariant.Skip(celt);
+			ienumvariant.Release();
 			return code;
 		}
 
@@ -1168,6 +1208,7 @@ public class Accessible {
 			if (code != COM.S_OK) return code;
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
 			code = ienumvariant.Reset();
+			ienumvariant.Release();
 			return code;
 		}
 		

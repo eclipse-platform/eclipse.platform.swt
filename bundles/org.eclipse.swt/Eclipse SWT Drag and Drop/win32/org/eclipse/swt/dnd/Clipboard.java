@@ -177,7 +177,15 @@ public void clearContents() {
 public void clearContents(int clipboards) {
 	checkWidget();
 	if ((clipboards & DND.CLIPBOARD) != 0) {
+		/* OleIsCurrentClipboard([in] pDataObject)
+		 * The argument pDataObject is owned by the caller so reference count does not
+		 * need to be incremented.
+		 */
 		if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) == COM.S_OK) {
+			/* OleSetClipboard([in] pDataObject)
+			 * The argument pDataObject is owned by the caller so reference count does not
+			 * need to be incremented.
+			 */
 			COM.OleSetClipboard(0);
 		}
 	}
@@ -198,6 +206,10 @@ public void clearContents(int clipboards) {
 public void dispose () {
 	if (isDisposed()) return;
 	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+	/* OleIsCurrentClipboard([in] pDataObject)
+	 * The argument pDataObject is owned by the caller so reference count does not
+	 * need to be incremented.
+	 */
 	if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) == COM.S_OK) {
 		COM.OleFlushClipboard();
 	}	
@@ -299,6 +311,9 @@ public Object getContents(Transfer transfer, int clipboards) {
 	*/
 	int[] ppv = new int[1];
 	int retryCount = 0;
+	/* OleGetClipboard([out] ppDataObject).
+	 * AddRef has already been called on ppDataObject by the callee and must be released by the caller.
+	 */
 	int result = COM.OleGetClipboard(ppv);
 	while (result != COM.S_OK && retryCount++ < 10) {
 		try {Thread.sleep(50);} catch (Throwable t) {}
@@ -462,6 +477,10 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 	if ((clipboards & DND.CLIPBOARD) == 0) return;
 	this.data = data;
 	this.transferAgents = dataTypes;
+	/* OleSetClipboard([in] pDataObject)
+	 * The argument pDataObject is owned by the caller so the reference count does not
+	 * need to be incremented.
+	 */
 	int result = COM.OleSetClipboard(iDataObject.getAddress());
 	
 	/*
@@ -511,6 +530,11 @@ private void disposeCOMInterfaces() {
 		iDataObject.dispose();
 	iDataObject = null;
 }
+/*
+ * EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc)
+ * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc 
+ * must be incremented before returning.  Caller is responsible for releasing ppenumFormatetc.
+ */
 private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
@@ -596,6 +620,10 @@ private int QueryGetData(int pFormatetc) {
 	
 	return COM.DV_E_FORMATETC;
 }
+/* QueryInterface([in] iid, [out] ppvObject)
+ * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
+ * must be incremented before returning.  Caller is responsible for releasing ppvObject.
+ */
 private int QueryInterface(int riid, int ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID();
@@ -729,9 +757,15 @@ public String[] getAvailableTypeNames() {
 private FORMATETC[] _getAvailableTypes() {
 	FORMATETC[] types = new FORMATETC[0];
 	int[] ppv = new int[1];
+	/* OleGetClipboard([out] ppDataObject).
+	 * AddRef has already been called on ppDataObject by the callee and must be released by the caller.
+	 */
 	if (COM.OleGetClipboard(ppv) != COM.S_OK) return types;
 	IDataObject dataObject = new IDataObject(ppv[0]);
 	int[] ppFormatetc = new int[1];
+	/* EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc) 
+	 * AddRef has already been called on ppenumFormatetc by the callee and must be released by the caller. 
+	 */
 	int rc = dataObject.EnumFormatEtc(COM.DATADIR_GET, ppFormatetc);
 	dataObject.Release();
 	if (rc != COM.S_OK)return types;
