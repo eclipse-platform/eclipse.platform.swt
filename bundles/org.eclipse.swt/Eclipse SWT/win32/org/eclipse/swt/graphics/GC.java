@@ -1691,9 +1691,9 @@ void drawRoundRectangleGdip (int gdipGraphics, int brush, int x, int y, int widt
 			Gdip.Graphics_DrawArc(gdipGraphics, brush, nx, ny + nh - nah, naw, nah, -180, -90);
 			Gdip.Graphics_DrawLine(gdipGraphics, brush, nx, ny + nah2, nx, ny + nh - nah2);
 		} else {
-			Gdip.Graphics_DrawArc(gdipGraphics, brush, nx, ny, naw, nh, 90, -180);
+			Gdip.Graphics_DrawArc(gdipGraphics, brush, nx, ny, naw, nh, -90, -180);
 			Gdip.Graphics_DrawLine(gdipGraphics, brush, nx + naw2, ny, nx + nw - naw2, ny);
-			Gdip.Graphics_DrawArc(gdipGraphics, brush, nx + nw - naw, ny, naw, nh, 270, -180);
+			Gdip.Graphics_DrawArc(gdipGraphics, brush, nx + nw - naw, ny, naw, nh, -270, -180);
 			Gdip.Graphics_DrawLine(gdipGraphics, brush, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
 		}
 	} else {
