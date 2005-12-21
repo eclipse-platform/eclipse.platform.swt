@@ -670,11 +670,20 @@ void removeControl (Control control) {
 	}
 }
 
+void setBackgroundImage (int hBitmap) {
+	super.setBackgroundImage (hBitmap);
+	setBackgroundTransparent (hBitmap != 0);
+}
+
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
+	setBackgroundTransparent (pixel != -1);
+}
+
+void setBackgroundTransparent (boolean transparent) {
 	/*
 	* Feature in Windows.  When TBSTYLE_TRANSPARENT is set
-	* in a tool bar that is drawing a background, image in
+	* in a tool bar that is drawing a background, images in
 	* the image list that include transparency information
 	* do not draw correctly.  The fix is to clear and set
 	* TBSTYLE_TRANSPARENT depending on the background color.
@@ -686,7 +695,7 @@ void setBackgroundPixel (int pixel) {
 	if ((style & SWT.FLAT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if (pixel == -1) {
+			if (!transparent && findBackgroundControl () == null) {
 				bits &= ~OS.TBSTYLE_TRANSPARENT;
 			} else {
 				bits |= OS.TBSTYLE_TRANSPARENT;
