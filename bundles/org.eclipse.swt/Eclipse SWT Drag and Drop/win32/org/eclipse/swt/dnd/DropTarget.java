@@ -84,7 +84,7 @@ public class DropTarget extends Widget {
 	// workaround - The dataobject address is only passed as an argument in drag enter and drop.  
 	// To allow applications to query the data values during the drag over operations, 
 	// maintain a reference to it.
-	private int iDataObject;
+	private IDataObject iDataObject;
 	
 	// interfaces
 	private COMObject iDropTarget;
@@ -247,7 +247,8 @@ private void disposeCOMInterfaces() {
 private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	selectedDataType = null;
 	selectedOperation = DND.DROP_NONE;
-	iDataObject = 0;
+	if (iDataObject != null) iDataObject.Release();
+	iDataObject = null;
 	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
@@ -256,7 +257,8 @@ private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int 
 	}	
 
 	// Remember the iDataObject because it is not passed into the DragOver callback
-	iDataObject = pDataObject;
+	iDataObject = new IDataObject(pDataObject);
+	iDataObject.AddRef();
 	
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
@@ -285,27 +287,29 @@ private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int 
 	return COM.S_OK;
 }
 
-
-
 private int DragLeave() {
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 	keyOperation = -1;
-	
-	if (iDataObject == 0) return COM.S_OK;
+
+	if (iDataObject == null) return COM.S_OK;
 
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.detail = DND.DROP_NONE;
 	notifyListeners(DND.DragLeave, event);
+	
+	iDataObject.Release();
+	iDataObject = null;
 	return COM.S_OK;
 }
 
 private int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
+	if (iDataObject == null) return COM.S_OK;
 	int oldKeyOperation = keyOperation;
 	
 	DNDEvent event = new DNDEvent();
-	if (!setEventData(event, iDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
+	if (!setEventData(event, iDataObject.getAddress(), grfKeyState, pt_x, pt_y, pdwEffect)) {
 		keyOperation = -1;
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_OK;
@@ -527,6 +531,10 @@ private int osToOp(int osOperation){
 	return operation;
 }
 
+/* QueryInterface([in] iid, [out] ppvObject)
+ * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
+ * must be incremented before returning.  Caller is responsible for releasing ppvObject.
+ */
 private int QueryInterface(int riid, int ppvObject) {
 	
 	if (riid == 0 || ppvObject == 0)
