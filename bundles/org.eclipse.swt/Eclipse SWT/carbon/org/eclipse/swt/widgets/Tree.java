@@ -2244,6 +2244,27 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+void releaseWidget () {
+	super.releaseWidget ();
+	/*
+	* Feature in the Mac. When RemoveDataBrowserItems() is used
+	* to remove items, item notification callbacks are issued with
+	* the message kDataBrowserItemRemoved  When many items are
+	* removed, this is slow.  The fix is to temporarily remove
+	* the item notification callback.
+	*/
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (handle, callbacks);
+	callbacks.v1_itemNotificationCallback = 0;
+	callbacks.v1_itemCompareCallback = 0;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
+
+	sortColumn = null;
+	paintGC = null;
+	imageBounds = null;
+	showItem = null;
+}
+
 /**
  * Removes all of the items from the receiver.
  * <p>
