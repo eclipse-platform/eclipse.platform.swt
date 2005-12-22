@@ -2036,6 +2036,10 @@ void releaseChildren (boolean destroy) {
 
 void releaseWidget () {	
 	super.releaseWidget ();
+	currentItem = null;
+	sortColumn = null;
+	paintGC = null;
+	imageBounds = null;
 	/*
 	 * Feature in the Mac. When RemoveDataBrowserItems() is used
 	 * to remove items, item notification callbacks are issued with
@@ -2048,11 +2052,6 @@ void releaseWidget () {
 	callbacks.v1_itemNotificationCallback = 0;
 	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
-	
-	currentItem = null;
-	sortColumn = null;
-	paintGC = null;
-	imageBounds = null;
 }
 
 /**
