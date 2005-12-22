@@ -198,6 +198,7 @@ void checkItems (boolean setScrollWidth) {
 		DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 		OS.GetDataBrowserCallbacks (handle, callbacks);
 		callbacks.v1_itemNotificationCallback = 0;
+		callbacks.v1_itemCompareCallback = 0;
 		OS.SetDataBrowserCallbacks (handle, callbacks);
 		int delta = itemCount - count [0];
 		if (delta < 1024) {
@@ -215,6 +216,7 @@ void checkItems (boolean setScrollWidth) {
 			}
 		}
 		callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+		callbacks.v1_itemCompareCallback = display.itemCompareProc;
 		OS.SetDataBrowserCallbacks (handle, callbacks);
 	}
 	if (setScrollWidth) setScrollWidth (items, true);
@@ -2157,9 +2159,11 @@ public void removeAll () {
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (handle, callbacks);
 	callbacks.v1_itemNotificationCallback = 0;
+	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	setTableEmpty ();
 }
@@ -2498,6 +2502,7 @@ public void setItemCount (int count) {
     DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (handle, callbacks);
 	callbacks.v1_itemNotificationCallback = 0;
+	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	if (count < itemCount) {
 		int index = count;
@@ -2524,6 +2529,7 @@ public void setItemCount (int count) {
 	itemCount = count;
 	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	fixScrollBar ();
 	setRedraw (true);
