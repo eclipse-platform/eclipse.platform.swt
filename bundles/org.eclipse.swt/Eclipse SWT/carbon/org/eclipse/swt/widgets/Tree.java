@@ -2261,10 +2261,26 @@ public void removeAll () {
 	items = new TreeItem [4];
 	childIds = null;
 	ignoreExpand = ignoreSelect = true;
-	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0) != OS.noErr) {
+	/*
+	* Feature in the Mac. When RemoveDataBrowserItems() is used
+	* to remove items, item notification callbacks are issued with
+	* the message kDataBrowserItemRemoved  When many items are
+	* removed, this is slow.  The fix is to temporarily remove
+	* the item notification callback.
+	*/
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (handle, callbacks);
+	callbacks.v1_itemNotificationCallback = 0;
+	callbacks.v1_itemCompareCallback = 0;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
+	int result = OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
+	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
+	ignoreExpand = ignoreSelect = false;
+	if (result != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
-	ignoreExpand = ignoreSelect = false;
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	anchorFirst = anchorLast = 0;
 	visibleCount = 0;
@@ -2541,6 +2557,7 @@ void setItemCount (TreeItem parentItem, int count) {
     DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (handle, callbacks);
 	callbacks.v1_itemNotificationCallback = 0;
+	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	int[] ids = parentItem == null ? childIds : parentItem.childIds;
 	if (count < itemCount) {
@@ -2610,6 +2627,7 @@ void setItemCount (TreeItem parentItem, int count) {
 	}
 	
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	setRedraw (true);
 	if (itemCount == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
