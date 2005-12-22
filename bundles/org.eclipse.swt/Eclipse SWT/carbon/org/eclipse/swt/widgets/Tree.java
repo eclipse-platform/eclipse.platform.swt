@@ -2280,7 +2280,6 @@ public void removeAll () {
 	}
 	items = new TreeItem [4];
 	childIds = null;
-	ignoreExpand = ignoreSelect = true;
 	/*
 	* Feature in the Mac. When RemoveDataBrowserItems() is used
 	* to remove items, item notification callbacks are issued with
@@ -2293,14 +2292,13 @@ public void removeAll () {
 	callbacks.v1_itemNotificationCallback = 0;
 	callbacks.v1_itemCompareCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
+	ignoreExpand = ignoreSelect = true;
 	int result = OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
+	ignoreExpand = ignoreSelect = false;
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
-	ignoreExpand = ignoreSelect = false;
-	if (result != OS.noErr) {
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
-	}
+	if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	anchorFirst = anchorLast = 0;
 	visibleCount = 0;
