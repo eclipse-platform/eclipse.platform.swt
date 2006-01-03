@@ -162,8 +162,8 @@ int copyWithAlpha (int hBitmap, int background, byte[] alphaData, int destWidth,
 	int memHdc = OS.CreateCompatibleDC (hdc);
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
-	bmiHeader.biWidth = Math.max (srcWidth, destWidth);
-	bmiHeader.biHeight = -Math.max (srcHeight, destHeight);
+	bmiHeader.biWidth = srcWidth;
+	bmiHeader.biHeight = -srcHeight;
 	bmiHeader.biPlanes = 1;
 	bmiHeader.biBitCount = 32;
 	bmiHeader.biCompression = OS.BI_RGB;
@@ -210,15 +210,33 @@ int copyWithAlpha (int hBitmap, int background, byte[] alphaData, int destWidth,
 	}
 	OS.MoveMemory (dibBM.bmBits, srcData, sizeInBytes);
 	
-	/* Stretch */
+	/* Stretch and free resources */
 	if (srcWidth != destWidth || srcHeight != destHeight) {
-		OS.SetStretchBltMode (memHdc, OS.COLORONCOLOR);
-		OS.StretchBlt (memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		BITMAPINFOHEADER bmiHeader2 = new BITMAPINFOHEADER ();
+		bmiHeader2.biSize = BITMAPINFOHEADER.sizeof;
+		bmiHeader2.biWidth = destWidth;
+		bmiHeader2.biHeight = -destHeight;
+		bmiHeader2.biPlanes = 1;
+		bmiHeader2.biBitCount = 32;
+		bmiHeader2.biCompression = OS.BI_RGB;
+		byte []	bmi2 = new byte[BITMAPINFOHEADER.sizeof];
+		OS.MoveMemory (bmi2, bmiHeader2, BITMAPINFOHEADER.sizeof);
+		int [] pBits2 = new int [1];
+		int memDib2 = OS.CreateDIBSection (0, bmi2, OS.DIB_RGB_COLORS, pBits2, 0, 0);
+		int memHdc2 = OS.CreateCompatibleDC (hdc);
+		int oldMemBitmap2 = OS.SelectObject (memHdc2, memDib2);
+		if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc2, OS.COLORONCOLOR);
+		OS.StretchBlt (memHdc2, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		OS.SelectObject (memHdc2, oldMemBitmap2);
+		OS.DeleteDC (memHdc2);
+		OS.SelectObject (memHdc, oldMemBitmap);
+		OS.DeleteDC (memHdc);
+		OS.DeleteObject (memDib);
+		memDib = memDib2;
+	} else {
+		OS.SelectObject (memHdc, oldMemBitmap);
+		OS.DeleteDC (memHdc);
 	}
-	
-	/* Free resources */
-	OS.SelectObject (memHdc, oldMemBitmap);
-	OS.DeleteDC (memHdc);
 	OS.SelectObject (srcHdc, oldSrcBitmap);
 	OS.DeleteDC (srcHdc);
 	OS.ReleaseDC (0, hdc);
