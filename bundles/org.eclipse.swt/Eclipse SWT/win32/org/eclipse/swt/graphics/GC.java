@@ -893,7 +893,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		return;
 	}
 
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+	if (OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 		BLENDFUNCTION blend = new BLENDFUNCTION();
 		blend.BlendOp = OS.AC_SRC_OVER;
 		int srcHdc = OS.CreateCompatibleDC(handle);
@@ -2207,7 +2207,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	* to the right edge of the rectangle. The fix is not to use
 	* GradientFill for printer devices.
 	*/
-	if (!OS.IsWinCE && rop2 != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
+	if (OS.IsWinNT && rop2 != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
 		final int hHeap = OS.GetProcessHeap();
 		final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
 		final int pVertex = pMesh + GRADIENT_RECT.sizeof;
