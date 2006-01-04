@@ -1339,7 +1339,9 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	if ((flags & OS.SWP_NOSIZE) == 0 && width != 0) {
 		RECT rect = new RECT ();
 		OS.GetWindowRect (handle, rect);
-		if (rect.right - rect.left == 0) {
+		int margins = OS.SendMessage (handle, OS.EM_GETMARGINS, 0, 0);
+		int marginWidth = (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+		if (rect.right - rect.left <= marginWidth) {
 			int [] start = new int [1], end = new int [1];
 			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 			if (start [0] != 0 || end [0] != 0) {
