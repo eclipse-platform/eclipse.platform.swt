@@ -259,7 +259,10 @@ public class StyledText extends Canvas {
 					printerRenderer.setLineAlignment(i, 1, event.alignment);
 					printerRenderer.setLineJustify(i, 1, event.justify);
 					printerRenderer.setLineBullet(i, 1, event.bullet);
-					printerRenderer.setStyleRanges(event.ranges, event.styles);
+					StyleRange[] styles = event.styles;
+					if (styles != null && styles.length > 0) {
+						printerRenderer.setStyleRanges(event.ranges, styles);
+					}
 				}
 			}
 		}
