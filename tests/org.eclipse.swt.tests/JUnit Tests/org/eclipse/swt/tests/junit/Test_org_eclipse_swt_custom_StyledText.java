@@ -934,6 +934,144 @@ public void test_getLineHeight() {
 	assertTrue(":a:", text.getLineHeight() > 0);
 }
 
+public void test_getLineIndex () {
+	test_getLineIndex(text);
+	StyledText text2 = new StyledText(shell, SWT.WRAP);
+	test_getLineIndex(text2);
+	text2.dispose();
+}
+
+void test_getLineIndex (StyledText text) {
+	int lineHeight = text.getLineHeight();
+	
+	text.setText("Line0\nLine1\nLine2");
+	text.setSize(400, lineHeight * 3);
+	assertEquals(0, text.getLineIndex(-100));
+	assertEquals(0, text.getLineIndex(-1));
+	assertEquals(0, text.getLineIndex(0));
+	assertEquals(0, text.getLineIndex(lineHeight / 2));
+	assertEquals(0, text.getLineIndex(lineHeight - 1));
+	assertEquals(1, text.getLineIndex(lineHeight));
+	assertEquals(1, text.getLineIndex(lineHeight + lineHeight / 2));
+	assertEquals(1, text.getLineIndex(2 * lineHeight - 1));
+	assertEquals(2, text.getLineIndex(2 * lineHeight));
+	assertEquals(2, text.getLineIndex(2 * lineHeight + lineHeight / 2));
+	assertEquals(2, text.getLineIndex(3 * lineHeight - 1));
+	assertEquals(2, text.getLineIndex(3 * lineHeight));
+	assertEquals(2, text.getLineIndex(10 * lineHeight));
+	
+	text.setSize(400, lineHeight);
+	text.setTopIndex(1);
+	assertEquals(0, text.getLineIndex(-10 * lineHeight));
+	assertEquals(0, text.getLineIndex(-lineHeight));
+	assertEquals(0, text.getLineIndex(-lineHeight / 2));
+	assertEquals(1, text.getLineIndex(0));
+	assertEquals(1, text.getLineIndex(lineHeight - 1));
+	assertEquals(2, text.getLineIndex(lineHeight));
+	assertEquals(2, text.getLineIndex(2 * lineHeight));
+	assertEquals(2, text.getLineIndex(10 * lineHeight));
+
+
+	text.setTopIndex(2);
+	assertEquals(0, text.getLineIndex(-10 * lineHeight));
+	assertEquals(0, text.getLineIndex(-2 * lineHeight));
+	assertEquals(0, text.getLineIndex(-lineHeight - 1));
+	assertEquals(1, text.getLineIndex(-lineHeight));
+	assertEquals(1, text.getLineIndex(-1));
+	assertEquals(2, text.getLineIndex(0));
+	assertEquals(2, text.getLineIndex(lineHeight - 1));
+	assertEquals(2, text.getLineIndex(lineHeight));
+	assertEquals(2, text.getLineIndex(10 * lineHeight));
+	
+
+	text.setTopIndex(0);
+	text.setSize(400, 0);
+	assertEquals(0, text.getLineIndex(-100));
+	assertEquals(0, text.getLineIndex(-1));
+	assertEquals(0, text.getLineIndex(0));
+	assertEquals(0, text.getLineIndex(lineHeight / 2));
+	assertEquals(0, text.getLineIndex(lineHeight - 1));
+	assertEquals(1, text.getLineIndex(lineHeight));
+	assertEquals(1, text.getLineIndex(lineHeight + lineHeight / 2));
+	assertEquals(1, text.getLineIndex(2 * lineHeight - 1));
+	assertEquals(2, text.getLineIndex(2 * lineHeight));
+	assertEquals(2, text.getLineIndex(2 * lineHeight + lineHeight / 2));
+	assertEquals(2, text.getLineIndex(3 * lineHeight - 1));
+	assertEquals(2, text.getLineIndex(3 * lineHeight));
+	assertEquals(2, text.getLineIndex(10 * lineHeight));
+	
+	text.setTopPixel(3 * lineHeight);
+	assertEquals(0, text.getLineIndex(-3 * lineHeight -100));
+	assertEquals(0, text.getLineIndex(-3 * lineHeight));
+	assertEquals(0, text.getLineIndex(-2 * lineHeight - 1));
+	assertEquals(1, text.getLineIndex(-2 * lineHeight));
+	assertEquals(1, text.getLineIndex(-lineHeight - 1));
+	assertEquals(2, text.getLineIndex(-lineHeight));
+	assertEquals(2, text.getLineIndex(0));
+	assertEquals(2, text.getLineIndex(100));
+	
+	text.setTopPixel(0);
+	text.setText("");
+	assertEquals(0, text.getLineIndex(-1));
+	assertEquals(0, text.getLineIndex(-100));
+	assertEquals(0, text.getLineIndex(0));
+	assertEquals(0, text.getLineIndex(1));
+	assertEquals(0, text.getLineIndex(100));
+}
+
+public void test_getLinePixel () {
+	test_getLinePixel(text);
+	StyledText text2 = new StyledText(shell, SWT.WRAP);
+	test_getLinePixel(text2);
+	text2.dispose();
+}
+
+void test_getLinePixel(StyledText text) {
+	int lineHeight = text.getLineHeight();
+	
+	text.setText("Line0\nLine1\nLine2");
+	text.setSize(400, lineHeight * 3);
+	assertEquals(0, text.getLinePixel(-100));
+	assertEquals(0, text.getLinePixel(0));
+	assertEquals(lineHeight, text.getLinePixel(1));
+	assertEquals(2 * lineHeight, text.getLinePixel(2));
+	assertEquals(3 * lineHeight, text.getLinePixel(3));
+	assertEquals(3 * lineHeight, text.getLinePixel(100));
+	
+	text.setSize(400, 0);
+	assertEquals(0, text.getLinePixel(-100));
+	assertEquals(0, text.getLinePixel(0));
+	assertEquals(lineHeight, text.getLinePixel(1));
+	assertEquals(2 * lineHeight, text.getLinePixel(2));
+	assertEquals(3 * lineHeight, text.getLinePixel(3));
+	assertEquals(3 * lineHeight, text.getLinePixel(100));
+	
+	text.setSize(400, lineHeight);
+	text.setTopIndex(1);
+	assertEquals(-lineHeight, text.getLinePixel(-100));
+	assertEquals(-lineHeight, text.getLinePixel(0));
+	assertEquals(0, text.getLinePixel(1));
+	assertEquals(lineHeight, text.getLinePixel(2));
+	assertEquals(2 * lineHeight, text.getLinePixel(3));
+	assertEquals(2 * lineHeight, text.getLinePixel(100));
+
+	text.setSize(400, 0); 
+	text.setTopPixel(3 * lineHeight);
+	assertEquals(-3 * lineHeight, text.getLinePixel(-100));
+	assertEquals(-3 * lineHeight, text.getLinePixel(0));
+	assertEquals(-2 * lineHeight, text.getLinePixel(1));
+	assertEquals(-lineHeight, text.getLinePixel(2));
+	assertEquals(0, text.getLinePixel(3));
+	assertEquals(0, text.getLinePixel(100));
+	
+	text.setTopPixel(0);
+	text.setText("");
+	assertEquals(0, text.getLinePixel(-10));
+	assertEquals(0, text.getLinePixel(0));
+	assertEquals(lineHeight, text.getLinePixel(1));
+	assertEquals(lineHeight, text.getLinePixel(10));
+}
+
 public void test_getLocationAtOffsetI(){
 	// copy from StyledText, has to match value used by StyledText
 	final int XINSET = isBidi() ? 2 : 0;
@@ -4066,6 +4204,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getLineCount");
 	methodNames.addElement("test_getLineDelimiter");
 	methodNames.addElement("test_getLineHeight");
+	methodNames.addElement("test_getLineIndex");
+	methodNames.addElement("test_getLinePixel");
 	methodNames.addElement("test_getLocationAtOffsetI");
 	methodNames.addElement("test_getOffsetAtLineI");
 	methodNames.addElement("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point");
@@ -4175,6 +4315,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getLineCount")) test_getLineCount();
 	else if (getName().equals("test_getLineDelimiter")) test_getLineDelimiter();
 	else if (getName().equals("test_getLineHeight")) test_getLineHeight();
+	else if (getName().equals("test_getLineIndex")) test_getLineIndex();
+	else if (getName().equals("test_getLinePixel")) test_getLinePixel();
 	else if (getName().equals("test_getLocationAtOffsetI")) test_getLocationAtOffsetI();
 	else if (getName().equals("test_getOffsetAtLineI")) test_getOffsetAtLineI();
 	else if (getName().equals("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point")) test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point();
