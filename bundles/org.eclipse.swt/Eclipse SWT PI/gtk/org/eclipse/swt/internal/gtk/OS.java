@@ -3067,6 +3067,15 @@ public static final boolean gdk_utf8_to_compound_text(byte[] str, int /*long*/[]
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gdk_utf8_to_string_target(byte[] str);
+public static final int /*long*/ gdk_utf8_to_string_target(byte[] str) {
+	lock.lock();
+	try {
+		return _gdk_utf8_to_string_target(str);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _gdk_text_property_to_utf8_list  (int /*long*/ encoding, int format, int /*long*/ text, int length,  int /*long*/[] list);
 public static final int gdk_text_property_to_utf8_list  (int /*long*/ encoding, int format, int /*long*/ text, int length,  int /*long*/[] list) {
 	lock.lock();

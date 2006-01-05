@@ -4742,6 +4742,22 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1utf8_1to_1string_1target
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1utf8_1to_1string_1target)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1utf8_1to_1string_1target_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)gdk_utf8_to_string_target((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1utf8_1to_1string_1target_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1visual_1get_1system
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1visual_1get_1system)
 	(JNIEnv *env, jclass that)

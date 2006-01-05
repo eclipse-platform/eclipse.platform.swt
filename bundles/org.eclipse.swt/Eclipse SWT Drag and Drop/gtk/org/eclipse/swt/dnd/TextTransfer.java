@@ -64,13 +64,13 @@ public void javaToNative (Object object, TransferData transferData) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
-	byte[] buffer = Converter.wcsToMbcs (null, string, true);
+	byte[] utf8 = Converter.wcsToMbcs (null, string, true);
 	if  (transferData.type ==  COMPOUND_TEXT_ID) {
 		int /*long*/[] encoding = new int /*long*/[1];
 		int[] format = new int[1];
 		int /*long*/[] ctext = new int /*long*/[1];
 		int[] length = new int[1];
-		boolean result = OS.gdk_utf8_to_compound_text(buffer, encoding, format, ctext, length);
+		boolean result = OS.gdk_utf8_to_compound_text(utf8, encoding, format, ctext, length);
 		if (!result) return;
 		transferData.type = encoding[0];
 		transferData.format = format[0];
@@ -78,15 +78,23 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.pValue = ctext[0];
 		transferData.result = 1;
 	} 
-	if (transferData.type == UTF8_STRING_ID ||
-		transferData.type == STRING_ID) {
-		int /*long*/ pValue = OS.g_malloc(buffer.length);
+	if (transferData.type == UTF8_STRING_ID) {
+		int /*long*/ pValue = OS.g_malloc(utf8.length);
 		if (pValue ==  0) return;
-		OS.memmove(pValue, buffer, buffer.length);
-		transferData.type = transferData.type;
+		OS.memmove(pValue, utf8, utf8.length);
+		transferData.type = UTF8_STRING_ID;
 		transferData.format = 8;
-		transferData.length = buffer.length - 1;
+		transferData.length = utf8.length - 1;
 		transferData.pValue = pValue;
+		transferData.result = 1;
+	}
+	if (transferData.type == STRING_ID) {
+		int /*long*/ string_target = OS.gdk_utf8_to_string_target(utf8);
+		if (string_target ==  0) return;
+		transferData.type = STRING_ID;
+		transferData.format = 8;
+		transferData.length = OS.strlen(string_target);
+		transferData.pValue = string_target;
 		transferData.result = 1;
 	}
 }
@@ -102,28 +110,17 @@ public void javaToNative (Object object, TransferData transferData) {
  */
 public Object nativeToJava(TransferData transferData){
 	if (!isSupportedType(transferData) ||  transferData.pValue == 0) return null;
-	byte[] buffer = null;
-	if (transferData.type == COMPOUND_TEXT_ID) { 	
-		int /*long*/[] list = new int /*long*/[1];
-		int count = OS.gdk_text_property_to_utf8_list(transferData.type, transferData.format, transferData.pValue, transferData.length, list);
-		if (count == 0) return null;
-		int /*long*/[] ptr = new int /*long*/[1];
-		OS.memmove(ptr, list[0], OS.PTR_SIZEOF);
-		int length = OS.strlen(ptr[0]);
-		buffer = new byte[length];
-		OS.memmove(buffer, ptr[0], length);
-		OS.g_strfreev(list[0]);
-	}
-	if (transferData.type == UTF8_STRING_ID ||
-		transferData.type == STRING_ID) {
-		int size = transferData.format * transferData.length / 8;
-		if (size == 0) return null;
-		buffer = new byte[size];
-		OS.memmove(buffer, transferData.pValue, size);
-	}
-	if (buffer == null) return null;
-	// convert byte array to a string
-	char [] unicode = Converter.mbcsToWcs (null, buffer);
+	int /*long*/[] list = new int /*long*/[1];
+	int count = OS.gdk_text_property_to_utf8_list(transferData.type, transferData.format, transferData.pValue, transferData.length, list);
+	if (count == 0) return null;
+	int /*long*/[] ptr = new int /*long*/[1];
+	OS.memmove(ptr, list[0], OS.PTR_SIZEOF);
+	int length = OS.strlen(ptr[0]);
+	byte[] utf8 = new byte[length];
+	OS.memmove(utf8, ptr[0], length);
+	OS.g_strfreev(list[0]);
+	// convert utf8 byte array to a unicode string
+	char [] unicode = Converter.mbcsToWcs (null, utf8);
 	String string = new String (unicode);
 	int end = string.indexOf('\0');
 	return (end == -1) ? string : string.substring(0, end);
