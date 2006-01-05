@@ -3591,23 +3591,15 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
  * Clamps out of ranges index.
  *  
  * @param lineIndex the line index, the max value is lineCount. if
- * lineIndex == lineCount it returns the bottomPixel of the last line.
+ * lineIndex == lineCount it returns the bottom pixel of the last line.
  * It means this function can be used to retrive the bottom pixel of any line. 
- *  
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  * 
  * @since 3.2
  */
 public int getLinePixel(int lineIndex) {
 	checkWidget();
-	//FIXME: range checking?
 	int lineCount = content.getLineCount();
-	if (lineIndex > lineCount) {
-		lineIndex = lineCount;
-	}
-	if (lineIndex < 0) {
-		lineIndex = 0;
-	}
+	lineIndex = Math.max(0, Math.min(lineCount, lineIndex));
 	if (isFixedLineHeight()) {
 		int lineHeight = renderer.getLineHeight();
 		return lineIndex * lineHeight - getVerticalScrollOffset() + topMargin;
@@ -3629,27 +3621,22 @@ public int getLinePixel(int lineIndex) {
  * Returns the line index for a y, relative to the client area.
  * The line index returned is always in the range 0..lineCount - 1.
  *
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- *
  * @since 3.2
  */
 public int getLineIndex(int y) {
 	checkWidget();
-	//FIXME: range checking?
 	y -= topMargin;
 	if (isFixedLineHeight()) {
 		int lineHeight = renderer.getLineHeight();
 		int lineIndex = (y + getVerticalScrollOffset()) / lineHeight;
 		int lineCount = content.getLineCount();
-		if (lineIndex >= lineCount) {
-			lineIndex = lineCount - 1;
-		}
+		lineIndex = Math.max(0, Math.min(lineCount - 1, lineIndex));
 		return lineIndex;
 	}
 	if (y == topIndexY) return topIndex;
 	int line = topIndex;
 	if (y < topIndexY) {
-		while (y <= topIndexY && line > 0) {
+		while (y < topIndexY && line > 0) {
 			y += renderer.getLineHeight(--line);
 		}
 	} else {
