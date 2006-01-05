@@ -1071,7 +1071,9 @@ void textChanging(TextChangingEvent event) {
 			int[] newHeights = new int[lineCount + delta + GROW];
 			System.arraycopy(lineHeight, 0, newHeights, 0, lineCount);
 			lineHeight = newHeights;
-			if (lines != null) {
+		}
+		if (lines != null) {
+			if (lineCount + delta > lines.length) {
 				LineInfo[] newLines = new LineInfo[lineCount + delta + GROW];
 				System.arraycopy(lines, 0, newLines, 0, lineCount);
 				lines = newLines;
