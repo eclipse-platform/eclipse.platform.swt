@@ -295,12 +295,12 @@ void computeRuns() {
 		int runLength = translateOffset(styles[i + 1].start) - start;
 		OS.ATSUSetRunStyle(layout, run.atsuStyle, start, runLength);
 	}
-	int ptr = OS.NewPtr(4);
-	buffer[0] = OS.Long2Fix(indent);
-	OS.memcpy(ptr, buffer, 4);
-	int[] tags = new int[]{OS.kATSUImposeWidthTag};
-	int[] sizes = new int[]{4};
-	int[] values = new int[]{ptr};
+	int ptr = OS.NewPtr(12);
+	buffer = new int[]{OS.Long2Fix(indent), 0, 0};
+	OS.memcpy(ptr, buffer, 12);
+	int[] tags = new int[]{OS.kATSUImposeWidthTag, OS.kATSUAscentTag, OS.kATSUDescentTag};
+	int[] sizes = new int[]{4, 4, 4};
+	int[] values = new int[]{ptr, ptr + 4, ptr + 8};
 	OS.ATSUCreateStyle(buffer);
 	indentStyle = buffer[0];
 	OS.ATSUSetAttributes(indentStyle, tags.length, tags, sizes, values);
