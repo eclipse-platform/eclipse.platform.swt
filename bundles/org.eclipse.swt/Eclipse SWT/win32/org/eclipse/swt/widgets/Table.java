@@ -4392,6 +4392,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
+			if (resizeCount != 0) {
+				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, plvfi.iItem, plvfi.iItem);
+				break;
+			}
 			TableItem item = _getItem (plvfi.iItem);
 			/*
 			* The cached flag is used by both virtual and non-virtual
