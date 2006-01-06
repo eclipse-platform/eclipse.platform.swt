@@ -540,6 +540,11 @@ void releaseHandle () {
 	parent = null;
 }
 
+void releaseParent () {
+	super.releaseParent ();
+	parent.checkItems (true);
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	strings = null;

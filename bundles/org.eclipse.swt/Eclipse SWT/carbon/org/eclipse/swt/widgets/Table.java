@@ -852,7 +852,6 @@ void destroyItem (TableColumn column) {
 }
 
 void destroyItem (TableItem item) {
-	checkItems (true);
 	int index = 0;
 	while (index < itemCount) {
 		if (items [index] == item) break;
