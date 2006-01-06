@@ -146,7 +146,6 @@ public class Accessible {
 		accessibleListeners.addElement(listener);
 	}
 	
-	
 	/**
 	 * Adds the listener to the collection of listeners who will
 	 * be notified when an accessible client asks for custom control
@@ -1322,7 +1321,6 @@ public class Accessible {
 	}
 
 	int osToRole(int osRole) {
-		int role = COM.ROLE_SYSTEM_CLIENT;
 		switch (osRole) {
 			case COM.ROLE_SYSTEM_CLIENT: return ACC.ROLE_CLIENT_AREA;
 			case COM.ROLE_SYSTEM_WINDOW: return ACC.ROLE_WINDOW;
@@ -1354,7 +1352,7 @@ public class Accessible {
 			case COM.ROLE_SYSTEM_SLIDER: return ACC.ROLE_SLIDER;
 			case COM.ROLE_SYSTEM_LINK: return ACC.ROLE_LINK;
 		}
-		return role;
+		return ACC.ROLE_CLIENT_AREA;
 	}
 
 	/* checkWidget was copied from Widget, and rewritten to work in this package */
