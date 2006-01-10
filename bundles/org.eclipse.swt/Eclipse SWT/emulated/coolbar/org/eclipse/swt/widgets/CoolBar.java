@@ -587,7 +587,7 @@ void onMouseDown(Event event) {
 	if (dragging != null) {
 		mouseXOffset = event.x;
 		itemXOffset = mouseXOffset - dragging.internalGetBounds().x;
-		setCursor(dragCursor);
+		_setCursor(dragCursor);
 	}
 	fixEvent(event);
 }
