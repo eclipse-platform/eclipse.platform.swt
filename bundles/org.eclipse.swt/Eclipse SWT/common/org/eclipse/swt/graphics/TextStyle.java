@@ -119,9 +119,7 @@ public boolean equals(Object object) {
 	if (font != null) {
 		if (!font.equals(style.font)) return false;
 	} else if (style.font != null) return false;
-	if (metrics != null) {
-		if (!metrics.equals(style.metrics)) return false;
-	} else if (style.metrics != null) return false;
+	if (metrics != null || style.metrics != null) return false;
 	if (underline != style.underline) return false;
 	if (strikeout != style.strikeout) return false;
 	if (rise != style.rise) return false;
