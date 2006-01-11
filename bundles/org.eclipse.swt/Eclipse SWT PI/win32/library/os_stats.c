@@ -14,13 +14,14 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 658;
-int OS_nativeFunctionCallCount[658];
+int OS_nativeFunctionCount = 661;
+int OS_nativeFunctionCallCount[661];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
 	"AdjustWindowRectEx",
 	"AlphaBlend",
+	"AnimateWindow",
 	"Arc",
 	"BeginDeferWindowPos",
 	"BeginPaint",
@@ -112,6 +113,8 @@ char * OS_nativeFunctionNames[] = {
 	"DrawTextA",
 	"DrawTextW",
 	"DrawThemeBackground",
+	"DrawThemeParentBackground",
+	"DrawThemeText",
 	"Ellipse",
 	"EnableMenuItem",
 	"EnableScrollBar",

@@ -87,6 +87,18 @@ fail:
 }
 #endif
 
+#ifndef NO_AnimateWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(AnimateWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, AnimateWindow_FUNC);
+	rc = (jboolean)AnimateWindow((HWND)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, AnimateWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Arc
 JNIEXPORT jboolean JNICALL OS_NATIVE(Arc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
@@ -1463,6 +1475,73 @@ fail:
 	if (arg5 && lparg5) setRECTFields(env, arg5, lparg5);
 	if (arg4 && lparg4) setRECTFields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, DrawThemeBackground_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DrawThemeParentBackground
+JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeParentBackground)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	RECT _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DrawThemeParentBackground_FUNC);
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
+/*
+	rc = (jint)DrawThemeParentBackground(arg0, arg1, lparg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(DrawThemeParentBackground_LIB);
+			if (hm) fp = GetProcAddress(hm, "DrawThemeParentBackground");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, DrawThemeParentBackground_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DrawThemeText
+JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeText)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4, jint arg5, jint arg6, jint arg7, jobject arg8)
+{
+	jchar *lparg4=NULL;
+	RECT _arg8, *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DrawThemeText_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = getRECTFields(env, arg8, &_arg8)) == NULL) goto fail;
+/*
+	rc = (jint)DrawThemeText(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, arg7, lparg8);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(DrawThemeText_LIB);
+			if (hm) fp = GetProcAddress(hm, "DrawThemeText");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, arg7, lparg8);
+		}
+	}
+fail:
+	if (arg8 && lparg8) setRECTFields(env, arg8, lparg8);
+	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, DrawThemeText_FUNC);
 	return rc;
 }
 #endif

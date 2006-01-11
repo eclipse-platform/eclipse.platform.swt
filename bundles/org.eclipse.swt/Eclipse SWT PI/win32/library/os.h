@@ -126,6 +126,7 @@
 #ifdef _WIN32_WCE
 #define NO_AbortDoc
 #define NO_ActivateKeyboardLayout
+#define NO_AnimateWindow
 #define NO_Arc
 #define NO_AlphaBlend
 #define NO_BeginPath
@@ -163,6 +164,7 @@
 #define NO_DrawTextA
 #define NO_DrawThemeBackground
 #define NO_DrawThemeParentBackground
+#define NO_DrawThemeText
 #define NO_EnableScrollBar
 #define NO_EndDoc
 #define NO_EndPage

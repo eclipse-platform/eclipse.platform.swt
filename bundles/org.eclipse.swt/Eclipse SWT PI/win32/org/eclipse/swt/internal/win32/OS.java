@@ -177,6 +177,10 @@ public class OS extends Platform {
 	public static final int AC_SRC_OVER = 0;
 	public static final int AC_SRC_ALPHA = 1;
 	public static final int ALTERNATE = 1;
+	public static final int AW_VER_POSITIVE = 0x00000004;
+	public static final int AW_VER_NEGATIVE = 0x00000008;
+	public static final int AW_HIDE = 0x00010000;
+	public static final int AW_SLIDE = 0x00040000;
 	public static final int BDR_SUNKENINNER = 0x8;
 	public static final int BFFM_INITIALIZED = 0x1;
 	public static final int BFFM_SETSELECTION = IsUnicode ? 0x467 : 0x466;
@@ -949,6 +953,7 @@ public class OS extends Platform {
 	public static final int PM_NOYIELD = 0x2;
 	public static final int PRF_CLIENT = 0x4;
 	public static final int PRF_ERASEBKGND = 0x8;
+	public static final int PRF_NONCLIENT = 0x2; 
 	public static final int QS_HOTKEY = 0x0080;
 	public static final int QS_KEY = 0x0001;
 	public static final int QS_MOUSEMOVE = 0x0002;
@@ -2480,6 +2485,7 @@ public static final native int AbortDoc (int hdc);
 public static final native int ActivateKeyboardLayout(int hkl, int Flags);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
 public static final native boolean AlphaBlend(int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
+public static final native boolean AnimateWindow(int hwnd, int dwTime, int dwFlags); 
 public static final native boolean Arc (int hdc,int nLeftRect,int nTopRect,int nRightRect,int nBottomRect,int nXStartArc,int nYStartArc,int nXEndArc,int nYEndArc);
 public static final native int BeginDeferWindowPos (int nNumWindows);
 public static final native int BeginPaint (int hWnd, PAINTSTRUCT lpPaint);
@@ -2571,6 +2577,8 @@ public static final native boolean DrawStateA (int hdc, int hbr, int lpOutputFun
 public static final native int DrawTextW (int hDC, char [] lpString, int nCount, RECT lpRect, int uFormat);
 public static final native int DrawTextA (int hDC, byte [] lpString, int nCount, RECT lpRect, int uFormat);
 public static final native int DrawThemeBackground(int hTheme, int hdc, int iPartId, int iStateId, RECT pRect, RECT pClipRect);
+public static final native int DrawThemeParentBackground(int hwnd, int hdc, RECT prc);
+public static final native int DrawThemeText(int hTheme, int hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
 public static final native boolean Ellipse (int hdc,int nLeftRect,int nTopRect,int nRightRect,int nBottomRect);
 public static final native boolean EnableMenuItem (int hMenu, int uIDEnableItem, int uEnable);
 public static final native boolean EnableScrollBar (int hWnd, int wSBflags, int wArrows);

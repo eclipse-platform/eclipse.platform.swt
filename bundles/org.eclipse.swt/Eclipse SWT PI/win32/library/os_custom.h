@@ -13,6 +13,8 @@
 #define AlphaBlend_LIB "msimg32.dll"
 #define CloseThemeData_LIB "uxtheme.dll"
 #define DrawThemeBackground_LIB "uxtheme.dll"
+#define DrawThemeParentBackground_LIB "uxtheme.dll"
+#define DrawThemeText_LIB "uxtheme.dll"
 #define EnumDisplayMonitors_LIB "user32.dll"
 #define EnumSystemLanguageGroupsA_LIB "kernel32.dll"
 #define EnumSystemLanguageGroupsW_LIB "kernel32.dll"
