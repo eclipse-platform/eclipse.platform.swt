@@ -46,7 +46,6 @@ public class TabFolder extends Composite {
 	ImageList imageList;
 	static final int TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (0, OS.WC_TABCONTROL, true);
-	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	
 	/*
 	* These are the undocumented control id's for the children of

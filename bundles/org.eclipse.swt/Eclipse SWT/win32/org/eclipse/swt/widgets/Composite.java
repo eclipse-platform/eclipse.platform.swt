@@ -52,8 +52,7 @@ public class Composite extends Scrollable {
 	WINDOWPOS [] lpwp;
 	Control [] tabList;
 	int layoutCount, backgroundMode;
-	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
-	
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */

@@ -62,7 +62,6 @@ public class Tree extends Composite {
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static final int HeaderProc;
 	static final TCHAR HeaderClass = new TCHAR (0, OS.WC_HEADER, true);
-	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, TreeClass, lpWndClass);
@@ -3443,6 +3442,11 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			case OS.WM_NCPAINT: {
 				LRESULT result = wmNCPaint (hwnd, wParam, lParam);
+				if (result != null) return result.value;
+				break;
+			}
+			case OS.WM_PRINT: {
+				LRESULT result = wmPrint (hwnd, wParam, lParam);
 				if (result != null) return result.value;
 				break;
 			}

@@ -3271,6 +3271,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
 		case OS.WM_PARENTNOTIFY:		result = WM_PARENTNOTIFY (wParam, lParam); break;
 		case OS.WM_PASTE:				result = WM_PASTE (wParam, lParam); break;
+		case OS.WM_PRINT:				result = WM_PRINT (wParam, lParam); break;
 		case OS.WM_PRINTCLIENT:			result = WM_PRINTCLIENT (wParam, lParam); break;
 		case OS.WM_QUERYENDSESSION:		result = WM_QUERYENDSESSION (wParam, lParam); break;
 		case OS.WM_QUERYNEWPALETTE:		result = WM_QUERYNEWPALETTE (wParam, lParam); break;
@@ -3778,6 +3779,10 @@ LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 
 LRESULT WM_PASTE (int wParam, int lParam) {
 	return null;
+}
+
+LRESULT WM_PRINT (int wParam, int lParam) {
+	return wmPrint (handle, wParam, lParam);
 }
 
 LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
