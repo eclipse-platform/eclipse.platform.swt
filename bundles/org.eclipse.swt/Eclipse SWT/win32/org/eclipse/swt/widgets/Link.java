@@ -855,6 +855,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 		OS.GetClientRect (handle, rect);
 		GCData data = new GCData ();
 		data.device = display;
+		data.foreground = getForegroundPixel ();
 		GC gc = GC.win32_new (wParam, data);
 		drawWidget (gc, rect);
 		gc.dispose ();
@@ -871,6 +872,9 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 LRESULT WM_SETFONT (int wParam, int lParam) {
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout.setFont (Font.win32_new (display, wParam));
+	}
+	if (lParam != 0) {
+		OS.InvalidateRect (handle, null, true);
 	}
 	return super.WM_SETFONT (font = wParam, lParam);
 }
