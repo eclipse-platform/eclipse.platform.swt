@@ -1282,6 +1282,11 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 		if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 			GCData data = new GCData ();
 			data.device = display;
+			data.foreground = getForegroundPixel ();
+			Control control = findBackgroundControl ();
+			if (control == null) control = this;
+			data.background = control.getBackgroundPixel ();
+			data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 			GC gc = GC.win32_new (wParam, data);
 			Event event = new Event ();
 			event.gc = gc;
@@ -1299,6 +1304,9 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFONT (int wParam, int lParam) {
+	if (lParam != 0) {
+		OS.InvalidateRect (handle, null, true);
+	}
 	return super.WM_SETFONT (font = wParam, lParam);
 }
 
