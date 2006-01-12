@@ -1304,9 +1304,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFONT (int wParam, int lParam) {
-	if (lParam != 0) {
-		OS.InvalidateRect (handle, null, true);
-	}
+	if (lParam != 0) OS.InvalidateRect (handle, null, true);
 	return super.WM_SETFONT (font = wParam, lParam);
 }
 

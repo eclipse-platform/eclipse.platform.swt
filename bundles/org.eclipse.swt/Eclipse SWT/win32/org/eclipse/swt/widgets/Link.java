@@ -873,9 +873,7 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout.setFont (Font.win32_new (display, wParam));
 	}
-	if (lParam != 0) {
-		OS.InvalidateRect (handle, null, true);
-	}
+	if (lParam != 0) OS.InvalidateRect (handle, null, true);
 	return super.WM_SETFONT (font = wParam, lParam);
 }
 
