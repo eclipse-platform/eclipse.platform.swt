@@ -4314,6 +4314,21 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_HSCROLL (int wParam, int lParam) {
+	LRESULT result = super.WM_HSCROLL (wParam, lParam);
+	/*
+	* Bug in Windows.  When an empty table is drawing grid lines
+	* and the user scrolls horizontally, the table does not redraw
+	* the newly exposed vertical grid lines.  The fix is to redraw
+	* the table.
+	*/
+	if (OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0) == 0) {
+		int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+		if ((bits & OS.LVS_EX_GRIDLINES) != 0) OS.InvalidateRect (handle, null, true);
+	}
+	return result;
+}
+
 LRESULT WM_VSCROLL (int wParam, int lParam) {
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	/*
