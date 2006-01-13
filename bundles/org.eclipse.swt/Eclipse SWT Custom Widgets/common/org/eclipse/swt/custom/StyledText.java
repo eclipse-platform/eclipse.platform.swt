@@ -5037,6 +5037,7 @@ void handleKey(Event event) {
 		    event.character == SWT.CR || event.character == SWT.LF || 
 		    event.character == TAB) {
 			doContent(event.character);
+			update();
 		}
 	} else {
 		invokeAction(action);
@@ -5300,9 +5301,6 @@ void handleTextChanged(TextChangedEvent event) {
 	// in some cases new text would be drawn in scroll source area even 
 	// though the intent is to scroll it.
 	updateSelection(lastTextChangeStart, lastTextChangeReplaceCharCount, lastTextChangeNewCharCount);
-	if (newLastLineBottom == lastLineBottom) {
-		update();
-	}
 	if (lastTextChangeReplaceLineCount > 0 || wordWrap) {
 		claimBottomFreeSpace();
 	}
