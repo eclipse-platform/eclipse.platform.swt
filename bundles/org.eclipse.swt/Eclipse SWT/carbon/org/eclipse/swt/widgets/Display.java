@@ -2764,6 +2764,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 }
 
 int mouseHoverProc (int id, int handle) {
+	OS.RemoveEventLoopTimer (id);
 	mouseHoverID = 0;
 	mouseMoved = false;
 	if (currentControl != null && !currentControl.isDisposed ()) {
@@ -2959,6 +2960,19 @@ protected void release () {
 void releaseDisplay () {
 	disposeWindows ();
 
+	/* Release Timers */
+	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
+	if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
+	caretID = mouseHoverID = 0;
+	if (timerIds != null) {
+		for (int i=0; i<timerIds.length; i++) {
+			if (timerIds [i] != 0 && timerIds [i] != -1) {
+				 OS.RemoveEventLoopTimer (timerIds [i]);
+			}
+		}
+	}
+	timerIds = null;
+	
 	actionCallback.dispose ();
 	appleEventCallback.dispose ();
 	caretCallback.dispose ();
@@ -3847,6 +3861,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 }
 
 int timerProc (int id, int index) {
+	OS.RemoveEventLoopTimer (id);
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
 		if (allowTimers) {
