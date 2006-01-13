@@ -4061,7 +4061,7 @@ LRESULT wmColorChild (int wParam, int lParam) {
 		if (foreground == -1) return null;
 	}
 	if (control == null) control = this;
-	int forePixel = control.getForegroundPixel ();
+	int forePixel = getForegroundPixel ();
 	int backPixel = control.getBackgroundPixel ();
 	OS.SetTextColor (wParam, forePixel);
 	OS.SetBkColor (wParam, backPixel);
