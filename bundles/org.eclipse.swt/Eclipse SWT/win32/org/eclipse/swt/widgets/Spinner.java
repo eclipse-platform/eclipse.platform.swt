@@ -1043,6 +1043,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	
 			/* Paint messages */
 			case OS.WM_PAINT:			result = wmPaint (hwnd, wParam, lParam); break;
+			case OS.WM_PRINT:			result = wmPrint (hwnd, wParam, lParam); break;			
 	
 			/* Menu messages */
 			case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam); break;
