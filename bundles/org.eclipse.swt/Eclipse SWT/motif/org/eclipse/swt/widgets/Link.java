@@ -410,6 +410,11 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 public void setFont (Font font) {
 	super.setFont (font);
 	layout.setFont (this.font);
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (handle);
+	if (xWindow == 0) return;
+	OS.XClearArea (xDisplay, xWindow, 0, 0, 0, 0, true);
 }
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);

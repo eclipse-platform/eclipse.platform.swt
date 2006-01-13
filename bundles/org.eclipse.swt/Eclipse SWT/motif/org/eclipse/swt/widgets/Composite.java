@@ -1004,6 +1004,17 @@ public boolean setFocus () {
 	}
 	return super.setFocus ();
 }
+public void setFont (Font font) {
+	checkWidget();
+	super.setFont (font);
+	if ((state & CANVAS) != 0) {
+		int xDisplay = OS.XtDisplay (handle);
+		if (xDisplay == 0) return;
+		int xWindow = OS.XtWindow (handle);
+		if (xWindow == 0) return;
+		OS.XClearArea (xDisplay, xWindow, 0, 0, 0, 0, true);
+	}
+}
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);
 	if ((state & CANVAS) != 0) {
@@ -1252,7 +1263,7 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 		gc.setBackground (getBackground ());
 		gc.setFont (getFont ());
 		if ((style & SWT.NO_BACKGROUND) != 0) {
-			/* This code is intentionaly commented because it is really slow to copy bits from the screen */
+			/* This code is intentionaly commented because it is too slow to copy bits from the screen */
 //			paintGC.copyArea(image, 0, 0);
 		} else {
 			gc.fillRectangle(0, 0, width, height);
