@@ -31,6 +31,7 @@ import java.awt.Canvas;
 import java.awt.Frame;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowEvent;
 
 
 /**
@@ -158,8 +159,34 @@ public static Frame new_Frame (final Composite parent) {
 		Method method = clazz.getMethod("registerListeners", null);
 		if (method != null) method.invoke(value, null);
 	} catch (Throwable e) {}
+	final Listener shellListener = new Listener () {
+		public void handleEvent (Event e) {
+			switch (e.type) {
+				case SWT.Deiconify:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED));
+						}
+					});
+					break;
+				case SWT.Iconify:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED));
+						}
+					});
+					break;
+			}
+		}
+	};
+	Shell shell = parent.getShell ();
+	shell.addListener (SWT.Deiconify, shellListener);
+	shell.addListener (SWT.Iconify, shellListener);
 	parent.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
+			Shell shell = parent.getShell ();
+			shell.removeListener (SWT.Deiconify, shellListener);
+			shell.removeListener (SWT.Iconify, shellListener);
 			parent.setVisible(false);
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
