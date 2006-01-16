@@ -29,7 +29,7 @@ public class Browser5 {
 	static int cntClosed = 0;
 	
 	public static boolean test1(String url) {
-		if (verbose) System.out.println("javascript window.open with location and size parameters - args: "+url+" Expected Event Sequence: Visibility.open");
+		if (verbose) System.out.println("javascript window.open with location and size parameters - args: "+url+"\n  Expected Event Sequence: Visibility.show");
 		passed = false;
 				
 		final Display display = new Display();
@@ -49,8 +49,10 @@ public class Browser5 {
 					public void show(WindowEvent event) {
 						Browser browser = (Browser)event.widget;
 						Shell parent = browser.getShell();
-						if (event.location != null) parent.setLocation(event.location);
-						if (event.size != null) parent.setSize(event.size);
+						Point location = event.location;
+						Point size = event.size;
+						if (location != null) parent.setLocation(location);
+						if (size != null) parent.setSize(size);
 						int index = ((Integer)browser.getData("index")).intValue();
 						parent.setText("SWT Browser shell "+index);
 						parent.open();
@@ -58,7 +60,7 @@ public class Browser5 {
 							/* Certain browsers fire multiple show events for no good reason. Further show events
 							 * are considered 'legal' as long as they don't contain size and location information.
 							 */
-							if (event.location != null || event.size != null) {
+							if (location != null || size != null) {
 								if (verbose) System.out.println("Failure - Browser "+index+" is receiving multiple show events");
 								passed = false;
 								shell.close();
@@ -66,21 +68,25 @@ public class Browser5 {
 								if (verbose) System.out.println("Unnecessary (but harmless) visibility.show event Browser "+index);
 							}
 						} else {
+							if (verbose) System.out.println("Visibility.show browser "+index+" location "+location+" size "+size);
 							browser.setData("index", new Integer(-100-index));
-							if (verbose) System.out.println("Visibility.show browser "+index+" location "+event.location+" size "+event.size);
-							/* Certain browsers include decorations to the expected size. Accept size that are larger or equal than
-							 * expected. Certain browsers invent size or location when some parameters are missing. If we expect
-							 * null for one of size or location, also accept non null answers.
+
+							/* Certain browsers include decorations in addition to the expected size.
+							 * Accept sizes that are greater than or equal to the expected size.
+							 * Certain browsers invent size or location when some parameters are missing.
+							 * If we expect null for one of size or location, also accept non null answers.
 							 */
-							boolean checkLocation = (event.location == null && regressionBounds[index][0] == null) ||
-								(event.location != null && event.location.equals(regressionBounds[index][0]) ||
-								(event.location != null && regressionBounds[index][0] == null));
-							boolean checkSize  = ((event.size == null && regressionBounds[index][1] == null) || 
-							(event.size != null && event.size.equals(regressionBounds[index][1])) ||
-							(event.size != null && regressionBounds[index][1] == null) ||
-							(event.size != null && event.size.x >= regressionBounds[index][1].x && event.size.y >= regressionBounds[index][1].y));
-							if (verbose) System.out.println("Expected location "+regressionBounds[index][0]+" size "+regressionBounds[index][1]);
-							if (!checkSize || !checkLocation || ((event.size != null || event.location != null) && regressionBounds[index][0] == null && regressionBounds[index][1] == null)) {
+							Point expectedLocation = regressionBounds[index][0];
+							Point expectedSize = regressionBounds[index][1];
+							if (verbose) System.out.println("Expected location "+expectedLocation+" size "+expectedSize);
+							boolean checkLocation = (location == null && expectedLocation == null) ||
+								(location != null && location.equals(expectedLocation) ||
+								(location != null && expectedLocation == null));
+							boolean checkSize  = (size == null && expectedSize == null) || 
+								(size != null && size.equals(expectedSize)) ||
+								(size != null && expectedSize == null) ||
+								(size != null && size.x >= expectedSize.x && size.y >= expectedSize.y);
+							if (!checkSize || !checkLocation) {
 								if (verbose) System.out.println("	Failure ");
 								passed = false;
 								shell.close();
