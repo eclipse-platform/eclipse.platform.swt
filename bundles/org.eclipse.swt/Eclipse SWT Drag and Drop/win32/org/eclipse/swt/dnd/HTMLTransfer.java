@@ -31,7 +31,13 @@ public class HTMLTransfer extends ByteArrayTransfer {
 	static HTMLTransfer _instance = new HTMLTransfer();
 	static final String HTML_FORMAT = "HTML Format"; //$NON-NLS-1$
 	static final int HTML_FORMATID = registerType(HTML_FORMAT);
-
+	static final String NUMBER = "00000000"; //$NON-NLS-1$
+	static final String HEADER = "Version:0.9\r\nStartHTML:"+NUMBER+"\r\nEndHTML:"+NUMBER+"\r\nStartFragment:"+NUMBER+"\r\nEndFragment:"+NUMBER+"\r\n";
+	static final String PREFIX = "<html><body><!--StartFragment-->"; //$NON-NLS-1$
+	static final String SUFFIX = "<!--EndFragment--></body></html>"; //$NON-NLS-1$
+	static final String StartFragment = "StartFragment:"; //$NON-NLS-1$
+	static final String EndFragment = "EndFragment:"; //$NON-NLS-1$
+	
 private HTMLTransfer() {}
 
 /**
@@ -56,7 +62,6 @@ public void javaToNative (Object object, TransferData transferData){
 	if (!checkHTML(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
-	// HTML Format is stored as a null terminated byte array
 	String string = (String)object;
 	int count = string.length();
 	char[] chars = new char[count + 1];
@@ -68,6 +73,38 @@ public void javaToNative (Object object, TransferData transferData){
 		transferData.result = COM.DV_E_STGMEDIUM;
 		return;
 	}
+	int startHTML = HEADER.length();
+	int startFragment = startHTML + PREFIX.length();
+	int endFragment = startFragment + cchMultiByte - 1;
+	int endHTML = endFragment + SUFFIX.length();
+	
+	StringBuffer buffer = new StringBuffer(HEADER);
+	int maxLength = NUMBER.length();
+	//startHTML
+	int start = buffer.indexOf(NUMBER);
+	String temp = Integer.toString(startHTML);
+	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
+	//endHTML
+	start = buffer.indexOf(NUMBER, start);
+	temp = Integer.toString(endHTML);
+	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
+	//startFragment
+	start = buffer.indexOf(NUMBER, start);
+	temp = Integer.toString(startFragment);
+	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
+	//endFragment
+	start = buffer.indexOf(NUMBER, start);
+	temp = Integer.toString(endFragment);
+	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
+	
+	buffer.append(PREFIX);
+	buffer.append(string);
+	buffer.append(SUFFIX);
+	
+	count = buffer.length();
+	chars = new char[count + 1];
+	buffer.getChars(0, count, chars, 0);
+	cchMultiByte = OS.WideCharToMultiByte(codePage, 0, chars, -1, null, 0, null, null);
 	int lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
 	OS.WideCharToMultiByte(codePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
@@ -99,6 +136,7 @@ public Object nativeToJava(TransferData transferData){
 	data.Release();	
 	if (transferData.result != COM.S_OK) return null;
 	int hMem = stgmedium.unionField;
+	
 	try {
 		int lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
@@ -108,7 +146,46 @@ public Object nativeToJava(TransferData transferData){
 			if (cchWideChar == 0) return null;
 			char[] lpWideCharStr = new char [cchWideChar - 1];
 			OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
-			return new String(lpWideCharStr);
+			StringBuffer buffer = new StringBuffer(new String(lpWideCharStr));
+			int fragmentStart = 0, fragmentEnd = 0;
+			int start = buffer.indexOf(StartFragment) + StartFragment.length();
+			int end = start + 1;
+			while (end < buffer.length()) { 
+				String s = buffer.substring(start, end);
+				try {
+					fragmentStart = Integer.parseInt(s);
+					end++;
+				} catch (NumberFormatException e) {
+					break;
+				}
+			}
+			start = buffer.indexOf(EndFragment) + EndFragment.length();
+			end = start + 1;
+			while (end < buffer.length()) { 
+				String s = buffer.substring(start, end);
+				try {
+					fragmentEnd = Integer.parseInt(s);
+					end++;
+				} catch (NumberFormatException e) {
+					break;
+				}
+			}
+			if (fragmentEnd <= fragmentStart || fragmentEnd > lpWideCharStr.length) return null;
+			/* TO DO:
+			 * FragmentStart and FragmentEnd are offsets in original byte stream, not
+			 * the wide char version of the byte stream.
+			 */
+			String s = buffer.substring(fragmentStart, fragmentEnd);
+			/*
+			 * Firefox includes <!--StartFragment --> in the fragment, so remove it.
+			 */
+			String foxStart = "<!--StartFragment -->\r\n"; //$NON-NLS-1$
+			int prefix = s.indexOf(foxStart);
+			if (prefix != -1) {
+				prefix += foxStart.length();
+				s = s.substring(prefix);
+			}
+			return s;
 		} finally {
 			OS.GlobalUnlock(hMem);
 		}
