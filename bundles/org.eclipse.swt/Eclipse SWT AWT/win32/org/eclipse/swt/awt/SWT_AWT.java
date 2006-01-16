@@ -175,6 +175,31 @@ public static Frame new_Frame (final Composite parent) {
 	*/
 	frame.addNotify();
 	
+	/* Forward the iconify and deiconify events */
+	final Listener shellListener = new Listener () {
+		public void handleEvent (Event e) {
+			switch (e.type) {
+				case SWT.Deiconify:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED));
+						}
+					});
+					break;
+				case SWT.Iconify:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED));
+						}
+					});
+					break;
+			}
+		}
+	};
+	Shell shell = parent.getShell ();
+	shell.addListener (SWT.Deiconify, shellListener);
+	shell.addListener (SWT.Iconify, shellListener);
+	
 	/*
 	* Generate the appropriate events to activate and deactivate
 	* the embedded frame. This is needed in order to make keyboard
@@ -184,6 +209,9 @@ public static Frame new_Frame (final Composite parent) {
 		public void handleEvent (Event e) {
 			switch (e.type) {
 				case SWT.Dispose:
+					Shell shell = parent.getShell ();
+					shell.removeListener (SWT.Deiconify, shellListener);
+					shell.removeListener (SWT.Iconify, shellListener);
 					parent.setVisible(false);
 					EventQueue.invokeLater(new Runnable () {
 						public void run () {
