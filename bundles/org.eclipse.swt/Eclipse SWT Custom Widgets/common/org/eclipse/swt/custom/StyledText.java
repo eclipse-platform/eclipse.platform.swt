@@ -893,6 +893,7 @@ public class StyledText extends Canvas {
 			case SWT.RIGHT: write("\\qr"); break;
 		}
 		if (justify) write("\\qj");
+		write(" ");
 		
 		if (lineBackground != null) {
 			write("{\\highlight");
