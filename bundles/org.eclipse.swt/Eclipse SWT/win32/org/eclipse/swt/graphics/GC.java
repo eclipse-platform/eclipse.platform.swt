@@ -2731,6 +2731,7 @@ public void getClipping (Region region) {
 			Gdip.Matrix_delete(identity);
 			Gdip.Matrix_delete(matrix);
 			OS.CombineRgn(region.handle, hRgn, 0, OS.RGN_COPY);
+			OS.DeleteObject(hRgn);
 		}
 		Gdip.Region_delete(rgn);
 		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
