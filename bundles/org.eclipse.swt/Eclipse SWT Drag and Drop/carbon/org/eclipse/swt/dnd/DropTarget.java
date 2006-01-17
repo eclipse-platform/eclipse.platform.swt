@@ -199,6 +199,7 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
+				event.item = effect.getItem(event.x, event.y);
 				selectedDataType = null;
 				selectedOperation = DND.DROP_NONE;				
 				notifyListeners(DND.DragOver, event);
@@ -333,7 +334,8 @@ int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	event.widget = this;
 	event.time = (int)System.currentTimeMillis();
 	event.detail = DND.DROP_NONE;
-	notifyListeners(DND.DragLeave, event);		
+	notifyListeners(DND.DragLeave, event);
+	
 	event = new DNDEvent();
 	if (!setEventData(theDrag, event)) {
 		return OS.dragNotAcceptedErr;
@@ -347,6 +349,7 @@ int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	selectedDataType = null;
 	selectedOperation = DND.DROP_NONE;
 	notifyListeners(DND.DropAccept, event);
+	
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
@@ -537,18 +540,6 @@ public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
-public void notifyListeners (int eventType, Event event) {
-	org.eclipse.swt.graphics.Point coordinates = new org.eclipse.swt.graphics.Point(event.x, event.y);
-	coordinates = control.toControl(coordinates);
-	if (this.control instanceof Tree) {
-		event.item = ((Tree)control).getItem(coordinates);
-	}
-	if (this.control instanceof Table) {
-		event.item = ((Table)control).getItem(coordinates);
-	}
-	super.notifyListeners(eventType, event);
-}
-
 void onDispose () {	
 	if (control == null)
 		return;
@@ -708,6 +699,7 @@ boolean setEventData(int theDrag, DNDEvent event) {
 	event.dataType = dataTypes[0];
 	event.operations = operations;
 	event.detail = operation;
+	event.item = effect.getItem(event.x, event.y);
 	
 	return true;
 }

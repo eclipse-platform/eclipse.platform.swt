@@ -23,6 +23,25 @@ class TableDragUnderEffect extends DragUnderEffect {
 TableDragUnderEffect(Table table) {
 	this.table = table;
 }
+Widget getItem(int x, int y) {
+	Point coordinates = new Point(x, y);
+	coordinates = table.toControl(coordinates);
+	TableItem item = table.getItem(coordinates);
+	if (item == null) {
+		Rectangle area = table.getClientArea();
+		if (area.contains(coordinates)) {
+			// Scan across the width of the tree.
+			for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+				Point pt = new Point(x1, coordinates.y);
+				item = table.getItem(pt);
+				if (item != null) {
+					break;
+				}
+			}
+		}
+	}
+	return item;
+}
 void show(int effect, int x, int y) {
 	TableItem item = null;
 	if (effect != DND.FEEDBACK_NONE) item = findItem(x, y);
