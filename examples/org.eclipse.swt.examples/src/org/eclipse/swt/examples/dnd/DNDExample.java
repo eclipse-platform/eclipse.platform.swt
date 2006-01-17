@@ -180,7 +180,7 @@ private void createDragSource() {
 					}
 					case TEXT: {
 						Text text = (Text)dragControl;
-						text.clearSelection();
+						text.insert("");
 						break;
 					}
 					case TREE: {
@@ -435,7 +435,7 @@ private void createDragTypes(Composite parent) {
 private void createDragWidget(Composite parent) {
 	parent.setLayout(new FormLayout());
 	Combo combo = new Combo(parent, SWT.READ_ONLY);
-	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree"});
+	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text"});
 	combo.select(LABEL);
 	dragControlType = combo.getSelectionIndex();
 	dragControl = createWidget(dragControlType, parent, "Drag Source");
@@ -984,13 +984,20 @@ private Control createWidget(int type, Composite parent, String prefix){
 		}
 		case TABLE: {
 			Table table = new Table(parent, SWT.BORDER | SWT.MULTI);
-			TableColumn column1 = new TableColumn(table, SWT.NONE);
-			TableColumn column2 = new TableColumn(table, SWT.NONE);
+			table.setHeaderVisible(true);
+			TableColumn column0 = new TableColumn(table, SWT.LEFT);
+			column0.setText("Name");
+			TableColumn column1 = new TableColumn(table, SWT.RIGHT);
+			column1.setText("Value");
+			TableColumn column2 = new TableColumn(table, SWT.CENTER);
+			column2.setText("Description");
 			for (int i = 0; i < 10; i++) {
 				TableItem item = new TableItem(table, SWT.NONE);
-				item.setText(0, prefix+" name " + i);
-				item.setText(1, prefix+" value " + i);
+				item.setText(0, prefix+" name "+i);
+				item.setText(1, prefix+" value "+i);
+				item.setText(2, prefix+" description "+i);
 			}
+			column0.pack();
 			column1.pack();
 			column2.pack();
 			return table;
@@ -1002,18 +1009,34 @@ private Control createWidget(int type, Composite parent, String prefix){
 		}
 		case TREE: {
 			Tree tree = new Tree(parent, SWT.BORDER);
+			tree.setHeaderVisible(true);
+			TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
+			column0.setText("Name");
+			TreeColumn column1 = new TreeColumn(tree, SWT.RIGHT);
+			column1.setText("Value");
+			TreeColumn column2 = new TreeColumn(tree, SWT.CENTER);
+			column2.setText("Description");
 			for (int i = 0; i < 3; i++) {
 				TreeItem item = new TreeItem(tree, SWT.NONE);
-				item.setText(prefix+" item " + i);
+				item.setText(0, prefix+" name "+i);
+				item.setText(1, prefix+" value "+i);
+				item.setText(2, prefix+" description "+i);
 				for (int j = 0; j < 3; j++) {
 					TreeItem subItem = new TreeItem(item, SWT.NONE);
-					subItem.setText(prefix+" item " + j);
+					subItem.setText(0, prefix+" name "+i+" "+j);
+					subItem.setText(1, prefix+" value "+i+" "+j);
+					subItem.setText(2, prefix+" description "+i+" "+j);
 					for (int k = 0; k < 3; k++) {
 						TreeItem subsubItem = new TreeItem(subItem, SWT.NONE);
-						subsubItem.setText(prefix+" item " + k);
+						subsubItem.setText(0, prefix+" name "+i+" "+j+" "+k);
+						subsubItem.setText(1, prefix+" value "+i+" "+j+" "+k);
+						subsubItem.setText(2, prefix+" description "+i+" "+j+" "+k);
 					}
 				}
 			}
+			column0.pack();
+			column1.pack();
+			column2.pack();
 			return tree;
 		}
 		case CANVAS: {
