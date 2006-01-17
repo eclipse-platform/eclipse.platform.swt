@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.widgets.*;
 
 abstract class DragUnderEffect {
 	
-abstract void show(int effect, int x, int y);
+void show(int effect, int x, int y) {}
+
+Widget getItem(int x, int y){return null;}
 
 }

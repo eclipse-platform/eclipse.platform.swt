@@ -263,7 +263,7 @@ private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int 
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
-	notifyListeners(DND.DragEnter,event);
+	notifyListeners(DND.DragEnter, event);
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
@@ -357,8 +357,10 @@ private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEf
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
+	event.item = effect.getItem(pt_x, pt_y);
 	event.detail = DND.DROP_NONE;
 	notifyListeners(DND.DragLeave, event);
+	
 	event = new DNDEvent();
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
 		keyOperation = -1;
@@ -366,14 +368,13 @@ private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEf
 		return COM.S_OK;
 	}
 	keyOperation = -1;
-	
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
-	
-	event.dataType = selectedDataType;		
+	event.dataType = selectedDataType;
 	event.detail = selectedOperation;
 	notifyListeners(DND.DropAccept,event);
+	
 	selectedDataType = null;
 	for (int i = 0; i < allowedDataTypes.length; i++) {
 		if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
@@ -442,46 +443,6 @@ private int getOperationFromKeyState(int grfKeyState) {
  */
 public Transfer[] getTransfer() {
 	return transferAgents;
-}
-
-public void notifyListeners (int eventType, Event event) {
-	Point coordinates = new Point(event.x, event.y);
-	coordinates = control.toControl(coordinates);
-	if (this.control instanceof Tree) {
-		Tree tree = (Tree)control;
-		event.item = tree.getItem(coordinates);
-		if (event.item == null) {
-			Rectangle area = tree.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					event.item = tree.getItem(pt);
-					if (event.item != null) {
-						break;
-					}
-				}
-			}
-		}
-	}
-	if (this.control instanceof Table) {
-		Table table = (Table)control;
-		event.item = table.getItem(coordinates);
-		if (event.item == null) {
-			Rectangle area = table.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					event.item = table.getItem(pt);
-					if (event.item != null) {
-						break;
-					}
-				}
-			}
-		}
-	}
-	super.notifyListeners(eventType, event);
 }
 
 private void onDispose () {	
@@ -660,6 +621,7 @@ private boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, i
 	event.feedback = DND.FEEDBACK_SELECT;
 	event.dataTypes = dataTypes;
 	event.dataType = dataTypes[0];
+	event.item = effect.getItem(pt_x, pt_y);
 	event.operations = operations[0];
 	event.detail = operation;
 	return true;

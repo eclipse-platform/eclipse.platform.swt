@@ -240,6 +240,7 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
+				event.item = effect.getItem(dragOverEvent.x, dragOverEvent.y);
 				notifyListeners(DND.DragOver, event);
 				
 				effect.show(event.feedback, event.x, event.y);
@@ -522,46 +523,6 @@ public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
-public void notifyListeners (int eventType, Event event) {
-	Point coordinates = new Point(event.x, event.y);
-	coordinates = control.toControl(coordinates);
-	if (this.control instanceof Tree) {
-		Tree tree = (Tree)control;
-		event.item = tree.getItem(coordinates);
-		if (event.item == null) {
-			Rectangle area = tree.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					event.item = tree.getItem(pt);
-					if (event.item != null) {
-						break;
-					}
-				}
-			}
-		}
-	}
-	if (this.control instanceof Table) {
-		Table table = (Table)control;
-		event.item = table.getItem(coordinates);
-		if (event.item == null) {
-			Rectangle area = table.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					event.item = table.getItem(pt);
-					if (event.item != null) {
-						break;
-					}
-				}
-			}
-		}
-	}
-	super.notifyListeners(eventType, event);
-}
-
 void onDispose() {
 	if (control == null) return;
 	if (controlListener != null) {
@@ -752,7 +713,7 @@ boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int t
 	event.dataType = dataTypes[0];
 	event.operations = operations;
 	event.detail = operation;
-	
+	event.item = effect.getItem(event.x, event.y);
 	return true;
 }
 
