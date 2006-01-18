@@ -1065,6 +1065,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1IMAGE_1MENU_1ITEM)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1PLUG
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1PLUG)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1PLUG_FUNC);
+	rc = (jboolean)GTK_IS_PLUG(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1PLUG_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1STOCK_1CANCEL
 JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1STOCK_1CANCEL)
 	(JNIEnv *env, jclass that)
@@ -6357,12 +6369,12 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1expander_1get_1expanded)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1get_1expanded_FUNC);
 /*
-	rc = (jboolean)gtk_expander_get_expanded((GtkExpander *)arg0);
+	rc = (jboolean)gtk_expander_get_expanded(arg0);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef jboolean (*FPTR)(GtkExpander *);
+		typedef jboolean (*FPTR)(jint);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -6371,7 +6383,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1expander_1get_1expanded)
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (jboolean)(*fptr)((GtkExpander *)arg0);
+			rc = (jboolean)(*fptr)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1get_1expanded_FUNC);
@@ -6418,12 +6430,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1expanded)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1expanded_FUNC);
 /*
-	gtk_expander_set_expanded((GtkExpander *)arg0, arg1);
+	gtk_expander_set_expanded(arg0, arg1);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef void (*FPTR)(GtkExpander *, jboolean);
+		typedef void (*FPTR)(jint, jboolean);
 		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_expander_set_expanded_LIB, RTLD_LAZY);
@@ -6431,7 +6443,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1expanded)
 			initialized = 1;
 		}
 		if (fptr) {
-			(*fptr)((GtkExpander *)arg0, arg1);
+			(*fptr)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1set_1expanded_FUNC);
@@ -6446,12 +6458,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1label)
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1label_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	gtk_expander_set_label((GtkExpander *)arg0, (const gchar *)lparg1);
+	gtk_expander_set_label(arg0, (const gchar *)lparg1);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef void (*FPTR)(GtkExpander *, const gchar *);
+		typedef void (*FPTR)(jint, const gchar *);
 		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_expander_set_label_LIB, RTLD_LAZY);
@@ -6459,7 +6471,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1label)
 			initialized = 1;
 		}
 		if (fptr) {
-			(*fptr)((GtkExpander *)arg0, (const gchar *)lparg1);
+			(*fptr)(arg0, (const gchar *)lparg1);
 		}
 	}
 fail:
