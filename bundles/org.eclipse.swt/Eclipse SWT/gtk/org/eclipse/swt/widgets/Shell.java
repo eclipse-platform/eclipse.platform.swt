@@ -1408,32 +1408,34 @@ public void setVisible (boolean visible) {
 		* the shell not will be mapped until the parent is
 		* unminimized or shown on the desktop.
 		*/
-		mapped = false;
-		OS.gtk_widget_show (shellHandle);
-		if (isDisposed ()) return;
-		display.dispatchEvents = new int [] {
-			OS.GDK_EXPOSE,
-			OS.GDK_FOCUS_CHANGE,
-			OS.GDK_CONFIGURE,
-			OS.GDK_MAP,
-			OS.GDK_UNMAP,
-			OS.GDK_NO_EXPOSE,
-		};
-		Display display = this.display;
-		display.putGdkEvents();
-		boolean iconic = false;
-		Shell shell = parent != null ? parent.getShell() : null;
-		do {
-			OS.g_main_context_iteration (0, false);
-			if (isDisposed ()) break;
-			iconic = minimized || (shell != null && shell.minimized);
-		} while (!mapped && !iconic);
-		display.dispatchEvents = null;
-		if (isDisposed ()) return;
-		if (!iconic) {
-			update (true, true);
+		if (!OS.GTK_IS_PLUG (shellHandle)) {
+			mapped = false;
+			OS.gtk_widget_show (shellHandle);
 			if (isDisposed ()) return;
-			adjustTrim ();
+			display.dispatchEvents = new int [] {
+				OS.GDK_EXPOSE,
+				OS.GDK_FOCUS_CHANGE,
+				OS.GDK_CONFIGURE,
+				OS.GDK_MAP,
+				OS.GDK_UNMAP,
+				OS.GDK_NO_EXPOSE,
+			};
+			Display display = this.display;
+			display.putGdkEvents();
+			boolean iconic = false;
+			Shell shell = parent != null ? parent.getShell() : null;
+			do {
+				OS.g_main_context_iteration (0, false);
+				if (isDisposed ()) break;
+				iconic = minimized || (shell != null && shell.minimized);
+			} while (!mapped && !iconic);
+			display.dispatchEvents = null;
+			if (isDisposed ()) return;
+			if (!iconic) {
+				update (true, true);
+				if (isDisposed ()) return;
+				adjustTrim ();
+			}
 		}
 		mapped = true;
 
