@@ -708,6 +708,8 @@ void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcH
 		int[] transform = new int[]{(int)(((float)srcWidth / destWidth) * 65536), 0, 0, 0, (int)(((float)srcHeight / destHeight) * 65536), 0, 0, 0, 65536};
 		OS.XRenderSetPictureTransform(xDisplay, srcPict, transform);
 		if (maskPict != 0) OS.XRenderSetPictureTransform(xDisplay, maskPict, transform);
+		srcX *= destWidth / (float)srcWidth;
+		srcY *= destHeight / (float)srcHeight;
 	}
 	int /*long*/ clipping = data.clipRgn;
 	if (data.damageRgn != 0) {
