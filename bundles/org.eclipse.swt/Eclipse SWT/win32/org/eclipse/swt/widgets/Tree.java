@@ -4786,23 +4786,42 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								}
 							}
 						}
-						if (useColor) {
-							int clrText = item.cellForeground != null ? item.cellForeground [0] : -1;
-							if (clrText == -1) clrText = item.foreground;
-							nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-							int clrTextBk = item.cellBackground != null ? item.cellBackground [0] : -1;
-							if (clrTextBk == -1) clrTextBk = item.background;
-							if (clrTextBk == -1) {
-								Control control = findBackgroundControl ();
-								if (control == null) control = this;
-								if (control.backgroundImage == null) {
-									nmcd.clrTextBk = control.getBackgroundPixel ();
-								}
-							} else {
-								nmcd.clrTextBk = clrTextBk;
+						int clrText = item.cellForeground != null ? item.cellForeground [0] : -1;
+						if (clrText == -1) clrText = item.foreground;
+						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+						int clrTextBk = item.cellBackground != null ? item.cellBackground [0] : -1;
+						if (clrTextBk == -1) clrTextBk = item.background;
+						if (clrTextBk == -1) {
+							Control control = findBackgroundControl ();
+							if (control == null) control = this;
+							if (control.backgroundImage == null) {
+								nmcd.clrTextBk = control.getBackgroundPixel ();
 							}
-							OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+						} else {
+							nmcd.clrTextBk = clrTextBk;
 						}
+						if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+							if (hwndHeader != 0) {
+								int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+								if (count != 0) {
+									HDITEM hdItem = new HDITEM ();
+									hdItem.mask = OS.HDI_WIDTH;
+									int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+									RECT rect = new RECT ();
+									OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+									if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+										RECT itemRect = new RECT ();
+										itemRect.left = item.handle;
+										if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+											rect.left = Math.min (itemRect.left, rect.right);
+										}
+									}
+									fillBackground (hDC, nmcd.clrTextBk, rect);
+								}
+							}
+						}
+						if (useColor) OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 					}
 					return new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
 				}
@@ -4903,10 +4922,15 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 							width = hdItem.cxy;
 						}
+						int clrTextBk = -1;
+						if (useColor) {
+							clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
+							if (clrTextBk == -1) clrTextBk = item.background;
+						}
 						RECT rect = new RECT ();
 						if (i == 0) {
 							drawItem = false;
-							if (useColor) {
+							if (useColor && clrTextBk == -1) {
 								Control control = findImageControl ();
 								if (control != null) {
 									/*
@@ -4959,22 +4983,17 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom - gridWidth);
 						}
 						if (drawItem) {
-							int clrTextBk = -1;
-							if (useColor) {
-								clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
-								if (clrTextBk == -1) clrTextBk = item.background;
-							}
 							if (clrTextBk == -1) {
 								if (printClient || (bits & OS.TVS_FULLROWSELECT) != 0) {
 									clrTextBk = OS.GetBkColor (hDC);
 								}
 							}
 							if (clrTextBk != -1) {
+								fillBackground (hDC, clrTextBk, rect);
+							} else {
 								Control control = findImageControl ();
 								if (control != null) {
 									fillImageBackground (hDC, control, rect);
-								} else {
-									fillBackground (hDC, clrTextBk, rect);
 								}
 							}
 							if (i > 0) {
