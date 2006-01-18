@@ -6350,6 +6350,58 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1events_1pending)
 }
 #endif
 
+#ifndef NO__1gtk_1expander_1get_1expanded
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1expander_1get_1expanded)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1get_1expanded_FUNC);
+	rc = (jboolean)gtk_expander_get_expanded((GtkExpander *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1get_1expanded_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1expander_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1expander_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)gtk_expander_new((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1expander_1set_1expanded
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1expanded)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1expanded_FUNC);
+	gtk_expander_set_expanded((GtkExpander *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1set_1expanded_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1expander_1set_1label
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1label)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1label_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_expander_set_label((GtkExpander *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1set_1label_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1add_1filter
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1add_1filter)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

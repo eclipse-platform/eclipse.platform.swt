@@ -4174,6 +4174,43 @@ public static final int gtk_events_pending() {
 		lock.unlock();
 	}
 }
+public static final native boolean _gtk_expander_get_expanded(int /*long*/ expander);
+public static final boolean gtk_expander_get_expanded(int /*long*/ expander) {
+	lock.lock();
+	try {
+		return _gtk_expander_get_expanded(expander);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_expander_new(byte[] label);
+public static final int /*long*/ gtk_expander_new(byte[] label) {
+	lock.lock();
+	try {
+		return _gtk_expander_new(label);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_expander_set_expanded(int /*long*/ expander, boolean expanded);
+public static final void gtk_expander_set_expanded(int /*long*/ expander, boolean expanded) {
+	lock.lock();
+	try {
+		_gtk_expander_set_expanded(expander, expanded);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_expander_set_label(int /*long*/ expander, byte[] label);
+public static final void gtk_expander_set_label(int /*long*/ expander, byte[] label) {
+	lock.lock();
+	try {
+		_gtk_expander_set_label(expander, label);
+	} finally {
+		lock.unlock();
+	}
+}
+
 public static final native void _gtk_file_chooser_add_filter(int /*long*/ chooser, int /*long*/ filter);
 public static final void gtk_file_chooser_add_filter(int /*long*/ chooser, int /*long*/ filter) {
 	lock.lock();
