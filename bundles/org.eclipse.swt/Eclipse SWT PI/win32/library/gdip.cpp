@@ -563,6 +563,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1StartFigure)
 }
 #endif
 
+#ifndef NO_GraphicsPath_1Transform
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Transform)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1Transform_FUNC);
+	rc = (jint)((GraphicsPath *)arg0)->Transform((Matrix *)arg1);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1Transform_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GraphicsPath_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(GraphicsPath_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -955,6 +967,42 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ResetClip)
 }
 #endif
 
+#ifndef NO_Graphics_1Restore
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1Restore)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1Restore_FUNC);
+	rc = (jint)((Graphics *)arg0)->Restore((GraphicsState)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1Restore_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1Save
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1Save)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1Save_FUNC);
+	rc = (jint)((Graphics *)arg0)->Save();
+	Gdip_NATIVE_EXIT(env, that, Graphics_1Save_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1ScaleTransform
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ScaleTransform)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1ScaleTransform_FUNC);
+	rc = (jint)((Graphics *)arg0)->ScaleTransform(arg1, arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1ScaleTransform_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Graphics_1SetClip__II
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -1063,6 +1111,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetTransform)
 	Gdip_NATIVE_ENTER(env, that, Graphics_1SetTransform_FUNC);
 	rc = (jint)((Graphics *)arg0)->SetTransform((Matrix *)arg1);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1SetTransform_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1TranslateTransform
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1TranslateTransform)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1TranslateTransform_FUNC);
+	rc = (jint)((Graphics *)arg0)->TranslateTransform(arg1, arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1TranslateTransform_FUNC);
 	return rc;
 }
 #endif

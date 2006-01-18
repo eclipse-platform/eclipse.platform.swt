@@ -107,7 +107,19 @@ public void addArc(float x, float y, float width, float height, float startAngle
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	Gdip.GraphicsPath_AddArc(handle, x, y, width, height, -startAngle, -arcAngle);
+	if (width == height) {
+		Gdip.GraphicsPath_AddArc(handle, x, y, width, height, -startAngle, -arcAngle);
+	} else {
+		int path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+		if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int matrix = Gdip.Matrix_new(width, 0, 0, height, x, y);
+		if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Gdip.GraphicsPath_AddArc(path, 0, 0, 1, 1, -startAngle, -arcAngle);
+		Gdip.GraphicsPath_Transform(path, matrix);
+		Gdip.GraphicsPath_AddPath(handle, path, false);
+		Gdip.Matrix_delete(matrix);
+		Gdip.GraphicsPath_delete(path);
+	}
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 }
 

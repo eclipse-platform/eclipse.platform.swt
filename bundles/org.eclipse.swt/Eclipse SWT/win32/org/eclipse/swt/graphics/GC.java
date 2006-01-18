@@ -518,7 +518,19 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 	if (gdipGraphics != 0) {
 		initGdip(true, false);
 		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
-		Gdip.Graphics_DrawArc(gdipGraphics, data.gdipPen, x, y, width, height, -startAngle, -arcAngle);
+		if (width == height) {
+			Gdip.Graphics_DrawArc(gdipGraphics, data.gdipPen, x, y, width, height, -startAngle, -arcAngle);
+		} else {
+			int path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+			if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			int matrix = Gdip.Matrix_new(width, 0, 0, height, x, y);
+			if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			Gdip.GraphicsPath_AddArc(path, 0, 0, 1, 1, -startAngle, -arcAngle);
+			Gdip.GraphicsPath_Transform(path, matrix);
+			Gdip.Graphics_DrawPath(gdipGraphics, data.gdipPen, path);
+			Gdip.Matrix_delete(matrix);
+			Gdip.GraphicsPath_delete(path);
+		}
 		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
@@ -2047,9 +2059,18 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		initGdip(false, true);
-		Gdip.Graphics_FillPie(data.gdipGraphics, data.gdipBrush, x, y, width, height, -startAngle, -arcAngle);
+		if (width == height) {
+			Gdip.Graphics_FillPie(gdipGraphics, data.gdipBrush, x, y, width, height, -startAngle, -arcAngle);
+		} else {
+			int state = Gdip.Graphics_Save(gdipGraphics);
+			Gdip.Graphics_TranslateTransform(gdipGraphics, x, y, Gdip.MatrixOrderPrepend);
+			Gdip.Graphics_ScaleTransform(gdipGraphics, width, height, Gdip.MatrixOrderPrepend);
+			Gdip.Graphics_FillPie(gdipGraphics, data.gdipBrush, 0, 0, 1, 1, -startAngle, -arcAngle);
+			Gdip.Graphics_Restore(gdipGraphics, state);
+		}
 		return;
 	}
 	

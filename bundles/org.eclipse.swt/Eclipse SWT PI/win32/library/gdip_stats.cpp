@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 150;
-int Gdip_nativeFunctionCallCount[150];
+int Gdip_nativeFunctionCount = 155;
+int Gdip_nativeFunctionCallCount[155];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -60,6 +60,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"GraphicsPath_1IsVisible",
 	"GraphicsPath_1SetFillMode",
 	"GraphicsPath_1StartFigure",
+	"GraphicsPath_1Transform",
 	"GraphicsPath_1delete",
 	"GraphicsPath_1new",
 	"Graphics_1DrawArc",
@@ -92,6 +93,9 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2",
 	"Graphics_1ReleaseHDC",
 	"Graphics_1ResetClip",
+	"Graphics_1Restore",
+	"Graphics_1Save",
+	"Graphics_1ScaleTransform",
 	"Graphics_1SetClip__II",
 	"Graphics_1SetClip__III",
 	"Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2",
@@ -101,6 +105,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1SetSmoothingMode",
 	"Graphics_1SetTextRenderingHint",
 	"Graphics_1SetTransform",
+	"Graphics_1TranslateTransform",
 	"Graphics_1delete",
 	"Graphics_1new",
 	"HatchBrush_1delete",

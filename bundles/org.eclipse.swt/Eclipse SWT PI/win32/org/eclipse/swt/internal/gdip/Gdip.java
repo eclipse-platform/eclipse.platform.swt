@@ -194,6 +194,9 @@ public static final native int Graphics_GetVisibleClipBounds(int graphics, Rect 
 public static final native int Graphics_MeasureString(int graphics, char[] string, int length, int font, PointF origin, RectF boundingBox);
 public static final native int Graphics_MeasureString(int graphics, char[] string, int length, int font, PointF origin, int format, RectF boundingBox);
 public static final native int Graphics_ResetClip(int graphics);
+public static final native int Graphics_Restore(int graphics, int gstate);
+public static final native int Graphics_Save(int graphics);
+public static final native int Graphics_ScaleTransform(int graphics, float sx, float sy, int order);
 public static final native int Graphics_SetClip(int graphics, int hrgn, int combineMode);
 public static final native int Graphics_SetClip(int graphics, int path);
 public static final native int Graphics_SetClip(int graphics, RectF rect);
@@ -203,6 +206,7 @@ public static final native int Graphics_SetSmoothingMode(int graphics, int smoot
 public static final native int Graphics_SetTransform(int graphics, int matrix);
 public static final native int Graphics_SetInterpolationMode(int graphics, int mode);
 public static final native int Graphics_SetTextRenderingHint(int graphics, int mode);
+public static final native int Graphics_TranslateTransform(int graphics, float dx, float dy, int order);
 public static final native int GraphicsPath_new(int brushMode);
 public static final native void GraphicsPath_delete(int path);
 public static final native int GraphicsPath_AddArc(int path, float x, float y, float width, float height, float startAngle, float sweepAngle);
@@ -221,6 +225,7 @@ public static final native boolean GraphicsPath_IsOutlineVisible(int path, float
 public static final native boolean GraphicsPath_IsVisible(int path, float x, float y, int g);
 public static final native int GraphicsPath_SetFillMode(int path, int fillmode);
 public static final native int GraphicsPath_StartFigure(int path);
+public static final native int GraphicsPath_Transform(int path, int matrix);
 public static final native int HatchBrush_new(int hatchStyle, int foreColor, int backColor);
 public static final native int Image_GetPixelFormat(int bitmap);
 public static final native int Image_GetWidth(int image);
