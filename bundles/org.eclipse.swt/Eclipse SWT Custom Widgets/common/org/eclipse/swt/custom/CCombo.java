@@ -122,7 +122,7 @@ public CCombo (Composite parent, int style) {
 	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn};
+	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 	
 	int [] arrowEvents = {SWT.Selection, SWT.FocusIn};
@@ -1208,6 +1208,9 @@ public void setLayout (Layout layout) {
 	checkWidget ();
 	return;
 }
+public void setMenu(Menu menu) {
+	text.setMenu(menu);
+}
 /**
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the
@@ -1389,6 +1392,12 @@ void textEvent (Event event) {
 			e.keyCode = event.keyCode;
 			e.stateMask = event.stateMask;
 			notifyListeners (SWT.KeyUp, e);
+			break;
+		}
+		case SWT.MenuDetect: {
+			Event e = new Event ();
+			e.time = event.time;
+			notifyListeners (SWT.MenuDetect, e);
 			break;
 		}
 		case SWT.Modify: {
