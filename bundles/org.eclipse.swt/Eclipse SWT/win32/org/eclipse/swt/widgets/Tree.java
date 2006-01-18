@@ -4817,7 +4817,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 											rect.left = Math.min (itemRect.left, rect.right);
 										}
 									}
-									fillBackground (hDC, nmcd.clrTextBk, rect);
+									if (clrTextBk == -1) {
+										Control control = findImageControl ();
+										if (control != null) {
+											fillImageBackground (hDC, control, rect);
+										}
+									} else {
+										fillBackground (hDC, nmcd.clrTextBk, rect);
+									}
 								}
 							}
 						}
@@ -4922,15 +4929,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 							width = hdItem.cxy;
 						}
-						int clrTextBk = -1;
-						if (useColor) {
-							clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
-							if (clrTextBk == -1) clrTextBk = item.background;
-						}
 						RECT rect = new RECT ();
 						if (i == 0) {
 							drawItem = false;
-							if (useColor && clrTextBk == -1) {
+							if (useColor) {
 								Control control = findImageControl ();
 								if (control != null) {
 									/*
@@ -4962,17 +4964,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 										rect.left = item.handle;
 										if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
 											drawItem = true;
-											int right = Math.min (rect.right, width);
-											OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
-											fillImageBackground (hDC, control, rect);
-											if (handle == OS.GetFocus ()) {
-												int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-												if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
-													int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-													if (hItem == item.handle) OS.DrawFocusRect (hDC, rect);
-												}
-											}
-											rect.left = Math.min (rect.right, rect.left + 2);
 										}
 									}
 								}
@@ -4983,6 +4974,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom - gridWidth);
 						}
 						if (drawItem) {
+							int clrTextBk = -1;
+							if (useColor) {
+								clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
+								if (clrTextBk == -1) clrTextBk = item.background;
+							}
 							if (clrTextBk == -1) {
 								if (printClient || (bits & OS.TVS_FULLROWSELECT) != 0) {
 									clrTextBk = OS.GetBkColor (hDC);
@@ -4993,7 +4989,21 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							} else {
 								Control control = findImageControl ();
 								if (control != null) {
-									fillImageBackground (hDC, control, rect);
+									if (i == 0 && (bits & OS.TVS_FULLROWSELECT) == 0) {
+										int right = Math.min (rect.right, width);
+										OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
+										fillImageBackground (hDC, control, rect);
+										if (handle == OS.GetFocus ()) {
+											int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+											if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+												int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+												if (hItem == item.handle) OS.DrawFocusRect (hDC, rect);
+											}
+										}
+										rect.left = Math.min (rect.right, rect.left + 2);
+									} else {
+										fillImageBackground (hDC, control, rect);
+									}
 								}
 							}
 							if (i > 0) {
@@ -5070,7 +5080,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (linesVisible) {
 						if (printClient && (bits & OS.TVS_FULLROWSELECT) != 0) {
 							if (hwndHeader != 0) {
-								if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0 && printClient) {
+								if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0) {
 									HDITEM hdItem = new HDITEM ();
 									hdItem.mask = OS.HDI_WIDTH;
 									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
@@ -5081,27 +5091,23 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							}
 						}
 						RECT rect = new RECT ();
-						if (OS.COMCTL32_MAJOR < 6 || (bits & OS.TVS_FULLROWSELECT) != 0) {
-							OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-						} else {
-							rect.left = item.handle;
-							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
-								int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-								if (hItem == item.handle) {
-									OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
-								} else {
-									TVITEM tvItem = new TVITEM ();
-									tvItem.mask = OS.TVIF_STATE;
-									tvItem.hItem = item.handle;
-									OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-									if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-										OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
-									} else {
-										OS.SetRect (rect, rect.left, nmcd.top, nmcd.right, nmcd.bottom);
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+							if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+								if (handle == OS.GetFocus ()) {
+									int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+									if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+										rect.left = item.handle;
+										if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+											int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+											if (hItem == item.handle) {
+												OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
+											}
+										} else {
+											rect.left = nmcd.left;
+										}
 									}
 								}
-							} else {
-								rect.left = 0;
 							}
 						}
 						OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
