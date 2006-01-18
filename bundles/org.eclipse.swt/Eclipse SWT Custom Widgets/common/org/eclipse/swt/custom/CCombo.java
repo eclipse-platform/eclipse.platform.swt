@@ -537,6 +537,9 @@ public String [] getItems () {
 	checkWidget ();
 	return list.getItems ();
 }
+public Menu getMenu() {
+	return text.getMenu();
+}
 /**
  * Returns a <code>Point</code> whose x coordinate is the start
  * of the selection in the receiver's text field, and whose y
