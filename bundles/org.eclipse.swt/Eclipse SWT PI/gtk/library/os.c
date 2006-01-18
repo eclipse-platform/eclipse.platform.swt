@@ -6356,7 +6356,24 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1expander_1get_1expanded)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1get_1expanded_FUNC);
+/*
 	rc = (jboolean)gtk_expander_get_expanded((GtkExpander *)arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(GtkExpander *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_expander_get_expanded_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_expander_get_expanded");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)((GtkExpander *)arg0);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1get_1expanded_FUNC);
 	return rc;
 }
@@ -6370,7 +6387,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1expander_1new)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1new_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
 	rc = (jint)gtk_expander_new((const gchar *)lparg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(const gchar *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_expander_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_expander_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((const gchar *)lparg0);
+		}
+	}
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1new_FUNC);
@@ -6383,7 +6417,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1expanded)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1expanded_FUNC);
+/*
 	gtk_expander_set_expanded((GtkExpander *)arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkExpander *, jboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_expander_set_expanded_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_expander_set_expanded");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkExpander *)arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1set_1expanded_FUNC);
 }
 #endif
@@ -6395,7 +6445,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1label)
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1label_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
 	gtk_expander_set_label((GtkExpander *)arg0, (const gchar *)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkExpander *, const gchar *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_expander_set_label_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_expander_set_label");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkExpander *)arg0, (const gchar *)lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1set_1label_FUNC);
