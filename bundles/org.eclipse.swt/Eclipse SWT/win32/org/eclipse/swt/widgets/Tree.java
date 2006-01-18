@@ -2292,21 +2292,18 @@ void setItemCount (int count, int hParent, int hItem) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		itemCount++;
 	}
-	if (hItem != 0) {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hItem);
-		tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-		while (tvItem.hItem != 0) {
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			TreeItem item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
-			if (item != null && !item.isDisposed ()) {
-				item.dispose ();
-			} else {
-				releaseItem (tvItem.hItem, tvItem, false);
-				destroyItem (null, tvItem.hItem);
-			}
-			tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	while (hItem != 0) {
+		tvItem.hItem = hItem;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		TreeItem item = tvItem.lParam != -1 ? items [tvItem.lParam] : null;
+		if (item != null && !item.isDisposed ()) {
+			item.dispose ();
+		} else {
+			releaseItem (tvItem.hItem, tvItem, false);
+			destroyItem (null, tvItem.hItem);
 		}
 	}
 	if ((style & SWT.VIRTUAL) != 0) {
