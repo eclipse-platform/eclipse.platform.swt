@@ -2135,7 +2135,6 @@ public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	//TODO - multiple monitors
 	int window = createOverlayWindow ();
-	OS.ShowWindow (window);
 	int port = OS.GetWindowPort (window);
 	int [] buffer = new int [1];
 	OS.CreateCGContextForPort (port, buffer);
@@ -2155,6 +2154,9 @@ public int internal_new_GC (GCData data) {
 		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
+		data.updateClip = true;
+	} else {
+		OS.ShowWindow (window);
 	}
 	return context;
 }

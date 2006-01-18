@@ -1592,6 +1592,7 @@ void flush () {
 			OS.CGContextSynchronize(handle);
 		}
 	}
+	if (data.control == 0 && data.window != 0) OS.CGContextSynchronize(handle);
 }
 
 /**
@@ -2490,6 +2491,7 @@ public void setClipping(Region region) {
 void setCGClipping () {
 	data.updateClip = false;
 	if (data.control == 0) {
+		if (data.window != 0 && ! OS.IsWindowVisible(data.window)) OS.ShowWindow (data.window);
 		OS.CGContextScaleCTM(handle, 1, -1);
 		if (data.clipRgn != 0) {
 			OS.ClipCGContextToRegion(handle, new Rect(), data.clipRgn);
