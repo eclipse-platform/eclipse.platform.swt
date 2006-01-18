@@ -2584,6 +2584,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 }
 
 int mouseHoverProc (int id, int handle) {
+	OS.RemoveEventLoopTimer (id);
 	mouseHoverID = 0;
 	mouseMoved = false;
 	if (currentControl == null) return 0;
@@ -3601,6 +3602,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 }
 
 int timerProc (int id, int index) {
+	OS.RemoveEventLoopTimer (id);
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
 		if (allowTimers) {
