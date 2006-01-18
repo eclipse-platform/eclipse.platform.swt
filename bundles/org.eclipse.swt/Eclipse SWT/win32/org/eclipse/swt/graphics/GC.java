@@ -2190,8 +2190,13 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	final RGB fromRGB = new RGB(fromColor & 0xff, (fromColor >>> 8) & 0xff, (fromColor >>> 16) & 0xff);
 	final RGB toRGB = new RGB(toColor & 0xff, (toColor >>> 8) & 0xff, (toColor >>> 16) & 0xff);	
 	if (fromRGB.red == toRGB.red && fromRGB.green == toRGB.green && fromRGB.blue == toRGB.blue) {
-		int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
-		OS.PatBlt(handle, x, y, width, height, dwRop);
+		if (data.gdipGraphics != 0) { 
+			initGdip(false, true);
+			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, x, y, width, height);
+		} else {
+			int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
+			OS.PatBlt(handle, x, y, width, height, dwRop);
+		}
 		return;
 	}
 	if (data.gdipGraphics != 0) {
