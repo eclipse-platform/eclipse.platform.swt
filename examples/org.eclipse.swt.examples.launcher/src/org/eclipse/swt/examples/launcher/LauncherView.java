@@ -66,15 +66,7 @@ public class LauncherView extends ViewPart {
 			public void widgetDefaultSelected(SelectionEvent event) {
 				final ItemDescriptor item = getSelectedItem();
 				setDescriptionByItem(item);
-				if (item.getMainType() == null && item.getView() == null) {
-					// Category selected, so just expand/colapse the node
-					TreeItem treeItem = (TreeItem) event.item;
-					boolean expanded = treeItem.getExpanded();
-					if (treeItem != null) treeItem.setExpanded(!expanded);
-					treeItem.setImage(LauncherPlugin.images[expanded ? LauncherPlugin.liClosedFolder : LauncherPlugin.liOpenFolder]);
-				} else {
-					launchItem(getSelectedItem());
-				}
+				launchItem(getSelectedItem());
 			}
 		});
 		launchTree.addTreeListener(new TreeListener() {
