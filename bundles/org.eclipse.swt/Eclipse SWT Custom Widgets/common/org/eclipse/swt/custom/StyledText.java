@@ -1536,8 +1536,7 @@ static int checkStyle(int style) {
 			style &= ~SWT.H_SCROLL;
 		}
 	}
-	style |= SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED;
-	if (!IS_GTK) style |= SWT.NO_BACKGROUND;
+	style |= SWT.NO_REDRAW_RESIZE | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND;
 	return style;
 }
 /**
