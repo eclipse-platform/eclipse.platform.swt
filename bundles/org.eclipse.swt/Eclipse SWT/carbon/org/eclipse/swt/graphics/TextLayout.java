@@ -364,7 +364,7 @@ void computeRuns() {
 		lineX[i] = OS.Fix2Long(trapezoid.lowerLeft_x);
 		lineAscent[i] = -OS.Fix2Long(trapezoid.upperRight_y);
 		if (lineLength != 0) {
-			lineWidth[i] = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
+			lineWidth[i] = OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x);
 		}
 		lineHeight[i] = OS.Fix2Long(trapezoid.lowerRight_y) + lineAscent[i] + spacing;
 		start = lineBreak;

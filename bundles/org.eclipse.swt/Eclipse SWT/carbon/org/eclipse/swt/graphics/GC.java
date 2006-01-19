@@ -1217,7 +1217,7 @@ void drawText(int x, int y, int start, int length, int flags) {
 	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 		ATSTrapezoid trapezoid = new ATSTrapezoid();
 		OS.ATSUGetGlyphBounds(layout, 0, 0, start, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-		int width = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
+		int width = OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x);
 		int height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
 		CGRect rect = new CGRect();
 		rect.x = x;
@@ -3203,13 +3203,13 @@ public Point textExtent(String string, int flags) {
 			for (int i=0, start=0; i<breaks.length; i++) {
 				int lineBreak = breaks[i];
 				OS.ATSUGetGlyphBounds(layout, 0, 0, start, lineBreak - start, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-				width = Math.max(width, OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x));
+				width = Math.max(width, OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x));
 				height += OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
 				start = lineBreak;
 			}
 		} else {
 			OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
-			width = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
+			width = OS.Fix2Long(trapezoid.lowerRight_x) - OS.Fix2Long(trapezoid.lowerLeft_x);
 			height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
 		}
 	}
