@@ -330,8 +330,8 @@ int /*long*/ childStyle () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
-	checkBuffered ();
 	super.createWidget (index);
+	checkBuffered ();
 	showWidget ();
 	setInitialBounds ();
 	setZOrder (null, false);

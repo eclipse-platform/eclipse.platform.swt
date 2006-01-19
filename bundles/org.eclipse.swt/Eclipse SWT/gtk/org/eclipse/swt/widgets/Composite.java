@@ -177,6 +177,13 @@ public void changed (Control[] changed) {
 	}
 }
 
+void checkBuffered () {
+	if ((style & SWT.DOUBLE_BUFFERED) == 0 && (style & SWT.NO_BACKGROUND) != 0) {
+		return;
+	}
+	super.checkBuffered();
+}
+
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
@@ -294,11 +301,11 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	* background of the widget rather than the current contents of
 	* the screen.  If nothing is drawn during an expose event,
 	* the pixels are altered.  The fix is to clear double buffering
-	* and the DOUBLE_BUFFERED flag.
+	* when NO_BACKGROUND is set and DOUBLE_BUFFERED
+	* is not explicitly set.
 	*/
-	if ((style & SWT.NO_BACKGROUND) != 0) {
+	if ((style & SWT.DOUBLE_BUFFERED) == 0 && (style & SWT.NO_BACKGROUND) != 0) {
 		OS.gtk_widget_set_double_buffered (handle, false);
-		style &= ~SWT.DOUBLE_BUFFERED;
 	}
 }
 
