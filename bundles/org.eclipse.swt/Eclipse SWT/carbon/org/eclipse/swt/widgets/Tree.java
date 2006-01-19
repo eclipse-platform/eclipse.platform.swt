@@ -1326,8 +1326,20 @@ public TreeItem getItem (Point point) {
 	if (!OS.HIVIEW) OS.GetControlBounds (handle, rect);
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
-	//TODO - optimize
 	int columnId = (columnCount == 0) ? column_id : columns [0].id;
+	if (0 < lastHittest && lastHittest <= items.length) {
+		TreeItem item = _getItem (lastHittest, false);
+		if (item != null) {
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+				if ((style & SWT.FULL_SELECTION) != 0) {
+					if (rect.top <= pt.v && pt.v < rect.bottom) return item;
+				} else {
+					if (OS.PtInRect (pt, rect)) return item;
+				}
+			}
+		}
+	}
+	//TODO - optimize
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
