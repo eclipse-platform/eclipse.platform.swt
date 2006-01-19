@@ -1285,8 +1285,18 @@ public TableItem getItem (Point point) {
 	if (!OS.HIVIEW) OS.GetControlBounds (handle, rect);
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
-	//TODO - optimize
 	int columnId = (columnCount == 0) ? column_id : columns [0].id;
+	if (0 < lastHittest && lastHittest <= itemCount) {
+		if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				if (rect.top <= pt.v && pt.v < rect.bottom) return _getItem (lastHittest - 1);
+			} else {
+				if (OS.PtInRect (pt, rect)) return _getItem (lastHittest - 1);
+			}
+		}
+			
+	}
+	//TODO - optimize
 	for (int i=0; i<itemCount; i++) {
 		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
