@@ -32,14 +32,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		int h = (hHint != SWT.DEFAULT) ? hHint : DEFAULT_HEIGHT;
 		return new Point(w, h);
 	}
-	Point size = sc.content.computeSize (wHint, hHint, flushCache);
-	if (sc.alwaysShowScroll) {
-		ScrollBar hBar = sc.getHorizontalBar();
-		ScrollBar vBar = sc.getVerticalBar();
-		if (hBar != null) size.y += hBar.getSize().y;
-		if (vBar != null) size.x += vBar.getSize().x;
-	}
-	return size;
+	return sc.content.computeSize (wHint, hHint, flushCache);
 }
 
 protected boolean flushCache(Control control) {
