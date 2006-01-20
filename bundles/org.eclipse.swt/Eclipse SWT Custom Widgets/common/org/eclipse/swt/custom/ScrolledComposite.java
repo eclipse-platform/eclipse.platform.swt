@@ -184,6 +184,76 @@ public boolean getAlwaysShowScrollBars() {
 }
 
 /**
+ * Returns <code>true</code> if the content control 
+ * will be expanded to fill available horizontal space.
+ *
+ * @return the receiver's horizontal expansion state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public boolean getExpandHorizontal() {
+	checkWidget();
+	return expandHorizontal;
+}
+
+/**
+ * Returns <code>true</code> if the content control 
+ * will be expanded to fill available vertical space.
+ *
+ * @return the receiver's vertical expansion state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public boolean getExpandVertical() {
+	checkWidget();
+	return expandVertical;
+}
+
+/**
+ * Returns the minimum width of the content control.
+ *
+ * @return the minimum width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public int getMinWidth() {
+	checkWidget();
+	return minWidth;
+}
+
+/**
+ * Returns the minimum height of the content control.
+ *
+ * @return the minimum height
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public int getMinHeight() {
+	checkWidget();
+	return minHeight;
+}
+
+/**
  * Get the content that is being scrolled.
  * 
  * @return the control displayed in the content area
