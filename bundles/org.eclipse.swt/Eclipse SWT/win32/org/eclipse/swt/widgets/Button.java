@@ -49,7 +49,7 @@ public class Button extends Control {
 	static final int CHECK_WIDTH, CHECK_HEIGHT;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static final int ButtonProc;
-	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
+	static final TCHAR ButtonClass = new TCHAR (0, "BUTTON", true);
 	static {
 		int hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
 		if (hBitmap == 0) {
