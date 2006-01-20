@@ -56,6 +56,10 @@ public class Accessible {
 		 * AddRef has already been called on ppvObject by the callee and must be released by the caller.
 		 */
 		int result = COM.CreateStdAccessibleObject(control.handle, COM.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
+		/* The object needs to be checked, because if the CreateStdAccessibleObject()
+		 * symbol is not found, the return value is S_OK.
+		 */
+		if (ppvObject[0] == 0) return;
 		if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 		iaccessible = new IAccessible(ppvObject[0]);
 	
