@@ -140,6 +140,7 @@ public ScrolledComposite(Composite parent, int style) {
 	super.setLayout(new ScrolledCompositeLayout());
 	ScrollBar hBar = getHorizontalBar ();
 	if (hBar != null) {
+		hBar.setVisible(false);
 		hBar.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				hScroll();
@@ -149,6 +150,7 @@ public ScrolledComposite(Composite parent, int style) {
 	
 	ScrollBar vBar = getVerticalBar ();
 	if (vBar != null) {
+		vBar.setVisible(false);
 		vBar.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				vScroll();

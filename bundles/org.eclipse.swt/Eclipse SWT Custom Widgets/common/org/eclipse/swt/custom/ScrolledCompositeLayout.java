@@ -43,10 +43,20 @@ protected void layout(Composite composite, boolean flushCache) {
 	if (inLayout) return;
 	ScrolledComposite sc = (ScrolledComposite)composite;
 	if (sc.content == null) return;
-	inLayout = true;
-	Rectangle contentRect = sc.content.getBounds();
 	ScrollBar hBar = sc.getHorizontalBar();
 	ScrollBar vBar = sc.getVerticalBar();
+	if (hBar != null) {
+		if (hBar.getSize().y >= sc.getSize().y) {
+			return;
+		}
+	}
+	if (vBar != null) {
+		if (vBar.getSize().x >= sc.getSize().x) {
+			return;
+		}
+	}
+	inLayout = true;
+	Rectangle contentRect = sc.content.getBounds();
 	if (!sc.alwaysShowScroll) {
 		boolean hVisible = sc.needHScroll(contentRect, false);
 		boolean vVisible = sc.needVScroll(contentRect, hVisible);
@@ -54,7 +64,6 @@ protected void layout(Composite composite, boolean flushCache) {
 		if (hBar != null) hBar.setVisible(hVisible);
 		if (vBar != null) vBar.setVisible(vVisible);
 	}
-
 	Rectangle hostRect = sc.getClientArea();
 	if (sc.expandHorizontal) {
 		contentRect.width = Math.max(sc.minWidth, hostRect.width);	
