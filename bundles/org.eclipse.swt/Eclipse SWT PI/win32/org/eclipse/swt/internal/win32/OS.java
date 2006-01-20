@@ -887,6 +887,13 @@ public class OS extends Platform {
 	public static final int NIM_ADD = 0x00000000;
 	public static final int NIM_DELETE = 0x00000002;
 	public static final int NIM_MODIFY = 0x00000001;
+	public static final int NIN_SELECT = 0x400 + 0;
+	public static final int NINF_KEY = 0x1;
+	public static final int NIN_KEYSELECT = NIN_SELECT | NINF_KEY;
+	public static final int NIN_BALLOONSHOW = 0x400 + 2;
+	public static final int NIN_BALLOONHIDE = 0x400 + 3;
+	public static final int NIN_BALLOONTIMEOUT = 0x400 + 4;
+	public static final int NIN_BALLOONUSERCLICK = 0x400 + 5;
 	public static final int NIS_HIDDEN = 0x00000001;
 	public static final int NM_FIRST = 0x0;
 	public static final int NM_CLICK = 0xfffffffe;
