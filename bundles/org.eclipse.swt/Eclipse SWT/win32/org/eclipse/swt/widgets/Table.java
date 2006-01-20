@@ -3235,7 +3235,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		* Bug in Windows.  When the width of the first column is
 		* small but not zero, Windows draws '...' outside of the
 		* bounds of the text.  This is strange, but only causes
-		* roblems when the item is selected.  In this case, Windows
+		* problems when the item is selected.  In this case, Windows
 		* clears the '...' but doesn't redraw it when the item is
 		* deselected, causing pixel corruption.  The fix is to ensure
 		* that the column is at least wide enough to draw a single
