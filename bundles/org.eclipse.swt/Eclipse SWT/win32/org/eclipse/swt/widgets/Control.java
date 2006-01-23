@@ -4084,7 +4084,15 @@ LRESULT wmColorChild (int wParam, int lParam) {
 		OS.SetBkMode (wParam, OS.TRANSPARENT);
 		return new LRESULT (hBrush);
 	}
-	return new LRESULT (findBrush (backPixel, OS.BS_SOLID));
+	int hBrush = findBrush (backPixel, OS.BS_SOLID);
+	if ((state & DRAW_BACKGROUND) != 0) {
+		RECT rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		int hOldBrush = OS.SelectObject (wParam, hBrush);
+		OS.PatBlt (wParam, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+		OS.SelectObject (wParam, hOldBrush);
+	}
+	return new LRESULT (hBrush);
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
