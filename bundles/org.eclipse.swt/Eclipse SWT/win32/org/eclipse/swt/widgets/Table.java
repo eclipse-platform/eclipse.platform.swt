@@ -2566,9 +2566,9 @@ void setBackgroundImage (int hBitmap) {
 
 void setBackgroundPixel (int newPixel) {
 	if (findImageControl () != null) return;
+	if (newPixel == -1) newPixel = defaultBackground ();
 	int oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
 	if (oldPixel != newPixel) {
-		if (newPixel == -1) newPixel = defaultBackground ();
 		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, newPixel);
 		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
 		if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
