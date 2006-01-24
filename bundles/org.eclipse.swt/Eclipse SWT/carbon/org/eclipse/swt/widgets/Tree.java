@@ -1331,10 +1331,12 @@ public TreeItem getItem (Point point) {
 		TreeItem item = _getItem (lastHittest, false);
 		if (item != null) {
 			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-				if ((style & SWT.FULL_SELECTION) != 0) {
-					if (rect.top <= pt.v && pt.v < rect.bottom) return item;
-				} else {
-					if (OS.PtInRect (pt, rect)) return item;
+				if (rect.top <= pt.v && pt.v <= rect.bottom) {
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						return item;
+					} else {
+						return OS.PtInRect (pt, rect) ? item : null;
+					}
 				}
 			}
 		}
@@ -1344,10 +1346,12 @@ public TreeItem getItem (Point point) {
 		TreeItem item = items [i];
 		if (item != null) {
 			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-				if ((style & SWT.FULL_SELECTION) != 0) {
-					if (rect.top <= pt.v && pt.v < rect.bottom) return item;
-				} else {
-					if (OS.PtInRect (pt, rect)) return item;
+				if (rect.top <= pt.v && pt.v <= rect.bottom) {
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						return item;
+					} else {
+						return OS.PtInRect (pt, rect) ? item : null;
+					}
 				}
 			}
 		}
