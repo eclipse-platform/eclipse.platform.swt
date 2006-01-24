@@ -56,21 +56,54 @@ Widget getItem(int x, int y) {
 	}
 	return item;
 }
-void show(int effect, int x, int y) {
-	effect = checkEffect(effect);
-	TreeItem item = null;
-	if (effect != DND.FEEDBACK_NONE) item = (TreeItem)getItem(x, y);
-	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect != effect && currentEffect == DND.FEEDBACK_NONE) {
-		selection = tree.getSelection();
-		tree.setSelection(new TreeItem[0]);
+void scroll(TreeItem item) {
+	TreeItem nextItem = null;
+	Rectangle bounds = item.getBounds();
+	Rectangle area = tree.getClientArea();
+	int headerHeight = tree.getHeaderHeight();
+	int itemHeight= tree.getItemHeight();
+	if (bounds.y + bounds.height < area.y + headerHeight + 2 * itemHeight) {
+		// scroll up
+		TreeItem childItem = item;
+		TreeItem parentItem = childItem.getParentItem();
+		int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
+		if (index == 0) {
+			nextItem = parentItem;
+		} else {
+			nextItem = parentItem == null ? tree.getItem(index-1) : parentItem.getItem(index-1);
+			int count = nextItem.getItemCount();
+			while (count > 0 && nextItem.getExpanded()) {
+				nextItem = nextItem.getItem(count - 1);
+				count = nextItem.getItemCount();
+			}
+		}
 	}
-	boolean restoreSelection = currentEffect != effect && effect == DND.FEEDBACK_NONE;
-	setDragUnderEffect(effect, item);
-	if (restoreSelection) {
-		tree.setSelection(selection);
-		selection = new TreeItem[0];
+	if (bounds.y > area.y + area.height - 2 * itemHeight) {
+		// scroll down
+		if (item.getExpanded()) {
+			nextItem = item.getItem(0);
+		} else {
+			TreeItem childItem = item;
+			TreeItem parentItem = childItem.getParentItem();
+			int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
+			int count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
+			while (nextItem == null) { 
+				if (index + 1 < count) {
+					nextItem = parentItem == null ? tree.getItem(index + 1) : parentItem.getItem(index + 1);
+				} else {
+					if (parentItem == null) {
+						nextItem = item;
+					} else {
+						childItem = parentItem;
+						parentItem = childItem.getParentItem();
+						index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
+						count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
+					}
+				}
+			}
+		}
 	}
+	if (nextItem != null) tree.showItem(nextItem);
 }
 void setDragUnderEffect(int effect, TreeItem item) {
 	if ((effect & DND.FEEDBACK_EXPAND) == 0) {
@@ -95,53 +128,7 @@ void setDragUnderEffect(int effect, TreeItem item) {
 	} else {
 		if (item != null && item.equals(scrollIndex)  && scrollBeginTime != 0) {
 			if (System.currentTimeMillis() >= scrollBeginTime) {
-				TreeItem nextItem = null;
-				Rectangle bounds = item.getBounds();
-				Rectangle area = tree.getClientArea();
-				int headerHeight = tree.getHeaderHeight();
-				int itemHeight= tree.getItemHeight();
-				if (bounds.y + bounds.height < area.y + headerHeight + 2 * itemHeight) {
-					// scroll up
-					TreeItem childItem = item;
-					TreeItem parentItem = childItem.getParentItem();
-					int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-					if (index == 0) {
-						nextItem = parentItem;
-					} else {
-						nextItem = parentItem == null ? tree.getItem(index-1) : parentItem.getItem(index-1);
-						int count = nextItem.getItemCount();
-						while (count > 0 && nextItem.getExpanded()) {
-							nextItem = nextItem.getItem(count - 1);
-							count = nextItem.getItemCount();
-						}
-					}
-				}
-				if (bounds.y > area.y + area.height - 2 * itemHeight) {
-					// scroll down
-					if (item.getExpanded()) {
-						nextItem = item.getItem(0);
-					} else {
-						TreeItem childItem = item;
-						TreeItem parentItem = childItem.getParentItem();
-						int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-						int count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
-						while (nextItem == null) { 
-							if (index + 1 < count) {
-								nextItem = parentItem == null ? tree.getItem(index + 1) : parentItem.getItem(index + 1);
-							} else {
-								if (parentItem == null) {
-									nextItem = item;
-								} else {
-									childItem = parentItem;
-									parentItem = childItem.getParentItem();
-									index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-									count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
-								}
-							}
-						}
-					}
-				}
-				if (nextItem != null) tree.showItem(nextItem);
+				scroll(item);
 				scrollBeginTime = 0;
 				scrollIndex = null;
 			}
@@ -188,5 +175,21 @@ void setDropSelection (TreeItem item) {
 }
 void setInsertMark (TreeItem item, boolean after) {
 	// not currently implemented
+}
+void show(int effect, int x, int y) {
+	effect = checkEffect(effect);
+	TreeItem item = null;
+	if (effect != DND.FEEDBACK_NONE) item = (TreeItem)getItem(x, y);
+	if (item == null) effect = DND.FEEDBACK_NONE;
+	if (currentEffect != effect && currentEffect == DND.FEEDBACK_NONE) {
+		selection = tree.getSelection();
+		tree.setSelection(new TreeItem[0]);
+	}
+	boolean restoreSelection = currentEffect != effect && effect == DND.FEEDBACK_NONE;
+	setDragUnderEffect(effect, item);
+	if (restoreSelection) {
+		tree.setSelection(selection);
+		selection = new TreeItem[0];
+	}
 }
 }
