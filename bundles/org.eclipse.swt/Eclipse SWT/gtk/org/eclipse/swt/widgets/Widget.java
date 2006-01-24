@@ -146,14 +146,15 @@ public abstract class Widget {
 	static final int SWITCH_PAGE = 48;
 	static final int TEST_COLLAPSE_ROW = 49;
 	static final int TEST_EXPAND_ROW = 50;
-	static final int TOGGLED = 51;
-	static final int UNMAP = 52;
-	static final int UNMAP_EVENT = 53;
-	static final int UNREALIZE = 54;
-	static final int VALUE_CHANGED = 55;
-	static final int VISIBILITY_NOTIFY_EVENT = 56;
-	static final int WINDOW_STATE_EVENT = 57;
-	static final int LAST_SIGNAL = 58;
+	static final int TEXT_BUFFER_INSERT_TEXT = 51;
+	static final int TOGGLED = 52;
+	static final int UNMAP = 53;
+	static final int UNMAP_EVENT = 54;
+	static final int UNREALIZE = 55;
+	static final int VALUE_CHANGED = 56;
+	static final int VISIBILITY_NOTIFY_EVENT = 57;
+	static final int WINDOW_STATE_EVENT = 58;
+	static final int LAST_SIGNAL = 59;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -736,6 +737,10 @@ int /*long*/ gtk_test_collapse_row (int /*long*/ tree, int /*long*/ iter, int /*
 }
 
 int /*long*/ gtk_test_expand_row (int /*long*/ tree, int /*long*/ iter, int /*long*/ path) {
+	return 0;
+}
+
+int /*long*/ gtk_text_buffer_insert_text (int /*long*/ widget, int /*long*/ iter, int /*long*/ text, int /*long*/ length) {
 	return 0;
 }
 
@@ -1442,6 +1447,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 		case CHANGE_VALUE: return gtk_change_value (handle, arg0, arg1, arg2);
 		case EXPAND_COLLAPSE_CURSOR_ROW: return gtk_expand_collapse_cursor_row (handle, arg0, arg1, arg2);
 		case INSERT_TEXT: return gtk_insert_text (handle, arg0, arg1, arg2);
+		case TEXT_BUFFER_INSERT_TEXT: return gtk_text_buffer_insert_text (handle, arg0, arg1, arg2);
 		default: return 0;
 	}
 }
