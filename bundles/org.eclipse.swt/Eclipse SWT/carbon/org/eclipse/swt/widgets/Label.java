@@ -174,9 +174,7 @@ int defaultThemeFont () {
 }
 
 void drawBackground (int control, int context) {
-	if ((style & SWT.SEPARATOR) != 0) {
-		fillBackground (control, context, null);
-	}
+	fillBackground (control, context, null);
 }
 
 void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
