@@ -320,6 +320,31 @@ void checkBuffered () {
 	style |= SWT.DOUBLE_BUFFERED;
 }
 
+void checkBackground () {
+	Shell shell = getShell ();
+	if (this == shell) return;
+	state &= ~PARENT_BACKGROUND;
+	Composite composite = parent;
+	do {
+		int mode = composite.backgroundMode;
+		if (mode != SWT.INHERIT_NONE) {
+			if (mode == SWT.INHERIT_DEFAULT) {
+				Control control = this;
+				do {
+					if ((control.state & THEME_BACKGROUND) == 0) {
+						return;
+					}
+					control = control.parent;
+				} while (control != composite);
+			}
+			state |= PARENT_BACKGROUND;
+			return;
+		}
+		if (composite == shell) break;		
+		composite = composite.parent;
+	} while (true);
+}
+
 void checkBorder () {
 	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
 }
@@ -330,6 +355,7 @@ int /*long*/ childStyle () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
+	checkBackground ();
 	super.createWidget (index);
 	checkBuffered ();
 	showWidget ();
@@ -2592,25 +2618,12 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 }
 
 void setBackground () {
-	Shell shell = getShell ();
-	if (this == shell) return;
-	Composite composite = parent;
-	do {
-		int mode = composite.backgroundMode;
-		if (mode != 0) {
-			if (mode == SWT.INHERIT_DEFAULT) {
-				Control control = this;
-				do {
-					if ((control.state & THEME_BACKGROUND) == 0) return;
-					control = control.parent;
-				} while (control != composite);
-			}
-			state |= PARENT_BACKGROUND;
-			return;
-		}
-		if (composite == shell) break;
-		composite = composite.parent;
-	} while (true);
+	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
+		setParentBackground ();
+	} else {
+		setWidgetBackground ();
+	}
+	redrawWidget (0, 0, 0, 0, true, false, false);
 }
 
 /**
@@ -2688,8 +2701,7 @@ public void setBackgroundImage (Image image) {
 		}
 		redrawWidget (0, 0, 0, 0, true, false, false);
 	} else {
-		int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
-		OS.gtk_widget_modify_style (handle, style);
+		setWidgetBackground ();
 	}
 	redrawChildren ();
 }
@@ -3329,6 +3341,15 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren, boolean fix
 	}
 }
 
+void setWidgetBackground  () {
+	if (fixedHandle != 0) {
+		int /*long*/ style = OS.gtk_widget_get_modifier_style (fixedHandle);
+		OS.gtk_widget_modify_style (fixedHandle, style);
+	}
+	int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
+	OS.gtk_widget_modify_style (handle, style);
+}
+
 boolean showMenu (int x, int y) {
 	Event event = new Event ();
 	event.x = x;
@@ -3612,6 +3633,14 @@ void update (boolean all, boolean flush) {
 	int /*long*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);
 	OS.gdk_window_process_updates (window, all);
+}
+
+void updateBackgroundMode () {
+	int oldState = state & PARENT_BACKGROUND;
+	checkBackground ();
+	if (oldState != (state & PARENT_BACKGROUND)) {
+		setBackground ();
+	}
 }
 
 void updateLayout (boolean all) {

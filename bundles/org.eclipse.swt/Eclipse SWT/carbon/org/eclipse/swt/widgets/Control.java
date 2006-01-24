@@ -373,6 +373,31 @@ int callFocusEventHandler (int nextHandler, int theEvent) {
 	return OS.CallNextEventHandler (nextHandler, theEvent);
 }
 
+void checkBackground () {
+	Shell shell = getShell ();
+	if (this == shell) return;
+	state &= ~PARENT_BACKGROUND;	
+	Composite composite = parent;
+	do {
+		int mode = composite.backgroundMode;
+		if (mode != 0) {
+			if (mode == SWT.INHERIT_DEFAULT) {
+				Control control = this;
+				do {
+					if ((control.state & THEME_BACKGROUND) == 0) {
+						return;
+					}
+					control = control.parent;
+				} while (control != composite);
+			}
+			state |= PARENT_BACKGROUND;					
+			return;
+		}
+		if (composite == shell) break;
+		composite = composite.parent;
+	} while (true);
+}
+
 void checkBuffered () {
 	style |= SWT.DOUBLE_BUFFERED;
 }
@@ -485,10 +510,10 @@ Control computeTabRoot () {
 
 void createWidget () {
 	checkOrientation (parent);
+	checkBackground ();
 	super.createWidget ();
 	checkBuffered ();
 	setDefaultFont ();
-	setBackground ();
 	setZOrder ();
 }
 
@@ -2288,25 +2313,7 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 }
 
 void setBackground () {
-	Shell shell = getShell ();
-	if (this == shell) return;
-	Composite composite = parent;
-	do {
-		int mode = composite.backgroundMode;
-		if (mode != 0) {
-			if (mode == SWT.INHERIT_DEFAULT) {
-				Control control = this;
-				do {
-					if ((control.state & THEME_BACKGROUND) == 0) return;
-					control = control.parent;
-				} while (control != composite);
-			}
-			state |= PARENT_BACKGROUND;					
-			return;
-		}
-		if (composite == shell) break;
-		composite = composite.parent;
-	} while (true);
+	redrawWidget (handle, false);
 }
 
 /**
@@ -3360,6 +3367,14 @@ void update (boolean all) {
 		OS.DisposeRgn (updateRgn);
 	}
 	OS.DisposeRgn (portRgn);
+}
+
+void updateBackgroundMode () {
+	int oldState = state & PARENT_BACKGROUND;
+	checkBackground ();
+	if (oldState != (state & PARENT_BACKGROUND)) {
+		setBackground ();
+	}
 }
 
 void updateLayout (boolean all) {

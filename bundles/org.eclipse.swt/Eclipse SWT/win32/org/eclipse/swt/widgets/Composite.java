@@ -719,6 +719,10 @@ void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();		
+	}
 }
 
 boolean setFixedFocus () {
@@ -905,6 +909,14 @@ void updateBackgroundImage () {
 		if ((children [i].state & PARENT_BACKGROUND) != 0) {
 			children [i].updateBackgroundImage ();
 		}
+	}
+}
+
+void updateBackgroundMode () {
+	super.updateBackgroundMode ();
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();		
 	}
 }
 

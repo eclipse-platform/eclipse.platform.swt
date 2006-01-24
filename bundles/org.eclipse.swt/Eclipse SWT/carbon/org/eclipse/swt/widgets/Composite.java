@@ -825,6 +825,10 @@ void resetVisibleRegion (int control) {
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -955,6 +959,14 @@ int traversalCode (int key, int theEvent) {
 		if (hooksKeys ()) return 0;
 	}
 	return super.traversalCode (key, theEvent);
+}
+
+void updateBackgroundMode () {
+	super.updateBackgroundMode ();
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();
+	}
 }
 
 void updateLayout (boolean all) {

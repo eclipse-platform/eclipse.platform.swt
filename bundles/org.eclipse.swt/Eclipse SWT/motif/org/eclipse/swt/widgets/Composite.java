@@ -932,6 +932,10 @@ void sendClientEvent (int time, int message, int detail, int data1, int data2) {
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
+	Control[] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();
+	}
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
@@ -1162,6 +1166,13 @@ boolean translateMnemonic (Event event, Control control) {
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) return false;
 	return super.translateTraversal (key, xEvent);
+}
+void updateBackgroundMode () {
+	super.updateBackgroundMode ();
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();
+	}
 }
 void updateLayout (boolean all) {
 	Composite parent = findDeferredControl ();

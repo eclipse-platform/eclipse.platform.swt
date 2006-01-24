@@ -299,7 +299,6 @@ void createHandle (int index) {
 }
 void createWidget (int index) {
 	createHandle (index);
-	setBackground ();
 	hookEvents ();
 	register ();
 	manageChildren ();
@@ -898,9 +897,6 @@ boolean sendKeyEvent (int type, XKeyEvent xEvent) {
 		if (isDisposed ()) return false;
 	}
 	return event.doit;
-}
-void setBackground () {
-	/* Do nothing */
 }
 /**
  * Sets the application defined widget data associated

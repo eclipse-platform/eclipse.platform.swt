@@ -343,6 +343,31 @@ int borderHandle () {
 	return handle;
 }
 
+void checkBackground () {
+	Shell shell = getShell ();
+	if (this == shell) return;
+	state &= ~PARENT_BACKGROUND;
+	Composite composite = parent;
+	do {
+		int mode = composite.backgroundMode;
+		if (mode != 0) {
+			if (mode == SWT.INHERIT_DEFAULT) {
+				Control control = this;
+				do {
+					if ((control.state & THEME_BACKGROUND) == 0) {
+						return;
+					}
+					control = control.parent;
+				} while (control != composite);
+			}
+			state |= PARENT_BACKGROUND;
+			return;
+		}
+		if (composite == shell) break;
+		composite = composite.parent;
+	} while (true);	
+}
+
 void checkBorder () {
 	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
 }
@@ -495,14 +520,17 @@ void createHandle () {
 void createWidget () {
 	foreground = background = -1;
 	checkOrientation (parent);
+	checkBackground ();
 	createHandle ();
 	checkBuffered ();
 	register ();
 	subclass ();
 	setDefaultFont ();
-	setBackground ();
 	checkMirrored ();
 	checkBorder ();
+	if ((state & PARENT_BACKGROUND) != 0) {
+		setBackground ();
+	}
 }
 
 int defaultBackground () {
@@ -1963,33 +1991,15 @@ boolean sendFocusEvent (int type) {
 }
 
 void setBackground () {
-	Shell shell = getShell ();
-	if (this == shell) return;
-	Composite composite = parent;
-	do {
-		int mode = composite.backgroundMode;
-		if (mode != 0) {
-			if (mode == SWT.INHERIT_DEFAULT) {
-				Control control = this;
-				do {
-					if ((control.state & THEME_BACKGROUND) == 0) return;
-					control = control.parent;
-				} while (control != composite);
-			}
-			state |= PARENT_BACKGROUND;
-			Control control = findBackgroundControl ();
-			if (control == null) return;
-			if (control.backgroundImage != null) {
-				shell.releaseBrushes ();
-				updateBackgroundImage ();		
-			} else {
-				updateBackgroundColor ();
-			}
-			return;
-		}
-		if (composite == shell) break;
-		composite = composite.parent;
-	} while (true);
+	Control control = findBackgroundControl ();
+	if (control == null) control = this;
+	if (control.backgroundImage != null) {
+		Shell shell = getShell ();
+		shell.releaseBrushes ();
+		setBackgroundImage (control.backgroundImage.handle);
+	} else {
+		setBackgroundPixel (control.background == -1 ? control.defaultBackground() : control.background);
+	}
 }
 
 /**
@@ -3101,6 +3111,14 @@ void updateBackgroundImage () {
 	Control control = findBackgroundControl ();
 	Image image = control != null ? control.backgroundImage : backgroundImage;
 	setBackgroundImage (image != null ? image.handle : 0);
+}
+
+void updateBackgroundMode () {
+	int oldState = state & PARENT_BACKGROUND;
+	checkBackground ();
+	if (oldState != (state & PARENT_BACKGROUND)) {
+		setBackground ();
+	}
 }
 
 void updateFont (Font oldFont, Font newFont) {

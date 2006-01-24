@@ -1032,6 +1032,10 @@ void resizeHandle (int width, int height) {
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
+	Control[] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -1200,6 +1204,14 @@ int traversalCode(int key, GdkEventKey event) {
 boolean translateTraversal (GdkEventKey keyEvent) {
 	if (socketHandle != 0) return false;
 	return super.translateTraversal (keyEvent);
+}
+
+void updateBackgroundMode () {
+	super.updateBackgroundMode ();
+	Control [] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].updateBackgroundMode ();
+	}
 }
 
 void updateLayout (boolean all) {

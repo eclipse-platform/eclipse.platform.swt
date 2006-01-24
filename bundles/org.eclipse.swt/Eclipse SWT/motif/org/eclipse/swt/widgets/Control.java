@@ -318,6 +318,30 @@ public void addTraverseListener (TraverseListener listener) {
 int borderHandle () {
 	return topHandle ();
 }
+void checkBackground () {
+	Shell shell = getShell ();
+	if (this == shell) return;
+	state &= ~PARENT_BACKGROUND;
+	Composite composite = parent;
+	do {
+		int mode = composite.backgroundMode;
+		if (mode != 0) {
+			if (mode == SWT.INHERIT_DEFAULT) {
+				Control control = this;
+				do {
+					if ((control.state & THEME_BACKGROUND) == 0) {
+						return;
+					}
+					control = control.parent;
+				} while (control != composite);
+			}
+			state |= PARENT_BACKGROUND;
+			return;
+		}
+		if (composite == shell) break;
+		composite = composite.parent;
+	} while (true);
+}
 void checkBuffered () {
 	style &= ~SWT.DOUBLE_BUFFERED;
 }
@@ -428,6 +452,7 @@ Control [] computeTabList () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
+	checkBackground ();
 	super.createWidget (index);
 	checkBuffered ();
 	setParentTraversal ();
@@ -1843,25 +1868,20 @@ boolean sendMouseEvent (int type, XMotionEvent xEvent) {
 	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
 }
 void setBackground () {
-	Shell shell = getShell ();
-	if (this == shell) return;
-	Composite composite = parent;
-	do {
-		int mode = composite.backgroundMode;
-		if (mode != 0) {
-			if (mode == SWT.INHERIT_DEFAULT) {
-				Control control = this;
-				do {
-					if ((control.state & THEME_BACKGROUND) == 0) return;
-					control = control.parent;
-				} while (control != composite);
-			}
-			state |= PARENT_BACKGROUND;
-			return;
+	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
+		setParentBackground ();
+	} else {
+		if (backgroundImage != null) {
+			int [] argList = {OS.XmNbackgroundPixmap, backgroundImage.pixmap};
+			OS.XtSetValues (handle, argList, argList.length / 2);
+		} else {
+			/* Ensure the resource value changes, otherwise XtSetValues() does nothing */
+			int pixel = getBackgroundPixel ();
+			setBackgroundPixel (pixel + 1);
+			setBackgroundPixel (pixel);
 		}
-		if (composite == shell) break;
-		composite = composite.parent;
-	} while (true);
+	}
+	redrawWidget (0, 0, 0, 0, true, false, false);
 }
 /**
  * Sets the receiver's background color to the color specified
@@ -2936,6 +2956,13 @@ void update (boolean all) {
 			OS.XtDispatchEvent (event);
 		}
 		OS.XtFree (event);
+	}
+}
+void updateBackgroundMode () {
+	int oldState = state & PARENT_BACKGROUND;
+	checkBackground ();
+	if (oldState != (state & PARENT_BACKGROUND)) {
+		setBackground ();
 	}
 }
 void updateIM () {

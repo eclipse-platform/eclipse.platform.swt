@@ -374,7 +374,6 @@ void createHandle (int index) {
 void createWidget (int index) {
 	createHandle (index);
 	setOrientation ();
-	setBackground ();
 	hookEvents ();
 	register ();
 }
@@ -1318,9 +1317,6 @@ boolean setKeyState (Event event, GdkEventKey keyEvent) {
 		if (!isNull) return false;
 	}
 	return setInputState (event, keyEvent.state);
-}
-
-void setBackground () {
 }
 
 void setOrientation () {
