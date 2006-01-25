@@ -667,6 +667,7 @@ public Rectangle getImageBounds (int index) {
 public TreeItem getItem (int index) {
 	checkWidget ();
 	if (index < 0 || index >= itemCount) error (SWT.ERROR_INVALID_RANGE);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent._getItem (this, index);
 }
 
@@ -683,6 +684,7 @@ public TreeItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getItemCount (this);
 }
 
@@ -704,6 +706,7 @@ public int getItemCount () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getItems (this);
 }
 
