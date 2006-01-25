@@ -750,6 +750,7 @@ public Rectangle getImageBounds (int index) {
  */
 public int getItemCount () {
 	checkWidget();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
 }
 
@@ -772,9 +773,10 @@ public int getItemCount () {
  */
 public TreeItem getItem (int index) {
 	checkWidget();
-	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle)))  {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int itemCount = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
+	if (index >= itemCount)  error (SWT.ERROR_INVALID_RANGE);
 	return  parent._getItem (handle, index);
 }
 
@@ -796,6 +798,7 @@ public TreeItem getItem (int index) {
  */
 public TreeItem [] getItems () {
 	checkWidget();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getItems (handle);
 }
 

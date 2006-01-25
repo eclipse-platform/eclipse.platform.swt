@@ -1283,7 +1283,9 @@ int getIndex () {
  */
 public TreeItem getItem (int index) {
 	checkWidget ();
-	if (!(0 <= index && index < items.length)) error (SWT.ERROR_INVALID_RANGE);
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index >= items.length) error (SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
 /**
@@ -1299,6 +1301,7 @@ public TreeItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return items.length;
 }
 String getNameText () {
@@ -1325,6 +1328,7 @@ String getNameText () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	TreeItem[] result = new TreeItem [items.length];
 	System.arraycopy (items, 0, result, 0, items.length);
 	return result;
