@@ -696,7 +696,7 @@ void fillBackground (int control, int context, Rectangle bounds) {
 			data.background = widget.getBackgroundColor ().handle;
 			GC gc = GC.carbon_new (context, data);
 			gc.setBackgroundPattern (pattern);
-			gc.fillRectangle ((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
+			gc.fillRectangle ((int) (rect.x + pt.x), (int) (rect.y + pt.y), (int) rect.width, (int) rect.height);
 			gc.dispose ();
 			pattern.dispose();
 		} else if (widget != null && widget.background != null) {
