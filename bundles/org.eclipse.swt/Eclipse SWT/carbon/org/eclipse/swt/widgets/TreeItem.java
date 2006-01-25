@@ -666,8 +666,9 @@ public Rectangle getImageBounds (int index) {
  */
 public TreeItem getItem (int index) {
 	checkWidget ();
-	if (index < 0 || index >= itemCount) error (SWT.ERROR_INVALID_RANGE);
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index >= itemCount) error (SWT.ERROR_INVALID_RANGE);
 	return parent._getItem (this, index);
 }
 

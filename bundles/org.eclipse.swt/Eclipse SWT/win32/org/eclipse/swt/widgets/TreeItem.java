@@ -661,6 +661,7 @@ public boolean getGrayed () {
 public TreeItem getItem (int index) {
 	checkWidget ();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int hwnd = parent.handle;
 	int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 	if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
@@ -686,6 +687,7 @@ public TreeItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int hwnd = parent.handle;
 	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 	if (hItem == 0) return 0;
@@ -710,6 +712,7 @@ public int getItemCount () {
  */
 public TreeItem [] getItems () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int hwnd = parent.handle;
 	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 	if (hItem == 0) return new TreeItem [0];
