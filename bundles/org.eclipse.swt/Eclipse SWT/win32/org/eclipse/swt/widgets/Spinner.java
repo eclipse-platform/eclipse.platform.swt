@@ -955,6 +955,44 @@ void setToolTipText (Shell shell, String string) {
 	shell.setToolTipText (hwndUpDown, string);
 }
 
+/**
+ * Sets the receiver's selection, minimum value, maximum
+ * value, digits, increment and page increment all at once.
+ * <p>
+ * Note: This is similar to setting the values individually
+ * using the appropriate methods, but may be implemented in a 
+ * more efficient fashion on some platforms.
+ * </p>
+ *
+ * @param selection the new selection value
+ * @param minimum the new minimum value
+ * @param maximum the new maximum value
+ * @param digits the new digits value
+ * @param increment the new increment value
+ * @param pageIncrement the new pageIncrement value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
+	checkWidget ();
+	if (minimum < 0) return;
+	if (maximum <= minimum) return;
+	if (digits < 0) return;
+	if (increment < 1) return;
+	if (pageIncrement < 1) return;
+	selection = Math.min (Math.max (minimum, selection), maximum);
+	setIncrement (increment);
+	this.pageIncrement = pageIncrement;
+	this.digits = digits;
+	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, minimum, maximum);
+	setSelection (selection, true, true, false);
+}
+
 void subclass () {
 	super.subclass ();
 	int newProc = display.windowProc;
