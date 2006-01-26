@@ -17,11 +17,19 @@ import org.eclipse.swt.widgets.*;
 class TableDragUnderEffect extends DragUnderEffect {
 	Table table;
 	TableItem currentItem;
-	TableItem[] selection = new TableItem[0];
 	int currentEffect = DND.FEEDBACK_NONE;
+	long scrollBeginTime = 0;
+	TableItem scrollItem;
+	static final int SCROLL_HYSTERESIS = 500; // milli seconds
 	
 TableDragUnderEffect(Table table) {
 	this.table = table;
+}
+int checkEffect(int effect) {
+	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
+	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
+	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
+	return effect;
 }
 Widget getItem(int x, int y) {
 	Point coordinates = new Point(x, y);
@@ -42,36 +50,62 @@ Widget getItem(int x, int y) {
 	}
 	return item;
 }
-void show(int effect, int x, int y) {
-	TableItem item = null;
-	if (effect != DND.FEEDBACK_NONE) item = findItem(x, y);
-	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect != effect && currentEffect == DND.FEEDBACK_NONE) {
-		selection = table.getSelection();
+void setDropSelection (TableItem item) {
+	if (item == null) {
 		table.setSelection(new TableItem[0]);
-	}
-	boolean restoreSelection = currentEffect != effect && effect == DND.FEEDBACK_NONE;
-	setDragUnderEffect(effect, item);
-	if (restoreSelection) {
-		table.setSelection(selection);
-		selection = new TableItem[0];
+	} else {
+		table.setSelection(new TableItem[]{item});
 	}
 }
-TableItem findItem(int x, int y){
-	if (table == null) return null;
-	Point coordinates = new Point(x, y);
-	coordinates = table.toControl(coordinates);
-	return table.getItem(coordinates);
+void setInsertMark (TreeItem item, boolean after) {
+	// not currently implemented
 }
-void setDragUnderEffect(int effect, TableItem item) {	
-	if (currentItem != item) {
-		if (item == null) {
-			table.setSelection(new TableItem[0]);
+void show(int effect, int x, int y) {
+	effect = checkEffect(effect);
+	TableItem item = (TableItem)getItem(x, y);
+
+	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
+		scrollBeginTime = 0;
+		scrollItem = null;
+	} else {
+		if (item != null && item.equals(scrollItem)  && scrollBeginTime != 0) {
+			if (System.currentTimeMillis() >= scrollBeginTime) {
+				Rectangle area = table.getClientArea();
+				int headerHeight = table.getHeaderHeight();
+				int itemHeight= table.getItemHeight();
+				Point pt = new Point(x, y);
+				pt = table.getDisplay().map(null, table, pt);
+				TableItem nextItem = null;
+				if (pt.y < area.y + headerHeight + 2 * itemHeight) {
+					int index = table.indexOf(item);
+					nextItem = table.getItem(Math.max(0, index-1));
+				}
+				if (pt.y > area.y + area.height - 2 * itemHeight) {
+					int index = table.indexOf(item);
+					nextItem = table.getItem(Math.min(table.getItemCount()-1, index+1));
+				}
+				if (nextItem != null) table.showItem(nextItem);
+				scrollBeginTime = 0;
+				scrollItem = null;
+			}
 		} else {
-			table.setSelection(new TableItem[] {item});
+			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+			scrollItem = item;
 		}
-		currentItem = item;
 	}
-	currentEffect = effect;
+	
+	if ((effect & DND.FEEDBACK_SELECT) != 0) {
+		if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
+		    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+			setInsertMark(null, false);
+			currentEffect = DND.FEEDBACK_NONE;
+			currentItem = null;
+		}
+		if (currentEffect != effect || currentItem != item) { 
+			setDropSelection(item); 
+			currentEffect = DND.FEEDBACK_SELECT;
+			currentItem = item;
+		}
+	}
 }
 }
