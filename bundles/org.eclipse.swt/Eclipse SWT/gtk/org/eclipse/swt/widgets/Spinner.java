@@ -960,6 +960,24 @@ public void setDigits (int value) {
 	OS.gtk_spin_button_set_digits (handle, value);
 }
 
+public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
+	checkWidget ();
+	if (minimum < 0) return;
+	if (maximum <= minimum) return;
+	if (digits < 0) return;
+	if (increment < 1) return;
+	if (pageIncrement < 1) return;
+	selection = Math.min (Math.max (minimum, selection), maximum);
+	double factor = 1;
+	for (int i = 0; i < digits; i++) factor *= 10;	
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+	OS.gtk_spin_button_set_range (handle, minimum / factor, maximum / factor);
+	OS.gtk_spin_button_set_increments (handle, increment / factor, pageIncrement / factor);
+	OS.gtk_spin_button_set_value (handle, selection / factor);
+	OS.gtk_spin_button_set_digits (handle, digits);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
+}
+
 boolean translateTraversal (GdkEventKey keyEvent) {
 	int key = keyEvent.keyval;
 	switch (key) {
