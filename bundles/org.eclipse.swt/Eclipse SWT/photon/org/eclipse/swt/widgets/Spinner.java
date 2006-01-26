@@ -675,6 +675,23 @@ public void setSelection (int value) {
 	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_VALUE, value, 0);
 }
 
+public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
+	checkWidget ();
+	if (minimum < 0) return;
+	if (maximum <= minimum) return;
+	if (digits < 0) return;
+	if (increment < 1) return;
+	if (pageIncrement < 1) return;
+	selection = Math.min (Math.max (minimum, selection), maximum);
+	int [] args = new int [] {
+		OS.Pt_ARG_NUMERIC_INCREMENT, increment, 0,
+		OS.Pt_ARG_NUMERIC_MIN, minimum, 0,
+		OS.Pt_ARG_NUMERIC_MAX, maximum, 0,
+		OS.Pt_ARG_NUMERIC_VALUE, selection, 0
+	};
+	OS.PtSetResources (handle, args.length / 3, args);
+}
+
 boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 	boolean translated = super.translateTraversal (key_sym, phEvent);
 	if (!translated && key_sym == OS.Pk_Return) {
