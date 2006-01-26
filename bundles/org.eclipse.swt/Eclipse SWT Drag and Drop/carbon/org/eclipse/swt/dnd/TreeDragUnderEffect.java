@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
  
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -107,7 +108,18 @@ void show(int effect, int x, int y) {
 	} else {
 		if (item != null && item.equals(expandIndex) && expandBeginTime != 0) {
 			if (System.currentTimeMillis() >= expandBeginTime) {
-				item.setExpanded(true);
+				if (item.getItemCount() > 0 && !item.getExpanded()) {
+					item.setExpanded(true);
+					if (item.getExpanded()) {
+						Event event = new Event();
+						event.x = x;
+						event.y = y;
+						event.item = item;
+						event.time = (int) System.currentTimeMillis();
+						tree.notifyListeners(SWT.Expand, event);
+						if (item.isDisposed()) return;
+					}
+				}
 				expandBeginTime = 0;
 				expandIndex = null;
 			}
