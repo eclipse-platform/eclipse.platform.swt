@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.events.*;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	Table table;
@@ -26,7 +25,7 @@ class TableDragUnderEffect extends DragUnderEffect {
 	
 	TableItem scrollItem;
 	long scrollBeginTime;
-	
+
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 
 TableDragUnderEffect(Table table) {
@@ -45,7 +44,7 @@ Widget getItem(int x, int y) {
 	if (item == null) {
 		Rectangle area = table.getClientArea();
 		if (area.contains(coordinates)) {
-			// Scan across the width of the table
+			// Scan across the width of the table.
 			for (int x1 = area.x; x1 < area.x + area.width; x1++) {
 				Point pt = new Point(x1, coordinates.y);
 				item = table.getItem(pt);
@@ -92,8 +91,8 @@ void setDropSelection (TableItem item) {
 }
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
-	TableItem item = (TableItem)getItem(x,y);
-	
+	TableItem item = (TableItem)getItem(x, y);
+
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
 		scrollItem = null;

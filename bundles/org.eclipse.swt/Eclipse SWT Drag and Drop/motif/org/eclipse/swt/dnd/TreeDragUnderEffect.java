@@ -10,10 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 	Tree tree;
@@ -26,7 +27,7 @@ class TreeDragUnderEffect extends DragUnderEffect {
 	
 	TreeItem insertItem = null;
 	boolean insertBefore = false;
-	
+
 	TreeItem scrollItem;
 	long scrollBeginTime;
 
@@ -135,7 +136,7 @@ void setInsertMark(TreeItem item, boolean before) {
 }
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
-	TreeItem item = (TreeItem)getItem(x,y);
+	TreeItem item = (TreeItem)getItem(x, y);
 	
 	if ((effect & DND.FEEDBACK_EXPAND) == 0) {
 		expandBeginTime = 0;
