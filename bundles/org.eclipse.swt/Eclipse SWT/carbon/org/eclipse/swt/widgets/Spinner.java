@@ -1034,6 +1034,22 @@ char [] setText (String string, int start, int end, boolean notify) {
 	return buffer;
 }
 
+public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
+	checkWidget ();
+	if (minimum < 0) return;
+	if (maximum <= minimum) return;
+	if (digits < 0) return;
+	if (increment < 1) return;
+	if (pageIncrement < 1) return;
+	selection = Math.min (Math.max (minimum, selection), maximum);
+	this.increment = increment;
+	this.pageIncrement = pageIncrement;
+	this.digits = digits;
+	OS.SetControl32BitMaximum (buttonHandle, maximum);
+	OS.SetControl32BitMinimum (buttonHandle, minimum);
+	setSelection (selection, false);
+}
+
 void setZOrder () {
 	super.setZOrder ();
 	if (textHandle != 0) OS.HIViewAddSubview (handle, textHandle);
