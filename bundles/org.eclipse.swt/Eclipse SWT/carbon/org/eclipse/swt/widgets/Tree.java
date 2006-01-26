@@ -308,15 +308,15 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 	if (OS.HIVIEW) {
 		Control widget = findBackgroundControl ();
 		if (widget != null) {
-			Rectangle rect1 = getClientArea ();
+			Rectangle rect = getClientArea ();
 			if (drawItem != 0) {
-				Rect rect = new Rect();
+				int clientX = rect.x, clientWidth = rect.width; 
+				Rect itemRect = new Rect();
 				int columnId = columnCount == 0 ? column_id : columns [columnCount - 1].id;
-				int clientX = rect1.x, clientWidth = rect1.width; 
-				if (OS.GetDataBrowserItemPartBounds (handle, drawItem, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					rect1.width = rect1.x + rect1.width - rect.right;
-					rect1.x = rect.right;
-					fillBackground (handle, paintGC.handle, rect1);
+				if (OS.GetDataBrowserItemPartBounds (handle, drawItem, columnId, OS.kDataBrowserPropertyEnclosingPart, itemRect) == OS.noErr) {
+					rect.width = rect.x + rect.width - itemRect.right;
+					rect.x = itemRect.right;
+					fillBackground (handle, paintGC.handle, rect);
 				}
 				int [] ids = childIds, state = new int [1];
 				int index = ids.length - 1;
@@ -339,22 +339,25 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 				if (index >= 0 && ids [index] != 0) {
 					int rc = -1;
 					if (columnCount == 0) {
-						rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], column_id, OS.kDataBrowserPropertyEnclosingPart, rect);
+						rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], column_id, OS.kDataBrowserPropertyEnclosingPart, itemRect);
 					} else {
 						for (int i = 0; i < columnCount && rc != OS.noErr; i++) {
-							rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], columns [i].id, OS.kDataBrowserPropertyEnclosingPart, rect);						
+							rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], columns [i].id, OS.kDataBrowserPropertyEnclosingPart, itemRect);						
 						}
 					}
 					if (rc == OS.noErr) {
-						rect1.width = clientWidth;
-						rect1.x = clientX;
-						rect1.height = rect1.y + rect1.height - rect.bottom;
-						rect1.y = rect.bottom;
-						fillBackground (handle, paintGC.handle, rect1);
+						rect.width = clientWidth;
+						rect.x = clientX;
+						rect.height = rect.y + rect.height - itemRect.bottom;
+						rect.y = itemRect.bottom;
+						fillBackground (handle, paintGC.handle, rect);
 					}
 				}
 			} else {
-				fillBackground (handle, paintGC.handle, rect1);
+				int headerHeight = getHeaderHeight ();
+				rect.y += headerHeight;
+				rect.width -= headerHeight;
+				fillBackground (handle, paintGC.handle, rect);
 			}
 		}
 	}
