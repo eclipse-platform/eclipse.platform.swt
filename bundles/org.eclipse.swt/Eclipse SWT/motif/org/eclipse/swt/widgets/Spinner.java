@@ -696,6 +696,24 @@ public void setSelection (int value) {
 	int [] argList = {OS.XmNposition, value};
 	OS.XtSetValues (handle, argList, argList.length / 2);	
 }
+
+public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
+	checkWidget ();
+	if (minimum < 0) return;
+	if (maximum <= minimum) return;
+	if (digits < 0) return;
+	if (increment < 1) return;
+	if (pageIncrement < 1) return;
+	selection = Math.min (Math.max (minimum, selection), maximum);
+	int [] argList = {
+			OS.XmNposition, selection, 
+			OS.XmNmaximumValue, maximum,
+			OS.XmNminimumValue, minimum,
+			OS.XmNincrementValue, increment,
+			OS.XmNdecimalPoints, digits};
+	OS.XtSetValues (handle, argList, argList.length / 2);	
+}
+
 void updateText () {
 	int [] argList = {
 			OS.XmNtextField, 0,		/* 1 */
