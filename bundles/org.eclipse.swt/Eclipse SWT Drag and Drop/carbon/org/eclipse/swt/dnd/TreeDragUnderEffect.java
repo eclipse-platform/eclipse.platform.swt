@@ -102,6 +102,7 @@ TreeItem previousItem(TreeItem item) {
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = (TreeItem)getItem(x, y);
+	
 	if ((effect & DND.FEEDBACK_EXPAND) == 0) {
 		expandBeginTime = 0;
 		expandIndex = null;
@@ -109,16 +110,14 @@ void show(int effect, int x, int y) {
 		if (item != null && item.equals(expandIndex) && expandBeginTime != 0) {
 			if (System.currentTimeMillis() >= expandBeginTime) {
 				if (item.getItemCount() > 0 && !item.getExpanded()) {
+					Event event = new Event();
+					event.x = x;
+					event.y = y;
+					event.item = item;
+					event.time = (int) System.currentTimeMillis();
+					tree.notifyListeners(SWT.Expand, event);
+					if (item.isDisposed()) return;
 					item.setExpanded(true);
-					if (item.getExpanded()) {
-						Event event = new Event();
-						event.x = x;
-						event.y = y;
-						event.item = item;
-						event.time = (int) System.currentTimeMillis();
-						tree.notifyListeners(SWT.Expand, event);
-						if (item.isDisposed()) return;
-					}
 				}
 				expandBeginTime = 0;
 				expandIndex = null;
