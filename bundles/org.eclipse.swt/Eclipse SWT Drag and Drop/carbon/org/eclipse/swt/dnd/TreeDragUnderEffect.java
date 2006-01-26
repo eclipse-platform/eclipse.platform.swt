@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,24 +10,28 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 class TreeDragUnderEffect extends DragUnderEffect {
-
 	Tree tree;
-	TreeItem currentItem = null;
-	int currentEffect = DND.FEEDBACK_NONE;
-	TreeItem[] selection = new TreeItem[0];
-	private TreeItem scrollItem;	
-	private long scrollBeginTime;
-	private TreeItem expandIndex;
-	private long expandBeginTime;
 	
-	private static final int SCROLL_HYSTERESIS = 150; // milli seconds
-	private static final int EXPAND_HYSTERESIS = 300; // milli seconds
+	int currentEffect = DND.FEEDBACK_NONE;
+	TreeItem currentItem;
+
+	TreeItem insertItem = null;
+	boolean insertBefore = false;
+
+	TreeItem scrollItem;
+	long scrollBeginTime;
+
+	TreeItem expandItem;
+	long expandBeginTime;
+	
+	static final int SCROLL_HYSTERESIS = 150; // milli seconds
+	static final int EXPAND_HYSTERESIS = 300; // milli seconds
 
 TreeDragUnderEffect(Tree tree) {
 	this.tree = tree;
@@ -59,27 +63,18 @@ Widget getItem(int x, int y) {
 }
 TreeItem nextItem(TreeItem item) {
 	if (item == null) return null;
-	if (item.getExpanded()) {
-		return item.getItem(0);
-	} else {
-		TreeItem childItem = item;
-		TreeItem parentItem = childItem.getParentItem();
-		int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-		int count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
-		while (true) {
-			if (index + 1 < count) {
-				return parentItem == null ? tree.getItem(index + 1) : parentItem.getItem(index + 1);
-			} else {
-				if (parentItem == null) {
-					return null;
-				} else {
-					childItem = parentItem;
-					parentItem = childItem.getParentItem();
-					index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-					count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
-				}
-			}
-		}
+	if (item.getExpanded()) return item.getItem(0);
+	TreeItem childItem = item;
+	TreeItem parentItem = childItem.getParentItem();
+	int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
+	int count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
+	while (true) {
+		if (index + 1 < count) return parentItem == null ? tree.getItem(index + 1) : parentItem.getItem(index + 1);
+		if (parentItem == null) return null;
+		childItem = parentItem;
+		parentItem = childItem.getParentItem();
+		index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
+		count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
 	}
 }
 TreeItem previousItem(TreeItem item) {
@@ -87,17 +82,27 @@ TreeItem previousItem(TreeItem item) {
 	TreeItem childItem = item;
 	TreeItem parentItem = childItem.getParentItem();
 	int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-	if (index == 0) {
-		return parentItem;
-	} else {
-		TreeItem nextItem = parentItem == null ? tree.getItem(index-1) : parentItem.getItem(index-1);
-		int count = nextItem.getItemCount();
-		while (count > 0 && nextItem.getExpanded()) {
-			nextItem = nextItem.getItem(count - 1);
-			count = nextItem.getItemCount();
-		}
-		return nextItem;
+	if (index == 0) return parentItem;
+	TreeItem nextItem = parentItem == null ? tree.getItem(index-1) : parentItem.getItem(index-1);
+	int count = nextItem.getItemCount();
+	while (count > 0 && nextItem.getExpanded()) {
+		nextItem = nextItem.getItem(count - 1);
+		count = nextItem.getItemCount();
 	}
+	return nextItem;
+}
+void setDropSelection (TreeItem item) {
+	if (item == null) {
+		tree.setSelection(new TreeItem[0]);
+	} else {
+		tree.setSelection(new TreeItem[]{item});
+	}
+}
+void setInsertMark(TreeItem item, boolean before) {
+	if (item == insertItem && before == insertBefore) return;
+	insertItem = item;
+	insertBefore = before;
+	tree.setInsertMark(item, before);
 }
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
@@ -105,9 +110,9 @@ void show(int effect, int x, int y) {
 	
 	if ((effect & DND.FEEDBACK_EXPAND) == 0) {
 		expandBeginTime = 0;
-		expandIndex = null;
+		expandItem = null;
 	} else {
-		if (item != null && item.equals(expandIndex) && expandBeginTime != 0) {
+		if (item != null && item.equals(expandItem) && expandBeginTime != 0) {
 			if (System.currentTimeMillis() >= expandBeginTime) {
 				if (item.getItemCount() > 0 && !item.getExpanded()) {
 					Event event = new Event();
@@ -120,11 +125,11 @@ void show(int effect, int x, int y) {
 					item.setExpanded(true);
 				}
 				expandBeginTime = 0;
-				expandIndex = null;
+				expandItem = null;
 			}
 		} else {
 			expandBeginTime = System.currentTimeMillis() + EXPAND_HYSTERESIS;
-			expandIndex = item;
+			expandItem = item;
 		}
 	}
 	
@@ -157,41 +162,26 @@ void show(int effect, int x, int y) {
 	}
 	
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-		    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-			setInsertMark(null, false);
-			currentEffect = DND.FEEDBACK_NONE;
-			currentItem = null;
-		}
-		if (currentEffect != effect || currentItem != item) { 
+		if (currentItem != item || (currentEffect & DND.FEEDBACK_SELECT) == 0) { 
 			setDropSelection(item); 
-			currentEffect = DND.FEEDBACK_SELECT;
+			currentEffect = effect;
 			currentItem = item;
 		}
+	} else {
+		setDropSelection(null);
 	}
 	
 	if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
 		(effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-		if (currentEffect == DND.FEEDBACK_SELECT) {
-			setDropSelection(null);
-			currentEffect = DND.FEEDBACK_NONE;
-			currentItem = null;
-		}
-		if (currentEffect != effect || currentItem != item) { 
-			setInsertMark(item, effect == DND.FEEDBACK_INSERT_AFTER);
+		if (currentItem != item || 
+			 ((effect & DND.FEEDBACK_INSERT_AFTER) != (currentEffect & DND.FEEDBACK_INSERT_AFTER)) ||
+			 ((effect & DND.FEEDBACK_INSERT_BEFORE) != (currentEffect & DND.FEEDBACK_INSERT_BEFORE))) { 
+			setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
 			currentEffect = effect;
 			currentItem = item;
 		}
-	}
-}
-void setDropSelection (TreeItem item) {
-	if (item == null) {
-		tree.setSelection(new TreeItem[0]);
 	} else {
-		tree.setSelection(new TreeItem[]{item});
+		setInsertMark(null, false);
 	}
-}
-void setInsertMark (TreeItem item, boolean after) {
-	// not currently implemented
 }
 }

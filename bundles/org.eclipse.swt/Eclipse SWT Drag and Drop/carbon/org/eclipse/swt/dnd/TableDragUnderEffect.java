@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,18 +10,21 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
- 
+
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	Table table;
-	TableItem currentItem;
-	int currentEffect = DND.FEEDBACK_NONE;
-	long scrollBeginTime = 0;
-	TableItem scrollItem;
-	static final int SCROLL_HYSTERESIS = 500; // milli seconds
 	
+	int currentEffect = DND.FEEDBACK_NONE;
+	TableItem currentItem;
+
+	TableItem scrollItem;
+	long scrollBeginTime;
+
+	static final int SCROLL_HYSTERESIS = 150; // milli seconds
+
 TableDragUnderEffect(Table table) {
 	this.table = table;
 }
@@ -38,7 +41,7 @@ Widget getItem(int x, int y) {
 	if (item == null) {
 		Rectangle area = table.getClientArea();
 		if (area.contains(coordinates)) {
-			// Scan across the width of the tree.
+			// Scan across the width of the table.
 			for (int x1 = area.x; x1 < area.x + area.width; x1++) {
 				Point pt = new Point(x1, coordinates.y);
 				item = table.getItem(pt);
@@ -57,9 +60,6 @@ void setDropSelection (TableItem item) {
 		table.setSelection(new TableItem[]{item});
 	}
 }
-void setInsertMark (TreeItem item, boolean after) {
-	// not currently implemented
-}
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TableItem item = (TableItem)getItem(x, y);
@@ -77,12 +77,12 @@ void show(int effect, int x, int y) {
 				pt = table.getDisplay().map(null, table, pt);
 				TableItem nextItem = null;
 				if (pt.y < area.y + headerHeight + 2 * itemHeight) {
-					int index = table.indexOf(item);
-					nextItem = table.getItem(Math.max(0, index-1));
+					int index = Math.max(0, table.indexOf(item)-1);
+					nextItem = table.getItem(index);
 				}
 				if (pt.y > area.y + area.height - 2 * itemHeight) {
-					int index = table.indexOf(item);
-					nextItem = table.getItem(Math.min(table.getItemCount()-1, index+1));
+					int index = Math.min(table.getItemCount()-1, table.indexOf(item)+1);
+					nextItem = table.getItem(index);
 				}
 				if (nextItem != null) table.showItem(nextItem);
 				scrollBeginTime = 0;
@@ -95,17 +95,13 @@ void show(int effect, int x, int y) {
 	}
 	
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-		    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-			setInsertMark(null, false);
-			currentEffect = DND.FEEDBACK_NONE;
-			currentItem = null;
-		}
-		if (currentEffect != effect || currentItem != item) { 
+		if (currentItem != item || (currentEffect & DND.FEEDBACK_SELECT) == 0) { 
 			setDropSelection(item); 
-			currentEffect = DND.FEEDBACK_SELECT;
+			currentEffect = effect;
 			currentItem = item;
 		}
+	} else {
+		setDropSelection(null);
 	}
 }
 }
