@@ -833,8 +833,8 @@ void setBackground (float [] color) {
 public void setDigits (int value) {
 	checkWidget ();
 	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (value == this.digits) return;
-	this.digits = value;
+	if (value == digits) return;
+	digits = value;
 	int pos = OS.GetControl32BitValue (buttonHandle);	
 	setSelection (pos, false);
 }
