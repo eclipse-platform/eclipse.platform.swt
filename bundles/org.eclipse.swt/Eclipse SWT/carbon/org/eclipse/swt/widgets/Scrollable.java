@@ -269,12 +269,14 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
 	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
 	int result = super.kEventMouseWheelMoved (nextHandler, theEvent, userData);
+	boolean redraw = false;
 	if (verticalBar != null) {
 		int position = verticalBar.getSelection ();
 		if (position != vPosition) {
 			Event event = new Event ();
 			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
 			verticalBar.sendEvent (SWT.Selection, event);
+			redraw = true;
 		}
 	}
 	if (horizontalBar != null) {
@@ -283,9 +285,22 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 			Event event = new Event ();
 			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
 			horizontalBar.sendEvent (SWT.Selection, event);
+			redraw = true;
 		}
 	}
+	if (redraw) redrawBackgroundImage ();
 	return result;
+}
+
+void redrawBackgroundImage () {
+	if (OS.HIVIEW) {
+		if (scrolledHandle == 0) {
+			Control control = findBackgroundControl();
+			if (control != null && control.backgroundImage != null) {
+				redrawWidget (handle, false);
+			}
+		}
+	}
 }
 
 void register () {

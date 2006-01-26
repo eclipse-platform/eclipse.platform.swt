@@ -54,7 +54,7 @@ public class Table extends Composite {
 	TableItem currentItem;
 	TableColumn sortColumn;
 	GC paintGC;
-	int clickCount, sortDirection;
+	int clickCount, sortDirection, drawItem;
 	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, lastIndexOf;
 	boolean  ignoreSelect, wasSelected, fixScrollWidth;
 	Rectangle imageBounds;
@@ -152,7 +152,42 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		paintGC = GC.carbon_new (this, data);
 	} 
 	fixScrollWidth = false;
+	drawItem = 0;
 	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	if (OS.HIVIEW) {
+		Control widget = findBackgroundControl ();
+		if (widget != null) {
+			Rect rect = new Rect();
+			int columnId = columnCount == 0 ? column_id : columns [columnCount - 1].id;
+			Rectangle rect1 = getClientArea ();
+			int clientX = rect1.x, clientWidth = rect1.width; 
+			if (drawItem != 0) {
+				if (OS.GetDataBrowserItemPartBounds (handle, drawItem, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+					rect1.width = rect1.x + rect1.width - rect.right;
+					rect1.x = rect.right;
+					fillBackground (handle, paintGC.handle, rect1);	
+				}
+				int rc = -1;
+				if (columnCount == 0) {
+					rc = OS.GetDataBrowserItemPartBounds (handle, itemCount, columnId, OS.kDataBrowserPropertyEnclosingPart, rect);
+				} else {
+					for (int i = 0; i < columnCount && rc != OS.noErr; i++) {
+						rc = OS.GetDataBrowserItemPartBounds (handle, itemCount, columns [i].id, OS.kDataBrowserPropertyEnclosingPart, rect);						
+					}
+				}
+				if (rc == OS.noErr) {
+					rect1.width = clientWidth;
+					rect1.x = clientX;
+					rect1.height = rect1.y + rect1.height - rect.bottom;
+					rect1.y = rect.bottom;
+					fillBackground (handle, paintGC.handle, rect1);
+				}
+			} else {
+				fillBackground (handle, paintGC.handle, rect1);
+			}
+		}
+	}
+	drawItem = 0;
 	if (fixScrollWidth) {
 		fixScrollWidth = false;
 		if (setScrollWidth (items, true)) redraw ();
@@ -886,6 +921,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	if (!OS.HIVIEW) OS.GetControlBounds (handle, controlRect);
 	lastIndexOf = index;
 	TableItem item = _getItem (index);
+	drawItem = id;
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (!item.cached) {
 			if (!checkData (item, false)) return OS.noErr;
@@ -927,10 +963,25 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	Rect itemRect = new Rect();
 	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, itemRect);
 	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
-	if (background != null || item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) {
-		gc.setBackground (item.getBackground (columnIndex));
-		int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
-		gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
+	if (OS.HIVIEW) {
+		Control control = findBackgroundControl ();
+		boolean controlBackground = control != null && (control.background != null || control.backgroundImage != null);
+		boolean itemBackground = item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null);
+		if (controlBackground || itemBackground) {
+			int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+			if (itemBackground) {
+				gc.setBackground (item.getBackground (columnIndex));
+				gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
+			} else {
+				fillBackground (handle, gc.handle, new Rectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1));
+			}
+		}
+	} else {
+		if (background != null || item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) {
+			gc.setBackground (item.getBackground (columnIndex));
+			int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+			gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
+		}
 	}
 	if (selected && (style & SWT.FULL_SELECTION) != 0) {
 		if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {

@@ -2523,6 +2523,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CalcMenuSize)
 }
 #endif
 
+#ifndef NO_Call
+JNIEXPORT void JNICALL OS_NATIVE(Call)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, Call_FUNC);
+	((void (*)())arg0)(arg1, arg2);
+	OS_NATIVE_EXIT(env, that, Call_FUNC);
+}
+#endif
+
 #ifndef NO_CallNextEventHandler
 JNIEXPORT jint JNICALL OS_NATIVE(CallNextEventHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -4510,6 +4520,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetControl32BitValue)
 }
 #endif
 
+#ifndef NO_GetControlAction
+JNIEXPORT jint JNICALL OS_NATIVE(GetControlAction)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetControlAction_FUNC);
+	rc = (jint)GetControlAction((ControlRef)arg0);
+	OS_NATIVE_EXIT(env, that, GetControlAction_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetControlBounds
 JNIEXPORT void JNICALL OS_NATIVE(GetControlBounds)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -6335,6 +6357,25 @@ fail:
 	if (arg2 && lparg2) setThemeButtonDrawInfoFields(env, arg2, lparg2);
 	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, GetThemeButtonContentBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemeButtonRegion
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeButtonRegion)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jobject arg2, jint arg3)
+{
+	Rect _arg0, *lparg0=NULL;
+	ThemeButtonDrawInfo _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeButtonRegion_FUNC);
+	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getThemeButtonDrawInfoFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)GetThemeButtonRegion(lparg0, arg1, lparg2, (RgnHandle)arg3);
+fail:
+	if (arg2 && lparg2) setThemeButtonDrawInfoFields(env, arg2, lparg2);
+	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, GetThemeButtonRegion_FUNC);
 	return rc;
 }
 #endif

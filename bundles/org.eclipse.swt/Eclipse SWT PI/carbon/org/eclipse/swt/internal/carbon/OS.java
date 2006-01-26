@@ -1054,6 +1054,7 @@ public static final native int ChangeWindowAttributes(int windowHandle, int setA
 public static final native int CPSEnableForegroundOperation(int[] psn, int arg2, int arg3, int arg4, int arg5);
 public static final native int CPSSetProcessName(int[] psn, byte[] name);
 public static final native int CallNextEventHandler(int nextHandler, int eventRefHandle);
+public static final native void Call(int proc, int arg1, int arg2);
 public static final native void CalcMenuSize(int theMenu);
 public static final native int CancelMenuTracking(int inRootMenu, boolean inImmediate, int inDismissalReason); 
 public static final native short CharWidth(short c);
@@ -1180,6 +1181,7 @@ public static final native int GetAvailableWindowPositioningBounds(int inDevice,
 public static final native int GetBestControlRect(int inControl, Rect outRect, short[] outBaseLineOffset);
 public static final native int GetCaretTime();
 public static final native void GetClip(int rgnHandle);
+public static final native int GetControlAction(int theControl	);
 public static final native int GetControl32BitMaximum(int cHandle);
 public static final native int GetControl32BitMinimum(int cHandle);
 public static final native int GetControl32BitValue(int cHandle);
@@ -1299,6 +1301,7 @@ public static final native int GetSuperControl(int cHandle, int[] parentHandle);
 public static final native int GetTabContentRect(int theControl, Rect rect);
 public static final native int GetThemeBrushAsColor(short inBrush, short inDepth, boolean inColorDev, RGBColor outColor);
 public static final native int GetThemeButtonContentBounds(Rect inBounds, int inKind, ThemeButtonDrawInfo inDrawInfo, Rect outBounds);
+public static final native int GetThemeButtonRegion(Rect inBounds, int inKind, ThemeButtonDrawInfo inNewInfo, int outRegion);
 public static final native int GetThemeDrawingState(int[] state);
 public static final native int GetThemeFont(short themeFontId, short scriptCode, byte[] fontName, short[] fontSize, byte[] style);
 public static final native int GetThemeMenuItemExtra(short inItemType, short[] outHeight, short[] outWidth); 

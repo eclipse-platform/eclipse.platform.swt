@@ -54,7 +54,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int [] childIds;
 	GC paintGC;
-	int clickCount, sortDirection;
+	int clickCount, sortDirection, drawItem;
 	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll;
 	Rectangle imageBounds;
@@ -302,8 +302,63 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		data.paintEvent = theEvent;
 		data.visibleRgn = visibleRgn;
 		paintGC = GC.carbon_new (this, data);
-	} 
+	}
+	drawItem = 0;
 	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	if (OS.HIVIEW) {
+		Control widget = findBackgroundControl ();
+		if (widget != null) {
+			Rectangle rect1 = getClientArea ();
+			if (drawItem != 0) {
+				Rect rect = new Rect();
+				int columnId = columnCount == 0 ? column_id : columns [columnCount - 1].id;
+				int clientX = rect1.x, clientWidth = rect1.width; 
+				if (OS.GetDataBrowserItemPartBounds (handle, drawItem, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+					rect1.width = rect1.x + rect1.width - rect.right;
+					rect1.x = rect.right;
+					fillBackground (handle, paintGC.handle, rect1);
+				}
+				int [] ids = childIds, state = new int [1];
+				int index = ids.length - 1;
+				while (true) {
+					while (index >= 0 && ids [index] == 0) index--;
+					if (index < 0) break;
+					OS.GetDataBrowserItemState (handle, ids [index], state);
+					if ((state [0] & OS.kDataBrowserContainerIsOpen) != 0) {
+						TreeItem item = items [ids [index] - 1];
+						if (item != null) {
+							ids = item.childIds;
+							index = ids.length - 1;
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+				}
+				if (index >= 0 && ids [index] != 0) {
+					int rc = -1;
+					if (columnCount == 0) {
+						rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], column_id, OS.kDataBrowserPropertyEnclosingPart, rect);
+					} else {
+						for (int i = 0; i < columnCount && rc != OS.noErr; i++) {
+							rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], columns [i].id, OS.kDataBrowserPropertyEnclosingPart, rect);						
+						}
+					}
+					if (rc == OS.noErr) {
+						rect1.width = clientWidth;
+						rect1.x = clientX;
+						rect1.height = rect1.y + rect1.height - rect.bottom;
+						rect1.y = rect.bottom;
+						fillBackground (handle, paintGC.handle, rect1);
+					}
+				}
+			} else {
+				fillBackground (handle, paintGC.handle, rect1);
+			}
+		}
+	}
+	drawItem = 0;
 	if (currentGC == null) {
 		paintGC.dispose ();
 		paintGC = null;
@@ -901,6 +956,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	Rect controlRect = new Rect ();
 	if (!OS.HIVIEW) OS.GetControlBounds (handle, controlRect);
 	TreeItem item = _getItem (id, true);
+	drawItem = id;
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (!item.cached) {
 			if (!checkData (item, false)) return OS.noErr;
@@ -942,10 +998,25 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	Rect itemRect = new Rect();
 	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, itemRect);
 	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
-	if (background != null || item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) {
-		gc.setBackground (item.getBackground (columnIndex));
-		int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
-		gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
+	if (OS.HIVIEW) {
+		Control control = findBackgroundControl ();
+		boolean controlBackground = control != null && (control.background != null || control.backgroundImage != null);
+		boolean itemBackground = item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null);
+		if (controlBackground || itemBackground) {
+			int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+			if (itemBackground) {
+				gc.setBackground (item.getBackground (columnIndex));
+				gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
+			} else {
+				fillBackground (handle, gc.handle, new Rectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1));
+			}
+		}
+	} else {
+		if (background != null || item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) {
+			gc.setBackground (item.getBackground (columnIndex));
+			int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+			gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
+		}
 	}
 	if (selected && (style & SWT.FULL_SELECTION) != 0) {
 		if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
@@ -2124,7 +2195,11 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 			postEvent (SWT.DefaultSelection);
 			break;
 		}
-
+		case 125: /* Down */
+		case 126: { /* Up*/
+			redrawBackgroundImage ();
+			break;
+		}
 	}
 	return result;
 }

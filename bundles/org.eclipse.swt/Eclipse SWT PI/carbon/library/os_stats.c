@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 896;
-int OS_nativeFunctionCallCount[896];
+int OS_nativeFunctionCount = 899;
+int OS_nativeFunctionCallCount[899];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -214,6 +214,7 @@ char * OS_nativeFunctionNames[] = {
 	"CPSEnableForegroundOperation",
 	"CPSSetProcessName",
 	"CalcMenuSize",
+	"Call",
 	"CallNextEventHandler",
 	"CancelMenuTracking",
 	"ChangeWindowAttributes",
@@ -345,6 +346,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetControl32BitMaximum",
 	"GetControl32BitMinimum",
 	"GetControl32BitValue",
+	"GetControlAction",
 	"GetControlBounds",
 	"GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2_3I",
 	"GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I",
@@ -461,6 +463,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetTabContentRect",
 	"GetThemeBrushAsColor",
 	"GetThemeButtonContentBounds",
+	"GetThemeButtonRegion",
 	"GetThemeDrawingState",
 	"GetThemeFont",
 	"GetThemeMenuItemExtra",
