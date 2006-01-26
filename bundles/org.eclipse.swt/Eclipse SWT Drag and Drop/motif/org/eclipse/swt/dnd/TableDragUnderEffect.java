@@ -14,34 +14,29 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.SWT;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	Table table;
-	int currentEffect = DND.FEEDBACK_NONE;
 	
-	TableItem dropSelection;
+	int currentEffect = DND.FEEDBACK_NONE;
+	TableItem currentItem;
+	
 	PaintListener paintListener;
+	TableItem dropSelection = null;
 	
 	TableItem scrollItem;
 	long scrollBeginTime;
+	
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 
 TableDragUnderEffect(Table table) {
 	this.table = table;
-	paintListener = new PaintListener() {
-		public void paintControl(PaintEvent e) {
-			if (dropSelection == null || dropSelection.isDisposed()) return;
-			GC gc = e.gc;
-			Color foreground = gc.getForeground();
-			Display display = e.widget.getDisplay();
-			gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
-			Rectangle bounds = dropSelection.getBounds(0);
-			Rectangle area = TableDragUnderEffect.this.table.getClientArea();
-			gc.drawRectangle(area.x, bounds.y + 1, area.width - 1, bounds.height - 3);
-			gc.setForeground(foreground);
-		}
-	};
+}
+int checkEffect(int effect) {
+	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
+	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
+	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
+	return effect;
 }
 Widget getItem(int x, int y) {
 	Point coordinates = new Point(x, y);
@@ -62,91 +57,81 @@ Widget getItem(int x, int y) {
 	}
 	return item;
 }
-void show(int effect, int x, int y) {
-	TableItem item = findItem(x, y);
-	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		table.addPaintListener(paintListener);
-	}
-	scrollHover(effect, item, x, y);
-	setDragUnderEffect(effect, item);
-	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		table.removePaintListener(paintListener);
-	}
-	currentEffect = effect;
-}
-TableItem findItem(int x, int y){
-	Point coordinates = new Point(x, y);
-	coordinates = table.toControl(coordinates);
-	Rectangle area = table.getClientArea();
-	if (!area.contains(coordinates)) return null;
-
-	TableItem item = table.getItem(coordinates);
-	if (item != null) return item;
-
-	// Scan across the width of the table
-	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		Point pt = new Point(x1, coordinates.y);
-		item = table.getItem(pt);
-		if (item != null) return item;
-	}
-	return null;
-}
-void setDragUnderEffect(int effect, TableItem item) {	
-	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(item);
-		return;
-	}
-	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(null);
-	}
-}
-void setDropSelection (TableItem item) {
+void setDropSelection (TableItem item) {	
 	if (item == dropSelection) return;
-	Rectangle area = table.getClientArea();
 	if (dropSelection != null && !dropSelection.isDisposed()) {
 		Rectangle bounds = dropSelection.getBounds(0);
-		table.redraw(area.x, bounds.y, area.width, bounds.height, true);
+		table.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
 	}
 	dropSelection = item;
 	if (dropSelection != null && !dropSelection.isDisposed()) {
 		Rectangle bounds = dropSelection.getBounds(0);
-		table.redraw(area.x, bounds.y, area.width, bounds.height, true);
+		table.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
+	}
+	if (dropSelection == null) {
+		if (paintListener != null) {
+			table.removePaintListener(paintListener);
+			paintListener = null;
+		}
+	} else {
+		if (paintListener == null) {
+			paintListener = new PaintListener() {
+				public void paintControl(PaintEvent e) {
+					if (dropSelection == null  || dropSelection.isDisposed()) return;
+					GC gc = e.gc;
+					boolean xor = gc.getXORMode();
+					gc.setXORMode(true);
+					Rectangle bounds = dropSelection.getBounds(0);
+					gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+					gc.setXORMode(xor);
+				}
+			};
+			table.addPaintListener(paintListener);
+		}
 	}
 }
-void scrollHover (int effect, TableItem item, int x, int y) {
+void show(int effect, int x, int y) {
+	effect = checkEffect(effect);
+	TableItem item = (TableItem)getItem(x,y);
+	
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
 		scrollItem = null;
-		return;
-	}
-	if (scrollItem == item && scrollBeginTime != 0) {
-		if (System.currentTimeMillis() >= scrollBeginTime) {
-			scroll(item, x, y);
-			scrollBeginTime = 0;
-			scrollItem = null;
+	} else {
+		if (item != null && item.equals(scrollItem)  && scrollBeginTime != 0) {
+			if (System.currentTimeMillis() >= scrollBeginTime) {
+				Rectangle area = table.getClientArea();
+				int headerHeight = table.getHeaderHeight();
+				int itemHeight= table.getItemHeight();
+				Point pt = new Point(x, y);
+				pt = table.getDisplay().map(null, table, pt);
+				TableItem nextItem = null;
+				if (pt.y < area.y + headerHeight + 2 * itemHeight) {
+					int index = Math.max(0, table.indexOf(item)-1);
+					nextItem = table.getItem(index);
+				}
+				if (pt.y > area.y + area.height - 2 * itemHeight) {
+					int index = Math.min(table.getItemCount()-1, table.indexOf(item)+1);
+					nextItem = table.getItem(index);
+				}
+				if (nextItem != null) table.showItem(nextItem);
+				scrollBeginTime = 0;
+				scrollItem = null;
+			}
+		} else {
+			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+			scrollItem = item;
 		}
-		return;
 	}
-	scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
-	scrollItem = item;
-}
-void scroll(TableItem item, int x, int y) {
-	if (item == null) return;
-	Point coordinates = new Point(x, y);
-	coordinates = table.toControl(coordinates);
-	Rectangle area = table.getClientArea();
-	int top = table.getTopIndex();
-	int newTop = -1;
-	// scroll if two lines from top or bottom
-	int scroll_width = 2*table.getItemHeight();
-	if (coordinates.y < area.y + scroll_width) {
-		newTop = Math.max(0, top - 1);
-	} else if (coordinates.y > area.y + area.height - scroll_width) {
-		newTop = Math.min(table.getItemCount() - 1, top + 1);
-	}
-	if (newTop != -1 && newTop != top) {
-		table.setTopIndex(newTop);
+	
+	if ((effect & DND.FEEDBACK_SELECT) != 0) {
+		if (currentItem != item || (currentEffect & DND.FEEDBACK_SELECT) == 0) { 
+			setDropSelection(item); 
+			currentEffect = effect;
+			currentItem = item;
+		}
+	} else {
+		setDropSelection(null);
 	}
 }
 }
