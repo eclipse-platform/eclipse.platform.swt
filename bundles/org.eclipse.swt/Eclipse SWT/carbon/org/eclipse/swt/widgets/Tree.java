@@ -309,6 +309,9 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		Control widget = findBackgroundControl ();
 		if (widget != null) {
 			Rectangle rect = getClientArea ();
+			int headerHeight = getHeaderHeight ();
+			rect.y += headerHeight;
+			rect.height -= headerHeight;
 			if (drawItem != 0) {
 				int clientX = rect.x, clientWidth = rect.width; 
 				Rect itemRect = new Rect();
@@ -354,9 +357,6 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 					}
 				}
 			} else {
-				int headerHeight = getHeaderHeight ();
-				rect.y += headerHeight;
-				rect.width -= headerHeight;
 				fillBackground (handle, paintGC.handle, rect);
 			}
 		}
