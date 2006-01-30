@@ -983,6 +983,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
+	selected |= (itemState & OS.kDataBrowserItemIsDragTarget) != 0;
 	x -= controlRect.left;
 	y -= controlRect.top;
 	GC gc = paintGC;

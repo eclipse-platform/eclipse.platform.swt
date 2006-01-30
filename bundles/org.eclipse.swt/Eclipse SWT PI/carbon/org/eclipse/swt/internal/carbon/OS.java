@@ -254,6 +254,7 @@ public class OS extends Platform {
 	public static final int kDataBrowserItemAnyState = -1;
 	public static final int kDataBrowserItemIsActiveProperty = 1;
 	public static final int kDataBrowserItemIsContainerProperty = 4;
+	public static final int kDataBrowserItemIsDragTarget  = 1 << 2;
 	public static final int kDataBrowserItemIsEditableProperty = 3;
 	public static final int kDataBrowserItemIsSelectableProperty = 2;
 	public static final int kDataBrowserItemIsSelected = 1 << 0;

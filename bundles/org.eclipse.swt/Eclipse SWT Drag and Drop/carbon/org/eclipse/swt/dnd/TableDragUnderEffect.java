@@ -11,29 +11,62 @@
 package org.eclipse.swt.dnd;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
+import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.widgets.*;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	Table table;
-	
-	int currentEffect = DND.FEEDBACK_NONE;
-	TableItem currentItem;
-
 	TableItem scrollItem;
 	long scrollBeginTime;
+	int currentEffect = DND.FEEDBACK_NONE;
 
+	static Callback AcceptDragProc;
+	static {
+		AcceptDragProc = new Callback(TableDragUnderEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
+		int acceptDragProc = AcceptDragProc.getAddress();
+		if (acceptDragProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	}
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 
 TableDragUnderEffect(Table table) {
 	this.table = table;
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (table.handle, callbacks);
+	callbacks.v1_acceptDragCallback = AcceptDragProc.getAddress();
+	OS.SetDataBrowserCallbacks(table.handle, callbacks);
 }
+
+static int AcceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
+	DropTarget target = FindDropTarget(theControl, theDrag);
+	if (target == null || target.effect == null) return 0;
+	TableDragUnderEffect effect = (TableDragUnderEffect)target.effect;
+	return effect.acceptDragProc(theControl, itemID, property, theRect, theDrag);
+}
+
+static DropTarget FindDropTarget(int theControl, int theDrag) {
+	if (theControl == 0) return null;
+	Display display = Display.findDisplay(Thread.currentThread());
+	if (display == null || display.isDisposed()) return null;
+	Widget widget = display.findWidget(theControl);
+	if (widget == null) return null;
+	return (DropTarget)widget.getData(DropTarget.DROPTARGETID); 
+}
+
+int acceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
+	return (currentEffect & DND.FEEDBACK_SELECT) != 0 ? 1 : 0;
+}
+
 int checkEffect(int effect) {
 	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
 	return effect;
 }
+
 Widget getItem(int x, int y) {
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
@@ -53,13 +86,7 @@ Widget getItem(int x, int y) {
 	}
 	return item;
 }
-void setDropSelection (TableItem item) {
-	if (item == null) {
-		table.setSelection(new TableItem[0]);
-	} else {
-		table.setSelection(new TableItem[]{item});
-	}
-}
+
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TableItem item = (TableItem)getItem(x, y);
@@ -94,14 +121,8 @@ void show(int effect, int x, int y) {
 		}
 	}
 	
-	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		if (currentItem != item || (currentEffect & DND.FEEDBACK_SELECT) == 0) { 
-			setDropSelection(item); 
-			currentEffect = effect;
-			currentItem = item;
-		}
-	} else {
-		setDropSelection(null);
-	}
+	// store current effect for selection feedback
+	currentEffect = effect;
+
 }
 }
