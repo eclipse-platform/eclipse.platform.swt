@@ -3330,6 +3330,7 @@ public void setSelection (int [] indices) {
  * </ul>
  */
 public void setSelection (TableItem  item) {
+	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (new TableItem [] {item});
 }

@@ -594,6 +594,7 @@ public void removeSelectionListener (SelectionListener listener) {
  * </ul>
  */
 public void setSelection (TabItem item) {
+	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (new TabItem [] {item});
 }
