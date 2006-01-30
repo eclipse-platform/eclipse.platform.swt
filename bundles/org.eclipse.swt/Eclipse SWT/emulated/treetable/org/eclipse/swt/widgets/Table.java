@@ -3340,6 +3340,7 @@ public void setRedraw (boolean value) {
 	header.setRedraw (value);
 }
 public void setSelection (TableItem  item) {
+	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (new TableItem[] {item});
 }

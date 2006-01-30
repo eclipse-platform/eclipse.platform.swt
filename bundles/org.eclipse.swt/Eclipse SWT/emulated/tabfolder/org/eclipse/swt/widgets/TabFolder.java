@@ -1076,6 +1076,7 @@ public void setSelection(int index) {
 	setSelection(index, false);
 }
 public void setSelection(TabItem item) {
+	checkWidget();
 	if (item == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setSelection(new TabItem[]{item});
 }
