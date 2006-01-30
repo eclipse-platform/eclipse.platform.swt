@@ -452,8 +452,8 @@ Control [] computeTabList () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
-	checkBackground ();
 	super.createWidget (index);
+	checkBackground ();
 	checkBuffered ();
 	setParentTraversal ();
 	overrideTranslations ();
