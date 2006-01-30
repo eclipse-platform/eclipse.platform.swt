@@ -35,7 +35,7 @@ class TreeDragUnderEffect extends DragUnderEffect {
 	
 	static Callback AcceptDragProc;
 	static {
-		AcceptDragProc = new Callback(TableDragUnderEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
+		AcceptDragProc = new Callback(TreeDragUnderEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
 		int acceptDragProc = AcceptDragProc.getAddress();
 		if (acceptDragProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
@@ -53,7 +53,7 @@ TreeDragUnderEffect(Tree tree) {
 static int AcceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
 	DropTarget target = FindDropTarget(theControl, theDrag);
 	if (target == null || target.effect == null) return 0;
-	TableDragUnderEffect effect = (TableDragUnderEffect)target.effect;
+	TreeDragUnderEffect effect = (TreeDragUnderEffect)target.effect;
 	return effect.acceptDragProc(theControl, itemID, property, theRect, theDrag);
 }
 
