@@ -1683,7 +1683,7 @@ void setToolTipText (int /*long*/ widget, String newString, String oldString) {
 					attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
 					attributes.wclass = OS.GDK_INPUT_ONLY;
 					attributes.window_type = OS.GDK_WINDOW_CHILD;
-					int enterWindow = OS.gdk_window_new (parentWindow, attributes, OS.GDK_WA_X | OS.GDK_WA_Y);
+					int /*long*/ enterWindow = OS.gdk_window_new (parentWindow, attributes, OS.GDK_WA_X | OS.GDK_WA_Y);
 					if (enterWindow != 0) {
 						OS.gdk_window_raise (enterWindow);
 						OS.gdk_window_show (enterWindow);
