@@ -171,6 +171,10 @@ public class Display extends Device {
 	int /*long*/ menuPositionProc;
 	Callback menuPositionCallback;
 
+	/* Tooltip size allocate callback */
+	int /*long*/ sizeAllocateProc;
+	Callback sizeAllocateCallback;
+
 	/* Shell map callback */
 	int /*long*/ shellMapProc;
 	Callback shellMapCallback;
@@ -2195,7 +2199,11 @@ void initializeCallbacks () {
 	menuPositionCallback = new Callback(this, "menuPositionProc", 5);
 	menuPositionProc = menuPositionCallback.getAddress();
 	if (menuPositionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
+	
+	sizeAllocateCallback = new Callback(this, "sizeAllocateProc", 3);
+	sizeAllocateProc = sizeAllocateCallback.getAddress();
+	if (sizeAllocateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
 	shellMapCallback = new Callback(this, "shellMapProc", 3);
 	shellMapProc = shellMapCallback.getAddress();
 	if (shellMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2829,6 +2837,10 @@ void releaseDisplay () {
 	menuPositionCallback.dispose (); menuPositionCallback = null;
 	menuPositionProc = 0;
 
+	/* Dispose the tooltip map callback */
+	sizeAllocateCallback.dispose (); sizeAllocateCallback = null;
+	sizeAllocateProc = 0;
+	
 	/* Dispose the shell map callback */
 	shellMapCallback.dispose (); shellMapCallback = null;
 	shellMapProc = 0;
@@ -3525,6 +3537,12 @@ int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int 
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.textCellDataProc (tree_column, cell, tree_model, iter, data);
+}
+
+int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+	Widget widget = getWidget (user_data);
+	if (widget == null) return 0;
+	return widget.sizeAllocateProc (handle, arg0, user_data);
 }
 
 int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int /*long*/ data) {

@@ -1594,9 +1594,9 @@ public void setTextLimit (int limit) {
 	OS.gtk_entry_set_max_length (entryHandle, limit);
 }
 
-void setToolTipText (Shell shell, String string) {
-	shell.setToolTipText (entryHandle, string);
-	shell.setToolTipText (arrowHandle, string);
+void setToolTipText (Shell shell, String newString, String oldString) {
+	shell.setToolTipText (entryHandle, newString, oldString);
+	shell.setToolTipText (arrowHandle, newString, oldString);
 }
 
 /**

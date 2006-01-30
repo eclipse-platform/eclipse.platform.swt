@@ -623,6 +623,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 		}
 		case OS.kHMDisposeContent: {
 			if (display.helpString != 0) OS.CFRelease (display.helpString);
+			display.helpControl = null;
 			display.helpString = 0;
 			break;
 		}

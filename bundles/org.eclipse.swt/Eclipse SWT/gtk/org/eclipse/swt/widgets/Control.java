@@ -3140,12 +3140,12 @@ boolean setTabItemFocus (boolean next) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	toolTipText = string;	
-	setToolTipText (_getShell (), string);
+	setToolTipText (_getShell (), string, toolTipText);
+	toolTipText = string;
 }
 
-void setToolTipText (Shell shell, String string) {
-	shell.setToolTipText (eventHandle (), string);
+void setToolTipText (Shell shell, String newString, String oldString) {
+	shell.setToolTipText (eventHandle (), newString, oldString);
 }
 
 /**

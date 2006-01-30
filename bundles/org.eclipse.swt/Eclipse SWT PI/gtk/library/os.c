@@ -161,6 +161,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTK_1TEXTVIEW_1IM_1CONTEXT)
 }
 #endif
 
+#ifndef NO_GTK_1TOOLTIPS_1TIP_1WINDOW
+JNIEXPORT jint JNICALL OS_NATIVE(GTK_1TOOLTIPS_1TIP_1WINDOW)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GTK_1TOOLTIPS_1TIP_1WINDOW_FUNC);
+	rc = (jint)GTK_TOOLTIPS_TIP_WINDOW((GtkTooltips *)arg0);
+	OS_NATIVE_EXIT(env, that, GTK_1TOOLTIPS_1TIP_1WINDOW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GTK_1WIDGET_1HEIGHT
 JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1HEIGHT)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -9398,6 +9410,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltips_1enable)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tooltips_1enable_FUNC);
 	gtk_tooltips_enable((GtkTooltips *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tooltips_1enable_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tooltips_1force_1window
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltips_1force_1window)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tooltips_1force_1window_FUNC);
+	gtk_tooltips_force_window((GtkTooltips *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tooltips_1force_1window_FUNC);
 }
 #endif
 

@@ -1241,6 +1241,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 		}
 		case OS.kHMDisposeContent: {
 			if (display.helpString != 0) OS.CFRelease (display.helpString);
+			display.helpControl = null;
 			display.helpString = 0;
 			break;
 		}
@@ -2887,6 +2888,11 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+	if (display.helpControl == this) {
+		display.helpControl = null;
+		OS.HMInstallControlContentCallback (handle, 0);
+		OS.HMInstallControlContentCallback (handle, display.helpProc);
+	}
 }
 
 /**

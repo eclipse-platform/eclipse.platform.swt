@@ -530,6 +530,7 @@ public static final native void GTK_ACCEL_LABEL_SET_ACCEL_STRING(int /*long*/ ac
 public static final native int /*long*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(int /*long*/ acce_label);
 public static final native int /*long*/ GTK_ENTRY_IM_CONTEXT(int /*long*/ widget);
 public static final native int /*long*/ GTK_TEXTVIEW_IM_CONTEXT(int /*long*/ widget);
+public static final native int /*long*/ GTK_TOOLTIPS_TIP_WINDOW(int /*long*/ widget);
 public static final native void GTK_WIDGET_SET_HEIGHT(int /*long*/ widget, int height);
 public static final native void GTK_WIDGET_SET_WIDTH(int /*long*/ widget, int width);
 public static final native void GTK_WIDGET_SET_X(int /*long*/ widget, int x);
@@ -6260,6 +6261,15 @@ public static final int /*long*/ gtk_tooltips_new() {
 	lock.lock();
 	try {
 		return _gtk_tooltips_new();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_tooltips_force_window(int /*long*/ tooltips);
+public static final void gtk_tooltips_force_window(int /*long*/ tooltips) {
+	lock.lock();
+	try {
+		_gtk_tooltips_force_window(tooltips);
 	} finally {
 		lock.unlock();
 	}

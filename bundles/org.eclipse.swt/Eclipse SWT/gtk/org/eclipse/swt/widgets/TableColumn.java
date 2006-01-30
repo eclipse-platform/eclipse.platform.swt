@@ -579,13 +579,13 @@ public void setText (String string) {
 
 public void setToolTipText (String string) {
 	checkWidget();
-	toolTipText = string;
 	Shell shell = parent._getShell ();
-	setToolTipText (shell, toolTipText);
+	setToolTipText (shell, string, toolTipText);
+	toolTipText = string;
 }
 
-void setToolTipText (Shell shell, String string) {
-	shell.setToolTipText (buttonHandle, string);
+void setToolTipText (Shell shell, String newString, String oldString) {
+	shell.setToolTipText (buttonHandle, newString, oldString);
 }
 
 /**

@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1042;
-int OS_nativeFunctionCallCount[1042];
+int OS_nativeFunctionCount = 1044;
+int OS_nativeFunctionCallCount[1044];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -34,6 +34,7 @@ char * OS_nativeFunctionNames[] = {
 	"GTK_1SCROLLED_1WINDOW_1SCROLLBAR_1SPACING",
 	"GTK_1SCROLLED_1WINDOW_1VSCROLLBAR",
 	"GTK_1TEXTVIEW_1IM_1CONTEXT",
+	"GTK_1TOOLTIPS_1TIP_1WINDOW",
 	"GTK_1WIDGET_1HEIGHT",
 	"GTK_1WIDGET_1REQUISITION_1HEIGHT",
 	"GTK_1WIDGET_1REQUISITION_1WIDTH",
@@ -729,6 +730,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1toolbar_1set_1orientation",
 	"_1gtk_1tooltips_1disable",
 	"_1gtk_1tooltips_1enable",
+	"_1gtk_1tooltips_1force_1window",
 	"_1gtk_1tooltips_1new",
 	"_1gtk_1tooltips_1set_1tip",
 	"_1gtk_1tree_1model_1get__III_3II",

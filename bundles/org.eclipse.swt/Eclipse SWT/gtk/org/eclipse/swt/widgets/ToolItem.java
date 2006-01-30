@@ -998,15 +998,15 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	toolTipText = string;
 	if (parent.toolTipText == null) {
 		Shell shell = parent._getShell ();
-		setToolTipText (shell, toolTipText);
+		setToolTipText (shell, string, toolTipText);
 	}
+	toolTipText = string;
 }
 
-void setToolTipText (Shell shell, String string) {
-	shell.setToolTipText (handle, string);
+void setToolTipText (Shell shell, String newString, String oldString) {
+	shell.setToolTipText (handle, newString, oldString);
 }
 
 /**

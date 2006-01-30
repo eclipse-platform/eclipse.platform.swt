@@ -100,7 +100,7 @@ import org.eclipse.swt.events.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	int /*long*/ shellHandle, tooltipsHandle;
+	int /*long*/ shellHandle, tooltipsHandle, tooltipWindow;
 	boolean mapped, moved, resized, opened;
 	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
@@ -666,8 +666,8 @@ void fixShell (Shell newShell, Control control) {
 	if (control == lastActive) setActiveControl (null);
 	String toolTipText = control.toolTipText;
 	if (toolTipText != null) {
-		control.setToolTipText (this, null);
-		control.setToolTipText (newShell, toolTipText);
+		control.setToolTipText (this, null, toolTipText);
+		control.setToolTipText (newShell, toolTipText, null);
 	}
 }
 
@@ -1494,6 +1494,13 @@ void showWidget () {
 	if (vboxHandle != 0) OS.gtk_widget_show (vboxHandle);
 }
 
+int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+	int [] x = new int [1], y = new int [1];
+	OS.gdk_window_get_pointer (0, x, y, null);
+	OS.gtk_window_move (handle, x [0], y [0] + 16);
+	return 0;
+}
+
 boolean traverseEscape () {
 	if (parent == null) return false;
 	if (!isVisible () || !isEnabled ()) return false;
@@ -1626,10 +1633,10 @@ void releaseWidget () {
 	lastActive = null;
 }
 
-void setToolTipText (int /*long*/ widget, String string) {
+void setToolTipText (int /*long*/ widget, String newString, String oldString) {
 	byte [] buffer = null;
-	if (string != null && string.length () > 0) {
-		buffer = Converter.wcsToMbcs (null, string, true);
+	if (newString != null && newString.length () > 0) {
+		buffer = Converter.wcsToMbcs (null, newString, true);
 	}
 	if (tooltipsHandle == 0) {
 		tooltipsHandle = OS.gtk_tooltips_new ();
@@ -1637,6 +1644,54 @@ void setToolTipText (int /*long*/ widget, String string) {
 		OS.g_object_ref (tooltipsHandle);
 		OS.gtk_object_sink (tooltipsHandle);
 	}
+
+	/*
+	* Feature in GTK.  There is no API to position a tooltip.
+	* The fix is to connect to the size_allocate signal for
+	* the tooltip window and position it before it is mapped.
+	*/
+	OS.gtk_tooltips_force_window (tooltipsHandle);
+	int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (tooltipsHandle);
+	if (tipWindow != tooltipWindow) {
+		OS.g_signal_connect (tipWindow, OS.size_allocate, display.sizeAllocateProc, shellHandle);
+		tooltipWindow = tipWindow;
+	}
 	OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
+	
+	/*
+	* Bug in GTK.  If the cursor is inside the window when a new
+	* tooltip is set and the old tooltip is null, the new tooltip
+	* is not displayed until the mouse enters the window.  The
+	* fix is to cause and enter/leave event to happen by creating
+	* a temporary INPUT_ONLY GDK window.
+	*/
+	if ((OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_REALIZED) == 0) return;
+	if ((OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_VISIBLE) == 0) return;
+	if (oldString == null || oldString.length () == 0) {
+		if (newString != null && newString.length () != 0) {
+			int[] x = new int [1], y = new int [1];
+			int /*long*/ window = OS.gdk_window_at_pointer (x, y);
+			if (window != 0) {
+				int /*long*/ [] user_data = new int /*long*/ [1];
+				OS.gdk_window_get_user_data (window, user_data);
+				if (widget == user_data [0]) {
+					int /*long*/ parentHandle = OS.gtk_widget_get_parent (widget);
+					int /*long*/ parentWindow = OS.GTK_WIDGET_WINDOW (parentHandle);
+					GdkWindowAttr attributes = new GdkWindowAttr ();
+					attributes.width = OS.GTK_WIDGET_WIDTH (parentHandle);
+					attributes.height = OS.GTK_WIDGET_HEIGHT (parentHandle);
+					attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
+					attributes.wclass = OS.GDK_INPUT_ONLY;
+					attributes.window_type = OS.GDK_WINDOW_CHILD;
+					int enterWindow = OS.gdk_window_new (parentWindow, attributes, OS.GDK_WA_X | OS.GDK_WA_Y);
+					if (enterWindow != 0) {
+						OS.gdk_window_raise (enterWindow);
+						OS.gdk_window_show (enterWindow);
+						OS.gdk_window_destroy (enterWindow);
+					}
+				}
+			}
+		}
+	}
 }
 }

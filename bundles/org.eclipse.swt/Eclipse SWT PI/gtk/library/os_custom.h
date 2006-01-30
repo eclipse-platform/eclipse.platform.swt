@@ -76,6 +76,7 @@
 #define GTK_WIDGET_SET_X(arg0, arg1) (arg0)->allocation.x = arg1
 #define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
 #define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
+#define GTK_TOOLTIPS_TIP_WINDOW(arg0) (arg0)->tip_window
 #define GTK_WIDGET_Y(arg0) ((GtkWidget *)arg0)->allocation.y
 #define GTK_WIDGET_SET_Y(arg0, arg1) (arg0)->allocation.y = arg1
 #define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width
