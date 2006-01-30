@@ -2865,6 +2865,11 @@ public void setSelection (int [] indices) {
 	}
 }
 
+public void setSelection (TableItem  item) {
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (new TableItem [] {item});
+}
+
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selection is cleared before the new items are selected.

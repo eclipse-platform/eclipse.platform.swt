@@ -1075,6 +1075,10 @@ public void setSelection(int index) {
 	if (!(0 <= index && index < items.length)) return;
 	setSelection(index, false);
 }
+public void setSelection(TabItem item) {
+	if (item == null) error(SWT.ERROR_NULL_ARGUMENT);
+	setSelection(new TabItem[]{item});
+}
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selected is first cleared, then the new items are

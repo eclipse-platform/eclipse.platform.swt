@@ -463,6 +463,9 @@ public void test_getSelection() {
 	table.setSelection(items);
 	assertSame(items, table.getSelection());
 	
+	table.setSelection(items[0]);
+	assertSame(new TableItem[] {items[0]}, table.getSelection());
+	
 	// note: SWT.SINGLE
 	makeCleanEnvironment(true);
 
@@ -497,6 +500,9 @@ public void test_getSelectionCount() {
 
 	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
 	assertEquals(3, table.getSelectionCount());
+	
+	table.setSelection(items[2]);
+	assertEquals(1, table.getSelectionCount());
 	
 	table.setSelection(items);
 	assertEquals(number, table.getSelectionCount());
@@ -535,6 +541,9 @@ public void test_getSelectionIndex() {
 
 	table.setSelection(new TableItem[]{items[2], items[number-1], items[10]});
 	assertEquals(2, table.getSelectionIndex());
+	
+	table.setSelection(items[10]);
+	assertEquals(10, table.getSelectionIndex());
 	
 	table.setSelection(items);
 	assertEquals(0, table.getSelectionIndex());
@@ -710,6 +719,15 @@ public void test_isSelectedI() {
 		else
 			assertTrue(":b:" + i, !table.isSelected(i));
 	}
+	
+	table.setSelection(items[0]);
+	for (int i = 0; i < number; i++) {
+		if (i == 0)
+			assertTrue(":b:" + i, table.isSelected(i));
+		else
+			assertTrue(":b:" + i, !table.isSelected(i));
+	}
+	
 	
 	table.setSelection(items);
 	for (int i = 0; i < number; i++)
@@ -1440,9 +1458,22 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 	finally {
 		assertEquals(0, table.getSelectionCount());
 	}
+	
+	try {
+		table.setSelection((TableItem) null);
+		fail("No exception thrown for selection == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	finally {
+		assertEquals(0, table.getSelectionCount());
+	}
 
 	table.setSelection(new TableItem[]{});
 	assertEquals(0, table.getSelectionCount());
+	
+	table.setSelection(items[0]);
+	assertEquals(1, table.getSelectionCount());
 
 	table.setSelection(new TableItem[]{items[0], items[3], items[2]});
 	assertSame(new TableItem[]{items[0], items[2], items[3]}, table.getSelection());	

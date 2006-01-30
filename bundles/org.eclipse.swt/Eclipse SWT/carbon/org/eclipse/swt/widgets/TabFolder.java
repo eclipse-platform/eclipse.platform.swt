@@ -556,6 +556,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
+public void setSelection (TabItem item) {
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (new TabItem [] {item});
+}
+
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selected is first cleared, then the new items are

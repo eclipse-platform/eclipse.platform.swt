@@ -579,6 +579,26 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 /**
+ * Sets the receiver's selection to the given item.
+ * The current selected is first cleared, then the new item is
+ * selected.
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setSelection (TabItem item) {
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (new TabItem [] {item});
+}
+
+/**
  * Sets the receiver's selection to be the given array of items.
  * The current selected is first cleared, then the new items are
  * selected.

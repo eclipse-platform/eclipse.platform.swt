@@ -155,6 +155,9 @@ public void test_getSelectionIndex() {
 	
 	tabFolder.setSelection(items);
 	assertTrue(":c:", tabFolder.getSelectionIndex()==0);
+	
+	tabFolder.setSelection(items[2]);
+	assertTrue(":d:", tabFolder.getSelectionIndex()==2);
 }
 
 public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
@@ -246,6 +249,16 @@ public void test_setSelectionI() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
 	try {
+		tabFolder.setSelection((TabItem) null);
+		fail("No exception thrown for selection == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	finally {
+		assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
+	}
+	
+	try {
 		tabFolder.setSelection((TabItem[]) null);
 		fail("No exception thrown for selection == null");
 	}
@@ -292,6 +305,9 @@ public void test_setSelectionI() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
 
+	tabFolder.setSelection(items[0]);
+	assertEquals(new TabItem[]{items[0]}, tabFolder.getSelection());
+	
 	tabFolder.setSelection(new TabItem[]{});
 	assertEquals(new TabItem[]{}, tabFolder.getSelection());
 		
