@@ -520,8 +520,8 @@ void createHandle () {
 void createWidget () {
 	foreground = background = -1;
 	checkOrientation (parent);
-	checkBackground ();
 	createHandle ();
+	checkBackground ();
 	checkBuffered ();
 	register ();
 	subclass ();

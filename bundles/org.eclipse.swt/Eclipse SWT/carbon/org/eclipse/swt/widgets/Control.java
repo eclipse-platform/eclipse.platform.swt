@@ -510,8 +510,8 @@ Control computeTabRoot () {
 
 void createWidget () {
 	checkOrientation (parent);
-	checkBackground ();
 	super.createWidget ();
+	checkBackground ();
 	checkBuffered ();
 	setDefaultFont ();
 	setZOrder ();

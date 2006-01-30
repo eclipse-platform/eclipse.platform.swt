@@ -355,8 +355,8 @@ int /*long*/ childStyle () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
-	checkBackground ();
 	super.createWidget (index);
+	checkBackground ();
 	checkBuffered ();
 	showWidget ();
 	setInitialBounds ();
