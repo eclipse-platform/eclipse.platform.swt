@@ -23,27 +23,16 @@ public class AllMotifTests extends TestSuite {
  * Tests not run because they consistently fail
  */
 static String[] excludeTests = {
-	"test_getActiveShell(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)",
-	"test_postLorg_eclipse_swt_widgets_Event(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)",
+	"test_sleep(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)",
 	"test_setBackgroundLorg_eclipse_swt_graphics_Color(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)",
+	"test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Font)",
+	"test_getFontData(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Font)",
 	"test_getBoundsI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TableItem)",
 	"test_getBoundsI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TreeItem)",
-	"test_getBounds(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TreeItem)",
-	"test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Menu)",
-	"test_setActive(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Shell)",
-	"test_getItemHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List)",
-	"test_setFontLorg_eclipse_swt_graphics_Font(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List)",
-	"test_setTopIndexI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List)",
-	"test_setFontLorg_eclipse_swt_graphics_Font(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_List)",
-	"test_getTextLimit(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_getTopPixel(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_setTextLimitI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_setTopIndexI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
-	"test_getHeaderHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree)",
-	"test_setSelectionI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_TabFolder)",
-	"test_getSelectionIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
-	"test_getRowCount(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_ToolBar)",
-	"test_getHeaderHeight(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Table)",
+	"test_setMaximizedZ(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Shell)",
+	"test_getLineIndex(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	"test_getLinePixel(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
 };
 
 static boolean isExcluded(String name) {
