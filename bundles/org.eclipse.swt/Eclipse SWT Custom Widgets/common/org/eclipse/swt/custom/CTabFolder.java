@@ -185,12 +185,6 @@ public class CTabFolder extends Composite {
 	Point oldSize;
 	Font oldFont;
 	
-	// tooltip
-	int [] toolTipEvents = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove, SWT.MouseDown, SWT.DragDetect};
-	Listener toolTipListener;
-	Shell toolTipShell;
-	Label toolTipLabel;
-	
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
 	static final int DEFAULT_HEIGHT = 64;
@@ -293,7 +287,6 @@ public CTabFolder(Composite parent, int style) {
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
 				case SWT.MouseDown:        onMouse(event);	break;
 				case SWT.MouseExit:        onMouse(event);	break;
-				case SWT.MouseHover:       onMouseHover(event); break;
 				case SWT.MouseMove:        onMouse(event); break;
 				case SWT.MouseUp:          onMouse(event); break;
 				case SWT.Paint:            onPaint(event);	break;
@@ -311,8 +304,7 @@ public CTabFolder(Composite parent, int style) {
 		SWT.KeyDown,
 		SWT.MouseDoubleClick, 
 		SWT.MouseDown,
-		SWT.MouseExit,
-		SWT.MouseHover, 
+		SWT.MouseExit, 
 		SWT.MouseMove,
 		SWT.MouseUp,
 		SWT.Paint,
@@ -322,21 +314,6 @@ public CTabFolder(Composite parent, int style) {
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
 	}
-	
-	toolTipListener = new Listener() {
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.MouseHover:
-				case SWT.MouseMove:
-					if (updateToolTip(event.x, event.y)) break;
-					// FALL THROUGH
-				case SWT.MouseExit:
-				case SWT.MouseDown:
-					hideToolTip();
-					break;
-			}
-		}
-	};
 }
 static int checkStyle (Composite parent, int style) {
 	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
@@ -581,7 +558,7 @@ void destroyItem (CTabItem item) {
 		if (control != null && !control.isDisposed()) {
 			control.setVisible(false);
 		}
-		hideToolTip();
+		setToolTipText(null);
 		setButtonBounds();
 		redraw();
 		return;
@@ -1816,8 +1793,6 @@ void onDispose(Event event) {
 	 * the inDispose flag is used to skip over this part of the item dispose.
 	 */
 	inDispose = true;
-	
-	hideToolTip();
 
 	if (showMenu != null && !showMenu.isDisposed()) {
 		showMenu.dispose();
@@ -1888,13 +1863,11 @@ void onMouseDoubleClick(Event event) {
 		notifyListeners(SWT.DefaultSelection, e);
 	}
 }
-void onMouseHover(Event event) {
-	showToolTip(event.x, event.y);
-}
 void onMouse(Event event) {
 	int x = event.x, y = event.y;
 	switch (event.type) {
 		case SWT.MouseExit: {
+			setToolTipText(null);
 			if (minImageState != NORMAL) {
 				minImageState = NORMAL;
 				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
@@ -1979,6 +1952,7 @@ void onMouse(Event event) {
 			break;
 		}
 		case SWT.MouseMove: {
+			_setToolTipText(event.x, event.y);
 			boolean close = false, minimize = false, maximize = false, chevron = false;
 			if (minRect.contains(x, y)) {
 				minimize = true;
@@ -3683,48 +3657,18 @@ public void showSelection () {
 	}
 }
 
-void hideToolTip() {
-	if(toolTipShell == null) return;
-	for (int i = 0; i < toolTipEvents.length; i++) {
-		removeListener(toolTipEvents[i], toolTipListener);
+void _setToolTipText (int x, int y) {
+	String oldTip = getToolTipText();
+	String newTip = _getToolTip(x, y);
+	if (newTip == null || !newTip.equals(oldTip)) {
+		setToolTipText(newTip);
 	}
-	toolTipShell.dispose();
-	toolTipShell = null;
-	toolTipLabel = null;
 }
-void showToolTip (int x, int y) {
-	String tooltip = _getToolTip(x, y);
-	if (tooltip == null) return;
-	if (toolTipShell == null) {
-		toolTipShell = new Shell (getShell(), SWT.ON_TOP | SWT.TOOL);
-		toolTipLabel = new Label (toolTipShell, SWT.CENTER);
-		toolTipShell.getAccessible().addAccessibleListener(new AccessibleAdapter() {
-			public void getName(AccessibleEvent e) {
-				e.result = toolTipLabel.getText();
-			}
-		});
-		toolTipShell.getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-			public void getRole(AccessibleControlEvent e) {
-				e.detail = ACC.ROLE_TOOLTIP;
-			}
-		});
-		Display display = toolTipShell.getDisplay();
-		toolTipLabel.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
-		toolTipLabel.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-		for (int i = 0; i < toolTipEvents.length; i++) {
-			addListener(toolTipEvents[i], toolTipListener);
-		}
-	}
-	if (updateToolTip(x, y)) {
-		toolTipShell.setVisible(true);
-	} else {
-		hideToolTip();
-	}
-	
-}
+
 boolean updateItems() {
 	return updateItems(selectedIndex);
 }
+
 boolean updateItems(int showIndex) {
 	if (!single && !mru && showIndex != -1) {
 		// make sure selected item will be showing
@@ -3782,10 +3726,10 @@ boolean updateItems(int showIndex) {
 	changed |= setItemLocation();
 	setButtonBounds();
 	changed |= showChevron != oldShowChevron;
-	if (changed && toolTipShell != null) {
+	if (changed && getToolTipText() != null) {
 		Point pt = getDisplay().getCursorLocation();
 		pt = toControl(pt);
-		if (!updateToolTip(pt.x, pt.y)) hideToolTip();
+		_setToolTipText(pt.x, pt.y);
 	}
 	return changed;
 }
@@ -3838,42 +3782,5 @@ String _getToolTip(int x, int y) {
 		return SWT.getMessage("SWT_Close"); //$NON-NLS-1$
 	}
 	return item.getToolTipText();
-}
-boolean updateToolTip (int x, int y) {
-	String tooltip = _getToolTip(x, y);
-	if (tooltip == null) return false;
-	if (tooltip.equals(toolTipLabel.getText())) return true;
-	
-	toolTipLabel.setText(tooltip);
-	Point labelSize = toolTipLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-	labelSize.x += 2; labelSize.y += 2;
-	toolTipLabel.setSize(labelSize);
-	toolTipShell.pack();
-	/*
-	 * On some platforms, there is a minimum size for a shell  
-	 * which may be greater than the label size.
-	 * To avoid having the background of the tip shell showing
-	 * around the label, force the label to fill the entire client area.
-	 */
-	Rectangle area = toolTipShell.getClientArea();
-	toolTipLabel.setSize(area.width, area.height);
-	/*
-	 * Position the tooltip and ensure that it is not located off
-	 * the screen.
-	 */
-	Point cursorLocation = getDisplay().getCursorLocation();
-	// Assuming cursor is 21x21 because this is the size of
-	// the arrow cursor on Windows 
-	int cursorHeight = 21; 
-	Point size = toolTipShell.getSize();
-	Rectangle rect = getMonitor().getBounds();
-	Point pt = new Point(cursorLocation.x, cursorLocation.y + cursorHeight + 2);
-	pt.x = Math.max(pt.x, rect.x);
-	if (pt.x + size.x > rect.x + rect.width) pt.x = rect.x + rect.width - size.x;
-	if (pt.y + size.y > rect.y + rect.height) {
-		pt.y = cursorLocation.y - 2 - size.y;
-	}
-	toolTipShell.setLocation(pt);
-	return true;
 }
 }
