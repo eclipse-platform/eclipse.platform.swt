@@ -160,7 +160,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 		int a = (int)((alpha1 & 0xFF) * 0.5f + (alpha2 & 0xFF) * 0.5f);
 		int r = (int)(((colorRef1 & 0xFF) >> 0) * 0.5f + ((colorRef2 & 0xFF) >> 0) * 0.5f);
 		int g = (int)(((colorRef1 & 0xFF00) >> 8) * 0.5f + ((colorRef2 & 0xFF00) >> 8) * 0.5f);
-		int b = (int)(((colorRef1 & 0xFF000) >> 16) * 0.5f + ((colorRef2 & 0xFF0000) >> 16) * 0.5f);
+		int b = (int)(((colorRef1 & 0xFF0000) >> 16) * 0.5f + ((colorRef2 & 0xFF0000) >> 16) * 0.5f);
 		int midColor = Gdip.Color_new(a << 24 | r << 16 | g << 8 | b);
 		Gdip.LinearGradientBrush_SetInterpolationColors(handle, new int[]{foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
 		Gdip.Color_delete(midColor);
