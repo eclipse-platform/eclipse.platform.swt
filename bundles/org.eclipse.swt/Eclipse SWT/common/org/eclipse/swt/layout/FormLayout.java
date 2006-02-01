@@ -280,7 +280,7 @@ protected void layout (Composite composite, boolean flushCache) {
 	int x = rect.x + marginLeft + marginWidth;
 	int y = rect.y + marginTop + marginHeight;
 	int width = Math.max (0, rect.width - marginLeft - 2 * marginWidth - marginRight);
-	int height = Math.max (0, rect.height - marginLeft - 2 * marginHeight - marginBottom);
+	int height = Math.max (0, rect.height - marginTop - 2 * marginHeight - marginBottom);
 	layout (composite, true, x, y, width, height, flushCache);
 }
 
