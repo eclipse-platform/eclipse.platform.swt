@@ -37,6 +37,7 @@ public class Snippet216 {
 		Listener mouseListener = new Listener () {
 			public void handleEvent (Event event) {
 				switch (event.type) {
+					case SWT.MouseEnter:
 					case SWT.MouseMove:
 						for (int i=0; i<rects.length; i++) {
 							if (rects [i].contains (event.x, event.y)) {
@@ -47,15 +48,13 @@ public class Snippet216 {
 								return;
 							}
 						}
-						//FALL THROUGH
-					case SWT.MouseExit:
 						shell.setToolTipText (null);
 						break;
 					}
 			}
 		};
 		shell.addListener (SWT.MouseMove, mouseListener);
-		shell.addListener (SWT.MouseExit, mouseListener);
+		shell.addListener (SWT.MouseEnter, mouseListener);
 		shell.addListener (SWT.Paint, new Listener () {
 			public void handleEvent (Event event) {
 				GC gc = event.gc;
