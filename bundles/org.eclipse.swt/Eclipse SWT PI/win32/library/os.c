@@ -87,18 +87,6 @@ fail:
 }
 #endif
 
-#ifndef NO_AnimateWindow
-JNIEXPORT jboolean JNICALL OS_NATIVE(AnimateWindow)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, AnimateWindow_FUNC);
-	rc = (jboolean)AnimateWindow((HWND)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, AnimateWindow_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_Arc
 JNIEXPORT jboolean JNICALL OS_NATIVE(Arc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
@@ -4172,6 +4160,44 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetTextMetricsW)
 fail:
 	if (arg1 && lparg1) setTEXTMETRICWFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, GetTextMetricsW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemeTextExtent
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeTextExtent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4, jint arg5, jint arg6, jobject arg7, jobject arg8)
+{
+	jchar *lparg4=NULL;
+	RECT _arg7, *lparg7=NULL;
+	RECT _arg8, *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeTextExtent_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = getRECTFields(env, arg7, &_arg7)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = getRECTFields(env, arg8, &_arg8)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemeTextExtent(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7, lparg8);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetThemeTextExtent_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetThemeTextExtent");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, lparg4, arg5, arg6, lparg7, lparg8);
+		}
+	}
+fail:
+	if (arg8 && lparg8) setRECTFields(env, arg8, lparg8);
+	if (arg7 && lparg7) setRECTFields(env, arg7, lparg7);
+	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, GetThemeTextExtent_FUNC);
 	return rc;
 }
 #endif

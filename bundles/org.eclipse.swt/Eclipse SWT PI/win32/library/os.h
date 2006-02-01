@@ -126,7 +126,6 @@
 #ifdef _WIN32_WCE
 #define NO_AbortDoc
 #define NO_ActivateKeyboardLayout
-#define NO_AnimateWindow
 #define NO_Arc
 #define NO_AlphaBlend
 #define NO_BeginPath
@@ -243,6 +242,7 @@
 #define NO_GetTextCharset
 #define NO_GetTextExtentPoint32A
 #define NO_GetTextMetricsA
+#define NO_GetThemeTextExtent
 #define NO_GetVersionExA
 #define NO_GetWindowLongA
 #define NO_GetWindowOrgEx
