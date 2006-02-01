@@ -1628,8 +1628,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		} else {
 			pattern = Cairo.cairo_pattern_create_linear (0.0, 0.0, 1.0, 0.0);
 		}
-		Cairo.cairo_pattern_add_color_stop_rgba (pattern, 0, fromRGB.red / 255f, fromRGB.green / 255f, fromRGB.blue / 255f, 1);
-		Cairo.cairo_pattern_add_color_stop_rgba (pattern, 1, toRGB.red / 255f, toRGB.green / 255f, toRGB.blue / 255f, 1);
+		Cairo.cairo_pattern_add_color_stop_rgba (pattern, 0, fromRGB.red / 255f, fromRGB.green / 255f, fromRGB.blue / 255f, data.alpha / 255f);
+		Cairo.cairo_pattern_add_color_stop_rgba (pattern, 1, toRGB.red / 255f, toRGB.green / 255f, toRGB.blue / 255f, data.alpha / 255f);
 		Cairo.cairo_save(cairo);
 		Cairo.cairo_translate(cairo, x, y);
 		Cairo.cairo_scale(cairo, width, height);
