@@ -1174,7 +1174,9 @@ void enableWidget (boolean enabled) {
 	*/
 	Control control = findBackgroundControl ();
 	if (control != null) {
-		_setBackgroundPixel (enabled ? control.getBackgroundPixel () : -1);
+		if (control.backgroundImage == null) {
+			_setBackgroundPixel (enabled ? control.getBackgroundPixel () : -1);
+		}
 	}
 	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
 }
