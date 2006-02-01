@@ -3563,6 +3563,15 @@ public static final int /*long*/ gtk_bin_get_child(int /*long*/ bin) {
 		lock.unlock();
 	}
 }
+public static final native void _gtk_box_set_spacing(int /*long*/ box, int spacing);
+public static final void gtk_box_set_spacing(int /*long*/ box, int spacing) {
+	lock.lock();
+	try {
+		_gtk_box_set_spacing(box, spacing);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_box_set_child_packing(int /*long*/ box, int /*long*/ child, boolean expand, boolean fill, int padding, int pack_type);
 public static final void gtk_box_set_child_packing(int /*long*/ box, int /*long*/ child, boolean expand, boolean fill, int padding, int pack_type) {
 	lock.lock();
@@ -5495,6 +5504,15 @@ public static final void gtk_scale_set_draw_value(int /*long*/ scale, boolean dr
 	lock.lock();
 	try {
 		_gtk_scale_set_draw_value(scale, draw_value);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_scrolled_window_add_with_viewport(int /*long*/ scrolled_window, int /*long*/ child);
+public static final void gtk_scrolled_window_add_with_viewport(int /*long*/ scrolled_window, int /*long*/ child) {
+	lock.lock();
+	try {
+		_gtk_scrolled_window_add_with_viewport(scrolled_window, child);
 	} finally {
 		lock.unlock();
 	}

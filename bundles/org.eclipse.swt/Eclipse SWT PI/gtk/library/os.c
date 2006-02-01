@@ -5561,6 +5561,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1box_1set_1child_1packing)
 }
 #endif
 
+#ifndef NO__1gtk_1box_1set_1spacing
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1box_1set_1spacing)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1box_1set_1spacing_FUNC);
+	gtk_box_set_spacing((GtkBox *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1box_1set_1spacing_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1button_1clicked
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1clicked)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -8343,6 +8353,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1scale_1set_1draw_1value)
 	OS_NATIVE_ENTER(env, that, _1gtk_1scale_1set_1draw_1value_FUNC);
 	gtk_scale_set_draw_value((GtkScale *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1scale_1set_1draw_1value_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1scrolled_1window_1add_1with_1viewport
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1scrolled_1window_1add_1with_1viewport)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1scrolled_1window_1add_1with_1viewport_FUNC);
+	gtk_scrolled_window_add_with_viewport((GtkScrolledWindow *)arg0, (GtkWidget *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1scrolled_1window_1add_1with_1viewport_FUNC);
 }
 #endif
 
