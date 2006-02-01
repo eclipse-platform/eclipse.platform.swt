@@ -2425,7 +2425,6 @@ public void redraw () {
 void redraw (boolean all) {
 //	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
-	forceResize ();
 	redrawWidget (0, 0, 0, 0, true, all, false);
 }
 
@@ -2472,9 +2471,10 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	int /*long*/ window = paintWindow ();
 	GdkRectangle rect = new GdkRectangle ();
 	if (redrawAll) {
-		int /*long*/ widget = paintHandle ();
-		rect.width = OS.GTK_WIDGET_WIDTH (widget);
-		rect.height = OS.GTK_WIDGET_HEIGHT (widget);
+		int [] w = new int [1], h = new int [1];
+		OS.gdk_drawable_get_size (window, w, h);
+		rect.width = w [0];
+		rect.height = h [0];
 	} else {
 		rect.x = x;
 		rect.y = y;
