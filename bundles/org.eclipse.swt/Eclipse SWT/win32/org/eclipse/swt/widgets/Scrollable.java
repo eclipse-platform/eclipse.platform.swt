@@ -153,7 +153,16 @@ public Rectangle getClientArea () {
 	RECT rect = new RECT ();
 	int scrolledHandle = scrolledHandle ();
 	OS.GetClientRect (scrolledHandle, rect);
-	return new Rectangle (0, 0, rect.right, rect.bottom);
+	int x = rect.left, y = rect.top;
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	if (scrolledHandle != handle) {
+		OS.GetClientRect (handle, rect);
+		OS.MapWindowPoints(handle, scrolledHandle, rect, 2);
+		x = -rect.left;
+		y = -rect.top;
+	}
+	return new Rectangle (x, y, width, height);
 }
 
 /**
