@@ -2172,8 +2172,7 @@ int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
 		setParentBackground ();
 	}
 	if (backgroundImage != null) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
-		if (window != 0) OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
+		setBackgroundPixmap (backgroundImage.pixmap);
 	}
 	return 0;
 }
@@ -2697,15 +2696,17 @@ public void setBackgroundImage (Image image) {
 	if (image == backgroundImage) return;
 	this.backgroundImage = image;
 	if (backgroundImage != null) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
-		if (window != 0) {
-			OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
-		}
+		setBackgroundPixmap (backgroundImage.pixmap);
 		redrawWidget (0, 0, 0, 0, true, false, false);
 	} else {
 		setWidgetBackground ();
 	}
 	redrawChildren ();
+}
+
+void setBackgroundPixmap (int pixmap) {
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+	if (window != 0) OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
 }
 
 /**
