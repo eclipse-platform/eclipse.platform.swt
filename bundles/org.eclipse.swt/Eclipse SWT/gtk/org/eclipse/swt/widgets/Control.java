@@ -116,6 +116,12 @@ int /*long*/ eventHandle () {
 	return handle;
 }
 
+int /*long*/ eventWindow () {
+	int /*long*/ eventHandle = eventHandle ();
+	OS.gtk_widget_realize (eventHandle);
+	return OS.GTK_WIDGET_WINDOW (eventHandle);
+}
+
 void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
@@ -928,9 +934,7 @@ public void setLayoutData (Object layoutData) {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
-	int /*long*/ eventHandle = eventHandle ();
-	OS.gtk_widget_realize (eventHandle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
+	int /*long*/ window = eventWindow ();
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	return new Point (x - origin_x [0], y - origin_y [0]);
@@ -976,9 +980,7 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (int x, int y) {
 	checkWidget();
-	int /*long*/ eventHandle = eventHandle ();
-	OS.gtk_widget_realize (eventHandle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
+	int /*long*/ window = eventWindow ();
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	return new Point (origin_x [0] + x, origin_y [0] + y);
@@ -2104,7 +2106,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	int state = gdkEvent.state;
 	if (gdkEvent.is_hint != 0) {
 		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
+		int /*long*/ window = eventWindow ();
 		OS.gdk_window_get_pointer (window, pointer_x, pointer_y, mask);
 		x = pointer_x [0];
 		y = pointer_y [0];
@@ -2601,7 +2603,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 		event.x = (int)x;
 		event.y = (int)y;
 	} else {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
+		int /*long*/ window = eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		event.x = (int)x - origin_x [0];
@@ -2756,7 +2758,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setCursor (int /*long*/ cursor) {
-	int /*long*/ window = paintWindow ();
+	int /*long*/ window = eventWindow ();
 	if (window != 0) {
 		OS.gdk_window_set_cursor (window, cursor);
 		if (!OS.GDK_WINDOWING_X11 ()) {
@@ -3051,6 +3053,9 @@ void setParentBackground () {
 		window = OS.GTK_WIDGET_WINDOW (fixedHandle);
 		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, true);
 	}
+}
+
+void setParentWindow (int /*long*/ widget) {
 }
 
 boolean setRadioSelection (boolean value) {
@@ -3374,6 +3379,7 @@ void showWidget () {
 	state |= ZERO_WIDTH | ZERO_HEIGHT;
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ parentHandle = parent.parentingHandle ();
+	parent.setParentWindow (topHandle);
 	OS.gtk_container_add (parentHandle, topHandle);
 	if (handle != 0 && handle != topHandle) OS.gtk_widget_show (handle);
 	if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {

@@ -2426,18 +2426,14 @@ public Point map (Control from, Control to, int x, int y) {
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
 	if (from != null) {
-		int /*long*/ eventHandle = from.eventHandle ();
-		OS.gtk_widget_realize (eventHandle);
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int /*long*/ window = from.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		point.x += origin_x [0];
 		point.y += origin_y [0];
 	}
 	if (to != null) {
-		int /*long*/ eventHandle = to.eventHandle ();
-		OS.gtk_widget_realize (eventHandle);
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int /*long*/ window = to.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		point.x -= origin_x [0];
@@ -2555,18 +2551,14 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = new Rectangle (x, y, width, height);
 	if (from != null) {
-		int /*long*/ eventHandle = from.eventHandle ();
-		OS.gtk_widget_realize (eventHandle);
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int /*long*/ window = from.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		rect.x += origin_x [0];
 		rect.y += origin_y [0];
 	}
 	if (to != null) {
-		int /*long*/ eventHandle = to.eventHandle ();
-		OS.gtk_widget_realize (eventHandle);
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int /*long*/ window = to.eventWindow ();
 		int [] origin_x = new int [1], origin_y = new int [1];
 		OS.gdk_window_get_origin (window, origin_x, origin_y);
 		rect.x -= origin_x [0];

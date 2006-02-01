@@ -258,23 +258,7 @@ public Rectangle getBounds (int index) {
 			rect.width -= w [0]  + buffer [0];
 		}
 	}
-	
-	/* 
-	 * In the horizontal direction, the origin of the bin window is 
-	 * not the same as the origin of the scrolled handle.
-	 * The method gtk_tree_view_get_cell_area returns the 
-	 * x coordinate relative to the bin window.  In order to
-	 * get the coordinates relative to the top left corner
-	 * of the client area,  we need to account for the
-	 * horizontal scroll adjustment.
-	 */
-	int[] wx = new int[1];
-	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
-	rect.x = wx[0];
-
-	int border = parent.getBorderWidth ();
-	int headerHeight = parent.getHeaderHeight ();
-	return new Rectangle (rect.x + border, rect.y + (headerHeight == 0 ?  border : headerHeight), rect.width + 1, rect.height + 1);
+	return new Rectangle (rect.x, rect.y, rect.width + 1, rect.height + 1);
 }
 
 /**
@@ -495,23 +479,7 @@ public Rectangle getImageBounds (int index) {
 		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
 		rect.width = w [0];
 	}
-	
-	/* 
-	 * In the horizontal direction, the origin of the bin window is 
-	 * not the same as the origin of the scrolled handle.
-	 * The method gtk_tree_view_get_cell_area returns the 
-	 * x coordinate relative to the bin window.  In order to
-	 * get the coordinates relative to the top left corner
-	 * of the client area,  we need to account for the
-	 * horizontal scroll adjustment.
-	 */
-	int[] wx = new int[1];
-	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
-	rect.x = wx[0];
-
-	int border = parent.getBorderWidth ();
-	int headerHeight = parent.getHeaderHeight ();
-	return new Rectangle (rect.x + border, rect.y + (headerHeight == 0 ?  border : headerHeight), rect.width, rect.height + 1);
+	return new Rectangle (rect.x, rect.y, rect.width, rect.height + 1);
 }
 
 /**

@@ -796,6 +796,10 @@ void destroyItem (TreeItem item) {
 	modelChanged = true;
 }
 
+int /*long*/ eventWindow () {
+	return paintWindow ();
+}
+
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	for (int i=0; i<columnCount; i++) {
@@ -809,6 +813,22 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
+}
+
+public Rectangle getClientArea () {
+	checkWidget ();
+	forceResize ();
+	OS.gtk_widget_realize (handle);
+	int /*long*/ fixedWindow = OS.GTK_WIDGET_WINDOW (fixedHandle);
+	int /*long*/ binWindow = OS.gtk_tree_view_get_bin_window (handle);
+	int [] binX = new int [1], binY = new int [1];
+	OS.gdk_window_get_origin (binWindow, binX, binY);
+	int [] fixedX = new int [1], fixedY = new int [1];
+	OS.gdk_window_get_origin (fixedWindow, fixedX, fixedY);
+	int /*long*/ clientHandle = clientHandle ();
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : OS.GTK_WIDGET_WIDTH (clientHandle);
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : OS.GTK_WIDGET_HEIGHT (clientHandle);
+	return new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
 }
 
 /**
@@ -1102,11 +1122,10 @@ public TreeItem getItem (int index) {
  */
 public TreeItem getItem (Point point) {
 	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int /*long*/ [] path = new int /*long*/ [1];
-	int clientX = point.x - getBorderWidth ();
-	int clientY = point.y - getHeaderHeight ();
 	OS.gtk_widget_realize (handle);
-	if (!OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY, path, null, null, null)) return null;
+	if (!OS.gtk_tree_view_get_path_at_pos (handle, point.x, point.y, path, null, null, null)) return null;
 	if (path [0] == 0) return null;
 	TreeItem item = null;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
@@ -1466,15 +1485,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
-	int border = getBorderWidth ();
-	int headerHeight = getHeaderHeight ();
-	gdkEvent.x += border;
-	gdkEvent.y += headerHeight;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	int /*long*/ result = super.gtk_button_press_event (widget, event);
-	gdkEvent.x -= border;
-	gdkEvent.y -= headerHeight;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	if (result != 0) return result;
 	/*
 	* Feature in GTK.  In a multi-select tree view, when multiple items are already
@@ -1528,19 +1539,9 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
-	int border = getBorderWidth ();
-	int headerHeight = getHeaderHeight ();
-	gdkEvent.x += border;
-	gdkEvent.y += headerHeight;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	int /*long*/ result = super.gtk_button_release_event (widget, event);
-	gdkEvent.x -= border;
-	gdkEvent.y -= headerHeight;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	return result;
+	int /*long*/ window = OS.GDK_EVENT_WINDOW (event);
+	if (window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
+	return super.gtk_button_release_event (widget, event);
 }
 
 int /*long*/ gtk_changed (int /*long*/ widget) {
@@ -1585,19 +1586,9 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 }
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	if (gdkEvent.window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
-	int border = getBorderWidth ();
-	int headerHeight = getHeaderHeight ();
-	gdkEvent.x += border;
-	gdkEvent.y += headerHeight;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	int /*long*/ result = super.gtk_motion_notify_event (widget, event);
-	gdkEvent.x -= border;
-	gdkEvent.y -= headerHeight;
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
-	return result;
+	int /*long*/ window = OS.GDK_EVENT_WINDOW (event);
+	if (window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
+	return super.gtk_motion_notify_event (widget, event);
 }
 
 int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long*/ column) {
@@ -2307,6 +2298,11 @@ public void setHeaderVisible (boolean show) {
 public void setLinesVisible (boolean show) {
 	checkWidget();
 	OS.gtk_tree_view_set_rules_hint (handle, show);
+}
+
+void setParentWindow (int /*long*/ widget) {
+	int /*long*/ window = eventWindow ();
+	OS.gtk_widget_set_parent_window (widget, window);
 }
 
 void setScrollWidth (int /*long*/ column, int /*long*/ iter) {

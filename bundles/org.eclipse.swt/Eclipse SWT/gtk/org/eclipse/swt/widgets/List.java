@@ -339,6 +339,10 @@ public void deselectAll () {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
+int /*long*/ eventWindow () {
+	return paintWindow ();
+}
+
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }
