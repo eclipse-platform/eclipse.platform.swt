@@ -3930,12 +3930,26 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			* performed in WM_KEYDOWN from WM_CHAR.
 			*/
 			return LRESULT.ZERO;
-		case OS.VK_UP:
-		case OS.VK_DOWN:
 		case OS.VK_PRIOR:
 		case OS.VK_NEXT:
 		case OS.VK_HOME:
 		case OS.VK_END:
+			/*
+			* When there are many columns in a table, scrolling performance
+			* can be improved by temporarily unsubclassing the window proc
+			* so that internal messages are dispatched directly to the table.
+			* If the application expects to see a paint event, the window
+			* proc cannot be unsubclassed or the event will not be seen.
+			*/
+			if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
+				unsubclass ();
+			}
+			int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+			result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
+			subclass ();
+			//FALL THROUGH
+		case OS.VK_UP:
+		case OS.VK_DOWN:
 			OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 			break;
 	}
@@ -4338,7 +4352,19 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 }
 
 LRESULT WM_HSCROLL (int wParam, int lParam) {
+	/*
+	* When there are many columns in a table, scrolling performance
+	* can be improved by temporarily unsubclassing the window proc
+	* so that internal messages are dispatched directly to the table.
+	* If the application expects to see a paint event, the window
+	* proc cannot be unsubclassed or the event will not be seen.
+	*/
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
+		unsubclass ();
+	}
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
+	subclass ();
+	
 	/*
 	* Bug in Windows.  When an empty table is drawing grid lines
 	* and the user scrolls horizontally, the table does not redraw
@@ -4353,7 +4379,19 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 }
 
 LRESULT WM_VSCROLL (int wParam, int lParam) {
+	/*
+	* When there are many columns in a table, scrolling performance
+	* can be improved by temporarily unsubclassing the window proc
+	* so that internal messages are dispatched directly to the table.
+	* If the application expects to see a paint event, the window
+	* proc cannot be unsubclassed or the event will not be seen.
+	*/
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
+		unsubclass ();
+	}
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
+	subclass ();
+	
 	/*
 	* Bug in Windows.  When a table is drawing grid lines and the
 	* user scrolls vertically up or down by a line or a page, the
