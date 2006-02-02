@@ -340,6 +340,9 @@ public void pack () {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 		TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
 		if (item != null) {
+			int newWidth = 0, hFont = -1;
+			if (item.cellFont != null) hFont = item.cellFont [index];
+			if (hFont == -1) hFont = item.font;
 			if (index == 0) {
 				if ((parent.style & SWT.VIRTUAL) == 0 && !item.cached && !parent.painted) {
 					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
@@ -361,7 +364,9 @@ public void pack () {
 				String string = item.strings != null ? item.strings [index] : null;
 				if (string != null) {
 					TCHAR buffer = new TCHAR (cp, string, false);
+					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 					OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+					if (hFont != -1) OS.SelectObject (hDC, hFont);
 					textWidth = rect.right - rect.left;
 				}
 				columnWidth = Math.max (columnWidth, imageWidth + textWidth + Tree.INSET * 3);
