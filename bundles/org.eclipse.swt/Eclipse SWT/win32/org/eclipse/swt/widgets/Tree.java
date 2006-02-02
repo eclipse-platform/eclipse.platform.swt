@@ -4850,8 +4850,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					}
 					int hDC = nmcd.hdc;
 					OS.RestoreDC (hDC, -1);
+					OS.SetBkMode (hDC, OS.TRANSPARENT);
 					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-					if (findImageControl () != null) OS.SetBkMode (hDC, OS.TRANSPARENT);
 					boolean useColor = OS.IsWindowEnabled (handle);
 					if (useColor) {
 						if ((bits & OS.TVS_FULLROWSELECT) != 0) {
@@ -4932,8 +4932,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						if (i == 0) {
 							drawItem = false;
 							if (useColor) {
-								Control control = findImageControl ();
-								if (control != null) {
+								Control control = findBackgroundControl ();
+								if (control != null && control.backgroundImage != null) {
 									/*
 									* Feature in Windows.  When the mouse is pressed in a
 									* single select tree, the previous item is no longer
@@ -4966,8 +4966,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 										}
 									}
 								}
+								if (control == null) control = this;
 								OS.SetTextColor (hDC, getForegroundPixel ());
-								OS.SetBkColor (hDC, getBackgroundPixel ());
+								OS.SetBkColor (hDC, control.getBackgroundPixel ());
 							}
 						} else {
 							OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom - gridWidth);
