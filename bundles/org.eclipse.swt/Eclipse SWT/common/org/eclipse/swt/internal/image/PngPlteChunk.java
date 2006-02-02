@@ -17,6 +17,13 @@ import org.eclipse.swt.internal.Compatibility;
 
 class PngPlteChunk extends PngChunk {
 
+PngPlteChunk(PaletteData palette) {
+	super(palette.getRGBs().length * 3);
+	setType(TYPE_PLTE);
+	setPaletteData(palette);
+	setCRC(computeCRC());
+}		
+
 PngPlteChunk(byte[] reference){
 	super(reference);
 }
@@ -46,6 +53,20 @@ PaletteData getPaletteData() {
 		rgbs[i] = new RGB(red, green, blue);		
 	}
 	return new PaletteData(rgbs);
+}
+
+/**
+ * Set the data of a PLTE chunk to the colors
+ * stored in the specified PaletteData object.
+ */
+void setPaletteData(PaletteData palette) {
+	RGB[] rgbs = palette.getRGBs();
+	for (int i = 0; i < rgbs.length; i++) {
+		int offset = DATA_OFFSET + (i * 3);
+		reference[offset] = (byte) rgbs[i].red;
+		reference[offset + 1] = (byte) rgbs[i].green;
+		reference[offset + 2] = (byte) rgbs[i].blue;
+	}
 }
 
 /**

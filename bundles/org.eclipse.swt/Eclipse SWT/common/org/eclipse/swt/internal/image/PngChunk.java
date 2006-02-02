@@ -66,6 +66,15 @@ PngChunk(byte[] reference) {
 }
 
 /**
+ * Construct a PngChunk with the specified number of
+ * data bytes.
+ */	
+PngChunk(int dataLength) {
+	this(new byte[MIN_LENGTH + dataLength]);
+	setLength(dataLength);
+}
+
+/**
  * Get the PngChunk's reference byteArray;
  */	
 byte[] getReference() {
@@ -77,6 +86,26 @@ byte[] getReference() {
  */	
 void setReference(byte[] reference) {
 	this.reference = reference;
+}
+
+/**
+ * Get the 16-bit integer from the reference byte
+ * array at the given offset.
+ */	
+int getInt16(int offset) {
+	int answer = 0;
+	answer |= (reference[offset] & 0xFF) << 8;
+	answer |= (reference[offset + 1] & 0xFF);
+	return answer;	
+}
+
+/**
+ * Set the 16-bit integer in the reference byte
+ * array at the given offset.
+ */	
+void setInt16(int offset, int value) {
+	reference[offset] = (byte) ((value >> 8) & 0xFF);
+	reference[offset + 1] = (byte) (value & 0xFF);
 }
 
 /**

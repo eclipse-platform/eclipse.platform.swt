@@ -15,6 +15,12 @@ import org.eclipse.swt.*;
 
 class PngIendChunk extends PngChunk {
 
+PngIendChunk() {
+	super(0);
+	setType(TYPE_IEND);
+	setCRC(computeCRC());
+}
+
 PngIendChunk(byte[] reference){
 	super(reference);
 }

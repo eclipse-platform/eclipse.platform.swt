@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Compatibility;
 
 class PngIhdrChunk extends PngChunk {
-	static final int EXPECTED_DATA_LENGTH = 13;
+	static final int IHDR_DATA_LENGTH = 13;
 	
 	static final int WIDTH_DATA_OFFSET = DATA_OFFSET + 0;
 	static final int HEIGHT_DATA_OFFSET = DATA_OFFSET + 4;
@@ -26,11 +26,11 @@ class PngIhdrChunk extends PngChunk {
 	static final int FILTER_METHOD_OFFSET = DATA_OFFSET + 11;
 	static final int INTERLACE_METHOD_OFFSET = DATA_OFFSET + 12;
 	
-	static final int COLOR_TYPE_GRAYSCALE = 0;
-	static final int COLOR_TYPE_RGB = 2;
-	static final int COLOR_TYPE_PALETTE = 3;
-	static final int COLOR_TYPE_GRAYSCALE_WITH_ALPHA = 4;
-	static final int COLOR_TYPE_RGB_WITH_ALPHA = 6;
+	static final byte COLOR_TYPE_GRAYSCALE = 0;
+	static final byte COLOR_TYPE_RGB = 2;
+	static final byte COLOR_TYPE_PALETTE = 3;
+	static final byte COLOR_TYPE_GRAYSCALE_WITH_ALPHA = 4;
+	static final byte COLOR_TYPE_RGB_WITH_ALPHA = 6;
 	
 	static final int INTERLACE_METHOD_NONE = 0;
 	static final int INTERLACE_METHOD_ADAM7 = 1;
@@ -44,6 +44,19 @@ class PngIhdrChunk extends PngChunk {
 	static final byte[] ValidBitDepths = {1, 2, 4, 8, 16};
 	static final byte[] ValidColorTypes = {0, 2, 3, 4, 6};
 	
+PngIhdrChunk(int width, int height, byte bitDepth, byte colorType, byte compressionMethod, byte filterMethod, byte interlaceMethod) {
+	super(IHDR_DATA_LENGTH);
+	setType(TYPE_IHDR);
+	setWidth(width);
+	setHeight(height);
+	setBitDepth(bitDepth);
+	setColorType(colorType);
+	setCompressionMethod(compressionMethod);
+	setFilterMethod(filterMethod);
+	setInterlaceMethod(interlaceMethod);
+	setCRC(computeCRC());
+}
+
 /**
  * Construct a PNGChunk using the reference bytes
  * given.
@@ -192,7 +205,7 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	
 	super.validate(readState, headerChunk);
 	
-	if (getLength() != EXPECTED_DATA_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	if (getLength() != IHDR_DATA_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	if (getCompressionMethod() != 0) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	if (getInterlaceMethod() != INTERLACE_METHOD_NONE &&
 		getInterlaceMethod() != INTERLACE_METHOD_ADAM7) {
