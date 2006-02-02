@@ -85,7 +85,7 @@ byte getNextIdatByte() {
 	return nextByte;
 }
 
-private void updateAdler(byte value) {
+void updateAdler(byte value) {
 	int low = adlerValue & 0xFFFF;
 	int high = (adlerValue >> 16) & 0xFFFF;
 	int valueInt = value & 0xFF;
