@@ -340,7 +340,7 @@ public void pack () {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 		TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
 		if (item != null) {
-			int newWidth = 0, hFont = -1;
+			int hFont = -1;
 			if (item.cellFont != null) hFont = item.cellFont [index];
 			if (hFont == -1) hFont = item.font;
 			if (index == 0) {
