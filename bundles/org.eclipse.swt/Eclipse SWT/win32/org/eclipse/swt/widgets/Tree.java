@@ -1742,24 +1742,22 @@ public TreeItem getParentItem () {
 }
 
 int getSelection (int hItem, TVITEM tvItem, TreeItem [] selection, int count) {
-	int result = 0;
 	while (hItem != 0) {
 		if (tvItem != null && selection != null && count < selection.length) {
 			tvItem.hItem = hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
 				selection [count++] = _getItem (hItem, tvItem.lParam);
-				result++;
 			}
 		} else {
 			int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
-			if ((state & OS.TVIS_SELECTED) != 0) result++;
+			if ((state & OS.TVIS_SELECTED) != 0) count++;
 		}
 		int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-		result += getSelection (hFirstItem, tvItem, selection, count);
+		count = getSelection (hFirstItem, tvItem, selection, count);
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 	}
-	return result;
+	return count;
 }
 
 /**
