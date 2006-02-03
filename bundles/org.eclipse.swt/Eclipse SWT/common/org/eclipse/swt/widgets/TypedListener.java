@@ -177,11 +177,19 @@ public void handleEvent (Event e) {
 			break;
 		}
 		case SWT.Expand: {
-			((TreeListener) eventListener).treeExpanded(new TreeEvent(e));
+			if (e.widget instanceof Tree) {
+				((TreeListener) eventListener).treeExpanded(new TreeEvent(e));
+			} else {
+				((ExpandListener) eventListener).itemExpanded(new ExpandEvent(e));	
+			}
 			break;
 		}
 		case SWT.Collapse: {
-			((TreeListener) eventListener).treeCollapsed(new TreeEvent(e));
+			if (e.widget instanceof Tree) {
+				((TreeListener) eventListener).treeCollapsed(new TreeEvent(e));
+			} else {
+				((ExpandListener) eventListener).itemCollapsed(new ExpandEvent(e));	
+			}
 			break;
 		}
 		case SWT.Modify: {
