@@ -177,7 +177,7 @@ public void handleEvent (Event e) {
 			break;
 		}
 		case SWT.Expand: {
-			if (e.widget instanceof Tree) {
+			if (eventListener instanceof TreeListener) {
 				((TreeListener) eventListener).treeExpanded(new TreeEvent(e));
 			} else {
 				((ExpandListener) eventListener).itemExpanded(new ExpandEvent(e));	
@@ -185,7 +185,7 @@ public void handleEvent (Event e) {
 			break;
 		}
 		case SWT.Collapse: {
-			if (e.widget instanceof Tree) {
+			if (eventListener instanceof TreeListener) {
 				((TreeListener) eventListener).treeCollapsed(new TreeEvent(e));
 			} else {
 				((ExpandListener) eventListener).itemCollapsed(new ExpandEvent(e));	
