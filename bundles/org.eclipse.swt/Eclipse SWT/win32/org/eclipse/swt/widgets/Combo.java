@@ -121,6 +121,7 @@ public class Combo extends Composite {
  */
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	if ((style & SWT.H_SCROLL) != 0) this.style |= SWT.H_SCROLL;
 }
 
 /**
@@ -145,6 +146,7 @@ public void add (String string) {
 	int result = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 	if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
 }
 
 /**
@@ -182,6 +184,7 @@ public void add (String string, int index) {
 	if (result == OS.CB_ERRSPACE || result == OS.CB_ERR) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
 }
 
 /**
@@ -348,33 +351,37 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT) {
-		int newFont, oldFont = 0;
-		int hDC = OS.GetDC (handle);
-		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-		RECT rect = new RECT ();
-		int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
-		if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
-		int length = OS.GetWindowTextLength (handle);
-		int cp = getCodePage ();
-		TCHAR buffer = new TCHAR (cp, length + 1);
-		OS.GetWindowText (handle, buffer, length + 1);
-		OS.DrawText (hDC, buffer, length, rect, flags);
-		width = Math.max (width, rect.right - rect.left);
-		for (int i=0; i<count; i++) {
-			length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
-			if (length != OS.CB_ERR) {
-				if (length + 1 > buffer.length ()) buffer = new TCHAR (cp, length + 1);
-				int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
-				if (result != OS.CB_ERR) {
-					OS.DrawText (hDC, buffer, length, rect, flags);
-					width = Math.max (width, rect.right - rect.left);
+		if ((style & SWT.H_SCROLL) != 0) {
+			width = OS.SendMessage (handle, OS.CB_GETHORIZONTALEXTENT, 0, 0);
+		} else {
+			int newFont, oldFont = 0;
+			int hDC = OS.GetDC (handle);
+			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+			int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+			RECT rect = new RECT ();
+			int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+			if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
+			int length = OS.GetWindowTextLength (handle);
+			int cp = getCodePage ();
+			TCHAR buffer = new TCHAR (cp, length + 1);
+			OS.GetWindowText (handle, buffer, length + 1);
+			OS.DrawText (hDC, buffer, length, rect, flags);
+			width = Math.max (width, rect.right - rect.left);
+			for (int i=0; i<count; i++) {
+				length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
+				if (length != OS.CB_ERR) {
+					if (length + 1 > buffer.length ()) buffer = new TCHAR (cp, length + 1);
+					int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
+					if (result != OS.CB_ERR) {
+						OS.DrawText (hDC, buffer, length, rect, flags);
+						width = Math.max (width, rect.right - rect.left);
+					}
 				}
 			}
+			if (newFont != 0) OS.SelectObject (hDC, oldFont);
+			OS.ReleaseDC (handle, hDC);
 		}
-		if (newFont != 0) OS.SelectObject (hDC, oldFont);
-		OS.ReleaseDC (handle, hDC);
 	}
 	if (hHint == SWT.DEFAULT) {
 		if ((style & SWT.SIMPLE) != 0) {
@@ -412,6 +419,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += textHeight + 10;
 		}
 	}
+	if ((style & SWT.H_SCROLL) != 0) height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 	return new Point (width, height);
 }
 
@@ -919,6 +927,14 @@ void register () {
  */
 public void remove (int index) {
 	checkWidget ();
+	TCHAR buffer = null;
+	if ((style & SWT.H_SCROLL) != 0) {
+		int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
+		if (length == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		buffer = new TCHAR (getCodePage (), length + 1);
+		int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
+		if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	}
 	int length = OS.GetWindowTextLength (handle);
 	int code = OS.SendMessage (handle, OS.CB_DELETESTRING, index, 0);
 	if (code == OS.CB_ERR) {
@@ -926,12 +942,8 @@ public void remove (int index) {
 		if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		error (SWT.ERROR_INVALID_RANGE);
 	}
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
 	if (length != OS.GetWindowTextLength (handle)) {
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the modify
-		* event.  If this happens, just return.
-		*/
 		sendEvent (SWT.Modify);
 		if (isDisposed ()) return;
 	}
@@ -971,17 +983,39 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int length = OS.GetWindowTextLength (handle);
+	int textLength = OS.GetWindowTextLength (handle);
+	RECT rect = null;
+	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
+	if ((style & SWT.H_SCROLL) != 0) {
+		rect = new RECT ();
+		hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+	}
+	int cp = getCodePage ();
+	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
 	for (int i=start; i<=end; i++) {
+		TCHAR buffer = null;
+		if ((style & SWT.H_SCROLL) != 0) {
+			int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, start, 0);
+			if (length == OS.CB_ERR) break;
+			buffer = new TCHAR (cp, length + 1);
+			int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, start, buffer);
+			if (result == OS.CB_ERR) break;
+		}
 		int result = OS.SendMessage (handle, OS.CB_DELETESTRING, start, 0);
 		if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		if ((style & SWT.H_SCROLL) != 0) {
+			OS.DrawText (hDC, buffer, -1, rect, flags);
+			newWidth = Math.max (newWidth, rect.right - rect.left);
+		}
 	}
-	if (length != OS.GetWindowTextLength (handle)) {
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the modify
-		* event.  If this happens, just return.
-		*/
+	if ((style & SWT.H_SCROLL) != 0) {
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+		setScrollWidth (newWidth, false);
+	}
+	if (textLength != OS.GetWindowTextLength (handle)) {
 		sendEvent (SWT.Modify);
 		if (isDisposed ()) return;
 	}
@@ -1035,7 +1069,10 @@ public void removeAll () {
 	checkWidget ();
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	sendEvent (SWT.Modify);
-	// widget could be disposed at this point
+	if (isDisposed ()) return;
+	if ((style & SWT.H_SCROLL) != 0) {
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
+	}
 }
 
 /**
@@ -1259,6 +1296,9 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
 		height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
+		if ((style & SWT.H_SCROLL) != 0) { 
+			height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		}
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
 		* the combo box resizes the height of the text field and uses
@@ -1284,6 +1324,12 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	} else {
 		super.setBounds (x, y, width, height, flags);
 	}
+}
+
+public void setFont (Font font) {
+	checkWidget ();
+	super.setFont (font);
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth ();
 }
 
 void setForegroundPixel (int pixel) {
@@ -1317,12 +1363,6 @@ public void setItem (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 	remove (index);
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the modify
-	* event that might be sent when the index is removed.
-	* If this happens, just exit.
-	*/
 	if (isDisposed ()) return;
 	add (string, index);
 	if (selection != -1) {
@@ -1350,6 +1390,15 @@ public void setItems (String [] items) {
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	RECT rect = null;
+	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
+	if ((style & SWT.H_SCROLL) != 0) {
+		rect = new RECT ();
+		hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
+	}
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	int codePage = getCodePage ();
 	for (int i=0; i<items.length; i++) {
@@ -1358,9 +1407,19 @@ public void setItems (String [] items) {
 		int code = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (code == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
+		if ((style & SWT.H_SCROLL) != 0) {
+			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
+			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			newWidth = Math.max (newWidth, rect.right - rect.left);
+		}
 	}
-	// widget could be disposed at this point
+	if ((style & SWT.H_SCROLL) != 0) {
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+	}
 	sendEvent (SWT.Modify);
+	// widget could be disposed at this point
 }
 
 /**
@@ -1440,6 +1499,56 @@ public void setOrientation (int orientation) {
 			bits1 &= ~OS.WS_EX_LAYOUTRTL;
 		}
 		OS.SetWindowLong (hwndList, OS.GWL_EXSTYLE, bits1);
+	}
+}
+
+void setScrollWidth () {
+	int newWidth = 0;
+	RECT rect = new RECT ();
+	int newFont, oldFont = 0;
+	int hDC = OS.GetDC (handle);
+	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+	int cp = getCodePage ();
+	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
+	for (int i=0; i<count; i++) {
+		int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
+		if (length != OS.CB_ERR) {
+			TCHAR buffer = new TCHAR (cp, length + 1);
+			int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
+			if (result != OS.CB_ERR) {
+				OS.DrawText (hDC, buffer, -1, rect, flags);
+				newWidth = Math.max (newWidth, rect.right - rect.left);
+			}
+		}
+	}
+	if (newFont != 0) OS.SelectObject (hDC, oldFont);
+	OS.ReleaseDC (handle, hDC);
+	OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+}
+
+void setScrollWidth (TCHAR buffer, boolean grow) {
+	RECT rect = new RECT ();
+	int newFont, oldFont = 0;
+	int hDC = OS.GetDC (handle);
+	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
+	OS.DrawText (hDC, buffer, -1, rect, flags);
+	if (newFont != 0) OS.SelectObject (hDC, oldFont);
+	OS.ReleaseDC (handle, hDC);
+	setScrollWidth (rect.right - rect.left, grow);
+}
+
+void setScrollWidth (int newWidth, boolean grow) {
+	int width = OS.SendMessage (handle, OS.CB_GETHORIZONTALEXTENT, 0, 0);
+	if (grow) {
+		if (newWidth <= width) return;
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+	} else {
+		if (newWidth < width) return;
+		setScrollWidth ();
 	}
 }
 
@@ -1672,7 +1781,7 @@ int widgetExtStyle () {
 }
 
 int widgetStyle () {
-	int bits = super.widgetStyle () | OS.CBS_AUTOHSCROLL | OS.CBS_NOINTEGRALHEIGHT | OS.WS_VSCROLL;
+	int bits = super.widgetStyle () | OS.CBS_AUTOHSCROLL | OS.CBS_NOINTEGRALHEIGHT | OS.WS_HSCROLL |OS.WS_VSCROLL;
 	if ((style & SWT.SIMPLE) != 0) return bits | OS.CBS_SIMPLE;
 	if ((style & SWT.READ_ONLY) != 0) return bits | OS.CBS_DROPDOWNLIST;
 	return bits | OS.CBS_DROPDOWN;
