@@ -256,6 +256,7 @@ public class OS extends Platform {
 	public static final int CB_GETDROPPEDCONTROLRECT = 0x152;
 	public static final int CB_GETDROPPEDSTATE = 0x157;
 	public static final int CB_GETEDITSEL = 0x140;
+	public static final int CB_GETHORIZONTALEXTENT = 0x015d;
 	public static final int CB_GETITEMHEIGHT = 0x154;
 	public static final int CB_GETLBTEXT = 0x148;
 	public static final int CB_GETLBTEXTLEN = 0x149;
@@ -265,6 +266,7 @@ public class OS extends Platform {
 	public static final int CB_SELECTSTRING = 0x14d;
 	public static final int CB_SETCURSEL = 0x14e;
 	public static final int CB_SETEDITSEL = 0x142;
+	public static final int CB_SETHORIZONTALEXTENT = 0x015e;
 	public static final int CB_SHOWDROPDOWN = 0x14f;
 	public static final int CCM_FIRST = 0x2000;
 	public static final int CCM_SETBKCOLOR = 0x2001;
@@ -1313,11 +1315,21 @@ public class OS extends Platform {
 	public static final int TTF_SUBCLASS = 0x10;
 	public static final int TTF_RTLREADING = 0x4;
 	public static final int TTF_TRACK = 0x20;
+	public static final int TTI_NONE = 0;
+	public static final int TTI_INFO = 1;
+	public static final int TTI_WARNING = 2;
+	public static final int TTI_ERROR= 3;
 	public static final int TTM_ADDTOOL = IsUnicode ? 0x432 : 0x404;
+	public static final int TTM_GETCURRENTTOOLA = 0x400 + 15;
+	public static final int TTM_GETCURRENTTOOLW = 0x400 + 59;
+	public static final int TTM_GETCURRENTTOOL = 0x400 + (IsUnicode ? 59 : 15);
 	public static final int TTM_DELTOOL = IsUnicode ? 0x433 : 0x405;
 	public static final int TTM_GETTOOLINFO = 0x400 + (IsUnicode ? 53 : 8);
 	public static final int TTM_NEWTOOLRECT = 0x400 + (IsUnicode ? 52 : 6);
 	public static final int TTM_SETMAXTIPWIDTH = 0x418;
+	public static final int TTM_SETTITLEA = 0x400 + 32;
+	public static final int TTM_SETTITLEW = 0x400 + 33;
+	public static final int TTM_SETTITLE = 0x400 + (IsUnicode ? 33 : 32);
 	public static final int TTM_TRACKPOSITION = 1042;
 	public static final int TTM_TRACKACTIVATE = 1041;
 	public static final int TTM_UPDATE = 0x41D;
@@ -1328,6 +1340,7 @@ public class OS extends Platform {
 	public static final int TTN_POP = TTN_FIRST - 2;
 	public static final int TTN_SHOW = TTN_FIRST - 1;
 	public static final int TTS_ALWAYSTIP = 0x1;
+	public static final int TTS_BALLOON = 0x40;
 	public static final int TV_FIRST = 0x1100;
 	public static final int TVE_COLLAPSE = 0x1;
 	public static final int TVE_EXPAND = 0x2;
