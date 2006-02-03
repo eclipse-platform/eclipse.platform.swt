@@ -3506,7 +3506,7 @@ void setTableEmpty () {
 		imageList = null;
 		if (itemHeight != -1) setItemHeight (false);
 	}
-	if ((style & SWT.VIRTUAL) != 0) customDraw = false;
+	if ((style & SWT.VIRTUAL) == 0) customDraw = false;
 	items = new TableItem [4];
 }
 
