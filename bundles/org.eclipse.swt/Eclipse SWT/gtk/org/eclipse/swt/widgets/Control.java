@@ -2704,7 +2704,7 @@ public void setBackgroundImage (Image image) {
 	redrawChildren ();
 }
 
-void setBackgroundPixmap (int pixmap) {
+void setBackgroundPixmap (int /*long*/ pixmap) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 	if (window != 0) OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
 }
