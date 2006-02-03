@@ -2115,8 +2115,8 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	int topHandle = topHandle ();
 	if (defer && parent != null) {
 		forceResize ();
-		if (findImageControl () != null && OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-			flags |= OS.SWP_NOCOPYBITS;
+		if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
+			if (findImageControl () != null) flags |= OS.SWP_NOCOPYBITS;
 		}
 		WINDOWPOS [] lpwp = parent.lpwp;
 		if (lpwp == null) {
