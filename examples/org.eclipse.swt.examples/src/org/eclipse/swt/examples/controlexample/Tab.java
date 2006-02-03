@@ -59,7 +59,7 @@ abstract class Tab {
 
 	/* Controls and resources for the "Colors & Fonts" group */
 	Button foregroundButton, backgroundButton, fontButton;
-	Image foregroundImage, backgroundImage, backgroundImageImage;
+	Image foregroundImage, backgroundImage;
 	Color foregroundColor, backgroundColor;
 	Font font;
 	boolean setFont = false, setForeground = false, setBackground = false;
