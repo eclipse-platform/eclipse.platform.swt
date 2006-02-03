@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 public class ExpandBar extends Composite {
 	
@@ -26,6 +27,16 @@ public void addExpandListener (ExpandListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Expand, typedListener);
 	addListener (SWT.Collapse, typedListener);
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
+	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
+	Point size = computeNativeSize (handle, wHint, hHint, changed);
+	int border = OS.gtk_container_get_border_width (handle);
+	size.x += 2 * border;
+	size.y += 2 * border;
+	return size;
 }
 
 void createHandle (int index) {
