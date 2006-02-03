@@ -8,6 +8,7 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/tabfolder"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/tray"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/treetable"/>
+    <classpathentry kind="src" path="Eclipse SWT/emulated/expand"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT/common_j2se"/>
     <classpathentry kind="src" path="Eclipse SWT PI/motif">

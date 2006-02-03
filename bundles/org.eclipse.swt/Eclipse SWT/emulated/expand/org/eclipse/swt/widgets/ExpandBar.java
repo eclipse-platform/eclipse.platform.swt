@@ -239,6 +239,7 @@ void showItem (int index) {
 	if (control != null && !control.isDisposed ()) {
 		control.setVisible (item.expanded);
 	}
+	item.redraw ();
 	layoutItems (index + 1, true);
 }
 
@@ -271,7 +272,6 @@ void onKeyDown (Event event) {
 		case 13: /* Return */
 		case 32: /* Space */
 			item.expanded = !item.expanded;
-			item.redraw ();
 			showItem (focusIndex);
 			Event ev = new Event ();
 			ev.item = item;
@@ -318,7 +318,6 @@ void onMouseUp (Event event) {
 	boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
 	if (hover) {
 		item.expanded = !item.expanded;
-		item.redraw ();
 		showItem (focusIndex);
 		Event ev = new Event ();
 		ev.item = item;
