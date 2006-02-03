@@ -120,21 +120,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int height = 0, width = 0;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
-		int hDC = OS.GetDC (handle);
-		int hTheme = 0;
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-			hTheme = OS.OpenThemeData (handle, EXPLORERBAR); 
-		}
-		height += spacing;
-		for (int i = 0; i < itemCount; i++) {
-			ExpandItem item = items [i];
-			height += ExpandBar.HEADER_HEIGHT;
-			if (item.expanded) height += item.height;
+		if (itemCount > 0) {
+			int hDC = OS.GetDC (handle);
+			int hTheme = 0;
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				hTheme = OS.OpenThemeData (handle, EXPLORERBAR);
+			}
 			height += spacing;
-			width = Math.max (width, item.getPreferredWidth (hTheme, hDC));			
-		}		
-		OS.ReleaseDC (handle, hDC);
-		if (hTheme != 0) OS.CloseThemeData (hTheme);
+			for (int i = 0; i < itemCount; i++) {
+				ExpandItem item = items [i];
+				height += ExpandBar.HEADER_HEIGHT;
+				if (item.expanded) height += item.height;
+				height += spacing;
+				width = Math.max (width, item.getPreferredWidth (hTheme, hDC));
+			}
+			OS.ReleaseDC (handle, hDC);
+			if (hTheme != 0) OS.CloseThemeData (hTheme);
+		}
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
