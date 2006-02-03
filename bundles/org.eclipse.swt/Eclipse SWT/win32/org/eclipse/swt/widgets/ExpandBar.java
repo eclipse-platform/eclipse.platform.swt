@@ -436,6 +436,7 @@ void showItem (int index) {
 			OS.ShowWindow (control.handle, OS.SW_HIDE);
 		}
 	}
+	item.redraw (true);
 	layoutItems (index + 1, true);
 }
 
@@ -459,7 +460,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			event.item = item;
 			sendEvent (item.expanded ? SWT.Expand :SWT.Collapse, event);
 			item.expanded = !item.expanded;
-			item.redraw (false);
 			showItem (focusIndex);
 			return LRESULT.ZERO;
 		case OS.VK_UP:
@@ -520,7 +520,6 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 		event.item = item;
 		sendEvent (item.expanded ? SWT.Expand :SWT.Collapse, event);
 		item.expanded = !item.expanded;
-		item.redraw (false);
 		showItem (focusIndex);
 	}
 	return result;
