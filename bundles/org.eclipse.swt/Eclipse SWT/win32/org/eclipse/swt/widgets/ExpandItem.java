@@ -208,21 +208,64 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+/**
+ * Returns the control that is shown when the item is expanded.
+ * If no control has been set, return <code>null</code>.
+ * <p>
+ * @return the control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getControl () {
 	checkWidget ();
 	return control;
 }
 
+/**
+ * Returns <code>true</code> if the receiver is expanded,
+ * and false otherwise.
+ * <p>
+ *
+ * @return the expanded state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getExpanded () {
 	checkWidget ();
 	return expanded;
 }
 
+/**
+ * Gets the height of the receiver.
+ *
+ * @return the height
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getHeight () {
 	checkWidget ();
 	return height;
 }
 
+/**
+ * Returns the receiver's parent, which must be a <code>ExpandBar</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public ExpandBar getParent () {
 	checkWidget ();
 	return parent;
@@ -307,6 +350,20 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
 	}
 }
 
+/**
+ * Sets the control that is shown when the item is expanded.
+ * <p>
+ * @param control the new control (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setControl (Control control) {
 	checkWidget ();
 	if (control != null) {
@@ -327,20 +384,43 @@ public void setControl (Control control) {
 	}
 }
 
+/**
+ * Sets the expanded state of the receiver.
+ * <p>
+ *
+ * @param expanded the new expanded state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setExpanded (boolean expanded) {
 	checkWidget ();
 	this.expanded = expanded;
 	parent.showItem (parent.indexOf (this));
 }
 
+/**
+ * Sets the height of the receiver. This is height of the item when it is expanded, 
+ * excluding the height of the header.
+ *
+ * @param height the new height
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setHeight (int height) {
 	checkWidget ();
+	if (height < 0) return;
 	setBounds (0, 0, width, height, false, true);
 	if (expanded) parent.layoutItems (parent.indexOf (this) + 1, true);
 }
 
-public void setImage(Image image) {
-	super.setImage(image);
+public void setImage (Image image) {
+	super.setImage (image);
 	redraw (true);
 }
 
