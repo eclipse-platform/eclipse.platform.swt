@@ -154,7 +154,8 @@ public abstract class Widget {
 	static final int VALUE_CHANGED = 56;
 	static final int VISIBILITY_NOTIFY_EVENT = 57;
 	static final int WINDOW_STATE_EVENT = 58;
-	static final int LAST_SIGNAL = 59;
+	static final int ACTIVATE_INVERSE = 59;
+	static final int LAST_SIGNAL = 60;
 
 /**
  * Prevents uninitialized instances from being created outside the package.

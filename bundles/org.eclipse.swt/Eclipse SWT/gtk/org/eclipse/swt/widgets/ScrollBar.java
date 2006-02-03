@@ -131,7 +131,7 @@ ScrollBar (Scrollable parent, int style) {
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener(listener);
+	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
@@ -367,6 +367,7 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	}
 	detail = OS.GTK_SCROLL_NONE;
 	postEvent (SWT.Selection, event);
+	parent.setScrollBarValue (this);
 	return 0;
 }
 

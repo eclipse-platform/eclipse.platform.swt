@@ -342,6 +342,9 @@ void resizeHandle (int width, int height) {
 	OS.gtk_widget_set_size_request (scrolledHandle != 0 ? scrolledHandle : handle, width, height);
 }
 
+void setScrollBarValue (ScrollBar bar) {
+}
+
 void showWidget () {
 	super.showWidget ();
 	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
