@@ -140,6 +140,11 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
+void _addListener (int eventType, Listener listener) {
+	if (eventTable == null) eventTable = new EventTable ();
+	eventTable.hook (eventType, listener);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs. When the
@@ -166,8 +171,7 @@ public Widget (Widget parent, int style) {
 public void addListener (int eventType, Listener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) eventTable = new EventTable ();
-	eventTable.hook (eventType, listener);
+	_addListener (eventType, listener);
 }
 
 /**
