@@ -46,6 +46,7 @@
 #define gtk_expander_new_LIB "libgtk-x11-2.0.so.0"
 #define gtk_expander_set_expanded_LIB "libgtk-x11-2.0.so.0"
 #define gtk_expander_set_label_LIB "libgtk-x11-2.0.so.0"
+#define gtk_expander_set_label_widget_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_selection_count_selected_rows_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_selection_get_selected_rows_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so.0"

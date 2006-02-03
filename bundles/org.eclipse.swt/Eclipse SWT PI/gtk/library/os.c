@@ -6502,6 +6502,32 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1expander_1set_1label_1widget
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1expander_1set_1label_1widget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1set_1label_1widget_FUNC);
+/*
+	gtk_expander_set_label_widget(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_expander_set_label_widget_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_expander_set_label_widget");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1set_1label_1widget_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1file_1chooser_1add_1filter
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1add_1filter)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

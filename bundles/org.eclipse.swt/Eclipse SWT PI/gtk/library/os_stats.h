@@ -509,6 +509,7 @@ typedef enum {
 	_1gtk_1expander_1new_FUNC,
 	_1gtk_1expander_1set_1expanded_FUNC,
 	_1gtk_1expander_1set_1label_FUNC,
+	_1gtk_1expander_1set_1label_1widget_FUNC,
 	_1gtk_1file_1chooser_1add_1filter_FUNC,
 	_1gtk_1file_1chooser_1dialog_1new_FUNC,
 	_1gtk_1file_1chooser_1get_1current_1folder_FUNC,

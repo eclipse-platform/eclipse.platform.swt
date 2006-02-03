@@ -4229,7 +4229,15 @@ public static final void gtk_expander_set_label(int /*long*/ expander, byte[] la
 		lock.unlock();
 	}
 }
-
+public static final native void _gtk_expander_set_label_widget(int /*long*/ expander, int /*long*/ label_widget);
+public static final void  gtk_expander_set_label_widget(int /*long*/ expander, int /*long*/ label_widget) {
+	lock.lock();
+	try {
+		_gtk_expander_set_label_widget(expander, label_widget);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_file_chooser_add_filter(int /*long*/ chooser, int /*long*/ filter);
 public static final void gtk_file_chooser_add_filter(int /*long*/ chooser, int /*long*/ filter) {
 	lock.lock();
