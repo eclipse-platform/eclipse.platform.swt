@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1047;
-int OS_nativeFunctionCallCount[1047];
+int OS_nativeFunctionCount = 1062;
+int OS_nativeFunctionCallCount[1062];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -70,6 +70,12 @@ char * OS_nativeFunctionNames[] = {
 	"GtkAdjustment_1sizeof",
 	"GtkAllocation_1sizeof",
 	"GtkBorder_1sizeof",
+	"GtkCellRendererPixbufClass_1sizeof",
+	"GtkCellRendererPixbuf_1sizeof",
+	"GtkCellRendererTextClass_1sizeof",
+	"GtkCellRendererText_1sizeof",
+	"GtkCellRendererToggleClass_1sizeof",
+	"GtkCellRendererToggle_1sizeof",
 	"GtkColorSelectionDialog_1sizeof",
 	"GtkCombo_1sizeof",
 	"GtkFileSelection_1sizeof",
@@ -109,11 +115,15 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1IS_1BUTTON",
 	"_1GTK_1IS_1CELL_1RENDERER_1PIXBUF",
 	"_1GTK_1IS_1CELL_1RENDERER_1TEXT",
+	"_1GTK_1IS_1CELL_1RENDERER_1TOGGLE",
 	"_1GTK_1IS_1CONTAINER",
 	"_1GTK_1IS_1IMAGE_1MENU_1ITEM",
 	"_1GTK_1IS_1PLUG",
 	"_1GTK_1STOCK_1CANCEL",
 	"_1GTK_1STOCK_1OK",
+	"_1GTK_1TYPE_1CELL_1RENDERER_1PIXBUF",
+	"_1GTK_1TYPE_1CELL_1RENDERER_1TEXT",
+	"_1GTK_1TYPE_1CELL_1RENDERER_1TOGGLE",
 	"_1GTK_1TYPE_1FIXED",
 	"_1GTK_1TYPE_1WIDGET",
 	"_1GTK_1WIDGET_1FLAGS",
@@ -165,6 +175,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XTestFakeMotionEvent",
 	"_1XWarpPointer",
 	"_1atk_1object_1add_1relationship",
+	"_1call",
 	"_1dlclose",
 	"_1dlopen",
 	"_1dlsym",
@@ -374,6 +385,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1window_1add_1filter",
 	"_1gdk_1window_1at_1pointer",
 	"_1gdk_1window_1begin_1paint_1rect",
+	"_1gdk_1window_1clear_1area",
 	"_1gdk_1window_1destroy",
 	"_1gdk_1window_1end_1paint",
 	"_1gdk_1window_1focus",
@@ -622,6 +634,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1notebook_1set_1show_1tabs",
 	"_1gtk_1notebook_1set_1tab_1pos",
 	"_1gtk_1object_1sink",
+	"_1gtk_1paint_1flat_1box",
 	"_1gtk_1paint_1focus",
 	"_1gtk_1paint_1handle",
 	"_1gtk_1plug_1get_1id",
@@ -1010,6 +1023,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkAdjustment_2",
+	"memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GtkWidgetClass_2",
@@ -1044,6 +1058,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II",
+	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I",

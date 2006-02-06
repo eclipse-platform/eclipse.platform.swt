@@ -585,6 +585,78 @@ JNIEXPORT jint JNICALL OS_NATIVE(GtkBorder_1sizeof)
 }
 #endif
 
+#ifndef NO_GtkCellRendererPixbufClass_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkCellRendererPixbufClass_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GtkCellRendererPixbufClass_1sizeof_FUNC);
+	rc = (jint)GtkCellRendererPixbufClass_sizeof();
+	OS_NATIVE_EXIT(env, that, GtkCellRendererPixbufClass_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkCellRendererPixbuf_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkCellRendererPixbuf_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GtkCellRendererPixbuf_1sizeof_FUNC);
+	rc = (jint)GtkCellRendererPixbuf_sizeof();
+	OS_NATIVE_EXIT(env, that, GtkCellRendererPixbuf_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkCellRendererTextClass_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkCellRendererTextClass_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GtkCellRendererTextClass_1sizeof_FUNC);
+	rc = (jint)GtkCellRendererTextClass_sizeof();
+	OS_NATIVE_EXIT(env, that, GtkCellRendererTextClass_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkCellRendererText_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkCellRendererText_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GtkCellRendererText_1sizeof_FUNC);
+	rc = (jint)GtkCellRendererText_sizeof();
+	OS_NATIVE_EXIT(env, that, GtkCellRendererText_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkCellRendererToggleClass_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkCellRendererToggleClass_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GtkCellRendererToggleClass_1sizeof_FUNC);
+	rc = (jint)GtkCellRendererToggleClass_sizeof();
+	OS_NATIVE_EXIT(env, that, GtkCellRendererToggleClass_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkCellRendererToggle_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkCellRendererToggle_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GtkCellRendererToggle_1sizeof_FUNC);
+	rc = (jint)GtkCellRendererToggle_sizeof();
+	OS_NATIVE_EXIT(env, that, GtkCellRendererToggle_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GtkColorSelectionDialog_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GtkColorSelectionDialog_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -1053,6 +1125,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1CELL_1RENDERER_1TEXT)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1CELL_1RENDERER_1TOGGLE
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1CELL_1RENDERER_1TOGGLE)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1CELL_1RENDERER_1TOGGLE_FUNC);
+	rc = (jboolean)GTK_IS_CELL_RENDERER_TOGGLE(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1CELL_1RENDERER_1TOGGLE_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1IS_1CONTAINER
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1CONTAINER)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1109,6 +1193,42 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1STOCK_1OK)
 	OS_NATIVE_ENTER(env, that, _1GTK_1STOCK_1OK_FUNC);
 	rc = (jint)GTK_STOCK_OK;
 	OS_NATIVE_EXIT(env, that, _1GTK_1STOCK_1OK_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GTK_1TYPE_1CELL_1RENDERER_1PIXBUF
+JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1TYPE_1CELL_1RENDERER_1PIXBUF)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1TYPE_1CELL_1RENDERER_1PIXBUF_FUNC);
+	rc = (jint)GTK_TYPE_CELL_RENDERER_PIXBUF;
+	OS_NATIVE_EXIT(env, that, _1GTK_1TYPE_1CELL_1RENDERER_1PIXBUF_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GTK_1TYPE_1CELL_1RENDERER_1TEXT
+JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1TYPE_1CELL_1RENDERER_1TEXT)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1TYPE_1CELL_1RENDERER_1TEXT_FUNC);
+	rc = (jint)GTK_TYPE_CELL_RENDERER_TEXT;
+	OS_NATIVE_EXIT(env, that, _1GTK_1TYPE_1CELL_1RENDERER_1TEXT_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1GTK_1TYPE_1CELL_1RENDERER_1TOGGLE
+JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1TYPE_1CELL_1RENDERER_1TOGGLE)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1TYPE_1CELL_1RENDERER_1TOGGLE_FUNC);
+	rc = (jint)GTK_TYPE_CELL_RENDERER_TOGGLE;
+	OS_NATIVE_EXIT(env, that, _1GTK_1TYPE_1CELL_1RENDERER_1TOGGLE_FUNC);
 	return rc;
 }
 #endif
@@ -1873,6 +1993,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1add_1relationship)
 	OS_NATIVE_ENTER(env, that, _1atk_1object_1add_1relationship_FUNC);
 	rc = (jboolean)atk_object_add_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
 	OS_NATIVE_EXIT(env, that, _1atk_1object_1add_1relationship_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1call
+JNIEXPORT jint JNICALL OS_NATIVE(_1call)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1call_FUNC);
+	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	OS_NATIVE_EXIT(env, that, _1call_FUNC);
 	return rc;
 }
 #endif
@@ -4833,6 +4965,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1begin_1paint_1rect)
 	gdk_window_begin_paint_rect((GdkWindow *)arg0, (GdkRectangle *)lparg1);
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1window_1begin_1paint_1rect_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1window_1clear_1area
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1clear_1area)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1clear_1area_FUNC);
+	gdk_window_clear_area((GdkWindow *)arg0, arg1, arg2, arg3, arg4);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1clear_1area_FUNC);
 }
 #endif
 
@@ -8074,6 +8216,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1object_1sink)
 	OS_NATIVE_ENTER(env, that, _1gtk_1object_1sink_FUNC);
 	gtk_object_sink((GtkObject *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1object_1sink_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1paint_1flat_1box
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1flat_1box)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	GdkRectangle _arg4, *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1flat_1box_FUNC);
+	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_paint_flat_box((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1flat_1box_FUNC);
 }
 #endif
 
@@ -12862,6 +13021,16 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkAdju
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2_FUNC);
+	if (arg1) getGtkCellRendererClassFields(env, arg1, (GtkCellRendererClass *)arg0);
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkFixed_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -13374,6 +13543,16 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkBorde
 fail:
 	if (arg0 && lparg0) setGtkBorderFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I_FUNC);
+	if (arg0) setGtkCellRendererClassFields(env, arg0, (GtkCellRendererClass *)arg1);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2I_FUNC);
 }
 #endif
 

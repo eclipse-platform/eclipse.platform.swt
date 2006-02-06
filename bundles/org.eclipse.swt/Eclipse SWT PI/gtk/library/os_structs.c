@@ -1386,6 +1386,40 @@ void setGtkBorderFields(JNIEnv *env, jobject lpObject, GtkBorder *lpStruct)
 }
 #endif
 
+#ifndef NO_GtkCellRendererClass
+typedef struct GtkCellRendererClass_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID render, get_size;
+} GtkCellRendererClass_FID_CACHE;
+
+GtkCellRendererClass_FID_CACHE GtkCellRendererClassFc;
+
+void cacheGtkCellRendererClassFields(JNIEnv *env, jobject lpObject)
+{
+	if (GtkCellRendererClassFc.cached) return;
+	GtkCellRendererClassFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GtkCellRendererClassFc.render = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "render", "I");
+	GtkCellRendererClassFc.get_size = (*env)->GetFieldID(env, GtkCellRendererClassFc.clazz, "get_size", "I");
+	GtkCellRendererClassFc.cached = 1;
+}
+
+GtkCellRendererClass *getGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendererClass *lpStruct)
+{
+	if (!GtkCellRendererClassFc.cached) cacheGtkCellRendererClassFields(env, lpObject);
+	lpStruct->render = (void(*)())(*env)->GetIntField(env, lpObject, GtkCellRendererClassFc.render);
+	lpStruct->get_size = (void(*)())(*env)->GetIntField(env, lpObject, GtkCellRendererClassFc.get_size);
+	return lpStruct;
+}
+
+void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendererClass *lpStruct)
+{
+	if (!GtkCellRendererClassFc.cached) cacheGtkCellRendererClassFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GtkCellRendererClassFc.render, (jint)lpStruct->render);
+	(*env)->SetIntField(env, lpObject, GtkCellRendererClassFc.get_size, (jint)lpStruct->get_size);
+}
+#endif
+
 #ifndef NO_GtkColorSelectionDialog
 typedef struct GtkColorSelectionDialog_FID_CACHE {
 	int cached;

@@ -327,6 +327,18 @@ void setGtkBorderFields(JNIEnv *env, jobject lpObject, GtkBorder *lpStruct);
 #define GtkBorder_sizeof() 0
 #endif
 
+#ifndef NO_GtkCellRendererClass
+void cacheGtkCellRendererClassFields(JNIEnv *env, jobject lpObject);
+GtkCellRendererClass *getGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendererClass *lpStruct);
+void setGtkCellRendererClassFields(JNIEnv *env, jobject lpObject, GtkCellRendererClass *lpStruct);
+#define GtkCellRendererClass_sizeof() sizeof(GtkCellRendererClass)
+#else
+#define cacheGtkCellRendererClassFields(a,b)
+#define getGtkCellRendererClassFields(a,b,c) NULL
+#define setGtkCellRendererClassFields(a,b,c)
+#define GtkCellRendererClass_sizeof() 0
+#endif
+
 #ifndef NO_GtkColorSelectionDialog
 void cacheGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject);
 GtkColorSelectionDialog *getGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct);

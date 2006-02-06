@@ -233,6 +233,8 @@ public class OS extends Platform {
 	public static final int GTK_CAN_DEFAULT = 0x2000;
 	public static final int GTK_CAN_FOCUS = 0x800;
 	public static final int GTK_CELL_RENDERER_MODE_ACTIVATABLE = 1;
+	public static final int GTK_CELL_RENDERER_SELECTED = 1 << 0;
+	public static final int GTK_CELL_RENDERER_FOCUSED = 1 << 4;
 	public static final int GTK_CLIST_SHOW_TITLES = 0x4;
 	public static final int GTK_CORNER_TOP_LEFT = 0x0;
 	public static final int GTK_CORNER_TOP_RIGHT = 0x2;
@@ -497,6 +499,12 @@ public static final native int GtkSelectionData_sizeof();
 public static final native int GtkTargetEntry_sizeof();
 public static final native int GtkTargetPair_sizeof();
 public static final native int GtkTextIter_sizeof();
+public static final native int GtkCellRendererText_sizeof();
+public static final native int GtkCellRendererTextClass_sizeof();
+public static final native int GtkCellRendererPixbuf_sizeof();
+public static final native int GtkCellRendererPixbufClass_sizeof();
+public static final native int GtkCellRendererToggle_sizeof();
+public static final native int GtkCellRendererToggleClass_sizeof();
 public static final native int GtkTreeIter_sizeof();
 public static final native int PangoAttribute_sizeof();
 public static final native int PangoItem_sizeof();
@@ -571,6 +579,15 @@ public static final int Call(int /*long*/ proc, int /*long*/ arg1, int /*long*/ 
 	lock.lock();
 	try {
 		return _Call(proc, arg1, arg2);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, int /*long*/ arg6);
+public static final int /*long*/ call (int /*long*/ function, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4, int /*long*/ arg5, int /*long*/ arg6) {
+	lock.lock();
+	try {
+		return _call(function, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 	} finally {
 		lock.unlock();
 	}
@@ -1041,6 +1058,15 @@ public static final boolean GTK_IS_CELL_RENDERER_TEXT(int /*long*/ obj) {
 		lock.unlock();
 	}
 }
+public static final native boolean _GTK_IS_CELL_RENDERER_TOGGLE(int /*long*/ obj);
+public static final boolean GTK_IS_CELL_RENDERER_TOGGLE(int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _GTK_IS_CELL_RENDERER_TOGGLE(obj);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _GTK_IS_CONTAINER(int /*long*/ obj);
 public static final boolean GTK_IS_CONTAINER(int /*long*/ obj) {
 	lock.lock();
@@ -1082,6 +1108,33 @@ public static final int /*long*/ GTK_STOCK_OK() {
 	lock.lock();
 	try {
 		return _GTK_STOCK_OK();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _GTK_TYPE_CELL_RENDERER_TEXT();
+public static final int /*long*/ GTK_TYPE_CELL_RENDERER_TEXT() {
+	lock.lock();
+	try {
+		return _GTK_TYPE_CELL_RENDERER_TEXT();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _GTK_TYPE_CELL_RENDERER_PIXBUF();
+public static final int /*long*/ GTK_TYPE_CELL_RENDERER_PIXBUF() {
+	lock.lock();
+	try {
+		return _GTK_TYPE_CELL_RENDERER_PIXBUF();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _GTK_TYPE_CELL_RENDERER_TOGGLE();
+public static final int /*long*/ GTK_TYPE_CELL_RENDERER_TOGGLE() {
+	lock.lock();
+	try {
+		return _GTK_TYPE_CELL_RENDERER_TOGGLE();
 	} finally {
 		lock.unlock();
 	}
@@ -3127,6 +3180,15 @@ public static final void gdk_window_begin_paint_rect(int /*long*/ window, GdkRec
 	lock.lock();
 	try {
 		_gdk_window_begin_paint_rect(window, rectangle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gdk_window_clear_area(int /*long*/ window, int x, int y, int width, int height);
+public static final void gdk_window_clear_area(int /*long*/ window, int x, int y, int width, int height) {
+	lock.lock();
+	try {
+		_gdk_window_clear_area(window, x, y, width, height);
 	} finally {
 		lock.unlock();
 	}
@@ -5287,6 +5349,15 @@ public static final void gtk_paint_handle(int /*long*/ style, int /*long*/ windo
 	lock.lock();
 	try {
 		_gtk_paint_handle(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height, orientation);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_flat_box(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
+public static final void gtk_paint_flat_box(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_paint_flat_box(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
 	} finally {
 		lock.unlock();
 	}
@@ -7987,6 +8058,8 @@ public static final native void memmove(GdkEventMotion dest, int /*long*/ src, i
 public static final native void memmove(GdkEventScroll dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventVisibility dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventWindowState dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, GtkCellRendererClass src);
+public static final native void memmove(GtkCellRendererClass dest, int /*long*/ src);
 public static final native void memmove(GtkFixed dest, int /*long*/ src);
 public static final native void memmove(int /*long*/ dest, GtkFixed src);
 public static final native void memmove(GdkVisual dest, int /*long*/ src);

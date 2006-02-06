@@ -16,6 +16,12 @@
 /* Special sizeof's */
 #define GPollFD_sizeof() sizeof(GPollFD)
 #define GtkFixedClass_sizeof() sizeof(GtkFixedClass)
+#define GtkCellRendererText_sizeof() sizeof(GtkCellRendererText)
+#define GtkCellRendererTextClass_sizeof() sizeof(GtkCellRendererTextClass)
+#define GtkCellRendererPixbuf_sizeof() sizeof(GtkCellRendererPixbuf)
+#define GtkCellRendererPixbufClass_sizeof() sizeof(GtkCellRendererPixbufClass)
+#define GtkCellRendererToggle_sizeof() sizeof(GtkCellRendererToggle)
+#define GtkCellRendererToggleClass_sizeof() sizeof(GtkCellRendererToggleClass)
 #define GtkTextIter_sizeof() sizeof(GtkTextIter)
 #define GtkTreeIter_sizeof() sizeof(GtkTreeIter)
 #define PTR_sizeof() sizeof(void *)
