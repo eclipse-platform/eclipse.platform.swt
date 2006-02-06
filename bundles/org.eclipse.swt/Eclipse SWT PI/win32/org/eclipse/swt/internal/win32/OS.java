@@ -163,15 +163,19 @@ public class OS extends Platform {
 
 	/* Constants */
 	public static final int ABS_DOWNDISABLED = 8;
+	public static final int ABS_DOWNHOT = 6;
 	public static final int ABS_DOWNNORMAL = 5;
 	public static final int ABS_DOWNPRESSED = 7;
 	public static final int ABS_LEFTDISABLED = 12;
+	public static final int ABS_LEFTHOT = 10;
 	public static final int ABS_LEFTNORMAL = 9;
 	public static final int ABS_LEFTPRESSED = 11;
 	public static final int ABS_RIGHTDISABLED = 16;
+	public static final int ABS_RIGHTHOT = 14;
 	public static final int	ABS_RIGHTNORMAL = 13;
 	public static final int	ABS_RIGHTPRESSED = 15;
 	public static final int ABS_UPDISABLED = 4;
+	public static final int ABS_UPHOT = 2;
 	public static final int ABS_UPNORMAL = 1;
 	public static final int ABS_UPPRESSED = 3;
 	public static final int AC_SRC_OVER = 0;
@@ -207,6 +211,8 @@ public class OS extends Platform {
 	public static final int BM_SETSTYLE = 0xf4;
 	public static final int BN_CLICKED = 0x0;
 	public static final int BN_DOUBLECLICKED = 0x5;
+	public static final int BP_PUSHBUTTON = 1;
+	public static final int BP_RADIOBUTTON = 2;
 	public static final int BP_CHECKBOX = 3;
 	public static final int BST_CHECKED = 0x1;
 	public static final int BST_UNCHECKED = 0x0;
@@ -246,6 +252,15 @@ public class OS extends Platform {
 	public static final int CBS_NOINTEGRALHEIGHT = 0x400;
 	public static final int CBS_SIMPLE = 0x1;
 	public static final int CBS_UNCHECKEDNORMAL = 1;
+	public static final int CBS_CHECKEDDISABLED = 8;
+	public static final int CBS_CHECKEDHOT = 6;
+	public static final int CBS_CHECKEDPRESSED = 7;
+	public static final int CBS_MIXEDDISABLED = 0;
+	public static final int CBS_MIXEDHOT = 0;
+	public static final int CBS_MIXEDPRESSED = 0;
+	public static final int CBS_UNCHECKEDDISABLED = 4;
+	public static final int CBS_UNCHECKEDHOT = 2;
+	public static final int CBS_UNCHECKEDPRESSED = 3;
 	public static final int CB_ADDSTRING = 0x143;
 	public static final int CB_DELETESTRING = 0x144;
 	public static final int CB_ERR = 0xffffffff;
@@ -958,6 +973,11 @@ public class OS extends Platform {
 	public static final int PBS_MARQUEE = 0x08;
 	public static final int PBS_SMOOTH = 0x1;
 	public static final int PBS_VERTICAL = 0x4;
+	public static final int PBS_NORMAL = 1;
+	public static final int PBS_HOT = 2;
+	public static final int PBS_PRESSED = 3; 
+	public static final int PBS_DISABLED = 4;
+	public static final int PBS_DEFAULTED = 5;
 	public static final int PD_ALLPAGES = 0x0;
 	public static final int PD_COLLATE = 0x10;
 	public static final int PD_PAGENUMS = 0x2;
@@ -993,6 +1013,10 @@ public class OS extends Platform {
 	public static final int PM_QS_SENDMESSAGE = QS_SENDMESSAGE << 16;
 	public static final int PM_REMOVE = 0x1;
 	public static final String PROGRESS_CLASS = "msctls_progress32"; //$NON-NLS-1$
+	public static final int PP_BAR = 1;
+	public static final int PP_BARVERT = 2;
+	public static final int PP_CHUNK = 3;
+	public static final int PP_CHUNKVERT = 4;
 	public static final int PS_DASH = 0x1;
 	public static final int PS_DASHDOT = 0x3;
 	public static final int PS_DASHDOTDOT = 0x4;
@@ -1067,6 +1091,15 @@ public class OS extends Platform {
 	public static final int RGN_OR = 0x2;
 	public static final int RP_BAND = 3;
 	public static final int SBP_ARROWBTN = 0x1;
+	public static final int SBP_THUMBBTNHORZ = 2;
+	public static final int SBP_THUMBBTNVERT = 3;
+	public static final int SBP_LOWERTRACKHORZ = 4;
+	public static final int SBP_UPPERTRACKHORZ = 5;
+	public static final int SBP_LOWERTRACKVERT = 6;
+	public static final int SBP_UPPERTRACKVERT = 7;
+	public static final int SBP_GRIPPERHORZ = 8;
+	public static final int SBP_GRIPPERVERT = 9;
+	public static final int SBP_SIZEBOX = 10;
 	public static final int SBS_HORZ = 0x0;
 	public static final int SBS_VERT = 0x1;
 	public static final int SB_BOTH = 0x3;
@@ -1095,6 +1128,10 @@ public class OS extends Platform {
 	public static final int SC_SIZE = 0xf000;
 	public static final int SC_TASKLIST = 0xf130;
 	public static final int SC_VSCROLL = 0xf070;
+	public static final int SCRBS_NORMAL = 1;
+	public static final int SCRBS_HOT = 2;
+	public static final int SCRBS_PRESSED = 3;
+	public static final int SCRBS_DISABLED = 4;
 	public static final int SEM_FAILCRITICALERRORS = 0x1;
 	public static final int SF_RTF = 0x2;
 	public static final int SHCMBF_HIDDEN = 0x2;
@@ -1197,6 +1234,15 @@ public class OS extends Platform {
 	public static final int SYSRGN = 0x4;
 	public static final int SYSTEM_FONT = 0xd;
 	public static final int S_OK = 0x0;
+	public static final int TABP_TABITEM = 1;
+	public static final int TABP_TABITEMLEFTEDGE = 2;
+	public static final int TABP_TABITEMRIGHTEDGE = 3;
+	public static final int TABP_TABITEMBOTHEDGE = 4;
+	public static final int TABP_TOPTABITEM = 5;
+	public static final int TABP_TOPTABITEMLEFTEDGE = 6;
+	public static final int TABP_TOPTABITEMRIGHTEDGE = 7;
+	public static final int TABP_TOPTABITEMBOTHEDGE = 8;
+	public static final int TABP_PANE = 9;
 	public static final int TABP_BODY = 10;
 	public static final int TBIF_COMMAND = 0x20;
 	public static final int TBIF_STATE = 0x4;
@@ -1298,10 +1344,16 @@ public class OS extends Platform {
 	public static final int TCS_TABS = 0x0;
 	public static final int TCS_TOOLTIPS = 0x4000;
 	public static final int TECHNOLOGY = 0x2;
+	public static final int TIS_NORMAL = 1;
+	public static final int TIS_HOT = 2;
+	public static final int TIS_SELECTED = 3;
+	public static final int TIS_DISABLED = 4;
+	public static final int TIS_FOCUSED = 5;
 	public static final int TME_HOVER = 0x1;
 	public static final int TME_LEAVE = 0x2;
 	public static final int TME_QUERY = 0x40000000;
 	public static final int TMPF_VECTOR = 0x2;
+	public static final int TMT_CONTENTMARGINS = 3602;
 	public static final String TOOLBARCLASSNAME = "ToolbarWindow32"; //$NON-NLS-1$
 	public static final String TOOLTIPS_CLASS = "tooltips_class32"; //$NON-NLS-1$
 	public static final int TPM_LEFTALIGN = 0x0;
@@ -2772,6 +2824,12 @@ public static final native boolean GetTextExtentPoint32W (int hdc, char [] lpStr
 public static final native boolean GetTextExtentPoint32A (int hdc, byte [] lpString, int cbString, SIZE lpSize);
 public static final native boolean GetTextMetricsW (int hdc, TEXTMETRICW lptm);
 public static final native boolean GetTextMetricsA (int hdc, TEXTMETRICA lptm);
+public static final native int GetThemeMargins(int hTheme, int hdc, int iPartId, int iStateId, int iPropId, RECT prc, MARGINS pMargins);
+public static final native int GetThemeBackgroundContentRect(int hTheme, int hdc, int iPartId, int iStateId, RECT pBoundingRect, RECT pContentRect);
+public static final native int GetThemePartSize(int hTheme, int hdc, int iPartId, int iStateId, RECT prc, int eSize, SIZE psz);
+public static final native int GetThemeMetric(int hTheme, int hdc, int iPartId, int iStateId, int iPropId, int[] piVal);
+public static final native int GetThemeRect(int hTheme, int iPartId, int iStateId, int iPropId, RECT pRect);
+public static final native int GetThemeSysSize(int hTheme, int iSizeID);
 public static final native boolean GetUpdateRect (int hWnd, RECT lpRect, boolean bErase);
 public static final native int GetUpdateRgn (int hWnd, int hRgn, boolean bErase);
 public static final native boolean GetVersionExW (OSVERSIONINFOW lpVersionInfo);
@@ -2801,6 +2859,7 @@ public static final native boolean GradientFill(int hdc, int pVertex, int dwNumV
 public static final native int HeapAlloc (int hHeap, int dwFlags, int dwBytes);
 public static final native boolean HeapFree (int hHeap, int dwFlags, int lpMem);
 public static final native boolean HideCaret (int hWnd);
+public static final native int HitTestThemeBackground(int hTheme, int hdc, int iPartId, int iStateId, int dwOptions, RECT pRect, int hrgn, POINT ptTest, short[] pwHitTestCode);
 public static final native int IIDFromString(char[] lpsz, byte[] lpiid);
 public static final native int ImageList_Add (int himl, int hbmImage, int hbmMask);
 public static final native int ImageList_AddMasked (int himl, int hbmImage, int crMask);

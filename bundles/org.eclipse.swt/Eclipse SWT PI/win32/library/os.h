@@ -243,6 +243,12 @@
 #define NO_GetTextExtentPoint32A
 #define NO_GetTextMetricsA
 #define NO_GetThemeTextExtent
+#define NO_GetThemeMargins
+#define NO_GetThemeBackgroundContentRect
+#define NO_GetThemePartSize
+#define NO_GetThemeMetric
+#define NO_GetThemeRect
+#define NO_GetThemeSysSize
 #define NO_GetVersionExA
 #define NO_GetWindowLongA
 #define NO_GetWindowOrgEx
@@ -253,6 +259,7 @@
 #define NO_GlobalAddAtomA
 #define NO_GlobalAddAtomW
 #define NO_GradientFill
+#define NO_HitTestThemeBackground
 #define NO_IIDFromString
 #define NO_ImmDisableTextFrameService
 #define NO_ImmGetCompositionFontA

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 661;
-int OS_nativeFunctionCallCount[661];
+int OS_nativeFunctionCount = 668;
+int OS_nativeFunctionCallCount[668];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -268,6 +268,12 @@ char * OS_nativeFunctionNames[] = {
 	"GetTextExtentPoint32W",
 	"GetTextMetricsA",
 	"GetTextMetricsW",
+	"GetThemeBackgroundContentRect",
+	"GetThemeMargins",
+	"GetThemeMetric",
+	"GetThemePartSize",
+	"GetThemeRect",
+	"GetThemeSysSize",
 	"GetThemeTextExtent",
 	"GetTickCount",
 	"GetUpdateRect",
@@ -299,6 +305,7 @@ char * OS_nativeFunctionNames[] = {
 	"HeapAlloc",
 	"HeapFree",
 	"HideCaret",
+	"HitTestThemeBackground",
 	"IIDFromString",
 	"ImageList_1Add",
 	"ImageList_1AddMasked",

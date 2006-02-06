@@ -4164,6 +4164,203 @@ fail:
 }
 #endif
 
+#ifndef NO_GetThemeBackgroundContentRect
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeBackgroundContentRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jobject arg5)
+{
+	RECT _arg4, *lparg4=NULL;
+	RECT _arg5, *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeBackgroundContentRect_FUNC);
+	if (arg4) if ((lparg4 = getRECTFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = getRECTFields(env, arg5, &_arg5)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemeBackgroundContentRect(arg0, arg1, arg2, arg3, lparg4, lparg5);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetThemeBackgroundContentRect_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetThemeBackgroundContentRect");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, lparg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) setRECTFields(env, arg5, lparg5);
+	if (arg4 && lparg4) setRECTFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, GetThemeBackgroundContentRect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemeMargins
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeMargins)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jobject arg5, jobject arg6)
+{
+	RECT _arg5, *lparg5=NULL;
+	MARGINS _arg6, *lparg6=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeMargins_FUNC);
+	if (arg5) if ((lparg5 = getRECTFields(env, arg5, &_arg5)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = getMARGINSFields(env, arg6, &_arg6)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemeMargins(arg0, arg1, arg2, arg3, arg4, lparg5, lparg6);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetThemeMargins_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetThemeMargins");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, arg4, lparg5, lparg6);
+		}
+	}
+fail:
+	if (arg6 && lparg6) setMARGINSFields(env, arg6, lparg6);
+	if (arg5 && lparg5) setRECTFields(env, arg5, lparg5);
+	OS_NATIVE_EXIT(env, that, GetThemeMargins_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemeMetric
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeMetric)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeMetric_FUNC);
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemeMetric(arg0, arg1, arg2, arg3, arg4, lparg5);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetThemeMetric_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetThemeMetric");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, arg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	OS_NATIVE_EXIT(env, that, GetThemeMetric_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemePartSize
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemePartSize)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jobject arg6)
+{
+	RECT _arg4, *lparg4=NULL;
+	SIZE _arg6, *lparg6=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemePartSize_FUNC);
+	if (arg4) if ((lparg4 = getRECTFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = getSIZEFields(env, arg6, &_arg6)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemePartSize(arg0, arg1, arg2, arg3, lparg4, arg5, lparg6);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetThemePartSize_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetThemePartSize");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, lparg4, arg5, lparg6);
+		}
+	}
+fail:
+	if (arg6 && lparg6) setSIZEFields(env, arg6, lparg6);
+	if (arg4 && lparg4) setRECTFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, GetThemePartSize_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemeRect
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	RECT _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeRect_FUNC);
+	if (arg4) if ((lparg4 = getRECTFields(env, arg4, &_arg4)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemeRect(arg0, arg1, arg2, arg3, lparg4);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetThemeRect_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetThemeRect");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) setRECTFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, GetThemeRect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetThemeSysSize
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeSysSize)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeSysSize_FUNC);
+/*
+	rc = (jint)GetThemeSysSize(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetThemeSysSize_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetThemeSysSize");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, GetThemeSysSize_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeTextExtent
 JNIEXPORT jint JNICALL OS_NATIVE(GetThemeTextExtent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4, jint arg5, jint arg6, jobject arg7, jobject arg8)
@@ -4622,6 +4819,44 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HideCaret)
 	OS_NATIVE_ENTER(env, that, HideCaret_FUNC);
 	rc = (jboolean)HideCaret((HWND)arg0);
 	OS_NATIVE_EXIT(env, that, HideCaret_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HitTestThemeBackground
+JNIEXPORT jint JNICALL OS_NATIVE(HitTestThemeBackground)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jobject arg5, jint arg6, jobject arg7, jshortArray arg8)
+{
+	RECT _arg5, *lparg5=NULL;
+	POINT _arg7, *lparg7=NULL;
+	jshort *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HitTestThemeBackground_FUNC);
+	if (arg5) if ((lparg5 = getRECTFields(env, arg5, &_arg5)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = getPOINTFields(env, arg7, &_arg7)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetShortArrayElements(env, arg8, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)HitTestThemeBackground(arg0, arg1, arg2, arg3, arg4, lparg5, arg6, *lparg7, lparg8);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(HitTestThemeBackground_LIB);
+			if (hm) fp = GetProcAddress(hm, "HitTestThemeBackground");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, arg4, lparg5, arg6, *lparg7, lparg8);
+		}
+	}
+fail:
+	if (arg8 && lparg8) (*env)->ReleaseShortArrayElements(env, arg8, lparg8, 0);
+	if (arg7 && lparg7) setPOINTFields(env, arg7, lparg7);
+	if (arg5 && lparg5) setRECTFields(env, arg5, lparg5);
+	OS_NATIVE_EXIT(env, that, HitTestThemeBackground_FUNC);
 	return rc;
 }
 #endif
