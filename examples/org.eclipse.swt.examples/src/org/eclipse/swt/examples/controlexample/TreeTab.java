@@ -252,30 +252,56 @@ class TreeTab extends ScrollableTab {
 		/* Create the image tree */	
 		tree2 = new Tree (imageTreeGroup, style);
 		Image image = instance.images[ControlExample.ciClosedFolder];
-		if (multipleColumns.getSelection()) {
+		boolean multi = multipleColumns.getSelection();
+		if (multi) {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TreeColumn treeColumn = new TreeColumn(tree2, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
 				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip") + columnTitles[i]);
+				treeColumn.setImage(image);
 			}
 		}
 		for (int i = 0; i < 4; i++) {
 			item = new TreeItem (tree2, SWT.NONE);
 			setItemText(item, i, ControlExample.getResourceString("Node_" + (i + 1)));
-			item.setImage(image);
+			if (multi) {
+				for (int j = 0; j < columnTitles.length; j++) {
+					item.setImage(j, image);
+				}
+			} else {
+				item.setImage(image);
+			}
 			if (i < 3) {
 				TreeItem subitem = new TreeItem (item, SWT.NONE);
 				setItemText(subitem, i, ControlExample.getResourceString("Node_" + (i + 1) + "_1"));
-				subitem.setImage(image);
+				if (multi) {
+					for (int j = 0; j < columnTitles.length; j++) {
+						subitem.setImage(j, image);
+					}
+				} else {
+					subitem.setImage(image);
+				}
 			}
 		}
 		treeRoots = tree2.getItems ();
 		item = new TreeItem (treeRoots[1], SWT.NONE);
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2"));
-		item.setImage(image);
+		if (multi) {
+			for (int j = 0; j < columnTitles.length; j++) {
+				item.setImage(j, image);
+			}
+		} else {
+			item.setImage(image);
+		}
 		item = new TreeItem (item, SWT.NONE);
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2_1"));
-		item.setImage(image);
+		if (multi) {
+			for (int j = 0; j < columnTitles.length; j++) {
+				item.setImage(j, image);
+			}
+		} else {
+			item.setImage(image);
+		}
 		imageNode1 = treeRoots[0];
 		packColumns(tree2);
 		
