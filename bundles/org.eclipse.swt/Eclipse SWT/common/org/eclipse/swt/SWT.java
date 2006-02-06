@@ -586,6 +586,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
+	 * 
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int EraseItem = 40;
 	
@@ -597,6 +599,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
+	 * 
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int MeasureItem = 41;
 	
@@ -608,6 +612,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
+	 * 
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int PaintItem = 42;	
 	
@@ -1366,6 +1372,8 @@ public class SWT {
 	 * is selected (value is 1&lt;&lt;1).
 	 *
 	 * @since 3.2
+	 * 
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int SELECTED = 1 << 1;
 	
@@ -1374,6 +1382,8 @@ public class SWT {
 	 * is focused (value is 1&lt;&lt;2).
 	 *
 	 * @since 3.2
+	 * 
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */	
 	public static final int FOCUSED = 1 << 2;
 	
