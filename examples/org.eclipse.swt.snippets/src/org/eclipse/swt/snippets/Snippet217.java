@@ -18,7 +18,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * StyledText snippet: embed widgets
+ * StyledText snippet: embed controls
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
