@@ -385,7 +385,8 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 			StyleRange style = (StyleRange)((StyleRange)styles[i]).clone();
 			style.start = start + lineOffset;
 			style.length = length;
-			styledText.paintObject(gc, point.x + paintX, point.y + paintY, metrics.getAscent(), metrics.getDescent(), style);
+			int lineAscent = metrics.getAscent() + metrics.getLeading();
+			styledText.paintObject(gc, point.x + paintX, point.y + paintY, lineAscent, metrics.getDescent(), style);
 		}
 	}
 	int height = layout.getBounds().height;
