@@ -293,6 +293,9 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	return true;
 }
 
+void redrawBackgroundImage () {
+}
+
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean all, boolean trim) {
 	super.redrawWidget (x, y, width, height, redrawAll, all, trim);
 	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
@@ -342,9 +345,6 @@ void resizeHandle (int width, int height) {
 	OS.gtk_widget_set_size_request (scrolledHandle != 0 ? scrolledHandle : handle, width, height);
 }
 
-void setScrollBarValue (ScrollBar bar) {
-}
-
 void showWidget () {
 	super.showWidget ();
 	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
@@ -354,6 +354,10 @@ int /*long*/ topHandle () {
 	if (fixedHandle != 0) return fixedHandle;
 	if (scrolledHandle != 0) return scrolledHandle;
 	return super.topHandle ();
+}
+
+void updateScrollBarValue (ScrollBar bar) {
+	parent.redrawBackgroundImage ();
 }
 
 int vScrollBarWidth() {

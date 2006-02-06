@@ -401,7 +401,9 @@ public Rectangle getBounds () {
 	int right = rect.x + rect.width;
 
 	int [] x = new int [1], w = new int [1];
+	parent.ignoreSize = true;
 	OS.gtk_cell_renderer_get_size (textRenderer, parentHandle, null, null, null, w, null);
+	parent.ignoreSize = false;
 	rect.width = w [0];
 	int [] buffer = new int [1];
 	if (OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
@@ -1010,8 +1012,8 @@ public void setBackground (int index, Color color) {
 				if (column == 0) return;
 				int /*long*/ textRenderer = parent.getTextRenderer (column);
 				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
-				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parentHandle, 0);
-				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parentHandle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
 			if (parent.columnCount == 0) {
 				parent.firstCustomDraw = true;
@@ -1157,8 +1159,8 @@ public void setFont (int index, Font font) {
 				if (column == 0) return;
 				int /*long*/ textRenderer = parent.getTextRenderer (column);
 				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
-				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parentHandle, 0);
-				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parentHandle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
 			if (parent.columnCount == 0) {
 				parent.firstCustomDraw = true;
@@ -1243,8 +1245,8 @@ public void setForeground (int index, Color color){
 				if (column == 0) return;
 				int /*long*/ textRenderer = parent.getTextRenderer (column);
 				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
-				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parentHandle, 0);
-				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.pixbufCellDataProc, parentHandle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.cellDataProc, parentHandle, 0);
+				OS.gtk_tree_view_column_set_cell_data_func (column, imageRenderer, display.cellDataProc, parentHandle, 0);
 			}
 			if (parent.columnCount == 0) {
 				parent.firstCustomDraw = true;

@@ -120,9 +120,15 @@ public class Display extends Device {
 	Widget [] widgetTable;
 	final static int GROW_SIZE = 1024;
 	static final int SWT_OBJECT_INDEX;
+	static final int SWT_OBJECT_INDEX1;
+	static final int SWT_OBJECT_INDEX2;
 	static {
 		byte [] buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX", true);
 		SWT_OBJECT_INDEX = OS.g_quark_from_string (buffer);
+		buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX1", true);
+		SWT_OBJECT_INDEX1 = OS.g_quark_from_string (buffer);
+		buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX2", true);
+		SWT_OBJECT_INDEX2 = OS.g_quark_from_string (buffer);
 	}
 		
 	/* Focus */
@@ -184,10 +190,8 @@ public class Display extends Device {
 	int treeSelectionLength;
 	int /*long*/ treeSelectionProc;
 	Callback treeSelectionCallback;
-	int /*long*/ textCellDataProc;
-	Callback textCellDataCallback;
-	int /*long*/ pixbufCellDataProc;
-	Callback pixbufCellDataCallback;
+	int /*long*/ cellDataProc;
+	Callback cellDataCallback;
 	
 	/* Set direction callback */
 	int /*long*/ setDirectionProc;
@@ -242,6 +246,12 @@ public class Display extends Device {
 	static int /*long*/ fixed_info_ptr;
 	static Callback fixedClassInitCallback, fixedMapCallback;
 	static int /*long*/ fixedClassInitProc, fixedMapProc;
+
+	/* Renderer Subclass */
+	static int /*long*/ text_renderer_type, pixbuf_renderer_type, toggle_renderer_type;
+	static int /*long*/ text_renderer_info_ptr, pixbuf_renderer_info_ptr, toggle_renderer_info_ptr;
+	static Callback rendererClassInitCallback, rendererRenderCallback, rendererGetSizeCallback;
+	static int /*long*/ rendererClassInitProc, rendererRenderProc, rendererGetSizeProc;
 
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -634,6 +644,12 @@ public void beep () {
 	}
 }
 
+int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
+	Widget widget = getWidget (data);
+	if (widget == null) return 0;
+	return widget.cellDataProc (tree_column, cell, tree_model, iter, data);
+}
+
 protected void checkDevice () {
 	if (thread == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -796,7 +812,45 @@ synchronized void createDisplay (DeviceData data) {
 		fixed_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
 		OS.memmove (fixed_info_ptr, fixed_info, GTypeInfo.sizeof);
 		fixed_type = OS.g_type_register_static (OS.GTK_TYPE_FIXED (), type_name, fixed_info_ptr, 0);
+	}
+	rendererClassInitCallback = new Callback (getClass (), "rendererClassInitProc", 2);
+	rendererClassInitProc = rendererClassInitCallback.getAddress ();
+	if (rendererClassInitProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", 7);
+	rendererRenderProc = rendererRenderCallback.getAddress ();
+	rendererGetSizeCallback = new Callback (getClass (), "rendererGetSizeProc", 7);
+	rendererGetSizeProc = rendererGetSizeCallback.getAddress ();
+	if (rendererRenderProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (text_renderer_type == 0) {
+		GTypeInfo renderer_info = new GTypeInfo ();
+		renderer_info.class_size = (short) OS.GtkCellRendererTextClass_sizeof ();
+		renderer_info.class_init = rendererClassInitProc;
+		renderer_info.instance_size = (short) OS.GtkCellRendererText_sizeof ();
+		text_renderer_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
+		OS.memmove (text_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
+		byte [] type_name = Converter.wcsToMbcs (null, "SwtTextRenderer", true);
+		text_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_TEXT (), type_name, text_renderer_info_ptr, 0);
+	}
+	if (pixbuf_renderer_type == 0) {
+		GTypeInfo renderer_info = new GTypeInfo ();
+		renderer_info.class_size = (short) OS.GtkCellRendererPixbufClass_sizeof ();
+		renderer_info.class_init = rendererClassInitProc;
+		renderer_info.instance_size = (short) OS.GtkCellRendererPixbuf_sizeof ();
+		pixbuf_renderer_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
+		OS.memmove (pixbuf_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
+		byte [] type_name = Converter.wcsToMbcs (null, "SwtPixbufRenderer", true);
+		pixbuf_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_PIXBUF (), type_name, pixbuf_renderer_info_ptr, 0);
 	}	
+	if (toggle_renderer_type == 0) {
+		GTypeInfo renderer_info = new GTypeInfo ();
+		renderer_info.class_size = (short) OS.GtkCellRendererToggleClass_sizeof ();
+		renderer_info.class_init = rendererClassInitProc;
+		renderer_info.instance_size = (short) OS.GtkCellRendererToggle_sizeof ();
+		toggle_renderer_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
+		OS.memmove (toggle_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
+		byte [] type_name = Converter.wcsToMbcs (null, "SwtToggleRenderer", true);
+		toggle_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_TOGGLE (), type_name, toggle_renderer_info_ptr, 0);
+	}
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
 	OS.gdk_rgb_init ();
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
@@ -1137,6 +1191,29 @@ static int /*long*/ fixedMapProc (int /*long*/ handle) {
 	return 0;
 }
 
+static int /*long*/ rendererClassInitProc (int /*long*/ g_class, int /*long*/ class_data) {
+	GtkCellRendererClass klass = new GtkCellRendererClass ();
+	OS.memmove (klass, g_class);
+	klass.render = rendererRenderProc;
+	klass.get_size = rendererGetSizeProc;
+	OS.memmove (g_class, klass);
+	return 0;
+}
+
+static int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ handle, int /*long*/ cell_area, int /*long*/ x_offset, int /*long*/ y_offset, int /*long*/ width, int /*long*/ height) {
+	Display display = getCurrent ();
+	Widget widget = display.getWidget (handle);
+	if (widget != null) return widget.rendererGetSizeProc (cell, handle, cell_area, x_offset, y_offset, width, height);
+	return 0;
+}
+
+static int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*long*/ handle, int /*long*/ background_area, int /*long*/ cell_area, int /*long*/ expose_area, int flags) {
+	Display display = getCurrent ();
+	Widget widget = display.getWidget (handle);
+	if (widget != null) return widget.rendererRenderProc (cell, window, handle, background_area, cell_area, expose_area, flags);
+	return 0;
+}
+
 void flushExposes (int /*long*/ window, boolean all) {
 	OS.gdk_flush ();
 	OS.gdk_flush ();
@@ -1408,6 +1485,18 @@ public Point getDPI () {
 
 int /*long*/ gtk_fixed_get_type () {
 	return fixed_type;
+}
+
+int /*long*/ gtk_cell_renderer_text_get_type () {
+	return text_renderer_type;
+}
+
+int /*long*/ gtk_cell_renderer_pixbuf_get_type () {
+	return pixbuf_renderer_type;
+}
+
+int /*long*/ gtk_cell_renderer_toggle_get_type () {
+	return toggle_renderer_type;
 }
 
 /**
@@ -2216,13 +2305,9 @@ void initializeCallbacks () {
 	treeSelectionProc = treeSelectionCallback.getAddress();
 	if (treeSelectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	textCellDataCallback = new Callback (this, "textCellDataProc", 5);
-	textCellDataProc = textCellDataCallback.getAddress ();
-	if (textCellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
-	pixbufCellDataCallback = new Callback (this, "pixbufCellDataProc", 5);
-	pixbufCellDataProc = pixbufCellDataCallback.getAddress ();
-	if (pixbufCellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cellDataCallback = new Callback (this, "cellDataProc", 5);
+	cellDataProc = cellDataCallback.getAddress ();
+	if (cellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	setDirectionCallback = new Callback (this, "setDirectionProc", 2);
 	setDirectionProc = setDirectionCallback.getAddress ();
@@ -2841,10 +2926,8 @@ void releaseDisplay () {
 	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;
-	textCellDataCallback.dispose (); textCellDataCallback = null;
-	textCellDataProc = 0;
-	pixbufCellDataCallback.dispose (); pixbufCellDataCallback = null;
-	pixbufCellDataProc = 0;
+	cellDataCallback.dispose (); cellDataCallback = null;
+	cellDataProc = 0;
 	
 	/* Dispose the set direction callback */
 	setDirectionCallback.dispose (); setDirectionCallback = null;
@@ -3519,17 +3602,6 @@ int /*long*/ caretProc (int /*long*/ clientData) {
 		currentCaret = null;
 	}
 	return 0;
-}
-
-int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
-	Widget widget = getWidget (data);
-	if (widget == null) return 0;
-	return widget.pixbufCellDataProc (tree_column, cell, tree_model, iter, data);
-}
-int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
-	Widget widget = getWidget (data);
-	if (widget == null) return 0;
-	return widget.textCellDataProc (tree_column, cell, tree_model, iter, data);
 }
 
 int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {

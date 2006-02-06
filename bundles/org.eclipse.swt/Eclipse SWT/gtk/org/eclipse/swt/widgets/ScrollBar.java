@@ -367,7 +367,7 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	}
 	detail = OS.GTK_SCROLL_NONE;
 	postEvent (SWT.Selection, event);
-	parent.setScrollBarValue (this);
+	parent.updateScrollBarValue (this);
 	return 0;
 }
 

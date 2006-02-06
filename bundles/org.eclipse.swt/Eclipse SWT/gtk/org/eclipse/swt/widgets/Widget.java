@@ -198,6 +198,11 @@ public Widget (Widget parent, int style) {
 	display = parent.display;
 }
 
+void _addListener (int eventType, Listener listener) {
+	if (eventTable == null) eventTable = new EventTable ();
+	eventTable.hook (eventType, listener);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs. When the
@@ -218,11 +223,10 @@ public Widget (Widget parent, int style) {
  * @see Listener
  * @see #removeListener
  */
-public void addListener (int eventType, Listener handler) {
+public void addListener (int eventType, Listener listener) {
 	checkWidget ();
-	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) eventTable = new EventTable ();
-	eventTable.hook (eventType, handler);
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	_addListener (eventType, listener);
 }
 
 /**
@@ -251,13 +255,7 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
-int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
-	return 0;
-}
 int /*long*/ paintWindow () {
-	return 0;
-}
-int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
 	return 0;
 }
 
@@ -271,6 +269,10 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	if ((style & int4) != 0) style = (style & ~mask) | int4;
 	if ((style & int5) != 0) style = (style & ~mask) | int5;
 	return style;
+}
+
+int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
+	return 0;
 }
 
 void checkOpen () {
@@ -1032,6 +1034,14 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
+}
+
+int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ handle, int /*long*/ cell_area, int /*long*/ x_offset, int /*long*/ y_offset, int /*long*/ width, int /*long*/ height) {
+	return 0;
+}
+
+int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*long*/ handle, int /*long*/ background_area, int /*long*/ cell_area, int /*long*/ expose_area, int flags) {
+	return 0;
 }
 
 /**

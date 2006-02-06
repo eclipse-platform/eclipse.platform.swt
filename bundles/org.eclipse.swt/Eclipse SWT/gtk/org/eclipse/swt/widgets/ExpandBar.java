@@ -135,14 +135,14 @@ public void removeExpandListener(ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
-void setScrollBarValue (ScrollBar bar) {
-	relayout ();
-}
-
 public void setSpacing (int spacing) {
 	checkWidget ();
 	if (spacing < 0) return;
 	OS.gtk_box_set_spacing (handle, spacing);
 	OS.gtk_container_set_border_width (handle, spacing);
+}
+
+void updateScrollBarValue (ScrollBar bar) {
+	relayout ();
 }
 }
