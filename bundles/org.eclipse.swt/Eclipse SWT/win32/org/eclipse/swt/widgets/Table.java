@@ -50,7 +50,7 @@ public class Table extends Composite {
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
-	boolean wasSelected, wasResized;
+	boolean wasSelected, wasResized, ignoreItemHeight, ignoreDraw;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -100,6 +100,20 @@ public class Table extends Composite {
  */
 public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+void _addListener (int eventType, Listener listener) {
+	super._addListener (eventType, listener);
+	switch (eventType) {
+		case SWT.MeasureItem:
+		case SWT.EraseItem:
+		case SWT.PaintItem:
+			customDraw = true;
+			setBackgroundTransparent (true);
+			//TODO - setting LVS_EX_LABELTIP causes white rectangles (turn it off for now)
+			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
+			break;
+	}
 }
 
 TableItem _getItem (int index) {
@@ -2538,25 +2552,13 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 }
 
 void setBackgroundImage (int hBitmap) {
+	setBackgroundTransparent (hBitmap != 0);
 	if (hBitmap != 0) {
-		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
-		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
-		/*
-		* Feature in Windows.  When the background color is changed,
-		* the table does not redraw until the next WM_PAINT.  The fix
-		* is to force a redraw.
-		*/
-		OS.InvalidateRect (handle, null, true);
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			int bits = OS.LVS_EX_FULLROWSELECT;
 			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
 		}
 	} else {
-		Control control = findBackgroundControl ();
-		if (control == null) control = this;
-		if (control.backgroundImage == null) {
-			setBackgroundPixel (control.getBackgroundPixel ());
-		}
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			int bits = OS.LVS_EX_FULLROWSELECT;
 			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
@@ -2573,11 +2575,35 @@ void setBackgroundPixel (int newPixel) {
 		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
 		if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
 		/*
-		* Feature in Windows.  When the background color is
-		* changed, the table does not redraw until the next
-		* WM_PAINT.  The fix is to force a redraw.
+		* Feature in Windows.  When the background color is changed,
+		* the table does not redraw until the next WM_PAINT.  The fix
+		* is to force a redraw.
 		*/
 		OS.InvalidateRect (handle, null, true);
+	}
+}
+
+void setBackgroundTransparent (boolean transparent) {
+	int oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+	if (transparent) {
+		if (oldPixel != OS.CLR_NONE) {
+			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
+			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
+			/*
+			* Feature in Windows.  When the background color is changed,
+			* the table does not redraw until the next WM_PAINT.  The fix
+			* is to force a redraw.
+			*/
+			OS.InvalidateRect (handle, null, true);
+		}
+	} else {
+		if (oldPixel == OS.CLR_NONE) {
+			Control control = findBackgroundControl ();
+			if (control == null) control = this;
+			if (control.backgroundImage == null) {
+				setBackgroundPixel (control.getBackgroundPixel ());
+			}
+		}
 	}
 }
 
@@ -2978,19 +3004,6 @@ public void setItemCount (int count) {
 	setDeferResize (false);
 }
 
-/**
- * Sets the height of the area which would be used to
- * display <em>one</em> of the items in the tree.
- *
- * @return the height of one item
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.2
- */
 void setItemHeight (boolean fixScroll) {
 	/*
 	* Bug in Windows.  Making any change to an item that
@@ -3506,8 +3519,13 @@ void setTableEmpty () {
 		imageList = null;
 		if (itemHeight != -1) setItemHeight (false);
 	}
-	if ((style & SWT.VIRTUAL) == 0) customDraw = false;
+	if ((style & SWT.VIRTUAL) == 0) {
+		if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+			customDraw = false;
+		}
+	}
 	items = new TableItem [4];
+	ignoreItemHeight = false;
 }
 
 /**
@@ -3906,6 +3924,12 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (findImageControl () != null) return LRESULT.ONE;
+	return result;
+}
+
 LRESULT WM_GETOBJECT (int wParam, int lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
@@ -4122,6 +4146,14 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					return LRESULT.ONE;
 				}
 				ignoreColumnMove = true;
+				switch (hdr.code) {
+					case OS.HDN_DIVIDERDBLCLICKW:
+					case OS.HDN_DIVIDERDBLCLICKA:
+						if (column != null && hooks (SWT.MeasureItem)) {
+							column.pack ();
+							return LRESULT.ONE;
+						}
+				}
 				break;
 			}
 			case OS.NM_RELEASEDCAPTURE: {
@@ -4343,11 +4375,12 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
 	if (findBackgroundControl () == null) {
-		int pixel = defaultBackground ();
-		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
-		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
+		setBackgroundPixel (defaultBackground ());
+	} else {
+		if ((style & SWT.CHECK) != 0) {
+			fixCheckboxImageListColor (true);
+		}
 	}
-	if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
 	return result;
 }
 
@@ -4549,11 +4582,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 		case OS.NM_CUSTOMDRAW: {
-			if (!customDraw) {
-				if (findImageControl () == null) break;
-			}
 			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hdr.hwndFrom == hwndHeader) break;
+			if (!customDraw && findImageControl () == null) break;
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
@@ -4561,18 +4592,28 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 //					if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
 //						if (!OS.IsWinCE && OS.WindowFromDC (nmcd.hdc) == handle) break;
 //					}
-					Control control = findImageControl ();
-					if (control != null) {
-						RECT rect = new RECT ();
-						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-						fillImageBackground (nmcd.hdc, control, rect);
+					if (OS.IsWindowEnabled (handle)) {
+						Control control = findBackgroundControl ();
+						if (control != null && control.backgroundImage != null) {
+							RECT rect = new RECT ();
+							OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+							fillImageBackground (nmcd.hdc, control, rect);
+						} else {
+							if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+								RECT rect = new RECT ();
+								OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+								if (control == null) control = this;
+								fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+							}
+						}
 					}
 					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
 				}
 				case OS.CDDS_ITEMPREPAINT: {
-					return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
+					return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 				}
 				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM: {
+					int hDC = nmcd.hdc;
 					TableItem item = _getItem (nmcd.dwItemSpec);
 					int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
 					if (hFont == -1) hFont = item.font;
@@ -4580,6 +4621,117 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (clrText == -1) clrText = item.foreground;
 					int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
+					if (hooks (SWT.MeasureItem)) {
+						RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
+						int nSavedDC = OS.SaveDC (hDC);
+						GCData data = new GCData ();
+						data.device = display;
+						data.hFont = hFont;
+						GC gc = GC.win32_new (hDC, data);
+						Event event = new Event ();
+						event.item = item;
+						event.gc = gc;
+						event.index = nmcd.iSubItem;
+						event.x = itemRect.left;
+						event.y = itemRect.top;
+						event.width = itemRect.right - itemRect.left;
+						event.height = itemRect.bottom - itemRect.top;
+						sendEvent (SWT.MeasureItem, event);
+						event.gc = null;
+						gc.dispose ();
+						OS.RestoreDC (hDC, nSavedDC);
+						if (isDisposed () || item.isDisposed ()) break;
+						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+						if (count == 1 && columns [0] == null) {
+							int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+							if (event.x + event.width > width) {
+								OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, event.x + event.width);
+							}
+						}
+						if (!ignoreItemHeight) {
+							if (event.height > getItemHeight ()) {
+								setItemHeight (event.height);
+							}
+							ignoreItemHeight = true;
+						}
+					}
+					ignoreDraw = false;
+					if (hooks (SWT.EraseItem)) {
+						RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
+						int nSavedDC = OS.SaveDC (hDC);
+						/*
+						* Bug in Windows.  For some reason, CDIS_SELECTED always set,
+						* even for items that are not selected.  The fix is to get
+						* the selection state from the item.
+						*/
+						LVITEM lvItem = new LVITEM ();
+						lvItem.mask = OS.LVIF_STATE;
+						lvItem.stateMask = OS.LVIS_SELECTED;
+						lvItem.iItem = nmcd.dwItemSpec;
+						int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+						boolean selected = (result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0);
+						GCData data = new GCData ();
+						data.device = display;
+						if (OS.IsWindowEnabled (handle)) {
+							if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
+								data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+								data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+							} else {
+								data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
+								data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+							}
+							data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+							data.hBrush = OS.CreateSolidBrush (data.background);
+						}
+						data.hFont = hFont;
+						GC gc = GC.win32_new (hDC, data);
+						Event event = new Event ();
+						event.item = item;
+						event.gc = gc;
+						event.index = nmcd.iSubItem;
+						if (selected) event.detail |= SWT.SELECTED;
+						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+						event.x = cellRect.left;
+						event.y = cellRect.top;
+						event.width = cellRect.right - cellRect.left;
+						event.height = cellRect.bottom - cellRect.top;
+						drawBackground (hDC, cellRect);
+						gc.setClipping (event.x, event.y, event.width, event.height);
+						sendEvent (SWT.EraseItem, event);
+						event.gc = null;
+						//int newClrText = OS.GetTextColor (hDC);
+						//int newClrTextBk = OS.GetBkColor (hDC);
+						gc.dispose ();
+						OS.RestoreDC (hDC, nSavedDC);
+						if (isDisposed () || item.isDisposed ()) break;
+						if (selected) {
+							if ((event.detail & SWT.SELECTED) == 0) {
+								if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
+									clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+									//clrText = newClrText;
+									//clrTextBk = newClrTextBk;
+								}
+								nmcd.uItemState &= ~OS.CDIS_SELECTED;
+								OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+							}
+						} else {
+							if ((event.detail & SWT.SELECTED) != 0) {
+								if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
+									clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+									clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+								}
+								nmcd.uItemState |= OS.CDIS_SELECTED;
+								OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+							}
+						}
+						ignoreDraw = !event.doit;
+						if (ignoreDraw) {
+							RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false);
+							OS.SelectClipRgn (hDC, 0);
+							OS.ExcludeClipRect (hDC, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
+							OS.SaveDC (hDC);
+						}
+					}
 					/*
 					* Feature in Windows.  When the font is set for one cell in a table,
 					* Windows does not reset the font for the next cell.  As a result,
@@ -4590,18 +4742,22 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					*/
 					if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
 						if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
-							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-							if (count == 1) break;
+							if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) == 1) {
+								if (ignoreDraw || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+									return new LRESULT (OS.CDRF_NOTIFYPOSTPAINT);
+								}
+								break;
+							}
 						}
 					}
 					if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-					OS.SelectObject (nmcd.hdc, hFont);
+					OS.SelectObject (hDC, hFont);
 					if (OS.IsWindowEnabled (handle)) {
 						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 						if (clrTextBk == -1) {
 							Control control = findBackgroundControl ();
 							if (control == null) control = this;
-							if (control.backgroundImage == null) {
+							if (control.backgroundImage == null && !hooks (SWT.EraseItem)) {
 								nmcd.clrTextBk = control.getBackgroundPixel ();
 							}
 						} else {
@@ -4609,7 +4765,71 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						}
 						OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 					}
+					if (ignoreDraw || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+						return new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
+					}
 					return new LRESULT (OS.CDRF_NEWFONT);
+				}
+				case OS.CDDS_ITEMPOSTPAINT | OS.CDDS_SUBITEM: {
+					int hDC = nmcd.hdc;
+					if (ignoreDraw) OS.RestoreDC (hDC, -1);
+					if (hooks (SWT.PaintItem)) {
+						TableItem item = _getItem (nmcd.dwItemSpec);
+						RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
+						int nSavedDC = OS.SaveDC (hDC);
+						GCData data = new GCData ();
+						data.device = display;
+						int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
+						if (hFont == -1) hFont = item.font;
+						data.hFont = hFont;
+						/*
+						* Bug in Windows.  For some reason, CDIS_SELECTED always set,
+						* even for items that are not selected.  The fix is to get
+						* the selection state from the item.
+						*/
+						LVITEM lvItem = new LVITEM ();
+						lvItem.mask = OS.LVIF_STATE;
+						lvItem.stateMask = OS.LVIS_SELECTED;
+						lvItem.iItem = nmcd.dwItemSpec;
+						int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+						boolean selected = result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0;
+						if (OS.IsWindowEnabled (handle)) {
+							if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
+								data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+								data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+							} else {
+								int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
+								if (clrText == -1) clrText = item.foreground;
+								int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
+								if (clrTextBk == -1) clrTextBk = item.background;
+								data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
+								data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+							}
+							data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+							data.hBrush = OS.CreateSolidBrush (data.background);
+						}
+						GC gc = GC.win32_new (hDC, data);
+						Event event = new Event ();
+						event.item = item;
+						event.gc = gc;
+						event.index = nmcd.iSubItem;
+						if (selected) event.detail |= SWT.SELECTED;
+						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+						event.x = itemRect.left;
+						event.y = itemRect.top;
+						event.width = itemRect.right - itemRect.left;
+						event.height = itemRect.bottom - itemRect.top;
+						RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
+						int cellWidth = cellRect.right - cellRect.left;
+						int cellHeight = cellRect.bottom - cellRect.top;
+						gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
+						sendEvent (SWT.PaintItem, event);
+						event.gc = null;
+						gc.dispose ();
+						OS.RestoreDC (hDC, nSavedDC);
+						if (isDisposed () || item.isDisposed ()) break;
+					}
+					break;
 				}
 			}
 			break;
@@ -4660,6 +4880,28 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						boolean newSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
 						if (oldSelected != newSelected) wasSelected = true;
 					}
+				}
+			}
+			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+				if (count != 0) {
+					RECT rect = new RECT ();
+					OS.GetClientRect (handle, rect);
+					NMLISTVIEW pnmlv = new NMLISTVIEW ();
+					OS.MoveMemory (pnmlv, lParam, NMLISTVIEW.sizeof);
+					if (pnmlv.iItem != -1) {
+						RECT itemRect = new RECT ();
+						rect.left = OS.LVIR_BOUNDS;
+						OS.SendMessage (handle, OS. LVM_GETITEMRECT, pnmlv.iItem, itemRect);
+						RECT headerRect = new RECT ();
+						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+						rect.left = headerRect.right;
+						rect.top = itemRect.top;
+						rect.bottom = itemRect.bottom;
+					}
+					OS.InvalidateRect (handle, rect, true);
 				}
 			}
 			break;
