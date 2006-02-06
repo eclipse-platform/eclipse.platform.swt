@@ -159,24 +159,38 @@ class TreeTab extends ScrollableTab {
 		super.createOtherGroup ();
 	
 		/* Create display controls specific to this example */
+		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
+		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
+		multipleColumns = new Button (otherGroup, SWT.CHECK);
+		multipleColumns.setText (ControlExample.getResourceString("Multiple_Columns"));
 		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
 		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
+		moveableColumns = new Button (otherGroup, SWT.CHECK);
+		moveableColumns.setText (ControlExample.getResourceString("Moveable_Columns"));
 		headerImagesButton = new Button (otherGroup, SWT.CHECK);
 		headerImagesButton.setText (ControlExample.getResourceString("Header_Images"));
 		subImagesButton = new Button (otherGroup, SWT.CHECK);
 		subImagesButton.setText (ControlExample.getResourceString("Sub_Images"));
-		multipleColumns = new Button (otherGroup, SWT.CHECK);
-		multipleColumns.setText (ControlExample.getResourceString("Multiple_Columns"));
-		moveableColumns = new Button (otherGroup, SWT.CHECK);
-		moveableColumns.setText (ControlExample.getResourceString("Moveable_Columns"));
-		moveableColumns.setSelection(false);
-		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
-		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
 	
 		/* Add the listeners */
+		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setWidgetLinesVisible ();
+			}
+		});
+		multipleColumns.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				recreateExampleWidgets ();
+			}
+		});
 		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetHeaderVisible ();
+			}
+		});
+		moveableColumns.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setColumnsMoveable ();
 			}
 		});
 		headerImagesButton.addSelectionListener (new SelectionAdapter () {
@@ -187,21 +201,6 @@ class TreeTab extends ScrollableTab {
 		subImagesButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
-			}
-		});
-		multipleColumns.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				recreateExampleWidgets ();
-			}
-		});
-		moveableColumns.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				setColumnsMoveable ();
-			}
-		});
-		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetLinesVisible ();
 			}
 		});
 	}
@@ -239,8 +238,8 @@ class TreeTab extends ScrollableTab {
 	
 		/* Create the text tree */
 		tree1 = new Tree (treeGroup, style);
-		boolean multi = multipleColumns.getSelection();
-		if (multi) {
+		boolean multiColumn = multipleColumns.getSelection();
+		if (multiColumn) {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TreeColumn treeColumn = new TreeColumn(tree1, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
@@ -267,7 +266,7 @@ class TreeTab extends ScrollableTab {
 		/* Create the image tree */	
 		tree2 = new Tree (imageTreeGroup, style);
 		Image image = instance.images[ControlExample.ciClosedFolder];
-		if (multi) {
+		if (multiColumn) {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TreeColumn treeColumn = new TreeColumn(tree2, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
@@ -278,7 +277,7 @@ class TreeTab extends ScrollableTab {
 		for (int i = 0; i < 4; i++) {
 			item = new TreeItem (tree2, SWT.NONE);
 			setItemText(item, i, ControlExample.getResourceString("Node_" + (i + 1)));
-			if (multi && subImagesButton.getSelection()) {
+			if (multiColumn && subImagesButton.getSelection()) {
 				for (int j = 0; j < columnTitles.length; j++) {
 					item.setImage(j, image);
 				}
@@ -288,7 +287,7 @@ class TreeTab extends ScrollableTab {
 			if (i < 3) {
 				TreeItem subitem = new TreeItem (item, SWT.NONE);
 				setItemText(subitem, i, ControlExample.getResourceString("Node_" + (i + 1) + "_1"));
-				if (multi) {
+				if (multiColumn) {
 					for (int j = 0; j < columnTitles.length; j++) {
 						subitem.setImage(j, image);
 					}
@@ -300,7 +299,7 @@ class TreeTab extends ScrollableTab {
 		treeRoots = tree2.getItems ();
 		item = new TreeItem (treeRoots[1], SWT.NONE);
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2"));
-		if (multi) {
+		if (multiColumn) {
 			for (int j = 0; j < columnTitles.length; j++) {
 				item.setImage(j, image);
 			}
@@ -309,7 +308,7 @@ class TreeTab extends ScrollableTab {
 		}
 		item = new TreeItem (item, SWT.NONE);
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2_1"));
-		if (multi) {
+		if (multiColumn) {
 			for (int j = 0; j < columnTitles.length; j++) {
 				item.setImage(j, image);
 			}

@@ -26,7 +26,7 @@ class TableTab extends ScrollableTab {
 	Button checkButton, fullSelectionButton, hideSelectionButton;
 
 	/* Other widgets added to the "Other" group */
-	Button multipleColumns, moveableColumns, headerVisibleButton, linesVisibleButton;
+	Button multipleColumns, moveableColumns, headerVisibleButton, headerImagesButton, linesVisibleButton, subImagesButton;
 	
 	/* Controls and resources added to the "Colors and Fonts" group */
 	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
@@ -158,21 +158,24 @@ class TableTab extends ScrollableTab {
 		super.createOtherGroup ();
 	
 		/* Create display controls specific to this example */
-		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
-		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
+		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
+		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
 		multipleColumns = new Button (otherGroup, SWT.CHECK);
 		multipleColumns.setText (ControlExample.getResourceString("Multiple_Columns"));
 		multipleColumns.setSelection(true);
+		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
+		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
 		moveableColumns = new Button (otherGroup, SWT.CHECK);
 		moveableColumns.setText (ControlExample.getResourceString("Moveable_Columns"));
-		moveableColumns.setSelection(false);
-		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
-		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
-	
+		headerImagesButton = new Button (otherGroup, SWT.CHECK);
+		headerImagesButton.setText (ControlExample.getResourceString("Header_Images"));
+		subImagesButton = new Button (otherGroup, SWT.CHECK);
+		subImagesButton.setText (ControlExample.getResourceString("Sub_Images"));
+
 		/* Add the listeners */
-		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
+		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
-				setWidgetHeaderVisible ();
+				setWidgetLinesVisible ();
 			}
 		});
 		multipleColumns.addSelectionListener (new SelectionAdapter () {
@@ -180,14 +183,24 @@ class TableTab extends ScrollableTab {
 				recreateExampleWidgets ();
 			}
 		});
+		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setWidgetHeaderVisible ();
+			}
+		});
 		moveableColumns.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setColumnsMoveable ();
 			}
 		});
-		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
+		headerImagesButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
-				setWidgetLinesVisible ();
+				recreateExampleWidgets ();
+			}
+		});
+		subImagesButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				recreateExampleWidgets ();
 			}
 		});
 	}
@@ -224,19 +237,19 @@ class TableTab extends ScrollableTab {
 		table1 = new Table (tableGroup, style);
 	
 		/* Fill the table with data */
-		boolean multi = multipleColumns.getSelection();
-		if (multi) {
+		boolean multiColumn = multipleColumns.getSelection();
+		if (multiColumn) {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TableColumn tableColumn = new TableColumn(table1, SWT.NONE);
 				tableColumn.setText(columnTitles[i]);
 				tableColumn.setToolTipText(ControlExample.getResourceString("Tooltip", new String [] {columnTitles[i]}));
-				tableColumn.setImage(instance.images [i % 3]);
+				if (headerImagesButton.getSelection()) tableColumn.setImage(instance.images [i % 3]);
 			}
 			table1.setSortColumn(table1.getColumn(0));
 		}
 		for (int i=0; i<16; i++) {
 			TableItem item = new TableItem (table1, SWT.NONE);
-			if (multi) {
+			if (multiColumn && subImagesButton.getSelection()) {
 				for (int j = 0; j < columnTitles.length; j++) {
 					item.setImage(j, instance.images [i % 3]);
 				}
