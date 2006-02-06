@@ -7064,6 +7064,15 @@ public static final boolean gtk_tree_view_expand_row(int /*long*/ view, int /*lo
 		lock.unlock();
 	}
 }
+public static final native void _gtk_tree_view_get_background_area(int /*long*/ tree_view, int /*long*/ path, int /*long*/ column, GdkRectangle rect);
+public static final void gtk_tree_view_get_background_area(int /*long*/ tree_view, int /*long*/ path, int /*long*/ column, GdkRectangle rect) {
+	lock.lock();
+	try {
+		_gtk_tree_view_get_background_area(tree_view, path, column, rect);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_tree_view_get_bin_window(int /*long*/ tree_view);
 public static final int /*long*/ gtk_tree_view_get_bin_window(int /*long*/ tree_view) {
 	lock.lock();

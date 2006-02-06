@@ -828,6 +828,7 @@ typedef enum {
 	_1gtk_1tree_1view_1column_1set_1visible_FUNC,
 	_1gtk_1tree_1view_1column_1set_1widget_FUNC,
 	_1gtk_1tree_1view_1expand_1row_FUNC,
+	_1gtk_1tree_1view_1get_1background_1area_FUNC,
 	_1gtk_1tree_1view_1get_1bin_1window_FUNC,
 	_1gtk_1tree_1view_1get_1cell_1area_FUNC,
 	_1gtk_1tree_1view_1get_1column_FUNC,

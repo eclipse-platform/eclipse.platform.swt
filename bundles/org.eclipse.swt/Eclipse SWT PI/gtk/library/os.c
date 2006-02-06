@@ -10592,6 +10592,20 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1tree_1view_1expand_1row)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1view_1get_1background_1area
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1background_1area)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	GdkRectangle _arg3, *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1get_1background_1area_FUNC);
+	if (arg3) if ((lparg3 = getGdkRectangleFields(env, arg3, &_arg3)) == NULL) goto fail;
+	gtk_tree_view_get_background_area((GtkTreeView *)arg0, (GtkTreePath *)arg1, (GtkTreeViewColumn *)arg2, (GdkRectangle *)lparg3);
+fail:
+	if (arg3 && lparg3) setGdkRectangleFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1get_1background_1area_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1view_1get_1bin_1window
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1view_1get_1bin_1window)
 	(JNIEnv *env, jclass that, jint arg0)
