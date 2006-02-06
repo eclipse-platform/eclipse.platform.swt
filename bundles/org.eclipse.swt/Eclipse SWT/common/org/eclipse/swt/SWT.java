@@ -576,10 +576,43 @@ public class SWT {
 	 * 
 	 * @since 3.2
 	 */
-	public static final int Settings = 38;
-
-	/* Event Details */
+	public static final int Settings = 39;
 	
+	/**
+	 * The paint item event type (value is 40).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.2
+	 */
+	public static final int EraseItem = 40;
+	
+	/**
+	 * The paint item event type (value is 41).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.2
+	 */
+	public static final int MeasureItem = 41;
+	
+	/**
+	 * The paint item event type (value is 42).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.2
+	 */
+	public static final int PaintItem = 42;	
+	
+	/* Event Details */
+
 	/**
 	 * A constant known to be zero (0), used in operations which
 	 * take bit flags to indicate that "no bits are set".
@@ -1328,6 +1361,29 @@ public class SWT {
 	 */
 	public static final int VERTICAL = 1 << 9;
 
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * is selected (value is 1&lt;&lt;1).
+	 *
+	 * @since 3.2
+	 */
+	public static final int SELECTED = 1 << 1;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * is focused (value is 1&lt;&lt;2).
+	 *
+	 * @since 3.2
+	 */	
+	public static final int FOCUSED = 1 << 2;
+	
+	/* This code is intentionally commented */
+	//public static final int PRESSED = 1 << 3;
+	//public static final int ACTIVE = 1 << 4;
+	//public static final int DISABLED = 1 << 5;
+	//public static final int HOT = 1 << 6;
+	//public static final int DEFAULTED = 1 << 7;
+	
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 1).
 	 * <p><b>Used By:</b><ul>

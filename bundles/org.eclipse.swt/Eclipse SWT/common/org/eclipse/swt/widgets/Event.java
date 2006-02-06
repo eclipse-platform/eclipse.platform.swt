@@ -63,6 +63,13 @@ public class Event {
 	public Widget item;
 	
 	/**
+	 * the index of the item where the event occurred
+	 * 
+	 * @since 3.2
+	 */
+	public int index;
+	
+	/**
 	 * the graphics context to use when painting
 	 * that is configured to use the colors, font and
 	 * damaged region of the control.  It is valid
