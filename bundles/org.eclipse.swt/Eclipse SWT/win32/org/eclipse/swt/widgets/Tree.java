@@ -2610,9 +2610,20 @@ void setCheckboxImageList () {
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	int clrBackground = control.getBackgroundPixel ();
+	/*
+	* NOTE: DrawFrameControl() draws a black and white
+	* mask when not drawing a push button.  In order to
+	* make the box surrounding the check mark transparent,
+	* fill it with a color that is neither black or white.
+	*/
+	int clrBackground = 0;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		clrBackground = control.getBackgroundPixel ();
+	} else {
+		clrBackground = 0x020000FF;
+	}
 	int hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
