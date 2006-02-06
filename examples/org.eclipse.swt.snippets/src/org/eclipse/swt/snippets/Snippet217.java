@@ -49,9 +49,11 @@ public class Snippet217 {
 	
 	public static void main(String [] args) {
 		final Display display = new Display();
+		Font font = new Font(display, "Tahoma", 32, SWT.NORMAL);
 		final Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		styledText = new StyledText(shell, SWT.WRAP | SWT.BORDER);
+		styledText.setFont(font);
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		styledText.setText(text);
 		controls = new Control[2];
@@ -101,7 +103,10 @@ public class Snippet217 {
 				for (int i = 0; i < offsets.length; i++) {
 					int offset = offsets[i];
 					if (start == offset) {
-						controls[i].setLocation(event.x + MARGIN, event.y + MARGIN);
+						Point pt = controls[i].getSize();
+						int x = event.x + MARGIN;
+						int y = event.y + event.ascent - 2*pt.y/3;
+						controls[i].setLocation(x, y);
 						break;
 					}
 				}
@@ -114,6 +119,7 @@ public class Snippet217 {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
+		font.dispose();
 		display.dispose();
 	}
 }
