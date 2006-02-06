@@ -27,7 +27,7 @@ class TreeTab extends ScrollableTab {
 	Button checkButton, fullSelectionButton;
 
 	/* Other widgets added to the "Other" group */
-	Button multipleColumns, moveableColumns, headerVisibleButton, linesVisibleButton;
+	Button multipleColumns, moveableColumns, headerVisibleButton, headerImagesButton, subImagesButton, linesVisibleButton;
 	
 	/* Controls and resources added to the "Colors and Fonts" group */
 	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
@@ -161,6 +161,10 @@ class TreeTab extends ScrollableTab {
 		/* Create display controls specific to this example */
 		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
 		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
+		headerImagesButton = new Button (otherGroup, SWT.CHECK);
+		headerImagesButton.setText (ControlExample.getResourceString("Header_Images"));
+		subImagesButton = new Button (otherGroup, SWT.CHECK);
+		subImagesButton.setText (ControlExample.getResourceString("Sub_Images"));
 		multipleColumns = new Button (otherGroup, SWT.CHECK);
 		multipleColumns.setText (ControlExample.getResourceString("Multiple_Columns"));
 		moveableColumns = new Button (otherGroup, SWT.CHECK);
@@ -173,6 +177,16 @@ class TreeTab extends ScrollableTab {
 		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetHeaderVisible ();
+			}
+		});
+		headerImagesButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				recreateExampleWidgets ();
+			}
+		});
+		subImagesButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				recreateExampleWidgets ();
 			}
 		});
 		multipleColumns.addSelectionListener (new SelectionAdapter () {
@@ -225,7 +239,8 @@ class TreeTab extends ScrollableTab {
 	
 		/* Create the text tree */
 		tree1 = new Tree (treeGroup, style);
-		if (multipleColumns.getSelection()) {
+		boolean multi = multipleColumns.getSelection();
+		if (multi) {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TreeColumn treeColumn = new TreeColumn(tree1, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
@@ -252,19 +267,18 @@ class TreeTab extends ScrollableTab {
 		/* Create the image tree */	
 		tree2 = new Tree (imageTreeGroup, style);
 		Image image = instance.images[ControlExample.ciClosedFolder];
-		boolean multi = multipleColumns.getSelection();
 		if (multi) {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TreeColumn treeColumn = new TreeColumn(tree2, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
 				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip") + columnTitles[i]);
-				treeColumn.setImage(image);
+				if (headerImagesButton.getSelection()) treeColumn.setImage(image);
 			}
 		}
 		for (int i = 0; i < 4; i++) {
 			item = new TreeItem (tree2, SWT.NONE);
 			setItemText(item, i, ControlExample.getResourceString("Node_" + (i + 1)));
-			if (multi) {
+			if (multi && subImagesButton.getSelection()) {
 				for (int j = 0; j < columnTitles.length; j++) {
 					item.setImage(j, image);
 				}
