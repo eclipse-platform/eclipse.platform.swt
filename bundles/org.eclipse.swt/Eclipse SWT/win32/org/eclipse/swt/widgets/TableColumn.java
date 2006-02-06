@@ -323,9 +323,7 @@ public void pack () {
 	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
 	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		headerWidth += Table.HEADER_EXTRA;
-	}
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
 	boolean hasHeaderImage = false;
 	if (image != null || parent.sortColumn == this) {
 		hasHeaderImage = true;
@@ -353,29 +351,78 @@ public void pack () {
 		headerWidth += margin * 4;
 	}
 	parent.ignoreColumnResize = true;
-	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
-	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
-	if (index == 0) {
-		/*
-		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
-		* where each item has I_IMAGECALLBACK but there are no images in the
-		* table, the size computed by LVM_SETCOLUMNWIDTH is too small for the
-		* first column, causing long items to be clipped with '...'.  The fix
-		* is to increase the column width by a small amount.
-		*/
-		if (parent.imageList == null) columnWidth += 2;
-		/*
-		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
-		* for a table with a state image list, the column is width does not
-		* include space for the state icon.  The fix is to increase the column
-		* width by the width of the image list.
-		*/
-		if ((parent.style & SWT.CHECK) != 0) {
-			int hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-			if (hStateList != 0) {
-				int [] cx = new int [1], cy = new int [1];
-				OS.ImageList_GetIconSize (hStateList, cx, cy);
-				columnWidth += cx [0];
+	int columnWidth = 0;
+	if (parent.hooks (SWT.MeasureItem)) {
+		RECT headerRect = new RECT ();
+		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+		int hDC = OS.GetDC (hwnd);
+		int oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		int count = OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);
+		for (int i=0; i<count; i++) {
+			TableItem item = parent.items [i];
+			if (item != null) {
+				int hFont = item.cellFont != null ? item.cellFont [index] : -1;
+				if (hFont == -1) hFont = item.font;
+				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+				RECT itemRect = item.getBounds (i, index, true, true, false, false, hDC);
+				if (hFont != -1) OS.SelectObject (hDC, hFont);
+				int nSavedDC = OS.SaveDC (hDC);
+				GCData data = new GCData ();
+				data.device = display;
+				data.hFont = hFont;
+				GC gc = GC.win32_new (hDC, data);
+				Event event = new Event ();
+				event.item = item;
+				event.gc = gc;
+				event.index = index;
+				event.x = itemRect.left;
+				event.y = itemRect.top;
+				event.width = itemRect.right - itemRect.left;
+				event.height = itemRect.bottom - itemRect.top;
+				parent.sendEvent (SWT.MeasureItem, event);
+				if (!parent.ignoreItemHeight) {
+					if (event.height > parent.getItemHeight ()) {
+						parent.setItemHeight (event.height);
+					}
+					parent.ignoreItemHeight = true;
+				}
+				event.gc = null;
+				gc.dispose ();
+				OS.RestoreDC (hDC, nSavedDC);
+				if (isDisposed () || parent.isDisposed ()) break;
+				columnWidth = Math.max (columnWidth, event.x + event.width - headerRect.left);
+			}
+		}
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (hwnd, hDC);
+		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
+	} else {
+		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
+		columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+		if (index == 0) {
+			/*
+			* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
+			* where each item has I_IMAGECALLBACK but there are no images in the
+			* table, the size computed by LVM_SETCOLUMNWIDTH is too small for the
+			* first column, causing long items to be clipped with '...'.  The fix
+			* is to increase the column width by a small amount.
+			*/
+			if (parent.imageList == null) columnWidth += 2;
+			/*
+			* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
+			* for a table with a state image list, the column is width does not
+			* include space for the state icon.  The fix is to increase the column
+			* width by the width of the image list.
+			*/
+			if ((parent.style & SWT.CHECK) != 0) {
+				int hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+				if (hStateList != 0) {
+					int [] cx = new int [1], cy = new int [1];
+					OS.ImageList_GetIconSize (hStateList, cx, cy);
+					columnWidth += cx [0];
+				}
 			}
 		}
 	}

@@ -219,74 +219,90 @@ public Rectangle getBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	RECT rect = getBounds (itemIndex, index, true, true, false);
+	RECT rect = getBounds (itemIndex, index, true, true, true);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
 RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean full) {
+	return getBounds (row, column, getText, getImage, full, false, 0);
+}
+
+RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText, boolean fullImage, int hDC) {
 	if (!getText && !getImage) return new RECT ();
-	int columnCount = Math.max (1, parent.getColumnCount ());
-	if (0 > column || column > columnCount - 1) return new RECT ();
+	int columnCount = parent.getColumnCount ();
+	if (!(0 <= column && column < Math.max (1, columnCount))) {
+		return new RECT ();
+	}
 	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
 	RECT rect = new RECT ();
 	int hwnd = parent.handle;
-	if (column == 0 && columnCount == 1) {
+	if (column == 0) {
 		if (getText && getImage) {
 			rect.left = OS.LVIR_SELECTBOUNDS;
 		} else {
 			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
 		}
 		if (OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect) == 0) {
-			rect.left = 0;
+			return new RECT ();
+		}
+		if (columnCount != 0 && (fullText || fullImage)) {
+			RECT headerRect = new RECT ();
+			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect);
+			if (getText && fullText) rect.right = headerRect.right;
+			if (getImage && fullImage) rect.left = headerRect.left;
 		}
 	} else {
 		/*
-		* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
-		* and zero for the column number gives the bounds of the first item
-		* without including the bounds of the icon.  This is undocumented.
-		* When called with values greater than zero, the icon bounds are
-		* included and this behavior is documented.
+		* Feature in Windows.  LVM_GETSUBITEMRECT returns an image width
+		* even when the subitem does not contain an image.  The fix is to
+		* test for this case and adjust the rectangle to represent the area
+		* the table is actually drawing.
 		*/
+		boolean hasImage = images != null && images [column] != null;
 		rect.top = column;
-		rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
-		if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) != 0) {
-			if (getText && getImage) {
-				if (column == 0) {
+		if (fullText || fullImage || hDC == 0) {
+			/*
+			* Bug in Windows.  Despite the fact that the documenation states
+			* that LVIR_BOUNDS and LVIR_LABEL are identical when used with
+			* LVM_GETSUBITEMRECT, LVIR_BOUNDS can return a zero height.  The
+			* fix is to use LVIR_LABEL.
+			*/
+			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
+			if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) == 0) {
+				return new RECT ();
+			}
+			if (hasImage) {
+				if (getText && !getImage) {
 					RECT iconRect = new RECT ();
+					iconRect.top = column;		
 					iconRect.left = OS.LVIR_ICON;
-					iconRect.top = column;
 					if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-						rect.left = iconRect.left;
-						rect.right = Math.max (rect.right, iconRect.right);
+						rect.left = iconRect.right + Table.INSET / 2;
 					}
 				}
 			} else {
-				if (column != 0) {
-					/*
-					* Feature in Windows.  LVM_GETSUBITEMRECT returns an image width
-					* even when the subitem does not contain an image.  The fix is to
-					* adjust the rectangle to represent the area the table is drawing.
-					*/
-					if (images != null && images [column] != null) {
-						if (getText) {
-							RECT iconRect = new RECT ();
-							iconRect.left = OS.LVIR_ICON;
-							iconRect.top = column;		
-							if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-								rect.left = iconRect.right + Table.INSET / 2;
-							}
-						}
-					} else {
-						if (getImage && !full) rect.right = rect.left;
-					}
-				}
+				if (getImage && !getText) rect.right = rect.left;
 			}
 		} else {
-			rect.left = rect.top = 0;
+			rect.left = OS.LVIR_ICON;
+			if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) == 0) {
+				return new RECT ();
+			}
+			if (!hasImage) rect.right = rect.left;
+			if (getText) {
+				String string = column == 0 ? text : strings != null ? strings [column] : null;
+				if (string != null) {
+					RECT textRect = new RECT ();
+					TCHAR buffer = new TCHAR (parent.getCodePage (), string, false);
+					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
+					OS.DrawText (hDC, buffer, buffer.length (), textRect, flags);
+					rect.right += textRect.right - textRect.left + Table.INSET * 3 + 1;
+				}
+			}
 		}
 	}
-	
 	/*
 	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
 	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
