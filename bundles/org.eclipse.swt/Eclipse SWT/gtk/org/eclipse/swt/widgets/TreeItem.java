@@ -208,10 +208,9 @@ void clear () {
 	if (parent.currentItem == this) return;
 	if (cached || (parent.style & SWT.VIRTUAL) == 0) {
 		int columnCount = OS.gtk_tree_model_get_n_columns (parent.modelHandle);
-		for (int i=0; i<columnCount; i++) {
+		for (int i=Tree.CHECKED_COLUMN; i<columnCount; i++) {
 			OS.gtk_tree_store_set (parent.modelHandle, handle, i, 0, -1);
 		}
-		OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.ID_COLUMN, -1, -1);
 		/*
 		* Bug in GTK.  When using fixed-height-mode on versions before 2.6.3,
 		* row changes do not cause the row to be repainted.  The fix is to
@@ -222,6 +221,7 @@ void clear () {
 				if ((OS.GTK_WIDGET_FLAGS (parent.handle) & OS.GTK_REALIZED) != 0) {
 					int /*long*/ parentHandle = parent.handle;
 					int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+					// TODO scrolling affects rect
 					GdkRectangle rect = new GdkRectangle ();
 					OS.gtk_tree_view_get_cell_area (parentHandle, path, 0, rect);
 					OS.gtk_tree_path_free (path);
