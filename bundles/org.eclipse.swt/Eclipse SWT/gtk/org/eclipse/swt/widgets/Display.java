@@ -813,14 +813,21 @@ synchronized void createDisplay (DeviceData data) {
 		OS.memmove (fixed_info_ptr, fixed_info, GTypeInfo.sizeof);
 		fixed_type = OS.g_type_register_static (OS.GTK_TYPE_FIXED (), type_name, fixed_info_ptr, 0);
 	}
-	rendererClassInitCallback = new Callback (getClass (), "rendererClassInitProc", 2);
-	rendererClassInitProc = rendererClassInitCallback.getAddress ();
-	if (rendererClassInitProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", 7);
-	rendererRenderProc = rendererRenderCallback.getAddress ();
-	rendererGetSizeCallback = new Callback (getClass (), "rendererGetSizeProc", 7);
-	rendererGetSizeProc = rendererGetSizeCallback.getAddress ();
-	if (rendererRenderProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	if (rendererClassInitProc == 0) {
+		rendererClassInitCallback = new Callback (getClass (), "rendererClassInitProc", 2);
+		rendererClassInitProc = rendererClassInitCallback.getAddress ();
+		if (rendererClassInitProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	}
+	if (rendererRenderProc == 0) {
+		rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", 7);
+		rendererRenderProc = rendererRenderCallback.getAddress ();
+		if (rendererRenderProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	}
+	if (rendererGetSizeProc == 0) {
+		rendererGetSizeCallback = new Callback (getClass (), "rendererGetSizeProc", 7);
+		rendererGetSizeProc = rendererGetSizeCallback.getAddress ();
+		if (rendererGetSizeProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	}
 	if (text_renderer_type == 0) {
 		GTypeInfo renderer_info = new GTypeInfo ();
 		renderer_info.class_size = (short) OS.GtkCellRendererTextClass_sizeof ();
@@ -851,6 +858,7 @@ synchronized void createDisplay (DeviceData data) {
 		byte [] type_name = Converter.wcsToMbcs (null, "SwtToggleRenderer", true);
 		toggle_renderer_type = OS.g_type_register_static (OS.GTK_TYPE_CELL_RENDERER_TOGGLE (), type_name, toggle_renderer_info_ptr, 0);
 	}
+	
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
 	OS.gdk_rgb_init ();
 	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
