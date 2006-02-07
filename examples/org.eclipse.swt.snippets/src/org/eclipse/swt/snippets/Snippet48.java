@@ -18,15 +18,15 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet48 {
 
 public static void main (String [] args) {
 	Display display = new Display ();
-	final Shell shell = new Shell (display,
-		SWT.SHELL_TRIM | SWT.NO_BACKGROUND |
-		SWT.NO_REDRAW_RESIZE | SWT.V_SCROLL | SWT.H_SCROLL);
+	Shell shell = new Shell (display);
+	shell.setLayout(new FillLayout());
 	Image originalImage = null;
 	FileDialog dialog = new FileDialog (shell, SWT.OPEN);
 	dialog.setText ("Open an image file or cancel");
@@ -46,30 +46,32 @@ public static void main (String [] args) {
 	}
 	final Image image = originalImage;
 	final Point origin = new Point (0, 0);
-	final ScrollBar hBar = shell.getHorizontalBar ();
+	final Canvas canvas = new Canvas (shell, SWT.NO_BACKGROUND |
+			SWT.NO_REDRAW_RESIZE | SWT.V_SCROLL | SWT.H_SCROLL);
+	final ScrollBar hBar = canvas.getHorizontalBar ();
 	hBar.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			int hSelection = hBar.getSelection ();
 			int destX = -hSelection - origin.x;
 			Rectangle rect = image.getBounds ();
-			shell.scroll (destX, 0, 0, 0, rect.width, rect.height, false);
+			canvas.scroll (destX, 0, 0, 0, rect.width, rect.height, false);
 			origin.x = -hSelection;
 		}
 	});
-	final ScrollBar vBar = shell.getVerticalBar ();
+	final ScrollBar vBar = canvas.getVerticalBar ();
 	vBar.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			int vSelection = vBar.getSelection ();
 			int destY = -vSelection - origin.y;
 			Rectangle rect = image.getBounds ();
-			shell.scroll (0, destY, 0, 0, rect.width, rect.height, false);
+			canvas.scroll (0, destY, 0, 0, rect.width, rect.height, false);
 			origin.y = -vSelection;
 		}
 	});
-	shell.addListener (SWT.Resize,  new Listener () {
+	canvas.addListener (SWT.Resize,  new Listener () {
 		public void handleEvent (Event e) {
 			Rectangle rect = image.getBounds ();
-			Rectangle client = shell.getClientArea ();
+			Rectangle client = canvas.getClientArea ();
 			hBar.setMaximum (rect.width);
 			vBar.setMaximum (rect.height);
 			hBar.setThumb (Math.min (rect.width, client.width));
@@ -86,15 +88,15 @@ public static void main (String [] args) {
 				if (vPage <= 0) vSelection = 0;
 				origin.y = -vSelection;
 			}
-			shell.redraw ();
+			canvas.redraw ();
 		}
 	});
-	shell.addListener (SWT.Paint, new Listener () {
+	canvas.addListener (SWT.Paint, new Listener () {
 		public void handleEvent (Event e) {
 			GC gc = e.gc;
 			gc.drawImage (image, origin.x, origin.y);
 			Rectangle rect = image.getBounds ();
-			Rectangle client = shell.getClientArea ();
+			Rectangle client = canvas.getClientArea ();
 			int marginWidth = client.width - rect.width;
 			if (marginWidth > 0) {
 				gc.fillRectangle (rect.width, 0, marginWidth, client.height);
