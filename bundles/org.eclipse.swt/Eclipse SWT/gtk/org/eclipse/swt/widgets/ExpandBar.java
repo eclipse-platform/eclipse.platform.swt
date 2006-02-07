@@ -116,7 +116,7 @@ void relayout () {
 	ExpandItem [] items = getItems ();
 	int yScroll = 0;
 	if (scrolledHandle != 0) {
-		int adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
+		int /*long*/ adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
 		GtkAdjustment adjustment = new GtkAdjustment ();
 		OS.memmove (adjustment, adjustmentHandle);
 		yScroll = (int)adjustment.value;
