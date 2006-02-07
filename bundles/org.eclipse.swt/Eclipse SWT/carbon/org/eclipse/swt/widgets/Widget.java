@@ -152,11 +152,15 @@ int actionProc (int theControl, int partCode) {
  * @see Listener
  * @see #removeListener
  */
-public void addListener (int eventType, Listener handler) {
+public void addListener (int eventType, Listener listener) {
 	checkWidget();
-	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	_addListener (eventType, listener);
+}
+
+void _addListener (int eventType, Listener listener) {
 	if (eventTable == null) eventTable = new EventTable ();
-	eventTable.hook (eventType, handler);
+	eventTable.hook (eventType, listener);
 }
 
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
