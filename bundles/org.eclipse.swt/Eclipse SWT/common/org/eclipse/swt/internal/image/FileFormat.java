@@ -38,7 +38,11 @@ public ImageData[] loadFromStream(LEDataInputStream stream) {
 		inputStream = stream;
 		return loadFromByteStream();
 	} catch (Exception e) {
-		SWT.error(SWT.ERROR_IO, e);
+		if (e instanceof IOException) {
+			SWT.error(SWT.ERROR_IO, e);
+		} else {
+			SWT.error(SWT.ERROR_INVALID_IMAGE, e);
+		}
 		return null;
 	}
 }
