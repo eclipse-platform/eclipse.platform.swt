@@ -73,7 +73,7 @@ public class DropTarget extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragUnderEffect effect;
+	DragAndDropEffect effect;
 	
 	// Track application selections
 	TransferData selectedDataType;
@@ -206,11 +206,11 @@ public DropTarget(Control control, int style) {
 
 	// Drag under effect
 	if (control instanceof Tree) {
-		effect = new TreeDragUnderEffect((Tree)control);
+		effect = new TreeDragAndDropEffect((Tree)control);
 	} else if (control instanceof Table) {
-		effect = new TableDragUnderEffect((Table)control);
+		effect = new TableDragAndDropEffect((Table)control);
 	} else {
-		effect = new NoDragUnderEffect(control);
+		effect = new NoDragAndDropEffect(control);
 	}
 
 	if (control.isVisible()) registerDropTarget();
@@ -243,7 +243,7 @@ public DropTarget(Control control, int style) {
 				event.item = effect.getItem(dragOverEvent.x, dragOverEvent.y);
 				notifyListeners(DND.DragOver, event);
 				
-				effect.show(event.feedback, event.x, event.y);
+				effect.showDropTargetEffect(event.feedback, event.x, event.y);
 				
 				selectedDataType = null;
 				if (event.dataType != null) {
@@ -361,7 +361,7 @@ void dragProcCallback(int widget, int client_data, int call_data) {
 
 	if (callbackData.reason == OS.XmCR_DROP_SITE_LEAVE_MESSAGE) {
 		updateDragOverHover(0, null);
-		effect.show(DND.FEEDBACK_NONE, 0, 0);
+		effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 		
 		if (callbackData.dropSiteStatus == OS.XmDROP_SITE_INVALID) {
 			return;
@@ -429,7 +429,7 @@ void dragProcCallback(int widget, int client_data, int call_data) {
 		selectedOperation = event.detail;
 	}
 	
-	effect.show(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, event.x, event.y);
 
 	callbackData.dropSiteStatus = (byte)OS.XmDROP_SITE_VALID;
 	callbackData.operation = opToOsOp(selectedOperation);
