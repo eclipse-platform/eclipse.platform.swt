@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 899;
-int OS_nativeFunctionCallCount[899];
+int OS_nativeFunctionCount = 900;
+int OS_nativeFunctionCallCount[900];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -772,6 +772,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetDataBrowserTarget",
 	"SetDragAllowableActions",
 	"SetDragDropAction",
+	"SetDragImageWithCGImage",
 	"SetDragInputProc",
 	"SetDragItemFlavorData",
 	"SetDragSendProc",

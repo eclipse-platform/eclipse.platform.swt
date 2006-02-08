@@ -1609,6 +1609,7 @@ public static final native int SetDataBrowserTableViewRowHeight(int browser, sho
 public static final native int SetDataBrowserTarget(int cHandle, int rootID);
 public static final native int SetDragAllowableActions(int theDrag, int inActions, boolean isLocal);
 public static final native int SetDragDropAction(int theDrag, int inAction);
+public static final native int SetDragImageWithCGImage(int inDrag, int inCGImage, CGPoint inImageOffsetPt, int inImageFlags);
 public static final native int SetDragInputProc(int theDrag, int inputProc, int dragInputRefCon);
 public static final native int SetDragItemFlavorData (int theDrag, int theItemRef, int theType, byte[] dataPtr, int dataSize, int dataOffset);
 public static final native int SetDragSendProc(int theDrag, int sendProc, int dragSendRefCon);

@@ -776,6 +776,7 @@ typedef enum {
 	SetDataBrowserTarget_FUNC,
 	SetDragAllowableActions_FUNC,
 	SetDragDropAction_FUNC,
+	SetDragImageWithCGImage_FUNC,
 	SetDragInputProc_FUNC,
 	SetDragItemFlavorData_FUNC,
 	SetDragSendProc_FUNC,

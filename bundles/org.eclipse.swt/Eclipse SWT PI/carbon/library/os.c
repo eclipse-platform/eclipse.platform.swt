@@ -10695,6 +10695,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDragDropAction)
 }
 #endif
 
+#ifndef NO_SetDragImageWithCGImage
+JNIEXPORT jint JNICALL OS_NATIVE(SetDragImageWithCGImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	CGPoint _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetDragImageWithCGImage_FUNC);
+	if (arg2) if ((lparg2 = getCGPointFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)SetDragImageWithCGImage((DragRef)arg0, (CGImageRef)arg1, (HIPoint *)lparg2, (DragImageFlags)arg3);
+fail:
+	if (arg2 && lparg2) setCGPointFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, SetDragImageWithCGImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetDragInputProc
 JNIEXPORT jint JNICALL OS_NATIVE(SetDragInputProc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
