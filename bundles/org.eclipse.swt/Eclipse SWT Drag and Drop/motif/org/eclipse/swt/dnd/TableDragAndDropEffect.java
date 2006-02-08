@@ -89,7 +89,8 @@ void setDropSelection (TableItem item) {
 		}
 	}
 }
-void show(int effect, int x, int y) {
+
+void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TableItem item = (TableItem)getItem(x, y);
 

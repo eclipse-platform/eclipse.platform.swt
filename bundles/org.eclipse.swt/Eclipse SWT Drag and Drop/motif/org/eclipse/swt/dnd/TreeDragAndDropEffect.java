@@ -16,7 +16,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-class TreeDragUnderEffect extends DragUnderEffect {
+class TreeDragAndDropEffect extends DragAndDropEffect {
 	Tree tree;
 	
 	int currentEffect = DND.FEEDBACK_NONE;
@@ -37,7 +37,7 @@ class TreeDragUnderEffect extends DragUnderEffect {
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 	static final int EXPAND_HYSTERESIS = 300; // milli seconds
 
-TreeDragUnderEffect(Tree tree) {
+TreeDragAndDropEffect(Tree tree) {
 	this.tree = tree;
 }
 int checkEffect(int effect) {
@@ -134,7 +134,7 @@ void setInsertMark(TreeItem item, boolean before) {
 	insertBefore = before;
 	tree.setInsertMark(item, before);
 }
-void show(int effect, int x, int y) {
+void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = (TreeItem)getItem(x, y);
 	
