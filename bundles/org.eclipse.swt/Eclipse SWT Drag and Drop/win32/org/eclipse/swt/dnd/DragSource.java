@@ -12,6 +12,7 @@ package org.eclipse.swt.dnd;
 
  
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
@@ -95,20 +96,23 @@ import org.eclipse.swt.internal.win32.*;
 public class DragSource extends Widget {
 
 	// info for registering as a drag source
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
+	DragAndDropEffect effect;
 	
 	// ole interfaces
-	private COMObject iDropSource;
-	private COMObject iDataObject;
-	private int refCount;
+	COMObject iDropSource;
+	COMObject iDataObject;
+	int refCount;
 	
 	//workaround - track the operation performed by the drop target for DragEnd event
-	private int dataEffect = DND.DROP_NONE;
+	int dataEffect = DND.DROP_NONE;
+
+	Runnable dragMove;	
 	
-	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
-	private static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
+	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -171,6 +175,13 @@ public DragSource(Control control, int style) {
 			DragSource.this.onDispose();
 		}
 	});
+	if (control instanceof Tree) {
+		effect = new TreeDragAndDropEffect((Tree)control);
+	} else if (control instanceof Table) {
+		effect = new TableDragAndDropEffect((Table)control);
+	} else {
+		effect = new NoDragAndDropEffect(control);
+	}
 }
 
 static int checkStyle(int style) {

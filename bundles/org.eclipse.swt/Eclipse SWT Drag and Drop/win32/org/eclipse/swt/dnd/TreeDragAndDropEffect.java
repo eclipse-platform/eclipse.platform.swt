@@ -10,28 +10,28 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
-class TreeDragUnderEffect extends DragUnderEffect {
-	private Tree tree;
-	private int dropIndex;
-	private int scrollIndex;	
-	private long scrollBeginTime;
-	private int expandIndex;
-	private long expandBeginTime;
-	private boolean clearInsert = false;
+class TreeDragAndDropEffect extends DragAndDropEffect {
+	Tree tree;
+	int dropIndex;
+	int scrollIndex;	
+	long scrollBeginTime;
+	int expandIndex;
+	long expandBeginTime;
+	boolean clearInsert = false;
 	
-	private static final int SCROLL_HYSTERESIS = 150; // milli seconds
-	private static final int EXPAND_HYSTERESIS = 300; // milli seconds
+	static final int SCROLL_HYSTERESIS = 150; // milli seconds
+	static final int EXPAND_HYSTERESIS = 300; // milli seconds
 	
 
-TreeDragUnderEffect(Tree tree) {
+TreeDragAndDropEffect(Tree tree) {
 	this.tree = tree;
 }
 
-private int checkEffect(int effect) {
+int checkEffect(int effect) {
 	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
@@ -58,7 +58,7 @@ Widget getItem(int x, int y) {
 	return item;
 }
 
-void show(int effect, int x, int y) {
+void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	int handle = tree.handle;
 	Point coordinates = new Point(x, y);

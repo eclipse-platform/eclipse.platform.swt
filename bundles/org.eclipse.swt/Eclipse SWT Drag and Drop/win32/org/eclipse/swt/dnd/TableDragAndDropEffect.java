@@ -10,25 +10,28 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
-class TableDragUnderEffect extends DragUnderEffect {
-	private Table table;
+class TableDragAndDropEffect extends DragAndDropEffect {
+	Table table;
 	int scrollIndex;
-	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 150; // milli seconds
+	long scrollBeginTime;
 	
-TableDragUnderEffect(Table table) {
+	static final int SCROLL_HYSTERESIS = 150; // milli seconds
+	
+TableDragAndDropEffect(Table table) {
 	this.table = table;
 }
+
 private int checkEffect(int effect) {
 	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
 	return effect;
 }
+
 Widget getItem(int x, int y) {
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
@@ -48,7 +51,8 @@ Widget getItem(int x, int y) {
 	}
 	return item;
 }
-void show(int effect, int x, int y) {
+
+void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	int handle = table.handle;
 	Point coordinates = new Point(x, y);
@@ -82,7 +86,7 @@ void show(int effect, int x, int y) {
 		lvItem.state = OS.LVIS_DROPHILITED;
 		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, pinfo.iItem, lvItem);
 	}
-// Insert mark only supported on Windows XP with manifest
+	//Insert mark only supported on Windows XP with manifest
 //	if (OS.COMCTL32_MAJOR >= 6) {
 //		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0 || (effect & DND.FEEDBACK_INSERT_AFTER) != 0) {
 //			LVINSERTMARK lvinsertmark = new LVINSERTMARK();
