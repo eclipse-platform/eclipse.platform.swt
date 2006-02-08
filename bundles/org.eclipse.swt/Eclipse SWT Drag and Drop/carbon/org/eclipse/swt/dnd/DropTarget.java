@@ -72,7 +72,7 @@ public class DropTarget extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragUnderEffect effect;
+	DragAndDropEffect effect;
 
 	// Track application selections
 	TransferData selectedDataType;
@@ -165,13 +165,13 @@ public DropTarget(Control control, int style) {
 		}
 	});
 	
-	// Drag under effect
+	// Drag and drop effect
 	if (control instanceof Tree) {
-		effect = new TreeDragUnderEffect((Tree)control);
+		effect = new TreeDragAndDropEffect((Tree)control);
 	} else if (control instanceof Table) {
-		effect = new TableDragUnderEffect((Table)control);
+		effect = new TableDragAndDropEffect((Table)control);
 	} else {
-		effect = new NoDragUnderEffect(control);
+		effect = new NoDragAndDropEffect(control);
 	}
 
 	dragOverHeartbeat = new Runnable() {
@@ -203,7 +203,7 @@ public DropTarget(Control control, int style) {
 				selectedDataType = null;
 				selectedOperation = DND.DROP_NONE;				
 				notifyListeners(DND.DragOver, event);
-				effect.show(event.feedback, event.x, event.y);
+				effect.showDropTargetEffect(event.feedback, event.x, event.y);
 				if (event.dataType != null) {
 					for (int i = 0; i < allowedTypes.length; i++) {
 						if (allowedTypes[i].type == event.dataType.type) {
@@ -326,7 +326,7 @@ protected void checkSubclass () {
 
 int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	updateDragOverHover(0, null);
-	effect.show(DND.FEEDBACK_NONE, 0, 0);
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 
 	if (keyOperation == -1) return OS.dragNotAcceptedErr;
 
@@ -417,7 +417,7 @@ int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDr
 	
 	if (message == OS.kDragTrackingLeaveWindow) {
 		updateDragOverHover(0, null);
-		effect.show(DND.FEEDBACK_NONE, 0, 0);
+		effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 		OS.SetThemeCursor(OS.kThemeArrowCursor);
 		if (keyOperation == -1) return OS.dragNotAcceptedErr;
 		keyOperation = -1;
@@ -488,7 +488,7 @@ int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDr
 	
 	OS.SetDragDropAction(theDrag, opToOsOp(selectedOperation));
 	
-	effect.show(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, event.x, event.y);
 
 	switch (selectedOperation) {
 		case DND.DROP_COPY:

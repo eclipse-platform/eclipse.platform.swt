@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.widgets.*;
 
-class TreeDragUnderEffect extends DragUnderEffect {
+class TreeDragAndDropEffect extends DragAndDropEffect {
 	Tree tree;
 	
 	int currentEffect = DND.FEEDBACK_NONE;
@@ -35,14 +35,14 @@ class TreeDragUnderEffect extends DragUnderEffect {
 	
 	static Callback AcceptDragProc;
 	static {
-		AcceptDragProc = new Callback(TreeDragUnderEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
+		AcceptDragProc = new Callback(TreeDragAndDropEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
 		int acceptDragProc = AcceptDragProc.getAddress();
 		if (acceptDragProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 	static final int EXPAND_HYSTERESIS = 300; // milli seconds
 
-TreeDragUnderEffect(Tree tree) {
+TreeDragAndDropEffect(Tree tree) {
 	this.tree = tree;
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (tree.handle, callbacks);
@@ -53,7 +53,7 @@ TreeDragUnderEffect(Tree tree) {
 static int AcceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
 	DropTarget target = FindDropTarget(theControl, theDrag);
 	if (target == null || target.effect == null) return 0;
-	TreeDragUnderEffect effect = (TreeDragUnderEffect)target.effect;
+	TreeDragAndDropEffect effect = (TreeDragAndDropEffect)target.effect;
 	return effect.acceptDragProc(theControl, itemID, property, theRect, theDrag);
 }
 
@@ -136,7 +136,7 @@ void setInsertMark(TreeItem item, boolean before) {
 	tree.setInsertMark(item, before);
 }
 
-void show(int effect, int x, int y) {
+void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = (TreeItem)getItem(x, y);
 	

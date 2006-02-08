@@ -13,8 +13,8 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.widgets.*;
 
-class NoDragUnderEffect extends DragUnderEffect {
+class NoDragAndDropEffect extends DragAndDropEffect {
 
-NoDragUnderEffect(Control control) {}
-void show(int effect, int x, int y){}
+NoDragAndDropEffect(Control control) {}
+void showDropTargetEffect(int effect, int x, int y){}
 }

@@ -10,12 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-abstract class DragUnderEffect {
+abstract class DragAndDropEffect {
 	
-void show(int effect, int x, int y) {}
-
 Widget getItem(int x, int y){return null;}
+
+ImageData getDragSourceImage(int x, int y){return null;}
+
+void showDropTargetEffect(int effect, int x, int y) {}
 
 }

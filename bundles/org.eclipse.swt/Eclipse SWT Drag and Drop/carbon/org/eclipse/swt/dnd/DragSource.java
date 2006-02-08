@@ -12,8 +12,10 @@ package org.eclipse.swt.dnd;
 
  
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.EventRecord;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Point;
@@ -100,6 +102,7 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
+	DragAndDropEffect effect;
 
 	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 	static Callback DragSendDataProc;
@@ -169,6 +172,15 @@ public DragSource(Control control, int style) {
 			onDispose();
 		}
 	});
+	
+	//	 Drag and drop effect
+	if (control instanceof Tree) {
+		effect = new TreeDragAndDropEffect((Tree)control);
+	} else if (control instanceof Table) {
+		effect = new TableDragAndDropEffect((Table)control);
+	} else {
+		effect = new NoDragAndDropEffect(control);
+	}
 }
 
 static int checkStyle (int style) {
@@ -300,27 +312,38 @@ void drag(Event dragEvent) {
 		OS.SetDragAllowableActions(theDrag[0], operations, true);
 		OS.SetDragAllowableActions(theDrag[0], operations, false);
 		
-		EventRecord theEvent = new EventRecord();
-		theEvent.message = OS.kEventMouseMoved;
-		theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
-		theEvent.what = (short)OS.osEvt;
-		theEvent.where_h = (short)pt.h;
-		theEvent.where_v = (short)pt.v;	
-		int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
-		
-		int operation = DND.DROP_NONE;
-		if (result == OS.noErr) { 
-			int[] outAction = new int[1];
-			OS.GetDragDropAction(theDrag[0], outAction);
-			operation = osOpToOp(outAction[0]);
+		ImageData imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
+		Image image = null;
+		try {
+			if (imageData != null) {
+				image = new Image(getDisplay(), imageData);
+				CGPoint imageOffsetPt = new CGPoint();
+				imageOffsetPt.x = 5;
+				imageOffsetPt.y = 5;
+				OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, 0); //kDragStandardTranslucency
+			}
+			EventRecord theEvent = new EventRecord();
+			theEvent.message = OS.kEventMouseMoved;
+			theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
+			theEvent.what = (short)OS.osEvt;
+			theEvent.where_h = pt.h;
+			theEvent.where_v = pt.v;	
+			int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
+			int operation = DND.DROP_NONE;
+			if (result == OS.noErr) { 
+				int[] outAction = new int[1];
+				OS.GetDragDropAction(theDrag[0], outAction);
+				operation = osOpToOp(outAction[0]);
+			}	
+			event = new DNDEvent();
+			event.widget = this;
+			event.time = (int)System.currentTimeMillis();
+			event.doit = result == OS.noErr;
+			event.detail = operation; 
+			notifyListeners(DND.DragEnd, event);
+		} finally {
+			if (image != null) image.dispose();
 		}
-		
-		event = new DNDEvent();
-		event.widget = this;
-		event.time = (int)System.currentTimeMillis();
-		event.doit = result == OS.noErr;
-		event.detail = operation; 
-		notifyListeners(DND.DragEnd, event);
 	} finally {	
 		if (theRegion != 0) OS.DisposeRgn(theRegion);
 	}

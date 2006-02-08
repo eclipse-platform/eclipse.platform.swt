@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.widgets.*;
 
-class TableDragUnderEffect extends DragUnderEffect {
+class TableDragAndDropEffect extends DragAndDropEffect {
 	Table table;
 	TableItem scrollItem;
 	long scrollBeginTime;
@@ -26,13 +26,13 @@ class TableDragUnderEffect extends DragUnderEffect {
 
 	static Callback AcceptDragProc;
 	static {
-		AcceptDragProc = new Callback(TableDragUnderEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
+		AcceptDragProc = new Callback(TableDragAndDropEffect.class, "AcceptDragProc", 5); //$NON-NLS-1$
 		int acceptDragProc = AcceptDragProc.getAddress();
 		if (acceptDragProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 
-TableDragUnderEffect(Table table) {
+TableDragAndDropEffect(Table table) {
 	this.table = table;
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (table.handle, callbacks);
@@ -43,7 +43,7 @@ TableDragUnderEffect(Table table) {
 static int AcceptDragProc(int theControl, int itemID, int property, int theRect, int theDrag) {
 	DropTarget target = FindDropTarget(theControl, theDrag);
 	if (target == null || target.effect == null) return 0;
-	TableDragUnderEffect effect = (TableDragUnderEffect)target.effect;
+	TableDragAndDropEffect effect = (TableDragAndDropEffect)target.effect;
 	return effect.acceptDragProc(theControl, itemID, property, theRect, theDrag);
 }
 
@@ -87,7 +87,7 @@ Widget getItem(int x, int y) {
 	return item;
 }
 
-void show(int effect, int x, int y) {
+void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TableItem item = (TableItem)getItem(x, y);
 
