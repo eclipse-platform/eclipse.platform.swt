@@ -69,28 +69,28 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class DropTarget extends Widget {
 	
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
-	private DragUnderEffect effect;
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
+	DragAndDropEffect effect;
 	
 	// Track application selections
-	private TransferData selectedDataType;
-	private int selectedOperation;
+	TransferData selectedDataType;
+	int selectedOperation;
 	
 	// workaround - There is no event for "operation changed" so track operation based on key state
-	private int keyOperation = -1;
+	int keyOperation = -1;
 	
 	// workaround - The dataobject address is only passed as an argument in drag enter and drop.  
 	// To allow applications to query the data values during the drag over operations, 
 	// maintain a reference to it.
-	private IDataObject iDataObject;
+	IDataObject iDataObject;
 	
 	// interfaces
-	private COMObject iDropTarget;
-	private int refCount;
+	COMObject iDropTarget;
+	int refCount;
 	
-	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -155,11 +155,11 @@ public DropTarget(Control control, int style) {
 
 	// Drag under effect
 	if (control instanceof Tree) {
-		effect = new TreeDragUnderEffect((Tree)control);
+		effect = new TreeDragAndDropEffect((Tree)control);
 	} else if (control instanceof Table) {
-		effect = new TableDragUnderEffect((Table)control);
+		effect = new TableDragAndDropEffect((Table)control);
 	} else {
-		effect = new NoDragUnderEffect(control);
+		effect = new NoDragAndDropEffect(control);
 	}
 }
 
@@ -253,7 +253,7 @@ private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int 
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
-		return COM.S_OK;
+		return COM.S_FALSE;
 	}	
 
 	// Remember the iDataObject because it is not passed into the DragOver callback
@@ -281,17 +281,17 @@ private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int 
 		selectedOperation = event.detail;
 	}
 
-	effect.show(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, event.x, event.y);
 	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
 
 private int DragLeave() {
-	effect.show(DND.FEEDBACK_NONE, 0, 0);
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 	keyOperation = -1;
 
-	if (iDataObject == null) return COM.S_OK;
+	if (iDataObject == null) return COM.S_FALSE;
 
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
@@ -305,14 +305,14 @@ private int DragLeave() {
 }
 
 private int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
-	if (iDataObject == null) return COM.S_OK;
+	if (iDataObject == null) return COM.S_FALSE;
 	int oldKeyOperation = keyOperation;
 	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(event, iDataObject.getAddress(), grfKeyState, pt_x, pt_y, pdwEffect)) {
 		keyOperation = -1;
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
-		return COM.S_OK;
+		return COM.S_FALSE;
 	}
 	
 	int allowedOperations = event.operations;
@@ -345,14 +345,14 @@ private int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 		selectedOperation = event.detail;
 	}
 	
-	effect.show(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, event.x, event.y);
 	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
 
 private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
-	effect.show(DND.FEEDBACK_NONE, 0, 0);
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
@@ -365,7 +365,7 @@ private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEf
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
 		keyOperation = -1;
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
-		return COM.S_OK;
+		return COM.S_FALSE;
 	}
 	keyOperation = -1;
 	int allowedOperations = event.operations;
