@@ -12,6 +12,7 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -104,6 +105,7 @@ public class DragSource extends Widget {
 	//workaround - remember action performed for DragEnd
 	boolean moveData = false;
 	
+	DragAndDropEffect effect;
 	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 		
 	static Callback DragGetData;
@@ -178,6 +180,15 @@ public DragSource(Control control, int style) {
 	};
 	control.addListener (SWT.Dispose, controlListener);
 	control.addListener (SWT.DragDetect, controlListener);
+	
+	// DND effect
+	if (control instanceof Tree) {
+		effect = new TreeDragAndDropEffect((Tree)control);
+	} else if (control instanceof Table) {
+		effect = new TableDragAndDropEffect((Table)control);
+	} else {
+		effect = new NoDragAndDropEffect(control);
+	}
 	
 	this.addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event e) {

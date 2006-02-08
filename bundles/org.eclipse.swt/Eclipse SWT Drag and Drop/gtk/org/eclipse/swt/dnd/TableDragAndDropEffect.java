@@ -11,20 +11,21 @@
 package org.eclipse.swt.dnd;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.gtk.OS;
 
-class TableDragUnderEffect extends DragUnderEffect {
+class TableDragAndDropEffect extends DragAndDropEffect {
 	private Table table;
 	private int scrollIndex = -1;
 	private long scrollBeginTime;
 	private static final int SCROLL_HYSTERESIS = 150; // milli seconds
 
-TableDragUnderEffect(Table table) {
+TableDragAndDropEffect(Table table) {
 	this.table = table;
 }
-private int checkEffect(int effect) {
+int checkEffect(int effect) {
 	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
@@ -51,7 +52,7 @@ Widget getItem(int x, int y) {
 	return item;
 }
 
-void show(int effect, int x, int y) {
+void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	int /*long*/ handle = table.handle;
 	Point coordinates = new Point(x, y);
