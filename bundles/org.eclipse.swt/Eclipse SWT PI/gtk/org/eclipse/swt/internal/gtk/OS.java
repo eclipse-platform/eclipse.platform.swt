@@ -4003,6 +4003,15 @@ public static final void gtk_drag_get_data(int /*long*/ widget, int /*long*/ con
 		lock.unlock();
 	}
 }
+public static final native void _gtk_drag_set_icon_pixbuf(int /*long*/ context, int /*long*/ pixbuf, int hot_x, int hot_y);
+public static final void gtk_drag_set_icon_pixbuf(int /*long*/ context, int /*long*/ pixbuf, int hot_x, int hot_y) {
+	lock.lock();
+	try {
+		_gtk_drag_set_icon_pixbuf(context, pixbuf, hot_x, hot_y);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_drawing_area_new();
 public static final int /*long*/ gtk_drawing_area_new() {
 	lock.lock();
@@ -6772,6 +6781,15 @@ public static final void gtk_tree_store_set(int /*long*/ store, int /*long*/ ite
 	lock.lock();
 	try {
 		_gtk_tree_store_set(store, iter, column, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gtk_tree_view_create_row_drag_icon(int /*long*/ view, int /*long*/ path);
+public static final int gtk_tree_view_create_row_drag_icon(int /*long*/ view, int /*long*/ path) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_create_row_drag_icon(view, path);
 	} finally {
 		lock.unlock();
 	}

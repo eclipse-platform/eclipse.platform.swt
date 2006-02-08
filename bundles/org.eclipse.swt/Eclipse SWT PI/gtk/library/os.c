@@ -6188,6 +6188,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1drag_1get_1data)
 }
 #endif
 
+#ifndef NO__1gtk_1drag_1set_1icon_1pixbuf
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1drag_1set_1icon_1pixbuf)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1drag_1set_1icon_1pixbuf_FUNC);
+	gtk_drag_set_icon_pixbuf((GdkDragContext *)arg0, (GdkPixbuf *)arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, _1gtk_1drag_1set_1icon_1pixbuf_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1drawing_1area_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1drawing_1area_1new)
 	(JNIEnv *env, jclass that)
@@ -10577,6 +10587,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1widget)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1set_1widget_FUNC);
 	gtk_tree_view_column_set_widget((GtkTreeViewColumn *)arg0, (GtkWidget *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1set_1widget_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1view_1create_1row_1drag_1icon
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1view_1create_1row_1drag_1icon)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1create_1row_1drag_1icon_FUNC);
+	rc = (jint)gtk_tree_view_create_row_drag_icon((GtkTreeView *)arg0, (GtkTreePath *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1create_1row_1drag_1icon_FUNC);
+	return rc;
 }
 #endif
 
