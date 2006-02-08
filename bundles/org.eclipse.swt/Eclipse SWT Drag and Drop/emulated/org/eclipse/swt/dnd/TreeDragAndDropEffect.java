@@ -14,27 +14,16 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-class TableDragAndDropEffect extends DragAndDropEffect {
-	private Table table;
-	
-TableDragAndDropEffect(Table table) {
-	this.table = table;
+class TreeDragAndDropEffect extends DragAndDropEffect {
+
+	private Tree tree;
+
+TreeDragAndDropEffect(Tree tree) {
+	this.tree = tree;
 }
 Widget getItem(int x, int y) {
-	if (table == null) return null;
 	Point coordinates = new Point(x, y);
-	coordinates = table.toControl(coordinates);
-	TableItem item = table.getItem(coordinates);
-	if (item != null) return item;
-	
-	Rectangle area = table.getClientArea();
-	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		coordinates = new Point(x1, y);
-		coordinates = table.toControl(coordinates);
-		item = table.getItem(coordinates);
-		if (item != null) return item;
-	}
-	return null;
-	
+	coordinates = tree.toControl(coordinates);
+	return tree.getItem(coordinates);
 }
 }

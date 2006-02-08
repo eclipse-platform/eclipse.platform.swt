@@ -71,7 +71,7 @@ public class DropTarget extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragUnderEffect effect;
+	DragAndDropEffect effect;
 
 	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 
@@ -129,11 +129,11 @@ public DropTarget(Control control, int style) {
 	});
 
 	if (control instanceof Tree) {
-		effect = new TreeDragUnderEffect((Tree)control);
+		effect = new TreeDragAndDropEffect((Tree)control);
 	} else if (control instanceof Table) {
-		effect = new TableDragUnderEffect((Table)control);
+		effect = new TableDragAndDropEffect((Table)control);
 	} else {
-		effect = new NoDragUnderEffect(control);
+		effect = new NoDragAndDropEffect(control);
 	}
 }
 

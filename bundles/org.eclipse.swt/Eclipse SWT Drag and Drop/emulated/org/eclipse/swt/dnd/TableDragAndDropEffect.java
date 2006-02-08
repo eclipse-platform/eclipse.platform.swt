@@ -24,17 +24,6 @@ Widget getItem(int x, int y) {
 	if (table == null) return null;
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
-	TableItem item = table.getItem(coordinates);
-	if (item != null) return item;
-	
-	Rectangle area = table.getClientArea();
-	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		coordinates = new Point(x1, y);
-		coordinates = table.toControl(coordinates);
-		item = table.getItem(coordinates);
-		if (item != null) return item;
-	}
-	return null;
-	
+	return table.getItem(coordinates);
 }
 }
