@@ -2386,7 +2386,7 @@ void setItemCount (int /*long*/ parentIter, int count) {
 		}
 	} else {
 		for (int i=itemCount; i<count; i++) {
-			items [i] = new TreeItem (this, parentIter, SWT.NONE, i, true);
+			new TreeItem (this, parentIter, SWT.NONE, i, true);
 		}
 	}
 	if (!isVirtual) setRedraw (true);
