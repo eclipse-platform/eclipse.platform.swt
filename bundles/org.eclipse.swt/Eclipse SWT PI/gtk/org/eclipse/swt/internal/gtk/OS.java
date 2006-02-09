@@ -6848,15 +6848,6 @@ public static final void gtk_tree_view_column_clear(int /*long*/ tree_column) {
 		lock.unlock();
 	}
 }
-public static final native boolean _gtk_tree_view_column_get_reorderable(int /*long*/ column);
-public static final boolean gtk_tree_view_column_get_reorderable(int /*long*/ column) {
-	lock.lock();
-	try {
-		return _gtk_tree_view_column_get_reorderable(column);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native int /*long*/ _gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column);
 public static final int /*long*/ gtk_tree_view_column_get_cell_renderers(int /*long*/ tree_column) {
 	lock.lock();
@@ -6875,11 +6866,29 @@ public static final int gtk_tree_view_column_get_fixed_width(int /*long*/ column
 		lock.unlock();
 	}
 }
+public static final native boolean _gtk_tree_view_column_get_reorderable(int /*long*/ column);
+public static final boolean gtk_tree_view_column_get_reorderable(int /*long*/ column) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_column_get_reorderable(column);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _gtk_tree_view_column_get_resizable(int /*long*/ column);
 public static final boolean gtk_tree_view_column_get_resizable(int /*long*/ column) {
 	lock.lock();
 	try {
 		return _gtk_tree_view_column_get_resizable(column);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gtk_tree_view_column_get_sizing(int /*long*/ tree_column);
+public static final int gtk_tree_view_column_get_sizing(int /*long*/ tree_column) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_column_get_sizing(tree_column);
 	} finally {
 		lock.unlock();
 	}
