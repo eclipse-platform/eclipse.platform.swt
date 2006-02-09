@@ -259,7 +259,7 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 	}
 	if (setData) {
 		ignoreCell = cell;
-		setScrollWidth (tree_column, iter);
+		setScrollWidth (tree_column, item);
 		ignoreCell = 0;
 	}
 	return 0;
@@ -2571,15 +2571,15 @@ void setParentWindow (int /*long*/ widget) {
 	OS.gtk_widget_set_parent_window (widget, window);
 }
 
-void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
-	if (columnCount != 0) return;
+void setScrollWidth (int /*long*/ column, TreeItem item) {
+	if (columnCount != 0 || currentItem == item) return;
 	/*
 	* Use GTK_TREE_VIEW_COLUMN_GROW_ONLY on GTK versions < 2.3.2
 	* because fixed_height_mode is not supported.
 	*/
 	if (((style & SWT.VIRTUAL) != 0) && OS.GTK_VERSION < OS.VERSION (2, 3, 2)) return;
-	int width = OS.gtk_tree_view_column_get_width (column);
-	int itemWidth = calculateWidth (column, iter);
+	int width = OS.gtk_tree_view_column_get_fixed_width (column);
+	int itemWidth = calculateWidth (column, item.handle);
 	if (width < itemWidth) {
 		OS.gtk_tree_view_column_set_fixed_width (column, itemWidth);
 	}

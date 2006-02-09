@@ -893,7 +893,7 @@ public void setGrayed (boolean grayed) {
  */
 public void setImage (int index, Image image) {
 	checkWidget ();
-	if (image != null && image.isDisposed()) {
+	if (image != null && image.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
@@ -908,6 +908,30 @@ public void setImage (int index, Image image) {
 	}
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_PIXBUF, pixbuf, -1);
+	if (image != null && parent.columnCount == 0) {
+		int /*long*/parentHandle = parent.handle;
+		int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, 0);
+		if (OS.gtk_tree_view_column_get_sizing (column) == OS.GTK_TREE_VIEW_COLUMN_FIXED) {
+			parent.setScrollWidth (column, this);
+			/*
+			* Bug in GTK.  When in fixed height mode, GTK does not recalculate the cell renderer width
+			* when the image is changed in the model.  The fix is to force it to recalculate the width if
+			* more space is required.
+			*/
+			int [] w = new int [1];
+			int /*long*/ pixbufRenderer = parent.getPixbufRenderer(column);
+			OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
+			if (w[0] < image.getBounds().width) {
+				/*
+				* There is no direct way to clear the cell renderer width so we
+				* are relying on the fact that it is done as part of modifying
+				* the style.
+				*/
+				int /*long*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
+				OS.gtk_widget_modify_style (parentHandle, style);
+			} 
+		}
+	}
 	cached = true;
 }
 
@@ -980,6 +1004,13 @@ public void setText (int index, String string) {
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_TEXT, buffer, -1);
+	if (parent.columnCount == 0) {
+		int /*long*/parentHandle = parent.handle;
+		int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, 0);
+		if (OS.gtk_tree_view_column_get_sizing (column) == OS.GTK_TREE_VIEW_COLUMN_FIXED) {
+			parent.setScrollWidth (column, this);
+		}
+	}
 	cached = true;
 }
 
