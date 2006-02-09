@@ -290,7 +290,7 @@ void drag(Event dragEvent) {
 	
 	int actions = opToOsOp(getStyle());
 	ImageData imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
-	int context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
+	int /*long*/ context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
 	if (context != 0 && imageData != null) {
 		Image image = new Image(getDisplay(), imageData);
 		int /*long*/ pixbuf = createPixbuf(image);
