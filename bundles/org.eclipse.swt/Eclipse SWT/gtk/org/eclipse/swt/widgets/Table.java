@@ -2757,7 +2757,7 @@ public void setItemCount (int count) {
 		itemCount = count;
 	} else {
 		for (int i=itemCount; i<count; i++) {
-			items [i] = new TableItem (this, SWT.NONE, i, true);
+			new TableItem (this, SWT.NONE, i, true);
 		}
 	}
 	if (!isVirtual) setRedraw (true);
