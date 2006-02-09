@@ -1315,9 +1315,9 @@ public void setImage (int index, Image image) {
 	}
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
-	if (image != null && parent.columnCount == 0) {
+	if (image != null) {
 		int /*long*/parentHandle = parent.handle;
-		int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, 0);
+		int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 		if (OS.gtk_tree_view_column_get_sizing (column) == OS.GTK_TREE_VIEW_COLUMN_FIXED) {
 			parent.setScrollWidth (column, this);
 			/*
@@ -1401,12 +1401,10 @@ public void setText (int index, String string) {
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, buffer, -1);
-	if (parent.columnCount == 0) {
-		int /*long*/parentHandle = parent.handle;
-		int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, 0);
-		if (OS.gtk_tree_view_column_get_sizing (column) == OS.GTK_TREE_VIEW_COLUMN_FIXED) {
-			parent.setScrollWidth (column, this);
-		}
+	int /*long*/parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
+	if (OS.gtk_tree_view_column_get_sizing (column) == OS.GTK_TREE_VIEW_COLUMN_FIXED) {
+		parent.setScrollWidth (column, this);
 	}
 	cached = true;
 }
