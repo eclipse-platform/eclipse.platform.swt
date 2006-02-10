@@ -491,8 +491,8 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
-	int x = lParam & 0xFFFF;
-	int y = lParam >> 16;
+	int x = (short) (lParam & 0xFFFF);
+	int y = (short) (lParam >> 16);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
 		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
@@ -512,8 +512,8 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	if (result == LRESULT.ZERO) return result;
 	if (focusIndex == -1) return result;
 	ExpandItem item = items [focusIndex];
-	int x = lParam & 0xFFFF;
-	int y = lParam >> 16;
+	int x = (short) (lParam & 0xFFFF);
+	int y = (short) (lParam >> 16);
 	boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
 	if (hover) {
 		Event event = new Event ();
@@ -528,8 +528,8 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
-	int x = lParam & 0xFFFF;
-	int y = lParam >> 16;
+	int x = (short) (lParam & 0xFFFF);
+	int y = (short) (lParam >> 16);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
 		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
