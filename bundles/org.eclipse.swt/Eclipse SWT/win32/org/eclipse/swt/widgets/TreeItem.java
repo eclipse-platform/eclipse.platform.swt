@@ -401,11 +401,15 @@ public Rectangle getBounds (int index) {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-//TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
+	return getBounds (index, getText, getImage, full, false, true, 0);
+}
+
+//TODO - take into account grid (add boolean arg) to damage less during redraw
+RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, boolean fullImage, boolean clip, int hDC) {
 	if (!getText && !getImage) return new RECT ();
+	int hwnd = parent.handle; 
 	if ((parent.style & SWT.VIRTUAL) == 0 && !cached && !parent.painted) {
-		int hwnd = parent.handle;
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
 		tvItem.hItem = handle;
@@ -420,12 +424,11 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 	}
 	RECT rect = new RECT ();
 	if (firstColumn) {
-		int hwnd = parent.handle; 
 		rect.left = handle;
 		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) == 0) {
 			return new RECT ();
 		}
-		if (getImage) {
+		if (getImage && !fullImage) {
 			if (OS.SendMessage (hwnd, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
 				Point size = parent.getImageSize ();
 				rect.left -= size.x + Tree.INSET;
@@ -434,13 +437,17 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 				if (!getText) rect.right = rect.left;
 			}
 		}
-		if (getText && hwndHeader != 0 && columnCount != 0) {
-			RECT headerRect = new RECT ();
-			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
-				return new RECT ();
-			}
-			if (full || headerRect.right < rect.right) {
-				rect.right = headerRect.right;
+		if (fullText || fullImage || clip) {
+			if (hwndHeader != 0 && columnCount != 0) {
+				RECT headerRect = new RECT ();
+				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
+					return new RECT ();
+				}
+				if (fullText) rect.right = headerRect.right;
+				if (fullImage) rect.left = headerRect.left;
+				if (clip && headerRect.right < rect.right) {
+					rect.right = headerRect.right;
+				}
 			}
 		}
 	} else {
@@ -449,14 +456,15 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
 			return new RECT ();
 		}
-		int hwnd = parent.handle;
 		rect.left = handle;
 		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) == 0) {
 			return new RECT ();
 		}
 		rect.left = headerRect.left;
-		rect.right = headerRect.right;
-		if (!getText || !getImage) {
+		if (fullText) {
+			rect.right = headerRect.right;
+		} else {
+			rect.right = headerRect.left;
 			Image image = null;
 			if (index == 0) {
 				image = this.image;
@@ -465,13 +473,37 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 			}
 			if (image != null) {
 				Point size = parent.getImageSize ();
-				if (getImage) {
-					rect.right = Math.min (rect.left + size.x, rect.right);
-				} else {
-					rect.left = Math.min (rect.left + size.x, rect.right);
+				rect.right += size.x;
+			}
+			if (getText) {
+				String string = index == 0 ? text : strings != null ? strings [index] : null;
+				if (string != null) {
+					RECT textRect = new RECT ();
+					TCHAR buffer = new TCHAR (parent.getCodePage (), string, false);
+					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
+					int hNewDC = hDC, hFont = 0;
+					if (hDC == 0) {
+						hNewDC = OS.GetDC (hwnd);
+						hFont = cellFont != null ? cellFont [index] : -1;
+						if (hFont == -1) hFont = font;
+						if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+						hFont = OS.SelectObject (hNewDC, hFont);
+					}
+					OS.DrawText (hNewDC, buffer, buffer.length (), textRect, flags);
+					if (hDC == 0) {
+						OS.SelectObject (hNewDC, hFont);
+						OS.ReleaseDC (hwnd, hNewDC);
+					}
+					if (getImage) {
+						rect.right += textRect.right - textRect.left + Tree.INSET * 3;
+					} else {
+						rect.left = rect.right + Tree.INSET;
+						rect.right = rect.left + (textRect.right - textRect.left) + Tree.INSET;
+					}
 				}
-			} else {
-				if (getImage) rect.right = rect.left;
+			}
+			if (clip && headerRect.right < rect.right) {
+				rect.right = headerRect.right;
 			}
 		}
 	}
@@ -891,6 +923,7 @@ void redraw () {
 			full = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0;
 		}
 	}
+	if (parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) full = true;
 	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, full ? 0 : 1, rect) != 0) {
 		OS.InvalidateRect (hwnd, rect, true);
 	}

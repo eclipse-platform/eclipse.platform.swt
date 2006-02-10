@@ -326,13 +326,12 @@ public void pack () {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int columnWidth = 0;
-	int hwnd = parent.handle;
+	int hwnd = parent.handle, hwndHeader = parent.hwndHeader;
+	RECT headerRect = new RECT ();
+	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
 	int hDC = OS.GetDC (hwnd);
 	int oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-	int cp = parent.getCodePage ();		
-	RECT rect = new RECT ();
-	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_PARAM;
 	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
@@ -340,46 +339,43 @@ public void pack () {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 		TreeItem item = tvItem.lParam != -1 ? parent.items [tvItem.lParam] : null;
 		if (item != null) {
-			int hFont = -1;
-			if (item.cellFont != null) hFont = item.cellFont [index];
+			int hFont = item.cellFont != null ? item.cellFont [index] : -1;
 			if (hFont == -1) hFont = item.font;
-			if (index == 0) {
-				if ((parent.style & SWT.VIRTUAL) == 0 && !item.cached && !parent.painted) {
-					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-					tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-					OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-					tvItem.mask = OS.TVIF_PARAM;
-				}
-				rect.left = item.handle;
-				if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
-					columnWidth = Math.max (columnWidth, rect.right);
-				}
-			} else {
-				int imageWidth = 0, textWidth = 0;
-				Image image = item.images != null ? item.images [index] : null;
-				if (image != null) {
-					Rectangle bounds = image.getBounds ();
-					imageWidth = bounds.width;
-				}
-				String string = item.strings != null ? item.strings [index] : null;
-				if (string != null) {
-					TCHAR buffer = new TCHAR (cp, string, false);
-					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-					OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-					if (hFont != -1) OS.SelectObject (hDC, hFont);
-					textWidth = rect.right - rect.left;
-				}
-				columnWidth = Math.max (columnWidth, imageWidth + textWidth + Tree.INSET * 3);
+			if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
+			if (hFont != -1) OS.SelectObject (hDC, hFont);
+			if (parent.hooks (SWT.MeasureItem)) {
+				int nSavedDC = OS.SaveDC (hDC);
+				GCData data = new GCData ();
+				data.device = display;
+				data.hFont = hFont;
+				GC gc = GC.win32_new (hDC, data);
+				Event event = new Event ();
+				event.item = item;
+				event.gc = gc;
+				event.index = index;
+				event.x = itemRect.left;
+				event.y = itemRect.top;
+				event.width = itemRect.right - itemRect.left;
+				event.height = itemRect.bottom - itemRect.top;
+				parent.sendEvent (SWT.MeasureItem, event);
+				event.gc = null;
+				gc.dispose ();
+				OS.RestoreDC (hDC, nSavedDC);
+				if (isDisposed () || parent.isDisposed ()) break;
+				//itemRect.left = event.x;
+				itemRect.right = event.x + event.width;
 			}
+			columnWidth = Math.max (columnWidth, itemRect.right - headerRect.left);
 		}
 		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, tvItem.hItem);
 	}
-	TCHAR buffer = new TCHAR (cp, text, false);
+	RECT rect = new RECT ();
+	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+	TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
 	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		headerWidth += Tree.HEADER_EXTRA;
-	}
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) headerWidth += Tree.HEADER_EXTRA;
 	if (image != null || parent.sortColumn == this) {
 		Image headerImage = null;
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NULL) {
@@ -395,7 +391,7 @@ public void pack () {
 			Rectangle bounds = headerImage.getBounds ();
 			headerWidth += bounds.width;
 		}
-		int margin = 0, hwndHeader = parent.hwndHeader;
+		int margin = 0;
 		if (hwndHeader != 0 && OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
 			margin = OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		} else {
