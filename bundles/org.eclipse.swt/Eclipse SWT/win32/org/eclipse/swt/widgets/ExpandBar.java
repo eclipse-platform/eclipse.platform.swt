@@ -361,7 +361,7 @@ void layoutItems (int index, boolean setScrollbar) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see ExapndListener
+ * @see ExpandListener
  * @see #addExpandListener
  */
 public void removeExpandListener (ExpandListener listener) {
