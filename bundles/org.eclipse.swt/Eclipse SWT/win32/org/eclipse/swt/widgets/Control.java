@@ -2821,14 +2821,12 @@ boolean translateMnemonic (MSG msg) {
 }
 
 boolean translateTraversal (MSG msg) {
+	int hwnd = msg.hwnd;
 	int key = msg.wParam;
 	if (key == OS.VK_MENU) {
-		Shell shell = getShell ();
-		int hwndShell = shell.handle;
-		OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+		OS.SendMessage (hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 		return false;
 	}
-	int hwnd = msg.hwnd;
 	int detail = SWT.TRAVERSE_NONE;
 	boolean doit = true, all = false;
 	boolean lastVirtual = false;
@@ -2937,8 +2935,7 @@ boolean translateTraversal (MSG msg) {
 	Control control = this;
 	do {
 		if (control.traverse (event)) {
-			int hwndShell = shell.handle;
-			OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+			OS.SendMessage (hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 			return true;
 		}
 		if (!event.doit && control.hooks (SWT.Traverse)) return false;
@@ -3054,7 +3051,11 @@ boolean traverseItem (boolean next) {
 }
 
 boolean traverseMnemonic (char key) {
-	return mnemonicHit (key);
+	if (mnemonicHit (key)) {
+		OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+		return true;
+	}
+	return false;
 }
 
 boolean traversePage (boolean next) {

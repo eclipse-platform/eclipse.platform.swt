@@ -804,11 +804,11 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 }
 boolean mnemonicHit (char key) {
 	for (int i = 0; i < items.length; i++) {
-		if (i != selectedIndex) {
-			char mnemonic = getMnemonic (items[i].getText ());
-			if (mnemonic != '\0') {
-				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-					setSelection(i, true);
+		char mnemonic = getMnemonic (items[i].getText ());
+		if (mnemonic != '\0') {
+			if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+				if (forceFocus ()) {
+					if (i != selectedIndex) setSelection(i, true);
 					return true;
 				}
 			}

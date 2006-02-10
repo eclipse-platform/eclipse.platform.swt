@@ -492,17 +492,14 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 }
 
 boolean mnemonicHit (char key) {
-	int selection = getSelectionIndex ();
 	for (int i=0; i<items.length; i++) {
-		if (i != selection) {
-			TabItem item = items [i];
-			if (item != null) {
-				char ch = findMnemonic (item.getText ());
-				if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {		
-					if (setFocus ()) {
-						setSelection (i, true);
-						return true;
-					}
+		TabItem item = items [i];
+		if (item != null) {
+			char ch = findMnemonic (item.getText ());
+			if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {
+				if (forceFocus ()) {
+					if (i != getSelectionIndex ()) setSelection (i, true);
+					return true;
 				}
 			}
 		}
@@ -704,7 +701,11 @@ boolean traversePage (boolean next) {
 		index = (index + offset + count) % count;
 	}
 	setSelection (index, true);
-	return index == getSelectionIndex ();
+	if (index == getSelectionIndex ()) {
+		OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+		return true;
+	}
+	return false;
 }
 
 int widgetStyle () {
