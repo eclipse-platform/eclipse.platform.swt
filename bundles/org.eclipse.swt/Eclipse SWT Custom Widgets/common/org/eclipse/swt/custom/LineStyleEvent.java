@@ -29,6 +29,8 @@ public class LineStyleEvent extends TypedEvent {
 	
 	/**
 	 * line ranges (output)
+	 * 
+	 * @since 3.2
 	 */
 	public int[] ranges;
 	
@@ -45,16 +47,22 @@ public class LineStyleEvent extends TypedEvent {
 
 	/** 
 	 * line alignment (input, output)
+	 * 
+	 * @since 3.2
 	 */
 	public int alignment;
 
 	/**
 	 * line indent (input, output)
+	 * 
+	 * @since 3.2
 	 */
 	public int indent;
 
 	/** 
 	 * line justification (input, output)
+	 * 
+	 * @since 3.2
 	 */
 	public boolean justify;
 
