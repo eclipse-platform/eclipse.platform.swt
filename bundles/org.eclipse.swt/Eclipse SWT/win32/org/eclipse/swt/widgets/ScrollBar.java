@@ -178,7 +178,7 @@ void createWidget () {
 	*/
 }
 
-public void destroyWidget () {
+void destroyWidget () {
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
 	if (OS.IsWinCE) {
 		SCROLLINFO info = new SCROLLINFO ();
