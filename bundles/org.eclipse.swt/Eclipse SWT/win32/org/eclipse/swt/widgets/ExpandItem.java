@@ -346,7 +346,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
 			width = Math.max (0, width - BORDER * 2);
 			height = Math.max (0, height - BORDER);
 		}
-		OS.SetWindowPos (hwnd, 0, x, y + ExpandBar.HEADER_HEIGHT, width, height, flags);
+		SetWindowPos (hwnd, 0, x, y + ExpandBar.HEADER_HEIGHT, width, height, flags);
 	}
 }
 
@@ -380,7 +380,7 @@ public void setControl (Control control) {
 			width = Math.max (0, width - BORDER * 2);
 			height = Math.max (0, height - BORDER);
 		}
-		OS.SetWindowPos (hwnd, 0, x, y + ExpandBar.HEADER_HEIGHT, width, height, flags);
+		SetWindowPos (hwnd, 0, x, y + ExpandBar.HEADER_HEIGHT, width, height, flags);
 	}
 }
 
