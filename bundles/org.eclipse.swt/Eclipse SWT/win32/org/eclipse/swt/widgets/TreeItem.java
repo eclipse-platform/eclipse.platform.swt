@@ -438,10 +438,15 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 			}
 		}
 		if (fullText || fullImage || clip) {
-			if (hwndHeader != 0 && columnCount != 0) {
+			if (hwndHeader != 0) {
 				RECT headerRect = new RECT ();
-				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
-					return new RECT ();
+				if (columnCount != 0) {
+					if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
+						return new RECT ();
+					}
+				} else {
+					headerRect.right = parent.scrollWidth;
+					if (headerRect.right == 0) headerRect = rect;
 				}
 				if (fullText) rect.right = headerRect.right;
 				if (fullImage) rect.left = headerRect.left;

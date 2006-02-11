@@ -4879,11 +4879,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						event.y = cellRect.top;
 						event.width = cellRect.right - cellRect.left;
 						event.height = cellRect.bottom - cellRect.top;
-						if (hwndHeader != 0) {
-							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-							if (count == 0) event.width = Math.max (event.width, scrollWidth);
-						}
-						event.height = cellRect.bottom - cellRect.top;
 						gc.setClipping (event.x, event.y, event.width, event.height);
 						sendEvent (SWT.EraseItem, event);
 						event.gc = null;
@@ -5272,12 +5267,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								event.height = itemRect.bottom - itemRect.top;
 								RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 								int cellWidth = cellRect.right - cellRect.left;
-								if (hwndHeader != 0) {
-									int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-									if (columnCount == 0) cellWidth = Math.max (cellWidth, scrollWidth);
-								}
-								gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellRect.bottom - cellRect.top);
-								sendEvent (SWT.PaintItem, event);
+								int cellHeight = cellRect.bottom - cellRect.top;
+								gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);						sendEvent (SWT.PaintItem, event);
 								event.gc = null;
 								gc.dispose ();
 								OS.RestoreDC (hDC, nSavedDC);
