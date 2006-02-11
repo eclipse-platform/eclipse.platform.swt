@@ -3381,7 +3381,7 @@ void updateImages () {
 void updateScrollBar () {
 	if (hwndParent != 0) {
 		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (columnCount != 0) {
+		if (columnCount != 0 || scrollWidth != 0) {
 			SCROLLINFO info = new SCROLLINFO ();
 			info.cbSize = SCROLLINFO.sizeof;
 			info.fMask = OS.SIF_ALL;
@@ -4564,6 +4564,16 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
+	/*
+	 * Bug in Windows.  When TVS_NOHSCROLL is set when the
+	 * size of the tree is zero, the scrol bar is shown the
+	 * next time the tree resizes.  The fix is to hide the
+	 * scroll bar every time the tree is resized.
+	 */
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.TVS_NOHSCROLL) != 0) {
+		if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
+	}
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
 }
@@ -4848,10 +4858,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							}
 						}
 						if (!ignoreItemHeight) {
-							int itemHeight = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0);
-							if (event.height > itemHeight) {
-								OS.SendMessage (handle, OS.TVM_SETITEMHEIGHT, event.height, 0);
-							}
+							if (event.height > getItemHeight ()) setItemHeight (event.height);
 							ignoreItemHeight = true;
 						}
 					}
