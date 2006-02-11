@@ -246,7 +246,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 		if (OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect) == 0) {
 			return new RECT ();
 		}
-		if (columnCount != 0 && (fullText || fullImage)) {
+		if (fullText || fullImage) {
 			RECT headerRect = new RECT ();
 			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect);
