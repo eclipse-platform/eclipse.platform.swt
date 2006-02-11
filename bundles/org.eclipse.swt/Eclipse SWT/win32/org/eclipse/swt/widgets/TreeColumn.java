@@ -359,6 +359,10 @@ public void pack () {
 				event.width = itemRect.right - itemRect.left;
 				event.height = itemRect.bottom - itemRect.top;
 				parent.sendEvent (SWT.MeasureItem, event);
+				if (!parent.ignoreItemHeight) {
+					if (event.height > parent.getItemHeight ()) parent. setItemHeight (event.height);
+					parent.ignoreItemHeight = true;
+				}
 				event.gc = null;
 				gc.dispose ();
 				OS.RestoreDC (hDC, nSavedDC);
