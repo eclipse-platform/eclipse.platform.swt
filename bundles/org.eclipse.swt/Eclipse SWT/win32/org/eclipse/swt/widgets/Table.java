@@ -4591,9 +4591,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: {
-//					if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
-//						if (!OS.IsWinCE && OS.WindowFromDC (nmcd.hdc) == handle) break;
-//					}
+					if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 					if (OS.IsWindowEnabled (handle)) {
 						Control control = findBackgroundControl ();
 						if (control != null && control.backgroundImage != null) {
@@ -4651,9 +4649,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							}
 						}
 						if (!ignoreItemHeight) {
-							if (event.height > getItemHeight ()) {
-								setItemHeight (event.height);
-							}
+							if (event.height > getItemHeight ()) setItemHeight (event.height);
 							ignoreItemHeight = true;
 						}
 					}

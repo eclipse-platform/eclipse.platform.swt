@@ -4706,9 +4706,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: {
-//					if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
-//						if (!OS.IsWinCE && OS.WindowFromDC (nmcd.hdc) == handle) break;
-//					}
+					if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 				}
 				case OS.CDDS_POSTPAINT: {
