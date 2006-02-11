@@ -383,9 +383,7 @@ public void pack () {
 				event.height = itemRect.bottom - itemRect.top;
 				parent.sendEvent (SWT.MeasureItem, event);
 				if (!parent.ignoreItemHeight) {
-					if (event.height > parent.getItemHeight ()) {
-						parent.setItemHeight (event.height);
-					}
+					if (event.height > parent.getItemHeight ()) parent.setItemHeight (event.height);
 					parent.ignoreItemHeight = true;
 				}
 				event.gc = null;
