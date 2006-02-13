@@ -28,9 +28,10 @@ AGL_LIB=lib$(SWTAGL_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 #NATIVE_STATS = -DNATIVE_STATS
 
 #SWT_DEBUG = -g
-CFLAGS = -c -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Headers
-LFLAGS = -bundle -framework JavaVM -framework Carbon 
-WEBKITCFLAGS = -c -xobjective-c -I /System/Library/Frameworks/JavaVM.framework/Headers -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
+ARCHS = -arch i386 -arch ppc
+CFLAGS = -c $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Headers
+LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Carbon 
+WEBKITCFLAGS = -c $(ARCHS) -xobjective-c -I /System/Library/Frameworks/JavaVM.framework/Headers -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
 WEBKITLFLAGS = $(LFLAGS) -framework WebKit -framework Cocoa
 AGLLFLAGS = $(LFLAGS) -framework OpenGL -framework AGL
 SWT_OBJECTS = swt.o callback.o
