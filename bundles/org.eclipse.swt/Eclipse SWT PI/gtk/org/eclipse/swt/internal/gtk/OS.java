@@ -4156,6 +4156,24 @@ public static final int /*long*/ gtk_entry_get_layout (int /*long*/ entry) {
 		lock.unlock();
 	}
 }
+public static final native void _gtk_entry_get_layout_offsets (int /*long*/ layout, int[] x, int[] y);
+public static final void gtk_entry_get_layout_offsets (int /*long*/ layout, int[] x, int[] y) {
+	lock.lock();
+	try {
+		_gtk_entry_get_layout_offsets(layout, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gtk_entry_text_index_to_layout_index (int /*long*/ entry, int index);
+public static final int gtk_entry_text_index_to_layout_index (int /*long*/ entry, int index) {
+	lock.lock();
+	try {
+		return _gtk_entry_text_index_to_layout_index(entry, index);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _gtk_entry_get_max_length(int /*long*/ entry);
 public static final int gtk_entry_get_max_length(int /*long*/ entry) {
 	lock.lock();

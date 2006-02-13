@@ -537,7 +537,20 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return new Point (0, 0);
+	if ((style & SWT.SINGLE) != 0) {
+		int index = OS.gtk_editable_get_position (handle);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+			index = OS.gtk_entry_text_index_to_layout_index (handle, index);
+		}
+		int [] offset_x = new int [1], offset_y = new int [1];
+		OS.gtk_entry_get_layout_offsets (handle, offset_x, offset_y);
+		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+		PangoRectangle pos = new PangoRectangle ();
+		OS.pango_layout_index_to_pos (layout, index, pos);
+		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth ();
+		int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
+		return new Point (x, y);
+	}
 	byte [] position = new byte [ITER_SIZEOF];
 	int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 	OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, mark);

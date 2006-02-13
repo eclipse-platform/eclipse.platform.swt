@@ -6386,6 +6386,23 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1entry_1get_1layout)
 }
 #endif
 
+#ifndef NO__1gtk_1entry_1get_1layout_1offsets
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1get_1layout_1offsets)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1get_1layout_1offsets_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_entry_get_layout_offsets((GtkEntry *)arg0, lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1get_1layout_1offsets_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1entry_1get_1max_1length
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1entry_1get_1max_1length)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6521,6 +6538,35 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1entry_1set_1visibility)
 	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1set_1visibility_FUNC);
 	gtk_entry_set_visibility((GtkEntry *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1set_1visibility_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1entry_1text_1index_1to_1layout_1index
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1entry_1text_1index_1to_1layout_1index)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1entry_1text_1index_1to_1layout_1index_FUNC);
+/*
+	rc = (jint)gtk_entry_text_index_to_layout_index(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_entry_text_index_to_layout_index_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_entry_text_index_to_layout_index");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1entry_1text_1index_1to_1layout_1index_FUNC);
+	return rc;
 }
 #endif
 

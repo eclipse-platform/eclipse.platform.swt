@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1066;
-int OS_nativeFunctionCallCount[1066];
+int OS_nativeFunctionCount = 1068;
+int OS_nativeFunctionCallCount[1068];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -502,6 +502,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1editable_1set_1position",
 	"_1gtk_1entry_1get_1invisible_1char",
 	"_1gtk_1entry_1get_1layout",
+	"_1gtk_1entry_1get_1layout_1offsets",
 	"_1gtk_1entry_1get_1max_1length",
 	"_1gtk_1entry_1get_1text",
 	"_1gtk_1entry_1get_1visibility",
@@ -513,6 +514,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1entry_1set_1max_1length",
 	"_1gtk_1entry_1set_1text",
 	"_1gtk_1entry_1set_1visibility",
+	"_1gtk_1entry_1text_1index_1to_1layout_1index",
 	"_1gtk_1events_1pending",
 	"_1gtk_1expander_1get_1expanded",
 	"_1gtk_1expander_1new",
