@@ -1215,7 +1215,7 @@ static int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ handle,
 	return 0;
 }
 
-static int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*long*/ handle, int /*long*/ background_area, int /*long*/ cell_area, int /*long*/ expose_area, int flags) {
+static int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*long*/ handle, int /*long*/ background_area, int /*long*/ cell_area, int /*long*/ expose_area, int /*long*/ flags) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) return widget.rendererRenderProc (cell, window, handle, background_area, cell_area, expose_area, flags);
