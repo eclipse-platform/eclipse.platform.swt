@@ -23,7 +23,8 @@ class StyledTextEvent extends Event {
 	int alignment;
 	int indent;
 	boolean justify;
-	Bullet bullet;	
+	Bullet bullet;
+	int bulletIndex;
 	// used by LineBackgroundEvent
 	Color lineBackground;
 	// used by BidiSegmentEvent

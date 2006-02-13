@@ -3385,7 +3385,7 @@ public Color getLineBackground(int index) {
  * 
  * @since 3.2
  */
-Bullet getLineBullet(int index) {
+public Bullet getLineBullet(int index) {
 	checkWidget();
 	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -4726,8 +4726,8 @@ Point getPointAtOffset(int offset) {
 		}
 	}
 	Point point;
+	TextLayout layout = renderer.getTextLayout(lineIndex);
 	if (lineLength != 0  && offsetInLine <= lineLength) {
-		TextLayout layout = renderer.getTextLayout(lineIndex);
 		switch (caretAlignment) {
 			case OFFSET_LEADING:
 				point = layout.getLocation(offsetInLine, false);
@@ -4741,10 +4741,10 @@ Point getPointAtOffset(int offset) {
 				}
 				break;
 		}
-		renderer.disposeTextLayout(layout);
 	} else {
-		point = new Point(0, 0);
+		point = new Point(layout.getIndent(), 0);
 	}
+	renderer.disposeTextLayout(layout);
 	point.x += leftMargin - horizontalScrollOffset;
 	point.y += getLinePixel(lineIndex);
 	return point;
@@ -5293,6 +5293,8 @@ void handleTextChanged(TextChangedEvent event) {
 	int newLastLineBottom = getLinePixel(lastLine + 1);
 	scrollText(lastLineBottom, newLastLineBottom);
 	super.redraw(0, firstLineTop, clientAreaWidth, newLastLineBottom - firstLineTop, false);
+	redrawLinesBullet(renderer.redrawLines);
+	renderer.redrawLines = null;
 	// update selection/caret location after styles have been changed.
 	// otherwise any text measuring could be incorrect
 	// 
@@ -5764,7 +5766,7 @@ void modifyContent(Event event, boolean updateCaret) {
 		}
 	}
 }
-void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style) {
+void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style, Bullet bullet, int bulletIndex) {
 	if (isListening(PaintObject)) {
 		StyledTextEvent event = new StyledTextEvent (content) ;
 		event.gc = gc;
@@ -5773,7 +5775,8 @@ void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style)
 		event.ascent = ascent;
 		event.descent = descent;
 		event.style = style;
-//		event.bullet = bullet;		
+		event.bullet = bullet;
+		event.bulletIndex = bulletIndex;
 		notifyListeners(PaintObject, event);
 	}
 }
@@ -5955,6 +5958,26 @@ void redrawLines(int startLine, int lineCount) {
 	int redrawBottom = getLinePixel(startLine + lineCount);
 	int redrawWidth = clientAreaWidth - leftMargin - rightMargin; 
 	super.redraw(leftMargin, redrawTop, redrawWidth, redrawBottom - redrawTop, true);
+}
+void redrawLinesBullet (int[] redrawLines) {
+	if (redrawLines == null) return;
+	int topIndex = getPartialTopIndex();
+	int bottomIndex = getPartialBottomIndex();
+	for (int i = 0; i < redrawLines.length; i++) {
+		int lineIndex = redrawLines[i];
+		if (!(topIndex <= lineIndex && lineIndex <= bottomIndex)) continue;
+		int width = -1;
+		Bullet bullet = renderer.getLineBullet(lineIndex, null);
+		if (bullet != null) {
+			StyleRange style = bullet.style;
+			GlyphMetrics metrics = style.metrics;
+			width = metrics.width;
+		}
+		if (width == -1) width = getClientArea().width;
+		int height = renderer.getLineHeight(lineIndex);
+		int y = getLinePixel(lineIndex);
+		super.redraw(0, y, width, height, false);
+	}
 }
 /** 
  * Redraws the specified text range.
@@ -7101,7 +7124,7 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
  * </ul>
  * @since 3.2
  */
-void setLineBullet(int startLine, int lineCount, Bullet bullet) {
+public void setLineBullet(int startLine, int lineCount, Bullet bullet) {
 	checkWidget();
 	if (isListening(LineGetStyle)) return;	
 	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {

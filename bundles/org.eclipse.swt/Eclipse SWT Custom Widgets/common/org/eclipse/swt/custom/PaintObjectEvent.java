@@ -41,7 +41,7 @@ public class PaintObjectEvent extends TypedEvent {
 	public int ascent;
 	
 	/**
-	 * the descent location
+	 * the line descent
 	 */
 	public int descent;
 	
@@ -50,7 +50,15 @@ public class PaintObjectEvent extends TypedEvent {
 	 */
 	public StyleRange style;
 	
-//	public Bullet bullet;
+	/**
+	 * the Bullet
+	 */
+	public Bullet bullet;
+	
+	/**
+	 * the bullet index
+	 */
+	public int bulletIndex;
 	
 	static final long serialVersionUID = 3906081274027192855L;
 	
@@ -62,6 +70,7 @@ public PaintObjectEvent(StyledTextEvent e) {
 	ascent = e.ascent;
 	descent = e.descent;
 	style = e.style;
-//	bullet = e.bullet;
+	bullet = e.bullet;
+	bulletIndex = e.bulletIndex;
 }
 }

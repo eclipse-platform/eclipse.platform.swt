@@ -42,12 +42,18 @@ class StyledTextRenderer {
 	int maxWidthLineIndex;
 	boolean idleRunning;
 	
+	/* Bullet */
+	Bullet[] bullets;
+	int[] bulletsIndices;
+	int[] redrawLines;
+	
 	/* Style data */
 	int[] ranges;
 	int styleCount;	
 	StyleRange[] styles;
 	StyleRange[] stylesSet;
 	int stylesSetCount = 0;
+	final static int BULLET_MARGIN = 8;
 	
 	final static boolean COMPACT_STYLES = true;
 	final static boolean MERGE_STYLES = true;
@@ -60,7 +66,6 @@ class StyledTextRenderer {
 	final static int ALIGNMENT = 1 << 1;
 	final static int INDENT = 1 << 2;
 	final static int JUSTIFY = 1 << 3;
-	final static int BULLET = 1 << 4;
 	final static int SEGMENTS = 1 << 5;
 	
 	static class LineInfo {
@@ -69,18 +74,16 @@ class StyledTextRenderer {
 		int alignment;
 		int indent;
 		boolean justify;
-		Bullet bullet;
 		int[] segments;
-		
-		public LineInfo() {			
+
+		public LineInfo() {
 		}
 		public LineInfo(LineInfo info) {
 			flags = info.flags;
-			background = info.background; 
+			background = info.background;
 			alignment = info.alignment;
 			indent = info.indent;
 			justify = info.justify;
-			bullet = info.bullet;
 			segments = info.segments;
 		}
 	}
@@ -262,8 +265,7 @@ void clearLineStyle(int startLine, int count) {
 	for (int i = startLine; i < startLine + count; i++) {
 		LineInfo info = lines[i];
 		if (info != null) {
-			info.flags &= ~(ALIGNMENT | INDENT | BULLET | JUSTIFY);
-			info.bullet = null;
+			info.flags &= ~(ALIGNMENT | INDENT | JUSTIFY);
 			if (info.flags == 0) lines[i] = null;
 		}
 	}
@@ -304,6 +306,47 @@ void disposeTextLayout (TextLayout layout) {
 			if (layouts[i] == layout) return;
 		}
 	}
+	layout.dispose();
+}
+void drawBullet(Bullet bullet, GC gc, int paintX, int paintY, int index, int lineAscent, int lineDescent) {
+	StyleRange style = bullet.style;
+	GlyphMetrics metrics = style.metrics;
+	Color color = style.foreground;
+	if (color != null) gc.setForeground(color);
+	if ((bullet.type & ST.BULLET_DOT) != 0 && StyledText.IS_MOTIF) {
+		int size = Math.max(4, (lineAscent + lineDescent) / 4);
+		if ((size & 1) == 0) size++;
+		if (color == null) {
+			Display display = styledText.getDisplay();
+			color = display.getSystemColor(SWT.COLOR_BLACK);
+		}
+		gc.setBackground(color);
+		int x = paintX + Math.max(0, metrics.width - size - BULLET_MARGIN);
+		gc.fillArc(x, paintY + size, size + 1, size + 1, 0, 360);
+		return;
+	}
+	Font font = style.font;
+	if (font != null) gc.setFont(font);
+	String string = "";
+	int type = bullet.type & (ST.BULLET_DOT|ST.BULLET_NUMBER|ST.BULLET_LETTER_LOWER|ST.BULLET_LETTER_UPPER);
+	switch (type) {
+		case ST.BULLET_DOT: string = "\u2022"; break;
+		case ST.BULLET_NUMBER: string = String.valueOf(index); break;
+		case ST.BULLET_LETTER_LOWER: string = String.valueOf((char) (index % 26 + 97)); break;
+		case ST.BULLET_LETTER_UPPER: string = String.valueOf((char) (index % 26 + 65)); break;
+	}
+	if ((bullet.type & ST.BULLET_TEXT) != 0) string += bullet.text;
+	Display display = styledText.getDisplay();
+	TextLayout layout = new TextLayout(display);
+	layout.setText(string);
+	layout.setAscent(lineAscent);
+	layout.setDescent(lineDescent);
+	style = (StyleRange)style.clone();
+	style.metrics = null;
+	if (style.font == null) style.font = getFont(style.fontStyle);
+	layout.setStyle(style, 0, string.length());	
+	int x = paintX + Math.max(0, metrics.width - layout.getBounds().width - BULLET_MARGIN);
+	layout.draw(gc, x, paintY);
 	layout.dispose();
 }
 int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackground, Color widgetForeground) {
@@ -366,13 +409,34 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	}
 
 	// draw objects
-//	Bullet bullet = null;
-//	if (lines != null) {
-//		LineInfo info = lines[lineIndex];
-//		if (info != null) {
-//			if ((info.flags & BULLET) != 0) bullet = info.bullet;
-//		}
-//	}
+	Bullet bullet = null;
+	int bulletIndex = -1;
+	if (bullets != null) {
+		if (bulletsIndices != null) {
+			int index = lineIndex - topIndex;
+			if (0 <= index && index < CACHE_SIZE) {
+				bullet = bullets[index];
+				bulletIndex = bulletsIndices[index];
+			}
+		} else {
+			for (int i = 0; i < bullets.length; i++) {
+				bullet = bullets[i];
+				bulletIndex = bullet.indexOf(lineIndex);
+				if (bulletIndex != -1) break;
+			}
+		}
+	}
+	if (bulletIndex != -1 && bullet != null) {
+		FontMetrics metrics = layout.getLineMetrics(0);
+		int lineAscent = metrics.getAscent() + metrics.getLeading();
+		if (bullet.type == ST.BULLET_CUSTOM) {
+			bullet.style.start = lineOffset;
+			styledText.paintObject(gc, paintX, paintY, lineAscent, metrics.getDescent(), bullet.style, bullet, bulletIndex);
+		} else {
+			drawBullet(bullet, gc, paintX, paintY, bulletIndex, lineAscent, metrics.getDescent());
+		}
+	}
+	
 	TextStyle[] styles = layout.getStyles();
 	int[] ranges = null;
 	for (int i = 0; i < styles.length; i++) {
@@ -386,7 +450,7 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 			style.start = start + lineOffset;
 			style.length = length;
 			int lineAscent = metrics.getAscent() + metrics.getLeading();
-			styledText.paintObject(gc, point.x + paintX, point.y + paintY, lineAscent, metrics.getDescent(), style);
+			styledText.paintObject(gc, point.x + paintX, point.y + paintY, lineAscent, metrics.getDescent(), style, null, 0);
 		}
 	}
 	int height = layout.getBounds().height;
@@ -455,11 +519,12 @@ Color getLineBackground(int index, Color defaultBackground) {
 	}
 	return defaultBackground;
 }
-Bullet getLineBullet(int index, Bullet defaultBullet) {
-	if (lines == null) return defaultBullet;
-	LineInfo info = lines[index];
-	if (info != null && (info.flags & BULLET) != 0) {
-		return info.bullet;
+Bullet getLineBullet (int index, Bullet defaultBullet) {
+	if (bullets == null) return defaultBullet;
+	if (bulletsIndices != null) return defaultBullet;
+	for (int i = 0; i < bullets.length; i++) {
+		Bullet bullet = bullets[i];
+		if (bullet.indexOf(index) != -1) return bullet;
 	}
 	return defaultBullet;
 }
@@ -614,7 +679,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		if (layouts == null || topIndex != this.topIndex) {
 			TextLayout[] newLayouts = new TextLayout[CACHE_SIZE];
 			if (layouts != null) {
-				for(int i = 0; i < layouts.length; i++) {
+				for (int i = 0; i < layouts.length; i++) {
 					if (layouts[i] != null) {
 						int layoutIndex = (i + this.topIndex) - topIndex;
 						if (0 <= layoutIndex && layoutIndex < newLayouts.length) {
@@ -623,6 +688,24 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 							layouts[i].dispose();
 						}
 					}
+				}
+			}
+			if (bullets != null && bulletsIndices != null && topIndex != this.topIndex) {
+				int delta = topIndex - this.topIndex;
+				if (delta > 0) {
+					if (delta < bullets.length) {
+						System.arraycopy(bullets, delta, bullets, 0, bullets.length - delta);
+						System.arraycopy(bulletsIndices, delta, bulletsIndices, 0, bulletsIndices.length - delta);
+					}
+					int startIndex = Math.max(0, bullets.length - delta);
+					for (int i = startIndex; i < bullets.length; i++) bullets[i] = null;
+				} else {
+					if (-delta < bullets.length) {
+						System.arraycopy(bullets, 0, bullets, -delta, bullets.length + delta);
+						System.arraycopy(bulletsIndices, 0, bulletsIndices, -delta, bulletsIndices.length + delta);
+					}
+					int endIndex = Math.min(bullets.length, -delta);
+					for (int i = 0; i < endIndex; i++) bullets[i] = null;
 				}
 			}
 			this.topIndex = topIndex;
@@ -679,6 +762,15 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				}
 			}
 		}
+		if (bullets == null || bulletsIndices == null) {
+			bullets = new Bullet[CACHE_SIZE];
+			bulletsIndices = new int[CACHE_SIZE];
+		}
+		int index = lineIndex - topIndex;
+		if (0 <= index && index < CACHE_SIZE) {
+			bullets[index] = bullet;
+			bulletsIndices[index] = event.bulletIndex;
+		}
 	} else {
 		if (lines != null) {
 			LineInfo info = lines[lineIndex];
@@ -686,8 +778,19 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				if ((info.flags & INDENT) != 0) indent = info.indent;
 				if ((info.flags & ALIGNMENT) != 0) alignment = info.alignment;
 				if ((info.flags & JUSTIFY) != 0) justify = info.justify;
-				if ((info.flags & BULLET) != 0) bullet = info.bullet;
 				if ((info.flags & SEGMENTS) != 0) segments = info.segments;
+			}
+		}
+		if (bulletsIndices != null) {
+			bullets = null;
+			bulletsIndices = null;
+		}
+		if (bullets != null) {
+			for (int i = 0; i < bullets.length; i++) {
+				if (bullets[i].indexOf(lineIndex) != -1) {
+					bullet = bullets[i];
+					break;
+				}
 			}
 		}
 		ranges = this.ranges;
@@ -699,8 +802,11 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			rangeStart = getRangeIndex(lineOffset, -1, styleCount);
 		}
 	}
-	if (bullet != null) indent += bullet.metrics.width;
-	
+	if (bullet != null) {
+		StyleRange style = bullet.style;
+		GlyphMetrics metrics = style.metrics;
+		indent += metrics.width;
+	}
 	layout.setFont(regularFont);
 	layout.setAscent(ascent);
 	layout.setDescent(descent);
@@ -776,6 +882,9 @@ void reset() {
 	lines = null;
 	lineWidth = null;
 	lineHeight = null;
+	bullets = null;
+	bulletsIndices = null;
+	redrawLines = null;
 }
 void reset(int startLine, int lineCount) {
 	int endLine = startLine + lineCount;
@@ -858,13 +967,32 @@ void setLineBackground(int startLine, int count, Color background) {
 	}
 }
 void setLineBullet(int startLine, int count, Bullet bullet) {
-	if (lines == null) lines = new LineInfo[lineCount];
-	for (int i = startLine; i < startLine + count; i++) {
-		if (lines[i] == null) {
-			lines[i] = new LineInfo();
+	if (bulletsIndices != null) {
+		bulletsIndices = null;
+		bullets = null;
+	}
+	if (bullets == null) {
+		if (bullet == null) return;
+		bullets = new Bullet[1];
+		bullets[0] = bullet;
+	}
+	int index = 0;
+	while (index < bullets.length) {
+		if (bullet == bullets[index]) break;
+		index++;
+	}
+	if (bullet != null) {
+		if (index == bullets.length) {
+			Bullet[] newBulletsList = new Bullet[bullets.length + 1];
+			System.arraycopy(bullets, 0, newBulletsList, 0, bullets.length);
+			newBulletsList[index] = bullet;
+			bullets = newBulletsList;
 		}
-		lines[i].flags |= BULLET;
-		lines[i].bullet = bullet;
+		bullet.addIndices(startLine, count);
+	} else {
+		updateBullets(startLine, count, 0, false);
+		styledText.redrawLinesBullet(redrawLines);
+		redrawLines = null;
 	}
 }
 void setLineIndent(int startLine, int count, int indent) {
@@ -1097,6 +1225,7 @@ void textChanging(TextChangingEvent event) {
 				if (0 <= i && i < layouts.length) {
 					if (layouts[i] != null) layouts[i].dispose();
 					layouts[i] = null;
+					if (bullets != null && bulletsIndices != null) bullets[i] = null;
 				}
 			}
 			if (delta > 0) {
@@ -1106,9 +1235,15 @@ void textChanging(TextChangingEvent event) {
 						if (0 <= endIndex && endIndex < layouts.length) {
 							layouts[endIndex] = layouts[i];
 							layouts[i] = null;
+							if (bullets != null && bulletsIndices != null) {
+								bullets[endIndex] = bullets[i];
+								bulletsIndices[endIndex] = bulletsIndices[i];
+								bullets[i] = null;
+							}
 						} else {
 							if (layouts[i] != null) layouts[i].dispose();
 							layouts[i] = null;
+							if (bullets != null && bulletsIndices != null) bullets[i] = null;
 						}
 					}
 				}
@@ -1119,28 +1254,37 @@ void textChanging(TextChangingEvent event) {
 						if (0 <= endIndex && endIndex < layouts.length) {
 							layouts[endIndex] = layouts[i];
 							layouts[i] = null;
+							if (bullets != null && bulletsIndices != null) {
+								bullets[endIndex] = bullets[i];
+								bulletsIndices[endIndex] = bulletsIndices[i];
+								bullets[i] = null;
+							}
 						} else {
 							if (layouts[i] != null) layouts[i].dispose();
 							layouts[i] = null;
+							if (bullets != null && bulletsIndices != null) bullets[i] = null;
 						}
 					}
 				}
 			}
 		}
-		if (lines != null && !(replaceLineCount == 0 && newLineCount == 0)) {
+		if (replaceLineCount != 0 || newLineCount != 0) {
 			int startLineOffset = content.getOffsetAtLine(startLine);
 			if (startLineOffset != start) startLine++;
-			startIndex = startLine + replaceLineCount;
-			endIndex = startLine + newLineCount;
-			System.arraycopy(lines, startIndex, lines, endIndex, lineCount - startIndex);
-			for (int i = startLine; i < endIndex; i++) {
-				lines[i] = null;
-			}
-			for (int i = lineCount + delta; i < lineCount; i++) {
-				lines[i] = null;
+			updateBullets(startLine, replaceLineCount, newLineCount, true);
+			if (lines != null) {
+				startIndex = startLine + replaceLineCount;
+				endIndex = startLine + newLineCount;
+				System.arraycopy(lines, startIndex, lines, endIndex, lineCount - startIndex);
+				for (int i = startLine; i < endIndex; i++) {
+					lines[i] = null;
+				}
+				for (int i = lineCount + delta; i < lineCount; i++) {
+					lines[i] = null;
+				}
 			}
 		}
-		lineCount += delta;		
+		lineCount += delta;
 		if (maxWidthLineIndex != -1 && startLine <= maxWidthLineIndex && maxWidthLineIndex <= startLine + replaceLineCount) {
 			maxWidth = 0;
 			maxWidthLineIndex = -1;
@@ -1151,7 +1295,41 @@ void textChanging(TextChangingEvent event) {
 				}
 			}
 		}
-	}	
+	}
+}
+void updateBullets(int startLine, int replaceLineCount, int newLineCount, boolean update) {
+	if (bullets == null) return;
+	if (bulletsIndices != null) return;
+	for (int i = 0; i < bullets.length; i++) {
+		Bullet bullet = bullets[i];
+		int[] lines = bullet.removeIndices(startLine, replaceLineCount, newLineCount, update);
+		if (lines != null) {
+			if (redrawLines == null) {
+				redrawLines = lines;
+			} else {
+				int[] newRedrawBullets = new int[redrawLines.length + lines.length];
+				System.arraycopy(redrawLines, 0, newRedrawBullets, 0, redrawLines.length);
+				System.arraycopy(lines, 0, newRedrawBullets, redrawLines.length, lines.length);
+				redrawLines = newRedrawBullets;
+			}
+		}
+	}
+	int removed = 0;
+	for (int i = 0; i < bullets.length; i++) {
+		if (bullets[i].size() == 0) removed++;
+	}
+	if (removed > 0) {
+		if (removed == bullets.length) {
+			bullets = null;
+		} else {
+			Bullet[] newBulletsList = new Bullet[bullets.length - removed];
+			for (int i = 0, j = 0; i < bullets.length; i++) {
+				Bullet bullet = bullets[i];
+				if (bullet.size() > 0) newBulletsList[j++] = bullet;
+			}
+			bullets = newBulletsList;
+		}
+	}
 }
 void updateRanges(int start, int replaceCharCount, int newCharCount) {
 	if (styleCount == 0 || (replaceCharCount == 0 && newCharCount == 0)) return;

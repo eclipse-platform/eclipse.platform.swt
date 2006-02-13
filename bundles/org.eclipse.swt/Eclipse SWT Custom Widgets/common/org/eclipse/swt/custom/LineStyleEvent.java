@@ -68,8 +68,15 @@ public class LineStyleEvent extends TypedEvent {
 
 	/**
 	 * line bullet (output)
+	 * @since 3.2
 	 */
-	Bullet bullet;
+	public Bullet bullet;
+
+	/**
+	 * line bullet index (output)
+	 * @since 3.2
+	 */
+	public int bulletIndex;
 	
 	static final long serialVersionUID = 3906081274027192884L;
 	
@@ -80,5 +87,7 @@ public LineStyleEvent(StyledTextEvent e) {
 	alignment = e.alignment;
 	justify = e.justify;
 	indent = e.indent;
+	bullet = e.bullet;
+	bulletIndex = e.bulletIndex;
 }
 }
