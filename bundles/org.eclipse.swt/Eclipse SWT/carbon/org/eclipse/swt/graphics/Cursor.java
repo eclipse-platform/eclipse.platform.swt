@@ -56,41 +56,41 @@ public final class Cursor extends Resource {
 	/**
 	 * data and mask used to create a Resize NS Cursor
 	 */
-	static final short [] SIZENS_SOURCE = new short[] {
-		(short)0x0000,
-		(short)0x0180,
-		(short)0x03C0,
-		(short)0x07E0,
-		(short)0x0180,
-		(short)0x0180,
-		(short)0x0180,
-	 	(short)0x7FFE,
-	 	(short)0x7FFE,
-		(short)0x0180,
-		(short)0x0180,
-		(short)0x0180,
-		(short)0x07E0,
-		(short)0x03C0,
-		(short)0x0180,
-		(short)0x0000,
+	static final byte [] SIZENS_SOURCE = new byte[] {
+		(byte)0x00, (byte)0x00,
+		(byte)0x01, (byte)0x80,
+		(byte)0x03, (byte)0xC0,
+		(byte)0x07, (byte)0xE0,
+		(byte)0x01, (byte)0x80,
+		(byte)0x01, (byte)0x80,
+		(byte)0x01, (byte)0x80,
+	 	(byte)0x7F, (byte)0xFE,
+	 	(byte)0x7F, (byte)0xFE,
+		(byte)0x01, (byte)0x80,
+		(byte)0x01, (byte)0x80,
+		(byte)0x01, (byte)0x80,
+		(byte)0x07, (byte)0xE0,
+		(byte)0x03, (byte)0xC0,
+		(byte)0x01, (byte)0x80,
+		(byte)0x00, (byte)0x00,
 	};
-	static final short [] SIZENS_MASK = new short[] {
-		(short)0x0180,
-		(short)0x03C0,
-		(short)0x07E0,
-		(short)0x0FF0,
-		(short)0x0FF0,
-		(short)0x03C0,
-		(short)0xFFFF,
-	 	(short)0xFFFF,
-	 	(short)0xFFFF,
-		(short)0xFFFF,
-		(short)0x03C0,
-		(short)0x0FF0,
-		(short)0x0FF0,
-		(short)0x07E0,
-		(short)0x03C0,
-		(short)0x0180,
+	static final byte [] SIZENS_MASK = new byte[] {
+		(byte)0x01, (byte)0x80,
+		(byte)0x03, (byte)0xC0,
+		(byte)0x07, (byte)0xE0,
+		(byte)0x0F, (byte)0xF0,
+		(byte)0x0F, (byte)0xF0,
+		(byte)0x03, (byte)0xC0,
+		(byte)0xFF, (byte)0xFF,
+	 	(byte)0xFF, (byte)0xFF,
+	 	(byte)0xFF, (byte)0xFF,
+		(byte)0xFF, (byte)0xFF,
+		(byte)0x03, (byte)0xC0,
+		(byte)0x0F, (byte)0xF0,
+		(byte)0x0F, (byte)0xF0,
+		(byte)0x07, (byte)0xE0,
+		(byte)0x03, (byte)0xC0,
+		(byte)0x01, (byte)0x80,
 	};
 	
 /**
@@ -289,8 +289,8 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 
 	/* Create the cursor */
 	org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-	short[] srcData = cursor.data;
-	short[] maskData = cursor.mask;
+	byte[] srcData = cursor.data;
+	byte[] maskData = cursor.mask;
 	for (int y = 0; y < height; y++) {
 		short d = 0, m = 0;
 		for (int x = 0; x < width; x++) {
@@ -302,8 +302,10 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 				d |= bit;
 			}
 		}
-		srcData[y] = d;
-		maskData[y] = m;
+		srcData[y * 2] = (byte)(d >> 8);
+		srcData[y * 2 + 1] = (byte)(d & 0xFF);
+		maskData[y * 2] = (byte)(m >> 8);
+		maskData[y * 2 + 1] = (byte)(m & 0xFF);
 	}
 	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotY - minX));
 	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
@@ -425,8 +427,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 
 	/* Create the cursor */
 	org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-	short[] srcData = cursor.data;
-	short[] maskData = cursor.mask;
+	byte[] srcData = cursor.data;
+	byte[] maskData = cursor.mask;
 	for (int y= 0; y < height; y++) {
 		short d = 0, m = 0;
 		for (int x = 0; x < width; x++) {
@@ -440,8 +442,10 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 				if (mask.getPixel(x + minX, y + minY) != 0) m |= bit;
 			}
 		}
-		srcData[y] = d;
-		maskData[y] = m;
+		srcData[y * 2] = (byte)(d >> 8);
+		srcData[y * 2 + 1] = (byte)(d & 0xFF);
+		maskData[y * 2] = (byte)(m >> 8);
+		maskData[y * 2 + 1] = (byte)(m & 0xFF);
 	}
 	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotY - minX));
 	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));

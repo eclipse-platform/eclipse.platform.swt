@@ -925,8 +925,8 @@ void cacheCursorFields(JNIEnv *env, jobject lpObject)
 {
 	if (CursorFc.cached) return;
 	CursorFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	CursorFc.data = (*env)->GetFieldID(env, CursorFc.clazz, "data", "[S");
-	CursorFc.mask = (*env)->GetFieldID(env, CursorFc.clazz, "mask", "[S");
+	CursorFc.data = (*env)->GetFieldID(env, CursorFc.clazz, "data", "[B");
+	CursorFc.mask = (*env)->GetFieldID(env, CursorFc.clazz, "mask", "[B");
 	CursorFc.hotSpot_v = (*env)->GetFieldID(env, CursorFc.clazz, "hotSpot_v", "S");
 	CursorFc.hotSpot_h = (*env)->GetFieldID(env, CursorFc.clazz, "hotSpot_h", "S");
 	CursorFc.cached = 1;
@@ -936,12 +936,12 @@ Cursor *getCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 {
 	if (!CursorFc.cached) cacheCursorFields(env, lpObject);
 	{
-	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, CursorFc.data);
-	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, (jshort *)lpStruct->data);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, CursorFc.data);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data), (jbyte *)lpStruct->data);
 	}
 	{
-	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, CursorFc.mask);
-	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask) / 2, (jshort *)lpStruct->mask);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, CursorFc.mask);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask), (jbyte *)lpStruct->mask);
 	}
 	lpStruct->hotSpot.v = (*env)->GetShortField(env, lpObject, CursorFc.hotSpot_v);
 	lpStruct->hotSpot.h = (*env)->GetShortField(env, lpObject, CursorFc.hotSpot_h);
@@ -952,12 +952,12 @@ void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 {
 	if (!CursorFc.cached) cacheCursorFields(env, lpObject);
 	{
-	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, CursorFc.data);
-	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, (jshort *)lpStruct->data);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, CursorFc.data);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data), (jbyte *)lpStruct->data);
 	}
 	{
-	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, CursorFc.mask);
-	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask) / 2, (jshort *)lpStruct->mask);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, CursorFc.mask);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->mask), (jbyte *)lpStruct->mask);
 	}
 	(*env)->SetShortField(env, lpObject, CursorFc.hotSpot_v, (jshort)lpStruct->hotSpot.v);
 	(*env)->SetShortField(env, lpObject, CursorFc.hotSpot_h, (jshort)lpStruct->hotSpot.h);
