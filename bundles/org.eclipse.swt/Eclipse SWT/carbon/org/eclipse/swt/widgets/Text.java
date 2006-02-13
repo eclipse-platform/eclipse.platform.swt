@@ -68,7 +68,7 @@ public class Text extends Scrollable {
 	* this delimiter.
 	*/
 	public static final String DELIMITER;
-	static final char PASSWORD = '\245';
+	static final char PASSWORD = '\u2022';
 
 	/*
 	* These values can be different on different platforms.
@@ -1711,7 +1711,7 @@ public void setEchoChar (char echo) {
 			setSelection (selection);
 		}
 	} else {
-		OS.TXNEchoMode (txnObject, echo, 0, echo != '\0');
+		OS.TXNEchoMode (txnObject, echo, OS.kTextEncodingMacUnicode, echo != '\0');
 	}
 	echoCharacter = echo;
 }

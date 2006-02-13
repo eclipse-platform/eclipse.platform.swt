@@ -682,6 +682,7 @@ public class OS extends Platform {
 	public static final int kTXNAutoScrollBehaviorTag = ('s'<<24) + ('b'<<16) + ('e'<<8) + 'v';
 	public static final int kTXNWantHScrollBarMask = 1 << 2;
 	public static final int kTXNWantVScrollBarMask = 1 << 3;
+	public static final int kTextEncodingMacUnicode = 0x7E;
 	public static final int kTextEncodingMacRoman = 0;
 	public static final int kTextLanguageDontCare = -128;
 	public static final int kTextRegionDontCare = -128;
