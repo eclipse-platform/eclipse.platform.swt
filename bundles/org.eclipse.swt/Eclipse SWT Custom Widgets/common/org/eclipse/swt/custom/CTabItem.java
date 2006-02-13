@@ -361,14 +361,10 @@ void drawSelected(GC gc ) {
 		if (!parent.single && closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
 		if (imageBounds.width < maxImageWidth) {
 			int imageX = xDraw;
-			int imageHeight = imageBounds.height;
-			int imageY = y + (height - imageHeight) / 2;
+			int imageY = y + (height - imageBounds.height) / 2;
 			imageY += parent.onBottom ? -1 : 1;
-			int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
-			gc.drawImage(image, 
-				         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
-				         imageX, imageY, imageWidth, imageHeight);
-			xDraw += imageWidth + INTERNAL_SPACING;
+			gc.drawImage(image, imageX, imageY);
+			xDraw += imageBounds.width + INTERNAL_SPACING;
 		}
 	}
 	
