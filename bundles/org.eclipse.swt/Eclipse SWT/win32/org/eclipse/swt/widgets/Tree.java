@@ -125,11 +125,20 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.MeasureItem:
 		case SWT.EraseItem:
 		case SWT.PaintItem:
-			if (hwndHeader == 0) {
-				createParent ();
-				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-				bits |= OS.TVS_NOHSCROLL;
-				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			if (hwndHeader == 0) createParent ();
+			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+			/*
+			* Feature in Windows.  When the tree has the style
+			* TVS_FULLROWSELECT, the background color for the
+			* entire row is filled when an item is painted,
+			* drawing on top of any custom drawing.  The fix
+			* is to clear TVS_FULLROWSELECT.
+			*/
+			if ((style & SWT.FULL_SELECTION) != 0) newBits &= ~OS.TVS_FULLROWSELECT;
+			newBits |= OS.TVS_NOHSCROLL;
+			if (newBits != oldBits) {
+				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+				OS.InvalidateRect (handle, null, true);
 				/*
 				* Bug in Windows.  When TVS_NOHSCROLL is set after items
 				* have been inserted into the tree, Windows shows the
@@ -2479,12 +2488,21 @@ void setBackgroundImage (int hBitmap) {
 			setBackgroundPixel (control.getBackgroundPixel ());
 		}
 	}
+	/*
+	* Feature in Windows.  When the tree has the style
+	* TVS_FULLROWSELECT, the background color for the
+	* entire row is filled when an item is painted,
+	* drawing on top of the background image.  The fix
+	* is to set and clear TVS_FULLROWSELECT.
+	*/
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if (hBitmap != 0) {
 			bits &= ~OS.TVS_FULLROWSELECT;
 		} else {
-			bits |= OS.TVS_FULLROWSELECT;
+			if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+				bits |= OS.TVS_FULLROWSELECT;
+			}
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		OS.InvalidateRect (handle, null, true);

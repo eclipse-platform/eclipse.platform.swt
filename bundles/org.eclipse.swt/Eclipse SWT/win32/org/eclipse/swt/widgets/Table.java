@@ -2553,17 +2553,6 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 
 void setBackgroundImage (int hBitmap) {
 	setBackgroundTransparent (hBitmap != 0);
-	if (hBitmap != 0) {
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			int bits = OS.LVS_EX_FULLROWSELECT;
-			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
-		}
-	} else {
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			int bits = OS.LVS_EX_FULLROWSELECT;
-			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
-		}
-	}
 }
 
 void setBackgroundPixel (int newPixel) {
@@ -2584,17 +2573,30 @@ void setBackgroundPixel (int newPixel) {
 }
 
 void setBackgroundTransparent (boolean transparent) {
+	/*
+	* Bug in Windows.  When the table has the extended style
+	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+	* CLR_NONE to make the table transparent, Windows draws
+	* a black rectangle around the first column.  The fix is
+	* to set and clear LVS_EX_FULLROWSELECT.
+	*/
 	int oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
 	if (transparent) {
 		if (oldPixel != OS.CLR_NONE) {
-			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
-			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
 			/*
 			* Feature in Windows.  When the background color is changed,
 			* the table does not redraw until the next WM_PAINT.  The fix
 			* is to force a redraw.
 			*/
+			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
+			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
 			OS.InvalidateRect (handle, null, true);
+			
+			/* Clear LVS_EX_FULLROWSELECT */
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				int bits = OS.LVS_EX_FULLROWSELECT;
+				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
+			}
 		}
 	} else {
 		if (oldPixel == OS.CLR_NONE) {
@@ -2602,6 +2604,14 @@ void setBackgroundTransparent (boolean transparent) {
 			if (control == null) control = this;
 			if (control.backgroundImage == null) {
 				setBackgroundPixel (control.getBackgroundPixel ());
+			}
+			
+			/* Set LVS_EX_FULLROWSELECT */
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+					int bits = OS.LVS_EX_FULLROWSELECT;
+					OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+				}
 			}
 		}
 	}
