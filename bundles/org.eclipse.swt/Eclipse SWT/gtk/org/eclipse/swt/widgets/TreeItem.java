@@ -212,27 +212,15 @@ void clear () {
 			OS.gtk_tree_store_set (parent.modelHandle, handle, i, 0, -1);
 		}
 		/*
-		* Bug in GTK.  When using fixed-height-mode on versions before 2.6.3,
+		* Bug in GTK.  When using fixed-height-mode,
 		* row changes do not cause the row to be repainted.  The fix is to
 		* invalidate the row when it is cleared.
 		*/
 		if ((parent.style & SWT.VIRTUAL) != 0) {
-			if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
-				if ((OS.GTK_WIDGET_FLAGS (parent.handle) & OS.GTK_REALIZED) != 0) {
-					int /*long*/ parentHandle = parent.handle;
-					int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
-					// TODO scrolling affects rect
-					GdkRectangle rect = new GdkRectangle ();
-					OS.gtk_tree_view_get_cell_area (parentHandle, path, 0, rect);
-					OS.gtk_tree_path_free (path);
-					int /*long*/ window = OS.gtk_tree_view_get_bin_window (parentHandle);
-					rect.x = 0;
-					rect.width = OS.GTK_WIDGET_WIDTH (parentHandle);
-					OS.gdk_window_invalidate_rect (window, rect, false);
-				}
+			if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
+				redraw ();
 			}
 		}
-		
 	}
 	cached = false;
 	font = null;
@@ -891,6 +879,22 @@ public int indexOf (TreeItem item) {
 	return index;
 }
 
+void redraw () {
+	int /*long*/ parentHandle = parent.handle;
+	if ((OS.GTK_WIDGET_FLAGS (parentHandle) & OS.GTK_REALIZED) != 0) {
+		int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+		GdkRectangle rect = new GdkRectangle ();
+		OS.gtk_tree_view_get_cell_area (parentHandle, path, 0, rect);
+		OS.gtk_tree_path_free (path);
+		int /*long*/ window = OS.gtk_tree_view_get_bin_window (parentHandle);
+		rect.x = 0;
+		int [] w = new int [1], h = new int [1];
+		OS.gdk_drawable_get_size (window, w, h);
+		rect.width = w [0];
+		OS.gdk_window_invalidate_rect (window, rect, false);
+	}
+}
+
 void releaseChildren (boolean destroy) {
 	if (destroy) {
 		parent.releaseItems (handle);
@@ -1315,27 +1319,35 @@ public void setImage (int index, Image image) {
 	}
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
-	if (image != null) {
-		int /*long*/parentHandle = parent.handle;
-		int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
-		if (OS.gtk_tree_view_column_get_sizing (column) == OS.GTK_TREE_VIEW_COLUMN_FIXED) {
-			parent.setScrollWidth (column, this);
-			/*
-			* Bug in GTK.  When in fixed height mode, GTK does not recalculate the cell renderer width
-			* when the image is changed in the model.  The fix is to force it to recalculate the width if
-			* more space is required.
-			*/
-			int [] w = new int [1];
-			int /*long*/ pixbufRenderer = parent.getPixbufRenderer(column);
-			OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
-			if (w[0] < image.getBounds().width) {
-				/*
-				 * There is no direct way to clear the cell renderer width so we
-				 * are relying on the fact that it is done as part of modifying
-				 * the style.
-				 */
-				int /*long*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
-				OS.gtk_widget_modify_style (parentHandle, style);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when the image changes.
+	* 
+	* Bug in GTK.  When using fixed-height-mode, GTK does not recalculate the cell renderer width
+	* when the image is changed in the model.  The fix is to force it to recalculate the width if
+	* more space is required.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
+			if (parent.columnCount == 0) {
+				redraw ();
+			}
+			if (image != null) {
+				int /*long*/parentHandle = parent.handle;
+				int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
+				int [] w = new int [1];
+				int /*long*/ pixbufRenderer = parent.getPixbufRenderer(column);
+				OS.gtk_tree_view_column_cell_get_position (column, pixbufRenderer, null, w);
+				if (w[0] < image.getBounds().width) {
+					/*
+					 * There is no direct way to clear the cell renderer width so we
+					 * are relying on the fact that it is done as part of modifying
+					 * the style.
+					 */
+					int /*long*/ style = OS.gtk_widget_get_modifier_style (parentHandle);
+					OS.gtk_widget_modify_style (parentHandle, style);
+				}
 			} 
 		}
 	}
@@ -1401,10 +1413,15 @@ public void setText (int index, String string) {
 	byte[] buffer = Converter.wcsToMbcs (null, string, true);
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, buffer, -1);
-	int /*long*/parentHandle = parent.handle;
-	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
-	if (OS.gtk_tree_view_column_get_sizing (column) == OS.GTK_TREE_VIEW_COLUMN_FIXED) {
-		parent.setScrollWidth (column, this);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when the text changes.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
+			redraw ();
+		}
 	}
 	cached = true;
 }
