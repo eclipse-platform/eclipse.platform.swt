@@ -458,6 +458,9 @@ public class OS extends Platform {
 	public static final int kThemeRightTrackPressed = 0x10;
 	public static final int kThemeRightInsideArrowPressed = 0x20;
 	public static final int kThemeRightOutsideArrowPressed = 0x40;
+	public static final int kThemeScrollBarMedium = 0;
+	public static final int kThemeSliderMedium = 2;
+	public static final int kThemeProgressBarMedium = 3;
 	public static final int kThemeTrackActive = 0;
 	public static final int kThemeTrackDisabled = 1;
 	public static final int kThemeTrackNothingToScroll = 2;
