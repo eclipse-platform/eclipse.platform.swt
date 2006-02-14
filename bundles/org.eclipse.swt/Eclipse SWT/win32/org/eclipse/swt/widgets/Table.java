@@ -4735,9 +4735,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						ignoreDraw = !event.doit;
 						if (ignoreDraw) {
 							RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false);
+							OS.SaveDC (hDC);
 							OS.SelectClipRgn (hDC, 0);
 							OS.ExcludeClipRect (hDC, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
-							OS.SaveDC (hDC);
 						}
 					}
 					/*
