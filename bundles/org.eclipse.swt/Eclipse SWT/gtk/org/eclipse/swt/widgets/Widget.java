@@ -1040,7 +1040,7 @@ int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ handle, int /*
 	return 0;
 }
 
-int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*long*/ handle, int /*long*/ background_area, int /*long*/ cell_area, int /*long*/ expose_area, int  /*long*/ flags) {
+int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*long*/ handle, int /*long*/ background_area, int /*long*/ cell_area, int /*long*/ expose_area, int /*long*/ flags) {
 	return 0;
 }
 

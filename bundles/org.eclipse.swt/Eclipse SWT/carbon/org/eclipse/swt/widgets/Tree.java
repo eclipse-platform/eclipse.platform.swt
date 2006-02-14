@@ -1004,6 +1004,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.CGContextSaveGState (gc.handle);
 	boolean draw = true;
 	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
+	selected |= (itemState & OS.kDataBrowserItemIsDragTarget) != 0;
 	boolean focused = false;
 	Control control = findBackgroundControl ();
 	boolean controlBackground = control != null && (control.background != null || control.backgroundImage != null);
