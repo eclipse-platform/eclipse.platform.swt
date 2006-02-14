@@ -7113,7 +7113,7 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
  *
  * @param startLine first line the bullet is applied to, 0 based
  * @param lineCount number of lines the bullet applies to.
- * @param indent line indent
+ * @param bullet line bullet
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

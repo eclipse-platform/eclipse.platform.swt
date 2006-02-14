@@ -19,8 +19,6 @@ public class ST {
 	/**
 	 *  Navigation Key Actions. Key bindings for the actions are set
 	 *  by the StyledText widget.
-	 *    
-	 *  @see StyledText#createKeyBindings()
 	 */	
 	public static final int LINE_UP = 16777217; 			// binding = SWT.ARROW_UP
 	public static final int LINE_DOWN = 16777218; 		// binding = SWT.ARROW_DOWN
