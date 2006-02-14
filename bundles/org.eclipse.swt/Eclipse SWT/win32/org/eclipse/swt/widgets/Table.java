@@ -3033,7 +3033,7 @@ void setItemHeight (boolean fixScroll) {
 		/*
 		* Feature in Windows.  Windows has no API to restore the
 		* defualt item height for a table.  The fix is to use
-		* WM_SEFONT which recomputes and assigns the default item
+		* WM_SETFONT which recomputes and assigns the default item
 		* height.
 		*/
 		int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
