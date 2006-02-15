@@ -3011,6 +3011,7 @@ public void setItemCount (int count) {
 		}
 	}
 	if (!isVirtual) setRedraw (true);
+	if (itemCount == 0) setScrollWidth (null, false);
 	setDeferResize (false);
 }
 
