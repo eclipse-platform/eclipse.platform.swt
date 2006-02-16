@@ -39,8 +39,9 @@ public static void main(String[] args) {
 	}
 
 	Button button = new Button(shell, SWT.PUSH);
-	button.setBounds(10, 180, 50, 30);
 	button.setText("Change");
+	button.pack();
+	button.setLocation(10, 180);
 	button.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			for (int i = 0; i < 4; i++) {

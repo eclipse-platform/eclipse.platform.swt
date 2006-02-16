@@ -27,6 +27,11 @@ public static void main(String[] args) {
 	final Display display = new Display();
 	final int [] count = new int [] {4};
 	final Image image = new Image(display, 300, 300);
+	GC gc = new GC(image);
+	gc.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+	gc.fillRectangle(image.getBounds());
+	gc.drawText("Splash Screen", 10, 10);
+	gc.dispose();
 	final Shell splash = new Shell(SWT.ON_TOP);
 	final ProgressBar bar = new ProgressBar(splash, SWT.NONE);
 	bar.setMaximum(count[0]);
