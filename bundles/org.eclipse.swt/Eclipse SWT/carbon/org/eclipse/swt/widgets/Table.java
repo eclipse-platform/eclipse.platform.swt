@@ -163,21 +163,25 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 	if (OS.HIVIEW) {
 		Control widget = findBackgroundControl ();
 		if (widget != null) {
-			int rc = -1;
-			Rect itemRect = new Rect();
-			if (columnCount == 0) {
-				rc = OS.GetDataBrowserItemPartBounds (handle, itemCount, column_id, OS.kDataBrowserPropertyEnclosingPart, itemRect);
-			} else {
-				for (int i = 0; i < columnCount && rc != OS.noErr; i++) {
-					rc = OS.GetDataBrowserItemPartBounds (handle, itemCount, columns [i].id, OS.kDataBrowserPropertyEnclosingPart, itemRect);						
+			Rectangle rect = getClientArea ();
+			int headerHeight = getHeaderHeight ();
+			rect.y += headerHeight;
+			rect.height -= headerHeight;
+			if (itemCount != 0) {
+				Rect itemRect = new Rect();
+				if (columnCount == 0) {
+					OS.GetDataBrowserItemPartBounds (handle, itemCount, column_id, OS.kDataBrowserPropertyEnclosingPart, itemRect);
+				} else {
+					for (int i = 0; i < columnCount; i++) {
+						if (OS.GetDataBrowserItemPartBounds (handle, itemCount, columns [i].id, OS.kDataBrowserPropertyEnclosingPart, itemRect) == OS.noErr) {
+							break;						
+						}
+					}
 				}
-			}
-			if (rc == OS.noErr) {
-				Rectangle rect = getClientArea ();
 				rect.height = rect.y + rect.height - itemRect.bottom;
 				rect.y = itemRect.bottom;
-				fillBackground (handle, paintGC.handle, rect);
 			}
+			fillBackground (handle, paintGC.handle, rect);
 		}
 	}
 	if (fixScrollWidth) {

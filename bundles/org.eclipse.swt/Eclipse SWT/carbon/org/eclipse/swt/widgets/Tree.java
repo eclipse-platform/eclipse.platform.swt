@@ -314,41 +314,45 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 	if (OS.HIVIEW) {
 		Control widget = findBackgroundControl ();
 		if (widget != null) {
-			int [] ids = childIds, state = new int [1];
-			int index = ids.length - 1;
-			while (true) {
-				while (index >= 0 && ids [index] == 0) index--;
-				if (index < 0) break;
-				OS.GetDataBrowserItemState (handle, ids [index], state);
-				if ((state [0] & OS.kDataBrowserContainerIsOpen) != 0) {
-					TreeItem item = items [ids [index] - 1];
-					if (item != null) {
-						ids = item.childIds;
-						index = ids.length - 1;
+			Rectangle rect = getClientArea ();
+			int headerHeight = getHeaderHeight ();
+			rect.y += headerHeight;
+			rect.height -= headerHeight;
+			if (childIds != null) {
+				int [] ids = childIds, state = new int [1];
+				int index = ids.length - 1;
+				while (true) {
+					while (index >= 0 && ids [index] == 0) index--;
+					if (index < 0) break;
+					OS.GetDataBrowserItemState (handle, ids [index], state);
+					if ((state [0] & OS.kDataBrowserContainerIsOpen) != 0) {
+						TreeItem item = items [ids [index] - 1];
+						if (item != null) {
+							ids = item.childIds;
+							index = ids.length - 1;
+						} else {
+							break;
+						}
 					} else {
 						break;
 					}
-				} else {
-					break;
 				}
-			}
-			if (index >= 0 && ids [index] != 0) {
-				int rc = -1;
-				Rect itemRect = new Rect();
-				if (columnCount == 0) {
-					rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], column_id, OS.kDataBrowserPropertyEnclosingPart, itemRect);
-				} else {
-					for (int i = 0; i < columnCount && rc != OS.noErr; i++) {
-						rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], columns [i].id, OS.kDataBrowserPropertyEnclosingPart, itemRect);						
+				if (index >= 0 && ids [index] != 0) {
+					Rect itemRect = new Rect();
+					if (columnCount == 0) {
+						OS.GetDataBrowserItemPartBounds (handle, ids [index], column_id, OS.kDataBrowserPropertyEnclosingPart, itemRect);
+					} else {
+						for (int i = 0; i < columnCount; i++) {
+							if (OS.GetDataBrowserItemPartBounds (handle, ids [index], columns [i].id, OS.kDataBrowserPropertyEnclosingPart, itemRect) == OS.noErr) {
+								break;
+							}
+						}
 					}
-				}
-				if (rc == OS.noErr) {
-					Rectangle rect = getClientArea ();
 					rect.height = rect.y + rect.height - itemRect.bottom;
 					rect.y = itemRect.bottom;
-					fillBackground (handle, paintGC.handle, rect);
 				}
 			}
+			fillBackground (handle, paintGC.handle, rect);
 		}
 	}
 	if (currentGC == null) {
