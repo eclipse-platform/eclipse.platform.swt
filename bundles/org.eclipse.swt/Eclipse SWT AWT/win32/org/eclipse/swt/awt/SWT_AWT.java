@@ -139,7 +139,7 @@ public static Frame new_Frame (final Composite parent) {
 	final int handle = parent.handle;	
 	final Frame[] result = new Frame[1];
 	final Throwable[] exception = new Throwable[1];
-	EventQueue.invokeLater(new Runnable () {
+	Runnable runnable = new Runnable () {
 		public void run () {
 			try {
 				/*
@@ -188,22 +188,27 @@ public static Frame new_Frame (final Composite parent) {
 				}
 			}
 		}
-	});
-	boolean interrupted = false;
-	MSG msg = new MSG ();
-	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
-	while (result[0] == null && exception[0] == null) {
-		OS.PeekMessage (msg, 0, 0, 0, flags);
-		try {
-			synchronized (result) {
-				result.wait(50);
+	};
+	if (EventQueue.isDispatchThread()) {
+		runnable.run();
+	} else {
+		EventQueue.invokeLater(runnable);
+		boolean interrupted = false;
+		MSG msg = new MSG ();
+		int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
+		while (result[0] == null && exception[0] == null) {
+			OS.PeekMessage (msg, 0, 0, 0, flags);
+			try {
+				synchronized (result) {
+					result.wait(50);
+				}
+			} catch (InterruptedException e) {
+				interrupted = true;
 			}
-		} catch (InterruptedException e) {
-			interrupted = true;
 		}
-	}
-	if (interrupted) {
-		Compatibility.interrupt();
+		if (interrupted) {
+			Compatibility.interrupt();
+		}
 	}
 	if (exception[0] != null) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, exception[0]);	
