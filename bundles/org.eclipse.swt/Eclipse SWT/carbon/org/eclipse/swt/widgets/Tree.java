@@ -1008,7 +1008,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.SectRgn (clip, itemRgn, itemRgn);
 	OS.DisposeRgn (clip);
 	Region region = Region.carbon_new (display, itemRgn);
-	gc.setClipping (region);
 	boolean draw = true;
 	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
 	selected |= (itemState & OS.kDataBrowserItemIsDragTarget) != 0;
@@ -1030,6 +1029,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			}
 		}
 	}
+	gc.setClipping (region);
 	if (selected) {
 		gc.setBackground (display.getSystemColor(SWT.COLOR_LIST_SELECTION));
 		gc.setForeground (display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
