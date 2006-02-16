@@ -22,7 +22,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /* AWT Imports */
 import java.awt.EventQueue;
@@ -135,45 +136,80 @@ public static Frame new_Frame (final Composite parent) {
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int handle = parent.handle;
-	/*
-	 * Some JREs have implemented the embedded frame constructor to take an integer
-	 * and other JREs take a long.  To handle this binary incompatability, use
-	 * reflection to create the embedded frame.
-	 */
-	Class clazz = null;
-	try {
-		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
-		clazz = Class.forName(className);
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
-	}
-	Constructor constructor = null;
-	try {
-		constructor = clazz.getConstructor (new Class [] {int.class});
-	} catch (Throwable e1) {
+	final int handle = parent.handle;	
+	final Frame[] result = new Frame[1];
+	final Throwable[] exception = new Throwable[1];
+	EventQueue.invokeLater(new Runnable () {
+		public void run () {
+			try {
+				/*
+				 * Some JREs have implemented the embedded frame constructor to take an integer
+				 * and other JREs take a long.  To handle this binary incompatability, use
+				 * reflection to create the embedded frame.
+				 */
+				Class clazz = null;
+				try {
+					String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
+					clazz = Class.forName(className);
+				} catch (Throwable e) {
+					exception[0] = e;
+					return;
+				}
+				Constructor constructor = null;
+				try {
+					constructor = clazz.getConstructor (new Class [] {int.class});
+				} catch (Throwable e1) {
+					try {
+						constructor = clazz.getConstructor (new Class [] {long.class});
+					} catch (Throwable e2) {
+						exception[0] = e2;
+						return;
+					}
+				}
+				initializeSwing ();
+				Object value = null;
+				try {
+					value = constructor.newInstance (new Object [] {new Integer (handle)});
+				} catch (Throwable e) {
+					exception[0] = e;
+					return;
+				}
+				final Frame frame = (Frame) value;
+				/*
+				 * This is necessary to make lightweight components
+				 * directly added to the frame receive mouse events
+				 * properly.
+				 */
+				frame.addNotify();
+				result[0] = frame;
+			} finally {
+				synchronized(result) {
+					result.notify();
+				}
+			}
+		}
+	});
+	boolean interrupted = false;
+	MSG msg = new MSG ();
+	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
+	while (result[0] == null && exception[0] == null) {
+		OS.PeekMessage (msg, 0, 0, 0, flags);
 		try {
-			constructor = clazz.getConstructor (new Class [] {long.class});
-		} catch (Throwable e2) {
-			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
+			synchronized (result) {
+				result.wait(50);
+			}
+		} catch (InterruptedException e) {
+			interrupted = true;
 		}
 	}
-	initializeSwing ();
-	Object value = null;
-	try {
-		value = constructor.newInstance (new Object [] {new Integer (handle)});
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+	if (interrupted) {
+		Compatibility.interrupt();
 	}
-	final Frame frame = (Frame) value;
-	parent.setData(EMBEDDED_FRAME_KEY, frame);
-	
-	/*
-	* This is necessary to make lightweight components
-	* directly added to the frame receive mouse events
-	* properly.
-	*/
-	frame.addNotify();
+	if (exception[0] != null) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, exception[0]);	
+	}
+	final Frame frame = result[0];	
+	parent.setData(EMBEDDED_FRAME_KEY, frame);	
 	
 	/* Forward the iconify and deiconify events */
 	final Listener shellListener = new Listener () {
