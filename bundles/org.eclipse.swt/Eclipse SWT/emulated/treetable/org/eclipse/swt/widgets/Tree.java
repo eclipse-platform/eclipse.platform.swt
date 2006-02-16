@@ -662,22 +662,6 @@ void destroyItem (TreeItem item) {
 	if (item == insertMarkItem) insertMarkItem = null;
 	if (item == lastClickedItem) lastClickedItem = null;
 }
-TreeItem[] getAllItems () {
-	int childCount = items.length;
-	TreeItem[][] childResults = new TreeItem [childCount][];
-	int count = 0;
-	for (int i = 0; i < childCount; i++) {
-		childResults [i] = items [i].computeAllDescendents ();
-		count += childResults [i].length;
-	}
-	TreeItem[] result = new TreeItem [count];
-	int index = 0;
-	for (int i = 0; i < childCount; i++) {
-		System.arraycopy (childResults [i], 0, result, index, childResults [i].length);
-		index += childResults [i].length;
-	}
-	return result;
-}
 Image getArrowDownImage () {
 	return (Image) display.getData (ID_ARROWDOWN);
 }
@@ -3108,9 +3092,8 @@ public void removeTreeListener (TreeListener listener) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	TreeItem[] items = getAllItems ();
-	selectedItems = new TreeItem [items.length];
-	System.arraycopy (items, 0, selectedItems, 0, items.length);
+	selectedItems = new TreeItem [availableItemsCount];
+	System.arraycopy (availableItems, 0, selectedItems, 0, availableItemsCount);
 	redraw ();
 }
 void selectItem (TreeItem item, boolean addToSelection) {
