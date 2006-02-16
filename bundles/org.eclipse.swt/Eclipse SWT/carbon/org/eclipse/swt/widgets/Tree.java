@@ -327,7 +327,7 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 					OS.GetDataBrowserItemState (handle, ids [index], state);
 					if ((state [0] & OS.kDataBrowserContainerIsOpen) != 0) {
 						TreeItem item = items [ids [index] - 1];
-						if (item != null) {
+						if (item != null && item.childIds != null) {
 							ids = item.childIds;
 							index = ids.length - 1;
 						} else {
