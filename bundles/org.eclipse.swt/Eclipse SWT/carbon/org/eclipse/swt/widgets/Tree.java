@@ -315,10 +315,7 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		Control widget = findBackgroundControl ();
 		if (widget != null) {
 			Rectangle rect = getClientArea ();
-			int headerHeight = getHeaderHeight ();
-			rect.y += headerHeight;
-			rect.height -= headerHeight;
-			if (childIds != null) {
+			if (getItemCount () != 0 && childIds != null) {
 				int [] ids = childIds, state = new int [1];
 				int index = ids.length - 1;
 				while (true) {
@@ -338,21 +335,29 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 					}
 				}
 				if (index >= 0 && ids [index] != 0) {
+					int rc = -1;
 					Rect itemRect = new Rect();
 					if (columnCount == 0) {
-						OS.GetDataBrowserItemPartBounds (handle, ids [index], column_id, OS.kDataBrowserPropertyEnclosingPart, itemRect);
+						rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], column_id, OS.kDataBrowserPropertyEnclosingPart, itemRect);
 					} else {
 						for (int i = 0; i < columnCount; i++) {
-							if (OS.GetDataBrowserItemPartBounds (handle, ids [index], columns [i].id, OS.kDataBrowserPropertyEnclosingPart, itemRect) == OS.noErr) {
+							if ((rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], columns [i].id, OS.kDataBrowserPropertyEnclosingPart, itemRect)) == OS.noErr) {
 								break;
 							}
 						}
 					}
-					rect.height = rect.y + rect.height - itemRect.bottom;
-					rect.y = itemRect.bottom;
+					if (rc == OS.noErr) {
+						rect.height = rect.y + rect.height - itemRect.bottom;
+						rect.y = itemRect.bottom;
+						fillBackground (handle, paintGC.handle, rect);
+					}
 				}
+			} else {
+				int headerHeight = getHeaderHeight ();
+				rect.y += headerHeight;
+				rect.height -= headerHeight;
+				fillBackground (handle, paintGC.handle, rect);
 			}
-			fillBackground (handle, paintGC.handle, rect);
 		}
 	}
 	if (currentGC == null) {
