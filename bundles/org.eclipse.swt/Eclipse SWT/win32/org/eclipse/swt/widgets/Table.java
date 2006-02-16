@@ -4513,10 +4513,23 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
-			if (resizeCount != 0) {
-				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, plvfi.iItem, plvfi.iItem);
-				break;
+			
+			/*
+			* When an item is being deleted from a virtual table, do not
+			* allow the application to provide data for a new item that
+			* becomes visible until the item has been removed from the
+			* items array.  Because arbitrary application code can run
+			* during the callback, the items array might be accessed
+			* in an inconsistent state.  Rather than answering the data
+			* right away, queue a redraw for later.
+			*/
+			if ((style & SWT.VIRTUAL) != 0) {
+				if (ignoreShrink) {
+					OS.SendMessage (handle, OS.LVM_REDRAWITEMS, plvfi.iItem, plvfi.iItem);
+					break;
+				}
 			}
+			
 			TableItem item = _getItem (plvfi.iItem);
 			/*
 			* The cached flag is used by both virtual and non-virtual
