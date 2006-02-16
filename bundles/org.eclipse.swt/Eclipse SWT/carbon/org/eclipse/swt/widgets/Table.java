@@ -949,9 +949,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int y = rect.top - offsetY;
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	int itemRgn = OS.NewRgn ();
-	OS.RectRgn (itemRgn, rect);
-	if (!OS.HIVIEW) OS.OffsetRgn (itemRgn, (short)-offsetX, (short)-offsetY);
 	GC gc = paintGC;
 	if (gc == null) {
 		GCData data = new GCData ();
@@ -959,14 +956,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		OS.GetPort (port);
 		data.port = port [0];
 		gc = GC.carbon_new (this, data);
-		if (!OS.HIVIEW) {
-			int clip = OS.NewRgn ();
-			OS.GetClip (clip);
-			if (!OS.HIVIEW) OS.OffsetRgn (clip, (short)-offsetX, (short)-offsetY);
-			OS.SectRgn (clip, itemRgn, itemRgn);
-			gc.setClipping (Region.carbon_new (display, clip));
-			OS.DisposeRgn (clip);
-		}
 	}
 	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect);	
 	if (!OS.HIVIEW) OS.OffsetRect (rect, (short)-offsetX, (short)-offsetX);
@@ -976,6 +965,15 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int itemWidth = rect.right - rect.left - gridWidth;
 	int itemHeight = rect.bottom - rect.top + 1;
 	OS.CGContextSaveGState (gc.handle);
+	int itemRgn = OS.NewRgn ();
+	OS.SetRectRgn (itemRgn, (short) itemX, (short) itemY, (short) (itemX + itemWidth), (short) (itemY + itemHeight));
+	int clip = OS.NewRgn ();
+	OS.GetClip (clip);
+	if (!OS.HIVIEW) OS.OffsetRgn (clip, (short)-offsetX, (short)-offsetY);
+	OS.SectRgn (clip, itemRgn, itemRgn);
+	OS.DisposeRgn (clip);
+	Region region = Region.carbon_new (display, itemRgn);
+	gc.setClipping (region);
 	boolean draw = true;
 	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
 	selected |= (itemState & OS.kDataBrowserItemIsDragTarget) != 0;
@@ -1033,8 +1031,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		}
 		contentWidth = event.width;
 		itemHeight = event.height;
+		gc.setClipping (region);
 	}
-	gc.setClipping (itemX, itemY, itemWidth, itemHeight);
 	if (hooks (SWT.EraseItem)) {
 		Event event = new Event ();
 		event.item = item;
@@ -1050,8 +1048,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		draw = event.doit;
 		selected = (event.detail & SWT.SELECTED) != 0;
 		focused = (event.detail & SWT.FOCUSED) != 0;
+		gc.setClipping (region);
 	}
-	gc.setClipping (itemX, itemY, itemWidth, itemHeight);
 	if (draw) {
 		if (selected && (style & SWT.FULL_SELECTION) != 0) {
 			if ((style & SWT.HIDE_SELECTION) == 0 || focused) {
