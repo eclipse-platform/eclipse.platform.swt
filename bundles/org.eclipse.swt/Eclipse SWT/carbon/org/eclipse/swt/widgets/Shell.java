@@ -1444,6 +1444,7 @@ public void setRegion (Region region) {
 		reshape = true;
 	} else {
 		OS.ReshapeCustomWindow (shellHandle);
+		if (OS.HIVIEW) redrawWidget (handle, true);
 	}
 }
 
