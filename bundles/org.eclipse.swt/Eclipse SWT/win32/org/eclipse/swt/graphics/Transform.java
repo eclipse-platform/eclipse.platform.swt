@@ -133,7 +133,6 @@ public void dispose() {
  * that the receiver represents, in the order {m11, m12, m21, m22, dx, dy}.
  *
  * @param elements array to hold the matrix values
- * @return (in elements array) the transformation matrix represented by the receiver
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>

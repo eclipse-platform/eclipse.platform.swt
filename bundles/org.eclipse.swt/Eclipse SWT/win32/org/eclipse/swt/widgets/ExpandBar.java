@@ -403,8 +403,6 @@ void setScrollbar () {
  * Sets the receiver's spacing, spacing specifies the number of pixel allocated around 
  * each item.
  *
- * @return the spacing
- *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
