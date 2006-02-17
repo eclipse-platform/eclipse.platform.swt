@@ -2140,7 +2140,10 @@ void onEnd (int stateMask) {
 void onFocusIn () {
 	hasFocus = true;
 
-	if (items.length == 0) return;
+	if (items.length == 0) {
+		redraw ();
+		return;
+	}
 	if (focusItem != null) {
 		redrawItem (focusItem.availableIndex, true);
 		return;
@@ -2166,6 +2169,11 @@ void onFocusIn () {
 }
 void onFocusOut () {
 	hasFocus = false;
+
+	if (items.length == 0) {
+		redraw ();
+		return;
+	}	
 
 	if (focusItem != null) {
 		redrawItem (focusItem.availableIndex, true);
@@ -2787,21 +2795,36 @@ void onPaint (Event event) {
 	}
 
 	/* draw focus rectangle */
-	if (focusItem != null && isFocusControl ()) {
-		Rectangle focusBounds = focusItem.getFocusBounds ();
-		if (focusBounds.width > 0) {
-			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
-			gc.setClipping (focusBounds);
-			int[] oldLineDash = gc.getLineDash ();
-			if (focusItem.isSelected ()) {
-				gc.setLineDash (new int[] {2, 2});
-			} else {
-				gc.setLineDash (new int[] {1, 1});
+	if (isFocusControl ()) {
+		if (focusItem != null) {
+			Rectangle focusBounds = focusItem.getFocusBounds ();
+			if (focusBounds.width > 0) {
+				gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
+				gc.setClipping (focusBounds);
+				int[] oldLineDash = gc.getLineDash ();
+				if (focusItem.isSelected ()) {
+					gc.setLineDash (new int[] {2, 2});
+				} else {
+					gc.setLineDash (new int[] {1, 1});
+				}
+				gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
+				gc.setLineDash (oldLineDash);
 			}
-			gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
+		} else {
+			/* no items, so draw focus border around Tree */
+			Point size = getSize ();
+			int y = headerHeight + 1;
+			int width = Math.max (0, size.x - 2);
+			int height = Math.max (0, size.y - headerHeight - 2);
+			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
+			gc.setClipping (1, y, width, height);
+			int[] oldLineDash = gc.getLineDash ();
+			gc.setLineDash (new int[] {1, 1});
+			gc.drawFocus (1, y, width, height);
 			gc.setLineDash (oldLineDash);
 		}
 	}
+
 	/* draw insert mark */
 	if (insertMarkItem != null) {
 		Rectangle focusBounds = insertMarkItem.getFocusBounds ();
