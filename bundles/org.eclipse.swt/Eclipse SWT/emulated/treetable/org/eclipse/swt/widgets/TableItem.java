@@ -1336,7 +1336,10 @@ public void setFont (int columnIndex, Font value) {
 
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
-	if (cellFonts == null) cellFonts = new Font [validColumnCount];
+	if (cellFonts == null) {
+		if (value == null) return;
+		cellFonts = new Font [validColumnCount];
+	}
 	if (cellFonts [columnIndex] == value) return;
 	if (cellFonts [columnIndex] != null && cellFonts [columnIndex].equals (value)) return;
 	cellFonts [columnIndex] = value;
