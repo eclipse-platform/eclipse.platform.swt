@@ -93,7 +93,7 @@ public int[][] getQuantizationTablesValues() {
 		int pq = (reference[ofs] & 0xFF) >> 4;
 		if (pq == 0) {
 			for (int i = 0; i < qk.length; i++) {
-				qk[i] = reference[ofs + i + 1];
+				qk[i] = reference[ofs + i + 1] & 0xFF;
 			}
 			ofs += 65;
 			totalLength -= 65;
