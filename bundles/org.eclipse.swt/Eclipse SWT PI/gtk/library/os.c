@@ -1991,7 +1991,24 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1atk_1object_1add_1relationship)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1atk_1object_1add_1relationship_FUNC);
+/*
 	rc = (jboolean)atk_object_add_relationship((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(AtkObject *, AtkRelationType, AtkObject *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(atk_object_add_relationship_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "atk_object_add_relationship");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)((AtkObject *)arg0, (AtkRelationType)arg1, (AtkObject *)arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1atk_1object_1add_1relationship_FUNC);
 	return rc;
 }
