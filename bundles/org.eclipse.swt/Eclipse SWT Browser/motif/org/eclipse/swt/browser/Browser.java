@@ -1906,10 +1906,10 @@ int /*long*/ SetStatus(int /*long*/ statusType, int /*long*/ status) {
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, status, length * 2);
 	String string = new String(dest);
-	if (string == null) string = ""; //$NON-NLS-1$
 	event.text = string;
-	for (int i = 0; i < statusTextListeners.length; i++)
-		statusTextListeners[i].changed(event);	
+	for (int i = 0; i < statusTextListeners.length; i++) {
+		statusTextListeners[i].changed(event);
+	}
 	return XPCOM.NS_OK;
 }		
 
