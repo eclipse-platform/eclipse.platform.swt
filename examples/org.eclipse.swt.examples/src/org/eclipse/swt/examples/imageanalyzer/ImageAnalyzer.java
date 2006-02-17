@@ -669,6 +669,18 @@ public class ImageAnalyzer {
 		});
 		
 		new MenuItem(fileMenu, SWT.SEPARATOR);
+
+		// File -> Load File... (natively)
+		item = new MenuItem(fileMenu, SWT.PUSH);
+		item.setText(bundle.getString("LoadFile"));
+		item.setAccelerator(SWT.MOD1 + 'L');
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				menuLoad();
+			}
+		});
+		
+		new MenuItem(fileMenu, SWT.SEPARATOR);
 		
 		// File -> Save
 		item = new MenuItem(fileMenu, SWT.PUSH);
@@ -795,6 +807,56 @@ public class ImageAnalyzer {
 		}
 	}
 
+	/* Just use Image(device, filename) to load an image file. */
+	void menuLoad() {
+		animate = false; // stop any animation in progress
+		
+		// Get the user to choose an image file.
+		FileDialog fileChooser = new FileDialog(shell, SWT.OPEN);
+		if (lastPath != null)
+			fileChooser.setFilterPath(lastPath);
+		fileChooser.setFilterExtensions(OPEN_FILTER_EXTENSIONS);
+		fileChooser.setFilterNames(OPEN_FILTER_NAMES);
+		String filename = fileChooser.open();
+		lastPath = fileChooser.getFilterPath();
+		if (filename == null)
+			return;
+
+		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		shell.setCursor(waitCursor);
+		imageCanvas.setCursor(waitCursor);
+		try {
+			// Read the new image from the chosen file.
+			long startTime = System.currentTimeMillis();
+			Image newImage = new Image(display, filename);
+			loadTime = System.currentTimeMillis() - startTime; // don't include getImageData in load time
+			imageData = newImage.getImageData();
+
+			// Cache the filename.
+			currentName = filename;
+			fileName = filename;
+			
+			// Fill in array and loader data.
+			loader = new ImageLoader();
+			imageDataArray = new ImageData[] {imageData};
+			loader.data = imageDataArray;
+				
+			// Display the image.
+			imageDataIndex = 0;
+			displayImage(imageData);
+		} catch (SWTException e) {
+			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
+		} catch (SWTError e) {
+			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
+		} catch (OutOfMemoryError e) {
+			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
+		} finally {
+			shell.setCursor(null);
+			imageCanvas.setCursor(crossCursor);
+			waitCursor.dispose();
+		}
+	}
+	
 	void menuOpenFile() {
 		animate = false; // stop any animation in progress
 		
@@ -849,6 +911,9 @@ public class ImageAnalyzer {
 		} catch (SWTError e) {
 			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
 			loader = oldLoader;
+		} catch (OutOfMemoryError e) {
+			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
+			loader = oldLoader;
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
@@ -886,8 +951,8 @@ public class ImageAnalyzer {
 			// Read the new image(s) from the chosen URL.
 			long startTime = System.currentTimeMillis();
 			imageDataArray = loader.load(stream);
-			stream.close();
 			loadTime = System.currentTimeMillis() - startTime;
+			stream.close();
 			if (imageDataArray.length > 0) {
 				currentName = urlname;
 				fileName = null;
@@ -903,6 +968,9 @@ public class ImageAnalyzer {
 				displayImage(imageDataArray[imageDataIndex]);
 			}
 		} catch (Exception e) {
+			showErrorDialog(bundle.getString("Loading_lc"), urlname, e);
+			loader = oldLoader;
+		} catch (OutOfMemoryError e) {
 			showErrorDialog(bundle.getString("Loading_lc"), urlname, e);
 			loader = oldLoader;
 		} finally {
@@ -1193,21 +1261,25 @@ public class ImageAnalyzer {
 		imageCanvas.setCursor(waitCursor);
 		try {
 			loader = new ImageLoader();
-			long startTime = System.currentTimeMillis();
 			ImageData[] newImageData;
 			if (fileName == null) {
 				URL url = new URL(currentName);
 				InputStream stream = url.openStream();
+				long startTime = System.currentTimeMillis();
 				newImageData = loader.load(stream);
+				loadTime = System.currentTimeMillis() - startTime;
 				stream.close();
 			} else {
+				long startTime = System.currentTimeMillis();
 				newImageData = loader.load(fileName);
+				loadTime = System.currentTimeMillis() - startTime;
 			}
-			loadTime = System.currentTimeMillis() - startTime;
 			imageDataIndex = 0;
 			displayImage(newImageData[imageDataIndex]);
 
 		} catch (Exception e) {
+			showErrorDialog(bundle.getString("Reloading_lc"), currentName, e);
+		} catch (OutOfMemoryError e) {
 			showErrorDialog(bundle.getString("Reloading_lc"), currentName, e);
 		} finally {	
 			shell.setCursor(null);
