@@ -44,6 +44,7 @@ public class List extends Scrollable {
 	boolean ignoreSelect;
 	static final int COLUMN_ID = 1024;
 	static final int EXTRA_WIDTH = 25;
+	static final int BORDER_INSET = 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -455,7 +456,7 @@ int getBorder () {
 	if (hasBorder [0] != 0) {
 		int [] outMetric = new int [1];
 		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-		border += outMetric [0];
+		border += outMetric [0] - BORDER_INSET;
 	}
 	return border;
 }

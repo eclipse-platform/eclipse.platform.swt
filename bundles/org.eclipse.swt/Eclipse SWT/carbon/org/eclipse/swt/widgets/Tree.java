@@ -65,6 +65,7 @@ public class Tree extends Composite {
 	static final int GRID_WIDTH = 1;
 	static final int ICON_AND_TEXT_GAP = 4;
 	static final int CELL_CONTENT_INSET = 12;
+	static final int BORDER_INSET = 1;
 	static final int DISCLOSURE_COLUMN_EDGE_INSET = 8;
 	static final int DISCLOSURE_TRIANGLE_AND_CONTENT_GAP = 8;
 
@@ -1143,7 +1144,7 @@ int getBorder () {
 	if (hasBorder [0] != 0) {
 		int [] outMetric = new int [1];
 		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-		border += outMetric [0];
+		border += outMetric [0] - BORDER_INSET;
 	}
 	return border;
 }

@@ -64,6 +64,7 @@ public class Table extends Composite {
 	static final int GRID_WIDTH = 1;
 	static final int ICON_AND_TEXT_GAP = 4;
 	static final int CELL_CONTENT_INSET = 12;
+	static final int BORDER_INSET = 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1128,7 +1129,7 @@ int getBorder () {
 	if (hasBorder [0] != 0) {
 		int [] outMetric = new int [1];
 		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-		border += outMetric [0];
+		border += outMetric [0] - BORDER_INSET;
 	}
 	return border;
 }
