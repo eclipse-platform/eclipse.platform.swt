@@ -4993,7 +4993,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) break;
 					int hDC = nmcd.hdc;
 					OS.RestoreDC (hDC, -1);
-					OS.SetBkMode (hDC, OS.TRANSPARENT);
+					if (findImageControl () != null) OS.SetBkMode (hDC, OS.TRANSPARENT);
 					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 					boolean selected = false;
 					if (OS.IsWindowEnabled (handle)) {
@@ -5249,6 +5249,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 										if (string != null) {
 											hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
 											clrText = clrText != -1 ? OS.SetTextColor (hDC, clrText) : -1;
+											clrTextBk = clrTextBk != -1 ? OS.SetBkColor (hDC, clrTextBk) : -1;
 											int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
 											if (index != 0) flags |= OS.DT_ENDELLIPSIS;
 											TreeColumn column = columns != null ? columns [index] : null;
@@ -5261,6 +5262,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 											OS.DrawText (hDC, buffer, buffer.length (), rect, flags | OS.DT_CALCRECT);
 											if (hFont != -1) OS.SelectObject (hDC, hFont);
 											if (clrText != -1) OS.SetTextColor (hDC, clrText);
+											if (clrTextBk != -1) OS.SetBkColor (hDC, clrTextBk);
 										}
 									}
 								}
