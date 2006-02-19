@@ -2814,7 +2814,8 @@ void setScrollWidth () {
 
 void setScrollWidth (int width) {
 	if (hwndHeader == 0 || hwndParent == 0) return;
-	scrollWidth = width;
+	//TEMPORARY CODE
+	//scrollWidth = width;
 	int left = 0;
 	RECT rect = new RECT ();
 	SCROLLINFO info = new SCROLLINFO ();
@@ -4869,7 +4870,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 							if (count == 0) {
 								if (event.x + event.width > scrollWidth) {
-									setScrollWidth (event.x + event.width);
+									setScrollWidth (scrollWidth = event.x + event.width);
 								}
 							}
 						}
