@@ -712,6 +712,7 @@ public class OS extends Platform {
 	public static final int kThemeCrossCursor = 5;
 	public static final int kThemeCurrentPortFont = 200;
 	public static final int kThemeDisclosureButton = 6;
+	public static final int kThemeDisclosureTriangle = 6;
 	public static final int kThemeDisclosureRight = 0;
 	public static final int kThemeDisclosureDown = 1;
 	public static final int kThemeDisclosureLeft = 2;
