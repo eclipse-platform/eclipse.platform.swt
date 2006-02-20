@@ -791,8 +791,9 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 26: ret = webViewFirstResponder(); break;
 		case 27: makeFirstResponder(arg0); break;
 		case 28: runJavaScriptAlertPanelWithMessage(arg0); break;
-		case 29: runOpenPanelForFileButtonWithResultListener(arg0); break;
-		case 30: decideDestinationWithSuggestedFilename(arg0, arg1); break;
+		case 29: ret = runJavaScriptConfirmPanelWithMessage(arg0); break;
+		case 30: runOpenPanelForFileButtonWithResultListener(arg0); break;
+		case 31: decideDestinationWithSuggestedFilename(arg0, arg1); break;
 	}
 	return ret;
 }
@@ -1641,6 +1642,20 @@ void runJavaScriptAlertPanelWithMessage(int message) {
 	messageBox.setText("Javascript");	//$NON-NLS-1$
 	messageBox.setMessage(text);
 	messageBox.open();
+}
+
+int runJavaScriptConfirmPanelWithMessage(int message) {
+	int length = OS.CFStringGetLength(message);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(message, range, buffer);
+	String text = new String(buffer);
+
+	MessageBox messageBox = new MessageBox(getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+	messageBox.setText("Javascript");	//$NON-NLS-1$
+	messageBox.setMessage(text);
+	return messageBox.open() == SWT.OK ? 1 : 0;
 }
 
 void runOpenPanelForFileButtonWithResultListener(int resultListener) {
