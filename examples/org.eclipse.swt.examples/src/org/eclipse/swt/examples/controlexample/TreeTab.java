@@ -287,7 +287,7 @@ class TreeTab extends ScrollableTab {
 			if (i < 3) {
 				TreeItem subitem = new TreeItem (item, SWT.NONE);
 				setItemText(subitem, i, ControlExample.getResourceString("Node_" + (i + 1) + "_1"));
-				if (multiColumn) {
+				if (multiColumn && subImagesButton.getSelection()) {
 					for (int j = 0; j < columnTitles.length; j++) {
 						subitem.setImage(j, image);
 					}
@@ -299,7 +299,7 @@ class TreeTab extends ScrollableTab {
 		treeRoots = tree2.getItems ();
 		item = new TreeItem (treeRoots[1], SWT.NONE);
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2"));
-		if (multiColumn) {
+		if (multiColumn && subImagesButton.getSelection()) {
 			for (int j = 0; j < columnTitles.length; j++) {
 				item.setImage(j, image);
 			}
@@ -308,7 +308,7 @@ class TreeTab extends ScrollableTab {
 		}
 		item = new TreeItem (item, SWT.NONE);
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2_1"));
-		if (multiColumn) {
+		if (multiColumn && subImagesButton.getSelection()) {
 			for (int j = 0; j < columnTitles.length; j++) {
 				item.setImage(j, image);
 			}
