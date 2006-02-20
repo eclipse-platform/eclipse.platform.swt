@@ -203,8 +203,9 @@ public Browser(Composite parent, int style) {
 					newEvent.widget = Browser.this;
 					newEvent.location = url;
 					newEvent.doit = true;
-					for (int i = 0; i < locationListeners.length; i++)
+					for (int i = 0; i < locationListeners.length; i++) {
 						locationListeners[i].changing(newEvent);
+					}
 					Variant cancel = event.arguments[6];
 					if (cancel != null) {
 						int pCancel = cancel.getByRef();
@@ -299,8 +300,9 @@ public Browser(Composite parent, int style) {
 						locationEvent.widget = Browser.this;
 						locationEvent.location = url;
 						locationEvent.top = top.getAddress() == dispatch.getAddress();
-						for (int i = 0; i < locationListeners.length; i++)
+						for (int i = 0; i < locationListeners.length; i++) {
 							locationListeners[i].changed(locationEvent);
+						}
 						/*
 						 * This code is intentionally commented.  A Variant constructed from an
 						 * OleAutomation object does not increase its reference count.  The IDispatch
@@ -320,8 +322,9 @@ public Browser(Composite parent, int style) {
 							ProgressEvent progressEvent = new ProgressEvent(Browser.this);
 							progressEvent.display = getDisplay();
 							progressEvent.widget = Browser.this;
-							for (int i = 0; i < progressListeners.length; i++)
+							for (int i = 0; i < progressListeners.length; i++) {
 								progressListeners[i].completed(progressEvent);
+							}
 						}
 					}
 											
@@ -346,8 +349,9 @@ public Browser(Composite parent, int style) {
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
 					newEvent.required = false;
-					for (int i = 0; i < openWindowListeners.length; i++)
+					for (int i = 0; i < openWindowListeners.length; i++) {
 						openWindowListeners[i].open(newEvent);
+					}
 					Browser browser = newEvent.browser;
 					boolean doit = browser != null && !browser.isDisposed();
 					if (doit) {
@@ -427,8 +431,9 @@ public Browser(Composite parent, int style) {
 						location = null;
 						size = null;
 					} else {
-						for (int i = 0; i < visibilityWindowListeners.length; i++)
+						for (int i = 0; i < visibilityWindowListeners.length; i++) {
 							visibilityWindowListeners[i].hide(newEvent);
+						}
 					}
 					break;
 				}
@@ -443,8 +448,9 @@ public Browser(Composite parent, int style) {
 					newEvent.current = nProgress;
 					newEvent.total = nProgressMax;
 					if (nProgress != -1) {
-						for (int i = 0; i < progressListeners.length; i++)
+						for (int i = 0; i < progressListeners.length; i++) {
 							progressListeners[i].changed(newEvent);
+						}
 					}
 					break;
 				}
@@ -456,8 +462,9 @@ public Browser(Composite parent, int style) {
 						newEvent.display = getDisplay();
 						newEvent.widget = Browser.this;
 						newEvent.text = text;
-						for (int i = 0; i < statusTextListeners.length; i++)
+						for (int i = 0; i < statusTextListeners.length; i++) {
 							statusTextListeners[i].changed(newEvent);
+						}
 					}
 					break;
 				}
@@ -469,8 +476,9 @@ public Browser(Composite parent, int style) {
 						newEvent.display = getDisplay();
 						newEvent.widget = Browser.this;
 						newEvent.title = title;
-						for (int i = 0; i < titleListeners.length; i++)
+						for (int i = 0; i < titleListeners.length; i++) {
 							titleListeners[i].changed(newEvent);
+						}
 					}
 					break;
 				}
@@ -478,11 +486,14 @@ public Browser(Composite parent, int style) {
 					WindowEvent newEvent = new WindowEvent(Browser.this);
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
-					for (int i = 0; i < closeWindowListeners.length; i++)
+					for (int i = 0; i < closeWindowListeners.length; i++) {
 						closeWindowListeners[i].close(newEvent);
+					}
 					Variant cancel = event.arguments[1];
 					int pCancel = cancel.getByRef();
-					COM.MoveMemory(pCancel, new short[]{COM.VARIANT_FALSE}, 2);
+					Variant arg1 = event.arguments[0];
+					boolean isChildWindow = arg1.getBoolean();
+					COM.MoveMemory(pCancel, new short[]{isChildWindow ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 					dispose();
 					break;
 				}
