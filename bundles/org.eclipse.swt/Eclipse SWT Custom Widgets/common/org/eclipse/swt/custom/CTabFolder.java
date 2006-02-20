@@ -286,6 +286,7 @@ public CTabFolder(Composite parent, int style) {
 				case SWT.KeyDown:          onKeyDown(event); break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
 				case SWT.MouseDown:        onMouse(event);	break;
+				case SWT.MouseEnter:       onMouse(event);	break;
 				case SWT.MouseExit:        onMouse(event);	break;
 				case SWT.MouseMove:        onMouse(event); break;
 				case SWT.MouseUp:          onMouse(event); break;
@@ -304,6 +305,7 @@ public CTabFolder(Composite parent, int style) {
 		SWT.KeyDown,
 		SWT.MouseDoubleClick, 
 		SWT.MouseDown,
+		SWT.MouseEnter, 
 		SWT.MouseExit, 
 		SWT.MouseMove,
 		SWT.MouseUp,
@@ -1866,11 +1868,11 @@ void onMouseDoubleClick(Event event) {
 void onMouse(Event event) {
 	int x = event.x, y = event.y;
 	switch (event.type) {
+		case SWT.MouseEnter: {
+			setToolTipText(null);
+			break;
+		}
 		case SWT.MouseExit: {
-			// TEMPORARY CODE
-			// On GTK, clearing tooltip on mouse exit prevents close button from drawing
-			String platform = SWT.getPlatform();
-			if (!"gtk".equals(platform)) setToolTipText(null); //$NON-NLS-1$
 			if (minImageState != NORMAL) {
 				minImageState = NORMAL;
 				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
