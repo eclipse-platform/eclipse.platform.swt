@@ -192,7 +192,7 @@ public int /*long*/ Confirm(int /*long*/ parent, int /*long*/ dialogTitle, int /
 	XPCOM.memmove(dest, text, length * 2);
 	String textLabel = new String(dest);
 
-	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL);
+	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
 	messageBox.setText(titleLabel);
 	messageBox.setMessage(textLabel);
 	int id = messageBox.open();
