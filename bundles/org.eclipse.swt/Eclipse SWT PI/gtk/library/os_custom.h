@@ -113,5 +113,14 @@
 #define gtk_style_get_text(arg0, arg1, arg2) *arg2 = (arg0)->text[arg1]
 #define gtk_style_get_xthickness(arg0) (arg0)->xthickness
 #define gtk_style_get_ythickness(arg0) (arg0)->ythickness
+#define gtk_style_get_fg_gc(arg0, arg1, arg2) *arg2 = (arg0)->fg_gc[arg1]
+#define gtk_style_get_bg_gc(arg0, arg1, arg2) *arg2 = (arg0)->bg_gc[arg1]
+#define gtk_style_get_light_gc(arg0, arg1, arg2) *arg2 = (arg0)->light_gc[arg1]
+#define gtk_style_get_dark_gc(arg0, arg1, arg2) *arg2 = (arg0)->dark_gc[arg1]
+#define gtk_style_get_mid_gc(arg0, arg1, arg2) *arg2 = (arg0)->mid_gc[arg1]
+#define gtk_style_get_text_gc(arg0, arg1, arg2) *arg2 = (arg0)->text_gc[arg1]
+#define gtk_style_get_text_aa_gc(arg0, arg1, arg2) *arg2 = (arg0)->text_aa_gc[arg1]
+#define gtk_style_get_black_gc(arg0, arg1) *arg1 = (arg0)->black_gc
+#define gtk_style_get_white_gc(arg0, arg1) *arg1 = (arg0)->white_gc
 #define localeconv_decimal_point() localeconv()->decimal_point
 

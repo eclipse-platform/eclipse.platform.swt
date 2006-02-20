@@ -272,6 +272,7 @@ public class OS extends Platform {
 	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 0x2;
 	public static final int GTK_REALIZED  = 1 << 6;
 	public static final int GTK_RELIEF_NONE = 0x2;
+	public static final int GTK_RELIEF_NORMAL = 0;
 	public static final int GTK_RC_BG = 1 << 1;
 	public static final int GTK_RC_FG = 1 << 0;
 	public static final int GTK_RESPONSE_CANCEL = 0xfffffffa;
@@ -3652,6 +3653,15 @@ public static final void gtk_button_clicked(int /*long*/ button) {
 		lock.unlock();
 	}
 }
+public static final native int _gtk_button_get_relief(int /*long*/ button);
+public static final int gtk_button_get_relief(int /*long*/ button) {
+	lock.lock();
+	try {
+		return _gtk_button_get_relief(button);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_button_new();
 public static final int /*long*/ gtk_button_new() {
 	lock.lock();
@@ -5398,6 +5408,69 @@ public static final void gtk_paint_focus(int /*long*/ style, int /*long*/ window
 		lock.unlock();
 	}
 }
+public static final native void _gtk_paint_option(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
+public static final void gtk_paint_option(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_paint_option(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_slider(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int orientation);
+public static final void gtk_paint_slider(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int orientation) {
+	lock.lock();
+	try {
+		_gtk_paint_slider(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height, orientation);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_tab(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
+public static final void gtk_paint_tab(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_paint_tab(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_box(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
+public static final void gtk_paint_box(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_paint_box(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_check(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
+public static final void gtk_paint_check(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_paint_check(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_expander(int /*long*/ style, int /*long*/ window, int state_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int expander_style);
+public static final void gtk_paint_expander(int /*long*/ style, int /*long*/ window, int state_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int expander_style) {
+	lock.lock();
+	try {
+		_gtk_paint_expander(style, window, state_type, area, widget, detail, x, y, expander_style);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_layout(int /*long*/ style, int /*long*/ window, int state_type, boolean use_text, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int /*long*/ layout);
+public static final void gtk_paint_layout(int /*long*/ style, int /*long*/ window, int state_type, boolean use_text, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int /*long*/ layout) {
+	lock.lock();
+	try {
+		_gtk_paint_layout(style, window, state_type, use_text, area, widget, detail, x, y, layout);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_plug_get_id(int /*long*/ plug);
 public static final int /*long*/ gtk_plug_get_id(int /*long*/ plug) {
 	lock.lock();
@@ -5872,6 +5945,87 @@ public static final void gtk_style_get_fg(int /*long*/ style, int index, GdkColo
 	lock.lock();
 	try {
 		_gtk_style_get_fg(style, index, color);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_fg_gc(int /*long*/ style, int index, int /*long*/[] gc);
+public static final void gtk_style_get_fg_gc(int /*long*/ style, int index, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_fg_gc(style, index, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_bg_gc(int /*long*/ style, int index, int /*long*/[] gc);
+public static final void gtk_style_get_bg_gc(int /*long*/ style, int index, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_bg_gc(style, index, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_light_gc(int /*long*/ style, int index, int /*long*/[] gc);
+public static final void gtk_style_get_light_gc(int /*long*/ style, int index, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_light_gc(style, index, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_dark_gc(int /*long*/ style, int index, int /*long*/[] gc);
+public static final void gtk_style_get_dark_gc(int /*long*/ style, int index, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_dark_gc(style, index, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_mid_gc(int /*long*/ style, int index, int /*long*/[] gc);
+public static final void gtk_style_get_mid_gc(int /*long*/ style, int index, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_mid_gc(style, index, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_text_gc(int /*long*/ style, int index, int /*long*/[] gc);
+public static final void gtk_style_get_text_gc(int /*long*/ style, int index, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_text_gc(style, index, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_text_aa_gc(int /*long*/ style, int index, int /*long*/[] gc);
+public static final void gtk_style_get_text_aa_gc(int /*long*/ style, int index, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_text_aa_gc(style, index, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_black_gc(int /*long*/ style, int /*long*/[] gc);
+public static final void gtk_style_get_black_gc(int /*long*/ style, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_black_gc(style, gc);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_style_get_white_gc(int /*long*/ style, int /*long*/[] gc);
+public static final void gtk_style_get_white_gc(int /*long*/ style, int /*long*/[] gc) {
+	lock.lock();
+	try {
+		_gtk_style_get_white_gc(style, gc);
 	} finally {
 		lock.unlock();
 	}

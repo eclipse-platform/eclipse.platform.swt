@@ -5740,6 +5740,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1clicked)
 }
 #endif
 
+#ifndef NO__1gtk_1button_1get_1relief
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1button_1get_1relief)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1button_1get_1relief_FUNC);
+	rc = (jint)gtk_button_get_relief((GtkButton *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1button_1get_1relief_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1button_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1button_1new)
 	(JNIEnv *env, jclass that)
@@ -8292,6 +8304,57 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1object_1sink)
 }
 #endif
 
+#ifndef NO__1gtk_1paint_1box
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1box)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	GdkRectangle _arg4, *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1box_FUNC);
+	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_paint_box((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1box_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1paint_1check
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1check)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	GdkRectangle _arg4, *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1check_FUNC);
+	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_paint_check((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1check_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1paint_1expander
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1expander)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jint arg4, jbyteArray arg5, jint arg6, jint arg7, jint arg8)
+{
+	GdkRectangle _arg3, *lparg3=NULL;
+	jbyte *lparg5=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1expander_FUNC);
+	if (arg3) if ((lparg3 = getGdkRectangleFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	gtk_paint_expander((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, lparg3, (GtkWidget *)arg4, (const gchar *)lparg5, arg6, arg7, arg8);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg3 && lparg3) setGdkRectangleFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1expander_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1paint_1flat_1box
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1flat_1box)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10)
@@ -8338,6 +8401,74 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1handle)
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1handle_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1paint_1layout
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1layout)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9)
+{
+	GdkRectangle _arg4, *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1layout_FUNC);
+	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_paint_layout((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, (PangoLayout *)arg9);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1layout_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1paint_1option
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1option)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	GdkRectangle _arg4, *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1option_FUNC);
+	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_paint_option((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1option_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1paint_1slider
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1slider)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
+{
+	GdkRectangle _arg4, *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1slider_FUNC);
+	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_paint_slider((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10, arg11);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1slider_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1paint_1tab
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1tab)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	GdkRectangle _arg4, *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paint_1tab_FUNC);
+	if (arg4) if ((lparg4 = getGdkRectangleFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_paint_tab((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, (const gchar *)lparg6, arg7, arg8, arg9, arg10);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg4 && lparg4) setGdkRectangleFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paint_1tab_FUNC);
 }
 #endif
 
@@ -8913,6 +9044,20 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1style_1get_1bg_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1bg_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1bg_1gc_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_style_get_bg_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1bg_1gc_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1style_1get_1black
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1black)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -8924,6 +9069,20 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1black)
 fail:
 	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1black_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1get_1black_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1black_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1black_1gc_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_style_get_black_gc((GtkStyle *)arg0, (GdkGC **)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1black_1gc_FUNC);
 }
 #endif
 
@@ -8941,6 +9100,20 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1style_1get_1dark_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1dark_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1dark_1gc_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_style_get_dark_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1dark_1gc_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1style_1get_1fg
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1fg)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -8952,6 +9125,20 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1fg)
 fail:
 	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1fg_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1get_1fg_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1fg_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1fg_1gc_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_style_get_fg_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1fg_1gc_FUNC);
 }
 #endif
 
@@ -8981,6 +9168,34 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1style_1get_1light_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1light_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1light_1gc_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_style_get_light_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1light_1gc_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1get_1mid_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1mid_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1mid_1gc_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_style_get_mid_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1mid_1gc_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1style_1get_1text
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1text)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -8992,6 +9207,48 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1text)
 fail:
 	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1text_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1get_1text_1aa_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1text_1aa_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1text_1aa_1gc_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_style_get_text_aa_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1text_1aa_1gc_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1get_1text_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1text_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1text_1gc_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_style_get_text_gc((GtkStyle *)arg0, arg1, (GdkGC **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1text_1gc_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1style_1get_1white_1gc
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1style_1get_1white_1gc)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1style_1get_1white_1gc_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_style_get_white_gc((GtkStyle *)arg0, (GdkGC **)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1style_1get_1white_1gc_FUNC);
 }
 #endif
 
