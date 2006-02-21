@@ -278,6 +278,12 @@ void createHandle (int index) {
 		};
 		OS.XtSetValues (textHandle, argList4, argList4.length / 2);
 	}
+	/*
+	* Feature in Motif.  The Spinner widget is created with a default
+	* drop target.  This is inconsistent with other platforms.
+	* To be consistent, disable the default drop target.
+	*/
+	OS.XmDropSiteUnregister (textHandle);
 }
 /**
  * Cuts the selected text.

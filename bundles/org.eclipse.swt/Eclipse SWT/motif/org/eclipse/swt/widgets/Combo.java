@@ -400,8 +400,15 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	int [] argList3 = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList3, argList3.length / 2);
+	int textHandle = argList3 [1];
 	int [] argList4 = {OS.XmNverifyBell, 0};
-	OS.XtSetValues (argList3 [1], argList4, argList4.length / 2);
+	OS.XtSetValues (textHandle, argList4, argList4.length / 2);
+	/*
+	* Feature in Motif.  The Combo widget is created with a default
+	* drop target.  This is inconsistent with other platforms.
+	* To be consistent, disable the default drop target.
+	*/
+	OS.XmDropSiteUnregister (textHandle);
 }
 /**
  * Cuts the selected text.
