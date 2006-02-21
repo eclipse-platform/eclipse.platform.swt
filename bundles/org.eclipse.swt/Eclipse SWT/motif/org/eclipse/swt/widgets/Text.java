@@ -394,12 +394,20 @@ void createHandle (int index) {
 		};
 		OS.XtSetValues (handle, argList3, argList3.length / 2);
 	}
+	
 }
 ScrollBar createScrollBar (int type) {
 	return createStandardBar (type);
 }
 void createWidget (int index) {
 	super.createWidget (index);
+	/*
+	* Feature in Motif.  The Text widget is created with a default
+	* drop target.  This is inconsistent with other platforms.
+	* To be consistent, disable the default drop target.
+	*/
+	OS.XmDropSiteUnregister (handle);
+	
 	hiddenText = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar ('*');
 }
