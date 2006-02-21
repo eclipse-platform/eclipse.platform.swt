@@ -3945,7 +3945,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* In a multi-select tree, if the user is collapsing a subtree that
 	* contains selected items, clear the selection from these items and
 	* issue a selection event.  Only items that are selected and visible
-	* are cleared.  This code also runs in the case when no item is selected.
+	* are cleared.  This code also runs in the case when the white space
+	* below the last item is selected.
 	*/
 	TVHITTESTINFO lpht = new TVHITTESTINFO ();
 	lpht.x = (short) (lParam & 0xFFFF);
@@ -4045,6 +4046,25 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			event.detail = SWT.CHECK;
 			postEvent (SWT.Selection, event);
 			return LRESULT.ZERO;
+		}
+	}
+	
+	/* Process the mouse when an item is not selected */
+	if ((style & SWT.FULL_SELECTION) == 0) {
+		if ((lpht.flags & OS.TVHT_ONITEM) == 0) {
+			Display display = this.display;
+			display.captureChanged = false;
+			if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+				if (!display.captureChanged && !isDisposed ()) {
+					if (OS.GetCapture () != handle) OS.SetCapture (handle);
+				}
+				return LRESULT.ZERO;
+			}
+			int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+			if (!display.captureChanged && !isDisposed ()) {
+				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			}
+			return new LRESULT (code);
 		}
 	}
 
