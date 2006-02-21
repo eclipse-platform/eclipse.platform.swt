@@ -217,7 +217,7 @@ void clear () {
 		* invalidate the row when it is cleared.
 		*/
 		if ((parent.style & SWT.VIRTUAL) != 0) {
-			if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
+			if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
 				redraw ();
 			}
 		}
@@ -968,6 +968,16 @@ public void setBackground (Color color) {
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, gdkColor, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 }
 
@@ -1000,6 +1010,16 @@ public void setBackground (int index, Color color) {
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_BACKGROUND, gdkColor, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 	
 	if (color != null) {
@@ -1108,6 +1128,16 @@ public void setFont (Font font){
 	this.font = font;
 	int /*long*/ fontHandle = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FONT_COLUMN, fontHandle, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 }
 
@@ -1147,6 +1177,16 @@ public void setFont (int index, Font font) {
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	int /*long*/ fontHandle  = font != null ? font.handle : 0;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FONT, fontHandle, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 	
 	if (font != null) {
@@ -1201,6 +1241,16 @@ public void setForeground (Color color){
 	}
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, gdkColor, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 }
 
@@ -1233,6 +1283,16 @@ public void setForeground (int index, Color color){
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	OS.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_FOREGROUND, gdkColor, -1);
+	/*
+	* Bug in GTK.  When using fixed-height-mode,
+	* row changes do not cause the row to be repainted.  The fix is to
+	* invalidate the row when it is cleared.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			redraw ();
+		}
+	}
 	cached = true;
 	
 	if (color != null) {
@@ -1323,16 +1383,21 @@ public void setImage (int index, Image image) {
 	* Bug in GTK.  When using fixed-height-mode,
 	* row changes do not cause the row to be repainted.  The fix is to
 	* invalidate the row when the image changes.
-	* 
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
+			if (parent.columnCount == 0) {
+				redraw ();
+			}
+		}
+	}
+	/*
 	* Bug in GTK.  When using fixed-height-mode, GTK does not recalculate the cell renderer width
 	* when the image is changed in the model.  The fix is to force it to recalculate the width if
 	* more space is required.
 	*/
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
-			if (parent.columnCount == 0) {
-				redraw ();
-			}
 			if (image != null) {
 				int /*long*/parentHandle = parent.handle;
 				int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
@@ -1419,7 +1484,7 @@ public void setText (int index, String string) {
 	* invalidate the row when the text changes.
 	*/
 	if ((parent.style & SWT.VIRTUAL) != 0) {
-		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2) && OS.GTK_VERSION < OS.VERSION (2, 6, 3)) {
 			redraw ();
 		}
 	}
