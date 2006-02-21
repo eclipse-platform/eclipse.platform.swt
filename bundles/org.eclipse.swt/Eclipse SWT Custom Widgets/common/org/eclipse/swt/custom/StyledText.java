@@ -4728,18 +4728,22 @@ Point getPointAtOffset(int offset) {
 	Point point;
 	TextLayout layout = renderer.getTextLayout(lineIndex);
 	if (lineLength != 0  && offsetInLine <= lineLength) {
-		switch (caretAlignment) {
-			case OFFSET_LEADING:
-				point = layout.getLocation(offsetInLine, false);
-				break;
-			case PREVIOUS_OFFSET_TRAILING:
-			default:
-				if (offsetInLine == 0) {
+		if (offsetInLine == lineLength) {
+			point = layout.getLocation(offsetInLine - 1, true);
+		} else {
+			switch (caretAlignment) {
+				case OFFSET_LEADING:
 					point = layout.getLocation(offsetInLine, false);
-				} else {
-					point = layout.getLocation(offsetInLine - 1, true);
-				}
-				break;
+					break;
+				case PREVIOUS_OFFSET_TRAILING:
+				default:
+					if (offsetInLine == 0) {
+						point = layout.getLocation(offsetInLine, false);
+					} else {
+						point = layout.getLocation(offsetInLine - 1, true);
+					}
+					break;
+			}
 		}
 	} else {
 		point = new Point(layout.getIndent(), 0);
