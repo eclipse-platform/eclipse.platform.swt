@@ -212,8 +212,8 @@ static int checkIndex (int index) {
 }
 
 int calculateWidth (int index, GC gc) {
-	if (index != 0 || (index == 0 && this.width == -1)) {
-		int width = 0;
+	int width = this.width;
+	if (index != 0 || (index == 0 && width == -1)) {
 		Image image = getImage (index);
 		String text = getText (index);
 		if (image != null) width += image.getBounds ().width + parent.getGap ();
@@ -235,7 +235,7 @@ int calculateWidth (int index, GC gc) {
 		}
 		if (index == 0) this.width = width;
 	}
-	return this.width;
+	return width;
 }
 
 protected void checkSubclass () {
