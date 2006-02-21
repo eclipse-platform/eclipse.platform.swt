@@ -2585,6 +2585,12 @@ void setScrollWidth (int /*long*/ column, TreeItem item) {
 	}
 }
 
+public void setSelection (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSelection (new TreeItem [] {item});
+}
+
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selection is cleared before the new items are selected.
