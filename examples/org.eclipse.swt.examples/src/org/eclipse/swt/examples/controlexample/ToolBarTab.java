@@ -313,7 +313,6 @@ class ToolBarTab extends Tab {
 			// Create the menu if it has not already been created
 			if (menu == null) {
 				// Lazy create the menu.
-				Shell shell = tabFolderPage.getShell();
 				menu = new Menu(shell);
 				for (int i = 0; i < 9; ++i) {
 					final String text = ControlExample.getResourceString("DropDownData_" + i);

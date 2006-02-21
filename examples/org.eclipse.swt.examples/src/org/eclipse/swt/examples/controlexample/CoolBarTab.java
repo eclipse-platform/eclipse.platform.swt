@@ -320,7 +320,6 @@ class CoolBarTab extends Tab {
 			// Create the menu if it has not already been created
 			if (menu == null) {
 				// Lazy create the menu.
-				Shell shell = tabFolderPage.getShell();
 				menu = new Menu(shell);
 				menu.addMenuListener(new MenuAdapter() {
 					public void menuHidden(MenuEvent e) {
@@ -475,7 +474,6 @@ class CoolBarTab extends Tab {
 				pt = coolBar.toDisplay(new Point(event.x, event.y));
 				menu.setLocation (pt.x, pt.y);
 				menu.setVisible (true);
-				Display display = coolBar.getDisplay ();
 				while (menu != null && !menu.isDisposed() && menu.isVisible ()) {
 					if (!display.readAndDispatch ()) display.sleep ();
 				}

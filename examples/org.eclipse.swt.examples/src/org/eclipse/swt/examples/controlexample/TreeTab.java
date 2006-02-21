@@ -30,11 +30,14 @@ class TreeTab extends ScrollableTab {
 	Button multipleColumns, moveableColumns, headerVisibleButton, headerImagesButton, subImagesButton, linesVisibleButton;
 	
 	/* Controls and resources added to the "Colors and Fonts" group */
-	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
-	Color itemForegroundColor, itemBackgroundColor;
-	Image itemForegroundImage, itemBackgroundImage;
-	Font itemFont;
-	boolean setItemFont = false, setItemForeground = false, setItemBackground = false;
+	static final int ITEM_FOREGROUND_COLOR = 3;
+	static final int ITEM_BACKGROUND_COLOR = 4;
+	static final int ITEM_FONT = 5;
+	static final int CELL_FOREGROUND_COLOR = 6;
+	static final int CELL_BACKGROUND_COLOR = 7;
+	static final int CELL_FONT = 8;
+	Color itemForegroundColor, itemBackgroundColor, cellForegroundColor, cellBackgroundColor;
+	Font itemFont, cellFont;
 
 	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
 		   ControlExample.getResourceString("TableTitle_1"),
@@ -68,88 +71,116 @@ class TreeTab extends ScrollableTab {
 	void createColorAndFontGroup () {
 		super.createColorAndFontGroup();
 		
-		itemGroup = new Group (colorGroup, SWT.NONE);
-		itemGroup.setText (ControlExample.getResourceString ("Tree_Item_Colors"));
-		GridData data = new GridData ();
-		data.horizontalSpan = 2;
-		itemGroup.setLayoutData (data);
-		itemGroup.setLayout (new GridLayout (2, false));
-		new Label (itemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
-		itemForegroundButton = new Button (itemGroup, SWT.PUSH);
-		new Label (itemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
-		itemBackgroundButton = new Button (itemGroup, SWT.PUSH);
-		itemFontButton = new Button (itemGroup, SWT.PUSH);
-		itemFontButton.setText(ControlExample.getResourceString("Font"));
-		itemFontButton.setLayoutData(new GridData (GridData.HORIZONTAL_ALIGN_FILL));
-		
-		Shell shell = colorGroup.getShell ();
-		final ColorDialog foregroundDialog = new ColorDialog (shell);
-		final ColorDialog backgroundDialog = new ColorDialog (shell);
-		final FontDialog fontDialog = new FontDialog (shell);
+		TableItem item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Item_Foreground_Color"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Item_Background_Color"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Item_Font"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Cell_Foreground_Color"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Cell_Background_Color"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Cell_Font"));
 
-		int imageSize = 12;
-		Display display = shell.getDisplay ();
-		itemForegroundImage = new Image(display, imageSize, imageSize);
-		itemBackgroundImage = new Image(display, imageSize, imageSize);
-
-		/* Add listeners to set the colors and font */
-		itemForegroundButton.setImage(itemForegroundImage);
-		itemForegroundButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				Color oldColor = itemForegroundColor;
-				if (oldColor == null) oldColor = textNode1.getForeground ();
-				foregroundDialog.setRGB(oldColor.getRGB());
-				RGB rgb = foregroundDialog.open();
-				if (rgb == null) return;
-				oldColor = itemForegroundColor;
-				itemForegroundColor = new Color (event.display, rgb);
-				setItemForeground = true;
-				setItemForeground ();
-				if (oldColor != null) oldColor.dispose ();
-			}
-		});
-		itemBackgroundButton.setImage(itemBackgroundImage);
-		itemBackgroundButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent event) {
-				Color oldColor = itemBackgroundColor;
-				if (oldColor == null) oldColor = textNode1.getBackground ();
-				backgroundDialog.setRGB(oldColor.getRGB());
-				RGB rgb = backgroundDialog.open();
-				if (rgb == null) return;
-				oldColor = itemBackgroundColor;
-				itemBackgroundColor = new Color (event.display, rgb);
-				setItemBackground = true;
-				setItemBackground ();
-				if (oldColor != null) oldColor.dispose ();
-			}
-		});
-		itemFontButton.addSelectionListener(new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				Font oldFont = itemFont;
-				if (oldFont == null) oldFont = textNode1.getFont ();
-				fontDialog.setFontList(oldFont.getFontData());
-				FontData fontData = fontDialog.open ();
-				if (fontData == null) return;
-				oldFont = itemFont;
-				itemFont = new Font (event.display, fontData);
-				setItemFont = true;
-				setItemFont ();
-				setExampleWidgetSize ();
-				if (oldFont != null) oldFont.dispose ();
-			}
-		});
 		shell.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent event) {
-				if (itemBackgroundImage != null) itemBackgroundImage.dispose();
-				if (itemForegroundImage != null) itemForegroundImage.dispose();
 				if (itemBackgroundColor != null) itemBackgroundColor.dispose();
 				if (itemForegroundColor != null) itemForegroundColor.dispose();
 				if (itemFont != null) itemFont.dispose();
+				if (cellBackgroundColor != null) cellBackgroundColor.dispose();
+				if (cellForegroundColor != null) cellForegroundColor.dispose();
+				if (cellFont != null) cellFont.dispose();
 				itemBackgroundColor = null;
 				itemForegroundColor = null;			
 				itemFont = null;
+				cellBackgroundColor = null;
+				cellForegroundColor = null;			
+				cellFont = null;
 			}
 		});
+	}
+
+	void changeFontOrColor(int index) {
+		switch (index) {
+		case ITEM_FOREGROUND_COLOR: {
+			Color oldColor = itemForegroundColor;
+			if (oldColor == null) oldColor = textNode1.getForeground ();
+			colorDialog.setRGB(oldColor.getRGB());
+			RGB rgb = colorDialog.open();
+			if (rgb == null) return;
+			oldColor = itemForegroundColor;
+			itemForegroundColor = new Color (display, rgb);
+			setItemForeground ();
+			if (oldColor != null) oldColor.dispose ();
+		}
+		break;
+		case ITEM_BACKGROUND_COLOR: {
+			Color oldColor = itemBackgroundColor;
+			if (oldColor == null) oldColor = textNode1.getBackground ();
+			colorDialog.setRGB(oldColor.getRGB());
+			RGB rgb = colorDialog.open();
+			if (rgb == null) return;
+			oldColor = itemBackgroundColor;
+			itemBackgroundColor = new Color (display, rgb);
+			setItemBackground ();
+			if (oldColor != null) oldColor.dispose ();
+		}
+		break;
+		case ITEM_FONT: {
+			Font oldFont = itemFont;
+			if (oldFont == null) oldFont = textNode1.getFont ();
+			fontDialog.setFontList(oldFont.getFontData());
+			FontData fontData = fontDialog.open ();
+			if (fontData == null) return;
+			oldFont = itemFont;
+			itemFont = new Font (display, fontData);
+			setItemFont ();
+			setExampleWidgetSize ();
+			if (oldFont != null) oldFont.dispose ();
+		}
+		break;
+		case CELL_FOREGROUND_COLOR: {
+			Color oldColor = cellForegroundColor;
+			if (oldColor == null) oldColor = textNode1.getForeground (1);
+			colorDialog.setRGB(oldColor.getRGB());
+			RGB rgb = colorDialog.open();
+			if (rgb == null) return;
+			oldColor = cellForegroundColor;
+			cellForegroundColor = new Color (display, rgb);
+			setCellForeground ();
+			if (oldColor != null) oldColor.dispose ();
+		}
+		break;
+		case CELL_BACKGROUND_COLOR: {
+			Color oldColor = cellBackgroundColor;
+			if (oldColor == null) oldColor = textNode1.getBackground (1);
+			colorDialog.setRGB(oldColor.getRGB());
+			RGB rgb = colorDialog.open();
+			if (rgb == null) return;
+			oldColor = cellBackgroundColor;
+			cellBackgroundColor = new Color (display, rgb);
+			setCellBackground ();
+			if (oldColor != null) oldColor.dispose ();
+		}
+		break;
+		case CELL_FONT: {
+			Font oldFont = cellFont;
+			if (oldFont == null) oldFont = textNode1.getFont (1);
+			fontDialog.setFontList(oldFont.getFontData());
+			FontData fontData = fontDialog.open ();
+			if (fontData == null) return;
+			oldFont = cellFont;
+			cellFont = new Font (display, fontData);
+			setCellFont ();
+			setExampleWidgetSize ();
+			if (oldFont != null) oldFont.dispose ();
+		}
+		break;
+		default:
+			super.changeFontOrColor(index);
+		}
 	}
 
 	/**
@@ -457,6 +488,18 @@ class TreeTab extends ScrollableTab {
 		itemFont = null;
 		setItemFont ();
 		if (oldFont != null) oldFont.dispose();
+		oldColor = cellForegroundColor;
+		cellForegroundColor = null;
+		setCellForeground ();
+		if (oldColor != null) oldColor.dispose();
+		oldColor = cellBackgroundColor;
+		cellBackgroundColor = null;
+		setCellBackground ();
+		if (oldColor != null) oldColor.dispose();
+		oldFont = font;
+		cellFont = null;
+		setCellFont ();
+		if (oldFont != null) oldFont.dispose();
 	}
 	
 	/**
@@ -467,6 +510,9 @@ class TreeTab extends ScrollableTab {
 		setItemBackground ();
 		setItemForeground ();
 		setItemFont ();
+		setCellBackground ();
+		setCellForeground ();
+		setCellFont ();
 		setExampleWidgetSize ();
 		setWidgetHeaderVisible ();
 		setWidgetLinesVisible ();
@@ -477,44 +523,113 @@ class TreeTab extends ScrollableTab {
 	}
 	
 	/**
+	 * Sets the background color of the Node 1 TreeItems in column 1.
+	 */
+	void setCellBackground () {
+		if (!instance.startup) {
+			textNode1.setBackground (1, cellBackgroundColor);
+			imageNode1.setBackground (1, cellBackgroundColor);
+		}
+		/* Set the background color item's image to match the background color of the cell. */
+		Color color = cellBackgroundColor;
+		if (color == null) color = textNode1.getBackground (1);
+		TableItem item = colorAndFontTable.getItem(CELL_BACKGROUND_COLOR);
+		Image oldImage = item.getImage();
+		if (oldImage != null) oldImage.dispose();
+		item.setImage (colorImage(color));
+	}
+	
+	/**
+	 * Sets the foreground color of the Node 1 TreeItems in column 1.
+	 */
+	void setCellForeground () {
+		if (!instance.startup) {
+			textNode1.setForeground (1, cellForegroundColor);
+			imageNode1.setForeground (1, cellForegroundColor);
+		}
+		/* Set the foreground color item's image to match the foreground color of the cell. */
+		Color color = cellForegroundColor;
+		if (color == null) color = textNode1.getForeground (1);
+		TableItem item = colorAndFontTable.getItem(CELL_FOREGROUND_COLOR);
+		Image oldImage = item.getImage();
+		if (oldImage != null) oldImage.dispose();
+		item.setImage (colorImage(color));
+	}
+	
+	/**
+	 * Sets the font of the Node 1 TreeItems in column 1.
+	 */
+	void setCellFont () {
+		if (!instance.startup) {
+			textNode1.setFont (1, cellFont);
+			imageNode1.setFont (1, cellFont);
+			packColumns (tree1);
+			packColumns (tree2);
+		}
+		/* Set the font item's image to match the font of the item. */
+		Font ft = cellFont;
+		if (ft == null) ft = textNode1.getFont (1);
+		TableItem item = colorAndFontTable.getItem(CELL_FONT);
+		Image oldImage = item.getImage();
+		if (oldImage != null) oldImage.dispose();
+		item.setImage (fontImage(ft));
+		item.setFont(ft);
+		colorAndFontTable.layout ();
+	}
+
+	/**
 	 * Sets the background color of the Node 1 TreeItems.
 	 */
 	void setItemBackground () {
-		if (setItemBackground) {
+		if (!instance.startup) {
 			textNode1.setBackground (itemBackgroundColor);
 			imageNode1.setBackground (itemBackgroundColor);
 		}
 		/* Set the background button's color to match the background color of the item. */
 		Color color = itemBackgroundColor;
 		if (color == null) color = textNode1.getBackground ();
-		drawImage (itemBackgroundImage, color);
-		itemBackgroundButton.setImage (itemBackgroundImage);
+		TableItem item = colorAndFontTable.getItem(ITEM_BACKGROUND_COLOR);
+		Image oldImage = item.getImage();
+		if (oldImage != null) oldImage.dispose();
+		item.setImage (colorImage(color));
 	}
 	
 	/**
 	 * Sets the foreground color of the Node 1 TreeItems.
 	 */
 	void setItemForeground () {
-		if (setItemForeground) {
+		if (!instance.startup) {
 			textNode1.setForeground (itemForegroundColor);
 			imageNode1.setForeground (itemForegroundColor);
 		}
 		/* Set the foreground button's color to match the foreground color of the item. */
 		Color color = itemForegroundColor;
 		if (color == null) color = textNode1.getForeground ();
-		drawImage (itemForegroundImage, color);
-		itemForegroundButton.setImage (itemForegroundImage);
+		TableItem item = colorAndFontTable.getItem(ITEM_FOREGROUND_COLOR);
+		Image oldImage = item.getImage();
+		if (oldImage != null) oldImage.dispose();
+		item.setImage (colorImage(color));
 	}
 	
 	/**
 	 * Sets the font of the Node 1 TreeItems.
 	 */
 	void setItemFont () {
-		if (instance.startup) return;
-		if (!setItemFont) return;
-		textNode1.setFont (itemFont);
-		imageNode1.setFont (itemFont);
-		packColumns (tree1);
+		if (!instance.startup) {
+			textNode1.setFont (itemFont);
+			imageNode1.setFont (itemFont);
+			packColumns (tree1);
+			packColumns (tree2);
+		}
+		/* Set the font item's image to match the font of the item. */
+		Font ft = itemFont;
+		if (ft == null) ft = textNode1.getFont ();
+		TableItem item = colorAndFontTable.getItem(ITEM_FONT);
+		Image oldImage = item.getImage();
+		if (oldImage != null) oldImage.dispose();
+		item.setImage (fontImage(ft));
+		item.setFont(ft);
+		colorAndFontTable.layout ();
 	}
 
 	/**
@@ -522,9 +637,10 @@ class TreeTab extends ScrollableTab {
 	 */
 	void setExampleWidgetFont () {
 		super.setExampleWidgetFont();
-		if (!setFont) return;
-		packColumns (tree1);
-		packColumns (tree2);
+		if (!instance.startup) {
+			packColumns (tree1);
+			packColumns (tree2);
+		}
 	}
 	
 	/**

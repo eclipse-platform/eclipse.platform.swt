@@ -85,7 +85,6 @@ class ShellTab extends Tab {
 		if (noParentButton.getSelection ()) {
 			shells [shellCount] = new Shell (style);
 		} else {
-			Shell shell = tabFolderPage.getShell ();
 			shells [shellCount] = new Shell (shell, style);
 		}
 		final Shell currentShell = shells [shellCount];

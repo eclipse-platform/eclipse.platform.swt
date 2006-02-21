@@ -117,7 +117,6 @@ class DialogTab extends Tab {
 	
 		/* Open the appropriate dialog type */
 		String name = dialogCombo.getText ();
-		Shell shell = tabFolderPage.getShell ();
 		
 		if (name.equals (ControlExample.getResourceString("ColorDialog"))) {
 			ColorDialog dialog = new ColorDialog (shell ,style);
