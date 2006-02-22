@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 
 abstract class ScrollableTab extends Tab {
 	/* Style widgets added to the "Style" group */	
-	Button singleButton, multiButton, horizontalButton, verticalButton, borderButton;
+	Button singleButton, multiButton, horizontalButton, verticalButton;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
