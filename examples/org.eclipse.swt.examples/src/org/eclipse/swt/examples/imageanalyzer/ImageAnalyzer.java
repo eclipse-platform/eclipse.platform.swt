@@ -1780,10 +1780,14 @@ public class ImageAnalyzer {
 		}
 		paletteLabel.setText(string);
 
-		string = createMsg(bundle.getString("Pixel_data_value"), 
-					 new Object[] {new Integer(imageData.bytesPerLine),
-						         new Integer(imageData.scanlinePad),
-							   depthInfo(imageData.depth)});
+		string = createMsg(
+				bundle.getString("Pixel_data_value"),
+				new Object[] {
+						new Integer(imageData.bytesPerLine),
+						new Integer(imageData.scanlinePad),
+						depthInfo(imageData.depth),
+						(imageData.alphaData != null && imageData.alphaData.length > 0) ?
+								bundle.getString("Scroll_for_alpha") : "" });
 		dataLabel.setText(string);
 
 		String data = dataHexDump(dataText.getLineDelimiter());
