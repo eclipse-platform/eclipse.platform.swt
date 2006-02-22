@@ -5089,7 +5089,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) break;
 					int hDC = nmcd.hdc;
 					OS.RestoreDC (hDC, -1);
-					if (findImageControl () != null) OS.SetBkMode (hDC, OS.TRANSPARENT);
+					if (findImageControl () != null || ignoreDrawSelected) {
+						OS.SetBkMode (hDC, OS.TRANSPARENT);
+					}
 					boolean selected = false;
 					if (OS.IsWindowEnabled (handle)) {
 						TVITEM tvItem = new TVITEM ();
