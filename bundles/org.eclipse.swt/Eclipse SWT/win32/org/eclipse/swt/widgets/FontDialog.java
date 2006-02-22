@@ -106,9 +106,10 @@ public FontData [] getFontList () {
 }
 
 /**
- * Returns the currently selected color in the receiver.
+ * Returns an RGB describing the color that was selected
+ * in the dialog, or null if none is available.
  *
- * @return the RGB value for the selected color, may be null
+ * @return the RGB value for the selected color, or null
  *
  * @see PaletteData#getRGBs
  * 
@@ -249,11 +250,15 @@ public void setFontData (FontData fontData) {
 }
 
 /**
- * Sets a set of FontData objects describing the font to
+ * Sets the set of FontData objects describing the font to
  * be selected by default in the dialog, or null to let
  * the platform choose one.
  * 
  * @param fontData the set of FontData objects to use initially, or null
+ *        to let the platform select a default when open() is called
+ *
+ * @see Font#getFontData
+ * 
  * @since 2.1.1
  */
 public void setFontList (FontData [] fontData) {
@@ -265,11 +270,11 @@ public void setFontList (FontData [] fontData) {
 }
 
 /**
- * Sets the receiver's selected color to be the argument.
+ * Sets the RGB describing the color to be selected by default
+ * in the dialog, or null to let the platform choose one.
  *
- * @param rgb the new RGB value for the selected color, may be
- *        null to let the platform to select a default when
- *        open() is called
+ * @param rgb the RGB value to use initially, or null to let
+ *        the platform select a default when open() is called
  *
  * @see PaletteData#getRGBs
  * 
