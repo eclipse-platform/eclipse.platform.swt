@@ -114,13 +114,15 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	Menu activeMenu;
-	int hIMC, hwndMDIClient, toolTipHandle, lpstrTip;
+	ToolTip [] toolTips;
+	int hIMC, hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle;
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
 	int [] brushes;
 	boolean showWithParent;
 	Control lastActive;
 	SHACTIVATEINFO psai;
 	Region region;
+	static /*final*/ int ToolTipProc;
 	static final int DialogProc;
 	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
 	final static int [] SYSTEM_COLORS = {
@@ -413,8 +415,16 @@ public void addShellListener (ShellListener listener) {
 	addListener (SWT.Deactivate, typedListener);
 }
 
+int balloonTipHandle () {
+	if (balloonTipHandle == 0) createBalloonTipHandle ();
+	return balloonTipHandle;
+}
+
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
+	if (hwnd == toolTipHandle || hwnd == balloonTipHandle) {
+		return OS.CallWindowProc (ToolTipProc, hwnd, msg, wParam, lParam);
+	}
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
 		if ((style & trim) == 0) return OS.DefWindowProc (hwnd, msg, wParam, lParam);
@@ -451,6 +461,33 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 public void close () {
 	checkWidget ();
 	closeWidget ();
+}
+
+void createBalloonTipHandle () {
+	balloonTipHandle = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		null,
+		OS.TTS_ALWAYSTIP | OS.TTS_BALLOON,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		handle,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (balloonTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (ToolTipProc == 0) {
+		ToolTipProc = OS.GetWindowLong (balloonTipHandle, OS.GWL_WNDPROC);
+	}
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (balloonTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	register ();
+	subclass ();
 }
 
 void createHandle () {
@@ -503,6 +540,74 @@ void createHandle () {
 		hIMC = OS.ImmCreateContext ();
 		if (hIMC != 0) OS.ImmAssociateContext (handle, hIMC);
 	}
+}
+
+void createToolTip (ToolTip toolTip) {
+	int id = 0;
+	if (toolTips == null) toolTips = new ToolTip [4];
+	while (id < toolTips.length && toolTips [id] != null) id++;
+	if (id == toolTips.length) {
+		ToolTip [] newToolTips = new ToolTip [toolTips.length + 4];
+		System.arraycopy (toolTips, 0, newToolTips, 0, toolTips.length);
+		toolTips = newToolTips;
+	}
+	toolTips [toolTip.id = id] = toolTip;
+	if (OS.IsWinCE) return;
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	lpti.hwnd = handle;
+	lpti.uId = toolTip.id;
+	lpti.uFlags = OS.TTF_TRACK;
+	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
+	int hwndToolTip = (toolTip.style & SWT.BALLOON) != 0 ? balloonTipHandle () : toolTipHandle ();
+	OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
+}
+
+void createToolTipHandle () {
+	toolTipHandle = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		null,
+		OS.TTS_ALWAYSTIP,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		handle,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (ToolTipProc == 0) {
+		ToolTipProc = OS.GetWindowLong (toolTipHandle, OS.GWL_WNDPROC);
+	}
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (toolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	register ();
+	subclass ();
+}
+
+void deregister () {
+	super.deregister ();
+	if (toolTipHandle != 0) display.removeControl (toolTipHandle);
+	if (balloonTipHandle != 0) display.removeControl (balloonTipHandle);
+}
+
+void destroyToolTip (ToolTip toolTip) {
+	if (toolTips == null) return;
+	toolTips [toolTip.id] = null;
+	if (OS.IsWinCE) return;
+	if (balloonTipHandle != 0) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		lpti.uId = toolTip.id;
+		lpti.hwnd = handle;
+		OS.SendMessage (balloonTipHandle, OS.TTM_DELTOOL, 0, lpti);
+	}
+	toolTip.id = -1;
 }
 
 public void dispose () {
@@ -589,6 +694,11 @@ Cursor findCursor () {
 
 Control findThemeControl () {
 	return null;
+}
+
+ToolTip findToolTip (int id) {
+	if (toolTips == null) return null;
+	return 0 <= id && id < toolTips.length ? toolTips [id] : null;
 }
 
 void fixShell (Shell newShell, Control control) {
@@ -892,6 +1002,12 @@ public void open () {
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
+void register () {
+	super.register ();
+	if (toolTipHandle != 0) display.addControl (toolTipHandle, this);
+	if (balloonTipHandle != 0) display.addControl (balloonTipHandle, this);
+}
+
 void releaseBrushes () {
 	if (brushes != null) {
 		for (int i=0; i<brushes.length; i++) {
@@ -909,6 +1025,15 @@ void releaseChildren (boolean destroy) {
 			shell.release (false);
 		}
 	}
+	if (toolTips != null) {
+		for (int i=0; i<toolTips.length; i++) {
+			ToolTip toolTip = toolTips [i];
+			if (toolTip != null && !toolTip.isDisposed ()) {
+				toolTip.release (false);
+			}
+		}
+	}
+	toolTips = null;
 	super.releaseChildren (destroy);
 }
 
@@ -931,7 +1056,7 @@ void releaseWidget () {
 		OS.HeapFree (hHeap, 0, lpstrTip);
 	}
 	lpstrTip = 0;
-	toolTipHandle = 0;
+	toolTipHandle = balloonTipHandle = 0;
 	if (OS.IsDBLocale) {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
@@ -1228,40 +1353,20 @@ public void setRegion (Region region) {
 
 void setToolTipText (int hwnd, String text) {
 	if (OS.IsWinCE) return;
-	if (toolTipHandle == 0) {
-		toolTipHandle = OS.CreateWindowEx (
-			0,
-			new TCHAR (0, OS.TOOLTIPS_CLASS, true),
-			null,
-			OS.TTS_ALWAYSTIP,
-			OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
-			handle,
-			0,
-			OS.GetModuleHandle (null),
-			null);
-		if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);	
-		/*
-		* Feature in Windows.  Despite the fact that the
-		* tool tip text contains \r\n, the tooltip will
-		* not honour the new line unless TTM_SETMAXTIPWIDTH
-		* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
-		* a large value.
-		*/
-		OS.SendMessage (toolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-	}
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
-	lpti.uId = hwnd;
 	lpti.hwnd = handle;
+	lpti.uId = hwnd;
+	int hwndToolTip = toolTipHandle ();
 	if (text == null) {
-		OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
+		OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
 	} else {
-		if (OS.SendMessage (toolTipHandle, OS.TTM_GETTOOLINFO, 0, lpti) != 0) {
-			OS.SendMessage (toolTipHandle, OS.TTM_UPDATE, 0, 0);
+		if (OS.SendMessage (hwndToolTip, OS.TTM_GETTOOLINFO, 0, lpti) != 0) {
+			OS.SendMessage (hwndToolTip, OS.TTM_UPDATE, 0, 0);
 		} else {
 			lpti.uFlags = OS.TTF_IDISHWND | OS.TTF_SUBCLASS;
 			lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-			OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+			OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
 		}
 	}
 }
@@ -1357,6 +1462,24 @@ public void setVisible (boolean visible) {
 	}
 }
 
+void subclass () {
+	super.subclass ();
+	if (ToolTipProc != 0) {
+		int newProc = display.windowProc;
+		if (toolTipHandle != 0) {
+			OS.SetWindowLong (toolTipHandle, OS.GWL_WNDPROC, newProc);
+		}
+		if (balloonTipHandle != 0) {
+			OS.SetWindowLong (balloonTipHandle, OS.GWL_WNDPROC, newProc);
+		}
+	}
+}
+
+int toolTipHandle () {
+	if (toolTipHandle == 0) createToolTipHandle ();
+	return toolTipHandle;
+}
+
 boolean translateAccelerator (MSG msg) {
 	if (!isEnabled () || !isActive ()) return false;
 	if (menuBar != null && !menuBar.isEnabled ()) return false;
@@ -1368,6 +1491,18 @@ boolean traverseEscape () {
 	if (!isVisible () || !isEnabled ()) return false;
 	close ();
 	return true;
+}
+
+void unsubclass () {
+	super.unsubclass ();
+	if (ToolTipProc != 0) {
+		if (toolTipHandle != 0) {
+			OS.SetWindowLong (toolTipHandle, OS.GWL_WNDPROC, ToolTipProc);
+		}	
+		if (toolTipHandle != 0) {
+			OS.SetWindowLong (toolTipHandle, OS.GWL_WNDPROC, ToolTipProc);
+		}
+	}
 }
 
 void updateModal () {
@@ -1446,6 +1581,31 @@ int windowProc () {
 		if ((style & trim) == 0) super.windowProc ();
 	}
 	return parent != null ? DialogProc : super.windowProc ();
+}
+
+int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (handle == 0) return 0;
+	if (hwnd == toolTipHandle || hwnd == balloonTipHandle) {
+		switch (msg) {
+			case OS.WM_LBUTTONDOWN:
+				if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
+					TOOLINFO lpti = new TOOLINFO ();
+					lpti.cbSize = TOOLINFO.sizeof;
+					if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+						if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
+							ToolTip tip = findToolTip (lpti.uId);
+							if (tip != null) {
+								tip.setVisible (false);
+								tip.postEvent (SWT.Selection);
+							}
+						}
+					}
+				}
+				break;
+		}
+		return callWindowProc (hwnd, msg, wParam, lParam);
+	}
+	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
 int widgetStyle () {

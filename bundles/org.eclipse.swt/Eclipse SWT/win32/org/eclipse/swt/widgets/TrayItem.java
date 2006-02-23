@@ -36,6 +36,7 @@ public class TrayItem extends Item {
 	Tray parent;
 	int id;
 	Image image2;
+	ToolTip toolTip;
 	String toolTipText;
 	boolean visible = true;
 	
@@ -144,6 +145,12 @@ public Tray getParent () {
 	return parent;
 }
 
+//TODO - Javadoc
+/*public*/ ToolTip getToolTip () {
+	checkWidget ();
+	return toolTip;
+}
+
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
@@ -211,6 +218,40 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			break;
 		}
+		case OS.NIN_BALLOONSHOW:
+			if (toolTip != null && !toolTip.visible) {
+				toolTip.visible = true;
+				if (toolTip.hooks (SWT.Show)) {
+					OS.SetForegroundWindow (hwnd);
+					toolTip.sendEvent (SWT.Show);
+					// widget could be disposed at this point
+					if (isDisposed()) return 0;
+				}
+			}
+			break;
+		case OS.NIN_BALLOONHIDE:
+		case OS.NIN_BALLOONTIMEOUT:
+		case OS.NIN_BALLOONUSERCLICK:
+			if (toolTip != null) {
+				if (toolTip.visible) {
+					toolTip.visible = false;
+					if (toolTip.hooks (SWT.Hide)) {
+						OS.SetForegroundWindow (hwnd);
+						toolTip.sendEvent (SWT.Hide);
+						// widget could be disposed at this point
+						if (isDisposed()) return 0;
+					}
+				}
+				if (lParam == OS.NIN_BALLOONUSERCLICK) {
+					if (toolTip.hooks (SWT.Selection)) {
+						OS.SetForegroundWindow (hwnd);
+						toolTip.postEvent (SWT.Selection);
+						// widget could be disposed at this point
+						if (isDisposed()) return 0;
+					}
+				}
+			};
+			break;
 	}
 	display.wakeThread ();
 	return 0;
@@ -231,6 +272,8 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (toolTip != null) toolTip.item = null;
+	toolTip = null;
 	if (image2 != null) image2.dispose ();
 	image2 = null;
 	toolTipText = null;
@@ -305,6 +348,15 @@ public void setImage (Image image) {
 	iconData.hIcon = hIcon;
 	iconData.uFlags = OS.NIF_ICON;
 	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+}
+
+//TODO - Javadoc
+/*public*/ void setToolTip (ToolTip toolTip) {
+	checkWidget ();
+	ToolTip oldTip = this.toolTip, newTip = toolTip;
+	if (oldTip != null) oldTip.item = null;
+	this.toolTip = newTip;
+	if (newTip != null) newTip.item = this;
 }
 
 /**

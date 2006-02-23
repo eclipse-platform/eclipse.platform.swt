@@ -866,13 +866,20 @@ boolean setTabGroupFocus () {
 
 String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) == 0) {
-		return null;
+		String string = null;
+		Shell shell = getShell ();
+		ToolTip toolTip = shell.findToolTip (hdr.idFrom);
+		if (toolTip != null) {
+			string = toolTip.message;
+			if (string == null || string.length () == 0) string = " ";
+		}
+		return string;
 	}
 	int hwnd = hdr.idFrom;
 	if (hwnd == 0) return null;
 	Control control = display.getControl (hwnd);
-	if (control == null) return null;
-	return control.toolTipText;
+	OS.SendMessage (hdr.hwndFrom, OS.TTM_SETTITLE, 0, 0);
+	return control != null ? control.toolTipText : null;
 }
 
 boolean translateMnemonic (Event event, Control control) {

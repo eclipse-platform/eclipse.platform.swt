@@ -1393,6 +1393,15 @@ public class SWT {
 	//public static final int DISABLED = 1 << 5;
 	//public static final int HOT = 1 << 6;
 	//public static final int DEFAULTED = 1 << 7;
+
+	/**
+	 * Style constant for balloon behavior (value is 4).
+	 *
+	 * @since 3.2
+	 * 
+	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+	 */	
+	public static final int BALLOON = 1 << 4;
 	
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 1).
