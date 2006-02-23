@@ -163,6 +163,7 @@ public String getText () {
 
 public boolean getVisible () {
 	checkWidget();
+	if (OS.IsWinCE) return false;
 	if (item != null) return visible;
 	int hwndToolTip = (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
 	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
@@ -331,6 +332,7 @@ public void setText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
+	if (OS.IsWinCE) return;
 	if (visible == getVisible ()) return;
 	if (item == null) {
 		TOOLINFO lpti = new TOOLINFO ();
