@@ -208,11 +208,11 @@ abstract class Tab {
 	void createColorAndFontGroup () {
 		/* Create the group. */
 		colorGroup = new Group(controlGroup, SWT.NONE);
-		colorGroup.setLayout (new GridLayout (2, false));
+		colorGroup.setLayout (new GridLayout (2, true));
 		colorGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		colorGroup.setText (ControlExample.getResourceString ("Colors"));
 		colorAndFontTable = new Table(colorGroup, SWT.BORDER | SWT.V_SCROLL);
-		colorAndFontTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		colorAndFontTable.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
 		TableItem item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Foreground_Color"));
 		colorAndFontTable.setSelection(0);
@@ -222,8 +222,10 @@ abstract class Tab {
 		item.setText(ControlExample.getResourceString ("Font"));
 		Button changeButton = new Button (colorGroup, SWT.PUSH);
 		changeButton.setText(ControlExample.getResourceString("Change"));
+		changeButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 		Button defaultsButton = new Button (colorGroup, SWT.PUSH);
 		defaultsButton.setText(ControlExample.getResourceString("Defaults"));
+		defaultsButton.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
 		/* Add listeners to set/reset colors and fonts. */
 		colorDialog = new ColorDialog (shell);
