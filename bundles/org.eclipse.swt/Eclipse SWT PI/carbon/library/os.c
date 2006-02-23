@@ -6772,6 +6772,39 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIComboBoxRemoveItemAtIndex)
 }
 #endif
 
+#ifndef NO_HICreateTransformedCGImage
+JNIEXPORT jint JNICALL OS_NATIVE(HICreateTransformedCGImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HICreateTransformedCGImage_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)HICreateTransformedCGImage((CGImageRef)arg0, arg1, (CGImageRef *)lparg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(CGImageRef, jint, CGImageRef *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HICreateTransformedCGImage_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HICreateTransformedCGImage"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((CGImageRef)arg0, arg1, (CGImageRef *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, HICreateTransformedCGImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIObjectCopyClassID
 JNIEXPORT jint JNICALL OS_NATIVE(HIObjectCopyClassID)
 	(JNIEnv *env, jclass that, jint arg0)

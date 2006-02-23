@@ -15,5 +15,6 @@
 #define DataBrowserGetMetric_LIB "com.apple.Carbon"
 #define DataBrowserSetMetric_LIB "com.apple.Carbon"
 #define GetIconRefFromIconFamilyPtr_LIB "com.apple.Carbon"
+#define HICreateTransformedCGImage_LIB "com.apple.Carbon"
 #define HIThemeSetFill_LIB "com.apple.Carbon"
 #define NavDialogSetFilterTypeIdentifiers_LIB "com.apple.Carbon"

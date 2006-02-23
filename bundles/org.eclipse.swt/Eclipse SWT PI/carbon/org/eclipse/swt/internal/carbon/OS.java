@@ -495,6 +495,9 @@ public class OS extends Platform {
 	public static final int kHIViewFeatureIsOpaque = 1 << 25;
 	public static final int kHIViewZOrderAbove = 1;
 	public static final int kHIViewZOrderBelow = 2;
+	public static final int kHITransformNone = 0x00;
+	public static final int kHITransformDisabled = 0x01;
+	public static final int kHITransformSelected = 0x4000;
 	public static final int kHMCFStringContent = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
 	public static final int kHMOutsideBottomRightAligned = 10;
 	public static final int kHMAbsoluteCenterAligned = 23;
@@ -1328,6 +1331,7 @@ public static final native int GetWindowPort(int wHandle);
 public static final native int GetWindowRegion(int window, short inRegionCode, int ioWinRgn);
 public static final native int GetWindowResizeLimits (int inWindow, CGPoint inMinLimits, CGPoint inMaxLimits);
 public static final native void GetWindowStructureWidths(int intWindow, Rect outRect);
+public static final native int HICreateTransformedCGImage(int inImage, int inTransform, int[] outImage); 
 public static final native int HandleControlSetCursor(int control, Point localPoint, int modifiers, boolean[] cursorWasSet);  
 public static final native int HIComboBoxAppendTextItem(int inComboBox, int inText, int[] outIndex);
 public static final native int HIComboBoxCopyTextItemAtIndex(int inComboBox, int inIndex, int[] outString);

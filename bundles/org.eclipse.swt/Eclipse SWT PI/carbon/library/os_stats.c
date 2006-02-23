@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 900;
-int OS_nativeFunctionCallCount[900];
+int OS_nativeFunctionCount = 901;
+int OS_nativeFunctionCallCount[901];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -490,6 +490,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIComboBoxGetItemCount",
 	"HIComboBoxInsertTextItemAtIndex",
 	"HIComboBoxRemoveItemAtIndex",
+	"HICreateTransformedCGImage",
 	"HIObjectCopyClassID",
 	"HIObjectCreate",
 	"HIObjectRegisterSubclass",

@@ -494,6 +494,7 @@ typedef enum {
 	HIComboBoxGetItemCount_FUNC,
 	HIComboBoxInsertTextItemAtIndex_FUNC,
 	HIComboBoxRemoveItemAtIndex_FUNC,
+	HICreateTransformedCGImage_FUNC,
 	HIObjectCopyClassID_FUNC,
 	HIObjectCreate_FUNC,
 	HIObjectRegisterSubclass_FUNC,
