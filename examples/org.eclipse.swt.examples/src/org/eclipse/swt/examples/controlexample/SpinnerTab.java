@@ -25,8 +25,8 @@ class SpinnerTab extends RangeTab {
 	/* Style widgets added to the "Style" group */
 	Button readOnlyButton, wrapButton;
 	
-	/* Scale widgets added to the "Control" group */
-	Scale incrementScale, pageIncrementScale, digitsScale;
+	/* Spinner widgets added to the "Control" group */
+	Spinner incrementSpinner, pageIncrementSpinner, digitsSpinner;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -79,8 +79,8 @@ class SpinnerTab extends RangeTab {
 	 */
 	void createMaximumGroup() {
 		super.createMaximumGroup();
-		maximumScale.setMaximum (1000);
-		maximumScale.setPageIncrement (100);
+		maximumSpinner.setMaximum (1000);
+		maximumSpinner.setPageIncrement (100);
 	}
 	
 	/**
@@ -89,8 +89,8 @@ class SpinnerTab extends RangeTab {
 	 */
 	void createSelectionGroup() {
 		super.createSelectionGroup();
-		selectionScale.setMaximum (1000);
-		selectionScale.setPageIncrement (100);
+		selectionSpinner.setMaximum (1000);
+		selectionSpinner.setPageIncrement (100);
 	}
 	
 	/**
@@ -105,19 +105,19 @@ class SpinnerTab extends RangeTab {
 		incrementGroup.setText (ControlExample.getResourceString("Increment"));
 		incrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
-		/* Create the scale widget */
-		incrementScale = new Scale (incrementGroup, SWT.NONE);
-		incrementScale.setMaximum (100);
-		incrementScale.setSelection (1);
-		incrementScale.setPageIncrement (10);
-		incrementScale.setIncrement (5);
+		/* Create the Spinner widget */
+		incrementSpinner = new Spinner (incrementGroup, SWT.BORDER);
+		incrementSpinner.setMaximum (100);
+		incrementSpinner.setSelection (1);
+		incrementSpinner.setPageIncrement (10);
+		incrementSpinner.setIncrement (5);
 
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		incrementScale.setLayoutData (data);
+		incrementSpinner.setLayoutData (data);
 	
 		/* Add the listeners */
-		incrementScale.addSelectionListener (new SelectionAdapter () {
+		incrementSpinner.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetIncrement ();
 			}
@@ -136,19 +136,19 @@ class SpinnerTab extends RangeTab {
 		pageIncrementGroup.setText (ControlExample.getResourceString("Page_Increment"));
 		pageIncrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 			
-		/* Create the scale widget */
-		pageIncrementScale = new Scale (pageIncrementGroup, SWT.NONE);
-		pageIncrementScale.setMaximum (100);
-		pageIncrementScale.setSelection (10);
-		pageIncrementScale.setPageIncrement (10);
-		pageIncrementScale.setIncrement (5);
+		/* Create the Spinner widget */
+		pageIncrementSpinner = new Spinner (pageIncrementGroup, SWT.BORDER);
+		pageIncrementSpinner.setMaximum (100);
+		pageIncrementSpinner.setSelection (10);
+		pageIncrementSpinner.setPageIncrement (10);
+		pageIncrementSpinner.setIncrement (5);
 	
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		pageIncrementScale.setLayoutData (data);
+		pageIncrementSpinner.setLayoutData (data);
 
 		/* Add the listeners */
-		pageIncrementScale.addSelectionListener (new SelectionAdapter () {
+		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetPageIncrement ();
 			}
@@ -167,19 +167,19 @@ class SpinnerTab extends RangeTab {
 		digitsGroup.setText (ControlExample.getResourceString("Digits"));
 		digitsGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
-		/* Create the scale widget */
-		digitsScale = new Scale (digitsGroup, SWT.NONE);
-		digitsScale.setMaximum (8);
-		digitsScale.setSelection (0);
-		digitsScale.setPageIncrement (10);
-		digitsScale.setIncrement (5);
+		/* Create the Spinner widget */
+		digitsSpinner = new Spinner (digitsGroup, SWT.BORDER);
+		digitsSpinner.setMaximum (8);
+		digitsSpinner.setSelection (0);
+		digitsSpinner.setPageIncrement (10);
+		digitsSpinner.setIncrement (5);
 
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		digitsScale.setLayoutData (data);
+		digitsSpinner.setLayoutData (data);
 	
 		/* Add the listeners */
-		digitsScale.addSelectionListener (new SelectionAdapter () {
+		digitsSpinner.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetDigits ();
 			}
@@ -262,41 +262,41 @@ class SpinnerTab extends RangeTab {
 	 * Sets the increment of the "Example" widgets.
 	 */
 	void setWidgetIncrement () {
-		spinner1.setIncrement (incrementScale.getSelection ());
+		spinner1.setIncrement (incrementSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
 	void setWidgetMaximum () {
-		spinner1.setMaximum (maximumScale.getSelection ());
+		spinner1.setMaximum (maximumSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
 	void setWidgetMinimum () {
-		spinner1.setMinimum (minimumScale.getSelection ());
+		spinner1.setMinimum (minimumSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the page increment of the "Example" widgets.
 	 */
 	void setWidgetPageIncrement () {
-		spinner1.setPageIncrement (pageIncrementScale.getSelection ());
+		spinner1.setPageIncrement (pageIncrementSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the digits of the "Example" widgets.
 	 */
 	void setWidgetDigits () {
-		spinner1.setDigits (digitsScale.getSelection ());
+		spinner1.setDigits (digitsSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
 	void setWidgetSelection () {
-		spinner1.setSelection (selectionScale.getSelection ());
+		spinner1.setSelection (selectionSpinner.getSelection ());
 	}
 }

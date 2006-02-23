@@ -22,8 +22,8 @@ class SliderTab extends RangeTab {
 	Slider slider1;
 	Group sliderGroup, scaleGroup;
 
-	/* Scale widgets added to the "Control" group */
-	Scale incrementScale, pageIncrementScale, thumbScale;
+	/* Spinner widgets added to the "Control" group */
+	Spinner incrementSpinner, pageIncrementSpinner, thumbSpinner;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -99,19 +99,19 @@ class SliderTab extends RangeTab {
 		incrementGroup.setText (ControlExample.getResourceString("Increment"));
 		incrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
-		/* Create the scale widget */
-		incrementScale = new Scale (incrementGroup, SWT.NONE);
-		incrementScale.setMaximum (100);
-		incrementScale.setSelection (5);
-		incrementScale.setPageIncrement (10);
-		incrementScale.setIncrement (5);
+		/* Create the Spinner widget */
+		incrementSpinner = new Spinner (incrementGroup, SWT.BORDER);
+		incrementSpinner.setMaximum (100);
+		incrementSpinner.setSelection (5);
+		incrementSpinner.setPageIncrement (10);
+		incrementSpinner.setIncrement (5);
 
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		incrementScale.setLayoutData (data);
+		incrementSpinner.setLayoutData (data);
 	
 		/* Add the listeners */
-		incrementScale.addSelectionListener (new SelectionAdapter () {
+		incrementSpinner.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetIncrement ();
 			}
@@ -130,19 +130,19 @@ class SliderTab extends RangeTab {
 		pageIncrementGroup.setText (ControlExample.getResourceString("Page_Increment"));
 		pageIncrementGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 			
-		/* Create the scale widget */
-		pageIncrementScale = new Scale (pageIncrementGroup, SWT.NONE);
-		pageIncrementScale.setMaximum (100);
-		pageIncrementScale.setSelection (10);
-		pageIncrementScale.setPageIncrement (10);
-		pageIncrementScale.setIncrement (5);
+		/* Create the Spinner widget */
+		pageIncrementSpinner = new Spinner (pageIncrementGroup, SWT.BORDER);
+		pageIncrementSpinner.setMaximum (100);
+		pageIncrementSpinner.setSelection (10);
+		pageIncrementSpinner.setPageIncrement (10);
+		pageIncrementSpinner.setIncrement (5);
 	
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		pageIncrementScale.setLayoutData (data);
+		pageIncrementSpinner.setLayoutData (data);
 
 		/* Add the listeners */
-		pageIncrementScale.addSelectionListener (new SelectionAdapter () {
+		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetPageIncrement ();
 			}
@@ -161,19 +161,19 @@ class SliderTab extends RangeTab {
 		thumbGroup.setText (ControlExample.getResourceString("Thumb"));
 		thumbGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 		
-		/* Create the scale widget */
-		thumbScale = new Scale (thumbGroup, SWT.NONE);
-		thumbScale.setMaximum (100);
-		thumbScale.setSelection (10);
-		thumbScale.setPageIncrement (10);
-		thumbScale.setIncrement (5);
+		/* Create the Spinner widget */
+		thumbSpinner = new Spinner (thumbGroup, SWT.BORDER);
+		thumbSpinner.setMaximum (100);
+		thumbSpinner.setSelection (10);
+		thumbSpinner.setPageIncrement (10);
+		thumbSpinner.setIncrement (5);
 	
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		thumbScale.setLayoutData (data);
+		thumbSpinner.setLayoutData (data);
 
 		/* Add the listeners */
-		thumbScale.addSelectionListener (new SelectionAdapter () {
+		thumbSpinner.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetThumb ();
 			}
@@ -217,46 +217,46 @@ class SliderTab extends RangeTab {
 	 * Sets the increment of the "Example" widgets.
 	 */
 	void setWidgetIncrement () {
-		slider1.setIncrement (incrementScale.getSelection ());
-		scale1.setIncrement (incrementScale.getSelection ());
+		slider1.setIncrement (incrementSpinner.getSelection ());
+		scale1.setIncrement (incrementSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
 	void setWidgetMaximum () {
-		slider1.setMaximum (maximumScale.getSelection ());
-		scale1.setMaximum (maximumScale.getSelection ());
+		slider1.setMaximum (maximumSpinner.getSelection ());
+		scale1.setMaximum (maximumSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
 	void setWidgetMinimum () {
-		slider1.setMinimum (minimumScale.getSelection ());
-		scale1.setMinimum (minimumScale.getSelection ());
+		slider1.setMinimum (minimumSpinner.getSelection ());
+		scale1.setMinimum (minimumSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the page increment of the "Example" widgets.
 	 */
 	void setWidgetPageIncrement () {
-		slider1.setPageIncrement (pageIncrementScale.getSelection ());
-		scale1.setPageIncrement (pageIncrementScale.getSelection ());
+		slider1.setPageIncrement (pageIncrementSpinner.getSelection ());
+		scale1.setPageIncrement (pageIncrementSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
 	void setWidgetSelection () {
-		slider1.setSelection (selectionScale.getSelection ());
-		scale1.setSelection (selectionScale.getSelection ());
+		slider1.setSelection (selectionSpinner.getSelection ());
+		scale1.setSelection (selectionSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the thumb of the "Example" widgets.
 	 */
 	void setWidgetThumb () {
-		slider1.setThumb (thumbScale.getSelection ());
+		slider1.setThumb (thumbSpinner.getSelection ());
 	}
 }

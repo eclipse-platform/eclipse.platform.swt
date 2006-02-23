@@ -104,15 +104,15 @@ class ProgressBarTab extends RangeTab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		if (indeterminateButton.getSelection ()) {
-			selectionScale.setEnabled (false);
-			minimumScale.setEnabled (false);
-			maximumScale.setEnabled (false);
+			selectionSpinner.setEnabled (false);
+			minimumSpinner.setEnabled (false);
+			maximumSpinner.setEnabled (false);
 		} else {
-			selectionScale.setEnabled (true);
-			minimumScale.setEnabled (true);
-			maximumScale.setEnabled (true);
+			selectionSpinner.setEnabled (true);
+			minimumSpinner.setEnabled (true);
+			maximumSpinner.setEnabled (true);
 		}
-		maximumScale.setMaximum (progressBar1.getMaximum ());
+		maximumSpinner.setMaximum (progressBar1.getMaximum ());
 		smoothButton.setSelection ((progressBar1.getStyle () & SWT.SMOOTH) != 0);
 		indeterminateButton.setSelection ((progressBar1.getStyle () & SWT.INDETERMINATE) != 0);
 	}
@@ -121,33 +121,33 @@ class ProgressBarTab extends RangeTab {
 	 * Sets the maximum of the "Example" widgets.
 	 */
 	void setWidgetMaximum () {
-		progressBar1.setMaximum (maximumScale.getSelection ());
-		updateScales ();
+		progressBar1.setMaximum (maximumSpinner.getSelection ());
+		updateSpinners ();
 	}
 
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
 	void setWidgetMinimum () {
-		progressBar1.setMinimum (minimumScale.getSelection ());
-		updateScales ();
+		progressBar1.setMinimum (minimumSpinner.getSelection ());
+		updateSpinners ();
 	}
 
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
 	void setWidgetSelection () {
-		progressBar1.setSelection (selectionScale.getSelection ());
-		updateScales ();
+		progressBar1.setSelection (selectionSpinner.getSelection ());
+		updateSpinners ();
 	}
 
 	/**
-	 * Update the scale widgets to reflect the actual value set 
+	 * Update the Spinner widgets to reflect the actual value set 
 	 * on the "Example" widget.
 	 */
-	void updateScales () {
-		minimumScale.setSelection (progressBar1.getMinimum ());
-		selectionScale.setSelection (progressBar1.getSelection ());
-		maximumScale.setSelection (progressBar1.getMaximum ());
+	void updateSpinners () {
+		minimumSpinner.setSelection (progressBar1.getMinimum ());
+		selectionSpinner.setSelection (progressBar1.getSelection ());
+		maximumSpinner.setSelection (progressBar1.getMaximum ());
 	}
 }

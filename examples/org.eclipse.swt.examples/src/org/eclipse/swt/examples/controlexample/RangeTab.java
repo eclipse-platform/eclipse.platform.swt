@@ -22,7 +22,7 @@ abstract class RangeTab extends Tab {
 	boolean orientationButtons = true;
 
 	/* Scale widgets added to the "Control" group */
-	Scale minimumScale, selectionScale, maximumScale;
+	Spinner minimumSpinner, selectionSpinner, maximumSpinner;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -53,19 +53,19 @@ abstract class RangeTab extends Tab {
 		maximumGroup.setText (ControlExample.getResourceString("Maximum"));
 		maximumGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
-		/* Create a scale widget */
-		maximumScale = new Scale (maximumGroup, SWT.NONE);
-		maximumScale.setMaximum (100);
-		maximumScale.setSelection (100);
-		maximumScale.setPageIncrement (10);
-		maximumScale.setIncrement (5);
+		/* Create a Spinner widget */
+		maximumSpinner = new Spinner (maximumGroup, SWT.BORDER);
+		maximumSpinner.setMaximum (100);
+		maximumSpinner.setSelection (100);
+		maximumSpinner.setPageIncrement (10);
+		maximumSpinner.setIncrement (5);
 		
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		maximumScale.setLayoutData (data);
+		maximumSpinner.setLayoutData (data);
 	
 		/* Add the listeners */
-		maximumScale.addSelectionListener(new SelectionAdapter () {
+		maximumSpinner.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetMaximum ();
 			}
@@ -84,19 +84,19 @@ abstract class RangeTab extends Tab {
 		minimumGroup.setText (ControlExample.getResourceString("Minimum"));
 		minimumGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
 	
-		/* Create a scale widget */
-		minimumScale = new Scale (minimumGroup, SWT.NONE);
-		minimumScale.setMaximum (100);
-		minimumScale.setSelection(0);
-		minimumScale.setPageIncrement (10);
-		minimumScale.setIncrement (5);
+		/* Create a Spinner widget */
+		minimumSpinner = new Spinner (minimumGroup, SWT.BORDER);
+		minimumSpinner.setMaximum (100);
+		minimumSpinner.setSelection(0);
+		minimumSpinner.setPageIncrement (10);
+		minimumSpinner.setIncrement (5);
 	
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		minimumScale.setLayoutData (data);
+		minimumSpinner.setLayoutData (data);
 
 		/* Add the listeners */
-		minimumScale.addSelectionListener (new SelectionAdapter () {
+		minimumSpinner.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetMinimum ();
 			}
@@ -117,19 +117,19 @@ abstract class RangeTab extends Tab {
 		selectionGroup.setLayoutData(gridData);
 		selectionGroup.setText(ControlExample.getResourceString("Selection"));
 	
-		/* Create a scale widget */
-		selectionScale = new Scale (selectionGroup, SWT.NONE);
-		selectionScale.setMaximum (100);
-		selectionScale.setSelection (50);
-		selectionScale.setPageIncrement (10);
-		selectionScale.setIncrement (5);
+		/* Create a Spinner widget */
+		selectionSpinner = new Spinner (selectionGroup, SWT.BORDER);
+		selectionSpinner.setMaximum (100);
+		selectionSpinner.setSelection (50);
+		selectionSpinner.setPageIncrement (10);
+		selectionSpinner.setIncrement (5);
 	
 		GridData data = new GridData (GridData.FILL_HORIZONTAL);
 		data.widthHint = 100;
-		selectionScale.setLayoutData (data);
+		selectionSpinner.setLayoutData (data);
 
 		/* Add the listeners */
-		selectionScale.addSelectionListener(new SelectionAdapter() {
+		selectionSpinner.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				setWidgetSelection ();
 			}
