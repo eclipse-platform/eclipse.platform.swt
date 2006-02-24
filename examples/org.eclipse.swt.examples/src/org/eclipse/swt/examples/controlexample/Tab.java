@@ -45,7 +45,7 @@ abstract class Tab {
 
 	/* Common groups and composites */
 	Composite tabFolderPage;
-	Group exampleGroup, controlGroup, listenersGroup, otherGroup, sizeGroup, styleGroup, colorGroup;
+	Group exampleGroup, controlGroup, listenersGroup, otherGroup, sizeGroup, styleGroup, colorGroup, backgroundModeGroup;
 
 	/* Controlling instance */
 	final ControlExample instance;
@@ -70,6 +70,10 @@ abstract class Tab {
 	FontDialog fontDialog;
 	Color foregroundColor, backgroundColor;
 	Font font;
+	
+	/* Controls and resources for the "Background Mode" group */
+	Combo backgroundModeCombo;
+	Button backgroundModeImageButton, backgroundModeColorButton;
 
 	/* Event logging variables and controls */
 	Text eventConsole;
@@ -209,7 +213,7 @@ abstract class Tab {
 		/* Create the group. */
 		colorGroup = new Group(controlGroup, SWT.NONE);
 		colorGroup.setLayout (new GridLayout (2, true));
-		colorGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
+		colorGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		colorGroup.setText (ControlExample.getResourceString ("Colors"));
 		colorAndFontTable = new Table(colorGroup, SWT.BORDER | SWT.V_SCROLL);
 		colorAndFontTable.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false, 2, 1));
@@ -345,6 +349,50 @@ abstract class Tab {
 		enabledButton.setSelection(true);
 		visibleButton.setSelection(true);
 		backgroundImageButton.setSelection(false);
+	}
+	
+	/**
+	 * Creates the "Background Mode" group.
+	 */
+	void createBackgroundModeGroup () {
+		// note that this method must be called after createExampleWidgets
+		if (getExampleWidgets ().length == 0) return;
+		
+		/* Create the group */
+		backgroundModeGroup = new Group (controlGroup, SWT.NONE);
+		backgroundModeGroup.setLayout (new GridLayout ());
+		backgroundModeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
+		backgroundModeGroup.setText (ControlExample.getResourceString("Background_Mode"));
+	
+		/* Create the controls */
+		backgroundModeCombo = new Combo(backgroundModeGroup, SWT.CHECK);
+		backgroundModeCombo.setItems(new String[] {"SWT.INHERIT_NONE", "SWT.INHERIT_DEFAULT", "SWT.INHERIT_FORCE"});
+		backgroundModeImageButton = new Button(backgroundModeGroup, SWT.CHECK);
+		backgroundModeImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
+		backgroundModeColorButton = new Button(backgroundModeGroup, SWT.CHECK);
+		backgroundModeColorButton.setText(ControlExample.getResourceString("BackgroundColor"));
+	
+		/* Add the listeners */
+		backgroundModeCombo.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setExampleGroupBackgroundMode ();
+			}
+		});
+		backgroundModeImageButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setExampleGroupBackgroundImage ();
+			}
+		});
+		backgroundModeColorButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setExampleGroupBackgroundColor ();
+			}
+		});
+	
+		/* Set the default state */
+		backgroundModeCombo.setText(backgroundModeCombo.getItem(0));
+		backgroundModeImageButton.setSelection(false);
+		backgroundModeColorButton.setSelection(false);
 	}
 	
 	/**
@@ -485,7 +533,7 @@ abstract class Tab {
 	void createListenersGroup () {
 		listenersGroup = new Group (tabFolderPage, SWT.NONE);
 		listenersGroup.setLayout (new GridLayout (3, false));
-		listenersGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, true, 2, 1));
+		listenersGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true, 2, 1));
 		listenersGroup.setText (ControlExample.getResourceString ("Listeners"));
 
 		/*
@@ -730,7 +778,7 @@ abstract class Tab {
 		/* Create Orientation group*/
 		orientationGroup = new Group (controlGroup, SWT.NONE);
 		orientationGroup.setLayout (new GridLayout());
-		orientationGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		orientationGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		orientationGroup.setText (ControlExample.getResourceString("Orientation"));
 		defaultOrietationButton = new Button (orientationGroup, SWT.RADIO);
 		defaultOrietationButton.setText (ControlExample.getResourceString("Default"));
@@ -750,7 +798,7 @@ abstract class Tab {
 		/* Create the group */
 		sizeGroup = new Group (controlGroup, SWT.NONE);
 		sizeGroup.setLayout (new GridLayout());
-		sizeGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		sizeGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		sizeGroup.setText (ControlExample.getResourceString("Size"));
 	
 		/* Create the controls */
@@ -800,7 +848,7 @@ abstract class Tab {
 	void createStyleGroup () {
 		styleGroup = new Group (controlGroup, SWT.NONE);
 		styleGroup.setLayout (new GridLayout ());
-		styleGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		styleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false));
 		styleGroup.setText (ControlExample.getResourceString("Styles"));
 	}
 	
@@ -830,6 +878,7 @@ abstract class Tab {
 		createExampleWidgets ();
 		hookExampleWidgetListeners ();
 		createControlWidgets ();
+		createBackgroundModeGroup ();
 		setExampleWidgetState ();
 		
 		return tabFolderPage;
@@ -1096,6 +1145,33 @@ abstract class Tab {
 	}
 	
 	/**
+	 * Sets the background color of the "Example" widgets' parent.
+	 */
+	void setExampleGroupBackgroundColor () {
+		if (backgroundModeGroup == null) return;
+		exampleGroup.setBackground (backgroundModeColorButton.getSelection () ? display.getSystemColor(SWT.COLOR_BLUE) : null);
+	}
+	/**
+	 * Sets the background image of the "Example" widgets' parent.
+	 */
+	void setExampleGroupBackgroundImage () {
+		if (backgroundModeGroup == null) return;
+		exampleGroup.setBackgroundImage (backgroundModeImageButton.getSelection () ? instance.images[ControlExample.ciBackground] : null);
+	}
+
+	/**
+	 * Sets the background mode of the "Example" widgets' parent.
+	 */
+	void setExampleGroupBackgroundMode () {
+		if (backgroundModeGroup == null) return;
+		String modeString = backgroundModeCombo.getText ();
+		int mode = SWT.INHERIT_NONE;
+		if (modeString.equals("SWT.INHERIT_DEFAULT")) mode = SWT.INHERIT_DEFAULT;
+		if (modeString.equals("SWT.INHERIT_FORCE")) mode = SWT.INHERIT_FORCE;
+		exampleGroup.setBackgroundMode (mode);
+	}
+
+	/**
 	 * Sets the background color of the "Example" widgets.
 	 */
 	void setExampleWidgetBackground () {
@@ -1198,6 +1274,9 @@ abstract class Tab {
 	 * that is specific to the widget.
 	 */
 	void setExampleWidgetState () {
+		setExampleGroupBackgroundMode ();
+		setExampleGroupBackgroundColor ();
+		setExampleGroupBackgroundImage ();
 		setExampleWidgetEnabled ();
 		setExampleWidgetVisibility ();
 		setExampleWidgetBackground ();

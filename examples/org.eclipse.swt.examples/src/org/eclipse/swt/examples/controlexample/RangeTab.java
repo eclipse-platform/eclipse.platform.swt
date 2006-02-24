@@ -59,10 +59,7 @@ abstract class RangeTab extends Tab {
 		maximumSpinner.setSelection (100);
 		maximumSpinner.setPageIncrement (10);
 		maximumSpinner.setIncrement (5);
-		
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
-		data.widthHint = 100;
-		maximumSpinner.setLayoutData (data);
+		maximumSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 	
 		/* Add the listeners */
 		maximumSpinner.addSelectionListener(new SelectionAdapter () {
@@ -90,10 +87,7 @@ abstract class RangeTab extends Tab {
 		minimumSpinner.setSelection(0);
 		minimumSpinner.setPageIncrement (10);
 		minimumSpinner.setIncrement (5);
-	
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
-		data.widthHint = 100;
-		minimumSpinner.setLayoutData (data);
+		minimumSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
 		minimumSpinner.addSelectionListener (new SelectionAdapter () {
@@ -113,7 +107,7 @@ abstract class RangeTab extends Tab {
 		/* Create the group */
 		Group selectionGroup = new Group(controlGroup, SWT.NONE);
 		selectionGroup.setLayout(new GridLayout());
-		GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+		GridData gridData = new GridData(SWT.FILL, SWT.BEGINNING, false, false);
 		selectionGroup.setLayoutData(gridData);
 		selectionGroup.setText(ControlExample.getResourceString("Selection"));
 	
@@ -123,10 +117,7 @@ abstract class RangeTab extends Tab {
 		selectionSpinner.setSelection (50);
 		selectionSpinner.setPageIncrement (10);
 		selectionSpinner.setIncrement (5);
-	
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
-		data.widthHint = 100;
-		selectionSpinner.setLayoutData (data);
+		selectionSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
 		selectionSpinner.addSelectionListener(new SelectionAdapter() {

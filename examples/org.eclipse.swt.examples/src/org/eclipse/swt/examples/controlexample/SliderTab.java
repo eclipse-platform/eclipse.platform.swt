@@ -105,10 +105,7 @@ class SliderTab extends RangeTab {
 		incrementSpinner.setSelection (5);
 		incrementSpinner.setPageIncrement (10);
 		incrementSpinner.setIncrement (5);
-
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
-		data.widthHint = 100;
-		incrementSpinner.setLayoutData (data);
+		incrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 	
 		/* Add the listeners */
 		incrementSpinner.addSelectionListener (new SelectionAdapter () {
@@ -136,10 +133,7 @@ class SliderTab extends RangeTab {
 		pageIncrementSpinner.setSelection (10);
 		pageIncrementSpinner.setPageIncrement (10);
 		pageIncrementSpinner.setIncrement (5);
-	
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
-		data.widthHint = 100;
-		pageIncrementSpinner.setLayoutData (data);
+		pageIncrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
 		pageIncrementSpinner.addSelectionListener (new SelectionAdapter () {
@@ -167,10 +161,7 @@ class SliderTab extends RangeTab {
 		thumbSpinner.setSelection (10);
 		thumbSpinner.setPageIncrement (10);
 		thumbSpinner.setIncrement (5);
-	
-		GridData data = new GridData (GridData.FILL_HORIZONTAL);
-		data.widthHint = 100;
-		thumbSpinner.setLayoutData (data);
+		thumbSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
 		thumbSpinner.addSelectionListener (new SelectionAdapter () {
