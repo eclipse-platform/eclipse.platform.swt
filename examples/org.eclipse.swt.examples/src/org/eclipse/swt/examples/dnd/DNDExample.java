@@ -1029,7 +1029,7 @@ private Control createWidget(int type, Composite parent, String prefix){
 			return text;
 		}
 		case TREE: {
-			Tree tree = new Tree(parent, SWT.BORDER);
+			Tree tree = new Tree(parent, SWT.BORDER | SWT.MULTI);
 			tree.setHeaderVisible(true);
 			TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
 			column0.setText("Name");
