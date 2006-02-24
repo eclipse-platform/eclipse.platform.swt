@@ -371,7 +371,7 @@ abstract class Tab {
 		backgroundModeGroup.setText (ControlExample.getResourceString("Background_Mode"));
 	
 		/* Create the controls */
-		backgroundModeCombo = new Combo(backgroundModeGroup, SWT.CHECK);
+		backgroundModeCombo = new Combo(backgroundModeGroup, SWT.READ_ONLY);
 		backgroundModeCombo.setItems(new String[] {"SWT.INHERIT_NONE", "SWT.INHERIT_DEFAULT", "SWT.INHERIT_FORCE"});
 		backgroundModeImageButton = new Button(backgroundModeGroup, SWT.CHECK);
 		backgroundModeImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
