@@ -282,6 +282,19 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void setBackgroundImage (int hImage) {
+	super.setBackgroundPixel (hImage);
+	/*
+	* Bug in Windows.  Changing the background color of the Scale
+	* widget and calling InvalidateRect() still draws with the old
+	* color.  The fix is to send a fake WM_SIZE event to cause
+	* it to redraw with the new background color.
+	*/
+	ignoreResize = true;
+	OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
+	ignoreResize = false;
+}
+
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	/*
