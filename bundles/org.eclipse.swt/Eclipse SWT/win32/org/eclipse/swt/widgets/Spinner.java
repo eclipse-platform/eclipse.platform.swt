@@ -1184,10 +1184,12 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 				OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
 				int length = OS.GetWindowTextLength (hwndText);
-				if (length != 0 && start [0] != end [0]) {
+				int [] newStart = new int [1], newEnd = new int [1];
+				OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
+				if (length != 0 && newStart [0] != newEnd [0]) {
 					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 					OS.GetWindowText (hwndText, buffer, length + 1);
-					newText = buffer.toString (start [0], end [0] - start [0]);
+					newText = buffer.toString (newStart [0], newEnd [0] - newStart [0]);
 				} else {
 					newText = "";
 				}
