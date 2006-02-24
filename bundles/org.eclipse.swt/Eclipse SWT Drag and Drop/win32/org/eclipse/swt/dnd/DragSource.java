@@ -107,9 +107,7 @@ public class DragSource extends Widget {
 	int refCount;
 	
 	//workaround - track the operation performed by the drop target for DragEnd event
-	int dataEffect = DND.DROP_NONE;
-
-	Runnable dragMove;	
+	int dataEffect = DND.DROP_NONE;	
 	
 	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
@@ -291,7 +289,28 @@ private void drag(Event dragEvent) {
 	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	Object oldValue = display.getData(key);
 	display.setData(key, new Boolean(true));
+	ImageData imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
+	Image image = null;
+	int imagelist = 0;
+	if (imageData != null) {
+		image = new Image(display, imageData);
+		imagelist = createImageList(image);
+		if (imagelist != 0) {
+			Point pt = getDisplay().map(control, null, dragEvent.x, dragEvent.y);
+			OS.ImageList_BeginDrag(imagelist, 0, 0, 0);
+			OS.ImageList_DragEnter(0, pt.x, pt.y);
+		}
+	}
 	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
+	if (imagelist != 0) {
+		OS.ImageList_DragLeave(0);
+		OS.ImageList_EndDrag();
+		OS.ImageList_Destroy(imagelist);
+		imagelist = 0;
+	}
+	if (image != null) {
+		image.dispose();
+	}
 	display.setData(key, oldValue);
 	int operation = osToOp(pdwEffect[0]);
 	if (dataEffect == DND.DROP_MOVE) {
@@ -309,7 +328,60 @@ private void drag(Event dragEvent) {
 	notifyListeners(DND.DragEnd,event);
 	dataEffect = DND.DROP_NONE;
 }
-
+int createImageList(Image image) {
+	int flags = OS.ILC_MASK;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		flags |= OS.ILC_COLOR32;
+	} else {
+		int hDC = OS.GetDC (0);
+		int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
+		int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
+		OS.ReleaseDC (0, hDC);
+		int depth = bits * planes;
+		switch (depth) {
+			case 4: flags |= OS.ILC_COLOR4; break;
+			case 8: flags |= OS.ILC_COLOR8; break;
+			case 16: flags |= OS.ILC_COLOR16; break;
+			case 24: flags |= OS.ILC_COLOR24; break;
+			case 32: flags |= OS.ILC_COLOR32; break;
+			default: flags |= OS.ILC_COLOR; break;
+		}
+	}
+	if ((control.getStyle() & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
+	Rectangle bounds = image.getBounds();
+	int cx = bounds.width, cy = bounds.height;
+	int imageList = OS.ImageList_Create(cx, cy, flags, 0, 1);
+	int hImage = image.handle;
+	switch (image.type) {
+		case SWT.BITMAP: {
+			int background = control.getBackground().handle;
+			OS.ImageList_AddMasked(imageList, hImage, background);
+			break;
+		}
+		case SWT.ICON: {
+			int hDC = OS.GetDC(0);
+			int bitmap = OS.CreateCompatibleBitmap(hDC, cx, cy);
+			int hDC1 = OS.CreateCompatibleDC(hDC);
+			int hOldBitmap = OS.SelectObject(hDC1, bitmap);
+			int hIcon = OS.CopyImage(image.handle, OS.IMAGE_ICON, cx, cy, 0);
+			OS.DrawIconEx(hDC1, 0, 0, hIcon, 0, 0, 0, 0, OS.DI_NORMAL);
+			OS.DestroyIcon(hIcon);
+			OS.SelectObject(hDC1, hOldBitmap);
+			ImageData imageData = image.getImageData();
+			int background = imageData.transparentPixel;
+			OS.ImageList_AddMasked(imageList, bitmap, background);
+			OS.DeleteObject(bitmap);
+			OS.DeleteDC (hDC1);
+			OS.ReleaseDC (0, hDC);
+			break;
+		}
+		default: {
+			OS.ImageList_Destroy(imageList);
+			imageList = 0;
+		}
+	}
+	return imageList;
+}
 /* 
  * EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc)
  * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc 
@@ -404,11 +476,19 @@ private int GiveFeedback(int dwEffect) {
 }
 
 private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
-	if (fEscapePressed != 0)
+	if (fEscapePressed != 0){
+		OS.ImageList_DragLeave(0);
 		return COM.DRAGDROP_S_CANCEL;
+	}
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	if ((grfKeyState & mask) == 0)
+	if ((grfKeyState & mask) == 0) {
+		OS.ImageList_DragLeave(0);
 		return COM.DRAGDROP_S_DROP;
+	}
+	
+	Display display = getDisplay();
+	Point pt = display.getCursorLocation();
+	OS.ImageList_DragMove(pt.x, pt.y);
 	return COM.S_OK;
 }
 
