@@ -103,7 +103,10 @@ abstract class Tab {
 		"MenuDetect",
 		"SetData",
 		"MouseWheel",
-//		"Settings",  // intentionally commented - event only goes to Display
+		"Settings",  // note: this event only goes to Display
+		"EraseItem",
+		"MeasureItem",
+		"PaintItem",
 	};
 
 	/**
