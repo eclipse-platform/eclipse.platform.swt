@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -23,7 +24,7 @@ class TreeDragAndDropEffect extends DragAndDropEffect {
 	long expandBeginTime;
 	boolean clearInsert = false;
 	
-	static final int SCROLL_HYSTERESIS = 150; // milli seconds
+	static final int SCROLL_HYSTERESIS = 200; // milli seconds
 	static final int EXPAND_HYSTERESIS = 300; // milli seconds
 	
 
@@ -58,6 +59,43 @@ Widget getItem(int x, int y) {
 	return item;
 }
 
+ImageData getDragSourceImage(int x, int y) {
+	TreeItem[] selection = tree.getSelection();
+	if (selection.length == 0) return null;
+	int treeImageList = OS.SendMessage (tree.handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
+	if (treeImageList != 0) {
+		int count = Math.min(selection.length, 10);
+		Rectangle bounds = selection[0].getBounds(0);
+		for (int i = 1; i < count; i++) {
+			bounds = bounds.union(selection[i].getBounds(0));
+		}
+		int hDC = OS.GetDC(0);
+		int hDC1 = OS.CreateCompatibleDC(hDC);
+		int bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
+		int hOldBitmap = OS.SelectObject(hDC1, bitmap);
+		RECT rect = new RECT();
+		rect.right = bounds.width;
+		rect.bottom = bounds.height;
+		OS.FillRect(hDC1, rect, -1);
+		for (int i = 0; i < count; i++) {
+			TreeItem selected = selection[i];
+			Rectangle cell = selected.getBounds(0);
+			int imageList = OS.SendMessage(tree.handle, OS.TVM_CREATEDRAGIMAGE, 0, selected.handle);
+			OS.ImageList_Draw(imageList, 0, hDC1, cell.x - bounds.x, cell.y - bounds.y, OS.ILD_SELECTED);
+			OS.ImageList_Destroy(imageList);
+		}
+		OS.SelectObject(hDC1, hOldBitmap);
+		OS.DeleteDC (hDC1);
+		OS.ReleaseDC (0, hDC);
+		Display display = tree.getDisplay();
+		Image image = Image.win32_new(display, SWT.BITMAP, bitmap);
+		ImageData imageData  = image.getImageData();
+		image.dispose();
+		return imageData;
+	}
+	return null;
+}
+
 void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	int handle = tree.handle;
@@ -76,7 +114,10 @@ void showDropTargetEffect(int effect, int x, int y) {
 			if (System.currentTimeMillis() >= scrollBeginTime) {
 				int topItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 				int nextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, hItem == topItem ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE, hItem);
+				OS.ImageList_DragShowNolock(false);
 				OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, nextItem);
+				tree.update();
+				OS.ImageList_DragShowNolock(true);
 				scrollBeginTime = 0;
 				scrollIndex = -1;
 			}
@@ -91,7 +132,10 @@ void showDropTargetEffect(int effect, int x, int y) {
 	} else {
 		if (hItem != -1 && expandIndex == hItem && expandBeginTime != 0) {
 			if (System.currentTimeMillis() >= expandBeginTime) {
+				OS.ImageList_DragShowNolock(false);
 				OS.SendMessage (handle, OS.TVM_EXPAND, OS.TVE_EXPAND, hItem);
+				tree.update();
+				OS.ImageList_DragShowNolock(true);
 				expandBeginTime = 0;
 				expandIndex = -1;
 			}
@@ -106,7 +150,10 @@ void showDropTargetEffect(int effect, int x, int y) {
 		tvItem.mask = OS.TVIF_STATE;
 		tvItem.stateMask = OS.TVIS_DROPHILITED;
 		tvItem.state = 0;
+		OS.ImageList_DragShowNolock(false);
 		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		tree.update();
+		OS.ImageList_DragShowNolock(true);
 		dropIndex = -1;
 	}
 	if (hItem != -1 && hItem != dropIndex && (effect & DND.FEEDBACK_SELECT) != 0) {
@@ -115,7 +162,10 @@ void showDropTargetEffect(int effect, int x, int y) {
 		tvItem.mask = OS.TVIF_STATE;
 		tvItem.stateMask = OS.TVIS_DROPHILITED;
 		tvItem.state = OS.TVIS_DROPHILITED;
+		OS.ImageList_DragShowNolock(false);
 		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		tree.update();
+		OS.ImageList_DragShowNolock(true);
 		dropIndex = hItem;
 	}
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0 || (effect & DND.FEEDBACK_INSERT_AFTER) != 0) {
@@ -131,11 +181,19 @@ void showDropTargetEffect(int effect, int x, int y) {
 		*/
 		TreeItem insertItem = (TreeItem)tree.getDisplay().findWidget(tree.handle, hItem);
 		if (insertItem != null) {
+			OS.ImageList_DragShowNolock(false);
 			tree.setInsertMark(insertItem, before);
+			tree.update();
+			OS.ImageList_DragShowNolock(true);
 			clearInsert = true;
 		}
 	} else {
-		if (clearInsert) tree.setInsertMark(null, false);
+		if (clearInsert) {
+			OS.ImageList_DragShowNolock(false);
+			tree.setInsertMark(null, false);
+			tree.update();
+			OS.ImageList_DragShowNolock(true);
+		}
 		clearInsert = false;
 	}
 	return;

@@ -644,6 +644,7 @@ public class OS extends Platform {
 	public static final int ILC_MASK = 0x1;
 	public static final int ILC_MIRROR = 0x2000;
 	public static final int ILD_NORMAL = 0x0;
+	public static final int ILD_SELECTED = 0x4;
 	public static final int IMAGE_BITMAP = 0x0;
 	public static final int IMAGE_CURSOR = 0x2;
 	public static final int IMAGE_ICON = 0x1;
@@ -746,12 +747,13 @@ public class OS extends Platform {
 	public static final int LVIS_FOCUSED = 0x1;
 	public static final int LVIS_SELECTED = 0x2;
 	public static final int LVIS_STATEIMAGEMASK = 0xf000;
+	public static final int LVM_FIRST = 0x1000;
 	public static final int LVM_APPROXIMATEVIEWRECT = 0x1040;
+	public static final int LVM_CREATEDRAGIMAGE = LVM_FIRST + 33;
 	public static final int LVM_DELETEALLITEMS = 0x1009;
 	public static final int LVM_DELETECOLUMN = 0x101c;
 	public static final int LVM_DELETEITEM = 0x1008;
 	public static final int LVM_ENSUREVISIBLE = 0x1013;
-	public static final int LVM_FIRST = 0x1000;
 	public static final int LVM_GETBKCOLOR = 0x1000;
 	public static final int LVM_GETCOLUMN = IsUnicode ? 0x105f : 0x1019;
 	public static final int LVM_GETCOLUMNORDERARRAY = LVM_FIRST + 59;
@@ -1426,6 +1428,7 @@ public class OS extends Platform {
 	public static final int TVI_FIRST = 0xffff0001;
 	public static final int TVI_LAST = 0xffff0002;
 	public static final int TVI_ROOT = 0xffff0000;
+	public static final int TVM_CREATEDRAGIMAGE = TV_FIRST + 18;
 	public static final int TVM_DELETEITEM = 0x1101;
 	public static final int TVM_ENSUREVISIBLE = 0x1114;
 	public static final int TVM_EXPAND = 0x1102;
@@ -2407,6 +2410,11 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, MARGINS lPar
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int SendMessage (int hWnd, int Msg, int wParam, POINT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int SendMessage (int hWnd, int Msg, int wParam, REBARBANDINFO lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -2863,8 +2871,15 @@ public static final native int HitTestThemeBackground(int hTheme, int hdc, int i
 public static final native int IIDFromString(char[] lpsz, byte[] lpiid);
 public static final native int ImageList_Add (int himl, int hbmImage, int hbmMask);
 public static final native int ImageList_AddMasked (int himl, int hbmImage, int crMask);
+public static final native boolean ImageList_BeginDrag (int himl, int iTrack, int dxHotspot, int dyHotspot);
 public static final native int ImageList_Create (int cx, int cy, int flags, int cInitial, int cGrow);
 public static final native boolean ImageList_Destroy (int himl);
+public static final native boolean ImageList_DragEnter (int hwndLock, int x, int y);
+public static final native boolean ImageList_DragLeave (int hwndLock);
+public static final native boolean ImageList_DragMove (int x, int y);
+public static final native boolean ImageList_DragShowNolock (boolean fShow);
+public static final native boolean ImageList_Draw(int himl, int i, int hdcDst, int x, int y, int fStyle);
+public static final native void ImageList_EndDrag ();
 public static final native int ImageList_GetIcon (int himl, int i, int flags);
 public static final native boolean ImageList_GetIconSize (int himl, int [] cx, int [] cy);   
 public static final native int ImageList_GetImageCount (int himl);
@@ -3092,6 +3107,7 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, LVHI
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, LITEM lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, LVITEM lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, MARGINS lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, POINT lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, REBARBANDINFO lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, RECT lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TBBUTTON lParam);
@@ -3117,6 +3133,7 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, LVHI
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, LITEM lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, LVITEM lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, MARGINS lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, POINT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, REBARBANDINFO lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, RECT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TBBUTTON lParam);

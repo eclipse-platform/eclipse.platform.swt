@@ -4904,6 +4904,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(ImageList_1AddMasked)
 }
 #endif
 
+#ifndef NO_ImageList_1BeginDrag
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1BeginDrag)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImageList_1BeginDrag_FUNC);
+	rc = (jboolean)ImageList_BeginDrag((HIMAGELIST)arg0, arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, ImageList_1BeginDrag_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ImageList_1Create
 JNIEXPORT jint JNICALL OS_NATIVE(ImageList_1Create)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
@@ -4925,6 +4937,76 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1Destroy)
 	rc = (jboolean)ImageList_Destroy((HIMAGELIST)arg0);
 	OS_NATIVE_EXIT(env, that, ImageList_1Destroy_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_ImageList_1DragEnter
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1DragEnter)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImageList_1DragEnter_FUNC);
+	rc = (jboolean)ImageList_DragEnter((HWND)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, ImageList_1DragEnter_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImageList_1DragLeave
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1DragLeave)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImageList_1DragLeave_FUNC);
+	rc = (jboolean)ImageList_DragLeave((HWND)arg0);
+	OS_NATIVE_EXIT(env, that, ImageList_1DragLeave_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImageList_1DragMove
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1DragMove)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImageList_1DragMove_FUNC);
+	rc = (jboolean)ImageList_DragMove(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, ImageList_1DragMove_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImageList_1DragShowNolock
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1DragShowNolock)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImageList_1DragShowNolock_FUNC);
+	rc = (jboolean)ImageList_DragShowNolock((BOOL)arg0);
+	OS_NATIVE_EXIT(env, that, ImageList_1DragShowNolock_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImageList_1Draw
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1Draw)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImageList_1Draw_FUNC);
+	rc = (jboolean)ImageList_Draw((HIMAGELIST)arg0, arg1, (HDC)arg2, arg3, arg4, (UINT)arg5);
+	OS_NATIVE_EXIT(env, that, ImageList_1Draw_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImageList_1EndDrag
+JNIEXPORT void JNICALL OS_NATIVE(ImageList_1EndDrag)
+	(JNIEnv *env, jclass that)
+{
+	OS_NATIVE_ENTER(env, that, ImageList_1EndDrag_FUNC);
+	ImageList_EndDrag();
+	OS_NATIVE_EXIT(env, that, ImageList_1EndDrag_FUNC);
 }
 #endif
 
@@ -8743,6 +8825,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	POINT _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2_FUNC);
+	if (arg3) if ((lparg3 = getPOINTFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setPOINTFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_POINT_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
@@ -9138,6 +9236,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win3
 fail:
 	if (arg3 && lparg3) setMARGINSFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_POINT_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win32_POINT_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	POINT _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_POINT_2_FUNC);
+	if (arg3) if ((lparg3 = getPOINTFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setPOINTFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_POINT_2_FUNC);
 	return rc;
 }
 #endif

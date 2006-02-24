@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -18,14 +19,15 @@ class TableDragAndDropEffect extends DragAndDropEffect {
 	Table table;
 	int scrollIndex;
 	long scrollBeginTime;
-	
-	static final int SCROLL_HYSTERESIS = 150; // milli seconds
+	TableItem dropHighlight;
+
+	static final int SCROLL_HYSTERESIS = 200; // milli seconds
 	
 TableDragAndDropEffect(Table table) {
 	this.table = table;
 }
 
-private int checkEffect(int effect) {
+int checkEffect(int effect) {
 	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
@@ -52,6 +54,40 @@ Widget getItem(int x, int y) {
 	return item;
 }
 
+ImageData getDragSourceImage(int x, int y) {
+	TableItem[] selection = table.getSelection();
+	if (selection.length == 0) return null;
+	int tableImageList = OS.SendMessage (table.handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+	if (tableImageList != 0) {
+		int count = Math.min(selection.length, 10);
+		Rectangle bounds = selection[0].getBounds(0);
+		for (int i = 1; i < count; i++) {
+			bounds = bounds.union(selection[i].getBounds(0));
+		}
+		int hDC = OS.GetDC(0);
+		int hDC1 = OS.CreateCompatibleDC(hDC);
+		int bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
+		int hOldBitmap = OS.SelectObject(hDC1, bitmap);
+		for (int i = 0; i < count; i++) {
+			TableItem selected = selection[i];
+			Rectangle cell = selected.getBounds(0);
+			POINT pt = new POINT();
+			int imageList = OS.SendMessage (table.handle, OS.LVM_CREATEDRAGIMAGE, table.indexOf(selected), pt);
+			OS.ImageList_Draw(imageList, 0, hDC1, cell.x - bounds.x, cell.y - bounds.y, OS.ILD_SELECTED);
+			OS.ImageList_Destroy(imageList);
+		}
+		OS.SelectObject(hDC1, hOldBitmap);
+		OS.DeleteDC (hDC1);
+		OS.ReleaseDC (0, hDC);
+		Display display = table.getDisplay();
+		Image image = Image.win32_new(display, SWT.BITMAP, bitmap);
+		ImageData imageData = image.getImageData();
+		image.dispose();
+		return imageData;
+	}
+	return null;
+}
+
 void showDropTargetEffect(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	int handle = table.handle;
@@ -70,7 +106,10 @@ void showDropTargetEffect(int effect, int x, int y) {
 				int top = Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
 				int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 				int index = (scrollIndex - 1 < top) ? Math.max(0, scrollIndex - 1) : Math.min(count - 1, scrollIndex + 1);
+				OS.ImageList_DragShowNolock(false);
 				OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+				table.update();
+				OS.ImageList_DragShowNolock(true);
 				scrollBeginTime = 0;
 				scrollIndex = -1;
 			}
@@ -79,13 +118,32 @@ void showDropTargetEffect(int effect, int x, int y) {
 			scrollIndex = pinfo.iItem;
 		}
 	}
-	LVITEM lvItem = new LVITEM ();
-	lvItem.stateMask = OS.LVIS_DROPHILITED;
-	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, lvItem);
+	
 	if (pinfo.iItem != -1 && (effect & DND.FEEDBACK_SELECT) != 0) {
-		lvItem.state = OS.LVIS_DROPHILITED;
-		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, pinfo.iItem, lvItem);
+		TableItem item = table.getItem(pinfo.iItem);
+		if (dropHighlight != item) {
+			LVITEM lvItem = new LVITEM();
+			lvItem.stateMask = OS.LVIS_DROPHILITED;
+			OS.ImageList_DragShowNolock(false);
+			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
+			lvItem.state = OS.LVIS_DROPHILITED;
+			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, pinfo.iItem, lvItem);
+			table.update();
+			OS.ImageList_DragShowNolock(true);
+			dropHighlight = item;
+		}
+	} else {
+		if (dropHighlight != null) {
+			LVITEM lvItem = new LVITEM ();
+			lvItem.stateMask = OS.LVIS_DROPHILITED;
+			OS.ImageList_DragShowNolock(false);
+			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
+			table.update();
+			OS.ImageList_DragShowNolock(true);
+			dropHighlight = null;
+		}
 	}
+
 	//Insert mark only supported on Windows XP with manifest
 //	if (OS.COMCTL32_MAJOR >= 6) {
 //		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0 || (effect & DND.FEEDBACK_INSERT_AFTER) != 0) {
