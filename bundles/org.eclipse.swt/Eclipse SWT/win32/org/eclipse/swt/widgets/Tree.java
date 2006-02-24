@@ -2499,7 +2499,7 @@ void setBackgroundImage (int hBitmap) {
 	* TVS_FULLROWSELECT, the background color for the
 	* entire row is filled when an item is painted,
 	* drawing on top of the background image.  The fix
-	* is to set and clear TVS_FULLROWSELECT.
+	* is to clear TVS_FULLROWSELECT.
 	*/
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
