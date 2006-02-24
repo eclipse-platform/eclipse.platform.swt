@@ -112,12 +112,32 @@ void showDropTargetEffect(int effect, int x, int y) {
 	} else {
 		if (hItem != -1 && scrollIndex == hItem && scrollBeginTime != 0) {
 			if (System.currentTimeMillis() >= scrollBeginTime) {
-				int topItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
-				int nextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, hItem == topItem ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE, hItem);
-				OS.ImageList_DragShowNolock(false);
-				OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, nextItem);
-				tree.update();
-				OS.ImageList_DragShowNolock(true);
+				int topItem = OS.SendMessage(handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+				int nextItem = OS.SendMessage(handle, OS.TVM_GETNEXTITEM, hItem == topItem ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE, hItem);
+				boolean scroll = true;
+				if (hItem == topItem) {
+					scroll = nextItem != 0;
+				} else {
+					RECT itemRect = new RECT ();
+					itemRect.left = nextItem;
+					if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+						RECT rect = new RECT ();
+						OS.GetClientRect (handle, rect);
+						POINT pt = new POINT ();
+						pt.x = itemRect.left;
+						pt.y = itemRect.top;
+						if (OS.PtInRect (rect, pt)) {
+							pt.y = itemRect.bottom;
+							if (OS.PtInRect (rect, pt)) scroll = false;
+						}
+					}
+				}
+				if (scroll) {
+					OS.ImageList_DragShowNolock(false);
+					OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, nextItem);
+					tree.update();
+					OS.ImageList_DragShowNolock(true);
+				}
 				scrollBeginTime = 0;
 				scrollIndex = -1;
 			}
@@ -132,10 +152,18 @@ void showDropTargetEffect(int effect, int x, int y) {
 	} else {
 		if (hItem != -1 && expandIndex == hItem && expandBeginTime != 0) {
 			if (System.currentTimeMillis() >= expandBeginTime) {
-				OS.ImageList_DragShowNolock(false);
-				OS.SendMessage (handle, OS.TVM_EXPAND, OS.TVE_EXPAND, hItem);
-				tree.update();
-				OS.ImageList_DragShowNolock(true);
+				if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem) != 0) {
+					TVITEM tvItem = new TVITEM ();
+					tvItem.hItem = hItem;
+					tvItem.mask = OS.TVIF_STATE;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					if ((tvItem.state & OS.TVIS_EXPANDED) == 0) {
+						OS.ImageList_DragShowNolock(false);
+						OS.SendMessage (handle, OS.TVM_EXPAND, OS.TVE_EXPAND, hItem);
+						tree.update();
+						OS.ImageList_DragShowNolock(true);
+					}
+				}
 				expandBeginTime = 0;
 				expandIndex = -1;
 			}

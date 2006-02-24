@@ -106,10 +106,30 @@ void showDropTargetEffect(int effect, int x, int y) {
 				int top = Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
 				int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 				int index = (scrollIndex - 1 < top) ? Math.max(0, scrollIndex - 1) : Math.min(count - 1, scrollIndex + 1);
-				OS.ImageList_DragShowNolock(false);
-				OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
-				table.update();
-				OS.ImageList_DragShowNolock(true);
+				boolean scroll = true;
+				if (pinfo.iItem == top) {
+					scroll = pinfo.iItem != index;
+				} else {
+					RECT itemRect = new RECT ();
+					itemRect.left = OS.LVIR_BOUNDS;
+					if (OS.SendMessage (handle, OS.LVM_GETITEMRECT, pinfo.iItem, itemRect) != 0) {
+						RECT rect = new RECT ();
+						OS.GetClientRect (handle, rect);
+						POINT pt = new POINT ();
+						pt.x = itemRect.left;
+						pt.y = itemRect.top;
+						if (OS.PtInRect (rect, pt)) {
+							pt.y = itemRect.bottom;
+							if (OS.PtInRect (rect, pt)) scroll = false;
+						}
+					}
+				}
+				if (scroll) {
+					OS.ImageList_DragShowNolock(false);
+					OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+					table.update();
+					OS.ImageList_DragShowNolock(true);
+				}
 				scrollBeginTime = 0;
 				scrollIndex = -1;
 			}
