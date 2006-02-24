@@ -7254,6 +7254,15 @@ public static final void gtk_tree_view_set_drag_dest_row(int /*long*/ view, int 
 		lock.unlock();
 	}
 }
+public static final native void _gtk_tree_view_set_enable_search (int /*long*/ view, boolean enable_search);
+public static final void gtk_tree_view_set_enable_search (int /*long*/ view, boolean enable_search) {
+	lock.lock();
+	try {
+		_gtk_tree_view_set_enable_search(view, enable_search);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _gtk_tree_view_expand_row(int /*long*/ view, int /*long*/ path, boolean open_all);
 public static final boolean gtk_tree_view_expand_row(int /*long*/ view, int /*long*/ path, boolean open_all) {
 	lock.lock();
