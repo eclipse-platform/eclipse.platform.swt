@@ -4616,6 +4616,22 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: {
 					if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
+					/*
+					* Bug in Windows.  When the table has the extended style
+					* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+					* CLR_NONE to make the table transparent, Windows fills
+					* a black rectangle around any column that contains an
+					* image.  The fix is clear LVS_EX_FULLROWSELECT during
+					* custom draw.
+					*/
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+							OS.UpdateWindow (handle);
+							int bits = OS.LVS_EX_FULLROWSELECT;
+							OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
+							OS.ValidateRect (handle, null);
+						}
+					}
 					if (OS.IsWindowEnabled (handle)) {
 						Control control = findBackgroundControl ();
 						if (control != null && control.backgroundImage != null) {
@@ -4631,7 +4647,37 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							}
 						}
 					}
-					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
+					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
+				}
+				case OS.CDDS_POSTPAINT: {
+					/*
+					* Bug in Windows.  When the table has the extended style
+					* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+					* CLR_NONE to make the table transparent, Windows fills
+					* a black rectangle around any column that contains an
+					* image.  The fix is clear LVS_EX_FULLROWSELECT during
+					* custom draw.
+					*/
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+							int bits = OS.LVS_EX_FULLROWSELECT;
+							if (OS.IsWinCE) {
+								RECT rect = new RECT ();
+								boolean damaged = OS.GetUpdateRect (handle, rect, true);
+								OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+								OS.ValidateRect (handle, null);
+								if (damaged) OS.InvalidateRect (handle, rect, true);
+							} else {
+								int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+								int result = OS.GetUpdateRgn (handle, rgn, true);
+								OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+								OS.ValidateRect (handle, null);
+								if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
+								OS.DeleteObject (rgn);
+							}
+						}
+					}
+					break;
 				}
 				case OS.CDDS_ITEMPREPAINT: {
 					return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
@@ -4678,6 +4724,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						}
 					}
 					ignoreDraw = false;
+					boolean ignoreDrawSelected = false;
 					if (hooks (SWT.EraseItem)) {
 						RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
 						int nSavedDC = OS.SaveDC (hDC);
@@ -4728,6 +4775,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						if (isDisposed () || item.isDisposed ()) break;
 						if (selected) {
 							if ((event.detail & SWT.SELECTED) == 0) {
+								ignoreDrawSelected = true;
 								if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
 									clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 									//clrText = newClrText;
@@ -4752,6 +4800,51 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SaveDC (hDC);
 							OS.SelectClipRgn (hDC, 0);
 							OS.ExcludeClipRect (hDC, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
+						}
+					}
+					/*
+					* Bug in Windows.  When the table has the extended style
+					* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+					* CLR_NONE to make the table transparent, Windows draws
+					* a black rectangle around any column that contains an
+					* image.  The fix is emulate LVS_EX_FULLROWSELECT by
+					* drawing the selection.
+					*/
+					if (!ignoreDrawSelected && (style & SWT.FULL_SELECTION) != 0) {
+						int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+						if ((bits & OS.LVS_EX_FULLROWSELECT) == 0) {
+							/*
+							* Bug in Windows.  For some reason, CDIS_SELECTED always set,
+							* even for items that are not selected.  The fix is to get
+							* the selection state from the item.
+							*/
+							LVITEM lvItem = new LVITEM ();
+							lvItem.mask = OS.LVIF_STATE;
+							lvItem.stateMask = OS.LVIS_SELECTED;
+							lvItem.iItem = nmcd.dwItemSpec;
+							int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+							if ((result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0)) {
+								if (OS.GetFocus () == handle) {
+									clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+									clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+								} else {
+									if ((style & SWT.HIDE_SELECTION) == 0) {
+										clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
+									}
+								}
+								if (clrTextBk != -1 && nmcd.iSubItem == 0) {
+									RECT itemRect = new RECT ();
+									itemRect.left = OS.LVIR_SELECTBOUNDS;
+									if (OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, itemRect) != 0) {
+										RECT headerRect = new RECT ();
+										if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) != 0) {
+											itemRect.left = itemRect.right;
+											itemRect.right = headerRect.right;
+											fillBackground (hDC, clrTextBk, itemRect);
+										}
+									}
+								}
+							}
 						}
 					}
 					/*
@@ -4914,7 +5007,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					OS.MoveMemory (pnmlv, lParam, NMLISTVIEW.sizeof);
 					if (pnmlv.iItem != -1) {
 						RECT itemRect = new RECT ();
-						rect.left = OS.LVIR_BOUNDS;
+						itemRect.left = OS.LVIR_BOUNDS;
 						OS.SendMessage (handle, OS. LVM_GETITEMRECT, pnmlv.iItem, itemRect);
 						RECT headerRect = new RECT ();
 						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);

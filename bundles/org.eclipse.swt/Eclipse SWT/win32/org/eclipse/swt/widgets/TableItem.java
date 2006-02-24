@@ -238,7 +238,8 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
 	RECT rect = new RECT ();
 	int hwnd = parent.handle;
-	if (column == 0) {
+	int bits = OS.SendMessage (hwnd, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+	if (column == 0 && (bits & OS.LVS_EX_FULLROWSELECT) == 0) {
 		if (getText && getImage) {
 			rect.left = OS.LVIR_SELECTBOUNDS;
 		} else {
@@ -261,7 +262,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 		* test for this case and adjust the rectangle to represent the area
 		* the table is actually drawing.
 		*/
-		boolean hasImage = images != null && images [column] != null;
+		boolean hasImage = (column == 0 && image != null) || (images != null && images [column] != null);
 		rect.top = column;
 		if (fullText || fullImage || hDC == 0) {
 			/*
