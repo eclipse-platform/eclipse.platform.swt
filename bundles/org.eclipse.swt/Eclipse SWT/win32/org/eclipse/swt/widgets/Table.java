@@ -2552,6 +2552,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 }
 
 void setBackgroundImage (int hBitmap) {
+	super.setBackgroundImage (hBitmap);
 	setBackgroundTransparent (hBitmap != 0);
 }
 
