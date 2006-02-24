@@ -27,16 +27,18 @@ public class ControlExample {
 	private TabFolder tabFolder;
 	Image images[];
 
-	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2, ciBackground = 3;
+	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2, ciBackground = 3, ciParentBackground = 4;
 	static final String[] imageLocations = {
 		"closedFolder.gif",
 		"openFolder.gif",
 		"target.gif",
-		"backgroundImage.png"};
+		"backgroundImage.png",
+		"parentBackgroundImage.png"};
 	static final int[] imageTypes = {
 		SWT.ICON,
 		SWT.ICON,
 		SWT.ICON,
+		SWT.BITMAP,
 		SWT.BITMAP};
 
 	boolean startup = true;

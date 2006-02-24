@@ -1156,7 +1156,7 @@ abstract class Tab {
 	 */
 	void setExampleGroupBackgroundImage () {
 		if (backgroundModeGroup == null) return;
-		exampleGroup.setBackgroundImage (backgroundModeImageButton.getSelection () ? instance.images[ControlExample.ciBackground] : null);
+		exampleGroup.setBackgroundImage (backgroundModeImageButton.getSelection () ? instance.images[ControlExample.ciParentBackground] : null);
 	}
 
 	/**
