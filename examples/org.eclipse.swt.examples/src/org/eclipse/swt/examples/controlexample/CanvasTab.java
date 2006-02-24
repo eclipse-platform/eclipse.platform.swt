@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
 class CanvasTab extends Tab {
-	static int colors [] = {
+	static final int colors [] = {
 		SWT.COLOR_RED,
 		SWT.COLOR_GREEN,
 		SWT.COLOR_BLUE,
@@ -32,6 +32,7 @@ class CanvasTab extends Tab {
 		SWT.COLOR_DARK_YELLOW,
 		SWT.COLOR_DARK_CYAN
 	};
+	static final String canvasString = "Canvas"; //$NON-NLS-1$
 	
 	/* Example widgets and groups that contain them */
 	Canvas canvas;
@@ -119,6 +120,8 @@ class CanvasTab extends Tab {
 				Point size = canvas.getSize ();
 				gc.drawArc(cx + 1, cy + 1, size.x - 2, size.y - 2, 0, 360);
 				gc.drawRectangle(cx + (size.x - 10) / 2, cy + (size.y - 10) / 2, 10, 10);
+				Point extent = gc.textExtent(canvasString);
+				gc.drawString(canvasString, cx + (size.x - extent.x) / 2, cy - extent.y + (size.y - 10) / 2, true);
 			}
 		});
 		canvas.addControlListener(new ControlAdapter() {

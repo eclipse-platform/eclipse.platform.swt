@@ -237,11 +237,14 @@ abstract class Tab {
 		/* Add listeners to set/reset colors and fonts. */
 		colorDialog = new ColorDialog (shell);
 		fontDialog = new FontDialog (shell);
+		colorAndFontTable.addSelectionListener(new SelectionAdapter() {
+			public void widgetDefaultSelected(SelectionEvent event) {
+				changeFontOrColor (colorAndFontTable.getSelectionIndex());
+			}
+		});
 		changeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				if (colorAndFontTable.getSelectionCount() != 1) return;
-				int index = colorAndFontTable.getSelectionIndex();
-				changeFontOrColor (index);
+				changeFontOrColor (colorAndFontTable.getSelectionIndex());
 			}
 		});
 		defaultsButton.addSelectionListener(new SelectionAdapter () {

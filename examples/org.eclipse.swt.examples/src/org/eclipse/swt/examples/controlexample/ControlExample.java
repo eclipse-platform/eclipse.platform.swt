@@ -22,18 +22,18 @@ import java.util.*;
 
 public class ControlExample {
 	private static ResourceBundle resourceBundle =
-		ResourceBundle.getBundle("examples_control");
+		ResourceBundle.getBundle("examples_control"); //$NON-NLS-1$
 	private ShellTab shellTab;
 	private TabFolder tabFolder;
 	Image images[];
 
 	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2, ciBackground = 3, ciParentBackground = 4;
 	static final String[] imageLocations = {
-		"closedFolder.gif",
-		"openFolder.gif",
-		"target.gif",
-		"backgroundImage.png",
-		"parentBackgroundImage.png"};
+		"closedFolder.gif", 			//$NON-NLS-1$
+		"openFolder.gif", 				//$NON-NLS-1$
+		"target.gif", 					//$NON-NLS-1$
+		"backgroundImage.png", 			//$NON-NLS-1$
+		"parentBackgroundImage.png"}; 	//$NON-NLS-1$
 	static final int[] imageTypes = {
 		SWT.ICON,
 		SWT.ICON,
@@ -134,7 +134,7 @@ public class ControlExample {
 		} catch (MissingResourceException e) {
 			return key;
 		} catch (NullPointerException e) {
-			return "!" + key + "!";
+			return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
 		}			
 	}
 
@@ -149,7 +149,7 @@ public class ControlExample {
 		} catch (MissingResourceException e) {
 			return key;
 		} catch (NullPointerException e) {
-			return "!" + key + "!";
+			return "!" + key + "!"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -185,7 +185,7 @@ public class ControlExample {
 		}
 		String error = (resourceBundle != null) ?
 			getResourceString("error.CouldNotLoadResources") :
-			"Unable to load resources";
+			"Unable to load resources"; //$NON-NLS-1$
 		freeResources();
 		throw new RuntimeException(error);
 	}
