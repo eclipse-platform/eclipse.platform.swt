@@ -436,7 +436,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	* results.  The fix is to send a fake WM_SIZE to force it
 	* to redraw every time there is a WM_PAINT.
 	*/
-	boolean fixPaint = findImageControl () != null;
+	boolean fixPaint = findBackgroundControl () != null;
 	if (!fixPaint) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 			Control control = findThemeControl ();
