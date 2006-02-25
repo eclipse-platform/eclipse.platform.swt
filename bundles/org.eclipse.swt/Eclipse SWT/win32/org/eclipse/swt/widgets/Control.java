@@ -2116,7 +2116,13 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	if (defer && parent != null) {
 		forceResize ();
 		if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-			if (findImageControl () != null) flags |= OS.SWP_NOCOPYBITS;
+			if (findImageControl () != null) {
+				flags |= OS.SWP_NOCOPYBITS;
+			} else {
+				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+					if (findThemeControl () != null) flags |= OS.SWP_NOCOPYBITS;
+				}
+			}
 		}
 		WINDOWPOS [] lpwp = parent.lpwp;
 		if (lpwp == null) {
