@@ -2226,6 +2226,12 @@ public void remove (int start, int end) {
 		System.arraycopy (items, index, items, start, count - index);
 		for (int i=count-(index-start); i<count; i++) items [i] = null;
 		if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		/*
+		* This code is intentionally commented.  It is not necessary
+		* to check for an empty table because removeAll() was called
+		* when the start == 0 and end == count - 1.
+		*/
+		//if (count - index == 0) setTableEmpty ();
 		setDeferResize (false);
 	}
 }
@@ -3540,6 +3546,12 @@ void setTableEmpty () {
 	}
 	items = new TableItem [4];
 	ignoreItemHeight = false;
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (count == 1 && columns [0] == null) {
+		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
+		setScrollWidth (null, false);
+	}
 }
 
 /**
