@@ -162,6 +162,8 @@
 #define NO_DrawStateW
 #define NO_DrawTextA
 #define NO_DrawThemeBackground
+#define NO_DrawThemeEdge
+#define NO_DrawThemeIcon
 #define NO_DrawThemeParentBackground
 #define NO_DrawThemeText
 #define NO_EnableScrollBar
@@ -243,8 +245,10 @@
 #define NO_GetTextExtentPoint32A
 #define NO_GetTextMetricsA
 #define NO_GetThemeTextExtent
+#define NO_GetThemeInt
 #define NO_GetThemeMargins
 #define NO_GetThemeBackgroundContentRect
+#define NO_GetThemeBackgroundExtent
 #define NO_GetThemePartSize
 #define NO_GetThemeMetric
 #define NO_GetThemeRect
