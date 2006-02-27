@@ -316,11 +316,16 @@ static int checkStyle (int style) {
 }
 
 boolean checkData (TableItem item, boolean redraw) {
+	return checkData (item, indexOf (item), redraw);
+}
+
+boolean checkData (TableItem item, int index, boolean redraw) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
+		event.index = index;
 		currentItem = item;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
@@ -4552,7 +4557,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (!item.cached) {
 				if ((style & SWT.VIRTUAL) != 0) {
 					lastIndexOf = plvfi.iItem;
-					if (!checkData (item, false)) break;
+					if (!checkData (item, lastIndexOf, false)) break;
 					TableItem newItem = fixScrollWidth ? null : item;
 					if (setScrollWidth (newItem, true)) {
 						OS.InvalidateRect (handle, null, true);

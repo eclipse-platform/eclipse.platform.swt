@@ -408,11 +408,17 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 }
 
 boolean checkData (TreeItem item, boolean redraw) {
+	TreeItem parentItem = item.getParentItem ();
+	return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
+}
+
+boolean checkData (TreeItem item, int index, boolean redraw) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
+		event.index = index;
 		currentItem = item;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
