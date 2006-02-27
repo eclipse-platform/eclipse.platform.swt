@@ -5173,26 +5173,21 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 							width = hdItem.cxy;
 						}
+						if (i == 0) {
+							RECT rect = new RECT ();
+							if ((style & SWT.FULL_SELECTION) != 0) {
+								OS.SetRect (rect, width, nmcd.top, nmcd.right, nmcd.bottom);
+								if ((selected || findImageControl () == null) && !ignoreDraw && !ignoreDrawSelected) {
+									fillBackground (hDC, OS.GetBkColor (hDC), rect);
+								}
+							}
+						}
 						if (x + width > clientRect.left) {
 							RECT rect = new RECT ();
 							boolean drawItem = true, drawText = true, drawImage = true, drawBackground = false;
 							if (i == 0) {
 								drawItem = drawImage = drawText = false;
-								Control control = findImageControl ();
-								/*
-								* Feature in Windows.  When the tree has the style
-								* TVS_FULLROWSELECT, the background color for the
-								* entire row is filled when an item is painted,
-								* drawing on top of any custom drawing.  The fix
-								* is to emulate TVS_FULLROWSELECT.
-								*/
-								if ((style & SWT.FULL_SELECTION) != 0) {
-									OS.SetRect (rect, width, nmcd.top, nmcd.right, nmcd.bottom);
-									if ((selected || control == null) && !ignoreDraw && !ignoreDrawSelected) {
-										fillBackground (hDC, OS.GetBkColor (hDC), rect);
-									}
-								}
-								if (control != null) {
+								if (findImageControl () != null) {
 									drawItem = drawText = drawBackground = true;
 									rect = item.getBounds (index, true, false, false, false, true, hDC);
 									if (linesVisible) {
