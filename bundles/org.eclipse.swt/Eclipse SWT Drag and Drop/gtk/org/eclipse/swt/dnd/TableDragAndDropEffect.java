@@ -76,7 +76,7 @@ ImageData getDragSourceImage(int x, int y) {
 		int width = 0, height = 0;
 		int[] w = new int[1], h = new int[1];
 		int[] yy = new int[count], hh = new int[count];
-		int/*long*/[] pixmaps = new int/*long*/[count];
+		int /*long*/ [] pixmaps = new int /*long*/ [count];
 		GdkRectangle rect = new GdkRectangle ();
 		for (int i=0; i<count; i++) {
 			int /*long*/ path = OS.g_list_nth_data (list, i);
