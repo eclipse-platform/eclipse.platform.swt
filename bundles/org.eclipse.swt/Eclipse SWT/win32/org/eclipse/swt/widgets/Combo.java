@@ -419,7 +419,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += textHeight + 10;
 		}
 	}
-	if ((style & SWT.H_SCROLL) != 0) height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+	if ((style & SWT.SIMPLE) != 0 && (style & SWT.H_SCROLL) != 0) {
+		height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+	}
 	return new Point (width, height);
 }
 
