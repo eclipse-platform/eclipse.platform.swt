@@ -1159,6 +1159,8 @@ public class OS extends Platform {
 	public static final int SM_CMONITORS = 80;
 	public static final int SM_CXBORDER = 0x5;
 	public static final int SM_CXCURSOR = 0xd;
+	public static final int SM_CXDOUBLECLK = 36;
+	public static final int SM_CYDOUBLECLK = 37;
 	public static final int SM_CXEDGE = 0x2d;
 	public static final int SM_CXHSCROLL = 0x15;
 	public static final int SM_CXICON = 0x0b;

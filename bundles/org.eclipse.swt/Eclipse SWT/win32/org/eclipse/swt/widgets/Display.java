@@ -183,6 +183,8 @@ public class Display extends Device {
 	int nextTimerId;
 	
 	/* Keyboard and Mouse */
+	RECT clickRect;
+	int clickCount, lastTime, lastButton, lastHwnd;
 	int lastKey, lastAscii, lastMouse;
 	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];
@@ -1143,6 +1145,35 @@ public static synchronized Display getCurrent () {
 	return findDisplay (Thread.currentThread ());
 }
 
+int getClickCount (int type, int button, int hwnd, int lParam) {
+	switch (type) {
+		case SWT.MouseDown:
+		case SWT.MouseDoubleClick:
+			int eventTime = OS.GetMessageTime ();
+			int doubleClick = OS.GetDoubleClickTime ();
+			if (clickRect == null) clickRect = new RECT ();
+			POINT pt = new POINT ();
+			pt.x = (short) (lParam & 0xFFFF);
+			pt.y = (short) (lParam >> 16);
+			int deltaTime = Math.abs (lastTime - eventTime);
+			if (lastHwnd == hwnd && lastButton == button && (deltaTime <= doubleClick) && OS.PtInRect (clickRect, pt)) {
+				clickCount++;
+			} else {
+				clickCount = 0;
+			}
+			lastHwnd = hwnd;
+			lastButton = button;
+			lastTime = eventTime;
+			int xInset = OS.GetSystemMetrics (OS.SM_CXDOUBLECLK) / 2;
+			int yInset = OS.GetSystemMetrics (OS.SM_CYDOUBLECLK) / 2;
+			OS.SetRect (clickRect, pt.x - xInset, pt.y - yInset, pt.x + xInset, pt.y + yInset);
+			//FALL THROUGH
+		case SWT.MouseUp:
+			return clickCount;
+	}
+	return 0;
+}
+
 /**
  * Returns a rectangle which describes the area of the
  * receiver which is capable of displaying data.
@@ -1775,20 +1806,30 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	int count = 0;
-	for (int i=0; i<controlTable.length; i++) {
-		Control control = controlTable [i];
-		if (control != null && control instanceof Shell) count++;
-	}
 	int index = 0;
-	Shell [] result = new Shell [count];
-	for (int i=0; i<controlTable.length; i++) {
+	Shell [] result = new Shell [16];
+	for (int i = 0; i < controlTable.length; i++) {
 		Control control = controlTable [i];
 		if (control != null && control instanceof Shell) {
-			result [index++] = (Shell) control;
+			int j = 0;
+			while (j < index) {
+				if (result [j] == control) break;
+				j++;
+			}
+			if (j == index) {
+				if (index == result.length) {
+					Shell [] newResult = new Shell [index + 16];
+					System.arraycopy (result, 0, newResult, 0, index);
+					result = newResult;
+				}
+				result [index++] = (Shell) control;	
+			}
 		}
 	}
-	return result;
+	if (index == result.length) return result;
+	Shell [] newResult = new Shell [index];
+	System.arraycopy (result, 0, newResult, 0, index);
+	return newResult;
 }
 
 Image getSortImage (int direction) {
