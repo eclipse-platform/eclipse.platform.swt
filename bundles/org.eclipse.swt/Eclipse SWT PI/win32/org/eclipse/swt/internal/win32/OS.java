@@ -311,6 +311,8 @@ public class OS extends Platform {
 	public static final int CDDS_ITEMPOSTPAINT = CDDS_ITEM | CDDS_POSTPAINT;
 	public static final int CDDS_ITEMPREPAINT = CDDS_ITEM | CDDS_PREPAINT;
 	public static final int CDDS_SUBITEM = 0x00020000;
+	public static final int CDDS_SUBITEMPOSTPAINT = CDDS_ITEMPOSTPAINT | CDDS_SUBITEM;
+	public static final int CDDS_SUBITEMPREPAINT = CDDS_ITEMPREPAINT | CDDS_SUBITEM;
 	public static final int CDIS_SELECTED = 0x0001;
 	public static final int CDIS_GRAYED = 0x0002;
 	public static final int CDIS_DISABLED = 0x0004;

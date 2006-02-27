@@ -4633,35 +4633,36 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: {
-					if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
-					/*
-					* Bug in Windows.  When the table has the extended style
-					* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
-					* CLR_NONE to make the table transparent, Windows fills
-					* a black rectangle around any column that contains an
-					* image.  The fix is clear LVS_EX_FULLROWSELECT during
-					* custom draw.
-					*/
-					if ((style & SWT.FULL_SELECTION) != 0) {
-						if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-							OS.UpdateWindow (handle);
-							int bits = OS.LVS_EX_FULLROWSELECT;
-							OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
-							OS.ValidateRect (handle, null);
-						}
-					}
-					if (OS.IsWindowEnabled (handle)) {
-						Control control = findBackgroundControl ();
-						if (control != null && control.backgroundImage != null) {
-							RECT rect = new RECT ();
-							OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-							fillImageBackground (nmcd.hdc, control, rect);
-						} else {
+					if (OS.IsWindowVisible (handle)) {
+						/*
+						* Bug in Windows.  When the table has the extended style
+						* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+						* CLR_NONE to make the table transparent, Windows fills
+						* a black rectangle around any column that contains an
+						* image.  The fix is clear LVS_EX_FULLROWSELECT during
+						* custom draw.
+						*/
+						if ((style & SWT.FULL_SELECTION) != 0) {
 							if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+								OS.UpdateWindow (handle);
+								int bits = OS.LVS_EX_FULLROWSELECT;
+								OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
+								OS.ValidateRect (handle, null);
+							}
+						}
+						if (OS.IsWindowEnabled (handle)) {
+							Control control = findBackgroundControl ();
+							if (control != null && control.backgroundImage != null) {
 								RECT rect = new RECT ();
 								OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-								if (control == null) control = this;
-								fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+								fillImageBackground (nmcd.hdc, control, rect);
+							} else {
+								if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+									RECT rect = new RECT ();
+									OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+									if (control == null) control = this;
+									fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+								}
 							}
 						}
 					}
@@ -4676,7 +4677,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					* image.  The fix is clear LVS_EX_FULLROWSELECT during
 					* custom draw.
 					*/
-					if ((style & SWT.FULL_SELECTION) != 0) {
+					if (OS.IsWindowVisible (handle) && (style & SWT.FULL_SELECTION) != 0) {
 						if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 							int bits = OS.LVS_EX_FULLROWSELECT;
 							if (OS.IsWinCE) {
@@ -4700,7 +4701,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				case OS.CDDS_ITEMPREPAINT: {
 					return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 				}
-				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM: {
+				case OS.CDDS_SUBITEMPREPAINT: {
 					int hDC = nmcd.hdc;
 					TableItem item = _getItem (nmcd.dwItemSpec);
 					int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
@@ -4709,7 +4710,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (clrText == -1) clrText = item.foreground;
 					int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
-					if (hooks (SWT.MeasureItem)) {
+					if (OS.IsWindowVisible (handle) && hooks (SWT.MeasureItem)) {
 						RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
 						int nSavedDC = OS.SaveDC (hDC);
 						GCData data = new GCData ();
@@ -4743,7 +4744,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					}
 					ignoreDraw = false;
 					boolean ignoreDrawSelected = false;
-					if (hooks (SWT.EraseItem)) {
+					if (OS.IsWindowVisible (handle) && hooks (SWT.EraseItem)) {
 						RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
 						int nSavedDC = OS.SaveDC (hDC);
 						/*
@@ -4828,7 +4829,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					* image.  The fix is emulate LVS_EX_FULLROWSELECT by
 					* drawing the selection.
 					*/
-					if (!ignoreDrawSelected && (style & SWT.FULL_SELECTION) != 0) {
+					if (OS.IsWindowVisible (handle) && (style & SWT.FULL_SELECTION) != 0 && !ignoreDrawSelected) {
 						int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 						if ((bits & OS.LVS_EX_FULLROWSELECT) == 0) {
 							/*
@@ -4903,10 +4904,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					}
 					return new LRESULT (OS.CDRF_NEWFONT);
 				}
-				case OS.CDDS_ITEMPOSTPAINT | OS.CDDS_SUBITEM: {
+				case OS.CDDS_SUBITEMPOSTPAINT: {
 					int hDC = nmcd.hdc;
 					if (ignoreDraw) OS.RestoreDC (hDC, -1);
-					if (hooks (SWT.PaintItem)) {
+					if (OS.IsWindowVisible (handle) && hooks (SWT.PaintItem)) {
 						TableItem item = _getItem (nmcd.dwItemSpec);
 						RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
 						int nSavedDC = OS.SaveDC (hDC);
