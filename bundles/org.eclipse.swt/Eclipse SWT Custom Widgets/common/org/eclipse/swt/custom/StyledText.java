@@ -3006,9 +3006,9 @@ public int getBaseline(int offset) {
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	TextLayout layout = renderer.getTextLayout(lineIndex);
 	int lineInParagraph = layout.getLineIndex(Math.min(offset - lineOffset, layout.getText().length()));
-	int baseline = layout.getLineMetrics(lineInParagraph).getAscent();
+	FontMetrics metrics = layout.getLineMetrics(lineInParagraph);
 	renderer.disposeTextLayout(layout);
-	return baseline;
+	return metrics.getAscent() + metrics.getLeading();
 }
 /**
  * Gets the BIDI coloring mode.  When true the BIDI text display
