@@ -367,29 +367,8 @@ public void pack () {
 				int hFont = item.cellFont != null ? item.cellFont [index] : -1;
 				if (hFont == -1) hFont = item.font;
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-				RECT itemRect = item.getBounds (i, index, true, true, false, false, hDC);
-				if (hFont != -1) OS.SelectObject (hDC, hFont);
-				int nSavedDC = OS.SaveDC (hDC);
-				GCData data = new GCData ();
-				data.device = display;
-				data.hFont = hFont;
-				GC gc = GC.win32_new (hDC, data);
-				Event event = new Event ();
-				event.item = item;
-				event.gc = gc;
-				event.index = index;
-				event.x = itemRect.left;
-				event.y = itemRect.top;
-				event.width = itemRect.right - itemRect.left;
-				event.height = itemRect.bottom - itemRect.top;
-				parent.sendEvent (SWT.MeasureItem, event);
-				if (!parent.ignoreItemHeight) {
-					if (event.height > parent.getItemHeight ()) parent.setItemHeight (event.height);
-					parent.ignoreItemHeight = true;
-				}
-				event.gc = null;
-				gc.dispose ();
-				OS.RestoreDC (hDC, nSavedDC);
+				Event event = parent.sendMeasureItemEvent (item, i, index, hDC);
+				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				if (isDisposed () || parent.isDisposed ()) break;
 				columnWidth = Math.max (columnWidth, event.x + event.width - headerRect.left);
 			}

@@ -50,7 +50,7 @@ public class Table extends Composite {
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
-	boolean wasSelected, wasResized, ignoreItemHeight, ignoreDraw;
+	boolean wasSelected, wasResized, ignoreItemHeight, ignoreDraw, ignoreDrawSelected;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -313,6 +313,210 @@ static int checkStyle (int style) {
 	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
+
+LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
+	return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
+}
+
+LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
+	if (OS.IsWindowVisible (handle)) {
+		/*
+		* Bug in Windows.  When the table has the extended style
+		* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+		* CLR_NONE to make the table transparent, Windows fills
+		* a black rectangle around any column that contains an
+		* image.  The fix is clear LVS_EX_FULLROWSELECT during
+		* custom draw.
+		*/
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+				int bits = OS.LVS_EX_FULLROWSELECT;
+				if (OS.IsWinCE) {
+					RECT rect = new RECT ();
+					boolean damaged = OS.GetUpdateRect (handle, rect, true);
+					OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+					OS.ValidateRect (handle, null);
+					if (damaged) OS.InvalidateRect (handle, rect, true);
+				} else {
+					int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+					int result = OS.GetUpdateRgn (handle, rgn, true);
+					OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+					OS.ValidateRect (handle, null);
+					if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
+					OS.DeleteObject (rgn);
+				}
+			}
+		}
+	}
+	return null;
+}
+
+LRESULT CDDS_PREPAINT (int wParam, int lParam) {
+	if (OS.IsWindowVisible (handle)) {
+		/*
+		* Bug in Windows.  When the table has the extended style
+		* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+		* CLR_NONE to make the table transparent, Windows fills
+		* a black rectangle around any column that contains an
+		* image.  The fix is clear LVS_EX_FULLROWSELECT during
+		* custom draw.
+		*/
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+				OS.UpdateWindow (handle);
+				int bits = OS.LVS_EX_FULLROWSELECT;
+				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
+				OS.ValidateRect (handle, null);
+			}
+		}
+		if (OS.IsWindowEnabled (handle)) {
+			Control control = findBackgroundControl ();
+			if (control != null && control.backgroundImage != null) {
+				NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+				OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+				RECT rect = new RECT ();
+				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+				fillImageBackground (nmcd.hdc, control, rect);
+			} else {
+				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+					NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+					OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+					if (control == null) control = this;
+					fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+				}
+			}
+		}
+	}
+	return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
+}
+
+LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
+	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+	int hDC = nmcd.hdc;
+	if (ignoreDraw) OS.RestoreDC (hDC, -1);
+	if (OS.IsWindowVisible (handle)) {
+		if (hooks (SWT.PaintItem)) {
+			TableItem item = _getItem (nmcd.dwItemSpec);
+			sendPaintItemEvent (item, nmcd);
+			//widget could be disposed at this point
+		}
+	}
+	return null;
+}
+
+LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
+	int code = OS.CDRF_DODEFAULT;
+	ignoreDraw = ignoreDrawSelected = false;
+	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+	TableItem item = _getItem (nmcd.dwItemSpec);
+	if (OS.IsWindowVisible (handle)) {
+		if (hooks (SWT.MeasureItem)) {
+			sendMeasureItemEvent (item, nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
+			if (isDisposed () || item.isDisposed ()) return null;
+		}
+		if (hooks (SWT.EraseItem)) {
+			sendEraseItemEvent (item, nmcd, lParam);
+			if (isDisposed () || item.isDisposed ()) return null;
+			code |= OS.CDRF_NOTIFYPOSTPAINT;
+		}
+		if (ignoreDraw || hooks (SWT.PaintItem)) code |= OS.CDRF_NOTIFYPOSTPAINT;
+	}
+	int hDC = nmcd.hdc;
+	int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
+	if (hFont == -1) hFont = item.font;
+	int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
+	if (clrText == -1) clrText = item.foreground;
+	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
+	if (clrTextBk == -1) clrTextBk = item.background;
+	/*
+	* Bug in Windows.  When the table has the extended style
+	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+	* CLR_NONE to make the table transparent, Windows draws
+	* a black rectangle around any column that contains an
+	* image.  The fix is emulate LVS_EX_FULLROWSELECT by
+	* drawing the selection.
+	*/
+	if (OS.IsWindowVisible (handle)) {
+		if (!ignoreDraw && !ignoreDrawSelected && (style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+			if ((bits & OS.LVS_EX_FULLROWSELECT) == 0) {
+				/*
+				* Bug in Windows.  For some reason, CDIS_SELECTED always set,
+				* even for items that are not selected.  The fix is to get
+				* the selection state from the item.
+				*/
+				LVITEM lvItem = new LVITEM ();
+				lvItem.mask = OS.LVIF_STATE;
+				lvItem.stateMask = OS.LVIS_SELECTED;
+				lvItem.iItem = nmcd.dwItemSpec;
+				int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+				if ((result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0)) {
+					if (OS.GetFocus () == handle) {
+						clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+						clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+					} else {
+						if ((style & SWT.HIDE_SELECTION) == 0) {
+							clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
+						}
+					}
+					if (clrTextBk != -1 && nmcd.iSubItem == 0) {
+						RECT itemRect = new RECT ();
+						itemRect.left = OS.LVIR_SELECTBOUNDS;
+						if (OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, itemRect) != 0) {
+							RECT headerRect = new RECT ();
+							int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+							if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) != 0) {
+								itemRect.left = itemRect.right;
+								itemRect.right = headerRect.right;
+								fillBackground (hDC, clrTextBk, itemRect);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	/*
+	* Feature in Windows.  When the font is set for one cell in a table,
+	* Windows does not reset the font for the next cell.  As a result,
+	* all subsequent cells are drawn using the new font.  The fix is to
+	* reset the font to the default.
+	* 
+	* NOTE: This does not happen for foreground and background.
+	*/
+	boolean hasAttributes = true;
+	if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
+		if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
+			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) == 1) {
+				hasAttributes = false;
+			}
+		}
+	}
+	if (hasAttributes) {
+		if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		OS.SelectObject (hDC, hFont);
+		if (OS.IsWindowEnabled (handle)) {
+			nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+			if (clrTextBk == -1) {
+				Control control = findBackgroundControl ();
+				if (control == null) control = this;
+				if (control.backgroundImage == null && !hooks (SWT.EraseItem)) {
+					nmcd.clrTextBk = control.getBackgroundPixel ();
+				}
+			} else {
+				nmcd.clrTextBk = clrTextBk;
+			}
+			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+		}
+		code |= OS.CDRF_NEWFONT;
+	}
+	return new LRESULT (code);
 }
 
 boolean checkData (TableItem item, boolean redraw) {
@@ -2472,6 +2676,129 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
+void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
+	int hDC = nmcd.hdc;
+	int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
+	if (hFont == -1) hFont = item.font;
+	int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
+	if (clrText == -1) clrText = item.foreground;
+	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
+	if (clrTextBk == -1) clrTextBk = item.background;
+	RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
+	int nSavedDC = OS.SaveDC (hDC);
+	/*
+	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
+	* even for items that are not selected.  The fix is to get
+	* the selection state from the item.
+	*/
+	LVITEM lvItem = new LVITEM ();
+	lvItem.mask = OS.LVIF_STATE;
+	lvItem.stateMask = OS.LVIS_SELECTED;
+	lvItem.iItem = nmcd.dwItemSpec;
+	int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+	boolean selected = (result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0);
+	GCData data = new GCData ();
+	data.device = display;
+	if (OS.IsWindowEnabled (handle)) {
+		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
+			data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+			data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+		} else {
+			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
+			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+		}
+		data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+		data.hBrush = OS.CreateSolidBrush (data.background);
+	}
+	data.hFont = hFont;
+	GC gc = GC.win32_new (hDC, data);
+	Event event = new Event ();
+	event.item = item;
+	event.gc = gc;
+	event.index = nmcd.iSubItem;
+	if (selected) event.detail |= SWT.SELECTED;
+	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+	event.x = cellRect.left;
+	event.y = cellRect.top;
+	event.width = cellRect.right - cellRect.left;
+	event.height = cellRect.bottom - cellRect.top;
+	drawBackground (hDC, cellRect);
+	gc.setClipping (event.x, event.y, event.width, event.height);
+	sendEvent (SWT.EraseItem, event);
+	event.gc = null;
+	//int newClrText = OS.GetTextColor (hDC);
+	//int newClrTextBk = OS.GetBkColor (hDC);
+	gc.dispose ();
+	OS.RestoreDC (hDC, nSavedDC);
+	if (isDisposed () || item.isDisposed ()) return;
+	if (selected) {
+		if ((event.detail & SWT.SELECTED) == 0) {
+			ignoreDrawSelected = true;
+			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
+				clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				//clrText = newClrText;
+				//clrTextBk = newClrTextBk;
+			}
+			nmcd.uItemState &= ~OS.CDIS_SELECTED;
+			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+		}
+	} else {
+		if ((event.detail & SWT.SELECTED) != 0) {
+			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
+				clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+			}
+			nmcd.uItemState |= OS.CDIS_SELECTED;
+			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+		}
+	}
+	ignoreDraw = !event.doit;
+	if (ignoreDraw) {
+		RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false);
+		OS.SaveDC (hDC);
+		OS.SelectClipRgn (hDC, 0);
+		OS.ExcludeClipRect (hDC, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
+	}
+}
+
+Event sendMeasureItemEvent (TableItem item, int row, int column, int hDC) {
+	int hFont = item.cellFont != null ? item.cellFont [column] : -1;
+	if (hFont == -1) hFont = item.font;
+	RECT itemRect = item.getBounds (row, column, true, true, false, false, hDC);
+	int nSavedDC = OS.SaveDC (hDC);
+	GCData data = new GCData ();
+	data.device = display;
+	data.hFont = hFont;
+	GC gc = GC.win32_new (hDC, data);
+	Event event = new Event ();
+	event.item = item;
+	event.gc = gc;
+	event.index = row;
+	event.x = itemRect.left;
+	event.y = itemRect.top;
+	event.width = itemRect.right - itemRect.left;
+	event.height = itemRect.bottom - itemRect.top;
+	sendEvent (SWT.MeasureItem, event);
+	event.gc = null;
+	gc.dispose ();
+	OS.RestoreDC (hDC, nSavedDC);
+	if (!isDisposed () && !item.isDisposed ()) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (count == 1 && columns [0] == null) {
+			int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+			if (event.x + event.width > width) {
+				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, event.x + event.width);
+			}
+		}
+		if (!ignoreItemHeight) {
+			if (event.height > getItemHeight ()) setItemHeight (event.height);
+			ignoreItemHeight = true;
+		}
+	}
+	return event;
+}
+
 LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lParam) {
 	/*
 	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
@@ -2560,6 +2887,62 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	}
 	dragStarted = false;
 	return new LRESULT (code);
+}
+
+void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
+	int hDC = nmcd.hdc;
+	RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
+	int nSavedDC = OS.SaveDC (hDC);
+	GCData data = new GCData ();
+	data.device = display;
+	int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
+	if (hFont == -1) hFont = item.font;
+	data.hFont = hFont;
+	/*
+	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
+	* even for items that are not selected.  The fix is to get
+	* the selection state from the item.
+	*/
+	LVITEM lvItem = new LVITEM ();
+	lvItem.mask = OS.LVIF_STATE;
+	lvItem.stateMask = OS.LVIS_SELECTED;
+	lvItem.iItem = nmcd.dwItemSpec;
+	int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+	boolean selected = result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0;
+	if (OS.IsWindowEnabled (handle)) {
+		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
+			data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+			data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+		} else {
+			int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
+			if (clrText == -1) clrText = item.foreground;
+			int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
+			if (clrTextBk == -1) clrTextBk = item.background;
+			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
+			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+		}
+		data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+		data.hBrush = OS.CreateSolidBrush (data.background);
+	}
+	GC gc = GC.win32_new (hDC, data);
+	Event event = new Event ();
+	event.item = item;
+	event.gc = gc;
+	event.index = nmcd.iSubItem;
+	if (selected) event.detail |= SWT.SELECTED;
+	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+	event.x = itemRect.left;
+	event.y = itemRect.top;
+	event.width = itemRect.right - itemRect.left;
+	event.height = itemRect.bottom - itemRect.top;
+	RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
+	int cellWidth = cellRect.right - cellRect.left;
+	int cellHeight = cellRect.bottom - cellRect.top;
+	gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
+	sendEvent (SWT.PaintItem, event);
+	event.gc = null;
+	gc.dispose ();
+	OS.RestoreDC (hDC, nSavedDC);
 }
 
 void setBackgroundImage (int hBitmap) {
@@ -4632,339 +5015,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREPAINT: {
-					if (OS.IsWindowVisible (handle)) {
-						/*
-						* Bug in Windows.  When the table has the extended style
-						* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
-						* CLR_NONE to make the table transparent, Windows fills
-						* a black rectangle around any column that contains an
-						* image.  The fix is clear LVS_EX_FULLROWSELECT during
-						* custom draw.
-						*/
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-								OS.UpdateWindow (handle);
-								int bits = OS.LVS_EX_FULLROWSELECT;
-								OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
-								OS.ValidateRect (handle, null);
-							}
-						}
-						if (OS.IsWindowEnabled (handle)) {
-							Control control = findBackgroundControl ();
-							if (control != null && control.backgroundImage != null) {
-								RECT rect = new RECT ();
-								OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-								fillImageBackground (nmcd.hdc, control, rect);
-							} else {
-								if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-									RECT rect = new RECT ();
-									OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-									if (control == null) control = this;
-									fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
-								}
-							}
-						}
-					}
-					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
-				}
-				case OS.CDDS_POSTPAINT: {
-					/*
-					* Bug in Windows.  When the table has the extended style
-					* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
-					* CLR_NONE to make the table transparent, Windows fills
-					* a black rectangle around any column that contains an
-					* image.  The fix is clear LVS_EX_FULLROWSELECT during
-					* custom draw.
-					*/
-					if (OS.IsWindowVisible (handle) && (style & SWT.FULL_SELECTION) != 0) {
-						if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-							int bits = OS.LVS_EX_FULLROWSELECT;
-							if (OS.IsWinCE) {
-								RECT rect = new RECT ();
-								boolean damaged = OS.GetUpdateRect (handle, rect, true);
-								OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
-								OS.ValidateRect (handle, null);
-								if (damaged) OS.InvalidateRect (handle, rect, true);
-							} else {
-								int rgn = OS.CreateRectRgn (0, 0, 0, 0);
-								int result = OS.GetUpdateRgn (handle, rgn, true);
-								OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
-								OS.ValidateRect (handle, null);
-								if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
-								OS.DeleteObject (rgn);
-							}
-						}
-					}
-					break;
-				}
-				case OS.CDDS_ITEMPREPAINT: {
-					return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
-				}
-				case OS.CDDS_SUBITEMPREPAINT: {
-					int hDC = nmcd.hdc;
-					TableItem item = _getItem (nmcd.dwItemSpec);
-					int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
-					if (hFont == -1) hFont = item.font;
-					int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
-					if (clrText == -1) clrText = item.foreground;
-					int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
-					if (clrTextBk == -1) clrTextBk = item.background;
-					if (OS.IsWindowVisible (handle) && hooks (SWT.MeasureItem)) {
-						RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
-						int nSavedDC = OS.SaveDC (hDC);
-						GCData data = new GCData ();
-						data.device = display;
-						data.hFont = hFont;
-						GC gc = GC.win32_new (hDC, data);
-						Event event = new Event ();
-						event.item = item;
-						event.gc = gc;
-						event.index = nmcd.iSubItem;
-						event.x = itemRect.left;
-						event.y = itemRect.top;
-						event.width = itemRect.right - itemRect.left;
-						event.height = itemRect.bottom - itemRect.top;
-						sendEvent (SWT.MeasureItem, event);
-						event.gc = null;
-						gc.dispose ();
-						OS.RestoreDC (hDC, nSavedDC);
-						if (isDisposed () || item.isDisposed ()) break;
-						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						if (count == 1 && columns [0] == null) {
-							int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-							if (event.x + event.width > width) {
-								OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, event.x + event.width);
-							}
-						}
-						if (!ignoreItemHeight) {
-							if (event.height > getItemHeight ()) setItemHeight (event.height);
-							ignoreItemHeight = true;
-						}
-					}
-					ignoreDraw = false;
-					boolean ignoreDrawSelected = false;
-					if (OS.IsWindowVisible (handle) && hooks (SWT.EraseItem)) {
-						RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
-						int nSavedDC = OS.SaveDC (hDC);
-						/*
-						* Bug in Windows.  For some reason, CDIS_SELECTED always set,
-						* even for items that are not selected.  The fix is to get
-						* the selection state from the item.
-						*/
-						LVITEM lvItem = new LVITEM ();
-						lvItem.mask = OS.LVIF_STATE;
-						lvItem.stateMask = OS.LVIS_SELECTED;
-						lvItem.iItem = nmcd.dwItemSpec;
-						int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-						boolean selected = (result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0);
-						GCData data = new GCData ();
-						data.device = display;
-						if (OS.IsWindowEnabled (handle)) {
-							if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
-								data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-								data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
-							} else {
-								data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
-								data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
-							}
-							data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-							data.hBrush = OS.CreateSolidBrush (data.background);
-						}
-						data.hFont = hFont;
-						GC gc = GC.win32_new (hDC, data);
-						Event event = new Event ();
-						event.item = item;
-						event.gc = gc;
-						event.index = nmcd.iSubItem;
-						if (selected) event.detail |= SWT.SELECTED;
-						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
-						event.x = cellRect.left;
-						event.y = cellRect.top;
-						event.width = cellRect.right - cellRect.left;
-						event.height = cellRect.bottom - cellRect.top;
-						drawBackground (hDC, cellRect);
-						gc.setClipping (event.x, event.y, event.width, event.height);
-						sendEvent (SWT.EraseItem, event);
-						event.gc = null;
-						//int newClrText = OS.GetTextColor (hDC);
-						//int newClrTextBk = OS.GetBkColor (hDC);
-						gc.dispose ();
-						OS.RestoreDC (hDC, nSavedDC);
-						if (isDisposed () || item.isDisposed ()) break;
-						if (selected) {
-							if ((event.detail & SWT.SELECTED) == 0) {
-								ignoreDrawSelected = true;
-								if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
-									clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-									//clrText = newClrText;
-									//clrTextBk = newClrTextBk;
-								}
-								nmcd.uItemState &= ~OS.CDIS_SELECTED;
-								OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
-							}
-						} else {
-							if ((event.detail & SWT.SELECTED) != 0) {
-								if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
-									clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-									clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
-								}
-								nmcd.uItemState |= OS.CDIS_SELECTED;
-								OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
-							}
-						}
-						ignoreDraw = !event.doit;
-						if (ignoreDraw) {
-							RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false);
-							OS.SaveDC (hDC);
-							OS.SelectClipRgn (hDC, 0);
-							OS.ExcludeClipRect (hDC, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
-						}
-					}
-					/*
-					* Bug in Windows.  When the table has the extended style
-					* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
-					* CLR_NONE to make the table transparent, Windows draws
-					* a black rectangle around any column that contains an
-					* image.  The fix is emulate LVS_EX_FULLROWSELECT by
-					* drawing the selection.
-					*/
-					if (OS.IsWindowVisible (handle) && (style & SWT.FULL_SELECTION) != 0 && !ignoreDrawSelected) {
-						int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-						if ((bits & OS.LVS_EX_FULLROWSELECT) == 0) {
-							/*
-							* Bug in Windows.  For some reason, CDIS_SELECTED always set,
-							* even for items that are not selected.  The fix is to get
-							* the selection state from the item.
-							*/
-							LVITEM lvItem = new LVITEM ();
-							lvItem.mask = OS.LVIF_STATE;
-							lvItem.stateMask = OS.LVIS_SELECTED;
-							lvItem.iItem = nmcd.dwItemSpec;
-							int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-							if ((result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0)) {
-								if (OS.GetFocus () == handle) {
-									clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-									clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
-								} else {
-									if ((style & SWT.HIDE_SELECTION) == 0) {
-										clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
-									}
-								}
-								if (clrTextBk != -1 && nmcd.iSubItem == 0) {
-									RECT itemRect = new RECT ();
-									itemRect.left = OS.LVIR_SELECTBOUNDS;
-									if (OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, itemRect) != 0) {
-										RECT headerRect = new RECT ();
-										if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) != 0) {
-											itemRect.left = itemRect.right;
-											itemRect.right = headerRect.right;
-											fillBackground (hDC, clrTextBk, itemRect);
-										}
-									}
-								}
-							}
-						}
-					}
-					/*
-					* Feature in Windows.  When the font is set for one cell in a table,
-					* Windows does not reset the font for the next cell.  As a result,
-					* all subsequent cells are drawn using the new font.  The fix is to
-					* reset the font to the default.
-					* 
-					* NOTE: This does not happen for foreground and background.
-					*/
-					if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
-						if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
-							if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) == 1) {
-								if (ignoreDraw || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-									return new LRESULT (OS.CDRF_NOTIFYPOSTPAINT);
-								}
-								break;
-							}
-						}
-					}
-					if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-					OS.SelectObject (hDC, hFont);
-					if (OS.IsWindowEnabled (handle)) {
-						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-						if (clrTextBk == -1) {
-							Control control = findBackgroundControl ();
-							if (control == null) control = this;
-							if (control.backgroundImage == null && !hooks (SWT.EraseItem)) {
-								nmcd.clrTextBk = control.getBackgroundPixel ();
-							}
-						} else {
-							nmcd.clrTextBk = clrTextBk;
-						}
-						OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
-					}
-					if (ignoreDraw || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-						return new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
-					}
-					return new LRESULT (OS.CDRF_NEWFONT);
-				}
-				case OS.CDDS_SUBITEMPOSTPAINT: {
-					int hDC = nmcd.hdc;
-					if (ignoreDraw) OS.RestoreDC (hDC, -1);
-					if (OS.IsWindowVisible (handle) && hooks (SWT.PaintItem)) {
-						TableItem item = _getItem (nmcd.dwItemSpec);
-						RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
-						int nSavedDC = OS.SaveDC (hDC);
-						GCData data = new GCData ();
-						data.device = display;
-						int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
-						if (hFont == -1) hFont = item.font;
-						data.hFont = hFont;
-						/*
-						* Bug in Windows.  For some reason, CDIS_SELECTED always set,
-						* even for items that are not selected.  The fix is to get
-						* the selection state from the item.
-						*/
-						LVITEM lvItem = new LVITEM ();
-						lvItem.mask = OS.LVIF_STATE;
-						lvItem.stateMask = OS.LVIS_SELECTED;
-						lvItem.iItem = nmcd.dwItemSpec;
-						int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-						boolean selected = result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0;
-						if (OS.IsWindowEnabled (handle)) {
-							if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
-								data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-								data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
-							} else {
-								int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
-								if (clrText == -1) clrText = item.foreground;
-								int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
-								if (clrTextBk == -1) clrTextBk = item.background;
-								data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
-								data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
-							}
-							data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-							data.hBrush = OS.CreateSolidBrush (data.background);
-						}
-						GC gc = GC.win32_new (hDC, data);
-						Event event = new Event ();
-						event.item = item;
-						event.gc = gc;
-						event.index = nmcd.iSubItem;
-						if (selected) event.detail |= SWT.SELECTED;
-						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
-						event.x = itemRect.left;
-						event.y = itemRect.top;
-						event.width = itemRect.right - itemRect.left;
-						event.height = itemRect.bottom - itemRect.top;
-						RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
-						int cellWidth = cellRect.right - cellRect.left;
-						int cellHeight = cellRect.bottom - cellRect.top;
-						gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
-						sendEvent (SWT.PaintItem, event);
-						event.gc = null;
-						gc.dispose ();
-						OS.RestoreDC (hDC, nSavedDC);
-						if (isDisposed () || item.isDisposed ()) break;
-					}
-					break;
-				}
+				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (wParam, lParam);
+				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (wParam, lParam);
+				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (wParam, lParam);
+				case OS.CDDS_SUBITEMPOSTPAINT: return CDDS_SUBITEMPOSTPAINT (wParam, lParam);
+				case OS.CDDS_SUBITEMPREPAINT: return CDDS_SUBITEMPREPAINT (wParam, lParam);
 			}
 			break;
 		}
