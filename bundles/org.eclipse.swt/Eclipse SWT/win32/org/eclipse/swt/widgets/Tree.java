@@ -249,6 +249,668 @@ int borderHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
 }
 
+LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
+	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
+	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
+	TreeItem item = _getItem (nmcd.dwItemSpec, nmcd.lItemlParam);
+	if (item == null) return null;
+	/*
+	* Feature in Windows.  Under certain circumstances, Windows
+	* sends CDDS_ITEMPOSTPAINT for an empty rectangle.  This is
+	* not a problem providing that graphics do not occur outside
+	* the rectangle.  The fix is to test for the rectangle and
+	* draw nothing.
+	* 
+	* NOTE:  This seems to happen when both I_IMAGECALLBACK
+	* and LPSTR_TEXTCALLBACK are used at the same time with
+	* TVM_SETITEM.
+	*/
+	if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) return null;
+	int hDC = nmcd.hdc;
+	OS.RestoreDC (hDC, -1);
+	if (!OS.IsWindowVisible (handle)) return null;
+	if (findImageControl () != null || ignoreDrawSelected) {
+		OS.SetBkMode (hDC, OS.TRANSPARENT);
+	}
+	boolean selected = false;
+	if (OS.IsWindowEnabled (handle)) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_STATE;
+		tvItem.hItem = item.handle;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
+			selected = true;
+			/*
+			* Feature in Windows.  When the mouse is pressed and the
+			* selection is first drawn for a tree, the previously
+			* selected item is redrawn but the the TVIS_SELECTED bits
+			* are not cleared.  When the user moves the mouse slightly
+			* and a drag and drop operation is not started, the item is
+			* drawn again and this time with TVIS_SELECTED is cleared.
+			* This means that an item that contains colored cells will
+			* not draw with the correct background until the mouse is
+			* moved.  The fix is to test for the selection colors and
+			* guess that the item is not selected.
+			* 
+			* NOTE: This code does not work when the foreground and
+			* background of the tree are set to the selection colors
+			* but this does not happen in a regular application.
+			*/
+			if (handle == OS.GetFocus ()) {
+				if (OS.GetTextColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+					selected = false;
+				} else {
+					if (OS.GetBkColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+						selected = false;
+					}
+				}
+			}
+		} else {
+			/*
+			* Feature in Windows.  When the mouse is pressed and the
+			* selection is first drawn for a tree, the item is drawn
+			* selected, but the TVIS_SELECTED bits for the item are
+			* not set.  When the user moves the mouse slightly and
+			* a drag and drop operation is not started, the item is
+			* drawn again and this time TVIS_SELECTED is set.  This
+			* means that an item that is in a tree that has the style
+			* TVS_FULLROWSELECT and that also contains colored cells
+			* will not draw the entire row selected until the user
+			* moves the mouse.  The fix is to test for the selection
+			* colors and guess that the item is selected.
+			* 
+			* NOTE: This code does not work when the foreground and
+			* background of the tree are set to the selection colors
+			* but this does not happen in a regular application.
+			*/
+			if (OS.GetTextColor (hDC) == OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+				if (OS.GetBkColor (hDC) == OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+					selected = true;
+				}
+			}
+		}
+	}
+	int count = 0;
+	int [] order = null;
+	RECT clientRect = new RECT (), focusRect = null;
+	OS.GetClientRect (scrolledHandle (), clientRect);
+	if (hwndHeader != 0) {
+		OS.MapWindowPoints (hwndParent, handle, clientRect, 2);
+		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (count != 0) {
+			order = new int [count];
+			OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+		}
+	}
+	Point size = null;
+	int x = 0, gridWidth = linesVisible ? GRID_WIDTH : 0;
+	for (int i=0; i<Math.max (1, count); i++) {
+		int index = order == null ? i : order [i], width = nmcd.right - nmcd.left;
+		if (count > 0 && hwndHeader != 0) {
+			HDITEM hdItem = new HDITEM ();
+			hdItem.mask = OS.HDI_WIDTH;
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+			width = hdItem.cxy;
+		}
+		if (i == 0) {
+			RECT rect = new RECT ();
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				OS.SetRect (rect, width, nmcd.top, nmcd.right, nmcd.bottom);
+				if ((selected || findImageControl () == null) && !ignoreDraw && !ignoreDrawSelected) {
+					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+				}
+			}
+		}
+		if (x + width > clientRect.left) {
+			RECT rect = new RECT ();
+			boolean drawItem = true, drawText = true, drawImage = true, drawBackground = false;
+			if (i == 0) {
+				drawItem = drawImage = drawText = false;
+				if (findImageControl () != null) {
+					drawItem = drawText = drawBackground = true;
+					rect = item.getBounds (index, true, false, false, false, true, hDC);
+					if (linesVisible) {
+						rect.right++;
+						rect.bottom++;
+					}
+				}
+				if (selected && !ignoreDraw && !ignoreDrawSelected) {
+					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+					drawBackground = false;
+				}
+				if (hooks (SWT.EraseItem)) {
+					drawItem = drawText = drawImage = true;
+					rect = item.getBounds (index, true, true, false, false, true, hDC);
+				}
+			} else {
+				ignoreDraw = ignoreDrawSelected = false;
+				OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom - gridWidth);
+			}
+			int clrText = -1, clrTextBk = -1;
+			int hFont = item.cellFont != null ? item.cellFont [index] : -1;
+			if (hFont == -1) hFont = item.font;
+			if (OS.IsWindowEnabled (handle)) {
+				boolean drawForeground = false;
+				if (selected) {
+					if (i != 0 && (style & SWT.FULL_SELECTION) == 0) {
+						OS.SetTextColor (hDC, getForegroundPixel ());
+						OS.SetBkColor (hDC, getBackgroundPixel ());
+						drawForeground = drawBackground = true;
+					}
+				} else {
+					drawForeground = drawBackground = true;
+				}
+				if (drawForeground) {
+					clrText = item.cellForeground != null ? item.cellForeground [index] : -1;
+					if (clrText == -1) clrText = item.foreground;
+				}
+				if (drawBackground) {
+					clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
+					if (clrTextBk == -1) clrTextBk = item.background;
+				}
+			}
+			if (drawItem) {
+				if (!ignoreDraw && !ignoreDrawSelected) {
+					if (clrTextBk != -1) {
+						if (drawBackground) fillBackground (hDC, clrTextBk, rect);
+					} else {
+						Control control = findImageControl ();
+						if (control != null) {
+							if (i == 0) {
+								int right = Math.min (rect.right, width);
+								OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
+								if (drawBackground) fillImageBackground (hDC, control, rect);
+								if (handle == OS.GetFocus ()) {
+									int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+									if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+										int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+										if (hItem == item.handle) {
+											focusRect = new RECT ();
+											OS.SetRect (focusRect, rect.left, rect.top, rect.right, rect.bottom);
+										}
+									}
+								}
+								rect.left = Math.min (rect.right, rect.left + 2);
+							} else {
+								if (drawBackground) fillImageBackground (hDC, control, rect);
+							}
+						}
+					}
+				}
+				if (i != 0) {
+					if (hooks (SWT.MeasureItem)) {
+						RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
+						int nSavedDC = OS.SaveDC (hDC);
+						GCData data = new GCData ();
+						data.device = display;
+						data.hFont = hFont;
+						GC gc = GC.win32_new (hDC, data);
+						Event event = new Event ();
+						event.item = item;
+						event.index = index;
+						event.gc = gc;
+						event.x = itemRect.left;
+						event.y = itemRect.top;
+						event.width = itemRect.right - itemRect.left;
+						event.height = itemRect.bottom - itemRect.top;
+						sendEvent (SWT.MeasureItem, event);
+						event.gc = null;
+						gc.dispose ();
+						OS.RestoreDC (hDC, nSavedDC);
+						if (isDisposed () || item.isDisposed ()) break;
+					}
+					if (hooks (SWT.EraseItem)) {
+						RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
+						int nSavedDC = OS.SaveDC (hDC);
+						GCData data = new GCData ();
+						data.device = display;
+						data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
+						data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+						data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+						data.hBrush = OS.CreateSolidBrush (data.background);
+						data.hFont = hFont;
+						GC gc = GC.win32_new (hDC, data);
+						Event event = new Event ();
+						event.item = item;
+						event.index = index;
+						event.gc = gc;
+						if (selected) event.detail |= SWT.SELECTED;
+						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+						event.x = cellRect.left;
+						event.y = cellRect.top;
+						event.width = cellRect.right - cellRect.left;
+						event.height = cellRect.bottom - cellRect.top;
+						gc.setClipping (event.x, event.y, event.width, event.height);
+						sendEvent (SWT.EraseItem, event);
+						event.gc = null;
+						gc.dispose ();
+						OS.RestoreDC (hDC, nSavedDC);
+						if (isDisposed () || item.isDisposed ()) break;
+						ignoreDraw = !event.doit;
+					}
+				}
+				if (drawImage) {
+					Image image = null;
+					if (index == 0) {
+						image = item.image;
+					} else {
+						Image [] images  = item.images;
+						if (images != null) image = images [index];
+					}
+					int inset = i != 0 ? INSET : 0;
+					if (image != null) {
+						Rectangle bounds = image.getBounds ();
+						if (size == null) size = getImageSize ();
+						//int y = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
+						int y = rect.top;
+						if (!ignoreDraw) {
+							//TODO - share GC, clip the drawing for index == 0
+							GCData data = new GCData();
+							data.device = display;
+							GC gc = GC.win32_new (hDC, data);
+							//if (index == 0) { //must clear
+								//gc.setClipping (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+							//}
+							gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left, y, size.x, size.y);
+							gc.dispose ();
+						}
+						OS.SetRect (rect, rect.left + size.x + INSET, rect.top, rect.right - inset, rect.bottom);
+					} else {
+						OS.SetRect (rect, rect.left + INSET, rect.top, rect.right - inset, rect.bottom);
+					}
+				}
+				if (drawText) {
+					/*
+					* Bug in Windows.  When DrawText() is used with DT_VCENTER
+					* and DT_ENDELLIPSIS, the ellipsis can draw outside of the
+					* rectangle when the rectangle is empty.  The fix is avoid
+					* all text drawing for empty rectangles.
+					*/
+					if (rect.left < rect.right) {
+						String string = null;
+						if (index == 0) {
+							string = item.text;
+						} else {
+							String [] strings  = item.strings;
+							if (strings != null) string = strings [index];
+						}
+						if (string != null) {
+							hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
+							clrText = clrText != -1 ? OS.SetTextColor (hDC, clrText) : -1;
+							clrTextBk = clrTextBk != -1 ? OS.SetBkColor (hDC, clrTextBk) : -1;
+							int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
+							if (index != 0) flags |= OS.DT_ENDELLIPSIS;
+							TreeColumn column = columns != null ? columns [index] : null;
+							if (column != null) {
+								if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
+								if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
+							}
+							TCHAR buffer = new TCHAR (getCodePage (), string, false);
+							if (!ignoreDraw) OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+							OS.DrawText (hDC, buffer, buffer.length (), rect, flags | OS.DT_CALCRECT);
+							if (hFont != -1) OS.SelectObject (hDC, hFont);
+							if (clrText != -1) OS.SetTextColor (hDC, clrText);
+							if (clrTextBk != -1) OS.SetBkColor (hDC, clrTextBk);
+						}
+					}
+				}
+			}
+			if (hooks (SWT.PaintItem)) {
+				RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
+				int nSavedDC = OS.SaveDC (hDC);
+				GCData data = new GCData ();
+				data.device = display;
+				data.hFont = hFont;
+				data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
+				data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+				data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+				data.hBrush = OS.CreateSolidBrush (data.background);
+				OS.SelectObject (hDC, data.hPen);
+				OS.SelectObject (hDC, data.hBrush);
+				GC gc = GC.win32_new (hDC, data);
+				Event event = new Event ();
+				event.item = item;
+				event.index = index;
+				event.gc = gc;
+				if (selected) event.detail |= SWT.SELECTED;
+				if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+				event.x = itemRect.left;
+				event.y = itemRect.top;
+				event.width = itemRect.right - itemRect.left;
+				event.height = itemRect.bottom - itemRect.top;
+				RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
+				int cellWidth = cellRect.right - cellRect.left;
+				int cellHeight = cellRect.bottom - cellRect.top;
+				gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
+				sendEvent (SWT.PaintItem, event);
+				event.gc = null;
+				gc.dispose ();
+				OS.RestoreDC (hDC, nSavedDC);
+				if (isDisposed () || item.isDisposed ()) break;
+			}
+		}
+		x += width;
+		if (x > clientRect.right) break;
+	}
+	if (linesVisible) {
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			if (hwndHeader != 0) {
+				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0) {
+					HDITEM hdItem = new HDITEM ();
+					hdItem.mask = OS.HDI_WIDTH;
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left + hdItem.cxy, nmcd.top, nmcd.right, nmcd.bottom);
+					OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+				}
+			}
+		}
+		RECT rect = new RECT ();
+		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+		OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+	}
+	if (focusRect != null && (style & SWT.FULL_SELECTION) == 0) {
+		OS.DrawFocusRect (hDC, focusRect);
+	}
+	return new LRESULT (OS.CDRF_DODEFAULT);
+}
+
+LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
+	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
+	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
+	/*
+	* Feature in Windows.  When a new tree item is inserted
+	* using TVM_INSERTITEM and the tree is using custom draw,
+	* a NM_CUSTOMDRAW is sent before TVM_INSERTITEM returns
+	* and before the item is added to the items array.  The
+	* fix is to check for null.
+	* 
+	* NOTE: This only happens on XP with the version 6.00 of
+	* COMCTL32.DLL,
+	*/
+	TreeItem item = _getItem (nmcd.dwItemSpec, nmcd.lItemlParam);
+	if (item == null) return null;
+	RECT clipRect = null;
+	int index = 0, count = 0;
+	if (hwndHeader != 0) {
+		index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (count != 0) {
+			clipRect = new RECT ();
+			HDITEM hdItem = new HDITEM ();
+			hdItem.mask = OS.HDI_WIDTH;
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+			OS.SetRect (clipRect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+		}
+	}
+	int clrText = -1, clrTextBk = -1;
+	int hFont = item.cellFont != null ? item.cellFont [index] : -1;
+	if (hFont == -1) hFont = item.font;
+	if (OS.IsWindowEnabled (handle)) {
+		clrText = item.cellForeground != null ? item.cellForeground [index] : -1;
+		if (clrText == -1) clrText = item.foreground;
+		clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
+		if (clrTextBk == -1) clrTextBk = item.background;
+	}
+	int hDC = nmcd.hdc;
+	/*
+	* Feature in Windows.  When the mouse is pressed and the
+	* selection is first drawn for a tree, the previously
+	* selected item is redrawn but the the TVIS_SELECTED bits
+	* are not cleared.  When the user moves the mouse slightly
+	* and a drag and drop operation is not started, the item is
+	* drawn again and this time with TVIS_SELECTED is cleared.
+	* This means that an item that contains colored cells will
+	* not draw with the correct background until the mouse is
+	* moved.  The fix is to test for the selection colors and
+	* guess that the item is not selected.
+	* 
+	* NOTE: This code does not work when the foreground and
+	* background of the tree are set to the selection colors
+	* but this does not happen in a regular application.
+	*/
+	boolean selected = false;
+	if (OS.IsWindowEnabled (handle)) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_STATE;
+		tvItem.hItem = item.handle;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
+			selected = true;
+			if (handle == OS.GetFocus ()) {
+				if (OS.GetTextColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+					selected = false;
+				} else {
+					if (OS.GetBkColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+						selected = false;
+					}
+				}
+			}
+		}
+	}
+	if (OS.IsWindowVisible (handle) && nmcd.left < nmcd.right && nmcd.top < nmcd.bottom) {
+		if (linesVisible) {
+			RECT rect = new RECT ();
+			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+			OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+		}
+		//TODO - BUG - measure and erase sent when first column is clipped
+		if (hooks (SWT.MeasureItem)) {
+			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
+			int nSavedDC = OS.SaveDC (hDC);
+			GCData data = new GCData ();
+			data.device = display;
+			data.hFont = hFont;
+			GC gc = GC.win32_new (hDC, data);
+			Event event = new Event ();
+			event.item = item;
+			event.gc = gc;
+			event.index = index;
+			event.x = itemRect.left;
+			event.y = itemRect.top;
+			event.width = itemRect.right - itemRect.left;
+			event.height = itemRect.bottom - itemRect.top;
+			sendEvent (SWT.MeasureItem, event);
+			event.gc = null;
+			gc.dispose ();
+			OS.RestoreDC (hDC, nSavedDC);
+			if (isDisposed () || item.isDisposed ()) return null;
+			if (hwndHeader != 0) {
+				if (count == 0) {
+					if (event.x + event.width > scrollWidth) {
+						setScrollWidth (scrollWidth = event.x + event.width);
+					}
+				}
+			}
+			if (!ignoreItemHeight) {
+				if (event.height > getItemHeight ()) setItemHeight (event.height);
+				ignoreItemHeight = true;
+			}
+		}
+		ignoreDraw = ignoreDrawSelected = false;
+		if (hooks (SWT.EraseItem)) {
+			RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
+			int nSavedDC = OS.SaveDC (hDC);
+			GCData data = new GCData ();
+			data.device = display;
+			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
+			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+			data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+			data.hBrush = OS.CreateSolidBrush (data.background);
+			if (hFont != -1) data.hFont = hFont;
+			OS.SelectObject (hDC, data.hPen);
+			OS.SelectObject (hDC, data.hBrush);
+			GC gc = GC.win32_new (hDC, data);
+			Event event = new Event ();
+			event.index = index;
+			event.item = item;
+			event.gc = gc;
+			if (selected) event.detail |= SWT.SELECTED;
+			if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+			event.x = cellRect.left;
+			event.y = cellRect.top;
+			event.width = cellRect.right - cellRect.left;
+			event.height = cellRect.bottom - cellRect.top;
+			gc.setClipping (event.x, event.y, event.width, event.height);
+			sendEvent (SWT.EraseItem, event);
+			event.gc = null;
+			gc.dispose ();
+			OS.RestoreDC (hDC, nSavedDC);
+			if (isDisposed () || item.isDisposed ()) return null;
+			ignoreDraw = !event.doit;
+			if (event.doit) {
+				if ((event.detail & SWT.SELECTED) != 0) {
+					/*
+					* Feature in Windows.  When the tree has the style
+					* TVS_FULLROWSELECT, the background color for the
+					* entire row is filled when an item is painted,
+					* drawing on top of any custom drawing.  The fix
+					* is to emulate TVS_FULLROWSELECT.
+					*/
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						fillBackground (hDC, OS.GetBkColor (hDC), rect);
+					} else {
+						RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
+						drawBackground (hDC, textRect, OS.GetBkColor (hDC));
+					}
+				} else {
+					ignoreDrawSelected = true;
+				}
+			}
+			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
+			OS.SaveDC (hDC);
+			OS.SelectClipRgn (hDC, 0);
+			//TODO - bug in Windows selection or SWT itemRect
+			/*if (selected)*/ itemRect.right++;
+			if (linesVisible) itemRect.bottom++;
+			if (clipRect != null) {
+				OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+			}
+			OS.ExcludeClipRect (hDC, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
+			return new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);
+		}
+		/*
+		* Feature in Windows.  When the tree has the style
+		* TVS_FULLROWSELECT, the background color for the
+		* entire row is filled when an item is painted,
+		* drawing on top of any custom drawing.  The fix
+		* is to emulate TVS_FULLROWSELECT.
+		*/
+		if (selected) {
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+				}
+			}
+		}
+	}
+	LRESULT result = null;
+	if (clrText == -1 && clrTextBk == -1 && hFont == -1) {
+		result = new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);	
+	} else {
+		result = new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
+		if (hFont != -1) OS.SelectObject (hDC, hFont);
+		if (OS.IsWindowEnabled (handle)) {
+			/*
+			* Feature in Windows.  Windows does not fill the entire cell
+			* with the background color when TVS_FULLROWSELECT is not set.
+			* The fix is to fill the cell with the background color.
+			*/
+			if (OS.IsWindowVisible (handle) && !selected) {
+				nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+				if (clrTextBk != -1) {
+					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+					if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						if (count != 0 && hwndHeader != 0) {
+							HDITEM hdItem = new HDITEM ();
+							hdItem.mask = OS.HDI_WIDTH;
+							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+							nmcd.right = nmcd.left + hdItem.cxy;
+							if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+								RECT itemRect = new RECT ();
+								itemRect.left = item.handle;
+								if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+									rect.left = Math.min (itemRect.left, rect.right);
+								}
+							}
+							fillBackground (hDC, clrTextBk, rect);
+						} else {
+							if ((style & SWT.FULL_SELECTION) != 0) {
+								fillBackground (hDC, clrTextBk, rect);
+							}
+						}
+					}
+					nmcd.clrTextBk = clrTextBk;
+				}
+				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+			}
+		}
+	}
+	OS.SaveDC (hDC);
+	if (clipRect != null) {
+		int hRgn = OS.CreateRectRgn (clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+		OS.SelectClipRgn (hDC, hRgn);
+		OS.DeleteObject (hRgn);
+	}
+	return result;
+}
+
+LRESULT CDDS_POSTPAINT (int wParam, int lParam) {	
+	if (OS.IsWindowVisible (handle)) {
+		if (linesVisible) {
+			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);	
+			int hDC = nmcd.hdc;
+			if (hwndHeader != 0) {
+				int x = 0;
+				RECT rect = new RECT ();
+				HDITEM hdItem = new HDITEM ();
+				hdItem.mask = OS.HDI_WIDTH;
+				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+				for (int i=0; i<count; i++) {
+					int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+					OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom);
+					OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_RIGHT);
+					x += hdItem.cxy;
+				}
+			}
+			int height = 0;
+			RECT rect = new RECT ();
+			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
+			if (hItem != 0) {
+				rect.left = hItem;
+				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+					height = rect.bottom - rect.top;
+				}
+			}
+			if (height == 0) {
+				height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0);
+				OS.GetClientRect (handle, rect);
+				OS.SetRect (rect, rect.left, rect.top, rect.right, rect.top + height);
+				OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+			}
+			while (rect.bottom < nmcd.bottom) {
+				int top = rect.top + height;
+				OS.SetRect (rect, rect.left, top, rect.right, top + height);
+				OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+			}
+		}
+	}
+	return new LRESULT (OS.CDRF_DODEFAULT);
+}
+
+LRESULT CDDS_PREPAINT (int wParam, int lParam) {
+	return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
+}
+
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
 	if (hwndParent != 0 && hwnd == hwndParent) {
@@ -4799,656 +5461,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREPAINT: {
-					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
-				}
-				case OS.CDDS_POSTPAINT: {
-					if (OS.IsWindowVisible (handle) && linesVisible) {
-						int hDC = nmcd.hdc;
-						if (hwndHeader != 0) {
-							int x = 0;
-							RECT rect = new RECT ();
-							HDITEM hdItem = new HDITEM ();
-							hdItem.mask = OS.HDI_WIDTH;
-							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-							for (int i=0; i<count; i++) {
-								int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
-								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom);
-								OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_RIGHT);
-								x += hdItem.cxy;
-							}
-						}
-						int height = 0;
-						RECT rect = new RECT ();
-						int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
-						if (hItem != 0) {
-							rect.left = hItem;
-							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
-								height = rect.bottom - rect.top;
-							}
-						}
-						if (height == 0) {
-							height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0);
-							OS.GetClientRect (handle, rect);
-							OS.SetRect (rect, rect.left, rect.top, rect.right, rect.top + height);
-							OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
-						}
-						while (rect.bottom < nmcd.bottom) {
-							int top = rect.top + height;
-							OS.SetRect (rect, rect.left, top, rect.right, top + height);
-							OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
-						}
-					}
-					return new LRESULT (OS.CDRF_DODEFAULT);
-				}
-				case OS.CDDS_ITEMPREPAINT: {
-					/*
-					* Feature in Windows.  When a new tree item is inserted
-					* using TVM_INSERTITEM and the tree is using custom draw,
-					* a NM_CUSTOMDRAW is sent before TVM_INSERTITEM returns
-					* and before the item is added to the items array.  The
-					* fix is to check for null.
-					* 
-					* NOTE: This only happens on XP with the version 6.00 of
-					* COMCTL32.DLL,
-					*/
-					TreeItem item = _getItem (nmcd.dwItemSpec, nmcd.lItemlParam);
-					if (item == null) break;
-					RECT clipRect = null;
-					int index = 0, count = 0;
-					if (hwndHeader != 0) {
-						index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
-						count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						if (count != 0) {
-							clipRect = new RECT ();
-							HDITEM hdItem = new HDITEM ();
-							hdItem.mask = OS.HDI_WIDTH;
-							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-							OS.SetRect (clipRect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
-						}
-					}
-					int clrText = -1, clrTextBk = -1;
-					int hFont = item.cellFont != null ? item.cellFont [index] : -1;
-					if (hFont == -1) hFont = item.font;
-					if (OS.IsWindowEnabled (handle)) {
-						clrText = item.cellForeground != null ? item.cellForeground [index] : -1;
-						if (clrText == -1) clrText = item.foreground;
-						clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
-						if (clrTextBk == -1) clrTextBk = item.background;
-					}
-					int hDC = nmcd.hdc;
-					/*
-					* Feature in Windows.  When the mouse is pressed and the
-					* selection is first drawn for a tree, the previously
-					* selected item is redrawn but the the TVIS_SELECTED bits
-					* are not cleared.  When the user moves the mouse slightly
-					* and a drag and drop operation is not started, the item is
-					* drawn again and this time with TVIS_SELECTED is cleared.
-					* This means that an item that contains colored cells will
-					* not draw with the correct background until the mouse is
-					* moved.  The fix is to test for the selection colors and
-					* guess that the item is not selected.
-					* 
-					* NOTE: This code does not work when the foreground and
-					* background of the tree are set to the selection colors
-					* but this does not happen in a regular application.
-					*/
-					boolean selected = false;
-					if (OS.IsWindowEnabled (handle)) {
-						TVITEM tvItem = new TVITEM ();
-						tvItem.mask = OS.TVIF_STATE;
-						tvItem.hItem = item.handle;
-						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-						if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
-							selected = true;
-							if (handle == OS.GetFocus ()) {
-								if (OS.GetTextColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
-									selected = false;
-								} else {
-									if (OS.GetBkColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
-										selected = false;
-									}
-								}
-							}
-						}
-					}
-					if (OS.IsWindowVisible (handle) && nmcd.left < nmcd.right && nmcd.top < nmcd.bottom) {
-						if (linesVisible) {
-							RECT rect = new RECT ();
-							OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-							OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
-						}
-						//TODO - BUG - measure and erase sent when first column is clipped
-						if (hooks (SWT.MeasureItem)) {
-							RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
-							int nSavedDC = OS.SaveDC (hDC);
-							GCData data = new GCData ();
-							data.device = display;
-							data.hFont = hFont;
-							GC gc = GC.win32_new (hDC, data);
-							Event event = new Event ();
-							event.item = item;
-							event.gc = gc;
-							event.index = index;
-							event.x = itemRect.left;
-							event.y = itemRect.top;
-							event.width = itemRect.right - itemRect.left;
-							event.height = itemRect.bottom - itemRect.top;
-							sendEvent (SWT.MeasureItem, event);
-							event.gc = null;
-							gc.dispose ();
-							OS.RestoreDC (hDC, nSavedDC);
-							if (isDisposed () || item.isDisposed ()) break;
-							if (hwndHeader != 0) {
-								if (count == 0) {
-									if (event.x + event.width > scrollWidth) {
-										setScrollWidth (scrollWidth = event.x + event.width);
-									}
-								}
-							}
-							if (!ignoreItemHeight) {
-								if (event.height > getItemHeight ()) setItemHeight (event.height);
-								ignoreItemHeight = true;
-							}
-						}
-						ignoreDraw = ignoreDrawSelected = false;
-						if (hooks (SWT.EraseItem)) {
-							RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
-							int nSavedDC = OS.SaveDC (hDC);
-							GCData data = new GCData ();
-							data.device = display;
-							data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
-							data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
-							data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-							data.hBrush = OS.CreateSolidBrush (data.background);
-							if (hFont != -1) data.hFont = hFont;
-							OS.SelectObject (hDC, data.hPen);
-							OS.SelectObject (hDC, data.hBrush);
-							GC gc = GC.win32_new (hDC, data);
-							Event event = new Event ();
-							event.index = index;
-							event.item = item;
-							event.gc = gc;
-							if (selected) event.detail |= SWT.SELECTED;
-							if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
-							event.x = cellRect.left;
-							event.y = cellRect.top;
-							event.width = cellRect.right - cellRect.left;
-							event.height = cellRect.bottom - cellRect.top;
-							gc.setClipping (event.x, event.y, event.width, event.height);
-							sendEvent (SWT.EraseItem, event);
-							event.gc = null;
-							gc.dispose ();
-							OS.RestoreDC (hDC, nSavedDC);
-							if (isDisposed () || item.isDisposed ()) break;
-							ignoreDraw = !event.doit;
-							if (event.doit) {
-								if ((event.detail & SWT.SELECTED) != 0) {
-									/*
-									* Feature in Windows.  When the tree has the style
-									* TVS_FULLROWSELECT, the background color for the
-									* entire row is filled when an item is painted,
-									* drawing on top of any custom drawing.  The fix
-									* is to emulate TVS_FULLROWSELECT.
-									*/
-									if ((style & SWT.FULL_SELECTION) != 0) {
-										RECT rect = new RECT ();
-										OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-										fillBackground (hDC, OS.GetBkColor (hDC), rect);
-									} else {
-										RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
-										drawBackground (hDC, textRect, OS.GetBkColor (hDC));
-									}
-								} else {
-									ignoreDrawSelected = true;
-								}
-							}
-							RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
-							OS.SaveDC (hDC);
-							OS.SelectClipRgn (hDC, 0);
-							//TODO - bug in Windows selection or SWT itemRect
-							/*if (selected)*/ itemRect.right++;
-							if (linesVisible) itemRect.bottom++;
-							if (clipRect != null) {
-								OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
-							}
-							OS.ExcludeClipRect (hDC, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
-							return new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);
-						}
-						/*
-						* Feature in Windows.  When the tree has the style
-						* TVS_FULLROWSELECT, the background color for the
-						* entire row is filled when an item is painted,
-						* drawing on top of any custom drawing.  The fix
-						* is to emulate TVS_FULLROWSELECT.
-						*/
-						if (selected) {
-							if ((style & SWT.FULL_SELECTION) != 0) {
-								int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-								if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-									RECT rect = new RECT ();
-									OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-									fillBackground (hDC, OS.GetBkColor (hDC), rect);
-								}
-							}
-						}
-					}
-					LRESULT result = null;
-					if (clrText == -1 && clrTextBk == -1 && hFont == -1) {
-						result = new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);	
-					} else {
-						result = new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
-						if (hFont != -1) OS.SelectObject (hDC, hFont);
-						if (OS.IsWindowEnabled (handle)) {
-							/*
-							* Feature in Windows.  Windows does not fill the entire cell
-							* with the background color when TVS_FULLROWSELECT is not set.
-							* The fix is to fill the cell with the background color.
-							*/
-							if (OS.IsWindowVisible (handle) && !selected) {
-								nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-								if (clrTextBk != -1) {
-									int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-									if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-										RECT rect = new RECT ();
-										OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-										if (count != 0 && hwndHeader != 0) {
-											HDITEM hdItem = new HDITEM ();
-											hdItem.mask = OS.HDI_WIDTH;
-											OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-											nmcd.right = nmcd.left + hdItem.cxy;
-											if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-												RECT itemRect = new RECT ();
-												itemRect.left = item.handle;
-												if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
-													rect.left = Math.min (itemRect.left, rect.right);
-												}
-											}
-											fillBackground (hDC, clrTextBk, rect);
-										} else {
-											if ((style & SWT.FULL_SELECTION) != 0) {
-												fillBackground (hDC, clrTextBk, rect);
-											}
-										}
-									}
-									nmcd.clrTextBk = clrTextBk;
-								}
-								OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
-							}
-						}
-					}
-					OS.SaveDC (hDC);
-					if (clipRect != null) {
-						int hRgn = OS.CreateRectRgn (clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
-						OS.SelectClipRgn (hDC, hRgn);
-						OS.DeleteObject (hRgn);
-					}
-					return result;
-				}
-				case OS.CDDS_ITEMPOSTPAINT: {
-					TreeItem item = _getItem (nmcd.dwItemSpec, nmcd.lItemlParam);
-					if (item == null) break;
-					/*
-					* Feature in Windows.  Under certain circumstances, Windows
-					* sends CDDS_ITEMPOSTPAINT for an empty rectangle.  This is
-					* not a problem providing that graphics do not occur outside
-					* the rectangle.  The fix is to test for the rectangle and
-					* draw nothing.
-					* 
-					* NOTE:  This seems to happen when both I_IMAGECALLBACK
-					* and LPSTR_TEXTCALLBACK are used at the same time with
-					* TVM_SETITEM.
-					*/
-					if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) break;
-					int hDC = nmcd.hdc;
-					OS.RestoreDC (hDC, -1);
-					if (!OS.IsWindowVisible (handle)) break;
-					if (findImageControl () != null || ignoreDrawSelected) {
-						OS.SetBkMode (hDC, OS.TRANSPARENT);
-					}
-					boolean selected = false;
-					if (OS.IsWindowEnabled (handle)) {
-						TVITEM tvItem = new TVITEM ();
-						tvItem.mask = OS.TVIF_STATE;
-						tvItem.hItem = item.handle;
-						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-						if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
-							selected = true;
-							/*
-							* Feature in Windows.  When the mouse is pressed and the
-							* selection is first drawn for a tree, the previously
-							* selected item is redrawn but the the TVIS_SELECTED bits
-							* are not cleared.  When the user moves the mouse slightly
-							* and a drag and drop operation is not started, the item is
-							* drawn again and this time with TVIS_SELECTED is cleared.
-							* This means that an item that contains colored cells will
-							* not draw with the correct background until the mouse is
-							* moved.  The fix is to test for the selection colors and
-							* guess that the item is not selected.
-							* 
-							* NOTE: This code does not work when the foreground and
-							* background of the tree are set to the selection colors
-							* but this does not happen in a regular application.
-							*/
-							if (handle == OS.GetFocus ()) {
-								if (OS.GetTextColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
-									selected = false;
-								} else {
-									if (OS.GetBkColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
-										selected = false;
-									}
-								}
-							}
-						} else {
-							/*
-							* Feature in Windows.  When the mouse is pressed and the
-							* selection is first drawn for a tree, the item is drawn
-							* selected, but the TVIS_SELECTED bits for the item are
-							* not set.  When the user moves the mouse slightly and
-							* a drag and drop operation is not started, the item is
-							* drawn again and this time TVIS_SELECTED is set.  This
-							* means that an item that is in a tree that has the style
-							* TVS_FULLROWSELECT and that also contains colored cells
-							* will not draw the entire row selected until the user
-							* moves the mouse.  The fix is to test for the selection
-							* colors and guess that the item is selected.
-							* 
-							* NOTE: This code does not work when the foreground and
-							* background of the tree are set to the selection colors
-							* but this does not happen in a regular application.
-							*/
-							if (OS.GetTextColor (hDC) == OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
-								if (OS.GetBkColor (hDC) == OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
-									selected = true;
-								}
-							}
-						}
-					}
-					int count = 0;
-					int [] order = null;
-					RECT clientRect = new RECT (), focusRect = null;
-					OS.GetClientRect (scrolledHandle (), clientRect);
-					if (hwndHeader != 0) {
-						OS.MapWindowPoints (hwndParent, handle, clientRect, 2);
-						count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						if (count != 0) {
-							order = new int [count];
-							OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-						}
-					}
-					Point size = null;
-					int x = 0, gridWidth = linesVisible ? GRID_WIDTH : 0;
-					for (int i=0; i<Math.max (1, count); i++) {
-						int index = order == null ? i : order [i], width = nmcd.right - nmcd.left;
-						if (count > 0 && hwndHeader != 0) {
-							HDITEM hdItem = new HDITEM ();
-							hdItem.mask = OS.HDI_WIDTH;
-							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-							width = hdItem.cxy;
-						}
-						if (i == 0) {
-							RECT rect = new RECT ();
-							if ((style & SWT.FULL_SELECTION) != 0) {
-								OS.SetRect (rect, width, nmcd.top, nmcd.right, nmcd.bottom);
-								if ((selected || findImageControl () == null) && !ignoreDraw && !ignoreDrawSelected) {
-									fillBackground (hDC, OS.GetBkColor (hDC), rect);
-								}
-							}
-						}
-						if (x + width > clientRect.left) {
-							RECT rect = new RECT ();
-							boolean drawItem = true, drawText = true, drawImage = true, drawBackground = false;
-							if (i == 0) {
-								drawItem = drawImage = drawText = false;
-								if (findImageControl () != null) {
-									drawItem = drawText = drawBackground = true;
-									rect = item.getBounds (index, true, false, false, false, true, hDC);
-									if (linesVisible) {
-										rect.right++;
-										rect.bottom++;
-									}
-								}
-								if (selected && !ignoreDraw && !ignoreDrawSelected) {
-									fillBackground (hDC, OS.GetBkColor (hDC), rect);
-									drawBackground = false;
-								}
-								if (hooks (SWT.EraseItem)) {
-									drawItem = drawText = drawImage = true;
-									rect = item.getBounds (index, true, true, false, false, true, hDC);
-								}
-							} else {
-								ignoreDraw = ignoreDrawSelected = false;
-								OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom - gridWidth);
-							}
-							int clrText = -1, clrTextBk = -1;
-							int hFont = item.cellFont != null ? item.cellFont [index] : -1;
-							if (hFont == -1) hFont = item.font;
-							if (OS.IsWindowEnabled (handle)) {
-								boolean drawForeground = false;
-								if (selected) {
-									if (i != 0 && (style & SWT.FULL_SELECTION) == 0) {
-										OS.SetTextColor (hDC, getForegroundPixel ());
-										OS.SetBkColor (hDC, getBackgroundPixel ());
-										drawForeground = drawBackground = true;
-									}
-								} else {
-									drawForeground = drawBackground = true;
-								}
-								if (drawForeground) {
-									clrText = item.cellForeground != null ? item.cellForeground [index] : -1;
-									if (clrText == -1) clrText = item.foreground;
-								}
-								if (drawBackground) {
-									clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
-									if (clrTextBk == -1) clrTextBk = item.background;
-								}
-							}
-							if (drawItem) {
-								if (!ignoreDraw && !ignoreDrawSelected) {
-									if (clrTextBk != -1) {
-										if (drawBackground) fillBackground (hDC, clrTextBk, rect);
-									} else {
-										Control control = findImageControl ();
-										if (control != null) {
-											if (i == 0) {
-												int right = Math.min (rect.right, width);
-												OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
-												if (drawBackground) fillImageBackground (hDC, control, rect);
-												if (handle == OS.GetFocus ()) {
-													int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-													if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
-														int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-														if (hItem == item.handle) {
-															focusRect = new RECT ();
-															OS.SetRect (focusRect, rect.left, rect.top, rect.right, rect.bottom);
-														}
-													}
-												}
-												rect.left = Math.min (rect.right, rect.left + 2);
-											} else {
-												if (drawBackground) fillImageBackground (hDC, control, rect);
-											}
-										}
-									}
-								}
-								if (i != 0) {
-									if (hooks (SWT.MeasureItem)) {
-										RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
-										int nSavedDC = OS.SaveDC (hDC);
-										GCData data = new GCData ();
-										data.device = display;
-										data.hFont = hFont;
-										GC gc = GC.win32_new (hDC, data);
-										Event event = new Event ();
-										event.item = item;
-										event.index = index;
-										event.gc = gc;
-										event.x = itemRect.left;
-										event.y = itemRect.top;
-										event.width = itemRect.right - itemRect.left;
-										event.height = itemRect.bottom - itemRect.top;
-										sendEvent (SWT.MeasureItem, event);
-										event.gc = null;
-										gc.dispose ();
-										OS.RestoreDC (hDC, nSavedDC);
-										if (isDisposed () || item.isDisposed ()) break;
-									}
-									if (hooks (SWT.EraseItem)) {
-										RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
-										int nSavedDC = OS.SaveDC (hDC);
-										GCData data = new GCData ();
-										data.device = display;
-										data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
-										data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
-										data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-										data.hBrush = OS.CreateSolidBrush (data.background);
-										data.hFont = hFont;
-										GC gc = GC.win32_new (hDC, data);
-										Event event = new Event ();
-										event.item = item;
-										event.index = index;
-										event.gc = gc;
-										if (selected) event.detail |= SWT.SELECTED;
-										if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
-										event.x = cellRect.left;
-										event.y = cellRect.top;
-										event.width = cellRect.right - cellRect.left;
-										event.height = cellRect.bottom - cellRect.top;
-										gc.setClipping (event.x, event.y, event.width, event.height);
-										sendEvent (SWT.EraseItem, event);
-										event.gc = null;
-										gc.dispose ();
-										OS.RestoreDC (hDC, nSavedDC);
-										if (isDisposed () || item.isDisposed ()) break;
-										ignoreDraw = !event.doit;
-									}
-								}
-								if (drawImage) {
-									Image image = null;
-									if (index == 0) {
-										image = item.image;
-									} else {
-										Image [] images  = item.images;
-										if (images != null) image = images [index];
-									}
-									int inset = i != 0 ? INSET : 0;
-									if (image != null) {
-										Rectangle bounds = image.getBounds ();
-										if (size == null) size = getImageSize ();
-										//int y = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
-										int y = rect.top;
-										if (!ignoreDraw) {
-											//TODO - share GC, clip the drawing for index == 0
-											GCData data = new GCData();
-											data.device = display;
-											GC gc = GC.win32_new (hDC, data);
-											//if (index == 0) { //must clear
-												//gc.setClipping (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-											//}
-											gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left, y, size.x, size.y);
-											gc.dispose ();
-										}
-										OS.SetRect (rect, rect.left + size.x + INSET, rect.top, rect.right - inset, rect.bottom);
-									} else {
-										OS.SetRect (rect, rect.left + INSET, rect.top, rect.right - inset, rect.bottom);
-									}
-								}
-								if (drawText) {
-									/*
-									* Bug in Windows.  When DrawText() is used with DT_VCENTER
-									* and DT_ENDELLIPSIS, the ellipsis can draw outside of the
-									* rectangle when the rectangle is empty.  The fix is avoid
-									* all text drawing for empty rectangles.
-									*/
-									if (rect.left < rect.right) {
-										String string = null;
-										if (index == 0) {
-											string = item.text;
-										} else {
-											String [] strings  = item.strings;
-											if (strings != null) string = strings [index];
-										}
-										if (string != null) {
-											hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
-											clrText = clrText != -1 ? OS.SetTextColor (hDC, clrText) : -1;
-											clrTextBk = clrTextBk != -1 ? OS.SetBkColor (hDC, clrTextBk) : -1;
-											int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
-											if (index != 0) flags |= OS.DT_ENDELLIPSIS;
-											TreeColumn column = columns != null ? columns [index] : null;
-											if (column != null) {
-												if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
-												if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
-											}
-											TCHAR buffer = new TCHAR (getCodePage (), string, false);
-											if (!ignoreDraw) OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-											OS.DrawText (hDC, buffer, buffer.length (), rect, flags | OS.DT_CALCRECT);
-											if (hFont != -1) OS.SelectObject (hDC, hFont);
-											if (clrText != -1) OS.SetTextColor (hDC, clrText);
-											if (clrTextBk != -1) OS.SetBkColor (hDC, clrTextBk);
-										}
-									}
-								}
-							}
-							if (hooks (SWT.PaintItem)) {
-								RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
-								int nSavedDC = OS.SaveDC (hDC);
-								GCData data = new GCData ();
-								data.device = display;
-								data.hFont = hFont;
-								data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
-								data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
-								data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-								data.hBrush = OS.CreateSolidBrush (data.background);
-								OS.SelectObject (hDC, data.hPen);
-								OS.SelectObject (hDC, data.hBrush);
-								GC gc = GC.win32_new (hDC, data);
-								Event event = new Event ();
-								event.item = item;
-								event.index = index;
-								event.gc = gc;
-								if (selected) event.detail |= SWT.SELECTED;
-								if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
-								event.x = itemRect.left;
-								event.y = itemRect.top;
-								event.width = itemRect.right - itemRect.left;
-								event.height = itemRect.bottom - itemRect.top;
-								RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
-								int cellWidth = cellRect.right - cellRect.left;
-								int cellHeight = cellRect.bottom - cellRect.top;
-								gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
-								sendEvent (SWT.PaintItem, event);
-								event.gc = null;
-								gc.dispose ();
-								OS.RestoreDC (hDC, nSavedDC);
-								if (isDisposed () || item.isDisposed ()) break;
-							}
-						}
-						x += width;
-						if (x > clientRect.right) break;
-					}
-					if (linesVisible) {
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							if (hwndHeader != 0) {
-								if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0) {
-									HDITEM hdItem = new HDITEM ();
-									hdItem.mask = OS.HDI_WIDTH;
-									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
-									RECT rect = new RECT ();
-									OS.SetRect (rect, nmcd.left + hdItem.cxy, nmcd.top, nmcd.right, nmcd.bottom);
-									OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
-								}
-							}
-						}
-						RECT rect = new RECT ();
-						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-						OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
-					}
-					if (focusRect != null && (style & SWT.FULL_SELECTION) == 0) {
-						OS.DrawFocusRect (hDC, focusRect);
-					}
-				}
-				return new LRESULT (OS.CDRF_DODEFAULT);
+				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (wParam, lParam);
+				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (wParam, lParam);
+				case OS.CDDS_ITEMPOSTPAINT: return CDDS_ITEMPOSTPAINT (wParam, lParam);
+				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (wParam, lParam);
 			}
 			break;
 		}
