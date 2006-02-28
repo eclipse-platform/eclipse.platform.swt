@@ -922,14 +922,18 @@ void redraw () {
 	* full selection, redraw only the text.  This is
 	* an optimization to reduce flashing.
 	*/
-	boolean full = (parent.style & SWT.FULL_SELECTION) != 0;
+	boolean full = (parent.style & (SWT.FULL_SELECTION | SWT.VIRTUAL)) != 0;
 	if (!full) {
 		int hwndHeader = parent.hwndHeader;
 		if (hwndHeader != 0) {
 			full = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) != 0;
 		}
+		if (!full) {
+			if (parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
+				full = true;
+			}
+		}
 	}
-	if (parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) full = true;
 	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, full ? 0 : 1, rect) != 0) {
 		OS.InvalidateRect (hwnd, rect, true);
 	}

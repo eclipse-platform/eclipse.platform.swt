@@ -1826,13 +1826,20 @@ void destroyItem (TreeItem item, int hItem) {
 	* force the widget to be fully painted, turn off redraw, remove
 	* the item and validate the damage caused by the removing of
 	* the item.
+	* 
+	* NOTE: This fix is not necessary when double buffering and
+	* can cause problems for virtual trees due to the call to
+	* UpdateWindow() that flushes outstanding WM_PAINT events,
+	* allowing application code to add or remove items.
 	*/
 	int hParent = 0;
 	boolean fixRedraw = false;
-	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
-		RECT rect = new RECT ();
-		rect.left = hItem;
-		fixRedraw = OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) == 0;
+	if ((style & SWT.DOUBLE_BUFFERED) == 0) {
+		if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+			RECT rect = new RECT ();
+			rect.left = hItem;
+			fixRedraw = OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) == 0;
+		}
 	}
 	if (fixRedraw) {
 		hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
