@@ -5020,11 +5020,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (wParam, lParam);
-				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (wParam, lParam);
 				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (wParam, lParam);
-				case OS.CDDS_SUBITEMPOSTPAINT: return CDDS_SUBITEMPOSTPAINT (wParam, lParam);
+				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (wParam, lParam);
 				case OS.CDDS_SUBITEMPREPAINT: return CDDS_SUBITEMPREPAINT (wParam, lParam);
+				case OS.CDDS_SUBITEMPOSTPAINT: return CDDS_SUBITEMPOSTPAINT (wParam, lParam);
+				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (wParam, lParam);
 			}
 			break;
 		}
