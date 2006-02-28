@@ -4350,7 +4350,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if ((style & SWT.VIRTUAL) != 0) return LRESULT.ONE;
+	if ((style & SWT.DOUBLE_BUFFERED) != 0) return LRESULT.ONE;
 	if (findImageControl () != null) return LRESULT.ONE;
 	return result;
 }
@@ -5224,7 +5224,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		shrink = false;
 	}
 	Control control = findImageControl ();
-	if (control != null || (style & SWT.VIRTUAL) != 0) {
+	if ((style & SWT.DOUBLE_BUFFERED) != 0 || control != null) {
 		GC gc = null;
 		int paintDC = 0;
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
