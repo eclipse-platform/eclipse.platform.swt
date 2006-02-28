@@ -2778,7 +2778,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int hDC) {
 	Event event = new Event ();
 	event.item = item;
 	event.gc = gc;
-	event.index = row;
+	event.index = column;
 	event.x = itemRect.left;
 	event.y = itemRect.top;
 	event.width = itemRect.right - itemRect.left;
