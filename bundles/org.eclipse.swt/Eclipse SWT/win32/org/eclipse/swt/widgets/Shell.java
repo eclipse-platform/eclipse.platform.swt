@@ -486,8 +486,8 @@ void createBalloonTipHandle () {
 	* a large value.
 	*/
 	OS.SendMessage (balloonTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-	register ();
-	subclass ();
+	display.addControl (balloonTipHandle, this);
+	OS.SetWindowLong (balloonTipHandle, OS.GWL_WNDPROC, display.windowProc);
 }
 
 void createHandle () {
@@ -586,8 +586,8 @@ void createToolTipHandle () {
 	* a large value.
 	*/
 	OS.SendMessage (toolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-	register ();
-	subclass ();
+	display.addControl (toolTipHandle, this);
+	OS.SetWindowLong (toolTipHandle, OS.GWL_WNDPROC, display.windowProc);
 }
 
 void deregister () {
