@@ -117,6 +117,16 @@ public final class Image extends Resource implements Drawable {
 	int alpha = -1;
 	
 	/**
+	 * The width of the image.
+	 */
+	int width = -1;
+	
+	/**
+	 * The height of the image.
+	 */
+	int height = -1;
+	
+	/**
 	 * Specifies the default scanline padding.
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
@@ -772,9 +782,12 @@ public Color getBackground() {
  */
 public Rectangle getBounds () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
- 	OS.XGetGeometry (device.xDisplay, pixmap, unused, unused, unused, width, height, unused, unused);
-	return new Rectangle(0, 0, width [0], height [0]);
+	if (width != -1 && height != -1) {
+		return new Rectangle(0, 0, width, height);
+	}
+	int [] unused = new int [1];  int [] w = new int [1];  int [] h = new int [1];
+ 	OS.XGetGeometry (device.xDisplay, pixmap, unused, unused, unused, w, h, unused, unused);
+	return new Rectangle(0, 0, width = w [0], height = h [0]);
 }
 /**
  * Returns an <code>ImageData</code> based on the receiver
