@@ -117,6 +117,16 @@ public final class Image extends Resource implements Drawable {
 	boolean gdiPlus;
 	
 	/**
+	 * width of the image
+	 */
+	int width = -1;
+	
+	/**
+	 * height of the image
+	 */
+	int height = -1;
+	
+	/**
 	 * specifies the default scanline padding
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
@@ -1184,14 +1194,17 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width != -1 && height != -1) {
+		return new Rectangle(0, 0, width, height);
+	}
 	switch (type) {
 		case SWT.BITMAP:
 			BITMAP bm = new BITMAP();
 			OS.GetObject(handle, BITMAP.sizeof, bm);
-			return new Rectangle(0, 0, bm.bmWidth, bm.bmHeight);
+			return new Rectangle(0, 0, width = bm.bmWidth, height = bm.bmHeight);
 		case SWT.ICON:
 			if (OS.IsWinCE) {
-				return new Rectangle(0, 0, data.width, data.height);
+				return new Rectangle(0, 0, width = data.width, height = data.height);
 			} else {
 				ICONINFO info = new ICONINFO();
 				OS.GetIconInfo(handle, info);
@@ -1202,7 +1215,7 @@ public Rectangle getBounds() {
 				if (hBitmap == info.hbmMask) bm.bmHeight /= 2;
 				if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
 				if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
-				return new Rectangle(0, 0, bm.bmWidth, bm.bmHeight);
+				return new Rectangle(0, 0, width = bm.bmWidth, height = bm.bmHeight);
 			}
 		default:
 			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
