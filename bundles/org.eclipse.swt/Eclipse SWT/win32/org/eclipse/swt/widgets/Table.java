@@ -519,6 +519,11 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
+void checkBuffered () {
+	super.checkBuffered ();
+	if (OS.COMCTL32_MAJOR >= 6) style |= SWT.DOUBLE_BUFFERED;
+}
+
 boolean checkData (TableItem item, boolean redraw) {
 	return checkData (item, indexOf (item), redraw);
 }

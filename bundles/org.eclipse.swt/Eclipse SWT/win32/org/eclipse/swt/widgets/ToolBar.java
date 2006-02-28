@@ -153,6 +153,11 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+void checkBuffered () {
+	super.checkBuffered ();
+	if (OS.COMCTL32_MAJOR >= 6) style |= SWT.DOUBLE_BUFFERED;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }

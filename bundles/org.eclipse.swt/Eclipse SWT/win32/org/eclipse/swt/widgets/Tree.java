@@ -407,6 +407,11 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	return code;
 }
 
+void checkBuffered () {
+	super.checkBuffered ();
+	if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
+}
+
 boolean checkData (TreeItem item, boolean redraw) {
 	TreeItem parentItem = item.getParentItem ();
 	return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
