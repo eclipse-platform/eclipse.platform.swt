@@ -111,6 +111,10 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 static int checkStyle (int style) {
 	style &= ~SWT.H_SCROLL;
 	return style | SWT.NO_BACKGROUND;
