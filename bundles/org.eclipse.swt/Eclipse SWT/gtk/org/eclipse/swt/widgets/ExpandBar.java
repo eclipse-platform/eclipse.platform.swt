@@ -29,6 +29,10 @@ public void addExpandListener (ExpandListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -67,16 +71,6 @@ int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
-public int indexOf (ExpandItem item) {
-	checkWidget();
-	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	ExpandItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
-		if (item == items [i]) return i;
-	}
-	return -1;
-}
-
 public ExpandItem [] getItems () {
 	checkWidget();
 	int /*long*/ list = OS.gtk_container_get_children (handle);
@@ -110,6 +104,16 @@ public int getItemCount () {
 public int getSpacing () {
 	checkWidget ();
 	return OS.gtk_container_get_border_width (handle);
+}
+
+public int indexOf (ExpandItem item) {
+	checkWidget();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	ExpandItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		if (item == items [i]) return i;
+	}
+	return -1;
 }
 
 void relayout () {
