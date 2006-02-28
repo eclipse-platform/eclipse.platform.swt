@@ -879,6 +879,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	if (hwnd == 0) return null;
 	Control control = display.getControl (hwnd);
 	OS.SendMessage (hdr.hwndFrom, OS.TTM_SETTITLE, 0, 0);
+	OS.SendMessage (hdr.hwndFrom, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 	return control != null ? control.toolTipText : null;
 }
 

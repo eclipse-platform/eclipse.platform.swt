@@ -192,7 +192,7 @@ public boolean getVisible () {
  */
 public boolean isVisible () {
 	checkWidget ();
-	if (item == null) return getVisible () && item.getVisible ();
+	if (item != null) return getVisible () && item.getVisible ();
 	return getVisible ();
 }
 
@@ -335,10 +335,11 @@ public void setVisible (boolean visible) {
 	if (OS.IsWinCE) return;
 	if (visible == getVisible ()) return;
 	if (item == null) {
+		int hwnd = parent.handle;
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		lpti.uId = id;
-		lpti.hwnd = parent.handle;
+		lpti.hwnd = hwnd;
 		int hwndToolTip = (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
 		if (text.length () != 0) {
 			int icon = OS.TTI_NONE;
@@ -350,6 +351,19 @@ public void setVisible (boolean visible) {
 		} else {
 			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
 		}
+		int maxWidth = 0;
+		if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
+			RECT rect = new RECT ();
+			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+			maxWidth = (rect.right - rect.left) / 4;
+		} else {
+			int hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
+			MONITORINFO lpmi = new MONITORINFO ();
+			lpmi.cbSize = MONITORINFO.sizeof;
+			OS.GetMonitorInfo (hmonitor, lpmi);
+			maxWidth = (lpmi.rcWork_right - lpmi.rcWork_left) / 4;
+		}
+		OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, maxWidth);
 		if (visible) {
 			int nX = x, nY = y;
 			if (!hasLocation) {
@@ -372,7 +386,6 @@ public void setVisible (boolean visible) {
 			POINT pt = new POINT ();
 			OS.GetCursorPos (pt);
 			RECT rect = new RECT ();
-			int hwnd = parent.handle;
 			OS.GetClientRect (hwnd, rect);
 			OS.MapWindowPoints (hwnd, 0, rect, 2);
 			if (!OS.PtInRect (rect, pt)) {
@@ -393,6 +406,7 @@ public void setVisible (boolean visible) {
 		} else {
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
 			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
+			OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 		}
 		return;
 	}
