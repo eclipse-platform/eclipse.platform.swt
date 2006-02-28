@@ -115,6 +115,16 @@ public final class Image extends Resource implements Drawable {
 	int alpha = -1;
 	
 	/**
+	 * The width of the image.
+	 */
+	int width = -1;
+	
+	/**
+	 * The height of the image.
+	 */
+	int height = -1;
+	
+	/**
 	 * Specifies the default scanline padding.
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
@@ -593,7 +603,10 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return new Rectangle(0, 0, OS.CGImageGetWidth(handle), OS.CGImageGetHeight(handle));
+	if (width != -1 && height != -1) {
+		return new Rectangle(0, 0, width, height);
+	}
+	return new Rectangle(0, 0, width = OS.CGImageGetWidth(handle), height = OS.CGImageGetHeight(handle));
 }
 
 /**
