@@ -1402,6 +1402,7 @@ public static final native short HiWord(int doubleWord);
 public static final native void HideWindow(int wHandle);
 public static final native void HiliteMenu(short menuID);
 public static final native void HLock(int h);
+public static final native int HMDisplayTag(HMHelpContentRec inContent);
 public static final native int HMGetTagDelay (int [] outDelay);
 public static final native int HMHideTag ();
 public static final native int HMSetTagDelay (int inDelay);

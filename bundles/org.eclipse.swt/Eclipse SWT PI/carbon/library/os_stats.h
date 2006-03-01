@@ -554,6 +554,7 @@ typedef enum {
 	HIViewSetZOrder_FUNC,
 	HIViewSimulateClick_FUNC,
 	HLock_FUNC,
+	HMDisplayTag_FUNC,
 	HMGetTagDelay_FUNC,
 	HMHideTag_FUNC,
 	HMInstallControlContentCallback_FUNC,

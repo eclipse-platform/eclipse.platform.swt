@@ -1675,20 +1675,9 @@ void setToolTipText (int /*long*/ widget, String newString, String oldString) {
 				int /*long*/ [] user_data = new int /*long*/ [1];
 				OS.gdk_window_get_user_data (window, user_data);
 				if (widget == user_data [0]) {
-					int /*long*/ parentHandle = OS.gtk_widget_get_parent (widget);
-					int /*long*/ parentWindow = OS.GTK_WIDGET_WINDOW (parentHandle);
-					GdkWindowAttr attributes = new GdkWindowAttr ();
-					attributes.width = OS.GTK_WIDGET_WIDTH (parentHandle);
-					attributes.height = OS.GTK_WIDGET_HEIGHT (parentHandle);
-					attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
-					attributes.wclass = OS.GDK_INPUT_ONLY;
-					attributes.window_type = OS.GDK_WINDOW_CHILD;
-					int /*long*/ enterWindow = OS.gdk_window_new (parentWindow, attributes, OS.GDK_WA_X | OS.GDK_WA_Y);
-					if (enterWindow != 0) {
-						OS.gdk_window_raise (enterWindow);
-						OS.gdk_window_show (enterWindow);
-						OS.gdk_window_destroy (enterWindow);
-					}
+					int /*long*/ data = OS.gtk_tooltips_data_get (widget);
+					OS.GTK_TOOLTIPS_SET_ACTIVE (tooltipsHandle, data);
+					OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
 				}
 			}
 		}

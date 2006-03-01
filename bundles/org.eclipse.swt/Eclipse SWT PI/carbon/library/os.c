@@ -7762,6 +7762,22 @@ JNIEXPORT void JNICALL OS_NATIVE(HLock)
 }
 #endif
 
+#ifndef NO_HMDisplayTag
+JNIEXPORT jint JNICALL OS_NATIVE(HMDisplayTag)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	HMHelpContentRec _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HMDisplayTag_FUNC);
+	if (arg0) if ((lparg0 = getHMHelpContentRecFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jint)HMDisplayTag((const HMHelpContentRec *)lparg0);
+fail:
+	if (arg0 && lparg0) setHMHelpContentRecFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HMDisplayTag_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HMGetTagDelay
 JNIEXPORT jint JNICALL OS_NATIVE(HMGetTagDelay)
 	(JNIEnv *env, jclass that, jintArray arg0)
