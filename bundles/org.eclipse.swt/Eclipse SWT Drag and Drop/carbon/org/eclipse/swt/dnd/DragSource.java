@@ -308,7 +308,7 @@ void drag(Event dragEvent) {
 	int theRegion = 0;
 	try {	
 		theRegion = OS.NewRgn();
-		OS.SetRectRgn(theRegion, (short)(pt.h), (short)(pt.v), (short)(pt.h+10), (short)(pt.v+10));
+		OS.SetRectRgn(theRegion, (short)(pt.h), (short)(pt.v), (short)(pt.h+20), (short)(pt.v+20));
 		
 		int operations = opToOsOp(getStyle());
 		//set operations twice - local and not local
