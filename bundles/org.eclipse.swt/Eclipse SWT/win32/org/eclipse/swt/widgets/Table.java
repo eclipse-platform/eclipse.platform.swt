@@ -44,6 +44,7 @@ import org.eclipse.swt.events.*;
 public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
+	int columnCount;
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
@@ -493,9 +494,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
 		if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
 			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0) == 1) {
-				hasAttributes = false;
-			}
+			if (columnCount == 1) hasAttributes = false;
 		}
 	}
 	if (hasAttributes) {
@@ -979,12 +978,8 @@ void createHeaderToolTips () {
 }
 
 void createItem (TableColumn column, int index) {
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	int columnCount = count + 1;
-	if (count == 1 && columns [0] == null) count = 0;
-	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	if (count == columns.length) {
+	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (columnCount == columns.length) {
 		TableColumn [] newColumns = new TableColumn [columns.length + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
@@ -995,27 +990,27 @@ void createItem (TableColumn column, int index) {
 		if (item != null) {
 			String [] strings = item.strings;
 			if (strings != null) {
-				String [] temp = new String [columnCount];
+				String [] temp = new String [columnCount + 1];
 				System.arraycopy (strings, 0, temp, 0, index);
-				System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+				System.arraycopy (strings, index, temp, index + 1, columnCount -  index);
 				item.strings = temp;
 			}
 			Image [] images = item.images;
 			if (images != null) {
-				Image [] temp = new Image [columnCount];
+				Image [] temp = new Image [columnCount + 1];
 				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+				System.arraycopy (images, index, temp, index + 1, columnCount - index);
 				item.images = temp;
 			}
 			if (index == 0) {
-				if (count != 0) {
+				if (columnCount != 0) {
 					if (strings == null) {
-						item.strings = new String [columnCount];
+						item.strings = new String [columnCount + 1];
 						item.strings [1] = item.text;
 					}
 					item.text = ""; //$NON-NLS-1$
 					if (images == null) {
-						item.images = new Image [columnCount];
+						item.images = new Image [columnCount + 1];
 						item.images [1] = item.image;
 					}
 					item.image = null;
@@ -1023,25 +1018,25 @@ void createItem (TableColumn column, int index) {
 			}
 			if (item.cellBackground != null) {
 				int [] cellBackground = item.cellBackground;
-				int [] temp = new int [columnCount];
+				int [] temp = new int [columnCount + 1];
 				System.arraycopy (cellBackground, 0, temp, 0, index);
-				System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+				System.arraycopy (cellBackground, index, temp, index + 1, columnCount - index);
 				temp [index] = -1;
 				item.cellBackground = temp;
 			}
 			if (item.cellForeground != null) {
 				int [] cellForeground = item.cellForeground;
-				int [] temp = new int [columnCount];
+				int [] temp = new int [columnCount + 1];
 				System.arraycopy (cellForeground, 0, temp, 0, index);
-				System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+				System.arraycopy (cellForeground, index, temp, index + 1, columnCount - index);
 				temp [index] = -1;
 				item.cellForeground = temp;
 			}
 			if (item.cellFont != null) {
 				int [] cellFont = item.cellFont;
-				int [] temp = new int [columnCount];
+				int [] temp = new int [columnCount + 1];
 				System.arraycopy (cellFont, 0, temp, 0, index);
-				System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+				System.arraycopy (cellFont, index, temp, index + 1, columnCount - index);
 				temp [index] = -1;
 				item.cellFont = temp;
 			}
@@ -1053,7 +1048,7 @@ void createItem (TableColumn column, int index) {
 	* any callbacks are issued as a result of LVM_INSERTCOLUMN
 	* or LVM_SETCOLUMN.
 	*/
-	System.arraycopy (columns, index, columns, index + 1, count - index);
+	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	
 	/*
@@ -1064,7 +1059,7 @@ void createItem (TableColumn column, int index) {
 	*/
 	ignoreColumnResize = true;
 	if (index == 0) {
-		if (count > 0) {
+		if (columnCount > 1) {
 			LVCOLUMN lvColumn = new LVCOLUMN ();
 			lvColumn.mask = OS.LVCF_WIDTH;
 			OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, 1, lvColumn);
@@ -1115,6 +1110,7 @@ void createItem (TableColumn column, int index) {
 	/* Add the tool tip item for the header */
 	if (headerToolTipHandle != 0) {
 		RECT rect = new RECT ();
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
 			TOOLINFO lpti = new TOOLINFO ();
 			lpti.cbSize = TOOLINFO.sizeof;
@@ -1322,8 +1318,6 @@ public void deselectAll () {
 }
 
 void destroyItem (TableColumn column) {
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	int index = 0;
 	while (index < columnCount) {
 		if (columns [index] == column) break;
@@ -1498,7 +1492,7 @@ void destroyItem (TableColumn column) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		lpti.uId = column.id;
-		lpti.hwnd = hwndHeader;
+		lpti.hwnd = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);;
 		OS.SendMessage (headerToolTipHandle, OS.TTM_DELTOOL, 0, lpti);
 	}
 }
@@ -1633,10 +1627,7 @@ void fixItemHeight (boolean fixScroll) {
  */
 public TableColumn getColumn (int index) {
 	checkWidget ();
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count == 1 && columns [0] == null) count = 0;
-	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= index && index < columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	return columns [index];
 }
 
@@ -1656,10 +1647,7 @@ public TableColumn getColumn (int index) {
  */
 public int getColumnCount () {
 	checkWidget ();
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count == 1 && columns [0] == null) count = 0;
-	return count;
+	return columnCount;
 }
 
 /**
@@ -1692,11 +1680,9 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
-	if (count == 1 && columns [0] == null) return new int [0];
-	int [] order = new int [count];
-	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
+	if (columnCount == 0) return new int [0];
+	int [] order = new int [columnCount];
+	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
 	return order;
 }
 
@@ -1729,11 +1715,8 @@ public int[] getColumnOrder () {
  */
 public TableColumn [] getColumns () {
 	checkWidget ();
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count == 1 && columns [0] == null) count = 0;
-	TableColumn [] result = new TableColumn [count];
-	System.arraycopy (columns, 0, result, 0, count);
+	TableColumn [] result = new TableColumn [columnCount];
+	System.arraycopy (columns, 0, result, 0, columnCount);
 	return result;
 }
 
@@ -2175,9 +2158,7 @@ int imageIndexHeader (Image image) {
 public int indexOf (TableColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<columnCount; i++) {
 		if (columns [i] == column) return i;
 	}
 	return -1;
@@ -2266,9 +2247,7 @@ void releaseChildren (boolean destroy) {
 		*
 		* NOTE: LVM_DELETEALLITEMS is also sent by the table
 		* when the table is destroyed.
-		*/	
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		*/
 		if (OS.IsWin95 && columnCount > 1) {
 			/* Turn off redraw and resize events and leave them off */
 			resizeCount = 1;
@@ -2289,9 +2268,6 @@ void releaseChildren (boolean destroy) {
 		items = null;
 	}
 	if (columns != null) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (columnCount == 1 && columns [0] == null) columnCount = 0;
 		for (int i=0; i<columnCount; i++) {
 			TableColumn column = columns [i];
 			if (!column.isDisposed ()) column.release (false);
@@ -2465,10 +2441,6 @@ public void removeAll () {
 		TableItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (columnCount == 1 && columns [0] == null) columnCount = 0;
-	
 	/*
 	* Feature in Windows 98.  When there are a large number
 	* of columns and items in a table (>1000) where each
@@ -2788,9 +2760,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int hDC) {
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
 	if (!isDisposed () && !item.isDisposed ()) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (count == 1 && columns [0] == null) {
+		if (columnCount == 0) {
 			int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 			if (event.x + event.width > width) {
 				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, event.x + event.width);
@@ -3066,26 +3036,25 @@ public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
-	if (count == 1 && columns [0] == null) {
+	if (columnCount == 0) {
 		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
 		return;
 	}
-	if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
-	int [] oldOrder = new int [count];
-	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, oldOrder);
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] oldOrder = new int [columnCount];
+	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, oldOrder);
 	boolean reorder = false;
-	boolean [] seen = new boolean [count];
+	boolean [] seen = new boolean [columnCount];
 	for (int i=0; i<order.length; i++) {
 		int index = order [i];
-		if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+		if (index < 0 || index >= columnCount) error (SWT.ERROR_INVALID_RANGE);
 		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
 		seen [index] = true;
 		if (index != oldOrder [i]) reorder = true;
 	}
 	if (reorder) {
-		RECT [] oldRects = new RECT [count];
-		for (int i=0; i<count; i++) {
+		RECT [] oldRects = new RECT [columnCount];
+		for (int i=0; i<columnCount; i++) {
 			oldRects [i] = new RECT ();
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
 		}
@@ -3096,10 +3065,10 @@ public void setColumnOrder (int [] order) {
 		* not.  The fix is to force a redraw.
 		*/
 		OS.InvalidateRect (handle, null, true);
-		TableColumn[] newColumns = new TableColumn [count];
-		System.arraycopy (columns, 0, newColumns, 0, count);
+		TableColumn[] newColumns = new TableColumn [columnCount];
+		System.arraycopy (columns, 0, newColumns, 0, columnCount);
 		RECT newRect = new RECT ();
-		for (int i=0; i<count; i++) {
+		for (int i=0; i<columnCount; i++) {
 			TableColumn column = newColumns [i];
 			if (!column.isDisposed ()) {
 				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
@@ -3609,17 +3578,15 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		return false;
 	}
 	fixScrollWidth = false;
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	/*
 	* NOTE: It is much faster to measure the strings and compute the
 	* width of the scroll bar in non-virtual table rather than using
 	* LVM_SETCOLUMNWIDTH with LVSCW_AUTOSIZE.
 	*/
-	if (count == 1 && columns [0] == null) {
+	if (columnCount == 0) {
 		int newWidth = 0, imageIndent = 0, index = 0;
-		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-		while (index < count) {
+		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		while (index < itemCount) {
 			String string = null;
 			int font = -1;
 			if (item != null) {
@@ -3939,9 +3906,7 @@ void setTableEmpty () {
 	}
 	items = new TableItem [4];
 	ignoreItemHeight = false;
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count == 1 && columns [0] == null) {
+	if (columnCount == 0) {
 		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
 		setScrollWidth (null, false);
 	}
@@ -4035,10 +4000,7 @@ public void showColumn (TableColumn column) {
 	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (column.parent != this) return;
 	int index = indexOf (column);
-	if (index == -1) return;
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count <= 1 || !(0 <= index && index < count)) return;
+	if (!(0 <= index && index < columnCount)) return;
 	/*
 	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with -1 for the
 	* row number gives the bounds of the item that would be above the
@@ -4159,10 +4121,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
 	if (headerToolTipHandle == hdr.hwndFrom) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (count == 1 && columns [0] == null) count = 0;
-		for (int i=0; i<count; i++) {
+		for (int i=0; i<columnCount; i++) {
 			TableColumn column = columns [i];
 			if (column.id == hdr.idFrom) return column.toolTipText;
 		}
@@ -4187,9 +4146,7 @@ void updateHeaderToolTips () {
 	lpti.uFlags = OS.TTF_SUBCLASS;
 	lpti.hwnd = hwndHeader;
 	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count == 1 && columns [0] == null) count = 0;
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<columnCount; i++) {
 		TableColumn column = columns [i];
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, rect) != 0) {
 			lpti.uId = column.id = display.nextToolTipId++;
@@ -4216,15 +4173,12 @@ void updateImages () {
 }
 
 void updateMoveable () {
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count == 1 && columns [0] == null) count = 0;
 	int index = 0;
-	while (index < count) {
+	while (index < columnCount) {
 		if (columns [index].moveable) break;
 		index++;
 	}
-	int newBits = index < count ? OS.LVS_EX_HEADERDRAGDROP : 0;
+	int newBits = index < columnCount ? OS.LVS_EX_HEADERDRAGDROP : 0;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_HEADERDRAGDROP, newBits);
 }
 
@@ -4556,8 +4510,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			case OS.HDN_BEGINTRACKA:
 			case OS.HDN_DIVIDERDBLCLICKW:
 			case OS.HDN_DIVIDERDBLCLICKA: {
-				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-				if (count == 1 && columns [0] == null) return LRESULT.ONE;
+				if (columnCount == 0) return LRESULT.ONE;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				TableColumn column = columns [phdn.iItem];
@@ -4577,9 +4530,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			}
 			case OS.NM_RELEASEDCAPTURE: {
 				if (!ignoreColumnMove) {
-					int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-					if (count == 1 && columns [0] == null) count = 0;
-					for (int i=0; i<count; i++) {
+					for (int i=0; i<columnCount; i++) {
 						TableColumn column = columns [i];
 						column.updateToolTip (i);
 					}
@@ -4591,8 +4542,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (ignoreColumnMove) return LRESULT.ONE;
 				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break; 
-				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-				if (count == 1 && columns [0] == null) return LRESULT.ONE;
+				if (columnCount == 0) return LRESULT.ONE;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				if (phdn.iItem != -1) {
@@ -4613,10 +4563,9 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					HDITEM pitem = new HDITEM ();
 					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						if (count == 1 && columns [0] == null) break;
-						int [] order = new int [count];
-						OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
+						if (columnCount == 0) break;
+						int [] order = new int [columnCount];
+						OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
 						int index = 0;
 						while (index < order.length) {
 						 	if (order [index] == phdn.iItem) break;
@@ -4670,20 +4619,18 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 								column.updateToolTip (phdn.iItem);
 								column.sendEvent (SWT.Resize);
 								if (isDisposed ()) return LRESULT.ZERO;
-								int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-								if (count == 1 && columns [0] == null) count = 0;
 								/*
 								* It is possible (but unlikely), that application
 								* code could have disposed the column in the move
 								* event.  If this happens, process the move event
 								* for those columns that have not been destroyed.
 								*/
-								TableColumn [] newColumns = new TableColumn [count];
-								System.arraycopy (columns, 0, newColumns, 0, count);
-								int [] order = new int [count];
-								OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, count, order);
+								TableColumn [] newColumns = new TableColumn [columnCount];
+								System.arraycopy (columns, 0, newColumns, 0, columnCount);
+								int [] order = new int [columnCount];
+								OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
 								boolean moved = false;
-								for (int i=0; i<count; i++) {
+								for (int i=0; i<columnCount; i++) {
 									TableColumn nextColumn = newColumns [order [i]];
 									if (moved && !nextColumn.isDisposed ()) {
 										nextColumn.updateToolTip (order [i]);
@@ -4697,7 +4644,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				}
 				break;
 			}
-			case OS.HDN_ITEMDBLCLICKW:      
+			case OS.HDN_ITEMDBLCLICKW:
 			case OS.HDN_ITEMDBLCLICKA: {
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
