@@ -32,7 +32,8 @@ public class TableItem extends Item {
 	boolean checked, grayed, cached;
 
 	String[] texts;
-	int[] textWidths = new int [1];		/* cached string measurements */
+	int[] textWidths = new int [1];	/* cached string measurements */
+	int customWidth = -1;				/* width specified by Measure callback */
 	int fontHeight;						/* cached item font height */
 	int[] fontHeights;
 	int imageIndent;
@@ -421,6 +422,12 @@ public Color getBackground (int columnIndex) {
 	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
 	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
 }
+Rectangle getPaintBounds () {
+	// TODO this method is likely temporary
+	Rectangle result = getBounds ();
+	if (parent.columns.length == 0 && customWidth != -1) result.width = customWidth;
+	return result;
+}
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
@@ -476,8 +483,13 @@ public Rectangle getBounds (int columnIndex) {
 Rectangle getCellBounds (int columnIndex) {
 	int y = parent.getItemY (this);
 	if (parent.columns.length == 0) {
-		int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
-		int width = getTextX (0) + textPaintWidth + parent.horizontalOffset;
+		int width;
+		if (customWidth != -1) {
+			width = getContentX (0) + customWidth + parent.horizontalOffset;
+		} else {
+			int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
+			width = getTextX (0) + textPaintWidth + parent.horizontalOffset;
+		}
 		return new Rectangle (-parent.horizontalOffset, y, width, parent.itemHeight);
 	}
 	TableColumn column = parent.columns [columnIndex];
@@ -542,11 +554,11 @@ int getContentX (int columnIndex) {
 	}
 
 	if (parent.columns.length == 0) return minX - parent.horizontalOffset;	/* free first column */
-	
+
 	TableColumn column = parent.columns [columnIndex];
 	int columnX = column.getX ();
 	if ((column.style & SWT.LEFT) != 0) return columnX + minX;
-	
+
 	/* column is not left-aligned */
 	int contentWidth = getContentWidth (columnIndex);
 	int contentX = 0;
@@ -853,6 +865,29 @@ public Table getParent () {
  * Returns the receiver's ideal width for the specified columnIndex.
  */
 int getPreferredWidth (int columnIndex) {
+	if (parent.hooks (SWT.MeasureItem)) {
+		GC gc = new GC (parent);
+		gc.setFont (getFont (columnIndex));
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.x = getContentX (columnIndex);
+		event.y = parent.getItemY (this);
+		event.width = getContentWidth (0) + parent.getCellPadding () + MARGIN_TEXT;	/* padding and margin to right of content only */
+		event.height = parent.itemHeight;
+		parent.sendEvent (SWT.MeasureItem, event);
+		if (parent.allowItemHeightChange) {
+			parent.allowItemHeightChange = false;
+			if (parent.itemHeight != event.height) {
+				parent.itemHeight = event.height;
+				parent.redraw ();
+			}
+		}
+		gc.dispose ();
+		return event.width;
+	}
+
 	int width = 2 * parent.getCellPadding ();
 	if (columnIndex == 0 && (parent.style & SWT.CHECK) != 0) {
 		width += parent.checkboxBounds.width;
@@ -925,17 +960,47 @@ boolean isSelected () {
 	return parent.getSelectionIndex (this) != -1;
 }
 /*
- * The paintCellContent argument indicates whether the item should paint
- * its cell contents (ie.- its text, image and check) in addition
- * to its item-level attributes (ie.- background color and selection).
+ * The backgroundOnly argument indicates whether the item should only
+ * worry about painting its background color and selection.
  */
-void paint (GC gc, TableColumn column, boolean paintCellContent) {
+void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 	if (!parent.checkData (this, true)) return;
 	int columnIndex = 0, x = 0;
 	if (column != null) {
 		columnIndex = column.getIndex ();
 		x = column.getX ();
 	}
+
+	if (parent.hooks (SWT.MeasureItem) && parent.columns.length == 0) {
+		int contentWidth = getContentWidth (columnIndex);
+		int contentX = getContentX (columnIndex);
+		gc.setFont (getFont (columnIndex));
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.x = contentX;
+		event.y = parent.getItemY (this);
+		event.width = contentWidth;
+		event.height = parent.itemHeight;
+		parent.sendEvent (SWT.MeasureItem, event);
+		event.gc = null;
+		if (isDisposed ()) return;
+		if (parent.allowItemHeightChange) {
+			parent.allowItemHeightChange = false;
+			if (parent.itemHeight != event.height) {
+				parent.itemHeight = event.height;
+				parent.redraw ();
+			}
+		}
+		int change = event.width - (customWidth != -1 ? customWidth : contentWidth);
+		if (event.width != contentWidth || customWidth != -1) customWidth = event.width;
+		if (change != 0) {	/* scrollbar may be affected since no columns */
+			parent.updateHorizontalBar (contentX + event.width, change);
+			// TODO what if clip is too small now?
+		}
+	}
+
 	/* if this cell is completely to the right of the client area then there's no need to paint it */
 	Rectangle clientArea = parent.getClientArea ();
 	if (clientArea.x + clientArea.width < x) return;
@@ -961,7 +1026,7 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 	/* draw the background color of this cell */
 	Color background = getBackground (columnIndex);
 	if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
-		Rectangle focusBounds = getFocusBounds ();		
+		Rectangle focusBounds = getFocusBounds ();
 		gc.setBackground (parent.getBackground ());
 		if (focusBounds.x > 0) {
 			/* fill space to left of selection rect */
@@ -992,8 +1057,39 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 		gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 	}
 
+	boolean isSelected = isSelected ();
+	boolean drawSelection = isSelected;
+	boolean drawContent = true;
+	if (parent.hooks (SWT.EraseItem)) {
+		gc.setFont (getFont ());
+		if (isSelected) {
+			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+		} else {
+			gc.setForeground (getForeground (columnIndex));
+			gc.setBackground (getBackground (columnIndex));
+		}
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.doit = true;
+		if (drawSelection) event.detail |= SWT.SELECTED;
+		if (parent.focusItem == this) event.detail |= SWT.FOCUSED;
+		event.x = cellBounds.x;
+		event.y = cellBounds.y;
+		event.width = cellBounds.width;
+		event.height = cellBounds.height;
+		gc.setClipping (event.x, event.y, event.width, event.height);
+		parent.sendEvent (SWT.EraseItem, event);
+		event.gc = null;
+		if (isDisposed ()) return;
+		drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;
+		drawContent = event.doit;
+	}
+
 	/* draw the selection bar if the receiver is selected */
-	if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+	if (drawSelection && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 		if (parent.hasFocus () || (parent.style & SWT.HIDE_SELECTION) == 0) {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 			if (columnIndex == 0) {
@@ -1036,7 +1132,7 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 		}
 	}
 
-	if (!paintCellContent) return;
+	if (paintBackgroundOnly) return;
 
 	/* Draw checkbox if drawing column 0 and parent has style SWT.CHECK */
 	if (columnIndex == 0 && (parent.style & SWT.CHECK) != 0) {
@@ -1053,44 +1149,85 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 		}
 	}
 
-	Image image = getImage (columnIndex, false);
-	String text = getDisplayText (columnIndex);
-	Rectangle imageArea = getImageBounds (columnIndex);
-	int startX = imageArea.x;
+	if (drawContent) {
+		Image image = getImage (columnIndex, false);
+		String text = getDisplayText (columnIndex);
+		Rectangle imageArea = getImageBounds (columnIndex);
+		int startX = imageArea.x;
+		
+		/* while painting the cell's content restrict the clipping region */
+		int padding = parent.getCellPadding ();
+		gc.setClipping (
+			startX,
+			cellBounds.y + padding - (parent.linesVisible ? 1 : 0),
+			cellRightX - startX - padding,
+			cellBounds.height - 2 * (padding - (parent.linesVisible ? 1 : 0)));
 	
-	/* while painting the cell's content restrict the clipping region */
-	int padding = parent.getCellPadding ();
-	gc.setClipping (
-		startX,
-		cellBounds.y + padding - (parent.linesVisible ? 1 : 0),
-		cellRightX - startX - padding,
-		cellBounds.height - 2 * (padding - (parent.linesVisible ? 1 : 0)));
-
-	/* draw the image */
-	if (image != null) {
-		Rectangle imageBounds = image.getBounds ();
-		gc.drawImage (
-			image,
-			0, 0,									/* source x, y */
-			imageBounds.width, imageBounds.height,	/* source width, height */
-			imageArea.x, imageArea.y,				/* dest x, y */
-			imageArea.width, imageArea.height);		/* dest width, height */
+		/* draw the image */
+		if (image != null) {
+			Rectangle imageBounds = image.getBounds ();
+			gc.drawImage (
+				image,
+				0, 0,									/* source x, y */
+				imageBounds.width, imageBounds.height,	/* source width, height */
+				imageArea.x, imageArea.y,				/* dest x, y */
+				imageArea.width, imageArea.height);		/* dest width, height */
+		}
+	
+		/* draw the text */
+		if (text.length () > 0) {
+			gc.setFont (getFont (columnIndex, false));
+			int fontHeight = getFontHeight (columnIndex);
+			if (drawSelection && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+				if (parent.hasFocus () || (parent.style & SWT.HIDE_SELECTION) == 0) {
+					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+				}
+			} else {
+				gc.setForeground (getForeground (columnIndex));
+			}
+			x = getTextX (columnIndex) + MARGIN_TEXT;
+			gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
+		}
 	}
 	
-	/* draw the text */
-	if (text.length () > 0) {
-		gc.setFont (getFont (columnIndex, false));
-		int fontHeight = getFontHeight (columnIndex);
-		if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
-			if (parent.hasFocus () || (parent.style & SWT.HIDE_SELECTION) == 0) {
-				gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
-			}
+	if (parent.hooks (SWT.PaintItem)) {
+		int contentWidth = getContentWidth (columnIndex);
+		int contentX = getContentX (columnIndex);
+		gc.setFont (getFont ());
+		if (isSelected) {
+			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		} else {
 			gc.setForeground (getForeground (columnIndex));
+			gc.setBackground (getBackground (columnIndex));
 		}
-		x = getTextX (columnIndex) + MARGIN_TEXT;
-		gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		if (isSelected) event.detail |= SWT.SELECTED;
+		if (parent.focusItem == this) event.detail |= SWT.FOCUSED;
+		event.x = contentX;
+		event.y = cellBounds.y;
+		event.width = contentWidth;
+		event.height = cellBounds.height;
+		gc.setClipping (event.x, event.y, event.width, event.height);
+		parent.sendEvent (SWT.PaintItem, event);
+		event.gc = null;
 	}
+}
+/*
+ * Redraw part of the receiver.  If either EraseItem or PaintItem is hooked then
+ * only full cells should be damaged, so adjust accordingly.  If neither of these
+ * events are hooked then the exact bounds given for damaging can be used.
+ */
+void redraw (int x, int y, int width, int height, int columnIndex) {
+	if (!parent.hooks (SWT.EraseItem) && !parent.hooks (SWT.PaintItem)) {
+		parent.redraw (x, y, width, height, false);
+		return;
+	}
+	Rectangle cellBounds = getCellBounds (columnIndex);
+	parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
 }
 void redrawItem () {
 	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.itemHeight, false);
@@ -1417,12 +1554,12 @@ public void setForeground (int columnIndex, Color value) {
 	cellForegrounds [columnIndex] = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 
-	parent.redraw (
+	redraw (
 		getTextX (columnIndex),
 		parent.getItemY (this),
 		textWidths [columnIndex] + 2 * MARGIN_TEXT,
 		parent.itemHeight,
-		false);
+		columnIndex);
 }
 /**
  * Sets the grayed state of the checkbox for this item.  This state change 
@@ -1515,7 +1652,7 @@ public void setImage (int columnIndex, Image value) {
 	}
 	
 	if (value == null) {
-		redrawItem ();
+		redrawItem ();	// TODO why the whole item?
 		return;
 	}
 
@@ -1575,7 +1712,7 @@ public void setImage (int columnIndex, Image value) {
 		}
 		return;
 	}
-	redrawItem ();
+	redrawItem ();	// TODO why the whole item?
 }
 /**
  * Sets the indent of the first column's image, expressed in terms of the image's width.
@@ -1635,12 +1772,12 @@ public void setText (int columnIndex, String value) {
 		int rightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (rightX, textWidths [columnIndex] - oldWidth);
 	}
-	parent.redraw (
+	redraw (
 		getTextX (columnIndex),
 		parent.getItemY (this),
 		Math.max (oldWidth, textWidths [columnIndex]) + 2 * MARGIN_TEXT,
 		parent.itemHeight,
-		false);
+		columnIndex);
 }
 public void setText (String value) {
 	checkWidget ();

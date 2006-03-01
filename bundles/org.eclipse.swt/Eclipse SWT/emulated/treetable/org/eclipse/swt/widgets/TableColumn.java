@@ -427,7 +427,12 @@ public void pack () {
 	int index = getIndex ();
 	int newWidth = getPreferredWidth ();
 	for (int i = 0; i < parent.itemsCount; i++) {
-		newWidth = Math.max (newWidth, items [i].getPreferredWidth (index));
+		int width = items [i].getPreferredWidth (index);
+		/* ensure that receiver and parent were not disposed in a callback */
+		if (parent.isDisposed () || isDisposed ()) return;
+		if (!items [i].isDisposed ()) {
+			newWidth = Math.max (newWidth, width);
+		}
 	}
 	if (newWidth != width) parent.updateColumnWidth (this, newWidth);
 }

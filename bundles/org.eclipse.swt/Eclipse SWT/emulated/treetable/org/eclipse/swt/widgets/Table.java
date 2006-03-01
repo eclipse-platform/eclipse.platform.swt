@@ -47,7 +47,7 @@ public class Table extends Composite {
 	TableItem[] selectedItems = new TableItem [0];
 	TableItem focusItem, anchorItem, lastClickedItem;
 	Event lastSelectionEvent;
-	boolean linesVisible, ignoreKey, ignoreDispose;
+	boolean linesVisible, ignoreKey, ignoreDispose, allowItemHeightChange = true;
 	int itemsCount = 0;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
@@ -2563,7 +2563,7 @@ void onPaint (Event event) {
 		startColumn = endColumn = 0;
 	}
 
-	/* Determine the TableItems to be painted */
+	/* Determine the items to be painted */
 	int startIndex = (clipping.y - headerHeight) / itemHeight + topIndex;
 	int endIndex = -1;
 	if (startIndex < itemsCount) {
@@ -2571,21 +2571,6 @@ void onPaint (Event event) {
 	}
 	startIndex = Math.max (0, startIndex);
 	endIndex = Math.min (endIndex, itemsCount - 1);
-	for (int i = startIndex; i <= endIndex; i++) {
-		TableItem item = items [i];
-		if (startColumn == -1) {
-			/* indicates that region to paint is to the right of the last column */
-			item.paint (gc, null, false);
-		} else {
-			if (numColumns == 0) {
-				item.paint (gc, null, true);
-			} else {
-				for (int j = startColumn; j <= endColumn; j++) {
-					item.paint (gc, orderedColumns [j], true);
-				}
-			}
-		}
-	}
 
 	/* fill background not handled by items */
 	gc.setBackground (getBackground ());
@@ -2604,7 +2589,31 @@ void onPaint (Event event) {
 		}
 	}
 
+	/* paint the items */
+	for (int i = startIndex; i <= Math.min (endIndex, itemsCount - 1); i++) {
+		TableItem item = items [i];
+		if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
+			if (startColumn == -1) {
+				/* indicates that region to paint is to the right of the last column */
+				item.paint (gc, null, true);
+			} else {
+				if (numColumns == 0) {
+					item.paint (gc, null, false);
+				} else {
+					for (int j = startColumn; j <= Math.min (endColumn, columns.length - 1); j++) {
+						if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
+							item.paint (gc, orderedColumns [j], false);
+						}
+						if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+					}
+				}
+			}
+		}
+		if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+	}
+
 	/* repaint grid lines */
+	gc.setClipping(clipping);
 	if (linesVisible) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		if (numColumns > 0 && startColumn != -1) {
@@ -2739,7 +2748,7 @@ void onSpace () {
 	event.item = focusItem;
 	postEvent (SWT.Selection, event);
 	if ((style & SWT.CHECK) == 0) return;
-	
+
 	/* SWT.CHECK */
 	event = new Event ();
 	event.item = focusItem;
@@ -2816,9 +2825,23 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 			if (rightX <= 0) return;	/* focus column(s) not visible */
 		}
 		endIndex = Math.min (endIndex, itemsCount - 1);
+		Rectangle clientArea = getClientArea ();
 		for (int i = startIndex; i <= endIndex; i++) {
-			Rectangle bounds = items [i].getFocusBounds ();
-			redraw (bounds.x, startY, bounds.width, height, false);
+			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				/* if custom painting is being done then only full cells are damaged */
+				if ((style & SWT.FULL_SELECTION) != 0) {
+					/* repaint the full item */
+					redraw (0, getItemY (items [i]), clientArea.width, itemHeight, false);
+				} else {
+					/* repaint the item's cell 0 */
+					Rectangle bounds = items [i].getCellBounds (0);
+					redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+				}
+			} else {
+				/* repaint the item's focus bounds */
+				Rectangle bounds = items [i].getFocusBounds ();
+				redraw (bounds.x, startY, bounds.width, height, false);
+			}
 		}
 	} else {
 		Rectangle bounds = getClientArea ();
@@ -3185,7 +3208,7 @@ public void setFont (Font value) {
 	
 	/* recompute the receiver's cached font height and item height values */
 	fontHeight = gc.getFontMetrics ().getHeight ();
-	itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
+	if (allowItemHeightChange) itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
 	Point headerSize = header.getSize ();
 	int newHeaderHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	if (headerSize.y != newHeaderHeight) {
@@ -3252,7 +3275,7 @@ public void setHeaderVisible (boolean value) {
 }
 void setImageHeight (int value) {
 	imageHeight = value;
-	itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
+	if (allowItemHeightChange) itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
 }
 /**
  * Sets the number of items contained in the receiver.
@@ -3776,7 +3799,7 @@ void updateHorizontalBar () {
 		}
 	} else {
 		for (int i = 0; i < itemsCount; i++) {
-			Rectangle itemBounds = items [i].getBounds ();
+			Rectangle itemBounds = items [i].getPaintBounds ();
 			maxX = Math.max (maxX, itemBounds.x + itemBounds.width + horizontalOffset);
 		}
 	}
