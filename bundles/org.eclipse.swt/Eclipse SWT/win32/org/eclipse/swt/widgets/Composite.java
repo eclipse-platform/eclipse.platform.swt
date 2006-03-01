@@ -290,7 +290,20 @@ void fixTabList (Control control) {
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Returns the receiver's background drawing mode. This
+ * will be one of the following constants defined in class
+ * <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERTIT_FORCE</code>.
+ *
+ * @return the background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
  * 
  * @since 3.2
  */
@@ -712,7 +725,19 @@ void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Sets the background drawing mode to the argument which should
+ * be one of the following constants defined in class <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERIT_FORCE</code>.
+ *
+ * @param mode the new background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
  * 
  * @since 3.2
  */

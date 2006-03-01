@@ -579,28 +579,24 @@ public class SWT {
 	public static final int Settings = 39;
 	
 	/**
-	 * The paint item event type (value is 40).
+	 * The erase item event type (value is 40).
 	 * 
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int EraseItem = 40;
 	
 	/**
-	 * The paint item event type (value is 41).
+	 * The measure item event type (value is 41).
 	 * 
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int MeasureItem = 41;
 	
@@ -612,8 +608,6 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Event
 	 * 
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int PaintItem = 42;	
 	
@@ -1369,21 +1363,17 @@ public class SWT {
 
 	/**
 	 * Event detail field that indicates a user-interface component
-	 * is selected (value is 1&lt;&lt;1).
+	 * state is selected (value is 1&lt;&lt;1).
 	 *
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */
 	public static final int SELECTED = 1 << 1;
 	
 	/**
 	 * Event detail field that indicates a user-interface component
-	 * is focused (value is 1&lt;&lt;2).
+	 * state is focused (value is 1&lt;&lt;2).
 	 *
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */	
 	public static final int FOCUSED = 1 << 2;
 	
@@ -1395,13 +1385,14 @@ public class SWT {
 	//public static final int DEFAULTED = 1 << 7;
 
 	/**
-	 * Style constant for balloon behavior (value is 4).
+	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ToolTip</code></li>
+	 * </ul></p>
 	 *
 	 * @since 3.2
-	 * 
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
 	 */	
-	public static final int BALLOON = 1 << 4;
+	public static final int BALLOON = 1 << 12;
 	
 	/**
 	 * Style constant for vertical alignment or orientation behavior (value is 1).
@@ -2122,22 +2113,31 @@ public class SWT {
 	public static final int SAVE = 1 << 13;
 
 	/**
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
-	 * 
+	 * The <code>Composite</code> constant to indicate that
+	 * an attribute (such as background) is not inhertited
+	 * by the children (value is 0).
+	 *
 	 * @since 3.2
 	 */
 	public static final int INHERIT_NONE = 0;
 	
 	/**
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
-	 * 
+	 * The <code>Composite</code> constant to indicate that
+	 * an attribute (such as background) is inhertited by
+	 * children who choose this value as their "default"
+	 * (value is 1).  For example, a label child will
+	 * typically choose to inherit the background color
+	 * of a composite while a list or table will not.
+	 *
 	 * @since 3.2
 	 */
 	public static final int INHERIT_DEFAULT = 1;
 	
 	/**
-	 * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
-	 * 
+	 * The <code>Composite</code> constant to indicate that
+	 * an attribute (such as background) is inhertited by
+	 * all children.
+	 *
 	 * @since 3.2
 	 */
 	public static final int INHERIT_FORCE = 2;
