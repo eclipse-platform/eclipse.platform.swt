@@ -247,6 +247,14 @@ boolean mnemonicMatch (char key) {
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 
+public void setFont (Font font) {
+	checkWidget ();
+	Rectangle oldRect = getClientArea ();
+	super.setFont (font);
+	Rectangle newRect = getClientArea ();
+	if (!oldRect.equals (newRect)) resize ();
+}
+
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,

@@ -660,6 +660,17 @@ void removeControl (Control control) {
 	resizeChildren ();
 }
 
+void resize () {
+	setResizeChildren (false);
+	sendEvent (SWT.Resize);
+	if (isDisposed ()) return;
+	if (layout != null) {
+		markLayout (false, false);
+		updateLayout (false, false);
+	}
+	setResizeChildren (true);
+}
+
 void resizeChildren () {
 	if (lpwp == null) return;
 	do {
@@ -1399,12 +1410,14 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
+	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
+	if (result != null) return result;
 	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 	while (hwndChild != 0) {
 		OS.SendMessage (hwndChild, OS.WM_SYSCOLORCHANGE, 0, 0);
 		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
 	}
-	return null;
+	return result;
 }
 
 LRESULT WM_SYSCOMMAND (int wParam, int lParam) {

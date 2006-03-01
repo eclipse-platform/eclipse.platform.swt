@@ -807,6 +807,8 @@ public class OS extends Platform {
 	public static final int LVM_SETITEM = IsUnicode ? 0x104c : 0x1006;
 	public static final int LVM_SETITEMCOUNT = LVM_FIRST + 47;
 	public static final int LVM_SETITEMSTATE = 0x102b;
+	public static final int LVM_SETSELECTIONMARK = LVM_FIRST + 67;
+	public static final int LVM_SETSELECTEDCOLUMN = LVM_FIRST + 140;
 	public static final int LVM_SETTEXTBKCOLOR = 0x1026;
 	public static final int LVM_SETTEXTCOLOR = 0x1024;
 	public static final int LVNI_FOCUSED = 0x1;
@@ -1208,6 +1210,7 @@ public class OS extends Platform {
 	public static final int SPI_GETNONCLIENTMETRICS = 41;
 	public static final int SPI_GETWHEELSCROLLLINES = 104;
 	public static final int SPI_SETSIPINFO = 224;
+	public static final int SPI_SETHIGHCONTRAST = 67;
 	public static final int SRCAND = 0x8800c6;
 	public static final int SRCCOPY = 0xcc0020;
 	public static final int SRCINVERT = 0x660046;

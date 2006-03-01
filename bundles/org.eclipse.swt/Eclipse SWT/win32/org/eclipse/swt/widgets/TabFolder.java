@@ -628,6 +628,24 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
+public void setFont (Font font) {
+	checkWidget ();
+	Rectangle oldRect = getClientArea ();
+	super.setFont (font);
+	Rectangle newRect = getClientArea ();
+	if (!oldRect.equals (newRect)) {
+		resize ();
+		int index = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+		if (index != -1) {
+			TabItem item = items [index];
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+			}
+		}
+	}
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.

@@ -180,7 +180,9 @@ public class Display extends Device {
 	/* Timers */
 	int [] timerIds;
 	Runnable [] timerList;
-	int nextTimerId;
+	int nextTimerId = SETTINGS_ID + 1;
+	static final int SETTINGS_ID = 100;
+	static final int SETTINGS_DELAY = 2000;
 	
 	/* Keyboard and Mouse */
 	RECT clickRect;
@@ -2667,11 +2669,21 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			break;
 		}
 		case OS.WM_SETTINGCHANGE: {
-			if (wParam == 0 || wParam == 1) runSettings ();
+			switch (wParam) {
+				case 0:
+				case 1:
+				case OS.SPI_SETHIGHCONTRAST:
+					OS.SetTimer (hwndMessage, SETTINGS_ID, SETTINGS_DELAY, 0);
+			}
 			break;
 		}
 		case OS.WM_TIMER: {
-			runTimer (wParam);
+			if (wParam == SETTINGS_ID) {
+				OS.KillTimer (hwndMessage, SETTINGS_ID);
+				runSettings ();
+			} else {
+				runTimer (wParam);
+			}
 			break;
 		}
 		default: {
@@ -3794,8 +3806,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 			if (timerList [index] == null) break;
 			index++;
 		}
-		nextTimerId++;
-		timerId = nextTimerId;
+		timerId = nextTimerId++;
 		if (index == timerList.length) {
 			Runnable [] newTimerList = new Runnable [timerList.length + 4];
 			System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
