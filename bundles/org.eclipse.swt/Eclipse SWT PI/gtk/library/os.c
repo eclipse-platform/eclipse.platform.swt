@@ -161,6 +161,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTK_1TEXTVIEW_1IM_1CONTEXT)
 }
 #endif
 
+#ifndef NO_GTK_1TOOLTIPS_1SET_1ACTIVE
+JNIEXPORT void JNICALL OS_NATIVE(GTK_1TOOLTIPS_1SET_1ACTIVE)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, GTK_1TOOLTIPS_1SET_1ACTIVE_FUNC);
+	GTK_TOOLTIPS_SET_ACTIVE((GtkTooltips *)arg0, (GtkTooltipsData *)arg1);
+	OS_NATIVE_EXIT(env, that, GTK_1TOOLTIPS_1SET_1ACTIVE_FUNC);
+}
+#endif
+
 #ifndef NO_GTK_1TOOLTIPS_1TIP_1WINDOW
 JNIEXPORT jint JNICALL OS_NATIVE(GTK_1TOOLTIPS_1TIP_1WINDOW)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -9928,6 +9938,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1toolbar_1set_1orientation)
 }
 #endif
 
+#ifndef NO__1gtk_1tooltips_1data_1get
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tooltips_1data_1get)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tooltips_1data_1get_FUNC);
+	rc = (jint)gtk_tooltips_data_get((GtkWidget *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tooltips_1data_1get_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1tooltips_1disable
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tooltips_1disable)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -11740,6 +11762,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1reparent)
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1reparent_FUNC);
 	gtk_widget_reparent((GtkWidget *)arg0, (GtkWidget *)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1reparent_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1widget_1set_1app_1paintable
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1app_1paintable)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1app_1paintable_FUNC);
+	gtk_widget_set_app_paintable((GtkWidget *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1app_1paintable_FUNC);
 }
 #endif
 

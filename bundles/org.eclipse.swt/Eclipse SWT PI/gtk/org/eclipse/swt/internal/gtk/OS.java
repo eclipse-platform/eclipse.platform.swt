@@ -246,6 +246,7 @@ public class OS extends Platform {
 	public static final int GTK_FILE_CHOOSER_ACTION_SAVE = 1;
 	public static final int GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER = 2;
 	public static final int GTK_HAS_FOCUS = 1 << 12;
+	public static final int GTK_ICON_SIZE_MENU = 1;
 	public static final int GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
 	public static final int GTK_ICON_SIZE_LARGE_TOOLBAR = 3;
 	public static final int GTK_ICON_SIZE_DIALOG = 6;
@@ -540,6 +541,7 @@ public static final native int /*long*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(int /*l
 public static final native int /*long*/ GTK_ENTRY_IM_CONTEXT(int /*long*/ widget);
 public static final native int /*long*/ GTK_TEXTVIEW_IM_CONTEXT(int /*long*/ widget);
 public static final native int /*long*/ GTK_TOOLTIPS_TIP_WINDOW(int /*long*/ widget);
+public static final native void GTK_TOOLTIPS_SET_ACTIVE(int /*long*/ widget, int /*long*/ data);
 public static final native void GTK_WIDGET_SET_HEIGHT(int /*long*/ widget, int height);
 public static final native void GTK_WIDGET_SET_WIDTH(int /*long*/ widget, int width);
 public static final native void GTK_WIDGET_SET_X(int /*long*/ widget, int x);
@@ -6516,6 +6518,15 @@ public static final void gtk_toolbar_set_orientation(int /*long*/ toolbar, int o
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_tooltips_data_get(int /*long*/ widget);
+public static final int /*long*/ gtk_tooltips_data_get(int /*long*/ widget) {
+	lock.lock();
+	try {
+		return _gtk_tooltips_data_get(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_tooltips_disable(int /*long*/ tooltips);
 public static final void gtk_tooltips_disable(int /*long*/ tooltips) {
 	lock.lock();
@@ -7844,6 +7855,15 @@ public static final void gtk_widget_reparent(int /*long*/ widget, int /*long*/ n
 	lock.lock();
 	try {
 		_gtk_widget_reparent(widget, new_parent);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_widget_set_app_paintable(int /*long*/ widget, boolean app_paintable);
+public static final void gtk_widget_set_app_paintable(int /*long*/ widget, boolean app_paintable) {
+	lock.lock();
+	try {
+		_gtk_widget_set_app_paintable(widget, app_paintable);
 	} finally {
 		lock.unlock();
 	}
