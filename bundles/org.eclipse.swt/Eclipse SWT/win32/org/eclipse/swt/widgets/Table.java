@@ -493,7 +493,6 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	boolean hasAttributes = true;
 	if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
 		if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
-			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (columnCount == 1) hasAttributes = false;
 		}
 	}
