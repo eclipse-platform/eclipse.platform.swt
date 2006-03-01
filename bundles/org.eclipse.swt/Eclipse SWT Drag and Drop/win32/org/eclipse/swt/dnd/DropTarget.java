@@ -11,8 +11,8 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -158,6 +158,8 @@ public DropTarget(Control control, int style) {
 		effect = new TreeDragAndDropEffect((Tree)control);
 	} else if (control instanceof Table) {
 		effect = new TableDragAndDropEffect((Table)control);
+	} else if (control instanceof StyledText) {
+		effect = new StyledTextDragAndDropEffect((StyledText)control);
 	} else {
 		effect = new NoDragAndDropEffect(control);
 	}
@@ -211,7 +213,7 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DropAccept, typedListener);
 }
 
-private int AddRef() {
+int AddRef() {
 	refCount++;
 	return refCount;
 }
@@ -224,7 +226,7 @@ protected void checkSubclass () {
 	}
 }
 
-private void createCOMInterfaces() {
+void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iDropTarget = new COMObject(new int[]{2, 0, 0, 5, 4, 0, 5}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
@@ -238,13 +240,13 @@ private void createCOMInterfaces() {
 
 }
 
-private void disposeCOMInterfaces() {
+void disposeCOMInterfaces() {
 	if (iDropTarget != null)
 		iDropTarget.dispose();
 	iDropTarget = null;
 }
 
-private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
+int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	selectedDataType = null;
 	selectedOperation = DND.DROP_NONE;
 	if (iDataObject != null) iDataObject.Release();
@@ -287,7 +289,7 @@ private int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int 
 	return COM.S_OK;
 }
 
-private int DragLeave() {
+int DragLeave() {
 	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 	keyOperation = -1;
 
@@ -304,7 +306,7 @@ private int DragLeave() {
 	return COM.S_OK;
 }
 
-private int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
+int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 	if (iDataObject == null) return COM.S_FALSE;
 	int oldKeyOperation = keyOperation;
 	
@@ -351,7 +353,7 @@ private int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 	return COM.S_OK;
 }
 
-private int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
+int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
 
 	DNDEvent event = new DNDEvent();
@@ -427,7 +429,7 @@ public Control getControl () {
 	return control;
 }
 
-private int getOperationFromKeyState(int grfKeyState) {
+int getOperationFromKeyState(int grfKeyState) {
 	boolean ctrl = (grfKeyState & OS.MK_CONTROL) != 0;
 	boolean shift = (grfKeyState & OS.MK_SHIFT) != 0;
 	if (ctrl && shift) return DND.DROP_LINK;
@@ -445,7 +447,7 @@ public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
-private void onDispose () {	
+void onDispose () {	
 	if (control == null) return;
 
 	COM.RevokeDragDrop(control.handle);
@@ -464,7 +466,7 @@ private void onDispose () {
 	COM.CoFreeUnusedLibraries();
 }
 
-private int opToOs(int operation) {
+int opToOs(int operation) {
 	int osOperation = 0;
 	if ((operation & DND.DROP_COPY) != 0){
 		osOperation |= COM.DROPEFFECT_COPY;
@@ -478,7 +480,7 @@ private int opToOs(int operation) {
 	return osOperation;
 }
 
-private int osToOp(int osOperation){
+int osToOp(int osOperation){
 	int operation = 0;
 	if ((osOperation & COM.DROPEFFECT_COPY) != 0){
 		operation |= DND.DROP_COPY;
@@ -496,23 +498,23 @@ private int osToOp(int osOperation){
  * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject 
  * must be incremented before returning.  Caller is responsible for releasing ppvObject.
  */
-private int QueryInterface(int riid, int ppvObject) {
+int QueryInterface(int riid, int ppvObject) {
 	
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropTarget)) {
-		COM.MoveMemory(ppvObject, new int[] {iDropTarget.getAddress()}, 4);
+		OS.MoveMemory(ppvObject, new int[] {iDropTarget.getAddress()}, 4);
 		AddRef();
 		return COM.S_OK;
 	}
 
-	COM.MoveMemory(ppvObject, new int[] {0}, 4);
+	OS.MoveMemory(ppvObject, new int[] {0}, 4);
 	return COM.E_NOINTERFACE;
 }
 
-private int Release() {
+int Release() {
 	refCount--;
 	
 	if (refCount == 0) {
@@ -550,7 +552,7 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DropAccept, listener);
 }
 
-private boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {	
+boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {	
 	if (pDataObject == 0 || pdwEffect == 0) return false;
 	
 	// get allowed operations
