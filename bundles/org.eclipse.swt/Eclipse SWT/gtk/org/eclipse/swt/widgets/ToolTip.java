@@ -23,14 +23,14 @@ import org.eclipse.swt.events.*;
 	int x, y, timerId;
 	int /*long*/ layoutText = 0, layoutMessage = 0;
 	int [] borderPolygon;
-	boolean spikeAbove, autohide;	
+	boolean spikeAbove, autohide;
 	
 	static final int BORDER = 5;
 	static final int PADDING = 5;
 	static final int INSET = 4;
 	static final int TIP_HEIGHT = 20;
 	static final int IMAGE_SIZE = 16;
-	static final int DELAY = 5000;
+	static final int DELAY = 8000;
 
 public ToolTip (Shell parent, int style) {
 	super (parent, checkStyle (style));
@@ -143,7 +143,7 @@ void configure () {
 	}
 	int /*long*/ rgn = OS.gdk_region_polygon (polyline, polyline.length / 2, OS.GDK_EVEN_ODD_RULE);
 	OS.gtk_widget_realize (handle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);			
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 	OS.gdk_window_shape_combine_region (window, rgn, 0, 0);
 	OS.gdk_region_destroy (rgn);
 }
@@ -283,13 +283,13 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			case SWT.ICON_WARNING: buffer = Converter.wcsToMbcs (null, "gtk-dialog-warning", true); break;
 		}
 		if (buffer != null) {
-			int /*long*/ style = OS.gtk_widget_get_default_style ();		
+			int /*long*/ style = OS.gtk_widget_get_default_style ();
 			int /*long*/ pixbuf = OS.gtk_icon_set_render_icon (
 				OS.gtk_icon_factory_lookup_default (buffer), 
 				style,
 				OS.GTK_TEXT_DIR_NONE, 
 				OS.GTK_STATE_NORMAL, 
-				OS.GTK_ICON_SIZE_MENU, 
+				OS.GTK_ICON_SIZE_MENU,
 				0, 
 				0);
 			OS.gdk_draw_pixbuf (window, gdkGC, pixbuf, 0, 0, x, y, IMAGE_SIZE, IMAGE_SIZE, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
@@ -300,7 +300,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		OS.gdk_draw_layout (window, gdkGC, x, y, layoutText);
 		int [] w = new int [1], h = new int [1];
 		OS.pango_layout_get_size (layoutText, w, h);
-		y += 2 * PADDING + Math.max (IMAGE_SIZE, OS.PANGO_PIXELS (h [0]));		
+		y += 2 * PADDING + Math.max (IMAGE_SIZE, OS.PANGO_PIXELS (h [0]));
 	}
 	if (layoutMessage != 0) {
 		x = BORDER + PADDING + INSET;
@@ -361,7 +361,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	eventTable.unhook (SWT.DefaultSelection, listener);
 }
 
 public void setAutoHide (boolean autohide) {
