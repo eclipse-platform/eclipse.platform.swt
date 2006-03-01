@@ -12,6 +12,7 @@ package org.eclipse.swt.dnd;
 
  
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.Callback;
@@ -178,6 +179,8 @@ public DragSource(Control control, int style) {
 		effect = new TreeDragAndDropEffect((Tree)control);
 	} else if (control instanceof Table) {
 		effect = new TableDragAndDropEffect((Table)control);
+	} else if (control instanceof StyledText) {
+		effect = new StyledTextDragAndDropEffect((StyledText)control);
 	} else {
 		effect = new NoDragAndDropEffect(control);
 	}
@@ -305,7 +308,7 @@ void drag(Event dragEvent) {
 	int theRegion = 0;
 	try {	
 		theRegion = OS.NewRgn();
-		OS.SetRectRgn(theRegion, (short)(pt.h-10), (short)(pt.v-10), (short)(pt.h+10), (short)(pt.v+10));
+		OS.SetRectRgn(theRegion, (short)(pt.h), (short)(pt.v), (short)(pt.h+10), (short)(pt.v+10));
 		
 		int operations = opToOsOp(getStyle());
 		//set operations twice - local and not local
@@ -318,9 +321,9 @@ void drag(Event dragEvent) {
 			if (imageData != null) {
 				image = new Image(getDisplay(), imageData);
 				CGPoint imageOffsetPt = new CGPoint();
-				imageOffsetPt.x = 5;
-				imageOffsetPt.y = 5;
-				OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, 0); //kDragStandardTranslucency
+				imageOffsetPt.x = 0;
+				imageOffsetPt.y = 0;
+				OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, OS.kDragStandardTranslucency);
 			}
 			EventRecord theEvent = new EventRecord();
 			theEvent.message = OS.kEventMouseMoved;
