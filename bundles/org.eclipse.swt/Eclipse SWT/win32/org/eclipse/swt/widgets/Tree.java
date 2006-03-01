@@ -4577,6 +4577,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 				if (!display.captureChanged && !isDisposed ()) {
 					if (OS.GetCapture () != handle) OS.SetCapture (handle);
 				}
+				OS.SetFocus (handle);
 				TVITEM tvItem = new TVITEM ();
 				tvItem.hItem = lpht.hItem;
 				tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
@@ -4702,6 +4703,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			if (!display.captureChanged && !isDisposed ()) {
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			}
+			OS.SetFocus (handle);
 			TVITEM tvItem = new TVITEM ();
 			tvItem.hItem = lpht.hItem;
 			tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
@@ -4753,11 +4755,12 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
-	boolean hittestSelected = false;
+	boolean hittestSelected = false, focused = false;
 	if ((style & SWT.MULTI) != 0) {
 		tvItem.hItem = lpht.hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		hittestSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
+		focused = OS.GetFocus () == handle;
 	}
 	
 	/* Get the selected state of the last selected item */
@@ -4768,7 +4771,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 		/* Check for CONTROL or drag selection */
 		if (hittestSelected || (wParam & OS.MK_CONTROL) != 0) {
-			if (drawCount == 0) {
+			if (drawCount == 0 && focused) {
 				OS.UpdateWindow (handle);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 				/*
@@ -4859,7 +4862,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 					}
 				}
 			}
-			if (drawCount == 0) {
+			if (drawCount == 0 && focused) {
 				RECT rect1 = new RECT (), rect2 = new RECT ();
 				rect1.left = hOldItem;  rect2.left = hNewItem;
 				int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
