@@ -2032,7 +2032,8 @@ public void setBackground (Color color) {
 /**
  * Sets the receiver's background image to the image specified
  * by the argument, or to the default system color for the control
- * if the argument is null.
+ * if the argument is null.  The background image is tiled to fill
+ * the available space.
  *
  * @param image the new image (or null)
  *
