@@ -3210,6 +3210,7 @@ void setFocusIndex (int index) {
 	ignoreSelect = true;
 	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
 	ignoreSelect = false;
+	OS.SendMessage (handle, OS.LVM_SETSELECTIONMARK, 0, index);
 }
 
 public void setFont (Font font) {
