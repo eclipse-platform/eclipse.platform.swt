@@ -304,6 +304,7 @@ public class OS extends Platform {
 	public static final int kDragActionMove = 1 << 4;
 	public static final int kDragActionDelete = 1 << 5;
 	public static final int kDragActionAll = 0xFFFFFFFF;
+	public static final int kDragStandardTranslucency = 0;
 	public static final int kDragTrackingEnterHandler = 1;
 	public static final int kDragTrackingEnterWindow = 2;
 	public static final int kDragTrackingInWindow = 3;
