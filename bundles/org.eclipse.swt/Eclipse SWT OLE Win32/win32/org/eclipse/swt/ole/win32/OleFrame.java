@@ -75,8 +75,7 @@ final public class OleFrame extends Composite
  *
  */
 public OleFrame(Composite parent, int style) {
-	// set up widget attributes
-	super(parent, style | SWT.CLIP_CHILDREN | SWT.CLIP_SIBLINGS);
+	super(parent, style);
 	
 	createCOMInterfaces();
 
