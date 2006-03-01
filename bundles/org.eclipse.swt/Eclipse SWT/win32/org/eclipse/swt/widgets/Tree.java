@@ -926,13 +926,13 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 			* if no item is selected, the first item in the tree is selected.
 			* This is unexpected and might clear the previous selection.
 			* The fix is to detect that there is no selection and set it to
-			* the first item in the tree.  If the item was not selected,
+			* the first visible item in the tree.  If the item was not selected,
 			* only the focus is assigned.
 			*/
 			if ((style & SWT.SINGLE) != 0) break;
 			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			if (hItem == 0) {
-				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 				if (hItem != 0) {
 					TVITEM tvItem = new TVITEM ();
 					tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
