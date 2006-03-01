@@ -16,9 +16,10 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
-//TODO - Javadoc
 /**
- * Instances of this class represent ... NOT DONE
+ * Instances of this class represent popup windows that are used
+ * used to inform or warn the user.
+ *
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BALLOON, ICON_ERROR, ICON_INFORMATION, ICON_WARNING</dd>
@@ -29,6 +30,8 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * @since 3.2
  */
 
 /*public*/ class ToolTip extends Widget {
@@ -36,7 +39,8 @@ import org.eclipse.swt.events.*;
 	TrayItem item;
 	String text = "", message = "";
 	int id, x, y;
-	boolean hasLocation, visible;
+	boolean autoHide = true, hasLocation, visible;
+	static final int TIMER_ID = 100;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -115,6 +119,23 @@ void destroyWidget () {
 }
 
 /**
+ * Returns <code>true</code> if the receiver is automatically
+ * hidden by the platform, and <code>false</code> otherwise.
+ *
+ * @return the receiver's auto hide state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ */
+public boolean getAutoHide () {
+	checkWidget();
+	return autoHide;
+}
+
+/**
  * Returns the receiver's message, which will be an empty
  * string if it has never been set.
  *
@@ -161,11 +182,28 @@ public String getText () {
 	return text;
 }
 
+/**
+ * Returns <code>true</code> if the receiver is visible, and
+ * <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getVisible () {
 	checkWidget();
 	if (OS.IsWinCE) return false;
 	if (item != null) return visible;
-	int hwndToolTip = (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
+	int hwndToolTip = hwndToolTip ();
 	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
@@ -174,6 +212,10 @@ public boolean getVisible () {
 		}
 	}
 	return false;
+}
+
+int hwndToolTip () {
+	return (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
 }
 
 /**
@@ -205,6 +247,20 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (item == null) {
+		if (autoHide) {
+			int hwndToolTip = hwndToolTip ();
+			if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
+				TOOLINFO lpti = new TOOLINFO ();
+				lpti.cbSize = TOOLINFO.sizeof;
+				if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+					if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
+						if (lpti.uId == id) OS.KillTimer (hwndToolTip, TIMER_ID);
+					}
+				}
+			}
+		}
+	}
 	if (item != null && item.toolTip == this) {
 		item.toolTip = null;
 	}
@@ -238,7 +294,27 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 /**
- * Sets the location of the receiver, which must be a popup,
+ * Makes the receiver hide automatically when <code>true</code>,
+ * and remain visible when <code>false</code>.
+ *
+ * @param autoHide the auto hide state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #getVisible
+ * @see #setVisible
+ */
+public void setAutoHide (boolean autoHide) {
+	checkWidget ();
+	this.autoHide = autoHide;
+	//TODO - update when visible
+}
+
+/**
+ * Sets the location of the receiver, which must be a tooltips,
  * to the point specified by the arguments which are relative
  * to the display.
  * <p>
@@ -263,7 +339,7 @@ public void setLocation (int x, int y) {
 }
 
 /**
- * Sets the location of the receiver, which must be a popup,
+ * Sets the location of the receiver, which must be a tooltip,
  * to the point specified by the argument which is relative
  * to the display.
  * <p>
@@ -271,7 +347,7 @@ public void setLocation (int x, int y) {
  * location of the widget is relative to the parent.
  * </p><p>
  * Note that the platform window manager ultimately has control
- * over the location of popup menus.
+ * over the location of tooltips.
  * </p>
  *
  * @param location the new location for the receiver
@@ -330,6 +406,22 @@ public void setText (String string) {
 	//TODO - update when visible
 }
 
+/**
+ * Marks the receiver as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param visible the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if (OS.IsWinCE) return;
@@ -340,7 +432,7 @@ public void setVisible (boolean visible) {
 		lpti.cbSize = TOOLINFO.sizeof;
 		lpti.uId = id;
 		lpti.hwnd = hwnd;
-		int hwndToolTip = (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
+		int hwndToolTip = hwndToolTip ();
 		if (text.length () != 0) {
 			int icon = OS.TTI_NONE;
 			if ((style & SWT.ICON_INFORMATION) != 0) icon = OS.TTI_INFO;
@@ -398,15 +490,15 @@ public void setVisible (boolean visible) {
 			} else {
 				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
 			}
-			//TODO - must be the current tool
-			if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) == 0) {
-				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
-				OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
-			}
+			
+			int time = OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
+			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
 		} else {
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
 			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
 			OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+			OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
+			OS.KillTimer (hwndToolTip, TIMER_ID);
 		}
 		return;
 	}
@@ -439,12 +531,9 @@ public void setVisible (boolean visible) {
 			if ((style & SWT.ICON_WARNING) != 0) iconData.dwInfoFlags = OS.NIIF_WARNING;
 			if ((style & SWT.ICON_ERROR) != 0) iconData.dwInfoFlags = OS.NIIF_ERROR;
 			sendEvent (SWT.Show);
-			if (OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData)) {
-				this.visible = true;
-			}
+			this.visible = OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 		} else {
-			sendEvent (SWT.Hide);
-			//TODO - not done, hide the tray item
+			//TODO - hide the tray item
 		}
 	}
 }

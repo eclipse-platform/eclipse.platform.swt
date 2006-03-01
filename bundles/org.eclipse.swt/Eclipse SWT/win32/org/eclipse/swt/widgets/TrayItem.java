@@ -145,7 +145,19 @@ public Tray getParent () {
 	return parent;
 }
 
-//TODO - Javadoc
+/**
+ * Returns the receiver's tool tip, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 /*public*/ ToolTip getToolTip () {
 	checkWidget ();
 	return toolTip;
@@ -350,7 +362,19 @@ public void setImage (Image image) {
 	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
 }
 
-//TODO - Javadoc
+/**
+ * Sets the receiver's tool tip to the argument, which
+ * may be null indicating that no tool tip should be shown.
+ *
+ * @param toolTip the new tool tip (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 /*public*/ void setToolTip (ToolTip toolTip) {
 	checkWidget ();
 	ToolTip oldTip = this.toolTip, newTip = toolTip;

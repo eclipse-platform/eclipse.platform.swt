@@ -1410,6 +1410,10 @@ public class OS extends Platform {
 	public static final int TS_DISABLED = 4;
 	public static final int TS_CHECKED = 5;
 	public static final int TS_HOTCHECKED = 6;
+	public static final int TTDT_AUTOMATIC = 0;
+	public static final int TTDT_RESHOW = 1;
+	public static final int TTDT_AUTOPOP = 2;
+	public static final int TTDT_INITIAL = 3;
 	public static final int TTF_ABSOLUTE = 0x80;
 	public static final int TTF_IDISHWND = 0x1;
 	public static final int TTF_SUBCLASS = 0x10;
@@ -1423,9 +1427,12 @@ public class OS extends Platform {
 	public static final int TTM_GETCURRENTTOOLA = 0x400 + 15;
 	public static final int TTM_GETCURRENTTOOLW = 0x400 + 59;
 	public static final int TTM_GETCURRENTTOOL = 0x400 + (IsUnicode ? 59 : 15);
+	public static final int TTM_GETDELAYTIME = 0x400 + 21;
 	public static final int TTM_DELTOOL = IsUnicode ? 0x433 : 0x405;
 	public static final int TTM_GETTOOLINFO = 0x400 + (IsUnicode ? 53 : 8);
 	public static final int TTM_NEWTOOLRECT = 0x400 + (IsUnicode ? 52 : 6);
+	public static final int TTM_POP = 0x400 + 28; 
+	public static final int TTM_SETDELAYTIME = 0x400 + 3;
 	public static final int TTM_SETMAXTIPWIDTH = 0x418;
 	public static final int TTM_SETTITLEA = 0x400 + 32;
 	public static final int TTM_SETTITLEW = 0x400 + 33;

@@ -559,8 +559,7 @@ void createToolTip (ToolTip toolTip) {
 	lpti.uId = toolTip.id;
 	lpti.uFlags = OS.TTF_TRACK;
 	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
-	int hwndToolTip = (toolTip.style & SWT.BALLOON) != 0 ? balloonTipHandle () : toolTipHandle ();
-	OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
+	OS.SendMessage (toolTip.hwndToolTip (), OS.TTM_ADDTOOL, 0, lpti);
 }
 
 void createToolTipHandle () {
@@ -752,6 +751,32 @@ public Rectangle getBounds () {
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
+}
+
+ToolTip getCurrentToolTip () {
+	if (toolTipHandle != 0) {
+		ToolTip tip = getCurrentToolTip (toolTipHandle);
+		if (tip != null) return tip;
+	}
+	if (balloonTipHandle != 0) {
+		ToolTip tip = getCurrentToolTip (balloonTipHandle);
+		if (tip != null) return tip;
+	}
+	return null;
+}
+
+ToolTip getCurrentToolTip (int hwndToolTip) {
+	if (hwndToolTip == 0) return null;
+	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
+				return findToolTip (lpti.uId);
+			}
+		}
+	}
+	return null;
 }
 
 public boolean getEnabled () {
@@ -1587,18 +1612,15 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
 	if (hwnd == toolTipHandle || hwnd == balloonTipHandle) {
 		switch (msg) {
+			case OS.WM_TIMER:
+				if (wParam != ToolTip.TIMER_ID) break;
+				//FALL THROUGH
 			case OS.WM_LBUTTONDOWN:
-				if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
-					TOOLINFO lpti = new TOOLINFO ();
-					lpti.cbSize = TOOLINFO.sizeof;
-					if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-						if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
-							ToolTip tip = findToolTip (lpti.uId);
-							if (tip != null) {
-								tip.setVisible (false);
-								tip.postEvent (SWT.Selection);
-							}
-						}
+				ToolTip tip = getCurrentToolTip (hwnd);
+				if (tip != null) {
+					tip.setVisible (false);
+					if (msg == OS.WM_LBUTTONDOWN) {
+						tip.postEvent (SWT.Selection);
 					}
 				}
 				break;
@@ -1684,9 +1706,13 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		}
 	}
 	
+	/* Process WM_ACTIVATE */
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
-	if (parent != null) return LRESULT.ZERO;
-	return result;
+	if ((wParam & 0xFFFF) == 0) {
+		ToolTip tip = getCurrentToolTip ();
+		if (tip != null) tip.setVisible (false);
+	}
+	return parent != null ? LRESULT.ZERO : result;
 }
 
 LRESULT WM_COMMAND (int wParam, int lParam) {
@@ -1845,6 +1871,14 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	
 	setActiveControl (control);
 	return null;
+}
+
+LRESULT WM_MOVE (int wParam, int lParam) {
+	LRESULT result = super.WM_MOVE (wParam, lParam);
+	if (result != null) return result;
+	ToolTip tip = getCurrentToolTip ();
+	if (tip != null) tip.setVisible (false);
+	return result;
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
