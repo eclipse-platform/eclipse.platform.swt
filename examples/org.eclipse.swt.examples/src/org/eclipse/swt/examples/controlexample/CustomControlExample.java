@@ -48,7 +48,7 @@ public class CustomControlExample extends ControlExample {
 		shell.setLayout(new FillLayout());
 		CustomControlExample instance = new CustomControlExample(shell);
 		shell.setText(getResourceString("custom.window.title"));
-		setShellSize(display, shell);
+		setShellSize(shell);
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();

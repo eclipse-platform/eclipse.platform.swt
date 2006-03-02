@@ -195,11 +195,11 @@ public class ControlExample {
 	 */
 	public static void main(String[] args) {
 		Display display = new Display();
-		Shell shell = new Shell(display);
+		Shell shell = new Shell(display, SWT.SHELL_TRIM);
 		shell.setLayout(new FillLayout());
 		ControlExample instance = new ControlExample(shell);
 		shell.setText(getResourceString("window.title"));
-		setShellSize(display, shell);
+		setShellSize(shell);
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
@@ -216,15 +216,13 @@ public class ControlExample {
 	
 	/**
 	 * Sets the size of the shell to it's "packed" size,
-	 * unless that makes it bigger than the display,
-	 * in which case set it to 9/10 of display size.
+	 * unless that makes it larger than the monitor it is being displayed on,
+	 * in which case set it to slightly smaller than the monitor.
 	 */
-	static void setShellSize (Display display, Shell shell) {
-		Rectangle bounds = display.getBounds();
-		Point size = shell.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-		if (size.x > bounds.width) size.x = bounds.width * 9 / 10;
-		if (size.y > bounds.height) size.y = bounds.height * 9 / 10;
-		shell.setSize (size);
+	static void setShellSize(Shell shell) {
+		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Rectangle monitorArea = shell.getMonitor().getClientArea();
+		shell.setSize(Math.min(size.x, monitorArea.width - 20), Math.min(size.y, monitorArea.height - 20));
 	}
 }
 
