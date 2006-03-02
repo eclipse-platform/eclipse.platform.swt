@@ -1830,7 +1830,8 @@ void destroyItem (TreeItem item, int hItem) {
 	* NOTE: This fix is not necessary when double buffering and
 	* can cause problems for virtual trees due to the call to
 	* UpdateWindow() that flushes outstanding WM_PAINT events,
-	* allowing application code to add or remove items.
+	* allowing application code to add or remove items during
+	* this remove operation.
 	*/
 	int hParent = 0;
 	boolean fixRedraw = false;
