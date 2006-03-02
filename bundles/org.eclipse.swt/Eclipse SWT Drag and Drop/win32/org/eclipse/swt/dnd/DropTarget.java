@@ -537,8 +537,7 @@ int Release() {
 
 void refresh() {
 	RECT lpRect = new RECT();
-	OS.GetUpdateRect(control.handle, lpRect, false);
-	if (lpRect.bottom != lpRect.top && lpRect.right != lpRect.left) {
+	if (OS.GetUpdateRect(control.handle, lpRect, false)) {
 		OS.ImageList_DragShowNolock(false);
 		OS.RedrawWindow(control.handle, lpRect, 0, OS.RDW_UPDATENOW | OS.RDW_INVALIDATE);
 		OS.ImageList_DragShowNolock(true);
