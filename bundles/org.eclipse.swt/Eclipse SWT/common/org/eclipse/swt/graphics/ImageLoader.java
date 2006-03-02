@@ -238,6 +238,10 @@ public void save(String filename, int format) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
 	save(stream, format);
+	try {
+		stream.close();
+	} catch (IOException e) {
+	}
 }
 
 /**	 
