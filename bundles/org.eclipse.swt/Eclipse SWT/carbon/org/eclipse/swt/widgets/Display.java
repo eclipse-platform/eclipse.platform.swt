@@ -170,7 +170,7 @@ public class Display extends Device {
 
 	/* Hover Help */
 	int helpString;
-	Control helpControl;
+	Widget helpControl;
 	int lastHelpX, lastHelpY;
 	
 	/* Mouse Enter/Exit/Hover */
@@ -3008,7 +3008,8 @@ void releaseDisplay () {
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;
-	grabControl = helpControl = currentControl = mouseUpControl = focusControl = focusCombo = null;
+	grabControl = currentControl = mouseUpControl = focusControl = focusCombo = null;
+	helpControl = null;
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
 	menus = popups = null;

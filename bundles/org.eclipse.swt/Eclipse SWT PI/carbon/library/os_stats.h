@@ -479,6 +479,7 @@ typedef enum {
 	GetWRefCon_FUNC,
 	GetWindowActivationScope_FUNC,
 	GetWindowBounds_FUNC,
+	GetWindowClass_FUNC,
 	GetWindowDefaultButton_FUNC,
 	GetWindowEventTarget_FUNC,
 	GetWindowFromPort_FUNC,

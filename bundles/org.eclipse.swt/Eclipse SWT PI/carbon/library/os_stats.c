@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 902;
-int OS_nativeFunctionCallCount[902];
+int OS_nativeFunctionCount = 903;
+int OS_nativeFunctionCallCount[903];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -475,6 +475,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetWRefCon",
 	"GetWindowActivationScope",
 	"GetWindowBounds",
+	"GetWindowClass",
 	"GetWindowDefaultButton",
 	"GetWindowEventTarget",
 	"GetWindowFromPort",

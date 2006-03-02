@@ -6554,6 +6554,22 @@ fail:
 }
 #endif
 
+#ifndef NO_GetWindowClass
+JNIEXPORT jint JNICALL OS_NATIVE(GetWindowClass)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetWindowClass_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)GetWindowClass((WindowRef)arg0, (WindowClass *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetWindowClass_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetWindowDefaultButton
 JNIEXPORT jint JNICALL OS_NATIVE(GetWindowDefaultButton)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)

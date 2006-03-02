@@ -1323,6 +1323,7 @@ public static final native int GetUserFocusWindow();
 public static final native int GetWRefCon(int wHandle);
 public static final native int GetWindowActivationScope(int inWindow, int[] outScope);
 public static final native void GetWindowBounds(int wHandle, short windowRegion, Rect bounds);
+public static final native int GetWindowClass (int inWindow, int[] outClass);
 public static final native int GetWindowDefaultButton(int wHandle, int[] cHandle);
 public static final native int GetWindowEventTarget(int wHandle);
 public static final native int GetWindowFromPort(int pHandle);
