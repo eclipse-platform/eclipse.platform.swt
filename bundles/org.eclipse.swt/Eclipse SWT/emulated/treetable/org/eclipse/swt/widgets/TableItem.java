@@ -1189,7 +1189,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 			gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
 		}
 	}
-	
+
 	if (parent.hooks (SWT.PaintItem)) {
 		int contentWidth = getContentWidth (columnIndex);
 		int contentX = getContentX (columnIndex);
@@ -1211,7 +1211,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 		event.y = cellBounds.y;
 		event.width = contentWidth;
 		event.height = cellBounds.height;
-		gc.setClipping (event.x, event.y, event.width, event.height);
+		gc.setClipping (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height);
 		parent.sendEvent (SWT.PaintItem, event);
 		event.gc = null;
 	}
@@ -1820,10 +1820,28 @@ public void setText (String[] value) {
 		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
 }
+/*
+ * Perform any internal changes necessary to reflect a changed column width.
+ */
 void updateColumnWidth (TableColumn column, GC gc) {
 	int columnIndex = column.getIndex ();
 	gc.setFont (getFont (columnIndex, false));
+	String oldDisplayText = displayTexts [columnIndex];
 	computeDisplayText (columnIndex, gc);
+
+	/* the cell must be damaged if there is custom drawing being done or if the alignment is not LEFT */
+	boolean columnIsLeft = (column.style & SWT.LEFT) != 0;
+	if (!columnIsLeft || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
+		Rectangle cellBounds = getCellBounds (columnIndex);
+		parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
+		return;
+	}
+	/* if the display text has changed then the cell text must be damaged in order to repaint */	
+	if (!oldDisplayText.equals (displayTexts [columnIndex])) {
+		Rectangle cellBounds = getCellBounds (columnIndex);
+		int textX = getTextX (columnIndex);
+		parent.redraw (textX, cellBounds.y, cellBounds.x + cellBounds.width - textX, cellBounds.height, false);
+	}
 }
 /*
  * The parent's font has changed, so if this font was being used by the receiver then

@@ -687,4 +687,16 @@ public void setWidth (int value) {
 void updateFont (GC gc) {
 	computeDisplayText (gc);
 }
+/*
+ * Perform any internal changes necessary to reflect a changed width.
+ */
+void updateWidth (GC gc) {
+	String oldDisplayText = displayText;
+	computeDisplayText (gc);
+	/* the header must be damaged if the display text has changed or if the alignment is not LEFT */	
+	if ((style & SWT.LEFT) == 0 || !oldDisplayText.equals (displayText)) {
+		int padding = parent.getHeaderPadding ();
+		parent.header.redraw (getX () + padding, 0, width - padding, parent.header.getBounds ().height, false);
+	}
+}
 }

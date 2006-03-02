@@ -1423,16 +1423,16 @@ void headerOnMouseMove (Event event) {
 }
 void headerOnMouseUp (Event event) {
 	if (resizeColumn == null) return;	/* not resizing a column */
+
+	/* remove the resize line */
+	GC gc = new GC (this);
+	redraw (resizeColumnX - 1, 0, 1, getClientArea ().height, false);
+	gc.dispose ();
+
 	int newWidth = resizeColumnX - resizeColumn.getX ();
 	if (newWidth != resizeColumn.width) {
 		setCursor (null);
 		updateColumnWidth (resizeColumn, newWidth);
-	} else {
-		/* remove the resize line */
-		GC gc = new GC (this);
-		int lineHeight = getClientArea ().height;
-		redraw (resizeColumnX - 1, 0, 1, lineHeight, false);
-		gc.dispose ();
 	}
 	resizeColumnX = -1;
 	resizeColumn = null;
@@ -3740,8 +3740,55 @@ void sort (int [] items) {
 }
 void updateColumnWidth (TableColumn column, int width) {
 	headerHideToolTip ();
-	column.width = width;
+	int oldWidth = column.width;
+	int columnX = column.getX ();
+	int x = columnX + oldWidth - 1;	/* -1 ensures that grid line is included */
 	Rectangle bounds = getClientArea ();
+
+	update ();
+	GC gc = new GC (this);
+	if (oldWidth > 0) {
+		gc.copyArea (x, 0, bounds.width - x, bounds.height, columnX + width - 1, 0);	/* dest x -1 offsets x's -1 above */
+	}
+	if (width > oldWidth) {
+		/* column width grew */
+		int change = width - oldWidth + 1;	/* +1 offsets x's -1 above */
+		redraw (x, 0, change, bounds.height, false);
+	} else {
+		int change = oldWidth - width + 1;	/* +1 offsets x's -1 above */
+		redraw (bounds.width - change, 0, change, bounds.height, false);
+	}
+
+	GC headerGC = new GC (header);
+	if (drawCount == 0 && header.getVisible ()) {
+		Rectangle headerBounds = header.getClientArea ();
+		header.update ();
+		x -= 1;	/* -1 ensures that full header column separator is included */
+		if (oldWidth > 0) {
+			headerGC.copyArea (x, 0, headerBounds.width - x, headerBounds.height, columnX + width - 2, 0);	/* dest x -2 offsets x's -1s above */
+		}
+		if (width > oldWidth) {
+			/* column width grew */
+			int change = width - oldWidth + 2;	/* +2 offsets x's -1s above */
+			header.redraw (x, 0, change, headerBounds.height, false);
+		} else {
+			int change = oldWidth - width + 2;	/* +2 offsets x's -1s above */
+			header.redraw (headerBounds.width - change, 0, change, headerBounds.height, false);
+		}
+	}
+
+	column.width = width;
+
+	/*
+	 * Notify column and all items of column width change so that display labels
+	 * can be recomputed if needed.
+	 */
+	column.updateWidth (headerGC);
+	headerGC.dispose ();
+	for (int i = 0; i < itemsCount; i++) {
+		items [i].updateColumnWidth (column, gc);
+	}
+	gc.dispose ();
 
 	int maximum = 0;
 	for (int i = 0; i < columns.length; i++) {
@@ -3751,30 +3798,13 @@ void updateColumnWidth (TableColumn column, int width) {
 	hBar.setMaximum (maximum);
 	hBar.setThumb (bounds.width);
 	hBar.setPageIncrement (bounds.width);
+	int oldHorizontalOffset = horizontalOffset;	/* hBar.setVisible() can modify horizontalOffset */
 	hBar.setVisible (bounds.width < maximum);
-	boolean offsetChanged = false;
 	int selection = hBar.getSelection ();
-	if (selection != horizontalOffset) {
+	if (selection != oldHorizontalOffset) {
 		horizontalOffset = selection;
-		offsetChanged = true;
-	}
-	
-	/* 
-	 * Notify column and all items of column width change so that display labels
-	 * can be recomputed if needed.
-	 */
-	GC gc = new GC (this);
-	column.computeDisplayText (gc);
-	for (int i = 0; i < itemsCount; i++) {
-		items [i].updateColumnWidth (column, gc);
-	}
-	gc.dispose ();
-
-	int x = 0;
-	if (!offsetChanged) x = column.getX ();
-	redraw (x, 0, bounds.width - x, bounds.height, false);
-	if (drawCount == 0 && header.getVisible ()) {
-		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
+		redraw ();
+		if (drawCount == 0 && header.getVisible ()) header.redraw ();
 	}
 
 	column.sendEvent (SWT.Resize);
