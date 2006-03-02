@@ -197,8 +197,18 @@ public boolean getAutoHide () {
 	return autohide;
 }
 
+public String getMessage () {
+	checkWidget ();
+	return message;
+}
+
 String getNameText () {
 	return getText ();
+}
+
+public Shell getParent () {
+	checkWidget ();
+	return parent;
 }
 
 Point getSize (int maxWidth) {
@@ -234,16 +244,6 @@ Point getSize (int maxWidth) {
 	return new Point(width, height);
 }
 
-public String getMessage () {
-	checkWidget ();
-	return message;
-}
-
-public Shell getParent () {
-	checkWidget ();
-	return parent;
-}
-
 public String getText () {
 	checkWidget ();
 	return text;
@@ -254,11 +254,6 @@ public boolean getVisible () {
 	if ((style & SWT.BALLOON) != 0) return OS.GTK_WIDGET_VISIBLE (handle);
 	int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (handle);
 	return OS.GTK_WIDGET_VISIBLE (tipWindow);
-}
-
-public boolean isVisible () {
-	checkWidget ();
-	return getVisible ();
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
@@ -334,6 +329,11 @@ void hookEvents () {
 			OS.g_signal_connect_closure (tipWindow, OS.button_press_event, display.closures [BUTTON_PRESS_EVENT], false);
 		}
 	}
+}
+
+public boolean isVisible () {
+	checkWidget ();
+	return getVisible ();
 }
 
 void register () {
