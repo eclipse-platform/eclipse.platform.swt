@@ -194,7 +194,7 @@ public String getText () {
 public boolean getVisible () {
 	checkWidget ();
 	if (tip != null) return	tip.getVisible ();
-	if (display.helpControl == this) {
+	if (display.helpWidget == this) {
 		int window = OS.FrontWindow ();
 		int [] windowClass = new int [1];
 		OS.GetWindowClass (window, windowClass);
@@ -306,7 +306,7 @@ public void setVisible (boolean visible) {
 	runnable = null;
 	if (visible) {
 		OS.HMHideTag ();
-		display.helpControl = this;
+		display.helpWidget = this;
 		if (!autohide || (style & SWT.BALLOON) != 0) {
 			// Show tip
 			if (tip == null) {
@@ -373,8 +373,8 @@ public void setVisible (boolean visible) {
 			OS.HMDisplayTag(helpContent);
 		}
 	} else {
-		if (display.helpControl == this) {
-			display.helpControl = null;
+		if (display.helpWidget == this) {
+			display.helpWidget = null;
 			OS.HMHideTag ();
 			if (tip != null) tip.setVisible (false);
 		}

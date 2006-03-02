@@ -1212,7 +1212,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				helpContent.tagSide = (short) OS.kHMAbsoluteCenterAligned;
 				int x = (short) (inGlobalMouse & 0xFFFF);
 				int y = (short) (inGlobalMouse >> 16);
-				if (display.helpControl != this) {
+				if (display.helpWidget != this) {
 					display.lastHelpX = x + cursorHeight / 2;
 					display.lastHelpY = y + cursorHeight + cursorHeight / 2;			
 				}
@@ -1223,7 +1223,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				y = display.lastHelpY - deltaY;
 				int width = deltaX * 2;
 				int height = deltaY * 2;
-				display.helpControl = this;
+				display.helpWidget = this;
 				helpContent.absHotRect_left = (short) x;
 				helpContent.absHotRect_top = (short) y;
 				helpContent.absHotRect_right = (short) (x + width);
@@ -1241,7 +1241,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 		}
 		case OS.kHMDisposeContent: {
 			if (display.helpString != 0) OS.CFRelease (display.helpString);
-			display.helpControl = null;
+			display.helpWidget = null;
 			display.helpString = 0;
 			break;
 		}
@@ -2888,8 +2888,8 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	if (display.helpControl == this) {
-		display.helpControl = null;
+	if (display.helpWidget == this) {
+		display.helpWidget = null;
 		OS.HMInstallControlContentCallback (handle, 0);
 		OS.HMInstallControlContentCallback (handle, display.helpProc);
 	}

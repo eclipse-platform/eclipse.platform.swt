@@ -606,7 +606,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
 				helpContent.version = OS.kMacHelpVersion;
 				helpContent.tagSide = (short) OS.kHMDefaultSide;
-				display.helpControl = null;
+				display.helpWidget = null;
 				helpContent.absHotRect_left = (short) 0;
 				helpContent.absHotRect_top = (short) 0;
 				helpContent.absHotRect_right = (short) 0;
@@ -623,7 +623,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 		}
 		case OS.kHMDisposeContent: {
 			if (display.helpString != 0) OS.CFRelease (display.helpString);
-			display.helpControl = null;
+			display.helpWidget = null;
 			display.helpString = 0;
 			break;
 		}

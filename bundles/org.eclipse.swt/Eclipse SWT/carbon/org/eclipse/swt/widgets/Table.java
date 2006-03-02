@@ -1811,7 +1811,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 					display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 					HMHelpContentRec helpContent = new HMHelpContentRec ();
 					OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
-					display.helpControl = this;
+					display.helpWidget = this;
 					helpContent.version = OS.kMacHelpVersion;
 					helpContent.tagSide = (short) tagSide;
 					helpContent.absHotRect_left = (short) (rect.left + windowLeft);
