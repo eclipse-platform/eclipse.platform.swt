@@ -83,30 +83,6 @@ public static void main (String [] args) {
 			if (e.detail == DND.DROP_DEFAULT)
 				e.detail = DND.DROP_COPY;
 		}
-		public void dragOver(DropTargetEvent e) {
-			text2.setFocus();
-			Point location = display.map(null, text2, e.x, e.y);
-			location.x = Math.max(0, location.x);
-			location.y = Math.max(0, location.y);
-			try {
-				int offset = text2.getOffsetAtLocation(new Point(location.x, location.y));
-				text2.setCaretOffset(offset);
-			} catch (IllegalArgumentException ex) {
-				int maxOffset = text2.getCharCount();
-				Point maxLocation = text2.getLocationAtOffset(maxOffset);
-				if (location.y >= maxLocation.y) {
-					if (location.x >= maxLocation.x) {
-						text2.setCaretOffset(maxOffset);
-					} else {
-						int offset = text2.getOffsetAtLocation(new Point(location.x, maxLocation.y));
-						text2.setCaretOffset(offset);
-					}
-				} else {
-					text2.setCaretOffset(maxOffset);
-				}
-			}
-			
-		}
 		public void drop(DropTargetEvent e) {
 			text2.insert((String)e.data);
 		}
