@@ -22,7 +22,8 @@ class TreeDragAndDropEffect extends DragAndDropEffect {
 	long scrollBeginTime;
 	int expandIndex;
 	long expandBeginTime;
-	boolean clearInsert = false;
+	TreeItem insertItem;
+	boolean insertBefore;
 	
 	static final int SCROLL_HYSTERESIS = 200; // milli seconds
 	static final int EXPAND_HYSTERESIS = 300; // milli seconds
@@ -197,16 +198,24 @@ void showDropTargetEffect(int effect, int x, int y) {
 		* Since the insert mark can not be queried from the tree,
 		* use the Tree API rather than calling the OS directly.
 		*/
-		TreeItem insertItem = (TreeItem)tree.getDisplay().findWidget(tree.handle, hItem);
-		if (insertItem != null) {
-			tree.setInsertMark(insertItem, before);
-			clearInsert = true;
+		TreeItem item = (TreeItem)tree.getDisplay().findWidget(tree.handle, hItem);
+		if (item != null) {
+			if (item != insertItem || before != insertBefore) {
+				tree.setInsertMark(item, before);
+			}
+			insertItem = item;
+			insertBefore = before;
+		} else {
+			if (insertItem != null) {
+				tree.setInsertMark(null, false);
+			}
+			insertItem = null;
 		}
 	} else {
-		if (clearInsert) {
+		if (insertItem != null) {
 			tree.setInsertMark(null, false);
 		}
-		clearInsert = false;
+		insertItem = null;
 	}
 	return;
 }
