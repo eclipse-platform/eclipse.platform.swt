@@ -1001,6 +1001,15 @@ abstract class Tab {
 	}
 	
 	/**
+	 * Gets the short text for the tab folder item.
+	 *
+	 * @return the short text for the tab item
+	 */
+	public String getShortTabText() {
+		return getTabText();
+	}
+
+	/**
 	 * Gets the text for the tab folder item.
 	 *
 	 * @return the text for the tab item

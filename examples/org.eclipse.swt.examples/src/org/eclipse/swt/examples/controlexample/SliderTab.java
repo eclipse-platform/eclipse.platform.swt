@@ -187,10 +187,16 @@ class SliderTab extends RangeTab {
 	}
 
 	/**
+	 * Gets the short text for the tab folder item.
+	 */
+	public String getShortTabText() {
+		return "S/S";
+	}
+
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		if (SWT.getPlatform().equals("carbon")) return "S/S";
 		return "Slider/Scale";
 	}
 	

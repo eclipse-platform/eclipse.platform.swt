@@ -25,6 +25,7 @@ public class ControlExample {
 		ResourceBundle.getBundle("examples_control"); //$NON-NLS-1$
 	private ShellTab shellTab;
 	private TabFolder tabFolder;
+	private Tab [] tabs;
 	Image images[];
 
 	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2, ciBackground = 3, ciParentBackground = 4;
@@ -52,7 +53,7 @@ public class ControlExample {
 	public ControlExample(Composite parent) {
 		initResources();
 		tabFolder = new TabFolder (parent, SWT.NONE);
-		Tab [] tabs = createTabs();
+		tabs = createTabs();
 		for (int i=0; i<tabs.length; i++) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
 		    item.setText (tabs [i].getTabText ());
@@ -199,7 +200,7 @@ public class ControlExample {
 		shell.setLayout(new FillLayout());
 		ControlExample instance = new ControlExample(shell);
 		shell.setText(getResourceString("window.title"));
-		setShellSize(shell);
+		setShellSize(instance, shell);
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
@@ -217,12 +218,20 @@ public class ControlExample {
 	/**
 	 * Sets the size of the shell to it's "packed" size,
 	 * unless that makes it larger than the monitor it is being displayed on,
-	 * in which case set it to slightly smaller than the monitor.
+	 * in which case we may be able to recover some width by using shorter tab names.
+	 * If that fails, just set the shell size to be slightly smaller than the monitor.
 	 */
-	static void setShellSize(Shell shell) {
+	static void setShellSize(ControlExample instance, Shell shell) {
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		Rectangle monitorArea = shell.getMonitor().getClientArea();
-		shell.setSize(Math.min(size.x, monitorArea.width - 20), Math.min(size.y, monitorArea.height - 20));
+		if (size.x > monitorArea.width) {
+			TabItem [] tabItems = instance.tabFolder.getItems();
+			for (int i=0; i<tabItems.length; i++) {
+				tabItems[i].setText (instance.tabs [i].getShortTabText ());
+			}
+			size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		}
+		shell.setSize(Math.min(size.x, monitorArea.width), Math.min(size.y, monitorArea.height));
 	}
 }
 

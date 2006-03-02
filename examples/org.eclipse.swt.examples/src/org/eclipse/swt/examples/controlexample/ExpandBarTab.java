@@ -119,6 +119,13 @@ class ExpandBarTab extends Tab {
 	}
 	
 	/**
+	 * Gets the short text for the tab folder item.
+	 */
+	public String getShortTabText() {
+		return "EB";
+	}
+
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
