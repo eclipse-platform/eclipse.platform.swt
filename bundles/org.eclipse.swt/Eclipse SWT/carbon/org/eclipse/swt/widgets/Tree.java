@@ -1081,7 +1081,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	if (draw) {
 		if (selected && (style & SWT.FULL_SELECTION) != 0) {
-			if ((style & SWT.HIDE_SELECTION) == 0 || focused) {
+			if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
 				gc.fillRectangle (itemX, itemY, itemWidth, itemHeight - 1);
 			}
 		}
