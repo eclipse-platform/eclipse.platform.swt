@@ -134,6 +134,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 				}
 				if (scroll) {
 					OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, nextItem);
+					tree.redraw();
 				}
 				scrollBeginTime = 0;
 				scrollIndex = -1;
@@ -156,6 +157,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					if ((tvItem.state & OS.TVIS_EXPANDED) == 0) {
 						OS.SendMessage (handle, OS.TVM_EXPAND, OS.TVE_EXPAND, hItem);
+						tree.redraw();
 					}
 				}
 				expandBeginTime = 0;

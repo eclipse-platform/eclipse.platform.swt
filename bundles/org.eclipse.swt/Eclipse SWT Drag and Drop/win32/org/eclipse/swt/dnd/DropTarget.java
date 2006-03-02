@@ -540,7 +540,7 @@ void refresh() {
 	OS.GetUpdateRect(control.handle, lpRect, false);
 	if (lpRect.bottom != lpRect.top && lpRect.right != lpRect.left) {
 		OS.ImageList_DragShowNolock(false);
-		OS.RedrawWindow(control.handle, null, 0, OS.RDW_UPDATENOW | /*OS.RDW_FRAME |*/ OS.RDW_INVALIDATE);
+		OS.RedrawWindow(control.handle, lpRect, 0, OS.RDW_UPDATENOW | OS.RDW_INVALIDATE);
 		OS.ImageList_DragShowNolock(true);
 	}
 }

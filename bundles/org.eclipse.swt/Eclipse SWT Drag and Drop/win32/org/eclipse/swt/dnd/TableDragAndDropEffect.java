@@ -126,6 +126,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 				}
 				if (scroll) {
 					OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+					table.redraw();
 				}
 				scrollBeginTime = 0;
 				scrollIndex = -1;
