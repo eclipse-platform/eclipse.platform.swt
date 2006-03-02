@@ -4300,6 +4300,38 @@ fail:
 }
 #endif
 
+#ifndef NO_GetThemeColor
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThemeColor_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetThemeColor(arg0, arg1, arg2, arg3, lparg4);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetThemeColor_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetThemeColor");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, arg2, arg3, lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, GetThemeColor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeInt
 JNIEXPORT jint JNICALL OS_NATIVE(GetThemeInt)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)

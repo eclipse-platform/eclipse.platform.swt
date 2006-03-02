@@ -21,6 +21,7 @@
 #define GetThemeMargins_LIB "uxtheme.dll"
 #define GetThemeBackgroundContentRect_LIB "uxtheme.dll"
 #define GetThemeBackgroundExtent_LIB "uxtheme.dll"
+#define GetThemeColor_LIB "uxtheme.dll"
 #define GetThemePartSize_LIB "uxtheme.dll"
 #define GetThemeMetric_LIB "uxtheme.dll"
 #define GetThemeRect_LIB "uxtheme.dll"

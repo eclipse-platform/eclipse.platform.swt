@@ -244,6 +244,7 @@
 #define NO_GetTextCharset
 #define NO_GetTextExtentPoint32A
 #define NO_GetTextMetricsA
+#define NO_GetThemeColor
 #define NO_GetThemeTextExtent
 #define NO_GetThemeInt
 #define NO_GetThemeMargins

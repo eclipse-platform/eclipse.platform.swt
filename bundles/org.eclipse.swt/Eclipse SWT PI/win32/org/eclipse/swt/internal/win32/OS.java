@@ -2838,6 +2838,7 @@ public static final native boolean GetMessageA (MSG lpMsg, int hWnd, int wMsgFil
 public static final native int GetMessagePos ();
 public static final native int GetMessageTime ();
 public static final native int GetMetaRgn(int hdc, int hrgn);
+public static final native int GetThemeColor(int hTheme, int iPartId, int iStateId, int iPropId, int[] pColor);
 public static final native int GetThemeTextExtent(int hTheme, int hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, RECT pBoundingRect, RECT pExtentRect);
 public static final native int GetTextCharset(int hdc);
 public static final native int GetTickCount ();

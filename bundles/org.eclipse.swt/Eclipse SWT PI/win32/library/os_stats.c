@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 681;
-int OS_nativeFunctionCallCount[681];
+int OS_nativeFunctionCount = 682;
+int OS_nativeFunctionCallCount[682];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -272,6 +272,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetTextMetricsW",
 	"GetThemeBackgroundContentRect",
 	"GetThemeBackgroundExtent",
+	"GetThemeColor",
 	"GetThemeInt",
 	"GetThemeMargins",
 	"GetThemeMetric",

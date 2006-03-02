@@ -276,6 +276,7 @@ typedef enum {
 	GetTextMetricsW_FUNC,
 	GetThemeBackgroundContentRect_FUNC,
 	GetThemeBackgroundExtent_FUNC,
+	GetThemeColor_FUNC,
 	GetThemeInt_FUNC,
 	GetThemeMargins_FUNC,
 	GetThemeMetric_FUNC,
