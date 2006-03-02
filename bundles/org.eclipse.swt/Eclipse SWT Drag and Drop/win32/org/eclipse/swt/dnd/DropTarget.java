@@ -266,6 +266,7 @@ int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffec
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
 	notifyListeners(DND.DragEnter, event);
+	refresh();
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
@@ -284,6 +285,7 @@ int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffec
 	}
 
 	effect.showDropTargetEffect(event.feedback, event.x, event.y);
+	refresh();
 	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
@@ -291,6 +293,7 @@ int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffec
 
 int DragLeave() {
 	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
+	refresh();
 	keyOperation = -1;
 
 	if (iDataObject == null) return COM.S_FALSE;
@@ -300,6 +303,7 @@ int DragLeave() {
 	event.time = OS.GetMessageTime();
 	event.detail = DND.DROP_NONE;
 	notifyListeners(DND.DragLeave, event);
+	refresh();
 	
 	iDataObject.Release();
 	iDataObject = null;
@@ -330,6 +334,7 @@ int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 		event.dataType = selectedDataType;
 	}
 	notifyListeners(event.type, event);
+	refresh();
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
@@ -348,6 +353,7 @@ int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 	}
 	
 	effect.showDropTargetEffect(event.feedback, event.x, event.y);
+	refresh();
 	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
@@ -355,13 +361,15 @@ int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 
 int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
-
+	refresh();
+	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.item = effect.getItem(pt_x, pt_y);
 	event.detail = DND.DROP_NONE;
 	notifyListeners(DND.DragLeave, event);
+	refresh();
 	
 	event = new DNDEvent();
 	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
@@ -376,6 +384,7 @@ int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	event.dataType = selectedDataType;
 	event.detail = selectedOperation;
 	notifyListeners(DND.DropAccept,event);
+	refresh();
 	
 	selectedDataType = null;
 	for (int i = 0; i < allowedDataTypes.length; i++) {
@@ -410,6 +419,7 @@ int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	event.dataType = selectedDataType;
 	event.data = object;
 	notifyListeners(DND.Drop,event);
+	refresh();
 	selectedOperation = DND.DROP_NONE;
 	if ((allowedOperations & event.detail) == event.detail) {
 		selectedOperation = event.detail;
@@ -523,6 +533,16 @@ int Release() {
 	}
 	
 	return refCount;
+}
+
+void refresh() {
+	RECT lpRect = new RECT();
+	OS.GetUpdateRect(control.handle, lpRect, false);
+	if (lpRect.bottom != lpRect.top && lpRect.right != lpRect.left) {
+		OS.ImageList_DragShowNolock(false);
+		OS.RedrawWindow(control.handle, null, 0, OS.RDW_UPDATENOW | /*OS.RDW_FRAME |*/ OS.RDW_INVALIDATE);
+		OS.ImageList_DragShowNolock(true);
+	}
 }
 
 /**
@@ -646,5 +666,4 @@ public void setTransfer(Transfer[] transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	this.transferAgents = transferAgents;
 }
-
 }

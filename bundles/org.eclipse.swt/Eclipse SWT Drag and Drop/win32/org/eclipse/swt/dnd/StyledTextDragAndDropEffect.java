@@ -13,7 +13,6 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.win32.*;
 
 class StyledTextDragAndDropEffect extends DragAndDropEffect {
 	StyledText text;
@@ -29,10 +28,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 			text.setFocus();
 			int offset = text.getOffsetAtLocation(pt);
 			if (offset != oldOffset) {
-				OS.ImageList_DragShowNolock(false);
 				text.setCaretOffset(offset);
-				text.update();
-				OS.ImageList_DragShowNolock(true);
 			}
 		} catch (IllegalArgumentException ex) {
 			int maxOffset = text.getCharCount();
@@ -48,10 +44,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 				offset = maxOffset;
 			}
 			if (offset != -1 && offset != oldOffset) {
-				OS.ImageList_DragShowNolock(false);
 				text.setCaretOffset(offset);
-				text.update();
-				OS.ImageList_DragShowNolock(true);
 			}
 		}
 	}

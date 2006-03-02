@@ -125,10 +125,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 					}
 				}
 				if (scroll) {
-					OS.ImageList_DragShowNolock(false);
 					OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
-					table.update();
-					OS.ImageList_DragShowNolock(true);
 				}
 				scrollBeginTime = 0;
 				scrollIndex = -1;
@@ -144,22 +141,16 @@ void showDropTargetEffect(int effect, int x, int y) {
 		if (dropHighlight != item) {
 			LVITEM lvItem = new LVITEM();
 			lvItem.stateMask = OS.LVIS_DROPHILITED;
-			OS.ImageList_DragShowNolock(false);
 			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
 			lvItem.state = OS.LVIS_DROPHILITED;
 			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, pinfo.iItem, lvItem);
-			table.update();
-			OS.ImageList_DragShowNolock(true);
 			dropHighlight = item;
 		}
 	} else {
 		if (dropHighlight != null) {
 			LVITEM lvItem = new LVITEM ();
 			lvItem.stateMask = OS.LVIS_DROPHILITED;
-			OS.ImageList_DragShowNolock(false);
 			OS.SendMessage(handle, OS.LVM_SETITEMSTATE, -1, lvItem);		
-			table.update();
-			OS.ImageList_DragShowNolock(true);
 			dropHighlight = null;
 		}
 	}

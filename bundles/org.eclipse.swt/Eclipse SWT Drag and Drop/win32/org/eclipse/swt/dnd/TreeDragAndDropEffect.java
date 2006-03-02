@@ -133,10 +133,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 					}
 				}
 				if (scroll) {
-					OS.ImageList_DragShowNolock(false);
 					OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, nextItem);
-					tree.update();
-					OS.ImageList_DragShowNolock(true);
 				}
 				scrollBeginTime = 0;
 				scrollIndex = -1;
@@ -158,10 +155,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 					tvItem.mask = OS.TVIF_STATE;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					if ((tvItem.state & OS.TVIS_EXPANDED) == 0) {
-						OS.ImageList_DragShowNolock(false);
 						OS.SendMessage (handle, OS.TVM_EXPAND, OS.TVE_EXPAND, hItem);
-						tree.update();
-						OS.ImageList_DragShowNolock(true);
 					}
 				}
 				expandBeginTime = 0;
@@ -178,10 +172,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 		tvItem.mask = OS.TVIF_STATE;
 		tvItem.stateMask = OS.TVIS_DROPHILITED;
 		tvItem.state = 0;
-		OS.ImageList_DragShowNolock(false);
 		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-		tree.update();
-		OS.ImageList_DragShowNolock(true);
 		dropIndex = -1;
 	}
 	if (hItem != -1 && hItem != dropIndex && (effect & DND.FEEDBACK_SELECT) != 0) {
@@ -190,10 +181,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 		tvItem.mask = OS.TVIF_STATE;
 		tvItem.stateMask = OS.TVIS_DROPHILITED;
 		tvItem.state = OS.TVIS_DROPHILITED;
-		OS.ImageList_DragShowNolock(false);
 		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-		tree.update();
-		OS.ImageList_DragShowNolock(true);
 		dropIndex = hItem;
 	}
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0 || (effect & DND.FEEDBACK_INSERT_AFTER) != 0) {
@@ -209,18 +197,12 @@ void showDropTargetEffect(int effect, int x, int y) {
 		*/
 		TreeItem insertItem = (TreeItem)tree.getDisplay().findWidget(tree.handle, hItem);
 		if (insertItem != null) {
-			OS.ImageList_DragShowNolock(false);
 			tree.setInsertMark(insertItem, before);
-			tree.update();
-			OS.ImageList_DragShowNolock(true);
 			clearInsert = true;
 		}
 	} else {
 		if (clearInsert) {
-			OS.ImageList_DragShowNolock(false);
 			tree.setInsertMark(null, false);
-			tree.update();
-			OS.ImageList_DragShowNolock(true);
 		}
 		clearInsert = false;
 	}
