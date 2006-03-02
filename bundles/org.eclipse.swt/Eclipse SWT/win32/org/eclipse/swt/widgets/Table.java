@@ -111,7 +111,7 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.PaintItem:
 			customDraw = true;
 			setBackgroundTransparent (true);
-			//TODO - setting LVS_EX_LABELTIP causes white rectangles (turn it off for now)
+			//TODO - LVS_EX_LABELTIP causes white rectangles (turn it off)
 			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
 			break;
 	}
@@ -2947,7 +2947,14 @@ void setBackgroundTransparent (boolean transparent) {
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
 	* CLR_NONE to make the table transparent, Windows draws
 	* a black rectangle around the first column.  The fix is
-	* to set and clear LVS_EX_FULLROWSELECT.
+	* clear LVS_EX_FULLROWSELECT.
+	* 
+	* Feature in Windows.  When LVM_SETBKCOLOR is used with
+	* CLR_NONE and LVM_SETSELECTEDCOLUMN is used to select
+	* a column, Windows fills the column with the selection
+	* color, drawing on top of the background image and any
+	* other custom drawing.  The fix is to clear the selected
+	* column.
 	*/
 	int oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
 	if (transparent) {
@@ -2966,6 +2973,12 @@ void setBackgroundTransparent (boolean transparent) {
 				int bits = OS.LVS_EX_FULLROWSELECT;
 				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
 			}
+			/* Clear LVM_SETSELECTEDCOLUMN */
+			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
+				if (sortColumn != null && !sortColumn.isDisposed ()) {
+					OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, -1, 0);
+				}
+			}
 		}
 	} else {
 		if (oldPixel == OS.CLR_NONE) {
@@ -2974,12 +2987,17 @@ void setBackgroundTransparent (boolean transparent) {
 			if (control.backgroundImage == null) {
 				setBackgroundPixel (control.getBackgroundPixel ());
 			}
-			
 			/* Set LVS_EX_FULLROWSELECT */
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
 					int bits = OS.LVS_EX_FULLROWSELECT;
 					OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+				}
+			}
+			/* Set LVM_SETSELECTEDCOLUMN */
+			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
+				if (sortColumn != null && !sortColumn.isDisposed ()) {
+					OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, indexOf (sortColumn), 0);
 				}
 			}
 		}

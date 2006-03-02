@@ -691,7 +691,18 @@ void setSortDirection (int direction) {
 				}
 				break;
 		}
+		/* 
+		* Feature in Windows.  When LVM_SETBKCOLOR is used with
+		* CLR_NONE and LVM_SETSELECTEDCOLUMN is used to select
+		* a column, Windows fills the column with the selection
+		* color, drawing on top of the background image and any
+		* other custom drawing.  The fix is to avoid setting the
+		* selected column.
+		*/
 		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+		if (OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, index, 0);
+		}
 	} else {
 		switch (direction) {
 			case SWT.UP:
