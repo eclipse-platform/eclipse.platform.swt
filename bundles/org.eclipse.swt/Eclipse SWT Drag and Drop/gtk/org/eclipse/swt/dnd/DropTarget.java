@@ -12,8 +12,9 @@ package org.eclipse.swt.dnd;
 
  
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -179,6 +180,8 @@ public DropTarget(Control control, int style) {
 		effect = new TreeDragAndDropEffect((Tree)control);
 	} else if (control instanceof Table) {
 		effect = new TableDragAndDropEffect((Table)control);
+	} else if (control instanceof StyledText) {
+		effect = new StyledTextDragAndDropEffect((StyledText)control);
 	} else {
 		effect = new NoDragAndDropEffect(control);
 	}
