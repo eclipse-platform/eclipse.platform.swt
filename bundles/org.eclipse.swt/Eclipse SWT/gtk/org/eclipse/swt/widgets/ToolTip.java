@@ -20,6 +20,7 @@ import org.eclipse.swt.events.*;
 /*public*/ class ToolTip extends Widget {
 	Shell parent;
 	String text, message;
+	TrayItem item;
 	int x, y, timerId;
 	int /*long*/ layoutText = 0, layoutMessage = 0;
 	int [] borderPolygon;
@@ -53,9 +54,19 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void configure () {
+	int x = this.x;
+	int y = this.y;
+	if (item != null) {
+		OS.gtk_widget_realize (item.handle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (item.handle);
+		int [] px = new int [1], py = new int [1];
+		OS.gdk_window_get_origin (window, px, py);
+		x = px [0];
+		y = py [0];
+	}
 	if (x == -1 || y == -1) {
 		int [] px = new int [1], py = new int [1];
-		OS.gtk_window_get_position (handle, px, py);
+		OS.gdk_window_get_pointer (0, px, py, null);
 		x = px [0];
 		y = py [0];
 	}
@@ -306,13 +317,32 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 }
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
-	if (x == -1 || y == -1) {
-		int [] x = new int [1], y = new int [1];
-		OS.gdk_window_get_pointer (0, x, y, null);
-		OS.gtk_window_move (widget, x [0], y [0]);
-	} else {
-		OS.gtk_window_move (widget, x, y);
+	int x = this.x;
+	int y = this.y;
+	if (item != null) {
+		OS.gtk_widget_realize (item.handle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (item.handle);
+		int [] px = new int [1], py = new int [1];
+		OS.gdk_window_get_origin (window, px, py);
+		x = px [0];
+		y = py [0];
 	}
+	if (x == -1 || y == -1) {
+		int [] px = new int [1], py = new int [1];
+		OS.gdk_window_get_pointer (0, px, py, null);
+		x = px [0];
+		y = py [0];
+	}
+	int /*long*/ screen = OS.gdk_screen_get_default ();
+	OS.gtk_widget_realize (widget);
+	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, OS.GTK_WIDGET_WINDOW (widget));
+	GdkRectangle dest = new GdkRectangle ();
+	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
+	int w = OS.GTK_WIDGET_WIDTH (widget);
+	int h = OS.GTK_WIDGET_HEIGHT (widget);
+	if (dest.height < y + h) y -= h;
+	if (dest.width < x + w) x -= w;
+	OS.gtk_window_move (widget, x, y);
 	return 0;
 }
 
