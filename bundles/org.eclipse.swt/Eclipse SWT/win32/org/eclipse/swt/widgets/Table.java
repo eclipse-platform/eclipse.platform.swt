@@ -483,17 +483,18 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 		}
 	}
 	/*
-	* Feature in Windows.  When the font is set for one cell in a table,
-	* Windows does not reset the font for the next cell.  As a result,
-	* all subsequent cells are drawn using the new font.  The fix is to
-	* reset the font to the default.
-	* 
-	* NOTE: This does not happen for foreground and background.
+	* Bug in Windows.  When the attibutes are for one cell in a table,
+	* Windows does not reset them for the next cell.  As a result, all
+	* subsequent cells are drawn using the previous font, foreground and
+	* background colors.  The fix is to set the all attributes when any
+	* attribute could have changed.
 	*/
 	boolean hasAttributes = true;
 	if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
 		if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
-			if (columnCount == 1) hasAttributes = false;
+			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+			int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+			if (count == 1) hasAttributes = false;
 		}
 	}
 	if (hasAttributes) {
@@ -504,9 +505,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 			if (clrTextBk == -1) {
 				Control control = findBackgroundControl ();
 				if (control == null) control = this;
-				if (control.backgroundImage == null && !hooks (SWT.EraseItem)) {
-					nmcd.clrTextBk = control.getBackgroundPixel ();
-				}
+				nmcd.clrTextBk  = control.backgroundImage == null ? control.getBackgroundPixel () : OS.CLR_NONE;
 			} else {
 				nmcd.clrTextBk = clrTextBk;
 			}
