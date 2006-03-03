@@ -34,6 +34,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class TrayItem extends Item {
 	Tray parent;
+	ToolTip toolTip;
 	String toolTipText;
 	int /*long*/ imageHandle;
 	int /*long*/ tooltipsHandle;
@@ -178,6 +179,11 @@ void destroyWidget () {
 public Tray getParent () {
 	checkWidget ();
 	return parent;
+}
+
+public ToolTip getToolTip () {
+	checkWidget ();
+	return toolTip;
 }
 
 /**
@@ -348,6 +354,14 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
+}
+
+public void setToolTip (ToolTip toolTip) {
+	checkWidget ();
+	ToolTip oldTip = this.toolTip, newTip = toolTip;
+	if (oldTip != null) oldTip.item = null;
+	this.toolTip = newTip;
+	if (newTip != null) newTip.item = this;
 }
 
 /**

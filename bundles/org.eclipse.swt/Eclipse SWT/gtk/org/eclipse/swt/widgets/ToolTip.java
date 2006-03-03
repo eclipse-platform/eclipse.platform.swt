@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-/*public*/ class ToolTip extends Widget {
+public class ToolTip extends Widget {
 	Shell parent;
 	String text, message;
 	TrayItem item;
