@@ -54,35 +54,22 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void configure () {
-	int x = this.x;
-	int y = this.y;
-	if (item != null) {
-		OS.gtk_widget_realize (item.handle);
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (item.handle);
-		int [] px = new int [1], py = new int [1];
-		OS.gdk_window_get_origin (window, px, py);
-		x = px [0];
-		y = py [0];
-	}
-	if (x == -1 || y == -1) {
-		int [] px = new int [1], py = new int [1];
-		OS.gdk_window_get_pointer (0, px, py, null);
-		x = px [0];
-		y = py [0];
-	}
 	int /*long*/ screen = OS.gdk_screen_get_default ();
 	OS.gtk_widget_realize (handle);
 	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, OS.GTK_WIDGET_WINDOW (handle));
 	GdkRectangle dest = new GdkRectangle ();
 	OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
-	Point size = getSize (dest.width / 4);
-	int w = size.x;
-	int h = size.y;
-	OS.gtk_window_resize (handle, w, h+TIP_HEIGHT);
+	Point point = getSize (dest.width / 4);
+	int w = point.x;
+	int h = point.y;
+	point = getLocation ();
+	int x = point.x;
+	int y = point.y;
+	OS.gtk_window_resize (handle, w, h + TIP_HEIGHT);
 	int[] polyline;
-	spikeAbove = dest.height >= y + size.y + TIP_HEIGHT;
-	if (dest.width >= x + size.x) {
-		if (dest.height >= y + size.y + TIP_HEIGHT) {
+	spikeAbove = dest.height >= y + h + TIP_HEIGHT;
+	if (dest.width >= x + w) {
+		if (dest.height >= y + h + TIP_HEIGHT) {
 			int t = TIP_HEIGHT;
 			polyline = new int[] {
 				0, 5+t, 1, 5+t, 1, 3+t, 3, 1+t,  5, 1+t, 5, t, 
@@ -114,10 +101,10 @@ void configure () {
 				35, h-1, 17, h+TIP_HEIGHT-2, 17, h-1,
 				5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6, 
 				0, 5};
-			OS.gtk_window_move (handle, Math.max(0, x - 17), y - size.y - TIP_HEIGHT);
+			OS.gtk_window_move (handle, Math.max(0, x - 17), y - h - TIP_HEIGHT);
 		}
 	} else {
-		if (dest.height >= y + size.y + TIP_HEIGHT) {
+		if (dest.height >= y + h + TIP_HEIGHT) {
 			int t = TIP_HEIGHT;
 			polyline = new int[] {
 				0, 5+t, 1, 5+t, 1, 3+t, 3, 1+t,  5, 1+t, 5, t, 
@@ -133,7 +120,7 @@ void configure () {
 				w-1, h-6+t, w-2, h-5+t, w-2, h-4+t, w-4, h-2+t, w-5, h-2+t, w-6, h-1+t,
 				5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t, 
 				0, 5+t};
-			OS.gtk_window_move (handle, Math.min(dest.width - size.x, x - size.x + 17), y);
+			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y);
 		} else {
 			polyline = new int[] {
 				0, 5, 1, 5, 1, 3, 3, 1,  5, 1, 5, 0, 
@@ -149,7 +136,7 @@ void configure () {
 				w-17, h-1, w-17, h+TIP_HEIGHT-2, w-36, h-1,
 				5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6, 
 				0, 5};
-			OS.gtk_window_move (handle, Math.min(dest.width - size.x, x - size.x + 17), y - size.y - TIP_HEIGHT);
+			OS.gtk_window_move (handle, Math.min(dest.width - w, x - w + 17), y - h - TIP_HEIGHT);
 		}
 	}
 	int /*long*/ rgn = OS.gdk_region_polygon (polyline, polyline.length / 2, OS.GDK_EVEN_ODD_RULE);
@@ -206,6 +193,27 @@ void destroyWidget () {
 public boolean getAutoHide () {
 	checkWidget ();
 	return autohide;
+}
+
+Point getLocation () {
+	int x = this.x;
+	int y = this.y;
+	if (item != null) {
+		int /*long*/ itemHandle = item.handle; 
+		OS.gtk_widget_realize (itemHandle);
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (itemHandle);
+		int [] px = new int [1], py = new int [1];
+		OS.gdk_window_get_origin (window, px, py);
+		x = px [0] + OS.GTK_WIDGET_WIDTH (itemHandle) / 2;
+		y = py [0] + OS.GTK_WIDGET_HEIGHT (itemHandle) / 2;
+	}
+	if (x == -1 || y == -1) {
+		int [] px = new int [1], py = new int [1];
+		OS.gdk_window_get_pointer (0, px, py, null);
+		x = px [0];
+		y = py [0];
+	}
+	return new Point(x, y);
 }
 
 public String getMessage () {
@@ -317,22 +325,9 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 }
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
-	int x = this.x;
-	int y = this.y;
-	if (item != null) {
-		OS.gtk_widget_realize (item.handle);
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (item.handle);
-		int [] px = new int [1], py = new int [1];
-		OS.gdk_window_get_origin (window, px, py);
-		x = px [0];
-		y = py [0];
-	}
-	if (x == -1 || y == -1) {
-		int [] px = new int [1], py = new int [1];
-		OS.gdk_window_get_pointer (0, px, py, null);
-		x = px [0];
-		y = py [0];
-	}
+	Point point = getLocation (); 
+	int x = point.x;
+	int y = point.y;
 	int /*long*/ screen = OS.gdk_screen_get_default ();
 	OS.gtk_widget_realize (widget);
 	int monitorNumber = OS.gdk_screen_get_monitor_at_window (screen, OS.GTK_WIDGET_WINDOW (widget));
@@ -384,6 +379,7 @@ void releaseWidget () {
 	timerId = 0;
 	text = null;
 	message = null;
+	borderPolygon = null;
 }
 
 public void removeSelectionListener (SelectionListener listener) {
