@@ -1086,10 +1086,11 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
 		Event event = new Event ();
 		event.item = item;
 		event.index = index;
+		TreeItem oldItem = currentItem;
 		currentItem = item;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
-		currentItem = null;
+		currentItem = oldItem;
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) item.redraw ();
 	}
@@ -1527,6 +1528,37 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 				rect.left = hParent;
 				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
 					OS.InvalidateRect (handle, rect, true);
+				}
+			}
+		}
+		/*
+		* Bug in Windows.  When a new item is added while Windows
+		* is requesting data a tree item using TVN_GETDISPINFO,
+		* outstanding damage for items that are below the new item
+		* is not scrolled.  The fix is to explicitly damage the
+		* new area.
+		*/
+		if ((style & SWT.VIRTUAL) != 0) {
+			if (currentItem != null) {
+				RECT rect = new RECT ();
+				rect.left = hNewItem;
+				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+					RECT damageRect = new RECT ();
+					boolean damaged = OS.GetUpdateRect (handle, damageRect, true);
+					if (damaged && damageRect.top < rect.bottom) {
+						if (OS.IsWinCE) {
+							OS.OffsetRect (damageRect, 0, rect.bottom - rect.top);
+							OS.InvalidateRect (handle, damageRect, true);
+						} else {
+							int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+							int result = OS.GetUpdateRgn (handle, rgn, true);
+							if (result != OS.NULLREGION) {
+								OS.OffsetRgn (rgn, 0, rect.bottom - rect.top);
+								OS.InvalidateRgn (handle, rgn, true);
+							}
+							OS.DeleteObject (rgn);
+						}
+					}
 				}
 			}
 		}
