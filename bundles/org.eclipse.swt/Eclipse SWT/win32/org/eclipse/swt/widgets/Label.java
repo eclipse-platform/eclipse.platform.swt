@@ -425,6 +425,20 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	if ((bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW) {
 		return LRESULT.ONE;
 	}
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the label uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (findImageControl () != null) {
+			drawBackground (wParam);
+			return LRESULT.ONE;
+		}
+	}
 	return result;
 }
 
@@ -477,6 +491,29 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 		return LRESULT.ZERO;
 	}
 	return result;
+}
+
+
+LRESULT wmColorChild (int wParam, int lParam) {
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW) {
+		return super.wmColorChild (wParam, lParam);
+	}
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the label uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (findImageControl () != null) {
+			OS.SetBkMode (wParam, OS.TRANSPARENT);
+			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+		}
+	}
+	return super.wmColorChild (wParam, lParam);
 }
 
 LRESULT wmDrawChild (int wParam, int lParam) {
