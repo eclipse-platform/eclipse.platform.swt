@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.carbon.HMHelpContentRec;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.events.*;
 
-/*public*/ class ToolTip extends Widget {
+public class ToolTip extends Widget {
 	Shell parent, tip;
 	int x, y;
 	boolean spikeAbove, autohide;

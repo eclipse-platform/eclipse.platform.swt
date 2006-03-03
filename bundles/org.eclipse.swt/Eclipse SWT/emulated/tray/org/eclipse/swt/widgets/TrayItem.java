@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class TrayItem extends Item {
 	Tray parent;
+	ToolTip toolTip;
 	String toolTipText;
 	boolean visible = true;
 	
@@ -127,6 +128,11 @@ public Tray getParent () {
 	return parent;
 }
 
+public ToolTip getToolTip () {
+	checkWidget ();
+	return toolTip;
+}
+
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
@@ -203,6 +209,11 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
+}
+
+public void setToolTip (ToolTip toolTip) {
+	checkWidget ();
+	this.toolTip = toolTip;
 }
 
 /**
