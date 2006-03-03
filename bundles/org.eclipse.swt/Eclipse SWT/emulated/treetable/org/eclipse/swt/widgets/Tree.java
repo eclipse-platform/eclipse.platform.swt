@@ -253,7 +253,9 @@ boolean checkData (TreeItem item, boolean redraw) {
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
 		Event event = new Event ();
+		TreeItem parentItem = item.getParentItem ();
 		event.item = item;
+		event.index = parentItem == null ? indexOf (item) : parentItem.indexOf (item);
 		sendEvent (SWT.SetData, event);
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) redrawItem (item.availableIndex, false);

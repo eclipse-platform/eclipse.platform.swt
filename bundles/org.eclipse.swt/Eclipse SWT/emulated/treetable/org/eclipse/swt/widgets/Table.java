@@ -222,6 +222,7 @@ boolean checkData (TableItem item, boolean redraw) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
+		event.index = indexOf (item);
 		sendEvent (SWT.SetData, event);
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) redrawItem (item.index, false);
