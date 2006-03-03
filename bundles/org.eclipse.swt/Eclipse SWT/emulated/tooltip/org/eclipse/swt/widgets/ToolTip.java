@@ -15,9 +15,10 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-/*public*/ class ToolTip extends Widget {
+public class ToolTip extends Widget {
 	Shell parent, tip;
 	int x, y;
+	int [] borderPolygon;
 	boolean spikeAbove, autohide;
 	Listener listener;
 	TextLayout layoutText, layoutMessage;
@@ -95,6 +96,13 @@ void configure () {
 				w, h-5+t, w-1, h-5+t, w-1, h-3+t, w-2, h-3+t, w-2, h-2+t, w-3, h-2+t, w-3, h-1+t, w-5, h-1+t, w-5, h+t,
 				5, h+t, 5, h-1+t, 3, h-1+t, 3, h-2+t, 2, h-2+t, 2, h-3+t, 1, h-3+t, 1, h-5+t, 0, h-5+t, 
 				0, 5+t};
+			borderPolygon = new int[] {
+					0, 5+t, 1, 4+t, 1, 3+t, 3, 1+t,  4, 1+t, 5, t, 
+					16, t, 16, 1, 35, t,
+					w-6, 0+t, w-5, 1+t, w-4, 1+t, w-2, 3+t, w-2, 4+t, w-1, 5+t,
+					w-1, h-6+t, w-2, h-5+t, w-2, h-4+t, w-4, h-2+t, w-5, h-2+t, w-6, h-1+t,
+					5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t, 
+					0, 5+t};
 			tip.setLocation (Math.max (0, x - i), y);
 		} else {
 			polyline = new int [] {
@@ -104,6 +112,13 @@ void configure () {
 				35, h, 16, h+t, 16, h,
 				5, h, 5, h-1, 3, h-1, 3, h-2, 2, h-2, 2, h-3, 1, h-3, 1, h-5, 0, h-5, 
 				0, 5};
+			borderPolygon = new int[] {
+					0, 5, 1, 4, 1, 3, 3, 1,  4, 1, 5, 0, 
+					w-6, 0, w-5, 1, w-4, 1, w-2, 3, w-2, 4, w-1, 5,
+					w-1, h-6, w-2, h-5, w-2, h-4, w-4, h-2, w-5, h-2, w-6, h-1,
+					36, h-1, 16, h+t-1, 16, h-1,
+					5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6, 
+					0, 5};
 			tip.setLocation (Math.max (0, x - i), y - size.y - t);
 		}
 	} else {
@@ -115,6 +130,13 @@ void configure () {
 				w, h-5+t, w-1, h-5+t, w-1, h-3+t, w-2, h-3+t, w-2, h-2+t, w-3, h-2+t, w-3, h-1+t, w-5, h-1+t, w-5, h+t,
 				5, h+t, 5, h-1+t, 3, h-1+t, 3, h-2+t, 2, h-2+t, 2, h-3+t, 1, h-3+t, 1, h-5+t, 0, h-5+t, 
 				0, 5+t};
+			borderPolygon = new int[] {
+					0, 5+t, 1, 4+t, 1, 3+t, 3, 1+t,  4, 1+t, 5, t, 
+					w-35, t, w-17, 2, w-17, t,
+					w-6, t, w-5, 1+t, w-4, 1+t, w-2, 3+t, w-2, 4+t, w-1, 5+t,
+					w-1, h-6+t, w-2, h-5+t, w-2, h-4+t, w-4, h-2+t, w-5, h-2+t, w-6, h-1+t,
+					5, h-1+t, 4, h-2+t, 3, h-2+t, 1, h-4+t, 1, h-5+t, 0, h-6+t, 
+					0, 5+t};
 			tip.setLocation (Math.min (dest.width - size.x, x - size.x + i), y);
 		} else {
 			polyline = new int [] {
@@ -124,6 +146,13 @@ void configure () {
 				w-16, h, w-16, h+t, w-35, h,
 				5, h, 5, h-1, 3, h-1, 3, h-2, 2, h-2, 2, h-3, 1, h-3, 1, h-5, 0, h-5, 
 				0, 5};
+			borderPolygon = new int[] {
+					0, 5, 1, 4, 1, 3, 3, 1,  4, 1, 5, 0, 
+					w-6, 0, w-5, 1, w-4, 1, w-2, 3, w-2, 4, w-1, 5,
+					w-1, h-6, w-2, h-5, w-2, h-4, w-4, h-2, w-5, h-2, w-6, h-1,
+					w-17, h-1, w-17, h+t-2, w-36, h-1,
+					5, h-1, 4, h-2, 3, h-2, 1, h-4, 1, h-5, 0, h-6, 
+					0, 5};
 			tip.setLocation (Math.min (dest.width - size.x, x - size.x + i), y - size.y - t);
 		}
 	}	
@@ -218,6 +247,7 @@ void onDispose (Event event) {
 	layoutMessage = null;
 	if (boldFont != null) boldFont.dispose ();
 	boldFont = null;
+	borderPolygon = null;
 }
 
 void onMouseDown (Event event) {
@@ -229,7 +259,13 @@ void onPaint (Event event) {
 	GC gc = event.gc;
 	int x = BORDER + PADDING;
 	int y = BORDER + PADDING;
-	if ((style & SWT.BALLOON) != 0 && spikeAbove) y += TIP_HEIGHT;
+	if ((style & SWT.BALLOON) != 0) {
+		if (spikeAbove) y += TIP_HEIGHT;
+		gc.drawPolygon (borderPolygon);
+	} else {
+		Rectangle rect = tip.getClientArea ();
+		gc.drawRectangle(rect.x, rect.y, rect.width - 1, rect.height -1);
+	} 
 	if (layoutText != null) {
 		int id = style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING);
 		if ((style & SWT.BALLOON) != 0 && id != 0) {
