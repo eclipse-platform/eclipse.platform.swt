@@ -699,8 +699,11 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	int [] argList = {OS.XmNposition, value};
-	OS.XtSetValues (handle, argList, argList.length / 2);	
+	int [] argList = {OS.XmNmaximumValue, 0, OS.XmNminimumValue, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	value = Math.min (Math.max (argList [3], value), argList [1]);
+	int [] argList1 = {OS.XmNposition, value};
+	OS.XtSetValues (handle, argList1, argList1.length / 2);
 }
 
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
