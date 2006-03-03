@@ -2550,20 +2550,20 @@ public TreeItem [] getSelection () {
 	}
 	int count = 0;
 	TreeItem [] guess = new TreeItem [8];
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
 	if ((style & SWT.VIRTUAL) != 0) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 		count = getSelection (hItem, tvItem, guess, 0);
 	} else {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
 			if (item != null) {
-				tvItem.hItem = item.handle;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+				int hItem = item.handle;
+				int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+				if ((state & OS.TVIS_SELECTED) != 0) {
 					if (count < guess.length) guess [count] = item;
 					count++;
 				}
@@ -2578,6 +2578,8 @@ public TreeItem [] getSelection () {
 		System.arraycopy (guess, 0, result, 0, count);
 		return result;
 	}
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
 	if ((style & SWT.VIRTUAL) != 0) {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
@@ -2614,28 +2616,23 @@ public int getSelectionCount () {
 	if ((style & SWT.SINGLE) != 0) {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (hItem == 0) return 0;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
-		tvItem.hItem = hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return 0;
+		int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+		if ((state & OS.TVIS_SELECTED) == 0) return 0;
 		return 1;
 	}
 	int count = 0;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
 	if ((style & SWT.VIRTUAL) != 0) {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		count = getSelection (hItem, tvItem, null, 0);
+		count = getSelection (hItem, null, null, 0);
 	} else {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
 			if (item != null) {
-				tvItem.hItem = item.handle;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				if ((tvItem.state & OS.TVIS_SELECTED) != 0) count++;
+				int hItem = item.handle;
+				int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+				if ((state & OS.TVIS_SELECTED) != 0) count++;
 			}
 		}
 	}
@@ -4011,11 +4008,8 @@ public void showSelection () {
 	if ((style & SWT.SINGLE) != 0) {	
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (hItem == 0) return;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
-		tvItem.hItem = hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return;
+		int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+		if ((state & OS.TVIS_SELECTED) == 0) return;
 	} else {
 		int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
@@ -4024,16 +4018,13 @@ public void showSelection () {
 			hItem = getNextSelection (hRoot);
 		} else {
 			//FIXME - this code expands first selected item it finds
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
 			int index = 0;
 			while (index <items.length) {
 				TreeItem item = items [index];
 				if (item != null) {
-					tvItem.hItem = item.handle;
-					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-						hItem = tvItem.hItem;
+					int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, item.handle, OS.TVIS_SELECTED);
+					if ((state & OS.TVIS_SELECTED) != 0) {
+						hItem = item.handle;
 						break;
 					}
 				}

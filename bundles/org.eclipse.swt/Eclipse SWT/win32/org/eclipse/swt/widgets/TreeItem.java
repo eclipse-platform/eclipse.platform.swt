@@ -562,12 +562,15 @@ public boolean getChecked () {
  */
 public boolean getExpanded () {
 	checkWidget ();
+	/*
+	* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
+	* to return only the bits specified by the stateMask, when called
+	* with TVIS_EXPANDED, the entire state is returned.  The fix is
+	* to explicitly check for the TVIS_EXPANDED bit.
+	*/
 	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.hItem = handle;
-	tvItem.mask = OS.TVIF_STATE;
-	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return (tvItem.state & OS.TVIS_EXPANDED) != 0;
+	int state = OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, handle, OS.TVIS_EXPANDED);
+	return (state & OS.TVIS_EXPANDED) != 0;
 }
 
 /**
