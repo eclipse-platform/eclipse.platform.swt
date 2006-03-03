@@ -865,38 +865,10 @@ public Table getParent () {
  * Returns the receiver's ideal width for the specified columnIndex.
  */
 int getPreferredWidth (int columnIndex) {
-	if (parent.hooks (SWT.MeasureItem)) {
-		GC gc = new GC (parent);
-		gc.setFont (getFont (columnIndex));
-		Event event = new Event ();
-		event.item = this;
-		event.gc = gc;
-		event.index = columnIndex;
-		event.x = getContentX (columnIndex);
-		event.y = parent.getItemY (this);
-		event.width = getContentWidth (0) + parent.getCellPadding () + MARGIN_TEXT;	/* padding and margin to right of content only */
-		event.height = parent.itemHeight;
-		parent.sendEvent (SWT.MeasureItem, event);
-		if (parent.allowItemHeightChange) {
-			parent.allowItemHeightChange = false;
-			if (parent.itemHeight != event.height) {
-				parent.itemHeight = event.height;
-				parent.redraw ();
-			}
-		}
-		gc.dispose ();
-		return event.width;
-	}
-
-	int width = 2 * parent.getCellPadding ();
-	if (columnIndex == 0 && (parent.style & SWT.CHECK) != 0) {
-		width += parent.checkboxBounds.width;
-		width += Table.MARGIN_IMAGE;
-	}
+	int width = 0;
 	GC gc = new GC (parent);
 	gc.setFont (getFont (columnIndex, false));
 	width += gc.stringExtent (getText (columnIndex, false)).x + 2 * MARGIN_TEXT;
-	gc.dispose ();
 	if (columnIndex == 0) {
 		if (parent.col0ImageWidth > 0) {
 			width += parent.col0ImageWidth;
@@ -909,7 +881,33 @@ int getPreferredWidth (int columnIndex) {
 			width += Table.MARGIN_IMAGE;
 		}
 	}
-	return width;
+
+	if (parent.hooks (SWT.MeasureItem)) {
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.x = getContentX (columnIndex);
+		event.y = parent.getItemY (this);
+		event.width = width;
+		event.height = parent.itemHeight;
+		parent.sendEvent (SWT.MeasureItem, event);
+		if (parent.allowItemHeightChange) {
+			parent.allowItemHeightChange = false;
+			if (parent.itemHeight != event.height) {
+				parent.itemHeight = event.height;
+				parent.redraw ();
+			}
+		}
+		width = event.width;
+	}
+
+	gc.dispose ();
+	if (columnIndex == 0 && (parent.style & SWT.CHECK) != 0) {
+		width += parent.checkboxBounds.width;
+		width += Table.MARGIN_IMAGE;
+	}
+	return width + 2 * parent.getCellPadding ();
 }
 public String getText () {
 	checkWidget ();
@@ -974,7 +972,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 	if (parent.hooks (SWT.MeasureItem) && parent.columns.length == 0) {
 		int contentWidth = getContentWidth (columnIndex);
 		int contentX = getContentX (columnIndex);
-		gc.setFont (getFont (columnIndex));
+		gc.setFont (getFont (columnIndex, false));
 		Event event = new Event ();
 		event.item = this;
 		event.gc = gc;
