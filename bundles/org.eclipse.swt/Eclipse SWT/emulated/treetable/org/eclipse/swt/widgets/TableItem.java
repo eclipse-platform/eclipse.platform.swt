@@ -584,12 +584,20 @@ Rectangle getFocusBounds () {
 	if ((parent.style & SWT.FULL_SELECTION) != 0) {
 		int col0index = columnOrder.length == 0 ? 0 : columnOrder [0];
 		if (col0index == 0) {
-			x = getTextX (0);
+			if (parent.hooks (SWT.PaintItem)) {
+				x = getContentX (0);
+			} else {
+				x = getTextX (0);
+			}
 		} else {
 			x = -parent.horizontalOffset;
 		}
 	} else {
-		x = getTextX (0);
+		if (parent.hooks (SWT.PaintItem)) {
+			x = getContentX (0);
+		} else {
+			x = getTextX (0);
+		}
 	}
 
 	if (columns.length > 0) {
@@ -895,7 +903,7 @@ int getPreferredWidth (int columnIndex) {
 		if (parent.allowItemHeightChange) {
 			parent.allowItemHeightChange = false;
 			if (parent.itemHeight != event.height) {
-				parent.itemHeight = event.height;
+				parent.itemHeight = event.height + 2 * parent.getCellPadding ();
 				parent.redraw ();
 			}
 		}
@@ -987,7 +995,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 		if (parent.allowItemHeightChange) {
 			parent.allowItemHeightChange = false;
 			if (parent.itemHeight != event.height) {
-				parent.itemHeight = event.height;
+				parent.itemHeight = event.height + 2 * parent.getCellPadding ();
 				parent.redraw ();
 			}
 		}
@@ -1060,7 +1068,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 	boolean drawContent = true;
 	if (parent.hooks (SWT.EraseItem)) {
 		gc.setFont (getFont ());
-		if (isSelected) {
+		if (isSelected && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		} else {
@@ -1192,7 +1200,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 		int contentWidth = getContentWidth (columnIndex);
 		int contentX = getContentX (columnIndex);
 		gc.setFont (getFont ());
-		if (isSelected) {
+		if (isSelected && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		} else {

@@ -696,7 +696,7 @@ void updateWidth (GC gc) {
 	/* the header must be damaged if the display text has changed or if the alignment is not LEFT */	
 	if ((style & SWT.LEFT) == 0 || !oldDisplayText.equals (displayText)) {
 		int padding = parent.getHeaderPadding ();
-		parent.header.redraw (getX () + padding, 0, width - padding, parent.header.getBounds ().height, false);
+		parent.header.redraw (getX () + padding, 0, width - padding, parent.getHeaderHeight (), false);
 	}
 }
 }
