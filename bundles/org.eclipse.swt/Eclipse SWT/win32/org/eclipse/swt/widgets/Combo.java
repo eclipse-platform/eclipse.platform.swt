@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
 
 public class Combo extends Composite {
 	boolean noSelection, ignoreModify, ignoreCharacter;
-	int visibleCount = 5;
+	int scrollWidth, visibleCount = 5;
 	
 	/**
 	 * the operating system limit for the number of characters
@@ -121,7 +121,9 @@ public class Combo extends Composite {
  */
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	if ((style & SWT.H_SCROLL) != 0) this.style |= SWT.H_SCROLL;
+	/* This code is intentionally commented */
+	//if ((style & SWT.H_SCROLL) != 0) this.style |= SWT.H_SCROLL;
+	this.style |= SWT.H_SCROLL;
 }
 
 /**
@@ -351,23 +353,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT) {
+		int newFont, oldFont = 0;
+		int hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+		RECT rect = new RECT ();
+		int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+		if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
+		int length = OS.GetWindowTextLength (handle);
+		int cp = getCodePage ();
+		TCHAR buffer = new TCHAR (cp, length + 1);
+		OS.GetWindowText (handle, buffer, length + 1);
+		OS.DrawText (hDC, buffer, length, rect, flags);
+		width = Math.max (width, rect.right - rect.left);
 		if ((style & SWT.H_SCROLL) != 0) {
-			width = OS.SendMessage (handle, OS.CB_GETHORIZONTALEXTENT, 0, 0);
+			width = Math.max (width, scrollWidth);
 		} else {
-			int newFont, oldFont = 0;
-			int hDC = OS.GetDC (handle);
-			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-			int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
-			RECT rect = new RECT ();
-			int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
-			if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
-			int length = OS.GetWindowTextLength (handle);
-			int cp = getCodePage ();
-			TCHAR buffer = new TCHAR (cp, length + 1);
-			OS.GetWindowText (handle, buffer, length + 1);
-			OS.DrawText (hDC, buffer, length, rect, flags);
-			width = Math.max (width, rect.right - rect.left);
 			for (int i=0; i<count; i++) {
 				length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
 				if (length != OS.CB_ERR) {
@@ -379,9 +381,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					}
 				}
 			}
-			if (newFont != 0) OS.SelectObject (hDC, oldFont);
-			OS.ReleaseDC (handle, hDC);
 		}
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
 	}
 	if (hHint == SWT.DEFAULT) {
 		if ((style & SWT.SIMPLE) != 0) {
@@ -1072,9 +1074,7 @@ public void removeAll () {
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	sendEvent (SWT.Modify);
 	if (isDisposed ()) return;
-	if ((style & SWT.H_SCROLL) != 0) {
-		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
-	}
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (0);
 }
 
 /**
@@ -1298,9 +1298,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
 		height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
-		if ((style & SWT.H_SCROLL) != 0) { 
-			height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
-		}
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
 		* the combo box resizes the height of the text field and uses
@@ -1399,7 +1396,7 @@ public void setItems (String [] items) {
 		hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
+		setScrollWidth (0);
 	}
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	int codePage = getCodePage ();
@@ -1411,14 +1408,14 @@ public void setItems (String [] items) {
 		if (code == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if ((style & SWT.H_SCROLL) != 0) {
 			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			OS.DrawText (hDC, buffer, -1, rect, flags);
 			newWidth = Math.max (newWidth, rect.right - rect.left);
 		}
 	}
 	if ((style & SWT.H_SCROLL) != 0) {
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
-		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+		setScrollWidth (newWidth + 3);
 	}
 	sendEvent (SWT.Modify);
 	// widget could be disposed at this point
@@ -1527,7 +1524,40 @@ void setScrollWidth () {
 	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+	setScrollWidth (newWidth + 3);
+}
+
+void setScrollWidth (int scrollWidth) {
+	this.scrollWidth = scrollWidth;
+	if ((style & SWT.SIMPLE) != 0) {
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, scrollWidth, 0);
+		return;
+	}
+	boolean scroll = false;
+	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+	if (count > 3) {
+		int maxWidth = 0;
+		if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
+			RECT rect = new RECT ();
+			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+			maxWidth = (rect.right - rect.left) / 4;
+		} else {
+			int hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
+			MONITORINFO lpmi = new MONITORINFO ();
+			lpmi.cbSize = MONITORINFO.sizeof;
+			OS.GetMonitorInfo (hmonitor, lpmi);
+			maxWidth = (lpmi.rcWork_right - lpmi.rcWork_left) / 4;
+		}
+		scroll = scrollWidth > maxWidth;
+	}
+	if (scroll) {
+		OS.SendMessage (handle, OS.CB_SETDROPPEDWIDTH, 0, 0);
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, scrollWidth, 0);
+	} else {
+		scrollWidth += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		OS.SendMessage (handle, OS.CB_SETDROPPEDWIDTH, scrollWidth, 0);
+		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, 0, 0);
+	}
 }
 
 void setScrollWidth (TCHAR buffer, boolean grow) {
@@ -1544,12 +1574,11 @@ void setScrollWidth (TCHAR buffer, boolean grow) {
 }
 
 void setScrollWidth (int newWidth, boolean grow) {
-	int width = OS.SendMessage (handle, OS.CB_GETHORIZONTALEXTENT, 0, 0);
 	if (grow) {
-		if (newWidth <= width) return;
-		OS.SendMessage (handle, OS.CB_SETHORIZONTALEXTENT, newWidth + 3, 0);
+		if (newWidth <= scrollWidth) return;
+		setScrollWidth (newWidth + 3);
 	} else {
-		if (newWidth < width) return;
+		if (newWidth < scrollWidth) return;
 		setScrollWidth ();
 	}
 }
@@ -1974,39 +2003,48 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* match from the list.  The fix is to remember the original
 	* text and reset it after the widget is resized.
 	*/
+	LRESULT result = null;
 	if ((style & SWT.READ_ONLY) != 0 || (style & SWT.DROP_DOWN) == 0) {
-		return super.WM_SIZE (wParam, lParam);
-	}
-	int index = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
-	boolean redraw = false;
-	TCHAR buffer = null;
-	int [] start = null, end = null;
-	if (index == OS.CB_ERR) {
-		int length = OS.GetWindowTextLength (handle);
-		if (length != 0) {
-			buffer = new TCHAR (getCodePage (), length + 1);
-			OS.GetWindowText (handle, buffer, length + 1);
-			start = new int [1];  end = new int [1];
-			OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
-			redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-			if (redraw) setRedraw (false);
+		result = super.WM_SIZE (wParam, lParam);
+	} else {
+		int index = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+		boolean redraw = false;
+		TCHAR buffer = null;
+		int [] start = null, end = null;
+		if (index == OS.CB_ERR) {
+			int length = OS.GetWindowTextLength (handle);
+			if (length != 0) {
+				buffer = new TCHAR (getCodePage (), length + 1);
+				OS.GetWindowText (handle, buffer, length + 1);
+				start = new int [1];  end = new int [1];
+				OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
+				redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+				if (redraw) setRedraw (false);
+			}
+		}
+		result = super.WM_SIZE (wParam, lParam);
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the resize
+		* event.  If this happens, end the processing of the
+		* Windows message by returning the result of the
+		* WM_SIZE message.
+		*/
+		if (isDisposed ()) return result;
+		if (buffer != null) {
+			OS.SetWindowText (handle, buffer);
+			int bits = start [0] | (end [0] << 16);
+			OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
+			if (redraw) setRedraw (true);
 		}
 	}
-	LRESULT result = super.WM_SIZE (wParam, lParam);
 	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the resize
-	* event.  If this happens, end the processing of the
-	* Windows message by returning the result of the
-	* WM_SIZE message.
+	* Feature in Windows.  When CB_SETDROPPEDWIDTH is called with
+	* a width that is smaller than the current size of the combo
+	* box, it is ignored.  This the fix is to set the width after
+	* the combo box has been resized.
 	*/
-	if (isDisposed ()) return result;
-	if (buffer != null) {
-		OS.SetWindowText (handle, buffer);
-		int bits = start [0] | (end [0] << 16);
-		OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
-		if (redraw) setRedraw (true);
-	}
+	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (scrollWidth);
 	return result; 
 }
 
