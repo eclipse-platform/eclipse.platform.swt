@@ -2708,7 +2708,7 @@ void onScrollHorizontal (Event event) {
 		clientArea.width, clientArea.height,
 		horizontalOffset - newSelection, 0);
 	gc.dispose ();
-	if (header.isVisible ()) {
+	if (drawCount == 0 && header.isVisible ()) {
 		header.update ();
 		clientArea = header.getClientArea ();
 		gc = new GC (header);
