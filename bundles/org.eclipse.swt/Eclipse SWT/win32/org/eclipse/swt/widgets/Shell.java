@@ -1709,8 +1709,10 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	/* Process WM_ACTIVATE */
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if ((wParam & 0xFFFF) == 0) {
-		ToolTip tip = getCurrentToolTip ();
-		if (tip != null) tip.setVisible (false);
+		if (lParam == 0 || (lParam != toolTipHandle && lParam != balloonTipHandle)) {
+			ToolTip tip = getCurrentToolTip ();
+			if (tip != null) tip.setVisible (false);
+		}
 	}
 	return parent != null ? LRESULT.ZERO : result;
 }

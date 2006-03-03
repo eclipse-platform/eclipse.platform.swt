@@ -375,7 +375,7 @@ public void setImage (Image image) {
  * 
  * @since 3.2
  */
-/*public*/ void setToolTip (ToolTip toolTip) {
+public void setToolTip (ToolTip toolTip) {
 	checkWidget ();
 	ToolTip oldTip = this.toolTip, newTip = toolTip;
 	if (oldTip != null) oldTip.item = null;

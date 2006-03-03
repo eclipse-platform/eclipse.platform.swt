@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  * @since 3.2
  */
 
-/*public*/ class ToolTip extends Widget {
+public class ToolTip extends Widget {
 	Shell parent;
 	TrayItem item;
 	String text = "", message = "";
