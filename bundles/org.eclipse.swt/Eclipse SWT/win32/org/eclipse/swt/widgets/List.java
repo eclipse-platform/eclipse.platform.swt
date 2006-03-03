@@ -1192,7 +1192,7 @@ public void setItems (String [] items) {
 		if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) break;
 		if ((style & SWT.H_SCROLL) != 0) {
 			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			OS.DrawText (hDC, buffer, -1, rect, flags);
 			newWidth = Math.max (newWidth, rect.right - rect.left);
 		}
 		index++;
