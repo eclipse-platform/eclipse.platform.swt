@@ -281,6 +281,7 @@ public class OS extends Platform {
 	public static final int CB_GETCURSEL = 0x147;
 	public static final int CB_GETDROPPEDCONTROLRECT = 0x152;
 	public static final int CB_GETDROPPEDSTATE = 0x157;
+	public static final int CB_GETDROPPEDWIDTH = 0x015f;
 	public static final int CB_GETEDITSEL = 0x140;
 	public static final int CB_GETHORIZONTALEXTENT = 0x015d;
 	public static final int CB_GETITEMHEIGHT = 0x154;
@@ -291,6 +292,7 @@ public class OS extends Platform {
 	public static final int CB_RESETCONTENT = 0x14b;
 	public static final int CB_SELECTSTRING = 0x14d;
 	public static final int CB_SETCURSEL = 0x14e;
+	public static final int CB_SETDROPPEDWIDTH= 0x0160;
 	public static final int CB_SETEDITSEL = 0x142;
 	public static final int CB_SETHORIZONTALEXTENT = 0x015e;
 	public static final int CB_SHOWDROPDOWN = 0x14f;
@@ -1453,6 +1455,7 @@ public class OS extends Platform {
 	public static final int TTS_BALLOON = 0x40;
 	public static final int TV_FIRST = 0x1100;
 	public static final int TVE_COLLAPSE = 0x1;
+	public static final int TVE_COLLAPSERESET = 0x8000;
 	public static final int TVE_EXPAND = 0x2;
 	public static final int TVGN_CARET = 0x9;
 	public static final int TVGN_CHILD = 0x4;
