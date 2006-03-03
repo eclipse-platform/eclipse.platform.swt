@@ -158,7 +158,7 @@ public Tray getParent () {
  * 
  * @since 3.2
  */
-/*public*/ ToolTip getToolTip () {
+public ToolTip getToolTip () {
 	checkWidget ();
 	return toolTip;
 }
