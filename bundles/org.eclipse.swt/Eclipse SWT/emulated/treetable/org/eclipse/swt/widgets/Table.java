@@ -3703,6 +3703,7 @@ public void showItem (TableItem item) {
 		setTopIndex (item.index);
 	} else {
 		/* item is below current viewport, so show on bottom */
+		visibleItemCount = Math.max (visibleItemCount, 1);	/* item to show should be top item */
 		setTopIndex (Math.min (index - visibleItemCount + 1, itemsCount - 1));
 	}
 }
