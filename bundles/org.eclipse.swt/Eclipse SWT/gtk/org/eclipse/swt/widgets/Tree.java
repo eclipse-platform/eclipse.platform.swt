@@ -266,11 +266,17 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 }
 
 boolean checkData (TreeItem item) {
+	TreeItem parentItem = item.getParentItem ();
+	return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item));
+}
+
+boolean checkData (TreeItem item, int index) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
+		event.index = index;
 		int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		int signal_id = OS.g_signal_lookup (OS.row_changed, OS.gtk_tree_model_get_type ());
 		OS.g_signal_handlers_block_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
