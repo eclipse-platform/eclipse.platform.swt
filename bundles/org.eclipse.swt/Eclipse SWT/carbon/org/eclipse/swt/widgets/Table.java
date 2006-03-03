@@ -200,17 +200,14 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 	}
 	return result;
 }
-boolean checkData (TableItem item, boolean redraw) {
-	return checkData (item, indexOf (item), redraw);
-}
 
-boolean checkData (TableItem item, int index, boolean redraw) {
+boolean checkData (TableItem item, boolean redraw) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
-		event.index = index;
+		event.index = indexOf (item);
 		currentItem = item;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point

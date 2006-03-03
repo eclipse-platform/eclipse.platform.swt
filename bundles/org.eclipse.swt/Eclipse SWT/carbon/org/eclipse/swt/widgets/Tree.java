@@ -369,17 +369,13 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 }
 
 boolean checkData (TreeItem item, boolean redraw) {
-	TreeItem parentItem = item.getParentItem ();
-	return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
-}
-
-boolean checkData (TreeItem item, int index, boolean redraw) {
 	if (item.cached) return true;
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
 		Event event = new Event ();
+		TreeItem parentItem = item.getParentItem ();
 		event.item = item;
-		event.index = index;
+		event.index = parentItem == null ? indexOf (item) : parentItem.indexOf (item);
 		ignoreRedraw = true;
 		sendEvent (SWT.SetData, event);
 		//widget could be disposed at this point
