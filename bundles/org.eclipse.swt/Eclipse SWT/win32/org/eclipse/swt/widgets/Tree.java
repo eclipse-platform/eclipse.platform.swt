@@ -5350,6 +5350,9 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	if (hwndHeader != 0) {
 		OS.SendMessage (hwndHeader, OS.WM_SETFONT, wParam, lParam);
 	}
+	if (headerToolTipHandle != 0) {
+		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
+	}
 	return result;
 }
 

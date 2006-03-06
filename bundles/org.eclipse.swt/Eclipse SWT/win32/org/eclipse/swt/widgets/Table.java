@@ -4756,6 +4756,15 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_SETFONT (int wParam, int lParam) {
+	LRESULT result = super.WM_SETFONT (wParam, lParam);
+	if (result != null) return result;
+	if (headerToolTipHandle != 0) {
+		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
+	}
+	return result;
+}
+
 LRESULT WM_SIZE (int wParam, int lParam) {
 	if (ignoreResize) return null;
 	if (resizeCount != 0) {
