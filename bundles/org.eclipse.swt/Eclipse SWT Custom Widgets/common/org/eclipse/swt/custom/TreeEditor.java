@@ -87,10 +87,10 @@ public TreeEditor (Tree tree) {
 
 	columnListener = new ControlListener() {
 		public void controlMoved(ControlEvent e){
-			resize();
+			_resize();
 		}
 		public void controlResized(ControlEvent e){
-			resize();
+			_resize();
 		}
 	};
 	treeListener = new TreeListener () {
@@ -98,7 +98,7 @@ public TreeEditor (Tree tree) {
 			public void run() {
 				if (editor == null || editor.isDisposed()) return;
 				if (TreeEditor.this.tree.isDisposed()) return;
-				resize();
+				_resize();
 				editor.setVisible(true);
 			}
 		};
@@ -218,7 +218,7 @@ public void setColumn(int column) {
 	// In this situation, there is a single default column.
 	if (columnCount == 0) {
 		this.column = (column == 0) ? 0 : -1;
-		resize();
+		_resize();
 		return;
 	}
 	if (this.column > -1 && this.column < columnCount){
@@ -232,12 +232,12 @@ public void setColumn(int column) {
 	this.column = column;
 	TreeColumn treeColumn = tree.getColumn(this.column);
 	treeColumn.addControlListener(columnListener);
-	resize();
+	_resize();
 }
 
 public void setItem (TreeItem item) {
 	this.item = item;
-	resize();
+	_resize();
 }
 
 /**
@@ -271,12 +271,12 @@ public void setEditor (Control editor, TreeItem item) {
 	setEditor(editor);
 }
 
-void resize () {
+void _resize () {
 	if (tree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;	
 	int columnCount = tree.getColumnCount();
 	if (columnCount == 0 && column != 0) return;
 	if (columnCount > 0 && (column < 0 || column >= columnCount)) return;
-	super.resize();
+	super._resize();
 }
 }

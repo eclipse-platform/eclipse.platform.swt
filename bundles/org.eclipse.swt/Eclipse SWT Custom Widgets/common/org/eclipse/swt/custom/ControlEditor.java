@@ -118,7 +118,7 @@ public ControlEditor (Composite parent) {
 
 	tableListener = new Listener() {
 		public void handleEvent(Event e) {
-			resize ();
+			_resize ();
 		}
 	};	
 	parent.addListener (SWT.Resize, tableListener);
@@ -206,9 +206,9 @@ public Control getEditor () {
  * @since 2.1
  */
 public void layout () {
-	resize();
+	_resize();
 }
-void resize () {
+void _resize () {
 	if (editor == null || editor.isDisposed()) return;
 	if (editor.getVisible ()) {
 		hadFocus = editor.isFocusControl();
@@ -243,7 +243,7 @@ public void setEditor (Control editor) {
 	}
 	
 	this.editor = editor;
-	resize();
+	_resize();
 	if (editor == null || editor.isDisposed()) return;
 	editor.setVisible(true);
 }

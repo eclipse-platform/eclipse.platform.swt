@@ -222,19 +222,19 @@ public TableCursor(Table parent, int style) {
 		public void handleEvent(Event event) {
 			row = null;
 			column = null;
-			resize();
+			_resize();
 		}
 	};
 	disposeColumnListener = new Listener() {
 		public void handleEvent(Event event) {
 			row = null;
 			column = null;
-			resize();
+			_resize();
 		}
 	};
 	resizeListener = new Listener() {
 		public void handleEvent(Event event) {
-			resize();
+			_resize();
 		}
 	};
 	ScrollBar hBar = table.getHorizontalBar();
@@ -536,7 +536,7 @@ void setRowColumn(TableItem row, TableColumn column, boolean notify) {
 
 public void setVisible(boolean visible) {
 	checkWidget();
-	if (visible) resize();
+	if (visible) _resize();
 	super.setVisible(visible);
 }
 
@@ -568,7 +568,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	removeListener(SWT.DefaultSelection, listener);	
 }
 
-void resize() {
+void _resize() {
 	if (row == null) {
 		setBounds(-200, -200, 0, 0);
 	} else {
