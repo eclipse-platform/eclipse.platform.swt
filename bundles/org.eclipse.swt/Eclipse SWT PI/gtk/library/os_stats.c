@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1089;
-int OS_nativeFunctionCallCount[1089];
+int OS_nativeFunctionCount = 1100;
+int OS_nativeFunctionCallCount[1100];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -567,6 +567,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1hseparator_1new",
 	"_1gtk_1icon_1factory_1lookup_1default",
 	"_1gtk_1icon_1set_1render_1icon",
+	"_1gtk_1icon_1source_1free",
+	"_1gtk_1icon_1source_1new",
+	"_1gtk_1icon_1source_1set_1pixbuf",
 	"_1gtk_1im_1context_1filter_1keypress",
 	"_1gtk_1im_1context_1focus_1in",
 	"_1gtk_1im_1context_1focus_1out",
@@ -639,16 +642,23 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1notebook_1set_1show_1tabs",
 	"_1gtk_1notebook_1set_1tab_1pos",
 	"_1gtk_1object_1sink",
+	"_1gtk_1paint_1arrow",
 	"_1gtk_1paint_1box",
+	"_1gtk_1paint_1box_1gap",
 	"_1gtk_1paint_1check",
 	"_1gtk_1paint_1expander",
+	"_1gtk_1paint_1extension",
 	"_1gtk_1paint_1flat_1box",
 	"_1gtk_1paint_1focus",
 	"_1gtk_1paint_1handle",
+	"_1gtk_1paint_1hline",
 	"_1gtk_1paint_1layout",
 	"_1gtk_1paint_1option",
+	"_1gtk_1paint_1shadow",
+	"_1gtk_1paint_1shadow_1gap",
 	"_1gtk_1paint_1slider",
 	"_1gtk_1paint_1tab",
+	"_1gtk_1paint_1vline",
 	"_1gtk_1plug_1get_1id",
 	"_1gtk_1plug_1new",
 	"_1gtk_1progress_1bar_1new",
@@ -716,6 +726,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1style_1get_1white_1gc",
 	"_1gtk_1style_1get_1xthickness",
 	"_1gtk_1style_1get_1ythickness",
+	"_1gtk_1style_1render_1icon",
 	"_1gtk_1target_1list_1new",
 	"_1gtk_1target_1list_1unref",
 	"_1gtk_1text_1buffer_1copy_1clipboard",

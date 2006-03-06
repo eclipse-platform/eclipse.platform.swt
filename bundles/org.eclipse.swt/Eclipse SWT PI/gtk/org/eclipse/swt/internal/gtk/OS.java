@@ -91,6 +91,10 @@ public class OS extends Platform {
 	public static final int GDK_ENTER_NOTIFY_MASK = 0x1000;
 	public static final int GDK_ENTER_NOTIFY = 10;
 	public static final int GDK_EVEN_ODD_RULE = 0;
+	public static final int GTK_EXPANDER_COLAPSED = 0;
+	public static final int GTK_EXPANDER_SEMI_COLLAPSED = 1;
+	public static final int GTK_EXPANDER_SEMI_EXPANDED = 2;
+	public static final int GTK_EXPANDER_EXPANDED = 3;
 	public static final int GDK_EXPOSE = 2;
 	public static final int GDK_EXPOSURE_MASK = 0x2;
 	public static final int GDK_End = 0xff57;
@@ -266,6 +270,7 @@ public class OS extends Platform {
 	public static final int GTK_POLICY_ALWAYS = 0x0;
 	public static final int GTK_POLICY_AUTOMATIC = 0x1;
 	public static final int GTK_POLICY_NEVER = 0x2;
+	public static final int GTK_POS_TOP = 0x2;
 	public static final int GTK_POS_BOTTOM = 0x3;
 	public static final int GTK_PROGRESS_CONTINUOUS = 0x0;
 	public static final int GTK_PROGRESS_DISCRETE = 0x1;
@@ -4726,6 +4731,33 @@ public static final int /*long*/ gtk_icon_factory_lookup_default(byte[] stock_id
 		lock.unlock();
 	}
 }
+public static final native void _gtk_icon_source_free(int /*long*/ source);
+public static final void gtk_icon_source_free(int /*long*/ source) {
+	lock.lock();
+	try {
+		_gtk_icon_source_free(source);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_icon_source_new();
+public static final int /*long*/ gtk_icon_source_new() {
+	lock.lock();
+	try {
+		return _gtk_icon_source_new();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_icon_source_set_pixbuf(int /*long*/ source, int /*long*/ pixbuf);
+public static final void gtk_icon_source_set_pixbuf(int /*long*/ source, int /*long*/ pixbuf) {
+	lock.lock();
+	try {
+		_gtk_icon_source_set_pixbuf(source, pixbuf);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_icon_set_render_icon(int /*long*/ icon_set, int /*long*/ style, int direction, int state, int size, int /*long*/ widget, int /*long*/ detail);
 public static final int /*long*/ gtk_icon_set_render_icon(int /*long*/ icon_set, int /*long*/ style, int direction, int state, int size, int /*long*/ widget, int /*long*/ detail) {
 	lock.lock();
@@ -5437,11 +5469,30 @@ public static final void gtk_paint_tab(int /*long*/ style, int /*long*/ window, 
 		lock.unlock();
 	}
 }
+public static final native void _gtk_paint_arrow(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int arrow_type, boolean fill, int x, int y, int width, int height);
+public static final void gtk_paint_arrow(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int arrow_type, boolean fill, int x, int y, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_paint_arrow(style, window, state_type, shadow_type, area, widget, detail, arrow_type, fill, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+
 public static final native void _gtk_paint_box(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
 public static final void gtk_paint_box(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
 	lock.lock();
 	try {
 		_gtk_paint_box(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_box_gap(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int gap_side, int gap_x, int gap_width);
+public static final void gtk_paint_box_gap(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int gap_side, int gap_x, int gap_width) {
+	lock.lock();
+	try {
+		_gtk_paint_box_gap(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height, gap_side, gap_x, gap_width);
 	} finally {
 		lock.unlock();
 	}
@@ -5464,11 +5515,56 @@ public static final void gtk_paint_expander(int /*long*/ style, int /*long*/ win
 		lock.unlock();
 	}
 }
+public static final native void _gtk_paint_extension(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int gap_side);
+public static final void gtk_paint_extension(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int gap_side) {
+	lock.lock();
+	try {
+		_gtk_paint_extension(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height, gap_side);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_hline(int /*long*/ style, int /*long*/ window, int state_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x1 , int x2, int y);
+public static final void gtk_paint_hline(int /*long*/ style, int /*long*/ window, int state_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x1 , int x2, int y) {
+	lock.lock();
+	try {
+		_gtk_paint_hline(style, window, state_type, area, widget, detail, x1, x2, y);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_paint_layout(int /*long*/ style, int /*long*/ window, int state_type, boolean use_text, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int /*long*/ layout);
 public static final void gtk_paint_layout(int /*long*/ style, int /*long*/ window, int state_type, boolean use_text, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int /*long*/ layout) {
 	lock.lock();
 	try {
 		_gtk_paint_layout(style, window, state_type, use_text, area, widget, detail, x, y, layout);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_shadow_gap(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int gap_side, int gap_x, int gap_width);
+public static final void gtk_paint_shadow_gap(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int gap_side, int gap_x, int gap_width) {
+	lock.lock();
+	try {
+		_gtk_paint_shadow_gap(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height, gap_side, gap_x, gap_width);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_shadow(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height);
+public static final void gtk_paint_shadow(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height) {
+	lock.lock();
+	try {
+		_gtk_paint_shadow(style, window, state_type, shadow_type, area, widget, detail, x, y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_paint_vline(int /*long*/ style, int /*long*/ window, int state_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int y1 , int y2, int x);
+public static final void gtk_paint_vline(int /*long*/ style, int /*long*/ window, int state_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int y1 , int y2, int x) {
+	lock.lock();
+	try {
+		_gtk_paint_vline(style, window, state_type, area, widget, detail, y1, y2, x);
 	} finally {
 		lock.unlock();
 	}
@@ -6073,6 +6169,15 @@ public static final int gtk_style_get_ythickness(int /*long*/ style) {
 	lock.lock();
 	try {
 		return _gtk_style_get_ythickness(style);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_style_render_icon(int /*long*/ style, int /*long*/ source, int direction, int state, int size, int /*long*/ widget, byte[] detail);
+public static final int /*long*/ gtk_style_render_icon(int /*long*/ style, int /*long*/ source, int direction, int state, int size, int /*long*/ widget, byte[] detail) {
+	lock.lock();
+	try {
+		return _gtk_style_render_icon(style, source, direction, state, size, widget, detail);
 	} finally {
 		lock.unlock();
 	}
