@@ -218,13 +218,15 @@ public class ControlExample {
 	/**
 	 * Sets the size of the shell to it's "packed" size,
 	 * unless that makes it larger than the monitor it is being displayed on,
-	 * in which case we may be able to recover some width by using shorter tab names.
-	 * If that fails, just set the shell size to be slightly smaller than the monitor.
+	 * in which case just set the shell size to be slightly smaller than the monitor.
 	 */
 	static void setShellSize(ControlExample instance, Shell shell) {
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		Rectangle monitorArea = shell.getMonitor().getClientArea();
-		if (size.x > monitorArea.width) {
+		/* Workaround: if the tab folder is wider than the screen,
+		 * carbon clips instead of somehow scrolling the tab items.
+		 * We try to recover some width by using shorter tab names. */
+		if (size.x > monitorArea.width && SWT.getPlatform().equals("carbon")) {
 			TabItem [] tabItems = instance.tabFolder.getItems();
 			for (int i=0; i<tabItems.length; i++) {
 				tabItems[i].setText (instance.tabs [i].getShortTabText ());
