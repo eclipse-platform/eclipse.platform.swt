@@ -29,16 +29,16 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	Image image = null;
 	final ToolTip tip = new ToolTip(shell, SWT.BALLOON | SWT.ICON_INFORMATION);
-	tip.setMessage("Here goes some message for the user, when the message is too long it wraps. I should say something cool but nothing comes to my mind");
+	tip.setMessage("Here is message for the user. When the message is too long it wraps. I should say something cool but nothing comes to my mind.");
 	Tray tray = display.getSystemTray();
 	if (tray != null) {
 		TrayItem item = new TrayItem(tray, SWT.NONE);
 		image = new Image(display, Snippet225.class.getResourceAsStream("eclipse.png"));
 		item.setImage(image);
-		tip.setText("Notification at the tray item");
+		tip.setText("Notification from a tray item");
 		item.setToolTip(tip);
 	} else {
-		tip.setText("Notification anywhere in the screen");
+		tip.setText("Notification from anywhere");
 		tip.setLocation(400, 400);
 	}
 	Button button = new Button (shell, SWT.PUSH);
