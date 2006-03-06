@@ -1,3 +1,0 @@
-
-#include <OpenGL/gl.h>
-
