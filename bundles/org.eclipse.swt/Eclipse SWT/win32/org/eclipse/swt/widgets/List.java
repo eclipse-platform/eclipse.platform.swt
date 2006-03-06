@@ -405,11 +405,8 @@ public String getItem (int index) {
 		if (result != OS.LB_ERR) return buffer.toString (0, length);
 	}
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-	if (0 <= index && index < count) {
-		error (SWT.ERROR_CANNOT_GET_ITEM);
-	} else {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
+	if (0 <= index && index < count) error (SWT.ERROR_CANNOT_GET_ITEM);
+	error (SWT.ERROR_INVALID_RANGE);
 	return "";
 }
 
@@ -780,10 +777,18 @@ public void remove (int index) {
 	TCHAR buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
 		int length = OS.SendMessage (handle, OS.LB_GETTEXTLEN, index, 0);
-		if (length == OS.LB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		if (length == OS.LB_ERR) {
+			int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+			if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+			error (SWT.ERROR_INVALID_RANGE);
+		}
 		buffer = new TCHAR (getCodePage (), length + 1);
 		int result = OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer);
-		if (result == OS.LB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		if (result == OS.LB_ERR) {
+			int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
+			if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+			error (SWT.ERROR_INVALID_RANGE);
+		}
 	}
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	int result = OS.SendMessage (handle, OS.LB_DELETESTRING, index, 0);

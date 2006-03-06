@@ -934,10 +934,18 @@ public void remove (int index) {
 	TCHAR buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
 		int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
-		if (length == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		if (length == OS.CB_ERR) {
+			int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+			if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+			error (SWT.ERROR_INVALID_RANGE);
+		}
 		buffer = new TCHAR (getCodePage (), length + 1);
 		int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
-		if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		if (result == OS.CB_ERR) {
+			int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
+			if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+			error (SWT.ERROR_INVALID_RANGE);
+		}
 	}
 	int length = OS.GetWindowTextLength (handle);
 	int code = OS.SendMessage (handle, OS.CB_DELETESTRING, index, 0);
