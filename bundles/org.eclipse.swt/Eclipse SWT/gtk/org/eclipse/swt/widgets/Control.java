@@ -366,7 +366,8 @@ void createWidget (int index) {
 	checkBuffered ();
 	showWidget ();
 	setInitialBounds ();
-	setZOrder (null, false);
+	setZOrder (null, false, false);
+	setRelations ();
 	checkBorder ();
 }
 
@@ -773,6 +774,30 @@ public void setSize (Point size) {
 	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true);
 }
 
+void setRelations () {
+	int /*long*/ parentHandle = parent.parentingHandle ();
+	int /*long*/ list = OS.gtk_container_get_children (parentHandle);
+	if (list == 0) return;
+	int count = OS.g_list_length (list);
+	if (count > 1) {
+		/*
+		 * the receiver is the last item in the list, so its predecessor will
+		 * be the second-last item in the list
+		 */
+		int /*long*/ handle = OS.g_list_nth_data (list, count - 2);
+		if (handle != 0) {
+			Widget widget = display.getWidget (handle);
+			if (widget != null && widget != this) {
+				if (widget instanceof Control) {
+					Control sibling = (Control)widget;
+					sibling.addRelation (this);
+				}
+			}
+		}
+	}
+	OS.g_list_free (list);
+}
+
 /**
  * Sets the receiver's size to the point specified by the arguments.
  * <p>
@@ -828,7 +853,7 @@ public void moveAbove (Control control) {
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
 	}
-	setZOrder (control, true);
+	setZOrder (control, true, true);
 }
 
 /**
@@ -857,7 +882,7 @@ public void moveBelow (Control control) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
 	}
-	setZOrder (control, false);
+	setZOrder (control, false, true);
 }
 
 /**
@@ -3043,7 +3068,7 @@ public boolean setParent (Composite parent) {
 	OS.gtk_widget_reparent (topHandle, newParent);
 	OS.gtk_fixed_move (newParent, topHandle, x, y);
 	this.parent = parent;
-	setZOrder (null, false);
+	setZOrder (null, false, true);
 	return true;
 }
 
@@ -3217,11 +3242,11 @@ public void setVisible (boolean visible) {
 	}
 }
 
-void setZOrder (Control sibling, boolean above) {
-	 setZOrder (sibling, above, true, true);
+void setZOrder (Control sibling, boolean above, boolean fixRelations) {
+	 setZOrder (sibling, above, fixRelations, true);
 }
 
-void setZOrder (Control sibling, boolean above, boolean fixChildren, boolean fixRelations) {
+void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fixChildren) {
 	int index = 0, siblingIndex = 0, oldNextIndex = -1;
 	Control[] children = null;
 	if (fixRelations) {
