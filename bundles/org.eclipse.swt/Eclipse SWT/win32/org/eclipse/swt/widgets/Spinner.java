@@ -537,11 +537,7 @@ int getSelectionText () {
 		if (min [0] <= value && value <= max [0]) return value;
 	} catch (NumberFormatException e) {
 	}
-	if (OS.IsWinCE) {
-		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
-	} else {
-		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-	}
+	return -1;
 }
 
 int mbcsToWcsPos (int mbcsPos) {
@@ -1230,14 +1226,14 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 		case OS.EN_CHANGE:
 			if (ignoreModify) break;
 			int value = getSelectionText ();
-			int pos;
-			if (OS.IsWinCE) {
-				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
-			} else {
-				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-			}
-			if (value != pos) {
-				setSelection (value, true, false, true);
+			if (value != -1) {
+				int pos;
+				if (OS.IsWinCE) {
+					pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+				} else {
+					pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+				}
+				if (pos != value) setSelection (value, true, false, true);
 			}
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
@@ -1262,6 +1258,13 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	}
 	if (delta != 0) {
 		int value = getSelectionText ();
+		if (value != -1) {
+			if (OS.IsWinCE) {
+				value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+			} else {
+				value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+			}
+		}
 		int newValue = value + delta;
 		int [] max = new int [1], min = new int [1];
 		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
@@ -1284,7 +1287,14 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 
 LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
 	int value = getSelectionText ();
-	setSelection (value, false, true, false);
+	if (value == -1) {
+		if (OS.IsWinCE) {
+			value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+		} else {
+			value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+		}		
+		setSelection (value, false, true, false);
+	}
 	return super.wmKillFocus (hwnd, wParam, lParam);
 }
 
