@@ -173,11 +173,11 @@ Point getSize (int maxWidth) {
 	int textWidth = 0, messageWidth = 0;
 	if (layoutText != null) {
 		layoutText.setWidth (-1);
-		textWidth = layoutText.getBounds ().width;;
+		textWidth = layoutText.getBounds ().width;
 	}
 	if (layoutMessage != null) {
 		layoutMessage.setWidth (-1);
-		messageWidth = layoutMessage.getBounds ().width;;
+		messageWidth = layoutMessage.getBounds ().width;
 	}
 	int messageTrim = 2 * INSET + 2 * BORDER + 2 * PADDING;
 	boolean hasImage = 	layoutText != null && (style & SWT.BALLOON) != 0 && (style & (SWT.ICON_ERROR | SWT.ICON_INFORMATION | SWT.ICON_WARNING)) != 0;

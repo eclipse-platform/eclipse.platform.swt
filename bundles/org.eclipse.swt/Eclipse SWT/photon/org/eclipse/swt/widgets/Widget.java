@@ -551,7 +551,7 @@ public Display getDisplay () {
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.length ();
-	while (--index > 0 && string.charAt (index) != '.');
+	while (--index > 0 && string.charAt (index) != '.') {/* empty */}
 	return string.substring (index + 1, string.length ());
 }
 

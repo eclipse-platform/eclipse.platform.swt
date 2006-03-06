@@ -1490,7 +1490,7 @@ void destroyItem (TableColumn column) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		lpti.uId = column.id;
-		lpti.hwnd = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);;
+		lpti.hwnd = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (headerToolTipHandle, OS.TTM_DELTOOL, 0, lpti);
 	}
 }

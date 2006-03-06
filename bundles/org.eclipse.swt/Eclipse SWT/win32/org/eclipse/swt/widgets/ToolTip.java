@@ -66,9 +66,9 @@ public class ToolTip extends Widget {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT#ERROR
- * @see SWT#INFORMATION
- * @see SWT#WARNING
+ * @see SWT#ICON_ERROR
+ * @see SWT#ICON_INFORMATION
+ * @see SWT#ICON_WARNING
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

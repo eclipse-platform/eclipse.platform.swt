@@ -13,7 +13,6 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.*;
 
 class StyledTextDragAndDropEffect extends DragAndDropEffect {

@@ -564,7 +564,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		int textHeight = Math.max (height - 2 * argList1 [7], 0);
 		if (textWidth != argList2 [1] || textHeight != argList2 [3]) {
 			OS.XtResizeWidget (argList1 [1], textWidth, textHeight, argList2 [5]);
-		};
+		}
 	}
 	return super.setBounds (x, y, width, height, move, resize);
 }

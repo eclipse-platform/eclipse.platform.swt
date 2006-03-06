@@ -326,7 +326,7 @@ public void pack () {
 int calculateWidth (int[] ids, int index, GC gc, int width) {
 	if (ids == null) return width;
 	for (int i=0; i<ids.length; i++) {
-		TreeItem item = parent._getItem (ids [i], false);;
+		TreeItem item = parent._getItem (ids [i], false);
 		if (item != null) {
 			width = Math.max (width, item.calculateWidth (index, gc));
 			if (item.getExpanded ()) {

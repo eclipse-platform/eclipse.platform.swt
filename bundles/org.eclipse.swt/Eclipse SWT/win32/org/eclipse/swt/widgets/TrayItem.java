@@ -262,7 +262,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 						if (isDisposed()) return 0;
 					}
 				}
-			};
+			}
 			break;
 	}
 	display.wakeThread ();

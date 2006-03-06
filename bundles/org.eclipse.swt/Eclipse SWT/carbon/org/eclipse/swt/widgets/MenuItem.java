@@ -261,7 +261,7 @@ public int getAccelerator () {
 		int outMenuRef [] = new int [1];
 		if (OS.GetMenuItemHierarchicalMenu (menu.handle, (short)(index + 1), outMenuRef) != OS.noErr) {
 			return new Rectangle (0 ,0, 0, 0);
-		};
+		}
 		Rect rect = new Rect ();
 		//TODO - get the bounds of the menu item from the menu title
 //		if (... code needed to do this ... != OS.noErr) {

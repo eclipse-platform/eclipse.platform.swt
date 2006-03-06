@@ -220,7 +220,7 @@ static String[] getXPServerList() {
 		while (i < buffer2.length) {
 			if (buffer2[i] != ' ') {
 				int start = i;
-				while (++i < buffer2.length && buffer2[i] != ' ');
+				while (++i < buffer2.length && buffer2[i] != ' ') {/*empty*/}
 				String server = new String(buffer2, start, i - start);
 				String[] newServerList = new String[serversList.length + 1];
 				System.arraycopy(serversList, 0, newServerList, 0, serversList.length);

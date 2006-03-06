@@ -396,7 +396,7 @@ void setScrollbar () {
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE | OS.SIF_PAGE | OS.SIF_POS;
 	info.nMin = 0;
-	info.nMax = maxHeight;;
+	info.nMax = maxHeight;
 	info.nPage = height;
 	info.nPos = Math.min (yCurrentScroll, info.nMax);
 	if (info.nPage != 0) info.nPage++;

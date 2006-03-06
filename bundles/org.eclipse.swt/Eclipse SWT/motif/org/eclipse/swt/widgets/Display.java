@@ -3609,11 +3609,11 @@ public void wake () {
 }
 void wakeThread () {
 	/* Write a single byte to the wake up pipe */
-	while (OS.write (write_fd, wake_buffer, 1) != 1);
+	while (OS.write (write_fd, wake_buffer, 1) != 1) {/* empty */}
 }
 int wakeProc (int closure, int source, int id) {
 	/* Read a single byte from the wake up pipe */
-	while (OS.read (read_fd, wake_buffer, 1) != 1);
+	while (OS.read (read_fd, wake_buffer, 1) != 1) {/* empty */}
 	return 0;
 }
 static int wcsToMbcs (char ch) {

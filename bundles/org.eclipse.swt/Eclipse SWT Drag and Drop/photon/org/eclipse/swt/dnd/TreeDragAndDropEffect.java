@@ -17,9 +17,6 @@ import org.eclipse.swt.widgets.*;
 class TreeDragAndDropEffect extends DragAndDropEffect {
 
 	private Tree tree;
-	private TreeItem currentItem = null;
-	private int currentEffect = DND.FEEDBACK_NONE;
-	private TreeItem[] selection = new TreeItem[0];
 
 TreeDragAndDropEffect(Tree tree) {
 	this.tree = tree;
