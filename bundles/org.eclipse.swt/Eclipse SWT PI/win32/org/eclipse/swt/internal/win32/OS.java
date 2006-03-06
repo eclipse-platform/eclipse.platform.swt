@@ -225,6 +225,7 @@ public class OS extends Platform {
 	public static final int BP_PUSHBUTTON = 1;
 	public static final int BP_RADIOBUTTON = 2;
 	public static final int BP_CHECKBOX = 3;
+	public static final int BP_GROUPBOX = 4;
 	public static final int BST_CHECKED = 0x1;
 	public static final int BST_UNCHECKED = 0x0;
 	public static final int BS_BITMAP = 0x80;
@@ -296,6 +297,10 @@ public class OS extends Platform {
 	public static final int CB_SETEDITSEL = 0x142;
 	public static final int CB_SETHORIZONTALEXTENT = 0x015e;
 	public static final int CB_SHOWDROPDOWN = 0x14f;
+	public static final int CBXS_NORMAL = 1;
+	public static final int CBXS_HOT = 2;
+	public static final int CBXS_PRESSED = 3;
+	public static final int CBXS_DISABLED = 4;
 	public static final int CCM_FIRST = 0x2000;
 	public static final int CCM_SETBKCOLOR = 0x2001;
 	public static final int CCM_SETVERSION = 0x2007;
@@ -387,6 +392,7 @@ public class OS extends Platform {
 	public static final int COMPLEXREGION = 0x3;
 	public static final int CP_ACP = 0x0;
 	public static final int CP_UTF8 = 65001;
+	public static final int CP_DROPDOWNBUTTON = 1;
 	public static final int CP_INSTALLED = 0x1;
 	public static final int CS_BYTEALIGNWINDOW = 0x2000;
 	public static final int CS_DBLCLKS = 0x8;
@@ -427,6 +433,7 @@ public class OS extends Platform {
 	public static final int DSTINVERT = 0x550009;
 	public static final int DST_BITMAP = 0x4;
 	public static final int DST_ICON = 0x3;
+	public static final int DT_BOTTOM = 0x8;
 	public static final int DT_CALCRECT = 0x400;
 	public static final int DT_CENTER = 0x1;
 	public static final int DT_EDITCONTROL = 0x2000;
@@ -437,6 +444,7 @@ public class OS extends Platform {
 	public static final int DT_RASPRINTER = 0x2;
 	public static final int DT_RIGHT = 0x2;
 	public static final int DT_SINGLELINE = 0x20;
+	public static final int DT_TOP = 0;
 	public static final int DT_VCENTER = 4;
 	public static final int DT_WORDBREAK = 0x10;
 	public static final int EBP_NORMALGROUPBACKGROUND = 5;
@@ -499,6 +507,11 @@ public class OS extends Platform {
 	public static final int ES_RIGHT = 0x2;
 	public static final int ETO_CLIPPED = 0x4;
 	public static final int ETS_NORMAL = 1;
+	public static final int ETS_HOT = 2;
+	public static final int ETS_SELECTED = 3;
+	public static final int ETS_DISABLED = 4;
+	public static final int ETS_FOCUSED = 5;
+	public static final int ETS_READONLY = 6;
 	public static final int EVENT_OBJECT_FOCUS = 0x8005;
 	public static final int EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
 //	public static final int EVENT_OBJECT_SELECTION = 0x8006;
@@ -513,6 +526,8 @@ public class OS extends Platform {
 	public static final int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
+	public static final int GBS_NORMAL = 1;
+	public static final int GBS_DISABLED = 2;
 	public static final int GCS_COMPSTR = 0x8;
 	public static final int GCS_RESULTSTR = 0x800;
 	public static final int GLPS_CLOSED = 1;
