@@ -217,11 +217,6 @@ public boolean getVisible () {
 	return tip.getVisible ();
 }
 
-public boolean isDisposed () {
-	checkWidget ();
-	return tip == null;
-}
-
 public boolean isVisible () {
 	checkWidget ();
 	return getVisible ();
