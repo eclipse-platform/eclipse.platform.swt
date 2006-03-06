@@ -414,7 +414,18 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	ignoreDraw = ignoreDrawSelected = false;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+	
+	/*
+	* Feature in Windows.  When a new table item is inserted
+	* using LVM_INSERTITEM in a table that is transparent
+	* (ie. LVM_SETBKCOLOR has been called with CLR_NONE),
+	* TVM_INSERTITEM calls NM_CUSTOMDRAW before the new item
+	* has been added to the array.  The fix is to check for
+	* null.
+	*/
 	TableItem item = _getItem (nmcd.dwItemSpec);
+	if (item == null) return null;
+
 	if (OS.IsWindowVisible (handle)) {
 		if (hooks (SWT.MeasureItem)) {
 			sendMeasureItemEvent (item, nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
@@ -4899,8 +4910,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					break;
 				}
 			}
-			
+
+			/*
+			* Feature in Windows.  When a new table item is inserted
+			* using LVM_INSERTITEM in a table that is transparent
+			* (ie. LVM_SETBKCOLOR has been called with CLR_NONE),
+			* TVM_INSERTITEM calls LVN_GETDISPINFO before the item
+			* has been added to the array.  The fix is to check for
+			* null.
+			*/
 			TableItem item = _getItem (plvfi.iItem);
+			if (item == null) break;
+			
 			/*
 			* The cached flag is used by both virtual and non-virtual
 			* tables to indicate that Windows has asked at least once
