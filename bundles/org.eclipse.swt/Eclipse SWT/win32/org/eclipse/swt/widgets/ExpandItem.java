@@ -36,7 +36,8 @@ public class ExpandItem extends Item {
 	ExpandBar parent;
 	Control control;
 	boolean expanded, hover;
-	int x, y, width, height;	
+	int x, y, width, height;
+	int imageHeight, imageWidth;
 	static final int TEXT_INSET = 6;
 	static final int BORDER = 1;
 	
@@ -176,13 +177,12 @@ void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
 	}
 	if (image != null) {
 		rect.left += ExpandItem.TEXT_INSET;
-		Rectangle bounds = image.getBounds();
-		if (bounds.height > headerHeight) {
-			gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left, rect.top, bounds.width, headerHeight);
+		if (imageHeight > headerHeight) {
+			gc.drawImage (image, rect.left, rect.top + headerHeight - imageHeight);
 		} else {
-			gc.drawImage (image, rect.left, rect.top + (headerHeight - bounds.height) / 2);
+			gc.drawImage (image, rect.left, rect.top + (headerHeight - imageHeight) / 2);
 		}
-		rect.left += bounds.width;
+		rect.left += imageWidth;
 	}
 	if (text.length () > 0) {
 		rect.left += ExpandItem.TEXT_INSET;
@@ -271,6 +271,10 @@ public boolean getExpanded () {
 	return expanded;
 }
 
+int getHeaderHeight () {
+	return Math.max (ExpandBar.HEADER_HEIGHT, imageHeight);
+}
+
 /**
  * Gets the height of the receiver.
  *
@@ -304,8 +308,7 @@ public ExpandBar getParent () {
 int getPreferredWidth (int hTheme, int hDC) {	
 	int width = ExpandItem.TEXT_INSET * 2 + ExpandBar.HEADER_HEIGHT;
 	if (image != null) {
-		width += ExpandItem.TEXT_INSET;
-		width += image.getBounds ().width;		
+		width += ExpandItem.TEXT_INSET + imageWidth;
 	}
 	if (text.length() > 0) {
 		RECT rect = new RECT ();
@@ -334,12 +337,17 @@ int getPreferredWidth (int hTheme, int hDC) {
 
 void redraw (boolean all) {
 	int parentHandle = parent.handle;
+	int headerHeight = ExpandBar.HEADER_HEIGHT;
 	RECT rect = new RECT ();
-	int left = all ? x : x + width - ExpandBar.HEADER_HEIGHT;
-	OS.SetRect (rect, left, y, x + width, y + ExpandBar.HEADER_HEIGHT);
+	int left = all ? x : x + width - headerHeight;
+	OS.SetRect (rect, left, y, x + width, y + headerHeight);
 	OS.InvalidateRect (parentHandle, rect, true);
+	if (imageHeight > headerHeight) {
+		OS.SetRect (rect, x + ExpandItem.TEXT_INSET, y + headerHeight - imageHeight, x + ExpandItem.TEXT_INSET + imageWidth, y);
+		OS.InvalidateRect (parentHandle, rect, true);
+	}
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-		OS.SetRect (rect, x, y + ExpandBar.HEADER_HEIGHT, x + width, y + ExpandBar.HEADER_HEIGHT + height + 1);
+		OS.SetRect (rect, x, y + headerHeight, x + width, y + headerHeight + height + 1);
 		OS.InvalidateRect (parentHandle, rect, true);
 	}
 }
@@ -356,8 +364,12 @@ void releaseWidget () {
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean size) {	
 	redraw (true);
+	int headerHeight = ExpandBar.HEADER_HEIGHT;
 	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_NOSIZE | OS.SWP_NOMOVE;
 	if (move) {
+		if (imageHeight > headerHeight) {
+			y += (imageHeight - headerHeight);
+		}
 		this.x = x;
 		this.y = y;
 		flags &= ~OS.SWP_NOMOVE;
@@ -376,7 +388,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
 			width = Math.max (0, width - BORDER * 2);
 			height = Math.max (0, height - BORDER);
 		}
-		SetWindowPos (hwnd, 0, x, y + ExpandBar.HEADER_HEIGHT, width, height, flags);
+		SetWindowPos (hwnd, 0, x, y + headerHeight, width, height, flags);
 	}
 }
 
@@ -451,7 +463,19 @@ public void setHeight (int height) {
 
 public void setImage (Image image) {
 	super.setImage (image);
-	redraw (true);
+	int oldImageHeight = imageHeight;
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		imageHeight = bounds.height;
+		imageWidth = bounds.width;
+	} else {
+		imageHeight = imageWidth = 0;
+	}
+	if (oldImageHeight != imageHeight) {
+		parent.layoutItems (parent.indexOf (this), true);
+	} else {
+		redraw (true);
+	}
 }
 
 public void setText (String string) {
