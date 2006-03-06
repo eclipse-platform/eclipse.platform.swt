@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 903;
-int OS_nativeFunctionCallCount[903];
+int OS_nativeFunctionCount = 909;
+int OS_nativeFunctionCallCount[909];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -513,7 +513,13 @@ char * OS_nativeFunctionNames[] = {
 	"HIThemeDrawTrack",
 	"HIThemeGetButtonBackgroundBounds",
 	"HIThemeGetButtonContentBounds",
+	"HIThemeGetScrollBarTrackRect",
 	"HIThemeGetTextDimensions",
+	"HIThemeGetTrackBounds",
+	"HIThemeGetTrackLiveValue",
+	"HIThemeGetTrackPartBounds",
+	"HIThemeGetTrackThumbPositionFromBounds",
+	"HIThemeGetTrackThumbPositionFromOffset",
 	"HIThemeHitTestScrollBarArrows",
 	"HIThemeHitTestTrack",
 	"HIThemeSetFill",

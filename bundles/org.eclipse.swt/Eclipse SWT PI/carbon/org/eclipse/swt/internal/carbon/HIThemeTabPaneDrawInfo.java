@@ -18,7 +18,7 @@ public class HIThemeTabPaneDrawInfo {
 	public int state;
 	public short direction;
 	public int size;	
-	//public int kind;
-	//public int adornment;
+	public int kind;
+	public int adornment;
 	public static final int sizeof = OS.VERSION >= 0x1040 ? 22 : 14;
 }

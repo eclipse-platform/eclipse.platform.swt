@@ -7207,6 +7207,28 @@ fail:
 }
 #endif
 
+#ifndef NO_HIThemeGetScrollBarTrackRect
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetScrollBarTrackRect)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jboolean arg2, jobject arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	HIScrollBarTrackInfo _arg1, *lparg1=NULL;
+	CGRect _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetScrollBarTrackRect_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getHIScrollBarTrackInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getCGRectFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)HIThemeGetScrollBarTrackRect(lparg0, lparg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) setCGRectFields(env, arg3, lparg3);
+	if (arg1 && lparg1) setHIScrollBarTrackInfoFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeGetScrollBarTrackRect_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIThemeGetTextDimensions
 JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetTextDimensions)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jobject arg2, jfloatArray arg3, jfloatArray arg4, jfloatArray arg5)
@@ -7228,6 +7250,107 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseFloatArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) setHIThemeTextInfoFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, HIThemeGetTextDimensions_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeGetTrackBounds
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetTrackBounds)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	HIThemeTrackDrawInfo _arg0, *lparg0=NULL;
+	CGRect _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetTrackBounds_FUNC);
+	if (arg0) if ((lparg0 = getHIThemeTrackDrawInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIThemeGetTrackBounds(lparg0, lparg1);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setHIThemeTrackDrawInfoFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeGetTrackBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeGetTrackLiveValue
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetTrackLiveValue)
+	(JNIEnv *env, jclass that, jobject arg0, jfloat arg1, jintArray arg2)
+{
+	HIThemeTrackDrawInfo _arg0, *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetTrackLiveValue_FUNC);
+	if (arg0) if ((lparg0 = getHIThemeTrackDrawInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)HIThemeGetTrackLiveValue(lparg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg0 && lparg0) setHIThemeTrackDrawInfoFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeGetTrackLiveValue_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeGetTrackPartBounds
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetTrackPartBounds)
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jobject arg2)
+{
+	HIThemeTrackDrawInfo _arg0, *lparg0=NULL;
+	CGRect _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetTrackPartBounds_FUNC);
+	if (arg0) if ((lparg0 = getHIThemeTrackDrawInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getCGRectFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)HIThemeGetTrackPartBounds(lparg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setCGRectFields(env, arg2, lparg2);
+	if (arg0 && lparg0) setHIThemeTrackDrawInfoFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeGetTrackPartBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeGetTrackThumbPositionFromBounds
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetTrackThumbPositionFromBounds)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jfloatArray arg2)
+{
+	HIThemeTrackDrawInfo _arg0, *lparg0=NULL;
+	CGRect _arg1, *lparg1=NULL;
+	jfloat *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetTrackThumbPositionFromBounds_FUNC);
+	if (arg0) if ((lparg0 = getHIThemeTrackDrawInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)HIThemeGetTrackThumbPositionFromBounds(lparg0, lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setHIThemeTrackDrawInfoFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeGetTrackThumbPositionFromBounds_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIThemeGetTrackThumbPositionFromOffset
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeGetTrackThumbPositionFromOffset)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jfloatArray arg2)
+{
+	HIThemeTrackDrawInfo _arg0, *lparg0=NULL;
+	CGPoint _arg1, *lparg1=NULL;
+	jfloat *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeGetTrackThumbPositionFromOffset_FUNC);
+	if (arg0) if ((lparg0 = getHIThemeTrackDrawInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getCGPointFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)HIThemeGetTrackThumbPositionFromOffset((HIThemeTrackDrawInfo *)lparg0, (HIPoint *)lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) setCGPointFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setHIThemeTrackDrawInfoFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HIThemeGetTrackThumbPositionFromOffset_FUNC);
 	return rc;
 }
 #endif

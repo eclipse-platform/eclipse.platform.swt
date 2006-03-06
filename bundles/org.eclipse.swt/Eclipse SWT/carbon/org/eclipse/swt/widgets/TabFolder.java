@@ -444,6 +444,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 }
 
 Rect getInset () {
+	if (OS.VERSION >= 0x1020) return super.getInset();
 	return (style & SWT.BOTTOM) != 0 ? display.tabFolderSouthInset : display.tabFolderNorthInset;
 }
 

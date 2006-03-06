@@ -19,7 +19,7 @@ public class HIThemeTabDrawInfo {
 	public short direction;
 	public int size;
 	public int adornment;
-	//public int kind;
-	//public int position;
+	public int kind;
+	public int position;
 	public static final int sizeof = OS.VERSION >= 0x1040 ? 24 : 16;
 }
