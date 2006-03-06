@@ -87,7 +87,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			GC gc = new GC (this);
 			for (int i = 0; i < itemCount; i++) {
 				ExpandItem item = items [i];
-				height += ExpandBar.HEADER_HEIGHT;
+				height += item.getHeaderHeight ();
 				if (item.expanded) height += item.height;
 				height += spacing;
 				width = Math.max (width, item.getPreferredWidth (gc));			
@@ -178,13 +178,13 @@ void layoutItems (int index, boolean setScrollbar) {
 		for (int i = 0; i < index; i++) {
 			ExpandItem item = items [i];
 			if (item.expanded) y += item.height;
-			y += ExpandBar.HEADER_HEIGHT + spacing;
+			y += item.getHeaderHeight() + spacing;
 		}
 		for (int i = index; i < itemCount; i++) {
 			ExpandItem item = items [i];
 			item.setBounds (spacing, y, 0, 0, true, false);
 			if (item.expanded) y += item.height;
-			y += ExpandBar.HEADER_HEIGHT + spacing;
+			y += item.getHeaderHeight() + spacing;
 		}
 	}
 	if (setScrollbar) setScrollbar ();

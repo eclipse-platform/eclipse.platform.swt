@@ -18,6 +18,7 @@ public class ExpandItem extends Item {
 	Control control;
 	boolean expanded;
 	int x, y, width, height;
+	int imageHeight, imageWidth;
 	static final int TEXT_INSET = 6;
 	static final int BORDER = 1;
 
@@ -89,13 +90,12 @@ void drawItem (GC gc, boolean drawFocus) {
 	int drawX = x;
 	if (image != null) {
 		drawX += ExpandItem.TEXT_INSET;
-		Rectangle bounds =  image.getBounds ();
-		if (bounds.height > headerHeight) {
-			gc.drawImage (image, 0, 0, bounds.width, bounds.height, drawX, y, bounds.width, headerHeight);
+		if (imageHeight > headerHeight) {
+			gc.drawImage (image, drawX, y + headerHeight - imageHeight);
 		} else {
-			gc.drawImage (image, drawX, y + (headerHeight - bounds.height) / 2);
+			gc.drawImage (image, drawX, y + (headerHeight - imageHeight) / 2);
 		}
-		drawX += bounds.width;
+		drawX += imageWidth;
 	}
 	if (text.length() > 0) {
 		drawX += ExpandItem.TEXT_INSET;
@@ -119,6 +119,15 @@ public boolean getExpanded() {
 	return expanded;
 }
 
+int getHeaderHeight () {
+	return Math.max (ExpandBar.HEADER_HEIGHT, imageHeight);
+}
+
+public int getHeight () {
+	checkWidget ();
+	return height;
+}
+
 public ExpandBar getParent () {
 	checkWidget ();
 	return parent;
@@ -127,8 +136,7 @@ public ExpandBar getParent () {
 int getPreferredWidth (GC gc) {
 	int width = ExpandItem.TEXT_INSET * 2 + ExpandBar.HEADER_HEIGHT;
 	if (image != null) {
-		width += ExpandItem.TEXT_INSET;
-		width += image.getBounds ().width;		
+		width += ExpandItem.TEXT_INSET + imageWidth;
 	}
 	if (text.length() > 0) {
 		width += gc.stringExtent (text).x;
@@ -137,12 +145,20 @@ int getPreferredWidth (GC gc) {
 }
 
 void redraw () {
-	parent.redraw (x, y, width, ExpandBar.HEADER_HEIGHT + height, false);
+	int headerHeight = ExpandBar.HEADER_HEIGHT;
+	if (imageHeight > headerHeight) {
+		parent.redraw (x + ExpandItem.TEXT_INSET, y + headerHeight - imageHeight, imageWidth, imageHeight, false);
+	}
+	parent.redraw (x, y, width, headerHeight + height, false);
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean size) {
 	redraw ();
+	int headerHeight = ExpandBar.HEADER_HEIGHT;
 	if (move) {
+		if (imageHeight > headerHeight) {
+			y += (imageHeight - headerHeight);
+		}
 		this.x = x;
 		this.y = y;
 		redraw ();
@@ -153,7 +169,6 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
 		redraw ();
 	}
 	if (control != null && !control.isDisposed ()) {
-		int headerHeight = ExpandBar.HEADER_HEIGHT;
 		if (move) control.setLocation (x + BORDER, y + headerHeight);
 		if (size) control.setSize (Math.max (0, width - 2 * BORDER), Math.max (0, height - BORDER));
 	}
@@ -181,7 +196,19 @@ public void setExpanded (boolean expanded) {
 
 public void setImage (Image image) {
 	super.setImage (image);
-	redraw ();
+	int oldImageHeight = imageHeight;
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		imageHeight = bounds.height;
+		imageWidth = bounds.width;
+	} else {
+		imageHeight = imageWidth = 0;
+	}
+	if (oldImageHeight != imageHeight) {
+		parent.layoutItems (parent.indexOf (this), true);
+	} else {
+		redraw ();
+	}
 }
 
 public void setHeight (int height) {
