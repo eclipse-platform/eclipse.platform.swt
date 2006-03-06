@@ -1372,6 +1372,12 @@ public void setRegion (Region region) {
 	this.region = region;
 }
 
+/*
+ * Shells are never labelled by other widgets, so no initialization is needed.
+ */
+void setRelations() {
+}
+
 public void setText (String string) {
 	super.setText (string);
 
@@ -1470,7 +1476,7 @@ public void setVisible (boolean visible) {
 	}
 }
 
-void setZOrder (Control sibling, boolean above) {
+void setZOrder (Control sibling, boolean above, boolean fixRelations) {
 	/*
 	* Bug in GTK+.  Changing the toplevel window Z-order causes
 	* X to send a resize event.  Before the shell is mapped, these
@@ -1478,6 +1484,7 @@ void setZOrder (Control sibling, boolean above) {
 	* layout work to occur.  The fix is to modify the Z-order only
 	* if the shell has already been mapped at least once.
 	*/
+	/* Shells are never included in labelled-by relations */
 	if (mapped) setZOrder (sibling, above, false, false);
 }
 
