@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
   
 /*
- * Tooltip example snippet: how to use a balloon tooltip with a tray item
+ * Tooltip example snippet: create a balloon tooltip for a tray item
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
