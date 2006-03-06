@@ -780,7 +780,7 @@ void drawChevron(GC gc) {
 	FontData fd = getFont().getFontData()[0];
 	fd.setHeight(fontHeight);
 	Font f = new Font(display, fd);
-	int fHeight = f.getFontData()[0].getHeight() * display.getDPI().y / 72;
+	int fHeight = f.getFontData()[0].getHeight() * dpi.y / 72;
 	int indent = Math.max(2, (chevronRect.height - fHeight - 4) /2);
 	int x = chevronRect.x + 2;
 	int y = chevronRect.y + indent;
