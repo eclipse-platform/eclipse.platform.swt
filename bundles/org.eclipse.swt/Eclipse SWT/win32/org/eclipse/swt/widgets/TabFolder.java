@@ -634,7 +634,7 @@ public void setFont (Font font) {
 	super.setFont (font);
 	Rectangle newRect = getClientArea ();
 	if (!oldRect.equals (newRect)) {
-		resize ();
+		sendResize ();
 		int index = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 		if (index != -1) {
 			TabItem item = items [index];

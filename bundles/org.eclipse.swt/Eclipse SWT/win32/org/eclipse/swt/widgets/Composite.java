@@ -660,17 +660,6 @@ void removeControl (Control control) {
 	resizeChildren ();
 }
 
-void resize () {
-	setResizeChildren (false);
-	sendEvent (SWT.Resize);
-	if (isDisposed ()) return;
-	if (layout != null) {
-		markLayout (false, false);
-		updateLayout (false, false);
-	}
-	setResizeChildren (true);
-}
-
 void resizeChildren () {
 	if (lpwp == null) return;
 	do {
@@ -733,6 +722,17 @@ void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
 		int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_ASYNCWINDOWPOS;
 		OS.SetWindowPos (embeddedHandle, 0, 0, 0, width, height, flags);
 	}
+}
+
+void sendResize () {
+	setResizeChildren (false);
+	sendEvent (SWT.Resize);
+	if (isDisposed ()) return;
+	if (layout != null) {
+		markLayout (false, false);
+		updateLayout (false, false);
+	}
+	setResizeChildren (true);
 }
 
 /**

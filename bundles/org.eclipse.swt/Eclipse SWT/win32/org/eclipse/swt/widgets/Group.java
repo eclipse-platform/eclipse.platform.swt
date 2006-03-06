@@ -252,7 +252,7 @@ public void setFont (Font font) {
 	Rectangle oldRect = getClientArea ();
 	super.setFont (font);
 	Rectangle newRect = getClientArea ();
-	if (!oldRect.equals (newRect)) resize ();
+	if (!oldRect.equals (newRect)) sendResize ();
 }
 
 /**
