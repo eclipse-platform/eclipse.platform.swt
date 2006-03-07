@@ -2390,6 +2390,9 @@ void init(Drawable drawable, GCData data, int /*long*/ gdkGC) {
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.layout = layout;
 
+	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
+		OS.pango_layout_set_auto_dir(layout, false);
+	}
 	GdkColor foreground = data.foreground;
 	if (foreground != null) OS.gdk_gc_set_foreground(gdkGC, foreground);
 	GdkColor background = data.background;
