@@ -1968,7 +1968,7 @@ void recreateRenderers () {
 		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.closures [TOGGLED], false);
 	}
 	if (columnCount == 0) {
-		createRenderers (OS.gtk_tree_view_get_column (handle, 0), Tree.FIRST_COLUMN, true, 0);
+		createRenderers (OS.gtk_tree_view_get_column (handle, 0), Table.FIRST_COLUMN, true, 0);
 	} else {
 		for (int i = 0; i < columnCount; i++) {
 			TableColumn column = columns [i];
