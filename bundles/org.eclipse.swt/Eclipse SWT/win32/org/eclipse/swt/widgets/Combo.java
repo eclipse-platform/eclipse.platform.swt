@@ -2012,7 +2012,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* text and reset it after the widget is resized.
 	*/
 	LRESULT result = null;
-	if ((style & SWT.READ_ONLY) != 0 || (style & SWT.DROP_DOWN) == 0) {
+	if ((style & SWT.READ_ONLY) != 0) {
 		result = super.WM_SIZE (wParam, lParam);
 	} else {
 		int index = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
