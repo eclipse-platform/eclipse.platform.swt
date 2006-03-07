@@ -276,8 +276,24 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) == 0) {
 				return new RECT ();
 			}
+			/*
+			* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
+			* and zero for the column number gives the bounds of the first item
+			* without including the bounds of the icon.  This is undocumented.
+			* When called with values greater than zero, the icon bounds are
+			* included and this behavior is documented.  If the icon is needed
+			* in the bounds of the first item, the fix is to adjust the item
+			* bounds using the icon bounds.
+			*/
+			if (column == 0 && getText && getImage) {
+				RECT iconRect = new RECT ();
+				iconRect.left = OS.LVIR_ICON;
+				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
+					rect.left = iconRect.left;
+				}
+			}
 			if (hasImage) {
-				if (getText && !getImage) {
+				if (column != 0 && getText && !getImage) {
 					RECT iconRect = new RECT ();
 					iconRect.top = column;		
 					iconRect.left = OS.LVIR_ICON;
