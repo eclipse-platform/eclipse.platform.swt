@@ -455,22 +455,6 @@ public void pack () {
 	}
 }
 
-void redraw () {
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	parent.forceResize ();
-	RECT rect = new RECT ();
-	int hwnd = parent.handle;
-	OS.GetClientRect (hwnd, rect);
-	RECT itemRect = new RECT ();
-	int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-	if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect) != 0) {
-		rect.left = itemRect.left;
-		rect.right = itemRect.right;
-		OS.InvalidateRect (hwnd, rect, true);
-	}
-}
-
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
@@ -727,19 +711,23 @@ void setSortDirection (int direction) {
 			* The fix is to force a redraw.
 			*/
 			parent.forceResize ();
-			RECT rect = new RECT (), itemRect = new RECT ();
+			RECT rect = new RECT (), headerRect = new RECT ();
 			OS.GetClientRect (hwnd, rect);
 			if (oldColumn != -1) {
-				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, itemRect);
-				rect.left = itemRect.left;
-				rect.right = itemRect.right;
-				OS.InvalidateRect (hwnd, rect, true);
+				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, headerRect) != 0) {
+					OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+					rect.left = headerRect.left;
+					rect.right = headerRect.right;
+					OS.InvalidateRect (hwnd, rect, true);
+				}
 			}
 			if (newColumn != -1) {
-				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, newColumn, itemRect);
-				rect.left = itemRect.left;
-				rect.right = itemRect.right;
-				OS.InvalidateRect (hwnd, rect, true);
+				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, newColumn, headerRect) != 0) {
+					OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+					rect.left = headerRect.left;
+					rect.right = headerRect.right;
+					OS.InvalidateRect (hwnd, rect, true);
+				}
 			}
 		}
 	} else {
