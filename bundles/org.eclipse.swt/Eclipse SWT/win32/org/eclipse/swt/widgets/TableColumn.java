@@ -701,7 +701,8 @@ void setSortDirection (int direction) {
 		*/
 		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 		if (OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
-			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, index, 0);
+			int column = direction == SWT.NONE ? -1 : index;
+			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, column, 0);
 		}
 	} else {
 		switch (direction) {
