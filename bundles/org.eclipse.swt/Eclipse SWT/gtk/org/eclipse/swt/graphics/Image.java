@@ -243,14 +243,12 @@ public Image(Device device, Image srcImage, int flag) {
 		if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 	}
 
-	/* Copy transparent pixel and alpha data when necessary */
-	if (flag != SWT.IMAGE_DISABLE) {
-		transparentPixel = srcImage.transparentPixel;
-		alpha = srcImage.alpha;
-		if (srcImage.alphaData != null) {
-			alphaData = new byte[srcImage.alphaData.length];
-			System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
-		}
+	/* Copy transparent pixel and alpha data */
+	if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
+	alpha = srcImage.alpha;
+	if (srcImage.alphaData != null) {
+		alphaData = new byte[srcImage.alphaData.length];
+		System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 	}
 
 	/* Create the new pixmap */
