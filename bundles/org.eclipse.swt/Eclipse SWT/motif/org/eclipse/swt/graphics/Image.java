@@ -415,6 +415,11 @@ public Image(Device device, Image srcImage, int flag) {
 			OS.XDestroyImage(destXImagePtr);
 			OS.XDestroyImage(srcXImagePtr);
 			OS.XFreeGC(xDisplay, gc);
+			alpha = srcImage.alpha;
+			if (srcImage.alphaData != null) {
+				alphaData = new byte[srcImage.alphaData.length];
+				System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+			}
 			this.pixmap = destPixmap;
 			if (device.tracking) device.new_Object(this);
 			return;
@@ -443,6 +448,8 @@ public Image(Device device, Image srcImage, int flag) {
 					rgbs[i] = new RGB(i, i, i);
 				}
 				newData = new ImageData(width, height, 8, new PaletteData(rgbs));
+				newData.alpha = data.alpha;
+				newData.alphaData = data.alphaData;
 				newData.maskData = data.maskData;
 				newData.maskPad = data.maskPad;
 				if (data.transparentPixel != -1) newData.transparentPixel = 254; 
