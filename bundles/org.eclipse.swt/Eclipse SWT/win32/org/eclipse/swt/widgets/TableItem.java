@@ -252,6 +252,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			RECT headerRect = new RECT ();
 			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect);
+			OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
 			if (getText && fullText) rect.right = headerRect.right;
 			if (getImage && fullImage) rect.left = headerRect.left;
 		}

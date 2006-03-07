@@ -483,6 +483,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 							RECT headerRect = new RECT ();
 							int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 							if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) != 0) {
+								OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
 								itemRect.left = itemRect.right;
 								itemRect.right = headerRect.right;
 								fillBackground (hDC, clrTextBk, itemRect);
@@ -5089,6 +5090,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 				if (count != 0) {
+					forceResize ();
 					RECT rect = new RECT ();
 					OS.GetClientRect (handle, rect);
 					NMLISTVIEW pnmlv = new NMLISTVIEW ();
@@ -5100,6 +5102,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						RECT headerRect = new RECT ();
 						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+						OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
 						rect.left = headerRect.right;
 						rect.top = itemRect.top;
 						rect.bottom = itemRect.bottom;

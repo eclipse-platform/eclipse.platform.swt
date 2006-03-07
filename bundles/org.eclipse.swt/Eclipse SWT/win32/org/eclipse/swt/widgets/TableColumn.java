@@ -357,6 +357,7 @@ public void pack () {
 		RECT headerRect = new RECT ();
 		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+		OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
 		int hDC = OS.GetDC (hwnd);
 		int oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
@@ -555,12 +556,13 @@ public void setAlignment (int alignment) {
 	*/
 	if (index != 0) {
 		parent.forceResize ();
-		RECT rect = new RECT (), itemRect = new RECT ();
+		RECT rect = new RECT (), headerRect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
 		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-		rect.left = itemRect.left;
-		rect.right = itemRect.right;
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+		OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+		rect.left = headerRect.left;
+		rect.right = headerRect.right;
 		OS.InvalidateRect (hwnd, rect, true);
 	}
 }
