@@ -342,6 +342,12 @@ public Image(Device device, Image srcImage, int flag) {
 					OS.DeleteDC(bwDC);
 					OS.DeleteDC(hdcBmp);
 					OS.DeleteObject(hbmBW);
+
+					alpha = srcImage.alpha;
+					if (srcImage.alphaData != null) {
+						alphaData = new byte[srcImage.alphaData.length];
+						System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+					}
 					
 					/* Release the HDC for the device */
 					device.internal_dispose_GC(hDC, null);
@@ -469,6 +475,8 @@ public Image(Device device, Image srcImage, int flag) {
 					rgbs[i] = new RGB(i, i, i);
 				}
 				newData = new ImageData(r.width, r.height, 8, new PaletteData(rgbs));
+				newData.alpha = data.alpha;
+				newData.alphaData = data.alphaData;
 				newData.maskData = data.maskData;
 				newData.maskPad = data.maskPad;
 				if (data.transparentPixel != -1) newData.transparentPixel = 254; 
@@ -723,7 +731,7 @@ public Image (Device device, String filename) {
 					SWT.error(SWT.ERROR_NO_HANDLES);
 				}
 				int[] hBitmap = new int[1];
-				Gdip.Bitmap_GetHBITMAP(bitmap, color, hBitmap);			
+				Gdip.Bitmap_GetHBITMAP(bitmap, color, hBitmap);
 				this.type = SWT.BITMAP;
 				this.handle = hBitmap[0];
 				if (this.handle == 0) {
