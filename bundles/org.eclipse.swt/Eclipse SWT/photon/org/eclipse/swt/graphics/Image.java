@@ -253,6 +253,8 @@ public Image(Device device, Image srcImage, int flag) {
 					rgbs[i] = new RGB(i, i, i);
 				}
 				newData = new ImageData(r.width, r.height, 8, new PaletteData(rgbs));
+				newData.alpha = data.alpha;
+				newData.alphaData = data.alphaData;
 				newData.maskData = data.maskData;
 				newData.maskPad = data.maskPad;
 				if (data.transparentPixel != -1) newData.transparentPixel = 254; 
