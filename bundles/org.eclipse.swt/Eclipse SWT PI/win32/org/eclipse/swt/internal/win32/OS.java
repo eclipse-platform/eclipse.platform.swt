@@ -803,6 +803,7 @@ public class OS extends Platform {
 	public static final int LVM_GETITEMRECT = 0x100e;
 	public static final int LVM_GETITEMSTATE = 0x102c;
 	public static final int LVM_GETNEXTITEM = 0x100c;
+	public static final int LVM_GETSELECTEDCOLUMN = LVM_FIRST + 174;
 	public static final int LVM_GETSELECTEDCOUNT = 0x1032;
 	public static final int LVM_GETSTRINGWIDTH = IsUnicode ? 0x1057 : 0x1011;
 	public static final int LVM_GETSUBITEMRECT = 0x1038;
