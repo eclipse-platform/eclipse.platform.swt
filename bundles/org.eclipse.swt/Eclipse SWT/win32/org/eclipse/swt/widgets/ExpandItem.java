@@ -148,12 +148,17 @@ private void drawChevron (int hDC, RECT rect) {
 		int whitePen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_3DHILIGHT));
 		int darkGrayPen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_3DSHADOW));
 		OS.SelectObject (hDC, whitePen);
-		OS.MoveToEx (hDC, rect.left, rect.bottom, 0);
-		OS.LineTo (hDC, rect.left, rect.top);
-		OS.LineTo (hDC, rect.right, rect.top);
+		int [] points1 = {
+				rect.left, rect.bottom,
+				rect.left, rect.top,
+				rect.right, rect.top};
+		OS.Polyline (hDC, points1, points1.length / 2);
 		OS.SelectObject (hDC, darkGrayPen);
-		OS.LineTo (hDC, rect.right, rect.bottom);
-		OS.LineTo (hDC, rect.left, rect.bottom);
+		int [] points2 = {
+				rect.right, rect.top,
+				rect.right, rect.bottom,
+				rect.left, rect.bottom};
+		OS.Polyline (hDC, points2, points2.length / 2);
 		OS.SelectObject (hDC, oldPen);
 		OS.DeleteObject (whitePen);
 		OS.DeleteObject (darkGrayPen);
@@ -193,10 +198,12 @@ void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
 			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
 			info.cbSize = NONCLIENTMETRICS.sizeof;
 			int hFont = 0, oldFont = 0;
-			if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-				LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
-				hFont = OS.CreateFontIndirect (logFont);
-				oldFont = OS.SelectObject (hDC, hFont);
+			if (!OS.IsWinCE) {
+				if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+					LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
+					hFont = OS.CreateFontIndirect (logFont);
+					oldFont = OS.SelectObject (hDC, hFont);
+				}
 			}
 			int oldBkMode = OS.SetBkMode (hDC, OS.TRANSPARENT);
 			OS.DrawText (hDC, buffer, buffer.length (), rect, OS.DT_VCENTER | OS.DT_SINGLELINE);
@@ -223,10 +230,12 @@ void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
 			int pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_BTNFACE));
 			int oldPen = OS.SelectObject (hDC, pen);
-			OS.MoveToEx (hDC, x, y + headerHeight, 0);			
-			OS.LineTo (hDC, x, y + headerHeight + height);
-			OS.LineTo (hDC, x + width - 1, y + headerHeight + height);
-			OS.LineTo (hDC, x + width - 1, y + headerHeight - 1);
+			int [] points = {
+					x, y + headerHeight, 
+					x, y + headerHeight + height, 
+					x + width - 1, y + headerHeight + height, 
+					x + width - 1, y + headerHeight - 1};
+			OS.Polyline (hDC, points, points.length / 2);
 			OS.SelectObject (hDC, oldPen);
 			OS.DeleteObject (pen);
 		}
@@ -319,10 +328,12 @@ int getPreferredWidth (int hTheme, int hDC) {
 			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
 			info.cbSize = NONCLIENTMETRICS.sizeof;
 			int hFont = 0, oldFont = 0;
-			if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-				LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
-				hFont = OS.CreateFontIndirect (logFont);
-				oldFont = OS.SelectObject (hDC, hFont);
+			if (!OS.IsWinCE) {
+				if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+					LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
+					hFont = OS.CreateFontIndirect (logFont);
+					oldFont = OS.SelectObject (hDC, hFont);
+				}
 			}
 			OS.DrawText (hDC, buffer, buffer.length (), rect, OS.DT_CALCRECT);
 			if (hFont != 0) {
