@@ -2970,9 +2970,9 @@ void setBackgroundTransparent (boolean transparent) {
 	if (transparent) {
 		if (oldPixel != OS.CLR_NONE) {
 			/*
-			* Feature in Windows.  When the background color is changed,
-			* the table does not redraw until the next WM_PAINT.  The fix
-			* is to force a redraw.
+			* Bug in Windows.  When the background color is changed,
+			* the table does not redraw until the next WM_PAINT.  The
+			* fix is to force a redraw.
 			*/
 			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, OS.CLR_NONE);
@@ -2987,6 +2987,12 @@ void setBackgroundTransparent (boolean transparent) {
 			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
 				if (sortColumn != null && !sortColumn.isDisposed ()) {
 					OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, -1, 0);
+					/* 
+					* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is set, Windows
+					* does not redraw either the new or the previous selected column.
+					* The fix is to force a redraw.
+					*/
+					OS.InvalidateRect (handle, null, true);
 				}
 			}
 		}
@@ -3007,7 +3013,16 @@ void setBackgroundTransparent (boolean transparent) {
 			/* Set LVM_SETSELECTEDCOLUMN */
 			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
 				if (sortColumn != null && !sortColumn.isDisposed ()) {
-					OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, indexOf (sortColumn), 0);
+					int column = indexOf (sortColumn);
+					if (column != -1) {
+						OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, column, 0);
+						/* 
+						* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is set, Windows
+						* does not redraw either the new or the previous selected column.
+						* The fix is to force a redraw.
+						*/
+						OS.InvalidateRect (handle, null, true);
+					}
 				}
 			}
 		}

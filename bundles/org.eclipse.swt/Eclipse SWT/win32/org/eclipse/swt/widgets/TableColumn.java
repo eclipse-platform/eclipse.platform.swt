@@ -455,6 +455,22 @@ public void pack () {
 	}
 }
 
+void redraw () {
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	parent.forceResize ();
+	RECT rect = new RECT ();
+	int hwnd = parent.handle;
+	OS.GetClientRect (hwnd, rect);
+	RECT itemRect = new RECT ();
+	int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+	if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect) != 0) {
+		rect.left = itemRect.left;
+		rect.right = itemRect.right;
+		OS.InvalidateRect (hwnd, rect, true);
+	}
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	parent = null;
@@ -554,6 +570,7 @@ public void setAlignment (int alignment) {
 	* visible rectangle for the column and redraw it.
 	*/
 	if (index != 0) {
+		parent.forceResize ();
 		RECT rect = new RECT (), itemRect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
 		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
@@ -701,8 +718,29 @@ void setSortDirection (int direction) {
 		*/
 		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 		if (OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
-			int column = direction == SWT.NONE ? -1 : index;
-			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, column, 0);
+			int oldColumn = OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+			int newColumn = direction == SWT.NONE ? -1 : index;
+			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
+			/* 
+			* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is set, Windows
+			* does not redraw either the new or the previous selected column.
+			* The fix is to force a redraw.
+			*/
+			parent.forceResize ();
+			RECT rect = new RECT (), itemRect = new RECT ();
+			OS.GetClientRect (hwnd, rect);
+			if (oldColumn != -1) {
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, itemRect);
+				rect.left = itemRect.left;
+				rect.right = itemRect.right;
+				OS.InvalidateRect (hwnd, rect, true);
+			}
+			if (newColumn != -1) {
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, newColumn, itemRect);
+				rect.left = itemRect.left;
+				rect.right = itemRect.right;
+				OS.InvalidateRect (hwnd, rect, true);
+			}
 		}
 	} else {
 		switch (direction) {
