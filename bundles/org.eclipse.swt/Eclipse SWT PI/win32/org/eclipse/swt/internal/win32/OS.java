@@ -3092,9 +3092,11 @@ public static final native void MoveMemory (UDACCEL Destination, int Source, int
 public static final native void MoveMemory(int Destination, DROPFILES Source, int Length);
 public static final native void MoveMemory(double[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory(float[] Destination, int SourcePtr, int Length);
+public static final native void MoveMemory(long[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory(short[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory(int DestinationPtr, double[] Source, int Length);
 public static final native void MoveMemory(int DestinationPtr, float[] Source, int Length);
+public static final native void MoveMemory(int DestinationPtr, long[] Source, int Length);
 public static final native void MoveMemory(int DestinationPtr, short[] Source, int Length);
 public static final native void MoveMemory (SCRIPT_ITEM Destination, int SourcePtr, int Length);
 public static final native void MoveMemory (SCRIPT_LOGATTR Destination, int SourcePtr, int Length);

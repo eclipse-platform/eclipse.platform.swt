@@ -369,6 +369,7 @@ public class COM extends OS {
 	public static final short VT_ERROR = 10;
 	public static final short VT_I2 = 2;
 	public static final short VT_I4 = 3;
+	public static final short VT_I8 = 20;
 	public static final short VT_NULL = 1;
 	public static final short VT_R4 = 4;
 	public static final short VT_R8 = 5;

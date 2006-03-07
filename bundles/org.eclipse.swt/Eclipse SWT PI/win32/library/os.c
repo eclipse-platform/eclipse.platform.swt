@@ -6572,6 +6572,34 @@ fail:
 }
 #endif
 
+#ifndef NO_MoveMemory__I_3JI
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3JI)
+	(JNIEnv *env, jclass that, jint arg0, jlongArray arg1, jint arg2)
+{
+	jlong *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__I_3JI_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	}
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
+	OS_NATIVE_EXIT(env, that, MoveMemory__I_3JI_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__I_3SI
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__I_3SI)
 	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jint arg2)
@@ -7332,6 +7360,34 @@ fail:
 		if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	}
 	OS_NATIVE_EXIT(env, that, MoveMemory___3III_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory___3JII
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory___3JII)
+	(JNIEnv *env, jclass that, jlongArray arg0, jint arg1, jint arg2)
+{
+	jlong *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory___3JII_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0) if ((lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg0) if ((lparg0 = (*env)->GetLongArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	}
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg0 && lparg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	} else
+#endif
+	{
+		if (arg0 && lparg0) (*env)->ReleaseLongArrayElements(env, arg0, lparg0, 0);
+	}
+	OS_NATIVE_EXIT(env, that, MoveMemory___3JII_FUNC);
 }
 #endif
 
