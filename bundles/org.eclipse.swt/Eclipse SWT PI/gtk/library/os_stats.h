@@ -1041,6 +1041,7 @@ typedef enum {
 	_1pango_1layout_1new_FUNC,
 	_1pango_1layout_1set_1alignment_FUNC,
 	_1pango_1layout_1set_1attributes_FUNC,
+	_1pango_1layout_1set_1auto_1dir_FUNC,
 	_1pango_1layout_1set_1font_1description_FUNC,
 	_1pango_1layout_1set_1indent_FUNC,
 	_1pango_1layout_1set_1justify_FUNC,
