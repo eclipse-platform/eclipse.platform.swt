@@ -223,9 +223,10 @@ int calculateWidth (int index, GC gc) {
 		event.item = this;
 		event.index = index;
 		event.gc = gc;
-		Rectangle bounds = getBounds ();
+		short [] height = new short [1];
+		OS.GetDataBrowserTableViewRowHeight (parent.handle, height);
 		event.width = width;
-		event.height = bounds.height;
+		event.height = height [0];
 		parent.sendEvent (SWT.MeasureItem, event);
 		if (parent.itemHeight == -1) {
 			parent.itemHeight = event.height;
