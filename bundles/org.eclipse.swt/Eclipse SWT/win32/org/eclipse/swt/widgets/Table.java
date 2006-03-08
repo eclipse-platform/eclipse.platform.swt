@@ -48,10 +48,10 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	boolean wasSelected, wasResized, ignoreItemHeight, ignoreDraw, ignoreDrawSelected;
+	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, textColor;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -411,6 +411,7 @@ LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
 
 LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	int code = OS.CDRF_DODEFAULT;
+	textColor = -1;
 	ignoreDraw = ignoreDrawSelected = false;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
@@ -445,6 +446,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	if (clrText == -1) clrText = item.foreground;
 	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 	if (clrTextBk == -1) clrTextBk = item.background;
+	if (textColor != -1) clrText = textColor;
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -2713,7 +2715,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	gc.setClipping (event.x, event.y, event.width, event.height);
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
-	//int newClrText = OS.GetTextColor (hDC);
+	int newClrText = OS.GetTextColor (hDC);
 	//int newClrTextBk = OS.GetBkColor (hDC);
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
@@ -2722,9 +2724,10 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		if ((event.detail & SWT.SELECTED) == 0) {
 			ignoreDrawSelected = true;
 			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
-				clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				//clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				//clrText = newClrText;
 				//clrTextBk = newClrTextBk;
+				textColor = newClrText;
 			}
 			nmcd.uItemState &= ~OS.CDIS_SELECTED;
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
@@ -2732,8 +2735,9 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	} else {
 		if ((event.detail & SWT.SELECTED) != 0) {
 			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
-				clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-				clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+				//clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				//clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+				textColor = newClrText;
 			}
 			nmcd.uItemState |= OS.CDIS_SELECTED;
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
@@ -2896,7 +2900,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	boolean selected = result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0;
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
-			data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+			data.foreground = textColor != -1 ? textColor : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 			data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 		} else {
 			int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
