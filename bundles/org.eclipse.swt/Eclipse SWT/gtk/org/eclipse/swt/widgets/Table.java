@@ -137,10 +137,9 @@ static int checkStyle (int style) {
 int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
 	if (cell == ignoreCell) return 0;
 	int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
-	int [] buffer = new int [1];
-	OS.memmove (buffer, OS.gtk_tree_path_get_indices (path), 4);
-	int index = buffer [0];
-	TableItem item = _getItem (index);
+	int [] index = new int [1];
+	OS.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
+	TableItem item = _getItem (index[0]);
 	OS.gtk_tree_path_free (path);
 	if (item != null) OS.g_object_set_qdata (cell, Display.SWT_OBJECT_INDEX2, item.handle);
 	boolean isPixbuf = OS.GTK_IS_CELL_RENDERER_PIXBUF (cell);
@@ -184,20 +183,21 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 			}
 		}
 		if (!item.cached) {
-			lastIndexOf = index;
+			lastIndexOf = index[0];
 			setData = checkData (item);
 		}
 	}
+	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
-		buffer [0] = 0;
+		ptr [0] = 0;
 		if (isPixbuf) {
-			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, buffer, -1);
-			OS.g_object_set (cell, OS.pixbuf, buffer [0], 0);
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
+			OS.g_object_set (cell, OS.pixbuf, ptr [0], 0);
 		} else {
-			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, buffer, -1); 
-			if (buffer [0] != 0) {
-				OS.g_object_set (cell, OS.text, buffer [0], 0);
-				OS.g_free (buffer [0]);
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1); 
+			if (ptr [0] != 0) {
+				OS.g_object_set (cell, OS.text, ptr [0], 0);
+				OS.g_free (ptr [0]);
 			}
 		}
 	}
@@ -207,22 +207,22 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 		* This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
 		*/
 		if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
-			buffer [0] = 0;
-			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, buffer, -1);
-			if (buffer [0] != 0) {
-				OS.g_object_set (cell, OS.cell_background_gdk, buffer [0], 0);
+			ptr [0] = 0;
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
+			if (ptr [0] != 0) {
+				OS.g_object_set (cell, OS.cell_background_gdk, ptr [0], 0);
 			}
 		}
 		if (!isPixbuf) {
-			buffer [0] = 0;
-			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FOREGROUND, buffer, -1);
-			if (buffer [0] != 0) {
-				OS.g_object_set (cell, OS.foreground_gdk, buffer [0], 0);
+			ptr [0] = 0;
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FOREGROUND, ptr, -1);
+			if (ptr [0] != 0) {
+				OS.g_object_set (cell, OS.foreground_gdk, ptr [0], 0);
 			}
-			buffer [0] = 0;
-			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FONT, buffer, -1);
-			if (buffer [0] != 0) {
-				OS.g_object_set (cell, OS.font_desc, buffer [0], 0);
+			ptr [0] = 0;
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_FONT, ptr, -1);
+			if (ptr [0] != 0) {
+				OS.g_object_set (cell, OS.font_desc, ptr [0], 0);
 			}
 		}
 	}
