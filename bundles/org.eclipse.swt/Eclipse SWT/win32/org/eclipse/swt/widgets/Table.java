@@ -1377,10 +1377,19 @@ void destroyItem (TableColumn column) {
 			int hHeap = OS.GetProcessHeap ();
 			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 			LVCOLUMN lvColumn = new LVCOLUMN ();
-			lvColumn.mask = OS.LVCF_TEXT;
+			lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_IMAGE | OS.LVCF_WIDTH | OS.LVCF_FMT;
 			lvColumn.pszText = pszText;
+			lvColumn.iImage = OS.I_IMAGENONE;
+			lvColumn.fmt = OS.LVCFMT_LEFT;
 			OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, lvColumn);
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+			if (OS.COMCTL32_MAJOR >= 6) {
+				HDITEM hdItem = new HDITEM ();
+				hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
+				hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN | OS.HDF_IMAGE);
+				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+				OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+			}
 		}
 		if ((parent.style & SWT.VIRTUAL) == 0) {
 			LVITEM lvItem = new LVITEM ();
