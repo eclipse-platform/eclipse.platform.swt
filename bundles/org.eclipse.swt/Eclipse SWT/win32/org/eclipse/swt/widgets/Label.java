@@ -493,12 +493,7 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	return result;
 }
 
-
 LRESULT wmColorChild (int wParam, int lParam) {
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW) {
-		return super.wmColorChild (wParam, lParam);
-	}
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
 	* is returned from WM_CTRLCOLOR is misaligned when
@@ -507,13 +502,17 @@ LRESULT wmColorChild (int wParam, int lParam) {
 	* contains an image, the image is misaligned.  The
 	* fix is to draw the background in WM_ERASEBKGND.
 	*/
+	LRESULT result = super.wmColorChild (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-		if (findImageControl () != null) {
-			OS.SetBkMode (wParam, OS.TRANSPARENT);
-			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
+			if (findImageControl () != null) {
+				OS.SetBkMode (wParam, OS.TRANSPARENT);
+				return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+			}
 		}
 	}
-	return super.wmColorChild (wParam, lParam);
+	return result;
 }
 
 LRESULT wmDrawChild (int wParam, int lParam) {

@@ -936,6 +936,29 @@ int windowProc () {
 	return ButtonProc;
 }
 
+
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the button uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) {
+			if (findImageControl () != null) {
+				drawBackground (wParam);
+				return LRESULT.ONE;
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
@@ -1028,6 +1051,27 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			postEvent (SWT.Selection);
 	}
 	return super.wmCommandChild (wParam, lParam);
+}
+
+LRESULT wmColorChild (int wParam, int lParam) {
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the label uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_ERASEBKGND.
+	*/
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) {
+			if (findImageControl () != null) {
+				OS.SetBkMode (wParam, OS.TRANSPARENT);
+				return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+			}
+		}
+	}
+	return result;
 }
 
 LRESULT wmDrawChild (int wParam, int lParam) {
