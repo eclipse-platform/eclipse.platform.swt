@@ -252,7 +252,36 @@ int borderHandle () {
 LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
-	TreeItem item = _getItem (nmcd.dwItemSpec, nmcd.lItemlParam);
+	/*
+	* Bug in Windows.  If the lParam field of TVITEM
+	* is changed during custom draw using TVM_SETITEM,
+	* the lItemlParam field of the NMTVCUSTOMDRAW struct
+	* is not updated until the next custom draw.  The
+	* fix is to query the field from the item instead
+	* of using the struct.
+	*/
+	int id = nmcd.lItemlParam;
+	if ((style & SWT.VIRTUAL) != 0) {
+		if (id == -1) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+			tvItem.hItem = nmcd.dwItemSpec;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			id = tvItem.lParam;
+		}
+	}
+	TreeItem item = _getItem (nmcd.dwItemSpec, id);
+	
+	/*
+	* Feature in Windows.  When a new tree item is inserted
+	* using TVM_INSERTITEM and the tree is using custom draw,
+	* a NM_CUSTOMDRAW is sent before TVM_INSERTITEM returns
+	* and before the item is added to the items array.  The
+	* fix is to check for null.
+	* 
+	* NOTE: This only happens on XP with the version 6.00 of
+	* COMCTL32.DLL,
+	*/
 	if (item == null) return null;
 	/*
 	* Feature in Windows.  Under certain circumstances, Windows
@@ -619,6 +648,25 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
 	/*
+	* Bug in Windows.  If the lParam field of TVITEM
+	* is changed during custom draw using TVM_SETITEM,
+	* the lItemlParam field of the NMTVCUSTOMDRAW struct
+	* is not updated until the next custom draw.  The
+	* fix is to query the field from the item instead
+	* of using the struct.
+	*/
+	int id = nmcd.lItemlParam;
+	if ((style & SWT.VIRTUAL) != 0) {
+		if (id == -1) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+			tvItem.hItem = nmcd.dwItemSpec;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			id = tvItem.lParam;
+		}
+	}
+	TreeItem item = _getItem (nmcd.dwItemSpec, id);
+	/*
 	* Feature in Windows.  When a new tree item is inserted
 	* using TVM_INSERTITEM and the tree is using custom draw,
 	* a NM_CUSTOMDRAW is sent before TVM_INSERTITEM returns
@@ -628,7 +676,6 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	* NOTE: This only happens on XP with the version 6.00 of
 	* COMCTL32.DLL,
 	*/
-	TreeItem item = _getItem (nmcd.dwItemSpec, nmcd.lItemlParam);
 	if (item == null) return null;
 	RECT clipRect = null;
 	int index = 0, count = 0;
@@ -5350,6 +5397,9 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	if (hwndHeader != 0) {
 		OS.SendMessage (hwndHeader, OS.WM_SETFONT, wParam, lParam);
 	}
+	if (headerToolTipHandle != 0) {
+		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
+	}
 	return result;
 }
 
@@ -5428,6 +5478,26 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (!OS.IntersectRect (rect, rect, itemRect)) break;
 				}
 			}
+			if (items == null) break;
+			/*
+			* Bug in Windows.  If the lParam field of TVITEM
+			* is changed during custom draw using TVM_SETITEM,
+			* the lItemlParam field of the NMTVCUSTOMDRAW struct
+			* is not updated until the next custom draw.  The
+			* fix is to query the field from the item instead
+			* of using the struct.
+			*/
+			int id = lptvdi.lParam;
+			if ((style & SWT.VIRTUAL) != 0) {
+				if (id == -1) {
+					TVITEM tvItem = new TVITEM ();
+					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+					tvItem.hItem = lptvdi.hItem;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					id = tvItem.lParam;
+				}
+			}
+			TreeItem item = _getItem (lptvdi.hItem, id);
 			/*
 			* Feature in Windows.  When a new tree item is inserted
 			* using TVM_INSERTITEM, a TVN_GETDISPINFO is sent before
@@ -5443,8 +5513,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			* that are about to be disposed.  The fix is to check for
 			* disposed items.
 			*/
-			if (items == null) break;
-			TreeItem item = _getItem (lptvdi.hItem, lptvdi.lParam);
 			if (item == null) break;
 			if (item.isDisposed ()) break;
 			if (!item.cached) {
