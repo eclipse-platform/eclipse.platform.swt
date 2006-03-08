@@ -298,11 +298,6 @@ private void drag(Event dragEvent) {
 		imagelist = createImageList(image);
 		if (imagelist != 0) {
 			topControl = control.getShell();
-			Composite parent = topControl.getParent();
-			while (parent != null) {
-				topControl = parent;
-				parent = topControl.getParent();
-			}
 			OS.ImageList_BeginDrag(imagelist, 0, 0, 0);
 			Point location = topControl.getLocation();
 			OS.ImageList_DragEnter(topControl.handle, dragEvent.x - location.x, dragEvent.y - location.y);
