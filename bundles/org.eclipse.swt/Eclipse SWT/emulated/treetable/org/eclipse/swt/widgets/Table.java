@@ -2592,6 +2592,7 @@ void onPaint (Event event) {
 
 	/* paint the items */
 	boolean noFocusDraw = false;
+	int[] lineDash = gc.getLineDash ();
 	for (int i = startIndex; i <= Math.min (endIndex, itemsCount - 1); i++) {
 		TableItem item = items [i];
 		if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
@@ -2618,6 +2619,7 @@ void onPaint (Event event) {
 	gc.setClipping(clipping);
 	if (linesVisible) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		gc.setLineDash (lineDash);
 		if (numColumns > 0 && startColumn != -1) {
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
@@ -2642,14 +2644,12 @@ void onPaint (Event event) {
 			if (focusBounds.width > 0) {
 				gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 				gc.setClipping (focusBounds);
-				int[] oldLineDash = gc.getLineDash ();
 				if (focusItem.isSelected ()) {
 					gc.setLineDash (new int[] {2, 2});
 				} else {
 					gc.setLineDash (new int[] {1, 1});
 				}
 				gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
-				gc.setLineDash (oldLineDash);
 			}
 		} else {
 			/* no items, so draw focus border around Table */
@@ -2659,10 +2659,8 @@ void onPaint (Event event) {
 			int height = Math.max (0, size.y - headerHeight - 2);
 			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 			gc.setClipping (1, y, width, height);
-			int[] oldLineDash = gc.getLineDash ();
 			gc.setLineDash (new int[] {1, 1});
 			gc.drawFocus (1, y, width, height);
-			gc.setLineDash (oldLineDash);
 		}
 	}
 }
