@@ -708,9 +708,10 @@ void setSortDirection (int direction) {
 			int newColumn = direction == SWT.NONE ? -1 : index;
 			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
 			/* 
-			* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is set, Windows
-			* does not redraw either the new or the previous selected column.
-			* The fix is to force a redraw.
+			* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
+			* specify a selected column, Windows does not redraw either
+			* the new or the previous selected column.  The fix is to
+			* force a redraw of both.
 			*/
 			parent.forceResize ();
 			RECT rect = new RECT (), headerRect = new RECT ();
