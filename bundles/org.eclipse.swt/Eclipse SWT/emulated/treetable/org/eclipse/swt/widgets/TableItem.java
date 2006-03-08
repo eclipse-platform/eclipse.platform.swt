@@ -168,6 +168,8 @@ void addColumn (TableColumn column) {
 		System.arraycopy (textWidths, 0, newTextWidths, 0, index);
 		System.arraycopy (textWidths, index, newTextWidths, index + 1, columnCount - index - 1);
 		textWidths = newTextWidths;
+	} else {
+		customWidth = -1;		/* columnCount == 1 */
 	}
 
 	/*
@@ -608,7 +610,11 @@ Rectangle getFocusBounds () {
 
 	int width;
 	if (columns.length == 0) {
-		width = textWidths [0] + 2 * MARGIN_TEXT;
+		if (customWidth != -1) {
+			width = customWidth;
+		} else {
+			width = textWidths [0] + 2 * MARGIN_TEXT;
+		}
 	} else {
 		TableColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
@@ -968,9 +974,12 @@ boolean isSelected () {
 /*
  * The backgroundOnly argument indicates whether the item should only
  * worry about painting its background color and selection.
+ *
+ * Returns a boolean indicating whether to abort drawing focus on the item.
+ * If the receiver is not the current focus item then this value is irrelevant.
  */
-void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
-	if (!parent.checkData (this, true)) return;
+boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
+	if (!parent.checkData (this, true)) return false;
 	int columnIndex = 0, x = 0;
 	if (column != null) {
 		columnIndex = column.getIndex ();
@@ -991,7 +1000,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 		event.height = parent.itemHeight;
 		parent.sendEvent (SWT.MeasureItem, event);
 		event.gc = null;
-		if (isDisposed ()) return;
+		if (isDisposed ()) return false;
 		if (parent.allowItemHeightChange) {
 			parent.allowItemHeightChange = false;
 			if (parent.itemHeight != event.height) {
@@ -1009,7 +1018,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 
 	/* if this cell is completely to the right of the client area then there's no need to paint it */
 	Rectangle clientArea = parent.getClientArea ();
-	if (clientArea.x + clientArea.width < x) return;
+	if (clientArea.x + clientArea.width < x) return false;
 
 	Rectangle cellBounds = getCellBounds (columnIndex);
 	if (parent.linesVisible) {
@@ -1065,6 +1074,8 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 
 	boolean isSelected = isSelected ();
 	boolean drawSelection = isSelected;
+	boolean isFocusItem = parent.focusItem == this;
+	boolean drawFocus = isFocusItem;
 	boolean drawContent = true;
 	if (parent.hooks (SWT.EraseItem)) {
 		gc.setFont (getFont ());
@@ -1080,8 +1091,8 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 		event.gc = gc;
 		event.index = columnIndex;
 		event.doit = true;
-		if (drawSelection) event.detail |= SWT.SELECTED;
-		if (parent.focusItem == this) event.detail |= SWT.FOCUSED;
+		if (isSelected) event.detail |= SWT.SELECTED;
+		if (isFocusItem) event.detail |= SWT.FOCUSED;
 		event.x = cellBounds.x;
 		event.y = cellBounds.y;
 		event.width = cellBounds.width;
@@ -1089,8 +1100,9 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 		gc.setClipping (event.x, event.y, event.width, event.height);
 		parent.sendEvent (SWT.EraseItem, event);
 		event.gc = null;
-		if (isDisposed ()) return;
-		drawSelection = drawSelection && (event.detail & SWT.SELECTED) != 0;
+		if (isDisposed ()) return false;
+		drawSelection = isSelected && (event.detail & SWT.SELECTED) != 0;
+		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
 		drawContent = event.doit;
 	}
 
@@ -1138,7 +1150,7 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 		}
 	}
 
-	if (paintBackgroundOnly) return;
+	if (backgroundOnly) return false;
 
 	/* Draw checkbox if drawing column 0 and parent has style SWT.CHECK */
 	if (columnIndex == 0 && (parent.style & SWT.CHECK) != 0) {
@@ -1212,15 +1224,18 @@ void paint (GC gc, TableColumn column, boolean paintBackgroundOnly) {
 		event.gc = gc;
 		event.index = columnIndex;
 		if (isSelected) event.detail |= SWT.SELECTED;
-		if (parent.focusItem == this) event.detail |= SWT.FOCUSED;
+		if (drawFocus) event.detail |= SWT.FOCUSED;
 		event.x = contentX;
 		event.y = cellBounds.y;
 		event.width = contentWidth;
 		event.height = cellBounds.height;
 		gc.setClipping (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height);
 		parent.sendEvent (SWT.PaintItem, event);
+		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
 		event.gc = null;
 	}
+
+	return isFocusItem && !drawFocus;
 }
 /*
  * Redraw part of the receiver.  If either EraseItem or PaintItem is hooked then

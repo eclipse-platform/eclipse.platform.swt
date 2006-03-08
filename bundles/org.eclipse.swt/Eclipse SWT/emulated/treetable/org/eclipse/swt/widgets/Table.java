@@ -2591,19 +2591,20 @@ void onPaint (Event event) {
 	}
 
 	/* paint the items */
+	boolean noFocusDraw = false;
 	for (int i = startIndex; i <= Math.min (endIndex, itemsCount - 1); i++) {
 		TableItem item = items [i];
 		if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
 			if (startColumn == -1) {
 				/* indicates that region to paint is to the right of the last column */
-				item.paint (gc, null, true);
+				noFocusDraw = item.paint (gc, null, true) || noFocusDraw;
 			} else {
 				if (numColumns == 0) {
-					item.paint (gc, null, false);
+					noFocusDraw = item.paint (gc, null, false) || noFocusDraw;
 				} else {
 					for (int j = startColumn; j <= Math.min (endColumn, columns.length - 1); j++) {
 						if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
-							item.paint (gc, orderedColumns [j], false);
+							noFocusDraw = item.paint (gc, orderedColumns [j], false) || noFocusDraw;
 						}
 						if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
 					}
@@ -2635,7 +2636,7 @@ void onPaint (Event event) {
 	}
 
 	/* paint focus rectangle */
-	if (isFocusControl ()) {
+	if (!noFocusDraw && isFocusControl ()) {
 		if (focusItem != null) {
 			Rectangle focusBounds = focusItem.getFocusBounds ();
 			if (focusBounds.width > 0) {
@@ -2814,7 +2815,8 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 	int startY = (startIndex - topIndex) * itemHeight + getHeaderHeight ();
 	int height = (endIndex - startIndex + 1) * itemHeight;
 	if (focusBoundsOnly) {
-		if (columns.length > 0) {
+		boolean custom = hooks (SWT.EraseItem) || hooks (SWT.PaintItem);
+		if (!custom && columns.length > 0) {
 			TableColumn lastColumn;
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				TableColumn[] orderedColumns = getOrderedColumns ();
@@ -2828,16 +2830,9 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 		endIndex = Math.min (endIndex, itemsCount - 1);
 		Rectangle clientArea = getClientArea ();
 		for (int i = startIndex; i <= endIndex; i++) {
-			if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-				/* if custom painting is being done then only full cells are damaged */
-				if ((style & SWT.FULL_SELECTION) != 0) {
-					/* repaint the full item */
-					redraw (0, getItemY (items [i]), clientArea.width, itemHeight, false);
-				} else {
-					/* repaint the item's cell 0 */
-					Rectangle bounds = items [i].getCellBounds (0);
-					redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
-				}
+			/* if custom painting is being done then repaint the full item */
+			if (custom) {
+				redraw (0, getItemY (items [i]), clientArea.width, itemHeight, false);
 			} else {
 				/* repaint the item's focus bounds */
 				Rectangle bounds = items [i].getFocusBounds ();
