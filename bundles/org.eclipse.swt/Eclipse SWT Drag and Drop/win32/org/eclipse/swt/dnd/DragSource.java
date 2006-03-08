@@ -100,6 +100,7 @@ public class DragSource extends Widget {
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
 	DragAndDropEffect effect;
+	Composite topControl;
 	
 	// ole interfaces
 	COMObject iDropSource;
@@ -296,17 +297,24 @@ private void drag(Event dragEvent) {
 		image = new Image(display, imageData);
 		imagelist = createImageList(image);
 		if (imagelist != 0) {
-			Point pt = getDisplay().map(control, null, dragEvent.x, dragEvent.y);
+			topControl = control.getShell();
+			Composite parent = topControl.getParent();
+			while (parent != null) {
+				topControl = parent;
+				parent = topControl.getParent();
+			}
 			OS.ImageList_BeginDrag(imagelist, 0, 0, 0);
-			OS.ImageList_DragEnter(0, pt.x, pt.y);
+			Point location = topControl.getLocation();
+			OS.ImageList_DragEnter(topControl.handle, dragEvent.x - location.x, dragEvent.y - location.y);
 		}
 	}
 	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
 	if (imagelist != 0) {
-		OS.ImageList_DragLeave(0);
+		OS.ImageList_DragLeave(topControl.handle);
 		OS.ImageList_EndDrag();
 		OS.ImageList_Destroy(imagelist);
 		imagelist = 0;
+		topControl = null;
 	}
 	if (image != null) {
 		image.dispose();
@@ -477,18 +485,21 @@ private int GiveFeedback(int dwEffect) {
 
 private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	if (fEscapePressed != 0){
-		OS.ImageList_DragLeave(0);
+		if (topControl != null) OS.ImageList_DragLeave(topControl.handle);
 		return COM.DRAGDROP_S_CANCEL;
 	}
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if ((grfKeyState & mask) == 0) {
-		OS.ImageList_DragLeave(0);
+		if (topControl != null) OS.ImageList_DragLeave(topControl.handle);
 		return COM.DRAGDROP_S_DROP;
 	}
 	
-	Display display = getDisplay();
-	Point pt = display.getCursorLocation();
-	OS.ImageList_DragMove(pt.x, pt.y);
+	if (topControl != null) {
+		Display display = getDisplay();
+		Point pt = display.getCursorLocation();
+		Point location = topControl.getLocation();
+		OS.ImageList_DragMove(pt.x - location.x, pt.y - location.y);
+	}
 	return COM.S_OK;
 }
 
