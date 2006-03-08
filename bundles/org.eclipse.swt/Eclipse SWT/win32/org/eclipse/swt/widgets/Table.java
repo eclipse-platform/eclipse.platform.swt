@@ -991,6 +991,10 @@ void createHeaderToolTips () {
 
 void createItem (TableColumn column, int index) {
 	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
+	int oldColumn = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+	if (oldColumn >= index) {
+		OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, oldColumn + 1, 0);
+	}
 	if (columnCount == columns.length) {
 		TableColumn [] newColumns = new TableColumn [columns.length + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
@@ -1335,6 +1339,14 @@ void destroyItem (TableColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
+	int oldColumn = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+	if (oldColumn == index) {
+		OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, -1, 0);
+	} else {
+		if (oldColumn > index) {
+			OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, oldColumn - 1, 0);
+		}
+	}
 	int orderIndex = 0;
 	int [] oldOrder = new int [columnCount];
 	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, oldOrder);
@@ -1486,7 +1498,6 @@ void destroyItem (TableColumn column) {
 			*/
 			OS.InvalidateRect (handle, null, true);			
 		}
-		
 		TableColumn [] newColumns = new TableColumn [columnCount - orderIndex];
 		for (int i=orderIndex; i<newOrder.length; i++) {
 			newColumns [i - orderIndex] = columns [newOrder [i]];
