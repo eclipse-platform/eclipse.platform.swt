@@ -61,7 +61,6 @@ public void test_createComposites() {
 	int samples;
 
     Performance performance = Performance.getDefault();
-    performance.setComment(meter, Performance.EXPLAINS_DEGRADATION_COMMENT, "For unknown reasons this test has a performance regression on the 2 GHz Linux machine.  The regression is not reproducable on similar machines.  See bug 96652.");
 	
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
@@ -98,7 +97,6 @@ public void test_createWidgets() {
 
     Performance performance = Performance.getDefault();
     performance.tagAsGlobalSummary(meter, "Create composites and widgets", Dimension.ELAPSED_PROCESS);
-    performance.setComment(meter, Performance.EXPLAINS_DEGRADATION_COMMENT, "For unknown reasons this test has a performance regression on the 2 GHz Linux machine.  The regression is not reproducable on similar machines.  See bug 96652.");
 
 	for(samples = 0; samples < 10; samples++) {
 		Shell shell = new Shell(display);
