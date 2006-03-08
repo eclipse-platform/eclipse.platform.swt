@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -22,7 +22,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /* AWT Imports */
 import java.awt.EventQueue;
@@ -49,45 +50,13 @@ public class SWT_AWT {
 	 */
 	public static String embeddedFrameClass;
 
-	static final int JAVA_VERSION;
+	/**
+	 * Key for looking up the embedded frame for a Composite using
+	 * getData(). 
+	 */
+	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
+
 	static boolean loaded, swingInitialized;
-
-static {
-	JAVA_VERSION = parseVersion(System.getProperty("java.version"));
-}
-
-static int parseVersion(String version) {
-	if (version == null) return 0;
-	int major = 0, minor = 0, micro = 0;
-	int length = version.length(), index = 0, start = 0;
-	while (index < length && Character.isDigit(version.charAt(index))) index++;
-	try {
-		if (start < length) major = Integer.parseInt(version.substring(start, index));
-	} catch (Exception e) {}
-	start = ++index;
-	while (index < length && Character.isDigit(version.charAt(index))) index++;
-	try {
-		if (start < length) minor = Integer.parseInt(version.substring(start, index));
-	} catch (Exception e) {}
-	start = ++index;
-	while (index < length && Character.isDigit(version.charAt(index))) index++;
-	try {
-		if (start < length) micro = Integer.parseInt(version.substring(start, index));
-	} catch (Exception e) {}
-	return JAVA_VERSION(major, minor, micro);
-}
-
-/**
- * Returns the Java version number as an integer.
- * 
- * @param major
- * @param minor
- * @param micro
- * @return the version
- */
-static int JAVA_VERSION (int major, int minor, int micro) {
-	return (major << 16) + (minor << 8) + micro;
-}
 
 static native final int getAWTHandle (Canvas canvas);
 
@@ -95,7 +64,15 @@ static synchronized void loadLibrary () {
 	if (loaded) return;
 	loaded = true;
 	Toolkit.getDefaultToolkit();
-	System.loadLibrary("jawt");
+	/*
+	* Note that the jawt library is loaded explicitily
+	* because it cannot be found by the library loader.
+	* All exceptions are caught because the library may
+	* have been loaded already.
+	*/
+	try {
+		System.loadLibrary("jawt");
+	} catch (Throwable e) {}
 	Library.loadLibrary("swt-awt");
 }
 
@@ -110,6 +87,25 @@ static synchronized void initializeSwing() {
 		Method method = clazz.getMethod("getDefaults", emptyClass);
 		if (method != null) method.invoke(clazz, emptyObject);
 	} catch (Throwable e) {}
+}
+
+/**
+ * Answers a <code>java.awt.Frame</code> which is the embedded frame
+ * associated with the specified composite.
+ * 
+ * @param parent the parent <code>Composite</code> of the <code>java.awt.Frame</code>
+ * @return a <code>java.awt.Frame</code> the embedded frame or <code>null</code>.
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public static Frame getFrame (Composite parent) {
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if ((parent.getStyle () & SWT.EMBEDDED) == 0) return null;
+	return (Frame)parent.getData(EMBEDDED_FRAME_KEY);
 }
 
 /**
@@ -140,91 +136,163 @@ public static Frame new_Frame (final Composite parent) {
 	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int handle = parent.handle;
-	/*
-	 * Some JREs have implemented the embedded frame constructor to take an integer
-	 * and other JREs take a long.  To handle this binary incompatability, use
-	 * reflection to create the embedded frame.
-	 */
-	Class clazz = null;
-	try {
-		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
-		clazz = Class.forName(className);
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
-	}
-	Constructor constructor = null;
-	try {
-		constructor = clazz.getConstructor (new Class [] {int.class});
-	} catch (Throwable e1) {
-		try {
-			constructor = clazz.getConstructor (new Class [] {long.class});
-		} catch (Throwable e2) {
-			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
+	final int handle = parent.handle;	
+	final Frame[] result = new Frame[1];
+	final Throwable[] exception = new Throwable[1];
+	Runnable runnable = new Runnable () {
+		public void run () {
+			try {
+				/*
+				 * Some JREs have implemented the embedded frame constructor to take an integer
+				 * and other JREs take a long.  To handle this binary incompatability, use
+				 * reflection to create the embedded frame.
+				 */
+				Class clazz = null;
+				try {
+					String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
+					clazz = Class.forName(className);
+				} catch (Throwable e) {
+					exception[0] = e;
+					return;
+				}
+				Constructor constructor = null;
+				try {
+					constructor = clazz.getConstructor (new Class [] {int.class});
+				} catch (Throwable e1) {
+					try {
+						constructor = clazz.getConstructor (new Class [] {long.class});
+					} catch (Throwable e2) {
+						exception[0] = e2;
+						return;
+					}
+				}
+				initializeSwing ();
+				Object value = null;
+				try {
+					value = constructor.newInstance (new Object [] {new Integer (handle)});
+				} catch (Throwable e) {
+					exception[0] = e;
+					return;
+				}
+				final Frame frame = (Frame) value;
+				/*
+				 * This is necessary to make lightweight components
+				 * directly added to the frame receive mouse events
+				 * properly.
+				 */
+				frame.addNotify();
+				result[0] = frame;
+			} finally {
+				synchronized(result) {
+					result.notify();
+				}
+			}
+		}
+	};
+	if (EventQueue.isDispatchThread()) {
+		runnable.run();
+	} else {
+		EventQueue.invokeLater(runnable);
+		boolean interrupted = false;
+		MSG msg = new MSG ();
+		int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_SENDMESSAGE;
+		while (result[0] == null && exception[0] == null) {
+			OS.PeekMessage (msg, 0, 0, 0, flags);
+			try {
+				synchronized (result) {
+					result.wait(50);
+				}
+			} catch (InterruptedException e) {
+				interrupted = true;
+			}
+		}
+		if (interrupted) {
+			Compatibility.interrupt();
 		}
 	}
-	initializeSwing ();
-	Object value = null;
-	try {
-		value = constructor.newInstance (new Object [] {new Integer (handle)});
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+	if (exception[0] != null) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, exception[0]);	
 	}
-	final Frame frame = (Frame) value;
+	final Frame frame = result[0];	
+	parent.setData(EMBEDDED_FRAME_KEY, frame);	
 	
-	/*
-	* This is necessary to make lightweight components
-	* directly added to the frame receive mouse events
-	* properly.
-	*/
-	frame.addNotify();
+	/* Forward the iconify and deiconify events */
+	final Listener shellListener = new Listener () {
+		public void handleEvent (Event e) {
+			switch (e.type) {
+				case SWT.Deiconify:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEICONIFIED));
+						}
+					});
+					break;
+				case SWT.Iconify:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ICONIFIED));
+						}
+					});
+					break;
+			}
+		}
+	};
+	Shell shell = parent.getShell ();
+	shell.addListener (SWT.Deiconify, shellListener);
+	shell.addListener (SWT.Iconify, shellListener);
 	
 	/*
 	* Generate the appropriate events to activate and deactivate
 	* the embedded frame. This is needed in order to make keyboard
 	* focus work properly for lightweights.
 	*/
-	parent.addListener (SWT.Activate, new Listener () {
+	Listener listener = new Listener () {
 		public void handleEvent (Event e) {
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					if (JAVA_VERSION < JAVA_VERSION(1, 4, 0)) {
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
-					} else {
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_GAINED_FOCUS));
-					}
-				}
-			});
+			switch (e.type) {
+				case SWT.Dispose:
+					Shell shell = parent.getShell ();
+					shell.removeListener (SWT.Deiconify, shellListener);
+					shell.removeListener (SWT.Iconify, shellListener);
+					parent.setVisible(false);
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							frame.dispose ();
+						}
+					});
+					break;
+				case SWT.Activate:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
+								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
+							} else {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_GAINED_FOCUS));
+							}
+						}
+					});
+					break;
+				case SWT.Deactivate:
+					EventQueue.invokeLater(new Runnable () {
+						public void run () {
+							if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
+							} else {
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
+								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+							}
+						}
+					});
+					break;
+			}
 		}
-	});
-	parent.addListener (SWT.Deactivate, new Listener () {
-		public void handleEvent (Event e) {
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					if (JAVA_VERSION < JAVA_VERSION(1, 4, 0)) {
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
-					} else {
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
-						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-					}
-				}
-			});
-		}
-	});
-
-	parent.addListener (SWT.Dispose, new Listener () {
-		public void handleEvent (Event event) {
-			parent.setVisible(false);
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.dispose ();
-				}
-			});
-		}
-	});
+	};
+	parent.addListener (SWT.Activate, listener);
+	parent.addListener (SWT.Deactivate, listener);
+	parent.addListener (SWT.Dispose, listener);
+	
 	parent.getDisplay().asyncExec(new Runnable() {
 		public void run () {
 			if (parent.isDisposed()) return;
@@ -268,6 +336,7 @@ public static Frame new_Frame (final Composite parent) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the display is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent's peer is not created</li>
  * </ul>
  * 
  * @since 3.0
@@ -282,7 +351,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
-	if (handle == 0) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+	if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
 
 	final Shell shell = Shell.win32_new (display, handle);
 	parent.addComponentListener(new ComponentAdapter () {

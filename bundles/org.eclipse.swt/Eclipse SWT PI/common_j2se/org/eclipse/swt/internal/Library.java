@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -29,6 +29,37 @@ public class Library {
 	 * SWT revision number (must be >= 0)
 	 */
 	static int REVISION = 0;
+	
+	/**
+	 * The JAVA and SWT versions
+	 */
+	public static final int JAVA_VERSION, SWT_VERSION;
+
+static {
+	JAVA_VERSION = parseVersion(System.getProperty("java.version"));
+	SWT_VERSION = SWT_VERSION(MAJOR_VERSION, MINOR_VERSION);
+}
+
+static int parseVersion(String version) {
+	if (version == null) return 0;
+	int major = 0, minor = 0, micro = 0;
+	int length = version.length(), index = 0, start = 0;
+	while (index < length && Character.isDigit(version.charAt(index))) index++;
+	try {
+		if (start < length) major = Integer.parseInt(version.substring(start, index));
+	} catch (NumberFormatException e) {}
+	start = ++index;
+	while (index < length && Character.isDigit(version.charAt(index))) index++;
+	try {
+		if (start < length) minor = Integer.parseInt(version.substring(start, index));
+	} catch (NumberFormatException e) {}
+	start = ++index;
+	while (index < length && Character.isDigit(version.charAt(index))) index++;
+	try {
+		if (start < length) micro = Integer.parseInt(version.substring(start, index));
+	} catch (NumberFormatException e) {}
+	return JAVA_VERSION(major, minor, micro);
+}
 
 /**
  * Returns the SWT version as an integer in the standard format
@@ -60,6 +91,29 @@ public static int getRevision () {
 	return REVISION;
 }
 	
+/**
+ * Returns the Java version number as an integer.
+ * 
+ * @param major
+ * @param minor
+ * @param micro
+ * @return the version
+ */
+public static int JAVA_VERSION (int major, int minor, int micro) {
+	return (major << 16) + (minor << 8) + micro;
+}
+
+/**
+ * Returns the SWT version number as an integer.
+ * 
+ * @param major
+ * @param minor
+ * @return the version
+ */
+public static int SWT_VERSION (int major, int minor) {
+	return major * 1000 + minor;
+}
+
 /**
  * Loads the shared library that matches the version of the
  * Java code which is currently running.  SWT shared libraries
