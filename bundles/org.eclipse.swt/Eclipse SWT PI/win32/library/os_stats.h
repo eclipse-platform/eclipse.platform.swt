@@ -327,6 +327,7 @@ typedef enum {
 	ImageList_1DragShowNolock_FUNC,
 	ImageList_1Draw_FUNC,
 	ImageList_1EndDrag_FUNC,
+	ImageList_1GetDragImage_FUNC,
 	ImageList_1GetIcon_FUNC,
 	ImageList_1GetIconSize_FUNC,
 	ImageList_1GetImageCount_FUNC,

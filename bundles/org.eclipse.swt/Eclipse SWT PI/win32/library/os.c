@@ -5175,6 +5175,25 @@ JNIEXPORT void JNICALL OS_NATIVE(ImageList_1EndDrag)
 }
 #endif
 
+#ifndef NO_ImageList_1GetDragImage
+JNIEXPORT jint JNICALL OS_NATIVE(ImageList_1GetDragImage)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	POINT _arg0, *lparg0=NULL;
+	POINT _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ImageList_1GetDragImage_FUNC);
+	if (arg0) if ((lparg0 = getPOINTFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getPOINTFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)ImageList_GetDragImage((POINT *)lparg0, (POINT *)lparg1);
+fail:
+	if (arg1 && lparg1) setPOINTFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setPOINTFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, ImageList_1GetDragImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ImageList_1GetIcon
 JNIEXPORT jint JNICALL OS_NATIVE(ImageList_1GetIcon)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

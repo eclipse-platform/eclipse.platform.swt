@@ -2959,8 +2959,9 @@ public static final native boolean ImageList_DragEnter (int hwndLock, int x, int
 public static final native boolean ImageList_DragLeave (int hwndLock);
 public static final native boolean ImageList_DragMove (int x, int y);
 public static final native boolean ImageList_DragShowNolock (boolean fShow);
-public static final native boolean ImageList_Draw(int himl, int i, int hdcDst, int x, int y, int fStyle);
+public static final native boolean ImageList_Draw (int himl, int i, int hdcDst, int x, int y, int fStyle);
 public static final native void ImageList_EndDrag ();
+public static final native int ImageList_GetDragImage (POINT ppt, POINT pptHotspot);
 public static final native int ImageList_GetIcon (int himl, int i, int flags);
 public static final native boolean ImageList_GetIconSize (int himl, int [] cx, int [] cy);   
 public static final native int ImageList_GetImageCount (int himl);

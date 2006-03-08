@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 684;
-int OS_nativeFunctionCallCount[684];
+int OS_nativeFunctionCount = 685;
+int OS_nativeFunctionCallCount[685];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -323,6 +323,7 @@ char * OS_nativeFunctionNames[] = {
 	"ImageList_1DragShowNolock",
 	"ImageList_1Draw",
 	"ImageList_1EndDrag",
+	"ImageList_1GetDragImage",
 	"ImageList_1GetIcon",
 	"ImageList_1GetIconSize",
 	"ImageList_1GetImageCount",
