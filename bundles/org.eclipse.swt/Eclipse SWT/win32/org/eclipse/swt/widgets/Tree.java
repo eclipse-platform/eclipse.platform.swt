@@ -5641,6 +5641,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.TVN_ITEMEXPANDEDA:
 		case OS.TVN_ITEMEXPANDEDW: {
+			if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
 			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
@@ -5660,6 +5661,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.TVN_ITEMEXPANDINGA:
 		case OS.TVN_ITEMEXPANDINGW: {
+			if ((style & SWT.VIRTUAL) != 0) style &= ~SWT.DOUBLE_BUFFERED;
 			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			}
