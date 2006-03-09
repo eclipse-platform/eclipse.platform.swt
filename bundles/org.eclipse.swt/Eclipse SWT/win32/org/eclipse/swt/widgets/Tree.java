@@ -2425,14 +2425,14 @@ public int getItemCount () {
 }
 
 int getItemCount (int hItem) {
-	int count = 0;
+	int count = 0, hFirstItem = hItem;
 	if (hItem == hFirstIndexOf) {
 		if (itemCount != -1) return itemCount;
-		hItem = hLastIndexOf;
+		hFirstItem = hLastIndexOf;
 		count = lastIndexOf;
 	}
-	while (hItem != 0) {
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+	while (hFirstItem != 0) {
+		hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hFirstItem);
 		count++;
 	}
 	if (hItem == hFirstIndexOf) itemCount = count;
