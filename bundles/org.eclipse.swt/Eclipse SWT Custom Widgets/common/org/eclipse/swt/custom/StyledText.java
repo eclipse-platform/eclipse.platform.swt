@@ -6315,6 +6315,20 @@ void resetSelection() {
 	selection.x = selection.y = caretOffset;
 	selectionAnchor = -1;
 }
+
+public void scroll(int destX, int destY, int x, int y, int width, int height, boolean all) {
+	super.scroll(destX, destY, x, y, width, height, false);
+	if (all) {
+		int deltaX = destX - x, deltaY = destY - y;
+		Control[] children = getChildren();
+		for (int i=0; i<children.length; i++) {
+			Control child = children[i];
+			Rectangle rect = child.getBounds();
+			child.setLocation(rect.x + deltaX, rect.y + deltaY);
+		}
+	}
+}
+
 /**
  * Scrolls the widget horizontally.
  * <p>
