@@ -47,7 +47,7 @@ public class Tree extends Composite {
 	TreeItem currentItem;
 	TreeColumn sortColumn;
 	int hwndParent, hwndHeader, hAnchor, hInsert, lastID;
-	int hFirstIndexOf, hLastIndexOf, lastIndexOf, sortDirection;
+	int hFirstIndexOf, hLastIndexOf, lastIndexOf, itemCount, sortDirection;
 	boolean dragStarted, gestureCompleted, insertAfter, shrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
@@ -1526,6 +1526,8 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 		lastID = id + 1;
 	}
 	int hNewItem = 0;
+	int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+	boolean fixParent = hFirstItem == 0;
 	if (hItem == 0) {
 		TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
 		tvInsert.hParent = hParent;
@@ -1560,6 +1562,15 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 		item.handle = hNewItem;
 		items [id] = item;
 	}
+	if (hFirstItem == 0) {
+		switch (hInsertAfter) {
+			case OS.TVI_FIRST:
+			case OS.TVI_LAST:
+				hFirstIndexOf = hLastIndexOf = hFirstItem = hNewItem;
+				itemCount = 0;
+		}
+	}
+	if (hFirstItem == hFirstIndexOf && itemCount != -1) itemCount++;
 	if (hItem == 0) {
 		/*
 		* Bug in Windows.  When a child item is added to a parent item
@@ -1568,9 +1579,8 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 		* indicator.  The fix is to detect the case when the first
 		* child is added to a visible parent item and redraw the parent.
 		*/
-		if (drawCount == 0 && OS.IsWindowVisible (handle)) {
-			int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-			if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
+		if (fixParent) {
+			if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 				RECT rect = new RECT ();
 				rect.left = hParent;
 				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
@@ -1698,6 +1708,7 @@ void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
 	columns = new TreeColumn [4];
+	itemCount = -1;
 }
 
 int defaultBackground () {
@@ -1897,6 +1908,7 @@ void destroyItem (TreeColumn column) {
 
 void destroyItem (TreeItem item, int hItem) {
 	hFirstIndexOf = hLastIndexOf = 0;
+	itemCount = -1;
 	/*
 	* Feature in Windows.  When an item is removed that is not
 	* visible in the tree because it belongs to a collapsed branch,
@@ -2033,6 +2045,7 @@ int findIndex (int hFirstItem, int hItem) {
 		index++;
 	}
 	if (hNextItem == hItem) {
+		itemCount = -1;
 		hFirstIndexOf = hFirstItem;
 		hLastIndexOf = hNextItem;
 		return lastIndexOf = index;
@@ -2097,6 +2110,7 @@ int findItem (int hFirstItem, int index) {
 		nextIndex++;
 	}
 	if (index == nextIndex) {
+		itemCount = -1;
 		lastIndexOf = nextIndex;
 		hFirstIndexOf = hFirstItem;
 		return hLastIndexOf = hNextItem;
@@ -2413,6 +2427,7 @@ public int getItemCount () {
 int getItemCount (int hItem) {
 	int count = 0;
 	if (hItem == hFirstIndexOf) {
+		if (itemCount != -1) return itemCount;
 		hItem = hLastIndexOf;
 		count = lastIndexOf;
 	}
@@ -2420,6 +2435,7 @@ int getItemCount (int hItem) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		count++;
 	}
+	if (hItem == hFirstIndexOf) itemCount = count;
 	return count;
 }
 
@@ -2984,6 +3000,7 @@ public void removeAll () {
 	imageList = null;
 	if (hwndParent == 0 && !linesVisible) customDraw = false;
 	hAnchor = hInsert = hFirstIndexOf = hLastIndexOf = 0;
+	itemCount = -1;
 	items = new TreeItem [4];
 	updateScrollBar ();
 	scrollWidth = 0;
