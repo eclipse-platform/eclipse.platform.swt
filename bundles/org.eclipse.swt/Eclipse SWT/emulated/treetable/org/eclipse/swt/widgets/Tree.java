@@ -125,7 +125,7 @@ public boolean isFocusControl() {
  * @see Widget#getStyle
  */
 public Tree (Composite parent, int style) {
-	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
+	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED));
 	setForeground (display.getSystemColor (SWT.COLOR_LIST_FOREGROUND));
 	setBackground (display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
 	GC gc = new GC (this);
