@@ -271,11 +271,11 @@ void onKeyDown (Event event) {
 	switch (event.keyCode) {
 		case 13: /* Return */
 		case 32: /* Space */
-			item.expanded = !item.expanded;
-			showItem (focusIndex);
 			Event ev = new Event ();
 			ev.item = item;
-			sendEvent (item.expanded ? SWT.Expand :SWT.Collapse, ev);
+			sendEvent (item.expanded ? SWT.Collapse :SWT.Expand, ev);
+			item.expanded = !item.expanded;
+			showItem (focusIndex);
 			break;
 		case SWT.ARROW_UP:
 			if (focusIndex > 0) {
@@ -317,11 +317,11 @@ void onMouseUp (Event event) {
 	ExpandItem item = items [focusIndex];
 	boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
 	if (hover) {
-		item.expanded = !item.expanded;
-		showItem (focusIndex);
 		Event ev = new Event ();
 		ev.item = item;
-		notifyListeners (item.expanded ? SWT.Expand : SWT.Collapse, ev);
+		notifyListeners (item.expanded ? SWT.Collapse : SWT.Expand, ev);
+		item.expanded = !item.expanded;
+		showItem (focusIndex);
 	}
 }
 
