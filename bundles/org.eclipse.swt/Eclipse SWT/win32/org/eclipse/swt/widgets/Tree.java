@@ -5312,8 +5312,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		}
 		shrink = false;
 	}
-	Control control = findImageControl ();
-	if ((style & SWT.DOUBLE_BUFFERED) != 0 || control != null) {
+	if ((style & SWT.DOUBLE_BUFFERED) != 0 || findImageControl () != null) {
 		GC gc = null;
 		int paintDC = 0;
 		PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -5340,7 +5339,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		int hDC = OS.CreateCompatibleDC (paintDC);
 		int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
 		int hOldBitmap = OS.SelectObject (hDC, hBitmap);
-		fillImageBackground (hDC, control, rect);
+		drawBackground (hDC, rect);
 		int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
 		OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
 		OS.SelectObject (hDC, hOldBitmap);
