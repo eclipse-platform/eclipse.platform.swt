@@ -709,11 +709,7 @@ public TreeItem getItem (int index) {
 	if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
 	int hItem = parent.findItem (hFirstItem, index);
 	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	tvItem.hItem = hItem;
-	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return parent._getItem (tvItem.hItem, tvItem.lParam);
+	return parent._getItem (hItem);
 }
 
 /**
@@ -844,12 +840,8 @@ public Tree getParent () {
 public TreeItem getParentItem () {
 	checkWidget ();
 	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, handle);
-	if (tvItem.hItem == 0) return null;
-	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return parent._getItem (tvItem.hItem, tvItem.lParam);
+	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, handle);
+	return hItem != 0 ? parent._getItem (hItem) : null;
 }
 
 public String getText () {
@@ -1144,12 +1136,7 @@ public void setExpanded (boolean expanded) {
 	if (hNewItem != hOldItem) {
 		Event event = new Event ();
 		if (hNewItem != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-			tvItem.hItem = hNewItem;
-			if (OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem) != 0) {
-				event.item = parent._getItem (tvItem.hItem, tvItem.lParam);
-			}
+			event.item = parent._getItem (hNewItem);
 			parent.hAnchor = hNewItem;
 		}
 		parent.sendEvent (SWT.Selection, event);

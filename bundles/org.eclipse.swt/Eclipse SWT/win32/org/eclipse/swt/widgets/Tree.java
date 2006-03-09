@@ -161,6 +161,16 @@ void _addListener (int eventType, Listener listener) {
 	}
 }
 
+TreeItem _getItem (int hItem) {
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	tvItem.hItem = hItem;
+	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
+		return _getItem (tvItem.hItem, tvItem.lParam);
+	}
+	return null;
+}
+
 TreeItem _getItem (int hItem, int id) {
 	if ((style & SWT.VIRTUAL) == 0) return items [id];
 	return id != -1 ? items [id] : new TreeItem (this, SWT.NONE, -1, -1, hItem);
@@ -304,7 +314,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 	boolean selected = false;
 	if (OS.IsWindowEnabled (handle)) {
 		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 		tvItem.hItem = item.handle;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
@@ -719,7 +729,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	boolean selected = false;
 	if (OS.IsWindowEnabled (handle)) {
 		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 		tvItem.hItem = item.handle;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
@@ -982,7 +992,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 				if (hItem != 0) {
 					TVITEM tvItem = new TVITEM ();
-					tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 					tvItem.hItem = hItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					ignoreDeselect = ignoreSelect = lockSelection = true;
@@ -1744,7 +1754,7 @@ void deselect (int hItem, TVITEM tvItem, int hIgnoreItem) {
 public void deselectAll () {
 	checkWidget ();
 	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
 	if ((style & SWT.SINGLE) != 0) {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
@@ -2053,14 +2063,8 @@ int findIndex (int hFirstItem, int hItem) {
 	return -1;
 }
 
-Widget findItem (int id) {
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	tvItem.hItem = id;
-	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
-		return _getItem (tvItem.hItem, tvItem.lParam);
-	}
-	return null;
+Widget findItem (int hItem) {
+	return _getItem (hItem);
 }
 
 int findItem (int hFirstItem, int index) {
@@ -2121,12 +2125,7 @@ int findItem (int hFirstItem, int index) {
 TreeItem getFocusItem () {
 //	checkWidget ();
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	if (hItem == 0) return null;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
-	tvItem.hItem = hItem;
-	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-	return _getItem (tvItem.hItem, tvItem.lParam);
+	return hItem != 0 ? _getItem (hItem) : null;
 }
 
 /**
@@ -2355,11 +2354,7 @@ public TreeItem getItem (int index) {
 	if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
 	int hItem = findItem (hFirstItem, index);
 	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	tvItem.hItem = hItem;
-	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-	return _getItem (hItem, tvItem.lParam);
+	return _getItem (hItem);
 }
 
 /**
@@ -2394,11 +2389,7 @@ public TreeItem getItem (Point point) {
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem != 0) {
 		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & OS.TVHT_ONITEM) != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-			tvItem.hItem = lpht.hItem;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			return _getItem (lpht.hItem, tvItem.lParam);
+			return _getItem (lpht.hItem);
 		}
 	}
 	return null;
@@ -2605,7 +2596,7 @@ public TreeItem [] getSelection () {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (hItem == 0) return new TreeItem [0];
 		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 		tvItem.hItem = hItem;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return new TreeItem [0];
@@ -2617,7 +2608,7 @@ public TreeItem [] getSelection () {
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
 	if ((style & SWT.VIRTUAL) != 0) {
 		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 		count = getSelection (hItem, tvItem, guess, 0);
 	} else {
@@ -2642,7 +2633,7 @@ public TreeItem [] getSelection () {
 		return result;
 	}
 	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
 	if ((style & SWT.VIRTUAL) != 0) {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
@@ -2762,14 +2753,7 @@ public int getSortDirection () {
 public TreeItem getTopItem () {
 	checkWidget ();
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
-	if (hItem == 0) return null;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM;
-	tvItem.hItem = hItem;
-	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
-		return _getItem (hItem, tvItem.lParam);
-	}
-	return null;
+	return hItem != 0 ? _getItem (hItem) : null;
 }
 
 int imageIndex (Image image, int index) {
@@ -3223,7 +3207,7 @@ public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
 	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.state = OS.TVIS_SELECTED;
 	tvItem.stateMask = OS.TVIS_SELECTED;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
@@ -3764,7 +3748,7 @@ public void setSelection (TreeItem [] items) {
 		*/
 		if (hOldItem == hNewItem) {
 			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 			tvItem.state = OS.TVIS_SELECTED;
 			tvItem.stateMask = OS.TVIS_SELECTED;
 			tvItem.hItem = hNewItem;
@@ -3776,7 +3760,7 @@ public void setSelection (TreeItem [] items) {
 
 	/* Select/deselect the rest of the items */
 	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
@@ -4370,7 +4354,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 				hAnchor = hItem;
 				OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
 				TVITEM tvItem = new TVITEM ();
-				tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE | OS.TVIF_PARAM;
 				tvItem.hItem = hItem;
 				if ((style & SWT.CHECK) != 0) {
 					tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
@@ -4427,13 +4411,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 			*/
 			Event event = new Event ();
 			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-			if (hItem != 0) {
-				TVITEM tvItem = new TVITEM ();
-				tvItem.hItem = hItem;
-				tvItem.mask = OS.TVIF_PARAM;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				event.item = _getItem (hItem, tvItem.lParam);
-			}
+			if (hItem != 0) event.item = _getItem (hItem);
 			postEvent (SWT.DefaultSelection, event);
 			return LRESULT.ZERO;
 		}
@@ -4492,7 +4470,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					ignoreSelect = ignoreDeselect = false;
 					int hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 					TVITEM tvItem = new TVITEM ();
-					tvItem.mask = OS.TVIF_STATE;
+					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 					tvItem.stateMask = OS.TVIS_SELECTED;
 					int hDeselectItem = hItem;					
 					RECT rect1 = new RECT ();
@@ -4521,7 +4499,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					}
 					tvItem.hItem = hNewItem;
 					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-					tvItem.mask = OS.TVIF_PARAM;
+					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 					tvItem.hItem = hNewItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					Event event = new Event ();
@@ -4534,7 +4512,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 				if (hItem != 0) {
 					TVITEM tvItem = new TVITEM ();
-					tvItem.mask = OS.TVIF_STATE;
+					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 					tvItem.stateMask = OS.TVIS_SELECTED;
 					tvItem.hItem = hItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
@@ -4668,7 +4646,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 				OS.SetFocus (handle);
 				TVITEM tvItem = new TVITEM ();
 				tvItem.hItem = lpht.hItem;
-				tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
+				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;	
 				tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
 				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 				int state = tvItem.state >> 12;
@@ -4699,11 +4677,7 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	if (lpht.hItem != 0) {
 		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & OS.TVHT_ONITEM) != 0) {
 			Event event = new Event ();
-			TVITEM tvItem = new TVITEM ();
-			tvItem.hItem = lpht.hItem;
-			tvItem.mask = OS.TVIF_PARAM;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			event.item = _getItem (tvItem.hItem, tvItem.lParam);
+			event.item = _getItem (lpht.hItem);
 			postEvent (SWT.DefaultSelection, event);
 		}
 	}
@@ -4736,7 +4710,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			int hSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			if (hSelection != 0) {
 				TVITEM tvItem = new TVITEM ();
-				tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 				tvItem.hItem = lpht.hItem;
 				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 				if ((tvItem.state & OS.TVIS_EXPANDED) != 0) {
@@ -4766,12 +4740,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			}
 		}
 		if (deselected) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_PARAM;
-			tvItem.hItem = lpht.hItem;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			Event event = new Event ();
-			event.item = _getItem (tvItem.hItem, tvItem.lParam);
+			event.item = _getItem (lpht.hItem);
 			postEvent (SWT.Selection, event);
 		}
 		return new LRESULT (code);
@@ -4794,7 +4764,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			OS.SetFocus (handle);
 			TVITEM tvItem = new TVITEM ();
 			tvItem.hItem = lpht.hItem;
-			tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;	
 			tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			int state = tvItem.state >> 12;
@@ -4841,7 +4811,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 	/* Get the selected state of the item under the mouse */
 	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 	tvItem.stateMask = OS.TVIS_SELECTED;
 	boolean hittestSelected = false, focused = false;
 	if ((style & SWT.MULTI) != 0) {
@@ -4918,7 +4888,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	*/
 	if ((style & SWT.SINGLE) != 0) {
 		if (hOldItem == hNewItem) {
-			tvItem.mask = OS.TVIF_STATE;
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 			tvItem.state = OS.TVIS_SELECTED;
 			tvItem.stateMask = OS.TVIS_SELECTED;
 			tvItem.hItem = hNewItem;
@@ -5017,7 +4987,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/* Issue notification */
 	if (!gestureCompleted) {
 		tvItem.hItem = hNewItem;
-		tvItem.mask = OS.TVIF_PARAM;
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 		Event event = new Event ();
 		event.item = _getItem (tvItem.hItem, tvItem.lParam);
@@ -5288,7 +5258,7 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & flags) != 0) {
 			if ((wParam & (OS.MK_CONTROL | OS.MK_SHIFT)) == 0) {
 				TVITEM tvItem = new TVITEM ();
-				tvItem.mask = OS.TVIF_STATE;
+				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 				tvItem.stateMask = OS.TVIS_SELECTED;
 				tvItem.hItem = lpht.hItem;
 				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
