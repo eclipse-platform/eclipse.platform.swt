@@ -1171,10 +1171,9 @@ public class StyledText extends Canvas {
  */
 public StyledText(Composite parent, int style) {
 	super(parent, checkStyle(style));
-	// set the bg/fg in the OS to ensure that these are the same as StyledText, necessary
+	// set the fg in the OS to ensure that these are the same as StyledText, necessary
 	// for ensuring that the bg/fg the IME box uses is the same as what StyledText uses
 	super.setForeground(getForeground());
-	super.setBackground(getBackground());
 	Display display = getDisplay();
 	isMirrored = (super.getStyle() & SWT.MIRRORED) != 0;
 	fixedLineHeight = true;
@@ -5217,22 +5216,22 @@ void handlePaint(Event event) {
 		}
 		if (y < endY) {
 			gc.setBackground(background);
-			gc.fillRectangle(0, y, clientAreaWidth, endY - y);
+			drawBackground(gc, 0, y, clientAreaWidth, endY - y);
 		}
 	}
 	// fill the margin background
 	gc.setBackground(background);
 	if (topMargin > 0) {
-		gc.fillRectangle(0, 0, clientAreaWidth, topMargin);
+		drawBackground(gc, 0, 0, clientAreaWidth, topMargin);
 	}
 	if (bottomMargin > 0) {
-		gc.fillRectangle(0, clientAreaHeight - bottomMargin, clientAreaWidth, bottomMargin);
+		drawBackground(gc, 0, clientAreaHeight - bottomMargin, clientAreaWidth, bottomMargin);
 	}
 	if (leftMargin > 0) {
-		gc.fillRectangle(0, 0, leftMargin, clientAreaHeight);
+		drawBackground(gc, 0, 0, leftMargin, clientAreaHeight);
 	}
 	if (rightMargin > 0) {
-		gc.fillRectangle(clientAreaWidth - rightMargin, 0, rightMargin, clientAreaHeight);
+		drawBackground(gc, clientAreaWidth - rightMargin, 0, rightMargin, clientAreaHeight);
 	}
 }
 /**
@@ -6567,7 +6566,6 @@ public void setAlignment(int alignment) {
 public void setBackground(Color color) {
 	checkWidget();
 	background = color;
-	super.setBackground(getBackground());
 	super.redraw();
 }
 /**

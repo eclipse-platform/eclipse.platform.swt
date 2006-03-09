@@ -144,7 +144,9 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	drawBackground (gc.handle, rect);
+	int hDC = gc.handle;
+	int pixel = background == -1 ? OS.GetBkColor (hDC) : -1;
+	drawBackground (hDC, rect, pixel);
 }
 
 /**
