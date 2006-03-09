@@ -185,7 +185,7 @@ public void test_getHeaderVisible() {
 }
 
 public void test_getItemCount() {
-	warnUnimpl("Test test_getItemCount not written");
+	//tested in test_setItemCountI
 }
 
 public void test_getItemHeight() {
@@ -384,6 +384,44 @@ public void test_setHeaderVisibleZ() {
 	assertTrue(tree.getHeaderVisible());
 	tree.setHeaderVisible(false);
 	assertFalse(tree.getHeaderVisible());
+}
+
+public void test_setItemCountI() {
+	tree.removeAll();
+	assertEquals(0, tree.getItemCount());
+	for (int i=0; i<8; i++) {
+		TreeItem item = new TreeItem(tree, SWT.NULL);
+		assertEquals(i+1, tree.getItemCount());
+	}
+	assertEquals(8, tree.getItemCount());
+	assertEquals(4, tree.indexOf(tree.getItems()[4]));
+	tree.getItem(1).dispose();
+	assertEquals(7, tree.getItemCount());
+	TreeItem item = new TreeItem (tree, SWT.NULL, 0);
+	assertEquals(1, tree.indexOf(tree.getItems()[1]));
+	assertEquals(8, tree.getItemCount());
+	tree.removeAll();
+	assertEquals(0, tree.getItemCount());
+	tree.setItemCount(0);
+	assertEquals(0, tree.getItemCount());
+	tree.setItemCount(-1);
+	assertEquals(0, tree.getItemCount());
+	tree.setItemCount(10);
+	assertEquals(10, tree.getItemCount());
+	tree.getItem(1).dispose();
+	assertEquals(9, tree.getItemCount());
+	assertEquals(4, tree.indexOf(tree.getItems()[4]));
+	tree.setItemCount(3);
+	assertEquals(3, tree.getItemCount());
+	try {
+		tree.getItem(4);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	tree.setItemCount(40);
+	assertEquals(40, tree.getItemCount());
+	tree.getItem(39);
 }
 
 public void test_setLinesVisibleZ() {
@@ -680,6 +718,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_setHeaderVisibleZ");
 	methodNames.addElement("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ");
+	methodNames.addElement("test_setItemCountI");
 	methodNames.addElement("test_setLinesVisibleZ");
 	methodNames.addElement("test_setRedrawZ");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem");
@@ -728,6 +767,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setHeaderVisibleZ")) test_setHeaderVisibleZ();
 	else if (getName().equals("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ")) test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ();
+	else if (getName().equals("test_setItemCountI")) test_setItemCountI();
 	else if (getName().equals("test_setLinesVisibleZ")) test_setLinesVisibleZ();
 	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem")) test_setSelection$Lorg_eclipse_swt_widgets_TreeItem();
