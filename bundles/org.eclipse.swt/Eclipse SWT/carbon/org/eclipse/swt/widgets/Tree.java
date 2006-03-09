@@ -2774,7 +2774,7 @@ void setItemCount (TreeItem parentItem, int count) {
 			System.arraycopy (items, 0, newItems, 0, items.length);
 			items = newItems;
 			for (int i=itemCount; i<count; i++) {
-				items [i] = new TreeItem (parentItem, SWT.NONE, i);
+				items [i] = new TreeItem (this, parentItem, SWT.NONE, i, true);
 			}
 		} else {
 			if (parentItem == null || parentItem.getExpanded ()) {
