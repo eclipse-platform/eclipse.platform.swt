@@ -315,25 +315,28 @@ void deregister () {
 }
 
 void drawBackground (GC gc, int x, int y, int width, int height) {
-	int /*long*/ gdkGC = gc.handle;
-	GdkGCValues values = new GdkGCValues ();
-	OS.gdk_gc_get_values (gdkGC, values);
 	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	if (control.backgroundImage != null) {
-		Point pt = display.map (this, control, 0, 0);
-		OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
-		OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
-		OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
-		gc.fillRectangle (x, y, width, height);
-		OS.gdk_gc_set_fill (gdkGC, values.fill);
-		OS.gdk_gc_set_ts_origin (gdkGC, values.ts_x_origin, values.ts_y_origin);
+	if (control != null) {
+		int /*long*/ gdkGC = gc.handle;
+		GdkGCValues values = new GdkGCValues ();
+		OS.gdk_gc_get_values (gdkGC, values);
+		if (control.backgroundImage != null) {
+			Point pt = display.map (this, control, 0, 0);
+			OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
+			OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
+			OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
+			gc.fillRectangle (x, y, width, height);
+			OS.gdk_gc_set_fill (gdkGC, values.fill);
+			OS.gdk_gc_set_ts_origin (gdkGC, values.ts_x_origin, values.ts_y_origin);
+		} else {
+			gc.setBackground (control.getBackground ());
+			gc.fillRectangle (x, y, width, height);
+			GdkColor color = new GdkColor ();
+			color.pixel = values.background_pixel;
+			OS.gdk_gc_set_background (gdkGC, color);
+		}
 	} else {
-		gc.setBackground (control.getBackground ());
 		gc.fillRectangle (x, y, width, height);
-		GdkColor color = new GdkColor ();
-		color.pixel = values.background_pixel;
-		OS.gdk_gc_set_background (gdkGC, color);
 	}
 }
 
