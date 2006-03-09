@@ -106,7 +106,7 @@ public ExpandBar getParent () {
 int /*long*/ gtk_activate (int /*long*/ widget) {
 	Event event = new Event ();
 	event.item = this;
-	int type = OS.gtk_expander_get_expanded (handle) ? SWT.Expand :SWT.Collapse;
+	int type = OS.gtk_expander_get_expanded (handle) ? SWT.Collapse : SWT.Expand;
 	parent.sendEvent (type, event);
 	return 0;
 }
