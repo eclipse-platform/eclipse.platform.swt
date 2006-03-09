@@ -53,7 +53,7 @@ public class Tree extends Composite {
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
 	boolean linesVisible, customDraw, printClient, painted;
 	boolean ignoreDraw, ignoreDrawSelected, ignoreItemHeight;
-	int scrollWidth, headerToolTipHandle;
+	int scrollWidth, headerToolTipHandle, textColor;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
 	static final int SORT_WIDTH = 10;
@@ -422,12 +422,14 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 					rect = item.getBounds (index, true, true, false, false, true, hDC);
 				}
 			} else {
+				textColor = -1;
 				ignoreDraw = ignoreDrawSelected = false;
 				OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom - gridWidth);
 			}
 			int clrText = -1, clrTextBk = -1;
 			int hFont = item.cellFont != null ? item.cellFont [index] : -1;
 			if (hFont == -1) hFont = item.font;
+			if (textColor != -1) clrText = textColor;
 			if (OS.IsWindowEnabled (handle)) {
 				boolean drawForeground = false;
 				if (selected) {
@@ -522,11 +524,23 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 						gc.setClipping (event.x, event.y, event.width, event.height);
 						sendEvent (SWT.EraseItem, event);
 						event.gc = null;
+						int newTextClr = OS.GetTextColor (hDC);
 						gc.dispose ();
 						OS.RestoreDC (hDC, nSavedDC);
 						if (isDisposed () || item.isDisposed ()) break;
 						ignoreDraw = !event.doit;
+						if (event.doit) {
+							if ((event.detail & SWT.SELECTED) != 0) {
+								if (!selected) {
+									textColor = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+								}
+							} else {
+								if (selected) textColor = newTextClr;
+								ignoreDrawSelected = true;
+							}
+						}
 					}
+					if (textColor != -1) clrText = textColor;
 				}
 				if (drawImage) {
 					Image image = null;
@@ -594,6 +608,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 					}
 				}
 			}
+			if (textColor != -1) clrText = textColor;
 			if (hooks (SWT.PaintItem)) {
 				RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
 				int nSavedDC = OS.SaveDC (hDC);
@@ -784,6 +799,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 				ignoreItemHeight = true;
 			}
 		}
+		textColor = -1;
 		ignoreDraw = ignoreDrawSelected = false;
 		if (hooks (SWT.EraseItem)) {
 			RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
@@ -811,12 +827,16 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 			gc.setClipping (event.x, event.y, event.width, event.height);
 			sendEvent (SWT.EraseItem, event);
 			event.gc = null;
+			int newTextClr = OS.GetTextColor (hDC);
 			gc.dispose ();
 			OS.RestoreDC (hDC, nSavedDC);
 			if (isDisposed () || item.isDisposed ()) return null;
 			ignoreDraw = !event.doit;
 			if (event.doit) {
 				if ((event.detail & SWT.SELECTED) != 0) {
+					if (!selected) {
+						textColor = clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+					}
 					/*
 					* Feature in Windows.  When the tree has the style
 					* TVS_FULLROWSELECT, the background color for the
@@ -833,6 +853,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 						drawBackground (hDC, textRect, OS.GetBkColor (hDC));
 					}
 				} else {
+					if (selected) textColor = clrText = newTextClr;
 					ignoreDrawSelected = true;
 				}
 			}

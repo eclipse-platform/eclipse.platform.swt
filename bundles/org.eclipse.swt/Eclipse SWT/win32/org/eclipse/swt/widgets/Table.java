@@ -517,11 +517,16 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 		if (OS.IsWindowEnabled (handle)) {
 			nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 			if (clrTextBk == -1) {
-				Control control = findBackgroundControl ();
-				if (control == null) control = this;
-				nmcd.clrTextBk  = control.backgroundImage == null ? control.getBackgroundPixel () : OS.CLR_NONE;
+				nmcd.clrTextBk = OS.CLR_NONE;
+				if (textColor == -1) {
+					Control control = findBackgroundControl ();
+					if (control == null) control = this;
+					if (control.backgroundImage == null) {
+						nmcd.clrTextBk = control.getBackgroundPixel ();
+					}
+				}
 			} else {
-				nmcd.clrTextBk = clrTextBk;
+				nmcd.clrTextBk = textColor != -1 ? OS.CLR_NONE : clrTextBk;
 			}
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
@@ -2735,8 +2740,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	gc.setClipping (event.x, event.y, event.width, event.height);
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
-	int newClrText = OS.GetTextColor (hDC);
-	//int newClrTextBk = OS.GetBkColor (hDC);
+	int newTextClr = OS.GetTextColor (hDC);
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
 	if (isDisposed () || item.isDisposed ()) return;
@@ -2744,21 +2748,13 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		if ((event.detail & SWT.SELECTED) == 0) {
 			ignoreDrawSelected = true;
 			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
-				//clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-				//clrText = newClrText;
-				//clrTextBk = newClrTextBk;
-				textColor = newClrText;
+				textColor = newTextClr;
 			}
 			nmcd.uItemState &= ~OS.CDIS_SELECTED;
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
 	} else {
 		if ((event.detail & SWT.SELECTED) != 0) {
-			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
-				//clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-				//clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
-				textColor = newClrText;
-			}
 			nmcd.uItemState |= OS.CDIS_SELECTED;
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
