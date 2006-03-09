@@ -598,7 +598,9 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 
 LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
-	int width = Math.max (0, (lParam & 0xFFFF) - spacing * 2);
+	RECT rect = new RECT ();
+	OS.GetClientRect (handle, rect);
+	int width = Math.max (0, (rect.right - rect.left) - spacing * 2);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
 		if (item.width != width) item.setBounds (0, 0, width, item.height, false, true);
