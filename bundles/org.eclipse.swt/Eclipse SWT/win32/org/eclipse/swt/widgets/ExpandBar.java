@@ -460,8 +460,9 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		case OS.VK_RETURN:
 			Event event = new Event ();
 			event.item = item;
-			sendEvent (item.expanded ? SWT.Expand :SWT.Collapse, event);
-			item.expanded = !item.expanded;
+			boolean expand = !item.expanded;
+			sendEvent (expand ? SWT.Expand : SWT.Collapse, event);
+			item.expanded = expand;
 			showItem (focusIndex);
 			return LRESULT.ZERO;
 		case OS.VK_UP:
@@ -520,8 +521,9 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	if (hover) {
 		Event event = new Event ();
 		event.item = item;
-		sendEvent (item.expanded ? SWT.Expand :SWT.Collapse, event);
-		item.expanded = !item.expanded;
+		boolean expand = !item.expanded;
+		sendEvent (expand ? SWT.Expand : SWT.Collapse, event);
+		item.expanded = expand;
 		showItem (focusIndex);
 	}
 	return result;
