@@ -225,8 +225,8 @@ public Rectangle getBounds (int index) {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean full) {
-	return getBounds (row, column, getText, getImage, full, false, 0);
+RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText) {
+	return getBounds (row, column, getText, getImage, fullText, false, 0);
 }
 
 RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean fullText, boolean fullImage, int hDC) {
