@@ -51,7 +51,7 @@ public class Tree extends Composite {
 	Event lastSelectionEvent;
 	int availableItemsCount = 0;
 	boolean insertMarkPrecedes = false;
-	boolean linesVisible, ignoreKey, ignoreDispose;
+	boolean linesVisible, ignoreKey, ignoreDispose, allowItemHeightChange;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
 	int headerImageHeight = 0, orderedCol0imageWidth = 0;
@@ -90,6 +90,7 @@ public class Tree extends Composite {
 
 //	TEMPORARY CODE
 boolean hasFocus;
+
 public boolean isFocusControl() {
 	return hasFocus;
 }
@@ -1364,16 +1365,16 @@ void headerOnMouseMove (Event event) {
 }
 void headerOnMouseUp (Event event) {
 	if (resizeColumn == null) return;	/* not resizing a column */
+
+	/* remove the resize line */
+	GC gc = new GC (this);
+	redraw (resizeColumnX - 1, 0, 1, getClientArea ().height, false);
+	gc.dispose ();
+
 	int newWidth = resizeColumnX - resizeColumn.getX ();
 	if (newWidth != resizeColumn.width) {
 		setCursor (null);
 		updateColumnWidth (resizeColumn, newWidth);
-	} else {
-		/* remove the resize line */
-		GC gc = new GC (this);
-		int lineHeight = getClientArea ().height;
-		redraw (resizeColumnX - 1, 0, 1, lineHeight, false);
-		gc.dispose ();
 	}
 	resizeColumnX = -1;
 	resizeColumn = null;
@@ -2735,7 +2736,7 @@ void onPaint (Event event) {
 		startColumn = endColumn = 0;
 	}
 
-	/* Determine the TreeItems to be painted */
+	/* Determine the items to be painted */
 	int startIndex = (clipping.y - headerHeight) / itemHeight + topIndex;
 	int endIndex = -1;
 	if (startIndex < availableItemsCount) {
@@ -2743,21 +2744,6 @@ void onPaint (Event event) {
 	}
 	startIndex = Math.max (0, startIndex);
 	endIndex = Math.min (endIndex, availableItemsCount - 1);
-	for (int i = startIndex; i <= endIndex; i++) {
-		TreeItem item = availableItems [i];
-		if (startColumn == -1) {
-			/* indicates that region to paint is to the right of the last column */
-			item.paint (gc, null, false);
-		} else {
-			if (numColumns == 0) {
-				item.paint (gc, null, true);
-			} else {
-				for (int j = startColumn; j <= endColumn; j++) {
-					item.paint (gc, orderedColumns [j], true);
-				}
-			}
-		}
-	}
 
 	/* fill background not handled by items */
 	gc.setBackground (getBackground ());
@@ -2775,10 +2761,37 @@ void onPaint (Event event) {
 			gc.fillRectangle (rightX, 0, clientArea.width - rightX, clientArea.height - fillHeight);
 		}
 	}
+	
+	/* paint the items */
+	boolean noFocusDraw = false;
+	int[] lineDash = gc.getLineDash ();
+	for (int i = startIndex; i <= Math.min (endIndex, availableItemsCount - 1); i++) {
+		TreeItem item = availableItems [i];
+		if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
+			if (startColumn == -1) {
+				/* indicates that region to paint is to the right of the last column */
+				noFocusDraw = item.paint (gc, null, true) || noFocusDraw;
+			} else {
+				if (numColumns == 0) {
+					noFocusDraw = item.paint (gc, null, false) || noFocusDraw;
+				} else {
+					for (int j = startColumn; j <= Math.min (endColumn, columns.length - 1); j++) {
+						if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
+							noFocusDraw = item.paint (gc, orderedColumns [j], false) || noFocusDraw;
+						}
+						if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+					}
+				}
+			}
+		}
+		if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+	}
 
 	/* repaint grid lines */
+	gc.setClipping(clipping);
 	if (linesVisible) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		gc.setLineDash (lineDash);
 		if (numColumns > 0 && startColumn != -1) {
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
@@ -2797,20 +2810,18 @@ void onPaint (Event event) {
 	}
 
 	/* draw focus rectangle */
-	if (isFocusControl ()) {
+	if (!noFocusDraw && isFocusControl ()) {
 		if (focusItem != null) {
 			Rectangle focusBounds = focusItem.getFocusBounds ();
 			if (focusBounds.width > 0) {
 				gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 				gc.setClipping (focusBounds);
-				int[] oldLineDash = gc.getLineDash ();
 				if (focusItem.isSelected ()) {
 					gc.setLineDash (new int[] {2, 2});
 				} else {
 					gc.setLineDash (new int[] {1, 1});
 				}
 				gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
-				gc.setLineDash (oldLineDash);
 			}
 		} else {
 			/* no items, so draw focus border around Tree */
@@ -2820,10 +2831,8 @@ void onPaint (Event event) {
 			int height = Math.max (0, size.y - headerHeight - 2);
 			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 			gc.setClipping (1, y, width, height);
-			int[] oldLineDash = gc.getLineDash ();
 			gc.setLineDash (new int[] {1, 1});
 			gc.drawFocus (1, y, width, height);
-			gc.setLineDash (oldLineDash);
 		}
 	}
 
@@ -2832,6 +2841,7 @@ void onPaint (Event event) {
 		Rectangle focusBounds = insertMarkItem.getFocusBounds ();
 		gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 		gc.setClipping (focusBounds);
+		gc.setLineDash (lineDash);
 		if (insertMarkPrecedes) {
 			gc.drawLine (focusBounds.x, focusBounds.y, focusBounds.x + focusBounds.width, focusBounds.y);
 		} else {
@@ -2884,7 +2894,7 @@ void onScrollHorizontal (Event event) {
 		clientArea.width, clientArea.height,
 		horizontalOffset - newSelection, 0);
 	gc.dispose ();
-	if (header.isVisible ()) {
+	if (drawCount == 0 && header.isVisible ()) {
 		header.update ();
 		clientArea = header.getClientArea ();
 		gc = new GC (header);
@@ -2924,7 +2934,7 @@ void onSpace () {
 	event.item = focusItem;
 	postEvent (SWT.Selection, event);
 	if ((style & SWT.CHECK) == 0) return;
-	
+
 	/* SWT.CHECK */
 	event = new Event ();
 	event.item = focusItem;
@@ -2997,7 +3007,8 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 	int startY = (startIndex - topIndex) * itemHeight + getHeaderHeight ();
 	int height = (endIndex - startIndex + 1) * itemHeight;
 	if (focusBoundsOnly) {
-		if (columns.length > 0) {
+		boolean custom = hooks (SWT.EraseItem) || hooks (SWT.PaintItem);
+		if (!custom && columns.length > 0) {
 			TreeColumn lastColumn;
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				TreeColumn[] orderedColumns = getOrderedColumns ();
@@ -3009,9 +3020,16 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 			if (rightX <= 0) return;	/* focus column(s) not visible */
 		}
 		endIndex = Math.min (endIndex, availableItemsCount - 1);
+		Rectangle clientArea = getClientArea ();
 		for (int i = startIndex; i <= endIndex; i++) {
-			Rectangle bounds = availableItems [i].getFocusBounds ();
-			redraw (bounds.x, startY, bounds.width, height, false);
+			/* if custom painting is being done then repaint the full item */
+			if (custom) {
+				redraw (0, getItemY (availableItems [i]), clientArea.width, itemHeight, false);
+			} else {
+				/* repaint the item's focus bounds */
+				Rectangle bounds = availableItems [i].getFocusBounds ();
+				redraw (bounds.x, startY, bounds.width, height, false);
+			}
 		}
 	} else {
 		Rectangle bounds = getClientArea ();
@@ -3209,7 +3227,7 @@ public void setFont (Font value) {
 	
 	/* recompute the receiver's cached font height and item height values */
 	fontHeight = gc.getFontMetrics ().getHeight ();
-	itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
+	if (allowItemHeightChange) itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
 	Point headerSize = header.getSize ();
 	int newHeaderHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	if (headerSize.y != newHeaderHeight) {
@@ -3280,7 +3298,7 @@ public void setHeaderVisible (boolean value) {
 }
 void setImageHeight (int value) {
 	imageHeight = value;
-	itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
+	if (allowItemHeightChange) itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
 }
 /**
  * Display a mark indicating the point at which an item will be inserted.
@@ -3674,6 +3692,7 @@ public void showItem (TreeItem item) {
 		setTopItem (item);
 	} else {
 		/* item is below current viewport, so show on bottom */
+		visibleItemCount = Math.max (visibleItemCount, 1);	/* item to show should be top item */
 		setTopItem (availableItems [Math.min (index - visibleItemCount + 1, availableItemsCount - 1)]);
 	}
 }
@@ -3696,8 +3715,55 @@ public void showSelection () {
 }
 void updateColumnWidth (TreeColumn column, int width) {
 	headerHideToolTip ();
-	column.width = width;
+	int oldWidth = column.width;
+	int columnX = column.getX ();
+	int x = columnX + oldWidth - 1;	/* -1 ensures that grid line is included */
 	Rectangle bounds = getClientArea ();
+
+	update ();
+	GC gc = new GC (this);
+	if (oldWidth > 0) {
+		gc.copyArea (x, 0, bounds.width - x, bounds.height, columnX + width - 1, 0);	/* dest x -1 offsets x's -1 above */
+	}
+	if (width > oldWidth) {
+		/* column width grew */
+		int change = width - oldWidth + 1;	/* +1 offsets x's -1 above */
+		redraw (x, 0, change, bounds.height, false);
+	} else {
+		int change = oldWidth - width + 1;	/* +1 offsets x's -1 above */
+		redraw (bounds.width - change, 0, change, bounds.height, false);
+	}
+
+	GC headerGC = new GC (header);
+	if (drawCount == 0 && header.getVisible ()) {
+		Rectangle headerBounds = header.getClientArea ();
+		header.update ();
+		x -= 1;	/* -1 ensures that full header column separator is included */
+		if (oldWidth > 0) {
+			headerGC.copyArea (x, 0, headerBounds.width - x, headerBounds.height, columnX + width - 2, 0);	/* dest x -2 offsets x's -1s above */
+		}
+		if (width > oldWidth) {
+			/* column width grew */
+			int change = width - oldWidth + 2;	/* +2 offsets x's -1s above */
+			header.redraw (x, 0, change, headerBounds.height, false);
+		} else {
+			int change = oldWidth - width + 2;	/* +2 offsets x's -1s above */
+			header.redraw (headerBounds.width - change, 0, change, headerBounds.height, false);
+		}
+	}
+
+	column.width = width;
+
+	/*
+	 * Notify column and all items of column width change so that display labels
+	 * can be recomputed if needed.
+	 */
+	column.updateWidth (headerGC);
+	headerGC.dispose ();
+	for (int i = 0; i < items.length; i++) {
+		items [i].updateColumnWidth (column, gc);
+	}
+	gc.dispose ();
 
 	int maximum = 0;
 	for (int i = 0; i < columns.length; i++) {
@@ -3709,30 +3775,13 @@ void updateColumnWidth (TreeColumn column, int width) {
 		hBar.setThumb (bounds.width);
 		hBar.setPageIncrement (bounds.width);
 	}
+	int oldHorizontalOffset = horizontalOffset;	/* hBar.setVisible() can modify horizontalOffset */
 	hBar.setVisible (bounds.width < maximum);
-	boolean offsetChanged = false;
 	int selection = hBar.getSelection ();
-	if (selection != horizontalOffset) {
+	if (selection != oldHorizontalOffset) {
 		horizontalOffset = selection;
-		offsetChanged = true;
-	}
-	
-	/* 
-	 * Notify column and all items of column width change so that display labels
-	 * can be recomputed if needed.
-	 */
-	GC gc = new GC (this);
-	column.computeDisplayText (gc);
-	for (int i = 0; i < items.length; i++) {
-		items [i].updateColumnWidth (column, gc);
-	}
-	gc.dispose ();
-
-	int x = 0;
-	if (!offsetChanged) x = column.getX ();
-	redraw (x, 0, bounds.width - x, bounds.height, false);
-	if (drawCount == 0 && header.getVisible ()) {
-		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
+		redraw ();
+		if (drawCount == 0 && header.getVisible ()) header.redraw ();
 	}
 
 	column.sendEvent (SWT.Resize);
@@ -3757,7 +3806,7 @@ void updateHorizontalBar () {
 		}
 	} else {
 		for (int i = 0; i < availableItemsCount; i++) {
-			Rectangle itemBounds = availableItems [i].getBounds (false);
+			Rectangle itemBounds = availableItems [i].getPaintBounds (false);
 			maxX = Math.max (maxX, itemBounds.x + itemBounds.width + horizontalOffset);
 		}
 	}

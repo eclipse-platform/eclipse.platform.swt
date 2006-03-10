@@ -37,7 +37,8 @@ public class TreeItem extends Item {
 	boolean checked, grayed, expanded, cached;
 
 	String[] texts;
-	int[] textWidths = new int [1];		/* cached string measurements */
+	int[] textWidths = new int [1];	/* cached string measurements */
+	int customWidth = -1;				/* width specified by Measure callback */
 	int fontHeight;						/* cached item font height */
 	int[] fontHeights;
 	Image[] images;
@@ -256,6 +257,8 @@ void addColumn (TreeColumn column) {
 		System.arraycopy (textWidths, 0, newTextWidths, 0, index);
 		System.arraycopy (textWidths, index, newTextWidths, index + 1, columnCount - index - 1);
 		textWidths = newTextWidths;
+	} else {
+		customWidth = -1;		/* columnCount == 1 */
 	}
 
 	/*
@@ -867,8 +870,13 @@ public Rectangle getBounds (int columnIndex) {
 Rectangle getCellBounds (int columnIndex) {
 	int y = parent.getItemY (this);
 	if (parent.columns.length == 0) {
-		int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
-		int width = getTextX (0) + textPaintWidth + parent.horizontalOffset;
+		int width;
+		if (customWidth != -1) {
+			width = getContentX (0) + customWidth + parent.horizontalOffset;
+		} else {
+			int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
+			width = getTextX (0) + textPaintWidth + parent.horizontalOffset;
+		}
 		return new Rectangle (-parent.horizontalOffset, y, width, parent.itemHeight);
 	}
 	TreeColumn column = parent.columns [columnIndex];
@@ -1001,7 +1009,13 @@ Rectangle getExpanderBounds () {
 Rectangle getFocusBounds () {
 	TreeColumn[] columns = parent.columns;
 	int orderedCol0index = columns.length == 0 ? 0 : parent.getOrderedColumns ()[0].getIndex ();
-	int x = getTextX (orderedCol0index);
+	int x;
+	if (parent.hooks (SWT.PaintItem)) {
+		x = getContentX (orderedCol0index);
+	} else {
+		x = getTextX (orderedCol0index);
+	}
+
 	int width;
 	if (columns.length > 0) {
 		/* ensure that the focus x does not start beyond the right bound of ordered column 0 */
@@ -1017,7 +1031,11 @@ Rectangle getFocusBounds () {
 		}
 		width = column.getX () + column.width - x - 1;
 	} else {	/* no columns */
-		width = textWidths [0] + 2 * MARGIN_TEXT;
+		if (customWidth != -1) {
+			width = customWidth;
+		} else {
+			width = textWidths [0] + 2 * MARGIN_TEXT;
+		}
 	}
 
 	return new Rectangle (
@@ -1333,6 +1351,13 @@ public TreeItem [] getItems () {
 	System.arraycopy (items, 0, result, 0, items.length);
 	return result;
 }
+Rectangle getPaintBounds (boolean checkData) {
+	// TODO this method is likely temporary
+	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
+	Rectangle result = getBounds (checkData);
+	if (customWidth != -1) result.width = customWidth;
+	return result;
+}
 /**
  * Returns the receiver's parent, which must be a <code>Tree</code>.
  *
@@ -1367,22 +1392,50 @@ public TreeItem getParentItem () {
  * Returns the receiver's ideal width for the specified columnIndex.
  */
 int getPreferredWidth (int columnIndex) {
+	int width = 0;
 	GC gc = new GC (parent);
 	gc.setFont (getFont (columnIndex, false));
-	int textPaintWidth = gc.stringExtent (getText (columnIndex, false)).x + 2 * MARGIN_TEXT;
+	width += gc.stringExtent (getText (columnIndex, false)).x + 2 * MARGIN_TEXT;
+//	if (columnIndex == 0) {	// TODO not applicable to Trees?
+//		if (parent.col0ImageWidth > 0) {
+//			width += parent.col0ImageWidth;
+//			width += Tree.MARGIN_IMAGE;
+//		}
+//	} else {
+		Image image = getImage (columnIndex, false);
+		if (image != null) {
+			width += image.getBounds ().width;
+			width += Tree.MARGIN_IMAGE;
+		}
+//	}
+
+	if (parent.hooks (SWT.MeasureItem)) {
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.x = getContentX (columnIndex);
+		event.y = parent.getItemY (this);
+		event.width = width;
+		event.height = parent.itemHeight;
+		parent.sendEvent (SWT.MeasureItem, event);
+		if (parent.allowItemHeightChange) {
+			parent.allowItemHeightChange = false;
+			if (parent.itemHeight != event.height) {
+				parent.itemHeight = event.height + 2 * parent.getCellPadding ();
+				parent.redraw ();
+			}
+		}
+		width = event.width;
+	}
 	gc.dispose ();
+
 	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
 	if (orderedIndex == 0) {
-		return getTextX (columnIndex) + parent.horizontalOffset + textPaintWidth + parent.getCellPadding ();	/* right side cell pad */
+		return getContentX (columnIndex) + parent.horizontalOffset + width + parent.getCellPadding ();	/* right side cell pad */
 	}
-	/* ordered column > 0 */
-	int width = 2 * parent.getCellPadding () + textPaintWidth;
-	Image image = getImage (columnIndex, false);
-	if (image != null) {
-		width += image.getBounds ().width;
-		width += Tree.MARGIN_IMAGE;
-	}
-	return width;
+
+	return width + 2 * parent.getCellPadding ();
 }
 public String getText () {
 	checkWidget ();
@@ -1489,21 +1542,54 @@ boolean isSelected () {
 	return parent.getSelectionIndex (this) != -1;
 }
 /*
- * The paintCellContent argument indicates whether the item should paint
- * its cell contents (ie.- its text, image, check and hierarchy) in addition
- * to its item-level attributes (ie.- background color and selection).
+ * The backgroundOnly argument indicates whether the item should only
+ * worry about painting its background color and selection.
+ *
+ * Returns a boolean indicating whether to abort drawing focus on the item.
+ * If the receiver is not the current focus item then this value is irrelevant.
  */
-void paint (GC gc, TreeColumn column, boolean paintCellContent) {
-	if (!parent.checkData (this, true)) return;
+boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
+	if (!parent.checkData (this, true)) return false;
 	int columnIndex = 0, orderedIndex = 0, x = 0;
 	if (column != null) {
 		columnIndex = column.getIndex ();
 		orderedIndex = column.getOrderIndex ();
 		x = column.getX ();
 	}
+
+	if (parent.hooks (SWT.MeasureItem) && parent.columns.length == 0) {
+		int contentWidth = getContentWidth (columnIndex);
+		int contentX = getContentX (columnIndex);
+		gc.setFont (getFont (columnIndex, false));
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.x = contentX;
+		event.y = parent.getItemY (this);
+		event.width = contentWidth;
+		event.height = parent.itemHeight;
+		parent.sendEvent (SWT.MeasureItem, event);
+		event.gc = null;
+		if (isDisposed ()) return false;
+		if (parent.allowItemHeightChange) {
+			parent.allowItemHeightChange = false;
+			if (parent.itemHeight != event.height) {
+				parent.itemHeight = event.height + 2 * parent.getCellPadding ();
+				parent.redraw ();
+			}
+		}
+		int change = event.width - (customWidth != -1 ? customWidth : contentWidth);
+		if (event.width != contentWidth || customWidth != -1) customWidth = event.width;
+		if (change != 0) {	/* scrollbar may be affected since no columns */
+			parent.updateHorizontalBar (contentX + event.width, change);
+			// TODO what if clip is too small now?
+		}
+	}
+
 	/* if this cell is completely to the right of the client area then there's no need to paint it */
 	Rectangle clientArea = parent.getClientArea ();
-	if (clientArea.x + clientArea.width < x) return;
+	if (clientArea.x + clientArea.width < x) return false;
 
 	Rectangle cellBounds = getCellBounds (columnIndex);
 	if (parent.linesVisible) {
@@ -1556,8 +1642,42 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 	}
 
+	boolean isSelected = isSelected ();
+	boolean drawSelection = isSelected;
+	boolean isFocusItem = parent.focusItem == this;
+	boolean drawFocus = isFocusItem;
+	boolean drawContent = true;
+	if (parent.hooks (SWT.EraseItem)) {
+		gc.setFont (getFont ());
+		if (isSelected && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+		} else {
+			gc.setForeground (getForeground (columnIndex));
+			gc.setBackground (getBackground (columnIndex));
+		}
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		event.doit = true;
+		if (isSelected) event.detail |= SWT.SELECTED;
+		if (isFocusItem) event.detail |= SWT.FOCUSED;
+		event.x = cellBounds.x;
+		event.y = cellBounds.y;
+		event.width = cellBounds.width;
+		event.height = cellBounds.height;
+		gc.setClipping (event.x, event.y, event.width, event.height);
+		parent.sendEvent (SWT.EraseItem, event);
+		event.gc = null;
+		if (isDisposed ()) return false;
+		drawSelection = isSelected && (event.detail & SWT.SELECTED) != 0;
+		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
+		drawContent = event.doit;
+	}
+
 	/* draw the selection bar if the receiver is selected */
-	if (isSelected () && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+	if (drawSelection && isSelected && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		if (orderedIndex == 0) {
 			Rectangle focusBounds = getFocusBounds ();
@@ -1584,7 +1704,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		}
 	}
 		
-	if (!paintCellContent) return;
+	if (backgroundOnly) return false;
 
 	/* Draw column 0 decorations */
 	if (orderedIndex == 0) {
@@ -1650,42 +1770,86 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		}
 	}
 
-	Image image = getImage (columnIndex, false);
-	String text = getDisplayText (columnIndex);
-	Rectangle imageArea = getImageBounds (columnIndex);
-	int startX = imageArea.x;
+	if (drawContent) {
+		Image image = getImage (columnIndex, false);
+		String text = getDisplayText (columnIndex);
+		Rectangle imageArea = getImageBounds (columnIndex);
+		int startX = imageArea.x;
+		
+		/* while painting the cell's content restrict the clipping region */
+		int padding = parent.getCellPadding ();
+		gc.setClipping (
+			startX,
+			cellBounds.y + padding - (parent.linesVisible ? 1 : 0),
+			cellRightX - startX - padding,
+			cellBounds.height - 2 * (padding - (parent.linesVisible ? 1 : 0)));
 	
-	/* while painting the cell's content restrict the clipping region */
-	int padding = parent.getCellPadding ();
-	gc.setClipping (
-		startX,
-		cellBounds.y + padding - (parent.linesVisible ? 1 : 0),
-		cellRightX - startX - padding,
-		cellBounds.height - 2 * (padding - (parent.linesVisible ? 1 : 0)));
-
-	/* draw the image */
-	if (image != null) {
-		Rectangle imageBounds = image.getBounds ();
-		gc.drawImage (
-			image,
-			0, 0,									/* source x, y */
-			imageBounds.width, imageBounds.height,	/* source width, height */
-			imageArea.x, imageArea.y,				/* dest x, y */
-			imageArea.width, imageArea.height);		/* dest width, height */
+		/* draw the image */
+		if (image != null) {
+			Rectangle imageBounds = image.getBounds ();
+			gc.drawImage (
+				image,
+				0, 0,									/* source x, y */
+				imageBounds.width, imageBounds.height,	/* source width, height */
+				imageArea.x, imageArea.y,				/* dest x, y */
+				imageArea.width, imageArea.height);		/* dest width, height */
+		}
+		
+		/* draw the text */
+		if (text.length () > 0) {
+			gc.setFont (getFont (columnIndex, false));
+			int fontHeight = getFontHeight (columnIndex);
+			if (isSelected () && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+				gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+			} else {
+				gc.setForeground (getForeground (columnIndex));
+			}
+			x = getTextX (columnIndex) + MARGIN_TEXT;
+			gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
+		}
 	}
 	
-	/* draw the text */
-	if (text.length () > 0) {
-		gc.setFont (getFont (columnIndex, false));
-		int fontHeight = getFontHeight (columnIndex);
-		if (isSelected () && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+	if (parent.hooks (SWT.PaintItem)) {
+		int contentWidth = getContentWidth (columnIndex);
+		int contentX = getContentX (columnIndex);
+		gc.setFont (getFont ());
+		if (isSelected && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		} else {
 			gc.setForeground (getForeground (columnIndex));
+			gc.setBackground (getBackground (columnIndex));
 		}
-		x = getTextX (columnIndex) + MARGIN_TEXT;
-		gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
+		Event event = new Event ();
+		event.item = this;
+		event.gc = gc;
+		event.index = columnIndex;
+		if (isSelected) event.detail |= SWT.SELECTED;
+		if (drawFocus) event.detail |= SWT.FOCUSED;
+		event.x = contentX;
+		event.y = cellBounds.y;
+		event.width = contentWidth;
+		event.height = cellBounds.height;
+		gc.setClipping (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height);
+		parent.sendEvent (SWT.PaintItem, event);
+		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
+		event.gc = null;
 	}
+
+	return isFocusItem && !drawFocus;
+}
+/*
+ * Redraw part of the receiver.  If either EraseItem or PaintItem is hooked then
+ * only full cells should be damaged, so adjust accordingly.  If neither of these
+ * events are hooked then the exact bounds given for damaging can be used.
+ */
+void redraw (int x, int y, int width, int height, int columnIndex) {
+	if (!parent.hooks (SWT.EraseItem) && !parent.hooks (SWT.PaintItem)) {
+		parent.redraw (x, y, width, height, false);
+		return;
+	}
+	Rectangle cellBounds = getCellBounds (columnIndex);
+	parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
 }
 void redrawItem () {
 	if (!isAvailable ()) return;
@@ -2200,12 +2364,12 @@ public void setForeground (int columnIndex, Color value) {
 	cellForegrounds [columnIndex] = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (availableIndex == -1) return;
-	parent.redraw (
+	redraw (
 		getTextX (columnIndex),
 		parent.getItemY (this),
 		textWidths [columnIndex] + 2 * MARGIN_TEXT,
 		parent.itemHeight,
-		false);
+		columnIndex);
 }
 /**
  * Sets the grayed state of the receiver.
@@ -2302,7 +2466,7 @@ public void setImage (int columnIndex, Image value) {
 	}
 
 	if (value == null) {
-		redrawItem ();
+		redrawItem ();	// TODO why the whole item?
 		return;
 	}
 
@@ -2377,7 +2541,7 @@ public void setImage (int columnIndex, Image value) {
 		return;
 	}
 
-	redrawItem ();
+	redrawItem ();	// TODO why the whole item?
 }
 public void setItemCount (int count) {
 	checkWidget ();
@@ -2532,21 +2696,43 @@ public void setText (int columnIndex, String value) {
 		int rightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (rightX, textWidths [columnIndex] - oldWidth);
 	}
-	parent.redraw (
+	redraw (
 		getTextX (columnIndex),
 		parent.getItemY (this),
 		Math.max (oldWidth, textWidths [columnIndex]) + 2 * MARGIN_TEXT,
 		parent.itemHeight,
-		false);
+		columnIndex);
 }
+/*
+ * Perform any internal changes necessary to reflect a changed column width.
+ */
 void updateColumnWidth (TreeColumn column, GC gc) {
 	int columnIndex = column.getIndex ();
 	gc.setFont (getFont (columnIndex, false));
+	String oldDisplayText = displayTexts [columnIndex];
 	computeDisplayText (columnIndex, gc);
+
+	/* the cell must be damaged if there is custom drawing being done or if the alignment is not LEFT */
+	if (availableIndex != -1) {
+		boolean columnIsLeft = (column.style & SWT.LEFT) != 0;
+		if (!columnIsLeft || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
+			Rectangle cellBounds = getCellBounds (columnIndex);
+			parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
+		} else {
+			/* if the display text has changed then the cell text must be damaged in order to repaint */	
+			if (!oldDisplayText.equals (displayTexts [columnIndex])) {
+				Rectangle cellBounds = getCellBounds (columnIndex);
+				int textX = getTextX (columnIndex);
+				parent.redraw (textX, cellBounds.y, cellBounds.x + cellBounds.width - textX, cellBounds.height, false);
+			}
+		}
+	}
+
 	for (int i = 0; i < items.length; i++) {
 		items [i].updateColumnWidth (column, gc);
 	}
 }
+
 /*
  * The parent's font has changed, so if this font was being used by the receiver then
  * recompute its cached text sizes using the gc argument.  Pass this notification on to

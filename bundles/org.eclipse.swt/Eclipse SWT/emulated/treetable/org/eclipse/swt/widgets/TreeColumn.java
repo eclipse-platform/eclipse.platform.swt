@@ -439,7 +439,12 @@ public void pack () {
 	int index = getIndex ();
 	int newWidth = getPreferredWidth ();
 	for (int i = 0; i < parent.availableItemsCount; i++) {
-		newWidth = Math.max (newWidth, availableItems [i].getPreferredWidth (index));
+		int width = availableItems [i].getPreferredWidth (index);
+		/* ensure that receiver and parent were not disposed in a callback */
+		if (parent.isDisposed () || isDisposed ()) return;
+		if (!availableItems [i].isDisposed ()) {
+			newWidth = Math.max (newWidth, width);
+		}
 	}
 	if (newWidth != width) parent.updateColumnWidth (this, newWidth);
 }
@@ -621,6 +626,20 @@ public void setWidth (int value) {
 	value = Math.max (value, 0);
 	if (width == value) return;							/* same value */
 	parent.updateColumnWidth (this, value);
+}
+/*
+ * Perform any internal changes necessary to reflect a changed width.
+ */
+void updateWidth (GC gc) {
+	String oldDisplayText = displayText;
+	computeDisplayText (gc);
+	/* the header must be damaged if the display text has changed or if the alignment is not LEFT */
+	if (parent.getHeaderVisible ()) {
+		if ((style & SWT.LEFT) == 0 || !oldDisplayText.equals (displayText)) {
+			int padding = parent.getHeaderPadding ();
+			parent.header.redraw (getX () + padding, 0, width - padding, parent.getHeaderHeight (), false);
+		}
+	}
 }
 void updateFont (GC gc) {
 	computeDisplayText (gc);
