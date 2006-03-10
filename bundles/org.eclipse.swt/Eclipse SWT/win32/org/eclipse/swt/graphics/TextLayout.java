@@ -2138,7 +2138,12 @@ void shape (final int hdc, final StyleItem run) {
 	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, run.advances, run.goffsets, abc);
 	if (run.style != null && run.style.metrics != null) {
 		GlyphMetrics metrics = run.style.metrics;
-		run.width = metrics.width * run.glyphCount;
+		/*
+		*  Bug in Windows, on a Japanese machine, Uniscribe returns glyphcount
+		*  equals zero for FFFC (possibily other unicode code points), the fix
+		*  is to make sure the glyph is at least one pixel wide.
+		*/
+		run.width = metrics.width * Math.max (1, run.glyphCount);
 		run.ascent = metrics.ascent;
 		run.descent = metrics.descent;
 		run.leading = 0;
