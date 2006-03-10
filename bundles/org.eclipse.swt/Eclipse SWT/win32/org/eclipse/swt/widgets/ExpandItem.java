@@ -376,30 +376,28 @@ void releaseWidget () {
 void setBounds (int x, int y, int width, int height, boolean move, boolean size) {	
 	redraw (true);
 	int headerHeight = ExpandBar.HEADER_HEIGHT;
-	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_NOSIZE | OS.SWP_NOMOVE;
 	if (move) {
 		if (imageHeight > headerHeight) {
 			y += (imageHeight - headerHeight);
 		}
 		this.x = x;
 		this.y = y;
-		flags &= ~OS.SWP_NOMOVE;
 		redraw (true);
 	}
 	if (size) {
 		this.width = width;
 		this.height = height;
-		flags &= ~OS.SWP_NOSIZE;
 		redraw (true);
 	}
 	if (control != null && !control.isDisposed ()) {
-		int hwnd = control.handle;
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
 			x += BORDER;
 			width = Math.max (0, width - BORDER * 2);
 			height = Math.max (0, height - BORDER);
 		}
-		SetWindowPos (hwnd, 0, x, y + headerHeight, width, height, flags);
+		if (move && size) control.setBounds (x, y + headerHeight, width, height);
+		if (move && !size) control.setLocation (x, y + headerHeight);
+		if (!move && size) control.setSize (width, height);
 	}
 }
 
@@ -425,15 +423,15 @@ public void setControl (Control control) {
 	}
 	this.control = control;
 	if (control != null) {
-		int hwnd = control.handle;
-		OS.ShowWindow (hwnd, expanded ? OS.SW_SHOW : OS.SW_HIDE);
-		int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+		int headerHeight = ExpandBar.HEADER_HEIGHT;
+		control.setVisible (expanded);
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			x += BORDER;
-			width = Math.max (0, width - BORDER * 2);
-			height = Math.max (0, height - BORDER);
+			int width = Math.max (0, this.width - BORDER * 2);
+			int height = Math.max (0, this.height - BORDER);
+			control.setBounds (x + BORDER, y + headerHeight, width, height);
+		} else {
+			control.setBounds (x, y + headerHeight, width, height);
 		}
-		SetWindowPos (hwnd, 0, x, y + ExpandBar.HEADER_HEIGHT, width, height, flags);
 	}
 }
 

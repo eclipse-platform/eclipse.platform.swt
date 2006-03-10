@@ -432,11 +432,7 @@ void showItem (int index) {
 	ExpandItem item = items [index];
 	Control control = item.control;
 	if (control != null && !control.isDisposed ()) {
-		if (item.expanded) {
-			OS.ShowWindow (control.handle, OS.SW_SHOW);
-		} else {
-			OS.ShowWindow (control.handle, OS.SW_HIDE);
-		}
+		control.setVisible (item.expanded);
 	}
 	item.redraw (true);
 	layoutItems (index + 1, true);
