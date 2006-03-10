@@ -424,12 +424,6 @@ public Color getBackground (int columnIndex) {
 	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
 	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
 }
-Rectangle getPaintBounds () {
-	// TODO this method is likely temporary
-	Rectangle result = getBounds ();
-	if (parent.columns.length == 0 && customWidth != -1) result.width = customWidth;
-	return result;
-}
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
@@ -860,6 +854,12 @@ String getNameText () {
 		if (!cached) return "*virtual*"; //$NON-NLS-1$
 	}
 	return super.getNameText ();
+}
+Rectangle getPaintBounds () {
+	// TODO this method is likely temporary
+	Rectangle result = getBounds ();
+	if (customWidth != -1) result.width = customWidth;
+	return result;
 }
 /**
  * Returns the receiver's parent, which must be a <code>Table</code>.

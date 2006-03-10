@@ -3791,8 +3791,10 @@ void updateColumnWidth (TableColumn column, int width) {
 	}
 	ScrollBar hBar = getHorizontalBar ();
 	hBar.setMaximum (maximum);
-	hBar.setThumb (bounds.width);
-	hBar.setPageIncrement (bounds.width);
+	if (hBar.getThumb () != bounds.width) {
+		hBar.setThumb (bounds.width);
+		hBar.setPageIncrement (bounds.width);
+	}
 	int oldHorizontalOffset = horizontalOffset;	/* hBar.setVisible() can modify horizontalOffset */
 	hBar.setVisible (bounds.width < maximum);
 	int selection = hBar.getSelection ();

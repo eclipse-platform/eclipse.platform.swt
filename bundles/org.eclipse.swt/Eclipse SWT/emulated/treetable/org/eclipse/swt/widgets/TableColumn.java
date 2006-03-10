@@ -693,10 +693,12 @@ void updateFont (GC gc) {
 void updateWidth (GC gc) {
 	String oldDisplayText = displayText;
 	computeDisplayText (gc);
-	/* the header must be damaged if the display text has changed or if the alignment is not LEFT */	
-	if ((style & SWT.LEFT) == 0 || !oldDisplayText.equals (displayText)) {
-		int padding = parent.getHeaderPadding ();
-		parent.header.redraw (getX () + padding, 0, width - padding, parent.getHeaderHeight (), false);
+	/* the header must be damaged if the display text has changed or if the alignment is not LEFT */
+	if (parent.getHeaderVisible ()) {
+		if ((style & SWT.LEFT) == 0 || !oldDisplayText.equals (displayText)) {
+			int padding = parent.getHeaderPadding ();
+			parent.header.redraw (getX () + padding, 0, width - padding, parent.getHeaderHeight (), false);
+		}
 	}
 }
 }
