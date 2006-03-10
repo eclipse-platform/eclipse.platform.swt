@@ -1389,18 +1389,19 @@ int getPreferredWidth (int columnIndex) {
 	GC gc = new GC (parent);
 	gc.setFont (getFont (columnIndex, false));
 	width += gc.stringExtent (getText (columnIndex, false)).x + 2 * MARGIN_TEXT;
-//	if (columnIndex == 0) {	// TODO not applicable to Trees?
-//		if (parent.col0ImageWidth > 0) {
-//			width += parent.col0ImageWidth;
-//			width += Tree.MARGIN_IMAGE;
-//		}
-//	} else {
+	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
+	if (orderedIndex == 0) {
+		if (parent.orderedCol0imageWidth > 0) {
+			width += parent.orderedCol0imageWidth;
+			width += Tree.MARGIN_IMAGE;
+		}
+	} else {
 		Image image = getImage (columnIndex, false);
 		if (image != null) {
 			width += image.getBounds ().width;
 			width += Tree.MARGIN_IMAGE;
 		}
-//	}
+	}
 
 	if (parent.hooks (SWT.MeasureItem)) {
 		Event event = new Event ();
@@ -1423,7 +1424,6 @@ int getPreferredWidth (int columnIndex) {
 	}
 	gc.dispose ();
 
-	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
 	if (orderedIndex == 0) {
 		return getContentX (columnIndex) + parent.horizontalOffset + width + parent.getCellPadding ();	/* right side cell pad */
 	}
