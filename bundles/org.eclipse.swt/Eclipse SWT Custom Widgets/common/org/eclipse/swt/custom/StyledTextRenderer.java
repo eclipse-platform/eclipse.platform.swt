@@ -861,6 +861,38 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		}
 	}
 	if (lastOffset < length) layout.setStyle(null, lastOffset, length);
+	if (styledText.isFixedLineHeight()) {
+		int height = layout.getBounds().height;
+		if (height > getLineHeight()) {
+			FontMetrics metrics = layout.getLineMetrics(0);
+			ascent = metrics.getAscent() + metrics.getLeading();
+			descent = metrics.getDescent();
+			if (layouts != null) {
+				for (int i = 0; i < layouts.length; i++) {
+					if (layouts[i] != null && layouts[i] != layout) {
+						layouts[i].setAscent(ascent);
+						layouts[i].setDescent(descent);
+					}
+				}
+			}
+			if (styledText.verticalScrollOffset != 0) {
+				int topIndex = styledText.topIndex;
+				int topIndexY = styledText.topIndexY;
+				int lineHeight = getLineHeight();
+				if (topIndexY >= 0) {
+					styledText.verticalScrollOffset = (topIndex - 1) * lineHeight + lineHeight - topIndexY;
+				} else {
+					styledText.verticalScrollOffset = topIndex * lineHeight - topIndexY;
+				}
+			}
+			if (styledText.isBidiCaret()) {
+				styledText.createCaretBitmaps();
+				styledText.caretDirection = SWT.NULL;
+			}
+			styledText.setCaretLocation();
+			styledText.redraw();
+		}
+	}
 	return layout;
 }
 int getWidth() {
