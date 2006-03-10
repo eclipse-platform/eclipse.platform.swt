@@ -855,12 +855,6 @@ String getNameText () {
 	}
 	return super.getNameText ();
 }
-Rectangle getPaintBounds () {
-	// TODO this method is likely temporary
-	Rectangle result = getBounds ();
-	if (customWidth != -1) result.width = customWidth;
-	return result;
-}
 /**
  * Returns the receiver's parent, which must be a <code>Table</code>.
  *

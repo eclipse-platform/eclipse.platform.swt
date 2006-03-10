@@ -1351,13 +1351,6 @@ public TreeItem [] getItems () {
 	System.arraycopy (items, 0, result, 0, items.length);
 	return result;
 }
-Rectangle getPaintBounds (boolean checkData) {
-	// TODO this method is likely temporary
-	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
-	Rectangle result = getBounds (checkData);
-	if (customWidth != -1) result.width = customWidth;
-	return result;
-}
 /**
  * Returns the receiver's parent, which must be a <code>Tree</code>.
  *

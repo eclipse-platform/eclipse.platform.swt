@@ -3826,7 +3826,7 @@ void updateHorizontalBar () {
 		}
 	} else {
 		for (int i = 0; i < itemsCount; i++) {
-			Rectangle itemBounds = items [i].getPaintBounds ();
+			Rectangle itemBounds = items [i].getCellBounds (0);
 			maxX = Math.max (maxX, itemBounds.x + itemBounds.width + horizontalOffset);
 		}
 	}
