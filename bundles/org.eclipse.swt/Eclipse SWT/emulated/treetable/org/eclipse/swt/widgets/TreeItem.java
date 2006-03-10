@@ -2713,7 +2713,7 @@ void updateColumnWidth (TreeColumn column, GC gc) {
 			parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
 		} else {
 			/* if the display text has changed then the cell text must be damaged in order to repaint */	
-			if (!oldDisplayText.equals (displayTexts [columnIndex])) {
+			if (oldDisplayText == null || !oldDisplayText.equals (displayTexts [columnIndex])) {
 				Rectangle cellBounds = getCellBounds (columnIndex);
 				int textX = getTextX (columnIndex);
 				parent.redraw (textX, cellBounds.y, cellBounds.x + cellBounds.width - textX, cellBounds.height, false);

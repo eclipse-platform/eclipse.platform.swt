@@ -435,7 +435,15 @@ void createItem (TreeColumn column, int index) {
 		items [i].addColumn (column);
 	}
 
-	/* no visual update needed because column's initial width is 0 */
+	/* existing items become hidden when going from 0 to 1 column (0 width) */
+	if (columns.length == 1 && availableItemsCount > 0) {
+		redrawFromItemDownwards (topIndex);
+	} else {
+		/* checkboxes become hidden when creating a column with index == ordered index == 0 (0 width) */
+		if (availableItemsCount > 0 && (style & SWT.CHECK) != 0 && index == 0 && column.getOrderIndex () == 0) {
+			redrawFromItemDownwards (topIndex);
+		}
+	}
 }
 void createItem (TreeItem item, int index) {
 	TreeItem[] newItems = new TreeItem [items.length + 1];
@@ -3722,26 +3730,25 @@ void updateColumnWidth (TreeColumn column, int width) {
 
 	update ();
 	GC gc = new GC (this);
-	if (oldWidth > 0) {
-		gc.copyArea (x, 0, bounds.width - x, bounds.height, columnX + width - 1, 0);	/* dest x -1 offsets x's -1 above */
-	}
+	gc.copyArea (x, 0, bounds.width - x, bounds.height, columnX + width - 1, 0);	/* dest x -1 offsets x's -1 above */
 	if (width > oldWidth) {
 		/* column width grew */
 		int change = width - oldWidth + 1;	/* +1 offsets x's -1 above */
-		redraw (x, 0, change, bounds.height, false);
+		/* -1/+1 below ensure that right bound of selection redraws correctly in column */
+		redraw (x - 1, 0, change + 1, bounds.height, false);
 	} else {
 		int change = oldWidth - width + 1;	/* +1 offsets x's -1 above */
 		redraw (bounds.width - change, 0, change, bounds.height, false);
 	}
+	/* the focus box must be repainted because its stipple may become shifted as a result of its new width */
+	if (focusItem != null) redrawItem (focusItem.availableIndex, true);
 
 	GC headerGC = new GC (header);
 	if (drawCount == 0 && header.getVisible ()) {
 		Rectangle headerBounds = header.getClientArea ();
 		header.update ();
 		x -= 1;	/* -1 ensures that full header column separator is included */
-		if (oldWidth > 0) {
-			headerGC.copyArea (x, 0, headerBounds.width - x, headerBounds.height, columnX + width - 2, 0);	/* dest x -2 offsets x's -1s above */
-		}
+		headerGC.copyArea (x, 0, headerBounds.width - x, headerBounds.height, columnX + width - 2, 0);	/* dest x -2 offsets x's -1s above */
 		if (width > oldWidth) {
 			/* column width grew */
 			int change = width - oldWidth + 2;	/* +2 offsets x's -1s above */
