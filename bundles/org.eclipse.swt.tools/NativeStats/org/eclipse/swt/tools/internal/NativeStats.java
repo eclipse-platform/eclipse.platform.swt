@@ -38,7 +38,7 @@ public class NativeStats {
 	
 	Hashtable snapshot;
 	
-	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "XPCOM", "COM"};
+	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "XPCOM", "COM", "AGL", "Gdip", "GLX", "Cairo", "WGL"};
 
 	
 	public static class NativeFunction implements Comparable {
@@ -175,9 +175,21 @@ public static final native int ATK_GetFunctionCount();
 public static final native String ATK_GetFunctionName(int index);
 public static final native int ATK_GetFunctionCallCount(int index);
 
+public static final native int AGL_GetFunctionCount();
+public static final native String AGL_GetFunctionName(int index);
+public static final native int AGL_GetFunctionCallCount(int index);
+
 public static final native int CDE_GetFunctionCount();
 public static final native String CDE_GetFunctionName(int index);
 public static final native int CDE_GetFunctionCallCount(int index);
+
+public static final native int Gdip_GetFunctionCount();
+public static final native String Gdip_GetFunctionName(int index);
+public static final native int Gdip_GetFunctionCallCount(int index);
+
+public static final native int GLX_GetFunctionCount();
+public static final native String GLX_GetFunctionName(int index);
+public static final native int GLX_GetFunctionCallCount(int index);
 
 public static final native int GNOME_GetFunctionCount();
 public static final native String GNOME_GetFunctionName(int index);
@@ -194,5 +206,13 @@ public static final native int XPCOM_GetFunctionCallCount(int index);
 public static final native int COM_GetFunctionCount();
 public static final native String COM_GetFunctionName(int index);
 public static final native int COM_GetFunctionCallCount(int index);
+
+public static final native int WGL_GetFunctionCount();
+public static final native String WGL_GetFunctionName(int index);
+public static final native int WGL_GetFunctionCallCount(int index);
+
+public static final native int Cairo_GetFunctionCount();
+public static final native String Cairo_GetFunctionName(int index);
+public static final native int Cairo_GetFunctionCallCount(int index);
 
 }
