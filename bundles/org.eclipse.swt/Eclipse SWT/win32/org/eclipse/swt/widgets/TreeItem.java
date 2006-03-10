@@ -403,8 +403,8 @@ public Rectangle getBounds (int index) {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
-	return getBounds (index, getText, getImage, full, false, true, 0);
+RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText) {
+	return getBounds (index, getText, getImage, fullText, false, true, 0);
 }
 
 //TODO - take into account grid (add boolean arg) to damage less during redraw
@@ -938,7 +938,8 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
-	RECT rect = getBounds (column, drawText, drawImage, true);
+	boolean fullImage = column == 0 && drawText && drawImage;
+	RECT rect = getBounds (column, drawText, drawImage, true, fullImage, true, 0);
 	OS.InvalidateRect (hwnd, rect, true);
 }
 

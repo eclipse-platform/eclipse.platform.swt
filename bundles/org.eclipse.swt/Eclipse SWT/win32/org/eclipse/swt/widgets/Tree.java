@@ -893,40 +893,45 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	} else {
 		result = new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
 		if (hFont != -1) OS.SelectObject (hDC, hFont);
-		if (OS.IsWindowEnabled (handle)) {
+		if (OS.IsWindowEnabled (handle) && OS.IsWindowVisible (handle)) {
 			/*
 			* Feature in Windows.  Windows does not fill the entire cell
 			* with the background color when TVS_FULLROWSELECT is not set.
 			* The fix is to fill the cell with the background color.
 			*/
-			if (OS.IsWindowVisible (handle) && !selected) {
-				nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-				if (clrTextBk != -1) {
-					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-					if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+			if (clrTextBk != -1) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+					if (count != 0 && hwndHeader != 0) {
 						RECT rect = new RECT ();
-						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-						if (count != 0 && hwndHeader != 0) {
-							HDITEM hdItem = new HDITEM ();
-							hdItem.mask = OS.HDI_WIDTH;
-							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-							nmcd.right = nmcd.left + hdItem.cxy;
-							if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-								RECT itemRect = new RECT ();
-								itemRect.left = item.handle;
-								if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
-									rect.left = Math.min (itemRect.left, rect.right);
-								}
-							}
-							fillBackground (hDC, clrTextBk, rect);
-						} else {
-							if ((style & SWT.FULL_SELECTION) != 0) {
-								fillBackground (hDC, clrTextBk, rect);
+						HDITEM hdItem = new HDITEM ();
+						hdItem.mask = OS.HDI_WIDTH;
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+						if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+							RECT itemRect = new RECT ();
+							itemRect.left = item.handle;
+							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+								rect.left = Math.min (itemRect.left, rect.right);
 							}
 						}
+						if ((style & SWT.FULL_SELECTION) != 0) {
+							if (!selected) fillBackground (hDC, clrTextBk, rect);
+						} else {
+							fillBackground (hDC, clrTextBk, rect);
+						}
+					} else {
+						if ((style & SWT.FULL_SELECTION) != 0) {
+							RECT rect = new RECT ();
+							OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+							if (!selected) fillBackground (hDC, clrTextBk, rect);
+						}
 					}
-					nmcd.clrTextBk = clrTextBk;
 				}
+			}
+			if (!selected) {
+				nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+				nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 			}
 		}
