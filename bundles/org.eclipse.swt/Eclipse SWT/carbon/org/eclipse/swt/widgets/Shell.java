@@ -818,6 +818,7 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowHitTest,
 		OS.kEventClassWindow, OS.kEventWindowShown,
 		OS.kEventClassWindow, OS.kEventWindowUpdate,
+		OS.kEventClassWindow, OS.kEventWindowGetClickModality,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, windowProc, mask1.length / 2, mask1, shellHandle, null);
@@ -987,6 +988,20 @@ int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	minimized = false;
 	sendEvent (SWT.Deiconify);
+	return result;
+}
+
+int kEventWindowGetClickModality (int nextHandler, int theEvent, int userData) {
+	/*
+	* Bug in the Macintosh.  When the user clicks in an Expose window that is
+	* disabled because of a modal dialog, the modal dialog does not come to
+	* front and is obscured by the Expose window.  The fix is to select the
+	* modal dialog.
+	*/
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	int [] modal = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamModalWindow, OS.typeWindowRef, null, 4, null, modal);
+	if (modal [0] != 0) OS.SelectWindow (modal [0]);
 	return result;
 }
 

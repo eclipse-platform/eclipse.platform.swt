@@ -1161,6 +1161,10 @@ int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventWindowGetClickModality (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventWindowGetRegion (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -2004,6 +2008,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventWindowHitTest:			return kEventWindowHitTest (nextHandler, theEvent, userData);
 		case OS.kEventWindowShown:				return kEventWindowShown (nextHandler, theEvent, userData);
 		case OS.kEventWindowUpdate:				return kEventWindowUpdate (nextHandler, theEvent, userData);
+		case OS.kEventWindowGetClickModality:	return kEventWindowGetClickModality (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

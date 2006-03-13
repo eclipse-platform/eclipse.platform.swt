@@ -397,6 +397,7 @@ public class OS extends Platform {
 	public static final int kEventParamMenuItemIndex = ('i'<<24) + ('t'<<16) + ('e'<<8) + 'm';
 	public static final int kEventParamMenuItemBounds = ('m'<<24) + ('i'<<16) + ('t'<<8) + 'b';
 	public static final int kEventParamMenuItemWidth = ('m'<<24) + ('i'<<16) + ('t'<<8) + 'w';
+	public static final int kEventParamModalWindow = ('m'<<24) + ('w'<<16) + ('i'<<8) + 'n';
 	public static final int kEventParamMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int kEventParamMouseChord = ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
 	public static final int kEventParamMouseLocation = ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
@@ -430,6 +431,7 @@ public class OS extends Platform {
 	public static final int kEventWindowExpanded = 70;
 	public static final int kEventWindowFocusAcquired = 200;
 	public static final int kEventWindowFocusRelinquish = 201;
+	public static final int kEventWindowGetClickModality = 8;
 	public static final int kEventWindowGetRegion = 1002;
 	public static final int kEventWindowHidden = 25;
 	public static final int kEventWindowHitTest = 1003;
