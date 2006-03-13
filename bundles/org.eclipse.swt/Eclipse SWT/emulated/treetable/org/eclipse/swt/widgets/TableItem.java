@@ -962,6 +962,16 @@ int getTextX (int columnIndex) {
 	}
 	return textX;
 }
+/*
+ * Answers a boolean indicating whether the receiver's y is within the current
+ * viewport of the parent.
+ */
+boolean isInViewport () {
+	int topIndex = parent.topIndex;
+	if (index < topIndex) return false;
+	int visibleCount = parent.clientArea.height / parent.itemHeight;
+	return index <= topIndex + visibleCount;
+}
 boolean isSelected () {
 	return parent.getSelectionIndex (this) != -1;
 }
@@ -1011,7 +1021,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 	}
 
 	/* if this cell is completely to the right of the client area then there's no need to paint it */
-	Rectangle clientArea = parent.getClientArea ();
+	Rectangle clientArea = parent.clientArea;
 	if (clientArea.x + clientArea.width < x) return false;
 
 	Rectangle cellBounds = getCellBounds (columnIndex);
@@ -1245,7 +1255,7 @@ void redraw (int x, int y, int width, int height, int columnIndex) {
 	parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
 }
 void redrawItem () {
-	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.itemHeight, false);
+	parent.redraw (0, parent.getItemY (this), parent.clientArea.width, parent.itemHeight, false);
 }
 /*
  * Updates internal structures in the receiver and its child items to handle the removal of a column.
@@ -1391,8 +1401,10 @@ public void setBackground (int columnIndex, Color value) {
 	cellBackgrounds [columnIndex] = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 
-	Rectangle bounds = getCellBounds (columnIndex);
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getCellBounds (columnIndex);
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 /**
  * Sets the checked state of the checkbox for this item.  This state change 
@@ -1412,8 +1424,10 @@ public void setChecked (boolean value) {
 	checked = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 
-	Rectangle bounds = getCheckboxBounds ();
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getCheckboxBounds ();
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 /**
  * Sets the font that the receiver will use to paint textual information
@@ -1505,8 +1519,10 @@ public void setFont (int columnIndex, Font value) {
 	computeDisplayText (columnIndex, gc);
 	gc.dispose ();
 
-	Rectangle bounds = getCellBounds (columnIndex);
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getCellBounds (columnIndex);
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 /**
  * Sets the receiver's foreground color to the color specified
@@ -1569,12 +1585,14 @@ public void setForeground (int columnIndex, Color value) {
 	cellForegrounds [columnIndex] = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 
-	redraw (
-		getTextX (columnIndex),
-		parent.getItemY (this),
-		textWidths [columnIndex] + 2 * MARGIN_TEXT,
-		parent.itemHeight,
-		columnIndex);
+	if (isInViewport ()) {
+		redraw (
+			getTextX (columnIndex),
+			parent.getItemY (this),
+			textWidths [columnIndex] + 2 * MARGIN_TEXT,
+			parent.itemHeight,
+			columnIndex);
+	}
 }
 /**
  * Sets the grayed state of the checkbox for this item.  This state change 
@@ -1594,8 +1612,10 @@ public void setGrayed (boolean value) {
 	grayed = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 
-	Rectangle bounds = getCheckboxBounds ();
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getCheckboxBounds ();
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 public void setImage (Image value) {
 	checkWidget ();
@@ -1722,7 +1742,7 @@ public void setImage (int columnIndex, Image value) {
 			parent.redraw (
 				columns [0].getX (), 0,
 				columns [0].width,
-				parent.getClientArea ().height,
+				parent.clientArea.height,
 				true);
 		}
 		return;
@@ -1787,12 +1807,14 @@ public void setText (int columnIndex, String value) {
 		int rightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (rightX, textWidths [columnIndex] - oldWidth);
 	}
-	redraw (
-		getTextX (columnIndex),
-		parent.getItemY (this),
-		Math.max (oldWidth, textWidths [columnIndex]) + 2 * MARGIN_TEXT,
-		parent.itemHeight,
-		columnIndex);
+	if (isInViewport ()) {
+		redraw (
+			getTextX (columnIndex),
+			parent.getItemY (this),
+			Math.max (oldWidth, textWidths [columnIndex]) + 2 * MARGIN_TEXT,
+			parent.itemHeight,
+			columnIndex);
+	}
 }
 public void setText (String value) {
 	checkWidget ();
@@ -1845,17 +1867,19 @@ void updateColumnWidth (TableColumn column, GC gc) {
 	computeDisplayText (columnIndex, gc);
 
 	/* the cell must be damaged if there is custom drawing being done or if the alignment is not LEFT */
-	boolean columnIsLeft = (column.style & SWT.LEFT) != 0;
-	if (!columnIsLeft || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
-		Rectangle cellBounds = getCellBounds (columnIndex);
-		parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
-		return;
-	}
-	/* if the display text has changed then the cell text must be damaged in order to repaint */	
-	if (!oldDisplayText.equals (displayTexts [columnIndex])) {
-		Rectangle cellBounds = getCellBounds (columnIndex);
-		int textX = getTextX (columnIndex);
-		parent.redraw (textX, cellBounds.y, cellBounds.x + cellBounds.width - textX, cellBounds.height, false);
+	if (isInViewport ()) {
+		boolean columnIsLeft = (column.style & SWT.LEFT) != 0;
+		if (!columnIsLeft || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
+			Rectangle cellBounds = getCellBounds (columnIndex);
+			parent.redraw (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height, false);
+			return;
+		}
+		/* if the display text has changed then the cell text must be damaged in order to repaint */	
+		if (oldDisplayText == null || !oldDisplayText.equals (displayTexts [columnIndex])) {
+			Rectangle cellBounds = getCellBounds (columnIndex);
+			int textX = getTextX (columnIndex);
+			parent.redraw (textX, cellBounds.y, cellBounds.x + cellBounds.width - textX, cellBounds.height, false);
+		}
 	}
 }
 /*

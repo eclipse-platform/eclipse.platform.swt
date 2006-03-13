@@ -236,25 +236,33 @@ void computeDisplayText (GC gc) {
 }
 public void dispose () {
 	if (isDisposed ()) return;
-	Rectangle parentBounds = parent.getClientArea ();
+	Rectangle parentBounds = parent.clientArea;
 	int x = getX ();
 	int index = getIndex ();
 	int orderIndex = getOrderIndex ();
+	int nextColumnAlignment = parent.columns.length > 1 ? parent.columns [1].getAlignment () : SWT.LEFT;
 	Table parent = this.parent;
 	dispose (true);
 
 	int width = parentBounds.width - x;
 	parent.redraw (x, 0, width, parentBounds.height, false);
 	/* 
-	 * If column 0 was disposed and if the parent has style CHECK then
-	 * the new column 0 will change, so explicitly redraw it if it appears to
-	 * the left of the disposed column in the column order.
+	 * If column 0 was disposed then the new column 0 must be redrawn if it appears to the
+	 * left of the disposed column in the column order AND one the following are true:
+	 * - the parent has style CHECK, since these will now appear in the new column 0
+	 * - the new column 0 had non-left alignment before the dispose, since the parent will have
+	 * 	changed this to LEFT in the call to dispose(true)
 	 */
-	if ((parent.style & SWT.CHECK) != 0 && index == 0) {
+	if (index == 0 && ((parent.style & SWT.CHECK) != 0 || nextColumnAlignment != SWT.LEFT)) {
 		if (parent.columns.length > 0) {
 			TableColumn newColumn0 = parent.columns [0];
 			if (newColumn0.getOrderIndex () < orderIndex) {
-				parent.redraw (newColumn0.getX (), 0, newColumn0.width, parentBounds.height, false);
+				int newColumn0x = newColumn0.getX (); 
+				parent.redraw (newColumn0x, 0, newColumn0.width, parentBounds.height, false);
+				/* if the alignment changed then the header text must be repainted with its new alignment */
+				if (nextColumnAlignment != SWT.LEFT && parent.getHeaderVisible () && parent.drawCount == 0) {
+					parent.header.redraw (newColumn0x, 0, newColumn0.width, parent.header.getClientArea ().height, false);
+				}
 			}
 		}
 	}
@@ -550,7 +558,7 @@ public void setAlignment (int alignment) {
 	style &= ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 	style |= alignment;
 	int x = getX ();
-	parent.redraw (x, 0, width, parent.getClientArea ().height, false);
+	parent.redraw (x, 0, width, parent.clientArea.height, false);
 	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);		
 	}
