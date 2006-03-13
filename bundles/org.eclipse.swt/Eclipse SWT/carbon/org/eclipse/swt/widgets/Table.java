@@ -2080,6 +2080,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	Shell shell = getShell ();
 	shell.bringToTop (true);
+	if (isDisposed ()) return OS.noErr;
 	/*
 	* Feature in the Macintosh.  For some reason, when the user
 	* clicks on the data browser, focus is assigned, then lost
