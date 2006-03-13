@@ -238,7 +238,7 @@ void computeDisplayText (GC gc) {
 }
 public void dispose () {
 	if (isDisposed ()) return;
-	Rectangle parentBounds = parent.getClientArea ();
+	Rectangle parentBounds = parent.clientArea;
 	int x = getX ();
 	Tree parent = this.parent;
 	dispose (true);
@@ -516,7 +516,7 @@ public void setAlignment (int alignment) {
 	style |= alignment;
 	if (getOrderIndex () == 0) return;	/* no update needed since first ordered column appears left-aligned */
 	int x = getX ();
-	parent.redraw (x, 0, width, parent.getClientArea ().height, false);
+	parent.redraw (x, 0, width, parent.clientArea.height, false);
 	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);		
 	}

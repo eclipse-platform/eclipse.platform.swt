@@ -328,7 +328,7 @@ void addItem (TreeItem item, int index) {
 
 	if (!item.isAvailable ()) {
 		/* receiver will now need an expander box if this is its first child */
-		if (isAvailable () && items.length == 1) {
+		if (isInViewport () && items.length == 1) {
 			Rectangle bounds = getExpanderBounds ();
 			parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 		}
@@ -1522,6 +1522,17 @@ boolean isAvailable () {
 	return parentItem.isAvailable ();
 }
 /*
+ * Answers a boolean indicating whether the receiver's y is within the current
+ * viewport of the parent.
+ */
+boolean isInViewport () {
+	if (availableIndex == -1) return false;
+	int topIndex = parent.topIndex;
+	if (availableIndex < topIndex) return false;
+	int visibleCount = parent.clientArea.height / parent.itemHeight;
+	return availableIndex <= topIndex + visibleCount;
+}
+/*
  * Returns true if the receiver is the last child of its parent item, or of its parent
  * if the receiver is a root item, and false otherwise.
  */
@@ -1581,7 +1592,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 	}
 
 	/* if this cell is completely to the right of the client area then there's no need to paint it */
-	Rectangle clientArea = parent.getClientArea ();
+	Rectangle clientArea = parent.clientArea;
 	if (clientArea.x + clientArea.width < x) return false;
 
 	Rectangle cellBounds = getCellBounds (columnIndex);
@@ -1701,6 +1712,8 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 
 	/* Draw column 0 decorations */
 	if (orderedIndex == 0) {
+		gc.setClipping (cellBounds);
+
 		/* Draw hierarchy connector lines */
 		Rectangle expanderBounds = getExpanderBounds ();
 		gc.setForeground (parent.getConnectorColor ());
@@ -1846,7 +1859,7 @@ void redraw (int x, int y, int width, int height, int columnIndex) {
 }
 void redrawItem () {
 	if (!isAvailable ()) return;
-	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.itemHeight, false);
+	parent.redraw (0, parent.getItemY (this), parent.clientArea.width, parent.itemHeight, false);
 }
 /*
  * Updates internal structures in the receiver and its child items to handle the removal of a column.
@@ -1987,9 +2000,10 @@ void removeItem (TreeItem item, int index) {
 		/* condition below handles creation of item within Expand callback */
 		if (!parent.inExpand) {
 			expanded = false;
-			if (availableIndex == -1) return;
-			Rectangle bounds = getExpanderBounds ();	/* expander box no longer needed */
-			parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+			if (isInViewport ()) {
+				Rectangle bounds = getExpanderBounds ();	/* expander box no longer needed */
+				parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+			}
 		}
 		return;
 	}
@@ -2056,9 +2070,10 @@ public void setBackground (int columnIndex, Color value) {
 	if (cellBackgrounds [columnIndex] != null && cellBackgrounds [columnIndex].equals (value)) return;
 	cellBackgrounds [columnIndex] = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (availableIndex == -1) return;
-	Rectangle bounds = getCellBounds (columnIndex);
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getCellBounds (columnIndex);
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 /**
  * Sets the checked state of the receiver.
@@ -2077,9 +2092,10 @@ public void setChecked (boolean value) {
 	if (checked == value) return;
 	checked = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (availableIndex == -1) return;
-	Rectangle bounds = getCheckboxBounds ();
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getCheckboxBounds ();
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 /**
  * Sets the expanded state of the receiver.
@@ -2106,7 +2122,7 @@ public void setExpanded (boolean value) {
 		int descendentsCount = availableDescendents.length;
 		if (availableIndex != parent.availableItemsCount - 1) {
 			/* the receiver is not the last available item */
-			Rectangle clientArea = parent.getClientArea ();
+			Rectangle clientArea = parent.clientArea;
 			int y = parent.getItemY (this) + parent.itemHeight;
 			if (0 < y && y < clientArea.height) {
 				if (parent.drawCount == 0) {
@@ -2148,7 +2164,7 @@ public void setExpanded (boolean value) {
 		TreeItem[] descendents = computeAvailableDescendents ();
 		expanded = value;
 		if (availableIndex == -1) return;
-		Rectangle clientArea = parent.getClientArea ();
+		Rectangle clientArea = parent.clientArea;
 
 		int y = parent.getItemY (this) + parent.itemHeight;
 		int startY = y + (descendents.length - 1) * parent.itemHeight;
@@ -2195,8 +2211,10 @@ public void setExpanded (boolean value) {
 		}
 	}
 	/* redraw the receiver's expander box */
-	Rectangle bounds = getExpanderBounds ();
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getExpanderBounds ();
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 /**
  * Sets the font that the receiver will use to paint textual information
@@ -2288,9 +2306,10 @@ public void setFont (int columnIndex, Font value) {
 	computeDisplayText (columnIndex, gc);
 	gc.dispose ();
 
-	if (availableIndex == -1) return;
-	Rectangle bounds = getCellBounds (columnIndex);
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getCellBounds (columnIndex);
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 /**
  * Sets the receiver's foreground color to the color specified
@@ -2356,13 +2375,14 @@ public void setForeground (int columnIndex, Color value) {
 	if (cellForegrounds [columnIndex] != null && cellForegrounds [columnIndex].equals (value)) return;
 	cellForegrounds [columnIndex] = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (availableIndex == -1) return;
-	redraw (
-		getTextX (columnIndex),
-		parent.getItemY (this),
-		textWidths [columnIndex] + 2 * MARGIN_TEXT,
-		parent.itemHeight,
-		columnIndex);
+	if (isInViewport ()) {
+		redraw (
+			getTextX (columnIndex),
+			parent.getItemY (this),
+			textWidths [columnIndex] + 2 * MARGIN_TEXT,
+			parent.itemHeight,
+			columnIndex);
+	}
 }
 /**
  * Sets the grayed state of the receiver.
@@ -2381,9 +2401,10 @@ public void setGrayed (boolean value) {
 	if (grayed == value) return;
 	grayed = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (availableIndex == -1) return;
-	Rectangle bounds = getCheckboxBounds ();
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	if (isInViewport ()) {
+		Rectangle bounds = getCheckboxBounds ();
+		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}
 }
 public void setImage (Image value) {
 	checkWidget ();
@@ -2504,7 +2525,7 @@ public void setImage (int columnIndex, Image value) {
 				parent.redraw ();
 			} else {
 				/* redraw the column since all items should now have image space */
-				parent.redraw (column.getX (), 0, column.width, parent.getClientArea ().height, false);
+				parent.redraw (column.getX (), 0, column.width, parent.clientArea.height, false);
 			}
 		} else {	/* not the first ordered column */
 			if (oldItemHeight != parent.itemHeight) {
@@ -2530,7 +2551,7 @@ public void setImage (int columnIndex, Image value) {
 			rootItems [i].updateColumnWidth (column, gc);
 		}
 		gc.dispose ();
-		parent.redraw (column.getX (), 0, column.width, parent.getClientArea ().height, false);
+		parent.redraw (column.getX (), 0, column.width, parent.clientArea.height, false);
 		return;
 	}
 
@@ -2689,12 +2710,14 @@ public void setText (int columnIndex, String value) {
 		int rightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (rightX, textWidths [columnIndex] - oldWidth);
 	}
-	redraw (
-		getTextX (columnIndex),
-		parent.getItemY (this),
-		Math.max (oldWidth, textWidths [columnIndex]) + 2 * MARGIN_TEXT,
-		parent.itemHeight,
-		columnIndex);
+	if (isInViewport ()) {
+		redraw (
+			getTextX (columnIndex),
+			parent.getItemY (this),
+			Math.max (oldWidth, textWidths [columnIndex]) + 2 * MARGIN_TEXT,
+			parent.itemHeight,
+			columnIndex);
+	}
 }
 /*
  * Perform any internal changes necessary to reflect a changed column width.
@@ -2706,7 +2729,7 @@ void updateColumnWidth (TreeColumn column, GC gc) {
 	computeDisplayText (columnIndex, gc);
 
 	/* the cell must be damaged if there is custom drawing being done or if the alignment is not LEFT */
-	if (availableIndex != -1) {
+	if (isInViewport ()) {
 		boolean columnIsLeft = (column.style & SWT.LEFT) != 0;
 		if (!columnIsLeft || parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
 			Rectangle cellBounds = getCellBounds (columnIndex);

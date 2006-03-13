@@ -130,6 +130,7 @@ public Table (Composite parent, int style) {
 	initImages (display);
 	checkboxBounds = getUncheckedImage ().getBounds ();
 	arrowBounds = getArrowDownImage ().getBounds ();
+	clientArea = getClientArea ();
 	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
