@@ -119,7 +119,8 @@ public boolean getExpanded() {
 	return expanded;
 }
 
-int getHeaderHeight () {
+public int getHeaderHeight () {
+	checkWidget ();
 	return Math.max (ExpandBar.HEADER_HEIGHT, imageHeight);
 }
 
