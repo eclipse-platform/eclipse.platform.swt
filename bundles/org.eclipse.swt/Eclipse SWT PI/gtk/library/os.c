@@ -13337,7 +13337,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1auto_1dir)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1set_1auto_1dir_FUNC);
-	pango_layout_set_auto_dir((PangoLayout *)arg0, arg1);
+/*
+	pango_layout_set_auto_dir(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_layout_set_auto_dir_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_layout_set_auto_dir");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1pango_1layout_1set_1auto_1dir_FUNC);
 }
 #endif
