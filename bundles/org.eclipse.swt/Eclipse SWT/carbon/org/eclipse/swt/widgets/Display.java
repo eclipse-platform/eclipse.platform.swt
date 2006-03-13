@@ -102,8 +102,8 @@ import org.eclipse.swt.graphics.*;
 public class Display extends Device {
 	
 	/* Windows and Events */
-	static final int WAKE_CLASS = 0;
-	static final int WAKE_KIND = 0;
+	static final int WAKE_CLASS = 'S' << 24 | 'W' << 16 | 'T' << 8 | '-';
+	static final int WAKE_KIND = 1;
 	Event [] eventQueue;
 	Callback actionCallback, appleEventCallback, commandCallback, controlCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback;
