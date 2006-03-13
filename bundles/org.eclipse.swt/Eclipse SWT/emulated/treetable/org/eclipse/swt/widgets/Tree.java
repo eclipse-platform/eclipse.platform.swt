@@ -2833,10 +2833,9 @@ void onPaint (Event event) {
 			}
 		} else {
 			/* no items, so draw focus border around Tree */
-			Point size = getSize ();
 			int y = headerHeight + 1;
-			int width = Math.max (0, size.x - 2);
-			int height = Math.max (0, size.y - headerHeight - 2);
+			int width = Math.max (0, clientArea.x - 2);
+			int height = Math.max (0, clientArea.y - headerHeight - 2);
 			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 			gc.setClipping (1, y, width, height);
 			gc.setLineDash (new int[] {1, 1});
@@ -2896,16 +2895,20 @@ void onScrollHorizontal (Event event) {
 	int newSelection = getHorizontalBar ().getSelection ();
 	Rectangle clientArea = getClientArea ();
 	update ();
-	GC gc = new GC (this);
-	gc.copyArea (
-		0, 0,
-		clientArea.width, clientArea.height,
-		horizontalOffset - newSelection, 0);
-	gc.dispose ();
+	if (availableItemsCount > 0) {
+		GC gc = new GC (this);
+		gc.copyArea (
+			0, 0,
+			clientArea.width, clientArea.height,
+			horizontalOffset - newSelection, 0);
+		gc.dispose ();
+	} else {
+		redraw ();	/* ensure that static focus rectangle updates properly */
+	}
 	if (drawCount == 0 && header.isVisible ()) {
 		header.update ();
 		clientArea = header.getClientArea ();
-		gc = new GC (header);
+		GC gc = new GC (header);
 		gc.copyArea (
 			0, 0,
 			clientArea.width, clientArea.height,
@@ -3777,7 +3780,7 @@ void updateColumnWidth (TreeColumn column, int width) {
 		maximum += columns [i].width;
 	}
 	ScrollBar hBar = getHorizontalBar ();
-	hBar.setMaximum (maximum);
+	hBar.setMaximum (Math.max (1, maximum));	/* setting a value of 0 here is ignored */
 	if (hBar.getThumb () != bounds.width) {
 		hBar.setThumb (bounds.width);
 		hBar.setPageIncrement (bounds.width);
@@ -3798,6 +3801,8 @@ void updateColumnWidth (TreeColumn column, int width) {
 			orderedColumns [i].sendEvent (SWT.Move);
 		}
 	}
+
+	if (availableItemsCount == 0) redraw ();	/* ensure that static focus rectangle updates properly */
 }
 /*
  * This is a naive implementation that computes the value from scratch.
@@ -3820,7 +3825,7 @@ void updateHorizontalBar () {
 	
 	int clientWidth = getClientArea ().width;
 	if (maxX != hBar.getMaximum ()) {
-		hBar.setMaximum (maxX);
+		hBar.setMaximum (Math.max (1, maxX));	/* setting a value of 0 here is ignored */
 	}
 	int thumb = Math.min (clientWidth, maxX);
 	if (thumb != hBar.getThumb ()) {
