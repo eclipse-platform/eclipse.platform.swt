@@ -1669,10 +1669,11 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
 	int result = sendMouseEvent (SWT.MouseDown, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 	if (isDisposed ()) return OS.noErr;
-	if (clickCount [0] == 2) {
+	if (clickCount [0] == 2 && display.clickCountButton == button [0]) {
 		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 		if (isDisposed ()) return OS.noErr;
 	}
+	display.clickCountButton = button [0];
 	if (hooks (SWT.DragDetect)) {
 		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;

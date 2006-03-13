@@ -173,9 +173,9 @@ public class Display extends Device {
 	Widget helpWidget;
 	int lastHelpX, lastHelpY;
 	
-	/* Mouse Enter/Exit/Hover */
+	/* Mouse Enter/Exit/Hover/DoubleClick */
 	Control currentControl;
-	int mouseHoverID;
+	int mouseHoverID, clickCountButton;
 	org.eclipse.swt.internal.carbon.Point dragMouseStart = null;
 	boolean dragging, mouseMoved;
 	
