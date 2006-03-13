@@ -287,6 +287,7 @@
 #define NO_LoadImageA__I_3BIIII
 #define NO_LoadLibraryA
 #define NO_LoadStringA
+#define NO_LockWindowUpdate
 #define NO_MapVirtualKeyA
 #define NO_MCIWndRegisterClass
 #define NO_MessageBoxA
