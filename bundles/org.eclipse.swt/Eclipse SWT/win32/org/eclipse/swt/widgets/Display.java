@@ -451,7 +451,7 @@ void addControl (int handle, Control control) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere
+ * be notified when an event of the given type occurs anywhere
  * in a widget. The event type is one of the event constants
  * defined in class <code>SWT</code>. When the event does occur,
  * the listener is notified by sending it the <code>handleEvent()</code>
@@ -494,7 +494,7 @@ public void addFilter (int eventType, Listener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. The event
+ * be notified when an event of the given type occurs. The event
  * type is one of the event constants defined in class <code>SWT</code>.
  * When the event does occur in the display, the listener is notified by
  * sending it the <code>handleEvent()</code> message.
@@ -3209,7 +3209,7 @@ void releaseToolDisabledImageList (ImageList list) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere in
+ * be notified when an event of the given type occurs anywhere in
  * a widget. The event type is one of the event constants defined
  * in class <code>SWT</code>.
  *
@@ -3240,7 +3240,7 @@ public void removeFilter (int eventType, Listener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs. The event type
+ * be notified when an event of the given type occurs. The event type
  * is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for

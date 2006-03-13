@@ -147,7 +147,7 @@ void _addListener (int eventType, Listener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
+ * be notified when an event of the given type occurs. When the
  * event does occur in the widget, the listener is notified by
  * sending it the <code>handleEvent()</code> message. The event
  * type is one of the event constants defined in class <code>SWT</code>.
@@ -176,7 +176,7 @@ public void addListener (int eventType, Listener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when the widget is disposed. When the widget is
+ * be notified when the widget is disposed. When the widget is
  * disposed, the listener is notified by sending it the
  * <code>widgetDisposed()</code> message.
  *
@@ -829,7 +829,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs. The event
+ * be notified when an event of the given type occurs. The event
  * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
@@ -857,7 +857,7 @@ public void removeListener (int eventType, Listener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
@@ -888,7 +888,7 @@ protected void removeListener (int eventType, SWTEventListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when the widget is disposed.
+ * be notified when the widget is disposed.
  *
  * @param listener the listener which should no longer be notified when the receiver is disposed
  *
