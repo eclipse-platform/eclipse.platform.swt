@@ -415,7 +415,6 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	ignoreDraw = ignoreDrawSelected = false;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
-	
 	/*
 	* Feature in Windows.  When a new table item is inserted
 	* using LVM_INSERTITEM in a table that is transparent
@@ -426,7 +425,6 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	*/
 	TableItem item = _getItem (nmcd.dwItemSpec);
 	if (item == null) return null;
-
 	if (OS.IsWindowVisible (handle)) {
 		if (hooks (SWT.MeasureItem)) {
 			sendMeasureItemEvent (item, nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
