@@ -53,6 +53,7 @@ public class OS extends Platform {
 	public static final int inToolbarButton = 13;	
 	public static final int italic = 2;
 	public static final int k32ARGBPixelFormat = 0x00000020;
+	public static final int kActivateAndHandleClick = 3;
 	public static final int kAppearanceEventClass = ('a'<<24) + ('p'<<16) + ('p'<<8) + 'r';
 	public static final int kAEAppearanceChanged = ('t'<<24) + ('h'<<16) + ('m'<<8) + 'e';
 	public static final int kAESystemFontChanged = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'f';
@@ -334,6 +335,7 @@ public class OS extends Platform {
   	public static final int kEventControlDeactivate = 10;
 	public static final int kEventControlDraw = 4;
 	public static final int kControlFocusNextPart = -1;
+	public static final int kEventControlGetClickActivation = 17;
 	public static final int kEventControlGetFocusPart = 8;
 	public static final int kEventControlHit = 1;
 	public static final int kEventControlHitTest = 3;
@@ -377,7 +379,8 @@ public class OS extends Platform {
 	public static final int kEventParamATSUFontID = ('a'<<24) + ('u'<<16) + ('i'<<8) + 'd';
 	public static final int kEventParamAttributes = ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r';
 	public static final int kEventParamBounds =  ('b'<<24) + ('o'<<16) + ('u'<<8) + 'n';
-	public static final int kEventParamCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+	public static final int kEventParamCGContextRef = ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+	public static final int kEventParamClickActivation = ('c'<<24) + ('l'<<16) + ('a'<<8) + 'c';
 	public static final int kEventParamClickCount = ('c'<<24) + ('c'<<16) + ('n'<<8) + 't';
 	public static final int kEventParamControlPart= ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int kEventParamControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
@@ -835,6 +838,7 @@ public class OS extends Platform {
 	public static final int teJustRight = -1;
 	public static final int typeCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
 	public static final int typeChar = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
+	public static final int typeClickActivationResult = ('c'<<24) + ('l'<<16) + ('a'<<8) + 'c';
 	public static final int typeControlPartCode = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int typeControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int typeEventRef = ('e'<<24) + ('v'<<16) + ('r'<<8) + 'f';
