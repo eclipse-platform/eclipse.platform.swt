@@ -1265,6 +1265,7 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
 		OS.kEventClassControl, OS.kEventControlGetFocusPart,
 		OS.kEventClassControl, OS.kEventControlTrack,
+		OS.kEventClassControl, OS.kEventControlGetClickActivation,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);

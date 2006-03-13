@@ -2078,9 +2078,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	clickCount = outData [0];
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	Shell shell = getShell ();
-	shell.bringToTop (true);
-	if (isDisposed ()) return OS.noErr;
 	/*
 	* Feature in the Macintosh.  For some reason, when the user
 	* clicks on the data browser, focus is assigned, then lost
@@ -2088,6 +2085,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	* The fix is to ignore kEvenControlSetFocusPart when the user
 	* clicks and send the focus events from kEventMouseDown.
 	*/
+	Display display = this.display;
 	Control oldFocus = display.getFocusControl ();
 	display.ignoreFocus = true;
 	wasSelected = false;
@@ -2097,6 +2095,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (SWT.FocusOut, false);
 		if (!isDisposed () && isEnabled ()) sendFocusEvent (SWT.FocusIn, false);
 	}
+	if (isDisposed ()) return OS.noErr;
 	if (!wasSelected) {
 		if (OS.IsDataBrowserItemSelected (handle, lastHittest)) {
 			int index = lastHittest - 1;
@@ -2108,6 +2107,11 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	return result;
+}
+
+int kEventControlGetClickActivation (int nextHandler, int theEvent, int userData) {
+	OS.SetEventParameter (theEvent, OS.kEventParamClickActivation, OS.typeClickActivationResult, 4, new int [] {OS.kActivateAndHandleClick});
+	return OS.noErr;
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
