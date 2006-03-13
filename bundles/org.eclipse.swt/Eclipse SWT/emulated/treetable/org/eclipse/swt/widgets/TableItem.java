@@ -471,7 +471,7 @@ public Rectangle getBounds (int columnIndex) {
 	/*
 	 * For columns > 0 this is the bounds of the table cell.
 	 */
-	return new Rectangle (column.getX (), parent.getItemY (this) + 1, column.width - 1, parent.itemHeight - 1);
+	return new Rectangle (column.getX (), parent.getItemY (this) + 1, column.width, parent.itemHeight - 1);
 }
 /*
  * Returns the full bounds of a cell in a table, regardless of its content.

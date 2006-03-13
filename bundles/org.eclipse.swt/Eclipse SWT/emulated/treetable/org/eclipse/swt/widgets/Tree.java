@@ -51,7 +51,7 @@ public class Tree extends Composite {
 	Event lastSelectionEvent;
 	int availableItemsCount = 0;
 	boolean insertMarkPrecedes = false;
-	boolean linesVisible, ignoreKey, ignoreDispose, allowItemHeightChange;
+	boolean linesVisible, ignoreKey, ignoreDispose, allowItemHeightChange = true;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
 	int headerImageHeight = 0, orderedCol0imageWidth = 0;

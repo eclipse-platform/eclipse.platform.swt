@@ -862,7 +862,7 @@ public Rectangle getBounds (int columnIndex) {
 	/*
 	 * For ordered columns > 0 this is the bounds of the tree cell.
 	 */
-	return new Rectangle (column.getX (), parent.getItemY (this) + 1, column.width - 1, parent.itemHeight - 1);
+	return new Rectangle (column.getX (), parent.getItemY (this) + 1, column.width, parent.itemHeight - 1);
 }
 /*
  * Returns the full bounds of a cell in a tree, regardless of its content.
