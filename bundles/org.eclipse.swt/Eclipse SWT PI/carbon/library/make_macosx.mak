@@ -37,7 +37,7 @@ AGLLFLAGS = $(LFLAGS) -framework OpenGL -framework AGL
 SWT_OBJECTS = swt.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_custom.o os_structs.o os_stats.o
 WEBKIT_OBJECTS = webkit.o
-AGL_OBJECTS = agl.o
+AGL_OBJECTS = agl.o agl_stats.o
 
 all: $(SWT_LIB) $(SWTPI_LIB) $(WEBKIT_LIB) $(AGL_LIB)
 
