@@ -6650,6 +6650,35 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1expander_1get_1expanded)
 }
 #endif
 
+#ifndef NO__1gtk_1expander_1get_1label_1widget
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1expander_1get_1label_1widget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1expander_1get_1label_1widget_FUNC);
+/*
+	rc = (jint)gtk_expander_get_label_widget(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_expander_get_label_widget_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_expander_get_label_widget");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1expander_1get_1label_1widget_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1expander_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1expander_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)

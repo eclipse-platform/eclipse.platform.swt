@@ -523,6 +523,7 @@ typedef enum {
 	_1gtk_1entry_1text_1index_1to_1layout_1index_FUNC,
 	_1gtk_1events_1pending_FUNC,
 	_1gtk_1expander_1get_1expanded_FUNC,
+	_1gtk_1expander_1get_1label_1widget_FUNC,
 	_1gtk_1expander_1new_FUNC,
 	_1gtk_1expander_1set_1expanded_FUNC,
 	_1gtk_1expander_1set_1label_FUNC,

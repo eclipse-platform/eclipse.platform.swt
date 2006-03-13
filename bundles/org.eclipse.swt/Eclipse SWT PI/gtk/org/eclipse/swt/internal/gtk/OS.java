@@ -4308,6 +4308,15 @@ public static final boolean gtk_expander_get_expanded(int /*long*/ expander) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_expander_get_label_widget(int /*long*/ expander);
+public static final int /*long*/ gtk_expander_get_label_widget(int /*long*/ expander) {
+	lock.lock();
+	try {
+		return _gtk_expander_get_label_widget(expander);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_expander_new(byte[] label);
 public static final int /*long*/ gtk_expander_new(byte[] label) {
 	lock.lock();

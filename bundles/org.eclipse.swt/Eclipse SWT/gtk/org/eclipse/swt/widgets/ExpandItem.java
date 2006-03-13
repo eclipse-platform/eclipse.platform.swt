@@ -90,6 +90,12 @@ public boolean getExpanded () {
 	return OS.gtk_expander_get_expanded (handle);
 }
 
+public int getHeaderHeight () {
+	checkWidget ();
+	int /*long*/ widget = OS.gtk_expander_get_label_widget (handle);
+	return OS.GTK_WIDGET_HEIGHT (widget); 
+}
+
 public int getHeight () {
 	checkWidget ();
 	GtkRequisition requisition = new GtkRequisition ();

@@ -50,6 +50,7 @@
 #define gtk_file_filter_new_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_filter_set_name_LIB "libgtk-x11-2.0.so.0"
 #define gtk_expander_get_expanded_LIB "libgtk-x11-2.0.so.0"
+#define gtk_expander_get_label_widget_LIB "libgtk-x11-2.0.so.0"
 #define gtk_expander_new_LIB "libgtk-x11-2.0.so.0"
 #define gtk_expander_set_expanded_LIB "libgtk-x11-2.0.so.0"
 #define gtk_expander_set_label_LIB "libgtk-x11-2.0.so.0"
