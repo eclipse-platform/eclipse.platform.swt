@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 909;
-int OS_nativeFunctionCallCount[909];
+int OS_nativeFunctionCount = 911;
+int OS_nativeFunctionCallCount[911];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -442,6 +442,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetMenuWidth",
 	"GetMouse",
 	"GetNextDevice",
+	"GetNextWindow",
 	"GetPixBounds",
 	"GetPixDepth",
 	"GetPort",
@@ -480,6 +481,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetWindowEventTarget",
 	"GetWindowFromPort",
 	"GetWindowGroupOfClass",
+	"GetWindowList",
 	"GetWindowModality",
 	"GetWindowPort",
 	"GetWindowRegion",

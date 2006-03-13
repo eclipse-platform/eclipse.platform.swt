@@ -6048,6 +6048,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetNextDevice)
 }
 #endif
 
+#ifndef NO_GetNextWindow
+JNIEXPORT jint JNICALL OS_NATIVE(GetNextWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetNextWindow_FUNC);
+	rc = (jint)GetNextWindow((WindowRef)arg0);
+	OS_NATIVE_EXIT(env, that, GetNextWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetPixBounds
 JNIEXPORT void JNICALL OS_NATIVE(GetPixBounds)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -6618,6 +6630,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetWindowGroupOfClass)
 	OS_NATIVE_ENTER(env, that, GetWindowGroupOfClass_FUNC);
 	rc = (jint)GetWindowGroupOfClass(arg0);
 	OS_NATIVE_EXIT(env, that, GetWindowGroupOfClass_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetWindowList
+JNIEXPORT jint JNICALL OS_NATIVE(GetWindowList)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetWindowList_FUNC);
+	rc = (jint)GetWindowList();
+	OS_NATIVE_EXIT(env, that, GetWindowList_FUNC);
 	return rc;
 }
 #endif

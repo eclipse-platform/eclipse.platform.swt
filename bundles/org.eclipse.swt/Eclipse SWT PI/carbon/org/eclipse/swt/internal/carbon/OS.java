@@ -1339,6 +1339,8 @@ public static final native int GetWindowDefaultButton(int wHandle, int[] cHandle
 public static final native int GetWindowEventTarget(int wHandle);
 public static final native int GetWindowFromPort(int pHandle);
 public static final native int GetWindowGroupOfClass (int windowClass);
+public static final native int GetWindowList();
+public static final native int GetNextWindow(int inWindow);
 public static final native int GetWindowModality(int inWindow, int[] outModalKind, int[] outUnavailableWindow);
 public static final native int GetWindowPort(int wHandle);
 public static final native int GetWindowRegion(int window, short inRegionCode, int ioWinRgn);
