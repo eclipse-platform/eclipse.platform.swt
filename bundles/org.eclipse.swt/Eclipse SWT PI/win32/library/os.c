@@ -6058,6 +6058,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LocalFree)
 }
 #endif
 
+#ifndef NO_LockWindowUpdate
+JNIEXPORT jboolean JNICALL OS_NATIVE(LockWindowUpdate)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, LockWindowUpdate_FUNC);
+	rc = (jboolean)LockWindowUpdate((HWND)arg0);
+	OS_NATIVE_EXIT(env, that, LockWindowUpdate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_MCIWndRegisterClass
 JNIEXPORT jboolean JNICALL OS_NATIVE(MCIWndRegisterClass)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 685;
-int OS_nativeFunctionCallCount[685];
+int OS_nativeFunctionCount = 686;
+int OS_nativeFunctionCallCount[686];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -386,6 +386,7 @@ char * OS_nativeFunctionNames[] = {
 	"LoadStringA",
 	"LoadStringW",
 	"LocalFree",
+	"LockWindowUpdate",
 	"MCIWndRegisterClass",
 	"MapVirtualKeyA",
 	"MapVirtualKeyW",

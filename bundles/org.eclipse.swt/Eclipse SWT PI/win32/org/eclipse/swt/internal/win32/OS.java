@@ -3024,6 +3024,7 @@ public static final native int LoadStringA (int hinst, int uID, byte [] lpBuffer
 public static final native int LoadLibraryW (char [] lpLibFileName);
 public static final native int LoadLibraryA (byte [] lpLibFileName);
 public static final native int LocalFree(int hMem);
+public static final native boolean LockWindowUpdate (int hWndLock);
 public static final native int MapVirtualKeyW (int uCode, int uMapType);
 public static final native int MapVirtualKeyA (int uCode, int uMapType);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, POINT lpPoints, int cPoints);

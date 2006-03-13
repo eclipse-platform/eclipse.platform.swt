@@ -390,6 +390,7 @@ typedef enum {
 	LoadStringA_FUNC,
 	LoadStringW_FUNC,
 	LocalFree_FUNC,
+	LockWindowUpdate_FUNC,
 	MCIWndRegisterClass_FUNC,
 	MapVirtualKeyA_FUNC,
 	MapVirtualKeyW_FUNC,
