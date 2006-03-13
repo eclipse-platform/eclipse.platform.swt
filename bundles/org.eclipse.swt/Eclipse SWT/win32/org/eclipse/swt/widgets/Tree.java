@@ -381,6 +381,15 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 			OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
 		}
 	}
+	int sortIndex = -1, clrSortBk = -1;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (sortColumn != null && sortDirection != SWT.NONE) {
+			if (findImageControl () == null) {
+				sortIndex = indexOf (sortColumn);
+				clrSortBk = getSortColumnPixel ();
+			}
+		}
+	}
 	Point size = null;
 	int x = 0, gridWidth = linesVisible ? GRID_WIDTH : 0;
 	for (int i=0; i<Math.max (1, count); i++) {
@@ -448,6 +457,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 				if (drawBackground) {
 					clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
+					if (clrTextBk == -1 && i == sortIndex) clrTextBk = clrSortBk;
 				}
 			}
 			if (drawItem) {
@@ -887,6 +897,13 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 			}
 		}
 	}
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (sortColumn != null && sortDirection != SWT.NONE) {
+			if (findImageControl () == null) {
+				if (indexOf (sortColumn) == 0) clrTextBk = getSortColumnPixel ();
+			}
+		}
+	}
 	LRESULT result = null;
 	if (clrText == -1 && clrTextBk == -1 && hFont == -1) {
 		result = new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);	
@@ -947,6 +964,30 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 
 LRESULT CDDS_POSTPAINT (int wParam, int lParam) {	
 	if (OS.IsWindowVisible (handle)) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (sortColumn != null && sortDirection != SWT.NONE) {
+				if (findImageControl () == null) {
+					int index = indexOf (sortColumn);
+					if (index != -1) {
+						int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
+						if (hItem != 0) {
+							RECT rect = new RECT ();
+							rect.left = hItem;
+							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+								NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
+								OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
+								OS.SetRect (rect, nmcd.left, rect.bottom, nmcd.right, nmcd.bottom);
+								RECT headerRect = new RECT ();
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+								rect.left = headerRect.left;
+								rect.right = headerRect.right;
+								drawBackground (nmcd.hdc, rect, getSortColumnPixel ());
+							}
+						}
+					}
+				}
+			}
+		}
 		if (linesVisible) {
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);	
@@ -1822,8 +1863,8 @@ void destroyItem (TreeColumn column) {
 		if (oldOrder [orderIndex] == index) break;
 		orderIndex++;
 	}
-	RECT itemRect = new RECT ();
-	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
+	RECT headerRect = new RECT ();
+	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
 	if (OS.SendMessage (hwndHeader, OS.HDM_DELETEITEM, index, 0) == 0) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
@@ -1912,7 +1953,7 @@ void destroyItem (TreeColumn column) {
 		}
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
-		rect.left = itemRect.left;
+		rect.left = headerRect.left;
 		OS.InvalidateRect (handle, rect, true);
 	}
 	setScrollWidth ();
@@ -2739,6 +2780,23 @@ public int getSelectionCount () {
 public TreeColumn getSortColumn () {
 	checkWidget ();
 	return sortColumn;
+}
+
+int getSortColumnPixel () {
+	int pixel = getBackgroundPixel ();
+	int red = pixel & 0xFF;
+	int green = (pixel & 0xFF00) >> 8;
+	int blue = (pixel & 0xFF0000) >> 16;
+	if (red > 240 && green > 240 && blue > 240) {
+		red -= 8;
+		green -= 8;
+		blue -= 8;
+	} else {
+		red = Math.min (0xFF, (red / 10) + red);
+		green = Math.min (0xFF, (green / 10) + green);
+		blue = Math.min (0xFF, (blue / 10) + blue);
+	}
+	return 0x02000000 | (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
 }
 
 /**
@@ -4020,18 +4078,18 @@ public void showColumn (TreeColumn column) {
 			RECT rect = new RECT ();
 			OS.GetClientRect (hwndParent, rect);
 			OS.MapWindowPoints (hwndParent, handle, rect, 2);
-			RECT itemRect = new RECT ();
-			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-			boolean scroll = itemRect.left < rect.left;
+			RECT headerRect = new RECT ();
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+			boolean scroll = headerRect.left < rect.left;
 			if (!scroll) {
-				int width = Math.min (rect.right - rect.left, itemRect.right - itemRect.left);
-				scroll = itemRect.left + width > rect.right;
+				int width = Math.min (rect.right - rect.left, headerRect.right - headerRect.left);
+				scroll = headerRect.left + width > rect.right;
 			}
 			if (scroll) {
 				SCROLLINFO info = new SCROLLINFO ();
 				info.cbSize = SCROLLINFO.sizeof;
 				info.fMask = OS.SIF_POS;
-				info.nPos = Math.max (0, itemRect.left - Tree.INSET / 2);
+				info.nPos = Math.max (0, headerRect.left - Tree.INSET / 2);
 				OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
 				setScrollWidth ();
 			}
@@ -5124,12 +5182,12 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						if (index == pitem.iOrder) break;
 						int start = Math.min (index, pitem.iOrder);
 						int end = Math.max (index, pitem.iOrder);
-						RECT rect = new RECT (), itemRect = new RECT ();
+						RECT rect = new RECT (), headerRect = new RECT ();
 						OS.GetClientRect (handle, rect);
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [start], itemRect);
-						rect.left = Math.max (rect.left, itemRect.left);
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], itemRect);
-						rect.right = Math.min (rect.right, itemRect.right);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [start], headerRect);
+						rect.left = Math.max (rect.left, headerRect.left);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], headerRect);
+						rect.right = Math.min (rect.right, headerRect.right);
 						OS.InvalidateRect (handle, rect, true);
 						ignoreColumnMove = false;
 						for (int i=start; i<=end; i++) {
@@ -5152,14 +5210,14 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					if ((newItem.mask & OS.HDI_WIDTH) != 0) {
 						RECT rect = new RECT ();
 						OS.GetClientRect (handle, rect);
-						RECT itemRect = new RECT ();
+						RECT headerRect = new RECT ();
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-						rect.right = Math.max (rect.right, itemRect.right);
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, itemRect);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+						rect.right = Math.max (rect.right, headerRect.right);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
 						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
-						rect.left = itemRect.right - gridWidth;
+						rect.left = headerRect.right - gridWidth;
 						if (findImageControl () != null) {
 							OS.InvalidateRect (handle, rect, true);
 						} else {
@@ -5172,8 +5230,8 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						}
 						//TODO - column flashes when resized and not double buffered
 						if (phdn.iItem != 0) {
-							rect.left = itemRect.left;
-							rect.right = itemRect.right;
+							rect.left = headerRect.left;
+							rect.right = headerRect.right;
 							OS.InvalidateRect (handle, rect, true);
 						}
 						setScrollWidth ();
@@ -5335,6 +5393,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 //		int x = ps.left, y = ps.top;
 //		int width = ps.right - ps.left;
 //		int height = ps.bottom - ps.top;
+		forceResize ();
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
 		int x = rect.left, y = rect.top;

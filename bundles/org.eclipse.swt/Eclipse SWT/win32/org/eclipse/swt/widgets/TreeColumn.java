@@ -502,11 +502,12 @@ public void setAlignment (int alignment) {
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 	if (index != 0) {
 		int hwnd = parent.handle;
-		RECT rect = new RECT (), itemRect = new RECT ();
+		parent.forceResize ();
+		RECT rect = new RECT (), headerRect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-		rect.left = itemRect.left;
-		rect.right = itemRect.right;
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+		rect.left = headerRect.left;
+		rect.right = headerRect.right;
 		OS.InvalidateRect (hwnd, rect, true);
 	}
 }
@@ -622,6 +623,14 @@ void setSortDirection (int direction) {
 					break;
 			}
 			OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+			int hwnd = parent.handle;
+			parent.forceResize ();
+			RECT rect = new RECT (), headerRect = new RECT ();
+			OS.GetClientRect (hwnd, rect);
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+			rect.left = headerRect.left;
+			rect.right = headerRect.right;
+			OS.InvalidateRect (hwnd, rect, true);
 		}
 	} else {
 		switch (direction) {
@@ -708,12 +717,13 @@ public void setWidth (int width) {
 	hdItem.mask = OS.HDI_WIDTH;
 	hdItem.cxy = width;
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-	RECT itemRect = new RECT ();
-	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
+	RECT headerRect = new RECT ();
+	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+	parent.forceResize ();
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.GetClientRect (hwnd, rect);
-	rect.left = itemRect.left;
+	rect.left = headerRect.left;
 	OS.InvalidateRect (hwnd, rect, true);
 	parent.setScrollWidth ();
 }
