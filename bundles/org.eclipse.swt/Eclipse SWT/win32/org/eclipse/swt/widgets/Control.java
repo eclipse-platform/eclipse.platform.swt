@@ -615,6 +615,7 @@ void enableWidget (boolean enabled) {
 }
 
 void fillBackground (int hDC, int pixel, RECT rect) {
+	if (rect.left > rect.right || rect.top > rect.bottom) return;
 	int hPalette = display.hPalette;
 	if (hPalette != 0) {
 		OS.SelectPalette (hDC, hPalette, false);
@@ -624,6 +625,7 @@ void fillBackground (int hDC, int pixel, RECT rect) {
 }
 
 void fillImageBackground (int hDC, Control control, RECT rect) {
+	if (rect.left > rect.right || rect.top > rect.bottom) return;
 	if (control != null) {
 		Image image = control.backgroundImage;
 		if (image != null) {
@@ -633,6 +635,7 @@ void fillImageBackground (int hDC, Control control, RECT rect) {
 }
 
 void fillThemeBackground (int hDC, Control control, RECT rect) {
+	if (rect.left > rect.right || rect.top > rect.bottom) return;
 	if (control != null) {
 		control.drawThemeBackground (hDC, handle, rect);
 	}
