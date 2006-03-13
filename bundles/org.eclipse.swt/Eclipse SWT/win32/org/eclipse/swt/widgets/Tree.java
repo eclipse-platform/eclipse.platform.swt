@@ -976,12 +976,14 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
 								NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 								OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
-								OS.SetRect (rect, nmcd.left, rect.bottom, nmcd.right, nmcd.bottom);
-								RECT headerRect = new RECT ();
-								OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-								rect.left = headerRect.left;
-								rect.right = headerRect.right;
-								drawBackground (nmcd.hdc, rect, getSortColumnPixel ());
+								if (nmcd.bottom > rect.bottom) {
+									OS.SetRect (rect, nmcd.left, rect.bottom, nmcd.right, nmcd.bottom);
+									RECT headerRect = new RECT ();
+									OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+									rect.left = headerRect.left;
+									rect.right = headerRect.right;
+									drawBackground (nmcd.hdc, rect, getSortColumnPixel ());
+								}
 							}
 						}
 					}
