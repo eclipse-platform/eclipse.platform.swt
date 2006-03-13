@@ -104,7 +104,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, moved, drawing, reshape, update, deactivate, activate, active, disposed, opened;
+	boolean resized, moved, drawing, reshape, update, deferDispose, activate, active, disposed, opened;
 	int invalRgn;
 	Control lastActive;
 	Region region;
@@ -479,15 +479,18 @@ void createHandle () {
 	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse, outGroup);
 	if (outGroup [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	windowGroup = outGroup [0];
-	if (parent != null) {
-		Shell shell = parent.getShell ();
-		int parentGroup = shell.windowGroup;
-		OS.SetWindowGroup (shellHandle, parentGroup);
-		OS.SetWindowGroupParent (windowGroup, parentGroup);
+	int parentGroup;
+	if ((style & SWT.ON_TOP) != 0) {
+		parentGroup = OS.GetWindowGroupOfClass (OS.kFloatingWindowClass);		
 	} else {
-		int parentGroup = OS.GetWindowGroupOfClass (windowClass);
-		OS.SetWindowGroupParent (windowGroup, parentGroup);
+		if (parent != null) {
+			parentGroup = parent.getShell ().windowGroup;
+		} else {
+			parentGroup = OS.GetWindowGroupOfClass (windowClass);
+		}
 	}
+	OS.SetWindowGroup (shellHandle, parentGroup);
+	OS.SetWindowGroupParent (windowGroup, parentGroup);
 	OS.SetWindowGroupOwner (windowGroup, shellHandle);
 	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
 	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
@@ -527,10 +530,16 @@ void destroyWidget () {
 	* the event loop becomes idle.
 	*/
 	Display display = this.display;
-	if (deactivate) OS.HideWindow (shellHandle);
+	Composite parent = this.parent;
+	while (!deferDispose && parent != null) {
+		Shell shell = parent.getShell ();
+		deferDispose = shell.deferDispose;
+		parent = shell.parent;
+	}
+	if (deferDispose) OS.HideWindow (shellHandle);
 	releaseHandle ();
 	if (theWindow != 0) {
-		if (deactivate) {
+		if (deferDispose) {
 			display.addDisposeWindow (theWindow);
 		} else {
 			OS.DisposeWindow (theWindow);
@@ -938,7 +947,7 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if (active) {
-		deactivate = true;
+		deferDispose = true;
 		active = false;
 		Display display = this.display;
 		sendEvent (SWT.Deactivate);
@@ -957,7 +966,7 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 			if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, false);
 		}
 		display.setMenuBar (null);
-		deactivate = false;
+		deferDispose = false;
 	}
 	return result;
 }
