@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 911;
-int OS_nativeFunctionCallCount[911];
+int OS_nativeFunctionCount = 912;
+int OS_nativeFunctionCallCount[912];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -177,6 +177,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGFunctionRelease",
 	"CGGetDisplaysWithRect",
 	"CGImageCreate",
+	"CGImageCreateWithImageInRect",
 	"CGImageCreateWithJPEGDataProvider",
 	"CGImageCreateWithPNGDataProvider",
 	"CGImageGetAlphaInfo",

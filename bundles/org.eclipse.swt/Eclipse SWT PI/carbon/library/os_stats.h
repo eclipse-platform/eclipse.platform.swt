@@ -181,6 +181,7 @@ typedef enum {
 	CGFunctionRelease_FUNC,
 	CGGetDisplaysWithRect_FUNC,
 	CGImageCreate_FUNC,
+	CGImageCreateWithImageInRect_FUNC,
 	CGImageCreateWithJPEGDataProvider_FUNC,
 	CGImageCreateWithPNGDataProvider_FUNC,
 	CGImageGetAlphaInfo_FUNC,

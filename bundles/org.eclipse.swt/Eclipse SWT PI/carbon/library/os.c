@@ -2054,6 +2054,39 @@ fail:
 }
 #endif
 
+#ifndef NO_CGImageCreateWithImageInRect
+JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateWithImageInRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGImageCreateWithImageInRect_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jint)CGImageCreateWithImageInRect(arg0, *lparg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, CGRect);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(CGImageCreateWithImageInRect_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("CGImageCreateWithImageInRect"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, *lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGImageCreateWithImageInRect_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGImageCreateWithJPEGDataProvider
 JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateWithJPEGDataProvider)
 	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jboolean arg2, jint arg3)

@@ -1043,6 +1043,7 @@ public static final native int CGFontCreateWithPlatformFont (int[] platformFontR
 public static final native void CGFontRelease (int font);
 public static final native int CGGetDisplaysWithRect (CGRect rect, int maxDisplays, int[] dspys, int[] dspyCnt);
 public static final native int CGImageCreate (int width, int height, int bitsPerComponent, int bitsPerPixel, int bytesPerRow, int colorspace, int alphaInfo, int provider, float[] decode, boolean shouldInterpolate, int intent);
+public static final native int CGImageCreateWithImageInRect(int image, CGRect rect);
 public static final native int CGImageCreateWithPNGDataProvider (int source, float[] decode, boolean shouldInterpolate, int intent);
 public static final native int CGImageCreateWithJPEGDataProvider (int source, float[] decode, boolean shouldInterpolate, int intent);
 public static final native int CGImageGetAlphaInfo (int image);
