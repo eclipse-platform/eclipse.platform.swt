@@ -863,8 +863,10 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 						drawBackground (hDC, textRect, OS.GetBkColor (hDC));
 					}
 				} else {
-					if (selected) textColor = clrText = newTextClr;
-					ignoreDrawSelected = true;
+					if (selected) {
+						textColor = clrText = newTextClr;
+						ignoreDrawSelected = true;
+					}
 				}
 			}
 			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
