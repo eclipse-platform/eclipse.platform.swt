@@ -31,6 +31,7 @@ public class Pattern extends Resource {
 	int alpha1, alpha2;
 	float x1, y1, x2, y2;
 	int shading;
+	CGRect drawRect;
 
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
@@ -182,12 +183,38 @@ int drawPatternProc (int ref, int context) {
 	if (image != null) {
 		if (image.isDisposed()) return 0;
 		int imageHandle = image.handle;
+		int imageWidth = OS.CGImageGetWidth(imageHandle);
+		int imageHeight = OS.CGImageGetHeight(imageHandle);
 		CGRect rect = new CGRect();
-		rect.width = OS.CGImageGetWidth(imageHandle);
-		rect.height = OS.CGImageGetHeight(imageHandle);
+		rect.width = imageWidth;
+		rect.height = imageHeight;
 		OS.CGContextScaleCTM(context, 1, -1);
-	 	OS.CGContextTranslateCTM(context, 0, -rect.height);
-		OS.CGContextDrawImage(context, rect, imageHandle);
+	 	if (drawRect != null && (drawRect.x % imageWidth) + drawRect.width < imageWidth && (drawRect.y % imageHeight) + drawRect.height < imageHeight) {
+	 		rect.x = drawRect.x % imageWidth;
+	 		rect.y = drawRect.y % imageHeight;
+	 		rect.width = drawRect.width;
+	 		rect.height = drawRect.height;
+	 		if (OS.VERSION >= 0x1040) {
+	 			imageHandle = OS.CGImageCreateWithImageInRect(imageHandle, rect);
+	 		} else {
+		 		int srcX = (int)drawRect.x, srcY = (int)drawRect.y;
+		 		int srcWidth = (int)drawRect.width, srcHeight = (int)drawRect.height;
+		 		int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
+				int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
+				int bpr = OS.CGImageGetBytesPerRow(imageHandle);
+				int colorspace = OS.CGImageGetColorSpace(imageHandle);
+				int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
+				int data = image.data + (srcY * bpr) + srcX * 4;
+				int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
+				if (provider != 0) {
+					imageHandle = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, true, 0);
+					OS.CGDataProviderRelease(provider);
+				}
+			}
+	 	}
+	 	OS.CGContextTranslateCTM(context, 0, -(rect.height + 2 * rect.y));
+	 	OS.CGContextDrawImage(context, rect, imageHandle);
+	 	if (imageHandle != 0 && imageHandle != image.handle) OS.CGImageRelease(imageHandle);
 	} else {
 		OS.CGContextDrawShading(context, shading);
 	}

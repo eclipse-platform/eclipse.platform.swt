@@ -1498,7 +1498,10 @@ public void fillRectangle(int x, int y, int width, int height) {
 	rect.y = y;
 	rect.width = width;
 	rect.height = height;
+	Pattern pattern = data.backgroundPattern;
+	if (pattern != null) pattern.drawRect = rect;
 	OS.CGContextFillRect(handle, rect);
+	if (pattern != null) pattern.drawRect = null;
 	flush();
 }
 
