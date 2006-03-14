@@ -834,7 +834,9 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}	
 		case OS.kDataBrowserItemDoubleClicked: {
-			postEvent (SWT.DefaultSelection);
+			if (display.clickCount == 2) {
+				postEvent (SWT.DefaultSelection);
+			}
 			break;
 		}
 	}

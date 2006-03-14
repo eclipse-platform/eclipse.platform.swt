@@ -54,7 +54,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int [] childIds;
 	GC paintGC;
-	int clickCount, sortDirection;
+	int sortDirection;
 	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight;
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll;
 	Rectangle imageBounds;
@@ -2059,7 +2059,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			for (int i = 0; i < columnCount; i++) {
 				TreeColumn column = columns [i];
 				if (property [0] == column.id) {
-					column.postEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+					column.postEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
 					break;
 				}
 			}
@@ -2108,9 +2108,11 @@ int itemNotificationProc (int browser, int id, int message) {
 		}	
 		case OS.kDataBrowserItemDoubleClicked: {
 			wasSelected = true;
-			Event event = new Event ();
-			event.item = _getItem (id, true);
-			postEvent (SWT.DefaultSelection, event);
+			if (display.clickCount == 2) {
+				Event event = new Event ();
+				event.item = _getItem (id, true);
+				postEvent (SWT.DefaultSelection, event);
+			}
 			break;
 		}
 		case OS.kDataBrowserContainerClosing: {
@@ -2262,9 +2264,6 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int [] outData = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, outData);
-	clickCount = outData [0];
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	/*

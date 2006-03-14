@@ -1669,7 +1669,8 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
 	int result = sendMouseEvent (SWT.MouseDown, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 	if (isDisposed ()) return OS.noErr;
-	if (clickCount [0] == 2 && display.clickCountButton == button [0]) {
+	display.clickCount = display.clickCountButton == button [0] ? clickCount [0] : 1;
+	if (display.clickCount == 2) {
 		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 		if (isDisposed ()) return OS.noErr;
 	}

@@ -54,7 +54,7 @@ public class Table extends Composite {
 	TableItem currentItem;
 	TableColumn sortColumn;
 	GC paintGC;
-	int clickCount, sortDirection;
+	int sortDirection;
 	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight, lastIndexOf;
 	boolean  ignoreSelect, wasSelected, fixScrollWidth;
 	Rectangle imageBounds;
@@ -2010,7 +2010,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			for (int i = 0; i < columnCount; i++) {
 				TableColumn column = columns [i];
 				if (property [0] == column.id) {
-					column.postEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+					column.postEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
 					break;
 				}
 			}
@@ -2061,11 +2061,12 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}	
 		case OS.kDataBrowserItemDoubleClicked: {
-			TableItem item = _getItem (index);
 			wasSelected = true;
-			Event event = new Event ();
-			event.item = item;
-			postEvent (SWT.DefaultSelection, event);
+			if (display.clickCount == 2) {
+				Event event = new Event ();
+				event.item = _getItem (index);
+				postEvent (SWT.DefaultSelection, event);
+			}
 			break;
 		}
 	}
@@ -2073,9 +2074,6 @@ int itemNotificationProc (int browser, int id, int message) {
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int [] outData = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, outData);
-	clickCount = outData [0];
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	/*
