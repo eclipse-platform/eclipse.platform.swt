@@ -160,6 +160,10 @@ static String getTypeSignature3(Class clazz) {
 }
 
 static String getTypeSignature4(Class clazz) {
+	return getTypeSignature4(clazz, false);
+}
+
+static String getTypeSignature4(Class clazz, boolean struct) {
 	if (clazz == Void.TYPE) return "void";
 	if (clazz == Integer.TYPE) return "jint";
 	if (clazz == Boolean.TYPE) return "jboolean";
@@ -172,9 +176,11 @@ static String getTypeSignature4(Class clazz) {
 	if (clazz == String.class) return "jstring";
 	if (clazz.isArray()) {
 		Class componentType = clazz.getComponentType();
-		return getTypeSignature4(componentType) + " *";
+		String sig = getTypeSignature4(componentType);
+		return struct ? sig : sig + " *";
 	}
-	return getClassName(clazz) + " *";
+	String sig = getClassName(clazz); 
+	return struct ? sig : sig + " *";
 }
 
 static HashMap uniqueCache = new HashMap();

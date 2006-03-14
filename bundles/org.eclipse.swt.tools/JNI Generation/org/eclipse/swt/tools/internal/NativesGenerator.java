@@ -492,7 +492,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 			if (cast.length() > 2) {
 				output(cast.substring(1, cast.length() - 1));
 			} else {
-				output(getTypeSignature4(paramType));
+				output(getTypeSignature4(paramType, paramData.getFlag("struct")));
 			}
 		}
 		outputln(");");
@@ -532,7 +532,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 			if (cast.length() > 2) {
 				output(cast.substring(1, cast.length() - 1));
 			} else {
-				output(getTypeSignature4(paramType));
+				output(getTypeSignature4(paramType, paramData.getFlag("struct")));
 			}
 		}
 		outputln(");");
