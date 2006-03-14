@@ -5249,7 +5249,6 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 							int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 							OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 						}
-						//TODO - column flashes when resized and not double buffered
 						if (phdn.iItem != 0) {
 							rect.left = headerRect.left;
 							rect.right = headerRect.right;
@@ -5268,6 +5267,14 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					HDITEM pitem = new HDITEM ();
 					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 					if ((pitem.mask & OS.HDI_WIDTH) != 0) {
+						if ((style & SWT.DOUBLE_BUFFERED) == 0) {
+							if (ignoreColumnMove) {
+								int oldStyle = style;
+								style |= SWT.DOUBLE_BUFFERED;
+								OS.UpdateWindow (handle);
+								style = oldStyle;
+							}
+						}
 						TreeColumn column = columns [phdn.iItem];
 						if (column != null) {
 							column.updateToolTip (phdn.iItem);
