@@ -3329,6 +3329,22 @@ void setBackgroundImage (int hBitmap) {
 			}
 		}
 		OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+		/*
+		* Feature in Windows.  When the tree has the style
+		* TVS_FULLROWSELECT, the background color for the
+		* entire row is filled when an item is painted,
+		* drawing on top of the background image.  The fix
+		* is to clear TVS_FULLROWSELECT when a background
+		* image is set.
+		*/
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.TVS_FULLROWSELECT) != 0) {
+				bits &= ~OS.TVS_FULLROWSELECT;
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+				OS.InvalidateRect (handle, null, true);
+			}
+		}
 	} else {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
@@ -3336,29 +3352,26 @@ void setBackgroundImage (int hBitmap) {
 			setBackgroundPixel (control.getBackgroundPixel ());
 		}
 	}
+}
+
+void setBackgroundPixel (int pixel) {
+	if ( findImageControl () != null) return;
 	/*
 	* Feature in Windows.  When the tree has the style
 	* TVS_FULLROWSELECT, the background color for the
 	* entire row is filled when an item is painted,
 	* drawing on top of the background image.  The fix
-	* is to clear TVS_FULLROWSELECT.
+	* is to restore TVS_FULLROWSELECT when a background
+	* color is set.
 	*/
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if (hBitmap != 0) {
-			bits &= ~OS.TVS_FULLROWSELECT;
-		} else {
-			if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
-				bits |= OS.TVS_FULLROWSELECT;
-			}
+		if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+			bits |= OS.TVS_FULLROWSELECT;
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			OS.InvalidateRect (handle, null, true);
 		}
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-		OS.InvalidateRect (handle, null, true);
 	}
-}
-
-void setBackgroundPixel (int pixel) {
-	if (findImageControl () != null) return;
 	/*
 	* Feature in Windows.  When a tree is given a background color
 	* using TVM_SETBKCOLOR and the tree is disabled, Windows draws
@@ -4949,7 +4962,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-			if (hNewItem == hOldItem) {
+			if (hNewItem == hOldItem && lpht.hItem != hOldItem) {
 				OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
 				hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			}
