@@ -885,10 +885,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 					styledText.verticalScrollOffset = topIndex * lineHeight - topIndexY;
 				}
 			}
-			if (styledText.isBidiCaret()) {
-				styledText.createCaretBitmaps();
-				styledText.caretDirection = SWT.NULL;
-			}
+			styledText.calculateScrollBars();
+			if (styledText.isBidiCaret()) styledText.createCaretBitmaps();
+			styledText.caretDirection = SWT.NULL;
 			styledText.setCaretLocation();
 			styledText.redraw();
 		}
