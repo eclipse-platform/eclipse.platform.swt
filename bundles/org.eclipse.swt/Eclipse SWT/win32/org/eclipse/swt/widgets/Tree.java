@@ -969,21 +969,24 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 				if (findImageControl () == null) {
 					int index = indexOf (sortColumn);
 					if (index != -1) {
+						int top = 0;
 						int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
 						if (hItem != 0) {
 							RECT rect = new RECT ();
 							rect.left = hItem;
 							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
-								NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
-								OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
-								OS.SetRect (rect, nmcd.left, rect.bottom, nmcd.right, nmcd.bottom);
-								RECT headerRect = new RECT ();
-								OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-								rect.left = headerRect.left;
-								rect.right = headerRect.right;
-								drawBackground (nmcd.hdc, rect, getSortColumnPixel ());
+								top = rect.bottom;
 							}
 						}
+						RECT rect = new RECT ();
+						NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
+						OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
+						OS.SetRect (rect, nmcd.left, top, nmcd.right, nmcd.bottom);
+						RECT headerRect = new RECT ();
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+						rect.left = headerRect.left;
+						rect.right = headerRect.right;
+						drawBackground (nmcd.hdc, rect, getSortColumnPixel ());
 					}
 				}
 			}
@@ -5647,7 +5650,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_CUSTOMDRAW: {
 			if (hdr.hwndFrom == hwndHeader) break;
-			if (!customDraw && findImageControl () == null) break;
+			if (!customDraw && findImageControl () == null) {
+				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+					if (sortColumn == null || sortDirection == SWT.NONE) {
+						break;
+					}
+				}
+			}
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {

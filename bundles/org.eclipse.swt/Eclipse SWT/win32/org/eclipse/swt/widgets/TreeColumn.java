@@ -623,14 +623,16 @@ void setSortDirection (int direction) {
 					break;
 			}
 			OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-			int hwnd = parent.handle;
-			parent.forceResize ();
-			RECT rect = new RECT (), headerRect = new RECT ();
-			OS.GetClientRect (hwnd, rect);
-			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-			rect.left = headerRect.left;
-			rect.right = headerRect.right;
-			OS.InvalidateRect (hwnd, rect, true);
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				int hwnd = parent.handle;
+				parent.forceResize ();
+				RECT rect = new RECT (), headerRect = new RECT ();
+				OS.GetClientRect (hwnd, rect);
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+				rect.left = headerRect.left;
+				rect.right = headerRect.right;
+				OS.InvalidateRect (hwnd, rect, true);
+			}
 		}
 	} else {
 		switch (direction) {
