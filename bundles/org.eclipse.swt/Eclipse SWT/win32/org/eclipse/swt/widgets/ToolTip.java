@@ -444,7 +444,7 @@ public void setVisible (boolean visible) {
 			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
 		}
 		int maxWidth = 0;
-		if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
+		if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
 			RECT rect = new RECT ();
 			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
 			maxWidth = (rect.right - rect.left) / 4;
