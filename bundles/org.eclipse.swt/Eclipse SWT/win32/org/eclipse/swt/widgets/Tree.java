@@ -478,17 +478,21 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 									if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
 										int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 										if (hItem == item.handle) {
-											focusRect = new RECT ();
-											OS.SetRect (focusRect, rect.left, rect.top, rect.right, rect.bottom);
+											if ((style & SWT.FULL_SELECTION) != 0) {
+												focusRect = new RECT ();
+												OS.SetRect (focusRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+											} else {
+												focusRect = item.getBounds (index, true, false, false, false, true, hDC);
+											}
 										}
 									}
 								}
-								rect.left = Math.min (rect.right, rect.left + 2);
 							} else {
 								if (drawBackground) fillImageBackground (hDC, control, rect);
 							}
 						}
 					}
+					if (i == 0 && item.image != null) rect.left = Math.min (rect.right, rect.left + 2);
 				}
 				if (i != 0) {
 					if (hooks (SWT.MeasureItem)) {
@@ -679,9 +683,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 		OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 	}
-	if (focusRect != null && (style & SWT.FULL_SELECTION) == 0) {
-		OS.DrawFocusRect (hDC, focusRect);
-	}
+	if (focusRect != null) OS.DrawFocusRect (hDC, focusRect);
 	return new LRESULT (OS.CDRF_DODEFAULT);
 }
 
