@@ -303,14 +303,15 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 	if (verticalBar != null) rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 
-	/* Get the height of the menu bar */
+	/* Compute the height of the menu bar */
 	if (hasMenu) {
 		RECT testRect = new RECT ();
 		OS.SetRect (testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
 		OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
 		while ((testRect.bottom - testRect.top) < height) {
+			if (testRect.bottom - testRect.top == 0) break;
 			rect.top -= OS.GetSystemMetrics (OS.SM_CYMENU) - OS.GetSystemMetrics (OS.SM_CYBORDER);
-			OS.SetRect(testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+			OS.SetRect (testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
 			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
 		}
 	}
