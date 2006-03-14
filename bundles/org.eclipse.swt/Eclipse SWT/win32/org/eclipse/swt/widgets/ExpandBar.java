@@ -351,6 +351,19 @@ void layoutItems (int index, boolean setScrollbar) {
 	if (setScrollbar) setScrollbar ();
 }
 
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			ExpandItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.release (false);
+			}
+		}
+		items = null;
+	}
+	super.releaseChildren (destroy);
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when items in the receiver are expanded or collapsed..
