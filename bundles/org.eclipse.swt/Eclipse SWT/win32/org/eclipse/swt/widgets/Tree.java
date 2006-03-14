@@ -4298,6 +4298,7 @@ void updateScrollBar () {
 				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 			} else {
 				OS.GetScrollInfo (handle, OS.SB_VERT, info);
+				if (info.nPage == 0) info.nPage = info.nMax + 1;
 				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 			}
 		}
