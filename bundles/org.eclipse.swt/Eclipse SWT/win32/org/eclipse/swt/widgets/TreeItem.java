@@ -1424,7 +1424,10 @@ public void setImage (int index, Image image) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	if (images == null && index != 0) images = new Image [count];
+	if (images == null && index != 0) {
+		images = new Image [count];
+		images [0] = image;
+	}
 	if (images != null) {
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (images [index])) return;
@@ -1538,7 +1541,10 @@ public void setText (int index, String string) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	if (strings == null && index != 0) strings = new String [count];
+	if (strings == null && index != 0) {
+		strings = new String [count];
+		strings [0] = text;
+	}
 	if (strings != null) {
 		if (string.equals (strings [index])) return;
 		strings [index] = string;
