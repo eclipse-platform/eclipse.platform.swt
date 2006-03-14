@@ -131,7 +131,7 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.MeasureItem:
 		case SWT.EraseItem:
 		case SWT.PaintItem: {
-			if (hwndHeader == 0) createParent ();
+			customDraw = true;
 			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 			/*
 			* Feature in Windows.  When the tree has the style
@@ -262,6 +262,9 @@ int borderHandle () {
 LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
+	int hDC = nmcd.hdc;
+	OS.RestoreDC (hDC, -1);
+
 	/*
 	* Bug in Windows.  If the lParam field of TVITEM
 	* is changed during custom draw using TVM_SETITEM,
@@ -293,6 +296,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 	* COMCTL32.DLL,
 	*/
 	if (item == null) return null;
+
 	/*
 	* Feature in Windows.  Under certain circumstances, Windows
 	* sends CDDS_ITEMPOSTPAINT for an empty rectangle.  This is
@@ -305,8 +309,6 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 	* TVM_SETITEM.
 	*/
 	if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) return null;
-	int hDC = nmcd.hdc;
-	OS.RestoreDC (hDC, -1);
 	if (!OS.IsWindowVisible (handle)) return null;
 	if (findImageControl () != null || ignoreDrawSelected) {
 		OS.SetBkMode (hDC, OS.TRANSPARENT);
@@ -509,6 +511,10 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 						gc.dispose ();
 						OS.RestoreDC (hDC, nSavedDC);
 						if (isDisposed () || item.isDisposed ()) break;
+						if (!ignoreItemHeight) {
+							if (event.height > getItemHeight ()) setItemHeight (event.height);
+							ignoreItemHeight = true;
+						}
 					}
 					if (hooks (SWT.EraseItem)) {
 						RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
@@ -812,6 +818,9 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		textColor = -1;
 		ignoreDraw = ignoreDrawSelected = false;
 		if (hooks (SWT.EraseItem)) {
+			RECT rect = new RECT ();
+			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+			drawBackground (hDC, rect);
 			RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 			int nSavedDC = OS.SaveDC (hDC);
 			GCData data = new GCData ();
@@ -855,8 +864,6 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 					* is to emulate TVS_FULLROWSELECT.
 					*/
 					if ((style & SWT.FULL_SELECTION) != 0) {
-						RECT rect = new RECT ();
-						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						fillBackground (hDC, OS.GetBkColor (hDC), rect);
 					} else {
 						RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
@@ -2057,7 +2064,11 @@ void destroyItem (TreeItem item, int hItem) {
 			display.releaseImageList (imageList);
 		}
 		imageList = null;
-		if (hwndParent == 0 && !linesVisible) customDraw = false;
+		if (hwndParent == 0 && !linesVisible) {
+			if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+				customDraw = false;
+			}
+		}
 		items = new TreeItem [4];
 		scrollWidth = 0;
 	}
@@ -3071,7 +3082,11 @@ public void removeAll () {
 		display.releaseImageList (imageList);
 	}
 	imageList = null;
-	if (hwndParent == 0 && !linesVisible) customDraw = false;
+	if (hwndParent == 0 && !linesVisible) {
+		if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+			customDraw = false;
+		}
+	}
 	hAnchor = hInsert = hFirstIndexOf = hLastIndexOf = 0;
 	itemCount = -1;
 	items = new TreeItem [4];
@@ -5660,6 +5675,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_CUSTOMDRAW: {
 			if (hdr.hwndFrom == hwndHeader) break;
+			if (hooks (SWT.MeasureItem)) {
+				if (hwndHeader == 0) createParent ();
+			}
 			if (!customDraw && findImageControl () == null) {
 				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 					if (sortColumn == null || sortDirection == SWT.NONE) {
