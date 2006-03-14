@@ -54,8 +54,8 @@ public class CBanner extends Composite {
 	int curve_indent = -2;
 	
 	int rightWidth = SWT.DEFAULT;
-	int rightMinWidth = SWT.DEFAULT;
-	int rightMinHeight = SWT.DEFAULT;
+	int rightMinWidth = 0;
+	int rightMinHeight = 0;
 	Cursor resizeCursor;
 	boolean dragging = false;
 	int rightDragDisplacement = 0;
@@ -224,7 +224,7 @@ public int getRightWidth() {
 	checkWidget();
 	if (right == null) return 0;
 	if (rightWidth == SWT.DEFAULT) {
-		Point size = right.computeSize(SWT.DEFAULT, getSize().y, false);
+		Point size = right.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
 		return size.x;
 	}
 	return rightWidth;
@@ -246,6 +246,7 @@ void onDispose() {
 	resizeCursor = null;
 	left = null;
 	right = null;
+	bottom = null;
 }
 void onMouseDown (int x, int y) {
 	if (curveRect.contains(x, y)) {
@@ -261,7 +262,10 @@ void onMouseMove(int x, int y) {
 		Point size = getSize();
 		if (!(0 < x && x < size.x)) return;
 		rightWidth = Math.max(0, size.x - x - rightDragDisplacement);
-		if (rightMinWidth != SWT.DEFAULT) {
+		if (rightMinWidth == SWT.DEFAULT) {
+			Point minSize = right.computeSize(rightMinWidth, rightMinHeight);
+			rightWidth = Math.max(minSize.x, rightWidth);
+		} else {
 			rightWidth = Math.max(rightMinWidth, rightWidth);
 		}
 		layout(false);
@@ -283,25 +287,23 @@ void onPaint(GC gc) {
 //	gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GREEN));
 //	gc.fillRectangle(-10, -10, size.x+20, size.y+20);
 //	}
+	if (left == null && right == null) return;
 	Point size = getSize();
 	Color border1 = getDisplay().getSystemColor(BORDER1);
-	
-	if (bottom != null && (left != null || right != null)) {
-		gc.setForeground(border1);
+	if (bottom != null) {
 		int y = bottom.getBounds().y - BORDER_STRIPE - 1;
+		gc.setForeground(border1);
 		gc.drawLine(0, y, size.x, y);
 	}
 	
-	if (left == null || right == null) return;
 	int[] line1 = new int[curve.length+6];
 	int index = 0;
 	int x = curveStart;
-	int y = 0;
 	line1[index++] = x + 1;
 	line1[index++] = size.y - BORDER_STRIPE;
 	for (int i = 0; i < curve.length/2; i++) {
 		line1[index++]=x+curve[2*i];
-		line1[index++]=y+curve[2*i+1];
+		line1[index++]=curve[2*i+1];
 	}
 	line1[index++] = x + curve_width;
 	line1[index++] = 0;
@@ -474,6 +476,7 @@ public void setRightMinimumSize(Point size) {
 	if (size == null || size.x < SWT.DEFAULT || size.y < SWT.DEFAULT) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	rightMinWidth = size.x;
 	rightMinHeight = size.y;
+	layout(false);
 }
 /**
  * Set the width of the control that appears on the right side of the banner.
