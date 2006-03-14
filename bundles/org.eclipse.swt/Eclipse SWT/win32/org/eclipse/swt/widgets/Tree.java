@@ -3355,7 +3355,7 @@ void setBackgroundImage (int hBitmap) {
 }
 
 void setBackgroundPixel (int pixel) {
-	if ( findImageControl () != null) return;
+	if (findImageControl () != null) return;
 	/*
 	* Feature in Windows.  When the tree has the style
 	* TVS_FULLROWSELECT, the background color for the
