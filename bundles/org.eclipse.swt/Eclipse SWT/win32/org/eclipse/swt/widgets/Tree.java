@@ -459,7 +459,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 				if (drawBackground) {
 					clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
-					if (i == sortIndex) clrTextBk = clrSortBk;
+					if (index == sortIndex) clrTextBk = clrSortBk;
 				}
 			}
 			if (drawItem) {
@@ -911,7 +911,9 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if (sortColumn != null && sortDirection != SWT.NONE) {
 			if (findImageControl () == null) {
-				if (indexOf (sortColumn) == 0) clrTextBk = getSortColumnPixel ();
+				if (indexOf (sortColumn) == index) {
+					clrTextBk = getSortColumnPixel ();
+				}
 			}
 		}
 	}
