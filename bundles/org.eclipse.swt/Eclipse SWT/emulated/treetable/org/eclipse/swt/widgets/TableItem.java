@@ -1043,6 +1043,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 	int itemHeight = parent.itemHeight;
 
 	/* draw the background color of this cell */
+	boolean hasBackground = background != null || (cellBackgrounds != null && cellBackgrounds [columnIndex] != null);
 	if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
 		Rectangle focusBounds = getFocusBounds ();
 		if (focusBounds.x > 0) {
@@ -1065,7 +1066,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 			fillWidth = column.width - focusBounds.x;
 			if (parent.linesVisible) fillWidth--;
 		}
-		if (background == null && (cellBackgrounds == null || cellBackgrounds [columnIndex] == null)) {
+		if (!hasBackground) {
 			parent.drawBackground (gc, focusBounds.x, focusBounds.y, fillWidth, focusBounds.height);
 		} else {
 			gc.setBackground (getBackground (columnIndex));
@@ -1074,7 +1075,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 	} else {
 		int fillWidth = cellBounds.width;
 		if (parent.linesVisible) fillWidth--;
-		if (background == null && (cellBackgrounds == null || cellBackgrounds [columnIndex] == null)) {
+		if (!hasBackground) {
 			parent.drawBackground (gc, cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 		} else {
 			gc.setBackground (getBackground (columnIndex));
@@ -1103,6 +1104,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 		event.doit = true;
 		if (isSelected) event.detail |= SWT.SELECTED;
 		if (isFocusItem) event.detail |= SWT.FOCUSED;
+		if (hasBackground) event.detail |= SWT.BACKGROUND;
 		event.x = cellBounds.x;
 		event.y = cellBounds.y;
 		event.width = cellBounds.width;
@@ -1211,7 +1213,9 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 				}
 			} else {
-				gc.setForeground (getForeground (columnIndex));
+				if (!isSelected) {
+					gc.setForeground (getForeground (columnIndex));
+				}
 			}
 			x = getTextX (columnIndex) + MARGIN_TEXT;
 			gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);

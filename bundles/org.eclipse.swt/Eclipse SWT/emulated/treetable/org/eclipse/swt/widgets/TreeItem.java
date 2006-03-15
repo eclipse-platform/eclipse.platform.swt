@@ -1614,6 +1614,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 	int itemHeight = parent.itemHeight;
 
 	/* draw the background color of this cell */
+	boolean hasBackground = background != null || (cellBackgrounds != null && cellBackgrounds [columnIndex] != null);
 	if (orderedIndex == 0) {
 		Rectangle focusBounds = getFocusBounds ();
 		if (focusBounds.x > 0) {
@@ -1635,7 +1636,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 			fillWidth = column.width - focusBounds.x;
 			if (parent.linesVisible) fillWidth--;
 		}
-		if (background == null && (cellBackgrounds == null || cellBackgrounds [columnIndex] == null)) {
+		if (!hasBackground) {
 			parent.drawBackground (gc, focusBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 		} else {
 			gc.setBackground (getBackground (columnIndex));
@@ -1644,7 +1645,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 	} else {
 		int fillWidth = cellBounds.width;
 		if (parent.linesVisible) fillWidth--;
-		if (background == null && (cellBackgrounds == null || cellBackgrounds [columnIndex] == null)) {
+		if (!hasBackground) {
 			parent.drawBackground (gc, cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 		} else {
 			gc.setBackground (getBackground (columnIndex));
@@ -1673,6 +1674,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		event.doit = true;
 		if (isSelected) event.detail |= SWT.SELECTED;
 		if (isFocusItem) event.detail |= SWT.FOCUSED;
+		if (hasBackground) event.detail |= SWT.BACKGROUND;
 		event.x = cellBounds.x;
 		event.y = cellBounds.y;
 		event.width = cellBounds.width;
@@ -1722,6 +1724,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 
 		/* Draw hierarchy connector lines */
 		Rectangle expanderBounds = getExpanderBounds ();
+		Color oldForeground = gc.getForeground ();
 		gc.setForeground (parent.getConnectorColor ());
 
 		/* Draw vertical line above expander */
@@ -1759,7 +1762,9 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 			}
 			item = item.parentItem;
 		}
-		
+
+		gc.setForeground (oldForeground);
+
 		/* Draw expand/collapse image if receiver has children */
 		if (items.length > 0) {
 			Image image = expanded ? parent.getExpandedImage () : parent.getCollapsedImage ();
@@ -1811,10 +1816,12 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		if (text.length () > 0) {
 			gc.setFont (getFont (columnIndex, false));
 			int fontHeight = getFontHeight (columnIndex);
-			if (isSelected () && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+			if (drawSelection && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 				gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			} else {
-				gc.setForeground (getForeground (columnIndex));
+				if (!isSelected) {
+					gc.setForeground (getForeground (columnIndex));
+				}
 			}
 			x = getTextX (columnIndex) + MARGIN_TEXT;
 			gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
