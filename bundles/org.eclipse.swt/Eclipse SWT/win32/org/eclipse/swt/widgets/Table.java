@@ -529,7 +529,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	if (hasAttributes) {
 		if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		OS.SelectObject (hDC, hFont);
-		if (!ignoreDraw && !ignoreDrawSelected && OS.IsWindowEnabled (handle)) {
+		if (OS.IsWindowEnabled (handle)) {
 			nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 			if (clrTextBk == -1) {
 				nmcd.clrTextBk = OS.CLR_NONE;
