@@ -1377,6 +1377,14 @@ public class SWT {
 	 */	
 	public static final int FOCUSED = 1 << 2;
 	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * draws the background (value is 1&lt;&lt;3).
+	 *
+	 * @since 3.2
+	 */
+	public static final int BACKGROUND = 1 << 3;
+
 	/* This code is intentionally commented */
 	//public static final int PRESSED = 1 << 3;
 	//public static final int ACTIVE = 1 << 4;
