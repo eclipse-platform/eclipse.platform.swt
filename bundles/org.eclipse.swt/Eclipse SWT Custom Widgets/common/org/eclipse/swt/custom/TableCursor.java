@@ -475,7 +475,7 @@ void tableMouseDown(Event event) {
 		for (int i = start; i < end; i++) {
 			TableItem nextItem = table.getItem(i);
 			Rectangle rect = nextItem.getBounds(0);
-			if (pt.y >= rect.y && pt.y < rect.y + rect.height) {
+			if (pt.y >= rect.y && pt.y < rect.y + rect.height + lineWidth) {
 				item = nextItem;
 				break;
 			}
@@ -489,6 +489,7 @@ void tableMouseDown(Event event) {
 		for (int i = 0; i < columnCount; i++) {
 			Rectangle rect = item.getBounds(i);
 			rect.width += lineWidth;
+			rect.height += lineWidth;
 			if (rect.contains(pt)) {
 				newColumn = table.getColumn(i);
 				break;
