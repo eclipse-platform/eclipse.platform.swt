@@ -1213,7 +1213,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 				}
 			} else {
-				if (!isSelected) {
+				if (!isSelected || drawSelection) {
 					gc.setForeground (getForeground (columnIndex));
 				}
 			}

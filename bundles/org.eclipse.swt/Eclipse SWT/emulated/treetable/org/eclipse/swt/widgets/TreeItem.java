@@ -1819,7 +1819,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 			if (drawSelection && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 				gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			} else {
-				if (!isSelected) {
+				if (!isSelected || drawSelection) {
 					gc.setForeground (getForeground (columnIndex));
 				}
 			}
