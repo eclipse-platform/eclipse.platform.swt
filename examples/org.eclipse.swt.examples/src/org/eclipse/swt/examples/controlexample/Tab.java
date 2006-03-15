@@ -1289,16 +1289,18 @@ abstract class Tab {
 	 * that is specific to the widget.
 	 */
 	void setExampleWidgetState () {
-		setExampleGroupBackgroundMode ();
-		setExampleGroupBackgroundColor ();
-		setExampleGroupBackgroundImage ();
-		setExampleWidgetEnabled ();
-		setExampleWidgetVisibility ();
 		setExampleWidgetBackground ();
 		setExampleWidgetForeground ();
-		setExampleWidgetBackgroundImage ();
 		setExampleWidgetFont ();
-		setExampleWidgetSize ();
+		if (!instance.startup) {
+			setExampleWidgetEnabled ();
+			setExampleWidgetVisibility ();
+			setExampleGroupBackgroundMode ();
+			setExampleGroupBackgroundColor ();
+			setExampleGroupBackgroundImage ();
+			setExampleWidgetBackgroundImage ();
+			setExampleWidgetSize ();
+		}
 		//TEMPORARY CODE
 //		Control [] controls = getExampleWidgets ();
 //		for (int i=0; i<controls.length; i++) {
