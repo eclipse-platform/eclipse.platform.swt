@@ -162,6 +162,6 @@ class GroupTab extends Tab {
 		shadowOutButton.setSelection ((group1.getStyle () & SWT.SHADOW_OUT) != 0);
 		shadowNoneButton.setSelection ((group1.getStyle () & SWT.SHADOW_NONE) != 0);
 		borderButton.setSelection ((group1.getStyle () & SWT.BORDER) != 0);
-		setTitleText ();
+		if (!instance.startup) setTitleText ();
 	}
 }

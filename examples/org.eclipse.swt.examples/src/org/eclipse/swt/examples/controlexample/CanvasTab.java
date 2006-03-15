@@ -305,6 +305,6 @@ class CanvasTab extends Tab {
 		noMergePaintsButton.setSelection ((canvas.getStyle () & SWT.NO_MERGE_PAINTS) != 0);
 		noRedrawResizeButton.setSelection ((canvas.getStyle () & SWT.NO_REDRAW_RESIZE) != 0);
 		doubleBufferedButton.setSelection ((canvas.getStyle () & SWT.DOUBLE_BUFFERED) != 0);
-		setCaret ();
+		if (!instance.startup) setCaret ();
 	}
 }

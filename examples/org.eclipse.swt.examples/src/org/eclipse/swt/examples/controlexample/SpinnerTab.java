@@ -71,6 +71,8 @@ class SpinnerTab extends RangeTab {
 		
 		/* Create the example widgets */
 		spinner1 = new Spinner (spinnerGroup, style);
+		spinner1.setMaximum(100);
+		spinner1.setSelection(50);
 	}
 	
 	/**
@@ -244,9 +246,11 @@ class SpinnerTab extends RangeTab {
 		super.setExampleWidgetState ();
 		readOnlyButton.setSelection ((spinner1.getStyle () & SWT.READ_ONLY) != 0);
 		wrapButton.setSelection ((spinner1.getStyle () & SWT.WRAP) != 0);
-		setWidgetIncrement ();
-		setWidgetPageIncrement ();
-		setWidgetDigits ();
+		if (!instance.startup) {
+			setWidgetIncrement ();
+			setWidgetPageIncrement ();
+			setWidgetDigits ();
+		}
 	}
 
 	/**

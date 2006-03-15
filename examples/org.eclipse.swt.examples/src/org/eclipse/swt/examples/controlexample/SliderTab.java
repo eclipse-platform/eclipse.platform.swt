@@ -205,9 +205,11 @@ class SliderTab extends RangeTab {
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
-		setWidgetIncrement ();
-		setWidgetPageIncrement ();
-		setWidgetThumb ();
+		if (!instance.startup) {
+			setWidgetIncrement ();
+			setWidgetPageIncrement ();
+			setWidgetThumb ();
+		}
 	}
 	
 	/**

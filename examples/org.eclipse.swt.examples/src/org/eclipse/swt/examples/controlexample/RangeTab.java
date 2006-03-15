@@ -150,9 +150,11 @@ abstract class RangeTab extends Tab {
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
-		setWidgetMinimum ();
-		setWidgetMaximum ();
-		setWidgetSelection ();
+		if (!instance.startup) {
+			setWidgetMinimum ();
+			setWidgetMaximum ();
+			setWidgetSelection ();
+		}
 		Control [] controls = getExampleWidgets ();
 		if (controls.length != 0) {
 			if (orientationButtons) {
