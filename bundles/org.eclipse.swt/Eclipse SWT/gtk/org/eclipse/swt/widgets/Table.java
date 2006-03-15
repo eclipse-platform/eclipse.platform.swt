@@ -2394,9 +2394,13 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				OS.gtk_tree_view_column_cell_get_position (columnHandle, cell, contentX, null);
 				ignoreSize = false;
 				Image image = item.getImage (columnIndex);
-				Rectangle bounds = image.getBounds ();
-				contentX [0] -= bounds.width;
-				contentWidth [0] += bounds.width;
+				int imageWidth = 0;
+				if (image != null) {
+					Rectangle bounds = image.getBounds ();
+					imageWidth = bounds.width;
+				}
+				contentX [0] -= imageWidth;
+				contentWidth [0] += imageWidth;
 				GC gc = new GC (this);
 				if ((drawFlags & OS.GTK_CELL_RENDERER_SELECTED) != 0) {
 					gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
