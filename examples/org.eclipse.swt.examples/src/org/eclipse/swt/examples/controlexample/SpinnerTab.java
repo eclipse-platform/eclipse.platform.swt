@@ -168,7 +168,7 @@ class SpinnerTab extends RangeTab {
 		digitsSpinner.setMaximum (8);
 		digitsSpinner.setSelection (0);
 		digitsSpinner.setPageIncrement (10);
-		digitsSpinner.setIncrement (5);
+		digitsSpinner.setIncrement (1);
 		digitsSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 	
 		/* Add the listeners */
@@ -229,7 +229,7 @@ class SpinnerTab extends RangeTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"ToolTipText"};
+		return new String[] {"Selection", "ToolTipText"};
 	}
 
 	/**

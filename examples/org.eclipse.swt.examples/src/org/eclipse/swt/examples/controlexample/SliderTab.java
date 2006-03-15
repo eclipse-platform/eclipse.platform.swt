@@ -183,7 +183,7 @@ class SliderTab extends RangeTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"ToolTipText"};
+		return new String[] {"Selection", "ToolTipText"};
 	}
 
 	/**
