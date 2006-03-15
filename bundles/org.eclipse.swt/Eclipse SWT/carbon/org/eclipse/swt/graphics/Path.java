@@ -97,7 +97,11 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] cmt = new float[6];
 	OS.CGAffineTransformMake(width / 2f, 0, 0, height / 2f, x + width / 2f, y + height / 2f, cmt);
-	OS.CGPathAddArc(handle, cmt, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+	if (arcAngle < 0) {
+		OS.CGPathAddArc(handle, cmt, 0, 0, 1, (startAngle + arcAngle) * (float)Compatibility.PI / 180,  startAngle * (float)Compatibility.PI / 180, true);
+	} else {
+		OS.CGPathAddArc(handle, cmt, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+	}
 }
 
 /**

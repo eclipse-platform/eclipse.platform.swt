@@ -567,7 +567,11 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	OS.CGContextTranslateCTM(handle, x + offset + width / 2f, y + offset + height / 2f);
 	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-	OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+	if (arcAngle < 0) {
+		OS.CGContextAddArc(handle, 0, 0, 1, (startAngle + arcAngle) * (float)Compatibility.PI / 180,  startAngle * (float)Compatibility.PI / 180, true);
+	} else {
+		OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+	}
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
 	flush();
@@ -1296,7 +1300,11 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
     OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
     OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
     OS.CGContextMoveToPoint(handle, 0, 0);
-    OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+    if (arcAngle < 0) {
+    	OS.CGContextAddArc(handle, 0, 0, 1, (startAngle + arcAngle) * (float)Compatibility.PI / 180,  startAngle * (float)Compatibility.PI / 180, true);
+    } else {
+        OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+    }
     OS.CGContextClosePath(handle);
     OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
