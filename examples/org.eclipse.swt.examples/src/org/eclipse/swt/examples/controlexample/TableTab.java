@@ -26,7 +26,7 @@ class TableTab extends ScrollableTab {
 	Button checkButton, fullSelectionButton, hideSelectionButton;
 
 	/* Other widgets added to the "Other" group */
-	Button multipleColumns, moveableColumns, headerVisibleButton, headerImagesButton, linesVisibleButton, subImagesButton;
+	Button multipleColumns, moveableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, linesVisibleButton, subImagesButton;
 	
 	/* Controls and resources added to the "Colors and Fonts" group */
 	static final int ITEM_FOREGROUND_COLOR = 3;
@@ -196,6 +196,8 @@ class TableTab extends ScrollableTab {
 		multipleColumns.setSelection(true);
 		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
 		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
+		sortIndicatorButton = new Button (otherGroup, SWT.CHECK);
+		sortIndicatorButton.setText (ControlExample.getResourceString("Sort_Indicator"));
 		moveableColumns = new Button (otherGroup, SWT.CHECK);
 		moveableColumns.setText (ControlExample.getResourceString("Moveable_Columns"));
 		headerImagesButton = new Button (otherGroup, SWT.CHECK);
@@ -217,6 +219,11 @@ class TableTab extends ScrollableTab {
 		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetHeaderVisible ();
+			}
+		});
+		sortIndicatorButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setWidgetSortIndicator ();
 			}
 		});
 		moveableColumns.addSelectionListener (new SelectionAdapter () {
@@ -344,7 +351,7 @@ class TableTab extends ScrollableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"ColumnOrder", "ItemCount", "Selection", "SelectionIndex", "SortDirection", "ToolTipText", "TopIndex"};
+		return new String[] {"ColumnOrder", "ItemCount", "Selection", "SelectionIndex", "ToolTipText", "TopIndex"};
 	}
 
 	String setMethodName(String methodRoot) {
@@ -419,7 +426,7 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
-	 * Sets the background color of the Node 1 TreeItems in column 1.
+	 * Sets the background color of the Row 0 TableItem in column 1.
 	 */
 	void setCellBackground () {
 		if (!instance.startup) {
@@ -435,7 +442,7 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
-	 * Sets the foreground color of the Node 1 TreeItems in column 1.
+	 * Sets the foreground color of the Row 0 TableItem in column 1.
 	 */
 	void setCellForeground () {
 		if (!instance.startup) {
@@ -451,7 +458,7 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
-	 * Sets the font of the Node 1 TreeItems in column 1.
+	 * Sets the font of the Row 0 TableItem in column 1.
 	 */
 	void setCellFont () {
 		if (!instance.startup) {
@@ -562,6 +569,7 @@ class TableTab extends ScrollableTab {
 		setCellFont ();
 		setExampleWidgetSize ();
 		setWidgetHeaderVisible ();
+		setWidgetSortIndicator ();
 		setWidgetLinesVisible ();
 		checkButton.setSelection ((table1.getStyle () & SWT.CHECK) != 0);
 		fullSelectionButton.setSelection ((table1.getStyle () & SWT.FULL_SELECTION) != 0);
@@ -573,6 +581,53 @@ class TableTab extends ScrollableTab {
 	 */
 	void setWidgetHeaderVisible () {
 		table1.setHeaderVisible (headerVisibleButton.getSelection ());
+	}
+	
+	/**
+	 * Sets the sort indicator state of the "Example" widgets.
+	 */
+	void setWidgetSortIndicator () {
+		if (sortIndicatorButton.getSelection ()) {
+			/* Reset to known state: 'down' on column 0. */
+			table1.setSortDirection (SWT.DOWN);
+			TableColumn [] columns = table1.getColumns();
+			for (int i = 0; i < columns.length; i++) {
+				TableColumn column = columns[i];
+				if (i == 0) {
+					table1.setSortColumn(column);
+					column.pack();
+				}
+				SelectionListener listener = new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+						int sortDirection = SWT.DOWN;
+						TableColumn oldColumn = table1.getSortColumn();
+						if (e.widget == oldColumn) {
+							/* If the sort column hasn't changed, cycle down -> up -> none. */
+							switch (table1.getSortDirection ()) {
+							case SWT.DOWN: sortDirection = SWT.UP; break;
+							case SWT.UP: sortDirection = SWT.NONE; break;
+							}
+						} else {
+							TableColumn newColumn = (TableColumn)e.widget;
+							table1.setSortColumn(newColumn);
+							oldColumn.pack();
+							newColumn.pack();
+						}
+						table1.setSortDirection (sortDirection);
+					}
+				};
+				column.addSelectionListener(listener);
+				column.setData("SortListener", listener);	//$NON-NLS-1$
+			}
+		} else {
+			table1.setSortDirection (SWT.NONE);
+			TableColumn [] columns = table1.getColumns();
+			for (int i = 0; i < columns.length; i++) {
+				SelectionListener listener = (SelectionListener)columns[i].getData("SortListener");	//$NON-NLS-1$
+				if (listener != null) columns[i].removeSelectionListener(listener);
+				columns[i].pack();
+			}
+		}
 	}
 	
 	/**
