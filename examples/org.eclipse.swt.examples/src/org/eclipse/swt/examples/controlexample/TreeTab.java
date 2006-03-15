@@ -23,6 +23,9 @@ class TreeTab extends ScrollableTab {
 	TreeItem textNode1, imageNode1;
 	Group treeGroup, imageTreeGroup, itemGroup;
 	
+	/* Size widgets added to the "Size" group */
+	Button packColumnsButton;
+	
 	/* Style widgets added to the "Style" group */
 	Button checkButton, fullSelectionButton;
 
@@ -370,6 +373,25 @@ class TreeTab extends ScrollableTab {
 	}
 	
 	/**
+	 * Creates the "Size" group.  The "Size" group contains
+	 * controls that allow the user to change the size of
+	 * the example widgets.
+	 */
+	void createSizeGroup () {
+		super.createSizeGroup();
+	
+		packColumnsButton = new Button (sizeGroup, SWT.PUSH);
+		packColumnsButton.setText (ControlExample.getResourceString("Pack_Columns"));
+		packColumnsButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				packColumns (tree1);
+				packColumns (tree2);
+				setExampleWidgetSize ();
+			}
+		});
+	}
+	
+	/**
 	 * Creates the "Style" group.
 	 */
 	void createStyleGroup() {
@@ -571,8 +593,6 @@ class TreeTab extends ScrollableTab {
 		if (!instance.startup) {
 			textNode1.setFont (1, cellFont);
 			imageNode1.setFont (1, cellFont);
-			packColumns (tree1);
-			packColumns (tree2);
 		}
 		/* Set the font item's image to match the font of the item. */
 		Font ft = cellFont;
@@ -626,8 +646,6 @@ class TreeTab extends ScrollableTab {
 		if (!instance.startup) {
 			textNode1.setFont (itemFont);
 			imageNode1.setFont (itemFont);
-			packColumns (tree1);
-			packColumns (tree2);
 		}
 		/* Set the font item's image to match the font of the item. */
 		Font ft = itemFont;
@@ -640,17 +658,6 @@ class TreeTab extends ScrollableTab {
 		colorAndFontTable.layout ();
 	}
 
-	/**
-	 * Sets the font of the "Example" widgets.
-	 */
-	void setExampleWidgetFont () {
-		super.setExampleWidgetFont();
-		if (!instance.startup) {
-			packColumns (tree1);
-			packColumns (tree2);
-		}
-	}
-	
 	/**
 	 * Sets the header visible state of the "Example" widgets.
 	 */

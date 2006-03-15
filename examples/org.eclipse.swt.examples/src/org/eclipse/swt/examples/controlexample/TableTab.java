@@ -22,6 +22,9 @@ class TableTab extends ScrollableTab {
 	Table table1;
 	Group tableGroup;
 
+	/* Size widgets added to the "Size" group */
+	Button packColumnsButton;
+	
 	/* Style widgets added to the "Style" group */
 	Button checkButton, fullSelectionButton, hideSelectionButton;
 
@@ -311,6 +314,24 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
+	 * Creates the "Size" group.  The "Size" group contains
+	 * controls that allow the user to change the size of
+	 * the example widgets.
+	 */
+	void createSizeGroup () {
+		super.createSizeGroup();
+	
+		packColumnsButton = new Button (sizeGroup, SWT.PUSH);
+		packColumnsButton.setText (ControlExample.getResourceString("Pack_Columns"));
+		packColumnsButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				packColumns ();
+				setExampleWidgetSize ();
+			}
+		});
+	}
+	
+	/**
 	 * Creates the "Style" group.
 	 */
 	void createStyleGroup () {
@@ -357,6 +378,14 @@ class TableTab extends ScrollableTab {
 	String setMethodName(String methodRoot) {
 		/* Override to handle special case of int getSelectionIndex()/setSelection(int) */
 		return (methodRoot.equals("SelectionIndex")) ? "setSelection" : "set" + methodRoot;
+	}
+
+	void packColumns () {
+		int columnCount = table1.getColumnCount(); 
+		for (int i = 0; i < columnCount; i++) {
+			TableColumn tableColumn = table1.getColumn(i);
+			tableColumn.pack();
+		}
 	}
 
 	Object[] parameterForType(String typeName, String value, Control control) {
@@ -463,7 +492,6 @@ class TableTab extends ScrollableTab {
 	void setCellFont () {
 		if (!instance.startup) {
 			table1.getItem (0).setFont (1, cellFont);
-			packColumns ();
 		}
 		/* Set the font item's image to match the font of the item. */
 		Font ft = cellFont;
@@ -514,7 +542,6 @@ class TableTab extends ScrollableTab {
 	void setItemFont () {
 		if (!instance.startup) {
 			table1.getItem (0).setFont (itemFont);
-			packColumns ();
 		}
 		/* Set the font item's image to match the font of the item. */
 		Font ft = itemFont;
@@ -525,24 +552,6 @@ class TableTab extends ScrollableTab {
 		item.setImage (fontImage(ft));
 		item.setFont(ft);
 		colorAndFontTable.layout ();
-	}
-
-	/**
-	 * Sets the font of the "Example" widgets.
-	 */
-	void setExampleWidgetFont () {
-		super.setExampleWidgetFont();
-		if (!instance.startup) {
-			packColumns ();
-		}
-	}
-	
-	void packColumns () {
-		int columnCount = table1.getColumnCount(); 
-		for (int i = 0; i < columnCount; i++) {
-			TableColumn tableColumn = table1.getColumn(i);
-			tableColumn.pack();
-		}
 	}
 
 	/**
