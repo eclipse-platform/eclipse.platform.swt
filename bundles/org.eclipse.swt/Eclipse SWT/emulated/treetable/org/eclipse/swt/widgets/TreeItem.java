@@ -1659,7 +1659,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 	boolean drawFocus = isFocusItem;
 	boolean drawContent = true;
 	if (parent.hooks (SWT.EraseItem)) {
-		gc.setFont (getFont ());
+		gc.setFont (getFont (columnIndex, false));
 		if (isSelected && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
@@ -1831,7 +1831,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 	if (parent.hooks (SWT.PaintItem)) {
 		int contentWidth = getContentWidth (columnIndex);
 		int contentX = getContentX (columnIndex);
-		gc.setFont (getFont ());
+		gc.setFont (getFont (columnIndex, false));
 		if (isSelected && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
