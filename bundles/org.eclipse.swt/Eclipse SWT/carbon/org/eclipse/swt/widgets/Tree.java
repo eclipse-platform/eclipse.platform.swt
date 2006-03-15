@@ -56,7 +56,7 @@ public class Tree extends Composite {
 	GC paintGC;
 	int sortDirection;
 	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight;
-	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll;
+	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll, drawBackground;
 	Rectangle imageBounds;
 	TreeItem showItem;
 	int lastHittest, visibleCount;
@@ -311,55 +311,15 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		data.visibleRgn = visibleRgn;
 		paintGC = GC.carbon_new (this, data);
 	}
+	drawBackground = OS.HIVIEW && findBackgroundControl () != null;
 	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
-	if (OS.HIVIEW) {
-		Control widget = findBackgroundControl ();
-		if (widget != null) {
-			Rectangle rect = getClientArea ();
-			if (getItemCount () != 0 && childIds != null) {
-				int [] ids = childIds, state = new int [1];
-				int index = ids.length - 1;
-				while (true) {
-					while (index >= 0 && ids [index] == 0) index--;
-					if (index < 0) break;
-					OS.GetDataBrowserItemState (handle, ids [index], state);
-					if ((state [0] & OS.kDataBrowserContainerIsOpen) != 0) {
-						TreeItem item = items [ids [index] - 1];
-						if (item != null && item.childIds != null) {
-							ids = item.childIds;
-							index = ids.length - 1;
-						} else {
-							break;
-						}
-					} else {
-						break;
-					}
-				}
-				if (index >= 0 && ids [index] != 0) {
-					int rc = -1;
-					Rect itemRect = new Rect();
-					if (columnCount == 0) {
-						rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], column_id, OS.kDataBrowserPropertyEnclosingPart, itemRect);
-					} else {
-						for (int i = 0; i < columnCount; i++) {
-							if ((rc = OS.GetDataBrowserItemPartBounds (handle, ids [index], columns [i].id, OS.kDataBrowserPropertyEnclosingPart, itemRect)) == OS.noErr) {
-								break;
-							}
-						}
-					}
-					if (rc == OS.noErr) {
-						rect.height = rect.y + rect.height - itemRect.bottom;
-						rect.y = itemRect.bottom;
-						fillBackground (handle, paintGC.handle, rect);
-					}
-				}
-			} else {
-				int headerHeight = getHeaderHeight ();
-				rect.y += headerHeight;
-				rect.height -= headerHeight;
-				fillBackground (handle, paintGC.handle, rect);
-			}
-		}
+	if (getItemCount () == 0 && drawBackground) {
+		drawBackground = false;
+		Rectangle rect = getClientArea ();
+		int headerHeight = getHeaderHeight ();
+		rect.y += headerHeight;
+		rect.height -= headerHeight;
+		fillBackground (handle, paintGC.handle, rect);
 	}
 	if (currentGC == null) {
 		paintGC.dispose ();
@@ -954,7 +914,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int offsetX = 0, offsetY = 0;
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
-	int controlRight = rect.right;
 	if (!OS.HIVIEW) {
 		offsetX = rect.left;
 		offsetY = rect.top;
@@ -995,6 +954,47 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int itemY = rect.top;
 	int itemWidth = rect.right - rect.left - gridWidth;
 	int itemHeight = rect.bottom - rect.top + 1;
+	if (drawBackground) {
+		drawBackground = false;
+		Region region = null;
+		if ((style & SWT.CHECK) != 0 || gridWidth != 0) {
+			region = new Region (display);
+			Rectangle clientArea = getClientArea ();
+			int headerHeight = getHeaderHeight ();
+			clientArea.y += headerHeight;
+			clientArea.height -= headerHeight;
+			region.add (clientArea);
+			int rgn = OS.NewRgn();
+			if ((style & SWT.CHECK) != 0) {
+				if (OS.GetDataBrowserItemPartBounds (handle, id, Table.CHECK_COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+					OS.SetRectRgn (rgn, (short)rect.left, (short)clientArea.y, (short)(rect.right + gridWidth), (short)(clientArea.y + clientArea.height));
+					OS.DiffRgn (region.handle, rgn, region.handle);
+				}
+			}
+			if (gridWidth != 0) {
+				if (columnCount == 0) {
+					if (OS.GetDataBrowserItemPartBounds (handle, id, Table.COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+						OS.SetRectRgn (rgn, (short)rect.right, (short)clientArea.y, (short)(rect.right + gridWidth), (short)(clientArea.y + clientArea.height));
+						OS.DiffRgn (region.handle, rgn, region.handle);					
+					}
+				} else {
+					for (int i = 0; i < columnCount; i++) {
+						if (OS.GetDataBrowserItemPartBounds (handle, id, columns[i].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+							OS.SetRectRgn (rgn, (short)rect.right, (short)clientArea.y, (short)(rect.right + gridWidth), (short)(clientArea.y + clientArea.height));
+							OS.DiffRgn (region.handle, rgn, region.handle);
+						}
+					}
+				}
+			}
+			OS.DisposeRgn (rgn);
+		}
+		if (region != null) gc.setClipping (region);
+		fillBackground (handle, gc.handle, null);
+		if (region != null) {
+			gc.setClipping ((Rectangle)null);
+			region.dispose ();
+		}
+	}
 	OS.CGContextSaveGState (gc.handle);
 	int itemRgn = OS.NewRgn ();
 	OS.SetRectRgn (itemRgn, (short) itemX, (short) itemY, (short) (itemX + itemWidth), (short) (itemY + itemHeight));
@@ -1007,24 +1007,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	boolean draw = true;
 	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
 	selected |= (itemState & OS.kDataBrowserItemIsDragTarget) != 0;
-	boolean focused = false;
-	Control control = findBackgroundControl ();
-	boolean controlBackground = control != null && (control.background != null || control.backgroundImage != null);
-	boolean itemBackground = item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null);
-	if (controlBackground || itemBackground) {
-		if (itemBackground || !OS.HIVIEW) {
-			gc.setBackground (item.getBackground (columnIndex));
-			gc.fillRectangle (itemX, itemY, itemWidth, itemHeight);
-		} else {
-			Rectangle bounds = new Rectangle (itemX, itemY, itemWidth, itemHeight);
-			fillBackground (handle, gc.handle, bounds);
-			if (columnCount == 0 || columnCount - 1 == columnIndex) {
-				bounds.x = itemX + itemWidth + gridWidth;
-				bounds.width = controlRight - itemX;
-				fillBackground (handle, gc.handle, bounds);
-			}
-		}
-	}
 	gc.setClipping (region);
 	if (selected) {
 		gc.setBackground (display.getSystemColor(SWT.COLOR_LIST_SELECTION));
@@ -1074,36 +1056,35 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		event.width = itemWidth;
 		event.height = itemHeight;
 		if (selected) event.detail |= SWT.SELECTED;
-		if (focused) event.detail |= SWT.FOCUSED;
 		sendEvent (SWT.EraseItem, event);
 		draw = event.doit;
 		selected = (event.detail & SWT.SELECTED) != 0;
-		focused = (event.detail & SWT.FOCUSED) != 0;
 		gc.setClipping (region);
 	}
 	if (draw) {
-		if (selected && (style & SWT.FULL_SELECTION) != 0) {
-			if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
-				gc.fillRectangle (itemX, itemY, itemWidth, itemHeight - 1);
-			}
-		}
 		if (columnCount != 0) {
 			TreeColumn column = columns [columnIndex];
 			if ((column.style & SWT.CENTER) != 0) x += (width - contentWidth) / 2;
 			if ((column.style & SWT.RIGHT) != 0) x += width - contentWidth;
 		}
-		if (image != null) {
-			gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, x, y + (height - this.imageBounds.height) / 2, this.imageBounds.width, this.imageBounds.height);
-			x += this.imageBounds.width + gap;
-		}
-		if (selected) {
-			if (columnIndex == 0 && (style & SWT.FULL_SELECTION) == 0) {
-				if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
-					gc.fillRectangle (x - 1, y, extent.x + 2, itemHeight - 1);
-				}
+		int stringX = x, imageX = x;
+		if (image != null) stringX += this.imageBounds.width + gap;
+		if (selected && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ())) {
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				gc.fillRectangle (itemX, itemY, itemWidth, itemHeight - 1);
+			} else if (columnIndex == 0) {
+				gc.fillRectangle (stringX - 1, y, extent.x + 2, itemHeight - 1);
+			}
+		} else {
+			if (item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) {
+				gc.setBackground (item.getBackground (columnIndex));
+				gc.fillRectangle (itemX, itemY, itemWidth, itemHeight);
 			}
 		}
-		gc.drawString (text, x, y + (height - extent.y) / 2, true);
+		if (image != null) {
+			gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, imageX, y + (height - this.imageBounds.height) / 2, this.imageBounds.width, this.imageBounds.height);
+		}
+		gc.drawString (text, stringX, y + (height - extent.y) / 2, true);
 	}
 	if (hooks (SWT.PaintItem)) {
 		Event event = new Event ();
@@ -1115,7 +1096,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		event.width = paintWidth;
 		event.height = itemHeight;
 		if (selected) event.detail |= SWT.SELECTED;
-		if (focused) event.detail |= SWT.FOCUSED;
 		sendEvent (SWT.PaintItem, event);
 	}
 	OS.CGContextRestoreGState (gc.handle);
