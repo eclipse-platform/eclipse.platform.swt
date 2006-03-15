@@ -464,23 +464,43 @@ void tableFocusIn(Event event) {
 void tableMouseDown(Event event) {
 	if (isDisposed() || !isVisible()) return;
 	Point pt = new Point(event.x, event.y);
-	Rectangle clientRect = table.getClientArea();
-	int columnCount = table.getColumnCount();
-	int maxColumnIndex =  columnCount == 0 ? 0 : columnCount - 1;
-	int start = table.getTopIndex();
-	int end = table.getItemCount();
-	for (int i = start; i < end; i++) {
-		TableItem item = table.getItem(i);
-		for (int j = 0; j <= maxColumnIndex; j++) {
-			Rectangle rect = item.getBounds(j);
+	int lineWidth = table.getLinesVisible() ? table.getGridLineWidth() : 0;
+	TableItem item = table.getItem(pt);
+	if ((table.getStyle() & SWT.FULL_SELECTION) != 0) {
+		if (item == null) return;
+	} else {
+		int start = item != null ? table.indexOf(item) : table.getTopIndex();
+		int end = table.getItemCount();
+		Rectangle clientRect = table.getClientArea();
+		for (int i = start; i < end; i++) {
+			TableItem nextItem = table.getItem(i);
+			Rectangle rect = nextItem.getBounds(0);
+			if (pt.y >= rect.y && pt.y < rect.y + rect.height) {
+				item = nextItem;
+				break;
+			}
 			if (rect.y > clientRect.y + clientRect.height) 	return;
+		}
+		if (item == null) return;
+	}
+	TableColumn newColumn = null;
+	int columnCount = table.getColumnCount();
+	if (columnCount > 0) {
+		for (int i = 0; i < columnCount; i++) {
+			Rectangle rect = item.getBounds(i);
+			rect.width += lineWidth;
 			if (rect.contains(pt)) {
-				setRowColumn(i, j, true);
-				setFocus();
-				return;
+				newColumn = table.getColumn(i);
+				break;
 			}
 		}
+		if (newColumn == null) {
+			newColumn = table.getColumn(0);
+		}
 	}
+	setRowColumn(item, newColumn, true);
+	setFocus();
+	return;
 }
 
 void traverse(Event event) {
