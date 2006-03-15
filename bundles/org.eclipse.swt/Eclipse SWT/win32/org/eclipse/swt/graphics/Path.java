@@ -116,7 +116,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 		if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Gdip.GraphicsPath_AddArc(path, 0, 0, 1, 1, -startAngle, -arcAngle);
 		Gdip.GraphicsPath_Transform(path, matrix);
-		Gdip.GraphicsPath_AddPath(handle, path, false);
+		Gdip.GraphicsPath_AddPath(handle, path, true);
 		Gdip.Matrix_delete(matrix);
 		Gdip.GraphicsPath_delete(path);
 	}
