@@ -529,7 +529,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	if (hasAttributes) {
 		if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		OS.SelectObject (hDC, hFont);
-		if (OS.IsWindowEnabled (handle)) {
+		if (!ignoreDraw && !ignoreDrawSelected && OS.IsWindowEnabled (handle)) {
 			nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 			if (clrTextBk == -1) {
 				nmcd.clrTextBk = OS.CLR_NONE;
@@ -2713,8 +2713,6 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	if (clrText == -1) clrText = item.foreground;
 	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 	if (clrTextBk == -1) clrTextBk = item.background;
-	RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
-	int nSavedDC = OS.SaveDC (hDC);
 	/*
 	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
 	* even for items that are not selected.  The fix is to get
@@ -2728,10 +2726,16 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	boolean selected = (result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0);
 	GCData data = new GCData ();
 	data.device = display;
+	int clrSelectionBk = -1;
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
-			data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-			data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+			if (OS.GetFocus () == handle) {
+				data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+			} else {
+				data.foreground = OS.GetTextColor (hDC);
+				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_3DFACE);
+			}
 		} else {
 			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
@@ -2740,13 +2744,17 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		data.hBrush = OS.CreateSolidBrush (data.background);
 	}
 	data.hFont = hFont;
+	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
+	RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
 	Event event = new Event ();
 	event.item = item;
 	event.gc = gc;
 	event.index = nmcd.iSubItem;
+	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+		event.detail |= SWT.FOCUSED;
+	}
 	if (selected) event.detail |= SWT.SELECTED;
-	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
 	event.x = cellRect.left;
 	event.y = cellRect.top;
 	event.width = cellRect.right - cellRect.left;
@@ -2755,7 +2763,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	gc.setClipping (event.x, event.y, event.width, event.height);
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
-	int newTextClr = OS.GetTextColor (hDC);
+	int clrSelectionText = OS.GetTextColor (hDC);
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
 	if (isDisposed () || item.isDisposed ()) return;
@@ -2763,7 +2771,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		if ((event.detail & SWT.SELECTED) == 0) {
 			ignoreDrawSelected = true;
 			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
-				textColor = newTextClr;
+				textColor = clrSelectionText;
 			}
 			nmcd.uItemState &= ~OS.CDIS_SELECTED;
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
@@ -2776,22 +2784,24 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	}
 	ignoreDraw = !event.doit;
 	if (ignoreDraw) {
-		RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false);
+		boolean fullText = (style & SWT.FULL_SELECTION) != 0;
+		RECT selectionRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, fullText, false, hDC);
+		if (!ignoreDrawSelected && clrSelectionBk != -1) fillBackground (hDC, clrSelectionBk, selectionRect);
 		OS.SaveDC (hDC);
 		OS.SelectClipRgn (hDC, 0);
-		OS.ExcludeClipRect (hDC, itemRect.left, itemRect.top, itemRect.right, itemRect.bottom);
+		OS.ExcludeClipRect (hDC, selectionRect.left, selectionRect.top, selectionRect.right, selectionRect.bottom);
 	}
 }
 
 Event sendMeasureItemEvent (TableItem item, int row, int column, int hDC) {
 	int hFont = item.cellFont != null ? item.cellFont [column] : -1;
 	if (hFont == -1) hFont = item.font;
-	RECT itemRect = item.getBounds (row, column, true, true, false, false, hDC);
-	int nSavedDC = OS.SaveDC (hDC);
 	GCData data = new GCData ();
 	data.device = display;
 	data.hFont = hFont;
+	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
+	RECT itemRect = item.getBounds (row, column, true, true, false, false, hDC);
 	Event event = new Event ();
 	event.item = item;
 	event.gc = gc;
@@ -2911,8 +2921,6 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 
 void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	int hDC = nmcd.hdc;
-	RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
-	int nSavedDC = OS.SaveDC (hDC);
 	GCData data = new GCData ();
 	data.device = display;
 	int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
@@ -2928,11 +2936,17 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	lvItem.iItem = nmcd.dwItemSpec;
 	int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
+	boolean drawBackground = false;
 	boolean selected = result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0;
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
-			data.foreground = textColor != -1 ? textColor : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-			data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+			if (OS.GetFocus () == handle) {
+				data.foreground = textColor != -1 ? textColor : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+			} else {
+				data.foreground = OS.GetTextColor (hDC);
+				data.background = OS.GetSysColor (OS.COLOR_3DFACE);
+			}
 		} else {
 			int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
 			if (clrText == -1) clrText = item.foreground;
@@ -2940,17 +2954,23 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 			if (clrTextBk == -1) clrTextBk = item.background;
 			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+			drawBackground = clrTextBk != -1;
 		}
 		data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
 		data.hBrush = OS.CreateSolidBrush (data.background);
 	}
+	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
+	RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
 	Event event = new Event ();
 	event.item = item;
 	event.gc = gc;
 	event.index = nmcd.iSubItem;
+	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+		event.detail |= SWT.FOCUSED;
+	}
 	if (selected) event.detail |= SWT.SELECTED;
-	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+	if (drawBackground) event.detail |= SWT.BACKGROUND;
 	event.x = itemRect.left;
 	event.y = itemRect.top;
 	event.width = itemRect.right - itemRect.left;
