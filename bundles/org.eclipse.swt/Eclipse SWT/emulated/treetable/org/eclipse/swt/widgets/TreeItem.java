@@ -1614,20 +1614,18 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 	int itemHeight = parent.itemHeight;
 
 	/* draw the background color of this cell */
-	Color background = getBackground (columnIndex);
 	if (orderedIndex == 0) {
 		Rectangle focusBounds = getFocusBounds ();
-		gc.setBackground (parent.getBackground ());
 		if (focusBounds.x > 0) {
 			/* fill space to left of selection rect */
-			gc.fillRectangle (0, y, focusBounds.x, itemHeight);
+			parent.drawBackground (gc, 0, y, focusBounds.x, itemHeight);
 		}
 		if (column == null) {
 			/* fill space to right of selection rect */
 			int rightX = focusBounds.x + focusBounds.width;
 			int width = clientArea.width - rightX;
 			if (width > 0) {
-				gc.fillRectangle (rightX, y, width, itemHeight);
+				parent.drawBackground (gc, rightX, y, width, itemHeight);
 			}
 		}
 		int fillWidth = 0;
@@ -1637,13 +1635,21 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 			fillWidth = column.width - focusBounds.x;
 			if (parent.linesVisible) fillWidth--;
 		}
-		gc.setBackground (background);
-		gc.fillRectangle (focusBounds.x, cellBounds.y, fillWidth, cellBounds.height);
+		if (background == null && (cellBackgrounds == null || cellBackgrounds [columnIndex] == null)) {
+			parent.drawBackground (gc, focusBounds.x, cellBounds.y, fillWidth, cellBounds.height);
+		} else {
+			gc.setBackground (getBackground (columnIndex));
+			gc.fillRectangle (focusBounds.x, cellBounds.y, fillWidth, cellBounds.height);
+		}
 	} else {
 		int fillWidth = cellBounds.width;
 		if (parent.linesVisible) fillWidth--;
-		gc.setBackground (background);
-		gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
+		if (background == null && (cellBackgrounds == null || cellBackgrounds [columnIndex] == null)) {
+			parent.drawBackground (gc, cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
+		} else {
+			gc.setBackground (getBackground (columnIndex));
+			gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
+		}
 	}
 
 	boolean isSelected = isSelected ();
