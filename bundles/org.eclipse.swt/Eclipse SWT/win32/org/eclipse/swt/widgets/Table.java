@@ -44,7 +44,7 @@ import org.eclipse.swt.events.*;
 public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
-	int columnCount;
+	int columnCount, customCount;
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
@@ -321,31 +321,34 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
-	if (OS.IsWindowVisible (handle)) {
-		/*
-		* Bug in Windows.  When the table has the extended style
-		* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
-		* CLR_NONE to make the table transparent, Windows fills
-		* a black rectangle around any column that contains an
-		* image.  The fix is clear LVS_EX_FULLROWSELECT during
-		* custom draw.
-		*/
+	/*
+	* Bug in Windows.  When the table has the extended style
+	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+	* CLR_NONE to make the table transparent, Windows fills
+	* a black rectangle around any column that contains an
+	* image.  The fix is clear LVS_EX_FULLROWSELECT during
+	* custom draw.
+	*/
+	if (--customCount == 0 && OS.IsWindowVisible (handle)) {
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-				int bits = OS.LVS_EX_FULLROWSELECT;
-				if (OS.IsWinCE) {
-					RECT rect = new RECT ();
-					boolean damaged = OS.GetUpdateRect (handle, rect, true);
-					OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
-					OS.ValidateRect (handle, null);
-					if (damaged) OS.InvalidateRect (handle, rect, true);
-				} else {
-					int rgn = OS.CreateRectRgn (0, 0, 0, 0);
-					int result = OS.GetUpdateRgn (handle, rgn, true);
-					OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
-					OS.ValidateRect (handle, null);
-					if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
-					OS.DeleteObject (rgn);
+				int dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+				if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) == 0) {
+					int bits = OS.LVS_EX_FULLROWSELECT;
+					if (OS.IsWinCE) {
+						RECT rect = new RECT ();
+						boolean damaged = OS.GetUpdateRect (handle, rect, true);
+						OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+						OS.ValidateRect (handle, null);
+						if (damaged) OS.InvalidateRect (handle, rect, true);
+					} else {
+						int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+						int result = OS.GetUpdateRgn (handle, rgn, true);
+						OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
+						OS.ValidateRect (handle, null);
+						if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
+						OS.DeleteObject (rgn);
+					}
 				}
 			}
 		}
@@ -354,40 +357,54 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_PREPAINT (int wParam, int lParam) {
-	if (OS.IsWindowVisible (handle)) {
-		/*
-		* Bug in Windows.  When the table has the extended style
-		* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
-		* CLR_NONE to make the table transparent, Windows fills
-		* a black rectangle around any column that contains an
-		* image.  The fix is clear LVS_EX_FULLROWSELECT during
-		* custom draw.
-		*/
+	/*
+	* Bug in Windows.  When the table has the extended style
+	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+	* CLR_NONE to make the table transparent, Windows fills
+	* a black rectangle around any column that contains an
+	* image.  The fix is clear LVS_EX_FULLROWSELECT during
+	* custom draw.
+	*/
+	if (customCount++ == 0 && OS.IsWindowVisible (handle)) {
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-				OS.UpdateWindow (handle);
-				int bits = OS.LVS_EX_FULLROWSELECT;
-				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
-				OS.ValidateRect (handle, null);
+				int dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+				if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) != 0) {
+					int bits = OS.LVS_EX_FULLROWSELECT;
+					if (OS.IsWinCE) {
+						RECT rect = new RECT ();
+						boolean damaged = OS.GetUpdateRect (handle, rect, true);
+						OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
+						OS.ValidateRect (handle, null);
+						if (damaged) OS.InvalidateRect (handle, rect, true);
+					} else {
+						int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+						int result = OS.GetUpdateRgn (handle, rgn, true);
+						OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
+						OS.ValidateRect (handle, null);
+						if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
+						OS.DeleteObject (rgn);
+					}
+				}
 			}
 		}
-		if (OS.IsWindowEnabled (handle)) {
-			Control control = findBackgroundControl ();
-			if (control != null && control.backgroundImage != null) {
+	}
+	if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
+		Control control = findBackgroundControl ();
+		if (control != null && control.backgroundImage != null) {
+			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+			RECT rect = new RECT ();
+			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+			fillImageBackground (nmcd.hdc, control, rect);
+		} else {
+			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 				NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 				OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 				RECT rect = new RECT ();
 				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-				fillImageBackground (nmcd.hdc, control, rect);
-			} else {
-				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-					NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
-					OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
-					RECT rect = new RECT ();
-					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-					if (control == null) control = this;
-					fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
-				}
+				if (control == null) control = this;
+				fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
 			}
 		}
 	}
