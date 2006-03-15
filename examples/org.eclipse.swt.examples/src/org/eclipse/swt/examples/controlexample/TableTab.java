@@ -593,25 +593,18 @@ class TableTab extends ScrollableTab {
 			TableColumn [] columns = table1.getColumns();
 			for (int i = 0; i < columns.length; i++) {
 				TableColumn column = columns[i];
-				if (i == 0) {
-					table1.setSortColumn(column);
-					column.pack();
-				}
+				if (i == 0) table1.setSortColumn(column);
 				SelectionListener listener = new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						int sortDirection = SWT.DOWN;
-						TableColumn oldColumn = table1.getSortColumn();
-						if (e.widget == oldColumn) {
+						if (e.widget == table1.getSortColumn()) {
 							/* If the sort column hasn't changed, cycle down -> up -> none. */
 							switch (table1.getSortDirection ()) {
 							case SWT.DOWN: sortDirection = SWT.UP; break;
 							case SWT.UP: sortDirection = SWT.NONE; break;
 							}
 						} else {
-							TableColumn newColumn = (TableColumn)e.widget;
-							table1.setSortColumn(newColumn);
-							oldColumn.pack();
-							newColumn.pack();
+							table1.setSortColumn((TableColumn)e.widget);
 						}
 						table1.setSortDirection (sortDirection);
 					}
@@ -625,7 +618,6 @@ class TableTab extends ScrollableTab {
 			for (int i = 0; i < columns.length; i++) {
 				SelectionListener listener = (SelectionListener)columns[i].getData("SortListener");	//$NON-NLS-1$
 				if (listener != null) columns[i].removeSelectionListener(listener);
-				columns[i].pack();
 			}
 		}
 	}

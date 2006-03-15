@@ -682,25 +682,18 @@ class TreeTab extends ScrollableTab {
 		TreeColumn [] columns = tree.getColumns();
 		for (int i = 0; i < columns.length; i++) {
 			TreeColumn column = columns[i];
-			if (i == 0)  {
-				tree.setSortColumn(column);
-				column.pack();
-			}
+			if (i == 0) tree.setSortColumn(column);
 			SelectionListener listener = new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					int sortDirection = SWT.DOWN;
-					TreeColumn oldColumn = tree.getSortColumn();
-					if (e.widget == oldColumn) {
+					if (e.widget == tree.getSortColumn()) {
 						/* If the sort column hasn't changed, cycle down -> up -> none. */
 						switch (tree.getSortDirection ()) {
 						case SWT.DOWN: sortDirection = SWT.UP; break;
 						case SWT.UP: sortDirection = SWT.NONE; break;
 						}
 					} else {
-						TreeColumn newColumn = (TreeColumn)e.widget;
-						tree.setSortColumn(newColumn);
-						oldColumn.pack();
-						newColumn.pack();
+						tree.setSortColumn((TreeColumn)e.widget);
 					}
 					tree.setSortDirection (sortDirection);
 				}
@@ -716,7 +709,6 @@ class TreeTab extends ScrollableTab {
 		for (int i = 0; i < columns.length; i++) {
 			SelectionListener listener = (SelectionListener)columns[i].getData("SortListener");	//$NON-NLS-1$
 			if (listener != null) columns[i].removeSelectionListener(listener);
-			columns[i].pack();
 		}
 	}
 	
