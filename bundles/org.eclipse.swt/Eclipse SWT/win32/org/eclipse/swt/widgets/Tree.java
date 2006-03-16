@@ -4599,7 +4599,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					RECT rect1 = new RECT ();
 					rect1.left = hAnchor;
 					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect1);
-					RECT rect2 = rect2 = new RECT ();
+					RECT rect2 = new RECT ();
 					rect2.left = hDeselectItem;
 					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect2);
 					int flags = rect1.top < rect2.top ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE;
@@ -5088,7 +5088,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 					if (hAnchor == 0) hAnchor = hNewItem;
 					rect1.left = hAnchor;
 					if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect1) != 0) {
-						RECT rect2 = rect2 = new RECT ();
+						RECT rect2 = new RECT ();
 						rect2.left = hNewItem;
 						OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect2);
 						int flags = rect1.top < rect2.top ? OS.TVGN_NEXTVISIBLE : OS.TVGN_PREVIOUSVISIBLE;			
