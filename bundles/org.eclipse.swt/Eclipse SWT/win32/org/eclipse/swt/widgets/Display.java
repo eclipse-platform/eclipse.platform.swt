@@ -1005,10 +1005,13 @@ boolean filterMessage (MSG msg) {
 
 Control findControl (int handle) {
 	if (handle == 0) return null;
+	int hwndOwner = 0;
 	do {
 		Control control = getControl (handle);
 		if (control != null) return control;
-	} while ((handle = OS.GetParent (handle)) != 0);
+		hwndOwner = OS.GetWindow (handle, OS.GW_OWNER);
+		handle = OS.GetParent (handle);
+	} while (handle != 0 && handle != hwndOwner);
 	return null;
 }
 
