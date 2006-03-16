@@ -646,6 +646,7 @@ void releaseWidget () {
 		if (hwndChild != 0) {
 			int threadId = OS.GetWindowThreadProcessId (hwndChild, null);
 			if (threadId != OS.GetCurrentThreadId ()) {
+				OS.ShowWindow (hwndChild, OS.SW_HIDE);
 				OS.SetParent (hwndChild, 0);
 			}
 		}
