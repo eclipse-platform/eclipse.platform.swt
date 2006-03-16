@@ -471,7 +471,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	* drawing the selection.
 	*/
 	if (OS.IsWindowVisible (handle)) {
-		if (!ignoreDraw && !ignoreDrawSelected && (style & SWT.FULL_SELECTION) != 0) {
+		if (!ignoreDrawSelected && (style & SWT.FULL_SELECTION) != 0) {
 			int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 			if ((bits & OS.LVS_EX_FULLROWSELECT) == 0) {
 				/*
@@ -511,41 +511,43 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 			}
 		}
 	}
-	/*
-	* Bug in Windows.  When the attibutes are for one cell in a table,
-	* Windows does not reset them for the next cell.  As a result, all
-	* subsequent cells are drawn using the previous font, foreground and
-	* background colors.  The fix is to set the all attributes when any
-	* attribute could have changed.
-	*/
-	boolean hasAttributes = true;
-	if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
-		if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
-			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-			int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-			if (count == 1) hasAttributes = false;
-		}
-	}
-	if (hasAttributes) {
-		if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		OS.SelectObject (hDC, hFont);
-		if (OS.IsWindowEnabled (handle)) {
-			nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-			if (clrTextBk == -1) {
-				nmcd.clrTextBk = OS.CLR_NONE;
-				if (textColor == -1) {
-					Control control = findBackgroundControl ();
-					if (control == null) control = this;
-					if (control.backgroundImage == null) {
-						nmcd.clrTextBk = control.getBackgroundPixel ();
-					}
-				}
-			} else {
-				nmcd.clrTextBk = textColor != -1 ? OS.CLR_NONE : clrTextBk;
+	if (!ignoreDraw) {
+		/*
+		* Bug in Windows.  When the attibutes are for one cell in a table,
+		* Windows does not reset them for the next cell.  As a result, all
+		* subsequent cells are drawn using the previous font, foreground and
+		* background colors.  The fix is to set the all attributes when any
+		* attribute could have changed.
+		*/
+		boolean hasAttributes = true;
+		if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
+			if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
+				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+				if (count == 1) hasAttributes = false;
 			}
-			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
-		code |= OS.CDRF_NEWFONT;
+		if (hasAttributes) {
+			if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			OS.SelectObject (hDC, hFont);
+			if (OS.IsWindowEnabled (handle)) {
+				nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+				if (clrTextBk == -1) {
+					nmcd.clrTextBk = OS.CLR_NONE;
+					if (textColor == -1) {
+						Control control = findBackgroundControl ();
+						if (control == null) control = this;
+						if (control.backgroundImage == null) {
+							nmcd.clrTextBk = control.getBackgroundPixel ();
+						}
+					}
+				} else {
+					nmcd.clrTextBk = textColor != -1 ? OS.CLR_NONE : clrTextBk;
+				}
+				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+			}
+			code |= OS.CDRF_NEWFONT;
+		}
 	}
 	return new LRESULT (code);
 }
@@ -2740,9 +2742,12 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
 		}
-		data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-		data.hBrush = OS.CreateSolidBrush (data.background);
+	} else {
+		data.foreground = OS.GetTextColor (hDC);
+		data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_3DFACE);
 	}
+	data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+	data.hBrush = OS.CreateSolidBrush (data.background);
 	data.hFont = hFont;
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
@@ -2759,7 +2764,6 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	event.y = cellRect.top;
 	event.width = cellRect.right - cellRect.left;
 	event.height = cellRect.bottom - cellRect.top;
-	drawBackground (hDC, cellRect);
 	gc.setClipping (event.x, event.y, event.width, event.height);
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
@@ -2785,11 +2789,11 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	ignoreDraw = !event.doit;
 	if (ignoreDraw) {
 		boolean fullText = (style & SWT.FULL_SELECTION) != 0;
-		RECT selectionRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, fullText, false, hDC);
-		if (!ignoreDrawSelected && clrSelectionBk != -1) fillBackground (hDC, clrSelectionBk, selectionRect);
+		RECT clipRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, fullText, false, hDC);
+		if (!ignoreDrawSelected && clrSelectionBk != -1) fillBackground (hDC, clrSelectionBk, clipRect);
 		OS.SaveDC (hDC);
 		OS.SelectClipRgn (hDC, 0);
-		OS.ExcludeClipRect (hDC, selectionRect.left, selectionRect.top, selectionRect.right, selectionRect.bottom);
+		OS.ExcludeClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
 	}
 }
 
@@ -2956,9 +2960,12 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
 			drawBackground = clrTextBk != -1;
 		}
-		data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-		data.hBrush = OS.CreateSolidBrush (data.background);
+	} else {
+		data.foreground = OS.GetTextColor (hDC);
+		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 	}
+	data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+	data.hBrush = OS.CreateSolidBrush (data.background);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
 	RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
