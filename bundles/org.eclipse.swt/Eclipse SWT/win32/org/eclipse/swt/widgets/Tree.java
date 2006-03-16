@@ -558,7 +558,6 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 							}
 						}
 					}
-					if (i == 0 && item.image != null) rect.left = Math.min (rect.right, rect.left + 2);
 				}
 				if (drawImage) {
 					Image image = null;
@@ -570,6 +569,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 					}
 					int inset = i != 0 ? INSET : 0;
 					if (image != null) {
+						if (index == 0) rect.left = Math.min (rect.right, rect.left + 2);
 						Rectangle bounds = image.getBounds ();
 						if (size == null) size = getImageSize ();
 						//int y = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
