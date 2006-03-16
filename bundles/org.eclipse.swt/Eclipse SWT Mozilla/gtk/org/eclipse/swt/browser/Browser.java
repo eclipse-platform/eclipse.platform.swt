@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import java.io.*;
+import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
@@ -76,10 +77,13 @@ public class Browser extends Composite {
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
-	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
+	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
+	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
 	static final int STOP_PROPOGATE = 1;
 /**
  * Constructs a new instance of this class given its parent
@@ -195,17 +199,92 @@ public Browser(Composite parent, int style) {
 		rc = serviceManager.GetServiceByContractID(aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-		serviceManager.Release();
-		
+
 		nsIWindowWatcher windowWatcher = new nsIWindowWatcher(result[0]);
 		result[0] = 0;
 		rc = windowWatcher.SetWindowCreator(WindowCreator.getAddress());
 		if (rc != XPCOM.NS_OK) error(rc);
 		windowWatcher.Release();
-		
+
+		/*
+		 * As a result of not using profiles, the user's locale defaults
+		 * to en_us, which is not the correct value for users in other
+		 * locales.  The fix for this is to set mozilla's locale preference
+		 * value according to the user's current locale.
+		 */
+		buffer = XPCOM.NS_PREFSERVICE_CONTRACTID.getBytes();
+		aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		rc = serviceManager.GetServiceByContractID(aContractID, nsIPrefService.NS_IPREFSERVICE_IID, result);
+		serviceManager.Release();
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+
+		nsIPrefService prefService = new nsIPrefService(result[0]);
+		result[0] = 0;
+		buffer = new byte[1];
+		rc = prefService.GetBranch(buffer, result);	/* empty buffer denotes root preference level */
+		prefService.Release();
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+
+		nsIPrefBranch prefBranch = new nsIPrefBranch(result[0]);
+		result[0] = 0;
+		buffer = Converter.wcsToMbcs(null, PREFERENCE_LANGUAGES, true);
+		rc = prefBranch.GetComplexValue(buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+
+		/* get Mozilla's current locale preference value */
+		nsIPrefLocalizedString localizedString = new nsIPrefLocalizedString(result[0]);
+		result[0] = 0;
+		rc = localizedString.ToString(result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+		int length = XPCOM.strlen_PRUnichar(result[0]);
+		char[] dest = new char[length];
+		XPCOM.memmove(dest, result[0], length * 2);
+		String prefLocales = new String(dest) + TOKENIZER_LOCALE;
+
+		/*
+		 * construct the new locale preference value by prepending the
+		 * user's current locale and language to the original value 
+		 */
+		Locale locale = java.util.Locale.getDefault();
+		String language = locale.getLanguage();
+		String country = locale.getCountry();
+		StringBuffer stringBuffer = new StringBuffer (language);
+		stringBuffer.append(SEPARATOR_LOCALE);
+		stringBuffer.append(country.toLowerCase());
+		stringBuffer.append(TOKENIZER_LOCALE);
+		stringBuffer.append(language);
+		stringBuffer.append(TOKENIZER_LOCALE);
+		String newLocales = stringBuffer.toString();
+		StringTokenizer tokenzier = new StringTokenizer(prefLocales, TOKENIZER_LOCALE);
+		while (tokenzier.hasMoreTokens()) {
+			String token = (tokenzier.nextToken() + TOKENIZER_LOCALE).trim();
+			/* ensure that duplicate locale values are not added */
+			if (newLocales.indexOf(token) == -1) {
+				stringBuffer.append(token);
+			}
+		}
+		newLocales = stringBuffer.toString();
+		if (!newLocales.equals(prefLocales)) {
+			/* write the new value */
+			newLocales = newLocales.substring(0, newLocales.length() - TOKENIZER_LOCALE.length ()); /* remove trailing tokenizer */
+			length = newLocales.length();
+			char[] charBuffer = new char[length + 1];
+			newLocales.getChars(0, length, charBuffer, 0);
+			localizedString.SetDataWithLength(length, charBuffer);
+			rc = prefBranch.SetComplexValue(buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress());
+			if (rc != XPCOM.NS_OK) error(rc);
+		}
+		localizedString.Release();
+		prefBranch.Release();
+
 		PromptServiceFactory factory = new PromptServiceFactory();
 		factory.AddRef();
-		
+
 		rc = componentManager.QueryInterface(nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
