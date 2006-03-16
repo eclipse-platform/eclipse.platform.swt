@@ -463,37 +463,6 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 				}
 			}
 			if (drawItem) {
-				if (!ignoreDraw && !ignoreDrawSelected) {
-					if (clrTextBk != -1) {
-						if (drawBackground) fillBackground (hDC, clrTextBk, rect);
-					} else {
-						Control control = findImageControl ();
-						if (control != null) {
-							if (i == 0) {
-								int right = Math.min (rect.right, width);
-								OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
-								if (drawBackground) fillImageBackground (hDC, control, rect);
-								if (handle == OS.GetFocus ()) {
-									int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-									if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
-										int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-										if (hItem == item.handle) {
-											if ((style & SWT.FULL_SELECTION) != 0) {
-												focusRect = new RECT ();
-												OS.SetRect (focusRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-											} else {
-												focusRect = item.getBounds (index, true, false, false, false, true, hDC);
-											}
-										}
-									}
-								}
-							} else {
-								if (drawBackground) fillImageBackground (hDC, control, rect);
-							}
-						}
-					}
-					if (i == 0 && item.image != null) rect.left = Math.min (rect.right, rect.left + 2);
-				}
 				if (i != 0) {
 					if (hooks (SWT.MeasureItem)) {
 						RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
@@ -549,18 +518,47 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 						OS.RestoreDC (hDC, nSavedDC);
 						if (isDisposed () || item.isDisposed ()) break;
 						ignoreDraw = !event.doit;
-						if (event.doit) {
-							if ((event.detail & SWT.SELECTED) != 0) {
-								if (!selected) {
-									textColor = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-								}
-							} else {
-								if (selected) textColor = newTextClr;
-								ignoreDrawSelected = true;
+						if ((event.detail & SWT.SELECTED) != 0) {
+							if (!selected) {
+								textColor = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 							}
+						} else {
+							if (selected) textColor = newTextClr;
+							ignoreDrawSelected = true;
 						}
 					}
 					if (textColor != -1) clrText = textColor;
+				}
+				if (!ignoreDraw && !ignoreDrawSelected) {
+					if (clrTextBk != -1) {
+						if (drawBackground) fillBackground (hDC, clrTextBk, rect);
+					} else {
+						Control control = findImageControl ();
+						if (control != null) {
+							if (i == 0) {
+								int right = Math.min (rect.right, width);
+								OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
+								if (drawBackground) fillImageBackground (hDC, control, rect);
+								if (handle == OS.GetFocus ()) {
+									int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+									if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+										int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+										if (hItem == item.handle) {
+											if ((style & SWT.FULL_SELECTION) != 0) {
+												focusRect = new RECT ();
+												OS.SetRect (focusRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+											} else {
+												focusRect = item.getBounds (index, true, false, false, false, true, hDC);
+											}
+										}
+									}
+								}
+							} else {
+								if (drawBackground) fillImageBackground (hDC, control, rect);
+							}
+						}
+					}
+					if (i == 0 && item.image != null) rect.left = Math.min (rect.right, rect.left + 2);
 				}
 				if (drawImage) {
 					Image image = null;
@@ -608,9 +606,9 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 							if (strings != null) string = strings [index];
 						}
 						if (string != null) {
-							hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
-							clrText = clrText != -1 ? OS.SetTextColor (hDC, clrText) : -1;
-							clrTextBk = clrTextBk != -1 ? OS.SetBkColor (hDC, clrTextBk) : -1;
+							if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+							if (clrText != -1) clrText = OS.SetTextColor (hDC, clrText);
+							if (clrTextBk != -1) clrTextBk = OS.SetBkColor (hDC, clrTextBk);
 							int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
 							if (index != 0) flags |= OS.DT_ENDELLIPSIS;
 							TreeColumn column = columns != null ? columns [index] : null;
@@ -621,9 +619,9 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 							TCHAR buffer = new TCHAR (getCodePage (), string, false);
 							if (!ignoreDraw) OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 							OS.DrawText (hDC, buffer, buffer.length (), rect, flags | OS.DT_CALCRECT);
-							if (hFont != -1) OS.SelectObject (hDC, hFont);
-							if (clrText != -1) OS.SetTextColor (hDC, clrText);
-							if (clrTextBk != -1) OS.SetBkColor (hDC, clrTextBk);
+							if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+							if (clrText != -1) clrText = OS.SetTextColor (hDC, clrText);
+							if (clrTextBk != -1) clrTextBk = OS.SetBkColor (hDC, clrTextBk);
 						}
 					}
 				}
@@ -648,6 +646,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 				event.gc = gc;
 				if (selected) event.detail |= SWT.SELECTED;
 				if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) event.detail |= SWT.FOCUSED;
+				if (clrTextBk != -1) event.detail |= SWT.BACKGROUND;
 				event.x = itemRect.left;
 				event.y = itemRect.top;
 				event.width = itemRect.right - itemRect.left;
@@ -853,29 +852,27 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 			OS.RestoreDC (hDC, nSavedDC);
 			if (isDisposed () || item.isDisposed ()) return null;
 			ignoreDraw = !event.doit;
-			if (event.doit) {
-				if ((event.detail & SWT.SELECTED) != 0) {
-					if (!selected) {
-						textColor = clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-					}
-					/*
-					* Feature in Windows.  When the tree has the style
-					* TVS_FULLROWSELECT, the background color for the
-					* entire row is filled when an item is painted,
-					* drawing on top of any custom drawing.  The fix
-					* is to emulate TVS_FULLROWSELECT.
-					*/
-					if ((style & SWT.FULL_SELECTION) != 0) {
-						fillBackground (hDC, OS.GetBkColor (hDC), rect);
-					} else {
-						RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
-						drawBackground (hDC, textRect, OS.GetBkColor (hDC));
-					}
+			if ((event.detail & SWT.SELECTED) != 0) {
+				if (!selected) {
+					textColor = clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				}
+				/*
+				* Feature in Windows.  When the tree has the style
+				* TVS_FULLROWSELECT, the background color for the
+				* entire row is filled when an item is painted,
+				* drawing on top of any custom drawing.  The fix
+				* is to emulate TVS_FULLROWSELECT.
+				*/
+				if ((style & SWT.FULL_SELECTION) != 0) {
+					fillBackground (hDC, OS.GetBkColor (hDC), rect);
 				} else {
-					if (selected) {
-						textColor = clrText = newTextClr;
-						ignoreDrawSelected = true;
-					}
+					RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
+					fillBackground (hDC, OS.GetBkColor (hDC), textRect);
+				}
+			} else {
+				if (selected) {
+					textColor = clrText = newTextClr;
+					ignoreDrawSelected = true;
 				}
 			}
 			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
