@@ -5267,7 +5267,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 							int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 							OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 						}
-						if (phdn.iItem != 0) {
+						if (OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, phdn.iItem, 0) != 0) {
 							rect.left = headerRect.left;
 							rect.right = headerRect.right;
 							OS.InvalidateRect (handle, rect, true);
