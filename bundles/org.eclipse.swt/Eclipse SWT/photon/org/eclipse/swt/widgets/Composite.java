@@ -270,6 +270,13 @@ void createScrolledHandle (int parentHandle) {
 	createScrollBars ();
 }
 
+void drawBackground (GC gc, int x, int y, int width, int height) {
+	Color oldColor = gc.getBackground();
+	gc.setBackground(getBackground());
+	gc.fillRectangle(x, y, width, height);
+	gc.setBackground(oldColor);
+}
+
 void drawWidget (int widget, int damage) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {

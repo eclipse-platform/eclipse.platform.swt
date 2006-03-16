@@ -110,10 +110,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	Color oldColor = gc.getBackground();
-	gc.setBackground(getBackground());
-	gc.fillRectangle(x, y, width, height);
-	gc.setBackground(oldColor);
+	super.drawBackground (gc, x, y, width, height);
 }
 
 int drawProc (int widget, int damage) {
