@@ -427,7 +427,8 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 	RECT rect = new RECT ();
 	if (firstColumn) {
 		rect.left = handle;
-		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) == 0) {
+		boolean full = columnCount == 0 && getText && getImage && fullText && fullImage;
+		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, full ? 0 : 1, rect) == 0) {
 			return new RECT ();
 		}
 		if (getImage && !fullImage) {
