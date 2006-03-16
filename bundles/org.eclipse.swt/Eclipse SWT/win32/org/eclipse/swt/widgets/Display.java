@@ -1741,12 +1741,15 @@ int getMsgProc (int code, int wParam, int lParam) {
 			case OS.WM_KEYUP:
 			case OS.WM_SYSKEYDOWN:
 			case OS.WM_SYSKEYUP: {
-				int hHeap = OS.GetProcessHeap ();
-				int keyMsg = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, MSG.sizeof);
-				OS.MoveMemory (keyMsg, msg, MSG.sizeof);
-				OS.PostMessage (hwndMessage, SWT_KEYMSG, wParam, keyMsg);
-				msg.message = OS.WM_NULL;
-				OS.MoveMemory (lParam, msg, MSG.sizeof);
+				Control control = findControl (msg.hwnd);
+				if (control != null) {
+					int hHeap = OS.GetProcessHeap ();
+					int keyMsg = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, MSG.sizeof);
+					OS.MoveMemory (keyMsg, msg, MSG.sizeof);
+					OS.PostMessage (hwndMessage, SWT_KEYMSG, wParam, keyMsg);
+					msg.message = OS.WM_NULL;
+					OS.MoveMemory (lParam, msg, MSG.sizeof);
+				}
 			}
 		}
 	}
