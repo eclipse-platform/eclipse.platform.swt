@@ -862,9 +862,18 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	}
 	if (lastOffset < length) layout.setStyle(null, lastOffset, length);
 	if (styledText.isFixedLineHeight()) {
-		int height = layout.getBounds().height;
-		if (height > getLineHeight()) {
-			FontMetrics metrics = layout.getLineMetrics(0);
+		int index = -1;
+		int lineCount = layout.getLineCount();
+		int height = getLineHeight();
+		for (int i = 0; i < lineCount; i++) {
+			int lineHeight = layout.getLineBounds(i).height;
+			if (lineHeight > height) {
+				height = lineHeight;
+				index = i;
+			}
+		}
+		if (index != -1) {
+			FontMetrics metrics = layout.getLineMetrics(index);
 			ascent = metrics.getAscent() + metrics.getLeading();
 			descent = metrics.getDescent();
 			if (layouts != null) {
