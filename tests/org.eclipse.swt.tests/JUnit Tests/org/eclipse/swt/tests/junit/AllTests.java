@@ -77,6 +77,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_graphics_PaletteData.suite());
 	addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
 
+	addTest(Test_org_eclipse_swt_widgets_ExpandItem.suite());
 	addTest(Test_org_eclipse_swt_widgets_MenuItem.suite());
 	addTest(Test_org_eclipse_swt_widgets_ToolItem.suite());
 	//addTest(Test_org_eclipse_swt_widgets_CoolItem.suite());
@@ -95,6 +96,7 @@ public AllTests() {
 	//addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
 	addTest(Test_org_eclipse_swt_widgets_Label.suite());
 	addTest(Test_org_eclipse_swt_widgets_Button.suite());
+	addTest(Test_org_eclipse_swt_widgets_ExpandBar.suite());
 	addTest(Test_org_eclipse_swt_widgets_List.suite());
 	addTest(Test_org_eclipse_swt_widgets_Text.suite());
 	addTest(Test_org_eclipse_swt_widgets_ScrollBar.suite());

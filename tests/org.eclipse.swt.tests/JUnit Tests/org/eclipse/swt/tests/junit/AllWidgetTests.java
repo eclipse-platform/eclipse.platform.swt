@@ -24,6 +24,7 @@ public static void main(String[] args) {
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 
+	suite.addTest(Test_org_eclipse_swt_widgets_ExpandItem.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_MenuItem.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_ToolItem.suite());
 	//suite.addTest(Test_org_eclipse_swt_widgets_CoolItem.suite());
@@ -42,6 +43,7 @@ public static Test suite() {
 	//suite.addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Label.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Button.suite());
+	suite.addTest(Test_org_eclipse_swt_widgets_ExpandBar.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_List.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Text.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_ScrollBar.suite());

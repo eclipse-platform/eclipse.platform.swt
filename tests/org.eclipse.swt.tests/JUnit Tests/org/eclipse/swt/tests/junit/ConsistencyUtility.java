@@ -33,6 +33,7 @@ public class ConsistencyUtility {
         eventOrdering.put("ButtonMouseSelection", 	new String[] {"MouseDown", "MouseUp", "Selection:"});
         eventOrdering.put("ComboMouseSelection",	new String[] {"MouseDown", "MouseUp", "Verify", "Modify", "Selection:"});
         eventOrdering.put("CComboMouseSelection",	new String[] {"Modify", "Selection:"});
+        eventOrdering.put("ExpandBarMouseSelection",new String[] {"MouseDown", "MouseUp", "Selection:"});
         eventOrdering.put("ListMouseSelection", 	new String[] {"MouseDown", "MouseUp", "Selection:"});
         eventOrdering.put("SashMouseSelection", 	new String[] {"Selection:Drag", "MouseDown", "Selection:", "MouseUp"});
         eventOrdering.put("TabFolderMouseSelection",new String[] {"MouseDown", "Selection:", "MouseUp" });
@@ -44,6 +45,7 @@ public class ConsistencyUtility {
         
         eventOrdering.put("ListDoubleClick", 		new String[] {"MouseDown", "MouseUp", "Selection:", "MouseDown", "MouseDoubleClick", "DefaultSelection", "MouseUp"});
         eventOrdering.put("ButtonEnterSelection", 	new String[] {"Traverse:Return", "KeyDown", "KeyUp"});
+        eventOrdering.put("ExpandBarEnterSelection",new String[] {"Traverse:Return", "Selection:", "KeyDown", "KeyUp"});
         eventOrdering.put("CComboEnterSelection", 	new String[] {"Traverse:Return", "DefaultSelection", "KeyDown", "KeyUp"});
         eventOrdering.put("ToolBarEnterSelection", 	new String[] {"Traverse:Return", "Selection:", "KeyDown", "KeyUp"});
         eventOrdering.put("TreeDragDetect", 		new String[] {"MouseDown", "Selection:", "DragDetect", "MouseUp"});
@@ -52,6 +54,7 @@ public class ConsistencyUtility {
         eventOrdering.put("TableTreeMenuDetect",	new String[] {"MenuDetect", "MouseDown", "Selection:", "MouseUp"});
         
         eventOrdering.put("ButtonSpaceSelection", 	new String[] {"Traverse:Mnemonic", "KeyDown", "KeyUp", "Selection:"});
+        eventOrdering.put("ExpandBarSpaceSelection",new String[] {"MouseDown", "MouseUp", "Selection:", "Traverse:Mnemonic", "KeyDown", "KeyUp"});
         eventOrdering.put("ListSpaceSelection", 	new String[] {"Selection:", "KeyDown", "KeyUp"});
         eventOrdering.put("ToolBarSpaceSelection", 	new String[] {"MouseDown", "MouseUp", "Selection:", "Traverse:Mnemonic", "KeyDown", "KeyUp"});
         eventOrdering.put("TreeSpaceSelection", 	new String[] {"Selection:", "KeyDown", "KeyUp"});
