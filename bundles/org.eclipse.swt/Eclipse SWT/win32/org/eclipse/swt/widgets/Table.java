@@ -389,7 +389,7 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 			}
 		}
 	}
-	if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
+	if (OS.IsWindowVisible (handle)) {
 		Control control = findBackgroundControl ();
 		if (control != null && control.backgroundImage != null) {
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
@@ -399,12 +399,14 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 			fillImageBackground (nmcd.hdc, control, rect);
 		} else {
 			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-				NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
-				OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
-				RECT rect = new RECT ();
-				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-				if (control == null) control = this;
-				fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+				if (OS.IsWindowEnabled (handle)) {
+					NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+					OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+					if (control == null) control = this;
+					fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+				}
 			}
 		}
 	}
@@ -546,6 +548,21 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 				}
 				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 			}
+			code |= OS.CDRF_NEWFONT;
+		}
+		/*
+		* Feature in Windows.  When the table is disabled, it draws
+		* with a gray background but does not gray the text.  The fix
+		* is to explicitly gray the text.
+		*/
+		if (!OS.IsWindowEnabled (handle)) {
+			nmcd.clrText = OS.GetSysColor (OS.COLOR_GRAYTEXT);
+			if (findImageControl () != null) {
+				nmcd.clrTextBk = OS.CLR_NONE;
+			} else {
+				nmcd.clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
+			}
+			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 			code |= OS.CDRF_NEWFONT;
 		}
 	}
@@ -2744,7 +2761,8 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		}
 	} else {
 		data.foreground = OS.GetTextColor (hDC);
-		data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_3DFACE);
+		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
+		if (selected) clrSelectionBk = data.background;
 	}
 	data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
 	data.hBrush = OS.CreateSolidBrush (data.background);
@@ -5088,7 +5106,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.NM_CUSTOMDRAW: {
 			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hdr.hwndFrom == hwndHeader) break;
-			if (!customDraw && findImageControl () == null) break;
+			if (!customDraw && findImageControl () == null) {
+				/*
+				* Feature in Windows.  When the table is disabled, it draws
+				* with a gray background but does not gray the text.  The fix
+				* is to explicitly gray the text using Custom Draw.
+				*/
+				if (OS.IsWindowEnabled (handle)) break;
+			}
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
