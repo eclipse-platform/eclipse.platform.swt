@@ -2789,7 +2789,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	ignoreDraw = !event.doit;
 	if (ignoreDraw) {
 		boolean fullText = (style & SWT.FULL_SELECTION) != 0;
-		RECT clipRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, fullText, false, hDC);
+		RECT clipRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 		if (!ignoreDrawSelected && clrSelectionBk != -1) fillBackground (hDC, clrSelectionBk, clipRect);
 		OS.SaveDC (hDC);
 		OS.SelectClipRgn (hDC, 0);
