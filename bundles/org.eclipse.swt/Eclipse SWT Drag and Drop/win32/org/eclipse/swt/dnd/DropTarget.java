@@ -418,7 +418,12 @@ int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	event.detail = selectedOperation;
 	event.dataType = selectedDataType;
 	event.data = object;
-	notifyListeners(DND.Drop,event);
+	OS.ImageList_DragShowNolock(false);
+	try {
+		notifyListeners(DND.Drop,event);
+	} finally {
+		OS.ImageList_DragShowNolock(true);
+	}
 	refresh();
 	selectedOperation = DND.DROP_NONE;
 	if ((allowedOperations & event.detail) == event.detail) {
