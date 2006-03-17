@@ -1548,8 +1548,6 @@ void claimBottomFreeSpace() {
 		int lineHeight = renderer.getLineHeight();
 		int newVerticalOffset = Math.max(0, content.getLineCount() * lineHeight - clientAreaHeight);
 		if (newVerticalOffset < getVerticalScrollOffset()) {
-			// Scroll up so that empty lines below last text line are used.
-			// Fixes 1GEYJM0
 			scrollVertical(newVerticalOffset - getVerticalScrollOffset(), true);
 		}
 	} else {
@@ -5291,12 +5289,18 @@ void handleResize(Event event) {
 void handleTextChanged(TextChangedEvent event) {
 	int firstLine = content.getLineAtOffset(lastTextChangeStart);
 	resetCache(firstLine, 0);
-	int lastLine = firstLine + lastTextChangeNewLineCount;
-	int firstLineTop = getLinePixel(firstLine);
-	int newLastLineBottom = getLinePixel(lastLine + 1);
-	scrollText(lastLineBottom, newLastLineBottom);
-	super.redraw(0, firstLineTop, clientAreaWidth, newLastLineBottom - firstLineTop, false);
-	redrawLinesBullet(renderer.redrawLines);
+	if (!isFixedLineHeight() && topIndex > firstLine) {
+		topIndex = firstLine;
+		topIndexY = 0;
+		super.redraw();
+	} else {
+		int lastLine = firstLine + lastTextChangeNewLineCount;
+		int firstLineTop = getLinePixel(firstLine);
+		int newLastLineBottom = getLinePixel(lastLine + 1);
+		scrollText(lastLineBottom, newLastLineBottom);
+		super.redraw(0, firstLineTop, clientAreaWidth, newLastLineBottom - firstLineTop, false);
+		redrawLinesBullet(renderer.redrawLines);
+	}
 	renderer.redrawLines = null;
 	// update selection/caret location after styles have been changed.
 	// otherwise any text measuring could be incorrect
