@@ -41,7 +41,7 @@ public class Link extends Control {
 	Point selection;
 	String [] ids;
 	int [] mnemonics;
-	int focusIndex;
+	int focusIndex, mouseDownIndex;
 	int font;
 	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	static final int LinkProc;
@@ -181,7 +181,7 @@ void createHandle () {
 		ids = new String [0];
 		mnemonics = new int [0];
 		selection = new Point (-1, -1);
-		focusIndex = -1;
+		focusIndex = mouseDownIndex = -1;
 	}
 }
 
@@ -759,9 +759,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				Rectangle rect = rects [i];
 				if (rect.contains (x, y)) {
 					if (j != focusIndex) {
-						focusIndex = j;						
 						redraw ();
 					}
+					focusIndex = mouseDownIndex = j;
 					return result;
 				}
 			}
@@ -774,20 +774,21 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
-		if (focusIndex == -1) return result;
+		if (mouseDownIndex == -1) return result;
 		int x = lParam & 0xFFFF;
 		int y = lParam >> 16;
-		Rectangle [] rects = getRectangles (focusIndex);
+		Rectangle [] rects = getRectangles (mouseDownIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects [i];
 			if (rect.contains (x, y)) {
 				Event event = new Event ();
-				event.text = ids [focusIndex];
+				event.text = ids [mouseDownIndex];
 				sendEvent (SWT.Selection, event);
-				return result;
+				break;
 			}
 		}
 	}
+	mouseDownIndex = -1;
 	return result;
 }
 
