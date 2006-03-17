@@ -1384,6 +1384,14 @@ public class SWT {
 	 * @since 3.2
 	 */
 	public static final int BACKGROUND = 1 << 3;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * draws the foreground (value is 1&lt;&lt;4).
+	 *
+	 * @since 3.2
+	 */
+	public static final int FOREGROUND = 1 << 4;
 
 	/* This code is intentionally commented */
 	//public static final int PRESSED = 1 << 3;
