@@ -3333,6 +3333,7 @@ public void selectAll () {
 }
 
 void setBackgroundImage (int hBitmap) {
+	super.setBackgroundImage (hBitmap);
 	if (hBitmap != 0) {
 		/*
 		* Feature in Windows.  If TVM_SETBKCOLOR is never
