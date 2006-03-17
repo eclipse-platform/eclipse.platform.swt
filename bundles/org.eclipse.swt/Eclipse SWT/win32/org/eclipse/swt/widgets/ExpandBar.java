@@ -391,6 +391,7 @@ public void removeExpandListener (ExpandListener listener) {
 
 void setScrollbar () {
 	if (itemCount == 0) return;
+	if ((style & SWT.V_SCROLL) == 0) return;
 	RECT rect = new RECT();
 	OS.GetClientRect (handle, rect);
 	int height = rect.bottom - rect.top;
