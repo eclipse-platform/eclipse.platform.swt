@@ -301,7 +301,7 @@ public Browser(Composite parent, int style) {
 
 		String newCharset = System.getProperty("file.encoding");	// $NON-NLS-1$
 		if (!newCharset.equals(prefCharsets)) {
-			/* write the new value */
+			/* write the new charset value */
 			length = newCharset.length();
 			char[] charBuffer = new char[length + 1];
 			newCharset.getChars(0, length, charBuffer, 0);
