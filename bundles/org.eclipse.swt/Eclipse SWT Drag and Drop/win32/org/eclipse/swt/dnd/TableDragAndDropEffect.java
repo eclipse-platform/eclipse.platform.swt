@@ -68,6 +68,10 @@ ImageData getDragSourceImage(int x, int y) {
 		int hDC1 = OS.CreateCompatibleDC(hDC);
 		int bitmap = OS.CreateCompatibleBitmap(hDC, bounds.width, bounds.height);
 		int hOldBitmap = OS.SelectObject(hDC1, bitmap);
+		RECT rect = new RECT();
+		rect.right = bounds.width;
+		rect.bottom = bounds.height;
+		OS.FillRect(hDC1, rect, -1);
 		for (int i = 0; i < count; i++) {
 			TableItem selected = selection[i];
 			Rectangle cell = selected.getBounds(0);
