@@ -71,7 +71,8 @@ ImageData getDragSourceImage(int x, int y) {
 		RECT rect = new RECT();
 		rect.right = bounds.width;
 		rect.bottom = bounds.height;
-		OS.FillRect(hDC1, rect, -1);
+		int hBrush = OS.GetStockObject(OS.WHITE_BRUSH);
+		OS.FillRect(hDC1, rect, hBrush);
 		for (int i = 0; i < count; i++) {
 			TableItem selected = selection[i];
 			Rectangle cell = selected.getBounds(0);
