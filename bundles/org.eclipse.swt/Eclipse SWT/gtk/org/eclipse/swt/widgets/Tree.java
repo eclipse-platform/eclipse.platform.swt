@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -52,8 +53,8 @@ public class Tree extends Composite {
 	boolean firstCustomDraw;
 	boolean modelChanged;
 	boolean expandAll;
-	int /*long*/ drawFlags;
-	boolean ownerDraw, ignoreDraw, ignoreSize;
+	int drawState, drawFlags;
+	boolean ownerDraw, ignoreSize;
 	
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -171,6 +172,8 @@ static int checkStyle (int style) {
 	* possible to create a tree without scroll bars.
 	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	/* GTK is always FULL_SELECTION */
+	style |= SWT.FULL_SELECTION;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
@@ -238,10 +241,12 @@ int /*long*/ cellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*lo
 		 * This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
 		 */
 		if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
-			ptr [0] = 0;
-			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
-			if (ptr [0] != 0) {
-				OS.g_object_set (cell, OS.cell_background_gdk, ptr[0], 0);
+			if (!ownerDraw) {
+				ptr [0] = 0;
+				OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
+				if (ptr [0] != 0) {
+					OS.g_object_set (cell, OS.cell_background_gdk, ptr[0], 0);
+				}
 			}
 		}
 		if (!isPixbuf) {
@@ -697,7 +702,7 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 		* This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
 		*/
 		if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
-			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+			if (!ownerDraw) OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 		}
 		if (ownerDraw) {
 			OS.gtk_tree_view_column_set_cell_data_func (columnHandle, checkRenderer, display.cellDataProc, handle, 0);
@@ -748,8 +753,10 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	 * This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
 	 */
 	if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
-		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+		if (!ownerDraw) {
+			OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+			OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+		}
 	}
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + CELL_TEXT);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
@@ -2190,34 +2197,37 @@ int /*long*/ rendererGetSizeProc (int /*long*/ cell, int /*long*/ widget, int /*
 int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*long*/ widget, int /*long*/ background_area, int /*long*/ cell_area, int /*long*/ expose_area, int /*long*/ flags) {
 	TreeItem item = null;
 	int /*long*/ iter = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX2);
-	int /*long*/ columnHandle = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX1);
 	if (iter != 0) item = _getItem (iter);
-//	if (checkRenderer != 0) {
-//		if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) {
-//			OS.gtk_tree_view_column_focus_cell (columnHandle, checkRenderer);
-//		}
-//	}
+	int /*long*/ columnHandle = OS.g_object_get_qdata (cell, Display.SWT_OBJECT_INDEX1);
 	int columnIndex = 0;
-	boolean draw = !ignoreDraw;
-	if (item != null) {
-		if (columnCount > 0) {
-			for (int i = 0; i < columnCount; i++) {
-				if (columns [i].handle == columnHandle) {
-					columnIndex = i;
-					break;
-				}				
-			}
+	if (columnCount > 0) {
+		for (int i = 0; i < columnCount; i++) {
+			if (columns [i].handle == columnHandle) {
+				columnIndex = i;
+				break;
+			}				
 		}
-		GdkRectangle rect = new GdkRectangle ();
-		int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-		OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
-		OS.gtk_tree_path_free (path);
+	}
+	if (item != null) {
 		if (OS.GTK_IS_CELL_RENDERER_TOGGLE (cell) || (OS.GTK_IS_CELL_RENDERER_PIXBUF (cell) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
-			draw = true;
-			ignoreDraw = !draw;
-			drawFlags = flags;
+			drawFlags = (int)/*64*/flags;
+			drawState = SWT.FOREGROUND;
+			int /*long*/ [] ptr = new int /*long*/ [1];
+			OS.gtk_tree_model_get (modelHandle, item.handle, Tree.BACKGROUND_COLUMN, ptr, -1);
+			if (ptr [0] == 0) {
+				int modelIndex = columnCount == 0 ? Tree.FIRST_COLUMN : columns [columnIndex].modelIndex;
+				OS.gtk_tree_model_get (modelHandle, item.handle, modelIndex + Tree.CELL_BACKGROUND, ptr, -1);
+			}
+			if (ptr [0] != 0) drawState |= SWT.BACKGROUND;
+			if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) drawState |= SWT.SELECTED;
+			if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;			
 			
-			if ((flags & OS.GTK_CELL_RENDERER_SELECTED) == 0) {
+			GdkRectangle rect = new GdkRectangle ();
+			int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+			OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
+			OS.gtk_tree_path_free (path);
+			
+			if ((drawState & SWT.SELECTED) == 0) {
 				Control control = findBackgroundControl ();
 				if (control != null && control.backgroundImage != null) {
 					OS.gdk_window_clear_area (window, rect.x, rect.y, rect.width, rect.height);
@@ -2225,10 +2235,18 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 			}
 
 			if (hooks (SWT.EraseItem)) {
-				if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) {
+				if ((drawState & SWT.SELECTED) != 0) {
 					OS.gdk_window_clear_area (window, rect.x, rect.y, rect.width, rect.height);
-				}				
+				}
 				GC gc = new GC (this);
+				if ((drawState & SWT.SELECTED) != 0) {
+					gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+				} else {
+					gc.setBackground (item.getBackground (columnIndex));
+					gc.setForeground (item.getForeground (columnIndex));
+				}
+				gc.setFont (item.getFont (columnIndex));
 				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
 				Event event = new Event ();
 				event.item = item;
@@ -2238,25 +2256,32 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				event.y = rect.y;
 				event.width = rect.width;
 				event.height = rect.height;
-				if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) event.detail |= SWT.SELECTED;
-				if ((flags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) event.detail |= SWT.FOCUSED;
+				event.detail = drawState;
 				sendEvent (SWT.EraseItem, event);
 				gc.dispose();
-				flags &= ~(OS.GTK_CELL_RENDERER_SELECTED | OS.GTK_CELL_RENDERER_FOCUSED);
-				if ((event.detail & SWT.SELECTED) != 0) flags |= OS.GTK_CELL_RENDERER_SELECTED;
-				if ((event.detail & SWT.FOCUSED) != 0) flags |= OS.GTK_CELL_RENDERER_FOCUSED;
-				drawFlags = flags;
-				draw = event.doit;
-				ignoreDraw = !draw;	
-				if ((flags & OS.GTK_CELL_RENDERER_SELECTED) != 0) {
+				drawState = event.detail;
+				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
+				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
+				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
+				if ((drawState & SWT.SELECTED) != 0) {
 					int /*long*/ style = OS.gtk_widget_get_style (widget);					
-					OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, null, rect.x, rect.y, rect.width, rect.height);
+					//TODO - parity and sorted
+					byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
+					OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
 				}
 			}
 		}
 	}
 	int /*long*/ result = 0;
-	if (draw || OS.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
+	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
+		GC gc = new GC (this);
+		gc.setBackground (item.getBackground (columnIndex));
+		GdkRectangle rect = new GdkRectangle ();
+		OS.memmove (rect, background_area, GdkRectangle.sizeof);
+		gc.fillRectangle (rect.x, rect.y, rect.width, rect.height);
+		gc.dispose ();
+	}
+	if ((drawState & SWT.FOREGROUND) != 0 || OS.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
 		int /*long*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 		GtkCellRendererClass klass = new GtkCellRendererClass ();
 		OS.memmove (klass, g_class);
@@ -2292,7 +2317,7 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;
 				GC gc = new GC (this);
-				if ((drawFlags & OS.GTK_CELL_RENDERER_SELECTED) != 0) {
+				if ((drawState & SWT.SELECTED) != 0) {
 					gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 				} else {
@@ -2309,21 +2334,17 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				event.y = rect.y;
 				event.width = contentWidth [0];
 				event.height = rect.height;
-				if ((drawFlags & OS.GTK_CELL_RENDERER_SELECTED) != 0) event.detail |= SWT.SELECTED;
-				if ((drawFlags & OS.GTK_CELL_RENDERER_FOCUSED) != 0) event.detail |= SWT.FOCUSED;
+				event.detail = drawState;
 				sendEvent (SWT.PaintItem, event);	
 				gc.dispose();
 			}
-			draw = true;
-			ignoreDraw = !draw;
-			drawFlags = 0;
 		}
 	}
 	return result;
 }
 
 void resetCustomDraw () {
-	if ((style & SWT.VIRTUAL) != 0) return;
+	if ((style & SWT.VIRTUAL) != 0 || ownerDraw) return;
 	int end = Math.max (1, columnCount);
 	for (int i=0; i<end; i++) {
 		boolean customDraw = columnCount != 0 ? columns [i].customDraw : firstCustomDraw;
