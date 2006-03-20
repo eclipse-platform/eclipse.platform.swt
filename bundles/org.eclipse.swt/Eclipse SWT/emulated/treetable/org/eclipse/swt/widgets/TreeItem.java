@@ -802,8 +802,7 @@ Rectangle getBounds (boolean checkData) {
 	TreeColumn[] orderedColumns = parent.getOrderedColumns ();
 	int orderedCol0Index = orderedColumns.length == 0 ? 0 : orderedColumns [0].getIndex ();
 	int x = getTextX (orderedCol0Index);
-	int textPaintWidth = textWidths [orderedCol0Index] + 2 * MARGIN_TEXT;
-	int width = textPaintWidth;
+	int width = textWidths [orderedCol0Index] + 2 * MARGIN_TEXT;
 	if (orderedColumns.length > 0) {
 		TreeColumn column = orderedColumns [0];
 		int right = column.getX () + column.width;

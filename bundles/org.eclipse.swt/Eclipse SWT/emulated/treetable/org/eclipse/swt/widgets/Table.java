@@ -257,7 +257,7 @@ static int checkStyle (int style) {
 public void clear (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemsCount)) error (SWT.ERROR_INVALID_RANGE);
-	Rectangle bounds = items [index].getBounds ();
+	Rectangle bounds = items [index].getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	items [index].clear ();
 	if (columns.length == 0) updateHorizontalBar (0, -oldRightX);
@@ -380,7 +380,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		if (columns.length == 0) {
 			for (int i = 0; i < itemsCount; i++) {
-				Rectangle itemBounds = items [i].getBounds ();
+				Rectangle itemBounds = items [i].getBounds (false);
 				width = Math.max (width, itemBounds.x + itemBounds.width);
 			}
 		} else {
@@ -458,7 +458,7 @@ void createItem (TableItem item) {
 
 	/* update scrollbars */
 	updateVerticalBar ();
-	Rectangle bounds = item.getBounds ();
+	Rectangle bounds = item.getBounds (false);
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
 	/* 
@@ -662,7 +662,7 @@ void destroyItem (TableItem item) {
 	if (item == focusItem) reassignFocus ();
 
 	int index = item.index;
-	Rectangle bounds = item.getBounds ();
+	Rectangle bounds = item.getBounds (false);
 	int rightX = bounds.x + bounds.width;
 
 	if (index != itemsCount - 1) {

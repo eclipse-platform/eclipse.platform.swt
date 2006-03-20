@@ -419,10 +419,22 @@ public Color getBackground (int columnIndex) {
 	if (cellBackgrounds == null || cellBackgrounds [columnIndex] == null) return getBackground ();
 	return cellBackgrounds [columnIndex];
 }
-/*public*/ Rectangle getBounds () {
+public Rectangle getBounds () {
 	checkWidget ();
-	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
-	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
+	return getBounds (true);
+}
+Rectangle getBounds (boolean checkData) {
+	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int x = getTextX (0);
+	int width = textWidths [0] + 2 * MARGIN_TEXT;
+	if (parent.columns.length > 0) {
+		TableColumn column = parent.columns [0];
+		int right = column.getX () + column.width;
+		if (x + width > right) {
+			width = Math.max (0, right - x);
+		}
+	}
+	return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight - 1);
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -1464,7 +1476,7 @@ public void setFont (Font value) {
 	if (font == value) return;
 	if (value != null && value.equals (font)) return;
 	
-	Rectangle bounds = getBounds ();
+	Rectangle bounds = getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	font = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1479,7 +1491,7 @@ public void setFont (Font value) {
 	
 	/* horizontal bar could be affected if table has no columns */
 	if (parent.columns.length == 0) {
-		bounds = getBounds ();
+		bounds = getBounds (false);
 		int newRightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
@@ -1813,7 +1825,7 @@ public void setText (int columnIndex, String value) {
 	gc.dispose ();
 
 	if (parent.columns.length == 0) {
-		Rectangle bounds = getBounds ();
+		Rectangle bounds = getBounds (false);
 		int rightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (rightX, textWidths [columnIndex] - oldWidth);
 	}
@@ -1828,12 +1840,12 @@ public void setText (int columnIndex, String value) {
 }
 public void setText (String value) {
 	checkWidget ();
-	Rectangle bounds = getBounds ();
+	Rectangle bounds = getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	setText (0, value);
 	/* horizontal bar could be affected if table has no columns */
 	if (parent.columns.length == 0) {
-		bounds = getBounds ();
+		bounds = getBounds (false);
 		int newRightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
@@ -1854,7 +1866,7 @@ public void setText (String value) {
 public void setText (String[] value) {
 	checkWidget ();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
-	Rectangle bounds = getBounds ();
+	Rectangle bounds = getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	// TODO make a smarter implementation of this
 	for (int i = 0; i < value.length; i++) {
@@ -1862,7 +1874,7 @@ public void setText (String[] value) {
 	}
 	/* horizontal bar could be affected if table has no columns */
 	if (parent.columns.length == 0) {
-		bounds = getBounds ();
+		bounds = getBounds (false);
 		int newRightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
