@@ -1025,10 +1025,11 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc.setClipping (region);
 		gc.setFont (font);
 	}
-	boolean draw = true;
-	boolean selected = (itemState & (OS.kDataBrowserItemIsSelected | OS.kDataBrowserItemIsDragTarget)) != 0, wasSelected = selected;
-	boolean itemBg = item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null);
-	if (selected && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
+	int drawState = SWT.FOREGROUND;
+	if (item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) drawState |= SWT.BACKGROUND;
+	if ((itemState & (OS.kDataBrowserItemIsSelected | OS.kDataBrowserItemIsDragTarget)) != 0) drawState |= SWT.SELECTED;
+	boolean wasSelected = (drawState & SWT.SELECTED) != 0;
+	if ((drawState & SWT.SELECTED) != 0 && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 	} else {
@@ -1044,14 +1045,12 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		event.y = itemY;
 		event.width = itemWidth;
 		event.height = itemHeight;
-		if (selected) event.detail |= SWT.SELECTED;
-		if (itemBg) event.detail |= SWT.BACKGROUND;
+		event.detail = drawState;
 		sendEvent (SWT.EraseItem, event);
-		draw = event.doit;
-		selected = (event.detail & SWT.SELECTED) != 0;
+		drawState = event.detail;
 		gc.setClipping (region);
 		gc.setFont (font);
-		if (selected && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
+		if ((drawState & SWT.SELECTED) != 0 && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		} else {
@@ -1065,26 +1064,24 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		if ((column.style & SWT.RIGHT) != 0) x += width - contentWidth;
 	}
 	int stringX = x;
-	boolean drawBackground = itemBg;
 	if (image != null) stringX += this.imageBounds.width + gap;
-	if (selected && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
+	if ((drawState & SWT.SELECTED) != 0 && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
 		if ((style & SWT.HIDE_SELECTION) == 0 || hasFocus ()) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				gc.fillRectangle (itemX, itemY, itemWidth, itemHeight - 1);
-				drawBackground = false;
+				drawState &= ~SWT.BACKGROUND;
 			} else if (columnIndex == 0) {
 				gc.fillRectangle (stringX - 1, y, extent.x + 2, itemHeight - 1);
-				drawBackground = false;
+				drawState &= ~SWT.BACKGROUND;
 			}
 		 } else {
-			 //TODO - funny thing
-			 if (itemBg) gc.setBackground (background);
+			 if ((drawState & SWT.BACKGROUND) != 0) gc.setBackground (background);
 		 }
 	}
-	if (draw) {
-		if (drawBackground) {
-			gc.fillRectangle (itemX, itemY, itemWidth, itemHeight);
-		}
+	if ((drawState & SWT.BACKGROUND) != 0) {
+		gc.fillRectangle (itemX, itemY, itemWidth, itemHeight);
+	}
+	if ((drawState & SWT.FOREGROUND) != 0) {
 		if (image != null) {
 			int imageX = x, imageY = y + (height - this.imageBounds.height) / 2;
 			gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, imageX, imageY, this.imageBounds.width, this.imageBounds.height);
@@ -1100,8 +1097,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		event.y = y;
 		event.width = paintWidth;
 		event.height = itemHeight;
-		if (selected) event.detail |= SWT.SELECTED;
-		if (itemBg) event.detail |= SWT.BACKGROUND;
+		event.detail = drawState;
 		sendEvent (SWT.PaintItem, event);
 	}
 	OS.CGContextRestoreGState (gc.handle);
