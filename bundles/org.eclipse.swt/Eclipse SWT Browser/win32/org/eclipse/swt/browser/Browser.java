@@ -248,7 +248,7 @@ public Browser(Composite parent, int style) {
 								* prepend the UTF-8 Byte Order Mark signature to the data.
 								*/
 								byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
-								int	hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED, UTF8BOM.length + byteCount);
+								int	hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
 								if (hGlobal != 0) {
 									OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
 									OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
