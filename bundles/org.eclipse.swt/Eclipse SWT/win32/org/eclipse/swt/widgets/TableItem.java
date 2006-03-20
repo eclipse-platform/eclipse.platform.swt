@@ -193,7 +193,7 @@ public Color getBackground (int index) {
  * 
  * @since 3.1
  */
-/*public*/ Rectangle getBounds () {
+public Rectangle getBounds () {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);

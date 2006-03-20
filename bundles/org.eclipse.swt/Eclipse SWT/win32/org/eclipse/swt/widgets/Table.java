@@ -48,10 +48,10 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	boolean customDraw, dragStarted, fixScrollWidth, tipRequested;
+	boolean ignoreItemHeight, ignoreDraw, ignoreDrawSelection, ignoreDrawBackground;
+	boolean customDraw, dragStarted, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
-	boolean wasSelected, wasResized, ignoreItemHeight, ignoreDraw, ignoreDrawSelected;
-	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, textColor;
+	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -430,8 +430,8 @@ LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
 
 LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	int code = OS.CDRF_DODEFAULT;
-	textColor = -1;
-	ignoreDraw = ignoreDrawSelected = false;
+	selectionForeground = -1;
+	ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = false;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 	/*
@@ -463,7 +463,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	if (clrText == -1) clrText = item.foreground;
 	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 	if (clrTextBk == -1) clrTextBk = item.background;
-	if (textColor != -1) clrText = textColor;
+	if (selectionForeground != -1) clrText = selectionForeground;
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -472,8 +472,8 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	* image.  The fix is emulate LVS_EX_FULLROWSELECT by
 	* drawing the selection.
 	*/
-	if (OS.IsWindowVisible (handle)) {
-		if (!ignoreDrawSelected && (style & SWT.FULL_SELECTION) != 0) {
+	if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
+		if (!ignoreDrawSelection && (style & SWT.FULL_SELECTION) != 0) {
 			int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 			if ((bits & OS.LVS_EX_FULLROWSELECT) == 0) {
 				/*
@@ -536,7 +536,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 				nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 				if (clrTextBk == -1) {
 					nmcd.clrTextBk = OS.CLR_NONE;
-					if (textColor == -1) {
+					if (selectionForeground == -1) {
 						Control control = findBackgroundControl ();
 						if (control == null) control = this;
 						if (control.backgroundImage == null) {
@@ -544,27 +544,28 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 						}
 					}
 				} else {
-					nmcd.clrTextBk = textColor != -1 ? OS.CLR_NONE : clrTextBk;
+					nmcd.clrTextBk = selectionForeground != -1 ? OS.CLR_NONE : clrTextBk;
 				}
 				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 			}
 			code |= OS.CDRF_NEWFONT;
 		}
-		/*
-		* Feature in Windows.  When the table is disabled, it draws
-		* with a gray background but does not gray the text.  The fix
-		* is to explicitly gray the text.
-		*/
-		if (!OS.IsWindowEnabled (handle)) {
-			nmcd.clrText = OS.GetSysColor (OS.COLOR_GRAYTEXT);
-			if (findImageControl () != null) {
-				nmcd.clrTextBk = OS.CLR_NONE;
-			} else {
-				nmcd.clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
-			}
-			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
-			code |= OS.CDRF_NEWFONT;
+	}
+	/*
+	* Feature in Windows.  When the table is disabled, it draws
+	* with a gray background but does not gray the text.  The fix
+	* is to explicitly gray the text.
+	*/
+	if (!OS.IsWindowEnabled (handle)) {
+		nmcd.clrText = OS.GetSysColor (OS.COLOR_GRAYTEXT);
+		if (findImageControl () != null) {
+			nmcd.clrTextBk = OS.CLR_NONE;
+		} else {
+			nmcd.clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
 		}
+		nmcd.uItemState &= ~OS.CDIS_SELECTED;
+		OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+		code |= OS.CDRF_NEWFONT;
 	}
 	return new LRESULT (code);
 }
@@ -2746,21 +2747,25 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	GCData data = new GCData ();
 	data.device = display;
 	int clrSelectionBk = -1;
+	boolean drawSelected = false, drawBackground = false;
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
 			if (OS.GetFocus () == handle) {
+				drawSelected = true;
 				data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 			} else {
+				drawSelected = (style & SWT.HIDE_SELECTION) == 0;
 				data.foreground = OS.GetTextColor (hDC);
 				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_3DFACE);
 			}
 		} else {
 			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
+			drawBackground = clrTextBk != -1;
 		}
 	} else {
-		data.foreground = OS.GetTextColor (hDC);
+		data.foreground = OS.GetSysColor (OS.COLOR_GRAYTEXT);
 		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 		if (selected) clrSelectionBk = data.background;
 	}
@@ -2774,10 +2779,17 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	event.item = item;
 	event.gc = gc;
 	event.index = nmcd.iSubItem;
+	event.detail |= SWT.FOREGROUND;
 	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-		event.detail |= SWT.FOCUSED;
+		if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
+			if (handle == OS.GetFocus ()) {
+				int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+				if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+			}
+		}
 	}
-	if (selected) event.detail |= SWT.SELECTED;
+	if (drawSelected) event.detail |= SWT.SELECTED;
+	if (drawBackground) event.detail |= SWT.BACKGROUND;
 	event.x = cellRect.left;
 	event.y = cellRect.top;
 	event.width = cellRect.right - cellRect.left;
@@ -2789,26 +2801,33 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
 	if (isDisposed () || item.isDisposed ()) return;
-	if (selected) {
-		if ((event.detail & SWT.SELECTED) == 0) {
-			ignoreDrawSelected = true;
+	ignoreDraw = (event.detail & SWT.FOREGROUND) == 0;
+	ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+	ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+	if (drawSelected) {
+		if (ignoreDrawSelection) {
 			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
-				textColor = clrSelectionText;
+				selectionForeground = clrSelectionText;
 			}
-			nmcd.uItemState &= ~OS.CDIS_SELECTED;
+			nmcd.uItemState &= ~(OS.CDIS_SELECTED | OS.CDIS_FOCUS);
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
 	} else {
-		if ((event.detail & SWT.SELECTED) != 0) {
+		if (ignoreDrawSelection) {
 			nmcd.uItemState |= OS.CDIS_SELECTED;
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
 	}
-	ignoreDraw = !event.doit;
 	if (ignoreDraw) {
-		boolean fullText = (style & SWT.FULL_SELECTION) != 0;
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+		boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
 		RECT clipRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, fullText, false, hDC);
-		if (!ignoreDrawSelected && clrSelectionBk != -1) {
+		if (!ignoreDrawBackground && drawBackground) {
+			RECT backgroundRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, true, false, hDC);
+			fillBackground (hDC, clrTextBk, backgroundRect);
+		}
+		if (!ignoreDrawSelection && clrSelectionBk != -1) {
 			RECT textRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 			fillBackground (hDC, clrSelectionBk, textRect);
 		}
@@ -2961,14 +2980,16 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	lvItem.iItem = nmcd.dwItemSpec;
 	int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-	boolean drawBackground = false;
 	boolean selected = result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0;
+	boolean drawSelected = false, drawBackground = false;
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
 			if (OS.GetFocus () == handle) {
-				data.foreground = textColor != -1 ? textColor : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				drawSelected = true;
+				data.foreground = selectionForeground != -1 ? selectionForeground : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 			} else {
+				drawSelected = (style & SWT.HIDE_SELECTION) == 0;
 				data.foreground = OS.GetTextColor (hDC);
 				data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 			}
@@ -2982,7 +3003,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 			drawBackground = clrTextBk != -1;
 		}
 	} else {
-		data.foreground = OS.GetTextColor (hDC);
+		data.foreground = OS.GetSysColor (OS.COLOR_GRAYTEXT);
 		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 	}
 	data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
@@ -2994,10 +3015,16 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	event.item = item;
 	event.gc = gc;
 	event.index = nmcd.iSubItem;
+	event.detail |= SWT.FOREGROUND;
 	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-		event.detail |= SWT.FOCUSED;
+		if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
+			if (handle == OS.GetFocus ()) {
+				int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+				if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+			}
+		}
 	}
-	if (selected) event.detail |= SWT.SELECTED;
+	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
 	event.x = itemRect.left;
 	event.y = itemRect.top;
