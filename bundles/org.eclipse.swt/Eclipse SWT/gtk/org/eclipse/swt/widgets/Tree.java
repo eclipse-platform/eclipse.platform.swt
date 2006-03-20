@@ -749,7 +749,7 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	 */
 	if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
 		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
-		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.background_gdk, BACKGROUND_COLUMN);
+		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 	}
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + CELL_TEXT);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
