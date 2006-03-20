@@ -1054,52 +1054,21 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 	int y = parent.getItemY (this);
 	int itemHeight = parent.itemHeight;
 
-	/* draw the background color of this cell */
-	boolean hasBackground = background != null || (cellBackgrounds != null && cellBackgrounds [columnIndex] != null);
-	if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
-		Rectangle focusBounds = getFocusBounds ();
-		if (focusBounds.x > 0) {
-			/* fill space to left of selection rect */
-			parent.drawBackground (gc, 0, y, focusBounds.x, itemHeight);
-		}
-		if (column == null) {
-			/* fill space to right of selection rect */
-			int rightX = focusBounds.x + focusBounds.width;
-			int width = clientArea.width - rightX;
-			if (width > 0) {
-				parent.drawBackground (gc, rightX, y, width, itemHeight);
-			}
-		}
-
-		int fillWidth = 0;
-		if (column == null) {
-			fillWidth = focusBounds.width;
-		} else {
-			fillWidth = column.width - focusBounds.x;
-			if (parent.linesVisible) fillWidth--;
-		}
-		if (!hasBackground) {
-			parent.drawBackground (gc, focusBounds.x, focusBounds.y, fillWidth, focusBounds.height);
-		} else {
-			gc.setBackground (getBackground (columnIndex));
-			gc.fillRectangle (focusBounds.x, focusBounds.y, fillWidth, focusBounds.height);
-		}
+	/* draw the parent background color/image of this cell */
+	if (column == null) {
+		parent.drawBackground (gc, 0, y, clientArea.width, itemHeight);
 	} else {
 		int fillWidth = cellBounds.width;
 		if (parent.linesVisible) fillWidth--;
-		if (!hasBackground) {
-			parent.drawBackground (gc, cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
-		} else {
-			gc.setBackground (getBackground (columnIndex));
-			gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
-		}
+		parent.drawBackground (gc, cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 	}
 
 	boolean isSelected = isSelected ();
-	boolean drawSelection = isSelected;
 	boolean isFocusItem = parent.focusItem == this;
+	boolean drawBackground = background != null || (cellBackgrounds != null && cellBackgrounds [columnIndex] != null);
+	boolean drawForeground = true;
+	boolean drawSelection = isSelected;
 	boolean drawFocus = isFocusItem;
-	boolean drawContent = true;
 	if (parent.hooks (SWT.EraseItem)) {
 		gc.setFont (getFont (columnIndex, false));
 		if (isSelected && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
@@ -1114,9 +1083,10 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 		event.gc = gc;
 		event.index = columnIndex;
 		event.doit = true;
+		event.detail = SWT.FOREGROUND;
+		if (drawBackground) event.detail |= SWT.BACKGROUND;
 		if (isSelected) event.detail |= SWT.SELECTED;
 		if (isFocusItem) event.detail |= SWT.FOCUSED;
-		if (hasBackground) event.detail |= SWT.BACKGROUND;
 		event.x = cellBounds.x;
 		event.y = cellBounds.y;
 		event.width = cellBounds.width;
@@ -1125,9 +1095,29 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 		parent.sendEvent (SWT.EraseItem, event);
 		event.gc = null;
 		if (isDisposed ()) return false;
+		drawBackground = drawBackground && (event.detail & SWT.BACKGROUND) != 0;
+		drawForeground = (event.detail & SWT.FOREGROUND) != 0;
 		drawSelection = isSelected && (event.detail & SWT.SELECTED) != 0;
 		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
-		drawContent = event.doit;
+	}
+
+	/* draw the cell's set background if appropriate */
+	if (drawBackground) {
+		gc.setBackground (getBackground (columnIndex));
+		if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
+			Rectangle focusBounds = getFocusBounds ();
+			int fillWidth = 0;
+			if (column == null) {
+				fillWidth = focusBounds.width;
+			} else {
+				fillWidth = column.width - focusBounds.x;
+				if (parent.linesVisible) fillWidth--;
+			}
+			gc.fillRectangle (focusBounds.x, focusBounds.y, fillWidth, focusBounds.height);
+		} else {
+			int fillWidth = cellBounds.width;
+			gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
+		}
 	}
 
 	/* draw the selection bar if the receiver is selected */
@@ -1191,7 +1181,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 		}
 	}
 
-	if (drawContent) {
+	if (drawForeground) {
 		Image image = getImage (columnIndex, false);
 		String text = getDisplayText (columnIndex);
 		Rectangle imageArea = getImageBounds (columnIndex);
