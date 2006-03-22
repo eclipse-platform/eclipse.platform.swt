@@ -2801,9 +2801,13 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
 	if (isDisposed () || item.isDisposed ()) return;
-	ignoreDraw = (event.detail & SWT.FOREGROUND) == 0;
-	ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
-	ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+	if (event.doit) {
+		ignoreDraw = (event.detail & SWT.FOREGROUND) == 0;
+		ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+		ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+	} else {
+		ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = true;
+	}
 	if (drawSelected) {
 		if (ignoreDrawSelection) {
 			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {

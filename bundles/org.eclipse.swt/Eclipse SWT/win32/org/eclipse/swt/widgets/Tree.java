@@ -537,9 +537,13 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 						gc.dispose ();
 						OS.RestoreDC (hDC, nSavedDC);
 						if (isDisposed () || item.isDisposed ()) break;
-						ignoreDraw = (event.detail & SWT.FOREGROUND) == 0;
-						ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
-						ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+						if (event.doit) {
+							ignoreDraw = (event.detail & SWT.FOREGROUND) == 0;
+							ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+							ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+						} else {
+							ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = true;
+						}
 						if (!ignoreDrawSelection) {
 							if (!selected) {
 								selectionForeground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
@@ -906,9 +910,13 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 			gc.dispose ();
 			OS.RestoreDC (hDC, nSavedDC);
 			if (isDisposed () || item.isDisposed ()) return null;
-			ignoreDraw = (event.detail & SWT.FOREGROUND) == 0;
-			ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
-			ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+			if (event.doit) {
+				ignoreDraw = (event.detail & SWT.FOREGROUND) == 0;
+				ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+				ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+			} else {
+				ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = true;
+			}
 			if (!selected && !ignoreDrawBackground && clrTextBk != -1) {
 				if ((style & SWT.FULL_SELECTION) != 0 && count == 0) {
 					fillBackground (hDC, clrTextBk, rect);
