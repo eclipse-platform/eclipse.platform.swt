@@ -13,8 +13,7 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.FontSelectionQDStyle;
+import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.carbon.RGBColor;
 
@@ -132,10 +131,27 @@ int fontProc (int nextHandler, int theEvent, int userData) {
 			int [] fontID = new int [1];
 			if (OS.GetEventParameter (theEvent, OS.kEventParamATSUFontID, OS.typeUInt32, null, 4, null, fontID) == OS.noErr) {
 				int [] actualLength = new int [1];
-				OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
-				byte [] buffer = new byte [actualLength [0]];
-				OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
-				String name = new String(buffer);
+				int platformCode = OS.kFontUnicodePlatform, encoding = OS.kCFStringEncodingUnicode;
+				if (OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null) != OS.noErr) {
+					platformCode = OS.kFontNoPlatformCode;
+					encoding = OS.kCFStringEncodingMacRoman;
+					OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
+				}	
+				byte[] buffer = new byte[actualLength[0]];
+				OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
+				String name = "";
+				int ptr = OS.CFStringCreateWithBytes (0, buffer, buffer.length, encoding, false);
+				if (ptr != 0) {
+					int length = OS.CFStringGetLength (ptr);
+					if (length != 0) {
+						char[] chars = new char [length];
+						CFRange range = new CFRange ();
+						range.length = length;
+						OS.CFStringGetCharacters (ptr, range, chars);
+						name = new String (chars);
+					}
+					OS.CFRelease (ptr);
+				}
 				fontData.setName (name);
 			}
 			short [] fontStyle = new short [1];

@@ -271,10 +271,27 @@ public boolean equals(Object object) {
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int [] actualLength = new int [1];
-	OS.ATSUFindFontName (handle, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
+	int platformCode = OS.kFontUnicodePlatform, encoding = OS.kCFStringEncodingUnicode;
+	if (OS.ATSUFindFontName(handle, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null) != OS.noErr) {
+		platformCode = OS.kFontNoPlatformCode;
+		encoding = OS.kCFStringEncodingMacRoman;
+		OS.ATSUFindFontName (handle, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
+	}	
 	byte[] buffer = new byte[actualLength[0]];
-	OS.ATSUFindFontName (handle, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
-	String name = new String(buffer);
+	OS.ATSUFindFontName(handle, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
+	String name = "";
+	int ptr = OS.CFStringCreateWithBytes(0, buffer, buffer.length, encoding, false);
+	if (ptr != 0) {
+		int length = OS.CFStringGetLength(ptr);
+		if (length != 0) {
+			char[] chars = new char[length];
+			CFRange range = new CFRange();
+			range.length = length;
+			OS.CFStringGetCharacters(ptr, range, chars);
+			name = new String(chars);
+		}
+		OS.CFRelease(ptr);
+	}
 	int style = SWT.NORMAL;
 	if ((this.style & OS.italic) != 0) style |= SWT.ITALIC;
 	if ((this.style & OS.bold) != 0) style |= SWT.BOLD;

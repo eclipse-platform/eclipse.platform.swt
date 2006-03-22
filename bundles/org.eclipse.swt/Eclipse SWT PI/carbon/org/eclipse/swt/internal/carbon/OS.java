@@ -119,7 +119,9 @@ public class OS extends Platform {
 	public static final int kCFNumberFormatterDecimalStyle = 1;
 	public static final int kCFURLPOSIXPathStyle = 0;
 	public static final int kCFStringEncodingASCII = 0x0600;
+	public static final int kCFStringEncodingMacRoman = 0;
 	public static final int kCFStringEncodingUTF8 = 0x08000100;
+	public static final int kCFStringEncodingUnicode = 0x0100;
 	public static final int kCGEncodingMacRoman = 1;
 	public static final int kCGImageAlphaFirst = 4;
 	public static final int kCGImageAlphaNoneSkipFirst = 6;
@@ -444,6 +446,7 @@ public class OS extends Platform {
 	public static final int kFontNoPlatformCode = -1;
 	public static final int kFontNoScriptCode = -1;
 	public static final int kFontNoLanguageCode = -1;
+	public static final int kFontUnicodePlatform = 0;
 	public static final int kFontSelectionQDStyleVersionZero = 0;
 	public static final int kFontSelectionQDType = ('q'<<24) + ('s'<<16) + ('t'<<8) + 'l';
 	public static final int kHIComboBoxAutoCompletionAttribute = (1 << 0);	

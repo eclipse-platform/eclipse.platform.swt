@@ -384,6 +384,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	short[] family = new short[1];
 	int[] fontCount = new int[1];
 	int[] actualLength = new int[1];
+	CFRange range = new CFRange();
 	OS.ATSUGetFontIDs(null, 0, fontCount);
 	int[] fontIDs = new int[fontCount[0]];
 	OS.ATSUGetFontIDs(fontIDs, fontIDs.length, fontCount);
@@ -391,17 +392,36 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	FontData[] fds = new FontData[fontCount[0]];
 	for (int i=0; i<fds.length; i++) {
 		int fontID = fontIDs[i];
-		OS.ATSUFindFontName(fontID, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
+		int platformCode = OS.kFontUnicodePlatform, encoding = OS.kCFStringEncodingUnicode;
+		if (OS.ATSUFindFontName(fontID, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null) != OS.noErr) {
+			platformCode = OS.kFontNoPlatformCode;
+			encoding = OS.kCFStringEncodingMacRoman;
+			if (OS.ATSUFindFontName(fontID, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null) != OS.noErr) {
+				continue;
+			}
+		}
 		byte[] buffer = new byte[actualLength[0]];
-		OS.ATSUFindFontName(fontID, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
-		String name = new String(buffer);
-		if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
-			OS.FMGetFontFamilyInstanceFromFont(fontID, family, style);
-			int s = SWT.NORMAL;
-			if ((style[0] & OS.italic) != 0) s |= SWT.ITALIC;
-			if ((style[0] & OS.bold) != 0) s |= SWT.BOLD;
-			FontData data = new FontData(name, 0, s);
-			fds[count++] = data;
+		OS.ATSUFindFontName(fontID, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
+		int ptr = OS.CFStringCreateWithBytes(0, buffer, buffer.length, encoding, false);
+		if (ptr != 0) {
+			int length = OS.CFStringGetLength(ptr);
+			if (length != 0) {
+				char[] chars = new char[length];
+				range.length = length;
+				OS.CFStringGetCharacters(ptr, range, chars);
+				String name = new String(chars);
+				if (!name.startsWith(".")) {
+					if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+						OS.FMGetFontFamilyInstanceFromFont(fontID, family, style);
+						int s = SWT.NORMAL;
+						if ((style[0] & OS.italic) != 0) s |= SWT.ITALIC;
+						if ((style[0] & OS.bold) != 0) s |= SWT.BOLD;
+						FontData data = new FontData(name, 0, s);
+						fds[count++] = data;
+					}
+				}
+			}
+			OS.CFRelease(ptr);
 		}
 	}
 	if (count == fds.length) return fds;
