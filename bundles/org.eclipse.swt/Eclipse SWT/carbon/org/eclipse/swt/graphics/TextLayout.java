@@ -245,7 +245,7 @@ public TextLayout (Device device) {
 	setLayoutControl(OS.kATSULineDirectionTag, OS.kATSULeftToRightBaseDirection, 1);
 	setLayoutControl(OS.kATSULineLayoutOptionsTag, OS.kATSLineLastNoJustification, 4);
 	setLayoutControl(OS.kATSULineLayoutOptionsTag, OS.kATSLineUseDeviceMetrics, 4);
-	OS.ATSUSetHighlightingMethod(layout, 1, new ATSUUnhighlightData());
+	OS.ATSUSetHighlightingMethod(layout, OS.kRedrawHighlighting, new ATSUUnhighlightData());
 	ascent = descent = -1;
 	text = "";
 	styles = new StyleItem[2];

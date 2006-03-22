@@ -461,6 +461,7 @@ public class OS extends Platform {
 	public static final int kHIThemeFrameTextFieldSquare = 0;
 	public static final int kHIThemeGroupBoxKindPrimary = 0;
 	public static final int kHIThemeFrameListBox = 1;
+	public static final int kRedrawHighlighting = 1;
 	public static final int kThemeComboBox = 16;
 	public static final int kThemeLeftOutsideArrowPressed = 0x01;
 	public static final int kThemeLeftInsideArrowPressed = 0x02;
