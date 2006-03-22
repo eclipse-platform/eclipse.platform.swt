@@ -180,10 +180,14 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int startY = rect.top;			
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	OS.GetControlBounds (parent.handle, rect);
+	if (!OS.HIVIEW) {
+		OS.GetControlBounds (parent.handle, rect);
+		startX -= rect.left;
+		startY -= rect.top;
+	}
 	Event event = new Event ();
-	event.x = startX -= rect.left;
-	event.y = startY -= rect.top;
+	event.x = startX;
+	event.y = startY;
 	event.width = width;
 	event.height = height;
 	sendEvent (SWT.Selection, event);
