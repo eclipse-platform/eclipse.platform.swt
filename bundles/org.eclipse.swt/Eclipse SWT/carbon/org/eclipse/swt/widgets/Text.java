@@ -1630,7 +1630,11 @@ void setBackground (float [] color) {
 		txnColor.bg_red = (short) (red << 8 | red);
 		txnColor.bg_green = (short) (green << 8 | green);
 		txnColor.bg_blue = (short) (blue << 8 | blue);
+		boolean readOnly = (style & SWT.READ_ONLY) != 0;
+		int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
+		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
 		OS.TXNSetBackground (txnObject, txnColor);
+		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
 	}
 }
 
@@ -1759,7 +1763,11 @@ void setForeground (float [] color) {
 		};
 		int ptr1 = OS.NewPtr (attribs.length * 4);
 		OS.memcpy (ptr1, attribs, attribs.length * 4);
+		boolean readOnly = (style & SWT.READ_ONLY) != 0;
+		int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
+		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
 		OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr1, 0, 0);
+		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
 		OS.DisposePtr (ptr1);
 		OS.DisposePtr (ptr2);
 	}
