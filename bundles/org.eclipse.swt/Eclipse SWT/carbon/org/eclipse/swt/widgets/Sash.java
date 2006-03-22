@@ -170,6 +170,9 @@ int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+
+	display.grabControl = null;
+	display.runDeferredEvents ();
 	
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
@@ -250,6 +253,14 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 					setBounds (event.x, event.y, width, height);
 					if (isDisposed ()) return result;
 					if (!OS.HIVIEW) parent.update (true);
+				}
+				if (outResult [0] == OS.kMouseTrackingMouseUp)  {
+					OS.GetControlBounds (handle, rect);
+					short [] button = new short [1];
+					OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+					int chord = OS.GetCurrentEventButtonState ();
+					int modifiers = OS.GetCurrentEventKeyModifiers ();
+					sendMouseEvent (SWT.MouseUp, button [0], true, chord, (short) (x - rect.left), (short) (y - rect.top), modifiers);
 				}
 				break;
 			}
