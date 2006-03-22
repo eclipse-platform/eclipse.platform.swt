@@ -3304,7 +3304,7 @@ boolean runGrabs () {
 			int handle = grabControl.handle;
 			int window = OS.GetControlOwner (handle);
 			int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
-			OS.TrackMouseLocationWithOptions (port, OS.kTrackMouseLocationOptionDontConsumeMouseUp, 50 / 1000.0, outPt, outModifiers, outResult);
+			OS.TrackMouseLocationWithOptions (port, OS.kTrackMouseLocationOptionDontConsumeMouseUp, 10 / 1000.0, outPt, outModifiers, outResult);
 			int type = 0, button = 0;
 			switch ((int) outResult [0]) {
 				case OS.kMouseTrackingTimedOut: {
