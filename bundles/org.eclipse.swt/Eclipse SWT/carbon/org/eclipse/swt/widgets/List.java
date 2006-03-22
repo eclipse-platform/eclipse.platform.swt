@@ -331,7 +331,7 @@ int defaultThemeFont () {
  */
 public void deselect (int index) {
 	checkWidget();
-	if (0 < index && index < itemCount) {
+	if (0 <= index && index < itemCount) {
 		int [] ids = new int [] {index + 1};
 		deselect (ids, ids.length);
 	}
