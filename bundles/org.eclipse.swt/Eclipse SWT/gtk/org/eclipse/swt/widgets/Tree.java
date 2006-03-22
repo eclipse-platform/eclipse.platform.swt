@@ -2259,7 +2259,11 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				event.detail = drawState;
 				sendEvent (SWT.EraseItem, event);
 				gc.dispose();
-				drawState = event.detail;
+				if (event.doit) {
+					drawState = event.detail;
+				} else {
+					drawState = 0;
+				}
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
 				if ((drawState & SWT.FOCUSED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_FOCUSED;
