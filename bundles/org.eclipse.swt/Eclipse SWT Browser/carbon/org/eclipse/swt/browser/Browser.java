@@ -245,6 +245,18 @@ public Browser(Composite parent, int style) {
 				}
 				case SWT.Show: {
 					/*
+					* Do not update size when it is not visible. Note that isVisible()
+					* cannot be used because SWT.Show is sent before the widget is
+					* actually visible. 
+					*/
+					Shell shell = getShell();
+					Composite parent = Browser.this;
+					while (parent != shell && (parent.getVisible() || parent == e.widget)) {
+						parent = parent.getParent();
+					}
+					if (!(parent.getVisible() || parent == e.widget)) return;
+
+					/*
 					* Bug on Safari. The web view cannot be obscured by other views above it.
 					* This problem is specified in the apple documentation for HiWebViewCreate.
 					* The workaround is to hook Hide and Show events on the browser's parents
