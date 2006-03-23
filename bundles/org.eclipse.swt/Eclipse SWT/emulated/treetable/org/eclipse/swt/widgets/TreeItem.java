@@ -1653,10 +1653,14 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		parent.sendEvent (SWT.EraseItem, event);
 		event.gc = null;
 		if (isDisposed ()) return false;
-		drawBackground = drawBackground && (event.detail & SWT.BACKGROUND) != 0;
-		drawForeground = (event.detail & SWT.FOREGROUND) != 0;
-		drawSelection = isSelected && (event.detail & SWT.SELECTED) != 0;
-		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
+		if (!event.doit) {
+			drawBackground = drawForeground = drawSelection = drawFocus = false;
+		} else {
+			drawBackground = drawBackground && (event.detail & SWT.BACKGROUND) != 0;
+			drawForeground = (event.detail & SWT.FOREGROUND) != 0;
+			drawSelection = isSelected && (event.detail & SWT.SELECTED) != 0;
+			drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
+		}
 	}
 
 	/* draw the cell's set background if appropriate */
