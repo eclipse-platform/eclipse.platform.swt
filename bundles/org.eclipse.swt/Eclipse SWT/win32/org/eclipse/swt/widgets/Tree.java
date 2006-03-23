@@ -615,6 +615,10 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 						OS.SetRect (rect, rect.left + size.x + INSET, rect.top, rect.right - inset, rect.bottom);
 					} else {
 						OS.SetRect (rect, rect.left + INSET, rect.top, rect.right - inset, rect.bottom);
+						if (i == 0 && OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
+							if (size == null) size = getImageSize ();
+							rect.left = Math.min (rect.left + size.x, rect.right);
+						}
 					}
 				}
 				if (drawText) {
@@ -637,7 +641,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 							if (clrText != -1) clrText = OS.SetTextColor (hDC, clrText);
 							if (clrTextBk != -1) clrTextBk = OS.SetBkColor (hDC, clrTextBk);
 							int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER;
-							if (index != 0) flags |= OS.DT_ENDELLIPSIS;
+							if (i != 0) flags |= OS.DT_ENDELLIPSIS;
 							TreeColumn column = columns != null ? columns [index] : null;
 							if (column != null) {
 								if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
@@ -782,6 +786,16 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
 		if (clrTextBk == -1) clrTextBk = item.background;
 	}
+	int clrSortBk = -1;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (sortColumn != null && sortDirection != SWT.NONE) {
+			if (findImageControl () == null) {
+				if (indexOf (sortColumn) == index) {
+					clrTextBk = clrSortBk = getSortColumnPixel ();
+				}
+			}
+		}
+	}
 	int hDC = nmcd.hdc;
 	/*
 	* Feature in Windows.  When the mouse is pressed and the
@@ -868,6 +882,10 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 				cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 			} else {
 				cellRect = item.getBounds (index, true, true, false, false, true, hDC);
+			}
+			if (clrSortBk != -1) {
+				RECT fullRect = item.getBounds (index, true, true, true, true, true, hDC);
+				drawBackground (hDC, fullRect, clrSortBk);
 			}
 			int nSavedDC = OS.SaveDC (hDC);
 			GCData data = new GCData ();
@@ -974,15 +992,6 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 					RECT rect = new RECT ();
 					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 					fillBackground (hDC, OS.GetBkColor (hDC), rect);
-				}
-			}
-		}
-	}
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		if (sortColumn != null && sortDirection != SWT.NONE) {
-			if (findImageControl () == null) {
-				if (indexOf (sortColumn) == index) {
-					clrTextBk = getSortColumnPixel ();
 				}
 			}
 		}
@@ -4344,7 +4353,7 @@ void updateImageList () {
 			if (index == 0) {
 				image = item.image;
 			} else {
-				Image [] images  = item.images;
+				Image [] images = item.images;
 				if (images != null) image = images [index];
 			}
 			if (image != null) break;
