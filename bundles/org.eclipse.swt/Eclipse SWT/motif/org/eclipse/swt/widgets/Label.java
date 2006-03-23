@@ -406,11 +406,13 @@ void realizeChildren () {
 }
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren, boolean trim) {
 	super.redrawWidget (x, y, width, height, redrawAll, allChildren, trim);
-	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (handle, (short) x, (short) y, root_x, root_y);
-	short [] label_x = new short [1], label_y = new short [1];
-	OS.XtTranslateCoords (formHandle, (short) 0, (short) 0, label_x, label_y);
-	redrawHandle (root_x [0] - label_x [0], root_y [0] - label_y [0], width, height, redrawAll, formHandle);
+	if (formHandle != 0) { 
+		short [] root_x = new short [1], root_y = new short [1];
+		OS.XtTranslateCoords (handle, (short) x, (short) y, root_x, root_y);
+		short [] label_x = new short [1], label_y = new short [1];
+		OS.XtTranslateCoords (formHandle, (short) 0, (short) 0, label_x, label_y);
+		redrawHandle (root_x [0] - label_x [0], root_y [0] - label_y [0], width, height, redrawAll, formHandle);
+	}
 }
 void register () {
 	super.register ();
