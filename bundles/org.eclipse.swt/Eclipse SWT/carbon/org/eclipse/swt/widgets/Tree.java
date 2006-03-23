@@ -1063,11 +1063,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		event.height = itemHeight;
 		event.detail = drawState;
 		sendEvent (SWT.EraseItem, event);
-		if (event.doit) {
-			drawState = event.detail;
-		} else {
-			drawState = 0;
-		}
+		drawState = event.doit ? event.detail : 0;
 		gc.setClipping (region);
 		gc.setFont (font);
 		if ((drawState & SWT.SELECTED) != 0 && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
