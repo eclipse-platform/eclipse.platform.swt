@@ -223,6 +223,8 @@ void setScrollbar () {
 
 public void setSpacing (int spacing) {
 	checkWidget ();
+	if (spacing < 0) return;
+	if (spacing == this.spacing) return;
 	this.spacing = spacing;
 	int width = Math.max (0, getClientArea ().width - spacing * 2);
 	for (int i = 0; i < itemCount; i++) {
