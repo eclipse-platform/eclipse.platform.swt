@@ -198,6 +198,10 @@ public String getText () {
 	return text;
 }
 
+float getThemeAlpha () {
+	return 0.25f * parent.getThemeAlpha ();
+}
+
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,

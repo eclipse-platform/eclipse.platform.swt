@@ -685,6 +685,7 @@ void fillBackground (int control, int context, Rectangle bounds) {
 		} else {
 			OS.HIViewGetBounds (control, rect);
 		}
+		OS.CGContextSetAlpha (context, getThemeAlpha ());
 		Control widget = findBackgroundControl ();
 		if (widget != null && widget.backgroundImage != null) {
 			CGPoint pt = new CGPoint();
@@ -1144,6 +1145,10 @@ public Point getSize () {
 public String getToolTipText () {
 	checkWidget();
 	return toolTipText;
+}
+
+float getThemeAlpha () {
+	return 1 * parent.getThemeAlpha ();
 }
 
 /**

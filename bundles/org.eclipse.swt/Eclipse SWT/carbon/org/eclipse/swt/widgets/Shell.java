@@ -792,6 +792,10 @@ public Point getSize () {
 	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
+float getThemeAlpha () {
+	return 1;
+}
+
 public boolean getVisible () {
 	checkWidget();
     return OS.IsWindowVisible (shellHandle);
