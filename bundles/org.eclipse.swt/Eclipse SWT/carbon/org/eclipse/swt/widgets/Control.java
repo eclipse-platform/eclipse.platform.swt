@@ -685,7 +685,6 @@ void fillBackground (int control, int context, Rectangle bounds) {
 		} else {
 			OS.HIViewGetBounds (control, rect);
 		}
-		OS.CGContextSetAlpha (context, getThemeAlpha ());
 		Control widget = findBackgroundControl ();
 		if (widget != null && widget.backgroundImage != null) {
 			CGPoint pt = new CGPoint();
@@ -705,10 +704,12 @@ void fillBackground (int control, int context, Rectangle bounds) {
 			OS.CGContextSetFillColorSpace (context, colorspace);
 			OS.CGContextSetFillColor (context, widget.background);
 			OS.CGColorSpaceRelease (colorspace);
+			OS.CGContextSetAlpha (context, getThemeAlpha ());
 			OS.CGContextFillRect (context, rect);
 		} else {
 			if (OS.VERSION >= 0x1040) {
 				OS.HIThemeSetFill (OS.kThemeBrushDialogBackgroundActive, 0, context, OS.kHIThemeOrientationNormal);
+				OS.CGContextSetAlpha (context, getThemeAlpha ());
 				OS.CGContextFillRect (context, rect);
 			} else {
 				Rect rect1 = new Rect ();
