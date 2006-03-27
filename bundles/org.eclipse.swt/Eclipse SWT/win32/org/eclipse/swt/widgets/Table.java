@@ -4919,6 +4919,23 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 
 LRESULT WM_HSCROLL (int wParam, int lParam) {
 	/*
+	* Bug in Windows.  When a table that is drawing grid lines
+	* is slowly scrolled horizontally to the left, the table does
+	* not redraw the newly exposed vertical grid lines.  The fix
+	* is to save the old scroll position, call the window proc,
+	* get the new scroll position and redraw the new area.
+	*/
+	int oldPos = 0;
+	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_POS;
+		OS.GetScrollInfo (handle, OS.SB_HORZ, info);
+		oldPos = info.nPos;
+	}
+	
+	/*
 	* When there are many columns in a table, scrolling performance
 	* can be improved by temporarily unsubclassing the window proc
 	* so that internal messages are dispatched directly to the table.
@@ -4932,14 +4949,24 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	subclass ();
 	
 	/*
-	* Bug in Windows.  When an empty table is drawing grid lines
-	* and the user scrolls horizontally, the table does not redraw
-	* the newly exposed vertical grid lines.  The fix is to redraw
-	* the table.
+	* Bug in Windows.  When a table that is drawing grid lines
+	* is slowly scrolled horizontally to the left, the table does
+	* not redraw the newly exposed vertical grid lines.  The fix
+	* is to save the old scroll position, call the window proc,
+	* get the new scroll position and redraw the new area.
 	*/
-	if (OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0) == 0) {
-		int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-		if ((bits & OS.LVS_EX_GRIDLINES) != 0) OS.InvalidateRect (handle, null, true);
+	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_POS;
+		OS.GetScrollInfo (handle, OS.SB_HORZ, info);
+		int newPos = info.nPos;
+		if (newPos < oldPos) {
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			rect.right = oldPos - newPos + GRID_WIDTH;
+			OS.InvalidateRect (handle, rect, true);
+		}
 	}
 	return result;
 }
