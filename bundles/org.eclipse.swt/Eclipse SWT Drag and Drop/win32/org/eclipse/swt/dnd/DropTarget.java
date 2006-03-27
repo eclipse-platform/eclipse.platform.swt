@@ -541,10 +541,12 @@ int Release() {
 }
 
 void refresh() {
+	if (control == null || control.isDisposed()) return;
+	int handle = control.handle;
 	RECT lpRect = new RECT();
-	if (OS.GetUpdateRect(control.handle, lpRect, false)) {
+	if (OS.GetUpdateRect(handle, lpRect, false)) {
 		OS.ImageList_DragShowNolock(false);
-		OS.RedrawWindow(control.handle, lpRect, 0, OS.RDW_UPDATENOW | OS.RDW_INVALIDATE);
+		OS.RedrawWindow(handle, lpRect, 0, OS.RDW_UPDATENOW | OS.RDW_INVALIDATE);
 		OS.ImageList_DragShowNolock(true);
 	}
 }
