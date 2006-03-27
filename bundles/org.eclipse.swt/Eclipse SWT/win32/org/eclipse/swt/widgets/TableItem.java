@@ -191,7 +191,7 @@ public Color getBackground (int index) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @since 3.1
+ * @since 3.2
  */
 public Rectangle getBounds () {
 	checkWidget();
