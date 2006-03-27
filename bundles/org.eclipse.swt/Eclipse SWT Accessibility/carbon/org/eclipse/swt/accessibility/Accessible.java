@@ -362,12 +362,6 @@ public class Accessible {
 	
 	int getRoleDescriptionAttribute (int nextHandler, int theEvent, int userData) {
 		int code = OS.CallNextEventHandler (nextHandler, theEvent);
-		String osRoleDescriptionAttribute = null;
-		int [] stringRef = new int [1];
-		if (code == OS.noErr) {
-			OS.GetEventParameter (theEvent, OS.kEventParamAccessibleAttributeValue, OS.typeCFStringRef, null, 4, null, stringRef);
-			osRoleDescriptionAttribute = stringRefToString (stringRef [0]);
-		}
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = getChildIDFromEvent(theEvent);
 		event.detail = osToRole(osRoleAttribute);
@@ -375,6 +369,7 @@ public class Accessible {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getRole(event);
 		}
+		int [] stringRef = new int [1];
 		stringRef [0] = stringToStringRef (roleToOs (event.detail));
 		if (stringRef [0] == 0) return code;
 		int [] stringRef2 = new int [1];
