@@ -833,9 +833,7 @@ public boolean forceFocus () {
  */
 public Accessible getAccessible () {
 	checkWidget ();
-	if (accessible == null) {
-		accessible = Accessible.internal_new_Accessible (this);
-	}
+	if (accessible == null) accessible = new_Accessible (this);
 	return accessible;
 }
 	
@@ -1275,6 +1273,13 @@ void hookEvents () {
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+	int accessibilityProc = display.accessibilityProc;
+	mask = new int [] {
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetChildAtPoint,
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetAllAttributeNames,
+		OS.kEventClassAccessibility, OS.kEventAccessibleGetNamedAttribute,
+	};
+	OS.InstallEventHandler (controlTarget, accessibilityProc, mask.length / 2, mask, handle, null);
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
 	int colorProc = display.colorProc;
@@ -1593,6 +1598,27 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
+int kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetChildAtPoint (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	if (accessible != null) {
+		return accessible.internal_kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
 	int x, y;
 	Rect rect = new Rect ();
@@ -1840,6 +1866,10 @@ public void moveBelow (Control control) {
 	setZOrder (control, false);
 }
 
+Accessible new_Accessible (Control control) {
+	return Accessible.internal_new_Accessible (this);
+}
+
 /**
  * Causes the receiver to be resized to its preferred size.
  * For a composite, this involves computing the preferred size
@@ -1969,6 +1999,10 @@ void releaseWidget () {
 	visibleRgn = 0;
 	menu = null;
 	layoutData = null;
+	if (accessible != null) {
+		accessible.internal_dispose_Accessible ();
+	}
+	accessible = null;
 }
 
 /**

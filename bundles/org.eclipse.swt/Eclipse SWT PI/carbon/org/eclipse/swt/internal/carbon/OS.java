@@ -44,6 +44,7 @@ public class OS extends Platform {
 	public static final int errUnknownControl = -30584;
 	public static final int eventLoopTimedOutErr = -9875;
 	public static final int eventNotHandledErr = -9874;
+	public static final int eventParameterNotFoundErr = -9870;
 	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
 	public static final int inContent = 3;
 	public static final int inMenuBar = 1;
@@ -842,7 +843,11 @@ public class OS extends Platform {
 	public static final int teJustLeft = 0;
 	public static final int teJustCenter = 1;
 	public static final int teJustRight = -1;
-	public static final int typeCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+	public static final int typeCFBooleanRef = ('c'<<24) + ('f'<<16) + ('b'<<8) + 'o';
+	public static final int typeCFMutableArrayRef = ('c'<<24) + ('f'<<16) + ('m'<<8) + 'a';
+	public static final int typeCFStringRef = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
+	public static final int typeCFTypeRef = ('c'<<24) + ('f'<<16) + ('t'<<8) + 'y';
+	public static final int typeCGContextRef = ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
 	public static final int typeChar = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final int typeClickActivationResult = ('c'<<24) + ('l'<<16) + ('a'<<8) + 'c';
 	public static final int typeControlPartCode = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
@@ -868,6 +873,7 @@ public class OS extends Platform {
 	public static final int typeType = ('t'<<24) + ('y'<<16) + ('p'<<8) + 'e';
 	public static final int typeUInt32 = ('m'<<24) + ('a'<<16) + ('g'<<8) + 'n';
 	public static final int typeUnicodeText = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
+	public static final int typeWildCard = ('w'<<24) + ('i'<<16) + ('l'<<8) + 'd';
 	public static final int typeWindowDefPartCode = ('w'<<24) + ('d'<<16) + ('p'<<8) + 't';
 	public static final int typeWindowRef = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int typeWindowRegionCode = ('w'<<24) + ('s'<<16) + ('h'<<8) + 'p';
@@ -944,6 +950,7 @@ public static final native int CFArrayGetCount(int theArray);
 public static final native int CFArrayGetValueAtIndex(int theArray, int idx); 
 public static final native void CFDataGetBytes(int theData, CFRange range,  byte[] buffer); 
 public static final native int CFDataGetLength(int theData);
+public static final native boolean CFEqual(int theString, int theOtherString);
 public static final native int CFLocaleCopyCurrent();
 public static final native int CFNumberFormatterCopyProperty(int formatter, int key);
 public static final native int CFNumberFormatterCreate(int alloc, int locale, int style);
@@ -1365,6 +1372,7 @@ public static final native int HIComboBoxCreate(CGRect boundsRect, int text, Con
 public static final native int HIComboBoxGetItemCount(int inComboBox);
 public static final native int HIComboBoxInsertTextItemAtIndex(int inComboBox, int inIndex, int inText);
 public static final native int HIComboBoxRemoveItemAtIndex(int inComboBox, int inIndex);
+public static final native int HICopyAccessibilityRoleDescription(int inRole, int inSubrole);
 public static final native int HIObjectCopyClassID(int inObject);
 public static final native int HIObjectCreate(int inClassID, int inConstructData, int[] outObject);
 public static final native int HIObjectRegisterSubclass(int inClassID, int inBaseClassID, int inOptions, int inConstructProc, int inNumEvents, int[] inEventList, int inConstructData, int[] outClassRef);
@@ -1792,4 +1800,309 @@ public static final native void memcpy(int[] dest, TXNTab src, int size);
 public static final native void memcpy(float[] dest, int src, int size);
 public static final native void memset(int dest, int value, int size);
 public static final native int strlen(int ptr);
+
+
+public static final native int AXUIElementCreateWithHIObjectAndIdentifier(int inHIObject, long inIdentifier);
+  
+public static final native void AXNotificationHIObjectNotify(int inNotification, int inHIObject, long inIdentifier);
+
+public static final native void AXUIElementGetIdentifier(int inUIElement, long[] outIdentifier);
+
+public static final int kEventClassAccessibility = ('a'<<24) + ('c'<<16) + ('c'<<8) + 'e';
+
+public static final int kEventAccessibleGetChildAtPoint = 1;
+public static final int kEventAccessibleGetFocusedChild = 2;
+public static final int kEventAccessibleGetAllAttributeNames = 21;
+public static final int kEventAccessibleGetAllParameterizedAttributeNames = 25;
+public static final int kEventAccessibleGetNamedAttribute = 22;
+public static final int kEventAccessibleSetNamedAttribute = 23;
+public static final int kEventAccessibleIsNamedAttributeSettable = 24;
+public static final int kEventAccessibleGetAllActionNames = 41;
+public static final int kEventAccessiblePerformNamedAction = 42;
+public static final int kEventAccessibleGetNamedActionDescription = 44;
+
+public static final int kEventParamAccessibleObject = ('a'<<24) + ('o'<<16) + ('b'<<8) + 'j';
+public static final int kEventParamAccessibleChild = ('a'<<24) + ('c'<<16) + ('h'<<8) + 'l';
+public static final int kEventParamAccessibleAttributeName = ('a'<<24) + ('t'<<16) + ('n'<<8) + 'm';
+public static final int kEventParamAccessibleAttributeNames = ('a'<<24) + ('t'<<16) + ('n'<<8) + 's';
+public static final int kEventParamAccessibleAttributeValue = ('a'<<24) + ('t'<<16) + ('v'<<8) + 'l';
+public static final int kEventParamAccessibleAttributeSettable = ('a'<<24) + ('t'<<16) + ('s'<<8) + 't';
+public static final int kEventParamAccessibleAttributeParameter = ('a'<<24) + ('t'<<16) + ('p'<<8) + 'a';
+public static final int kEventParamAccessibleActionName = ('a'<<24) + ('c'<<16) + ('n'<<8) + 'm';
+public static final int kEventParamAccessibleActionNames = ('a'<<24) + ('c'<<16) + ('n'<<8) + 's';
+public static final int kEventParamAccessibleActionDescription = ('a'<<24) + ('c'<<16) + ('d'<<8) + 's';
+public static final int kEventParamAccessibleEventQueued = ('a'<<24) + ('e'<<16) + ('q'<<8) + 'u';
+
+public static final String kAXApplicationRole  = "AXApplication";
+public static final String kAXSystemWideRole   = "AXSystemWide";
+public static final String kAXWindowRole       = "AXWindow";
+public static final String kAXSheetRole        = "AXSheet";
+public static final String kAXDrawerRole       = "AXDrawer";
+public static final String kAXGrowAreaRole     = "AXGrowArea";
+public static final String kAXImageRole        = "AXImage";
+public static final String kAXUnknownRole      = "AXUnknown";
+public static final String kAXButtonRole       = "AXButton";
+public static final String kAXRadioButtonRole  = "AXRadioButton";
+public static final String kAXCheckBoxRole     = "AXCheckBox";
+public static final String kAXPopUpButtonRole  = "AXPopUpButton";
+public static final String kAXMenuButtonRole   = "AXMenuButton";
+public static final String kAXTabGroupRole     = "AXTabGroup";
+public static final String kAXTableRole        = "AXTable";
+public static final String kAXColumnRole       = "AXColumn";
+public static final String kAXRowRole          = "AXRow";
+public static final String kAXOutlineRole      = "AXOutline";
+public static final String kAXBrowserRole      = "AXBrowser";
+public static final String kAXScrollAreaRole   = "AXScrollArea";
+public static final String kAXScrollBarRole    = "AXScrollBar";
+public static final String kAXRadioGroupRole   = "AXRadioGroup";
+public static final String kAXListRole         = "AXList";
+public static final String kAXGroupRole        = "AXGroup";
+public static final String kAXValueIndicatorRole = "AXValueIndicator";
+public static final String kAXComboBoxRole     = "AXComboBox";
+public static final String kAXSliderRole       = "AXSlider";
+public static final String kAXIncrementorRole  = "AXIncrementor";
+public static final String kAXBusyIndicatorRole = "AXBusyIndicator";
+public static final String kAXProgressIndicatorRole = "AXProgressIndicator";
+public static final String kAXRelevanceIndicatorRole = "AXRelevanceIndicator";
+public static final String kAXToolbarRole      = "AXToolbar";
+public static final String kAXDisclosureTriangleRole = "AXDisclosureTriangle";
+public static final String kAXTextFieldRole = "AXTextField";
+public static final String kAXTextAreaRole     = "AXTextArea";
+public static final String kAXStaticTextRole   = "AXStaticText";
+public static final String kAXMenuBarRole      = "AXMenuBar";
+public static final String kAXMenuBarItemRole  = "AXMenuBarItem";
+public static final String kAXMenuRole         = "AXMenu";
+public static final String kAXMenuItemRole     = "AXMenuItem";
+public static final String kAXSplitGroupRole   = "AXSplitGroup";
+public static final String kAXSplitterRole     = "AXSplitter";
+public static final String kAXColorWellRole    = "AXColorWell";
+public static final String kAXTimeFieldRole    = "AXTimeField";
+public static final String kAXDateFieldRole    = "AXDateField";
+public static final String kAXHelpTagRole      = "AXHelpTag";
+public static final String kAXMatteRole        = "AXMatteRole";
+public static final String kAXDockItemRole     = "AXDockItem";
+public static final String kAXLinkRole         = "AXLink";  // as seen in Safari
+
+public static final String kAXCloseButtonSubrole       = "AXCloseButton";
+public static final String kAXMinimizeButtonSubrole    = "AXMinimizeButton";
+public static final String kAXZoomButtonSubrole        = "AXZoomButton";
+public static final String kAXToolbarButtonSubrole     = "AXToolbarButton";
+public static final String kAXSecureTextFieldSubrole   = "AXSecureTextField";
+public static final String kAXTableRowSubrole          = "AXTableRow";
+public static final String kAXOutlineRowSubrole        = "AXOutlineRow";
+public static final String kAXUnknownSubrole           = "AXUnknown";
+public static final String kAXStandardWindowSubrole    = "AXStandardWindow";
+public static final String kAXDialogSubrole            = "AXDialog";
+public static final String kAXSystemDialogSubrole      = "AXSystemDialog";
+public static final String kAXFloatingWindowSubrole    = "AXFloatingWindow";
+public static final String kAXSystemFloatingWindowSubrole = "AXSystemFloatingWindow";
+public static final String kAXIncrementArrowSubrole    = "AXIncrementArrow";
+public static final String kAXDecrementArrowSubrole    = "AXDecrementArrow";
+public static final String kAXIncrementPageSubrole     = "AXIncrementPage";
+public static final String kAXDecrementPageSubrole     = "AXDecrementPage";
+public static final String kAXSortButtonSubrole        = "AXSortButton";
+public static final String kAXSearchFieldSubrole       = "AXSearchField";
+public static final String kAXApplicationDockItemSubrole = "AXApplicationDockItem";
+public static final String kAXDocumentDockItemSubrole  = "AXDocumentDockItem";
+public static final String kAXFolderDockItemSubrole    = "AXFolderDockItem";
+public static final String kAXMinimizedWindowDockItemSubrole= "AXMinimizedWindowDockItem";
+public static final String kAXURLDockItemSubrole       = "AXURLDockItem";
+public static final String kAXDockExtraDockItemSubrole = "AXDockExtraDockItem";
+public static final String kAXTrashDockItemSubrole     = "AXTrashDockItem";
+public static final String kAXProcessSwitcherListSubrole = "AXProcessSwitcherList";
+
+//General attributes
+public static final String kAXRoleAttribute                    = "AXRole";
+public static final String kAXSubroleAttribute                 = "AXSubrole";
+public static final String kAXRoleDescriptionAttribute         = "AXRoleDescription";
+public static final String kAXHelpAttribute                    = "AXHelp";
+public static final String kAXTitleAttribute                   = "AXTitle";
+public static final String kAXValueAttribute                   = "AXValue";
+public static final String kAXMinValueAttribute                = "AXMinValue";
+public static final String kAXMaxValueAttribute                = "AXMaxValue";
+public static final String kAXValueIncrementAttribute          = "AXValueIncrement";
+public static final String kAXAllowedValuesAttribute           = "AXAllowedValues";
+public static final String kAXEnabledAttribute                 = "AXEnabled";
+public static final String kAXFocusedAttribute                 = "AXFocused";
+public static final String kAXParentAttribute                  = "AXParent";
+public static final String kAXChildrenAttribute                = "AXChildren";
+public static final String kAXSelectedChildrenAttribute        = "AXSelectedChildren";
+public static final String kAXVisibleChildrenAttribute         = "AXVisibleChildren";
+public static final String kAXWindowAttribute                  = "AXWindow";
+public static final String kAXTopLevelUIElementAttribute       = "AXTopLevelUIElement";
+public static final String kAXPositionAttribute                = "AXPosition";
+public static final String kAXSizeAttribute                    = "AXSize";
+public static final String kAXOrientationAttribute             = "AXOrientation";
+public static final String kAXDescriptionAttribute             = "AXDescription";
+
+//   Text-specific attributes
+public static final String kAXSelectedTextAttribute            = "AXSelectedText";
+public static final String kAXVisibleCharacterRangeAttribute   = "AXVisibleCharacterRange";
+public static final String kAXSelectedTextRangeAttribute       = "AXSelectedTextRange";
+public static final String kAXNumberOfCharactersAttribute      = "AXNumberOfCharacters";
+public static final String kAXSharedTextUIElementsAttribute    = "AXSharedTextUIElements";
+public static final String kAXSharedCharacterRangeAttribute    = "AXSharedCharacterRange";
+     
+//   Window-specific attributes
+public static final String kAXMainAttribute                    = "AXMain";
+public static final String kAXMinimizedAttribute               = "AXMinimized";
+public static final String kAXCloseButtonAttribute             = "AXCloseButton";
+public static final String kAXZoomButtonAttribute              = "AXZoomButton";
+public static final String kAXMinimizeButtonAttribute          = "AXMinimizeButton";
+public static final String kAXToolbarButtonAttribute           = "AXToolbarButton";
+public static final String kAXGrowAreaAttribute                = "AXGrowArea";
+public static final String kAXProxyAttribute                   = "AXProxy";
+public static final String kAXModalAttribute                   = "AXModal";
+public static final String kAXDefaultButtonAttribute           = "AXDefaultButton";
+public static final String kAXCancelButtonAttribute            = "AXCancelButton";
+     
+//   Menu-specific attributes
+public static final String kAXMenuItemCmdCharAttribute         = "AXMenuItemCmdChar";
+public static final String kAXMenuItemCmdVirtualKeyAttribute   = "AXMenuItemCmdVirtualKey";
+public static final String kAXMenuItemCmdGlyphAttribute        = "AXMenuItemCmdGlyph";
+public static final String kAXMenuItemCmdModifiersAttribute    = "AXMenuItemCmdModifiers";
+public static final String kAXMenuItemMarkCharAttribute        = "AXMenuItemMarkChar";
+public static final String kAXMenuItemPrimaryUIElementAttribute = "AXMenuItemPrimaryUIElement";
+     
+//   Application-specific attributes
+public static final String kAXMenuBarAttribute                 = "AXMenuBar";
+public static final String kAXWindowsAttribute                 = "AXWindows";
+public static final String kAXFrontmostAttribute               = "AXFrontmost";
+public static final String kAXHiddenAttribute                  = "AXHidden";
+public static final String kAXMainWindowAttribute              = "AXMainWindow";
+public static final String kAXFocusedWindowAttribute           = "AXFocusedWindow";
+public static final String kAXFocusedUIElementAttribute        = "AXFocusedUIElement"; 
+     
+//   Miscellaneous attributes
+public static final String kAXHeaderAttribute                  = "AXHeader";
+public static final String kAXEditedAttribute                  = "AXEdited";
+public static final String kAXValueWrapsAttribute              = "AXValueWraps";
+public static final String kAXTabsAttribute                    = "AXTabs";
+public static final String kAXTitleUIElementAttribute          = "AXTitleUIElement";
+public static final String kAXHorizontalScrollBarAttribute     = "AXHorizontalScrollBar";
+public static final String kAXVerticalScrollBarAttribute       = "AXVerticalScrollBar";
+public static final String kAXOverflowButtonAttribute          = "AXOverflowButton";
+public static final String kAXFilenameAttribute                = "AXFilename";
+public static final String kAXExpandedAttribute                = "AXExpanded";
+public static final String kAXSelectedAttribute                = "AXSelected";
+public static final String kAXSplittersAttribute               = "AXSplitters";
+public static final String kAXNextContentsAttribute            = "AXNextContents";
+public static final String kAXDocumentAttribute                = "AXDocument";
+public static final String kAXDecrementButtonAttribute         = "AXDecrementButton";
+public static final String kAXIncrementButtonAttribute         = "AXIncrementButton";
+public static final String kAXPreviousContentsAttribute        = "AXPreviousContents";
+public static final String kAXContentsAttribute                = "AXContents";
+public static final String kAXIncrementorAttribute             = "AXIncrementor";
+public static final String kAXHourFieldAttribute               = "AXHourField";
+public static final String kAXMinuteFieldAttribute             = "AXMinuteField";
+public static final String kAXSecondFieldAttribute             = "AXSecondField";
+public static final String kAXAMPMFieldAttribute               = "AXAMPMField";
+public static final String kAXDayFieldAttribute                = "AXDayField";
+public static final String kAXMonthFieldAttribute              = "AXMonthField";
+public static final String kAXYearFieldAttribute               = "AXYearField";
+public static final String kAXColumnTitleAttribute             = "AXColumnTitles";
+public static final String kAXURLAttribute                     = "AXURL";
+public static final String kAXLabelUIElementsAttribute         = "AXLabelUIElements";
+public static final String kAXLabelValueAttribute              = "AXLabelValue";
+public static final String kAXShownMenuUIElementAttribute      = "AXShownMenuUIElement";
+public static final String kAXServesAsTitleForUIElementsAttribute = "AXServesAsTitleForUIElements";
+public static final String kAXLinkedUIElementsAttribute        = "AXLinkedUIElements";
+     
+//   Table and outline view attributes
+public static final String kAXRowsAttribute                    = "AXRows";
+public static final String kAXVisibleRowsAttribute             = "AXVisibleRows";
+public static final String kAXSelectedRowsAttribute            = "AXSelectedRows";
+public static final String kAXColumnsAttribute                 = "AXColumns";
+public static final String kAXVisibleColumnsAttribute          = "AXVisibleColumns";
+public static final String kAXSelectedColumnsAttribute         = "AXSelectedColumns";
+public static final String kAXSortDirectionAttribute           = "AXSortDirection";
+public static final String kAXColumnHeaderUIElementsAttribute  = "AXColumnHeaderUIElements";
+public static final String kAXIndexAttribute                   = "AXIndex";
+public static final String kAXDisclosingAttribute              = "AXDisclosing";
+public static final String kAXDisclosedRowsAttribute           = "AXDisclosedRows";
+public static final String kAXDisclosedByRowAttribute          = "AXDisclosedByRow";
+     
+//   Matte attributes
+public static final String kAXMatteHoleAttribute               = "AXMatteHole";
+public static final String kAXMatteContentUIElementAttribute   = "AXMatteContentUIElement";
+     
+//   Dock attributes
+public static final String kAXIsApplicationRunningAttribute    = "AXIsApplicationRunning";
+     
+//   System-wide attributes
+public static final String kAXFocusedApplicationAttribute      = "AXFocusedApplication";
+
+// Text-suite parameterized attributes
+public static final String kAXLineForIndexParameterizedAttribute = "AXLineForIndex";
+public static final String kAXRangeForLineParameterizedAttribute = "AXRangeForLine";
+public static final String kAXStringForRangeParameterizedAttribute = "AXStringForRange";
+public static final String kAXRangeForPositionParameterizedAttribute = "AXRangeForPosition";
+public static final String kAXRangeForIndexParameterizedAttribute = "AXRangeForIndex";
+public static final String kAXBoundsForRangeParameterizedAttribute = "AXBoundsForRange";
+public static final String kAXRTFForRangeParameterizedAttribute = "AXRTFForRange";
+public static final String kAXAttributedStringForRangeParameterizedAttribute = "AXAttributedStringForRange";
+public static final String kAXStyleRangeForIndexParameterizedAttribute = "AXStyleRangeForIndex";
+public static final String kAXInsertionPointLineNumberAttribute = "AXInsertionPointLineNumber";
+
+// Accessibility actions.
+public static final String kAXPressAction          = "AXPress";
+public static final String kAXIncrementAction      = "AXIncrement";
+public static final String kAXDecrementAction      = "AXDecrement";
+public static final String kAXConfirmAction        = "AXConfirm";
+public static final String kAXCancelAction         = "AXCancel";
+public static final String kAXRaiseAction          = "AXRaise";
+public static final String kAXShowMenuAction       = "AXShowMenu";
+
+// Focus notifications
+public static final String kAXMainWindowChangedNotification = "AXMainWindowChanged";
+public static final String kAXFocusedWindowChangedNotification = "AXFocusedWindowChanged";
+public static final String kAXFocusedUIElementChangedNotification = "AXFocusedUIElementChanged";
+     
+//   Application notifications
+public static final String kAXApplicationActivatedNotification = "AXApplicationActivated";
+public static final String kAXApplicationDeactivatedNotification = "AXApplicationDeactivated";
+public static final String kAXApplicationHiddenNotification = "AXApplicationHidden";
+public static final String kAXApplicationShownNotification = "AXApplicationShown";
+     
+//   Window notifications
+public static final String kAXWindowCreatedNotification    = "AXWindowCreated";
+public static final String kAXWindowMovedNotification      = "AXWindowMoved";
+public static final String kAXWindowResizedNotification    = "AXWindowResized";
+public static final String kAXWindowMiniaturizedNotification = "AXWindowMiniaturized";
+public static final String kAXWindowDeminiaturizedNotification = "AXWindowDeminiaturized";
+     
+//   New drawer, sheet, and help tag notifications
+public static final String kAXDrawerCreatedNotification    = "AXDrawerCreated";
+public static final String kAXSheetCreatedNotification     = "AXSheetCreated";
+public static final String kAXHelpTagCreatedNotification   = "AXHelpTagCreated";
+     
+//   Element notifications
+public static final String kAXValueChangedNotification     = "AXValueChanged";
+public static final String kAXUIElementDestroyedNotification = "AXUIElementDestroyed";
+     
+//   Menu notifications
+public static final String kAXMenuOpenedNotification       = "AXMenuOpened";
+public static final String kAXMenuClosedNotification       = "AXMenuClosed";
+public static final String kAXMenuItemSelectedNotification = "AXMenuItemSelected";
+     
+//   Table and outline view notifications
+public static final String kAXRowCountChangedNotification  = "AXRowCountChanged";
+     
+//   Miscellaneous notifications
+public static final String kAXSelectedChildrenChangedNotification = "AXSelectedChildrenChanged";
+public static final String kAXResizedNotification          = "AXResized";
+public static final String kAXMovedNotification            = "AXMoved";
+public static final String kAXCreatedNotification          = "AXCreated";
+
+// Error codes
+public static final int kAXErrorIllegalArgument = -25201;
+public static final int kAXErrorInvalidUIElement = -25202;
+public static final int kAXErrorInvalidUIElementObserver = -25203;
+public static final int kAXErrorCannotComplete = -25204;
+public static final int kAXErrorAttributeUnsupported = -25205;
+public static final int kAXErrorActionUnsupported = -25206;
+public static final int kAXErrorAPIDisabled = -25211;
+public static final int kAXErrorParameterizedAttributeUnsupported = -25213;
+
+
 }

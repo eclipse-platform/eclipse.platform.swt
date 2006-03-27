@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 912;
-int OS_nativeFunctionCallCount[912];
+int OS_nativeFunctionCount = 917;
+int OS_nativeFunctionCallCount[917];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -59,6 +59,9 @@ char * OS_nativeFunctionNames[] = {
 	"ATSUSetTransientFontMatching",
 	"ATSUTextDeleted",
 	"ATSUTextInserted",
+	"AXNotificationHIObjectNotify",
+	"AXUIElementCreateWithHIObjectAndIdentifier",
+	"AXUIElementGetIdentifier",
 	"ActiveNonFloatingWindow",
 	"AddDataBrowserItems",
 	"AddDataBrowserListViewColumn",
@@ -73,6 +76,7 @@ char * OS_nativeFunctionNames[] = {
 	"CFArrayGetValueAtIndex",
 	"CFDataGetBytes",
 	"CFDataGetLength",
+	"CFEqual",
 	"CFLocaleCopyCurrent",
 	"CFNumberFormatterCopyProperty",
 	"CFNumberFormatterCreate",
@@ -494,6 +498,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIComboBoxGetItemCount",
 	"HIComboBoxInsertTextItemAtIndex",
 	"HIComboBoxRemoveItemAtIndex",
+	"HICopyAccessibilityRoleDescription",
 	"HICreateTransformedCGImage",
 	"HIObjectCopyClassID",
 	"HIObjectCreate",

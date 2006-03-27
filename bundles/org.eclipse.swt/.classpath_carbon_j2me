@@ -14,7 +14,7 @@
 		</attributes>
     </classpathentry>
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2me"/>
-    <classpathentry kind="src" path="Eclipse SWT Accessibility/emulated"/>
+    <classpathentry kind="src" path="Eclipse SWT Accessibility/carbon"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>

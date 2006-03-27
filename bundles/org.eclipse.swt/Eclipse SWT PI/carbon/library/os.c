@@ -718,6 +718,42 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUTextInserted)
 }
 #endif
 
+#ifndef NO_AXNotificationHIObjectNotify
+JNIEXPORT void JNICALL OS_NATIVE(AXNotificationHIObjectNotify)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2)
+{
+	OS_NATIVE_ENTER(env, that, AXNotificationHIObjectNotify_FUNC);
+	AXNotificationHIObjectNotify((CFStringRef)arg0, (HIObjectRef)arg1, (UInt64)arg2);
+	OS_NATIVE_EXIT(env, that, AXNotificationHIObjectNotify_FUNC);
+}
+#endif
+
+#ifndef NO_AXUIElementCreateWithHIObjectAndIdentifier
+JNIEXPORT jint JNICALL OS_NATIVE(AXUIElementCreateWithHIObjectAndIdentifier)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AXUIElementCreateWithHIObjectAndIdentifier_FUNC);
+	rc = (jint)AXUIElementCreateWithHIObjectAndIdentifier((HIObjectRef)arg0, (UInt64)arg1);
+	OS_NATIVE_EXIT(env, that, AXUIElementCreateWithHIObjectAndIdentifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_AXUIElementGetIdentifier
+JNIEXPORT void JNICALL OS_NATIVE(AXUIElementGetIdentifier)
+	(JNIEnv *env, jclass that, jint arg0, jlongArray arg1)
+{
+	jlong *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, AXUIElementGetIdentifier_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	AXUIElementGetIdentifier((AXUIElementRef)arg0, (UInt64 *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, AXUIElementGetIdentifier_FUNC);
+}
+#endif
+
 #ifndef NO_ActiveNonFloatingWindow
 JNIEXPORT jint JNICALL OS_NATIVE(ActiveNonFloatingWindow)
 	(JNIEnv *env, jclass that)
@@ -897,6 +933,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFDataGetLength)
 	OS_NATIVE_ENTER(env, that, CFDataGetLength_FUNC);
 	rc = (jint)CFDataGetLength((CFDataRef)arg0);
 	OS_NATIVE_EXIT(env, that, CFDataGetLength_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFEqual
+JNIEXPORT jboolean JNICALL OS_NATIVE(CFEqual)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CFEqual_FUNC);
+	rc = (jboolean)CFEqual((CFStringRef)arg0, (CFStringRef)arg1);
+	OS_NATIVE_EXIT(env, that, CFEqual_FUNC);
 	return rc;
 }
 #endif
@@ -6841,6 +6889,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIComboBoxRemoveItemAtIndex)
 	OS_NATIVE_ENTER(env, that, HIComboBoxRemoveItemAtIndex_FUNC);
 	rc = (jint)HIComboBoxRemoveItemAtIndex((HIViewRef)arg0, (CFIndex)arg1);
 	OS_NATIVE_EXIT(env, that, HIComboBoxRemoveItemAtIndex_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HICopyAccessibilityRoleDescription
+JNIEXPORT jint JNICALL OS_NATIVE(HICopyAccessibilityRoleDescription)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HICopyAccessibilityRoleDescription_FUNC);
+	rc = (jint)HICopyAccessibilityRoleDescription((CFStringRef)arg0, (CFStringRef)arg1);
+	OS_NATIVE_EXIT(env, that, HICopyAccessibilityRoleDescription_FUNC);
 	return rc;
 }
 #endif

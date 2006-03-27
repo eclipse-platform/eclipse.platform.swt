@@ -358,6 +358,16 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int accessibilityProc (int nextHandler, int theEvent, int userData) {
+	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventAccessibleGetChildAtPoint:	return kEventAccessibleGetChildAtPoint (nextHandler, theEvent, userData);
+		case OS.kEventAccessibleGetAllAttributeNames:	return kEventAccessibleGetAllAttributeNames (nextHandler, theEvent, userData);
+		case OS.kEventAccessibleGetNamedAttribute:	return kEventAccessibleGetNamedAttribute (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
 int createCIcon (Image image) {
 	int imageHandle = image.handle;
 	int width = OS.CGImageGetWidth(imageHandle);
@@ -927,6 +937,18 @@ int itemDataProc (int browser, int item, int property, int itemData, int setValu
 
 int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
+}
+
+int kEventAccessibleGetChildAtPoint (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetAllAttributeNames (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
 }
 
 int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
