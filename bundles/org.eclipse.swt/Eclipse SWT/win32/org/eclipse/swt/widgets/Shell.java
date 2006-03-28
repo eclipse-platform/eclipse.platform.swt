@@ -551,7 +551,8 @@ void createToolTip (ToolTip toolTip) {
 		System.arraycopy (toolTips, 0, newToolTips, 0, toolTips.length);
 		toolTips = newToolTips;
 	}
-	toolTips [toolTip.id = id] = toolTip;
+	toolTips [id] = toolTip;
+	toolTip.id = id + Display.ID_START;
 	if (OS.IsWinCE) return;
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
@@ -597,7 +598,7 @@ void deregister () {
 
 void destroyToolTip (ToolTip toolTip) {
 	if (toolTips == null) return;
-	toolTips [toolTip.id] = null;
+	toolTips [toolTip.id - Display.ID_START] = null;
 	if (OS.IsWinCE) return;
 	if (balloonTipHandle != 0) {
 		TOOLINFO lpti = new TOOLINFO ();
@@ -697,6 +698,7 @@ Control findThemeControl () {
 
 ToolTip findToolTip (int id) {
 	if (toolTips == null) return null;
+	id = id - Display.ID_START;
 	return 0 <= id && id < toolTips.length ? toolTips [id] : null;
 }
 
@@ -771,9 +773,7 @@ ToolTip getCurrentToolTip (int hwndToolTip) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
-				return findToolTip (lpti.uId);
-			}
+			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) return findToolTip (lpti.uId);
 		}
 	}
 	return null;
@@ -1612,18 +1612,22 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
 	if (hwnd == toolTipHandle || hwnd == balloonTipHandle) {
 		switch (msg) {
-			case OS.WM_TIMER:
+			case OS.WM_TIMER: {
 				if (wParam != ToolTip.TIMER_ID) break;
-				//FALL THROUGH
-			case OS.WM_LBUTTONDOWN:
+				ToolTip tip = getCurrentToolTip (hwnd);
+				if (tip != null && tip.autoHide) {
+					tip.setVisible (false);
+				}
+				break;
+			}
+			case OS.WM_LBUTTONDOWN: {
 				ToolTip tip = getCurrentToolTip (hwnd);
 				if (tip != null) {
 					tip.setVisible (false);
-					if (msg == OS.WM_LBUTTONDOWN) {
-						tip.postEvent (SWT.Selection);
-					}
+					tip.postEvent (SWT.Selection);
 				}
 				break;
+			}
 		}
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
