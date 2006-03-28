@@ -640,7 +640,7 @@ void createSurface() {
 				OS.memmove(maskLine, maskOffset, maskStride);
 				for (int x=0, offset1=0; x<width; x++, offset1 += 4) {
 					if (maskLine[x * 3] == 0) {
-						line[offset1 + 3] = 0;
+						line[offset1 + 0] = line[offset1 + 1] = line[offset1 + 2] = line[offset1 + 3] = 0;
 					}
 					byte temp = line[offset1];
 					line[offset1] = line[offset1 + 2];
