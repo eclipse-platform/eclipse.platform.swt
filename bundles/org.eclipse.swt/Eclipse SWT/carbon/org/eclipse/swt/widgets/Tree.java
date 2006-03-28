@@ -956,14 +956,13 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int itemHeight = rect.bottom - rect.top + 1;
 	if (drawBackground) {
 		drawBackground = false;
-		Region region = null;
+		Region region = new Region (display);
+		Rectangle clientArea = getClientArea ();
+		int headerHeight = getHeaderHeight ();
+		clientArea.y += headerHeight;
+		clientArea.height -= headerHeight;
+		region.add (clientArea);
 		if ((style & SWT.CHECK) != 0 || gridWidth != 0) {
-			region = new Region (display);
-			Rectangle clientArea = getClientArea ();
-			int headerHeight = getHeaderHeight ();
-			clientArea.y += headerHeight;
-			clientArea.height -= headerHeight;
-			region.add (clientArea);
 			int rgn = OS.NewRgn();
 			if ((style & SWT.CHECK) != 0) {
 				if (OS.GetDataBrowserItemPartBounds (handle, id, Table.CHECK_COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
