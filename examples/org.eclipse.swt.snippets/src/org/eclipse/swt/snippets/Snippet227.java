@@ -60,20 +60,28 @@ public static void main(String [] args) {
 		}
 	}
 
+	/*
+	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
+	 * Therefore, it is critical for performance that these methods be as efficient as possible.
+	 */
 	Listener paintListener = new Listener() {
+		String getText(TreeItem item, int column) {
+			String text = item.getText(column);
+			TreeItem parent = item.getParentItem();
+			int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
+			if (index % 3 == 1){
+				text +="\nOne Extra Line";
+			}
+			if (index % 3 == 2) {
+				text +="\nFirst Extra Line\nSecond Extra Line";
+			}
+			return text;
+		}
 		public void handleEvent(Event event) {
 			switch(event.type) {		
 				case SWT.MeasureItem: {
 					TreeItem item = (TreeItem)event.item;
-					String text = item.getText(event.index);
-					TreeItem parent = item.getParentItem();
-					int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
-					if (index % 3 == 2) {
-						text +="\nFirst Extra Line\nSecond Extra Line";
-					}
-					if (index % 3 == 1){
-						text +="\nOne Extra Line";
-					}
+					String text = getText(item, event.index);
 					Point size = event.gc.textExtent(text);
 					event.width = size.x;
 					event.height = Math.max(event.height, size.y);
@@ -81,15 +89,7 @@ public static void main(String [] args) {
 				}
 				case SWT.PaintItem: {
 					TreeItem item = (TreeItem)event.item;
-					String text = item.getText(event.index);
-					TreeItem parent = item.getParentItem();
-					int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
-					if (index % 3 == 2) {
-						text +="\nFirst Extra Line\nSecond Extra Line";
-					}
-					if (index % 3 == 1){
-						text +="\nOne Extra Line";
-					}
+					String text = getText(item, event.index);
 					Point size = event.gc.textExtent(text);					
 					int offset2 = Math.max(0, (event.height - size.y) / 2);
 					event.gc.drawText(text, event.x, event.y + offset2, true);
@@ -105,13 +105,14 @@ public static void main(String [] args) {
 	tree.addListener(SWT.MeasureItem, paintListener);
 	tree.addListener(SWT.PaintItem, paintListener);
 	tree.addListener(SWT.EraseItem, paintListener);
+	
 	for (int i = 0; i < columnCount; i++) {
 		tree.getColumn(i).pack();
 	}
 	shell.setSize(500, 600);
 	shell.open();
-	while(!shell.isDisposed()) {
-		if(!display.readAndDispatch()) display.sleep();
+	while (!shell.isDisposed()) {
+		if (!display.readAndDispatch()) display.sleep();
 	}
 	display.dispose();
 }
