@@ -767,7 +767,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	if (hwndHeader != 0) {
 		index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (count != 0) {
+		if (count != 0 && !printClient) {
 			clipRect = new RECT ();
 			HDITEM hdItem = new HDITEM ();
 			hdItem.mask = OS.HDI_WIDTH;
