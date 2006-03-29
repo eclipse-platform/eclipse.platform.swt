@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * example snippet: Draw a custom gradient selection
+ * Tree example snippet: Draw a custom gradient selection
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

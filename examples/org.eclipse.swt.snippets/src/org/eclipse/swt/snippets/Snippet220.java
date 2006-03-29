@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * example snippet: Images on the right side of the TreeItem
+ * Tree example snippet: Images on the right side of the TreeItem
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
