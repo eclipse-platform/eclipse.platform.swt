@@ -492,10 +492,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 						gc.dispose ();
 						OS.RestoreDC (hDC, nSavedDC);
 						if (isDisposed () || item.isDisposed ()) break;
-						if (!ignoreItemHeight) {
-							if (event.height > getItemHeight ()) setItemHeight (event.height);
-							ignoreItemHeight = true;
-						}
+						if (event.height > getItemHeight ()) setItemHeight (event.height);
 					}
 					if (hooks (SWT.EraseItem)) {
 						RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
@@ -867,10 +864,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 					}
 				}
 			}
-			if (!ignoreItemHeight) {
-				if (event.height > getItemHeight ()) setItemHeight (event.height);
-				ignoreItemHeight = true;
-			}
+			if (event.height > getItemHeight ()) setItemHeight (event.height);
 		}
 		selectionForeground = -1;
 		ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = false;

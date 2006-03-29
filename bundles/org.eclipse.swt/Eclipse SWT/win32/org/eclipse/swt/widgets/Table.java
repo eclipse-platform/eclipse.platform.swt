@@ -48,7 +48,7 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	boolean ignoreItemHeight, ignoreDraw, ignoreDrawSelection, ignoreDrawBackground;
+	boolean ignoreDraw, ignoreDrawSelection, ignoreDrawBackground;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
@@ -2869,10 +2869,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int hDC) {
 				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, event.x + event.width);
 			}
 		}
-		if (!ignoreItemHeight) {
-			if (event.height > getItemHeight ()) setItemHeight (event.height);
-			ignoreItemHeight = true;
-		}
+		if (event.height > getItemHeight ()) setItemHeight (event.height);
 	}
 	return event;
 }
@@ -4063,7 +4060,6 @@ void setTableEmpty () {
 		}
 	}
 	items = new TableItem [4];
-	ignoreItemHeight = false;
 	if (columnCount == 0) {
 		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
 		setScrollWidth (null, false);
