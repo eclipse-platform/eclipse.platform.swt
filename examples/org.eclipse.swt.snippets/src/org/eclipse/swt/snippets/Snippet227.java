@@ -68,7 +68,7 @@ public static void main(String [] args) {
 					String text = item.getText(event.index);
 					TreeItem parent = item.getParentItem();
 					int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
-					if (index % 3 == 0) {
+					if (index % 3 == 2) {
 						text +="\nFirst Extra Line\nSecond Extra Line";
 					}
 					if (index % 3 == 1){
@@ -84,7 +84,7 @@ public static void main(String [] args) {
 					String text = item.getText(event.index);
 					TreeItem parent = item.getParentItem();
 					int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
-					if (index % 3 == 0) {
+					if (index % 3 == 2) {
 						text +="\nFirst Extra Line\nSecond Extra Line";
 					}
 					if (index % 3 == 1){
@@ -96,7 +96,7 @@ public static void main(String [] args) {
 					break;
 				}
 				case SWT.EraseItem: {	
-					event.doit = false;
+					event.detail &= ~SWT.FOREGROUND;
 					break;
 				}
 			}
