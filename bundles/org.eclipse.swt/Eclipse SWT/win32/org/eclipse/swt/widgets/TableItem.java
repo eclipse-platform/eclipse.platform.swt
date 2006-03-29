@@ -245,9 +245,10 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 		} else {
 			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
 		}
-		if (OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect) == 0) {
-			return new RECT ();
-		}
+		parent.ignoreCustomDraw = true;
+		int code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect);
+		parent.ignoreCustomDraw = false;
+		if (code == 0) return new RECT ();
 		if (fullText || fullImage) {
 			RECT headerRect = new RECT ();
 			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
@@ -273,9 +274,10 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			* fix is to use LVIR_LABEL.
 			*/
 			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
-			if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) == 0) {
-				return new RECT ();
-			}
+			parent.ignoreCustomDraw = true;
+			int code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
+			parent.ignoreCustomDraw = false;
+			if (code == 0) return new RECT ();
 			/*
 			* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
 			* and zero for the column number gives the bounds of the first item
@@ -288,9 +290,10 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			if (column == 0 && getText && getImage) {
 				RECT iconRect = new RECT ();
 				iconRect.left = OS.LVIR_ICON;
-				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-					rect.left = iconRect.left;
-				}
+				parent.ignoreCustomDraw = true;
+				code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect);
+				parent.ignoreCustomDraw = false;
+				if (code != 0) rect.left = iconRect.left;
 			}
 			if (hasImage) {
 				if (column != 0 && getText && !getImage) {
@@ -306,9 +309,10 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			}
 		} else {
 			rect.left = OS.LVIR_ICON;
-			if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) == 0) {
-				return new RECT ();
-			}
+			parent.ignoreCustomDraw = true;
+			int code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
+			parent.ignoreCustomDraw = false;
+			if (code == 0) return new RECT ();
 			if (!hasImage) rect.right = rect.left;
 			if (getText) {
 				String string = column == 0 ? text : strings != null ? strings [column] : null;

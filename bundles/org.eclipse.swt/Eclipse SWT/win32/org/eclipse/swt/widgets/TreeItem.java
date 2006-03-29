@@ -416,7 +416,9 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
 		tvItem.hItem = handle;
 		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+		parent.ignoreCustomDraw = true;
 		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		parent.ignoreCustomDraw = false;
 	}
 	boolean firstColumn = index == 0;
 	int columnCount = 0, hwndHeader = parent.hwndHeader;

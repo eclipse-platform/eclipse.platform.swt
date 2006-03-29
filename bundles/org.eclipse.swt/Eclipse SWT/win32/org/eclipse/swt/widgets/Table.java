@@ -48,7 +48,7 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	boolean ignoreDraw, ignoreDrawSelection, ignoreDrawBackground;
+	boolean ignoreDraw, ignoreCustomDraw, ignoreDrawSelection, ignoreDrawBackground;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
@@ -322,6 +322,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
+	if (ignoreCustomDraw) return null;
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -358,6 +359,9 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_PREPAINT (int wParam, int lParam) {
+	if (ignoreCustomDraw) {
+		return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
+	}
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -415,6 +419,7 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
+	if (ignoreCustomDraw) return null;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 	int hDC = nmcd.hdc;
@@ -430,9 +435,6 @@ LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
-	int code = OS.CDRF_DODEFAULT;
-	selectionForeground = -1;
-	ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = false;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 	/*
@@ -445,6 +447,16 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	*/
 	TableItem item = _getItem (nmcd.dwItemSpec);
 	if (item == null) return null;
+	if (ignoreCustomDraw) {
+		int hDC = nmcd.hdc;
+		int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
+		if (hFont == -1) hFont = item.font;
+		if (hFont != -1) OS.SelectObject (hDC, hFont);
+		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
+	}
+	int code = OS.CDRF_DODEFAULT;
+	selectionForeground = -1;
+	ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = false;
 	if (OS.IsWindowVisible (handle)) {
 		if (hooks (SWT.MeasureItem)) {
 			sendMeasureItemEvent (item, nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
@@ -499,7 +511,10 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 					if (clrTextBk != -1 && nmcd.iSubItem == 0) {
 						RECT itemRect = new RECT ();
 						itemRect.left = OS.LVIR_SELECTBOUNDS;
-						if (OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, itemRect) != 0) {
+						ignoreCustomDraw = true;
+						result = OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, itemRect);
+						ignoreCustomDraw = false;
+						if (result != 0) {
 							RECT headerRect = new RECT ();
 							int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 							if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) != 0) {
@@ -4127,7 +4142,9 @@ public void setTopIndex (int index) {
 	/* Use LVM_SCROLL to scroll the table */
 	RECT rect = new RECT ();
 	rect.left = OS.LVIR_BOUNDS;
+	ignoreCustomDraw = true;
 	OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, rect);
+	ignoreCustomDraw = false;
 	int dy = (index - topIndex) * (rect.bottom - rect.top);
 	OS.SendMessage (handle, OS.LVM_SCROLL, 0, dy);
 }
@@ -4170,13 +4187,17 @@ public void showColumn (TableColumn column) {
 	itemRect.left = OS.LVIR_BOUNDS;
 	if (index == 0) {
 		itemRect.top = 1;
+		ignoreCustomDraw = true;
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, itemRect);
+		ignoreCustomDraw = false;
 		itemRect.right = itemRect.left;
 		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		itemRect.left = itemRect.right - width;
 	} else {
 		itemRect.top = index;
+		ignoreCustomDraw = true;
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, itemRect);
+		ignoreCustomDraw = false;
 	}
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
@@ -5296,7 +5317,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (pnmlv.iItem != -1) {
 						RECT itemRect = new RECT ();
 						itemRect.left = OS.LVIR_BOUNDS;
+						ignoreCustomDraw = true;
 						OS.SendMessage (handle, OS. LVM_GETITEMRECT, pnmlv.iItem, itemRect);
+						ignoreCustomDraw = false;
 						RECT headerRect = new RECT ();
 						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);

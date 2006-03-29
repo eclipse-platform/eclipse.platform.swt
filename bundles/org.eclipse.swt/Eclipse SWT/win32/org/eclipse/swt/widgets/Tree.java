@@ -51,8 +51,8 @@ public class Tree extends Composite {
 	boolean dragStarted, gestureCompleted, insertAfter, shrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
-	boolean linesVisible, customDraw, printClient, painted;
-	boolean ignoreItemHeight, ignoreDraw, ignoreDrawSelection, ignoreDrawBackground;
+	boolean linesVisible, customDraw, printClient, painted, ignoreItemHeight;
+	boolean ignoreDraw, ignoreCustomDraw, ignoreDrawSelection, ignoreDrawBackground;
 	int scrollWidth, headerToolTipHandle, selectionForeground;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
@@ -261,6 +261,7 @@ int borderHandle () {
 }
 
 LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
+	if (ignoreCustomDraw) return null;
 	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
 	int hDC = nmcd.hdc;
@@ -751,6 +752,14 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		}
 	}
 	TreeItem item = _getItem (nmcd.dwItemSpec, id);
+	if (ignoreCustomDraw) {
+		int hDC = nmcd.hdc;
+		int index = hwndHeader != 0 ? OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) : 0;
+		int hFont = item.cellFont != null ? item.cellFont [index] : -1;
+		if (hFont == -1) hFont = item.font;
+		if (hFont != -1) OS.SelectObject (hDC, hFont);
+		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
+	}
 	/*
 	* Feature in Windows.  When a new tree item is inserted
 	* using TVM_INSERTITEM and the tree is using custom draw,
@@ -872,12 +881,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 			drawBackground (hDC, rect);
-			RECT cellRect = null;
-			if ((style & SWT.FULL_SELECTION) != 0 && count == 0) {
-				cellRect = item.getBounds (index, true, true, true, true, true, hDC);
-			} else {
-				cellRect = item.getBounds (index, true, true, false, false, true, hDC);
-			}
+			RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 			if (clrSortBk != -1) {
 				RECT fullRect = item.getBounds (index, true, true, true, true, true, hDC);
 				drawBackground (hDC, fullRect, clrSortBk);
@@ -1049,7 +1053,8 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT CDDS_POSTPAINT (int wParam, int lParam) {	
+LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
+	if (ignoreCustomDraw) return null;
 	if (OS.IsWindowVisible (handle)) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 			if (sortColumn != null && sortDirection != SWT.NONE) {
@@ -1448,7 +1453,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
 			tvItem.hItem = hItem;
 			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			ignoreCustomDraw = true;
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			ignoreCustomDraw = false;
 		}
 		rect.left = hItem;
 		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
