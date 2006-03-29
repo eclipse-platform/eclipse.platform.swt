@@ -35,7 +35,8 @@ public static void main(String [] args) {
 	int columnCount = 4;
 	for (int i=0; i<columnCount; i++) {
 		TreeColumn column = new TreeColumn(tree, SWT.NONE);
-		column.setText("Col: " + i);	
+		column.setText("Column " + i);
+		column.setWidth(100);
 	}
 	int itemCount = 3;
 	for (int i=0; i<itemCount; i++) {
@@ -67,13 +68,15 @@ public static void main(String [] args) {
 	Listener paintListener = new Listener() {
 		String getText(TreeItem item, int column) {
 			String text = item.getText(column);
-			TreeItem parent = item.getParentItem();
-			int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
-			if (index % 3 == 1){
-				text +="\nOne Extra Line";
-			}
-			if (index % 3 == 2) {
-				text +="\nFirst Extra Line\nSecond Extra Line";
+			if (column != 0) {
+				TreeItem parent = item.getParentItem();
+				int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
+				if ((index+column) % 3 == 1){
+					text +="\nnew line";
+				}
+				if ((index+column) % 3 == 2) {
+					text +="\nnew line\nnew line";
+				}
 			}
 			return text;
 		}
@@ -91,7 +94,7 @@ public static void main(String [] args) {
 					TreeItem item = (TreeItem)event.item;
 					String text = getText(item, event.index);
 					Point size = event.gc.textExtent(text);					
-					int offset2 = Math.max(0, (event.height - size.y) / 2);
+					int offset2 = event.index == 0 ? Math.max(0, (event.height - size.y) / 2) : 0;
 					event.gc.drawText(text, event.x, event.y + offset2, true);
 					break;
 				}
@@ -105,11 +108,8 @@ public static void main(String [] args) {
 	tree.addListener(SWT.MeasureItem, paintListener);
 	tree.addListener(SWT.PaintItem, paintListener);
 	tree.addListener(SWT.EraseItem, paintListener);
-	
-	for (int i = 0; i < columnCount; i++) {
-		tree.getColumn(i).pack();
-	}
-	shell.setSize(500, 600);
+
+	shell.setSize(600, 400);
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
