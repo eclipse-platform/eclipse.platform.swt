@@ -244,7 +244,7 @@ public void setEditor (Control editor) {
 	
 	this.editor = editor;
 	_resize();
-	if (editor == null || editor.isDisposed()) return;
+	if (this.editor == null || this.editor.isDisposed()) return;
 	editor.setVisible(true);
 }
 }
