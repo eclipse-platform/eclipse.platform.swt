@@ -3807,6 +3807,10 @@ void setScrollWidth (int width) {
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
 		left = info.nPos;
 	}
+	if (horizontalBar != null) {
+		horizontalBar.setIncrement (3);
+		horizontalBar.setPageIncrement (info.nPage);
+	}
 	OS.GetClientRect (hwndParent, rect);
 	int hHeap = OS.GetProcessHeap ();
 	HDLAYOUT playout = new HDLAYOUT ();
@@ -4510,17 +4514,6 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			case OS.WM_SYSCOLORCHANGE: {
 				return OS.SendMessage (handle, msg, wParam, lParam);
 			}
-			case OS.WM_VSCROLL: {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
-				info.fMask = OS.SIF_ALL;
-				OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
-				OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
-				int code = OS.SendMessage (handle, OS.WM_VSCROLL, wParam, lParam);
-				OS.GetScrollInfo (handle, OS.SB_VERT, info);
-				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
-				return code;
-			}
 			case OS.WM_HSCROLL: {
 				/*
 				* Bug on WinCE.  lParam should be NULL when the message is not sent
@@ -4534,6 +4527,17 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				}
 				setScrollWidth ();
 				break;
+			}
+			case OS.WM_VSCROLL: {
+				SCROLLINFO info = new SCROLLINFO ();
+				info.cbSize = SCROLLINFO.sizeof;
+				info.fMask = OS.SIF_ALL;
+				OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
+				OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
+				int code = OS.SendMessage (handle, OS.WM_VSCROLL, wParam, lParam);
+				OS.GetScrollInfo (handle, OS.SB_VERT, info);
+				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+				return code;
 			}
 		}
 		return callWindowProc (hwnd, msg, wParam, lParam);
