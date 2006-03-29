@@ -59,6 +59,7 @@ public class Tree extends Composite {
 	static final int SORT_WIDTH = 10;
 	static final int HEADER_MARGIN = 12;
 	static final int HEADER_EXTRA = 3;
+	static final int INCREMENT = 5;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static final int HeaderProc;
@@ -3808,7 +3809,7 @@ void setScrollWidth (int width) {
 		left = info.nPos;
 	}
 	if (horizontalBar != null) {
-		horizontalBar.setIncrement (3);
+		horizontalBar.setIncrement (INCREMENT);
 		horizontalBar.setPageIncrement (info.nPage);
 	}
 	OS.GetClientRect (hwndParent, rect);
