@@ -64,7 +64,6 @@ public static void main(String [] args) {
 		public void handleEvent(Event event) {
 			switch(event.type) {		
 				case SWT.MeasureItem: {
-					System.out.println("Measure "+event.item);
 					TreeItem item = (TreeItem)event.item;
 					String text = item.getText(event.index);
 					TreeItem parent = item.getParentItem();
