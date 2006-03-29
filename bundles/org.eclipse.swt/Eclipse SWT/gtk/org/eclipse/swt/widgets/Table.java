@@ -2403,15 +2403,6 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				OS.gtk_tree_path_free (path);
-				if (OS.gtk_tree_view_get_expander_column (handle) == columnHandle) {
-					int [] buffer = new int [1];
-					OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
-					rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-					rect.width -= buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-					//OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-					//int horizontalSeparator = buffer[0];
-					//rect.x += horizontalSeparator;
-				}
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				OS.gtk_cell_renderer_get_size (cell, handle, null, null, null, contentWidth, null);
