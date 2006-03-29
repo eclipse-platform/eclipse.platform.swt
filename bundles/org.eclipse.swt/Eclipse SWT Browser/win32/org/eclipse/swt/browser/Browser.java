@@ -194,6 +194,7 @@ public Browser(Composite parent, int style) {
 	
 	OleListener oleListener = new OleListener() {
 		public void handleEvent(OleEvent event) {
+			if (auto == null) return;		/* receiver was disposed, callback is asynchronous */
 			switch (event.type) {
 				case BeforeNavigate2: {
 					Variant varResult = event.arguments[1];
