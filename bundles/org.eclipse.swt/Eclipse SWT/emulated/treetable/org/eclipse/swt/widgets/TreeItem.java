@@ -1412,12 +1412,10 @@ int getPreferredWidth (int columnIndex) {
 		event.width = width;
 		event.height = parent.itemHeight;
 		parent.sendEvent (SWT.MeasureItem, event);
-		if (parent.allowItemHeightChange) {
-			parent.allowItemHeightChange = false;
-			if (parent.itemHeight != event.height) {
-				parent.itemHeight = event.height + 2 * parent.getCellPadding ();
-				parent.redraw ();
-			}
+		if (parent.itemHeight != event.height) {
+			parent.customHeightSet = true;
+			boolean update = parent.setItemHeight (event.height + 2 * parent.getCellPadding ());
+			if (update) parent.redraw ();
 		}
 		width = event.width;
 	}
@@ -1575,12 +1573,10 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		parent.sendEvent (SWT.MeasureItem, event);
 		event.gc = null;
 		if (isDisposed ()) return false;
-		if (parent.allowItemHeightChange) {
-			parent.allowItemHeightChange = false;
-			if (parent.itemHeight != event.height) {
-				parent.itemHeight = event.height + 2 * parent.getCellPadding ();
-				parent.redraw ();
-			}
+		if (parent.itemHeight != event.height) {
+			parent.customHeightSet = true;
+			boolean update = parent.setItemHeight (event.height + 2 * parent.getCellPadding ());
+			if (update) parent.redraw ();
 		}
 		int change = event.width - (customWidth != -1 ? customWidth : contentWidth);
 		if (event.width != contentWidth || customWidth != -1) customWidth = event.width;

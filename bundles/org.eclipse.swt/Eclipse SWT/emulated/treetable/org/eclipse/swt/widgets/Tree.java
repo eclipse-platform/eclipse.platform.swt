@@ -51,7 +51,7 @@ public class Tree extends Composite {
 	Event lastSelectionEvent;
 	int availableItemsCount = 0;
 	boolean insertMarkPrecedes = false;
-	boolean linesVisible, ignoreKey, ignoreDispose, allowItemHeightChange = true;
+	boolean linesVisible, ignoreKey, ignoreDispose, customHeightSet;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
 	int headerImageHeight = 0, orderedCol0imageWidth = 0;
@@ -3234,7 +3234,7 @@ public void setFont (Font value) {
 	
 	/* recompute the receiver's cached font height and item height values */
 	fontHeight = gc.getFontMetrics ().getHeight ();
-	if (allowItemHeightChange) itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
+	setItemHeight (Math.max (fontHeight, imageHeight) + 2 * getCellPadding ());
 	Point headerSize = header.getSize ();
 	int newHeaderHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	if (headerSize.y != newHeaderHeight) {
@@ -3305,7 +3305,7 @@ public void setHeaderVisible (boolean value) {
 }
 void setImageHeight (int value) {
 	imageHeight = value;
-	if (allowItemHeightChange) itemHeight = Math.max (fontHeight, imageHeight) + 2 * getCellPadding ();
+	setItemHeight (Math.max (fontHeight, imageHeight) + 2 * getCellPadding ());
 }
 /**
  * Display a mark indicating the point at which an item will be inserted.
@@ -3409,6 +3409,11 @@ public void setItemCount (int count) {
 
 	updateVerticalBar ();
 	redrawItems (redrawStart, redrawEnd, false);
+}
+boolean setItemHeight (int value) {
+	boolean update = !customHeightSet || itemHeight < value; 
+	if (update) itemHeight = value;
+	return update;
 }
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
