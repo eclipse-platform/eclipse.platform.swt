@@ -110,6 +110,7 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.EraseItem:
 		case SWT.PaintItem:
 			customDraw = true;
+			style |= SWT.DOUBLE_BUFFERED;
 			setBackgroundTransparent (true);
 			//TODO - LVS_EX_LABELTIP causes white rectangles (turn it off)
 			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
@@ -573,6 +574,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 void checkBuffered () {
 	super.checkBuffered ();
 	if (OS.COMCTL32_MAJOR >= 6) style |= SWT.DOUBLE_BUFFERED;
+	if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
 }
 
 boolean checkData (TableItem item, boolean redraw) {
@@ -4637,6 +4639,58 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		}
 	}
 	if (fixScrollWidth) setScrollWidth (null, true);
+	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+		int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+		if ((bits & OS.LVS_EX_DOUBLEBUFFER) == 0) {
+			GC gc = null;
+			int paintDC = 0;
+			PAINTSTRUCT ps = new PAINTSTRUCT ();
+			if (hooks (SWT.Paint)) {
+				GCData data = new GCData ();
+				data.ps = ps;
+				data.hwnd = handle;
+				gc = GC.win32_new (this, data);
+				paintDC = gc.handle;
+			} else {
+				paintDC = OS.BeginPaint (handle, ps);
+			}
+			
+			//TODO - only double buffer the damage
+//			int x = ps.left, y = ps.top;
+//			int width = ps.right - ps.left;
+//			int height = ps.bottom - ps.top;
+			forceResize ();
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			int x = rect.left, y = rect.top;
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+			
+			int hDC = OS.CreateCompatibleDC (paintDC);
+			int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
+			int hOldBitmap = OS.SelectObject (hDC, hBitmap);
+			int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
+			OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
+			OS.SelectObject (hDC, hOldBitmap);
+			OS.DeleteObject (hBitmap);
+			OS.DeleteObject (hDC);
+			if (hooks (SWT.Paint)) {
+				Event event = new Event ();
+				event.gc = gc;
+				event.x = ps.left;
+				event.y = ps.top;
+				event.width = ps.right - ps.left;
+				event.height = ps.bottom - ps.top;
+				sendEvent (SWT.Paint, event);
+				// widget could be disposed at this point
+				event.gc = null;
+				gc.dispose ();
+			} else {
+				OS.EndPaint (handle, ps);
+			}
+			return new LRESULT (code);
+		}
+	}
 	return super.WM_PAINT (wParam, lParam);
 }
 
