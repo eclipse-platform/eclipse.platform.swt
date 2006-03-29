@@ -840,6 +840,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		}
 	}
 	if (OS.IsWindowVisible (handle) && nmcd.left < nmcd.right && nmcd.top < nmcd.bottom) {
+		if (hFont != -1) OS.SelectObject (hDC, hFont);
 		if (linesVisible) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
