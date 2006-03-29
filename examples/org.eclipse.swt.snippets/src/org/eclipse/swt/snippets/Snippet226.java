@@ -28,7 +28,7 @@ public class Snippet226 {
 public static void main(String [] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
-	shell.setText("Custom Selection - Gradient selection");
+	shell.setText("Tree: Custom Gradient selection");
 	shell.setLayout(new FillLayout());
 	final Tree tree = new Tree(shell, SWT.MULTI | SWT.FULL_SELECTION);
 	tree.setHeaderVisible(true);
@@ -61,16 +61,38 @@ public static void main(String [] args) {
 		}
 	}
 
+	/*
+	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
+	 * Therefore, it is critical for performance that these methods be as efficient as possible.
+	 */
 	tree.addListener(SWT.EraseItem, new Listener() {
 		public void handleEvent(Event event) {			
 			if(tree.getEnabled() && (event.detail & SWT.SELECTED) != 0) {
 				GC gc = event.gc;
+				Rectangle area = tree.getClientArea();
+				/*
+				 * If you wish to paint the selection beyond the end of
+				 * last column, you must change the clipping region.
+				 */
+				int columnCount = tree.getColumnCount();
+				if (event.index == columnCount - 1 || columnCount == 0) {
+					Region region = new Region();
+					gc.getClipping(region);
+					region.add(event.x, event.y, area.x + area.width - event.x, event.height); 
+					gc.setClipping(region);
+					region.dispose();
+				}
 				gc.setAdvanced(true);
 				if (gc.getAdvanced()) gc.setAlpha(127);								
 				Rectangle rect = event.getBounds();
+				Color foreground = gc.getForeground();
+				Color background = gc.getBackground();
 				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
 				gc.setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-				gc.fillGradientRectangle(0, rect.y, 500, rect.height, false);
+				gc.fillGradientRectangle(0, rect.y, area.width, rect.height, false);
+				// restore colors for subsequent drawing
+				gc.setForeground(foreground);
+				gc.setBackground(background);
 				event.detail &= ~SWT.SELECTED;					
 			}						
 		}
