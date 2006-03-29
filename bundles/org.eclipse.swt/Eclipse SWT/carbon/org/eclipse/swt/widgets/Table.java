@@ -1012,7 +1012,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		event.width = contentWidth;
 		event.height = itemHeight;
 		sendEvent (SWT.MeasureItem, event);
-		if (this.itemHeight == -1) {
+		if (this.itemHeight < event.height) {
 			this.itemHeight = event.height;
 			OS.SetDataBrowserTableViewRowHeight (handle, (short) event.height);
 		}

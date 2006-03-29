@@ -139,7 +139,7 @@ int calculateWidth (int index, GC gc) {
 		event.width = width;
 		event.height = height[0];
 		parent.sendEvent (SWT.MeasureItem, event);
-		if (parent.itemHeight == -1) {
+		if (parent.itemHeight < event.height) {
 			parent.itemHeight = event.height;
 			OS.SetDataBrowserTableViewRowHeight (parent.handle, (short) event.height);
 		}
