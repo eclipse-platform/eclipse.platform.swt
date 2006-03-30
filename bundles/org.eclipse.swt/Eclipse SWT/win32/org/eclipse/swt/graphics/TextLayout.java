@@ -1630,9 +1630,13 @@ StyleItem[] merge (int items, int itemCount) {
 		if (styleLimit <= itemLimit) {
 			styleIndex++;
 			start = styleLimit;
-			if (start < itemLimit) {
-				item.analysis.fLinkAfter = true;
-				linkBefore = true;
+			if (start < itemLimit && 0 < start && start < end) {
+				char pChar = segmentsText.charAt(start - 1);
+				char tChar = segmentsText.charAt(start);
+				if (!Compatibility.isWhitespace(pChar) && !Compatibility.isWhitespace(tChar)) {
+					item.analysis.fLinkAfter = true;
+					linkBefore = true;
+				}
 			}
 		}
 		if (itemLimit <= styleLimit) {
