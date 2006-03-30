@@ -93,7 +93,7 @@ public static void main(String [] args) {
 				Color background = gc.getBackground();
 				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
 				gc.setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-				gc.fillGradientRectangle(0, rect.y, area.width, rect.height, false);
+				gc.fillGradientRectangle(0, rect.y, display.getBounds().width, rect.height, false);
 				// restore colors for subsequent drawing
 				gc.setForeground(foreground);
 				gc.setBackground(background);
