@@ -219,30 +219,6 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 	OS.CloseThemeData (hTheme);
 }
 
-void drawWidget (GC gc, RECT clipRect) {
-	int hTheme = 0;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		hTheme = OS.OpenThemeData (handle, EXPLORERBAR); 
-	}
-	if (hTheme != 0) {
-		RECT rect = new RECT ();
-		OS.GetClientRect (handle, rect);
-		OS.DrawThemeBackground (hTheme, gc.handle, OS.EBP_HEADERBACKGROUND, 0, rect, clipRect);
-	} else {
-		drawBackground (gc.handle);
-	}
-	boolean drawFocus = false;
-	if (handle == OS.GetFocus ()) {
-		int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-		drawFocus = (uiState & OS.UISF_HIDEFOCUS) == 0;
-	}
-	for (int i = 0; i < itemCount; i++) {
-		ExpandItem item = items[i];
-		item.drawItem (gc, hTheme, clipRect, i == focusIndex && drawFocus);
-	}
-	if (hTheme != 0) OS.CloseThemeData (hTheme);
-}
-
 Control findBackgroundControl () {
 	Control control = super.findBackgroundControl ();
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
@@ -584,19 +560,37 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	data.hwnd = handle;
 	GC gc = new_GC (data);
 	if (gc != null) {
-		int width = ps.right - ps.left;
-		int height = ps.bottom - ps.top;
-		if (width != 0 && height != 0) {
-			RECT rect = new RECT ();
-			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-			drawWidget (gc, rect);
+		if ((ps.right - ps.left) != 0 && (ps.bottom - ps.top) != 0) {
+			int hTheme = 0;
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				hTheme = OS.OpenThemeData (handle, EXPLORERBAR); 
+			}
+			RECT clipRect = new RECT ();
+			OS.SetRect (clipRect, ps.left, ps.top, ps.right, ps.bottom);
+			if (hTheme != 0) {
+				RECT rect = new RECT ();
+				OS.GetClientRect (handle, rect);
+				OS.DrawThemeBackground (hTheme, gc.handle, OS.EBP_HEADERBACKGROUND, 0, rect, clipRect);				
+			} else {
+				drawBackground (gc.handle);
+			}
+			boolean drawFocus = false;
+			if (handle == OS.GetFocus ()) {
+				int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+				drawFocus = (uiState & OS.UISF_HIDEFOCUS) == 0;
+			}
+			for (int i = 0; i < itemCount; i++) {
+				ExpandItem item = items[i];
+				item.drawItem (gc, hTheme, clipRect, i == focusIndex && drawFocus);		
+			}
+			if (hTheme != 0) OS.CloseThemeData (hTheme);
 			if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 				Event event = new Event ();
 				event.gc = gc;
-				event.x = rect.left;
-				event.y = rect.top;
-				event.width = width;
-				event.height = height;
+				event.x = clipRect.left;
+				event.y = clipRect.top;
+				event.width = clipRect.right - clipRect.left;
+				event.height = clipRect.bottom - clipRect.top;
 				sendEvent (SWT.Paint, event);
 				event.gc = null;
 			}
@@ -604,19 +598,6 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		gc.dispose ();
 	}
 	return LRESULT.ZERO;
-}
-
-LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
-	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
-	RECT rect = new RECT ();
-	OS.GetClientRect (handle, rect);
-	GCData data = new GCData ();
-	data.device = display;
-	data.foreground = getForegroundPixel ();
-	GC gc = GC.win32_new (wParam, data);
-	drawWidget (gc, rect);
-	gc.dispose ();
-	return result;
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {

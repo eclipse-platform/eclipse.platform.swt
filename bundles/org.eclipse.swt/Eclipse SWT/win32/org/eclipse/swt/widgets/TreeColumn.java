@@ -364,7 +364,10 @@ public void pack () {
 				gc.dispose ();
 				OS.RestoreDC (hDC, nSavedDC);
 				if (isDisposed () || parent.isDisposed ()) break;
-				if (event.height > parent.getItemHeight ()) parent.setItemHeight (event.height);
+				if (!parent.ignoreItemHeight) {
+					if (event.height > parent.getItemHeight ()) parent.setItemHeight (event.height);
+					parent.ignoreItemHeight = true;
+				}
 				//itemRect.left = event.x;
 				itemRect.right = event.x + event.width;
 			}

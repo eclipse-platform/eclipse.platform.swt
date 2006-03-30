@@ -380,7 +380,7 @@ public void setText (String string) {
 			if ((style & SWT.WRAP) != 0) {
 				newBits |= OS.SS_LEFT;
 			} else {
-				newBits |= OS.SS_LEFTNOWORDWRAP;
+			newBits |= OS.SS_LEFTNOWORDWRAP;
 			}
 		}
 		if ((style & SWT.CENTER) != 0) newBits |= OS.SS_CENTER;
@@ -390,17 +390,6 @@ public void setText (String string) {
 	string = Display.withCrLf (string);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
-	/*
-	* Bug in Windows.  For some reason, the HBRUSH that
-	* is returned from WM_CTRLCOLOR is misaligned when
-	* the label uses it to draw.  If the brush is a solid
-	* color, this does not matter.  However, if the brush
-	* contains an image, the image is misaligned.  The
-	* fix is to draw the background in WM_ERASEBKGND.
-	*/
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-		if (findImageControl () != null) OS.InvalidateRect (handle, null, true);
-	}
 }
 
 int widgetExtStyle () {

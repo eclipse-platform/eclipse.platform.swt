@@ -48,7 +48,7 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	boolean ignoreDraw, ignoreCustomDraw, ignoreDrawSelection, ignoreDrawBackground;
+	boolean ignoreItemHeight, ignoreDraw, ignoreDrawSelection, ignoreDrawBackground;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
@@ -110,7 +110,6 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.EraseItem:
 		case SWT.PaintItem:
 			customDraw = true;
-			style |= SWT.DOUBLE_BUFFERED;
 			setBackgroundTransparent (true);
 			//TODO - LVS_EX_LABELTIP causes white rectangles (turn it off)
 			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
@@ -322,7 +321,6 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
-	if (ignoreCustomDraw) return null;
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -359,9 +357,6 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_PREPAINT (int wParam, int lParam) {
-	if (ignoreCustomDraw) {
-		return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
-	}
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -419,7 +414,6 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
-	if (ignoreCustomDraw) return null;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 	int hDC = nmcd.hdc;
@@ -435,6 +429,9 @@ LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
 }
 
 LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
+	int code = OS.CDRF_DODEFAULT;
+	selectionForeground = -1;
+	ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = false;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 	/*
@@ -447,16 +444,6 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	*/
 	TableItem item = _getItem (nmcd.dwItemSpec);
 	if (item == null) return null;
-	if (ignoreCustomDraw) {
-		int hDC = nmcd.hdc;
-		int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
-		if (hFont == -1) hFont = item.font;
-		if (hFont != -1) OS.SelectObject (hDC, hFont);
-		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
-	}
-	int code = OS.CDRF_DODEFAULT;
-	selectionForeground = -1;
-	ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = false;
 	if (OS.IsWindowVisible (handle)) {
 		if (hooks (SWT.MeasureItem)) {
 			sendMeasureItemEvent (item, nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
@@ -511,10 +498,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 					if (clrTextBk != -1 && nmcd.iSubItem == 0) {
 						RECT itemRect = new RECT ();
 						itemRect.left = OS.LVIR_SELECTBOUNDS;
-						ignoreCustomDraw = true;
-						result = OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, itemRect);
-						ignoreCustomDraw = false;
-						if (result != 0) {
+						if (OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, itemRect) != 0) {
 							RECT headerRect = new RECT ();
 							int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 							if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) != 0) {
@@ -589,7 +573,6 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 void checkBuffered () {
 	super.checkBuffered ();
 	if (OS.COMCTL32_MAJOR >= 6) style |= SWT.DOUBLE_BUFFERED;
-	if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
 }
 
 boolean checkData (TableItem item, boolean redraw) {
@@ -2886,7 +2869,10 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int hDC) {
 				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, event.x + event.width);
 			}
 		}
-		if (event.height > getItemHeight ()) setItemHeight (event.height);
+		if (!ignoreItemHeight) {
+			if (event.height > getItemHeight ()) setItemHeight (event.height);
+			ignoreItemHeight = true;
+		}
 	}
 	return event;
 }
@@ -4077,6 +4063,7 @@ void setTableEmpty () {
 		}
 	}
 	items = new TableItem [4];
+	ignoreItemHeight = false;
 	if (columnCount == 0) {
 		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
 		setScrollWidth (null, false);
@@ -4142,9 +4129,7 @@ public void setTopIndex (int index) {
 	/* Use LVM_SCROLL to scroll the table */
 	RECT rect = new RECT ();
 	rect.left = OS.LVIR_BOUNDS;
-	ignoreCustomDraw = true;
 	OS.SendMessage (handle, OS.LVM_GETITEMRECT, 0, rect);
-	ignoreCustomDraw = false;
 	int dy = (index - topIndex) * (rect.bottom - rect.top);
 	OS.SendMessage (handle, OS.LVM_SCROLL, 0, dy);
 }
@@ -4187,17 +4172,13 @@ public void showColumn (TableColumn column) {
 	itemRect.left = OS.LVIR_BOUNDS;
 	if (index == 0) {
 		itemRect.top = 1;
-		ignoreCustomDraw = true;
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, itemRect);
-		ignoreCustomDraw = false;
 		itemRect.right = itemRect.left;
 		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		itemRect.left = itemRect.right - width;
 	} else {
 		itemRect.top = index;
-		ignoreCustomDraw = true;
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, itemRect);
-		ignoreCustomDraw = false;
 	}
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
@@ -4660,58 +4641,6 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		}
 	}
 	if (fixScrollWidth) setScrollWidth (null, true);
-	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
-		int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-		if ((bits & OS.LVS_EX_DOUBLEBUFFER) == 0) {
-			GC gc = null;
-			int paintDC = 0;
-			PAINTSTRUCT ps = new PAINTSTRUCT ();
-			if (hooks (SWT.Paint)) {
-				GCData data = new GCData ();
-				data.ps = ps;
-				data.hwnd = handle;
-				gc = GC.win32_new (this, data);
-				paintDC = gc.handle;
-			} else {
-				paintDC = OS.BeginPaint (handle, ps);
-			}
-			
-			//TODO - only double buffer the damage
-//			int x = ps.left, y = ps.top;
-//			int width = ps.right - ps.left;
-//			int height = ps.bottom - ps.top;
-			forceResize ();
-			RECT rect = new RECT ();
-			OS.GetClientRect (handle, rect);
-			int x = rect.left, y = rect.top;
-			int width = rect.right - rect.left;
-			int height = rect.bottom - rect.top;
-			
-			int hDC = OS.CreateCompatibleDC (paintDC);
-			int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
-			int hOldBitmap = OS.SelectObject (hDC, hBitmap);
-			int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
-			OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
-			OS.SelectObject (hDC, hOldBitmap);
-			OS.DeleteObject (hBitmap);
-			OS.DeleteObject (hDC);
-			if (hooks (SWT.Paint)) {
-				Event event = new Event ();
-				event.gc = gc;
-				event.x = ps.left;
-				event.y = ps.top;
-				event.width = ps.right - ps.left;
-				event.height = ps.bottom - ps.top;
-				sendEvent (SWT.Paint, event);
-				// widget could be disposed at this point
-				event.gc = null;
-				gc.dispose ();
-			} else {
-				OS.EndPaint (handle, ps);
-			}
-			return new LRESULT (code);
-		}
-	}
 	return super.WM_PAINT (wParam, lParam);
 }
 
@@ -5317,9 +5246,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (pnmlv.iItem != -1) {
 						RECT itemRect = new RECT ();
 						itemRect.left = OS.LVIR_BOUNDS;
-						ignoreCustomDraw = true;
 						OS.SendMessage (handle, OS. LVM_GETITEMRECT, pnmlv.iItem, itemRect);
-						ignoreCustomDraw = false;
 						RECT headerRect = new RECT ();
 						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
