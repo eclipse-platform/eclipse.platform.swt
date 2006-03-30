@@ -38,7 +38,7 @@ public static void main(String [] args) {
 	column1.setText("Bug Status");
 	column1.setWidth(100);
 	final TableColumn column2 = new TableColumn(table, SWT.NONE);
-	column2.setText("Precent");
+	column2.setText("Percent");
 	column2.setWidth(200);
 	String[] labels = new String[]{"Resolved", "New", "Won't Fix", "Invalid"};
 	for (int i=0; i<labels.length; i++) {
@@ -52,18 +52,13 @@ public static void main(String [] args) {
 	 * as efficient as possible.
 	 */
 	table.addListener(SWT.PaintItem, new Listener() {
+		int[] percents = new int[] {15, 5, 30, 50};
 		public void handleEvent(Event event) {
 			if (event.index == 1) {
 				GC gc = event.gc;
 				TableItem item = (TableItem)event.item;
 				int index = table.indexOf(item);
-				int percent = 0;
-				switch (index) {
-					case 3: percent = 15; break;
-					case 2: percent = 5; break;
-					case 1: percent = 30; break;
-					case 0: percent = 50; break;
-				}
+				int percent = percents[index];
 				Color foreground = gc.getForeground();
 				Color background = gc.getBackground();
 				gc.setForeground(display.getSystemColor(SWT.COLOR_RED));

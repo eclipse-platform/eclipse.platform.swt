@@ -57,7 +57,7 @@ public static void main(String [] args) {
 	 * as efficient as possible.
 	 */
 	tree.addListener(SWT.PaintItem, new Listener() {
-		int[] percents = new int[] {15, 5, 30, 50};
+		int[] percents = new int[] {50, 30, 5, 15};
 		public void handleEvent(Event event) {
 			if (event.index == 1) {
 				TreeItem item = (TreeItem)event.item;
