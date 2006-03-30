@@ -303,6 +303,8 @@ public void getBounds(float[] bounds) {
 	Cairo.memmove(path, copy, cairo_path_t.sizeof);
 	double minX = 0, minY = 0, maxX = 0, maxY = 0;
 	if (path.num_data > 0) {
+		minX = minY = Double.POSITIVE_INFINITY;
+		maxX = maxY = Double.NEGATIVE_INFINITY;
 		int i = 0;
 		double[] points = new double[6]; 
 		cairo_path_data_t data = new cairo_path_data_t();
