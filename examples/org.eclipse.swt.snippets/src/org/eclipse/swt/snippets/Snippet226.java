@@ -28,7 +28,7 @@ public class Snippet226 {
 public static void main(String [] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
-	shell.setText("Tree: Custom Gradient selection");
+	shell.setText("Custom gradient selection for Tree");
 	shell.setLayout(new FillLayout());
 	final Tree tree = new Tree(shell, SWT.MULTI | SWT.FULL_SELECTION);
 	tree.setHeaderVisible(true);
@@ -36,7 +36,7 @@ public static void main(String [] args) {
 	int columnCount = 4;
 	for (int i=0; i<columnCount; i++) {
 		TreeColumn column = new TreeColumn(tree, SWT.NONE);
-		column.setText("Col: " + i);	
+		column.setText("Column " + i);	
 	}
 	int itemCount = 3;
 	for (int i=0; i<itemCount; i++) {
@@ -63,11 +63,12 @@ public static void main(String [] args) {
 
 	/*
 	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
-	 * Therefore, it is critical for performance that these methods be as efficient as possible.
+	 * Therefore, it is critical for performance that these methods be
+	 * as efficient as possible.
 	 */
 	tree.addListener(SWT.EraseItem, new Listener() {
 		public void handleEvent(Event event) {			
-			if(tree.getEnabled() && (event.detail & SWT.SELECTED) != 0) {
+			if((event.detail & SWT.SELECTED) != 0) {
 				GC gc = event.gc;
 				Rectangle area = tree.getClientArea();
 				/*
@@ -76,11 +77,14 @@ public static void main(String [] args) {
 				 */
 				int columnCount = tree.getColumnCount();
 				if (event.index == columnCount - 1 || columnCount == 0) {
-					Region region = new Region();
-					gc.getClipping(region);
-					region.add(event.x, event.y, area.x + area.width - event.x, event.height); 
-					gc.setClipping(region);
-					region.dispose();
+					int width = area.x + area.width - event.x;
+					if (width > 0) {
+						Region region = new Region();
+						gc.getClipping(region);
+						region.add(event.x, event.y, width, event.height); 
+						gc.setClipping(region);
+						region.dispose();
+					}
 				}
 				gc.setAdvanced(true);
 				if (gc.getAdvanced()) gc.setAlpha(127);								

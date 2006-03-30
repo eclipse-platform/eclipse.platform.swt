@@ -30,7 +30,7 @@ public static void main(String [] args) {
 	final Display display = new Display();		
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	shell.setText("Data chart");
+	shell.setText("Show results as a bar chart in Table");
 	final Table table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
 	table.setHeaderVisible(true);
 	table.setLinesVisible(true);
@@ -59,9 +59,9 @@ public static void main(String [] args) {
 				int index = table.indexOf(item);
 				int percent = 0;
 				switch (index) {
-					case 3: percent = 15;	 break;
-					case 2: percent = 5;	 break;
-					case 1: percent = 30;	 break;
+					case 3: percent = 15; break;
+					case 2: percent = 5; break;
+					case 1: percent = 30; break;
 					case 0: percent = 50; break;
 				}
 				Color foreground = gc.getForeground();
@@ -83,7 +83,7 @@ public static void main(String [] args) {
 		}
 	});		
 			
-	shell.setSize(400, 300);
+	shell.pack();
 	shell.open();
 	while(!shell.isDisposed()) {
 		if(!display.readAndDispatch()) display.sleep();

@@ -63,23 +63,10 @@ public static void main(String [] args) {
 
 	/*
 	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
-	 * Therefore, it is critical for performance that these methods be as efficient as possible.
+	 * Therefore, it is critical for performance that these methods be
+	 * as efficient as possible.
 	 */
 	Listener paintListener = new Listener() {
-		String getText(TreeItem item, int column) {
-			String text = item.getText(column);
-			if (column != 0) {
-				TreeItem parent = item.getParentItem();
-				int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
-				if ((index+column) % 3 == 1){
-					text +="\nnew line";
-				}
-				if ((index+column) % 3 == 2) {
-					text +="\nnew line\nnew line";
-				}
-			}
-			return text;
-		}
 		public void handleEvent(Event event) {
 			switch(event.type) {		
 				case SWT.MeasureItem: {
@@ -103,6 +90,20 @@ public static void main(String [] args) {
 					break;
 				}
 			}
+		}
+		String getText(TreeItem item, int column) {
+			String text = item.getText(column);
+			if (column != 0) {
+				TreeItem parent = item.getParentItem();
+				int index = parent == null ? tree.indexOf(item) : parent.indexOf(item);
+				if ((index+column) % 3 == 1){
+					text +="\nnew line";
+				}
+				if ((index+column) % 3 == 2) {
+					text +="\nnew line\nnew line";
+				}
+			}
+			return text;
 		}
 	};
 	tree.addListener(SWT.MeasureItem, paintListener);

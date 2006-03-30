@@ -61,6 +61,11 @@ public static void main(String [] args) {
 			}
 		}
 	}
+	/*
+	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
+	 * Therefore, it is critical for performance that these methods be
+	 * as efficient as possible.
+	 */
 	Listener paintListener = new Listener() {
 		public void handleEvent(Event event) {			
 			switch(event.type) {
@@ -80,8 +85,8 @@ public static void main(String [] args) {
 			}
 		}
 	};		
-	tree.addListener (SWT.MeasureItem, paintListener);
-	tree.addListener (SWT.PaintItem, paintListener);		
+	tree.addListener(SWT.MeasureItem, paintListener);
+	tree.addListener(SWT.PaintItem, paintListener);		
 
 	for(int i = 0; i < columnCount; i++) {
 		tree.getColumn(i).pack();
