@@ -31,7 +31,7 @@ public static void main(String [] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	shell.setText("Show results as a bar chart in Table");
-	final Table table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
+	final Table table = new Table(shell, SWT.BORDER);
 	table.setHeaderVisible(true);
 	table.setLinesVisible(true);
 	TableColumn column1 = new TableColumn(table, SWT.NONE);

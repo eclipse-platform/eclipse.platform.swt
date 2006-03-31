@@ -31,7 +31,7 @@ public static void main(String [] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	shell.setText("Show results as a bar chart in Table");
-	final Tree tree = new Tree(shell, SWT.BORDER | SWT.FULL_SELECTION);
+	final Tree tree = new Tree(shell, SWT.BORDER);
 	tree.setHeaderVisible(true);
 	tree.setLinesVisible(true);
 	TreeColumn column1 = new TreeColumn(tree, SWT.NONE);
