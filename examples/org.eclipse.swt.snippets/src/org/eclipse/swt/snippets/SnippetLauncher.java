@@ -67,8 +67,12 @@ public class SnippetLauncher {
 				if (method != null) {
 					try {
 						method.invoke(clazz, new Object [] {param});
-					} catch (Exception e) {
-						System.out.println("   Failed to launch");
+					} catch (IllegalAccessException e) {
+						System.out.println("   Failed to launch (illegal access)");
+					} catch (IllegalArgumentException e) {
+						System.out.println("   Failed to launch (illegal argument to main)");
+					} catch (InvocationTargetException e) {
+						System.out.println("   Exception in Snippet: " + e.getTargetException());
 					}
 				}
 			}
