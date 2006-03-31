@@ -14,7 +14,9 @@ package org.eclipse.swt.snippets;
  * Reading and writing to a SAFEARRAY
  * 
  * This example reads from a PostData object in a BeforeNavigate2 event and
- * creates a PostData object in a call to Navigate.
+ * creates a PostData object in a call to Navigate. (win32 only)
+ * NOTE: This snippet uses internal SWT packages that are
+ * subject to change without notice.
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
