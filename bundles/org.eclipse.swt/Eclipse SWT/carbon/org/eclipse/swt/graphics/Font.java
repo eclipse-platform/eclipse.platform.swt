@@ -343,6 +343,7 @@ public int hashCode() {
 void init(Device device, String name, int height, int style) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.device = device;
 	int[] font = new int[1];
 	byte[] buffer = name.getBytes();
 	this.id = OS.kInvalidFontFamily;
