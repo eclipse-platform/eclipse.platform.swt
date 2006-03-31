@@ -4477,6 +4477,12 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (findImageControl () != null) return LRESULT.ONE;
+	if (OS.COMCTL32_MAJOR < 6) {
+		if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+			int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+			if ((bits & OS.LVS_EX_DOUBLEBUFFER) == 0) return LRESULT.ONE;
+		}
+	}
 	return result;
 }
 
