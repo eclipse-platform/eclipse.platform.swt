@@ -985,14 +985,14 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		* drawing on top of any custom drawing.  The fix
 		* is to emulate TVS_FULLROWSELECT.
 		*/
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-				RECT rect = new RECT ();
-				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-				fillBackground (hDC, OS.GetBkColor (hDC), rect);
-				nmcd.uItemState &= ~OS.CDIS_FOCUS;
-				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+		if (selected) {
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+				}
 			}
 		}
 	}
