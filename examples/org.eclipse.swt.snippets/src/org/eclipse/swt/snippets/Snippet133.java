@@ -123,6 +123,7 @@ public class Snippet133 {
 		if (font != null) font.dispose();
 		if (foregroundColor != null) foregroundColor.dispose();
 		if (backgroundColor != null) backgroundColor.dispose();
+		display.dispose();
 	}
 		
 	void menuOpen() {
