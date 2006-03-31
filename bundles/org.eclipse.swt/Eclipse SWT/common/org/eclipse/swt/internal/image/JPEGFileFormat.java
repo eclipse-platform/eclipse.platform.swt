@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
- * All rights reserved.  This source file is made available under the terms contained in the README file
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * All rights reserved.  This source file is made available under the terms contained in the README file
  * accompanying this program.  The README file should be located in the about_files directory of the
  * plug-in that contains this source file.
- *
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
