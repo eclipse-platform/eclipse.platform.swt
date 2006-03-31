@@ -473,6 +473,8 @@ void copyModel (int /*long*/ oldModel, int oldStart, int /*long*/ newModel, int 
 						if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
 					}
 				}
+			} else {
+				OS.gtk_tree_store_set (newModel, newItem, ID_COLUMN, -1, -1);
 			}
 			// recurse through children
 			copyModel(oldModel, oldStart, newModel, newStart, types, iter, newItem, modelLength);
