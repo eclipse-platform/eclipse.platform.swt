@@ -2130,7 +2130,7 @@ public class SWT {
 
 	/**
 	 * The <code>Composite</code> constant to indicate that
-	 * an attribute (such as background) is not inhertited
+	 * an attribute (such as background) is not inherited
 	 * by the children (value is 0).
 	 *
 	 * @since 3.2
@@ -2139,7 +2139,7 @@ public class SWT {
 	
 	/**
 	 * The <code>Composite</code> constant to indicate that
-	 * an attribute (such as background) is inhertited by
+	 * an attribute (such as background) is inherited by
 	 * children who choose this value as their "default"
 	 * (value is 1).  For example, a label child will
 	 * typically choose to inherit the background color
@@ -2151,7 +2151,7 @@ public class SWT {
 	
 	/**
 	 * The <code>Composite</code> constant to indicate that
-	 * an attribute (such as background) is inhertited by
+	 * an attribute (such as background) is inherited by
 	 * all children.
 	 *
 	 * @since 3.2
