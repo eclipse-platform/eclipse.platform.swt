@@ -1,5 +1,14 @@
 package org.eclipse.swt.snippets;
 
+/*
+ * Simple "hackable" code that runs all of the SWT Snippets,
+ * typically for testing. One example of a useful "hack" is
+ * to add the line:
+ *    if (source.indexOf("Table") == -1 && source.indexOf("Tree") == -1) continue;
+ * after the line:
+ *    String source = String.valueOf(buffer);
+ * in order to run all of the Table and Tree Snippets.
+ */
 import java.lang.reflect.*;
 import java.io.*;
 import org.eclipse.swt.SWT;
