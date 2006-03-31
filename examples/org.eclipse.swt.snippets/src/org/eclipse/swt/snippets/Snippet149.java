@@ -54,5 +54,6 @@ public class Snippet149 {
 				display.sleep();
 			}
 		}
+		display.dispose();
 	}
 }
