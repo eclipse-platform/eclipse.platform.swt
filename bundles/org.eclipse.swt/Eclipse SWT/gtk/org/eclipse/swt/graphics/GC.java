@@ -2128,6 +2128,11 @@ public Pattern getForegroundPattern() {
 	return data.foregroundPattern;
 }
 
+public GCData getGCData() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data;
+}
+
 /** 
  * Returns the receiver's interpolation setting, which will be one of
  * <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>, 
