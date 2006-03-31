@@ -2,6 +2,7 @@ package org.eclipse.swt.snippets;
 
 import java.lang.reflect.*;
 import java.io.*;
+import org.eclipse.swt.SWT;
 
 public class SnippetLauncher {
 
@@ -32,8 +33,26 @@ public class SnippetLauncher {
 						start = source.indexOf("/*", start);
 						int end = source.indexOf("* For a list of all");
 						System.out.println(source.substring(start, end-3));
+						boolean skip = false;
+						String platform = SWT.getPlatform();
 						if (source.indexOf("PocketPC") != -1) {
-							System.out.println("...skipping PocketPC example...");
+							platform = "PocketPC";
+							skip = true;
+						} else if (source.indexOf("OpenGL") != -1) {
+							platform = "OpenGL";
+							skip = true;
+						} else {
+							String [] platforms = {"win32", "motif", "gtk", "photon", "carbon"};
+							for (int p = 0; p < platforms.length; p++) {
+								if (!platforms[p].equals(platform) && source.indexOf("." + platforms[p]) != -1) {
+									platform = platforms[p];
+									skip = true;
+									break;
+								}
+							}
+						}
+						if (skip) {
+							System.out.println("...skipping " + platform + " example...");
 							continue;
 						}
 					} catch (Exception e) {}
