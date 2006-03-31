@@ -1000,7 +1000,7 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 		x = column.getX ();
 	}
 
-	if (parent.hooks (SWT.MeasureItem) && parent.columns.length == 0) {
+	if (parent.hooks (SWT.MeasureItem)) {
 		int contentWidth = getContentWidth (columnIndex);
 		int contentX = getContentX (columnIndex);
 		gc.setFont (getFont (columnIndex, false));
@@ -1020,11 +1020,13 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 			boolean update = parent.setItemHeight (event.height + 2 * parent.getCellPadding ());
 			if (update) parent.redraw ();
 		}
-		int change = event.width - (customWidth != -1 ? customWidth : contentWidth);
-		if (event.width != contentWidth || customWidth != -1) customWidth = event.width;
-		if (change != 0) {	/* scrollbar may be affected since no columns */
-			parent.updateHorizontalBar (contentX + event.width, change);
-			// TODO what if clip is too small now?
+		if (parent.columns.length == 0) {
+			int change = event.width - (customWidth != -1 ? customWidth : contentWidth);
+			if (event.width != contentWidth || customWidth != -1) customWidth = event.width;
+			if (change != 0) {	/* scrollbar may be affected since no columns */
+				parent.updateHorizontalBar (contentX + event.width, change);
+				// TODO what if clip is too small now?
+			}
 		}
 	}
 
