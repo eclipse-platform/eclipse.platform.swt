@@ -1,4 +1,3 @@
-package org.eclipse.swt.snippets;
 /*******************************************************************************
  * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -9,11 +8,7 @@ package org.eclipse.swt.snippets;
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.graphics.*;
+package org.eclipse.swt.snippets;
 
 /*
  * SWT StyledText snippet: use gradient background.
@@ -23,6 +18,12 @@ import org.eclipse.swt.graphics.*;
  * 
  * @since 3.2
  */
+import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
+
 public class Snippet218 {
 
 	static String text = "Plans do not materialize out of nowhere, nor are they entirely static. To ensure the planning process is " +
