@@ -2903,6 +2903,31 @@ public Pattern getForegroundPattern() {
 }
 
 /** 
+ * Returns the GCData.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @return the receiver's GCData
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see GCData
+ * 
+ * @since 3.2
+ */
+public GCData getGCData() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data;
+}
+
+/** 
  * Returns the receiver's interpolation setting, which will be one of
  * <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>, 
  * <code>SWT.LOW</code> or <code>SWT.HIGH</code>.
