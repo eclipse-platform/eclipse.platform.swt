@@ -2177,7 +2177,7 @@ public void setExpanded (boolean value) {
 				GC gc = new GC (parent);
 				gc.copyArea (0, startY, clientArea.width, clientArea.height - startY, 0, y);
 				gc.dispose ();
-				int redrawY = clientArea.height - startY + y;
+				int redrawY = y + Math.max (0, clientArea.height - startY);
 				parent.redraw (0, redrawY, clientArea.width, clientArea.height - redrawY, false);
 			}
 		}
