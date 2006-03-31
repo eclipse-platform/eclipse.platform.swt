@@ -881,7 +881,11 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		if (hooks (SWT.EraseItem)) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-			drawBackground (hDC, rect);
+			if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
+				drawBackground (hDC, rect);
+			} else {
+				fillBackground (hDC, OS.GetBkColor (hDC), rect);
+			}
 			RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 			if (clrSortBk != -1) {
 				RECT fullRect = item.getBounds (index, true, true, true, true, true, hDC);
@@ -988,9 +992,11 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-				RECT rect = new RECT ();
-				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-				fillBackground (hDC, OS.GetBkColor (hDC), rect);
+				if (selected || findImageControl () == null) {
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+				}
 				nmcd.uItemState &= ~OS.CDIS_FOCUS;
 				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 			}
