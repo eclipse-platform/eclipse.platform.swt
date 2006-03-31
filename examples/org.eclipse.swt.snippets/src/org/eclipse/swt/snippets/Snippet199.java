@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Listen for events in Excel
+ * Listen for events in Excel (win32 only)
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

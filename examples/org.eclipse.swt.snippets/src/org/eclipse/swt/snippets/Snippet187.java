@@ -16,7 +16,7 @@ import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
 /*
- * Running a script within IE.
+ * Running a script within IE. (win32 only)
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
