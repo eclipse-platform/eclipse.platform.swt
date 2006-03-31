@@ -39,10 +39,14 @@ public static void main(String[] args) {
 	for (int i=0; i<items.length; i++) {
 		TableEditor editor = new TableEditor (table);
 		CCombo combo = new CCombo (table, SWT.NONE);
+		combo.setText("CCombo");
+		combo.add("item 1");
+		combo.add("item 2");
 		editor.grabHorizontal = true;
 		editor.setEditor(combo, items[i], 0);
 		editor = new TableEditor (table);
 		Text text = new Text (table, SWT.NONE);
+		text.setText("Text");
 		editor.grabHorizontal = true;
 		editor.setEditor(text, items[i], 1);
 		editor = new TableEditor (table);
