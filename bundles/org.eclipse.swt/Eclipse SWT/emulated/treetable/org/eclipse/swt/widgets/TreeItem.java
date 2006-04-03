@@ -1558,6 +1558,21 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		x = column.getX ();
 	}
 
+	/* 
+	 * Capture GC attributes that will need to be restored later in the paint
+	 * process to ensure that the item paints as intended without being affected
+	 * by GC changes made in MeasureItem/EraseItem/PaintItem callbacks.
+	 */
+	int oldAlpha = gc.getAlpha ();
+	boolean oldAdvanced = gc.getAdvanced ();
+	int oldAntialias = gc.getAntialias ();
+	Pattern oldBackgroundPattern = gc.getBackgroundPattern ();
+	Pattern oldForegroundPattern = gc.getForegroundPattern ();
+	int oldInterpolation = gc.getInterpolation ();
+	int[] oldLineDash = gc.getLineDash ();
+	int oldLineWidth = gc.getLineWidth ();
+	int oldTextAntialias = gc.getTextAntialias ();
+
 	if (parent.hooks (SWT.MeasureItem)) {
 		int contentWidth = getContentWidth (columnIndex);
 		int contentX = getContentX (columnIndex);
@@ -1572,6 +1587,15 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		event.height = parent.itemHeight;
 		parent.sendEvent (SWT.MeasureItem, event);
 		event.gc = null;
+		gc.setAdvanced (oldAdvanced);
+		gc.setAlpha (oldAlpha);
+		gc.setAntialias (oldAntialias);
+		gc.setBackgroundPattern (oldBackgroundPattern);
+		gc.setForegroundPattern (oldForegroundPattern);
+		gc.setInterpolation (oldInterpolation);
+		gc.setLineDash (oldLineDash);
+		gc.setLineWidth (oldLineWidth);
+		gc.setTextAntialias (oldTextAntialias);
 		if (isDisposed ()) return false;
 		if (parent.itemHeight != event.height) {
 			parent.customHeightSet = true;
@@ -1647,9 +1671,19 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		event.y = cellBounds.y;
 		event.width = cellBounds.width;
 		event.height = cellBounds.height;
-		gc.setClipping (event.x, event.y, event.width, event.height);
+		gc.setClipping (cellBounds);
 		parent.sendEvent (SWT.EraseItem, event);
 		event.gc = null;
+		gc.setAdvanced (oldAdvanced);
+		gc.setAlpha (oldAlpha);
+		gc.setAntialias (oldAntialias);
+		gc.setBackgroundPattern (oldBackgroundPattern);
+		gc.setClipping (cellBounds);
+		gc.setForegroundPattern (oldForegroundPattern);
+		gc.setInterpolation (oldInterpolation);
+		gc.setLineDash (oldLineDash);
+		gc.setLineWidth (oldLineWidth);
+		gc.setTextAntialias (oldTextAntialias);
 		if (isDisposed ()) return false;
 		if (!event.doit) {
 			drawBackground = drawForeground = drawSelection = drawFocus = false;
@@ -1841,10 +1875,20 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		event.y = cellBounds.y;
 		event.width = contentWidth;
 		event.height = cellBounds.height;
-		gc.setClipping (cellBounds.x, cellBounds.y, cellBounds.width, cellBounds.height);
+		gc.setClipping (cellBounds);
 		parent.sendEvent (SWT.PaintItem, event);
-		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
 		event.gc = null;
+		gc.setAdvanced (oldAdvanced);
+		gc.setAlpha (oldAlpha);
+		gc.setAntialias (oldAntialias);
+		gc.setBackgroundPattern (oldBackgroundPattern);
+		gc.setClipping (cellBounds);
+		gc.setForegroundPattern (oldForegroundPattern);
+		gc.setInterpolation (oldInterpolation);
+		gc.setLineDash (oldLineDash);
+		gc.setLineWidth (oldLineWidth);
+		gc.setTextAntialias (oldTextAntialias);
+		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
 	}
 
 	return isFocusItem && !drawFocus;

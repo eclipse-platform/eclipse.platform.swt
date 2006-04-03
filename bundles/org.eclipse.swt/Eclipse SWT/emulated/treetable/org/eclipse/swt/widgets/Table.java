@@ -2613,6 +2613,7 @@ void onPaint (Event event) {
 	/* paint the items */
 	boolean noFocusDraw = false;
 	int[] lineDash = gc.getLineDash ();
+	int lineWidth = gc.getLineWidth ();
 	for (int i = startIndex; i <= Math.min (endIndex, itemsCount - 1); i++) {
 		TableItem item = items [i];
 		if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
@@ -2637,6 +2638,7 @@ void onPaint (Event event) {
 
 	/* repaint grid lines */
 	gc.setClipping(clipping);
+	gc.setLineWidth (lineWidth);
 	if (linesVisible) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
 		gc.setLineDash (lineDash);
