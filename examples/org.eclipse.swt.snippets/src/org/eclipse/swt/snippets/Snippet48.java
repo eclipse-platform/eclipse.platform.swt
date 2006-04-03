@@ -112,6 +112,7 @@ public static void main (String [] args) {
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
+	originalImage.dispose();
 	display.dispose ();
 }
 
