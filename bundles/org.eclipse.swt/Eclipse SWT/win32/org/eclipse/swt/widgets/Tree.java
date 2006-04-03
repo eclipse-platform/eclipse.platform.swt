@@ -134,6 +134,7 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.PaintItem: {
 			customDraw = true;
 			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+			newBits |= OS.TVS_NOHSCROLL;
 			/*
 			* Feature in Windows.  When the tree has the style
 			* TVS_FULLROWSELECT, the background color for the
@@ -141,8 +142,9 @@ void _addListener (int eventType, Listener listener) {
 			* drawing on top of any custom drawing.  The fix
 			* is to clear TVS_FULLROWSELECT.
 			*/
-			if ((style & SWT.FULL_SELECTION) != 0) newBits &= ~OS.TVS_FULLROWSELECT;
-			newBits |= OS.TVS_NOHSCROLL;
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				if (eventType != SWT.MeasureItem) newBits &= ~OS.TVS_FULLROWSELECT;
+			}
 			if (newBits != oldBits) {
 				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 				OS.InvalidateRect (handle, null, true);
@@ -469,6 +471,11 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 					clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
 					if (index == sortIndex) clrTextBk = clrSortBk;
+				}
+			} else {
+				if (index == sortIndex) {
+					drawBackground = true;
+					clrTextBk = clrSortBk;
 				}
 			}
 			if (drawItem) {
@@ -1050,6 +1057,19 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 			}
 		}
+	}
+	/*
+	* Feature in Windows.  When the tree is disabled, it draws
+	* with a gray background over the sort column.  The fix is
+	* to fill the background with the sort column color.
+	*/
+	if (!OS.IsWindowEnabled (handle) && clrSortBk != -1) {
+		RECT rect = new RECT ();
+		HDITEM hdItem = new HDITEM ();
+		hdItem.mask = OS.HDI_WIDTH;
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+		fillBackground (hDC, clrSortBk, rect);
 	}
 	OS.SaveDC (hDC);
 	if (clipRect != null) {
@@ -2184,6 +2204,16 @@ void enableWidget (boolean enabled) {
 		}
 	}
 	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
+
+	/*
+	* Feature in Windows.  When the tree has the style
+	* TVS_FULLROWSELECT, the background color for the
+	* entire row is filled when an item is painted,
+	* drawing on top of the sort column color.  The fix
+	* is to clear TVS_FULLROWSELECT when a their is
+	* as sort column.
+	*/
+	updateFullSelection ();
 }
 
 int findIndex (int hFirstItem, int hItem) {
@@ -2891,7 +2921,7 @@ public TreeColumn getSortColumn () {
 }
 
 int getSortColumnPixel () {
-	int pixel = getBackgroundPixel ();
+	int pixel = OS.IsWindowEnabled (handle) ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_3DFACE);
 	int red = pixel & 0xFF;
 	int green = (pixel & 0xFF00) >> 8;
 	int blue = (pixel & 0xFF0000) >> 16;
@@ -3442,22 +3472,6 @@ void setBackgroundImage (int hBitmap) {
 			}
 		}
 		OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
-		/*
-		* Feature in Windows.  When the tree has the style
-		* TVS_FULLROWSELECT, the background color for the
-		* entire row is filled when an item is painted,
-		* drawing on top of the background image.  The fix
-		* is to clear TVS_FULLROWSELECT when a background
-		* image is set.
-		*/
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.TVS_FULLROWSELECT) != 0) {
-				bits &= ~OS.TVS_FULLROWSELECT;
-				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-				OS.InvalidateRect (handle, null, true);
-			}
-		}
 	} else {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
@@ -3465,6 +3479,15 @@ void setBackgroundImage (int hBitmap) {
 			setBackgroundPixel (control.getBackgroundPixel ());
 		}
 	}
+	/*
+	* Feature in Windows.  When the tree has the style
+	* TVS_FULLROWSELECT, the background color for the
+	* entire row is filled when an item is painted,
+	* drawing on top of the background image.  The fix
+	* is to clear TVS_FULLROWSELECT when a background
+	* image is set.
+	*/
+	updateFullSelection ();
 }
 
 void setBackgroundPixel (int pixel) {
@@ -3472,22 +3495,6 @@ void setBackgroundPixel (int pixel) {
 	if (control != null) {
 		setBackgroundImage (control.backgroundImage);
 		return;
-	}
-	/*
-	* Feature in Windows.  When the tree has the style
-	* TVS_FULLROWSELECT, the background color for the
-	* entire row is filled when an item is painted,
-	* drawing on top of the background image.  The fix
-	* is to restore TVS_FULLROWSELECT when a background
-	* color is set.
-	*/
-	if ((style & SWT.FULL_SELECTION) != 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-			bits |= OS.TVS_FULLROWSELECT;
-			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-			OS.InvalidateRect (handle, null, true);
-		}
 	}
 	/*
 	* Feature in Windows.  When a tree is given a background color
@@ -3498,6 +3505,16 @@ void setBackgroundPixel (int pixel) {
 	* is disabled and restore it when enabled.
 	*/
 	if (OS.IsWindowEnabled (handle)) _setBackgroundPixel (pixel);
+
+	/*
+	* Feature in Windows.  When the tree has the style
+	* TVS_FULLROWSELECT, the background color for the
+	* entire row is filled when an item is painted,
+	* drawing on top of the background image.  The fix
+	* is to restore TVS_FULLROWSELECT when a background
+	* color is set.
+	*/
+	updateFullSelection ();
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
@@ -4331,6 +4348,25 @@ String toolTipText (NMTTDISPINFO hdr) {
 
 int topHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
+}
+
+void updateFullSelection () {
+	if ((style & SWT.FULL_SELECTION) != 0) {
+		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+		if ((newBits & OS.TVS_FULLROWSELECT) != 0) {
+			if (!OS.IsWindowEnabled (handle)) newBits &= ~OS.TVS_FULLROWSELECT;
+		} else {
+			if (OS.IsWindowEnabled (handle) && findImageControl () == null) {
+				if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+					newBits |= OS.TVS_FULLROWSELECT;
+				}
+			}
+		}
+		if (newBits != oldBits) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+			OS.InvalidateRect (handle, null, true);
+		}
+	}
 }
 
 void updateHeaderToolTips () {
