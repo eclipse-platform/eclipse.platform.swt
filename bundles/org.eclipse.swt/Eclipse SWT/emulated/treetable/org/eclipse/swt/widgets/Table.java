@@ -470,7 +470,15 @@ void createItem (TableItem item) {
 		getVerticalBar ().setSelection (topIndex);
 		return;
 	}
-
+	/*
+	 * If this is the first item and the receiver has focus then its boundary
+	 * focus ring must be removed. 
+	 */
+	if (itemsCount == 1 && isFocusControl ()) {
+		focusItem = item;
+		redraw ();
+		return;
+	}
 	if (item.isInViewport ()) {
 		redrawFromItemDownwards (index);
 	}
@@ -714,6 +722,14 @@ void destroyItem (TableItem item) {
 	}
 	if (item == anchorItem) anchorItem = null;
 	if (item == lastClickedItem) lastClickedItem = null;
+	/*
+	 * If this was the last item and the receiver has focus then its boundary
+	 * focus ring must be redrawn.
+	 */
+	if (itemsCount == 0 && isFocusControl ()) {
+		redraw ();
+		return;
+	}
 }
 Image getArrowDownImage () {
 	return (Image) display.getData (ID_ARROWDOWN);
@@ -3297,6 +3313,7 @@ public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (count == itemsCount) return;
+	int oldCount = itemsCount;
 	int redrawStart, redrawEnd;
 	
 	/* if the new item count is less than the current count then remove all excess items from the end */
@@ -3342,9 +3359,18 @@ public void setItemCount (int count) {
 			items [i] = new TableItem (this, SWT.NONE, i, false);
 			itemsCount++;
 		}
+		if (oldCount == 0) focusItem = items [0];
 	}
 
 	updateVerticalBar ();
+	/*
+	 * If this is the focus control and the item count is going from 0->!0 or !0->0 then the
+	 * receiver must be redrawn to ensure that its boundary focus ring is updated.
+	 */
+	if ((oldCount == 0 || itemsCount == 0) && isFocusControl ()) {
+		redraw ();
+		return;
+	}
 	redrawItems (redrawStart, redrawEnd, false);
 }
 boolean setItemHeight (int value) {
