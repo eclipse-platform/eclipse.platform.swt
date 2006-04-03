@@ -192,6 +192,6 @@ public static void main(String[] args) {
 	if (swtImage != null) swtImage.dispose();
 	if (swtImage2 != null) swtImage.dispose();
 	frame.dispose();
-	System.exit(0);
+	display.dispose();
 }
 }
