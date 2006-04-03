@@ -694,6 +694,7 @@ void setSortDirection (int direction) {
 				}
 				break;
 		}
+		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 		/* 
 		* Feature in Windows.  When LVM_SETBKCOLOR is used with
 		* CLR_NONE and LVM_SETSELECTEDCOLUMN is used to select
@@ -702,7 +703,6 @@ void setSortDirection (int direction) {
 		* other custom drawing.  The fix is to avoid setting the
 		* selected column.
 		*/
-		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 		if (OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
 			int oldColumn = OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
 			int newColumn = direction == SWT.NONE ? -1 : index;
