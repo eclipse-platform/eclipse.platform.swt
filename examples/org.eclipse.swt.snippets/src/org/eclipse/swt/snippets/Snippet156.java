@@ -193,5 +193,9 @@ public static void main(String[] args) {
 	if (swtImage2 != null) swtImage.dispose();
 	frame.dispose();
 	display.dispose();
+	/* Note: If you are using JDK 1.3.x, you need to use System.exit(0) at the end of your program to exit AWT.
+	 * This is because in 1.3.x, AWT does not exit when the frame is disposed, because the AWT thread is not a daemon.
+	 * This was fixed in JDK 1.4.x with the addition of the AWT Shutdown thread.
+	 */
 }
 }
