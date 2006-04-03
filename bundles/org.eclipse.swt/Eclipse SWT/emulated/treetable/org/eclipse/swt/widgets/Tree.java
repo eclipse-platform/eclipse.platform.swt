@@ -2900,6 +2900,9 @@ void onResize (Event event) {
 	/* header */
 	int headerHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	header.setSize (clientArea.width, headerHeight);
+	
+	/* if this is the focus control but there are no items then the boundary focus ring must be repainted */
+	if (availableItemsCount == 0 && isFocusControl ()) redraw ();
 }
 void onScrollHorizontal (Event event) {
 	int newSelection = getHorizontalBar ().getSelection ();
