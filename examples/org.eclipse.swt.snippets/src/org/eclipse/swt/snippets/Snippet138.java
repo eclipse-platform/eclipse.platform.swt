@@ -60,6 +60,8 @@ public class Snippet138 {
 			if (!display.readAndDispatch())
 				display.sleep();
 		}
+		small.dispose();
+		large.dispose();
 		display.dispose();
 	}
 }
