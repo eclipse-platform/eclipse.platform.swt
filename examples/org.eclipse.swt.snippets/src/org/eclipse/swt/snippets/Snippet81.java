@@ -34,7 +34,8 @@ public static void main(String[] args) {
 
 	String progID = args[0];
 	
-	Shell shell = new Shell();
+	Display display = new Display();
+	Shell shell = new Shell(display);
 
 	OleFrame frame = new OleFrame(shell, SWT.NONE);
 	OleControlSite site = null;
@@ -51,6 +52,7 @@ public static void main(String[] args) {
 	
 	auto.dispose();
 	shell.dispose();
+	display.dispose();
 
 }
 
