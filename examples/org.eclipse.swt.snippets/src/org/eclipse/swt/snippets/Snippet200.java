@@ -67,6 +67,7 @@ public static void main(String[] args) {
 		if (!display.readAndDispatch())
 			display.sleep();
 	}
+	image.dispose();
 	pattern.dispose();
 	display.dispose();
 }
