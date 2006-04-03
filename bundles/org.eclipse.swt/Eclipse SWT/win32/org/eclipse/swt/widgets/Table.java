@@ -4979,6 +4979,9 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 
 LRESULT WM_SIZE (int wParam, int lParam) {
 	if (ignoreResize) return null;
+	if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+		OS.InvalidateRect (handle, null, true);
+	}
 	if (resizeCount != 0) {
 		wasResized = true;
 		return null;
