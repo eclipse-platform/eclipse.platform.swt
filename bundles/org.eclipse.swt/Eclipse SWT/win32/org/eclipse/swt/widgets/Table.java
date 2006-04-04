@@ -32,7 +32,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection</dd>
+ * <dd>Selection, DefaultSelection, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles SINGLE, and MULTI may be specified.
