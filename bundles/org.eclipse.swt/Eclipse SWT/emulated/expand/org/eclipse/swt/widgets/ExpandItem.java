@@ -21,6 +21,7 @@ public class ExpandItem extends Item {
 	int imageHeight, imageWidth;
 	static final int TEXT_INSET = 6;
 	static final int BORDER = 1;
+	static final int CHEVRON_SIZE = 24;
 
 public ExpandItem (ExpandBar parent, int style) {
 	this (parent, style, checkNull (parent).getItemCount ());
@@ -46,11 +47,10 @@ public void dispose () {
 	control = null;
 }
 
-void drawChevron (GC gc) {
-	int headerHeight = ExpandBar.HEADER_HEIGHT;
+void drawChevron (GC gc, int x, int y) {
 	int [] polyline1, polyline2;
 	if (expanded) {
-		int px = x + width - headerHeight + 4 + 5;
+		int px = x + 4 + 5;
 		int py = y + 4 + 7;
 		polyline1 = new int [] {
 				px,py, px+1,py, px+1,py-1, px+2,py-1, px+2,py-2, px+3,py-2, px+3,py-3,
@@ -60,7 +60,7 @@ void drawChevron (GC gc) {
 				px,py, px+1,py, px+1,py-1, px+2,py-1, px+2,py-2, px+3,py-2, px+3,py-3,
 				px+3,py-2, px+4,py-2, px+4,py-1,  px+5,py-1, px+5,py, px+6,py};
 	} else {
-		int px = x + width - headerHeight + 4 + 5;
+		int px = x + 4 + 5;
 		int py = y + 4 + 4;
 		polyline1 = new int[] {
 				px,py, px+1,py, px+1,py+1, px+2,py+1, px+2,py+2, px+3,py+2, px+3,py+3,
@@ -76,7 +76,7 @@ void drawChevron (GC gc) {
 }
 
 void drawItem (GC gc, boolean drawFocus) {
-	int headerHeight = ExpandBar.HEADER_HEIGHT;
+	int headerHeight = parent.getBandHeight ();
 	Display display = getDisplay ();
 	gc.setForeground (display.getSystemColor (SWT.COLOR_TITLE_BACKGROUND));
 	gc.setBackground (display.getSystemColor (SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
@@ -100,10 +100,11 @@ void drawItem (GC gc, boolean drawFocus) {
 	if (text.length() > 0) {
 		drawX += ExpandItem.TEXT_INSET;
 		Point size = gc.stringExtent (text);
-		gc.setForeground (display.getSystemColor (SWT.COLOR_TITLE_FOREGROUND));
+		gc.setForeground (parent.getForeground ());
 		gc.drawString (text, drawX, y + (headerHeight - size.y) / 2, true);
 	}
-	drawChevron (gc);
+	int chevronSize = ExpandItem.CHEVRON_SIZE;
+	drawChevron (gc, x + width - chevronSize, y + (headerHeight - chevronSize) / 2);
 	if (drawFocus) {
 		gc.drawFocus (x + 1, y + 1, width - 2, headerHeight - 2);
 	}
@@ -121,7 +122,7 @@ public boolean getExpanded() {
 
 public int getHeaderHeight () {
 	checkWidget ();
-	return Math.max (ExpandBar.HEADER_HEIGHT, imageHeight);
+	return Math.max (parent.getBandHeight (), imageHeight);
 }
 
 public int getHeight () {
@@ -135,7 +136,7 @@ public ExpandBar getParent () {
 }
 
 int getPreferredWidth (GC gc) {
-	int width = ExpandItem.TEXT_INSET * 2 + ExpandBar.HEADER_HEIGHT;
+	int width = ExpandItem.TEXT_INSET * 2 + ExpandItem.CHEVRON_SIZE;
 	if (image != null) {
 		width += ExpandItem.TEXT_INSET + imageWidth;
 	}
@@ -146,7 +147,7 @@ int getPreferredWidth (GC gc) {
 }
 
 void redraw () {
-	int headerHeight = ExpandBar.HEADER_HEIGHT;
+	int headerHeight = parent.getBandHeight ();
 	if (imageHeight > headerHeight) {
 		parent.redraw (x + ExpandItem.TEXT_INSET, y + headerHeight - imageHeight, imageWidth, imageHeight, false);
 	}
@@ -155,7 +156,7 @@ void redraw () {
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean size) {
 	redraw ();
-	int headerHeight = ExpandBar.HEADER_HEIGHT;
+	int headerHeight = parent.getBandHeight ();
 	if (move) {
 		if (imageHeight > headerHeight) {
 			y += (imageHeight - headerHeight);
@@ -184,7 +185,7 @@ public void setControl(Control control) {
 	this.control = control;
 	if (control != null) {
 		control.setVisible (expanded);
-		int headerHeight = ExpandBar.HEADER_HEIGHT;
+		int headerHeight = parent.getBandHeight ();
 		control.setBounds (x + BORDER, y + headerHeight, Math.max (0, width - 2 * BORDER), Math.max (0, height - BORDER));
 	}
 }

@@ -20,9 +20,10 @@ public class ExpandBar extends Composite {
 	int focusIndex;
 	int spacing;
 	int yCurrentScroll;
+	Font font;
+	Color foreground;
 	Listener listener;
 	boolean inDispose;
-	static final int HEADER_HEIGHT = 24;	
 	
 public ExpandBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -140,6 +141,23 @@ void destroyItem (ExpandItem item) {
 	layoutItems (index, true);
 }
 
+int getBandHeight () {
+	if (font == null) return ExpandItem.CHEVRON_SIZE;
+	GC gc = new GC (this);
+	FontMetrics metrics = gc.getFontMetrics ();
+	gc.dispose ();
+	return Math.max (ExpandItem.CHEVRON_SIZE, metrics.getHeight ());
+}
+
+public Color getForeground () {
+	checkWidget ();
+	if (foreground == null) {
+		Display display = getDisplay ();
+		return display.getSystemColor (SWT.COLOR_TITLE_FOREGROUND);
+	}
+	return foreground;
+}
+
 public ExpandItem getItem (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);	
@@ -198,13 +216,24 @@ public void removeExpandListener (ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);	
 }
 
+public void setFont(Font font) {
+	super.setFont (font);
+	this.font = font;
+	layoutItems (0, true);
+}
+
+public void setForeground (Color color) {
+	super.setForeground (color);
+	foreground = color;
+}
+
 void setScrollbar () {
 	if (itemCount == 0) return;
 	ScrollBar verticalBar = getVerticalBar ();
 	if (verticalBar == null) return;
 	int height = getClientArea ().height;
 	ExpandItem item = items [itemCount - 1];
-	int maxHeight = item.y + ExpandBar.HEADER_HEIGHT + spacing;
+	int maxHeight = item.y + getBandHeight () + spacing;
 	if (item.expanded) maxHeight += item.height;
 
 	//claim bottom free space
@@ -261,6 +290,8 @@ void onDispose (Event event) {
 		items [i].dispose ();
 	}
 	items = null;
+	font = null;
+	foreground = null;
 }
 
 void onFocus () {
@@ -301,7 +332,7 @@ void onMouseDown (Event event) {
 	int y = event.y;
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
-		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
+		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight ()); 
 		if (hover) {
 			items [focusIndex].redraw ();
 			focusIndex = i;
@@ -317,7 +348,7 @@ void onMouseUp (Event event) {
 	int y = event.y;
 	if (focusIndex == -1) return;
 	ExpandItem item = items [focusIndex];
-	boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
+	boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight ()); 
 	if (hover) {
 		Event ev = new Event ();
 		ev.item = item;
