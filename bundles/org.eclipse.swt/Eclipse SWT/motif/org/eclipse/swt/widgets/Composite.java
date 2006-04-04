@@ -1280,7 +1280,7 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 			/* This code is intentionaly commented because it is too slow to copy bits from the screen */
 //			paintGC.copyArea(image, 0, 0);
 		} else {
-			gc.fillRectangle(0, 0, width, height);
+			drawBackground (gc, 0, 0, width, height);
 		}
 	}
 	Event event = new Event ();
