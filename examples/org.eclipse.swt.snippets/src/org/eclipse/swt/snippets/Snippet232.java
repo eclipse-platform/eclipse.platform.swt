@@ -30,7 +30,7 @@ public static void main(String [] args) {
 	final Display display = new Display();		
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	shell.setText("Show results as a bar chart in Table");
+	shell.setText("Show results as a bar chart in Tree");
 	final Tree tree = new Tree(shell, SWT.BORDER);
 	tree.setHeaderVisible(true);
 	tree.setLinesVisible(true);
