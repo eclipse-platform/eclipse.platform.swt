@@ -150,6 +150,28 @@ public void removeExpandListener(ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	setBackgroundColor (fixedHandle, color);
+}
+
+void setFontDescription (int /*long*/ font) {
+	super.setFontDescription (font);
+	ExpandItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		items[i].setFontDescription (font);
+	}
+	relayout ();
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	ExpandItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		items[i].setForegroundColor (color);
+	}
+}
+
 public void setSpacing (int spacing) {
 	checkWidget ();
 	if (spacing < 0) return;

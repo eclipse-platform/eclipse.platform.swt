@@ -186,6 +186,18 @@ public void setExpanded (boolean expanded) {
 	parent.relayout ();
 }
 
+void setFontDescription (int /*long*/ font) {
+	OS.gtk_widget_modify_font (handle, font);
+	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
+	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	OS.gtk_widget_modify_fg (handle,  OS.GTK_STATE_NORMAL, color);
+	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle,  OS.GTK_STATE_NORMAL, color);
+	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle,  OS.GTK_STATE_NORMAL, color);
+}
+
 public void setImage (Image image) {
 	super.setImage (image);
 	if (imageList != null) imageList.dispose ();
