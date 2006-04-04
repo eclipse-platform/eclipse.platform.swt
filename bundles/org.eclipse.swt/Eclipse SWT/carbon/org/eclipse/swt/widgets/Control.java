@@ -1651,7 +1651,7 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 			menu.setVisible (true);
 		}
 	}
-	return OS.eventNotHandledErr;
+	return OS.noErr;
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
