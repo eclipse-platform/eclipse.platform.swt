@@ -472,7 +472,8 @@ public class StyledText extends Canvas {
 					}
 				} else {
 					//draw paragraph top in the current page and paragraph bottom in the next
-					gc.setClipping(paintX, paintY, clientArea.width, paragraphBottom - paintY);
+					int height = paragraphBottom - paintY;
+					gc.setClipping(paintX, paintY, clientArea.width, height);
 					printLine(paintX, paintY, gc, foreground, lineBackground, layout);
 					printDecoration(page, false);
 					printer.endPage();					
@@ -480,11 +481,11 @@ public class StyledText extends Canvas {
 					if (page <= endPage) {
 						printer.startPage();
 						printDecoration(page, true);
-						paintY = clientArea.y;
-						int height = layout.getBounds().height - paragraphBottom;
-						gc.setClipping(paintX, paintY, clientArea.width, height);
+						paintY = clientArea.y - height;
+						int layoutHeight = layout.getBounds().height;
+						gc.setClipping(paintX, clientArea.y, clientArea.width, layoutHeight - height);
 						printLine(paintX, paintY, gc, foreground, lineBackground, layout);
-						paintY += height;
+						paintY += layoutHeight;
 					}
 					gc.setClipping((Rectangle)null);
 				}
