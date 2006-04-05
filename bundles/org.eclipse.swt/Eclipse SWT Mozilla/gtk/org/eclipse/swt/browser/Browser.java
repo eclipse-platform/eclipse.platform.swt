@@ -150,10 +150,19 @@ public Browser(Composite parent, int style) {
 		try {
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {
-			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, e);
+			try {
+				/* 
+				 * The initial loadLibrary attempt may have failed as a result of the user's
+				 * system not having libstdc++.so.6 installed, so try to load the alternate
+				 * swt mozilla library that depends on libswtc++.so.5 instead.
+				 */
+				Library.loadLibrary ("swt-mozilla-gcc3"); //$NON-NLS-1$
+			} catch (UnsatisfiedLinkError ex) {
+				dispose();
+				SWT.error(SWT.ERROR_NO_HANDLES, ex);
+			}
 		}
-		
+
 		int /*long*/[] retVal = new int /*long*/[1];
 		nsEmbedString path = new nsEmbedString(mozillaPath);
 		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);

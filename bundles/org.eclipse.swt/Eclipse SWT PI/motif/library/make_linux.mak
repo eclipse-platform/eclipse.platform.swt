@@ -59,7 +59,7 @@ CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = -shared -fpic -fPIC -s `pkg-config --libs-only-L cairo` -lcairo
 
 MOZILLA_PREFIX = swt-mozilla
-MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+MOZILLA_LIB = lib$(MOZILLA_PREFIX)$(GCC_VERSION)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 MOZILLACFLAGS = -O \
 	-DXPCOM_GLUE=1 \

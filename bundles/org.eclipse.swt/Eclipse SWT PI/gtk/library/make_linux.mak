@@ -24,7 +24,7 @@ SWTPI_PREFIX = swt-pi
 CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 GNOME_PREFIX = swt-gnome
-MOZILLA_PREFIX = swt-mozilla
+MOZILLA_PREFIX = swt-mozilla$(GCC_VERSION)
 GLX_PREFIX = swt-glx
 
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
