@@ -861,7 +861,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		}
 	}
 	if (lastOffset < length) layout.setStyle(null, lastOffset, length);
-	if (styledText.isFixedLineHeight()) {
+	if (styledText != null && styledText.isFixedLineHeight()) {
 		int index = -1;
 		int lineCount = layout.getLineCount();
 		int height = getLineHeight();
