@@ -471,7 +471,7 @@ String getDecimalSeparator () {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
-int gtk_activate (int widget) {
+int /*long*/ gtk_activate (int /*long*/ widget) {
 	postEvent (SWT.DefaultSelection);
 	return 0;
 }
