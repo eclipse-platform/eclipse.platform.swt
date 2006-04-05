@@ -2021,6 +2021,7 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 
 int itemNotificationProc (int browser, int id, int message) {
 	if (message == OS.kDataBrowserUserStateChanged) {
+		boolean resized = false;
 		short [] width = new short [1];
 		TreeColumn [] newColumns = getColumns ();
 		for (int i = 0; i < columnCount; i++) {
@@ -2029,7 +2030,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, width);
 				if (width [0] != column.lastWidth) {
 					column.resized (width [0]);
-					return OS.noErr;
+					resized = true;
 				}
 			}
 			if (!column.isDisposed ()) {
@@ -2047,17 +2048,20 @@ int itemNotificationProc (int browser, int id, int message) {
 						}
 					}
 					column.sendEvent (SWT.Move);
+					resized = true;
 				}
 			}
 		}
 		int [] property = new int [1];
 		OS.GetDataBrowserSortProperty (handle, property);
 		if (property [0] != 0) {
-			for (int i = 0; i < columnCount; i++) {
-				TreeColumn column = columns [i];
-				if (property [0] == column.id) {
-					column.postEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
-					break;
+			if (!resized) {
+				for (int i = 0; i < columnCount; i++) {
+					TreeColumn column = columns [i];
+					if (property [0] == column.id) {
+						column.postEvent (display.clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+						break;
+					}
 				}
 			}
 			OS.SetDataBrowserSortProperty (handle, 0);
