@@ -593,12 +593,13 @@ void checkBuffered () {
 }
 
 boolean checkData (TableItem item, boolean redraw) {
+	if ((style & SWT.VIRTUAL) == 0) return true;
 	return checkData (item, indexOf (item), redraw);
 }
 
 boolean checkData (TableItem item, int index, boolean redraw) {
-	if (item.cached) return true;
-	if ((style & SWT.VIRTUAL) != 0) {
+	if ((style & SWT.VIRTUAL) == 0) return true;
+	if (!item.cached) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
