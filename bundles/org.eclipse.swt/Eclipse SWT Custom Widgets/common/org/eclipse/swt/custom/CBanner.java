@@ -295,7 +295,7 @@ void onPaint(GC gc) {
 		gc.setForeground(border1);
 		gc.drawLine(0, y, size.x, y);
 	}
-	
+	if (left == null || right == null) return;
 	int[] line1 = new int[curve.length+6];
 	int index = 0;
 	int x = curveStart;
