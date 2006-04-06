@@ -22,6 +22,7 @@ extern char* OS_nativeFunctionNames[];
 
 typedef enum {
 	AbortDoc_FUNC,
+	ActivateActCtx_FUNC,
 	ActivateKeyboardLayout_FUNC,
 	AdjustWindowRectEx_FUNC,
 	AlphaBlend_FUNC,
@@ -60,6 +61,8 @@ typedef enum {
 	CopyImage_FUNC,
 	CreateAcceleratorTableA_FUNC,
 	CreateAcceleratorTableW_FUNC,
+	CreateActCtxA_FUNC,
+	CreateActCtxW_FUNC,
 	CreateBitmap_FUNC,
 	CreateCaret_FUNC,
 	CreateCompatibleBitmap_FUNC,
@@ -223,6 +226,8 @@ typedef enum {
 	GetMessageTime_FUNC,
 	GetMessageW_FUNC,
 	GetMetaRgn_FUNC,
+	GetModuleFileNameA_FUNC,
+	GetModuleFileNameW_FUNC,
 	GetModuleHandleA_FUNC,
 	GetModuleHandleW_FUNC,
 	GetMonitorInfoA_FUNC,

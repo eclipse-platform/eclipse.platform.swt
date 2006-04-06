@@ -47,6 +47,7 @@
 
 /* Structs excludes */
 #ifdef _WIN32_WCE
+#define NO_ACTCTX
 #define NO_BLENDFUNCTION
 #define NO_BROWSEINFO
 #define NO_BUTTON_IMAGELIST
@@ -125,6 +126,7 @@
 /* Functions excludes */
 #ifdef _WIN32_WCE
 #define NO_AbortDoc
+#define NO_ActivateActCtx
 #define NO_ActivateKeyboardLayout
 #define NO_Arc
 #define NO_AlphaBlend
@@ -140,6 +142,8 @@
 #define NO_CoCreateInstance
 #define NO_CopyImage
 #define NO_CreateAcceleratorTableA
+#define NO_CreateActCtxA
+#define NO_CreateActCtxW
 #define NO_CreateCursor
 #define NO_CreateDCA
 #define NO_CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2
@@ -220,6 +224,7 @@
 #define NO_GetMessageA
 #define NO_GetMessageTime
 #define NO_GetMetaRgn
+#define NO_GetModuleFileNameA
 #define NO_GetModuleHandleA
 #define NO_GetMonitorInfoA
 #define NO_GetMonitorInfoW

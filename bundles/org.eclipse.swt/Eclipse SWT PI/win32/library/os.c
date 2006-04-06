@@ -27,6 +27,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(AbortDoc)
 }
 #endif
 
+#ifndef NO_ActivateActCtx
+JNIEXPORT jboolean JNICALL OS_NATIVE(ActivateActCtx)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ActivateActCtx_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)ActivateActCtx(arg0, (ULONG_PTR*)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(ActivateActCtx_LIB);
+			if (hm) fp = GetProcAddress(hm, "ActivateActCtx");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(arg0, (ULONG_PTR*)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, ActivateActCtx_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ActivateKeyboardLayout
 JNIEXPORT jint JNICALL OS_NATIVE(ActivateKeyboardLayout)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -563,6 +595,68 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateAcceleratorTableW)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, CreateAcceleratorTableW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateActCtxA
+JNIEXPORT jint JNICALL OS_NATIVE(CreateActCtxA)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	ACTCTX _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateActCtxA_FUNC);
+	if (arg0) if ((lparg0 = getACTCTXFields(env, arg0, &_arg0)) == NULL) goto fail;
+/*
+	rc = (jint)CreateActCtxA(lparg0);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(CreateActCtxA_LIB);
+			if (hm) fp = GetProcAddress(hm, "CreateActCtxA");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(lparg0);
+		}
+	}
+fail:
+	OS_NATIVE_EXIT(env, that, CreateActCtxA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateActCtxW
+JNIEXPORT jint JNICALL OS_NATIVE(CreateActCtxW)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	ACTCTX _arg0, *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateActCtxW_FUNC);
+	if (arg0) if ((lparg0 = getACTCTXFields(env, arg0, &_arg0)) == NULL) goto fail;
+/*
+	rc = (jint)CreateActCtxW(lparg0);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(CreateActCtxW_LIB);
+			if (hm) fp = GetProcAddress(hm, "CreateActCtxW");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(lparg0);
+		}
+	}
+fail:
+	OS_NATIVE_EXIT(env, that, CreateActCtxW_FUNC);
 	return rc;
 }
 #endif
@@ -3345,6 +3439,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetMetaRgn)
 	OS_NATIVE_ENTER(env, that, GetMetaRgn_FUNC);
 	rc = (jint)GetMetaRgn((HDC)arg0, (HRGN)arg1);
 	OS_NATIVE_EXIT(env, that, GetMetaRgn_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetModuleFileNameA
+JNIEXPORT jint JNICALL OS_NATIVE(GetModuleFileNameA)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetModuleFileNameA_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)GetModuleFileNameA((HMODULE)arg0, (LPSTR)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetModuleFileNameA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetModuleFileNameW
+JNIEXPORT jint JNICALL OS_NATIVE(GetModuleFileNameW)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetModuleFileNameW_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)GetModuleFileNameW((HMODULE)arg0, (LPWSTR)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetModuleFileNameW_FUNC);
 	return rc;
 }
 #endif

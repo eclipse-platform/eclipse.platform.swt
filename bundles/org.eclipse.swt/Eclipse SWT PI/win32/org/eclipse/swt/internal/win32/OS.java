@@ -78,6 +78,33 @@ public class OS extends Platform {
 		WIN32_VERSION = VERSION (WIN32_MAJOR, WIN32_MINOR);
 		IsUnicode = !IsWin32s && !IsWin95;
 
+		/* Load the manifest to force the XP Theme */
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+			TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
+			int hModule = OS.GetLibraryHandle ();
+			while (OS.GetModuleFileName (hModule, buffer, buffer.length ()) == buffer.length ()) {
+				buffer = new TCHAR (0, buffer.length () + OS.MAX_PATH);
+			}
+			int hHeap = OS.GetProcessHeap ();
+			int byteCount = buffer.length () * TCHAR.sizeof;
+			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (pszText, buffer, byteCount);	
+			ACTCTX pActCtx = new ACTCTX ();
+			pActCtx.cbSize = ACTCTX.sizeof;
+			pActCtx.dwFlags = OS.ACTCTX_FLAG_RESOURCE_NAME_VALID;
+			pActCtx.lpSource = pszText;
+			pActCtx.lpResourceName = OS.MANIFEST_RESOURCE_ID;
+			int hActCtx = OS.CreateActCtx (pActCtx);
+			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+			int [] lpCookie = new int [1];
+			OS.ActivateActCtx (hActCtx, lpCookie);
+			/*
+			* NOTE:  A single activation context is created and activated
+			* for the entire lifetime of the program.  It is deactivated
+			* and released by Windows when the program exits.
+			*/
+		}
+
 		/* Get the DBCS flag */
 		boolean dbcsEnabled = OS.GetSystemMetrics (OS.SM_DBCSENABLED) != 0;
 		boolean immEnabled = OS.GetSystemMetrics (OS.SM_IMMENABLED) != 0;
@@ -178,6 +205,13 @@ public class OS extends Platform {
 	public static final int ABS_UPHOT = 2;
 	public static final int ABS_UPNORMAL = 1;
 	public static final int ABS_UPPRESSED = 3;
+	public static final int ACTCTX_FLAG_PROCESSOR_ARCHITECTURE_VALID = 0x00000001;
+	public static final int ACTCTX_FLAG_LANGID_VALID = 0x00000002;
+	public static final int ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID = 0x00000004;
+	public static final int ACTCTX_FLAG_RESOURCE_NAME_VALID = 0x00000008;
+	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
+	public static final int ACTCTX_FLAG_APPLICATION_NAME_VALID = 0x00000020;
+	public static final int ACTCTX_FLAG_HMODULE_VALID = 0x00000080;
 	public static final int AC_SRC_OVER = 0;
 	public static final int AC_SRC_ALPHA = 1;
 	public static final int ALTERNATE = 1;
@@ -309,6 +343,7 @@ public class OS extends Platform {
 	public static final int CCS_VERT = 0x80;
 	public static final int CC_ANYCOLOR = 0x100;
 	public static final int CC_ENABLEHOOK = 0x10;
+	public static final int CC_FULLOPEN = 0x2;
 	public static final int CC_RGBINIT = 0x1;
 	public static final int CDDS_POSTERASE = 0x00000004;
 	public static final int CDDS_POSTPAINT = 0x00000002;
@@ -868,6 +903,7 @@ public class OS extends Platform {
 	public static final int MAX_LINKID_TEXT = 48;
 	public static final int MAX_PATH = 260;
 	public static final int MA_NOACTIVATE = 0x3;
+	public static final int MANIFEST_RESOURCE_ID = 2;
 	public static final int MB_ABORTRETRYIGNORE = 0x2;
 	public static final int MB_APPLMODAL = 0x0;
 	public static final int MB_ICONERROR = 0x10;
@@ -1824,6 +1860,11 @@ public static final boolean ChooseFont (CHOOSEFONT chooseFont) {
 	return ChooseFontA (chooseFont);
 }
 
+public static final int CreateActCtx (ACTCTX pActCtx) {
+	if (IsUnicode) return CreateActCtxW (pActCtx);
+	return CreateActCtxA (pActCtx);
+}
+
 public static final int CreateAcceleratorTable (byte [] lpaccl, int cEntries) {
 	if (IsUnicode) return CreateAcceleratorTableW (lpaccl, cEntries);
 	return CreateAcceleratorTableA (lpaccl, cEntries);
@@ -2046,6 +2087,15 @@ public static final boolean GetMenuItemInfo (int hMenu, int uItem, boolean fByPo
 public static final boolean GetMessage (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax) {	
 	if (IsUnicode) return GetMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
 	return GetMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
+}
+
+public static final int GetModuleFileName (int hModule, TCHAR lpFilename, int inSize) {
+	if (IsUnicode) {
+		char [] lpFilename1 = lpFilename == null ? null : lpFilename.chars;
+		return GetModuleFileNameW (hModule, lpFilename1, inSize);
+	}
+	byte [] lpFilename1 = lpFilename == null ? null : lpFilename.bytes;
+	return GetModuleFileNameA (hModule, lpFilename1, inSize);
 }
 
 public static final int GetModuleHandle (TCHAR lpModuleName) {
@@ -2656,6 +2706,7 @@ public static final short VkKeyScan (short ch) {
 
 /** Natives */
 public static final native int AbortDoc (int hdc);
+public static final native boolean ActivateActCtx (int hActCtx, int [] lpCookie);
 public static final native int ActivateKeyboardLayout(int hkl, int Flags);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
 public static final native boolean AlphaBlend(int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
@@ -2694,6 +2745,8 @@ public static final native int CommDlgExtendedError ();
 public static final native int CopyImage (int hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
 public static final native int CreateAcceleratorTableW (byte [] lpaccl, int cEntries); 
 public static final native int CreateAcceleratorTableA (byte [] lpaccl, int cEntries);
+public static final native int CreateActCtxW (ACTCTX pActCtx);
+public static final native int CreateActCtxA (ACTCTX pActCtx);
 public static final native int CreateBitmap (int nWidth, int nHeight, int cPlanes, int cBitsPerPel, byte [] lpvBits);
 public static final native boolean CreateCaret (int hWnd, int hBitmap, int nWidth, int nHeight);
 public static final native int CreateCompatibleBitmap (int hdc, int nWidth, int nHeight);
@@ -2862,6 +2915,8 @@ public static final native int GetThemeColor(int hTheme, int iPartId, int iState
 public static final native int GetThemeTextExtent(int hTheme, int hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, RECT pBoundingRect, RECT pExtentRect);
 public static final native int GetTextCharset(int hdc);
 public static final native int GetTickCount ();
+public static final native int GetModuleFileNameW (int hModule, char [] lpFilename, int inSize);
+public static final native int GetModuleFileNameA (int hModule, byte [] lpFilename, int inSize);
 public static final native int GetModuleHandleW (char [] lpModuleName);
 public static final native int GetModuleHandleA (byte [] lpModuleName);
 public static final native boolean GetMonitorInfoW (int hmonitor, MONITORINFO lpmi);

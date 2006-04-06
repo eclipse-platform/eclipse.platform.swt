@@ -49,6 +49,61 @@ void setACCELFields(JNIEnv *env, jobject lpObject, ACCEL *lpStruct)
 }
 #endif
 
+#ifndef NO_ACTCTX
+typedef struct ACTCTX_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, dwFlags, lpSource, wProcessorArchitecture, wLangId, lpAssemblyDirectory, lpResourceName, lpApplicationName, hModule;
+} ACTCTX_FID_CACHE;
+
+ACTCTX_FID_CACHE ACTCTXFc;
+
+void cacheACTCTXFields(JNIEnv *env, jobject lpObject)
+{
+	if (ACTCTXFc.cached) return;
+	ACTCTXFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ACTCTXFc.cbSize = (*env)->GetFieldID(env, ACTCTXFc.clazz, "cbSize", "I");
+	ACTCTXFc.dwFlags = (*env)->GetFieldID(env, ACTCTXFc.clazz, "dwFlags", "I");
+	ACTCTXFc.lpSource = (*env)->GetFieldID(env, ACTCTXFc.clazz, "lpSource", "I");
+	ACTCTXFc.wProcessorArchitecture = (*env)->GetFieldID(env, ACTCTXFc.clazz, "wProcessorArchitecture", "S");
+	ACTCTXFc.wLangId = (*env)->GetFieldID(env, ACTCTXFc.clazz, "wLangId", "S");
+	ACTCTXFc.lpAssemblyDirectory = (*env)->GetFieldID(env, ACTCTXFc.clazz, "lpAssemblyDirectory", "I");
+	ACTCTXFc.lpResourceName = (*env)->GetFieldID(env, ACTCTXFc.clazz, "lpResourceName", "I");
+	ACTCTXFc.lpApplicationName = (*env)->GetFieldID(env, ACTCTXFc.clazz, "lpApplicationName", "I");
+	ACTCTXFc.hModule = (*env)->GetFieldID(env, ACTCTXFc.clazz, "hModule", "I");
+	ACTCTXFc.cached = 1;
+}
+
+ACTCTX *getACTCTXFields(JNIEnv *env, jobject lpObject, ACTCTX *lpStruct)
+{
+	if (!ACTCTXFc.cached) cacheACTCTXFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, ACTCTXFc.cbSize);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, ACTCTXFc.dwFlags);
+	lpStruct->lpSource = (LPCTSTR)(*env)->GetIntField(env, lpObject, ACTCTXFc.lpSource);
+	lpStruct->wProcessorArchitecture = (*env)->GetShortField(env, lpObject, ACTCTXFc.wProcessorArchitecture);
+	lpStruct->wLangId = (*env)->GetShortField(env, lpObject, ACTCTXFc.wLangId);
+	lpStruct->lpAssemblyDirectory = (LPCTSTR)(*env)->GetIntField(env, lpObject, ACTCTXFc.lpAssemblyDirectory);
+	lpStruct->lpResourceName = (LPCTSTR)(*env)->GetIntField(env, lpObject, ACTCTXFc.lpResourceName);
+	lpStruct->lpApplicationName = (LPCTSTR)(*env)->GetIntField(env, lpObject, ACTCTXFc.lpApplicationName);
+	lpStruct->hModule = (HMODULE)(*env)->GetIntField(env, lpObject, ACTCTXFc.hModule);
+	return lpStruct;
+}
+
+void setACTCTXFields(JNIEnv *env, jobject lpObject, ACTCTX *lpStruct)
+{
+	if (!ACTCTXFc.cached) cacheACTCTXFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ACTCTXFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, ACTCTXFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, ACTCTXFc.lpSource, (jint)lpStruct->lpSource);
+	(*env)->SetShortField(env, lpObject, ACTCTXFc.wProcessorArchitecture, (jshort)lpStruct->wProcessorArchitecture);
+	(*env)->SetShortField(env, lpObject, ACTCTXFc.wLangId, (jshort)lpStruct->wLangId);
+	(*env)->SetIntField(env, lpObject, ACTCTXFc.lpAssemblyDirectory, (jint)lpStruct->lpAssemblyDirectory);
+	(*env)->SetIntField(env, lpObject, ACTCTXFc.lpResourceName, (jint)lpStruct->lpResourceName);
+	(*env)->SetIntField(env, lpObject, ACTCTXFc.lpApplicationName, (jint)lpStruct->lpApplicationName);
+	(*env)->SetIntField(env, lpObject, ACTCTXFc.hModule, (jint)lpStruct->hModule);
+}
+#endif
+
 #ifndef NO_BITMAP
 typedef struct BITMAP_FID_CACHE {
 	int cached;

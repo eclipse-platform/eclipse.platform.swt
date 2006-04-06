@@ -14,10 +14,11 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 686;
-int OS_nativeFunctionCallCount[686];
+int OS_nativeFunctionCount = 691;
+int OS_nativeFunctionCallCount[691];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
+	"ActivateActCtx",
 	"ActivateKeyboardLayout",
 	"AdjustWindowRectEx",
 	"AlphaBlend",
@@ -56,6 +57,8 @@ char * OS_nativeFunctionNames[] = {
 	"CopyImage",
 	"CreateAcceleratorTableA",
 	"CreateAcceleratorTableW",
+	"CreateActCtxA",
+	"CreateActCtxW",
 	"CreateBitmap",
 	"CreateCaret",
 	"CreateCompatibleBitmap",
@@ -219,6 +222,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetMessageTime",
 	"GetMessageW",
 	"GetMetaRgn",
+	"GetModuleFileNameA",
+	"GetModuleFileNameW",
 	"GetModuleHandleA",
 	"GetModuleHandleW",
 	"GetMonitorInfoA",

@@ -23,6 +23,18 @@ void setACCELFields(JNIEnv *env, jobject lpObject, ACCEL *lpStruct);
 #define ACCEL_sizeof() 0
 #endif
 
+#ifndef NO_ACTCTX
+void cacheACTCTXFields(JNIEnv *env, jobject lpObject);
+ACTCTX *getACTCTXFields(JNIEnv *env, jobject lpObject, ACTCTX *lpStruct);
+void setACTCTXFields(JNIEnv *env, jobject lpObject, ACTCTX *lpStruct);
+#define ACTCTX_sizeof() sizeof(ACTCTX)
+#else
+#define cacheACTCTXFields(a,b)
+#define getACTCTXFields(a,b,c) NULL
+#define setACTCTXFields(a,b,c)
+#define ACTCTX_sizeof() 0
+#endif
+
 #ifndef NO_BITMAP
 void cacheBITMAPFields(JNIEnv *env, jobject lpObject);
 BITMAP *getBITMAPFields(JNIEnv *env, jobject lpObject, BITMAP *lpStruct);
