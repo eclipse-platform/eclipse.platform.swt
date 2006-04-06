@@ -1449,11 +1449,27 @@ public void setSelection (String [] items) {
 public void setTopIndex (int index) {
 	checkWidget();
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0))) return;
-	// FIXME - For some reason, sometimes the tree scrolls to the wrong place
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
+		/*
+		* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
+		* should vertically scroll the cell to the top if use_align is true and row_align is 0.
+		* However, prior to version 2.8 it does not scroll at all.  The fix is to determine
+		* the new location and use gtk_tree_view_scroll_to_point.
+		* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
+		* will have no effect. Therefore, it is still neccessary to call 
+		* gtk_tree_view_scroll_to_cell.
+		*/
+		OS.gtk_widget_realize (handle);
+		GdkRectangle cellRect = new GdkRectangle ();
+		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
+		GdkRectangle visibleRect = new GdkRectangle ();
+		OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
+		OS.gtk_tree_view_scroll_to_point (handle, -1, visibleRect.y + cellRect.y);
+	}
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
@@ -1475,7 +1491,28 @@ public void showSelection () {
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+	/*
+	* This code intentionally commented.
+	* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
+	* should scroll the minimum amount to show the cell if use_align is false.
+	* However, what actually happens is the cell is scrolled to the top.
+	* The fix is to determine the new location and use gtk_tree_view_scroll_to_point.
+	* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
+	* will have no effect. Therefore, it is still neccessary to 
+	* call gtk_tree_view_scroll_to_cell.
+	*/
+//	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+	OS.gtk_widget_realize (handle);
+	GdkRectangle cellRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
+	GdkRectangle visibleRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
+	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0f, 0f);
+	int height = Math.min (visibleRect.height, cellRect.height);
+	if (cellRect.y + height > visibleRect.y + visibleRect.height) {
+		int tree_y = visibleRect.y + cellRect.y - visibleRect.height + cellRect.height;
+		OS.gtk_tree_view_scroll_to_point (handle, -1, tree_y);
+	}
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
