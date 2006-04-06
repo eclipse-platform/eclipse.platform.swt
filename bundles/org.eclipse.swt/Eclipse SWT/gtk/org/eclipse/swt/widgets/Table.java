@@ -3070,9 +3070,9 @@ public void setTopIndex (int index) {
 		OS.gtk_widget_realize (handle);
 		GdkRectangle cellRect = new GdkRectangle ();
 		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
-		GdkRectangle visibleRect = new GdkRectangle ();
-		OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
-		OS.gtk_tree_view_scroll_to_point (handle, -1, visibleRect.y + cellRect.y);
+		int[] tx = new int[1], ty = new int[1];
+		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
 	}
 	OS.gtk_tree_path_free (path);
 }
@@ -3177,15 +3177,22 @@ void showItem (int /*long*/ iter) {
 	*/
 //	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
 	OS.gtk_widget_realize (handle);
-	GdkRectangle cellRect = new GdkRectangle ();
-	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
 	GdkRectangle visibleRect = new GdkRectangle ();
 	OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0f, 0f);
-	int height = Math.min (visibleRect.height, cellRect.height);
-	if (cellRect.y + height > visibleRect.y + visibleRect.height) {
-		int tree_y = visibleRect.y + cellRect.y - visibleRect.height + cellRect.height;
-		OS.gtk_tree_view_scroll_to_point (handle, -1, tree_y);
+	GdkRectangle cellRect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
+	int[] tx = new int[1], ty = new int[1];
+	OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+	if (ty[0] < visibleRect.y ) {
+		OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
+		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+	} else {
+		int height = Math.min (visibleRect.height, cellRect.height);
+		if (ty[0] + height > visibleRect.y + visibleRect.height) {
+			OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 1f, 0f);
+			ty[0] += cellRect.height - visibleRect.height;
+			OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+		}
 	}
 	OS.gtk_tree_path_free (path);
 }

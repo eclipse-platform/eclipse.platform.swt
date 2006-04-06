@@ -2761,9 +2761,9 @@ public void setTopItem (TreeItem item) {
 		OS.gtk_widget_realize (handle);
 		GdkRectangle cellRect = new GdkRectangle ();
 		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
-		GdkRectangle visibleRect = new GdkRectangle ();
-		OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
-		OS.gtk_tree_view_scroll_to_point (handle, -1, visibleRect.y + cellRect.y);
+		int[] tx = new int[1], ty = new int[1];
+		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
+		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
 	}
 	OS.gtk_tree_path_free (path);
 }
@@ -2860,17 +2860,16 @@ void showItem (int /*long*/ path, boolean scroll) {
 		OS.gtk_tree_path_free (tempPath);		
 	}
 	if (scroll) {
-		GdkRectangle rect = new GdkRectangle ();
 		OS.gtk_widget_realize (handle);
-		OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-		boolean isHidden = rect.y == 0 && rect.height == 0;
+		GdkRectangle cellRect = new GdkRectangle ();
+		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
+		boolean isHidden = cellRect.y == 0 && cellRect.height == 0;
+		int [] tx = new int [1], ty = new int [1];
+		OS.gtk_tree_view_widget_to_tree_coords (handle, cellRect.x, cellRect.y, tx, ty);
+		GdkRectangle visibleRect = new GdkRectangle ();
+		OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
 		if (!isHidden) {
-			int [] tx = new int [1], ty = new int [1];
-			OS.gtk_tree_view_widget_to_tree_coords (handle, rect.x, rect.y, tx, ty);
-			rect.y = ty[0];
-			GdkRectangle visRect = new GdkRectangle ();
-			OS.gtk_tree_view_get_visible_rect (handle, visRect);
-			if (rect.y < visRect.y || rect.y + rect.height > visRect.y + visRect.height) {
+			if (ty[0] < visibleRect.y || ty[0] + cellRect.height > visibleRect.y + visibleRect.height) {
 				isHidden = true;
 			} 
 		}
@@ -2889,16 +2888,13 @@ void showItem (int /*long*/ path, boolean scroll) {
 			if (depth != 1) {
 				OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0.5f, 0.0f);
 			} else {
-				OS.gtk_widget_realize (handle);
-				GdkRectangle cellRect = new GdkRectangle ();
-				OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
-				GdkRectangle visibleRect = new GdkRectangle ();
-				OS.gtk_tree_view_get_visible_rect (handle, visibleRect);
-				OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0f, 0f);
-				int height = Math.min (visibleRect.height, cellRect.height);
-				if (cellRect.y + height > visibleRect.y + visibleRect.height) {
-					int tree_y = visibleRect.y + cellRect.y - visibleRect.height + cellRect.height;
-					OS.gtk_tree_view_scroll_to_point (handle, -1, tree_y);
+				if (ty[0] < visibleRect.y ) {
+					OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+				} else {
+					int height = Math.min (visibleRect.height, cellRect.height);
+					if (ty[0] + height > visibleRect.y + visibleRect.height) {
+						OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0] + cellRect.height - visibleRect.height);
+					}
 				}
 			}
 		}
