@@ -285,7 +285,9 @@ public class OS extends Platform {
 	public static final int kDataBrowserMetricDisclosureTriangleAndContentGap = 4;
 	public static final int kDataBrowserMetricDisclosureColumnPerDepthGap = 5;
 	public static final int kDataBrowserNoItem = 0;
+	public static final int kDataBrowserOrderUndefined = 0;
 	public static final int kDataBrowserOrderIncreasing = 1;
+	public static final int kDataBrowserOrderDecreasing = 2;
 	public static final int kDataBrowserPropertyEnclosingPart = 0;
 	public static final int kDataBrowserPropertyContentPart =  ('-'<<24) + ('-'<<16) + ('-'<<8) + '-';
 	public static final int kDataBrowserPropertyDisclosurePart =  ('d'<<24) + ('i'<<16) + ('s'<<8) + 'c';
