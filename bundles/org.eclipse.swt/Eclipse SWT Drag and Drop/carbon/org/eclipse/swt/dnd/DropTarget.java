@@ -369,7 +369,7 @@ int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 		return OS.dragNotAcceptedErr;
 	}
 	// ask drag source for dropped data
-	byte[][] data  = data = new byte[0][];
+	byte[][] data  = new byte[0][];
 	// locate all the items with data of the desired type 
 	short[] numItems = new short[1];
 	OS.CountDragItems(theDrag, numItems);
