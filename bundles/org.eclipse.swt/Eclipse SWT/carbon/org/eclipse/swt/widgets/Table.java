@@ -2038,7 +2038,8 @@ int itemNotificationProc (int browser, int id, int message) {
 			OS.SetDataBrowserSortProperty (handle, 0);
 			if (sortColumn != null && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
 				OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-				OS.SetDataBrowserSortOrder (handle, sortDirection == SWT.DOWN ? (short)2 : (short)1);
+				int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
+				OS.SetDataBrowserSortOrder (handle, (short) order);
 			}
 		}
 		return OS.noErr;
@@ -3016,7 +3017,7 @@ public void setSortColumn (TableColumn column) {
 	if (column == sortColumn) return;
 	if (column == null) {
 		if (sortColumn != null  && !sortColumn.isDisposed ()  && sortDirection != SWT.NONE) {
-			OS.SetDataBrowserSortOrder (handle, (short)1);
+			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
 			sortColumn = null; 
 			OS.SetDataBrowserSortProperty (handle, 0);
 		}
@@ -3024,7 +3025,8 @@ public void setSortColumn (TableColumn column) {
 	sortColumn = column;
 	if (sortColumn != null  && !sortColumn.isDisposed () && sortDirection != SWT.NONE) {
 		OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-		OS.SetDataBrowserSortOrder (handle, sortDirection == SWT.DOWN ? (short)2 : (short)1);
+		int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
+		OS.SetDataBrowserSortOrder (handle, (short) order);
 	}
 }
 
@@ -3048,7 +3050,7 @@ public void setSortDirection  (int direction) {
 	sortDirection = direction;
 	if (sortColumn != null && !sortColumn.isDisposed ()) {
 		if (sortDirection == SWT.NONE) {
-			OS.SetDataBrowserSortOrder (handle, (short)1);
+			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
 			TableColumn column = sortColumn;
 			sortColumn = null; 
 			OS.SetDataBrowserSortProperty (handle, 0);
@@ -3056,7 +3058,8 @@ public void setSortDirection  (int direction) {
 		} else {
 			OS.SetDataBrowserSortProperty (handle, 0);
 			OS.SetDataBrowserSortProperty (handle, sortColumn.id);
-			OS.SetDataBrowserSortOrder (handle, sortDirection == SWT.DOWN ? (short)2 : (short)1);
+			int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
+			OS.SetDataBrowserSortOrder (handle, (short) order);
 		}
 	}
 }
