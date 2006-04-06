@@ -232,7 +232,7 @@ public int /*long*/ ConfirmEx(int /*long*/ parent, int /*long*/ dialogTitle, int
 	
 	PromptDialog dialog = new PromptDialog(browser.getShell());
 	int[] check = new int[1], result = new int[1];
-	if (checkValue != 0) XPCOM.memmove(check, (int)/*64*/checkValue, 4);
+	if (checkValue != 0) XPCOM.memmove(check, checkValue, 4);
 	dialog.confirmEx(titleLabel, textLabel, checkLabel, button1Label, button2Label, button3Label, check, result);
 	if (checkValue != 0) XPCOM.memmove(checkValue, check, 4);
 	XPCOM.memmove(_retval, result, 4);
@@ -275,7 +275,7 @@ public int /*long*/ Prompt(int /*long*/ parent, int /*long*/ dialogTitle, int /*
 	
 	PromptDialog dialog = new PromptDialog(browser.getShell());
 	int[] check = new int[1], result = new int[1];
-	if (checkValue != 0) XPCOM.memmove(check, (int)/*64*/checkValue, 4);
+	if (checkValue != 0) XPCOM.memmove(check, checkValue, 4);
 	dialog.prompt(titleLabel, textLabel, checkLabel, valueLabel, check, result);
 
 	XPCOM.memmove(_retval, result, 4);
@@ -370,7 +370,7 @@ public int /*long*/ PromptUsernameAndPassword(int /*long*/ parent, int /*long*/ 
 	
 	PromptDialog dialog = new PromptDialog(browser.getShell());
 	int[] check = new int[1], result = new int[1];
-	if (checkValue != 0) XPCOM.memmove(check, (int)/*64*/checkValue, 4);
+	if (checkValue != 0) XPCOM.memmove(check, checkValue, 4);
 	dialog.promptUsernameAndPassword(titleLabel, textLabel, checkLabel, userLabel, passLabel, check, result);
 
 	XPCOM.memmove(_retval, result, 4);
