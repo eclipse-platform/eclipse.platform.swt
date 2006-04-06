@@ -507,8 +507,6 @@ void createHandle () {
 void createWidget () {
 	super.createWidget ();
 	resizeBounds ();
-//	setBackgroundImage(new Image(display, "/Users/ssq/Desktop/workspace/Silenio/irmaos.jpg"));
-//	setBackgroundMode(SWT.INHERIT_FORCE);
 }
 
 void deregister () {
