@@ -5946,10 +5946,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						break;
 				}
 				/*
-				* Feature in Windows.  When all of the items are deleted during
-				* TVN_ITEMEXPANDING, Windows does not send TVN_ITEMEXPANDED,
-				* even though the tree was expanded.  The fix is to detect this
-				* case and runn the TVN_ITEMEXPANDED code.
+				* Bug in Windows.  When all of the items are deleted during
+				* TVN_ITEMEXPANDING, Windows does not send TVN_ITEMEXPANDED.
+				* The fix is to detect this case and run the TVN_ITEMEXPANDED
+				* code in this method.
 				*/
 				int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, tvItem.hItem);
 				runExpanded = hFirstItem == 0;
