@@ -999,10 +999,12 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		if ((style & SWT.FULL_SELECTION) != 0) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-				if (selected || findImageControl () == null) {
-					RECT rect = new RECT ();
-					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+				RECT rect = new RECT ();
+				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+				if (selected) {
 					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+				} else {
+					drawBackground (hDC, rect);
 				}
 				nmcd.uItemState &= ~OS.CDIS_FOCUS;
 				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
@@ -4355,7 +4357,9 @@ void updateFullSelection () {
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 		if ((newBits & OS.TVS_FULLROWSELECT) != 0) {
-			if (!OS.IsWindowEnabled (handle)) newBits &= ~OS.TVS_FULLROWSELECT;
+			if (!OS.IsWindowEnabled (handle) || findImageControl () != null) {
+				newBits &= ~OS.TVS_FULLROWSELECT;
+			}
 		} else {
 			if (OS.IsWindowEnabled (handle) && findImageControl () == null) {
 				if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
