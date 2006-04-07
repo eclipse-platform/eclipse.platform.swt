@@ -854,6 +854,7 @@ typedef enum {
 	_1gtk_1tree_1view_1column_1set_1cell_1data_1func_FUNC,
 	_1gtk_1tree_1view_1column_1set_1clickable_FUNC,
 	_1gtk_1tree_1view_1column_1set_1fixed_1width_FUNC,
+	_1gtk_1tree_1view_1column_1set_1min_1width_FUNC,
 	_1gtk_1tree_1view_1column_1set_1reorderable_FUNC,
 	_1gtk_1tree_1view_1column_1set_1resizable_FUNC,
 	_1gtk_1tree_1view_1column_1set_1sizing_FUNC,

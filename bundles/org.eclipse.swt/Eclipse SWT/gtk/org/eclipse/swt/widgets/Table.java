@@ -535,6 +535,7 @@ void createColumn (TableColumn column, int index) {
 	}
 	OS.gtk_tree_view_column_set_resizable (columnHandle, true);
 	OS.gtk_tree_view_column_set_clickable (columnHandle, true);
+	OS.gtk_tree_view_column_set_min_width (columnHandle, 0);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	if (column != null) {
 		column.handle = columnHandle;

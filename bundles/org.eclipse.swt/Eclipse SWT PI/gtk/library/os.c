@@ -11056,6 +11056,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1fixed_1width)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1view_1column_1set_1min_1width
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1min_1width)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1set_1min_1width_FUNC);
+	gtk_tree_view_column_set_min_width((GtkTreeViewColumn *)arg0, (gint)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1set_1min_1width_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1view_1column_1set_1reorderable
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1reorderable)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)

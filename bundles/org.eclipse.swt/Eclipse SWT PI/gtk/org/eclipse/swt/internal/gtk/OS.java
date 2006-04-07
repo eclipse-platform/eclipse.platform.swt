@@ -7298,6 +7298,15 @@ public static final void gtk_tree_view_column_set_fixed_width(int /*long*/ colum
 		lock.unlock();
 	}
 }
+public static final native void _gtk_tree_view_column_set_min_width(int /*long*/ tree_column, int min_width);
+public static final void gtk_tree_view_column_set_min_width(int /*long*/ tree_column, int min_width) {
+	lock.lock();
+	try {
+		_gtk_tree_view_column_set_min_width(tree_column, min_width);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_tree_view_column_set_reorderable(int /*long*/ column, boolean reorderable);
 public static final void gtk_tree_view_column_set_reorderable(int /*long*/ column, boolean reorderable) {
 	lock.lock();
