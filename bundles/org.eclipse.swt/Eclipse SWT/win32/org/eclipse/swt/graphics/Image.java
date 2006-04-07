@@ -212,9 +212,9 @@ public Image(Device device, Image srcImage, int flag) {
 	this.device = device;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle rect = srcImage.getBounds();
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
-			Rectangle r = srcImage.getBounds();
 			this.type = srcImage.type;
 			switch (type) {
 				case SWT.BITMAP:
@@ -225,10 +225,10 @@ public Image(Device device, Image srcImage, int flag) {
 					int hdcSource = OS.CreateCompatibleDC(hDC);
 					int hdcDest = OS.CreateCompatibleDC(hDC);
 					int hOldSrc = OS.SelectObject(hdcSource, srcImage.handle);
-					handle = OS.CreateCompatibleBitmap(hdcSource, r.width, r.height);
+					handle = OS.CreateCompatibleBitmap(hdcSource, rect.width, rect.height);
 					if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					int hOldDest = OS.SelectObject(hdcDest, handle);
-					OS.BitBlt(hdcDest, 0, 0, r.width, r.height, hdcSource, 0, 0, OS.SRCCOPY);
+					OS.BitBlt(hdcDest, 0, 0, rect.width, rect.height, hdcSource, 0, 0, OS.SRCCOPY);
 					OS.SelectObject(hdcSource, hOldSrc);
 					OS.SelectObject(hdcDest, hOldDest);
 					OS.DeleteDC(hdcSource);
@@ -248,7 +248,7 @@ public Image(Device device, Image srcImage, int flag) {
 					if (OS.IsWinCE) {
 						init(device, srcImage.data);
 					} else {
-						handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, r.width, r.height, 0);
+						handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, rect.width, rect.height, 0);
 						if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					}
 					break;
@@ -259,198 +259,66 @@ public Image(Device device, Image srcImage, int flag) {
 			return;
 		}
 		case SWT.IMAGE_DISABLE: {
-			Rectangle r = srcImage.getBounds();
-			this.type = srcImage.type;
-			byte[] rgbBwBitmapInfo = {
-				40,0,0,0, /* biSize */
-				(byte)(r.width & 0xFF), /* biWidth */
-				(byte)((r.width & 0xFF00) >> 8),
-				(byte)((r.width & 0xFF0000) >> 16),
-				(byte)((r.width & 0xFF000000) >> 24),
-				(byte)(r.height & 0xFF), /* biHeight */
-				(byte)((r.height & 0xFF00) >> 8),
-				(byte)((r.height & 0xFF0000) >> 16),
-				(byte)((r.height & 0xFF000000) >> 24),
-				1,0, /* biPlanes */
-				1,0, /* biBitCount */
-				0,0,0,0, /* biCompression */
-				0,0,0,0, /* biSizeImage */
-				0,0,0,0, /* biXPelsPerMeter */
-				0,0,0,0, /* biYPelsPerMeter */
-				0,0,0,0, /* biClrUsed */
-				0,0,0,0, /* biClrImportant */
-				0,0,0,0, /* First color: black */
-				(byte)0xFF,(byte)0xFF,(byte)0xFF,0 /* Second color: white */
-			};
+			ImageData data = srcImage.getImageData();
+			PaletteData palette = data.palette;
+			RGB[] rgbs = new RGB[3];
+			rgbs[0] = device.getSystemColor(SWT.COLOR_BLACK).getRGB();
+			rgbs[1] = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
+			rgbs[2] = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB();
+			ImageData newData = new ImageData(rect.width, rect.height, 8, new PaletteData(rgbs));
+			newData.alpha = data.alpha;
+			newData.alphaData = data.alphaData;
+			newData.maskData = data.maskData;
+			newData.maskPad = data.maskPad;
+			if (data.transparentPixel != -1) newData.transparentPixel = 0;
 
-			/* Get the HDC for the device */
-			int hDC = device.internal_new_GC(null);
-
-			/* Source DC */
-			int hdcSource = OS.CreateCompatibleDC(hDC);
-			if (hdcSource == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			/* Monochrome (Intermediate) DC */
-			int bwDC = OS.CreateCompatibleDC(hdcSource);
-			if (bwDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			/* Destination DC */
-			int hdcBmp = OS.CreateCompatibleDC(hDC);
-			if (hdcBmp == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			/* Monochrome (Intermediate) DIB section */
-			int[] pbitsBW = new int[1];
-			int hbmBW = OS.CreateDIBSection(bwDC, rgbBwBitmapInfo, OS.DIB_RGB_COLORS, pbitsBW, 0, 0);
-			if (hbmBW == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			switch (type) {
-				case SWT.BITMAP:
-					/* Attach the bitmap to the source DC */
-					int hOldSrc = OS.SelectObject(hdcSource, srcImage.handle);
-					/* Create the destination bitmap */
-					handle = OS.CreateCompatibleBitmap(hDC, r.width, r.height);
-					if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					/* Attach the DIB section and the new bitmap to the DCs */
-					int hOldBw = OS.SelectObject(bwDC, hbmBW);
-					int hOldBmp = OS.SelectObject(hdcBmp, handle);
-					/* BitBlt the bitmap into the monochrome DIB section */
-					OS.BitBlt(bwDC, 0, 0, r.width, r.height, hdcSource, 0, 0, OS.SRCCOPY);
-					/* Paint the destination rectangle in gray */
-					RECT rect = new RECT();
-					rect.left = 0;
-					rect.top = 0;
-					rect.right = r.width;
-					rect.bottom = r.height;
-					OS.FillRect(hdcBmp, rect, OS.GetSysColorBrush(OS.COLOR_3DFACE));
-					/*
-					 * BitBlt the black bits in the monochrome bitmap into
-					 * COLOR_3DHILIGHT bits in the destination DC.
-					 * The magic ROP comes from Charles Petzold's book
-					 */
-					int hb = OS.CreateSolidBrush(OS.GetSysColor(OS.COLOR_3DHILIGHT));
-					int oldBrush = OS.SelectObject(hdcBmp, hb);
-					OS.BitBlt(hdcBmp, 1, 1, r.width, r.height, bwDC, 0, 0, 0xB8074A);
-					/*
-					 * BitBlt the black bits in the monochrome bitmap into 
-					 * COLOR_3DSHADOW bits in the destination DC.
-					 */
-					hb = OS.CreateSolidBrush(OS.GetSysColor(OS.COLOR_3DSHADOW));
-					OS.DeleteObject(OS.SelectObject(hdcBmp, hb));
-					OS.BitBlt(hdcBmp, 0, 0, r.width, r.height, bwDC, 0, 0, 0xB8074A);
-					OS.DeleteObject(OS.SelectObject(hdcBmp, oldBrush));
-					/* Free resources */
-					OS.SelectObject(hdcSource, hOldSrc);
-					OS.SelectObject(hdcBmp, hOldBmp);
-					OS.SelectObject(bwDC, hOldBw);
-					OS.DeleteDC(hdcSource);
-					OS.DeleteDC(bwDC);
-					OS.DeleteDC(hdcBmp);
-					OS.DeleteObject(hbmBW);
-
-					alpha = srcImage.alpha;
-					if (srcImage.alphaData != null) {
-						alphaData = new byte[srcImage.alphaData.length];
-						System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+			/* Convert the pixels. */
+			int[] scanline = new int[rect.width];
+			int[] maskScanline = null;
+			ImageData mask = null;
+			if (data.maskData != null) mask = data.getTransparencyMask();
+			if (mask != null) maskScanline = new int[rect.width];
+			int redMask = palette.redMask;
+			int greenMask = palette.greenMask;
+			int blueMask = palette.blueMask;
+			int redShift = palette.redShift;
+			int greenShift = palette.greenShift;
+			int blueShift = palette.blueShift;
+			for (int y=0; y<rect.height; y++) {
+				int offset = y * newData.bytesPerLine;
+				data.getPixels(0, y, rect.width, scanline, 0);
+				if (mask != null) mask.getPixels(0, y, rect.width, maskScanline, 0);
+				for (int x=0; x<rect.width; x++) {
+					int pixel = scanline[x];
+					if (!(pixel == data.transparentPixel || (mask != null && maskScanline[x] == 0))) {
+						int red, green, blue;
+						if (palette.isDirect) {
+							red = pixel & redMask;
+							red = (redShift < 0) ? red >>> -redShift : red << redShift;
+							green = pixel & greenMask;
+							green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
+							blue = pixel & blueMask;
+							blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
+						} else {
+							red = palette.colors[pixel].red;
+							green = palette.colors[pixel].green;
+							blue = palette.colors[pixel].blue;
+						}
+						int intensity = red * red + green * green + blue * blue;
+						if (intensity < 98304) {
+							newData.data[offset] = (byte)1;
+						} else {
+							newData.data[offset] = (byte)2;	
+						}
 					}
-					
-					/* Release the HDC for the device */
-					device.internal_dispose_GC(hDC, null);
-					break;
-				case SWT.ICON:
-					/* Get icon information */
-					ICONINFO iconInfo = new ICONINFO();
-					if (OS.IsWinCE) {
-						GetIconInfo(srcImage, iconInfo);
-					} else {
-						if (!OS.GetIconInfo(srcImage.handle, iconInfo))
-							SWT.error(SWT.ERROR_INVALID_IMAGE);
-					}
-					int hdcMask = OS.CreateCompatibleDC(hDC);
-					/* Create the destination bitmaps */
-					if (iconInfo.hbmColor == 0)
-						hOldSrc = OS.SelectObject(hdcSource, iconInfo.hbmMask);
-					else
-						hOldSrc = OS.SelectObject(hdcSource, iconInfo.hbmColor);
-					int newHbmp = OS.CreateCompatibleBitmap(hdcSource, r.width, r.height);
-					if (newHbmp == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					int newHmask = OS.CreateBitmap(r.width, r.height, 1, 1, null);
-					if (newHmask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					/* BitBlt the source mask into the destination mask */
-					int hOldMask = OS.SelectObject(hdcMask, newHmask);
-					if (iconInfo.hbmColor != 0)
-						OS.SelectObject(hdcSource, iconInfo.hbmMask);
-					OS.SelectObject(hdcSource, iconInfo.hbmMask);
-					OS.BitBlt(hdcMask, 0, 0, r.width, r.height, hdcSource, 0, 0, OS.SRCCOPY);
-					/* Attach the monochrome DIB section and the destination bitmap to the DCs */
-					hOldBw = OS.SelectObject(bwDC, hbmBW);
-					/* BitBlt the bitmap into the monochrome DIB section */
-					if (iconInfo.hbmColor == 0) {
-						OS.SelectObject(hdcSource, iconInfo.hbmMask);
-						OS.BitBlt(bwDC, 0, 0, r.width, r.height, hdcSource, 0, r.height, OS.SRCCOPY);
-					} else {
-						OS.SelectObject(hdcSource, iconInfo.hbmColor);
-						OS.BitBlt(bwDC, 0, 0, r.width, r.height, hdcSource, 0, 0, OS.SRCCOPY);
-					}
-					/* Paint the destination rectangle in grey */
-					rect = new RECT();
-					rect.left = 0;
-					rect.top = 0;
-					rect.right = r.width;
-					rect.bottom = r.height;
-					hOldBmp = OS.SelectObject(hdcBmp, newHbmp);
-					OS.FillRect(hdcBmp, rect, OS.GetSysColorBrush(OS.COLOR_3DFACE));
-					/*
-					 * BitBlt the black bits in the monochrome bitmap into
-					 * COLOR_3DHILIGHT bits in the destination DC.
-					 * The magic ROP comes from Charles Petzold's book
-					 */
-					hb = OS.CreateSolidBrush(OS.GetSysColor(OS.COLOR_3DSHADOW));
-					oldBrush = OS.SelectObject(hdcBmp, hb);
-					OS.BitBlt(hdcBmp, 0, 0, r.width, r.height, bwDC, 0, 0, 0xB8074A);
-					/* Invert mask into hdcBw */
-					OS.BitBlt(bwDC, 0, 0, r.width, r.height, hdcMask, 0, 0, OS.NOTSRCCOPY);
-					/* Select black brush into destination */
-					hb = OS.CreateSolidBrush(0);
-					OS.DeleteObject(OS.SelectObject(hdcBmp, hb));
-					/*
-					 * Copy black bits from monochrome bitmap into black bits in the
-					 * destination DC.
-					 */
-					OS.BitBlt(hdcBmp, 0, 0, r.width, r.height, bwDC, 0, 0, 0xB8074A);
-					OS.DeleteObject(OS.SelectObject(hdcBmp, oldBrush));
-					/* Free resources */
-					OS.SelectObject(hdcSource, hOldSrc);
-					OS.DeleteDC(hdcSource);
-					OS.SelectObject(bwDC, hOldBw);
-					OS.DeleteDC(bwDC);
-					OS.SelectObject(hdcBmp, hOldBmp);
-					OS.DeleteDC(hdcBmp);
-					OS.SelectObject(hdcMask, hOldMask);
-					OS.DeleteDC(hdcMask);
-					OS.DeleteObject(hbmBW);
-					
-					/* Release the HDC for the device */
-					device.internal_dispose_GC(hDC, null);
-			
-					/* Create the new iconinfo */
-					ICONINFO newIconInfo = new ICONINFO();
-					newIconInfo.fIcon = iconInfo.fIcon;
-					newIconInfo.hbmMask = newHmask;
-					newIconInfo.hbmColor = newHbmp;
-					/* Create the new icon */
-					handle = OS.CreateIconIndirect(newIconInfo);
-					if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					/* Free bitmaps */
-					OS.DeleteObject(newHbmp);
-					OS.DeleteObject(newHmask);
-					if (iconInfo.hbmColor != 0)
-						OS.DeleteObject(iconInfo.hbmColor);
-					OS.DeleteObject(iconInfo.hbmMask);
-					break;
-				default:
-					SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+					offset++;
+				}
 			}
-			if (device.tracking) device.new_Object(this);	
+			init (device, newData);
+			if (device.tracking) device.new_Object(this);
 			return;
 		}
 		case SWT.IMAGE_GRAY: {
-			Rectangle r = srcImage.getBounds();
 			ImageData data = srcImage.getImageData();
 			PaletteData palette = data.palette;
 			ImageData newData = data;
@@ -474,7 +342,7 @@ public Image(Device device, Image srcImage, int flag) {
 				for (int i=0; i<rgbs.length; i++) {
 					rgbs[i] = new RGB(i, i, i);
 				}
-				newData = new ImageData(r.width, r.height, 8, new PaletteData(rgbs));
+				newData = new ImageData(rect.width, rect.height, 8, new PaletteData(rgbs));
 				newData.alpha = data.alpha;
 				newData.alphaData = data.alphaData;
 				newData.maskData = data.maskData;
@@ -482,17 +350,17 @@ public Image(Device device, Image srcImage, int flag) {
 				if (data.transparentPixel != -1) newData.transparentPixel = 254; 
 
 				/* Convert the pixels. */
-				int[] scanline = new int[r.width];
+				int[] scanline = new int[rect.width];
 				int redMask = palette.redMask;
 				int greenMask = palette.greenMask;
 				int blueMask = palette.blueMask;
 				int redShift = palette.redShift;
 				int greenShift = palette.greenShift;
 				int blueShift = palette.blueShift;
-				for (int y=0; y<r.height; y++) {
+				for (int y=0; y<rect.height; y++) {
 					int offset = y * newData.bytesPerLine;
-					data.getPixels(0, y, r.width, scanline, 0);
-					for (int x=0; x<r.width; x++) {
+					data.getPixels(0, y, rect.width, scanline, 0);
+					for (int x=0; x<rect.width; x++) {
 						int pixel = scanline[x];
 						if (pixel != data.transparentPixel) {
 							int red = pixel & redMask;
