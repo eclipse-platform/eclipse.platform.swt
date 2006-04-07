@@ -220,7 +220,9 @@ public Image(Device device, Image srcImage, int flag) {
 					int hdcSource = OS.CreateCompatibleDC(hDC);
 					int hdcDest = OS.CreateCompatibleDC(hDC);
 					int hOldSrc = OS.SelectObject(hdcSource, srcImage.handle);
-					handle = OS.CreateCompatibleBitmap(hdcSource, rect.width, rect.height);
+					BITMAP bm = new BITMAP();
+					OS.GetObject(srcImage.handle, BITMAP.sizeof, bm);
+					handle = OS.CreateCompatibleBitmap(hdcSource, rect.width, bm.bmBits != 0 ? -rect.height : rect.height);
 					if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					int hOldDest = OS.SelectObject(hdcDest, handle);
 					OS.BitBlt(hdcDest, 0, 0, rect.width, rect.height, hdcSource, 0, 0, OS.SRCCOPY);
