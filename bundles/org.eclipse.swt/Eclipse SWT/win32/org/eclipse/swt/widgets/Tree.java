@@ -5890,28 +5890,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		}
-		case OS.TVN_ITEMEXPANDEDA:
-		case OS.TVN_ITEMEXPANDEDW: {
-			if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
-			if (findImageControl () != null && drawCount == 0) {
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-				OS.InvalidateRect (handle, null, true);
-			}
-			/*
-			* Bug in Windows.  When TVM_SETINSERTMARK is used to set
-			* an insert mark for a tree and an item is expanded or
-			* collapsed near the insert mark, the tree does not redraw
-			* the insert mark properly.  The fix is to hide and show
-			* the insert mark whenever an item is expanded or collapsed.
-			*/
-			if (hInsert != 0) {
-				OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
-			}
-			updateScrollBar ();
-			break;
-		}
 		case OS.TVN_ITEMEXPANDINGA:
 		case OS.TVN_ITEMEXPANDINGW: {
+			boolean runExpanded = false;
 			if ((style & SWT.VIRTUAL) != 0) style &= ~SWT.DOUBLE_BUFFERED;
 			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
@@ -5964,7 +5945,36 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						if (isDisposed ()) return LRESULT.ZERO;
 						break;
 				}
+				/*
+				* Feature in Windows.  When all of the items are deleted during
+				* TVN_ITEMEXPANDING, Windows does not send TVN_ITEMEXPANDED,
+				* even though the tree was expanded.  The fix is to detect this
+				* case and runn the TVN_ITEMEXPANDED code.
+				*/
+				int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, tvItem.hItem);
+				runExpanded = hFirstItem == 0;
 			}
+			if (!runExpanded) break;
+			//FALL THROUGH
+		}
+		case OS.TVN_ITEMEXPANDEDA:
+		case OS.TVN_ITEMEXPANDEDW: {
+			if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
+			if (findImageControl () != null && drawCount == 0) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.InvalidateRect (handle, null, true);
+			}
+			/*
+			* Bug in Windows.  When TVM_SETINSERTMARK is used to set
+			* an insert mark for a tree and an item is expanded or
+			* collapsed near the insert mark, the tree does not redraw
+			* the insert mark properly.  The fix is to hide and show
+			* the insert mark whenever an item is expanded or collapsed.
+			*/
+			if (hInsert != 0) {
+				OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
+			}
+			updateScrollBar ();
 			break;
 		}
 		case OS.TVN_BEGINDRAGA:
