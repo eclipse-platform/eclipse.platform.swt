@@ -112,11 +112,6 @@ public final class Image extends Resource implements Drawable {
 	ImageData data;
 	
 	/**
-	 * the image was created using GDI+
-	 */
-	boolean gdiPlus;
-	
-	/**
 	 * width of the image
 	 */
 	int width = -1;
@@ -583,45 +578,25 @@ public Image (Device device, String filename) {
 		filename.getChars(0, length, chars, 0);
 		int bitmap = Gdip.Bitmap_new(chars, false);
 		if (bitmap != 0) {
+			int transparentColor = -1;
+			int width = Gdip.Image_GetWidth(bitmap);
+			int height = Gdip.Image_GetHeight(bitmap);
 			if (filename.toLowerCase().endsWith(".ico")) {
+				this.type = SWT.ICON;
 				int[] hicon = new int[1];
 				Gdip.Bitmap_GetHICON(bitmap, hicon);
-				this.type = SWT.ICON;
 				this.handle = hicon[0];
-				if (this.handle == 0) {
-					Gdip.Bitmap_delete(bitmap);
-					SWT.error(SWT.ERROR_INVALID_IMAGE);
-				}
 			} else {
-				int color = Gdip.Color_new(0);
-				if (color == 0) {
-					Gdip.Bitmap_delete(bitmap);
-					SWT.error(SWT.ERROR_NO_HANDLES);
-				}
-				int[] hBitmap = new int[1];
-				Gdip.Bitmap_GetHBITMAP(bitmap, color, hBitmap);
 				this.type = SWT.BITMAP;
-				this.handle = hBitmap[0];
-				if (this.handle == 0) {
-					Gdip.Bitmap_delete(bitmap);
-					Gdip.Color_delete(color);
-					SWT.error(SWT.ERROR_INVALID_IMAGE);
-				}
 				int pixelFormat = Gdip.Image_GetPixelFormat(bitmap);
 				switch (pixelFormat) {
 					case Gdip.PixelFormat32bppARGB:
 						int lockedBitmapData = Gdip.BitmapData_new();
-						if (lockedBitmapData == 0) {
-							Gdip.Bitmap_delete(bitmap);
-							Gdip.Color_delete(color);
-							SWT.error(SWT.ERROR_NO_HANDLES);
-						}
+						if (lockedBitmapData == 0) break;
 						Gdip.Bitmap_LockBits(bitmap, 0, 0, pixelFormat, lockedBitmapData);
 						BitmapData bitmapData = new BitmapData();
 						Gdip.MoveMemory(bitmapData, lockedBitmapData, BitmapData.sizeof);
 						int stride = bitmapData.Stride;
-						int width = bitmapData.Width;
-						int height = bitmapData.Height;
 						int pixels = bitmapData.Scan0;
 						byte[] line = new byte[stride];
 		 		 		alphaData = new byte[width * height];
@@ -633,6 +608,7 @@ public Image (Device device, String filename) {
 		 		 		}
 		 		 		Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
 						Gdip.BitmapData_delete(lockedBitmapData);
+						this.handle = createDIB(width, height, 32);
 						break;
 					case Gdip.PixelFormat1bppIndexed:
 					case Gdip.PixelFormat4bppIndexed:
@@ -640,30 +616,78 @@ public Image (Device device, String filename) {
 						int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
 						int hHeap = OS.GetProcessHeap();
 						int palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
-						if (palette == 0) {
-							Gdip.Bitmap_delete(bitmap);
-							Gdip.Color_delete(color);
-							SWT.error(SWT.ERROR_NO_HANDLES); 
-						}
+						if (palette == 0) break;
 						Gdip.Image_GetPalette(bitmap, palette, paletteSize);
 						ColorPalette colorPalette = new ColorPalette();
 						Gdip.MoveMemory(colorPalette, palette, ColorPalette.sizeof);
-						if ((colorPalette.Flags & Gdip.PaletteFlagsHasAlpha) != 0) { 
-							int[] entries = new int[colorPalette.Count];
-							OS.MoveMemory(entries, palette + 8, entries.length * 4);
-							for (int i = 0; i < entries.length; i++) {
-								if (((entries[i] >> 24) & 0xFF) == 0) {
-									transparentPixel = i;
+						int[] entries = new int[colorPalette.Count];
+						OS.MoveMemory(entries, palette + 8, entries.length * 4);
+						OS.HeapFree(hHeap, 0, palette);
+						BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+						bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+						bmiHeader.biWidth = width;
+						bmiHeader.biHeight = -height;
+						bmiHeader.biPlanes = 1;
+						bmiHeader.biBitCount = (short)8;
+						bmiHeader.biCompression = OS.BI_RGB;
+						byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + colorPalette.Count * 4];
+						OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);					
+						int offset = BITMAPINFOHEADER.sizeof;
+						for (int i = 0; i < entries.length; i++) {
+							if (((entries[i] >> 24) & 0xFF) == 0 && (colorPalette.Flags & Gdip.PaletteFlagsHasAlpha) != 0) {
+								transparentPixel = i;
+								transparentColor = entries[i] & 0xFFFFFF;
+							}
+							bmi[offset] = (byte)((entries[i] & 0xFF) >> 0);
+							bmi[offset + 1] = (byte)((entries[i] & 0xFF00) >> 8);
+							bmi[offset + 2] = (byte)((entries[i] & 0xFF0000) >> 16);
+							bmi[offset + 3] = 0;
+							offset += 4;
+						}
+						int[] pBits = new int[1];
+						this.handle = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);						
+						break;
+					case Gdip.PixelFormat16bppGrayScale:
+					case Gdip.PixelFormat16bppRGB555:
+					case Gdip.PixelFormat16bppRGB565:
+						this.handle = createDIB(width, height, 16);
+						break;
+					case Gdip.PixelFormat24bppRGB:
+						this.handle = createDIB(width, height, 24);
+						break;
+					default:
+						this.handle = createDIB(width, height, 32);
+				}
+				if (handle != 0) {
+					int hDC = device.internal_new_GC(null);
+					int srcHDC = OS.CreateCompatibleDC(hDC);
+					int oldSrcBitmap = OS.SelectObject(srcHDC, handle);
+					int graphics = Gdip.Graphics_new(srcHDC);
+					if (graphics != 0) {						
+						if (transparentColor != -1) {
+							int color = Gdip.Color_new(transparentColor | 0xFF000000);
+							if (color != 0) {
+								int brush = Gdip.SolidBrush_new(color);
+								if (brush != 0) {
+									Gdip.Graphics_FillRectangle(graphics, brush, 0, 0, width, height);
+									Gdip.SolidBrush_delete(brush);
 								}
+								Gdip.Color_delete(color);
 							}
 						}
-						OS.HeapFree(hHeap, 0, palette);
-						break;
-				}			
-				Gdip.Color_delete(color);
+						Rect rect = new Rect();
+						rect.Width = width;
+						rect.Height = height;
+						Gdip.Graphics_DrawImage(graphics, bitmap, rect, 0, 0, width, height, Gdip.UnitPixel, 0, 0, 0);
+						Gdip.Graphics_delete(graphics);
+					}
+					OS.SelectObject(srcHDC, oldSrcBitmap);
+					OS.DeleteDC(srcHDC);
+					device.internal_dispose_GC(hDC, null);
+				}
 			}
 			Gdip.Bitmap_delete(bitmap);
-			gdiPlus = true;
+			if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			return;
 		}
 	} catch (SWTException e) {}
@@ -1361,19 +1385,7 @@ public ImageData getImageData() {
 					/* get image data from the temporary DIB */
 					OS.MoveMemory(data, dib.bmBits, imageSize);
 				} else {
-					if (!gdiPlus) {
-						OS.MoveMemory(data, bm.bmBits, imageSize);
-					} else {
-						int stride = dib.bmWidthBytes;
-						int offset = 0;
-						byte[] scanline = new byte[dib.bmWidthBytes];
-						for (int i = 0; i < dib.biHeight; i++) {
-							int cur = dib.bmBits + dib.biHeight * stride - (i + 1) * stride;
-							OS.MoveMemory(scanline, cur, dib.bmWidthBytes);
-							System.arraycopy(scanline, 0, data, offset, dib.bmWidthBytes);
-							offset += stride;
-						}
-					}
+					OS.MoveMemory(data, bm.bmBits, imageSize);
 				}
 			} else {
 				int hHeap = OS.GetProcessHeap();
