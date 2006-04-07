@@ -115,6 +115,7 @@ void createHandle (int index) {
 		} else {
 			handle = topHandle;
 		}
+		OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	}
 }
 

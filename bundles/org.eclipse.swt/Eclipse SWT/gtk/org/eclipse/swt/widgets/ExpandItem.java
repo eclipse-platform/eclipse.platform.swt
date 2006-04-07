@@ -60,6 +60,7 @@ void createHandle (int index) {
 		OS.gtk_container_add (boxHandle, imageHandle);
 		OS.gtk_container_add (boxHandle, labelHandle);
 		OS.gtk_expander_set_label_widget (handle, boxHandle);
+		OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	}
 }
 
@@ -195,7 +196,7 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	return 0;
 }
 
-int gtk_size_allocate (int widget, int allocation) {
+int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	parent.layoutItems (0, false);
 	return 0;
 }
