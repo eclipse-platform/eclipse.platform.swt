@@ -928,6 +928,7 @@ typedef enum {
 	_1gtk_1widget_1modify_1font_FUNC,
 	_1gtk_1widget_1modify_1style_FUNC,
 	_1gtk_1widget_1modify_1text_FUNC,
+	_1gtk_1widget_1queue_1resize_FUNC,
 	_1gtk_1widget_1realize_FUNC,
 	_1gtk_1widget_1remove_1accelerator_FUNC,
 	_1gtk_1widget_1reparent_FUNC,

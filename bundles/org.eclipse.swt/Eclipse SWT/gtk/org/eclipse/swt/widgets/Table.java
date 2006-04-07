@@ -3230,4 +3230,24 @@ int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*lon
 	return 0;
 }
 
+void updateScrollBarValue (ScrollBar bar) {
+	super.updateScrollBarValue (bar);
+	/* Bug in GTK. Scrolling changes the XWindow position
+	 * and makes the child widgets appear to scroll even
+	 * though when queried their position is unchanged.
+	 * The fix is to queue a resize event for each child to
+	 * force the position to be corrected.
+	 */
+	int /*long*/ parentHandle = parentingHandle ();
+	int /*long*/ list = OS.gtk_container_get_children (parentHandle);
+	if (list == 0) return;
+	int /*long*/ temp = list;
+	while (temp != 0) {
+		int /*long*/ widget = OS.g_list_data (temp);
+		if (widget != 0) 	OS.gtk_widget_queue_resize  (widget);
+		temp = OS.g_list_next (temp);
+	}
+	OS.g_list_free (list);
+}
+
 }

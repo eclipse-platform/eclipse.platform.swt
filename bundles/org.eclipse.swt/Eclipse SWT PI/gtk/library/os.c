@@ -11941,6 +11941,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1queue_1resize
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1queue_1resize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1queue_1resize_FUNC);
+	gtk_widget_queue_resize((GtkWidget *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1queue_1resize_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1realize
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1realize)
 	(JNIEnv *env, jclass that, jint arg0)

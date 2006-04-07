@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1103;
-int OS_nativeFunctionCallCount[1103];
+int OS_nativeFunctionCount = 1104;
+int OS_nativeFunctionCallCount[1104];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -924,6 +924,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1widget_1modify_1font",
 	"_1gtk_1widget_1modify_1style",
 	"_1gtk_1widget_1modify_1text",
+	"_1gtk_1widget_1queue_1resize",
 	"_1gtk_1widget_1realize",
 	"_1gtk_1widget_1remove_1accelerator",
 	"_1gtk_1widget_1reparent",

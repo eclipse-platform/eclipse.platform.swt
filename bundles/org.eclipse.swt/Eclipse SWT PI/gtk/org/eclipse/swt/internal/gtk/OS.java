@@ -7955,6 +7955,15 @@ public static final void gtk_widget_modify_text(int /*long*/ widget, int state, 
 		lock.unlock();
 	}
 }
+public static final native void _gtk_widget_queue_resize(int /*long*/ widget);
+public static final void gtk_widget_queue_resize(int /*long*/ widget) {
+	lock.lock();
+	try {
+		_gtk_widget_queue_resize(widget);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_widget_realize(int /*long*/ widget);
 public static final void gtk_widget_realize(int /*long*/ widget) {
 	lock.lock();
