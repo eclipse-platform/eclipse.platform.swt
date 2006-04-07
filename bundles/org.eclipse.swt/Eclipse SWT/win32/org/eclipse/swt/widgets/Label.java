@@ -587,9 +587,9 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 				GCData data = new GCData();
 				data.device = display;
 				GC gc = GC.win32_new (struct.hDC, data);
-				Image drawnImage = getEnabled () ? image : new Image (display, image, SWT.IMAGE_DISABLE);
-				gc.drawImage (drawnImage, x, Math.max (0, (height - imageHeight) / 2));
-				if (drawnImage != image) drawnImage.dispose ();
+				Image image = getEnabled () ? this.image : new Image (display, this.image, SWT.IMAGE_DISABLE);
+				gc.drawImage (image, x, Math.max (0, (height - imageHeight) / 2));
+				if (image != this.image) image.dispose ();
 				gc.dispose ();
 				x += imageWidth + margin;
 			}
@@ -602,7 +602,6 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 				OS.DrawText (struct.hDC, buffer, -1, rect, flags);
 			}
 		}
-
 	}
 	return null;
 }

@@ -190,37 +190,6 @@ void click (boolean dropDown) {
 	}
 }
 
-Image createDisabledImage (Image image, Color color) {
-  	/*
-  	* In order to be consistent with the way that disabled
-	* images appear in other places in the user interface,
-	* use the SWT Graphics to create a disabled image instead
-    * of calling DrawState().
-	*/
-	return new Image (display, image, SWT.IMAGE_DISABLE);
-	/*
-	* This code is intentionally commented.
-	*/
-//	if (OS.IsWinCE) {
-//		return new Image (display, image, SWT.IMAGE_DISABLE);
-//	}
-//	Rectangle rect = image.getBounds ();
-//	Image disabled = new Image (display, rect);
-//	GC gc = new GC (disabled);
-//	gc.setBackground (color);
-//	gc.fillRectangle (rect);
-//	int hDC = gc.handle;
-//	int hImage = image.handle;
-//	int fuFlags = OS.DSS_DISABLED;
-//	switch (image.type) {
-//		case SWT.BITMAP: fuFlags |= OS.DST_BITMAP; break;
-//		case SWT.ICON: fuFlags |= OS.DST_ICON; break;
-//	}
-//	OS.DrawState (hDC, 0, 0, hImage, 0, 0, 0, rect.width, rect.height, fuFlags);
-//	gc.dispose ();
-//	return disabled;
-}
-
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -889,8 +858,7 @@ void updateImages (boolean enabled) {
 			disabledImage2 = null;
 			disabled = image;
 			if (!enabled) {
-				Color color = parent.getBackground ();
-				disabled = disabledImage2 = createDisabledImage (image, color);
+				disabled = disabledImage2 = new Image (display, image, SWT.IMAGE_DISABLE);
 			}
 		}
 		/*
@@ -920,8 +888,7 @@ void updateImages (boolean enabled) {
 				if (disabledImage == null) {
 					disabled = image;
 					if (!enabled) {
-						Color color = parent.getBackground ();
-						disabled = disabledImage2 = createDisabledImage (image, color);
+						disabled = disabledImage2 = new Image (display, image, SWT.IMAGE_DISABLE);
 					}
 				}
 			}

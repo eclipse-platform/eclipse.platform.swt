@@ -1088,7 +1088,9 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		* the item is in a menu bar.
 		*/
 		int x = (parent.style & SWT.BAR) != 0 ? MARGIN_WIDTH * 2 : struct.left;
+		Image image = getEnabled () ? this.image : new Image (display, this.image, SWT.IMAGE_DISABLE);
 		gc.drawImage (image, x, struct.top + MARGIN_HEIGHT);
+		if (this.image != image) image.dispose ();
 		gc.dispose ();
 	}
 	return null;
