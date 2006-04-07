@@ -16,7 +16,12 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 public class ExpandBar extends Composite {
-	
+	ExpandItem [] items;
+	int itemCount;
+	int focusIndex;
+	int spacing;
+	int yCurrentScroll;
+
 public ExpandBar (Composite parent, int style) {
 	super (parent, style);
 }
@@ -34,91 +39,322 @@ protected void checkSubclass () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
-	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	Point size = computeNativeSize (handle, wHint, hHint, changed);
-	int border = OS.gtk_container_get_border_width (handle);
-	size.x += 2 * border;
-	size.y += 2 * border;
-	return size;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
+		if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
+		Point size = computeNativeSize (handle, wHint, hHint, changed);
+		int border = OS.gtk_container_get_border_width (handle);
+		size.x += 2 * border;
+		size.y += 2 * border;
+		return size;
+	} else {
+		int height = 0, width = 0;
+		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+			if (itemCount > 0) {
+				height += spacing;
+				GC gc = new GC (this);
+				for (int i = 0; i < itemCount; i++) {
+					ExpandItem item = items [i];
+					height += item.getHeaderHeight ();
+					if (item.expanded) height += item.height;
+					height += spacing;
+					width = Math.max (width, item.getPreferredWidth (gc));
+				}
+				gc.dispose ();
+			}
+		}
+		if (width == 0) width = DEFAULT_WIDTH;
+		if (height == 0) height = DEFAULT_HEIGHT;
+		if (wHint != SWT.DEFAULT) width = wHint;
+		if (hHint != SWT.DEFAULT) height = hHint;
+		return new Point (width, height);	
+	} 
 }
 
 void createHandle (int index) {
-	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-		// TODO
-		error (SWT.ERROR_NO_HANDLES);
-	}
 	state |= HANDLE;
-	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	handle = OS.gtk_vbox_new (false, 0);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((style & SWT.V_SCROLL) != 0) {
-		scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
-		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
-		OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, vsp);
-		OS.gtk_container_add (fixedHandle, scrolledHandle);
-		OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
+		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_fixed_set_has_window (fixedHandle, true);
+		handle = OS.gtk_vbox_new (false, 0);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		if ((style & SWT.V_SCROLL) != 0) {
+			scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
+			if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
+			OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, vsp);
+			OS.gtk_container_add (fixedHandle, scrolledHandle);
+			OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
+		} else {
+			OS.gtk_container_add (fixedHandle, handle);
+		}
+		OS.gtk_container_set_border_width (handle, 0);
 	} else {
-		OS.gtk_container_add (fixedHandle, handle);
+		int /*long*/ topHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
+		if (topHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_fixed_set_has_window (topHandle, true);
+		if ((style & SWT.V_SCROLL) != 0) {
+			fixedHandle = topHandle;
+			scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
+			if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_fixed_set_has_window (handle, true);
+			OS.gtk_container_add (fixedHandle, scrolledHandle);
+				
+			/*
+			* Force the scrolledWindow to have a single child that is
+			* not scrolled automatically.  Calling gtk_container_add()
+			* seems to add the child correctly but cause a warning.
+			*/
+			boolean warnings = display.getWarnings ();
+			display.setWarnings (false);
+			OS.gtk_container_add (scrolledHandle, handle);
+			display.setWarnings (warnings);
+		} else {
+			handle = topHandle;
+		}
 	}
-	OS.gtk_container_set_border_width (handle, 0);
+}
+
+void createItem (ExpandItem item, int style, int index) {
+	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (itemCount == items.length) {
+		ExpandItem [] newItems = new ExpandItem [itemCount + 4];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+	}
+	System.arraycopy (items, index, items, index + 1, itemCount - index);
+	items [index] = item;
+	itemCount++;
+	if (itemCount == 1) focusIndex = 0;
+	item.width = Math.max (0, getClientArea ().width - spacing * 2);
+	layoutItems (index, true);
+}
+
+void createWidget (int index) {
+	super.createWidget (index);
+	items = new ExpandItem [4];	
+	focusIndex = -1;
+}
+
+void destroyItem (ExpandItem item) {
+	int index = 0;
+	while (index < itemCount) {
+		if (items [index] == item) break;
+		index++;
+	}
+	if (index == itemCount) return;
+	System.arraycopy (items, index + 1, items, index, --itemCount - index);
+	items [itemCount] = null;
+	if (itemCount == 0) {
+		focusIndex = -1;
+	} else {
+		if (focusIndex == index && focusIndex == itemCount) {
+			focusIndex = index - 1;
+			items [focusIndex].redraw ();
+		}
+	}
+	item.redraw ();
+	layoutItems (index, true);
 }
 
 int /*long*/ eventHandle () {
-	return fixedHandle;
+	return OS.GTK_VERSION >= OS.VERSION (2, 4, 0) ? fixedHandle : handle;
 }
 
-public ExpandItem [] getItems () {
-	checkWidget();
-	int /*long*/ list = OS.gtk_container_get_children (handle);
-	if (list == 0) return new ExpandItem [0];
-	int count = OS.g_list_length (list);
-	ExpandItem [] result = new ExpandItem [count];
-	for (int i=0; i<count; i++) {
-		int /*long*/ data = OS.g_list_nth_data (list, i);
-		Widget widget = display.getWidget (data);
-		result [i] = (ExpandItem) widget;
+int getBandHeight () {
+	if (font == null) return ExpandItem.CHEVRON_SIZE;
+	GC gc = new GC (this);
+	FontMetrics metrics = gc.getFontMetrics ();
+	gc.dispose ();
+	return Math.max (ExpandItem.CHEVRON_SIZE, metrics.getHeight ());
+}
+
+GdkColor getForegroundColor () {
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		if ((state & FOREGROUND) == 0) {
+			return display.getSystemColor (SWT.COLOR_TITLE_FOREGROUND).handle;
+		}
 	}
-	OS.g_list_free (list);
-	return result;
+	return super.getForegroundColor ();
 }
 
 public ExpandItem getItem (int index) {
 	checkWidget();
-	if (!(0 <= index && index < getItemCount ())) error (SWT.ERROR_INVALID_RANGE);
-	return getItems () [index];
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	return items [index];
 }
 
 public int getItemCount () {
 	checkWidget();
-	int /*long*/ list = OS.gtk_container_get_children (handle);
-	if (list == 0) return 0;
-	int itemCount = OS.g_list_length (list);
-	OS.g_list_free (list);
 	return itemCount;
+}
+
+public ExpandItem [] getItems () {
+	checkWidget ();
+	ExpandItem [] result = new ExpandItem [itemCount];
+	System.arraycopy (items, 0, result, 0, itemCount);
+	return result;
 }
 
 public int getSpacing () {
 	checkWidget ();
-	return OS.gtk_container_get_border_width (handle);
+	return spacing;
+}
+
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		GdkEventButton gdkEvent = new GdkEventButton ();
+		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+		int x = (int)gdkEvent.x;
+		int y = (int)gdkEvent.y;
+		for (int i = 0; i < itemCount; i++) {
+			ExpandItem item = items[i];
+			boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight ());
+			if (hover) {
+				items [focusIndex].redraw ();
+				focusIndex = i;
+				items [focusIndex].redraw ();
+				forceFocus ();
+				break;
+			}
+		}
+	}
+	return super.gtk_button_press_event (widget, event);
+}
+
+int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		if (focusIndex != -1) {
+			GdkEventButton gdkEvent = new GdkEventButton ();
+			OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+			int x = (int)gdkEvent.x;
+			int y = (int)gdkEvent.y;
+			ExpandItem item = items [focusIndex];
+			boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight ()); 
+			if (hover) {
+				Event ev = new Event ();
+				ev.item = item;
+				notifyListeners (item.expanded ? SWT.Collapse : SWT.Expand, ev);
+				item.expanded = !item.expanded;
+				showItem (focusIndex);
+			}
+		}
+	}
+	return super.gtk_button_release_event (widget, event);
+}
+
+int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		GdkEventExpose gdkEvent = new GdkEventExpose ();
+		OS.memmove(gdkEvent, eventPtr, GdkEventExpose.sizeof);
+		GCData data = new GCData ();
+		data.damageRgn = gdkEvent.region;
+		GC gc = GC.gtk_new (this, data);
+		OS.gdk_gc_set_clip_region (gc.handle, gdkEvent.region);
+		boolean hasFocus = isFocusControl ();
+		for (int i = 0; i < itemCount; i++) {
+			ExpandItem item = items [i];
+			item.drawItem (gc, hasFocus && i == focusIndex);
+		}
+		gc.dispose ();
+	}
+	return super.gtk_expose_event (widget, eventPtr);
+}
+
+int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		if (focusIndex != -1) items [focusIndex].redraw ();
+	}
+	return super.gtk_focus_in_event(widget, event);
+}
+
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		if (focusIndex != -1) items [focusIndex].redraw ();
+	}
+	return super.gtk_focus_out_event (widget, event);
+}
+
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		if (focusIndex != -1) {
+			ExpandItem item = items [focusIndex];
+			GdkEventKey keyEvent = new GdkEventKey ();
+			OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+			switch (keyEvent.keyval) {
+				case OS.GDK_Return:
+				case OS.GDK_space:
+					Event ev = new Event ();
+					ev.item = item;
+					sendEvent (item.expanded ? SWT.Collapse :SWT.Expand, ev);
+					item.expanded = !item.expanded;
+					showItem (focusIndex);
+					break;
+				case OS.GDK_Up:
+				case OS.GDK_KP_Up:
+					if (focusIndex > 0) {
+						item.redraw ();
+						focusIndex--;
+						items [focusIndex].redraw ();
+					}
+					break;
+				case OS.GDK_Down:
+				case OS.GDK_KP_Down:
+					if (focusIndex < itemCount - 1) {
+						item.redraw ();
+						focusIndex++;
+						items [focusIndex].redraw ();
+					}
+					break;
+			}
+		}
+	}
+	return super.gtk_key_press_event (widget, event);
 }
 
 public int indexOf (ExpandItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	ExpandItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
-		if (item == items [i]) return i;
+	for (int i = 0; i < itemCount; i++) {
+		if (items [i] == item) return i;
 	}
 	return -1;
 }
 
+void layoutItems (int index, boolean setScrollbar) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		for (int i = 0; i < itemCount; i++) {
+			ExpandItem item = items [i];
+			if (item != null) item.resizeControl (yCurrentScroll);
+		}
+	} else {
+		if (index < itemCount) {
+			int y = spacing - yCurrentScroll;
+			for (int i = 0; i < index; i++) {
+				ExpandItem item = items [i];
+				if (item.expanded) y += item.height;
+				y += item.getHeaderHeight() + spacing;
+			}
+			for (int i = index; i < itemCount; i++) {
+				ExpandItem item = items [i];
+				item.setBounds (spacing, y, 0, 0, true, false);
+				if (item.expanded) y += item.height;
+				y += item.getHeaderHeight() + spacing;
+			}
+		}
+		if (setScrollbar) setScrollbar ();
+	}
+}
+
+int /*long*/ parentingHandle () {
+	return OS.GTK_VERSION >= OS.VERSION (2, 4, 0) ? fixedHandle : handle;
+}
+
 void releaseChildren (boolean destroy) {
-	ExpandItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
 			item.release (false);
@@ -127,22 +363,7 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
-void relayout () {
-	ExpandItem [] items = getItems ();
-	int yScroll = 0;
-	if (scrolledHandle != 0) {
-		int /*long*/ adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
-		GtkAdjustment adjustment = new GtkAdjustment ();
-		OS.memmove (adjustment, adjustmentHandle);
-		yScroll = (int)adjustment.value;
-	}
-	for (int i=0; i<items.length; i++) {
-		ExpandItem item = items [i];
-		if (item != null) item.resizeControl (yScroll);
-	}
-}
-
-public void removeExpandListener(ExpandListener listener) {
+public void removeExpandListener (ExpandListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
@@ -150,36 +371,103 @@ public void removeExpandListener(ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
-void setBackgroundColor (GdkColor color) {
-	super.setBackgroundColor (color);
-	setBackgroundColor (fixedHandle, color);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds (x, y, width, height, move, resize);
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		if (resize) setScrollbar ();
+	}
+	return result;
 }
 
 void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
-	ExpandItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
-		items[i].setFontDescription (font);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		for (int i = 0; i < itemCount; i++) {
+			items[i].setFontDescription (font);
+		}
+		layoutItems (0, true);
 	}
-	relayout ();
 }
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	ExpandItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
-		items[i].setForegroundColor (color);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		for (int i = 0; i < itemCount; i++) {
+			items[i].setForegroundColor (color);
+		}
+	}
+}
+
+void setScrollbar () {
+	if (itemCount == 0) return;
+	if ((style & SWT.V_SCROLL) == 0) return;
+	int height = getClientArea ().height;
+	ExpandItem item = items [itemCount - 1];
+	int maxHeight = item.y + getBandHeight () + spacing;
+	if (item.expanded) maxHeight += item.height;
+	int /*long*/ adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, adjustmentHandle);
+	yCurrentScroll = (int)adjustment.value;
+
+	//claim bottom free space
+	if (yCurrentScroll > 0 && height > maxHeight) {
+		yCurrentScroll = Math.max (0, yCurrentScroll + maxHeight - height);
+		layoutItems (0, false);
+	}
+	maxHeight += yCurrentScroll;	
+	adjustment.value = Math.min (yCurrentScroll, maxHeight);
+	adjustment.upper = maxHeight;
+	adjustment.page_size = height;
+	OS.memmove (adjustmentHandle, adjustment);
+	OS.gtk_adjustment_changed (adjustmentHandle);
+	int policy = maxHeight > height ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
+	OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, policy);
+	int width = OS.GTK_WIDGET_WIDTH (fixedHandle) - spacing * 2;
+	if (policy == OS.GTK_POLICY_ALWAYS) {
+		int /*long*/ vHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (vHandle, requisition);
+		width -= requisition.width;
+	}
+	width = Math.max (0,  width);
+	for (int i = 0; i < itemCount; i++) {
+		ExpandItem item2 = items[i];
+		item2.setBounds (0, 0, width, item2.height, false, true);
 	}
 }
 
 public void setSpacing (int spacing) {
 	checkWidget ();
 	if (spacing < 0) return;
-	OS.gtk_box_set_spacing (handle, spacing);
-	OS.gtk_container_set_border_width (handle, spacing);
+	if (spacing == this.spacing) return;
+	this.spacing = spacing;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		OS.gtk_box_set_spacing (handle, spacing);
+		OS.gtk_container_set_border_width (handle, spacing);
+	} else {
+		int width = Math.max (0, getClientArea ().width - spacing * 2);
+		for (int i = 0; i < itemCount; i++) {
+			ExpandItem item = items[i];
+			if (item.width != width) item.setBounds (0, 0, width, item.height, false, true);
+		}
+		layoutItems (0, true);
+		redraw ();
+	}
+}
+
+void showItem (int index) {
+	ExpandItem item = items [index];
+	Control control = item.control;
+	if (control != null && !control.isDisposed ()) {
+		control.setVisible (item.expanded);
+	}
+	item.redraw ();
+	layoutItems (index + 1, true);
 }
 
 void updateScrollBarValue (ScrollBar bar) {
-	relayout ();
+	yCurrentScroll = bar.getSelection();
+	layoutItems (0, false);
 }
 }
