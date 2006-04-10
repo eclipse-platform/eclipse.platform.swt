@@ -579,8 +579,10 @@ public Image (Device device, String filename) {
 		char[] chars = new char[length+1];
 		filename.getChars(0, length, chars, 0);
 		int bitmap = Gdip.Bitmap_new(chars, false);
-		if (bitmap != 0) {
+		int status = Gdip.Image_GetLastStatus(bitmap);
+		if (bitmap != 0 && status == 0) {
 			int transparentColor = -1;
+			int error = SWT.ERROR_NO_HANDLES;
 			int width = Gdip.Image_GetWidth(bitmap);
 			int height = Gdip.Image_GetHeight(bitmap);
 			if (filename.toLowerCase().endsWith(".ico")) {
@@ -665,7 +667,7 @@ public Image (Device device, String filename) {
 					int srcHDC = OS.CreateCompatibleDC(hDC);
 					int oldSrcBitmap = OS.SelectObject(srcHDC, handle);
 					int graphics = Gdip.Graphics_new(srcHDC);
-					if (graphics != 0) {						
+					if (graphics != 0) {
 						if (transparentColor != -1) {
 							int color = Gdip.Color_new(transparentColor | 0xFF000000);
 							if (color != 0) {
@@ -680,7 +682,12 @@ public Image (Device device, String filename) {
 						Rect rect = new Rect();
 						rect.Width = width;
 						rect.Height = height;
-						Gdip.Graphics_DrawImage(graphics, bitmap, rect, 0, 0, width, height, Gdip.UnitPixel, 0, 0, 0);
+						status = Gdip.Graphics_DrawImage(graphics, bitmap, rect, 0, 0, width, height, Gdip.UnitPixel, 0, 0, 0);
+						if (status != 0) {
+							error = SWT.ERROR_INVALID_IMAGE;
+							OS.DeleteObject(handle);
+							handle = 0;
+						}
 						Gdip.Graphics_delete(graphics);
 					}
 					OS.SelectObject(srcHDC, oldSrcBitmap);
@@ -689,7 +696,7 @@ public Image (Device device, String filename) {
 				}
 			}
 			Gdip.Bitmap_delete(bitmap);
-			if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			if (handle == 0) SWT.error(error);
 			return;
 		}
 	} catch (SWTException e) {}
