@@ -1884,6 +1884,18 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__IJJJ
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IJJJ)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jlong arg2, jlong arg3)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IJJJ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IJJJ_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I
 JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)

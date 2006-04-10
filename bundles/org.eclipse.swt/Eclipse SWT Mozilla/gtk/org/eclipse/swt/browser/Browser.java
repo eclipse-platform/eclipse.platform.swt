@@ -1687,7 +1687,7 @@ public boolean setText(String html) {
 		char[] charBuffer = new char[html.length() + 1];
 		html.getChars(0, html.length(), charBuffer, 0);
 		int size = charBuffer.length * 2;
-		int ptr = XPCOM.PR_Malloc(size);
+		int /*long*/ ptr = XPCOM.PR_Malloc(size);
 		XPCOM.memmove(ptr, charBuffer, size);
 		rc = stream.AppendToStream(ptr, html.length());
 		if (rc != XPCOM.NS_OK) error(rc);
