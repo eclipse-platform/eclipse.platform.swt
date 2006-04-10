@@ -196,9 +196,24 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
+	setFocus ();
+	return 0;
+}
+
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	parent.lastFocus = this;
+	return 0;
+}
+
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	parent.layoutItems (0, false);
 	return 0;
+}
+
+boolean hasFocus () {
+	return OS.GTK_WIDGET_HAS_FOCUS (handle);
 }
 
 void hookEvents () {
@@ -206,6 +221,8 @@ void hookEvents () {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE], false);
 		OS.g_signal_connect_closure (handle, OS.activate, display.closures [ACTIVATE_INVERSE], true);
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
 		OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.closures [SIZE_ALLOCATE], true);
 	}
 }
@@ -239,6 +256,7 @@ void releaseHandle () {
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
+	if (parent.lastFocus == this) parent.lastFocus = null;
 	imageList = null;
 	control = null;
 }
@@ -252,7 +270,11 @@ void resizeControl (int yScroll) {
 			if (x != -1 && y != -1) {
 				int width = OS.GTK_WIDGET_WIDTH (clientHandle);
 				int height = OS.GTK_WIDGET_HEIGHT (clientHandle);
-				control.setBounds (x, y - yScroll, width, height, true, true);
+				int [] property = new int [1];
+				OS.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);				
+				y += property [0] * 2;
+				height -= property [0] * 2;
+				control.setBounds (x, y - yScroll, width, Math.max (0, height), true, true);
 			}
 		}
 		control.setVisible (visible);
@@ -310,6 +332,15 @@ public void setExpanded (boolean expanded) {
 	} else {
 		parent.showItem (parent.indexOf (this));
 	}
+}
+
+boolean setFocus () {
+	if (!OS.gtk_widget_get_child_visible (handle)) return false;
+	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	OS.gtk_widget_grab_focus (handle);
+	boolean result = OS.gtk_widget_is_focus (handle);
+	if (!result) OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	return result;
 }
 
 void setFontDescription (int /*long*/ font) {

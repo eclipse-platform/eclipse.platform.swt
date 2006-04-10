@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.*;
 
 public class ExpandBar extends Composite {
 	ExpandItem [] items;
+	ExpandItem lastFocus;
 	int itemCount;
 	int focusIndex;
 	int spacing;
@@ -165,6 +166,27 @@ int /*long*/ eventHandle () {
 	return OS.GTK_VERSION >= OS.VERSION (2, 4, 0) ? fixedHandle : handle;
 }
 
+boolean forceFocus (int /*long*/ focusHandle) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (lastFocus != null && lastFocus.setFocus ()) return true;
+		for (int i = 0; i < itemCount; i++) {
+			ExpandItem item = items [i];
+			if (item.setFocus ()) return true;
+		}
+	}
+	return super.forceFocus (focusHandle);
+}
+
+boolean hasFocus () {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		for (int i=0; i<itemCount; i++) {
+			ExpandItem item = items [i];
+			if (item.hasFocus ()) return true;
+		}
+	}
+	return super.hasFocus();
+}
+
 int getBandHeight () {
 	if (font == null) return ExpandItem.CHEVRON_SIZE;
 	GC gc = new GC (this);
@@ -280,7 +302,32 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
-	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (!hasFocus ()) return 0;
+		int /*long*/ result = super.gtk_key_press_event (widget, event);
+		if (result != 0) return result;
+		int index = 0;
+		while (index < itemCount) {
+			if (items [index].hasFocus ()) break;
+			index++;
+		}
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+		boolean next = false;
+		switch (gdkEvent.keyval) {
+			case OS.GDK_Up:
+			case OS.GDK_Left: next = false; break;
+			case OS.GDK_Down: 
+			case OS.GDK_Right: next = true; break;
+			default: return result;
+		}
+		int start = index, offset = next ? 1 : -1;
+		while ((index = (index + offset + itemCount) % itemCount) != start) {
+			ExpandItem item = items [index];
+			if (item.setFocus ()) return result;
+		}
+		return result;
+	} else {
 		if (focusIndex != -1) {
 			ExpandItem item = items [focusIndex];
 			GdkEventKey keyEvent = new GdkEventKey ();
