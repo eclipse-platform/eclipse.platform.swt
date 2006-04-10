@@ -142,7 +142,6 @@ typedef enum {
 	VtblCall__II_3J_FUNC,
 	VtblCall__II_3S_FUNC,
 	VtblCall__II_3Z_FUNC,
-	VtblCall__IJJJ_FUNC,
 	memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
 	memmove__I_3BI_FUNC,
 	memmove__I_3CI_FUNC,
