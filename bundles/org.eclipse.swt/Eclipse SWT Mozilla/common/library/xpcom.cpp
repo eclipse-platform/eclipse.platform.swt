@@ -183,6 +183,18 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III)
 }
 #endif
 
+#ifndef NO_VtblCall__IIII
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIII_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint))(*(jint **)arg1)[arg0])(arg1, arg2, arg3);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIII_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IIIII
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
