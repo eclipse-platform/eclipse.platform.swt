@@ -216,6 +216,7 @@ public static final native int GraphicsPath_AddPath(int path, int addingPath, bo
 public static final native int GraphicsPath_AddRectangle(int path, RectF rect);
 public static final native int GraphicsPath_AddString(int path, char[] string, int length, int family, int style, float emSize, PointF origin, int format);
 public static final native int GraphicsPath_CloseFigure(int path);
+public static final native int GraphicsPath_Flatten(int path, int matrix, float flatness);
 public static final native int GraphicsPath_GetBounds(int path, RectF bounds, int matrix, int pen);
 public static final native int GraphicsPath_GetLastPoint(int path, PointF lastPoint);
 public static final native int GraphicsPath_GetPathPoints(int path, float[] points, int count);
@@ -227,6 +228,7 @@ public static final native int GraphicsPath_SetFillMode(int path, int fillmode);
 public static final native int GraphicsPath_StartFigure(int path);
 public static final native int GraphicsPath_Transform(int path, int matrix);
 public static final native int HatchBrush_new(int hatchStyle, int foreColor, int backColor);
+public static final native int Image_GetLastStatus(int image);
 public static final native int Image_GetPixelFormat(int bitmap);
 public static final native int Image_GetWidth(int image);
 public static final native int Image_GetHeight(int image);

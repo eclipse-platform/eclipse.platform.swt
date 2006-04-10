@@ -455,6 +455,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1CloseFigure)
 }
 #endif
 
+#ifndef NO_GraphicsPath_1Flatten
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Flatten)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1Flatten_FUNC);
+	rc = (jint)((GraphicsPath *)arg0)->Flatten((Matrix *)arg1, arg2);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1Flatten_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GraphicsPath_1GetBounds
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetBounds)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
@@ -1229,6 +1241,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)
 	Gdip_NATIVE_ENTER(env, that, Image_1GetHeight_FUNC);
 	rc = (jint)((Image *)arg0)->GetHeight();
 	Gdip_NATIVE_EXIT(env, that, Image_1GetHeight_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Image_1GetLastStatus
+JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetLastStatus)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Image_1GetLastStatus_FUNC);
+	rc = (jint)((Image*)arg0)->GetLastStatus();
+	Gdip_NATIVE_EXIT(env, that, Image_1GetLastStatus_FUNC);
 	return rc;
 }
 #endif
