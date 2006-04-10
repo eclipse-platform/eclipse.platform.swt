@@ -672,7 +672,9 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 				data.hFont = hFont;
 				data.foreground = OS.GetTextColor (hDC);
 				data.background = OS.GetBkColor (hDC);
-				if (!selected) {
+				if (selected) {
+					if (selectionForeground != -1) data.foreground = selectionForeground;
+				} else {
 					if (clrText != -1) data.foreground = clrText;
 					if (clrTextBk != -1) data.background = clrTextBk;
 				}
