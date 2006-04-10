@@ -1608,7 +1608,8 @@ public boolean setText(String html) {
 	*/
 	if (this != getDisplay().getFocusControl()) Deactivate();
 	
-	/* Convert the String containing HTML to an array of
+	/*
+	 * Convert the String containing HTML to an array of
 	 * bytes with UTF-8 data.
 	 */
 	byte[] data = null;
@@ -1617,34 +1618,18 @@ public boolean setText(String html) {
 	} catch (UnsupportedEncodingException e) {
 		return false;
 	}
-	/* render HTML in memory */		
-	InputStream inputStream = new InputStream(data);
-	inputStream.AddRef();
 
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = webBrowser.QueryInterface(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	
-	nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor(result[0]);
-	result[0] = 0;
-	rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_IID, result);				
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	interfaceRequestor.Release();
-	
-	nsIDocShell docShell = new nsIDocShell(result[0]);
-	result[0] = 0;
-		
-	rc = XPCOM.NS_GetServiceManager(result);
+	int rc = XPCOM.NS_GetServiceManager(result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-	
+
 	nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 	result[0] = 0;
 	rc = serviceManager.GetService(XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
-	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+	serviceManager.Release();
 
 	nsIIOService ioService = new nsIIOService(result[0]);
 	result[0] = 0;
@@ -1663,35 +1648,72 @@ public boolean setText(String html) {
 	
 	nsIURI uri = new nsIURI(result[0]);
 	result[0] = 0;
-	rc = XPCOM.NS_GetComponentManager(result);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 
 	/* aContentType */
-	byte[] buffer = "text/plain".getBytes(); //$NON-NLS-1$
+	byte[] buffer = "text/html".getBytes(); //$NON-NLS-1$
 	byte[] contentTypeBuffer = new byte[buffer.length + 1];
 	System.arraycopy(buffer, 0, contentTypeBuffer, 0, buffer.length);
 	int /*long*/ aContentType = XPCOM.nsEmbedCString_new(contentTypeBuffer, contentTypeBuffer.length);
 
-	buffer = "UTF-8".getBytes(); //$NON-NLS-1$
-	byte[] contentCharsetBuffer = new byte[buffer.length + 1];
-	System.arraycopy(buffer, 0, contentCharsetBuffer, 0, buffer.length);
-	int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
-
 	/*
-	* Feature in Mozilla. LoadStream invokes the nsIInputStream argument
-	* through a different thread.  The callback mechanism must attach 
-	* a non java thread to the JVM otherwise the nsIInputStream Read and
-	* Close methods never get called.
-	*/
-	rc = docShell.LoadStream(inputStream.getAddress(), uri.getAddress(), aContentType,  aContentCharset, 0);
-	if (rc != XPCOM.NS_OK) error(rc);
+	 * First try to use nsIWebBrowserStream to set the text into the Browser, since this
+	 * interface is frozen.  However, this may fail because this interface was only introduced
+	 * as of mozilla 1.8; if this interface is not found then use the pre-1.8 approach of
+	 * utilizing nsIDocShell instead. 
+	 */
+	result[0] = 0;
+	rc = webBrowser.QueryInterface(nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
+	if (rc == XPCOM.NS_OK) {
+		if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+		nsIWebBrowserStream stream = new nsIWebBrowserStream (result [0]);
+		rc = stream.OpenStream(uri.getAddress(), aContentType);
+		if (rc != XPCOM.NS_OK) error(rc);
 
-	XPCOM.nsEmbedCString_delete(aContentCharset);
+		char[] charBuffer = new char[html.length() + 1];
+		html.getChars(0, html.length(), charBuffer, 0);
+		int size = charBuffer.length * 2;
+		int /*long*/ ptr = XPCOM.PR_Malloc(size);
+		XPCOM.memmove(ptr, charBuffer, size);
+		rc = stream.AppendToStream(ptr, html.length());
+		if (rc != XPCOM.NS_OK) error(rc);
+		rc = stream.CloseStream();
+		if (rc != XPCOM.NS_OK) error(rc);
+		XPCOM.PR_Free(ptr);
+		stream.Release();
+	} else {
+		rc = webBrowser.QueryInterface(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+		
+		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor(result[0]);
+		result[0] = 0;
+		rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_IID, result);				
+		interfaceRequestor.Release();
+
+		nsIDocShell docShell = new nsIDocShell(result[0]);
+		result[0] = 0;
+		buffer = "UTF-8".getBytes(); //$NON-NLS-1$
+		byte[] contentCharsetBuffer = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, contentCharsetBuffer, 0, buffer.length);
+		int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
+
+		/*
+		* Feature in Mozilla. LoadStream invokes the nsIInputStream argument
+		* through a different thread.  The callback mechanism must attach 
+		* a non java thread to the JVM otherwise the nsIInputStream Read and
+		* Close methods never get called.
+		*/
+		InputStream inputStream = new InputStream(data);
+		inputStream.AddRef();
+		rc = docShell.LoadStream(inputStream.getAddress(), uri.getAddress(), aContentType,  aContentCharset, 0);
+		if (rc != XPCOM.NS_OK) error(rc);
+		XPCOM.nsEmbedCString_delete(aContentCharset);
+		inputStream.Release();
+		docShell.Release();
+	}
+
 	XPCOM.nsEmbedCString_delete(aContentType);
 	uri.Release();
-	inputStream.Release();
-	docShell.Release();
 	return true;
 }
 
