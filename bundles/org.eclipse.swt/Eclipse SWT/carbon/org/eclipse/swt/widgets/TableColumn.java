@@ -314,13 +314,11 @@ public void pack () {
 		width += parent.headerHeight;
 		if (text.length () != 0) width += parent.getGap ();
 	}
-	if ((parent.style & SWT.VIRTUAL) == 0) {
-		int index = parent.indexOf (this);
-		for (int i=0; i<parent.itemCount; i++) {
-			TableItem item = parent.items [i];
-			if (item != null) {
-				width = Math.max (width, item.calculateWidth (index, gc));
-			}
+	int index = parent.indexOf (this);
+	for (int i=0; i<parent.itemCount; i++) {
+		TableItem item = parent.items [i];
+		if (item != null && item.cached) {
+			width = Math.max (width, item.calculateWidth (index, gc));
 		}
 	}
 	gc.dispose ();

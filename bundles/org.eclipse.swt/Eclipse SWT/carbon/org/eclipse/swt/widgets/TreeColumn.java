@@ -324,17 +324,18 @@ public void pack () {
 }
 
 int calculateWidth (int[] ids, int index, GC gc, int width) {
-	if (ids == null) return width;
+	int max = width;
+	if (ids == null) return max;
 	for (int i=0; i<ids.length; i++) {
 		TreeItem item = parent._getItem (ids [i], false);
-		if (item != null) {
-			width = Math.max (width, item.calculateWidth (index, gc));
+		if (item != null && item.cached) {
+			max = Math.max (max, item.calculateWidth (index, gc));
 			if (item.getExpanded ()) {
-				width = Math.max (width, calculateWidth (item.childIds, index, gc, width));
+				max = Math.max (max, calculateWidth (item.childIds, index, gc, max));
 			}
 		}
 	}
-	return width;
+	return max;
 }
 
 void releaseHandle () {
