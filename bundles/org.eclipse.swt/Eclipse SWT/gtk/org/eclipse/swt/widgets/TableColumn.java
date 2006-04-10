@@ -608,10 +608,18 @@ public void setWidth (int width) {
 		* ensure that the table has been realized.
 		*/
 		OS.gtk_widget_realize (parent.handle);
+		boolean sendResize = false;
+		if (!OS.gtk_tree_view_column_get_visible (handle)) {
+			sendResize = OS.gtk_tree_view_column_get_fixed_width (handle) == width;
+		}
 		OS.gtk_tree_view_column_set_fixed_width (handle, width);
 		OS.gtk_tree_view_column_set_visible (handle, true);
+		if (sendResize) 	sendEvent (SWT.Resize);
 	} else {
-		OS.gtk_tree_view_column_set_visible (handle, false);
+		if (OS.gtk_tree_view_column_get_visible (handle)) {
+			OS.gtk_tree_view_column_set_visible (handle, false);
+			sendEvent (SWT.Resize);
+		}
 	}
 }
 
