@@ -41,22 +41,20 @@ public ExpandBar (Composite parent, int style) {
 				case SWT.KeyDown:		onKeyDown (event);    		break;
 				case SWT.FocusIn:		onFocus ();     			break;
 				case SWT.FocusOut:		onFocus ();     			break;
+				case SWT.Traverse:		onTraverse (event);   		break;
 			}
 		}
 	};
-	int [] events = new int [] { 
-		SWT.Dispose, 
-		SWT.MouseDown,
-		SWT.MouseUp, 
-		SWT.Paint,
-		SWT.Resize,
-		SWT.KeyDown,
-		SWT.FocusIn,
-		SWT.FocusOut,
-	};
-	for (int i = 0; i < events.length; i++) {
-		addListener (events [i], listener);	
-	}
+	addListener (SWT.Dispose, listener);
+	addListener (SWT.MouseDown, listener);
+	addListener (SWT.MouseUp, listener);
+	addListener (SWT.Paint, listener);
+	addListener (SWT.Resize, listener);
+	addListener (SWT.KeyDown, listener);
+	addListener (SWT.FocusIn, listener);
+	addListener (SWT.FocusOut, listener);
+	addListener (SWT.Traverse, listener);
+	
 	ScrollBar verticalBar = getVerticalBar ();
 	if (verticalBar != null) {
 		verticalBar.addListener (SWT.Selection, new Listener () {
@@ -381,6 +379,15 @@ void onScroll (Event event) {
 	if (verticalBar != null) {
 		yCurrentScroll = verticalBar.getSelection();
 		layoutItems (0, false);
+	}
+}
+
+void onTraverse (Event event) {
+	switch (event.detail) {
+		case SWT.TRAVERSE_TAB_NEXT:
+		case SWT.TRAVERSE_TAB_PREVIOUS:
+			event.doit = true;
+			break;
 	}
 }
 
