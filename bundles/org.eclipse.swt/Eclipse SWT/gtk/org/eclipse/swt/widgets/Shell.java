@@ -432,7 +432,21 @@ void bringToTop (boolean force) {
 			if (focusHandle != 0 && !OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
 		}
 	}
+	/*
+	* Bug in GTK.  When a shell that is not managed by the window
+	* manage is given focus, GTK gets stuck in "focus follows pointer"
+	* mode when the pointer is within the shell and its parent when
+	* the shell is hidden or disposed. The fix is to use XSetInputFocus()
+	* to assign focus when ever the active shell has not managed by
+	* the window manager.
+	* 
+	* NOTE: This bug is fixed in GTK+ 2.6.8 and above.
+	*/
+	boolean xFocus = false;
 	if (activeShell != null) {
+		if (OS.GTK_VERSION < OS.VERSION (2, 6, 8)) {
+			xFocus = (activeShell.style & SWT.ON_TOP) != 0;
+		}
 		display.activeShell = null;
 		display.activePending = true;
 	}
@@ -443,7 +457,7 @@ void bringToTop (boolean force) {
 	* the focus.
 	*/
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
-	if ((style & SWT.ON_TOP) != 0 && OS.GDK_WINDOWING_X11 ()) {
+	if ((xFocus || (style & SWT.ON_TOP) != 0) && OS.GDK_WINDOWING_X11 ()) {
 		int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
 		OS.gdk_error_trap_push ();
@@ -630,35 +644,21 @@ int /*long*/ topHandle () {
 	return shellHandle;
 }
 
-int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data) {
-	/*
-	* Bug in GTK.  When a shell that has no window manager trimmings
-	* is given focus, GTK gets stuck in "focus follows pointer" mode when
-	* the pointer is within the shell and its parent when the shell is disposed.
-	* The fix is to modify the X events that cause this to happen.
-	*/
-	XFocusChangeEvent focusEvent = new XFocusChangeEvent ();
-	OS.memmove (focusEvent, xEvent, 4);
-	switch (focusEvent.type) {
-		case OS.FocusIn: {
-			OS.memmove (focusEvent, xEvent, XFocusChangeEvent.sizeof);
-			if (focusEvent.detail == OS.NotifyPointer) {
-				focusEvent.detail = OS.NotifyNonlinear;
-				OS.memmove (xEvent, focusEvent, XFocusChangeEvent.sizeof);
+void fixActiveShell () {
+	if (display.activeShell == this) {
+		Shell shell = null;
+		if (parent != null && parent.isVisible ()) shell = parent.getShell ();
+		if (shell == null && (style & SWT.ON_TOP) != 0) {
+			Shell [] shells = display.getShells ();
+			for (int i = 0; i < shells.length; i++) {
+				if (shells [i] != null && shells [i].isVisible ()) {
+					shell = shells [i];
+					break;
+				}
 			}
-			break;
 		}
-		case OS.EnterNotify: {
-			XCrossingEvent crossingEvent = new XCrossingEvent ();
-			OS.memmove (crossingEvent, xEvent, XCrossingEvent.sizeof);
-			if (crossingEvent.focus) {
-				crossingEvent.focus = false;
-				OS.memmove (xEvent, crossingEvent, XCrossingEvent.sizeof);
-			}
-			break;
-		}
+		if (shell != null) shell.bringToTop (false);
 	}
-	return 0;
 }
 
 void fixShell (Shell newShell, Control control) {
@@ -932,17 +932,6 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 	}
 	if ((style & SWT.ON_TOP) != 0) {
 		OS.gdk_window_set_override_redirect (window, true);
-	}
-	/*
-	* Bug in GTK.  When a shell that has no window manager trimmings
-	* is given focus, GTK gets stuck in "focus follows pointer" mode when
-	* the pointer is within the shell and its parent when the shell is disposed.
-	* The fix is to modify the X events that cause this to happen.
-	* 
-	* NOTE: This bug is fixed in GTK+ 2.6.8 and above.
-	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 6, 8)) {
-		OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
 	}
 	return result;
 }
@@ -1470,7 +1459,8 @@ public void setVisible (boolean visible) {
 				updateLayout (false);
 			}
 		}
-	} else {	
+	} else {
+		fixActiveShell ();
 		OS.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
 	}
@@ -1557,21 +1547,8 @@ public void dispose () {
 	* more than once.  If this happens, fail silently.
 	*/
 	if (isDisposed()) return;
-
-	/*
-	* Feature in GTK.  When the active shell is disposed,
-	* GTK assigns focus temporarily to the root window
-	* unless it has previously been told to do otherwise.
-	* The fix is to make the parent be the active top level
-	* shell when the child shell is disposed.
-	*/
+	fixActiveShell ();
 	OS.gtk_widget_hide (shellHandle);
-	if (parent != null) {
-		if (display.activeShell == this) {
-			Shell shell = parent.getShell ();	
-			shell.bringToTop (false);
-		}
-	}
 	super.dispose ();
 }
 
@@ -1632,10 +1609,6 @@ void releaseWidget () {
 	if (display.activeShell == this) display.activeShell = null;
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
-	if (OS.GTK_VERSION < OS.VERSION (2, 6, 8) ) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
-		OS.gdk_window_remove_filter  (window, display.filterProc, shellHandle);
-	}
 	region = null;
 	lastActive = null;
 }

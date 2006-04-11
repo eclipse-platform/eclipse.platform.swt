@@ -1364,11 +1364,8 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 					break;
 			}
 		}
-		return 0;
-	} 
-	Widget widget = getWidget (data);
-	if (widget == null) return 0;
-	return widget.filterProc (xEvent, gdkEvent, data);
+	}
+	return 0;
 }
 
 /**

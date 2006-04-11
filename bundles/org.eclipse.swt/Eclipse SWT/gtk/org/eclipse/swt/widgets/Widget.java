@@ -792,10 +792,6 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
-int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data) {
-	return 0;
-}
-
 int /*long*/ fixedMapProc (int /*long*/ widget) {
 	return 0;
 }
