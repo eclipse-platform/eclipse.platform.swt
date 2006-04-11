@@ -1680,16 +1680,12 @@ public boolean setText(String html) {
 	rc = webBrowser.QueryInterface(nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
 	if (rc == XPCOM.NS_OK) {
 		if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-		nsIWebBrowserStream stream = new nsIWebBrowserStream (result [0]);
+		nsIWebBrowserStream stream = new nsIWebBrowserStream(result[0]);
 		rc = stream.OpenStream(uri.getAddress(), aContentType);
 		if (rc != XPCOM.NS_OK) error(rc);
-
-		char[] charBuffer = new char[html.length() + 1];
-		html.getChars(0, html.length(), charBuffer, 0);
-		int size = charBuffer.length * 2;
-		int /*long*/ ptr = XPCOM.PR_Malloc(size);
-		XPCOM.memmove(ptr, charBuffer, size);
-		rc = stream.AppendToStream(ptr, html.length());
+		int /*long*/ ptr = XPCOM.PR_Malloc(data.length);
+		XPCOM.memmove(ptr, data, data.length);
+		rc = stream.AppendToStream(ptr, data.length);
 		if (rc != XPCOM.NS_OK) error(rc);
 		rc = stream.CloseStream();
 		if (rc != XPCOM.NS_OK) error(rc);
@@ -1699,7 +1695,7 @@ public boolean setText(String html) {
 		rc = webBrowser.QueryInterface(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-		
+
 		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor(result[0]);
 		result[0] = 0;
 		rc = interfaceRequestor.GetInterface(nsIDocShell.NS_IDOCSHELL_IID, result);				
