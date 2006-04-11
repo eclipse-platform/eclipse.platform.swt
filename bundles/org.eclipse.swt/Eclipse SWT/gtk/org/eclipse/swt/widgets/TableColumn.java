@@ -619,7 +619,7 @@ public void setWidth (int width) {
 		}
 		OS.gtk_tree_view_column_set_fixed_width (handle, width);
 		OS.gtk_tree_view_column_set_visible (handle, true);
-		if (sendResize) 	sendEvent (SWT.Resize);
+		if (sendResize) sendEvent (SWT.Resize);
 	} else {
 		if (OS.gtk_tree_view_column_get_visible (handle)) {
 			OS.gtk_tree_view_column_set_visible (handle, false);
