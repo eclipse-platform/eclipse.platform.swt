@@ -16,7 +16,7 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  * 
- * @since 3.0
+ * @since 3.2
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -29,7 +29,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	Image image = null;
 	final ToolTip tip = new ToolTip(shell, SWT.BALLOON | SWT.ICON_INFORMATION);
-	tip.setMessage("Here is message for the user. When the message is too long it wraps. I should say something cool but nothing comes to my mind.");
+	tip.setMessage("Here is a message for the user. When the message is too long it wraps. I should say something cool but nothing comes to my mind.");
 	Tray tray = display.getSystemTray();
 	if (tray != null) {
 		TrayItem item = new TrayItem(tray, SWT.NONE);
