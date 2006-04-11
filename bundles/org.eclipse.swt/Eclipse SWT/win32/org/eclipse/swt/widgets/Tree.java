@@ -30,9 +30,9 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem</dd>
+ * <dd>Selection, DefaultSelection, Collapse, Expand</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles SINGLE and MULTI may be specified.
@@ -134,7 +134,6 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.PaintItem: {
 			customDraw = true;
 			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
-			newBits |= OS.TVS_NOHSCROLL;
 			/*
 			* Feature in Windows.  When the tree has the style
 			* TVS_FULLROWSELECT, the background color for the
@@ -142,9 +141,8 @@ void _addListener (int eventType, Listener listener) {
 			* drawing on top of any custom drawing.  The fix
 			* is to clear TVS_FULLROWSELECT.
 			*/
-			if ((style & SWT.FULL_SELECTION) != 0) {
-				if (eventType != SWT.MeasureItem) newBits &= ~OS.TVS_FULLROWSELECT;
-			}
+			if ((style & SWT.FULL_SELECTION) != 0) newBits &= ~OS.TVS_FULLROWSELECT;
+			newBits |= OS.TVS_NOHSCROLL;
 			if (newBits != oldBits) {
 				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 				OS.InvalidateRect (handle, null, true);
@@ -472,11 +470,6 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 					if (clrTextBk == -1) clrTextBk = item.background;
 					if (index == sortIndex) clrTextBk = clrSortBk;
 				}
-			} else {
-				if (index == sortIndex) {
-					drawBackground = true;
-					clrTextBk = clrSortBk;
-				}
 			}
 			if (drawItem) {
 				if (i != 0) {
@@ -672,9 +665,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 				data.hFont = hFont;
 				data.foreground = OS.GetTextColor (hDC);
 				data.background = OS.GetBkColor (hDC);
-				if (selected) {
-					if (selectionForeground != -1) data.foreground = selectionForeground;
-				} else {
+				if (!selected) {
 					if (clrText != -1) data.foreground = clrText;
 					if (clrTextBk != -1) data.background = clrTextBk;
 				}
@@ -890,11 +881,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		if (hooks (SWT.EraseItem)) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-			if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
-				drawBackground (hDC, rect);
-			} else {
-				fillBackground (hDC, OS.GetBkColor (hDC), rect);
-			}
+			drawBackground (hDC, rect);
 			RECT cellRect = item.getBounds (index, true, true, true, true, true, hDC);
 			if (clrSortBk != -1) {
 				RECT fullRect = item.getBounds (index, true, true, true, true, true, hDC);
@@ -998,18 +985,14 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		* drawing on top of any custom drawing.  The fix
 		* is to emulate TVS_FULLROWSELECT.
 		*/
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-				RECT rect = new RECT ();
-				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-				if (selected) {
+		if (selected) {
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+					RECT rect = new RECT ();
+					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 					fillBackground (hDC, OS.GetBkColor (hDC), rect);
-				} else {
-					drawBackground (hDC, rect);
 				}
-				nmcd.uItemState &= ~OS.CDIS_FOCUS;
-				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 			}
 		}
 	}
@@ -1061,19 +1044,6 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 			}
 		}
-	}
-	/*
-	* Feature in Windows.  When the tree is disabled, it draws
-	* with a gray background over the sort column.  The fix is
-	* to fill the background with the sort column color.
-	*/
-	if (!OS.IsWindowEnabled (handle) && clrSortBk != -1) {
-		RECT rect = new RECT ();
-		HDITEM hdItem = new HDITEM ();
-		hdItem.mask = OS.HDI_WIDTH;
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
-		fillBackground (hDC, clrSortBk, rect);
 	}
 	OS.SaveDC (hDC);
 	if (clipRect != null) {
@@ -1325,14 +1295,13 @@ void checkBuffered () {
 }
 
 boolean checkData (TreeItem item, boolean redraw) {
-	if ((style & SWT.VIRTUAL) == 0) return true;
 	TreeItem parentItem = item.getParentItem ();
 	return checkData (item, parentItem == null ? indexOf (item) : parentItem.indexOf (item), redraw);
 }
 
 boolean checkData (TreeItem item, int index, boolean redraw) {
-	if ((style & SWT.VIRTUAL) == 0) return true;
-	if (!item.cached) {
+	if (item.cached) return true;
+	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
 		Event event = new Event ();
 		event.item = item;
@@ -2209,16 +2178,6 @@ void enableWidget (boolean enabled) {
 		}
 	}
 	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
-
-	/*
-	* Feature in Windows.  When the tree has the style
-	* TVS_FULLROWSELECT, the background color for the
-	* entire row is filled when an item is painted,
-	* drawing on top of the sort column color.  The fix
-	* is to clear TVS_FULLROWSELECT when a their is
-	* as sort column.
-	*/
-	updateFullSelection ();
 }
 
 int findIndex (int hFirstItem, int hItem) {
@@ -2926,7 +2885,7 @@ public TreeColumn getSortColumn () {
 }
 
 int getSortColumnPixel () {
-	int pixel = OS.IsWindowEnabled (handle) ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_3DFACE);
+	int pixel = getBackgroundPixel ();
 	int red = pixel & 0xFF;
 	int green = (pixel & 0xFF00) >> 8;
 	int blue = (pixel & 0xFF0000) >> 16;
@@ -3477,6 +3436,22 @@ void setBackgroundImage (int hBitmap) {
 			}
 		}
 		OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+		/*
+		* Feature in Windows.  When the tree has the style
+		* TVS_FULLROWSELECT, the background color for the
+		* entire row is filled when an item is painted,
+		* drawing on top of the background image.  The fix
+		* is to clear TVS_FULLROWSELECT when a background
+		* image is set.
+		*/
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.TVS_FULLROWSELECT) != 0) {
+				bits &= ~OS.TVS_FULLROWSELECT;
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+				OS.InvalidateRect (handle, null, true);
+			}
+		}
 	} else {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
@@ -3484,15 +3459,6 @@ void setBackgroundImage (int hBitmap) {
 			setBackgroundPixel (control.getBackgroundPixel ());
 		}
 	}
-	/*
-	* Feature in Windows.  When the tree has the style
-	* TVS_FULLROWSELECT, the background color for the
-	* entire row is filled when an item is painted,
-	* drawing on top of the background image.  The fix
-	* is to clear TVS_FULLROWSELECT when a background
-	* image is set.
-	*/
-	updateFullSelection ();
 }
 
 void setBackgroundPixel (int pixel) {
@@ -3500,6 +3466,22 @@ void setBackgroundPixel (int pixel) {
 	if (control != null) {
 		setBackgroundImage (control.backgroundImage);
 		return;
+	}
+	/*
+	* Feature in Windows.  When the tree has the style
+	* TVS_FULLROWSELECT, the background color for the
+	* entire row is filled when an item is painted,
+	* drawing on top of the background image.  The fix
+	* is to restore TVS_FULLROWSELECT when a background
+	* color is set.
+	*/
+	if ((style & SWT.FULL_SELECTION) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+			bits |= OS.TVS_FULLROWSELECT;
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			OS.InvalidateRect (handle, null, true);
+		}
 	}
 	/*
 	* Feature in Windows.  When a tree is given a background color
@@ -3510,16 +3492,6 @@ void setBackgroundPixel (int pixel) {
 	* is disabled and restore it when enabled.
 	*/
 	if (OS.IsWindowEnabled (handle)) _setBackgroundPixel (pixel);
-
-	/*
-	* Feature in Windows.  When the tree has the style
-	* TVS_FULLROWSELECT, the background color for the
-	* entire row is filled when an item is painted,
-	* drawing on top of the background image.  The fix
-	* is to restore TVS_FULLROWSELECT when a background
-	* color is set.
-	*/
-	updateFullSelection ();
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
@@ -4353,27 +4325,6 @@ String toolTipText (NMTTDISPINFO hdr) {
 
 int topHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
-}
-
-void updateFullSelection () {
-	if ((style & SWT.FULL_SELECTION) != 0) {
-		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
-		if ((newBits & OS.TVS_FULLROWSELECT) != 0) {
-			if (!OS.IsWindowEnabled (handle) || findImageControl () != null) {
-				newBits &= ~OS.TVS_FULLROWSELECT;
-			}
-		} else {
-			if (OS.IsWindowEnabled (handle) && findImageControl () == null) {
-				if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
-					newBits |= OS.TVS_FULLROWSELECT;
-				}
-			}
-		}
-		if (newBits != oldBits) {
-			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-			OS.InvalidateRect (handle, null, true);
-		}
-	}
 }
 
 void updateHeaderToolTips () {
@@ -5896,9 +5847,28 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		}
+		case OS.TVN_ITEMEXPANDEDA:
+		case OS.TVN_ITEMEXPANDEDW: {
+			if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
+			if (findImageControl () != null && drawCount == 0) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.InvalidateRect (handle, null, true);
+			}
+			/*
+			* Bug in Windows.  When TVM_SETINSERTMARK is used to set
+			* an insert mark for a tree and an item is expanded or
+			* collapsed near the insert mark, the tree does not redraw
+			* the insert mark properly.  The fix is to hide and show
+			* the insert mark whenever an item is expanded or collapsed.
+			*/
+			if (hInsert != 0) {
+				OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
+			}
+			updateScrollBar ();
+			break;
+		}
 		case OS.TVN_ITEMEXPANDINGA:
 		case OS.TVN_ITEMEXPANDINGW: {
-			boolean runExpanded = false;
 			if ((style & SWT.VIRTUAL) != 0) style &= ~SWT.DOUBLE_BUFFERED;
 			if (findImageControl () != null && drawCount == 0) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
@@ -5951,36 +5921,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						if (isDisposed ()) return LRESULT.ZERO;
 						break;
 				}
-				/*
-				* Bug in Windows.  When all of the items are deleted during
-				* TVN_ITEMEXPANDING, Windows does not send TVN_ITEMEXPANDED.
-				* The fix is to detect this case and run the TVN_ITEMEXPANDED
-				* code in this method.
-				*/
-				int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, tvItem.hItem);
-				runExpanded = hFirstItem == 0;
 			}
-			if (!runExpanded) break;
-			//FALL THROUGH
-		}
-		case OS.TVN_ITEMEXPANDEDA:
-		case OS.TVN_ITEMEXPANDEDW: {
-			if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
-			if (findImageControl () != null && drawCount == 0) {
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-				OS.InvalidateRect (handle, null, true);
-			}
-			/*
-			* Bug in Windows.  When TVM_SETINSERTMARK is used to set
-			* an insert mark for a tree and an item is expanded or
-			* collapsed near the insert mark, the tree does not redraw
-			* the insert mark properly.  The fix is to hide and show
-			* the insert mark whenever an item is expanded or collapsed.
-			*/
-			if (hInsert != 0) {
-				OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
-			}
-			updateScrollBar ();
 			break;
 		}
 		case OS.TVN_BEGINDRAGA:
