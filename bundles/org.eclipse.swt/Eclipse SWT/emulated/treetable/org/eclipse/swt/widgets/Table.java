@@ -2628,12 +2628,12 @@ void onPaint (Event event) {
 						if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
 							noFocusDraw = item.paint (gc, orderedColumns [j], false) || noFocusDraw;
 						}
-						if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+						if (isDisposed () || gc.isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
 					}
 				}
 			}
 		}
-		if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+		if (isDisposed () || gc.isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
 	}
 
 	/* repaint grid lines */

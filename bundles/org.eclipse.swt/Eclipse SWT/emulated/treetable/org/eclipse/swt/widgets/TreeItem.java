@@ -1587,7 +1587,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		event.height = parent.itemHeight;
 		parent.sendEvent (SWT.MeasureItem, event);
 		event.gc = null;
-		gc.setAdvanced (oldAdvanced);
+		if (gc.isDisposed ()) return false;
 		gc.setAlpha (oldAlpha);
 		gc.setAntialias (oldAntialias);
 		gc.setBackgroundPattern (oldBackgroundPattern);
@@ -1596,6 +1596,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		gc.setLineDash (oldLineDash);
 		gc.setLineWidth (oldLineWidth);
 		gc.setTextAntialias (oldTextAntialias);
+		gc.setAdvanced (oldAdvanced);
 		if (isDisposed ()) return false;
 		if (parent.itemHeight != event.height) {
 			parent.customHeightSet = true;
@@ -1674,7 +1675,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		gc.setClipping (cellBounds);
 		parent.sendEvent (SWT.EraseItem, event);
 		event.gc = null;
-		gc.setAdvanced (oldAdvanced);
+		if (gc.isDisposed ()) return false;
 		gc.setAlpha (oldAlpha);
 		gc.setAntialias (oldAntialias);
 		gc.setBackgroundPattern (oldBackgroundPattern);
@@ -1684,6 +1685,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		gc.setLineDash (oldLineDash);
 		gc.setLineWidth (oldLineWidth);
 		gc.setTextAntialias (oldTextAntialias);
+		gc.setAdvanced (oldAdvanced);
 		if (isDisposed ()) return false;
 		if (!event.doit) {
 			drawBackground = drawForeground = drawSelection = drawFocus = false;
@@ -1878,7 +1880,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		gc.setClipping (cellBounds);
 		parent.sendEvent (SWT.PaintItem, event);
 		event.gc = null;
-		gc.setAdvanced (oldAdvanced);
+		if (gc.isDisposed ()) return false;
 		gc.setAlpha (oldAlpha);
 		gc.setAntialias (oldAntialias);
 		gc.setBackgroundPattern (oldBackgroundPattern);
@@ -1888,6 +1890,7 @@ boolean paint (GC gc, TreeColumn column, boolean backgroundOnly) {
 		gc.setLineDash (oldLineDash);
 		gc.setLineWidth (oldLineWidth);
 		gc.setTextAntialias (oldTextAntialias);
+		gc.setAdvanced (oldAdvanced);
 		drawFocus = isFocusItem && (event.detail & SWT.FOCUSED) != 0;
 	}
 

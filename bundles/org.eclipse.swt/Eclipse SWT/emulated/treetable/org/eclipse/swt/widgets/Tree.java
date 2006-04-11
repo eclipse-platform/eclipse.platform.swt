@@ -2779,7 +2779,7 @@ void onPaint (Event event) {
 			drawBackground (gc, rightX, 0, clientArea.width - rightX, clientArea.height - fillHeight);
 		}
 	}
-	
+
 	/* paint the items */
 	boolean noFocusDraw = false;
 	int[] lineDash = gc.getLineDash ();
@@ -2798,12 +2798,12 @@ void onPaint (Event event) {
 						if (!item.isDisposed ()) {	/* ensure that item was not disposed in a callback */
 							noFocusDraw = item.paint (gc, orderedColumns [j], false) || noFocusDraw;
 						}
-						if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+						if (isDisposed () || gc.isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
 					}
 				}
 			}
 		}
-		if (isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
+		if (isDisposed () || gc.isDisposed ()) return;	/* ensure that receiver was not disposed in a callback */
 	}
 
 	/* repaint grid lines */
