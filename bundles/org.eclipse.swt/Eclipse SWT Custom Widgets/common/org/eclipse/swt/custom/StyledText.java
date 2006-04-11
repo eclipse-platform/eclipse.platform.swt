@@ -8044,6 +8044,11 @@ boolean showLocation(Rectangle rect) {
 	int clientAreaWidth = this.clientAreaWidth - leftMargin - rightMargin;
 	int clientAreaHeight = this.clientAreaHeight - topMargin - bottomMargin;
 	boolean scrolled = false;
+	if (rect.y <= topMargin) {
+		scrolled = scrollVertical(rect.y - topMargin, true);
+	} else if (rect.y + rect.height > clientAreaHeight) {
+		scrolled = scrollVertical(rect.y + rect.height - clientAreaHeight, true);
+	}
 	if (clientAreaWidth > 0) {
 		// always make 1/4 of a page visible
 		if (rect.x < leftMargin) {
@@ -8051,15 +8056,10 @@ boolean showLocation(Rectangle rect) {
 			int maxScroll = horizontalScrollOffset;
 			scrolled = scrollHorizontal(-Math.min(maxScroll, scrollWidth), true);
 		} else if (rect.x + rect.width > clientAreaWidth) {
-			int scrollWidth =  Math.max(rect.x + rect.width - clientAreaWidth,clientAreaWidth / 4);
+			int scrollWidth =  Math.max(rect.x + rect.width - clientAreaWidth, clientAreaWidth / 4);
 			int maxScroll = renderer.getWidth() - horizontalScrollOffset - this.clientAreaWidth;
 			scrolled = scrollHorizontal(Math.min(maxScroll, scrollWidth), true);
 		}
-	}
-	if (rect.y <= topMargin) {
-		scrolled = scrollVertical(rect.y - topMargin, true);
-	} else if (rect.y + rect.height > clientAreaHeight) {
-		scrolled = scrollVertical(rect.y + rect.height - clientAreaHeight, true);
 	}
 	return scrolled;
 }
