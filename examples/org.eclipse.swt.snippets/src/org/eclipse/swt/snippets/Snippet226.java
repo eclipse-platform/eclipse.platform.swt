@@ -9,6 +9,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
+
 /* 
  * Tree example snippet: Draw a custom gradient selection
  *
@@ -17,7 +18,6 @@ package org.eclipse.swt.snippets;
  * 
  * @since 3.2
  */
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.FillLayout;
@@ -68,7 +68,7 @@ public static void main(String [] args) {
 	 */
 	tree.addListener(SWT.EraseItem, new Listener() {
 		public void handleEvent(Event event) {			
-			if((event.detail & SWT.SELECTED) != 0) {
+			if ((event.detail & SWT.SELECTED) != 0) {
 				GC gc = event.gc;
 				Rectangle area = tree.getClientArea();
 				/*
