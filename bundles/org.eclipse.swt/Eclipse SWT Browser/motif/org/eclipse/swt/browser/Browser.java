@@ -151,10 +151,6 @@ public Browser(Composite parent, int style) {
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
 		}
-		if (System.getProperty("java.io.tmpdir") == null) { //$NON-NLS-1$
-			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Missing system property java.io.tmpdir is required to create Mozilla profile]"); //$NON-NLS-1$
-		}
 
 		try {
 			Library.loadLibrary ("swt-gtk"); //$NON-NLS-1$
