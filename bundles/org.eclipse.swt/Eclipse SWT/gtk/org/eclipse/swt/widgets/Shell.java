@@ -445,7 +445,8 @@ void bringToTop (boolean force) {
 	boolean xFocus = false;
 	if (activeShell != null) {
 		if (OS.GTK_VERSION < OS.VERSION (2, 6, 8)) {
-			xFocus = (activeShell.style & SWT.ON_TOP) != 0;
+			xFocus = (activeShell.style & (SWT.SHELL_TRIM | SWT.BORDER)) == SWT.NONE ||
+				(activeShell.style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0;
 		}
 		display.activeShell = null;
 		display.activePending = true;
