@@ -26,7 +26,7 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	final Text t = new Text(shell, SWT.BORDER | SWT.MULTI);
-    
+    t.setText ("here is some text to be selected");
 	Menu bar = new Menu (shell, SWT.BAR);
 	shell.setMenuBar (bar);
 	MenuItem editItem = new MenuItem (bar, SWT.CASCADE);
@@ -41,7 +41,7 @@ public static void main(String[] args) {
 		}
 	});
 	item.setText ("Select &All\tCtrl+A");
-	item.setAccelerator (SWT.CTRL + 'A');
+	item.setAccelerator (SWT.MOD1 + 'A');
 	
 	// Note that as long as your application has not overridden 
 	// the global accelerators for copy, paste, and cut 
