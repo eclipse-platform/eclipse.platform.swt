@@ -1027,14 +1027,18 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	* kEventRawKeyDown event when the up and down arrow keys are
 	* pressed, causing kEventTextInputUnicodeForKeyEvent not
 	* to be sent.  The fix is to handle these keys in kEventRawKeyDown.
+	* 
+	* NOTE:  This was fixed in OS X 10.4.
 	*/
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	switch (keyCode [0]) {
-		case 126: /* Up arrow */
-		case 125: /* Down arrow */
-			if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
-			break;
+	if (OS.VERSION < 0x1040) {
+		int [] keyCode = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+		switch (keyCode [0]) {
+			case 126: /* Up arrow */
+			case 125: /* Down arrow */
+				if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+				break;
+		}
 	}
 	return OS.eventNotHandledErr;
 }
