@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Event;
  * Otherwise, the user can traverse into a control but not
  * out.  Note that native controls such as table and tree
  * implement key traversal in the operating system.  It is
- * not necessary to add traveral listeners for these controls,
- * unless you want to override the default traveral.
+ * not necessary to add traversal listeners for these controls,
+ * unless you want to override the default traversal.
  * </p>
  * @see KeyListener
  * @see TraverseListener

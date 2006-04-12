@@ -459,7 +459,7 @@ public void setRight(Control control) {
 	layout(false);
 }
 /**
- * Set the minumum height of the control that appears on the right side of the banner.
+ * Set the minimum height of the control that appears on the right side of the banner.
  * 
  * @param size the minimum size of the control on the right
  * 

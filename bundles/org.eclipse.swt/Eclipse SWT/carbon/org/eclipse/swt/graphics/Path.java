@@ -326,7 +326,7 @@ public void close() {
  * @param x the x coordinate of the point to test for containment
  * @param y the y coordinate of the point to test for containment
  * @param gc the GC to use when testing for containment
- * @param outline controls wether to check the outline or contained area of the path
+ * @param outline controls whether to check the outline or contained area of the path
  * @return <code>true</code> if the path contains the point and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>

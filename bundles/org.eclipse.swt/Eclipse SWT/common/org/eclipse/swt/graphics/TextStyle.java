@@ -152,7 +152,7 @@ public int hashCode() {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the <code>RGB</code>
+ * @return a string representation of the <code>TextStyle</code>
  */
 public String toString () {
 	StringBuffer buffer = new StringBuffer("TextStyle {");

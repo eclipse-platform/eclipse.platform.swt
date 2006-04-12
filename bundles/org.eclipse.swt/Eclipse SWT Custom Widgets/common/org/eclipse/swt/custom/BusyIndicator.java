@@ -38,8 +38,6 @@ public class BusyIndicator {
 * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the runnable is null</li>
  * </ul>
- * 
- * @see #showWhile
  */
 
 public static void showWhile(Display display, Runnable runnable) {

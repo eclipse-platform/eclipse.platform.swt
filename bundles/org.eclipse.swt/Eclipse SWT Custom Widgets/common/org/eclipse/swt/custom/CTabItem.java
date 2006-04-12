@@ -485,7 +485,7 @@ public Rectangle getBounds () {
 	return new Rectangle(x, y, w, height);
 }
 /**
-* Gets the control that is displayed in the content are of the tab item.
+* Gets the control that is displayed in the content area of the tab item.
 *
 * @return the control
 *

@@ -295,7 +295,7 @@ public void setForeground (Color color) {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : No Layout can be set on this Control because it already
+ * Note: No Layout can be set on this Control because it already
  * manages the size and position of its children.
  * </p>
  *
@@ -313,8 +313,8 @@ public void setLayout (Layout layout) {
 /**
  * Specify the control that should take up the entire client area of the SashForm.  
  * If one control has been maximized, and this method is called with a different control, 
- * the previous control will be minimized and the new control will be maximized..
- * if the value of control is null, the SashForm will minimize all controls and return to
+ * the previous control will be minimized and the new control will be maximized.
+ * If the value of control is null, the SashForm will minimize all controls and return to
  * the default layout where all controls are laid out separated by sashes.
  * 
  * @param control the control to be maximized or null

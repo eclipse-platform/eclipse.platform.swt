@@ -303,10 +303,10 @@ boolean needVScroll(Rectangle contentRect, boolean hVisible) {
 }
 
 /**
- * Return the point in the content that currenly appears in the top left 
+ * Return the point in the content that currently appears in the top left 
  * corner of the scrolled composite.
  * 
- * @return the point in the content that currenly appears in the top left 
+ * @return the point in the content that currently appears in the top left 
  * corner of the scrolled composite.  If no content has been set, this returns
  * (0, 0).
  * 
@@ -447,7 +447,7 @@ public void setContent(Control content) {
  * Configure the ScrolledComposite to resize the content object to be as wide as the 
  * ScrolledComposite when the width of the ScrolledComposite is greater than the
  * minimum width specified in setMinWidth.  If the ScrolledComposite is less than the
- * minimum width, the content will not resized and instead the horizontal scroll bar will be
+ * minimum width, the content will not be resized and instead the horizontal scroll bar will be
  * used to view the entire width.
  * If expand is false, this behaviour is turned off.  By default, this behaviour is turned off.
  * 
@@ -468,7 +468,7 @@ public void setExpandHorizontal(boolean expand) {
  * Configure the ScrolledComposite to resize the content object to be as tall as the 
  * ScrolledComposite when the height of the ScrolledComposite is greater than the
  * minimum height specified in setMinHeight.  If the ScrolledComposite is less than the
- * minimum height, the content will not resized and instead the vertical scroll bar will be
+ * minimum height, the content will not be resized and instead the vertical scroll bar will be
  * used to view the entire height.
  * If expand is false, this behaviour is turned off.  By default, this behaviour is turned off.
  * 
@@ -489,7 +489,7 @@ public void setExpandVertical(boolean expand) {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : No Layout can be set on this Control because it already
+ * Note: No Layout can be set on this Control because it already
  * manages the size and position of its children.
  * </p>
  *

@@ -100,7 +100,7 @@ public int hashCode () {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the <code>RGB</code>
+ * @return a string representation of the <code>GlyphMetrics</code>
  */
 public String toString () {
 	return "GlyphMetrics {" + ascent + ", " + descent + ", " + width + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$

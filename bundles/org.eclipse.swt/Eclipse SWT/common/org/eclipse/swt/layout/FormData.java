@@ -99,7 +99,7 @@ public FormData () {
 /**
  * Constructs a new instance of FormData according to the parameters.
  * A value of SWT.DEFAULT indicates that no minimum width or
- * no minumum height is specified.
+ * no minimum height is specified.
  * 
  * @param width a minimum width for the control
  * @param height a minimum height for the control
@@ -325,7 +325,7 @@ FormAttachment getTopAttachment (Control control, int spacing, boolean flushCach
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the FormData object
  */
 public String toString () {
  	String string = getName()+" {";

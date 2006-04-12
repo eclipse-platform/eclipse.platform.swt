@@ -47,7 +47,7 @@ public int getCharCount();
  * <p>
  *
  * @param lineIndex index of the line to return. Does not include 
- *	delimiters of preceeding lines. Index 0 is the first line of the 
+ *	delimiters of preceding lines. Index 0 is the first line of the 
  * 	content.
  * @return the line text without delimiters
  */
@@ -184,7 +184,7 @@ public void removeTextChangeListener(TextChangeListener listener);
  * </p>
  *
  * @param start start offset of text to replace, none of the offsets include 
- *	delimiters of preceeding lines, offset 0 is the first character of the 
+ *	delimiters of preceding lines, offset 0 is the first character of the 
  * 	document 
  * @param replaceLength length of text to replace
  * @param text text to replace

@@ -220,7 +220,7 @@ protected void layout (Composite composite, boolean flushCache) {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the layout
  */
 public String toString () {
  	String string = getName ()+" {";

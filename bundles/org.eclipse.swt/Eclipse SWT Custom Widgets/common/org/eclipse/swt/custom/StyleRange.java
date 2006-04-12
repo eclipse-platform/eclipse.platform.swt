@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.CloneableCompatibility;
 public class StyleRange extends TextStyle implements CloneableCompatibility {
 	
 	/**
-	 * the start offset of the range. zero-based from the document start
+	 * the start offset of the range, zero-based from the document start
 	 */
 	public int start;
 	
@@ -159,7 +159,7 @@ public Object clone() {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the StyleRange
  */
 public String toString() {
 	StringBuffer buffer = new StringBuffer();

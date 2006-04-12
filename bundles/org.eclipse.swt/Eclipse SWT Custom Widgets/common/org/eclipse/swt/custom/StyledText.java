@@ -1356,7 +1356,7 @@ public void addPaintObjectListener(PaintObjectListener listener) {
  * Adds a selection listener. A Selection event is sent by the widget when the 
  * selection has changed.
  * <p>
- * When <code>widgetSelected</code> is called, the event x amd y fields contain
+ * When <code>widgetSelected</code> is called, the event x and y fields contain
  * the start and end caret indices of the selection.
  * <code>widgetDefaultSelected</code> is not called for StyledTexts.
  * </p>
@@ -3236,7 +3236,7 @@ public int getIndent() {
 	return indent;
 }
 /**
- * Returns whether the widget justify lines.
+ * Returns whether the widget justifies lines.
  * <p>
  * 
  * @return whether lines are justified
@@ -3525,7 +3525,7 @@ public int getLineIndent(int index) {
 	return isListening(LineGetStyle) ? 0 : renderer.getLineIndent(index, indent);
 }
 /**
- * Returns wheter the line at the given index is justified.
+ * Returns whether the line at the given index is justified.
  * <p>
  * 
  * @param index the index of the line
@@ -3588,9 +3588,9 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
  * Returns the top pixel, relative to the client area, of a given line.
  * Clamps out of ranges index.
  *  
- * @param lineIndex the line index, the max value is lineCount. if
+ * @param lineIndex the line index, the max value is lineCount. If
  * lineIndex == lineCount it returns the bottom pixel of the last line.
- * It means this function can be used to retrive the bottom pixel of any line. 
+ * It means this function can be used to retrieve the bottom pixel of any line. 
  * 
  * @since 3.2
  */
@@ -3805,7 +3805,7 @@ int getOffsetAtPoint(int x, int y, int lineIndex) {
 	return offsetInLine + content.getOffsetAtLine(lineIndex);
 }
 /**
- * Return the orientation of the receiver.
+ * Returns the orientation of the receiver.
  *
  * @return the orientation style
  * 
@@ -4505,7 +4505,7 @@ public int getTopIndex() {
 }
 /**
  * Gets the top pixel.  The top pixel is the pixel position of the line that is 
- * currently at the top of the widget.The text widget can be scrolled by pixels 
+ * currently at the top of the widget. The text widget can be scrolled by pixels 
  * by dragging the scroll thumb so that a partial line may be displayed at the top 
  * the widget.  The top pixel changes when the widget is scrolled.  The top pixel 
  * does not include the widget trimming.
@@ -6926,7 +6926,7 @@ public void setHorizontalPixel(int pixel) {
 /**
  * Sets the line indentation of the widget.
  * It is the amount of blank space, in pixels, at the beginning of each line. 
- * When a line wraps in several lines only first one is indented. 
+ * When a line wraps in several lines only the first one is indented. 
  * <p>
  * 
  * @param indent the new indent
@@ -7625,7 +7625,7 @@ public void setStyleRange(StyleRange range) {
  * The ranges array contains start and length pairs.  Each pair refers to
  * the corresponding style in the styles array.  For example, the pair
  * that starts at ranges[n] with length ranges[n+1] uses the style
- * at styles[n/2].  The range fields within each StyleRange is ignored.
+ * at styles[n/2].  The range fields within each StyleRange are ignored.
  * If ranges or styles is null, the specified range is cleared.
  * <p>
  * Note: It is expected that the same instance of a StyleRange will occur
@@ -7639,7 +7639,7 @@ public void setStyleRange(StyleRange range) {
  * @param start offset of first character where styles will be deleted
  * @param length length of the range to delete styles in
  * @param ranges the array of ranges.  The ranges must not overlap and must be in order.
- * @param styles the array of StyleRanges.  The range fields within the StyleRange is unused.
+ * @param styles the array of StyleRanges.  The range fields within the StyleRange are unused.
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -7669,7 +7669,7 @@ public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] sty
  * The ranges array contains start and length pairs.  Each pair refers to
  * the corresponding style in the styles array.  For example, the pair
  * that starts at ranges[n] with length ranges[n+1] uses the style
- * at styles[n/2].  The range fields within each StyleRange is ignored.
+ * at styles[n/2].  The range fields within each StyleRange are ignored.
  * If either argument is null, the styles are cleared.
  * <p>
  * Note: It is expected that the same instance of a StyleRange will occur
@@ -7681,7 +7681,7 @@ public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] sty
  * </p>
  *
  * @param ranges the array of ranges.  The ranges must not overlap and must be in order.
- * @param styles the array of StyleRanges.  The range fields within the StyleRange is unused.
+ * @param styles the array of StyleRanges.  The range fields within the StyleRange are unused.
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

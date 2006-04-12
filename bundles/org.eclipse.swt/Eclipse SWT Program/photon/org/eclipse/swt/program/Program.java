@@ -20,7 +20,7 @@ import java.io.*;
 
 /**
  * Instances of this class represent programs and
- * their assoicated file extensions in the operating
+ * their associated file extensions in the operating
  * system.
  */
 public final class Program {	
@@ -304,7 +304,7 @@ public boolean execute (String fileName) {
 
 /**
  * Returns the receiver's image data.  This is the icon
- * that is associated with the reciever in the operating
+ * that is associated with the receiver in the operating
  * system.
  *
  * @return the image data for the program, may be null
@@ -363,7 +363,7 @@ public int hashCode() {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the program
  */
 public String toString () {
 	return "Program {" + name + "}";

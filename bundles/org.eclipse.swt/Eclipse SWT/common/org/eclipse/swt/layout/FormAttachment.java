@@ -290,7 +290,7 @@ int solveY (int value) {
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the event
+ * @return a string representation of the FormAttachment
  */
 public String toString () {
  	String string = control != null ? control.toString () : numerator + "/" + denominator;

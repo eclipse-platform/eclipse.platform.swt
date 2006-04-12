@@ -78,7 +78,7 @@ public class ControlEditor {
 	/**
 	* Specifies the minimum width the editor can have.  This is used in association with
 	* a true value of grabHorizontal.  If the cell becomes smaller than the minimumWidth, the 
-	* editor will not made smaller than the minumum width value.  The default value is 0.
+	* editor will not made smaller than the minimum width value.  The default value is 0.
 	*/
 	public int minimumWidth = 0;
 	
@@ -98,7 +98,7 @@ public class ControlEditor {
 	/**
 	* Specifies the minimum height the editor can have.  This is used in association with
 	* a true value of grabVertical.  If the control becomes smaller than the minimumHeight, the 
-	* editor will not made smaller than the minumum height value.  The default value is 0.
+	* editor will not made smaller than the minimum height value.  The default value is 0.
 	*/
 	public int minimumHeight = 0;
 

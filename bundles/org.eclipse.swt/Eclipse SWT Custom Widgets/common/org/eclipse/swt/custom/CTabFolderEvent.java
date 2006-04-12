@@ -46,7 +46,7 @@ public class CTabFolderEvent extends TypedEvent {
 	public int y;
 	/**
 	 * The width of the chevron button at the time of the event.
-	 * Applies to the showList event.  Applies to the showList event.
+	 * Applies to the showList event.
 	 * 
 	 * @since 3.0
 	 */
