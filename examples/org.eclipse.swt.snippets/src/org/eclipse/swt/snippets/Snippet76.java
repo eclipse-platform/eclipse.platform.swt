@@ -32,7 +32,7 @@ public static void main (String [] args) {
 		button.setText ("Page " + i);
 		item.setControl (button);
 	}
-	tabFolder.setSize (400, 200);
+	tabFolder.pack ();
 	shell.pack ();
 	shell.open ();
 	while (!shell.isDisposed ()) {
