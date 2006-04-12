@@ -35,8 +35,10 @@ public static void main( String[] args) {
 	copy.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			String textData = text.getSelectionText();
-			TextTransfer textTransfer = TextTransfer.getInstance();
-			cb.setContents(new Object[]{textData}, new Transfer[]{textTransfer});
+			if (textData.length() > 0) {
+				TextTransfer textTransfer = TextTransfer.getInstance();
+				cb.setContents(new Object[]{textData}, new Transfer[]{textTransfer});
+			}
 		}
 	});
 	
