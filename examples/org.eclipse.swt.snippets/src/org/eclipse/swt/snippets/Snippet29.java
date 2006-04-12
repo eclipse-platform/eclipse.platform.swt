@@ -37,7 +37,7 @@ public static void main (String [] args) {
 		}
 	});
 	item.setText ("Select &All\tCtrl+A");
-	item.setAccelerator (SWT.CTRL + 'A');
+	item.setAccelerator (SWT.MOD1 + 'A');
 	shell.setSize (200, 200);
 	shell.open ();
 	while (!shell.isDisposed()) {
