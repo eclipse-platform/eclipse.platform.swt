@@ -3021,7 +3021,8 @@ void redrawFromItemDownwards (int index) {
  * beyond the last available item.
  */
 void redrawItem (int itemIndex, boolean focusBoundsOnly) {
-	if (!availableItems [itemIndex].isInViewport ()) return;
+	if (itemIndex == -1) return;
+	if (itemIndex < availableItemsCount && !availableItems [itemIndex].isInViewport ()) return;
 	redrawItems (itemIndex, itemIndex, focusBoundsOnly);
 }
 /*
