@@ -445,8 +445,7 @@ void bringToTop (boolean force) {
 	boolean xFocus = false;
 	if (activeShell != null) {
 		if (OS.GTK_VERSION < OS.VERSION (2, 6, 8)) {
-			xFocus = (activeShell.style & (SWT.SHELL_TRIM | SWT.BORDER)) == SWT.NONE ||
-				(activeShell.style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0;
+			xFocus = activeShell.isUndecorated ();
 		}
 		display.activeShell = null;
 		display.activePending = true;
@@ -553,8 +552,7 @@ void createHandle (int index) {
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 		OS.gtk_window_set_destroy_with_parent (shellHandle, true);
-		int orientations = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-		if (!((style & ~orientations) == SWT.NONE || (style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0)) {
+		if (!isUndecorated ()) {
 			OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
 		}
 	}
@@ -627,6 +625,12 @@ public boolean isEnabled () {
 	return getEnabled ();
 }
 
+boolean isUndecorated () {
+	return
+		(style & (SWT.SHELL_TRIM | SWT.BORDER)) == SWT.NONE ||
+		(style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0;
+}
+
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
@@ -649,7 +653,7 @@ void fixActiveShell () {
 	if (display.activeShell == this) {
 		Shell shell = null;
 		if (parent != null && parent.isVisible ()) shell = parent.getShell ();
-		if (shell == null && (style & SWT.ON_TOP) != 0) {
+		if (shell == null && isUndecorated ()) {
 			Shell [] shells = display.getShells ();
 			for (int i = 0; i < shells.length; i++) {
 				if (shells [i] != null && shells [i].isVisible ()) {
