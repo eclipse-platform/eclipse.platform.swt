@@ -1797,46 +1797,73 @@ void createKeyBindings() {
 	// Navigation
 	setKeyBinding(SWT.ARROW_UP, ST.LINE_UP);	
 	setKeyBinding(SWT.ARROW_DOWN, ST.LINE_DOWN);
-	setKeyBinding(SWT.HOME, ST.LINE_START);
-	setKeyBinding(SWT.END, ST.LINE_END);
+	if (IS_CARBON) {
+		setKeyBinding(previousKey | SWT.MOD1, ST.LINE_START);
+		setKeyBinding(nextKey | SWT.MOD1, ST.LINE_END);
+		setKeyBinding(SWT.HOME, ST.TEXT_START);
+		setKeyBinding(SWT.END, ST.TEXT_END);
+		setKeyBinding(SWT.ARROW_UP | SWT.MOD1, ST.TEXT_START);
+		setKeyBinding(SWT.ARROW_DOWN | SWT.MOD1, ST.TEXT_END);
+		setKeyBinding(nextKey | SWT.MOD3, ST.WORD_NEXT);
+		setKeyBinding(previousKey | SWT.MOD3, ST.WORD_PREVIOUS);
+	} else {
+		setKeyBinding(SWT.HOME, ST.LINE_START);
+		setKeyBinding(SWT.END, ST.LINE_END);
+		setKeyBinding(SWT.HOME | SWT.MOD1, ST.TEXT_START);
+		setKeyBinding(SWT.END | SWT.MOD1, ST.TEXT_END);
+		setKeyBinding(nextKey | SWT.MOD1, ST.WORD_NEXT);
+		setKeyBinding(previousKey | SWT.MOD1, ST.WORD_PREVIOUS);
+	}
 	setKeyBinding(SWT.PAGE_UP, ST.PAGE_UP);
 	setKeyBinding(SWT.PAGE_DOWN, ST.PAGE_DOWN);
-	setKeyBinding(SWT.HOME | SWT.MOD1, ST.TEXT_START);
-	setKeyBinding(SWT.END | SWT.MOD1, ST.TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1, ST.WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1, ST.WINDOW_END);
 	setKeyBinding(nextKey, ST.COLUMN_NEXT);
 	setKeyBinding(previousKey, ST.COLUMN_PREVIOUS);
-	setKeyBinding(nextKey | SWT.MOD1, ST.WORD_NEXT);
-	setKeyBinding(previousKey | SWT.MOD1, ST.WORD_PREVIOUS);
 	
 	// Selection
 	setKeyBinding(SWT.ARROW_UP | SWT.MOD2, ST.SELECT_LINE_UP);	
 	setKeyBinding(SWT.ARROW_DOWN | SWT.MOD2, ST.SELECT_LINE_DOWN);
-	setKeyBinding(SWT.HOME | SWT.MOD2, ST.SELECT_LINE_START);
-	setKeyBinding(SWT.END | SWT.MOD2, ST.SELECT_LINE_END);
+	if (IS_CARBON) {
+		setKeyBinding(previousKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_LINE_START);
+		setKeyBinding(nextKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_LINE_END);
+		setKeyBinding(SWT.HOME | SWT.MOD2, ST.SELECT_TEXT_START);	
+		setKeyBinding(SWT.END | SWT.MOD2, ST.SELECT_TEXT_END);
+		setKeyBinding(SWT.ARROW_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_START);	
+		setKeyBinding(SWT.ARROW_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
+		setKeyBinding(nextKey | SWT.MOD2 | SWT.MOD3, ST.SELECT_WORD_NEXT);
+		setKeyBinding(previousKey | SWT.MOD2 | SWT.MOD3, ST.SELECT_WORD_PREVIOUS);
+	} else  {
+		setKeyBinding(SWT.HOME | SWT.MOD2, ST.SELECT_LINE_START);
+		setKeyBinding(SWT.END | SWT.MOD2, ST.SELECT_LINE_END);
+		setKeyBinding(SWT.HOME | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_START);	
+		setKeyBinding(SWT.END | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
+		setKeyBinding(nextKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_NEXT);
+		setKeyBinding(previousKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
+	}
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD2, ST.SELECT_PAGE_UP);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD2, ST.SELECT_PAGE_DOWN);
-	setKeyBinding(SWT.HOME | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_START);	
-	setKeyBinding(SWT.END | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_END);
 	setKeyBinding(nextKey | SWT.MOD2, ST.SELECT_COLUMN_NEXT);
 	setKeyBinding(previousKey | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);	
-	setKeyBinding(nextKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_NEXT);
-	setKeyBinding(previousKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
            	  	
 	// Modification
 	// Cut, Copy, Paste
 	setKeyBinding('X' | SWT.MOD1, ST.CUT);
 	setKeyBinding('C' | SWT.MOD1, ST.COPY);
 	setKeyBinding('V' | SWT.MOD1, ST.PASTE);
-	// Cut, Copy, Paste Wordstar style
-	setKeyBinding(SWT.DEL | SWT.MOD2, ST.CUT);
-	setKeyBinding(SWT.INSERT | SWT.MOD1, ST.COPY);
-	setKeyBinding(SWT.INSERT | SWT.MOD2, ST.PASTE);
+	if (IS_CARBON) {
+		setKeyBinding(SWT.DEL | SWT.MOD2, ST.DELETE_NEXT);
+		setKeyBinding(SWT.BS | SWT.MOD3, ST.DELETE_WORD_PREVIOUS);
+		setKeyBinding(SWT.DEL | SWT.MOD3, ST.DELETE_WORD_NEXT);
+	} else {
+		// Cut, Copy, Paste Wordstar style
+		setKeyBinding(SWT.DEL | SWT.MOD2, ST.CUT);
+		setKeyBinding(SWT.INSERT | SWT.MOD1, ST.COPY);
+		setKeyBinding(SWT.INSERT | SWT.MOD2, ST.PASTE);
+	}
 	setKeyBinding(SWT.BS | SWT.MOD2, ST.DELETE_PREVIOUS);
-	
 	setKeyBinding(SWT.BS, ST.DELETE_PREVIOUS);
 	setKeyBinding(SWT.DEL, ST.DELETE_NEXT);
 	setKeyBinding(SWT.BS | SWT.MOD1, ST.DELETE_WORD_PREVIOUS);
