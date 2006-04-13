@@ -51,19 +51,10 @@ public class Snippet133 {
 	
 	void open() {
 		display = new Display();
-		font = new Font(display, "Courier", 10, SWT.NORMAL); 
-		Color black = display.getSystemColor(SWT.COLOR_BLACK);
-		foregroundColor = new Color(display, black.getRGB());
-		Color white = display.getSystemColor(SWT.COLOR_WHITE);
-		backgroundColor = new Color(display, white.getRGB());
 		shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText("Print Text");
-		shell.setMaximized(true);
 		text = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		text.setFont(font);
-		text.setForeground(foregroundColor);
-		text.setBackground(backgroundColor);
 		
 		Menu menuBar = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(menuBar);
@@ -116,15 +107,14 @@ public class Snippet133 {
 				System.exit(0);
 			}
 		});
-		
-		shell.pack();
+
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
-		font.dispose();
-		foregroundColor.dispose();
-		backgroundColor.dispose();
+		if (font != null) font.dispose();
+		if (foregroundColor != null) foregroundColor.dispose();
+		if (backgroundColor != null) backgroundColor.dispose();
 		display.dispose();
 	}
 		
@@ -165,10 +155,10 @@ public class Snippet133 {
 
 	void menuFont() {
 		FontDialog fontDialog = new FontDialog(shell);
-		fontDialog.setFontList(font.getFontData());
+		fontDialog.setFontList(text.getFont().getFontData());
 		FontData fontData = fontDialog.open();
 		if (fontData != null) {
-			font.dispose();
+			if (font != null) font.dispose();
 			font = new Font(display, fontData);
 			text.setFont(font);
 		}
@@ -176,10 +166,10 @@ public class Snippet133 {
 
 	void menuForegroundColor() {
 		ColorDialog colorDialog = new ColorDialog(shell);
-		colorDialog.setRGB(foregroundColor.getRGB());
+		colorDialog.setRGB(text.getForeground().getRGB());
 		RGB rgb = colorDialog.open();
 		if (rgb != null) {
-			foregroundColor.dispose();
+			if (foregroundColor != null) foregroundColor.dispose();
 			foregroundColor = new Color(display, rgb);
 			text.setForeground(foregroundColor);
 		}
@@ -187,10 +177,10 @@ public class Snippet133 {
 
 	void menuBackgroundColor() {
 		ColorDialog colorDialog = new ColorDialog(shell);
-		colorDialog.setRGB(backgroundColor.getRGB());
+		colorDialog.setRGB(text.getBackground().getRGB());
 		RGB rgb = colorDialog.open();
 		if (rgb != null) {
-			backgroundColor.dispose();
+			if (backgroundColor != null) backgroundColor.dispose();
 			backgroundColor = new Color(display, rgb);
 			text.setBackground(backgroundColor);
 		}
@@ -237,17 +227,17 @@ public class Snippet133 {
 			/* Create printer GC, and create and set the printer font & foreground color. */
 			gc = new GC(printer);
 			
-			FontData fontData = font.getFontData()[0];
+			FontData fontData = text.getFont().getFontData()[0];
 			printerFont = new Font(printer, fontData.getName(), fontData.getHeight(), fontData.getStyle());
 			gc.setFont(printerFont);
 			tabWidth = gc.stringExtent(tabs).x;
 			lineHeight = gc.getFontMetrics().getHeight();
 			
-			RGB rgb = foregroundColor.getRGB();
+			RGB rgb = text.getForeground().getRGB();
 			printerForegroundColor = new Color(printer, rgb);
 			gc.setForeground(printerForegroundColor);
 		
-			rgb = backgroundColor.getRGB();
+			rgb = text.getBackground().getRGB();
 			printerBackgroundColor = new Color(printer, rgb);
 			gc.setBackground(printerBackgroundColor);
 		
