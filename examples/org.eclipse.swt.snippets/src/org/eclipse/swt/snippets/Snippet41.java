@@ -25,16 +25,16 @@ public static void main (String [] args) {
 	String string = "This is a string\nwith a new line.";
 	Display display = new Display ();
 	Shell shell = new Shell (display);
-	shell.open ();
 	TabFolder folder = new TabFolder (shell, SWT.BORDER);
 	folder.setSize (200, 200);
 	TabItem item0 = new TabItem (folder, 0);
-	item0.setToolTipText (string);
+	item0.setToolTipText ("TabItem toolTip: " + string);
 	ToolBar bar = new ToolBar (shell, SWT.BORDER);
 	bar.setBounds (0, 200, 200, 64);
 	ToolItem item1 = new ToolItem (bar, 0);
-	item1.setToolTipText (string);
-	shell.setToolTipText (string);
+	item1.setToolTipText ("ToolItem toolTip: " + string);
+	shell.setToolTipText ("Shell toolTip: " + string);
+	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
