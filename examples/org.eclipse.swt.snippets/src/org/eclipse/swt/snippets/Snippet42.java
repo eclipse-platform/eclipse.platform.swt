@@ -22,7 +22,7 @@ public class Snippet42 {
 
 public static void main (String [] args) {
 	Display display = new Display ();
-	System.out.println ("BOUNDS=" + display.getBounds () + " CLIENT=" + display.getClientArea ());
+	System.out.println ("Display Bounds=" + display.getBounds () + " Display ClientArea=" + display.getClientArea ());
 	display.dispose ();
 }
 } 
