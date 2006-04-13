@@ -69,6 +69,7 @@ public class SnippetLauncher {
 				}
 				Method method = null;
 				String [] param = new String [0];
+				if (i == 81) param = new String[] {"Shell.Explorer"};
 				try {
 					method = clazz.getMethod("main", new Class[] {param.getClass()});
 				} catch (NoSuchMethodException e) {
