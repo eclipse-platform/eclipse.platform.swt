@@ -51,9 +51,12 @@ public class Snippet133 {
 	
 	void open() {
 		display = new Display();
-		font = new Font(display, "Courier", 10, SWT.NORMAL);
-		foregroundColor = display.getSystemColor(SWT.COLOR_BLACK);
-		backgroundColor = display.getSystemColor(SWT.COLOR_WHITE);
+		Font initialFont = new Font(display, "Courier", 10, SWT.NORMAL); 
+		font = new Font(display, initialFont.getFontData());
+		Color black = display.getSystemColor(SWT.COLOR_BLACK);
+		foregroundColor = new Color(display, black.getRGB());
+		Color white = display.getSystemColor(SWT.COLOR_WHITE);
+		backgroundColor = new Color(display, white.getRGB());
 		shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText("Print Text");
@@ -120,9 +123,9 @@ public class Snippet133 {
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
-		if (font != null) font.dispose();
-		if (foregroundColor != null) foregroundColor.dispose();
-		if (backgroundColor != null) backgroundColor.dispose();
+		font.dispose();
+		foregroundColor.dispose();
+		backgroundColor.dispose();
 		display.dispose();
 	}
 		
@@ -166,7 +169,7 @@ public class Snippet133 {
 		fontDialog.setFontList(font.getFontData());
 		FontData fontData = fontDialog.open();
 		if (fontData != null) {
-			if (font != null) font.dispose();
+			font.dispose();
 			font = new Font(display, fontData);
 			text.setFont(font);
 		}
@@ -177,7 +180,7 @@ public class Snippet133 {
 		colorDialog.setRGB(foregroundColor.getRGB());
 		RGB rgb = colorDialog.open();
 		if (rgb != null) {
-			if (foregroundColor != null) foregroundColor.dispose();
+			foregroundColor.dispose();
 			foregroundColor = new Color(display, rgb);
 			text.setForeground(foregroundColor);
 		}
@@ -188,7 +191,7 @@ public class Snippet133 {
 		colorDialog.setRGB(backgroundColor.getRGB());
 		RGB rgb = colorDialog.open();
 		if (rgb != null) {
-			if (backgroundColor != null) backgroundColor.dispose();
+			backgroundColor.dispose();
 			backgroundColor = new Color(display, rgb);
 			text.setBackground(backgroundColor);
 		}
