@@ -18,12 +18,14 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.*;
 
 public class Snippet15 {
 
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setLayout(new FillLayout());
 	final Tree tree = new Tree (shell, SWT.BORDER);
 	tree.setSize (100, 100);
 	shell.setSize (200, 200);
