@@ -27,12 +27,12 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.H_SCROLL | SWT.V_SCROLL);
 	final Composite composite = new Composite (shell, SWT.BORDER);
-	composite.setSize (600, 600);
+	composite.setSize (700, 600);
 	final Color red = display.getSystemColor (SWT.COLOR_RED);
 	composite.addPaintListener (new PaintListener() {
 		public void paintControl (PaintEvent e) {
 			e.gc.setBackground (red);
-			e.gc.fillOval (5, 5, 590, 590);
+			e.gc.fillOval (5, 5, 690, 590);
 		}
 	});
 	final ScrollBar hBar = shell.getHorizontalBar ();
