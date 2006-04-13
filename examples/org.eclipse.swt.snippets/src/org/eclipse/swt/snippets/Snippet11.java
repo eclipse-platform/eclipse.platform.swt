@@ -31,7 +31,9 @@ public static void main (String [] args) {
 	}
 	shell.open ();
 	text.setSelection (30);
-	System.out.println (text.getCaretLocation ());
+	System.out.println ("selection=" + text.getSelection ());
+	System.out.println ("caret position=" + text.getCaretPosition ());
+	System.out.println ("caret location=" + text.getCaretLocation ());
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
