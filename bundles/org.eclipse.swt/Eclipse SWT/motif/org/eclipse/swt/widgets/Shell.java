@@ -618,9 +618,8 @@ void createHandle (int index) {
 	* resource.  The fix is to treat the window as if it has been
 	* reparented by the Window Manager despite the fact that this
 	* has not really happened.
-	*/
-	int orientations = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
-	if ((style & ~orientations) == SWT.NONE || (style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0) {
+	*/	
+	if (isUndecorated ()) {
 		reparented = true;
 	} 
 	
@@ -1045,6 +1044,11 @@ boolean isModal () {
 	int [] argList = {OS.XmNmwmInputMode, 0};
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	return (argList [1] != -1 && argList [1] != OS.MWM_INPUT_MODELESS);
+}
+boolean isUndecorated () {
+	return
+		(style & (SWT.SHELL_TRIM | SWT.BORDER)) == SWT.NONE ||
+		(style & (SWT.NO_TRIM | SWT.ON_TOP)) != 0;
 }
 public boolean isVisible () {
 	checkWidget();
