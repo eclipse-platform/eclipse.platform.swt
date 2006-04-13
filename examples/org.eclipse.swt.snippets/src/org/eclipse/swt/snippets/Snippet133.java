@@ -51,8 +51,7 @@ public class Snippet133 {
 	
 	void open() {
 		display = new Display();
-		Font initialFont = new Font(display, "Courier", 10, SWT.NORMAL); 
-		font = new Font(display, initialFont.getFontData());
+		font = new Font(display, "Courier", 10, SWT.NORMAL); 
 		Color black = display.getSystemColor(SWT.COLOR_BLACK);
 		foregroundColor = new Color(display, black.getRGB());
 		Color white = display.getSystemColor(SWT.COLOR_WHITE);
