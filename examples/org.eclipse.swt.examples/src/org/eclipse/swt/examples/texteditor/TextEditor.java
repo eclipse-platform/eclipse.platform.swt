@@ -127,7 +127,7 @@ void setStyle(Widget widget) {
  */
 void clear() {
 	Point sel = text.getSelectionRange();
-	if ((sel != null) && (sel.y != 0)) {
+	if (sel.y != 0) {
 		StyleRange style;
 		style = new StyleRange(sel.x, sel.y, null, null, SWT.NORMAL);
 		text.setStyleRange(style);

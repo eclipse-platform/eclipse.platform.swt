@@ -229,8 +229,7 @@ private boolean findEntry() {
 	}
 	
 	shell.setCursor(null);
-	if (waitCursor != null)
-		waitCursor.dispose();
+	waitCursor.dispose();
 		
 	return found;
 }

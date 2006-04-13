@@ -2314,10 +2314,10 @@ public class ImageAnalyzer {
 	 * transparent or background pixel.
 	 */
 	static String pixelInfo(int pixel) {
-		if (pixel == -1)
+		if (pixel == -1) {
 			return pixel + " (" + bundle.getString("None_lc") + ")";
-		else
-			return pixel + " (0x" + Integer.toHexString(pixel) + ")";
+		}
+		return pixel + " (0x" + Integer.toHexString(pixel) + ")";
 	}
 	
 	/*

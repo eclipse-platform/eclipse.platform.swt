@@ -283,9 +283,8 @@ public class JavaScanner {
 							return COMMENT;
 						}
 					}
-				} else {
-					unread(c);
 				}
+				unread(c);
 				return OTHER;
 			case '\'':	// char const
 				while(true) {

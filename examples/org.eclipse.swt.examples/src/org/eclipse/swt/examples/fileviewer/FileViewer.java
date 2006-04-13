@@ -1241,14 +1241,13 @@ public class FileViewer {
 			File[] roots = (File[]) list.toArray(new File[list.size()]);
 			sortFiles(roots);
 			return roots;
-		} else {
-			File root = new File(File.separator);
-			if (initial) {
-				currentDirectory = root;
-				initial = false;
-			}
-			return new File[] { root };
 		}
+		File root = new File(File.separator);
+		if (initial) {
+			currentDirectory = root;
+			initial = false;
+		}
+		return new File[] { root };
 	}
 
 	/**
@@ -1376,9 +1375,8 @@ public class FileViewer {
 			//System.out.println(getResourceString("simulate.Delete.text",
 			//	new Object[] { oldFile.getPath(), oldFile.getPath() }));
 			return true;
-		} else {
-			return oldFile.delete();
 		}
+		return oldFile.delete();
 	}
 	
 	/**

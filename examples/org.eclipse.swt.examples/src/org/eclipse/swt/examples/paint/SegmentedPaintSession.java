@@ -136,11 +136,9 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 		if (controlPoints.size() == 0) {
 			ps.setStatusCoord(ps.getCurrentPosition());
 			return; // spurious event
-		} else {
-			ps.setStatusCoordRange((Point) controlPoints.elementAt(controlPoints.size() - 1),
-				ps.getCurrentPosition());
 		}
-
+		ps.setStatusCoordRange((Point) controlPoints.elementAt(controlPoints.size() - 1),
+			ps.getCurrentPosition());
 		ps.clearRubberbandSelection();
 		Point[] points = (Point[]) controlPoints.toArray(new Point[controlPoints.size() + 1]);
 		points[controlPoints.size()] = ps.getCurrentPosition();

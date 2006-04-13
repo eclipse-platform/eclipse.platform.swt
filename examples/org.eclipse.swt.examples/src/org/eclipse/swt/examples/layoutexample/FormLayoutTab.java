@@ -478,20 +478,19 @@ class FormLayoutTab extends Tab {
 			}
 			align = attachment.substring (colon + 1);
 			return new FormAttachment (attachControl, offset, alignmentConstant (align));
-		} else {
-			/* Case where there is a position */
-			try {
-				position = new Integer (attachment.substring (0,comma)).intValue ();	
-			} catch (NumberFormatException e) {
-				position = 0;
-			}
-			try {
-				offset = new Integer (attachment.substring (comma + 1)).intValue ();
-			} catch (NumberFormatException e) {
-				offset = 0;
-			}
-			return new FormAttachment (position, offset);		
 		}
+		/* Case where there is a position */
+		try {
+			position = new Integer (attachment.substring (0,comma)).intValue ();	
+		} catch (NumberFormatException e) {
+			position = 0;
+		}
+		try {
+			offset = new Integer (attachment.substring (comma + 1)).intValue ();
+		} catch (NumberFormatException e) {
+			offset = 0;
+		}
+		return new FormAttachment (position, offset);		
 	}
 	
 	/**
