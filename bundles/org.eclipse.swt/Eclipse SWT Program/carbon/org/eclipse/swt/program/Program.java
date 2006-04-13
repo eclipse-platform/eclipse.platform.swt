@@ -94,12 +94,10 @@ static Program getProgram (String key) {
 
 	/* Command */
 	String command = "/usr/bin/open %f";
-	if (command == null || command.length () == 0) return null;
 
 	/* Icon */
-	String iconName= "icon";
-	if (iconName == null || iconName.length () == 0) return null;
-	
+	String iconName = "icon";
+
 	Program program = new Program ();
 	program.name = name;
 	program.command = command;
