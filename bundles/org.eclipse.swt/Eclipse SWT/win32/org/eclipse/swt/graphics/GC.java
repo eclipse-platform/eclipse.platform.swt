@@ -92,7 +92,7 @@ GC() {
  *            into another graphics context</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  * </ul>
  */
 public GC(Drawable drawable) {
@@ -120,7 +120,7 @@ public GC(Drawable drawable) {
  *            into another graphics context</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  * </ul>
  *  
  * @since 2.1.2

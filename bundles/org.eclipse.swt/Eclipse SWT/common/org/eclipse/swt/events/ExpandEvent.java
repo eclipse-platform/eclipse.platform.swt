@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are sent as a result of
- * <code>ExpandItem</code> being expanded or collapsed.
+ * <code>ExpandItem</code>s being expanded or collapsed.
  *
  * @see ExpandListener
  * 

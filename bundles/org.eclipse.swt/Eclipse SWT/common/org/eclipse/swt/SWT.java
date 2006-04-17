@@ -1091,7 +1091,7 @@ public class SWT {
 	public static final int FLAT = 1 << 23;
 
 	/**
-	 * Style constant for flat appearance. (value is 1&lt;&lt;16).
+	 * Style constant for smooth appearance. (value is 1&lt;&lt;16).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ProgressBar</code></li>
@@ -1296,7 +1296,7 @@ public class SWT {
 	public static final int LEFT               = LEAD;
 
 	/**
-	 * Style constant for trailiing alignment (value is 1&lt;&lt;17).
+	 * Style constant for trailing alignment (value is 1&lt;&lt;17).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
@@ -2030,7 +2030,7 @@ public class SWT {
 	public static final int BREAK = KEYCODE_BIT + 86;
 	
 	/**
-	 * Keyboard event constant representing the break
+	 * Keyboard event constant representing the print screen
 	 * key (value is (1&lt;&lt;24)+87).
 	 * 
 	 * @since 3.0
@@ -2194,7 +2194,7 @@ public class SWT {
 	public static final int COLOR_YELLOW = 7;
 
 	/**
-	 * Default color dark yello (value is 8).
+	 * Default color dark yellow (value is 8).
 	 */
 	public static final int COLOR_DARK_YELLOW = 8;
 
@@ -2357,7 +2357,7 @@ public class SWT {
 
 	/**
 	 * Draw constant indicating whether the string drawing operation
-	 * should handle line-delimeters (value is 1&lt;&lt;1).
+	 * should handle line-delimiters (value is 1&lt;&lt;1).
 	 */
 	public static final int DRAW_DELIMITER = 1 << 1;
 
