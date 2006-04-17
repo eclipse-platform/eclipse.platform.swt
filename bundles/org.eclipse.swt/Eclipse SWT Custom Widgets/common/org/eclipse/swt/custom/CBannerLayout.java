@@ -113,8 +113,8 @@ protected void layout(Composite composite, boolean flushCache) {
 	
 	Point size = banner.getSize();
 	boolean showCurve = left != null && right != null;
-	int width = size.x;
-	int height = size.y;
+	int width = size.x - 2*banner.getBorderWidth();
+	int height = size.y - 2*banner.getBorderWidth();
 	
 	Point bottomSize = new Point(0, 0);
 	if (bottom != null) {
@@ -137,7 +137,7 @@ protected void layout(Composite composite, boolean flushCache) {
 			w = Math.max(0, w);
 		}
 		rightSize = computeChildSize(right, w, SWT.DEFAULT, flushCache);
-		width -= rightSize.x + banner.curve_width - banner.curve_indent; 
+		width = width - (rightSize.x - banner.curve_indent + banner.curve_width - banner.curve_indent); 
 	}
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
@@ -159,7 +159,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	if(left != null) {
 		leftRect = new Rectangle(x, y, leftSize.x, leftSize.y);
 		banner.curveStart = x + leftSize.x - banner.curve_indent;
-		x += leftSize.x + banner.curve_width - 2*banner.curve_indent;
+		x += leftSize.x - banner.curve_indent + banner.curve_width - banner.curve_indent;
 	}
 	if (right != null) {
 		if (left != null) {
