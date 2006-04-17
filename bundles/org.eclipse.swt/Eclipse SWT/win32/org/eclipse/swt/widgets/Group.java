@@ -260,14 +260,14 @@ public void setFont (Font font) {
  * be displayed as the receiver's <em>title</em>, to the argument,
  * which may not be null. The string may include the mnemonic character.
  * </p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
- * key sequence that matches the mnemonic, focus is assgned
+ * key sequence that matches the mnemonic, focus is assigned
  * to the first child of the group. On most platforms, the
  * mnemonic appears underlined but may be emphasised in a
  * platform specific manner.  The mnemonic indicator character
- *'&amp' can be escaped by doubling it in the string, causing
- * a single '&amp' to be displayed.
+ * '&amp;' can be escaped by doubling it in the string, causing
+ * a single '&amp;' to be displayed.
  * </p>
  * @param string the new text
  *

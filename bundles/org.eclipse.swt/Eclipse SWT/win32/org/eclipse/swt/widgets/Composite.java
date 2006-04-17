@@ -35,8 +35,8 @@ import org.eclipse.swt.graphics.*;
  * Note: The <code>CENTER</code> style, although undefined for composites, has the
  * same value as <code>EMBEDDED</code> (which is used to embed widgets from other
  * widget toolkits into SWT).  On some operating systems (GTK, Motif), this may cause
- * the children of this compostite to be obscured.  The <code>EMBEDDED</code> style
- * is for used by other widget toolkits and should normally never be used.
+ * the children of this composite to be obscured.  The <code>EMBEDDED</code> style
+ * is for use by other widget toolkits and should normally never be used.
  * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates

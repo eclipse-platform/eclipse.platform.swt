@@ -390,7 +390,7 @@ void releaseChildren (boolean destroy) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when items in the receiver are expanded or collapsed..
+ * be notified when items in the receiver are expanded or collapsed.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -442,7 +442,7 @@ void setScrollbar () {
 }
 
 /**
- * Sets the receiver's spacing, spacing specifies the number of pixel allocated around 
+ * Sets the receiver's spacing. Spacing specifies the number of pixels allocated around 
  * each item.
  *
  * @exception SWTException <ul>
