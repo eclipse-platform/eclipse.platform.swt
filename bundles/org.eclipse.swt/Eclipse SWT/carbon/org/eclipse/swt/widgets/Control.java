@@ -1620,38 +1620,42 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 }
 
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
-	int x, y;
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		x = (int) pt.x;
-		y = (int) pt.y;
-		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-	} else {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		x = pt.h;
-		y = pt.v;
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	}
-	x += rect.left;
-	y += rect.top;
-	Event event = new Event ();
-	event.x = x;
-	event.y = y;
-	sendEvent (SWT.MenuDetect, event);
-	if (event.doit) {
-		if (menu != null && !menu.isDisposed ()) {
-			if (event.x != x || event.y != y) {
-				menu.setLocation (event.x, event.y);
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	if (display.getWidget (theControl [0]) == this) {
+		int x, y;
+		Rect rect = new Rect ();
+		int window = OS.GetControlOwner (handle);
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+			x = (int) pt.x;
+			y = (int) pt.y;
+			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+		} else {
+			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+			x = pt.h;
+			y = pt.v;
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		}
+		x += rect.left;
+		y += rect.top;
+		Event event = new Event ();
+		event.x = x;
+		event.y = y;
+		sendEvent (SWT.MenuDetect, event);
+		if (event.doit) {
+			if (menu != null && !menu.isDisposed ()) {
+				if (event.x != x || event.y != y) {
+					menu.setLocation (event.x, event.y);
+				}
+				menu.setVisible (true);
 			}
-			menu.setVisible (true);
 		}
 	}
-	return OS.noErr;
+	return OS.eventNotHandledErr;
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
