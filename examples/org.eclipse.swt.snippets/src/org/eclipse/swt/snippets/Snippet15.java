@@ -27,8 +27,6 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
 	final Tree tree = new Tree (shell, SWT.BORDER);
-	tree.setSize (100, 100);
-	shell.setSize (200, 200);
 	for (int i=0; i<4; i++) {
 		TreeItem iItem = new TreeItem (tree, 0);
 		iItem.setText ("TreeItem (0) -" + i);
@@ -45,6 +43,7 @@ public static void main (String [] args) {
 			}
 		}
 	}
+	shell.setSize (200, 200);
 	shell.open ();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch ()) display.sleep ();
