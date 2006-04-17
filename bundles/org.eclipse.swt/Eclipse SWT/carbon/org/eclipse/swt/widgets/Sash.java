@@ -171,6 +171,10 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 
+	Shell shell = getShell ();
+	shell.bringToTop (true);
+	if (isDisposed ()) return OS.noErr;
+
 	display.grabControl = null;
 	display.runDeferredEvents ();
 	
