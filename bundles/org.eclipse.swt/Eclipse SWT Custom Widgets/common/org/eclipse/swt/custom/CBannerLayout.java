@@ -137,7 +137,7 @@ protected void layout(Composite composite, boolean flushCache) {
 			w = Math.max(0, w);
 		}
 		rightSize = computeChildSize(right, w, SWT.DEFAULT, flushCache);
-		width -= rightSize.x + banner.curve_width - 2*banner.curve_indent; 
+		width -= rightSize.x + banner.curve_width - banner.curve_indent; 
 	}
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
