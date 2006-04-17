@@ -1196,7 +1196,7 @@ public void setItems (String [] items) {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : No Layout can be set on this Control because it already
+ * Note: No Layout can be set on this Control because it already
  * manages the size and position of its children.
  * </p>
  *

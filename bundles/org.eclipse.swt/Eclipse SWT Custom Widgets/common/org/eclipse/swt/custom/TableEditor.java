@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.*;
 *	final Table table = new Table(shell, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 *	TableColumn column1 = new TableColumn(table, SWT.NONE);
 *	TableColumn column2 = new TableColumn(table, SWT.NONE);
-*	for (int i = 0; i &lt 10; i++) {
+*	for (int i = 0; i &lt; 10; i++) {
 *		TableItem item = new TableItem(table, SWT.NONE);
 *		item.setText(new String[] {"item " + i, "edit this value"});
 *	}

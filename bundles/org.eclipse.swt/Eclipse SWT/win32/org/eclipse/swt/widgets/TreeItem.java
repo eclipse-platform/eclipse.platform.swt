@@ -286,7 +286,7 @@ public void clear (int index, boolean all) {
 
 /**
  * Clears all the items in the receiver. The text, icon and other
- * attribues of the items are set to their default values. If the
+ * attributes of the items are set to their default values. If the
  * tree was created with the SWT.VIRTUAL style, these attributes
  * are requested again as needed.
  * 

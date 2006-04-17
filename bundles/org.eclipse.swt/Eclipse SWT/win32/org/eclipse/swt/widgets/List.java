@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 /** 
  * Instances of this class represent a selectable user interface
  * object that displays a list of strings and issues notification
- * when a string selected.  A list may be single or multi select.
+ * when a string is selected.  A list may be single or multi select.
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>

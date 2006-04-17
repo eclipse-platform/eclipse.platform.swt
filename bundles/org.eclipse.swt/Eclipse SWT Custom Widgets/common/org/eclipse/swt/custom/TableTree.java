@@ -661,7 +661,7 @@ public void removeSelectionListener (SelectionListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when items in the receiver are expanded or collapsed..
+ * be notified when items in the receiver are expanded or collapsed.
  *
  * @param listener the listener which should no longer be notified
  *

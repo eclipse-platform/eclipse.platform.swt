@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class provide a selectable user interface object
- * that displays a hierarchy of items and issue notification when an
+ * that displays a hierarchy of items and issues notification when an
  * item in the hierarchy is selected.
  * <p>
  * The item children that may be added to instances of this class
@@ -1428,7 +1428,7 @@ void clear (int hItem, TVITEM tvItem) {
 
 /**
  * Clears all the items in the receiver. The text, icon and other
- * attribues of the items are set to their default values. If the
+ * attributes of the items are set to their default values. If the
  * tree was created with the SWT.VIRTUAL style, these attributes
  * are requested again as needed.
  * 
@@ -3247,7 +3247,7 @@ public void removeSelectionListener (SelectionListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when items in the receiver are expanded or collapsed..
+ * be notified when items in the receiver are expanded or collapsed.
  *
  * @param listener the listener which should no longer be notified
  *

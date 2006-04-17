@@ -38,7 +38,7 @@ import java.awt.event.FocusEvent;
 
 /**
  * This class provides a bridge between SWT and AWT, so that it
- * is possible to embedded AWT components in SWT and vice versa.
+ * is possible to embed AWT components in SWT and vice versa.
  * 
  * @since 3.0
  */

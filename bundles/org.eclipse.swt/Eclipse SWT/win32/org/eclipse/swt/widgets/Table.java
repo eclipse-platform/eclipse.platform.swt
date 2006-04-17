@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 
 /** 
  * Instances of this class implement a selectable user interface
- * object that displays a list of images and strings and issue
+ * object that displays a list of images and strings and issues
  * notification when selected.
  * <p>
  * The item children that may be added to instances of this class
@@ -685,7 +685,7 @@ public void clear (int index) {
 /**
  * Removes the items from the receiver which are between the given
  * zero-relative start and end indices (inclusive).  The text, icon
- * and other attribues of the items are set to their default values.
+ * and other attributes of the items are set to their default values.
  * If the table was created with the SWT.VIRTUAL style, these attributes
  * are requested again as needed.
  *
@@ -759,7 +759,7 @@ public void clear (int start, int end) {
 
 /**
  * Clears the items at the given zero-relative indices in the receiver.
- * The text, icon and other attribues of the items are set to their default
+ * The text, icon and other attributes of the items are set to their default
  * values.  If the table was created with the SWT.VIRTUAL style, these
  * attributes are requested again as needed.
  *
@@ -830,7 +830,7 @@ public void clear (int [] indices) {
 
 /**
  * Clears all the items in the receiver. The text, icon and other
- * attribues of the items are set to their default values. If the
+ * attributes of the items are set to their default values. If the
  * table was created with the SWT.VIRTUAL style, these attributes
  * are requested again as needed.
  *

@@ -338,8 +338,7 @@ Rectangle [] getRectangles (int linkIndex) {
 
 /**
  * Returns the receiver's text, which will be an empty
- * string if it has never been set or if the receiver is
- * a <code>SEPARATOR</code> label.
+ * string if it has never been set.
  *
  * @return the receiver's text
  *

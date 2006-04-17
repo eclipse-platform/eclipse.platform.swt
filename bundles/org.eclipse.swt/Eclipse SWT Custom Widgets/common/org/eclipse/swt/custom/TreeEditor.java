@@ -26,10 +26,10 @@ import org.eclipse.swt.widgets.*;
 * <p> Here is an example of using a TreeEditor:
 * <code><pre>
 *	final Tree tree = new Tree(shell, SWT.BORDER);
-*	for (int i = 0; i &lt 3; i++) {
+*	for (int i = 0; i &lt; 3; i++) {
 *		TreeItem item = new TreeItem(tree, SWT.NONE);
 *		item.setText("item " + i);
-*		for (int j = 0; j &lt 3; j++) {
+*		for (int j = 0; j &lt; 3; j++) {
 *			TreeItem subItem = new TreeItem(item, SWT.NONE);
 *			subItem.setText("item " + i + " " + j);
 *		}

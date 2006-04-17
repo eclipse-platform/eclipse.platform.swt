@@ -13,7 +13,7 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.*;
 
 /**
- * Instances of this class represent bullet in the <code>StyledText</code>.
+ * Instances of this class represent bullets in the <code>StyledText</code>.
  * <p>
  * The hashCode() method in this class uses the values of the public
  * fields to compute the hash value. When storing instances of the

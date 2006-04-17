@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class represent popup windows that are used
- * used to inform or warn the user.
+ * to inform or warn the user.
  *
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -314,7 +314,7 @@ public void setAutoHide (boolean autoHide) {
 }
 
 /**
- * Sets the location of the receiver, which must be a tooltips,
+ * Sets the location of the receiver, which must be a tooltip,
  * to the point specified by the arguments which are relative
  * to the display.
  * <p>

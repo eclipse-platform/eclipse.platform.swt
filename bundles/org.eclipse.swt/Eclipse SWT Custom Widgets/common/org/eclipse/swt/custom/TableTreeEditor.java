@@ -29,11 +29,11 @@ import org.eclipse.swt.events.*;
 *	final Table table = tableTree.getTable();
 *	TableColumn column1 = new TableColumn(table, SWT.NONE);
 *	TableColumn column2 = new TableColumn(table, SWT.NONE);
-*	for (int i = 0; i &lt 10; i++) {
+*	for (int i = 0; i &lt; 10; i++) {
 *		TableTreeItem item = new TableTreeItem(tableTree, SWT.NONE);
 *		item.setText(0, "item " + i);
 *		item.setText(1, "edit this value");
-*		for (int j = 0; j &lt 3; j++) {
+*		for (int j = 0; j &lt; 3; j++) {
 *			TableTreeItem subitem = new TableTreeItem(item, SWT.NONE);
 *			subitem.setText(0, "subitem " + i + " " + j);
 *			subitem.setText(1, "edit this value");
