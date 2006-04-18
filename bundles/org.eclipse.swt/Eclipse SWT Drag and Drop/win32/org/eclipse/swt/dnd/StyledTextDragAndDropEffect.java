@@ -43,7 +43,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 				}
 			} else {
 				try {
-					int startOffset = text.getOffsetAtLocation(new Point(2, pt.y));
+					int startOffset = text.getOffsetAtLocation(new Point(0, pt.y));
 					int endOffset = maxOffset;
 					int line = text.getLineAtOffset(startOffset);
 					int lineCount = text.getLineCount();
