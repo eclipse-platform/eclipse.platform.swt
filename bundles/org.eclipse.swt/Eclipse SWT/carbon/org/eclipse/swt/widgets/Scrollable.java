@@ -398,6 +398,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	if (scrolledHandle == 0) return false;
+	if ((state & CANVAS) == 0) return false;
 	if (visible) {
 		if ((bar.state & HIDDEN) == 0) return false;
 		bar.state &= ~HIDDEN;

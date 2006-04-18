@@ -414,7 +414,7 @@ void hookEvents () {
 		int controlTarget = OS.GetControlEventTarget (handle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
 	}
-	if (parent.scrolledHandle == 0) {
+	if ((parent.state & CANVAS) == 0) {
 		oldActionProc = OS.GetControlAction (handle);
 		OS.SetControlAction (handle, display.actionProc);
 	}
