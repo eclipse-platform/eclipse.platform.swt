@@ -1182,6 +1182,7 @@ public void setText (String string) {
 		OS.SetControlData (labelHandle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
 		OS.CFRelease (ptr);
 		redrawWidget (labelHandle, false);
+		parent.relayout ();
 	} else {
 		updateText (true);
 	}
