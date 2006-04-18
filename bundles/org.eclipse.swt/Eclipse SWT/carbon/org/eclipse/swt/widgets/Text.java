@@ -1700,18 +1700,10 @@ public void setEchoChar (char echo) {
 	if ((style & SWT.MULTI) != 0) return;
 	if (txnObject == 0) {
 		if ((style & SWT.PASSWORD) == 0) {
-			String newText;
-			if (echo == '\0') {
-				newText = hiddenText;
-				hiddenText = "";
-			} else {
-				hiddenText = getText ();
-				char [] buffer = new char [hiddenText.length ()];
-				for (int i = 0; i < buffer.length; i++) buffer [i] = echo;
-				newText = new String (buffer);
-			}
 			Point selection = getSelection ();
-			setEditText (newText);
+			String text = getText ();
+			echoCharacter = echo;
+			setEditText (text);
 			setSelection (selection);
 		}
 	} else {
@@ -1991,8 +1983,15 @@ public void setText (String string) {
 }
 
 void setEditText (String string) {
-	char [] buffer = new char [string.length ()];
-	string.getChars (0, buffer.length, buffer, 0);
+	char [] buffer;
+	if ((style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
+		hiddenText = string;
+		buffer = new char [hiddenText.length ()];
+		for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
+	} else {
+		buffer = new char [string.length ()];
+		string.getChars (0, buffer.length, buffer, 0);
+	}
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
