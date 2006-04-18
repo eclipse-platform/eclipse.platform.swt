@@ -414,6 +414,7 @@ void dropDown (boolean drop) {
 	int x = parentRect.x;
 	int y = parentRect.y + comboSize.y;
 	if (y + height > displayRect.y + displayRect.height) y = parentRect.y - height;
+	if (x + width > displayRect.x + displayRect.width) x = displayRect.x + displayRect.width - listRect.width;
 	popup.setBounds (x, y, width, height);
 	popup.setVisible (true);
 	list.setFocus ();
