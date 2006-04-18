@@ -311,12 +311,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	gc.dispose();
 	Point textSize = text.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
 	Point arrowSize = arrow.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
-	Point listSize = list.computeSize (wHint, SWT.DEFAULT, changed);
+	Point listSize = list.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
 	int borderWidth = getBorderWidth ();
 	
-	height = Math.max (hHint, Math.max (textSize.y, arrowSize.y) + 2*borderWidth);
-	width = Math.max (wHint, Math.max (textWidth + 2*spacer + arrowSize.x + 2*borderWidth, listSize.x));
-	return new Point (width, height);
+	height = Math.max (textSize.y, arrowSize.y);
+	width = Math.max (textWidth + 2*spacer + arrowSize.x + 2*borderWidth, listSize.x);
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	return new Point (width + 2*borderWidth, height + 2*borderWidth);
 }
 void createPopup(String[] items, int selectionIndex) {		
 		// create shell and list
