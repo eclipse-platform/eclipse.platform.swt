@@ -5325,7 +5325,10 @@ void handleTextChanged(TextChangedEvent event) {
 		int lastLine = firstLine + lastTextChangeNewLineCount;
 		int firstLineTop = getLinePixel(firstLine);
 		int newLastLineBottom = getLinePixel(lastLine + 1);
-		scrollText(lastLineBottom, newLastLineBottom);
+		if (lastLineBottom != newLastLineBottom) {
+			scrollText(lastLineBottom, newLastLineBottom);
+			if (wordWrap) setCaretLocation();
+		}
 		super.redraw(0, firstLineTop, clientAreaWidth, newLastLineBottom - firstLineTop, false);
 		redrawLinesBullet(renderer.redrawLines);
 	}
