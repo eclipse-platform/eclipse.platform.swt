@@ -635,13 +635,6 @@ public void forceActive () {
 	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 }
 
-public Rectangle getClientArea () {
-	checkWidget();
-	Rect rect = new Rect ();
-	OS.GetWindowBounds (shellHandle, (short) OS.kWindowContentRgn, rect);
-	return new Rectangle (0, 0, rect.right - rect.left, rect.bottom - rect.top);
-}
-
 public Rectangle getBounds () {
 	checkWidget();
 	Rect rect = new Rect ();
