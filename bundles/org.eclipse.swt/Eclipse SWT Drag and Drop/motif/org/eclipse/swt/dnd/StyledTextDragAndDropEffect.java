@@ -23,33 +23,54 @@ StyledTextDragAndDropEffect(StyledText control) {
 	text = control;
 }
 void showDropTargetEffect(int effect, int x, int y) {
-	int offset = -1;
+	int newOffset = -1;
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
 		Point pt = text.getDisplay().map(null, text, x, y);
 		try {
-			//text.setFocus();	
-			offset = text.getOffsetAtLocation(pt);
-		} catch (IllegalArgumentException ex) {
+			newOffset = text.getOffsetAtLocation(pt);
+		} catch (IllegalArgumentException ex1) {
 			int maxOffset = text.getCharCount();
 			Point maxLocation = text.getLocationAtOffset(maxOffset);
 			if (pt.y >= maxLocation.y) {
 				if (pt.x >= maxLocation.x) {
-					offset = maxOffset;
+					newOffset = maxOffset;
 				} else {
-					offset = text.getOffsetAtLocation(new Point(pt.x, maxLocation.y));
+					try {
+						newOffset = text.getOffsetAtLocation(new Point(pt.x, maxLocation.y));
+					} catch (IllegalArgumentException ex2) {
+						newOffset = -1;
+					}
 				}
 			} else {
-				offset = maxOffset;
+				try {
+					int startOffset = text.getOffsetAtLocation(new Point(0, pt.y));
+					int endOffset = maxOffset;
+					int line = text.getLineAtOffset(startOffset);
+					int lineCount = text.getLineCount();
+					if (line + 1 < lineCount) {
+						endOffset = text.getOffsetAtLine(line + 1)  - 1;
+					}
+					int lineHeight = text.getLineHeight(startOffset);
+					for (int i = endOffset; i >= startOffset; i--) {
+						Point p = text.getLocationAtOffset(i);
+						if (p.x < pt.x && p.y < pt.y && p.y + lineHeight > pt.y) {
+							newOffset = i;
+							break;
+						}
+					}
+				} catch (IllegalArgumentException ex2) {
+					newOffset = -1;
+				}
 			}
 		}
 	}
 	if (caretBounds != null) {
-			// hide caret
-			drawCaret();
-			caretBounds = null; 
+		// hide caret
+		drawCaret();
+		caretBounds = null; 
 	}
-	if (offset != -1) {
-		text.setCaretOffset(offset);
+	if (newOffset != -1) {
+		text.setCaretOffset(newOffset);
 		// show caret
 		caretBounds = text.getCaret().getBounds();
 		drawCaret();
