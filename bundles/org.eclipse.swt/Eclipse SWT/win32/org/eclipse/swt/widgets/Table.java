@@ -3304,9 +3304,17 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	Control control = findBackgroundControl ();
-	if (control == null) control = this;
-	int clrBackground = control.getBackgroundPixel ();
+	int clrBackground;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		clrBackground = control.getBackgroundPixel ();
+	} else {
+		clrBackground = 0x020000FF;
+		if ((clrBackground & 0xFFFFFF) == OS.GetSysColor (OS.COLOR_WINDOW)) {
+			clrBackground = 0x0200FF00;
+		}
+	}
 	int hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);

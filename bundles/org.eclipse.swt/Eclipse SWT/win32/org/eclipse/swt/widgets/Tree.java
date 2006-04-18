@@ -3674,6 +3674,9 @@ void setCheckboxImageList () {
 		clrBackground = control.getBackgroundPixel ();
 	} else {
 		clrBackground = 0x020000FF;
+		if ((clrBackground & 0xFFFFFF) == OS.GetSysColor (OS.COLOR_WINDOW)) {
+			clrBackground = 0x0200FF00;
+		}
 	}
 	int hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
