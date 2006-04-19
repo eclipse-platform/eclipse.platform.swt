@@ -130,8 +130,24 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (isAppThemed ()) {
 				hTheme = OS.OpenThemeData (handle, EXPLORERBAR);
 			}
-			int oldHFont = 0;
-			if (hFont != 0) oldHFont = OS.SelectObject (hDC, hFont);
+			int hCurrentFont = 0, oldFont = 0;
+			if (hTheme == 0) {
+				if (hFont != 0) {
+					hCurrentFont = hFont;
+				} else {
+					if (!OS.IsWinCE) {
+						NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+						info.cbSize = NONCLIENTMETRICS.sizeof;
+						if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+							LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
+							hCurrentFont = OS.CreateFontIndirect (logFont);
+						}
+					}
+				}
+				if (hCurrentFont != 0) {
+					oldFont = OS.SelectObject (hDC, hCurrentFont);
+				}
+			}
 			height += spacing;
 			for (int i = 0; i < itemCount; i++) {
 				ExpandItem item = items [i];
@@ -140,7 +156,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				height += spacing;
 				width = Math.max (width, item.getPreferredWidth (hTheme, hDC));
 			}
-			if (hFont != 0) OS.SelectObject (hDC, oldHFont);
+			if (hCurrentFont != 0) {
+				OS.SelectObject (hDC, oldFont);
+				if (hCurrentFont != hFont) OS.DeleteObject (hCurrentFont);
+			}
 			OS.ReleaseDC (handle, hDC);
 			if (hTheme != 0) OS.CloseThemeData (hTheme);
 		}
@@ -239,9 +258,25 @@ void drawWidget (GC gc, RECT clipRect) {
 		int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 		drawFocus = (uiState & OS.UISF_HIDEFOCUS) == 0;
 	}
+	int hCaptionFont = 0, oldFont = 0;	
+	if (hTheme == 0) {
+		if (!OS.IsWinCE && hFont == 0) {
+			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+			info.cbSize = NONCLIENTMETRICS.sizeof;
+			if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+				LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
+				hCaptionFont = OS.CreateFontIndirect (logFont);
+				oldFont = OS.SelectObject (gc.handle, hCaptionFont);
+			}
+		}
+	}
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
 		item.drawItem (gc, hTheme, clipRect, i == focusIndex && drawFocus);
+	}
+	if (hCaptionFont != 0) {
+		OS.SelectObject (gc.handle, oldFont);
+		OS.DeleteObject (hCaptionFont);
 	}
 	if (hTheme != 0) OS.CloseThemeData (hTheme);
 }

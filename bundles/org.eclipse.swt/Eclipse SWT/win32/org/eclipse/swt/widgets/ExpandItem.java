@@ -196,23 +196,9 @@ void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
 		if (hTheme != 0) {
 			OS.DrawThemeText (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer.chars, buffer.length(), OS.DT_VCENTER | OS.DT_SINGLELINE, 0, rect);
 		} else {
-			int hFont = 0, oldFont = 0;
-			if (!OS.IsWinCE && parent.hFont == 0) {
-				NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-				info.cbSize = NONCLIENTMETRICS.sizeof;
-				if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-					LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
-					hFont = OS.CreateFontIndirect (logFont);
-					oldFont = OS.SelectObject (hDC, hFont);
-				}
-			}
 			int oldBkMode = OS.SetBkMode (hDC, OS.TRANSPARENT);
 			OS.DrawText (hDC, buffer, buffer.length (), rect, OS.DT_VCENTER | OS.DT_SINGLELINE);
 			OS.SetBkMode (hDC, oldBkMode);
-			if (hFont != 0) {
-				OS.SelectObject (hDC, oldFont);
-				OS.DeleteObject (hFont);
-			}
 		}
 	}
 	int chevronSize = ExpandItem.CHEVRON_SIZE;
@@ -340,21 +326,7 @@ int getPreferredWidth (int hTheme, int hDC) {
 		if (hTheme != 0) {
 			OS.GetThemeTextExtent (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer.chars, buffer.length(), OS.DT_SINGLELINE, null, rect);			
 		} else {
-			int hFont = 0, oldFont = 0;
-			if (!OS.IsWinCE && parent.hFont == 0) {
-				NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-				info.cbSize = NONCLIENTMETRICS.sizeof;
-				if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-					LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
-					hFont = OS.CreateFontIndirect (logFont);
-					oldFont = OS.SelectObject (hDC, hFont);
-				}
-			}
 			OS.DrawText (hDC, buffer, buffer.length (), rect, OS.DT_CALCRECT);
-			if (hFont != 0) {
-				OS.SelectObject (hDC, oldFont);
-				OS.DeleteObject (hFont);
-			}
 		}
 		width += (rect.right - rect.left);
 	}
