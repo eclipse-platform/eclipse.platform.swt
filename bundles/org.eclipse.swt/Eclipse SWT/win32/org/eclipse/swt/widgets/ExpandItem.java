@@ -115,12 +115,15 @@ static ExpandBar checkNull (ExpandBar control) {
 }
 
 private void drawChevron (int hDC, RECT rect) {
+	int oldBrush = OS.SelectObject (hDC, OS.GetSysColorBrush (OS.COLOR_BTNFACE));
+	OS.PatBlt (hDC, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
+	OS.SelectObject (hDC, oldBrush);
 	rect.left += 4;
 	rect.top += 4;
 	rect.right -= 4;
-	rect.bottom -= 4;		
-	int blackPen = OS.CreatePen (OS.PS_SOLID, 1, 0);
-	int oldPen = OS.SelectObject (hDC, blackPen);
+	rect.bottom -= 4;
+	int hPen = OS.CreatePen (OS.PS_SOLID, 1, parent.foreground);
+	int oldPen = OS.SelectObject (hDC, hPen);
 	int [] polyline1, polyline2;
 	if (expanded) {
 		int px = rect.left + 5;
@@ -166,7 +169,7 @@ private void drawChevron (int hDC, RECT rect) {
 	} else {
 		OS.SelectObject (hDC, oldPen);
 	}		
-	OS.DeleteObject (blackPen);
+	OS.DeleteObject (hPen);
 }
 
 void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
@@ -315,7 +318,7 @@ public ExpandBar getParent () {
 	return parent;
 }
 
-int getPreferredWidth (int hTheme, int hDC) {	
+int getPreferredWidth (int hTheme, int hDC) {
 	int width = ExpandItem.TEXT_INSET * 2 + ExpandItem.CHEVRON_SIZE;
 	if (image != null) {
 		width += ExpandItem.TEXT_INSET + imageWidth;
