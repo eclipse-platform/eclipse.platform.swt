@@ -158,8 +158,12 @@ public Browser(Composite parent, int style) {
 				 */
 				Library.loadLibrary ("swt-mozilla-gcc3"); //$NON-NLS-1$
 			} catch (UnsatisfiedLinkError ex) {
-				dispose();
-				SWT.error(SWT.ERROR_NO_HANDLES, ex);
+				dispose ();
+				/*
+				 * Print the error from the first failed attempt since at this point it's
+				 * known that the failure was not due to the libstdc++.so.6 dependency.
+				 */
+				SWT.error (SWT.ERROR_NO_HANDLES, e);
 			}
 		}
 
