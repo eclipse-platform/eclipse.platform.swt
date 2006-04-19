@@ -17,13 +17,50 @@ import org.eclipse.swt.internal.win32.*;
 
 class StyledTextDragAndDropEffect extends DragAndDropEffect {
 	StyledText text;
+	long scrollBeginTime;
+	int scrollY;
+	
+	static final int SCROLL_HYSTERESIS = 100; // milli seconds
+	static final int SCROLL_TOLERANCE = 20; // pixels
 	
 StyledTextDragAndDropEffect(StyledText control) {
 	text = control;
 }
 void showDropTargetEffect(int effect, int x, int y) {
+	Point pt = text.getDisplay().map(null, text, x, y);
+	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
+		scrollBeginTime = 0;
+		scrollY = -1;
+	} else {
+		if (scrollY != -1 && scrollBeginTime != 0
+			&& pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE)) {
+			if (System.currentTimeMillis() >= scrollBeginTime) {
+				Rectangle area = text.getClientArea();
+				int lineHeight = text.getLineHeight();
+				if (pt.y < area.y + lineHeight) {
+					int topPixel = text.getTopPixel();
+					text.setTopPixel(topPixel - lineHeight);
+					if (text.getTopPixel() != topPixel) {
+						text.redraw();
+					}
+				}
+				if (pt.y > area.height - lineHeight) {
+					int topPixel = text.getTopPixel();
+					text.setTopPixel(topPixel + lineHeight);
+					if (text.getTopPixel() != topPixel) {
+						text.redraw();
+					}
+				}
+				scrollBeginTime = 0;
+				scrollY = -1;
+			}
+		} else {
+			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+			scrollY = pt.y;
+		}
+	}
+		
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		Point pt = text.getDisplay().map(null, text, x, y);
 		int oldOffset = text.getCaretOffset();
 		int newOffset = -1;
 		try {
