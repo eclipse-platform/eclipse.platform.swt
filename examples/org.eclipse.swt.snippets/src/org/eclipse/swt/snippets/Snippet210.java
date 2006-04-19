@@ -49,24 +49,19 @@ public static void main (String [] args) {
 	DragSource source = new DragSource(text1, DND.DROP_COPY | DND.DROP_MOVE);
 	source.setTransfer(new Transfer[] {TextTransfer.getInstance()});
 	source.addDragListener(new DragSourceAdapter() {
+		Point selection;
 		public void dragStart(DragSourceEvent e) {
-			Point selection = text1.getSelection();
-			try {
-				int offset = text1.getOffsetAtLocation(new Point(e.x, e.y));
-				e.doit = offset > selection.x && offset < selection.y;
-			} catch (IllegalArgumentException ex) {
-			}
+			selection = text1.getSelection();
+			e.doit = selection.x != selection.y;
 		}
 		public void dragSetData(DragSourceEvent e) {
-			Point selection = text1.getSelection();
-			if (selection.x != selection.y) {
-				e.data = text1.getText(selection.x, selection.y-1);
-			}
+			e.data = text1.getText(selection.x, selection.y-1);
 		}
 		public void dragFinished(DragSourceEvent e) {
 			if (e.detail == DND.DROP_MOVE) {
-				text1.insert("");
+				text1.replaceTextRange(selection.x, selection.y - selection.x, "");
 			}
+			selection = null;
 		}
 	});
 	
