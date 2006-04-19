@@ -44,8 +44,8 @@ public class ExpandBar extends Composite {
 	int itemCount;
 	int focusIndex;
 	int spacing;
-	int yCurrentScroll;	
-	static final int HEADER_HEIGHT = 24;
+	int yCurrentScroll;
+	int hFont;
 	
 	
 /**
@@ -127,9 +127,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (itemCount > 0) {
 			int hDC = OS.GetDC (handle);
 			int hTheme = 0;
-			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (isAppThemed ()) {
 				hTheme = OS.OpenThemeData (handle, EXPLORERBAR);
 			}
+			int oldHFont = 0;
+			if (hFont != 0) oldHFont = OS.SelectObject (hDC, hFont);
 			height += spacing;
 			for (int i = 0; i < itemCount; i++) {
 				ExpandItem item = items [i];
@@ -138,6 +140,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				height += spacing;
 				width = Math.max (width, item.getPreferredWidth (hTheme, hDC));
 			}
+			if (hFont != 0) OS.SelectObject (hDC, oldHFont);
 			OS.ReleaseDC (handle, hDC);
 			if (hTheme != 0) OS.CloseThemeData (hTheme);
 		}
@@ -177,13 +180,13 @@ void createWidget () {
 	super.createWidget ();
 	items = new ExpandItem [4];
 	focusIndex = -1;
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (!isAppThemed ()) {
 		backgroundMode = SWT.INHERIT_DEFAULT;
 	}
 }
 
 int defaultBackground() {
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (!isAppThemed ()) {
 		return OS.GetSysColor (OS.COLOR_WINDOW);
 	}
 	return super.defaultBackground();
@@ -221,7 +224,7 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 
 void drawWidget (GC gc, RECT clipRect) {
 	int hTheme = 0;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	if (isAppThemed ()) {
 		hTheme = OS.OpenThemeData (handle, EXPLORERBAR); 
 	}
 	if (hTheme != 0) {
@@ -245,15 +248,14 @@ void drawWidget (GC gc, RECT clipRect) {
 
 Control findBackgroundControl () {
 	Control control = super.findBackgroundControl ();
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (!isAppThemed ()) {
 		if (control == null) control = this;
 	}
 	return control;
 }
 
-Control findThemeControl () {
-	/* It is not possible to change the background of this control */
-	return this;	
+Control findThemeControl () {	
+	return isAppThemed () ? this : super.findThemeControl ();	
 }
 
 /**
@@ -330,6 +332,17 @@ public int getSpacing () {
 	return spacing;
 }
 
+int getBandHeight () {
+	if (hFont == 0) return ExpandItem.CHEVRON_SIZE;
+	int hDC = OS.GetDC (handle);
+	int oldHFont = OS.SelectObject (hDC, hFont);
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+	OS.GetTextMetrics (hDC, lptm);
+	OS.SelectObject (hDC, oldHFont);
+	OS.ReleaseDC (handle, hDC);
+	return Math.max (ExpandItem.CHEVRON_SIZE, lptm.tmHeight + 4);
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -355,6 +368,13 @@ public int indexOf (ExpandItem item) {
 		if (items [i] == item) return i;
 	}
 	return -1;
+}
+
+boolean isAppThemed () {
+	if (background != -1) return false;
+	if (foreground != -1) return false;
+	if (hFont != 0) return false;
+	return OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ();
 }
 
 void layoutItems (int index, boolean setScrollbar) {
@@ -413,6 +433,20 @@ public void removeExpandListener (ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);	
 }
 
+public void setFont (Font font) {
+	super.setFont (font);
+	hFont = font != null ? font.handle : 0;
+	layoutItems (0, true);
+}
+
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	if (!OS.IsWinCE) {
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
+}
+
 void setScrollbar () {
 	if (itemCount == 0) return;
 	if ((style & SWT.V_SCROLL) == 0) return;
@@ -420,12 +454,12 @@ void setScrollbar () {
 	OS.GetClientRect (handle, rect);
 	int height = rect.bottom - rect.top;
 	ExpandItem item = items [itemCount - 1];
-	int maxHeight = item.y + ExpandBar.HEADER_HEIGHT + spacing;
+	int maxHeight = item.y + getBandHeight () + spacing;
 	if (item.expanded) maxHeight += item.height;
 
 	//claim bottom free space
 	if (yCurrentScroll > 0 && height > maxHeight) {
-		yCurrentScroll = Math.max(0, yCurrentScroll + maxHeight - height);
+		yCurrentScroll = Math.max (0, yCurrentScroll + maxHeight - height);
 		layoutItems (0, false);
 	}
 	maxHeight += yCurrentScroll;
@@ -531,7 +565,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	int y = (short) (lParam >> 16);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
-		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
+		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight()); 
 		if (hover && focusIndex != i) {
 			items [focusIndex].redraw (true);
 			focusIndex = i;
@@ -550,7 +584,7 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	ExpandItem item = items [focusIndex];
 	int x = (short) (lParam & 0xFFFF);
 	int y = (short) (lParam >> 16);
-	boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
+	boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight()); 
 	if (hover) {
 		Event event = new Event ();
 		event.item = item;
@@ -568,7 +602,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	int y = (short) (lParam >> 16);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
-		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + ExpandBar.HEADER_HEIGHT); 
+		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight()); 
 		if (item.hover != hover) {
 			item.hover = hover;
 			item.redraw (false);

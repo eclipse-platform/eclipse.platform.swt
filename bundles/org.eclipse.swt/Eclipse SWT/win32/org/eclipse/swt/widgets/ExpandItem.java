@@ -40,6 +40,7 @@ public class ExpandItem extends Item {
 	int imageHeight, imageWidth;
 	static final int TEXT_INSET = 6;
 	static final int BORDER = 1;
+	static final int CHEVRON_SIZE = 24;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -170,7 +171,7 @@ private void drawChevron (int hDC, RECT rect) {
 
 void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
 	int hDC = gc.handle;
-	int headerHeight = ExpandBar.HEADER_HEIGHT;
+	int headerHeight = parent.getBandHeight ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + headerHeight);
 	if (hTheme != 0) {
@@ -195,10 +196,10 @@ void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
 		if (hTheme != 0) {
 			OS.DrawThemeText (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer.chars, buffer.length(), OS.DT_VCENTER | OS.DT_SINGLELINE, 0, rect);
 		} else {
-			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-			info.cbSize = NONCLIENTMETRICS.sizeof;
 			int hFont = 0, oldFont = 0;
-			if (!OS.IsWinCE) {
+			if (!OS.IsWinCE && parent.hFont == 0) {
+				NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+				info.cbSize = NONCLIENTMETRICS.sizeof;
 				if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
 					LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
 					hFont = OS.CreateFontIndirect (logFont);
@@ -214,7 +215,10 @@ void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
 			}
 		}
 	}
-	rect.left = rect.right - headerHeight;
+	int chevronSize = ExpandItem.CHEVRON_SIZE;
+	rect.left = rect.right - chevronSize;
+	rect.top = y + (headerHeight - chevronSize) / 2;
+	rect.bottom = rect.top + chevronSize;
 	if (hTheme != 0) {
 		int partID = expanded ? OS.EBP_NORMALGROUPCOLLAPSE : OS.EBP_NORMALGROUPEXPAND;
 		int stateID = hover ? OS.EBNGC_HOT : OS.EBNGC_NORMAL;
@@ -227,7 +231,7 @@ void drawItem (GC gc, int hTheme, RECT clipRect, boolean drawFocus) {
 		OS.DrawFocusRect (hDC, rect);
 	}
 	if (expanded) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (!parent.isAppThemed ()) {
 			int pen = OS.CreatePen (OS.PS_SOLID, 1, OS.GetSysColor (OS.COLOR_BTNFACE));
 			int oldPen = OS.SelectObject (hDC, pen);
 			int [] points = {
@@ -292,7 +296,7 @@ public boolean getExpanded () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return Math.max (ExpandBar.HEADER_HEIGHT, imageHeight);
+	return Math.max (parent.getBandHeight (), imageHeight);
 }
 
 /**
@@ -326,7 +330,7 @@ public ExpandBar getParent () {
 }
 
 int getPreferredWidth (int hTheme, int hDC) {	
-	int width = ExpandItem.TEXT_INSET * 2 + ExpandBar.HEADER_HEIGHT;
+	int width = ExpandItem.TEXT_INSET * 2 + ExpandItem.CHEVRON_SIZE;
 	if (image != null) {
 		width += ExpandItem.TEXT_INSET + imageWidth;
 	}
@@ -336,10 +340,10 @@ int getPreferredWidth (int hTheme, int hDC) {
 		if (hTheme != 0) {
 			OS.GetThemeTextExtent (hTheme, hDC, OS.EBP_NORMALGROUPHEAD, 0, buffer.chars, buffer.length(), OS.DT_SINGLELINE, null, rect);			
 		} else {
-			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-			info.cbSize = NONCLIENTMETRICS.sizeof;
 			int hFont = 0, oldFont = 0;
-			if (!OS.IsWinCE) {
+			if (!OS.IsWinCE && parent.hFont == 0) {
+				NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+				info.cbSize = NONCLIENTMETRICS.sizeof;
 				if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
 					LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfCaptionFont : ((NONCLIENTMETRICSA)info).lfCaptionFont;
 					hFont = OS.CreateFontIndirect (logFont);
@@ -359,7 +363,7 @@ int getPreferredWidth (int hTheme, int hDC) {
 
 void redraw (boolean all) {
 	int parentHandle = parent.handle;
-	int headerHeight = ExpandBar.HEADER_HEIGHT;
+	int headerHeight = parent.getBandHeight ();
 	RECT rect = new RECT ();
 	int left = all ? x : x + width - headerHeight;
 	OS.SetRect (rect, left, y, x + width, y + headerHeight);
@@ -368,7 +372,7 @@ void redraw (boolean all) {
 		OS.SetRect (rect, x + ExpandItem.TEXT_INSET, y + headerHeight - imageHeight, x + ExpandItem.TEXT_INSET + imageWidth, y);
 		OS.InvalidateRect (parentHandle, rect, true);
 	}
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (!parent.isAppThemed ()) {
 		OS.SetRect (rect, x, y + headerHeight, x + width, y + headerHeight + height + 1);
 		OS.InvalidateRect (parentHandle, rect, true);
 	}
@@ -386,7 +390,7 @@ void releaseWidget () {
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean size) {	
 	redraw (true);
-	int headerHeight = ExpandBar.HEADER_HEIGHT;
+	int headerHeight = parent.getBandHeight ();
 	if (move) {
 		if (imageHeight > headerHeight) {
 			y += (imageHeight - headerHeight);
@@ -401,7 +405,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
 		redraw (true);
 	}
 	if (control != null && !control.isDisposed ()) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (!parent.isAppThemed ()) {
 			x += BORDER;
 			width = Math.max (0, width - BORDER * 2);
 			height = Math.max (0, height - BORDER);
@@ -434,9 +438,9 @@ public void setControl (Control control) {
 	}
 	this.control = control;
 	if (control != null) {
-		int headerHeight = ExpandBar.HEADER_HEIGHT;
+		int headerHeight = parent.getBandHeight ();
 		control.setVisible (expanded);
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if (!parent.isAppThemed ()) {
 			int width = Math.max (0, this.width - BORDER * 2);
 			int height = Math.max (0, this.height - BORDER);
 			control.setBounds (x + BORDER, y + headerHeight, width, height);
