@@ -58,6 +58,9 @@ final public class OleFrame extends Composite
 	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS"; //$NON-NLS-1$
 	private static String HHOOK = "OLE_HHOOK"; //$NON-NLS-1$
 	private static String HHOOKMSG = "OLE_HHOOK_MSG"; //$NON-NLS-1$
+
+	private static boolean ignoreNextKey;
+	private static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 	
 /**
  * Create an OleFrame child widget using style bits
@@ -206,13 +209,46 @@ static int getMsgProc(int code, int wParam, int lParam) {
 						OleFrame frame = site.frame;
 						consumed = frame.translateOleAccelerator(msg);
 					}
+					boolean accentKey = false;
+					switch (msg.message) {
+						case OS.WM_KEYDOWN:
+						case OS.WM_SYSKEYDOWN:
+							if (!OS.IsWinCE) {
+								/* 
+								* Bug in Windows. The high bit in the result of MapVirtualKey() on
+								* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
+								* They should both be bit 32.  The fix is to test the right bit.
+								*/
+								int mapKey = OS.MapVirtualKey (msg.wParam, 2);
+								if (mapKey != 0) {
+									accentKey = (mapKey & (OS.IsWinNT ? 0x80000000 : 0x8000)) != 0;
+									if (!accentKey) {
+										for (int i=0; i<ACCENTS.length; i++) {
+											int value = OS.VkKeyScan (ACCENTS [i]);
+											if (value != -1 && (value & 0xFF) == msg.wParam) {
+												int state = value >> 8;
+												if ((OS.GetKeyState (OS.VK_SHIFT) < 0) != ((state & 0x1) != 0)) break;
+												if ((OS.GetKeyState (OS.VK_CONTROL) < 0) != ((state & 0x2) != 0)) break;
+												if ((OS.GetKeyState (OS.VK_MENU) < 0) != ((state & 0x4) != 0)) break;
+												accentKey = true;
+											}
+										}
+									}
+								}
+							}
+					}
 					/* Allow OleClientSite to process key events before activeX control */
-					if (!consumed) {
+					if (!consumed && !accentKey && !ignoreNextKey) {
 						int hwndOld = msg.hwnd;
 						msg.hwnd = site.handle;
 						consumed = OS.DispatchMessage (msg) == 1;
 						msg.hwnd = hwndOld;
 					}
+					switch (msg.message) {
+						case OS.WM_KEYDOWN:
+						case OS.WM_SYSKEYDOWN: ignoreNextKey = accentKey;
+					}
+
 					if (consumed) {
 						// In order to prevent this message from also being processed
 						// by the application, zero out message, wParam and lParam
