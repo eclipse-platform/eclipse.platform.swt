@@ -17,6 +17,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet61 {
@@ -24,6 +25,7 @@ public class Snippet61 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setLayout (new FillLayout ());
 	final Tree tree = new Tree (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 	for (int i=0; i<4; i++) {
 		TreeItem item0 = new TreeItem (tree, 0);
@@ -37,7 +39,6 @@ public static void main (String [] args) {
 			}	
 		}
 	}
-	tree.setBounds (0, 0, 100, 100);
 	tree.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event e) {
 			String string = "";
