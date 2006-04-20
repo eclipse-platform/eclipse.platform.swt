@@ -72,6 +72,7 @@ public static void main(String [] args) {
 	font1.dispose();
 	font2.dispose();
 	font3.dispose();
+	textLayout.dispose();
 	display.dispose();
 }
 }
