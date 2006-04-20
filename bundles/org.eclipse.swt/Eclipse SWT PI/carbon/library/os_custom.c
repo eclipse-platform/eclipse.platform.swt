@@ -241,3 +241,19 @@ fail:
 	OS_NATIVE_EXIT(env, that, CGPointApplyAffineTransform_FUNC);
 }
 #endif
+
+#ifndef NO__1_1BIG_1ENDIAN_1_1
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1_1BIG_1ENDIAN_1_1)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, _1_1BIG_1ENDIAN_1_1_FUNC)
+#ifdef __BIG_ENDIAN__
+	rc = (jboolean)TRUE;
+#else
+	rc = (jboolean)FALSE;
+#endif
+	OS_NATIVE_EXIT(env, that, _1_1BIG_1ENDIAN_1_1_FUNC)
+	return rc;
+}
+#endif

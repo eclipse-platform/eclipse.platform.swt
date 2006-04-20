@@ -251,7 +251,12 @@ public void copyArea(Image image, int x, int y) {
 				int bpp = OS.CGDisplayBitsPerPixel(display);
 				int bps = OS.CGDisplayBitsPerSample(display);
 				int provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
-				int srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, OS.kCGImageAlphaNoneSkipFirst, provider, null, true, 0);
+				int bitmapInfo = OS.kCGImageAlphaNoneSkipFirst;
+				switch (bpp) {
+					case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
+					case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
+				}
+				int srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, bitmapInfo, provider, null, true, 0);
 				OS.CGDataProviderRelease(provider);
 				copyArea(image, x, y, srcImage);
 				if (srcImage != 0) OS.CGImageRelease(srcImage);
