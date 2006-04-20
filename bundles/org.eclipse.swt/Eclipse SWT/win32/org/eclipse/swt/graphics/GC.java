@@ -3610,12 +3610,14 @@ void setClipping(int clipRgn) {
 	} else {
 		POINT pt = null;
 		if (hRgn != 0 && !OS.IsWinCE) {
-			pt = new POINT ();
-			OS.GetWindowOrgEx (handle, pt);
-			OS.OffsetRgn (hRgn, -pt.x, -pt.y);
+			pt = new POINT();
+			OS.GetWindowOrgEx(handle, pt);
+			OS.OffsetRgn(hRgn, -pt.x, -pt.y);
 		}
 		OS.SelectClipRgn(handle, hRgn);
-		if (hRgn != 0) OS.OffsetRgn (hRgn, pt.x, pt.y);
+		if (hRgn != 0 && !OS.IsWinCE) {
+			OS.OffsetRgn(hRgn, pt.x, pt.y);
+		}
 	}
 	if (hRgn != 0 && hRgn != clipRgn) {
 		OS.DeleteObject(hRgn);
