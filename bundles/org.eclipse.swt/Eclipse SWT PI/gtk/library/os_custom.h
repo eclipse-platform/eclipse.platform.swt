@@ -28,6 +28,7 @@
 
 /* Libraries for dynamic loaded functions */
 #define XRenderQueryExtension_LIB "libXrender.so"
+#define XRenderQueryVersion_LIB "libXrender.so"
 #define XRenderFindStandardFormat_LIB "libXrender.so"
 #define XRenderFindVisualFormat_LIB "libXrender.so"
 #define XRenderComposite_LIB "libXrender.so"

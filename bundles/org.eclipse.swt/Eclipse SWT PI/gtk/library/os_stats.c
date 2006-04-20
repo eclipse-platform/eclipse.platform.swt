@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1104;
-int OS_nativeFunctionCallCount[1104];
+int OS_nativeFunctionCount = 1105;
+int OS_nativeFunctionCallCount[1105];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -164,6 +164,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XRenderFindVisualFormat",
 	"_1XRenderFreePicture",
 	"_1XRenderQueryExtension",
+	"_1XRenderQueryVersion",
 	"_1XRenderSetPictureClipRectangles",
 	"_1XRenderSetPictureTransform",
 	"_1XSendEvent",

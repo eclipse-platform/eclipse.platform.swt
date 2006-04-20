@@ -937,6 +937,15 @@ public static final boolean XRenderQueryExtension(int /*long*/ display, int[] ev
 		lock.unlock();
 	}
 }
+public static final native int _XRenderQueryVersion(int /*long*/ display, int[] major_versionp, int[] minor_versionp);
+public static final int XRenderQueryVersion(int /*long*/ display, int[] major_versionp, int[] minor_versionp) {
+	lock.lock();
+	try {
+		return _XRenderQueryVersion(display, major_versionp, minor_versionp);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes);
 public static final int /*long*/ XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes) {
 	lock.lock();

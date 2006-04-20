@@ -1833,6 +1833,42 @@ fail:
 }
 #endif
 
+#ifndef NO__1XRenderQueryVersion
+JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderQueryVersion)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XRenderQueryVersion_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)XRenderQueryVersion(arg0, lparg1, lparg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, jint *, jint *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderQueryVersion_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderQueryVersion");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, lparg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1XRenderQueryVersion_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XRenderSetPictureClipRectangles
 JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRectangles)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4, jint arg5)
