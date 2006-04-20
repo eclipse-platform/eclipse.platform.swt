@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * example snippet: Usage of SWT.Settings
+ * example snippet: Usage of SWT.Settings event
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -30,14 +30,16 @@ public static void main(String [] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
 	shell.setText("The SWT.Settings Event");
-	shell.setLayout(new FillLayout());
-	
+	shell.setLayout(new GridLayout());
+	Label label = new Label(shell, SWT.WRAP);
+	label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+	label.setText("Change a system setting and the table below will be updated.");
 	final Table table = new Table(shell, SWT.BORDER);
+	table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 	TableColumn column = new TableColumn(table, SWT.NONE);
 	column = new TableColumn(table, SWT.NONE);
 	column.setWidth(150);
 	column = new TableColumn(table, SWT.NONE);
-	column.setWidth(150);
 	for (int i = 0; i < colorIds.length; i++) {
 		TableItem item = new TableItem(table, SWT.NONE);
 		Color color = display.getSystemColor(colorIds[i]);
@@ -45,7 +47,9 @@ public static void main(String [] args) {
 		item.setBackground(1, color);
 		item.setText(2, color.toString());
 	}
-	table.getColumn(0).pack();
+	TableColumn[] columns = table.getColumns();
+	columns[0].pack();
+	columns[2].pack();
 	display.addListener(SWT.Settings, new Listener() {
 		public void handleEvent(Event event) {
 			for (int i = 0; i < colorIds.length; i++) {
@@ -53,6 +57,9 @@ public static void main(String [] args) {
 				TableItem item = table.getItem(i);
 				item.setBackground(1, color);
 			}
+			TableColumn[] columns = table.getColumns();
+			columns[0].pack();
+			columns[2].pack();
 		}
 	});
 
