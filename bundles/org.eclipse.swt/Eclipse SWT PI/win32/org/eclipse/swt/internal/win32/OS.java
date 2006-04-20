@@ -1476,10 +1476,12 @@ public class OS extends Platform {
 	public static final int TTF_SUBCLASS = 0x10;
 	public static final int TTF_RTLREADING = 0x4;
 	public static final int TTF_TRACK = 0x20;
+	public static final int TTF_TRANSPARENT = 0x100;
 	public static final int TTI_NONE = 0;
 	public static final int TTI_INFO = 1;
 	public static final int TTI_WARNING = 2;
 	public static final int TTI_ERROR= 3;
+	public static final int TTM_ACTIVATE = 0x400 + 1;
 	public static final int TTM_ADDTOOL = IsUnicode ? 0x432 : 0x404;
 	public static final int TTM_GETCURRENTTOOLA = 0x400 + 15;
 	public static final int TTM_GETCURRENTTOOLW = 0x400 + 59;
