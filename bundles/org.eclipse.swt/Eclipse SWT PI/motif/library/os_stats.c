@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 468;
-int OS_nativeFunctionCallCount[468];
+int OS_nativeFunctionCount = 469;
+int OS_nativeFunctionCallCount[469];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -130,6 +130,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XRenderFindVisualFormat",
 	"_1XRenderFreePicture",
 	"_1XRenderQueryExtension",
+	"_1XRenderQueryVersion",
 	"_1XRenderSetPictureClipRectangles",
 	"_1XRenderSetPictureClipRegion",
 	"_1XRenderSetPictureTransform",

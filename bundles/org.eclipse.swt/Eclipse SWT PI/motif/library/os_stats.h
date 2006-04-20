@@ -134,6 +134,7 @@ typedef enum {
 	_1XRenderFindVisualFormat_FUNC,
 	_1XRenderFreePicture_FUNC,
 	_1XRenderQueryExtension_FUNC,
+	_1XRenderQueryVersion_FUNC,
 	_1XRenderSetPictureClipRectangles_FUNC,
 	_1XRenderSetPictureClipRegion_FUNC,
 	_1XRenderSetPictureTransform_FUNC,
