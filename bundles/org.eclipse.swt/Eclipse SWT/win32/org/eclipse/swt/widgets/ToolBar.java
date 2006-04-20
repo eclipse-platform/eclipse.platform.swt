@@ -1152,11 +1152,12 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		case OS.NM_CUSTOMDRAW:
 			if (OS.COMCTL32_MAJOR < 6) break;
-			if (OS.IsAppThemed ()) {
-				if (findBackgroundControl () == null && findThemeControl () == null) {
-					break;
-				}
-			}
+			/*
+			* Bug in Windows.  For some reason, under the XP Silver
+			* theme, tool bars continue to draw using the gray color
+			* from the default Blue theme.  The fix is to draw the
+			* background.
+			*/
 			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
