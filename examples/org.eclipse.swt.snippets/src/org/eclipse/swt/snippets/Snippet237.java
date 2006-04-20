@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * example snippet: Shows different settings for BackgroundMode for a widget.
+ * Composite Snippet: Different ways a child widget can inherit a background color or image
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
