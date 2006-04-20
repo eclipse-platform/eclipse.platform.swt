@@ -542,9 +542,12 @@ public boolean getWarnings () {
 protected void init () {
 	if (OS.GDK_WINDOWING_X11()) {
 		xDisplay = OS.GDK_DISPLAY ();
-
 		int[] event_basep = new int[1], error_basep = new int [1];
-		useXRender = OS.XRenderQueryExtension (xDisplay, event_basep, error_basep);
+		if (OS.XRenderQueryExtension (xDisplay, event_basep, error_basep)) {
+			int[] major_versionp = new int[1], minor_versionp = new int [1];
+			OS.XRenderQueryVersion (xDisplay, major_versionp, minor_versionp);
+			useXRender = major_versionp[0] > 0 || (major_versionp[0] == 0 && minor_versionp[0] >= 8);
+		}
 	}
 
 	if (debug) {

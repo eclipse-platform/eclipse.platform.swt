@@ -601,7 +601,11 @@ protected void init () {
 	if (debug) OS.XSynchronize (xDisplay, true);
 
 	int[] event_basep = new int[1], error_basep = new int [1];
-	useXRender = OS.XRenderQueryExtension(xDisplay, event_basep, error_basep);
+	if (OS.XRenderQueryExtension (xDisplay, event_basep, error_basep)) {
+		int[] major_versionp = new int[1], minor_versionp = new int [1];
+		OS.XRenderQueryVersion (xDisplay, major_versionp, minor_versionp);
+		useXRender = major_versionp[0] > 0 || (major_versionp[0] == 0 && minor_versionp[0] >= 8);
+	}
 		
 	/* Create the warning and error callbacks */
 	Class clazz = getClass ();
