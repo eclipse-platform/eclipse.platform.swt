@@ -1026,6 +1026,8 @@ public void setExpanded (boolean expanded) {
 	}
 	parent.ignoreExpand = false;
 	cached = true;
+	parent.setScrollWidth (true);
+	parent.fixScrollBar ();
 }
 
 /**

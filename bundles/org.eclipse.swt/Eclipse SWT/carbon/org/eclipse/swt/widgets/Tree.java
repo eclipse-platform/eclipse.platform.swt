@@ -2189,9 +2189,10 @@ int itemNotificationProc (int browser, int id, int message) {
 				Event event = new Event ();
 				event.item = parentItem;
 				sendEvent (SWT.Collapse, event);
+				if (isDisposed ()) break;
+				setScrollWidth (true);
+				fixScrollBar ();
 			}
-			setScrollWidth (true);
-			fixScrollBar ();
 			break;
 		}
 		case OS.kDataBrowserContainerOpened: {
@@ -2203,6 +2204,7 @@ int itemNotificationProc (int browser, int id, int message) {
 				try {
 					item.state |= EXPANDING;
 					sendEvent (SWT.Expand, event);
+					if (isDisposed ()) break;
 				} finally {
 					item.state &= ~EXPANDING;
 				}
