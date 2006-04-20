@@ -53,7 +53,7 @@ public class Tree extends Composite {
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
 	boolean linesVisible, customDraw, printClient, painted, ignoreItemHeight;
 	boolean ignoreDraw, ignoreCustomDraw, ignoreDrawSelection, ignoreDrawBackground;
-	int scrollWidth, headerToolTipHandle, selectionForeground;
+	int scrollWidth, itemToolTipHandle, headerToolTipHandle, selectionForeground;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
 	static final int SORT_WIDTH = 10;
@@ -134,7 +134,7 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.PaintItem: {
 			customDraw = true;
 			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
-			newBits |= OS.TVS_NOHSCROLL;
+			newBits |= OS.TVS_NOHSCROLL | OS.TVS_NOTOOLTIPS;
 			/*
 			* Feature in Windows.  When the tree has the style
 			* TVS_FULLROWSELECT, the background color for the
@@ -1558,9 +1558,9 @@ void createHeaderToolTips () {
 		0,
 		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 		null,
-		OS.TTS_ALWAYSTIP,
-		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
 		0,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		handle,
 		0,
 		OS.GetModuleHandle (null),
 		null);
@@ -1829,6 +1829,40 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 	}
 }
 
+void createItemToolTips () {
+	if (OS.IsWinCE) return;
+	if (itemToolTipHandle != 0) return;
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	bits |= OS.TVS_NOTOOLTIPS;
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	itemToolTipHandle = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		null,
+		0,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		handle,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (itemToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (itemToolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	lpti.hwnd = handle;
+	lpti.uId = handle;
+	lpti.uFlags = OS.TTF_SUBCLASS | OS.TTF_TRANSPARENT;
+	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
+	OS.SendMessage (itemToolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+}
+
 void createParent () {
 	forceResize ();
 	RECT rect = new RECT ();
@@ -1908,6 +1942,7 @@ void createParent () {
 	if (hwndFocus == handle) OS.SetFocus (handle);
 	register ();
 	subclass ();
+	createItemToolTips ();
 }
 
 void createWidget () {
@@ -3164,8 +3199,9 @@ void releaseWidget () {
 	int hStateList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
 	if (hStateList != 0) OS.ImageList_Destroy (hStateList);
+	if (itemToolTipHandle != 0) OS.DestroyWindow (itemToolTipHandle);
 	if (headerToolTipHandle != 0) OS.DestroyWindow (headerToolTipHandle);
-	headerToolTipHandle = 0;
+	itemToolTipHandle = headerToolTipHandle = 0;
 }
 
 /**
@@ -4345,10 +4381,60 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
 	if (headerToolTipHandle == hdr.hwndFrom) {
-		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		int count = OS.SendMessage(hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			TreeColumn column = columns [i];
 			if (column.id == hdr.idFrom) return column.toolTipText;
+		}
+		return super.toolTipText (hdr);
+	}
+	if (itemToolTipHandle == hdr.hwndFrom && hwndHeader != 0) {
+		int pos = OS.GetMessagePos ();
+		POINT pt = new POINT();
+		pt.x = (short) (pos & 0xFFFF);
+		pt.y = (short) (pos >> 16);
+		OS.ScreenToClient (handle, pt);
+		TVHITTESTINFO lpht = new TVHITTESTINFO ();
+		lpht.x = pt.x;
+		lpht.y = pt.y;
+		OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+		if (lpht.hItem != 0) {
+			int hDC = OS.GetDC (handle);
+			int oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+			RECT rect = new RECT ();
+			OS.GetClientRect (hwndParent, rect);
+			OS.MapWindowPoints (hwndParent, handle, rect, 2);
+			TreeItem item = _getItem (lpht.hItem);
+			String text = null;
+			int index = 0, count = Math.max (1, OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
+			int [] order = new int [count];
+			OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+			while (index < count) {
+				int hFont = item.cellFont != null ? item.cellFont [order [index]] : -1;
+				if (hFont == -1) hFont = item.font;
+				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+				RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
+				if (hFont != -1) OS.SelectObject (hDC, hFont);
+				if (cellRect.left > rect.right) break;
+				cellRect.right = Math.min (cellRect.right, rect.right);
+				if (OS.PtInRect (cellRect, pt)) {
+					RECT textRect = item.getBounds (order [index], true, false, false, false, false, hDC);
+					if (textRect.right > cellRect.right) {
+						if (order [index] == 0) {
+							text = item.text;
+						} else {
+							String[] strings = item.strings;
+							if (strings != null) text = strings [order [index]];
+						}
+					}
+					break;
+				}
+				index++;
+			}
+			if (newFont != 0) OS.SelectObject (hDC, oldFont);
+			OS.ReleaseDC (handle, hDC);
+			if (text != null) return text;
 		}
 	}
 	return super.toolTipText (hdr);
@@ -5277,6 +5363,64 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
+LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
+	if (result != null) return result;
+	if (itemToolTipHandle != 0 && hwndHeader != 0) {
+		int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+		if (((wParam & 0xFFFF) & mask) == 0) {
+			TVHITTESTINFO lpht = new TVHITTESTINFO ();
+			lpht.x = (short) (lParam & 0xFFFF);
+			lpht.y = (short) (lParam >> 16);
+			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+			if (lpht.hItem != 0) {
+				int hDC = OS.GetDC (handle);
+				int oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+				POINT pt = new POINT();
+				pt.x = lpht.x;
+				pt.y = lpht.y;
+				RECT rect = new RECT ();
+				OS.GetClientRect (hwndParent, rect);
+				OS.MapWindowPoints (hwndParent, handle, rect, 2);
+				TreeItem item = _getItem (lpht.hItem);
+				int index = 0, count = Math.max (1, OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
+				int [] order = new int [count];
+				OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+				while (index < count) {
+					int hFont = item.cellFont != null ? item.cellFont [order [index]] : -1;
+					if (hFont == -1) hFont = item.font;
+					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+					RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
+					if (hFont != -1) OS.SelectObject (hDC, hFont);
+					if (cellRect.left > rect.right) break;
+					cellRect.right = Math.min (cellRect.right, rect.right);
+					if (OS.PtInRect (cellRect, pt)) {
+						RECT textRect = item.getBounds (order [index], true, false, false, false, false, hDC);
+						if (textRect.right > cellRect.right) {
+							TOOLINFO lpti = new TOOLINFO ();
+							lpti.cbSize = TOOLINFO.sizeof;
+							lpti.hwnd = handle;
+							lpti.uId = handle;
+							lpti.uFlags = OS.TTF_SUBCLASS | OS.TTF_TRANSPARENT;
+							lpti.left = cellRect.left;
+							lpti.top = cellRect.top;
+							lpti.right = cellRect.right;
+							lpti.bottom = cellRect.bottom;
+							OS.SendMessage (itemToolTipHandle, OS.TTM_NEWTOOLRECT, 0, lpti);
+						}
+						break;
+					}
+					index++;
+				}
+				if (newFont != 0) OS.SelectObject (hDC, oldFont);
+				OS.ReleaseDC (handle, hDC);
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_MOVE (int wParam, int lParam) {
 	if (ignoreResize) return null;
 	return super.WM_MOVE (wParam, lParam);
@@ -5285,7 +5429,60 @@ LRESULT WM_MOVE (int wParam, int lParam) {
 LRESULT WM_NOTIFY (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-	if (hwndHeader != 0 && hdr.hwndFrom == hwndHeader) {
+	if (hdr.hwndFrom == itemToolTipHandle && hwndHeader != 0) {
+		if (!OS.IsWinCE) {
+			switch (hdr.code) {
+				case OS.TTN_SHOW: {
+					int pos = OS.GetMessagePos ();
+					POINT pt = new POINT();
+					pt.x = (short) (pos & 0xFFFF);
+					pt.y = (short) (pos >> 16);
+					OS.ScreenToClient (handle, pt);
+					TVHITTESTINFO lpht = new TVHITTESTINFO ();
+					lpht.x = pt.x;
+					lpht.y = pt.y;
+					OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+					if (lpht.hItem != 0) {
+						int hDC = OS.GetDC (handle);
+						int oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+						if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+						LRESULT result = null;
+						RECT rect = new RECT ();
+						OS.GetClientRect (hwndParent, rect);
+						OS.MapWindowPoints (hwndParent, handle, rect, 2);
+						TreeItem item = _getItem (lpht.hItem);
+						int index = 0, count = Math.max (1, OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
+						int [] order = new int [count];
+						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+						while (index < count) {
+							int hFont = item.cellFont != null ? item.cellFont [order [index]] : -1;
+							if (hFont == -1) hFont = item.font;
+							if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+							RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
+							if (hFont != -1) OS.SelectObject (hDC, hFont);
+							if (cellRect.left > rect.right) break;
+							cellRect.right = Math.min (cellRect.right, rect.right);
+							if (OS.PtInRect (cellRect, pt)) {
+								RECT textRect = item.getBounds (order [index], true, false, false, false, false, hDC);
+								if (textRect.right > cellRect.right) {
+									OS.MapWindowPoints (handle, 0, textRect, 2);
+									int flags = OS.SWP_NOACTIVATE | OS.SWP_NOSIZE | OS.SWP_NOZORDER;
+									SetWindowPos (itemToolTipHandle, 0, textRect.left, textRect.top, 0, 0, flags);
+									result = LRESULT.ONE;
+								}
+								break;
+							}
+							index++;
+						}
+						if (newFont != 0) OS.SelectObject (hDC, oldFont);
+						OS.ReleaseDC (handle, hDC);
+						if (result != null) return result;
+					}
+				}
+			}
+		}
+	}
+	if (hdr.hwndFrom == hwndHeader) {
 		/*
 		* Feature in Windows.  On NT, the automatically created
 		* header control is created as a UNICODE window, not an
@@ -5655,6 +5852,9 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	if (result != null) return result;
 	if (hwndHeader != 0) {
 		OS.SendMessage (hwndHeader, OS.WM_SETFONT, wParam, lParam);
+	}
+	if (itemToolTipHandle != 0) {
+		OS.SendMessage (itemToolTipHandle, OS.WM_SETFONT, wParam, lParam);
 	}
 	if (headerToolTipHandle != 0) {
 		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
