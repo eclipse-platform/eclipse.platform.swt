@@ -119,6 +119,9 @@ public class Display extends Device {
 	
 	boolean inPaint, needsPaint;
 
+	/* GC */
+	int gcWindow;
+
 	/* Deferred dispose window */
 	int disposeWindow;
 	int [] disposeWindowList;
@@ -2146,7 +2149,8 @@ void initializeWidgetTable () {
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	//TODO - multiple monitors
-	int window = createOverlayWindow ();
+	int window = gcWindow;
+	if (window == 0) window = gcWindow = createOverlayWindow ();
 	int port = OS.GetWindowPort (window);
 	int [] buffer = new int [1];
 	OS.CreateCGContextForPort (port, buffer);
@@ -2190,7 +2194,11 @@ public void internal_dispose_GC (int context, GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (data != null) {
 		int window = data.window;
-		OS.DisposeWindow (window);
+		if (gcWindow == window) {
+			OS.HideWindow (window);
+		} else {
+			OS.DisposeWindow (window);
+		}
 		data.window = 0;
 	}
 	
@@ -2973,6 +2981,9 @@ protected void release () {
 
 void releaseDisplay () {
 	disposeWindows ();
+
+	if (gcWindow != 0) OS.DisposeWindow (gcWindow);
+	gcWindow = 0;
 
 	/* Release Timers */
 	if (caretID != 0) OS.RemoveEventLoopTimer (caretID);
