@@ -978,6 +978,9 @@ void setFont(Font font, int tabs) {
 		boldItalicFont.dispose();
 		boldFont = italicFont = boldItalicFont = null;
 	}
+	layout.dispose();
+	layout = new TextLayout(device);
+	layout.setFont(regularFont);
 	StringBuffer tabBuffer = new StringBuffer(tabs);
 	for (int i = 0; i < tabs; i++) {
 		tabBuffer.append(' ');
