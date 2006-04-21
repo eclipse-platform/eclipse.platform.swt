@@ -18,8 +18,7 @@ import org.eclipse.swt.internal.win32.*;
 class StyledTextDragAndDropEffect extends DragAndDropEffect {
 	StyledText text;
 	long scrollBeginTime;
-	int scrollY;
-	int scrollX;
+	int scrollX = -1, scrollY = -1;
 	
 	static final int SCROLL_HYSTERESIS = 100; // milli seconds
 	static final int SCROLL_TOLERANCE = 20; // pixels
@@ -33,27 +32,12 @@ void showDropTargetEffect(int effect, int x, int y) {
 		scrollBeginTime = 0;
 		scrollY = scrollX = -1;
 	} else {
-		if (scrollY != -1 && scrollX != -1 && scrollBeginTime != 0 &&
-			(pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE) ||
-			 pt.x >= scrollX && pt.x <= (scrollX + SCROLL_TOLERANCE))) {
+		if (scrollX != -1 && scrollY != -1 && scrollBeginTime != 0 &&
+			(pt.x >= scrollX && pt.x <= (scrollX + SCROLL_TOLERANCE) ||
+			 pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE))) {
 			if (System.currentTimeMillis() >= scrollBeginTime) {
 				Rectangle area = text.getClientArea();
 				Rectangle bounds = text.getTextBounds(0, 0);
-				int lineHeight = bounds.height;
-				if (pt.y < area.y + lineHeight) {
-					int topPixel = text.getTopPixel();
-					text.setTopPixel(topPixel - lineHeight);
-					if (text.getTopPixel() != topPixel) {
-						text.redraw();
-					}
-				}
-				if (pt.y > area.height - lineHeight) {
-					int topPixel = text.getTopPixel();
-					text.setTopPixel(topPixel + lineHeight);
-					if (text.getTopPixel() != topPixel) {
-						text.redraw();
-					}
-				}
 				int charWidth = bounds.width;
 				if (pt.x < area.x + 2*charWidth) {
 					int leftPixel = text.getHorizontalPixel();
@@ -69,13 +53,28 @@ void showDropTargetEffect(int effect, int x, int y) {
 						text.redraw();
 					}
 				}
+				int lineHeight = bounds.height;
+				if (pt.y < area.y + lineHeight) {
+					int topPixel = text.getTopPixel();
+					text.setTopPixel(topPixel - lineHeight);
+					if (text.getTopPixel() != topPixel) {
+						text.redraw();
+					}
+				}
+				if (pt.y > area.height - lineHeight) {
+					int topPixel = text.getTopPixel();
+					text.setTopPixel(topPixel + lineHeight);
+					if (text.getTopPixel() != topPixel) {
+						text.redraw();
+					}
+				}
 				scrollBeginTime = 0;
-				scrollY = scrollX = -1;
+				scrollX = scrollY = -1;
 			}
 		} else {
 			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
-			scrollY = pt.y;
 			scrollX = pt.x;
+			scrollY = pt.y;
 		}
 	}
 		
