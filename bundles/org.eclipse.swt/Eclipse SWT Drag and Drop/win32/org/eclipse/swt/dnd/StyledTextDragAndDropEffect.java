@@ -30,7 +30,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 	Point pt = text.getDisplay().map(null, text, x, y);
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
-		scrollY = scrollX = -1;
+		scrollX = scrollY = -1;
 	} else {
 		if (scrollX != -1 && scrollY != -1 && scrollBeginTime != 0 &&
 			(pt.x >= scrollX && pt.x <= (scrollX + SCROLL_TOLERANCE) ||
