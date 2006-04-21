@@ -2150,7 +2150,18 @@ public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	//TODO - multiple monitors
 	int window = gcWindow;
-	if (window == 0) window = gcWindow = createOverlayWindow ();
+	if (window == 0) {
+		window = gcWindow = createOverlayWindow ();
+	} else {
+		int gdevice = OS.GetMainDevice ();
+		int [] ptr = new int [1];
+		OS.memcpy (ptr, gdevice, 4);
+		GDevice device = new GDevice ();
+		OS.memcpy (device, ptr [0], GDevice.sizeof);
+		Rect rect = new Rect ();	
+		OS.SetRect (rect, device.left, device.top, device.right, device.bottom);
+		OS.SetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	}
 	int port = OS.GetWindowPort (window);
 	int [] buffer = new int [1];
 	OS.CreateCGContextForPort (port, buffer);
