@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.*;
 class StyledTextDragAndDropEffect extends DragAndDropEffect {
 	StyledText text;
 	long scrollBeginTime;
-	int scrollY;
+	int scrollX = -1, scrollY = -1;
 	
 	static final int SCROLL_HYSTERESIS = 100; // milli seconds
 	static final int SCROLL_TOLERANCE = 20; // pixels
@@ -26,16 +26,33 @@ StyledTextDragAndDropEffect(StyledText control) {
 	text = control;
 }
 void showDropTargetEffect(int effect, int x, int y) {
-		Point pt = text.getDisplay().map(null, text, x, y);
+	Point pt = text.getDisplay().map(null, text, x, y);
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
-		scrollY = -1;
+		scrollX = scrollY = -1;
 	} else {
-		if (scrollY != -1 && scrollBeginTime != 0
-			&& pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE)) {
+		if (scrollX != -1 && scrollY != -1 && scrollBeginTime != 0 &&
+			(pt.x >= scrollX && pt.x <= (scrollX + SCROLL_TOLERANCE) ||
+			 pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE))) {
 			if (System.currentTimeMillis() >= scrollBeginTime) {
 				Rectangle area = text.getClientArea();
-				int lineHeight = text.getLineHeight();
+				Rectangle bounds = text.getTextBounds(0, 0);
+				int charWidth = bounds.width;
+				if (pt.x < area.x + 2*charWidth) {
+					int leftPixel = text.getHorizontalPixel();
+					text.setHorizontalPixel(leftPixel - charWidth);
+					if (text.getHorizontalPixel() != leftPixel) {
+						text.redraw();
+					}
+				}
+				if (pt.x > area.width - 2*charWidth) {
+					int leftPixel = text.getHorizontalPixel();
+					text.setHorizontalPixel(leftPixel + charWidth);
+					if (text.getHorizontalPixel() != leftPixel) {
+						text.redraw();
+					}
+				}
+				int lineHeight = bounds.height;
 				if (pt.y < area.y + lineHeight) {
 					int topPixel = text.getTopPixel();
 					text.setTopPixel(topPixel - lineHeight);
@@ -51,10 +68,11 @@ void showDropTargetEffect(int effect, int x, int y) {
 					}
 				}
 				scrollBeginTime = 0;
-				scrollY = -1;
+				scrollX = scrollY = -1;
 			}
 		} else {
 			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+			scrollX = pt.x;
 			scrollY = pt.y;
 		}
 	}
