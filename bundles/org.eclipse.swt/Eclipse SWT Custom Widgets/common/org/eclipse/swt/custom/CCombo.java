@@ -772,6 +772,11 @@ void initAccessible() {
 		public void getCaretOffset (AccessibleTextEvent e) {
 			e.offset = text.getCaretPosition ();
 		}
+		public void getSelectionRange(AccessibleTextEvent e) {
+			Point sel = text.getSelection();
+			e.offset = sel.x;
+			e.length = sel.y - sel.x;
+		}
 	});
 	
 	getAccessible().addAccessibleControlListener (new AccessibleControlAdapter() {
