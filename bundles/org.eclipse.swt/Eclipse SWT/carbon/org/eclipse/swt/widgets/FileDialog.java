@@ -221,7 +221,7 @@ public String open () {
 			char [] buffer = new char [publicData.length ()];
 			publicData.getChars (0, buffer.length, buffer, 0);
 			kUTTypeData = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			identifiers = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 1, 0);
+			identifiers = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 0, 0);
 			for (int i = 0; i < count; i++) {
 				int uti;
 				String extension = extensions [i];
