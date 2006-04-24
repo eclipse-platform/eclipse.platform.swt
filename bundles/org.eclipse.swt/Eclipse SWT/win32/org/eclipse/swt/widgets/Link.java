@@ -889,13 +889,14 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT wmColorChild (int wParam, int lParam) {
-	LRESULT result = super.wmColorChild (wParam, lParam);
+	int fg = foreground;
 	if (OS.COMCTL32_MAJOR >= 6) {
 		if (!OS.IsWindowEnabled (handle)) {
-			int forePixel = OS.GetSysColor (OS.COLOR_GRAYTEXT);
-			OS.SetTextColor (wParam, forePixel);
+			foreground = OS.GetSysColor (OS.COLOR_GRAYTEXT);
 		}
 	}
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	foreground = fg;
 	return result;
 }
 
