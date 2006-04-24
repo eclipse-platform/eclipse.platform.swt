@@ -9,13 +9,13 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
+
 /* 
  * Menu example snippet: create a popup menu with a submenu
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
