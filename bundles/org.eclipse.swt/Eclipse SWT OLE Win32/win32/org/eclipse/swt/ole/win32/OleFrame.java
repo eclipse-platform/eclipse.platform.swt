@@ -243,7 +243,6 @@ static int getMsgProc(int code, int wParam, int lParam) {
 					if (!consumed && !accentKey && !ignoreNextKey) {
 						int hwndOld = msg.hwnd;
 						msg.hwnd = site.handle;
-						//OS.TranslateMessage (msg);
 						consumed = OS.DispatchMessage (msg) == 1;
 						msg.hwnd = hwndOld;
 					}
