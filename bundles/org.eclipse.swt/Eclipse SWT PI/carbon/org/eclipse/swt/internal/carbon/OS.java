@@ -852,7 +852,7 @@ public class OS extends Platform {
 	public static final int teJustLeft = 0;
 	public static final int teJustCenter = 1;
 	public static final int teJustRight = -1;
-	public static final int typeCFBooleanRef = ('c'<<24) + ('f'<<16) + ('b'<<8) + 'o';
+	public static final int typeBoolean = ('b'<<24) + ('o'<<16) + ('o'<<8) + 'l';
 	public static final int typeCFMutableArrayRef = ('c'<<24) + ('f'<<16) + ('m'<<8) + 'a';
 	public static final int typeCFStringRef = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
 	public static final int typeCFTypeRef = ('c'<<24) + ('f'<<16) + ('t'<<8) + 'y';
@@ -1291,6 +1291,7 @@ public static final native int GetEventParameter(int inEvent, int inName, int in
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, char[] outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, short[] outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, byte[] outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, boolean[] outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, HICommand outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, Point outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, CGPoint outData);
@@ -1678,6 +1679,7 @@ public static final native int SetEventParameter(int inEvent, int inName, int in
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, char[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, short[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, int[] inDataPtr);
+public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, boolean[] inDataPtr);
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, CGPoint inDataPtr);
 public static final native int SetFontInfoForSelection(int iStyleType, int iNumStyles, int iStyles, int iFPEventTarget);
 public static final native int SetFrontProcess(int[] psn);
@@ -1813,10 +1815,9 @@ public static final native int strlen(int ptr);
 
 
 public static final native int AXUIElementCreateWithHIObjectAndIdentifier(int inHIObject, long inIdentifier);
-  
 public static final native void AXNotificationHIObjectNotify(int inNotification, int inHIObject, long inIdentifier);
-
 public static final native void AXUIElementGetIdentifier(int inUIElement, long[] outIdentifier);
+public static final native int AXValueCreate (int theType, CFRange range);
 
 public static final int kEventClassAccessibility = ('a'<<24) + ('c'<<16) + ('c'<<8) + 'e';
 
@@ -2103,6 +2104,9 @@ public static final String kAXSelectedChildrenChangedNotification = "AXSelectedC
 public static final String kAXResizedNotification          = "AXResized";
 public static final String kAXMovedNotification            = "AXMoved";
 public static final String kAXCreatedNotification          = "AXCreated";
+
+// AXValue types
+public static final int kAXValueCFRangeType = 4;
 
 // Error codes
 public static final int kAXErrorIllegalArgument = -25201;

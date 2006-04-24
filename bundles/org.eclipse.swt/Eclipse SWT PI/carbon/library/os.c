@@ -754,6 +754,22 @@ fail:
 }
 #endif
 
+#ifndef NO_AXValueCreate
+JNIEXPORT jint JNICALL OS_NATIVE(AXValueCreate)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CFRange _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AXValueCreate_FUNC);
+	if (arg1) if ((lparg1 = getCFRangeFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)AXValueCreate((AXValueType)arg0, (CFRange *)lparg1);
+fail:
+	if (arg1 && lparg1) setCFRangeFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, AXValueCreate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ActiveNonFloatingWindow
 JNIEXPORT jint JNICALL OS_NATIVE(ActiveNonFloatingWindow)
 	(JNIEnv *env, jclass that)
@@ -5646,6 +5662,28 @@ fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, GetEventParameter__III_3II_3I_3S_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetEventParameter__III_3II_3I_3Z
+JNIEXPORT jint JNICALL OS_NATIVE(GetEventParameter__III_3II_3I_3Z)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jbooleanArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	jboolean *lparg6=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetEventParameter__III_3II_3I_3Z_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetBooleanArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseBooleanArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, GetEventParameter__III_3II_3I_3Z_FUNC);
 	return rc;
 }
 #endif
@@ -11144,6 +11182,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3S)
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
 	OS_NATIVE_EXIT(env, that, SetEventParameter__IIII_3S_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetEventParameter__IIII_3Z
+JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3Z)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbooleanArray arg4)
+{
+	jboolean *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetEventParameter__IIII_3Z_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetBooleanArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)SetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (UInt32)arg3, (const void *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseBooleanArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, SetEventParameter__IIII_3Z_FUNC);
 	return rc;
 }
 #endif

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 918;
-int OS_nativeFunctionCallCount[918];
+int OS_nativeFunctionCount = 921;
+int OS_nativeFunctionCallCount[921];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -62,6 +62,7 @@ char * OS_nativeFunctionNames[] = {
 	"AXNotificationHIObjectNotify",
 	"AXUIElementCreateWithHIObjectAndIdentifier",
 	"AXUIElementGetIdentifier",
+	"AXValueCreate",
 	"ActiveNonFloatingWindow",
 	"AddDataBrowserItems",
 	"AddDataBrowserListViewColumn",
@@ -415,6 +416,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetEventParameter__III_3II_3I_3C",
 	"GetEventParameter__III_3II_3I_3I",
 	"GetEventParameter__III_3II_3I_3S",
+	"GetEventParameter__III_3II_3I_3Z",
 	"GetEventTime",
 	"GetFlavorData",
 	"GetFlavorDataSize",
@@ -799,6 +801,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetEventParameter__IIII_3C",
 	"SetEventParameter__IIII_3I",
 	"SetEventParameter__IIII_3S",
+	"SetEventParameter__IIII_3Z",
 	"SetFontInfoForSelection",
 	"SetFrontProcess",
 	"SetFrontProcessWithOptions",
