@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.win32.*;
 
 /* AWT Imports */
 import java.awt.EventQueue;
