@@ -48,7 +48,7 @@ public class Tree extends Composite {
 	TreeColumn sortColumn;
 	int hwndParent, hwndHeader, hAnchor, hInsert, lastID;
 	int hFirstIndexOf, hLastIndexOf, lastIndexOf, itemCount, sortDirection;
-	boolean dragStarted, gestureCompleted, insertAfter, shrink;
+	boolean dragStarted, gestureCompleted, insertAfter, shrink, ignoreShrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
 	boolean linesVisible, customDraw, printClient, painted, ignoreItemHeight;
@@ -2186,7 +2186,9 @@ void destroyItem (TreeItem item, int hItem) {
 	if ((style & SWT.MULTI) != 0) {
 		ignoreDeselect = ignoreSelect = lockSelection = true;
 	}
+	shrink = ignoreShrink = true;
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+	ignoreShrink = false;
 	if ((style & SWT.MULTI) != 0) {
 		ignoreDeselect = ignoreSelect = lockSelection = false;
 	}
@@ -3229,7 +3231,9 @@ public void removeAll () {
 		*/
 //		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
+	shrink = ignoreShrink = true;
 	int result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
+	ignoreShrink = false;
 	if (redraw) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);	
 		/*
@@ -3834,7 +3838,9 @@ public void setRedraw (boolean redraw) {
 	}
 	super.setRedraw (redraw);
 	if (hItem != 0) {
+		ignoreShrink = true;
 		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+		ignoreShrink = false;
 	}
 }
 
@@ -5744,7 +5750,7 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_PAINT (int wParam, int lParam) {
-	if (shrink) {
+	if (shrink && !ignoreShrink) {
 		/* Resize the item array to fit the last item */
 		int count = items.length - 1;
 		while (count >= 0) {
@@ -5920,9 +5926,20 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				* COMCTL32.DLL.
 				*/
 				boolean checkVisible = true;
-				if (items != null && lptvdi.lParam != -1) {
-					if (items [lptvdi.lParam] != null && items [lptvdi.lParam].cached) {
-						checkVisible = false;
+				/*
+				* When an item is being deleted from a virtual tree, do not
+				* allow the application to provide data for a new item that
+				* becomes visible until the item has been removed from the
+				* items array.  Because arbitrary application code can run
+				* during the callback, the items array might be accessed
+				* in an inconsistent state.  Rather than answering the data
+				* right away, queue a redraw for later.
+				*/
+				if (!ignoreShrink) {
+					if (items != null && lptvdi.lParam != -1) {
+						if (items [lptvdi.lParam] != null && items [lptvdi.lParam].cached) {
+							checkVisible = false;
+						}
 					}
 				}
 				if (checkVisible) {
@@ -5935,6 +5952,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					RECT rect = new RECT ();
 					OS.GetClientRect (handle, rect);
 					if (!OS.IntersectRect (rect, rect, itemRect)) break;
+					if (ignoreShrink) {
+						OS.InvalidateRect (handle, rect, true);
+						break;
+					}
 				}
 			}
 			if (items == null) break;
