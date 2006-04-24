@@ -226,7 +226,8 @@ public Browser(Composite parent, int style) {
 					WebKit.objc_msgSend(webView, WebKit.S_setPolicyDelegate, 0);
 					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver, delegate);
 					
-					WebKit.objc_msgSend(delegate, WebKit.S_release);					
+					WebKit.objc_msgSend(delegate, WebKit.S_release);
+					if (OS.HIVIEW) OS.DisposeControl(webViewHandle);
 					html = null;
 					break;
 				}
