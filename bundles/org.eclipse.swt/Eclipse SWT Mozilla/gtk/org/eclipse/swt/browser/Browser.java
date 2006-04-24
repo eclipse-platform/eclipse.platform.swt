@@ -311,7 +311,6 @@ public Browser(Composite parent, int style) {
 			}
 			localizedString.SetDataWithLength(length, charBuffer);
 			rc = prefBranch.SetComplexValue(buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress());
-			if (rc != XPCOM.NS_OK) error(rc);
 		}
 		if (localizedString != null) {
 			localizedString.Release();
@@ -360,7 +359,6 @@ public Browser(Composite parent, int style) {
 			}
 			localizedString.SetDataWithLength(length, charBuffer);
 			rc = prefBranch.SetComplexValue(buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress());
-			if (rc != XPCOM.NS_OK) error(rc);
 		}
 		if (localizedString != null) localizedString.Release();
 		prefBranch.Release();
