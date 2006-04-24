@@ -889,14 +889,23 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT wmColorChild (int wParam, int lParam) {
-	int fg = foreground;
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	/*
+	* Feature in Windows.  When a SysLink is disabled, it does
+	* not gray out the non-link portion of the text.  The fix
+	* is to set the text color to the system gray color.
+	*/
 	if (OS.COMCTL32_MAJOR >= 6) {
 		if (!OS.IsWindowEnabled (handle)) {
-			foreground = OS.GetSysColor (OS.COLOR_GRAYTEXT);
+			OS.SetTextColor (wParam, OS.GetSysColor (OS.COLOR_GRAYTEXT));
+			if (result == null) {
+				int backPixel = getBackgroundPixel ();
+				OS.SetBkColor (wParam, backPixel);
+				int hBrush = findBrush (backPixel, OS.BS_SOLID);
+				return new LRESULT (hBrush);
+			}
 		}
 	}
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	foreground = fg;
 	return result;
 }
 
