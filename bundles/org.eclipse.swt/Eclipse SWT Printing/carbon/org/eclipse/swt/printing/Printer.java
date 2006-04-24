@@ -277,8 +277,10 @@ protected void create(DeviceData deviceData) {
 	char[] buffer1 = new char[name.length ()];
 	name.getChars(0, buffer1.length, buffer1, 0);
 	int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, buffer1, buffer1.length);
-	if (ptr != 0) OS.PMSessionSetCurrentPrinter(printSession, ptr); 
-	OS.CFRelease(ptr);
+	if (ptr != 0) {
+		OS.PMSessionSetCurrentPrinter(printSession, ptr); 
+		OS.CFRelease(ptr);
+	}
 	
 	OS.PMSessionValidatePrintSettings(printSession, printSettings, null);
 	OS.PMSessionValidatePageFormat(printSession, pageFormat, null);	
@@ -393,8 +395,10 @@ public boolean startJob(String jobName) {
 		char[] buffer = new char[jobName.length ()];
 		jobName.getChars(0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (ptr != 0) OS.PMSetJobNameCFString(printSettings, ptr); 
-		OS.CFRelease (ptr);
+		if (ptr != 0) {
+			OS.PMSetJobNameCFString(printSettings, ptr); 
+			OS.CFRelease (ptr);
+		}
 	}
 	return OS.PMSessionBeginDocumentNoDialog(printSession, printSettings, pageFormat) == OS.noErr;
 }
