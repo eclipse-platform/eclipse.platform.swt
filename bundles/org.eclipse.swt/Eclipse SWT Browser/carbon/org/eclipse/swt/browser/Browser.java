@@ -801,12 +801,10 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 23: setStatusText(arg0); break;
 		case 24: webViewFocus(); break;
 		case 25: webViewUnfocus(); break;
-		case 26: ret = webViewFirstResponder(); break;
-		case 27: makeFirstResponder(arg0); break;
-		case 28: runJavaScriptAlertPanelWithMessage(arg0); break;
-		case 29: ret = runJavaScriptConfirmPanelWithMessage(arg0); break;
-		case 30: runOpenPanelForFileButtonWithResultListener(arg0); break;
-		case 31: decideDestinationWithSuggestedFilename(arg0, arg1); break;
+		case 26: runJavaScriptAlertPanelWithMessage(arg0); break;
+		case 27: ret = runJavaScriptConfirmPanelWithMessage(arg0); break;
+		case 28: runOpenPanelForFileButtonWithResultListener(arg0); break;
+		case 29: decideDestinationWithSuggestedFilename(arg0, arg1); break;
 	}
 	return ret;
 }
@@ -1624,23 +1622,6 @@ void webViewFocus() {
 }
 
 void webViewUnfocus() {
-}
-
-int webViewFirstResponder() {
-	/*
-	* Note.  A web page can request focus through javascript to an internal
-	* element.  For some reason, when this occurs, Carbon SWT widget previously
-	* focused continues to believe it has focus, causing graphical problems
-	* (text widget shows flashing caret) and keyboard grab (keyboard continues
-	* to go to WebKit even if the Browser widget is hidden and another Carbon
-	* SWT widget has been selected by the user.  The workaround is to not allow
-	* WebKit to give focus to an internal element by returning 0 in this
-	* callback and by not doing anything in the makeFirstResponder callback. 
-	*/
-	return 0;
-}
-
-void makeFirstResponder(int responder) {
 }
 
 void runJavaScriptAlertPanelWithMessage(int message) {

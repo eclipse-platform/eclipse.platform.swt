@@ -194,29 +194,19 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 	proc((int)sender, user_data, 25, 0, 0, 0, 0);
 }
 
-- (NSResponder *)webViewFirstResponder:(WebView *)sender
-{
-	return (NSResponder *) proc((int)sender, user_data, 26, 0, 0, 0, 0);
-}
-
-- (void)webView:(WebView *)sender makeFirstResponder:(NSResponder *)responder
-{
-	proc((int)sender, user_data, 27, (int)responder, 0, 0, 0);
-}
-
 - (void)webView:(WebView *)sender runJavaScriptAlertPanelWithMessage:(NSString *)message
 {
-	proc((int)sender, user_data, 28, (int)message, 0, 0, 0);
+	proc((int)sender, user_data, 26, (int)message, 0, 0, 0);
 }
 
 - (BOOL)webView:(WebView *)sender runJavaScriptConfirmPanelWithMessage:(NSString *)message
 {
-	return (BOOL) proc((int)sender, user_data, 29, (int)message, 0, 0, 0);
+	return (BOOL) proc((int)sender, user_data, 27, (int)message, 0, 0, 0);
 }
 
 - (void)webView:(WebView *)sender runOpenPanelForFileButtonWithResultListener:(id<WebOpenPanelResultListener>)resultListener
 {
-	proc((int)sender, user_data, 30, (int)resultListener, 0, 0, 0);
+	proc((int)sender, user_data, 28, (int)resultListener, 0, 0, 0);
 }
 
 /* WebPolicyDelegate */
@@ -246,7 +236,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 
 - (void)download:(NSURLDownload *)download decideDestinationWithSuggestedFilename:(NSString *)filename
 {
-	proc((int)download, user_data, 31, (int)download, (int)filename, 0, 0);
+	proc((int)download, user_data, 29, (int)download, (int)filename, 0, 0);
 }
 
 @end
