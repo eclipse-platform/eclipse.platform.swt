@@ -253,20 +253,31 @@ public Browser(Composite parent, int style) {
 		result[0] = 0;
 
 		/* get Mozilla's current locale preference value */
+		String prefLocales = null;
+		nsIPrefLocalizedString localizedString = null;
 		buffer = Converter.wcsToMbcs(null, PREFERENCE_LANGUAGES, true);
 		rc = prefBranch.GetComplexValue(buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-
-		nsIPrefLocalizedString localizedString = new nsIPrefLocalizedString(result[0]);
+		/* 
+		 * Feature of Debian.  For some reason attempting to query for the current locale
+		 * preference fails on Debian.  The workaround for this is to assume a value of
+		 * "en-us,en" since this is typically the default value when mozilla is used without
+		 * a profile.
+		 */
+		if (rc != XPCOM.NS_OK) {
+			prefLocales = "en-us,en" + TOKENIZER_LOCALE;	//$NON-NLS-1$
+		} else {
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			localizedString = new nsIPrefLocalizedString(result[0]);
+			result[0] = 0;
+			rc = localizedString.ToString(result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			int length = XPCOM.strlen_PRUnichar(result[0]);
+			char[] dest = new char[length];
+			XPCOM.memmove(dest, result[0], length * 2);
+			prefLocales = new String(dest) + TOKENIZER_LOCALE;
+		}
 		result[0] = 0;
-		rc = localizedString.ToString(result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-		int length = XPCOM.strlen_PRUnichar(result[0]);
-		char[] dest = new char[length];
-		XPCOM.memmove(dest, result[0], length * 2);
-		String prefLocales = new String(dest) + TOKENIZER_LOCALE;
 
 		/*
 		 * construct the new locale preference value by prepending the
@@ -294,42 +305,71 @@ public Browser(Composite parent, int style) {
 		if (!newLocales.equals(prefLocales)) {
 			/* write the new locale value */
 			newLocales = newLocales.substring(0, newLocales.length() - TOKENIZER_LOCALE.length ()); /* remove trailing tokenizer */
-			length = newLocales.length();
+			int length = newLocales.length();
 			char[] charBuffer = new char[length + 1];
 			newLocales.getChars(0, length, charBuffer, 0);
+			if (localizedString == null) {
+				byte[] contractID = Converter.wcsToMbcs(null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
+				rc = componentManager.CreateInstanceByContractID(contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				localizedString = new nsIPrefLocalizedString(result[0]);
+				result[0] = 0;
+			}
 			localizedString.SetDataWithLength(length, charBuffer);
 			rc = prefBranch.SetComplexValue(buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress());
 			if (rc != XPCOM.NS_OK) error(rc);
 		}
-		localizedString.Release();
+		if (localizedString != null) {
+			localizedString.Release();
+			localizedString = null;
+		}
 
 		/* get Mozilla's current charset preference value */
+		String prefCharset = null;
 		buffer = Converter.wcsToMbcs(null, PREFERENCE_CHARSET, true);
 		rc = prefBranch.GetComplexValue(buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-
-		localizedString = new nsIPrefLocalizedString(result[0]);
+		/* 
+		 * Feature of Debian.  For some reason attempting to query for the current charset
+		 * preference fails on Debian.  The workaround for this is to assume a value of
+		 * "ISO-8859-1" since this is typically the default value when mozilla is used
+		 * without a profile.
+		 */
+		if (rc != XPCOM.NS_OK) {
+			prefCharset = "ISO-8859-1";	//$NON_NLS-1$
+		} else {
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			localizedString = new nsIPrefLocalizedString(result[0]);
+			result[0] = 0;
+			rc = localizedString.ToString(result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			int length = XPCOM.strlen_PRUnichar(result[0]);
+			char[] dest = new char[length];
+			XPCOM.memmove(dest, result[0], length * 2);
+			prefCharset = new String(dest);
+		}
 		result[0] = 0;
-		rc = localizedString.ToString(result);
-		if (rc != XPCOM.NS_OK) error(rc);
-		if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-		length = XPCOM.strlen_PRUnichar(result[0]);
-		dest = new char[length];
-		XPCOM.memmove(dest, result[0], length * 2);
-		String prefCharsets = new String(dest);
 
 		String newCharset = System.getProperty("file.encoding");	// $NON-NLS-1$
-		if (!newCharset.equals(prefCharsets)) {
+		if (!newCharset.equals(prefCharset)) {
 			/* write the new charset value */
-			length = newCharset.length();
+			int length = newCharset.length();
 			char[] charBuffer = new char[length + 1];
 			newCharset.getChars(0, length, charBuffer, 0);
+			if (localizedString == null) {
+				byte[] contractID = Converter.wcsToMbcs(null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
+				rc = componentManager.CreateInstanceByContractID(contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				localizedString = new nsIPrefLocalizedString(result[0]);
+				result[0] = 0;
+			}
 			localizedString.SetDataWithLength(length, charBuffer);
 			rc = prefBranch.SetComplexValue(buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress());
 			if (rc != XPCOM.NS_OK) error(rc);
 		}
-		localizedString.Release();
+		if (localizedString != null) localizedString.Release();
 		prefBranch.Release();
 
 		PromptServiceFactory factory = new PromptServiceFactory();
