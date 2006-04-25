@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Tool Tips example snippet: create tool tips for a tab folder, tool bar and control
+ * Tool Tips example snippet: create tool tips for a tab item, tool item, and shell
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
