@@ -58,7 +58,6 @@ public static void main (String [] args) {
 	}
 	
 	shell.open ();
-	bar.getItems () [1].setImage (disabledImage);
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
