@@ -225,21 +225,8 @@ public void append (String string) {
 		if (string == null) return;
 	}
 	if (txnObject == 0) {
-		if (hasFocus ()) {
-			ControlEditTextSelectionRec selection = new ControlEditTextSelectionRec ();
-			selection.selStart = selection.selEnd = -1;
-			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
-			char [] buffer = new char [string.length ()];
-			string.getChars (0, buffer.length, buffer, 0);
-			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextInsertCFStringRefTag, 4, new int[] {ptr});
-			OS.CFRelease (ptr);
-		} else {
-			String newText = getText () + string;
-			setEditText (newText);
-			setSelection(newText.length ());
-		}
+		setSelection (getCharCount ());
+		insertEditText (string);
 	} else {
 		setTXNText (OS.kTXNEndOffset, OS.kTXNEndOffset, string);
 		OS.TXNSetSelection (txnObject, OS.kTXNEndOffset, OS.kTXNEndOffset);
@@ -415,7 +402,7 @@ public void copy () {
 	if (txnObject == 0) {
 		Point selection = getSelection ();
 		if (selection.x == selection.y) return;
-		copy (getEditText (selection.x, selection.y - 1, true));	
+		copy (getEditText (selection.x, selection.y - 1));	
 	} else {
 		OS.TXNCopy (txnObject);
 	}
@@ -577,7 +564,6 @@ ScrollBar createScrollBar (int style) {
 void createWidget () {
 	super.createWidget ();
 	doubleClick = true;
-	hiddenText = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar (PASSWORD);
 }
 
@@ -601,7 +587,7 @@ public void cut () {
 	Point oldSelection = getSelection ();
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		if (oldSelection.x != oldSelection.y) {
-			oldText = getEditText (oldSelection.x, oldSelection.y - 1, true);
+			oldText = getEditText (oldSelection.x, oldSelection.y - 1);
 			String newText = verifyText ("", oldSelection.x, oldSelection.y, null);
 			if (newText == null) return;
 			if (newText.length () != 0) {
@@ -617,7 +603,7 @@ public void cut () {
 	}
 	if (cut) {
 		if (txnObject == 0) {
-			if (oldText == null) oldText = getEditText (oldSelection.x, oldSelection.y - 1, true);
+			if (oldText == null) oldText = getEditText (oldSelection.x, oldSelection.y - 1);
 			copy (oldText);
 			insertEditText ("");
 		} else {
@@ -962,7 +948,7 @@ public String getSelectionText () {
 	if (txnObject == 0) {
 		Point selection = getSelection ();
 		if (selection.x == selection.y) return "";
-		return new String (getEditText (selection.x, selection.y - 1, true));
+		return new String (getEditText (selection.x, selection.y - 1));
 	} else {
 		return getTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
 	}
@@ -1005,7 +991,7 @@ public int getTabs () {
 public String getText () {
 	checkWidget();
 	if (txnObject == 0) {
-		return new String (getEditText (0, -1, true));
+		return new String (getEditText (0, -1));
 	} else {
 		return getTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset);
 	}
@@ -1032,7 +1018,7 @@ public String getText () {
 public String getText (int start, int end) {
 	checkWidget ();
 	if (txnObject == 0) {
-		return new String (getEditText (start, end, true));
+		return new String (getEditText (start, end));
 	} else {
 		if (!(start <= end && 0 <= end)) return "";
 		int length = OS.TXNDataSize (txnObject) / 2;
@@ -1042,7 +1028,7 @@ public String getText (int start, int end) {
 	}
 }
 
-char [] getEditText (int start, int end, boolean hidden) {
+char [] getEditText (int start, int end) {
 	int [] ptr = new int [1];
 	int [] actualSize = new int [1];
 	int result = OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
@@ -1058,7 +1044,7 @@ char [] getEditText (int start, int end, boolean hidden) {
 		range.length = Math.max (0, end - start + 1);
 	}
 	char [] buffer = new char [range.length];
-	if (hidden && (style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
+	if (hiddenText != null) {
 		hiddenText.getChars (range.location, range.location + range.length, buffer, 0);
 	} else {
 		OS.CFStringGetCharacters (ptr [0], range, buffer);
@@ -1224,7 +1210,7 @@ public void insert (String string) {
 }
 
 void insertEditText (String string) {
-	if (hasFocus ()) {
+	if (hasFocus () && hiddenText == null) {
 		char [] buffer = new char [string.length ()];
 		string.getChars (0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
@@ -1596,14 +1582,16 @@ boolean sendKeyEvent (int type, Event event) {
 	if (charCount - (end - start) + newText.length () > textLimit) {
 		return false;
 	}
-	if (newText != oldText) {
+	boolean result = newText == oldText;
+	if (newText != oldText || hiddenText != null) {
 		if (txnObject == 0) {
-			String text = new String (getEditText (0, -1, false));
+			String text = new String (getEditText (0, -1));
 			String leftText = text.substring (0, start);
 			String rightText = text.substring (end, text.length ());
 			setEditText (leftText + newText + rightText);
 			start += newText.length ();
 			setSelection (new Point (start, start));
+			result = false;
 		} else {
 			setTXNText (start, end, newText);
 		}
@@ -1615,7 +1603,7 @@ boolean sendKeyEvent (int type, Event event) {
 	* because this method is called from the event loop.
 	*/
 	postEvent (SWT.Modify);
-	return newText == oldText;
+	return result;
 }
 
 void setBackground (float [] color) {
@@ -1989,6 +1977,7 @@ void setEditText (String string) {
 		buffer = new char [hiddenText.length ()];
 		for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
 	} else {
+		hiddenText = null;
 		buffer = new char [string.length ()];
 		string.getChars (0, buffer.length, buffer, 0);
 	}
@@ -2171,18 +2160,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	 */
 	sendEvent (SWT.Verify, event);
 	if (!event.doit || isDisposed ()) return null;
-	if (event.text != null) {
-		if (txnObject == 0 && (style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
-			if (!(hiddenText.length () - (end - start) + event.text.length () > textLimit)) {
-				String prefix = hiddenText.substring (0, start);
-				String sufix = hiddenText.substring(end, hiddenText.length ());
-				hiddenText = prefix + event.text + sufix;
-				char [] buffer = new char [event.text.length ()];
-				for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
-				event.text = new String (buffer);
-			}
-		}
-	}
 	return event.text;
 }
 
