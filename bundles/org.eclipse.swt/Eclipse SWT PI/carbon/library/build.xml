@@ -13,7 +13,7 @@
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="install"/>
 	</exec>
-	<eclipse.refreshLocal resource="org.eclipse.swt.carbon.macosx.ppc" depth="infinite" />		
+	<eclipse.refreshLocal resource="org.eclipse.swt.carbon.macosx" depth="infinite" />		
 </target>
 
 <target name="clean">

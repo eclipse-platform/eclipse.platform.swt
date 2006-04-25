@@ -10,7 +10,7 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/expand"/>
     <classpathentry kind="src" path="Eclipse SWT PI/carbon">
 	    <attributes>
-			<attribute value="org.eclipse.swt.carbon.macosx.ppc" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
+			<attribute value="org.eclipse.swt.carbon.macosx" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
 		</attributes>
     </classpathentry>
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
