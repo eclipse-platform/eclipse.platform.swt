@@ -1622,7 +1622,12 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	if (display.getWidget (theControl [0]) == this) {
+	Widget widget = display.getWidget (theControl [0]);
+	while (widget != null && !(widget instanceof Control)) {
+		OS.GetSuperControl (theControl [0], theControl);
+		widget = display.getWidget (theControl [0]);
+	}
+	if (widget == this) {
 		int x, y;
 		Rect rect = new Rect ();
 		int window = OS.GetControlOwner (handle);
