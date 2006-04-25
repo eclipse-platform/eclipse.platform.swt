@@ -67,7 +67,7 @@ public static void main( String[] args) {
 	data = new FormData();
 	data.left = new FormAttachment(0, 5);
 	data.top = new FormAttachment(0, 5);
-	data.right = new FormAttachment(copy, -5);
+	data.right = new FormAttachment(paste, -5);
 	data.bottom = new FormAttachment(100, -5);
 	text.setLayoutData(data);
 	
