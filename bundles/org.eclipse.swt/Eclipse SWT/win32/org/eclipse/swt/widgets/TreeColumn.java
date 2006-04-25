@@ -647,6 +647,7 @@ void setSortDirection (int direction) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string.equals (text)) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
