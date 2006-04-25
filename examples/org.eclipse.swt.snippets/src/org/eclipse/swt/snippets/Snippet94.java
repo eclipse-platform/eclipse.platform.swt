@@ -55,6 +55,7 @@ public static void main( String[] args) {
 	});
 	
 	FormData data = new FormData();
+	data.left = new FormAttachment(paste, 0, SWT.LEFT);
 	data.right = new FormAttachment(100, -5);
 	data.top = new FormAttachment(0, 5);
 	copy.setLayoutData(data);
