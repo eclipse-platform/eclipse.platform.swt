@@ -110,6 +110,22 @@ public ToolBar (Composite parent, int style) {
 	if ((style & SWT.VERTICAL) != 0) {
 		this.style |= SWT.VERTICAL;
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		/*
+		* Feature in Windows.  When a tool bar has the style
+		* TBSTYLE_LIST and has a drop down item, Window leaves
+		* too much padding around the button.  This affects
+		* every button in the tool bar and makes the preferred
+		* height too big.  The fix is to set the TBSTYLE_LIST
+		* when the tool bar contains both text and images.
+		* 
+		* NOTE: Tool bars with CCS_VERT must have TBSTYLE_LIST
+		* set before any item is added or the tool bar does
+		* not lay out properly.  The work around does not run
+		* in this case.
+		*/
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
+		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.CCS_VERT);
 	} else {
 		this.style |= SWT.HORIZONTAL;
@@ -565,7 +581,45 @@ public int indexOf (ToolItem item) {
 	return OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, item.id, 0);
 }
 
-void layoutItems () {
+void layoutItems () {	
+	/*
+	* Feature in Windows.  When a tool bar has the style
+	* TBSTYLE_LIST and has a drop down item, Window leaves
+	* too much padding around the button.  This affects
+	* every button in the tool bar and makes the preferred
+	* height too big.  The fix is to set the TBSTYLE_LIST
+	* when the tool bar contains both text and images.
+	* 
+	* NOTE: Tool bars with CCS_VERT must have TBSTYLE_LIST
+	* set before any item is added or the tool bar does
+	* not lay out properly.  The work around does not run
+	* in this case.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if ((style & SWT.RIGHT) != 0 && (style & SWT.VERTICAL) == 0) {
+			boolean hasText = false, hasImage = false;
+			for (int i=0; i<items.length; i++) {
+				ToolItem item = items [i];
+				if (item != null) {
+					if (!hasText) hasText = item.text.length () != 0;
+					if (!hasImage) hasImage = item.image != null;
+					if (hasText && hasImage) break;
+				}
+			}
+			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+			if (hasText && hasImage) {
+				newBits |= OS.TBSTYLE_LIST;
+			} else {
+				newBits &= ~OS.TBSTYLE_LIST;
+			}
+			if (newBits != oldBits) {
+				setDropDownItems (false);
+				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+				setDropDownItems (true);
+			}
+		}
+	}
+	
 	if ((style & SWT.WRAP) != 0) {
 		OS.SendMessage (handle, OS.TB_AUTOSIZE, 0, 0);
 	}
@@ -735,18 +789,64 @@ void setDefaultFont () {
 	OS.SendMessage (handle, OS.TB_SETBUTTONSIZE, 0, 0);
 }
 
+void setDropDownItems (boolean set) {
+	/*
+	* Feature in Windows.  When the first button in a tool bar
+	* is a drop down item, Window leaves too much padding around
+	* the button.  This affects every button in the tool bar and
+	* makes the preferred height too big.  The fix is clear the
+	* BTNS_DROPDOWN before Windows lays out the tool bar and set
+	* the bit afterwards.
+	* 
+	* NOTE:  This work around only runs when the tool bar contains
+	* both text and images.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		boolean hasText = false, hasImage = false;
+		for (int i=0; i<items.length; i++) {
+			ToolItem item = items [i];
+			if (item != null) {
+				if (!hasText) hasText = item.text.length () != 0;
+				if (!hasImage) hasImage = item.image != null;
+				if (hasText && hasImage) break;
+			}
+		}
+		if (hasImage && !hasText) {
+			for (int i=0; i<items.length; i++) {
+				ToolItem item = items [i];
+				if (item != null && (item.style & SWT.DROP_DOWN) != 0) {
+					TBBUTTONINFO info = new TBBUTTONINFO ();
+					info.cbSize = TBBUTTONINFO.sizeof;
+					info.dwMask = OS.TBIF_STYLE;
+					OS.SendMessage (handle, OS.TB_GETBUTTONINFO, item.id, info);
+					if (set) {
+						info.fsStyle |= OS.BTNS_DROPDOWN;
+					} else {
+						info.fsStyle &= ~OS.BTNS_DROPDOWN;
+					}
+					OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
+				}
+			}
+		}
+	}
+}
+
 void setDisabledImageList (ImageList imageList) {
 	if (disabledImageList == imageList) return;
 	int hImageList = 0;
 	if ((disabledImageList = imageList) != null) {
 		hImageList = disabledImageList.getHandle ();
 	}
+	setDropDownItems (false);
 	OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
+	setDropDownItems (true);
 }
 
 public void setFont (Font font) {
 	checkWidget ();
+	setDropDownItems (false);
 	super.setFont (font);
+	setDropDownItems (true);
 	/*
 	* Bug in Windows.  When WM_SETFONT is sent to a tool bar
 	* that contains only separators, causes the bitmap and button
@@ -773,7 +873,9 @@ void setHotImageList (ImageList imageList) {
 	if ((hotImageList = imageList) != null) {
 		hImageList = hotImageList.getHandle ();
 	}
+	setDropDownItems (false);
 	OS.SendMessage (handle, OS.TB_SETHOTIMAGELIST, 0, hImageList);
+	setDropDownItems (true);
 }
 
 void setImageList (ImageList imageList) {
@@ -782,7 +884,9 @@ void setImageList (ImageList imageList) {
 	if ((this.imageList = imageList) != null) {
 		hImageList = imageList.getHandle ();
 	}
+	setDropDownItems (false);
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
+	setDropDownItems (true);
 }
 
 public boolean setParent (Composite parent) {
@@ -790,6 +894,13 @@ public boolean setParent (Composite parent) {
 	if (!super.setParent (parent)) return false;
 	OS.SendMessage (handle, OS.TB_SETPARENT, parent.handle, 0);
 	return true;
+}
+
+public void setRedraw (boolean redraw) {
+	checkWidget ();
+	setDropDownItems (false);
+	super.setRedraw (redraw);
+	setDropDownItems (true);
 }
 
 void setRowCount (int count) {
@@ -870,7 +981,22 @@ int widgetStyle () {
 	if ((style & SWT.SHADOW_OUT) == 0) bits |= OS.CCS_NODIVIDER;
 	if ((style & SWT.WRAP) != 0) bits |= OS.TBSTYLE_WRAPABLE;
 	if ((style & SWT.FLAT) != 0) bits |= OS.TBSTYLE_FLAT;
-	if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
+	/*
+	* Feature in Windows.  When a tool bar has the style
+	* TBSTYLE_LIST and has a drop down item, Window leaves
+	* too much padding around the button.  This affects
+	* every button in the tool bar and makes the preferred
+	* height too big.  The fix is to set the TBSTYLE_LIST
+	* when the tool bar contains both text and images.
+	* 
+	* NOTE: Tool bars with CCS_VERT must have TBSTYLE_LIST
+	* set before any item is added or the tool bar does
+	* not lay out properly.  The work around does not run
+	* in this case.
+	*/
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+		if ((style & SWT.RIGHT) != 0) bits |= OS.TBSTYLE_LIST;
+	}
 	return bits;
 }
 

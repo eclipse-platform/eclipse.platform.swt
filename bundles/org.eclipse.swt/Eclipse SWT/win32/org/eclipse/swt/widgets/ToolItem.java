@@ -785,9 +785,10 @@ public void setText (String string) {
 	* item is created.  The fix is to use WM_SETFONT to force
 	* the tool bar to redraw and layout.
 	*/
+	parent.setDropDownItems (false);
 	int hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);
-	
+	parent.setDropDownItems (true);
 	parent.layoutItems ();
 }
 
