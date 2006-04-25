@@ -27,7 +27,7 @@ public static void main (String [] args) {
 	Menu bar = new Menu (shell, SWT.BAR);
 	shell.setMenuBar (bar);
 	MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);
-	fileItem.setText ("File");
+	fileItem.setText ("&File");
 	Menu submenu = new Menu (shell, SWT.DROP_DOWN);
 	fileItem.setMenu (submenu);
 	MenuItem item = new MenuItem (submenu, SWT.PUSH);
