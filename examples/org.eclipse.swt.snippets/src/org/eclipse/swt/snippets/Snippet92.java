@@ -56,9 +56,9 @@ public static void main (String [] args) {
 		public void paintControl(PaintEvent e) {
 			GC gc = e.gc;
 			gc.drawString("source: ", 10, 10);
-			gc.drawImage(source, 0, 0, 20, 20, 50, 10, 20, 20);
+			gc.drawImage(source, 0, 0, 20, 20, 60, 10, 20, 20);
 			gc.drawString("mask: ",10, 40);
-			gc.drawImage(mask, 0, 0, 20, 20, 50, 40, 20, 20);
+			gc.drawImage(mask, 0, 0, 20, 20, 60, 40, 20, 20);
 		}
 	});
 	shell.setSize(150, 150);
