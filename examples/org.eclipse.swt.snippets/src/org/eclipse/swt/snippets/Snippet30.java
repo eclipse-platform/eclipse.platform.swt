@@ -24,7 +24,7 @@ public class Snippet30 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Program p = Program.findProgram (".txt");
-	if (p != null) p.execute ("c:\\autoexec.bat");
+	if (p != null) p.execute ("c:\\autoexec.bat"); // Windows-specific filename
 	display.dispose ();
 }
 
