@@ -29,9 +29,9 @@ public static void main (String [] args) {
 	Label label = new Label (shell, SWT.WRAP);
 	label.setText ("This is a long text string that will wrap when the dialog is resized.");
 	List list = new List (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-	list.setItems (new String [] {"Item 1", "Item2"});
+	list.setItems (new String [] {"Item 1", "Item 2"});
 	Button button1 = new Button (shell, SWT.PUSH);
-	button1.setText ("Ok");
+	button1.setText ("OK");
 	Button button2 = new Button (shell, SWT.PUSH);
 	button2.setText ("Cancel");
 	

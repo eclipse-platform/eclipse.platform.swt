@@ -31,7 +31,7 @@ public static void main (String [] args) {
 	final Shell dialog = new Shell (shell, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 	dialog.setLayout (new RowLayout ());
 	final Button ok = new Button (dialog, SWT.PUSH);
-	ok.setText ("Ok");
+	ok.setText ("OK");
 	Button cancel = new Button (dialog, SWT.PUSH);
 	cancel.setText ("Cancel");
 	Listener listener =new Listener () {
