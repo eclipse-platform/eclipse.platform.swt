@@ -85,30 +85,27 @@ void showDropTargetEffect(int effect, int x, int y) {
 	}
 	
 	int newOffset = -1;
+	StyledTextContent content = text.getContent();
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
 		try {
 			newOffset = text.getOffsetAtLocation(pt);
 		} catch (IllegalArgumentException ex1) {
-			int maxOffset = text.getCharCount();
+			int maxOffset = content.getCharCount();
 			Point maxLocation = text.getLocationAtOffset(maxOffset);
 			if (pt.y >= maxLocation.y) {
-				if (pt.x >= maxLocation.x) {
+				try {
+					newOffset = text.getOffsetAtLocation(new Point(pt.x, maxLocation.y));
+				} catch (IllegalArgumentException ex2) {
 					newOffset = maxOffset;
-				} else {
-					try {
-						newOffset = text.getOffsetAtLocation(new Point(pt.x, maxLocation.y));
-					} catch (IllegalArgumentException ex2) {
-						newOffset = -1;
-					}
 				}
 			} else {
 				try {
 					int startOffset = text.getOffsetAtLocation(new Point(0, pt.y));
 					int endOffset = maxOffset;
-					int line = text.getLineAtOffset(startOffset);
-					int lineCount = text.getLineCount();
+					int line = content.getLineAtOffset(startOffset);
+					int lineCount = content.getLineCount();
 					if (line + 1 < lineCount) {
-						endOffset = text.getOffsetAtLine(line + 1)  - 1;
+						endOffset = content.getOffsetAtLine(line + 1)  - 1;
 					}
 					int lineHeight = text.getLineHeight(startOffset);
 					for (int i = endOffset; i >= startOffset; i--) {
@@ -130,6 +127,17 @@ void showDropTargetEffect(int effect, int x, int y) {
 		caretBounds = null; 
 	}
 	if (newOffset != -1) {
+		// check if offset is line delimiter
+		// see StyledText.isLineDelimiter()
+		int line = content.getLineAtOffset(newOffset);
+		int lineOffset = content.getOffsetAtLine(line);	
+		int offsetInLine = newOffset - lineOffset;
+		// offsetInLine will be greater than line length if the line 
+		// delimiter is longer than one character and the offset is set
+		// in between parts of the line delimiter.
+		if (offsetInLine > content.getLine(line).length()) {
+			newOffset = Math.max(0, newOffset - 1);
+		}
 		text.setCaretOffset(newOffset);
 		// show caret
 		caretBounds = text.getCaret().getBounds();
