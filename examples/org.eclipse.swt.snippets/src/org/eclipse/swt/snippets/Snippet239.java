@@ -70,7 +70,8 @@ public static void main(String [] args) {
 						int offset = 0;
 						if (event.index == 2) offset = column1.getWidth();
 						event.gc.setForeground(red);
-						event.gc.drawString(string, event.x - offset, event.y);
+						int y = event.y + (event.height - extent.y)/2;
+						event.gc.drawString(string, event.x - offset, y);
 					}
 					break;
 				}
