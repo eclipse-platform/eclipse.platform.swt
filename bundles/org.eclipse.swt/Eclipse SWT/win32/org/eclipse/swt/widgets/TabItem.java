@@ -108,6 +108,39 @@ public TabItem (TabFolder parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
+void _setText (int index, String string) {
+	/*
+	* Bug in Windows.  In version 6.00 of COMCTL32.DLL, tab
+	* items with an image and a label that includes '&' cause
+	* the tab to draw incorrectly (even when doubled '&&').
+	* The image overlaps the label.  The fix is to remove
+	* all '&' characters from the string. 
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && image != null) {
+		if (string.indexOf ('&') != -1) {
+			int length = string.length ();
+			char[] text = new char [length];
+			string.getChars ( 0, length, text, 0);
+			int i = 0, j = 0;
+			for (i=0; i<length; i++) {
+				if (text[i] != '&') text [j++] = text [i];
+			}
+			if (j < i) string = new String (text, 0, j);
+		}
+	}
+	int hwnd = parent.handle;
+	int hHeap = OS.GetProcessHeap ();
+	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount); 
+	TCITEM tcItem = new TCITEM ();
+	tcItem.mask = OS.TCIF_TEXT;
+	tcItem.pszText = pszText;
+	OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
+	OS.HeapFree (hHeap, 0, pszText);
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -231,10 +264,11 @@ public void setImage (Image image) {
 	* items with an image and a label that includes '&' cause
 	* the tab to draw incorrectly (even when doubled '&&').
 	* The image overlaps the label.  The fix is to remove
-	* all '&' characters from the string. 
+	* all '&' characters from the string and set the text
+	* whenever the image or text is changed.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) {
-		if (text.indexOf ('&') != -1) setText (text);
+		if (text.indexOf ('&') != -1) _setText (index, text);
 	}
 	int hwnd = parent.handle;
 	TCITEM tcItem = new TCITEM ();
@@ -275,36 +309,7 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	/*
-	* Bug in Windows.  In version 6.00 of COMCTL32.DLL, tab
-	* items with an image and a label that includes '&' cause
-	* the tab to draw incorrectly (even when doubled '&&').
-	* The image overlaps the label.  The fix is to remove
-	* all '&' characters from the string. 
-	*/
-	if (OS.COMCTL32_MAJOR >= 6 && image != null) {
-		if (text.indexOf ('&') != -1) {
-			int length = string.length ();
-			char[] text = new char [length];
-			string.getChars ( 0, length, text, 0);
-			int i = 0, j = 0;
-			for (i=0; i<length; i++) {
-				if (text[i] != '&') text [j++] = text [i];
-			}
-			if (j < i) string = new String (text, 0, j);
-		}
-	}
-	int hwnd = parent.handle;
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount); 
-	TCITEM tcItem = new TCITEM ();
-	tcItem.mask = OS.TCIF_TEXT;
-	tcItem.pszText = pszText;
-	OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
-	OS.HeapFree (hHeap, 0, pszText);
+	_setText (index, string);
 }
 
 /**
