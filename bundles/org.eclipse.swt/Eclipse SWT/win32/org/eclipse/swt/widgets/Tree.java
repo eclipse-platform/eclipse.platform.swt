@@ -4395,52 +4395,55 @@ String toolTipText (NMTTDISPINFO hdr) {
 		return super.toolTipText (hdr);
 	}
 	if (itemToolTipHandle == hdr.hwndFrom && hwndHeader != 0) {
-		int pos = OS.GetMessagePos ();
-		POINT pt = new POINT();
-		pt.x = (short) (pos & 0xFFFF);
-		pt.y = (short) (pos >> 16);
-		OS.ScreenToClient (handle, pt);
-		TVHITTESTINFO lpht = new TVHITTESTINFO ();
-		lpht.x = pt.x;
-		lpht.y = pt.y;
-		OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-		if (lpht.hItem != 0) {
-			int hDC = OS.GetDC (handle);
-			int oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-			RECT rect = new RECT ();
-			OS.GetClientRect (hwndParent, rect);
-			OS.MapWindowPoints (hwndParent, handle, rect, 2);
-			TreeItem item = _getItem (lpht.hItem);
-			String text = null;
-			int index = 0, count = Math.max (1, OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
-			int [] order = new int [count];
-			OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
-			while (index < count) {
-				int hFont = item.cellFont != null ? item.cellFont [order [index]] : -1;
-				if (hFont == -1) hFont = item.font;
-				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
-				RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
-				if (hFont != -1) OS.SelectObject (hDC, hFont);
-				if (cellRect.left > rect.right) break;
-				cellRect.right = Math.min (cellRect.right, rect.right);
-				if (OS.PtInRect (cellRect, pt)) {
-					RECT textRect = item.getBounds (order [index], true, false, false, false, false, hDC);
-					if (textRect.right > cellRect.right) {
-						if (order [index] == 0) {
-							text = item.text;
-						} else {
-							String[] strings = item.strings;
-							if (strings != null) text = strings [order [index]];
+		if (toolTipText != null) return "";
+		if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+			int pos = OS.GetMessagePos ();
+			POINT pt = new POINT();
+			pt.x = (short) (pos & 0xFFFF);
+			pt.y = (short) (pos >> 16);
+			OS.ScreenToClient (handle, pt);
+			TVHITTESTINFO lpht = new TVHITTESTINFO ();
+			lpht.x = pt.x;
+			lpht.y = pt.y;
+			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+			if (lpht.hItem != 0) {
+				int hDC = OS.GetDC (handle);
+				int oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+				RECT rect = new RECT ();
+				OS.GetClientRect (hwndParent, rect);
+				OS.MapWindowPoints (hwndParent, handle, rect, 2);
+				TreeItem item = _getItem (lpht.hItem);
+				String text = null;
+				int index = 0, count = Math.max (1, OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0));
+				int [] order = new int [count];
+				OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+				while (index < count) {
+					int hFont = item.cellFont != null ? item.cellFont [order [index]] : -1;
+					if (hFont == -1) hFont = item.font;
+					if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+					RECT cellRect = item.getBounds (order [index], true, false, true, false, true, hDC);
+					if (hFont != -1) OS.SelectObject (hDC, hFont);
+					if (cellRect.left > rect.right) break;
+					cellRect.right = Math.min (cellRect.right, rect.right);
+					if (OS.PtInRect (cellRect, pt)) {
+						RECT textRect = item.getBounds (order [index], true, false, false, false, false, hDC);
+						if (textRect.right > cellRect.right) {
+							if (order [index] == 0) {
+								text = item.text;
+							} else {
+								String[] strings = item.strings;
+								if (strings != null) text = strings [order [index]];
+							}
 						}
+						break;
 					}
-					break;
+					index++;
 				}
-				index++;
+				if (newFont != 0) OS.SelectObject (hDC, oldFont);
+				OS.ReleaseDC (handle, hDC);
+				if (text != null) return text;
 			}
-			if (newFont != 0) OS.SelectObject (hDC, oldFont);
-			OS.ReleaseDC (handle, hDC);
-			if (text != null) return text;
 		}
 	}
 	return super.toolTipText (hdr);
