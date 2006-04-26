@@ -35,5 +35,6 @@
     <classpathentry kind="src" path="Eclipse SWT OpenGL/gtk"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Theme/gtk"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
