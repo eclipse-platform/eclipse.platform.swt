@@ -719,14 +719,12 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	/* Set alignment */
 	if ((columnStyle & SWT.RIGHT) != 0) {
 		OS.g_object_set(textRenderer, OS.xalign, 1f, 0);
-		OS.g_object_set (pixbufRenderer, OS.xalign, 1f, 0);
-		OS.gtk_tree_view_column_pack_end (columnHandle, textRenderer, false);
-		OS.gtk_tree_view_column_pack_end (columnHandle, pixbufRenderer, true);
+		OS.gtk_tree_view_column_pack_end (columnHandle, textRenderer, true);
+		OS.gtk_tree_view_column_pack_end (columnHandle, pixbufRenderer, false);
 		OS.gtk_tree_view_column_set_alignment (columnHandle, 1f);
 	} else if ((columnStyle & SWT.CENTER) != 0) {
 		OS.g_object_set(textRenderer, OS.xalign, 0.5f, 0);
-		OS.g_object_set (pixbufRenderer, OS.xalign, 1f, 0);
-		OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, true);
+		OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, false);
 		OS.gtk_tree_view_column_pack_end (columnHandle, textRenderer, true);
 		OS.gtk_tree_view_column_set_alignment (columnHandle, 0.5f);
 	} else {
