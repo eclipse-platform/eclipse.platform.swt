@@ -53,7 +53,6 @@ public static void main(String [] args) {
 	GC gc = new GC(table);
 	final Point extent = gc.stringExtent(string);
 	gc.dispose();
-	final TableColumn column1 = table.getColumn(1);
 	final Color red = display.getSystemColor(SWT.COLOR_RED);
 	Listener paintListener = new Listener() {
 		public void handleEvent(Event event) {
@@ -68,7 +67,10 @@ public static void main(String [] args) {
 				case SWT.PaintItem: {
 					if (event.index == 1 || event.index == 2) {
 						int offset = 0;
-						if (event.index == 2) offset = column1.getWidth();
+						if (event.index == 2) {
+							TableColumn column1 = table.getColumn(1);
+							offset = column1.getWidth();
+						}
 						event.gc.setForeground(red);
 						int y = event.y + (event.height - extent.y)/2;
 						event.gc.drawString(string, event.x - offset, y);
