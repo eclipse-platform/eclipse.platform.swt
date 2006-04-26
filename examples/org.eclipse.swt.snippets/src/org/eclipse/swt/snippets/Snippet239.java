@@ -39,7 +39,7 @@ public static void main(String [] args) {
 		column.setText("Column " + i);	
 	}
 	int itemCount = 8;
-	for(int i = 0; i < itemCount; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		TableItem item = new TableItem(table, SWT.NONE);
 		item.setText(0, "item "+i+" a");
 		item.setText(3, "item "+i+" d");
