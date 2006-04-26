@@ -575,6 +575,7 @@ public Browser(Composite parent, int style) {
 }
 
 public static void clearSessions () {
+	if (!mozilla) return;
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = XPCOM.NS_GetServiceManager (result);
 	if (rc != XPCOM.NS_OK) error (rc);
