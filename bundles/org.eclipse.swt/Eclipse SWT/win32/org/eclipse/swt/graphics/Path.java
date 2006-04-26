@@ -332,20 +332,6 @@ public void getBounds(float[] bounds) {
 	bounds[3] = rect.Height;
 }
 
-public void getBounds(float[] bounds, GC gc) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	gc.initGdip(true, false);
-	RectF rect = new RectF();
-	Gdip.GraphicsPath_Flatten(handle, 0, 0.1f);
-	Gdip.GraphicsPath_GetBounds(handle, rect, 0, gc.data.gdipPen);
-	bounds[0] = rect.X;
-	bounds[1] = rect.Y;
-	bounds[2] = rect.Width;
-	bounds[3] = rect.Height;
-}
-
 /**
  * Replaces the first two elements in the parameter with values that
  * describe the current point of the path.

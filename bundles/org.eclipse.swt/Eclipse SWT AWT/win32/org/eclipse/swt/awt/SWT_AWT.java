@@ -144,8 +144,7 @@ public static Frame new_Frame (final Composite parent) {
 	Class clazz = null;
 	try {
 		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		clazz = Class.forName(className, true, loader);
+		clazz = Class.forName(className);
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
@@ -278,9 +277,7 @@ public static Frame new_Frame (final Composite parent) {
 				Class clazz = Class.forName("sun.awt.windows.WComponentPeer");
 				Field field = clazz.getDeclaredField("winGraphicsConfig");
 				field.setAccessible(true);
-				Method mt = frame.getClass().getMethod("getPeer", new Class[0]);
-				System.out.println(mt);
-				field.set(mt.invoke(frame, new Object[0]), frame.getGraphicsConfiguration());
+				field.set(frame.getPeer(), frame.getGraphicsConfiguration());
 			} catch (Throwable e) {}
 		}
 	});

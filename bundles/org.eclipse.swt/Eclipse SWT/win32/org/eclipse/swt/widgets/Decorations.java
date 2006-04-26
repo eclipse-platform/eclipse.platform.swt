@@ -1542,39 +1542,26 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if (result != null) return result;
-//	int threadId = OS.GetWindowThreadProcessId (lParam, null);
-//	if (threadId != OS.GetCurrentThreadId ()) {
-//		int [] processID = new int [1];
-//		OS.GetWindowThreadProcessId (lParam, processID);
-//		if (processID [0] == OS.GetCurrentProcessId ()) {
-//			TCHAR buffer = new TCHAR (0, 128);
-//			OS.GetClassName (lParam, buffer, buffer.length ());
-//			String className = buffer.toString (0, buffer.strlen ());
-//			/*
-//			* Feature in AWT.  
-//			*/
-//			if (className.startsWith (Display.AWT_WINDOW_CLASS_PREFIX)) {
-//				//OS.ReplyMessage (0);
-//			}
-//			/*
-//			* Feature in AWT.  When an AWT Window is activated,
-//			* for some reason, it seems to forward the WM_ACTIVATE
-//			* message to the parent.  Normally, the parent is an
-//			* AWT Frame.  When AWT is embedded in SWT, the SWT
-//			* shell gets the WM_ACTIVATE and assumes that it came
-//			* from Windows.  When an SWT shell is activated it
-//			* restores focus to the last control that had focus.
-//			* If this control is an embedded composite, it takes
-//			* focus from the AWT Window.  The fix is to ignore
-//			* WM_ACTIVATE messages that come from AWT Windows.
-//			*/
-//			if (OS.GetParent (lParam) == handle) {
-//				if (className.equals (Display.AWT_WINDOW_CLASS)) {
-//					return LRESULT.ZERO;
-//				}
-//			}
-//		}
-//	}
+	/*
+	* Feature in AWT.  When an AWT Window is activated,
+	* for some reason, it seems to forward the WM_ACTIVATE
+	* message to the parent.  Normally, the parent is an
+	* AWT Frame.  When AWT is embedded in SWT, the SWT
+	* shell gets the WM_ACTIVATE and assumes that it came
+	* from Windows.  When an SWT shell is activated it
+	* restores focus to the last control that had focus.
+	* If this control is an embedded composite, it takes
+	* focus from the AWT Window.  The fix is to ignore
+	* WM_ACTIVATE messages that come from AWT Windows.
+	*/
+	if (OS.GetParent (lParam) == handle) {
+		TCHAR buffer = new TCHAR (0, 128);
+		OS.GetClassName (lParam, buffer, buffer.length ());
+		String className = buffer.toString (0, buffer.strlen ());
+		if (className.equals (Display.AWT_WINDOW_CLASS)) {
+			return LRESULT.ZERO;
+		}
+	}
 	if ((wParam & 0xFFFF) != 0) {
 		/*
 		* When the high word of wParam is non-zero, the activation
