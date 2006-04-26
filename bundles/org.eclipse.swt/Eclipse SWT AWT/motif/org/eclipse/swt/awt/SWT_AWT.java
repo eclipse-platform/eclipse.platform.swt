@@ -130,7 +130,8 @@ public static Frame new_Frame (final Composite parent) {
 	Class clazz = null;
 	try {
 		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.X11.XEmbeddedFrame";
-		clazz = Class.forName(className);
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		clazz = Class.forName(className, true, loader);
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e, " [need JDK 1.5 or greater]");		
 	}

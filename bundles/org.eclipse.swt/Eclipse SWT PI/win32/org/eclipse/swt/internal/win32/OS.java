@@ -1692,6 +1692,7 @@ public class OS extends Platform {
 	public static final int WHEEL_DELTA = 120;
 	public static final int WHEEL_PAGESCROLL = 0xFFFFFFFF;
 	public static final int WHITE_BRUSH = 0;
+	public static final int BLACK_BRUSH = 4;
 	public static final int WM_ACTIVATE = 0x6;
 	public static final int WM_ACTIVATEAPP = 0x1c;
 	public static final int WM_APP = 0x8000;
@@ -3047,6 +3048,7 @@ public static final native boolean ImmSetConversionStatus (int hIMC, int fdwConv
 public static final native boolean ImmSetOpenStatus (int hIMC, boolean fOpen);
 public static final native void InitCommonControls ();
 public static final native boolean InitCommonControlsEx (INITCOMMONCONTROLSEX lpInitCtrls);
+public static final native boolean InSendMessage ();
 public static final native boolean InsertMenuW (int hMenu, int uPosition, int uFlags, int uIDNewItem, char [] lpNewItem);
 public static final native boolean InsertMenuA (int hMenu, int uPosition, int uFlags, int uIDNewItem, byte [] lpNewItem);
 public static final native boolean InsertMenuItemW (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
@@ -3215,6 +3217,7 @@ public static final native boolean ReleaseCapture ();
 public static final native int ReleaseDC (int hWnd, int hDC);
 public static final native boolean RemoveMenu (int hMenu, int uPosition, int uFlags);
 public static final native int RemovePropA (int hWnd, int lpString);
+public static final native boolean ReplyMessage (int lResult);
 public static final native int RemovePropW (int hWnd, int lpString);
 public static final native boolean RestoreDC(int hdc, int nSavedDC);
 public static final native boolean RoundRect (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);

@@ -162,6 +162,7 @@ public class Display extends Device {
 	Callback getMsgCallback, embeddedCallback;
 	int getMsgProc, msgHook, embeddedHwnd, embeddedProc;
 	static final String AWT_WINDOW_CLASS = "SunAwtWindow";
+	static final String AWT_WINDOW_CLASS_PREFIX = "SunAwt";
 	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 
 	/* Sync/Async Widget Communication */
