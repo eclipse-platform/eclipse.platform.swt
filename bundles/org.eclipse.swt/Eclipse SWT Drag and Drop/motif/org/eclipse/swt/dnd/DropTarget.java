@@ -175,12 +175,20 @@ public DropTarget(Control control, int style) {
 					} else {
 						int[] args = new int[]{OS.XmNdropSiteActivity,   OS.XmDROP_SITE_ACTIVE,};
 						OS.XmDropSiteUpdate(DropTarget.this.control.handle, args, args.length/2);
+						if (DropTarget.this.control instanceof Label) {
+							int formHandle = OS.XtParent (DropTarget.this.control.handle);
+							OS.XmDropSiteUpdate(formHandle, args, args.length / 2);
+						}
 					}
 					break;
 				}
 				case SWT.Hide: {
 					int[] args = new int[]{OS.XmNdropSiteActivity,   OS.XmDROP_SITE_INACTIVE,};
 					OS.XmDropSiteUpdate(DropTarget.this.control.handle, args, args.length/2);	
+					if (DropTarget.this.control instanceof Label) {
+						int formHandle = OS.XtParent (DropTarget.this.control.handle);
+						OS.XmDropSiteUpdate(formHandle, args, args.length / 2);
+					}
 					break;
 				}
 			}
@@ -608,10 +616,10 @@ void registerDropTarget() {
 	}
 	
 	OS.XmDropSiteRegister(control.handle, args, args.length / 2);
-	//if (control instanceof Label) {
-	//	int formHandle = OS.XtParent (control.handle);
-	//	OS.XmDropSiteRegister(formHandle, args, args.length / 2);
-	//}
+	if (control instanceof Label) {
+		int formHandle = OS.XtParent (control.handle);
+		OS.XmDropSiteRegister(formHandle, args, args.length / 2);
+	}
 	registered = true;
 }
 
@@ -763,6 +771,10 @@ public void setTransfer(Transfer[] transferAgents){
 	};
 
 	OS.XmDropSiteUpdate(control.handle, args, args.length / 2);
+	if (control instanceof Label) {
+		int formHandle = OS.XtParent (control.handle);
+		OS.XmDropSiteUpdate(formHandle, args, args.length / 2);
+	}
 	
 	OS.XtFree(pImportTargets);
 	
@@ -829,6 +841,11 @@ void transferProcCallback(int widget, int client_data, int pSelection, int pType
 void unregisterDropTarget() {
 	if (control == null || control.isDisposed() || !registered) return;
 	OS.XmDropSiteUnregister(control.handle);
+	if (control instanceof Label) {
+		int formHandle = OS.XtParent(control.handle);
+		OS.XmDropSiteUnregister(formHandle);
+	}
+	
 	registered = false;
 }
 
