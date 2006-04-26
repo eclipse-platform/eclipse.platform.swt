@@ -78,6 +78,7 @@ void draw(Theme theme, GC gc, Rectangle bounds) {
 }
 
 int hit(Theme theme, Point position, Rectangle bounds) {
+	if (!(OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ())) return DrawData.WIDGET_NOWHERE;
 	if (!bounds.contains(position)) return DrawData.WIDGET_NOWHERE;
 	int hTheme = OS.OpenThemeData(0, getClassId());
 	RECT rect = new RECT ();
