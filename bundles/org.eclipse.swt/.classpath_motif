@@ -40,5 +40,6 @@
     <classpathentry kind="src" path="Eclipse SWT OpenGL/motif"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Theme/emulated"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
