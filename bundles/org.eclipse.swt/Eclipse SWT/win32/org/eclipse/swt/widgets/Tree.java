@@ -1200,6 +1200,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		}	
 	}
 	int hItem = 0;
+	boolean redraw = false;
 	switch (msg) {
 		/* Keyboard messages */
 		case OS.WM_KEYDOWN:
@@ -1220,9 +1221,8 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 			
 		/* Resize messages */
 		case OS.WM_SIZE:
-			if (findImageControl () != null && drawCount == 0) {
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-			}
+			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
+			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			//FALL THROUGH
 			
 		/* Mouse messages */
@@ -1274,7 +1274,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 			
 		/* Resize messages */
 		case OS.WM_SIZE:
-			if (findImageControl () != null && drawCount == 0) {
+			if (redraw) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 				if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
@@ -4916,7 +4916,8 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 						tvItem.hItem = hNewItem;
 						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 						boolean newSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
-						if (!newSelected && drawCount == 0) {
+						boolean redraw = !newSelected && drawCount == 0 && OS.IsWindowVisible (handle);
+						if (redraw) {
 							OS.UpdateWindow (handle);
 							OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 							/*
@@ -4937,7 +4938,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 							tvItem.hItem = hNewItem;
 							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 						}
-						if (!newSelected && drawCount == 0) {
+						if (redraw) {
 							RECT rect1 = new RECT (), rect2 = new RECT ();
 							rect1.left = hItem;  rect2.left = hNewItem;
 							int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
@@ -5179,6 +5180,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	}
 	
 	/* Get the selected state of the last selected item */
+	boolean redraw = false;
 	int hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 	if ((style & SWT.MULTI) != 0) {
 		tvItem.hItem = hOldItem;
@@ -5186,7 +5188,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 		/* Check for CONTROL or drag selection */
 		if (hittestSelected || (wParam & OS.MK_CONTROL) != 0) {
-			if (drawCount == 0 && focused) {
+			redraw = focused && drawCount == 0 && OS.IsWindowVisible (handle);
+			if (redraw) {
 				OS.UpdateWindow (handle);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 				/*
@@ -5277,7 +5280,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 					}
 				}
 			}
-			if (drawCount == 0 && focused) {
+			if (redraw) {
 				RECT rect1 = new RECT (), rect2 = new RECT ();
 				rect1.left = hOldItem;  rect2.left = hNewItem;
 				int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
@@ -6124,7 +6127,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.TVN_ITEMEXPANDINGW: {
 			boolean runExpanded = false;
 			if ((style & SWT.VIRTUAL) != 0) style &= ~SWT.DOUBLE_BUFFERED;
-			if (findImageControl () != null && drawCount == 0) {
+			if (findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle)) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			}
 			/*
@@ -6190,7 +6193,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.TVN_ITEMEXPANDEDA:
 		case OS.TVN_ITEMEXPANDEDW: {
 			if ((style & SWT.VIRTUAL) != 0) style |= SWT.DOUBLE_BUFFERED;
-			if (findImageControl () != null && drawCount == 0) {
+			if (findImageControl () != null && drawCount == 0 /*&& OS.IsWindowVisible (handle)*/) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 			}

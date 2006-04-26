@@ -172,7 +172,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		}
 	}
 	int topIndex = 0;
-	boolean checkSelection = false, checkActivate = false;
+	boolean checkSelection = false, checkActivate = false, redraw = false;
 	switch (msg) {
 		/* Keyboard messages */
 		/*
@@ -200,9 +200,8 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 						
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
-			if (findImageControl () != null && drawCount == 0) {
-				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-			}
+			redraw = findImageControl () != null && drawCount == 0 && OS.IsWindowVisible (handle);
+			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			//FALL THROUGH
 			
 		/* Mouse messages */
@@ -265,7 +264,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 			
 		/* Resize messages */
 		case OS.WM_WINDOWPOSCHANGED:
-			if (findImageControl () != null && drawCount == 0) {
+			if (redraw) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, null, true);
 				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
