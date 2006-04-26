@@ -61,7 +61,7 @@ public static void main(String [] args) {
 				case SWT.MeasureItem: {
 					if (event.index == 1 || event.index == 2) {
 						event.width = extent.x/2;
-						event.height = extent.y;
+						event.height = Math.max(event.height, extent.y + 2);
 					}
 					break;
 				}
