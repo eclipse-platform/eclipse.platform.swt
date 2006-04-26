@@ -615,6 +615,14 @@ void layoutItems () {
 			if (newBits != oldBits) {
 				setDropDownItems (false);
 				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+				/*
+				* Feature in Windows.  For some reason, when the style
+				* is changed to TBSTYLE_LIST, Windows does not lay out
+				* the tool items.  The fix is to use WM_SETFONT to force
+				* the tool bar to redraw and lay out.
+				*/
+				int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 				setDropDownItems (true);
 			}
 		}
