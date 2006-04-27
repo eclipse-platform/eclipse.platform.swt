@@ -526,6 +526,71 @@ LRESULT wmColorChild (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_PAINT (int wParam, int lParam) {
+	if (OS.IsWinCE) {
+		boolean drawImage = image != null;
+		boolean drawSeparator = (style & SWT.SEPARATOR) != 0 && (style & SWT.SHADOW_NONE) == 0;
+		if (drawImage || drawSeparator) {
+			LRESULT result = null;
+			PAINTSTRUCT ps = new PAINTSTRUCT ();
+			GCData data = new GCData ();
+			data.ps = ps;
+			data.hwnd = handle;
+			GC gc = new_GC (data);
+			if (gc != null) {
+				drawBackground (gc.handle);
+				RECT clientRect = new RECT();
+				OS.GetClientRect (handle, clientRect);
+				if (drawSeparator) {
+					RECT rect = new RECT ();
+					int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
+					int flags = (style & SWT.SHADOW_IN) != 0 ? OS.EDGE_SUNKEN : OS.EDGE_ETCHED;
+					if ((style & SWT.HORIZONTAL) != 0) {
+						int bottom = clientRect.top + Math.max (lineWidth * 2, (clientRect.bottom - clientRect.top) / 2);
+						OS.SetRect (rect, clientRect.left, clientRect.top, clientRect.right, bottom);
+						OS.DrawEdge (gc.handle, rect, flags, OS.BF_BOTTOM);
+					} else {
+						int right = clientRect.left + Math.max (lineWidth * 2, (clientRect.right - clientRect.left) / 2);
+						OS.SetRect (rect, clientRect.left, clientRect.top, right, clientRect.bottom);
+						OS.DrawEdge (gc.handle, rect, flags, OS.BF_RIGHT);
+					}
+					result = LRESULT.ONE;
+				}
+				if (drawImage) {
+					Rectangle imageBounds = image.getBounds ();
+					int x = 0;
+					if ((style & SWT.CENTER) != 0) {
+						x = Math.max (0, (clientRect.right - imageBounds.width) / 2);
+					} else {
+						if ((style & SWT.RIGHT) != 0) {
+							x = Math.max (0, (clientRect.right - imageBounds.width));
+						}
+					}
+					gc.drawImage (image, x, Math.max (0, (clientRect.bottom - imageBounds.height) / 2));
+					result = LRESULT.ONE;
+				}
+				
+				int width = ps.right - ps.left;
+				int height = ps.bottom - ps.top;
+				if (width != 0 && height != 0) {
+					Event event = new Event ();
+					event.gc = gc;
+					event.x = ps.left;
+					event.y = ps.top;
+					event.width = width;
+					event.height = height;
+					sendEvent (SWT.Paint, event);
+					// widget could be disposed at this point
+					event.gc = null;
+				}
+				gc.dispose ();
+			}
+			return result;
+		}
+	}
+	return super.WM_PAINT(wParam, lParam);
+}
+
 LRESULT wmDrawChild (int wParam, int lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
