@@ -43,6 +43,11 @@ public static void main(String [] args) {
 		TreeItem item = new TreeItem(tree, SWT.NONE);
 		item.setText(0, "item "+i+" a");
 		item.setText(3, "item "+i+" d");
+		for (int j = 0; j < 3; j++) {
+			TreeItem subItem = new TreeItem(item, SWT.NONE);
+			subItem.setText(0, "subItem "+i+"-"+j+" a");
+			subItem.setText(3, "subItem "+i+"-"+j+" d");
+		}
 	}	
 	/*
 	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
