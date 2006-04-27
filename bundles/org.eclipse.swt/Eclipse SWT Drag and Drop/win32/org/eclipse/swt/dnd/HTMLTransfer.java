@@ -81,19 +81,19 @@ public void javaToNative (Object object, TransferData transferData){
 	StringBuffer buffer = new StringBuffer(HEADER);
 	int maxLength = NUMBER.length();
 	//startHTML
-	int start = buffer.indexOf(NUMBER);
+	int start = buffer.toString().indexOf(NUMBER);
 	String temp = Integer.toString(startHTML);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
 	//endHTML
-	start = buffer.indexOf(NUMBER, start);
+	start = buffer.toString().indexOf(NUMBER, start);
 	temp = Integer.toString(endHTML);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
 	//startFragment
-	start = buffer.indexOf(NUMBER, start);
+	start = buffer.toString().indexOf(NUMBER, start);
 	temp = Integer.toString(startFragment);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
 	//endFragment
-	start = buffer.indexOf(NUMBER, start);
+	start = buffer.toString().indexOf(NUMBER, start);
 	temp = Integer.toString(endFragment);
 	buffer.replace(start + maxLength-temp.length(), start + maxLength, temp);
 	
@@ -146,12 +146,12 @@ public Object nativeToJava(TransferData transferData){
 			if (cchWideChar == 0) return null;
 			char[] lpWideCharStr = new char [cchWideChar - 1];
 			OS.MultiByteToWideChar (codePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
-			StringBuffer buffer = new StringBuffer(new String(lpWideCharStr));
+			String string = new String(lpWideCharStr);
 			int fragmentStart = 0, fragmentEnd = 0;
-			int start = buffer.indexOf(StartFragment) + StartFragment.length();
+			int start = string.indexOf(StartFragment) + StartFragment.length();
 			int end = start + 1;
-			while (end < buffer.length()) { 
-				String s = buffer.substring(start, end);
+			while (end < string.length()) { 
+				String s = string.substring(start, end);
 				try {
 					fragmentStart = Integer.parseInt(s);
 					end++;
@@ -159,10 +159,10 @@ public Object nativeToJava(TransferData transferData){
 					break;
 				}
 			}
-			start = buffer.indexOf(EndFragment) + EndFragment.length();
+			start = string.indexOf(EndFragment) + EndFragment.length();
 			end = start + 1;
-			while (end < buffer.length()) { 
-				String s = buffer.substring(start, end);
+			while (end < string.length()) { 
+				String s = string.substring(start, end);
 				try {
 					fragmentEnd = Integer.parseInt(s);
 					end++;
@@ -175,7 +175,7 @@ public Object nativeToJava(TransferData transferData){
 			 * FragmentStart and FragmentEnd are offsets in original byte stream, not
 			 * the wide char version of the byte stream.
 			 */
-			String s = buffer.substring(fragmentStart, fragmentEnd);
+			String s = string.substring(fragmentStart, fragmentEnd);
 			/*
 			 * Firefox includes <!--StartFragment --> in the fragment, so remove it.
 			 */
