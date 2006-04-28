@@ -48,7 +48,7 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	boolean ignoreDraw, ignoreCustomDraw, ignoreDrawSelection, ignoreDrawBackground;
+	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawSelection;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
@@ -422,7 +422,7 @@ LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 	int hDC = nmcd.hdc;
-	if (ignoreDraw) OS.RestoreDC (hDC, -1);
+	if (ignoreDrawForeground) OS.RestoreDC (hDC, -1);
 	if (OS.IsWindowVisible (handle)) {
 		if (hooks (SWT.PaintItem)) {
 			TableItem item = _getItem (nmcd.dwItemSpec);
@@ -455,7 +455,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	}
 	int code = OS.CDRF_DODEFAULT;
 	selectionForeground = -1;
-	ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = false;
+	ignoreDrawForeground = ignoreDrawSelection = ignoreDrawBackground = false;
 	if (OS.IsWindowVisible (handle)) {
 		if (hooks (SWT.MeasureItem)) {
 			sendMeasureItemEvent (item, nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
@@ -466,7 +466,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 			if (isDisposed () || item.isDisposed ()) return null;
 			code |= OS.CDRF_NOTIFYPOSTPAINT;
 		}
-		if (ignoreDraw || hooks (SWT.PaintItem)) code |= OS.CDRF_NOTIFYPOSTPAINT;
+		if (ignoreDrawForeground || hooks (SWT.PaintItem)) code |= OS.CDRF_NOTIFYPOSTPAINT;
 	}
 	int hDC = nmcd.hdc;
 	int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
@@ -528,7 +528,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 			}
 		}
 	}
-	if (!ignoreDraw) {
+	if (!ignoreDrawForeground) {
 		/*
 		* Bug in Windows.  When the attibutes are for one cell in a table,
 		* Windows does not reset them for the next cell.  As a result, all
@@ -2819,11 +2819,11 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	OS.RestoreDC (hDC, nSavedDC);
 	if (isDisposed () || item.isDisposed ()) return;
 	if (event.doit) {
-		ignoreDraw = (event.detail & SWT.FOREGROUND) == 0;
-		ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+		ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
 		ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+		ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
 	} else {
-		ignoreDraw = ignoreDrawSelection = ignoreDrawBackground = true;
+		ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = true;
 	}
 	if (drawSelected) {
 		if (ignoreDrawSelection) {
@@ -2839,7 +2839,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
 	}
-	if (ignoreDraw) {
+	if (ignoreDrawForeground) {
 		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 		boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
