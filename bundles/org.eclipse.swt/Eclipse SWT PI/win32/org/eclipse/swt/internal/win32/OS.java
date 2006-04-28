@@ -1566,6 +1566,7 @@ public class OS extends Platform {
 	public static final int TVM_SETINSERTMARK = 0x111a;
 	public static final int TVM_SETITEM = IsUnicode ? 0x113f : 0x110d;
 	public static final int TVM_SETITEMHEIGHT = TV_FIRST + 27;
+	public static final int TVM_SETSCROLLTIME = TV_FIRST + 33;
 	public static final int TVM_SETTEXTCOLOR = 0x111e;
 	public static final int TVN_BEGINDRAGW = 0xfffffe38;
 	public static final int TVN_BEGINDRAGA = 0xfffffe69;
