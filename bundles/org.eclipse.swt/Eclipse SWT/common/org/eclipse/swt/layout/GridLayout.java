@@ -45,6 +45,8 @@ public final class GridLayout extends Layout {
  
  	/**
  	 * numColumns specifies the number of cell columns in the layout.
+ 	 * If numColumns has a value less than 1, the layout will not
+ 	 * set the size and postion of any controls.
  	 *
  	 * The default value is 1.
  	 */
@@ -140,6 +142,8 @@ public GridLayout () {}
  * Constructs a new instance of this class given the
  * number of columns, and whether or not the columns
  * should be forced to have the same width.
+ * If numColumns has a value less than 1, the layout will not
+ * set the size and postion of any controls.
  *
  * @param numColumns the number of columns in the grid
  * @param makeColumnsEqualWidth whether or not the columns will have equal width
