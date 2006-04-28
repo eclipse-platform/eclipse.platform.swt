@@ -5116,7 +5116,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				if ((tvItem.state & OS.TVIS_EXPANDED) != 0) {
 					fixSelection = true;
 					tvItem.stateMask = OS.TVIS_SELECTED;
-					int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, lpht.hItem);
 					int hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, lpht.hItem);
 					while (hNext != 0) {
 						tvItem.hItem = hNext;
@@ -5124,8 +5123,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 						if ((tvItem.state & OS.TVIS_SELECTED) != 0) deselected = true;
 						tvItem.state = 0;
 						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-						if ((hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNext)) == 0) break;
-						if (hParent == OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hNext)) break;
+						int hItem = hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNext);
+						while (hItem != 0 && hItem != lpht.hItem) {
+							hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+						}
+						if (hItem == 0) break;
 					}
 				}
 			}
