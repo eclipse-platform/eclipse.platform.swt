@@ -12,6 +12,10 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
+/**
+ * Internal class that separates ImageData from ImageLoader
+ * to allow removal of ImageLoader from the toolkit.
+ */
 class ImageDataLoader {
 
 	public static ImageData[] load(InputStream stream) {
