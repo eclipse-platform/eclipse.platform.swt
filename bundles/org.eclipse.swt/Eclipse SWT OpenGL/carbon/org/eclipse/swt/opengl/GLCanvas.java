@@ -121,6 +121,17 @@ public GLCanvas (Composite parent, int style, GLData data) {
 			case SWT.Dispose:
 				AGL.aglDestroyContext (context);
 				AGL.aglDestroyPixelFormat (pixelFormat);
+				// Remove listeners
+				Shell shell = getShell();
+				shell.removeListener(SWT.Resize, this);
+				shell.removeListener(SWT.Show, this);
+				shell.removeListener(SWT.Hide, this);
+				Control c = GLCanvas.this;
+				do {
+					c.removeListener(SWT.Show, this);
+					c.removeListener(SWT.Hide, this);
+					c = c.getParent();
+				} while (c != shell);
 				break;
 			case SWT.Resize:
 			case SWT.Hide:
