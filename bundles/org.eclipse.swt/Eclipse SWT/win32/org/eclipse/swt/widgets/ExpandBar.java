@@ -42,7 +42,7 @@ import org.eclipse.swt.events.*;
 public class ExpandBar extends Composite {
 	ExpandItem[] items;
 	int itemCount;
-	int focusIndex;
+	ExpandItem focusItem;
 	int spacing;
 	int yCurrentScroll;
 	int hFont;
@@ -187,7 +187,7 @@ void createItem (ExpandItem item, int style, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount - index);
 	items [index] = item;	
 	itemCount++;
-	if (itemCount == 1) focusIndex = 0;
+	if (focusItem == null) focusItem = item;
 	
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -198,7 +198,6 @@ void createItem (ExpandItem item, int style, int index) {
 void createWidget () {
 	super.createWidget ();
 	items = new ExpandItem [4];
-	focusIndex = -1;
 	if (!isAppThemed ()) {
 		backgroundMode = SWT.INHERIT_DEFAULT;
 	}
@@ -218,16 +217,17 @@ void destroyItem (ExpandItem item) {
 		index++;
 	}
 	if (index == itemCount) return;
-	System.arraycopy (items, index + 1, items, index, --itemCount - index);
-	items [itemCount] = null;
-	if (itemCount == 0) {
-		focusIndex = -1;
-	} else {
-		if (focusIndex == index && focusIndex == itemCount) {
-			focusIndex = index - 1;
-			items [focusIndex].redraw (true);
+	if (item == focusItem) {
+		int focusIndex = index > 0 ? index - 1 : 1;
+		if (focusIndex < itemCount) {
+			focusItem = items [focusIndex];
+			focusItem.redraw (true);
+		} else {
+			focusItem = null;
 		}
 	}
+	System.arraycopy (items, index + 1, items, index, --itemCount - index);
+	items [itemCount] = null;
 	item.redraw (true);
 	layoutItems (index, true);
 }
@@ -272,7 +272,7 @@ void drawWidget (GC gc, RECT clipRect) {
 	}
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
-		item.drawItem (gc, hTheme, clipRect, i == focusIndex && drawFocus);
+		item.drawItem (gc, hTheme, clipRect, item == focusItem && drawFocus);
 	}
 	if (hCaptionFont != 0) {
 		OS.SelectObject (gc.handle, oldFont);
@@ -440,6 +440,7 @@ void releaseChildren (boolean destroy) {
 		}
 		items = null;
 	}
+	focusItem = null;
 	super.releaseChildren (destroy);
 }
 
@@ -535,13 +536,13 @@ public void setSpacing (int spacing) {
 	OS.InvalidateRect (handle, null, true);
 }
 
-void showItem (int index) {
-	ExpandItem item = items [index];
+void showItem (ExpandItem item) {
 	Control control = item.control;
 	if (control != null && !control.isDisposed ()) {
 		control.setVisible (item.expanded);
 	}
 	item.redraw (true);
+	int index = indexOf (item);
 	layoutItems (index + 1, true);
 }
 
@@ -556,40 +557,43 @@ int windowProc () {
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	if (focusIndex == -1) return result;
-	ExpandItem item = items [focusIndex];
+	if (focusItem == null) return result;
 	switch (wParam) {
 		case OS.VK_SPACE:
 		case OS.VK_RETURN:
 			Event event = new Event ();
-			event.item = item;
-			sendEvent (item.expanded ? SWT.Collapse : SWT.Expand, event);
-			item.expanded = !item.expanded;
-			showItem (focusIndex);
+			event.item = focusItem;
+			sendEvent (focusItem.expanded ? SWT.Collapse : SWT.Expand, event);
+			focusItem.expanded = !focusItem.expanded;
+			showItem (focusItem);
 			return LRESULT.ZERO;
-		case OS.VK_UP:
+		case OS.VK_UP: {
+			int focusIndex = indexOf (focusItem);
 			if (focusIndex > 0) {
-				item.redraw (true);
-				focusIndex--;
-				items [focusIndex].redraw (true);
+				focusItem.redraw (true);
+				focusItem = items [focusIndex - 1];
+				focusItem.redraw (true);
 				return LRESULT.ZERO;
 			}
 			break;
-		case OS.VK_DOWN:
+		}
+		case OS.VK_DOWN: {
+			int focusIndex = indexOf (focusItem);
 			if (focusIndex < itemCount - 1) {
-				item.redraw (true);
-				focusIndex++;
-				items [focusIndex].redraw (true);
+				focusItem.redraw (true);
+				focusItem = items [focusIndex + 1];
+				focusItem.redraw (true);
 				return LRESULT.ZERO;
 			}
 			break;
+		}
 	}
 	return result;
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
-	if (focusIndex != -1) items [focusIndex].redraw (true);
+	if (focusItem != null) focusItem.redraw (true);
 	return result;
 }
 
@@ -601,10 +605,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
 		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight()); 
-		if (hover && focusIndex != i) {
-			items [focusIndex].redraw (true);
-			focusIndex = i;
-			items [focusIndex].redraw (true);
+		if (hover && focusItem != item) {
+			focusItem.redraw (true);
+			focusItem = item;
+			focusItem.redraw (true);
 			forceFocus ();
 			break;
 		}
@@ -615,17 +619,16 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
-	if (focusIndex == -1) return result;
-	ExpandItem item = items [focusIndex];
+	if (focusItem == null) return result;
 	int x = (short) (lParam & 0xFFFF);
 	int y = (short) (lParam >> 16);
-	boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight()); 
+	boolean hover = focusItem.x <= x && x < (focusItem.x + focusItem.width) && focusItem.y <= y && y < (focusItem.y + getBandHeight()); 
 	if (hover) {
 		Event event = new Event ();
-		event.item = item;
-		sendEvent (item.expanded ? SWT.Collapse : SWT.Expand, event);
-		item.expanded = !item.expanded;
-		showItem (focusIndex);
+		event.item = focusItem;
+		sendEvent (focusItem.expanded ? SWT.Collapse : SWT.Expand, event);
+		focusItem.expanded = !focusItem.expanded;
+		showItem (focusItem);
 	}
 	return result;
 }
@@ -690,7 +693,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	if (focusIndex != -1) items [focusIndex].redraw (true);
+	if (focusItem != null) focusItem.redraw (true);
 	return result;
 }
 
