@@ -382,9 +382,9 @@ void clear (TreeItem parentItem, int index, boolean all) {
 
 void clearAll (TreeItem parentItem, boolean all) {
 	boolean update = !inClearAll;
-	inClearAll = true;
 	int count = getItemCount (parentItem);
 	if (count == 0) return;
+	inClearAll = true;
 	int [] ids = parentItem == null ? childIds : parentItem.childIds;
 	for (int i=0; i<count; i++) {
 		TreeItem item = _getItem (ids [i], false);
