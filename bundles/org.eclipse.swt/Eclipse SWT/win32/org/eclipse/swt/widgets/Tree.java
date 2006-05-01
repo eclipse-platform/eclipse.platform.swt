@@ -33,6 +33,7 @@ import org.eclipse.swt.events.*;
  * <p> Here is an example of using a <code>Tree</code> with style <code>VIRTUAL</code>:
  * <code><pre>
  *  final Tree tree = new Tree(parent, SWT.VIRTUAL | SWT.BORDER);
+ *  tree.setItemCount(20);
  *  tree.addListener(SWT.SetData, new Listener() {
  *      public void handleEvent(Event event) {
  *          TreeItem item = (TreeItem)event.item;
@@ -48,7 +49,6 @@ import org.eclipse.swt.events.*;
  *          item.setItemCount(10);
  *      }
  *  });
- *  tree.setItemCount(20);
  * </pre></code>
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
