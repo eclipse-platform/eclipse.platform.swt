@@ -138,6 +138,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 			case SWT.Show:
 				getDisplay().asyncExec(new Runnable() {
 					public void run() {
+						if (isDisposed()) return;
 						fixBounds();
 					}
 				});
