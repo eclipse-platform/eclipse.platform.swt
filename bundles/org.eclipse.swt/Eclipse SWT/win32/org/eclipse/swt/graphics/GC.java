@@ -732,8 +732,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		case SWT.ICON:
 			drawIcon(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
 			break;
-		default:
-			SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	}
 }
 

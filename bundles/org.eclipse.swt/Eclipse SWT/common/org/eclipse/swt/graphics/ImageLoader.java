@@ -116,9 +116,9 @@ void reset() {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
- *    <li>ERROR_IO - if an input/output error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
  * </ul>
  */
 public ImageData[] load(InputStream stream) {
@@ -141,8 +141,8 @@ public ImageData[] load(InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data</li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  */
@@ -189,9 +189,9 @@ public ImageData[] load(String filename) {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE if the image data contains invalid data</li>
- *    <li>ERROR_IO if an IO error occurs while writing to the stream</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT if the image data cannot be saved to the requested format</li>
+ *    <li>ERROR_IO - if an IO error occurs while writing to the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image data contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
  * </ul>
  */
 public void save(OutputStream stream, int format) {
@@ -224,9 +224,9 @@ public void save(OutputStream stream, int format) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE if the image data contains invalid data</li>
- *    <li>ERROR_IO if an IO error occurs while writing to the file</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT if the image data cannot be saved to the requested format</li>
+ *    <li>ERROR_IO - if an IO error occurs while writing to the file</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image data contains invalid data</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image data cannot be saved to the requested format</li>
  * </ul>
  */
 public void save(String filename, int format) {

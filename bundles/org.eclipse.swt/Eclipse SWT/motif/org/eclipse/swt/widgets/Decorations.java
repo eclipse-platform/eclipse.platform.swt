@@ -164,8 +164,6 @@ void _setImages (Image [] images) {
 				pixmap = icon.pixmap;
 				mask = icon.mask;
 				break;
-			default:
-				error (SWT.ERROR_INVALID_IMAGE);
 		}
 	}
 	int [] argList = {
