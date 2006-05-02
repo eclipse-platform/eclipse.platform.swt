@@ -294,7 +294,7 @@ public class BrowserExample {
 	}
 
 	/**
-	 * Grabs input focus.
+	 * Grabs input focus
 	 */
 	public void focus() {
 		if (locationBar != null) locationBar.setFocus();
