@@ -23,3 +23,5 @@ Export-Package:
  org.eclipse.swt.internal.image; x-internal:=true,
  org.eclipse.swt.internal.theme; x-internal:=true
 Eclipse-ExtensibleAPI: true
+Bundle-RequiredExecutionEnvironment: CDC-1.0/Foundation-1.0,
+ J2SE-1.3
