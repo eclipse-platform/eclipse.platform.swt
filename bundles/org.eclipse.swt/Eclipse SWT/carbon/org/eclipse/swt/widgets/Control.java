@@ -1706,16 +1706,12 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	int [] clickCount = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
 	int result = sendMouseEvent (SWT.MouseDown, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 	if (isDisposed ()) return OS.noErr;
-	display.clickCount = display.clickCountButton == button [0] ? clickCount [0] : 1;
 	if (display.clickCount == 2) {
 		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 		if (isDisposed ()) return OS.noErr;
 	}
-	display.clickCountButton = button [0];
 	if (hooks (SWT.DragDetect)) {
 		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;

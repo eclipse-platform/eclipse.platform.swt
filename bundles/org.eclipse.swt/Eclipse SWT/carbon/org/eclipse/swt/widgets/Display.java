@@ -2698,6 +2698,14 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 int mouseProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
+		case OS.kEventMouseDown:
+			short [] buttonData = new short [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, buttonData);
+			int [] clickCountData = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCountData);
+			clickCount = clickCountButton == buttonData [0] ? clickCountData [0] : 1;
+			clickCountButton = buttonData [0];
+			break;
 		case OS.kEventMouseDragged:
 		case OS.kEventMouseMoved:
 			mouseMoved = true;
