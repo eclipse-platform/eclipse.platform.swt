@@ -2797,9 +2797,21 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_3DFACE);
 			}
 		} else {
+			drawBackground = clrTextBk != -1;
+			/*
+			* Bug in Windows.  When LVM_SETTEXTBKCOLOR or LVM_SETBKCOLOR
+			* is used to set the background color of the the text or the
+			* control, the color is not set in the HDC that is provided
+			* in Custom Draw.  The fix is to explicitly set the background
+			* color.
+			*/
+			if (clrTextBk == -1) {
+				Control control = findBackgroundControl ();
+				if (control == null) control = this;
+				clrTextBk = control.getBackgroundPixel ();
+			}
 			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
-			drawBackground = clrTextBk != -1;
 		}
 	} else {
 		data.foreground = OS.GetSysColor (OS.COLOR_GRAYTEXT);
@@ -3036,9 +3048,21 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 			if (clrText == -1) clrText = item.foreground;
 			int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 			if (clrTextBk == -1) clrTextBk = item.background;
+			drawBackground = clrTextBk != -1;
+			/*
+			* Bug in Windows.  When LVM_SETTEXTBKCOLOR or LVM_SETBKCOLOR
+			* is used to set the background color of the the text or the
+			* control, the color is not set in the HDC that is provided
+			* in Custom Draw.  The fix is to explicitly set the background
+			* color.
+			*/
+			if (clrTextBk == -1) {
+				Control control = findBackgroundControl ();
+				if (control == null) control = this;
+				clrTextBk = control.getBackgroundPixel ();
+			}
 			data.foreground = clrText != -1 ? clrText : OS.GetTextColor (hDC);
 			data.background = clrTextBk != -1 ? clrTextBk : OS.GetBkColor (hDC);
-			drawBackground = clrTextBk != -1;
 		}
 	} else {
 		data.foreground = OS.GetSysColor (OS.COLOR_GRAYTEXT);
