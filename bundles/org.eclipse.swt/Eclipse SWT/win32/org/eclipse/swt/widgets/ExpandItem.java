@@ -335,6 +335,11 @@ int getPreferredWidth (int hTheme, int hDC) {
 	return width;
 }
 
+boolean isHover (int x, int y) {
+	int bandHeight = parent.getBandHeight ();
+	return this.x < x && x < (this.x + width) && this.y < y && y < (this.y + bandHeight);
+}
+
 void redraw (boolean all) {
 	int parentHandle = parent.handle;
 	int headerHeight = parent.getBandHeight ();

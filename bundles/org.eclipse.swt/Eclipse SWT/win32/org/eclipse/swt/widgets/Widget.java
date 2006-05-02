@@ -75,6 +75,9 @@ public abstract class Widget {
 	static final int RELEASED		= 1<<11;
 	static final int DISPOSE_SENT	= 1<<12;
 	
+	/* Mouse track flag */
+	static final int TRACK_MOUSE	= 1<<13;
+	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -1897,10 +1900,11 @@ LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
 	int pos = OS.GetMessagePos ();
 	if (pos != display.lastMouse || display.captureChanged) {
 		if (!OS.IsWinCE) {
+			boolean trackMouse = (state & TRACK_MOUSE) != 0;
 			boolean mouseEnter = hooks (SWT.MouseEnter) || display.filters (SWT.MouseEnter);
 			boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
 			boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
-			if (mouseEnter || mouseExit || mouseHover) {
+			if (trackMouse || mouseEnter || mouseExit || mouseHover) {
 				TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
 				lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
 				lpEventTrack.dwFlags = OS.TME_QUERY;

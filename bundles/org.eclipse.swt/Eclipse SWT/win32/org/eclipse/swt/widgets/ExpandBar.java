@@ -175,6 +175,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
+	state |= TRACK_MOUSE;
 }
 
 void createItem (ExpandItem item, int style, int index) {
@@ -293,6 +294,17 @@ Control findThemeControl () {
 	return isAppThemed () ? this : super.findThemeControl ();	
 }
 
+int getBandHeight () {
+	if (hFont == 0) return ExpandItem.CHEVRON_SIZE;
+	int hDC = OS.GetDC (handle);
+	int oldHFont = OS.SelectObject (hDC, hFont);
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+	OS.GetTextMetrics (hDC, lptm);
+	OS.SelectObject (hDC, oldHFont);
+	OS.ReleaseDC (handle, hDC);
+	return Math.max (ExpandItem.CHEVRON_SIZE, lptm.tmHeight + 4);
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -365,17 +377,6 @@ public ExpandItem [] getItems () {
 public int getSpacing () {
 	checkWidget ();
 	return spacing;
-}
-
-int getBandHeight () {
-	if (hFont == 0) return ExpandItem.CHEVRON_SIZE;
-	int hDC = OS.GetDC (handle);
-	int oldHFont = OS.SelectObject (hDC, hFont);
-	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
-	OS.GetTextMetrics (hDC, lptm);
-	OS.SelectObject (hDC, oldHFont);
-	OS.ReleaseDC (handle, hDC);
-	return Math.max (ExpandItem.CHEVRON_SIZE, lptm.tmHeight + 4);
 }
 
 /**
@@ -604,7 +605,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	int y = (short) (lParam >> 16);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
-		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight()); 
+		boolean hover = item.isHover (x, y);
 		if (hover && focusItem != item) {
 			focusItem.redraw (true);
 			focusItem = item;
@@ -622,7 +623,7 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	if (focusItem == null) return result;
 	int x = (short) (lParam & 0xFFFF);
 	int y = (short) (lParam >> 16);
-	boolean hover = focusItem.x <= x && x < (focusItem.x + focusItem.width) && focusItem.y <= y && y < (focusItem.y + getBandHeight()); 
+	boolean hover = focusItem.isHover (x, y);
 	if (hover) {
 		Event event = new Event ();
 		event.item = focusItem;
@@ -633,14 +634,28 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
+	LRESULT result = super.WM_MOUSELEAVE (wParam, lParam);
+	if (result != null) return result;
+	for (int i = 0; i < itemCount; i++) {
+		ExpandItem item = items [i];
+		if (item.hover) {
+			item.hover = false;
+			item.redraw (false);
+			break;
+		}
+	}
+	return result;
+}
+
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	int x = (short) (lParam & 0xFFFF);
 	int y = (short) (lParam >> 16);
 	for (int i = 0; i < itemCount; i++) {
-		ExpandItem item = items[i];
-		boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight()); 
+		ExpandItem item = items [i];
+		boolean hover = item.isHover (x, y);
 		if (item.hover != hover) {
 			item.hover = hover;
 			item.redraw (false);
@@ -691,6 +706,23 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_SETCURSOR (int wParam, int lParam) {
+	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
+	if (result != null) return result;
+	int hitTest = lParam & 0xFFFF;
+ 	if (hitTest == OS.HTCLIENT) {
+		for (int i = 0; i < itemCount; i++) {
+			ExpandItem item = items [i];
+			if (item.hover) {
+				int hCursor = OS.LoadCursor (0, OS.IDC_HAND);
+				OS.SetCursor (hCursor);
+				return LRESULT.ONE;
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if (focusItem != null) focusItem.redraw (true);
@@ -707,6 +739,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (item.width != width) item.setBounds (0, 0, width, item.height, false, true);
 	}
 	setScrollbar ();
+	OS.InvalidateRect (handle, null, true);
 	return result;
 }
 
