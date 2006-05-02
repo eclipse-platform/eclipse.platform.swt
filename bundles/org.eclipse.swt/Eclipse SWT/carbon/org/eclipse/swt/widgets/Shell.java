@@ -876,23 +876,23 @@ public boolean isVisible () {
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	/*
+	* Bug in the Macintosh.  Despite the that a window has scope
+	* kWindowActivationScopeNone, it gets kEventWindowActivated
+	* events but does not get kEventWindowDeactivated events.  The
+	* fix is to ignore kEventWindowActivated events.
+	*/
+	int [] outScope = new int [1];
+	OS.GetWindowActivationScope (shellHandle, outScope); 
+	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
 	if (!active) {
 		active = true;
-		/*
-		* Bug in the Macintosh.  Despite the that a window has scope
-		* kWindowActivationScopeNone, it gets kEventWindowActivated
-		* events but does not get kEventWindowDeactivated events.  The
-		* fix is to ignore kEventWindowActivated events.
-		*/
-		int [] outScope = new int [1];
-		OS.GetWindowActivationScope (shellHandle, outScope); 
-		if (outScope [0] == OS.kWindowActivationScopeNone) return result;
 		display.setMenuBar (menuBar);
 		if (menuBar != null) OS.DrawMenuBar ();
 		activate = true;
 		sendEvent (SWT.Activate);
 		if (isDisposed ()) return result;
-		restoreFocus ();
+		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 		activate = false;
 	}
 	return result;
@@ -945,8 +945,8 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if (active) {
-		deferDispose = true;
 		active = false;
+		deferDispose = true;
 		Display display = this.display;
 		sendEvent (SWT.Deactivate);
 		if (isDisposed ()) return result;
