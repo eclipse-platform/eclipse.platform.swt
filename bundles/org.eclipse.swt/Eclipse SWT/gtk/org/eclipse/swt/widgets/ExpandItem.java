@@ -256,7 +256,9 @@ void releaseHandle () {
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
-	if (parent.lastFocus == this) parent.lastFocus = null;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (parent.lastFocus == this) parent.lastFocus = null;
+	}
 	imageList = null;
 	control = null;
 }
@@ -330,7 +332,7 @@ public void setExpanded (boolean expanded) {
 		OS.gtk_expander_set_expanded (handle, expanded);
 		parent.layoutItems (0, true);
 	} else {
-		parent.showItem (parent.indexOf (this));
+		parent.showItem (this);
 	}
 }
 

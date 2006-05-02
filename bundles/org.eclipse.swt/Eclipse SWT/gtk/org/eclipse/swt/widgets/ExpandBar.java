@@ -19,7 +19,6 @@ public class ExpandBar extends Composite {
 	ExpandItem [] items;
 	ExpandItem lastFocus;
 	int itemCount;
-	int focusIndex;
 	int spacing;
 	int yCurrentScroll;
 
@@ -130,7 +129,9 @@ void createItem (ExpandItem item, int style, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount - index);
 	items [index] = item;
 	itemCount++;
-	if (itemCount == 1) focusIndex = 0;
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		if (lastFocus == null) lastFocus = item;
+	}
 	item.width = Math.max (0, getClientArea ().width - spacing * 2);
 	layoutItems (index, true);
 }
@@ -138,7 +139,6 @@ void createItem (ExpandItem item, int style, int index) {
 void createWidget (int index) {
 	super.createWidget (index);
 	items = new ExpandItem [4];	
-	focusIndex = -1;
 }
 
 void destroyItem (ExpandItem item) {
@@ -148,16 +148,19 @@ void destroyItem (ExpandItem item) {
 		index++;
 	}
 	if (index == itemCount) return;
-	System.arraycopy (items, index + 1, items, index, --itemCount - index);
-	items [itemCount] = null;
-	if (itemCount == 0) {
-		focusIndex = -1;
-	} else {
-		if (focusIndex == index && focusIndex == itemCount) {
-			focusIndex = index - 1;
-			items [focusIndex].redraw ();
+	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
+		if (item == lastFocus) {
+			int focusIndex = index > 0 ? index - 1 : 1;
+			if (focusIndex < itemCount) {
+				lastFocus = items [focusIndex];
+				lastFocus.redraw ();
+			} else {
+				lastFocus = null;
+			}
 		}
 	}
+	System.arraycopy (items, index + 1, items, index, --itemCount - index);
+	items [itemCount] = null;
 	item.redraw ();
 	layoutItems (index, true);
 }
@@ -236,10 +239,10 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 		for (int i = 0; i < itemCount; i++) {
 			ExpandItem item = items[i];
 			boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight ());
-			if (hover) {
-				items [focusIndex].redraw ();
-				focusIndex = i;
-				items [focusIndex].redraw ();
+			if (hover && item != lastFocus) {
+				lastFocus.redraw ();
+				lastFocus = item;
+				lastFocus.redraw ();
 				forceFocus ();
 				break;
 			}
@@ -250,19 +253,18 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
 	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-		if (focusIndex != -1) {
+		if (lastFocus != null) {
 			GdkEventButton gdkEvent = new GdkEventButton ();
 			OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 			int x = (int)gdkEvent.x;
 			int y = (int)gdkEvent.y;
-			ExpandItem item = items [focusIndex];
-			boolean hover = item.x <= x && x < (item.x + item.width) && item.y <= y && y < (item.y + getBandHeight ()); 
+			boolean hover = lastFocus.x <= x && x < (lastFocus.x + lastFocus.width) && lastFocus.y <= y && y < (lastFocus.y + getBandHeight ()); 
 			if (hover) {
 				Event ev = new Event ();
-				ev.item = item;
-				notifyListeners (item.expanded ? SWT.Collapse : SWT.Expand, ev);
-				item.expanded = !item.expanded;
-				showItem (focusIndex);
+				ev.item = lastFocus;
+				notifyListeners (lastFocus.expanded ? SWT.Collapse : SWT.Expand, ev);
+				lastFocus.expanded = !lastFocus.expanded;
+				showItem (lastFocus);
 			}
 		}
 	}
@@ -280,7 +282,7 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		boolean hasFocus = isFocusControl ();
 		for (int i = 0; i < itemCount; i++) {
 			ExpandItem item = items [i];
-			item.drawItem (gc, hasFocus && i == focusIndex);
+			item.drawItem (gc, hasFocus && item == lastFocus);
 		}
 		gc.dispose ();
 	}
@@ -289,14 +291,14 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 
 int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-		if (focusIndex != -1) items [focusIndex].redraw ();
+		if (lastFocus != null) lastFocus.redraw ();
 	}
 	return super.gtk_focus_in_event(widget, event);
 }
 
 int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-		if (focusIndex != -1) items [focusIndex].redraw ();
+		if (lastFocus != null) lastFocus.redraw ();
 	}
 	return super.gtk_focus_out_event (widget, event);
 }
@@ -328,35 +330,38 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 		}
 		return result;
 	} else {
-		if (focusIndex != -1) {
-			ExpandItem item = items [focusIndex];
+		if (lastFocus != null) {
 			GdkEventKey keyEvent = new GdkEventKey ();
 			OS.memmove (keyEvent, event, GdkEventKey.sizeof);
 			switch (keyEvent.keyval) {
 				case OS.GDK_Return:
 				case OS.GDK_space:
 					Event ev = new Event ();
-					ev.item = item;
-					sendEvent (item.expanded ? SWT.Collapse :SWT.Expand, ev);
-					item.expanded = !item.expanded;
-					showItem (focusIndex);
+					ev.item = lastFocus;
+					sendEvent (lastFocus.expanded ? SWT.Collapse :SWT.Expand, ev);
+					lastFocus.expanded = !lastFocus.expanded;
+					showItem (lastFocus);
 					break;
 				case OS.GDK_Up:
-				case OS.GDK_KP_Up:
+				case OS.GDK_KP_Up: {
+					int focusIndex = indexOf (lastFocus);
 					if (focusIndex > 0) {
-						item.redraw ();
-						focusIndex--;
-						items [focusIndex].redraw ();
+						lastFocus.redraw ();
+						lastFocus = items [focusIndex - 1];
+						lastFocus.redraw ();
 					}
 					break;
+				}
 				case OS.GDK_Down:
-				case OS.GDK_KP_Down:
+				case OS.GDK_KP_Down: {
+					int focusIndex = indexOf (lastFocus);
 					if (focusIndex < itemCount - 1) {
-						item.redraw ();
-						focusIndex++;
-						items [focusIndex].redraw ();
+						lastFocus.redraw ();
+						lastFocus = items [focusIndex + 1];
+						lastFocus.redraw ();
 					}
 					break;
+				}
 			}
 		}
 	}
@@ -504,13 +509,13 @@ public void setSpacing (int spacing) {
 	}
 }
 
-void showItem (int index) {
-	ExpandItem item = items [index];
+void showItem (ExpandItem item) {
 	Control control = item.control;
 	if (control != null && !control.isDisposed ()) {
 		control.setVisible (item.expanded);
 	}
 	item.redraw ();
+	int index = indexOf (item);
 	layoutItems (index + 1, true);
 }
 
