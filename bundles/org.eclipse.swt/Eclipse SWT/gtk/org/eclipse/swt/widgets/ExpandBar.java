@@ -427,7 +427,19 @@ public void removeExpandListener (ExpandListener listener) {
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if (OS.GTK_VERSION < OS.VERSION (2, 4, 0)) {
-		if (resize) setScrollbar ();
+		if (resize) {
+			if ((style & SWT.V_SCROLL) != 0) {
+				setScrollbar ();
+			} else {
+				for (int i = 0; i < itemCount; i++) {
+					ExpandItem item = items [i];
+					int newWidth = Math.max (0, getClientArea ().width - spacing * 2);
+					if (item.width != newWidth) {
+						item.setBounds (0, 0, newWidth, item.height, false, true);
+					}
+				}
+			}
+		}
 	}
 	return result;
 }
@@ -499,10 +511,12 @@ public void setSpacing (int spacing) {
 		OS.gtk_box_set_spacing (handle, spacing);
 		OS.gtk_container_set_border_width (handle, spacing);
 	} else {
-		int width = Math.max (0, getClientArea ().width - spacing * 2);
-		for (int i = 0; i < itemCount; i++) {
-			ExpandItem item = items[i];
-			if (item.width != width) item.setBounds (0, 0, width, item.height, false, true);
+		if ((style & SWT.V_SCROLL) == 0) {
+			int width = Math.max (0, getClientArea ().width - spacing * 2);
+			for (int i = 0; i < itemCount; i++) {
+				ExpandItem item = items [i];
+				if (item.width != width) item.setBounds (0, 0, width, item.height, false, true);
+			}
 		}
 		layoutItems (0, true);
 		redraw ();
