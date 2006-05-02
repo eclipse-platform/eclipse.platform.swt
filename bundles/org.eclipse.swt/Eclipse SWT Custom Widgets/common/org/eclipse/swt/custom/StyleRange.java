@@ -36,8 +36,9 @@ public class StyleRange extends TextStyle implements CloneableCompatibility {
 	public int fontStyle = SWT.NORMAL;
 	
 /**
- * Create a new style range with no font,
- * no foreground, no background.
+ * Create a new style range with no styles
+ * 
+ * @since 3.2
  */
 public StyleRange() {
 	super(null, null, null);
@@ -115,7 +116,6 @@ boolean isVariableHeight() {
  * @return true if the receiver is unstyled, false otherwise.
  */
 public boolean isUnstyled() {
-	//BAD
 	if (font != null) return false;
 	if (rise != 0) return false;
 	if (metrics != null) return false;
