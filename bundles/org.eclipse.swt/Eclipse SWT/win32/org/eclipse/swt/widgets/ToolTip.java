@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class represent popup windows that are used
  * to inform or warn the user.
- *
+ * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BALLOON, ICON_ERROR, ICON_INFORMATION, ICON_WARNING</dd>

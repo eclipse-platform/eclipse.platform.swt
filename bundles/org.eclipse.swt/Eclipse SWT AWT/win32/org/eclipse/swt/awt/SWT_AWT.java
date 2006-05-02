@@ -89,7 +89,7 @@ static synchronized void initializeSwing() {
 }
 
 /**
- * Answers a <code>java.awt.Frame</code> which is the embedded frame
+ * Returns a <code>java.awt.Frame</code> which is the embedded frame
  * associated with the specified composite.
  * 
  * @param parent the parent <code>Composite</code> of the <code>java.awt.Frame</code>

@@ -29,8 +29,8 @@ import org.eclipse.swt.events.*;
  * instead of up-front.  This can provide significant performance improvements for
  * tables that are very large or for which <code>TableItem</code> population is
  * expensive (for example, retrieving values from an external source).
- *
- * <p> Here is an example of using a <code>Table</code> with style <code>VIRTUAL</code>:
+ * </p><p>
+ * Here is an example of using a <code>Table</code> with style <code>VIRTUAL</code>:
  * <code><pre>
  *  final Table table = new Table (parent, SWT.VIRTUAL | SWT.BORDER);
  *  table.setItemCount (1000000);
@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles SINGLE, and MULTI may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -2537,7 +2537,7 @@ public void remove (int start, int end) {
 
 /**
  * Removes all of the items from the receiver.
- * <p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2632,6 +2632,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * Indices that are out of range and duplicate indices are ignored.
  * If the receiver is single-select and multiple indices are specified,
  * then all indices are ignored.
+ * </p>
  *
  * @param indices the array of indices for the items to select
  *
@@ -2704,6 +2705,7 @@ public void select (int index) {
  * if start is greater than end.
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
+ * </p>
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -2744,6 +2746,7 @@ public void select (int start, int end) {
  * Selects all of the items in the receiver.
  * <p>
  * If the receiver is single-select, do nothing.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3901,6 +3904,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
  * Indices that are out of range and duplicate indices are ignored.
  * If the receiver is single-select and multiple indices are specified,
  * then all indices are ignored.
+ * </p>
  *
  * @param indices the indices of the items to select
  *
@@ -3932,6 +3936,7 @@ public void setSelection (int [] indices) {
  * The current selection is cleared before the new item is selected.
  * <p>
  * If the item is not in the receiver, then it is ignored.
+ * </p>
  *
  * @param item the item to select
  *
@@ -3959,6 +3964,7 @@ public void setSelection (TableItem  item) {
  * Items that are not in the receiver are ignored.
  * If the receiver is single-select and multiple items are specified,
  * then all items are ignored.
+ * </p>
  *
  * @param items the array of items
  *
@@ -4023,6 +4029,7 @@ public void setSelection (int index) {
  * if start is greater than end.
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
+ * </p>
  * 
  * @param start the start index of the items to select
  * @param end the end index of the items to select

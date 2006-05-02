@@ -27,7 +27,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify</dd>
  * </dl>
- * <p>
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 
@@ -754,6 +754,7 @@ void setBackgroundPixel (int pixel) {
  * a value of 2 and setSelection() with a value of 137. Similarly, if getDigits() has a value
  * of 2 and getSelection() returns 137 this should be interpreted as 1.37. This applies to all
  * numeric APIs. 
+ * </p>
  * 
  * @param value the new digits (must be greater than or equal to zero)
  * 

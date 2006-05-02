@@ -29,7 +29,7 @@ import org.eclipse.swt.accessibility.*;
  *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse,
  *     DragDetect, MenuDetect</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
  * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
@@ -3199,7 +3199,7 @@ int widgetStyle () {
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.
- * Answers <code>true</code> if the parent is successfully changed.
+ * Returns <code>true</code> if the parent is successfully changed.
  *
  * @param parent the new parent for the control.
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.

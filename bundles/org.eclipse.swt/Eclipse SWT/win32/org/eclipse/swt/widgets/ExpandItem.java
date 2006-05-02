@@ -24,7 +24,7 @@ import org.eclipse.swt.*;
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
- * <p>
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 
@@ -243,7 +243,7 @@ void destroyWidget () {
 /**
  * Returns the control that is shown when the item is expanded.
  * If no control has been set, return <code>null</code>.
- * <p>
+ *
  * @return the control
  *
  * @exception SWTException <ul>
@@ -259,7 +259,6 @@ public Control getControl () {
 /**
  * Returns <code>true</code> if the receiver is expanded,
  * and false otherwise.
- * <p>
  *
  * @return the expanded state
  *
@@ -393,7 +392,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean size)
 
 /**
  * Sets the control that is shown when the item is expanded.
- * <p>
+ *
  * @param control the new control (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -427,7 +426,6 @@ public void setControl (Control control) {
 
 /**
  * Sets the expanded state of the receiver.
- * <p>
  *
  * @param expanded the new expanded state
  *

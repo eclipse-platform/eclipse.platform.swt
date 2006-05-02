@@ -29,8 +29,8 @@ import org.eclipse.swt.events.*;
  * instead of up-front.  This can provide significant performance improvements for
  * trees that are very large or for which <code>TreeItem</code> population is
  * expensive (for example, retrieving values from an external source).
- *
- * <p> Here is an example of using a <code>Tree</code> with style <code>VIRTUAL</code>:
+ * </p><p>
+ * Here is an example of using a <code>Tree</code> with style <code>VIRTUAL</code>:
  * <code><pre>
  *  final Tree tree = new Tree(parent, SWT.VIRTUAL | SWT.BORDER);
  *  tree.setItemCount(20);
@@ -61,7 +61,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles SINGLE and MULTI may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -3276,7 +3276,7 @@ void releaseWidget () {
 
 /**
  * Removes all of the items from the receiver.
- * <p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -3536,6 +3536,7 @@ void select (int hItem, TVITEM tvItem) {
  * Selects all of the items in the receiver.
  * <p>
  * If the receiver is single-select, do nothing.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -4007,6 +4008,7 @@ void setSelection (int hItem, TVITEM tvItem, TreeItem [] selection) {
  * The current selection is cleared before the new item is selected.
  * <p>
  * If the item is not in the receiver, then it is ignored.
+ * </p>
  *
  * @param item the item to select
  *
@@ -4034,6 +4036,7 @@ public void setSelection (TreeItem item) {
  * Items that are not in the receiver are ignored.
  * If the receiver is single-select and multiple items are specified,
  * then all items are ignored.
+ * </p>
  *
  * @param items the array of items
  *

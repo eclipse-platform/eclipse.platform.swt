@@ -21,14 +21,14 @@ import org.eclipse.swt.events.*;
  * <p>
  * The item children that may be added to instances of this class
  * must be of type <code>ExpandItem</code>.
- * <p>
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>V_SCROLL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Expand, Collapse</dd>
  * </dl>
- * <p>
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 

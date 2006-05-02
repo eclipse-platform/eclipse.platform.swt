@@ -35,13 +35,16 @@ public class StyleRange extends TextStyle implements CloneableCompatibility {
 	 */
 	public int fontStyle = SWT.NORMAL;
 	
+/**
+ * Create a new style range with no font,
+ * no foreground, no background.
+ */
 public StyleRange() {
 	super(null, null, null);
 }
 
 /** 
  * Create a new style range.
- * <p>
  *
  * @param start start offset of the style
  * @param length length of the style 
@@ -56,7 +59,6 @@ public StyleRange(int start, int length, Color foreground, Color background) {
 
 /** 
  * Create a new style range.
- * <p>
  *
  * @param start start offset of the style
  * @param length length of the style 
@@ -109,7 +111,6 @@ boolean isVariableHeight() {
 /**
  * Returns whether or not the receiver is unstyled (i.e., does not have any 
  * style attributes specified).
- * <p>
  *
  * @return true if the receiver is unstyled, false otherwise.
  */
@@ -130,7 +131,6 @@ public boolean isUnstyled() {
  * Compares the specified object to this StyleRange and answer if the two 
  * are similar. The object must be an instance of StyleRange and have the
  * same field values for except for start and length.
- * <p>
  *
  * @param style the object to compare with this object
  * @return true if the objects are similar, false otherwise
@@ -142,8 +142,7 @@ public boolean similarTo(StyleRange style) {
 }
 
 /**
- * Answers a new StyleRange with the same values as this StyleRange.
- * <p>
+ * Returns a new StyleRange with the same values as this StyleRange.
  *
  * @return a shallow copy of this StyleRange
  */	
