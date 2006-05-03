@@ -19,14 +19,14 @@ import org.eclipse.swt.internal.gtk.*;
 /**
  * Instances of this class represent icons that can be placed on the
  * system tray or task bar status area.
- *
+ * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, MenuDetect, Selection</dd>
  * </dl>
- * <p>
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 
@@ -181,6 +181,19 @@ public Tray getParent () {
 	return parent;
 }
 
+/**
+ * Returns the receiver's tool tip, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public ToolTip getToolTip () {
 	checkWidget ();
 	return toolTip;
@@ -356,6 +369,19 @@ public void setImage (Image image) {
 	}
 }
 
+/**
+ * Sets the receiver's tool tip to the argument, which
+ * may be null indicating that no tool tip should be shown.
+ *
+ * @param toolTip the new tool tip (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setToolTip (ToolTip toolTip) {
 	checkWidget ();
 	ToolTip oldTip = this.toolTip, newTip = toolTip;

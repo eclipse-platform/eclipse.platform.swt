@@ -19,11 +19,31 @@ import org.eclipse.swt.events.*;
 
 /** 
  * Instances of this class implement a selectable user interface
- * object that displays a list of images and strings and issue
+ * object that displays a list of images and strings and issues
  * notification when selected.
  * <p>
  * The item children that may be added to instances of this class
  * must be of type <code>TableItem</code>.
+ * </p><p>
+ * Style <code>VIRTUAL</code> is used to create a <code>Table</code> whose
+ * <code>TableItem</code>s are to be populated by the client on an on-demand basis
+ * instead of up-front.  This can provide significant performance improvements for
+ * tables that are very large or for which <code>TableItem</code> population is
+ * expensive (for example, retrieving values from an external source).
+ * </p><p>
+ * Here is an example of using a <code>Table</code> with style <code>VIRTUAL</code>:
+ * <code><pre>
+ *  final Table table = new Table (parent, SWT.VIRTUAL | SWT.BORDER);
+ *  table.setItemCount (1000000);
+ *  table.addListener (SWT.SetData, new Listener () {
+ *      public void handleEvent (Event event) {
+ *          TableItem item = (TableItem) event.item;
+ *          int index = table.indexOf (item);
+ *          item.setText ("Item " + index);
+ *          System.out.println (item.getText ());
+ *      }
+ *  }); 
+ * </pre></code>
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to add <code>Control</code> children to it,
@@ -33,9 +53,9 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection</dd>
+ * <dd>Selection, DefaultSelection, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles SINGLE, and MULTI may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -332,8 +352,8 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 /**
  * Clears the item at the given zero-relative index in the receiver.
  * The text, icon and other attributes of the item are set to the default
- * value.  If the table was created with the SWT.VIRTUAL style, these
- * attributes are requested again as needed.
+ * value.  If the table was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param index the index of the item to clear
  *
@@ -362,9 +382,9 @@ public void clear (int index) {
 /**
  * Removes the items from the receiver which are between the given
  * zero-relative start and end indices (inclusive).  The text, icon
- * and other attribues of the items are set to their default values.
- * If the table was created with the SWT.VIRTUAL style, these attributes
- * are requested again as needed.
+ * and other attributes of the items are set to their default values.
+ * If the table was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param start the start index of the item to clear
  * @param end the end index of the item to clear
@@ -400,9 +420,9 @@ public void clear (int start, int end) {
 
 /**
  * Clears the items at the given zero-relative indices in the receiver.
- * The text, icon and other attribues of the items are set to their default
- * values.  If the table was created with the SWT.VIRTUAL style, these
- * attributes are requested again as needed.
+ * The text, icon and other attributes of the items are set to their default
+ * values.  If the table was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param indices the array of indices of the items
  *
@@ -437,9 +457,9 @@ public void clear (int [] indices) {
 
 /**
  * Clears all the items in the receiver. The text, icon and other
- * attribues of the items are set to their default values. If the
- * table was created with the SWT.VIRTUAL style, these attributes
- * are requested again as needed.
+ * attributes of the items are set to their default values. If the
+ * table was created with the <code>SWT.VIRTUAL</code> style, these
+ * attributes are requested again as needed.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1033,6 +1053,7 @@ public Rectangle getClientArea () {
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
+ * Columns are returned in the order that they were created.
  * If no <code>TableColumn</code>s were created by the programmer,
  * this method will throw <code>ERROR_INVALID_RANGE</code> despite
  * the fact that a single column of data may be visible in the table.
@@ -1049,6 +1070,12 @@ public Rectangle getClientArea () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  */
 public TableColumn getColumn (int index) {
 	checkWidget();
@@ -1148,7 +1175,8 @@ public int [] getColumnOrder () {
 
 /**
  * Returns an array of <code>TableColumn</code>s which are the
- * columns in the receiver. If no <code>TableColumn</code>s were
+ * columns in the receiver.  Columns are returned in the order
+ * that they were created.  If no <code>TableColumn</code>s were
  * created by the programmer, the array is empty, despite the fact
  * that visually, one column of items may be visible. This occurs
  * when the programmer uses the table like a list, adding items but
@@ -1165,6 +1193,12 @@ public int [] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  */
 public TableColumn [] getColumns () {
 	checkWidget();
@@ -1291,9 +1325,16 @@ public TableItem getItem (int index) {
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
  * coordinate system of the receiver.
+ * <p>
+ * The item that is returned represents an item that could be selected by the user.
+ * For example, if selection only occurs in items in the first column, then null is 
+ * returned if the point is outside of the item. 
+ * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
+ * determines the extent of the selection.
+ * </p>
  *
  * @param point the point used to locate the item
- * @return the item at the given point
+ * @return the item at the given point, or null if the point is not in a selectable item
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -2169,7 +2210,7 @@ public void remove (int [] indices) {
 
 /**
  * Removes all of the items from the receiver.
- * <p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2499,6 +2540,7 @@ public void select (int index) {
  * if start is greater than end.
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
+ * </p>
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -2541,6 +2583,7 @@ public void select (int start, int end) {
  * Indices that are out of range and duplicate indices are ignored.
  * If the receiver is single-select and multiple indices are specified,
  * then all indices are ignored.
+ * </p>
  *
  * @param indices the array of indices for the items to select
  *
@@ -2581,6 +2624,7 @@ public void select (int [] indices) {
  * Selects all of the items in the receiver.
  * <p>
  * If the receiver is single-select, do nothing.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2841,7 +2885,7 @@ void setScrollWidth (int /*long*/ column, TableItem item) {
  * value will clear the sort indicator.  The current sort column is cleared 
  * before the new column is set.
  *
- * @param column the column used by the sort indicator
+ * @param column the column used by the sort indicator or <code>null</code>
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
@@ -2924,6 +2968,7 @@ public void setSelection (int index) {
  * if start is greater than end.
  * If the receiver is single-select and there is more than one item in the
  * given range, then all indices are ignored.
+ * </p>
  * 
  * @param start the start index of the items to select
  * @param end the end index of the items to select
@@ -2959,6 +3004,7 @@ public void setSelection (int start, int end) {
  * Indices that are out of range and duplicate indices are ignored.
  * If the receiver is single-select and multiple indices are specified,
  * then all indices are ignored.
+ * </p>
  *
  * @param indices the indices of the items to select
  *
@@ -2988,6 +3034,26 @@ public void setSelection (int [] indices) {
 	if (fixColumn) hideFirstColumn ();
 }
 
+/**
+ * Sets the receiver's selection to the given item.
+ * The current selection is cleared before the new item is selected.
+ * <p>
+ * If the item is not in the receiver, then it is ignored.
+ * </p>
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setSelection (TableItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (new TableItem [] {item});
@@ -3001,6 +3067,7 @@ public void setSelection (TableItem item) {
  * Items that are not in the receiver are ignored.
  * If the receiver is single-select and multiple items are specified,
  * then all items are ignored.
+ * </p>
  *
  * @param items the array of items
  *
