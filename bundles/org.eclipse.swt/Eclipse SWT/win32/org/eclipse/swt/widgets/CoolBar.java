@@ -57,6 +57,8 @@ public class CoolBar extends Composite {
 	}
 	static final int SEPARATOR_WIDTH = 2;
 	static final int MAX_WIDTH = 0x7FFF;
+	static final int DEFAULT_COOLBAR_WIDTH = 0;
+	static final int DEFAULT_COOLBAR_HEIGHT = 0;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -184,8 +186,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 		ignoreResize = false;
 	}
-	if (width == 0) width = DEFAULT_WIDTH;
-	if (height == 0) height = DEFAULT_HEIGHT;
+	if (width == 0) width = DEFAULT_COOLBAR_WIDTH;
+	if (height == 0) height = DEFAULT_COOLBAR_HEIGHT;
 	if ((style & SWT.VERTICAL) != 0) {
 		int tmp = width;
 		width = height;

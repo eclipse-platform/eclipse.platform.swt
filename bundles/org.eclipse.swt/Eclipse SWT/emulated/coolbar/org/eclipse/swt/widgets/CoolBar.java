@@ -45,6 +45,8 @@ public class CoolBar extends Composite {
 	boolean inDispose = false;
 	static final int ROW_SPACING = 2;
 	static final int CLICK_DISTANCE = 3;
+	static final int DEFAULT_COOLBAR_WIDTH = 0;
+	static final int DEFAULT_COOLBAR_HEIGHT = 0;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -140,8 +142,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = Math.max(width, rowWidth);
 	}
 	wrapItems(getWidth());
-	if (width == 0) width = DEFAULT_WIDTH;
-	if (height == 0) height = DEFAULT_HEIGHT;
+	if (width == 0) width = DEFAULT_COOLBAR_WIDTH;
+	if (height == 0) height = DEFAULT_COOLBAR_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim(0, 0, width, height);
