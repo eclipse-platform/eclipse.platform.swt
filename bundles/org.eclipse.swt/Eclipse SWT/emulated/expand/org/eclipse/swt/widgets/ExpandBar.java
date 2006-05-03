@@ -76,6 +76,10 @@ static int checkStyle (int style) {
 	return style & ~SWT.H_SCROLL;
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int height = 0, width = 0;

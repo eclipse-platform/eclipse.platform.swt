@@ -267,6 +267,9 @@ boolean checkData (TreeItem item, boolean redraw) {
 static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
 public void clear (int index, boolean recursive) {
 	checkWidget ();
 	if (!(0 <= index && index < items.length)) error (SWT.ERROR_INVALID_RANGE);

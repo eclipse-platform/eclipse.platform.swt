@@ -224,6 +224,9 @@ static Table checkNull (Table table) {
 	if (table == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return table;
 }
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
 void clear () {
 	checked = grayed = false;
 	texts = null;
