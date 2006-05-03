@@ -337,9 +337,11 @@ public Display (DeviceData data) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere
- * in a widget. When the event does occur, the listener is
- * notified by sending it the <code>handleEvent()</code> message.
+ * be notified when an event of the given type occurs anywhere
+ * in a widget. The event type is one of the event constants
+ * defined in class <code>SWT</code>. When the event does occur,
+ * the listener is notified by sending it the <code>handleEvent()</code>
+ * message.
  * <p>
  * Setting the type of an event to <code>SWT.None</code> from
  * within the <code>handleEvent()</code> method can be used to
@@ -363,6 +365,7 @@ public Display (DeviceData data) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeFilter
  * @see #removeListener
  * 
@@ -377,8 +380,9 @@ public void addFilter (int eventType, Listener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
- * event does occur in the display, the listener is notified by
+ * be notified when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
+ * When the event does occur in the display, the listener is notified by
  * sending it the <code>handleEvent()</code> message.
  *
  * @param eventType the type of event to listen for
@@ -393,6 +397,7 @@ public void addFilter (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeListener
  * 
  * @since 2.0 
@@ -1133,10 +1138,10 @@ public Color getSystemColor (int id) {
  * specified in class <code>SWT</code>. This cursor should
  * not be free'd because it was allocated by the system,
  * not the application.  A value of <code>null</code> will
- * be returned if the supplied constant is not an swt cursor
+ * be returned if the supplied constant is not an SWT cursor
  * constant. 
  *
- * @param id the swt cursor constant
+ * @param id the SWT cursor constant
  * @return the corresponding cursor or <code>null</code>
  *
  * @exception SWTException <ul>
@@ -1212,10 +1217,10 @@ public Font getSystemFont () {
  * not be free'd because it was allocated by the system,
  * not the application.  A value of <code>null</code> will
  * be returned either if the supplied constant is not an
- * swt icon constant or if the platform does not define an
+ * SWT icon constant or if the platform does not define an
  * image that corresponds to the constant. 
  *
- * @param id the swt icon constant
+ * @param id the SWT icon constant
  * @return the corresponding image or <code>null</code>
  *
  * @exception SWTException <ul>
@@ -2109,8 +2114,9 @@ void releaseDisplay () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs anywhere in
- * a widget.
+ * be notified when an event of the given type occurs anywhere in
+ * a widget. The event type is one of the event constants defined
+ * in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -2123,6 +2129,7 @@ void releaseDisplay () {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addFilter
  * @see #addListener
  * 
@@ -2138,7 +2145,8 @@ public void removeFilter (int eventType, Listener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs. The event type
+ * is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -2152,6 +2160,7 @@ public void removeFilter (int eventType, Listener listener) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
  * 
  * @since 2.0 

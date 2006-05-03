@@ -26,7 +26,7 @@ import org.eclipse.swt.*;
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify</dd>
  * </dl>
- * <p>
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 
@@ -569,6 +569,7 @@ void removeVerifyListener (VerifyListener listener) {
  * a value of 2 and setSelection() with a value of 137. Similarly, if getDigits() has a value
  * of 2 and getSelection() returns 137 this should be interpreted as 1.37. This applies to all
  * numeric APIs. 
+ * </p>
  * 
  * @param value the new digits (must be greater than or equal to zero)
  * 
@@ -675,6 +676,29 @@ public void setSelection (int value) {
 	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_VALUE, value, 0);
 }
 
+/**
+ * Sets the receiver's selection, minimum value, maximum
+ * value, digits, increment and page increment all at once.
+ * <p>
+ * Note: This is similar to setting the values individually
+ * using the appropriate methods, but may be implemented in a 
+ * more efficient fashion on some platforms.
+ * </p>
+ *
+ * @param selection the new selection value
+ * @param minimum the new minimum value
+ * @param maximum the new maximum value
+ * @param digits the new digits value
+ * @param increment the new increment value
+ * @param pageIncrement the new pageIncrement value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setValues (int selection, int minimum, int maximum, int digits, int increment, int pageIncrement) {
 	checkWidget ();
 	if (minimum < 0) return;

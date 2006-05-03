@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.carbon.*;
 
 /**
- * Instances of this class are used used to inform or warn the user.
+ * Instances of this class are used to inform or warn the user.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>ICON_ERROR, ICON_INFORMATION, ICON_QUESTION, ICON_WARNING, ICON_WORKING</dd>

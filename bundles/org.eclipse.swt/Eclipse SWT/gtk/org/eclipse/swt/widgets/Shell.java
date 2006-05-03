@@ -52,9 +52,18 @@ import org.eclipse.swt.events.*;
  * of these changes are also possible.
  * </li>
  * </ul>
- * </p>
- * <p>
- * Note: The styles supported by this class must be treated
+ * </p><p>
+ * The <em>modality</em> of an instance may be specified using
+ * style bits. The modality style bits are used to determine
+ * whether input is blocked for other shells on the display.
+ * The <code>PRIMARY_MODAL</code> style allows an instance to block
+ * input to its parent. The <code>APPLICATION_MODAL</code> style
+ * allows an instance to block input to every other shell in the
+ * display. The <code>SYSTEM_MODAL</code> style allows an instance
+ * to block input to all shells, including shells belonging to
+ * different applications.
+ * </p><p>
+ * Note: The styles supported by this class are treated
  * as <em>HINT</em>s, since the window manager for the
  * desktop on which the instance is visible has ultimate
  * control over the appearance and behavior of decorations
@@ -65,6 +74,11 @@ import org.eclipse.swt.events.*;
  * more restrictive modality style that is supported. For
  * example, if <code>PRIMARY_MODAL</code> is not supported,
  * it would be upgraded to <code>APPLICATION_MODAL</code>.
+ * A modality style may also be "downgraded" to a less
+ * restrictive style. For example, most operating systems
+ * no longer support <code>SYSTEM_MODAL</code> because
+ * it can freeze up the desktop, so this is typically
+ * downgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL</dd>

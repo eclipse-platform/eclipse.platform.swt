@@ -26,11 +26,38 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class provide a selectable user interface object
- * that displays a hierarchy of items and issue notification when an
+ * that displays a hierarchy of items and issues notification when an
  * item in the hierarchy is selected.
  * <p>
  * The item children that may be added to instances of this class
  * must be of type <code>TreeItem</code>.
+ * </p><p>
+ * Style <code>VIRTUAL</code> is used to create a <code>Tree</code> whose
+ * <code>TreeItem</code>s are to be populated by the client on an on-demand basis
+ * instead of up-front.  This can provide significant performance improvements for
+ * trees that are very large or for which <code>TreeItem</code> population is
+ * expensive (for example, retrieving values from an external source).
+ * </p><p>
+ * Here is an example of using a <code>Tree</code> with style <code>VIRTUAL</code>:
+ * <code><pre>
+ *  final Tree tree = new Tree(parent, SWT.VIRTUAL | SWT.BORDER);
+ *  tree.setItemCount(20);
+ *  tree.addListener(SWT.SetData, new Listener() {
+ *      public void handleEvent(Event event) {
+ *          TreeItem item = (TreeItem)event.item;
+ *          TreeItem parentItem = item.getParentItem();
+ *          String text = null;
+ *          if (parentItem == null) {
+ *              text = "node " + tree.indexOf(item);
+ *          } else {
+ *              text = parentItem.getText() + " - " + parentItem.indexOf(item);
+ *          }
+ *          item.setText(text);
+ *          System.out.println(text);
+ *          item.setItemCount(10);
+ *      }
+ *  });
+ * </pre></code>
  * </p><p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to add <code>Control</code> children to it,
@@ -38,11 +65,11 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection, Collapse, Expand</dd>
+ * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem</dd>
  * </dl>
- * <p>
+ * </p><p>
  * Note: Only one of the styles SINGLE and MULTI may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -402,11 +429,12 @@ void clearAll (TreeItem parentItem, boolean all) {
 /**
  * Clears the item at the given zero-relative index in the receiver.
  * The text, icon and other attributes of the item are set to the default
- * value.  If the tree was created with the SWT.VIRTUAL style, these
- * attributes are requested again as needed.
+ * value.  If the tree was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param index the index of the item to clear
- * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ * @param all <code>true</code> if all child items of the indexed item should be
+ * cleared recursively, and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
@@ -430,11 +458,12 @@ public void clear (int index, boolean all) {
 
 /**
  * Clears all the items in the receiver. The text, icon and other
- * attribues of the items are set to their default values. If the
- * tree was created with the SWT.VIRTUAL style, these attributes
- * are requested again as needed.
+ * attributes of the items are set to their default values. If the
+ * tree was created with the <code>SWT.VIRTUAL</code> style, these
+ * attributes are requested again as needed.
  * 
- * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ * @param all <code>true</code> if all child items should be cleared
+ * recursively, and <code>false</code> otherwise
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1176,6 +1205,7 @@ public Rectangle getClientArea () {
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
+ * Columns are returned in the order that they were created.
  * If no <code>TreeColumn</code>s were created by the programmer,
  * this method will throw <code>ERROR_INVALID_RANGE</code> despite
  * the fact that a single column of data may be visible in the tree.
@@ -1192,6 +1222,12 @@ public Rectangle getClientArea () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
  * 
  * @since 3.1
  */
@@ -1248,7 +1284,7 @@ public int getColumnCount () {
  * @see TreeColumn#setMoveable(boolean)
  * @see SWT#Move
  * 
- * @since 3.1
+ * @since 3.2
  */
 public int [] getColumnOrder () {
 	checkWidget ();
@@ -1265,7 +1301,8 @@ public int [] getColumnOrder () {
 
 /**
  * Returns an array of <code>TreeColumn</code>s which are the
- * columns in the receiver. If no <code>TreeColumn</code>s were
+ * columns in the receiver. Columns are returned in the order
+ * that they were created.  If no <code>TreeColumn</code>s were
  * created by the programmer, the array is empty, despite the fact
  * that visually, one column of items may be visible. This occurs
  * when the programmer uses the tree like a list, adding items but
@@ -1282,6 +1319,12 @@ public int [] getColumnOrder () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
  * 
  * @since 3.1
  */
@@ -1434,9 +1477,16 @@ public TreeItem getItem (int index) {
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
  * coordinate system of the receiver.
+ * <p>
+ * The item that is returned represents an item that could be selected by the user.
+ * For example, if selection only occurs in items in the first column, then null is 
+ * returned if the point is outside of the item. 
+ * Note that the SWT.FULL_SELECTION style hint, which specifies the selection policy,
+ * determines the extent of the selection.
+ * </p>
  *
  * @param point the point used to locate the item
- * @return the item at the given point
+ * @return the item at the given point, or null if the point is not in a selectable item
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -2417,7 +2467,7 @@ void releaseWidget () {
 
 /**
  * Removes all of the items from the receiver.
- * <p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -2483,7 +2533,7 @@ public void removeSelectionListener (SelectionListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when items in the receiver are expanded or collapsed..
+ * be notified when items in the receiver are expanded or collapsed.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -2541,6 +2591,7 @@ public void setInsertMark (TreeItem item, boolean before) {
  * Selects all of the items in the receiver.
  * <p>
  * If the receiver is single-select, do nothing.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2701,7 +2752,7 @@ public void setHeaderVisible (boolean show) {
 }
 
 /**
- * Sets the number of items contained in the receiver.
+ * Sets the number of root-level items contained in the receiver.
  *
  * @param count the number of items
  *
@@ -2894,6 +2945,26 @@ boolean setScrollWidth (boolean set) {
 	return true;
 }
 
+/**
+ * Sets the receiver's selection to the given item.
+ * The current selection is cleared before the new item is selected.
+ * <p>
+ * If the item is not in the receiver, then it is ignored.
+ * </p>
+ *
+ * @param item the item to select
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setSelection (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -2907,6 +2978,7 @@ public void setSelection (TreeItem item) {
  * Items that are not in the receiver are ignored.
  * If the receiver is single-select and multiple items are specified,
  * then all items are ignored.
+ * </p>
  *
  * @param items the array of items
  *
@@ -2974,7 +3046,7 @@ public void setSelection (TreeItem [] items) {
  * value will clear the sort indicator.  The current sort column is cleared 
  * before the new column is set.
  *
- * @param column the column used by the sort indicator
+ * @param column the column used by the sort indicator or <code>null</code>
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 

@@ -711,7 +711,7 @@ public int getOrientation () {
  * Indexing is zero based.  The range of a selection is from
  * 0..N where N is the number of characters in the widget.
  * </p>
- * 
+ *
  * @return a point representing the selection start and end
  *
  * @exception SWTException <ul>

@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a hierarchy of tree items in a tree widget.
+ * 
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -87,10 +88,11 @@ public TreeItem (Tree parent, int style) {
  *
  * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -156,10 +158,11 @@ public TreeItem (TreeItem parentItem, int style) {
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -227,11 +230,53 @@ void clear () {
 	cellFont = null;
 }
 
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attributes of the item are set to the default
+ * value.  If the tree was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ * @param all <code>true</code> if all child items of the indexed item should be
+ * cleared recursively, and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
 public void clear (int index, boolean all) {
 	checkWidget ();
 	parent.clear (handle, index, all);
 }
 
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attributes of the items are set to their default values. If the
+ * tree was created with the <code>SWT.VIRTUAL</code> style, these
+ * attributes are requested again as needed.
+ * 
+ * @param all <code>true</code> if all child items should be cleared
+ * recursively, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
 public void clearAll (boolean all) {
 	checkWidget ();
 	parent.clearAll (all, handle);
@@ -247,13 +292,14 @@ void destroyWidget () {
  * Returns the receiver's background color.
  *
  * @return the background color
- *
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
  * @since 2.0
+ * 
  */
 public Color getBackground () {
 	checkWidget ();
@@ -424,7 +470,7 @@ public Rectangle getBounds () {
 /**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
- * the <code>CHECK</code> style, return false.
+ * the <code>CHECK style, return false.
  * <p>
  *
  * @return the checked state
@@ -516,7 +562,7 @@ public Font getFont (int index) {
  * </ul>
  * 
  * @since 2.0
- *
+ * 
  */
 public Color getForeground () {
 	checkWidget ();
@@ -560,9 +606,10 @@ public Color getForeground (int index) {
 /**
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
- * the <code>CHECK</code> style, return false.
+ * the <code>CHECK style, return false.
+ * <p>
  *
- * @return the grayed state
+ * @return the grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1233,6 +1280,7 @@ public void setFont (int index, Font font) {
  * </ul>
  * 
  * @since 2.0
+ * 
  */
 public void setForeground (Color color){
 	checkWidget ();
@@ -1322,10 +1370,10 @@ public void setForeground (int index, Color color){
 }
 
 /**
- * Sets the grayed state of the receiver.
- * <p>
+ * Sets the grayed state of the checkbox for this item.  This state change 
+ * only applies if the Tree was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state
+ * @param grayed the new grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1448,6 +1496,18 @@ public void setImage (Image [] images) {
 	}
 }
 
+/**
+ * Sets the number of child items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);

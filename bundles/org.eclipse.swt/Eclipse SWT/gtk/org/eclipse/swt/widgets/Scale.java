@@ -74,6 +74,10 @@ public Scale (Composite parent, int style) {
  * be notified when the receiver's value changes, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the control's value changes.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *

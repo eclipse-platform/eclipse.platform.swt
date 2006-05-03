@@ -292,7 +292,7 @@ public Point getSize () {
 }
 
 /**
- * Answers the size of the receiver's thumb relative to the
+ * Returns the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.
  *
  * @return the thumb value
@@ -636,7 +636,7 @@ public void setThumb (int value) {
  * Sets the receiver's selection, minimum value, maximum
  * value, thumb, increment and page increment all at once.
  * <p>
- * Note: This is equivalent to setting the values individually
+ * Note: This is similar to setting the values individually
  * using the appropriate methods, but may be implemented in a 
  * more efficient fashion on some platforms.
  * </p>

@@ -98,10 +98,11 @@ public ToolItem (ToolBar parent, int style) {
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -325,7 +326,7 @@ public Rectangle getBounds () {
 
 /**
  * Returns the control that is used to fill the bounds of
- * the item when the items is a <code>SEPARATOR</code>.
+ * the item when the item is a <code>SEPARATOR</code>.
  *
  * @return the control
  *
@@ -736,7 +737,7 @@ void selectRadio () {
 
 /**
  * Sets the control that is used to fill the bounds of
- * the item when the items is a <code>SEPARATOR</code>.
+ * the item when the item is a <code>SEPARATOR</code>.
  *
  * @param control the new control
  *
@@ -948,14 +949,14 @@ public void setSelection (boolean selected) {
  * the mnemonic character.
  * </p>
  * <p>
- * Mnemonics are indicated by an '&amp' that causes the next
+ * Mnemonics are indicated by an '&amp;' that causes the next
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
  * underlined but may be emphasised in a platform specific
- * manner.  The mnemonic indicator character '&amp' can be
+ * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
- *'&amp' to be displayed.
+ * '&amp;' to be displayed.
  * </p>
  * 
  * @param string the new text

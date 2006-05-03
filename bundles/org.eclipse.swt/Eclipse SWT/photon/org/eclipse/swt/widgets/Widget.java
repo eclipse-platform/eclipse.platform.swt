@@ -255,9 +255,10 @@ int copyPhImage(int image) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when an event of the given type occurs. When the
+ * be notified when an event of the given type occurs. When the
  * event does occur in the widget, the listener is notified by
- * sending it the <code>handleEvent()</code> message.
+ * sending it the <code>handleEvent()</code> message. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
@@ -271,7 +272,9 @@ int copyPhImage(int image) {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #removeListener
+ * @see #notifyListeners
  */
 public void addListener (int eventType, Listener handler) {
 	checkWidget();
@@ -282,7 +285,7 @@ public void addListener (int eventType, Listener handler) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notifed when the widget is disposed. When the widget is
+ * be notified when the widget is disposed. When the widget is
  * disposed, the listener is notified by sending it the
  * <code>widgetDisposed()</code> message.
  *
@@ -621,15 +624,18 @@ boolean isValidSubclass () {
 /**
  * Returns <code>true</code> if there are any listeners
  * for the specified event type associated with the receiver,
- * and <code>false</code> otherwise.
+ * and <code>false</code> otherwise. The event type is one of
+ * the event constants defined in class <code>SWT</code>.
  *
- * @param	eventType the type of event
+ * @param eventType the type of event
  * @return true if the event is hooked
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see SWT
  */
 public boolean isListening (int eventType) {
 	checkWidget();
@@ -643,7 +649,9 @@ boolean isValidThread () {
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
- * invoking their <code>handleEvent()</code> method.
+ * invoking their <code>handleEvent()</code> method.  The
+ * event type is one of the event constants defined in class
+ * <code>SWT</code>.
  *
  * @param eventType the type of event which has occurred
  * @param event the event data
@@ -652,6 +660,10 @@ boolean isValidThread () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see SWT
+ * @see #addListener
+ * @see #removeListener
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
@@ -807,7 +819,8 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs. The event
+ * type is one of the event constants defined in class <code>SWT</code>.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -821,7 +834,9 @@ void releaseWidget () {
  * </ul>
  *
  * @see Listener
+ * @see SWT
  * @see #addListener
+ * @see #notifyListeners
  */
 public void removeListener (int eventType, Listener handler) {
 	checkWidget();
@@ -832,7 +847,7 @@ public void removeListener (int eventType, Listener handler) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when an event of the given type occurs.
+ * be notified when an event of the given type occurs.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
@@ -863,7 +878,7 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notifed when the widget is disposed.
+ * be notified when the widget is disposed.
  *
  * @param listener the listener which should no longer be notified when the receiver is disposed
  *

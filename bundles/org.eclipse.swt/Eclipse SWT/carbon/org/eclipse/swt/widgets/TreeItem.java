@@ -96,10 +96,11 @@ public TreeItem (Tree parent, int style) {
  *
  * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -165,10 +166,11 @@ public TreeItem (TreeItem parentItem, int style) {
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
+ * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the parent (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -259,11 +261,12 @@ void clear () {
 /**
  * Clears the item at the given zero-relative index in the receiver.
  * The text, icon and other attributes of the item are set to the default
- * value.  If the tree was created with the SWT.VIRTUAL style, these
- * attributes are requested again as needed.
+ * value.  If the tree was created with the <code>SWT.VIRTUAL</code> style,
+ * these attributes are requested again as needed.
  *
  * @param index the index of the item to clear
- * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ * @param all <code>true</code> if all child items of the indexed item should be
+ * cleared recursively, and <code>false</code> otherwise
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
@@ -288,11 +291,12 @@ public void clear (int index, boolean all) {
 
 /**
  * Clears all the items in the receiver. The text, icon and other
- * attribues of the items are set to their default values. If the
- * tree was created with the SWT.VIRTUAL style, these attributes
- * are requested again as needed.
+ * attributes of the items are set to their default values. If the
+ * tree was created with the <code>SWT.VIRTUAL</code> style, these
+ * attributes are requested again as needed.
  * 
- * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ * @param all <code>true</code> if all child items should be cleared
+ * recursively, and <code>false</code> otherwise
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -577,7 +581,7 @@ public Color getForeground (int index) {
  * the <code>CHECK style, return false.
  * <p>
  *
- * @return the grayed state
+ * @return the grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1164,10 +1168,10 @@ public void setForeground (int index, Color color){
 }
 
 /**
- * Sets the grayed state of the receiver.
- * <p>
+ * Sets the grayed state of the checkbox for this item.  This state change 
+ * only applies if the Tree was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state
+ * @param grayed the new grayed state of the checkbox
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1257,7 +1261,7 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the number of items contained in the receiver.
+ * Sets the number of child items contained in the receiver.
  *
  * @param count the number of items
  *
