@@ -165,6 +165,11 @@ public Browser(Composite parent, int style) {
 	OS.PtRealizeWidget(webHandle);
 }
 
+/**
+ * Clears all session cookies from all current Browser instances.
+ * 
+ * @since 3.2
+ */
 public static void clearSessions () {
 	// TODO
 }

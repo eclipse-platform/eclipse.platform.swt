@@ -527,6 +527,11 @@ public Browser(Composite parent, int style) {
 	GTK.gtk_widget_show(gtkHandle);
 }
 
+/**
+ * Clears all session cookies from all current Browser instances.
+ * 
+ * @since 3.2
+ */
 public static void clearSessions () {
 	if (!mozilla) return;
 	int[] result = new int [1];

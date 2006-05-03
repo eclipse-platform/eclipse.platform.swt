@@ -376,6 +376,11 @@ public Browser(Composite parent, int style) {
 	WebKit.objc_msgSend(webView, WebKit.S_setDownloadDelegate, delegate);
 }
 
+/**
+ * Clears all session cookies from all current Browser instances.
+ * 
+ * @since 3.2
+ */
 public static void clearSessions () {
 	int storage = WebKit.objc_msgSend (WebKit.C_NSHTTPCookieStorage, WebKit.S_sharedHTTPCookieStorage);
 	int cookies = WebKit.objc_msgSend (storage, WebKit.S_cookies);

@@ -92,6 +92,34 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	this(device, x1, y1, x2, y2, color1, 0xFF, color2, 0xFF);
 }
 
+/**
+ * Constructs a new Pattern that represents a linear, two color
+ * gradient. Drawing with the pattern will cause the resulting area to be
+ * tiled with the gradient specified by the arguments.
+ * 
+ * @param device the device on which to allocate the pattern
+ * @param x1 the x coordinate of the starting corner of the gradient
+ * @param y1 the y coordinate of the starting corner of the gradient
+ * @param x2 the x coordinate of the ending corner of the gradient
+ * @param y2 the y coordinate of the ending corner of the gradient
+ * @param color1 the starting color of the gradient
+ * @param alpha1 the starting alpha value of the gradient
+ * @param color2 the ending color of the gradient
+ * @param alpha2 the ending alpha value of the gradient
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
+ *                              or if either color1 or color2 is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * 
+ * @since 3.2
+ */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
