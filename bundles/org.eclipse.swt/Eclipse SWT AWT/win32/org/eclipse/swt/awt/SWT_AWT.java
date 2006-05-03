@@ -227,7 +227,7 @@ public static Frame new_Frame (final Composite parent) {
 								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
 							} else {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_GAINED_FOCUS));
+								frame.dispatchEvent (new WindowEvent (frame, 207 /*WindowEvent.WINDOW_GAINED_FOCUS*/));
 							}
 						}
 					});
@@ -239,7 +239,7 @@ public static Frame new_Frame (final Composite parent) {
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 								frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
 							} else {
-								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
+								frame.dispatchEvent (new WindowEvent (frame, 208 /*WindowEvent.WINDOW_LOST_FOCUS*/));
 								frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 							}
 						}
