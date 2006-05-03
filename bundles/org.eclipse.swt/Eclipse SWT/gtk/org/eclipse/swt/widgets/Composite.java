@@ -31,6 +31,12 @@ import org.eclipse.swt.graphics.*;
  * behavior is undefined if they are used with subclasses of <code>Composite</code> other
  * than <code>Canvas</code>.
  * </p><p>
+ * Note: The <code>CENTER</code> style, although undefined for composites, has the
+ * same value as <code>EMBEDDED</code> (which is used to embed widgets from other
+ * widget toolkits into SWT).  On some operating systems (GTK, Motif), this may cause
+ * the children of this composite to be obscured.  The <code>EMBEDDED</code> style
+ * is for use by other widget toolkits and should normally never be used.
+ * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates
  * of other controls.
@@ -430,6 +436,24 @@ boolean forceFocus (int /*long*/ focusHandle) {
 	return result;
 }
 
+/**
+ * Returns the receiver's background drawing mode. This
+ * will be one of the following constants defined in class
+ * <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERTIT_FORCE</code>.
+ *
+ * @return the background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
 public int getBackgroundMode () {
 	checkWidget ();
 	return backgroundMode;
@@ -437,7 +461,9 @@ public int getBackgroundMode () {
 
 /**
  * Returns a (possibly empty) array containing the receiver's children.
- * Children are returned in the order that they are drawn.
+ * Children are returned in the order that they are drawn.  The topmost
+ * control appears at the beginning of the array.  Subsequent controls
+ * draw beneath this control and appear later in the array.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
@@ -1032,6 +1058,23 @@ void resizeHandle (int width, int height) {
 	if (socketHandle != 0) OS.gtk_widget_set_size_request (socketHandle, width, height);
 }
 
+/**
+ * Sets the background drawing mode to the argument which should
+ * be one of the following constants defined in class <code>SWT</code>:
+ * <code>INHERIT_NONE</code>, <code>INHERIT_DEFAULT</code>,
+ * <code>INHERIT_FORCE</code>.
+ *
+ * @param mode the new background mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT
+ * 
+ * @since 3.2
+ */
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
