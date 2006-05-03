@@ -35,8 +35,7 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * In addition to text style attributes, the background color of a line may 
  * be specified.
- * </p>
- * <p>
+ * </p><p>
  * There are two ways to use this widget when specifying text style information.  
  * You may use the API that is defined for StyledText or you may define your own 
  * LineStyleListener.  If you define your own listener, you will be responsible 
@@ -50,8 +49,7 @@ import org.eclipse.swt.widgets.*;
  * <li>setStyleRange(StyleRange)
  * <li>setStyleRanges(StyleRange[])
  * </ul>
- * </p>
- * <p>
+ * </p><p>
  * There are two ways to use this widget when specifying line background colors.
  * You may use the API that is defined for StyledText or you may define your own 
  * LineBackgroundListener.  If you define your own listener, you will be responsible 
@@ -63,19 +61,18 @@ import org.eclipse.swt.widgets.*;
  * <li>getLineBackground(int)
  * <li>setLineBackground(int,int,Color)
  * </ul>
- * </p>
- * <p>
+ * </p><p>
  * The content implementation for this widget may also be user-defined.  To do so,
  * you must implement the StyledTextContent interface and use the StyledText API
  * setContent(StyledTextContent) to initialize the widget. 
- * </p>
- * <p>
- * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- * </p>
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b><dd>FULL_SELECTION, MULTI, READ_ONLY, SINGLE, WRAP
  * <dt><b>Events:</b><dd>ExtendedModify, LineGetBackground, LineGetSegments, LineGetStyle, Modify, Selection, Verify, VerifyKey
  * </dl>
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public class StyledText extends Canvas {
 	static final char TAB = '\t';
@@ -606,8 +603,7 @@ public class StyledText extends Canvas {
 	 * <p>
 	 * toString() is guaranteed to return a valid RTF string only after 
 	 * close() has been called. 
-	 * </p>
-	 * <p>
+	 * </p><p>
 	 * Whole and partial lines and line breaks can be written. Lines will be
 	 * formatted using the styles queried from the LineStyleListener, if 
 	 * set, or those set directly in the widget. All styles are applied to
@@ -625,7 +621,6 @@ public class StyledText extends Canvas {
 	 * Creates a RTF writer that writes content starting at offset "start"
 	 * in the document.  <code>start</code> and <code>length</code>can be set to specify partial 
 	 * lines.
-	 * <p>
 	 *
 	 * @param start start offset of content to write, 0 based from 
 	 * 	beginning of document
@@ -654,7 +649,6 @@ public class StyledText extends Canvas {
 	}	
 	/**
 	 * Returns the index of the specified color in the RTF color table.
-	 * <p>
 	 *
 	 * @param color the color
 	 * @param defaultIndex return value if color is null
@@ -672,7 +666,6 @@ public class StyledText extends Canvas {
 	}
 	/**
 	 * Returns the index of the specified color in the RTF color table.
-	 * <p>
 	 *
 	 * @param color the color
 	 * @param defaultIndex return value if color is null
@@ -720,7 +713,6 @@ public class StyledText extends Canvas {
 	/**
 	 * Appends the specified segment of "string" to the RTF data.
 	 * Copy from <code>start</code> up to, but excluding, <code>end</code>.
-	 * <p>
 	 *
 	 * @param string string to copy a segment from. Must not contain
 	 * 	line breaks. Line breaks should be written using writeLineDelimiter()
@@ -806,7 +798,6 @@ public class StyledText extends Canvas {
 	 * Appends the specified line text to the RTF data.  Lines will be formatted 
 	 * using the styles queried from the LineStyleListener, if set, or those set 
 	 * directly in the widget.
-	 * <p>
 	 *
 	 * @param line line text to write as RTF. Must not contain line breaks
 	 * 	Line breaks should be written using writeLineDelimiter()
@@ -848,7 +839,6 @@ public class StyledText extends Canvas {
 	}
 	/**
 	 * Appends the specified line delmimiter to the RTF data.
-	 * <p>
 	 *
 	 * @param lineDelimiter line delimiter to write as RTF.
 	 * @exception SWTException <ul>
@@ -864,11 +854,12 @@ public class StyledText extends Canvas {
 	}
 	/**
 	 * Appends the specified line text to the RTF data.
+	 * <p>
 	 * Use the colors and font styles specified in "styles" and "lineBackground".
 	 * Formatting is written to reflect the text rendering by the text widget.
 	 * Style background colors take precedence over the line background color.
 	 * Background colors are written using the \highlight tag (vs. the \cb tag).
-	 * <p>
+	 * </p>
 	 *
 	 * @param line line text to write as RTF. Must not contain line breaks
 	 * 	Line breaks should be written using writeLineDelimiter()
@@ -996,7 +987,8 @@ public class StyledText extends Canvas {
 	 * during object creation.
 	 * <p>
 	 * </b>NOTE:</b> <code>toString()</code> is guaranteed to return a valid string only after close() 
-	 * has been called. 
+	 * has been called.
+	 * </p>
 	 */
 	class TextWriter {
 		private StringBuffer buffer;
@@ -1008,7 +1000,6 @@ public class StyledText extends Canvas {
 	/**
 	 * Creates a writer that writes content starting at offset "start"
 	 * in the document.  <code>start</code> and <code>length</code> can be set to specify partial lines.
-	 * <p>
 	 *
 	 * @param start start offset of content to write, 0 based from beginning of document
 	 * @param length length of content to write
@@ -1067,8 +1058,9 @@ public class StyledText extends Canvas {
 	}
 	/**
 	 * Inserts the given string to the data at the specified offset.
-	 * Do nothing if "offset" is < 0 or > getCharCount()
 	 * <p>
+	 * Do nothing if "offset" is < 0 or > getCharCount()
+	 * </p>
 	 *
 	 * @param string text to insert
 	 * @param offset offset in the existing data to insert "string" at.
@@ -1093,7 +1085,6 @@ public class StyledText extends Canvas {
 	}
 	/**
 	 * Appends the specified line text to the data.
-	 * <p>
 	 *
 	 * @param line line text to write. Must not contain line breaks
 	 * 	Line breaks should be written using writeLineDelimiter()
@@ -1125,7 +1116,6 @@ public class StyledText extends Canvas {
 	}
 	/**
 	 * Appends the specified line delmimiter to the data.
-	 * <p>
 	 *
 	 * @param lineDelimiter line delimiter to write
 	 * @exception SWTException <ul>
@@ -1219,7 +1209,6 @@ public StyledText(Composite parent, int style) {
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 
  * widget when the widget text has changed.
- * <p>
  *
  * @param extendedModifyListener the listener
  * @exception SWTException <ul>
@@ -1237,7 +1226,9 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
 	addListener(ExtendedModify, typedListener);
 }
 /**
- * Adds a bidirectional segment listener. A BidiSegmentEvent is sent 
+ * Adds a bidirectional segment listener.
+ * <p>
+ * A BidiSegmentEvent is sent 
  * whenever a line of text is measured or rendered. The user can 
  * specify text ranges in the line that should be treated as if they 
  * had a different direction than the surrounding text.
@@ -1246,7 +1237,7 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
  * E.g., Multiple Java string literals in a right-to-left language
  * should generally remain in logical order to each other, that is, the
  * way they are stored. 
- * <p>
+ * </p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -1267,7 +1258,6 @@ public void addBidiSegmentListener(BidiSegmentListener listener) {
 /**
  * Adds a line background listener. A LineGetBackground event is sent by the 
  * widget to determine the background color for a line.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -1289,7 +1279,6 @@ public void addLineBackgroundListener(LineBackgroundListener listener) {
 /**
  * Adds a line style listener. A LineGetStyle event is sent by the widget to 
  * determine the styles for a line.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -1312,7 +1301,6 @@ public void addLineStyleListener(LineStyleListener listener) {
 /**	 
  * Adds a modify listener. A Modify event is sent by the widget when the widget text 
  * has changed.
- * <p>
  *
  * @param modifyListener the listener
  * @exception SWTException <ul>
@@ -1331,7 +1319,6 @@ public void addModifyListener(ModifyListener modifyListener) {
 /**	 
  * Adds a paint object listener. A paint object event is sent by the widget when an object
  * needs to be drawn.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -1379,7 +1366,6 @@ public void addSelectionListener(SelectionListener listener) {
  * Adds a verify key listener. A VerifyKey event is sent by the widget when a key 
  * is pressed. The widget ignores the key press if the listener sets the doit field 
  * of the event to false. 
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -1400,7 +1386,6 @@ public void addVerifyKeyListener(VerifyKeyListener listener) {
  * is about to change. The listener can set the event text and the doit field to 
  * change the text that is set in the widget or to force the widget to ignore the 
  * text change.
- * <p>
  *
  * @param verifyListener the listener
  * @exception SWTException <ul>
@@ -1418,7 +1403,6 @@ public void addVerifyListener(VerifyListener verifyListener) {
 }
 /** 
  * Appends a string to the text at the end of the widget.
- * <p>
  *
  * @param string the string to be appended
  * @see #replaceTextRange(int,int,String)
@@ -1573,7 +1557,6 @@ void claimRightFreeSpace() {
 }
 /**
  * Removes the widget selection.
- * <p>
  *
  * @param sendEvent a Selection event is sent when set to true and when the selection is actually reset.
  */
@@ -1629,12 +1612,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 /**
  * Copies the selected text to the <code>DND.CLIPBOARD</code> clipboard.
+ * <p>
  * The text will be put on the clipboard in plain text format and RTF format.
  * The <code>DND.CLIPBOARD</code> clipboard is used for data that is
- *  transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V) or 
- *  by menu action.
- * 
- * <p>
+ * transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V) or 
+ * by menu action.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1648,13 +1631,14 @@ public void copy() {
 /**
  * Copies the selected text to the specified clipboard.  The text will be put in the 
  * clipboard in plain text format and RTF format.
- * 
- * <p>The clipboardType is  one of the clipboard constants defined in class 
+ * <p>
+ * The clipboardType is  one of the clipboard constants defined in class 
  * <code>DND</code>.  The <code>DND.CLIPBOARD</code>  clipboard is 
  * used for data that is transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V) 
  * or by menu action.  The <code>DND.SELECTION_CLIPBOARD</code> 
  * clipboard is used for data that is transferred by selecting text and pasting 
- * with the middle mouse button.</p>
+ * with the middle mouse button.
+ * </p>
  * 
  * @param clipboardType indicates the type of clipboard
  *
@@ -1685,7 +1669,6 @@ public void copy(int clipboardType) {
 }
 /**
  * Returns the alignment of the widget.
- * <p>
  * 
  * @return the alignment
  * 
@@ -1735,8 +1718,9 @@ int getAvailableHeightBellow(int height) {
 /**
  * Returns a string that uses only the line delimiter specified by the 
  * StyledTextContent implementation.
- * Returns only the first line if the widget has the SWT.SINGLE style.
  * <p>
+ * Returns only the first line if the widget has the SWT.SINGLE style.
+ * </p>
  *
  * @param text the text that may have line delimiters that don't 
  * 	match the model line delimiter. Possible line delimiters 
@@ -1916,7 +1900,6 @@ void createCaretBitmaps() {
 /**
  * Moves the selected text to the clipboard.  The text will be put in the 
  * clipboard in plain text format and RTF format.
- * <p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1975,7 +1958,6 @@ void doAutoScroll(Event event) {
 }
 /** 
  * Initiates autoscrolling.
- * <p>
  *
  * @param direction SWT.UP, SWT.DOWN, SWT.COLUMN_NEXT, SWT.COLUMN_PREVIOUS
  */
@@ -2071,9 +2053,10 @@ void doBackspace() {
 /**
  * Replaces the selection with the character or insert the character at the 
  * current caret position if no selection exists.
+ * <p>
  * If a carriage return was typed replace it with the line break character 
  * used by the widget on this platform.
- * <p>
+ * </p>
  *
  * @param key the character typed by the user
  */
@@ -2140,7 +2123,6 @@ void doContentStart() {
  * Moves the caret to the start of the selection if a selection exists.
  * Otherwise, if no selection exists move the cursor according to the 
  * cursor selection rules.
- * <p>
  *
  * @see #doSelectionCursorPrevious
  */
@@ -2157,7 +2139,6 @@ void doCursorPrevious() {
  * Moves the caret to the end of the selection if a selection exists.
  * Otherwise, if no selection exists move the cursor according to the 
  * cursor selection rules.
- * <p>
  *
  * @see #doSelectionCursorNext
  */
@@ -2360,7 +2341,6 @@ void doLineUp(boolean select) {
 }
 /**
  * Moves the caret to the specified location.
- * <p>
  *
  * @param x x location of the new caret position
  * @param y y location of the new caret position
@@ -2456,11 +2436,12 @@ int doMouseWordSelect(int x, int newCaretOffset, int line) {
 /**
  * Scrolls one page down so that the last line (truncated or whole)
  * of the current page becomes the fully visible top line.
+ * <p>
  * The caret is scrolled the same number of lines so that its location 
  * relative to the top line remains the same. The exception is the end 
  * of the text where a full page scroll is not possible. In this case 
  * the caret is moved after the last character.
- * <p>
+ * </p>
  *
  * @param select whether or not to select the page
  */
@@ -2861,11 +2842,12 @@ void doSelectionLineUp() {
 /**
  * Scrolls one page down so that the last line (truncated or whole)
  * of the current page becomes the fully visible top line.
+ * <p>
  * The caret is scrolled the same number of lines so that its location 
  * relative to the top line remains the same. The exception is the end 
  * of the text where a full page scroll is not possible. In this case 
  * the caret is moved after the last character.
- * <p>
+ * <p></p>
  * Adjusts the selection according to the caret change. This can either add
  * to or subtract from the old selection, depending on the previous selection
  * direction.
@@ -2879,11 +2861,12 @@ void doSelectionPageDown(int pixels) {
 /**
  * Scrolls one page up so that the first line (truncated or whole)
  * of the current page becomes the fully visible last line.
+ * <p>
  * The caret is scrolled the same number of lines so that its location 
  * relative to the top line remains the same. The exception is the beginning 
  * of the text where a full page scroll is not possible. In this case the
  * caret is moved in front of the first character.
- * <p>
+ * </p><p>
  * Adjusts the selection according to the caret change. This can either add
  * to or subtract from the old selection, depending on the previous selection
  * direction.
@@ -3045,9 +3028,8 @@ public int getBaseline(int offset) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * <p>
+ * 
  * @deprecated use BidiSegmentListener instead.
- * </p>
  */
 public boolean getBidiColoring() {
 	checkWidget();
@@ -3055,7 +3037,6 @@ public boolean getBidiColoring() {
 }
 /** 
  * Returns the index of the last fully visible line.
- * <p>
  *
  * @return index of the last fully visible line.
  */
@@ -3104,7 +3085,6 @@ Rectangle getBoundsAtOffset(int offset) {
 
 /**
  * Returns the caret position relative to the start of the text.
- * <p>
  *
  * @return the caret position relative to the start of the text.
  * @exception SWTException <ul>
@@ -3118,7 +3098,6 @@ public int getCaretOffset() {
 }
 /**
  * Returns the caret width.
- * <p>
  *
  * @return the caret width, 0 if caret is null.
  */
@@ -3152,7 +3131,6 @@ int getClusterPrevious(int offset, int lineIndex) {
 /**
  * Returns the content implementation that is used for text storage
  * or null if no user defined content implementation has been set.
- * <p>
  *
  * @return content implementation that is used for text storage or null 
  * if no user defined content implementation has been set.
@@ -3167,7 +3145,6 @@ public StyledTextContent getContent() {
 }
 /** 
  * Returns whether the widget implements double click mouse behavior.
- * <p>
  *
  * @return true if double clicking a word selects the word, false if double clicks
  * have the same effect as regular mouse clicks
@@ -3182,7 +3159,6 @@ public boolean getDoubleClickEnabled() {
 }
 /**
  * Returns whether the widget content can be edited.
- * <p>
  *
  * @return true if content can be edited, false otherwise
  * @exception SWTException <ul>
@@ -3203,7 +3179,6 @@ public Color getForeground() {
 }
 /** 
  * Returns the horizontal scroll increment.
- * <p>
  *
  * @return horizontal scroll increment.
  */
@@ -3215,7 +3190,6 @@ int getHorizontalIncrement() {
 }
 /** 
  * Returns the horizontal scroll offset relative to the start of the line.
- * <p>
  *
  * @return horizontal scroll offset relative to the start of the line,
  * measured in character increments starting at 0, if > 0 the content is scrolled
@@ -3230,7 +3204,6 @@ public int getHorizontalIndex() {
 }
 /** 
  * Returns the horizontal scroll offset relative to the start of the line.
- * <p>
  *
  * @return the horizontal scroll offset relative to the start of the line,
  * measured in pixel starting at 0, if > 0 the content is scrolled.
@@ -3245,7 +3218,6 @@ public int getHorizontalPixel() {
 }
 /**
  * Returns the line indentation of the widget.
- * <p>
  * 
  * @return the line indentation
  * 
@@ -3264,7 +3236,6 @@ public int getIndent() {
 }
 /**
  * Returns whether the widget justifies lines.
- * <p>
  * 
  * @return whether lines are justified
  * 
@@ -3284,7 +3255,6 @@ public boolean getJustify() {
 /** 
  * Returns the action assigned to the key.
  * Returns SWT.NULL if there is no action associated with the key.
- * <p>
  *
  * @param key a key code defined in SWT.java or a character. 
  * 	Optionally ORd with a state mask.  Preferred state masks are one or more of
@@ -3305,7 +3275,6 @@ public int getKeyBinding(int key) {
 }
 /**
  * Gets the number of characters.
- * <p>
  *
  * @return number of characters in the widget
  * @exception SWTException <ul>
@@ -3319,7 +3288,6 @@ public int getCharCount() {
 }
 /**
  * Returns the alignment of the line at the given index.
- * <p>
  * 
  * @param index the index of the line
  * 
@@ -3394,7 +3362,6 @@ public Color getLineBackground(int index) {
 }
 /**
  * Returns the bullet of the line at the given index.
- * <p>
  * 
  * @param index the index of the line
  * 
@@ -3420,7 +3387,7 @@ public Bullet getLineBullet(int index) {
 /**
  * Returns the line background data for the given line or null if 
  * there is none.
- * <p>
+ * 
  * @param lineOffset offset of the line start relative to the start
  * 	of the content.
  * @param line line to get line background data for
@@ -3431,7 +3398,6 @@ StyledTextEvent getLineBackgroundData(int lineOffset, String line) {
 }
 /** 
  * Gets the number of text lines.
- * <p>
  *
  * @return the number of lines in the widget
  * @exception SWTException <ul>
@@ -3446,7 +3412,6 @@ public int getLineCount() {
 /**
  * Returns the number of lines that can be completely displayed in the 
  * widget client area.
- * <p>
  *
  * @return number of lines that can be completely displayed in the widget 
  * 	client area.
@@ -3461,7 +3426,6 @@ int getLineCountWhole() {
 /**
  * Returns the line delimiter used for entering new lines by key down
  * or paste operation.
- * <p>
  *
  * @return line delimiter used for entering new lines by key down
  * or paste operation.
@@ -3478,7 +3442,8 @@ public String getLineDelimiter() {
  * Returns the line height.
  * <p>
  * Note: this API should not be used if a StyleRange attribute causes lines to 
- * have different heights (i.e. different fonts, rise, etc). 
+ * have different heights (i.e. different fonts, rise, etc).
+ * </p>
  *
  * @return line height in pixel.
  * @exception SWTException <ul>
@@ -3526,7 +3491,6 @@ public int getLineHeight(int offset) {
 }
 /**
  * Returns the indentation of the line at the given index.
- * <p>
  * 
  * @param index the index of the line
  * 
@@ -3553,7 +3517,6 @@ public int getLineIndent(int index) {
 }
 /**
  * Returns whether the line at the given index is justified.
- * <p>
  * 
  * @param index the index of the line
  * 
@@ -3580,7 +3543,6 @@ public boolean getLineJustify(int index) {
 }
 /**
  * Returns the line spacing of the widget.
- * <p>
  * 
  * @return the line spacing
  *  
@@ -3597,10 +3559,12 @@ public int getLineSpacing() {
 }
 /**
  * Returns the line style data for the given line or null if there is 
- * none. If there is a LineStyleListener but it does not set any styles, 
+ * none.
+ * <p>
+ * If there is a LineStyleListener but it does not set any styles, 
  * the StyledTextEvent.styles field will be initialized to an empty 
  * array.
- * <p>
+ * </p>
  * 
  * @param lineOffset offset of the line start relative to the start of 
  * 	the content.
@@ -3678,7 +3642,6 @@ public int getLineIndex(int y) {
  * Returns the x, y location of the upper left corner of the character 
  * bounding box at the specified offset in the text. The point is 
  * relative to the upper left corner of the widget client area.
- * <p>
  *
  * @param offset offset relative to the start of the content. 
  * 	0 <= offset <= getCharCount()
@@ -3701,7 +3664,6 @@ public Point getLocationAtOffset(int offset) {
 }
 /**
  * Returns the character offset of the first character of the given line.
- * <p>
  *
  * @param lineIndex index of the line, 0 based relative to the first 
  * 	line in the content. 0 <= lineIndex < getLineCount(), except
@@ -3731,11 +3693,12 @@ public int getOffsetAtLine(int lineIndex) {
 /**
  * Returns the offset of the character at the given location relative 
  * to the first character in the document.
+ * <p>
  * The return value reflects the character offset that the caret will
  * be placed at if a mouse click occurred at the specified location.
  * If the x coordinate of the location is beyond the center of a character
  * the returned offset will be behind the character.
- * <p>
+ * </p>
  *
  * @param point the origin of character bounding box relative to 
  * 	the origin of the widget client area.
@@ -3789,7 +3752,6 @@ int getOffsetAtPoint(int x, int y) {
 }
 /**
  * Returns the offset at the specified x location in the specified line.
- * <p>
  *
  * @param x	x location of the mouse location
  * @param line	line the mouse location is in
@@ -3875,7 +3837,6 @@ int getPartialTopIndex() {
 /**
  * Returns the content in the specified range using the platform line 
  * delimiter to separate lines.
- * <p>
  *
  * @param writer the TextWriter to write line text into
  * @return the content in the specified range using the platform line 
@@ -3910,7 +3871,7 @@ String getPlatformDelimitedText(TextWriter writer) {
  * the corresponding style in the styles array.  For example, the pair
  * that starts at ranges[n] with length ranges[n+1] uses the style
  * at styles[n/2] returned by <code>getStyleRanges(int, int, boolean)</code>.
- * <p>
+ * </p>
  * 
  * @return the ranges or an empty array if a LineStyleListener has been set.
  * 
@@ -3941,7 +3902,7 @@ public int[] getRanges() {
  * the corresponding style in the styles array.  For example, the pair
  * that starts at ranges[n] with length ranges[n+1] uses the style
  * at styles[n/2] returned by <code>getStyleRanges(int, int, boolean)</code>.
- * <p>
+ * </p>
  *
  * @param start the start offset of the style ranges to return
  * @param length the number of style ranges to return
@@ -3979,7 +3940,7 @@ public int[] getRanges(int start, int length) {
  * Text selections are specified in terms of caret positions.  In a text
  * widget that contains N characters, there are N+1 caret positions, 
  * ranging from 0..N
- * <p>
+ * </p>
  *
  * @return start and end of the selection, x is the offset of the first 
  * 	selected character, y is the offset after the last selected character.
@@ -3999,7 +3960,6 @@ public Point getSelection() {
 }
 /**
  * Returns the selection.
- * <p>
  *
  * @return start and length of the selection, x is the offset of the 
  * 	first selected character, relative to the first character of the 
@@ -4037,7 +3997,6 @@ public Color getSelectionBackground() {
 }
 /**
  * Gets the number of selected characters.
- * <p>
  *
  * @return the number of selected characters.
  * @exception SWTException <ul>
@@ -4069,7 +4028,6 @@ public Color getSelectionForeground() {
 }
 /**
  * Returns the selected text.
- * <p>
  *
  * @return selected text, or an empty String if there is no selection.
  * @exception SWTException <ul>
@@ -4095,7 +4053,6 @@ public int getStyle() {
 /**
  * Returns the text segments that should be treated as if they 
  * had a different direction than the surrounding text.
- * <p>
  *
  * @param lineOffset offset of the first character in the line. 
  * 	0 based from the beginning of the document.
@@ -4201,11 +4158,12 @@ int [] getBidiSegmentsCompatibility(String line, int lineOffset) {
 }
 /**
  * Returns the style range at the given offset.
+ * <p>
  * Returns null if a LineStyleListener has been set or if a style is not set
  * for the offset. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
- * <p>
+ * </p>
  *
  * @param offset the offset to return the style for. 
  * 	0 <= offset < getCharCount() must be true.
@@ -4233,10 +4191,11 @@ public StyleRange getStyleRangeAtOffset(int offset) {
 }
 /**
  * Returns the styles.
+ * <p>
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
- * <p>
+ * <p></p>
  * Note: Because a StyleRange includes the start and length, the
  * same instance cannot occur multiple times in the array of styles.
  * If the same style attributes, such as font and color, occur in
@@ -4259,10 +4218,11 @@ public StyleRange[] getStyleRanges() {
 }
 /**
  * Returns the styles.
+ * <p>
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
- * <p>
+ * </p><p>
  * Note: When <code>includeRanges</code> is true, the start and length
  * fields of each StyleRange will be valid, however the StyleRange
  * objects may need to be cloned. When <code>includeRanges</code> is
@@ -4290,10 +4250,11 @@ public StyleRange[] getStyleRanges(boolean includeRanges) {
 }
 /**
  * Returns the styles for the given text range.
+ * <p>
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
- * <p>
+ * </p><p>
  * Note: Because the StyleRange includes the start and length, the
  * same instance cannot occur multiple times in the array of styles.
  * If the same style attributes, such as font and color, occur in
@@ -4327,10 +4288,11 @@ public StyleRange[] getStyleRanges(int start, int length) {
 }
 /**
  * Returns the styles for the given text range.
+ * <p>
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
- * <p>
+ * </p><p>
  * Note: When <code>includeRanges</code> is true, the start and length
  * fields of each StyleRange will be valid, however the StyleRange
  * objects may need to be cloned. When <code>includeRanges</code> is
@@ -4389,7 +4351,6 @@ public int getTabs() {
 }
 /**
  * Returns a copy of the widget content.
- * <p>
  *
  * @return copy of the widget content
  * @exception SWTException <ul>
@@ -4403,7 +4364,6 @@ public String getText() {
 }
 /**
  * Returns the widget content between the two offsets.
- * <p>
  *
  * @param start offset of the first character in the returned String
  * @param end offset of the last character in the returned String 
@@ -4427,7 +4387,6 @@ public String getText(int start, int end) {
 }
 /**
  * Returns the smallest bounding rectangle that includes the characters between two offsets.
- * <p>
  *
  * @param start offset of the first character included in the bounding box
  * @param end offset of the last character included in the bounding box 
@@ -4477,7 +4436,6 @@ public Rectangle getTextBounds(int start, int end) {
 }
 /**
  * Returns the widget content starting at start for length characters.
- * <p>
  *
  * @param start offset of the first character in the returned String
  * @param length number of characters to return 
@@ -4514,11 +4472,12 @@ public int getTextLimit() {
 	return textLimit;
 }
 /**
- * Gets the top index.  The top index is the index of the fully visible line that
- * is currently at the top of the widget or the topmost partially visible line if 
- * no line is fully visible. 
- * The top index changes when the widget is scrolled. Indexing is zero based.
+ * Gets the top index.
  * <p>
+ * The top index is the index of the fully visible line that is currently 
+ * at the top of the widget or the topmost partially visible line if no line is fully visible. 
+ * The top index changes when the widget is scrolled. Indexing is zero based.
+ * </p>
  *
  * @return the index of the top line
  * @exception SWTException <ul>
@@ -4531,12 +4490,14 @@ public int getTopIndex() {
 	return topIndex;
 }
 /**
- * Gets the top pixel.  The top pixel is the pixel position of the line that is 
+ * Gets the top pixel.
+ * <p>
+ * The top pixel is the pixel position of the line that is 
  * currently at the top of the widget. The text widget can be scrolled by pixels 
  * by dragging the scroll thumb so that a partial line may be displayed at the top 
  * the widget.  The top pixel changes when the widget is scrolled.  The top pixel 
  * does not include the widget trimming.
- * <p>
+ * </p>
  *
  * @return pixel position of the top line
  * @exception SWTException <ul>
@@ -4550,7 +4511,6 @@ public int getTopPixel() {
 }
 /** 
  * Returns the vertical scroll increment.
- * <p>
  *
  * @return vertical scroll increment.
  */
@@ -4620,8 +4580,7 @@ int getWrapWidth () {
  * <li>from 0-9 and A-z (ASCII 48-57 and 65-122)
  * <li>every other character except line breaks
  * </ul>
- * </p>
- * <p>
+ * </p><p>
  * Space characters ' ' (ASCII 20) are special as they are treated as
  * part of the word leading up to the space character.  Line breaks are 
  * treated as one word.
@@ -4654,8 +4613,7 @@ int getWordEnd(int offset) {
  * <li>from 0-9 and A-z (ASCII 48-57 and 65-122)
  * <li>every other character except line breaks
  * </ul>
- * </p>
- * <p>
+ * </p><p>
  * Spaces are ignored and do not represent a word.  Line breaks are treated 
  * as one word.
  * </p>
@@ -4694,8 +4652,7 @@ int getWordEndNoSpaces(int offset) {
  * <li>from 0-9 and A-z (ASCII 48-57 and 65-122)
  * <li>every other character except line breaks
  * </ul>
- * </p>
- * <p>
+ * </p><p>
  * Space characters ' ' (ASCII 20) are special as they are treated as
  * part of the word leading up to the space character.  Line breaks are treated 
  * as one word.
@@ -4722,7 +4679,6 @@ int getWordStart(int offset) {
 }
 /**
  * Returns whether the widget wraps lines.
- * <p>
  *
  * @return true if widget wraps lines, false otherwise
  * @since 2.0
@@ -4733,8 +4689,9 @@ public boolean getWordWrap() {
 }
 /** 
  * Returns the location of the given offset.
- * <b>NOTE:</b> Does not return correct values for true italic fonts (vs. slanted fonts).
  * <p>
+ * <b>NOTE:</b> Does not return correct values for true italic fonts (vs. slanted fonts).
+ * </p>
  *
  * @return location of the character at the given offset in the line.
  */
@@ -4780,7 +4737,6 @@ Point getPointAtOffset(int offset) {
 }
 /** 
  * Inserts a string.  The old selection is replaced with the new text.  
- * <p>
  *
  * @param string the string
  * @see #replaceTextRange(int,int,String)
@@ -5011,7 +4967,6 @@ void handleHorizontalScroll(Event event) {
 /**
  * If an action has been registered for the key stroke execute the action.
  * Otherwise, if a character has been entered treat it as new content.
- * <p>
  *
  * @param event keyboard event
  */
@@ -5075,7 +5030,6 @@ void handleKey(Event event) {
 /**
  * If a VerifyKey listener exists, verify that the key that was entered
  * should be processed.
- * <p>
  *
  * @param event keyboard event
  */
@@ -5096,7 +5050,6 @@ void handleKeyDown(Event event) {
 }
 /**
  * Update the Selection Clipboard.
- * <p>
  *
  * @param event keyboard event
  */
@@ -5220,7 +5173,6 @@ void handleMouseUp(Event event) {
 }
 /**
  * Renders the invalidated area specified in the paint event.
- * <p>
  *
  * @param event paint event
  */
@@ -5263,7 +5215,6 @@ void handlePaint(Event event) {
 /**
  * Recalculates the scroll bars. Rewraps all lines when in word 
  * wrap mode.
- * <p>
  *
  * @param event resize event
  */
@@ -5312,7 +5263,6 @@ void handleResize(Event event) {
 /**
  * Updates the caret position and selection and the scroll bars to reflect 
  * the content change.
- * <p>
  */
 void handleTextChanged(TextChangedEvent event) {
 	int firstLine = content.getLineAtOffset(lastTextChangeStart);
@@ -5350,7 +5300,6 @@ void handleTextChanged(TextChangedEvent event) {
 }
 /**
  * Updates the screen to reflect a pending content change.
- * <p>
  *
  * @param event.start the start offset of the change
  * @param event.newText text that is going to be inserted or empty String 
@@ -5389,7 +5338,6 @@ void handleTextChanging(TextChangingEvent event) {
  * Called when the widget content is set programatically, overwriting 
  * the old content. Resets the caret position, selection and scroll offsets. 
  * Recalculates the content width and scroll bars. Redraws the widget.
- * <p>
  *
  * @param event text change event. 
  */
@@ -5402,7 +5350,6 @@ void handleTextSet(TextChangedEvent event) {
  * line mode or in multi line and non-editable mode . 
  * When in editable multi line mode we want to prevent the tab 
  * traversal and receive the tab key event instead.
- * <p>
  *
  * @param event the event
  */
@@ -5544,7 +5491,6 @@ char _findMnemonic (String string) {
 }
 /**
  * Executes the action.
- * <p>
  *
  * @param action one of the actions defined in ST.java
  */
@@ -5734,7 +5680,6 @@ boolean isMirrored() {
 }
 /**
  * Returns whether the widget can have only one line.
- * <p>
  *
  * @return true if widget can have only one line, false if widget can have 
  * 	multiple lines
@@ -5745,7 +5690,6 @@ boolean isSingleLine() {
 /**
  * Sends the specified verify event, replace/insert text as defined by 
  * the event and send a modify event.
- * <p>
  *
  * @param event	the text change event. 
  *	<ul>
@@ -5824,7 +5768,6 @@ void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style,
  * caret offset.   If the widget has the SWT.SINGLE style and the 
  * clipboard text contains more than one line, only the first line without
  * line delimiters is  inserted in the widget.
- * <p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -6019,7 +5962,6 @@ void redrawLinesBullet (int[] redrawLines) {
 }
 /** 
  * Redraws the specified text range.
- * <p>
  *
  * @param start offset of the first character to redraw
  * @param length number of characters to redraw
@@ -6056,7 +5998,6 @@ public void redrawRange(int start, int length, boolean clearBackground) {
 }
 /**
  * Removes the specified bidirectional segment listener.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -6075,7 +6016,6 @@ public void removeBidiSegmentListener(BidiSegmentListener listener) {
 }
 /**
  * Removes the specified extended modify listener.
- * <p>
  *
  * @param extendedModifyListener the listener
  * @exception SWTException <ul>
@@ -6093,7 +6033,6 @@ public void removeExtendedModifyListener(ExtendedModifyListener extendedModifyLi
 }
 /**
  * Removes the specified line background listener.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -6111,7 +6050,6 @@ public void removeLineBackgroundListener(LineBackgroundListener listener) {
 }
 /**
  * Removes the specified line style listener.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -6129,7 +6067,6 @@ public void removeLineStyleListener(LineStyleListener listener) {
 }
 /**
  * Removes the specified modify listener.
- * <p>
  *
  * @param modifyListener the listener
  * @exception SWTException <ul>
@@ -6147,7 +6084,6 @@ public void removeModifyListener(ModifyListener modifyListener) {
 }
 /**
  * Removes the specified listener.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -6166,7 +6102,6 @@ public void removePaintObjectListener(PaintObjectListener listener) {
 }
 /**
  * Removes the specified selection listener.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -6184,7 +6119,6 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 /**
  * Removes the specified verify listener.
- * <p>
  *
  * @param verifyListener the listener
  * @exception SWTException <ul>
@@ -6202,7 +6136,6 @@ public void removeVerifyListener(VerifyListener verifyListener) {
 }
 /**
  * Removes the specified key verify listener.
- * <p>
  *
  * @param listener the listener
  * @exception SWTException <ul>
@@ -6227,8 +6160,7 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
  * If the same style attributes, such as font and color, occur in
  * multiple StyleRanges, <code>setStyleRanges(int, int, int[], StyleRange[])</code>
  * can be used to share styles and reduce memory usage.
- * </p>
- * <p>
+ * </p><p>
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * </p>
@@ -6365,7 +6297,6 @@ public void scroll(int destX, int destY, int x, int y, int width, int height, bo
 
 /**
  * Scrolls the widget horizontally.
- * <p>
  *
  * @param pixels number of pixels to scroll, > 0 = scroll left,
  * 	< 0 scroll right
@@ -6412,7 +6343,6 @@ boolean scrollHorizontal(int pixels, boolean adjustScrollBar) {
 }
 /**
  * Scrolls the widget vertically.
- * <p>
  *
  * @param pixel the new vertical scroll offset
  * @param adjustScrollBar 
@@ -6491,7 +6421,6 @@ void scrollText(int srcY, int destY) {
 }
 /** 
  * Selects all the text.
- * <p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -6504,7 +6433,6 @@ public void selectAll() {
 }
 /**
  * Replaces/inserts text as defined by the event.
- * <p>
  *
  * @param event the text change event. 
  *	<ul>
@@ -6521,10 +6449,11 @@ void sendKeyEvent(Event event) {
 /**
  * Returns a StyledTextEvent that can be used to request data such 
  * as styles and background color for a line.
+ * <p>
  * The specified line may be a visual (wrapped) line if in word 
  * wrap mode. The returned object will always be for a logical 
  * (unwrapped) line.
- * <p>
+ * </p>
  *
  * @param lineOffset offset of the line. This may be the offset of
  * 	a visual line if the widget is in word wrap mode.
@@ -6573,7 +6502,6 @@ void sendSelectionEvent() {
 /**
  * Sets the alignment of the widget. The argument should be one of <code>SWT.LEFT</code>, 
  * <code>SWT.CENTER</code> or <code>SWT.RIGHT</code>. The alignment applies for all lines.  
- * <p>
  * 
  * @param alignment the new alignment
  *  
@@ -6632,9 +6560,8 @@ public void setCaret(Caret caret) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * <p>
+ * 
  * @deprecated use BidiSegmentListener instead.
- * </p>
  */
 public void setBidiColoring(boolean mode) {
 	checkWidget();
@@ -6734,7 +6661,6 @@ public void setCaretOffset(int offset) {
 /**
  * Copies the specified text range to the clipboard.  The text will be placed
  * in the clipboard in plain text format and RTF format.
- * <p>
  *
  * @param start start index of the text
  * @param length length of text to place in clipboard
@@ -6763,7 +6689,6 @@ void setClipboardContent(int start, int length, int clipboardType) throws SWTErr
 }
 /**
  * Sets the content implementation to use for text storage.
- * <p>
  *
  * @param newContent StyledTextContent implementation to use for text storage.
  * @exception SWTException <ul>
@@ -6955,9 +6880,10 @@ public void setHorizontalPixel(int pixel) {
 }
 /**
  * Sets the line indentation of the widget.
+ * <p>
  * It is the amount of blank space, in pixels, at the beginning of each line. 
  * When a line wraps in several lines only the first one is indented. 
- * <p>
+ * </p>
  * 
  * @param indent the new indent
  *  
@@ -6980,7 +6906,6 @@ public void setIndent(int indent) {
 }
 /**
  * Sets whether the widget should justify lines.  
- * <p>
  * 
  * @param justify whether lines should be justified
  *  
@@ -7003,9 +6928,10 @@ public void setJustify(boolean justify) {
 }
 /** 
  * Maps a key to an action.
+ * <p>
  * One action can be associated with N keys. However, each key can only 
  * have one action (key:action is N:1 relation).
- * <p>
+ * </p>
  *
  * @param key a key code defined in SWT.java or a character. 
  * 	Optionally ORd with a state mask.  Preferred state masks are one or more of
@@ -7054,7 +6980,7 @@ public void setKeyBinding(int key, int action) {
  * <p>
  * Should not be called if a LineStyleListener has been set since the listener 
  * maintains the line attributes.
- * <p>
+ * </p><p>
  * All line attributes are maintained relative to the line text, not the 
  * line index that is specified in this method call.
  * During text changes, when entire lines are inserted or removed, the line 
@@ -7062,7 +6988,7 @@ public void setKeyBinding(int key, int action) {
  * will "move" with their respective text. An entire line is defined as 
  * extending from the first character on a line to the last and including the 
  * line delimiter. 
- * <p>
+ * </p><p>
  * When two lines are joined by deleting a line delimiter, the top line 
  * attributes take precedence and the attributes of the bottom line are deleted. 
  * For all other text changes line attributes will remain unchanged. 
@@ -7098,14 +7024,15 @@ public void setLineAlignment(int startLine, int lineCount, int alignment) {
 }
 /** 
  * Sets the background color of the specified lines.
+ * <p>
  * The background color is drawn for the width of the widget. All
  * line background colors are discarded when setText is called.
  * The text background color if defined in a StyleRange overlays the 
  * line background color. 
- * <p>
+ * </p><p>
  * Should not be called if a LineBackgroundListener has been set since the 
  * listener maintains the line backgrounds.
- * <p>
+ * </p><p>
  * All line attributes are maintained relative to the line text, not the 
  * line index that is specified in this method call.
  * During text changes, when entire lines are inserted or removed, the line 
@@ -7113,8 +7040,7 @@ public void setLineAlignment(int startLine, int lineCount, int alignment) {
  * will "move" with their respective text. An entire line is defined as 
  * extending from the first character on a line to the last and including the 
  * line delimiter. 
- * </p>
- * <p>
+ * </p><p>
  * When two lines are joined by deleting a line delimiter, the top line 
  * attributes take precedence and the attributes of the bottom line are deleted. 
  * For all other text changes line attributes will remain unchanged. 
@@ -7149,7 +7075,7 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
  * <p>
  * Should not be called if a LineStyleListener has been set since the listener 
  * maintains the line attributes.
- * <p>
+ * </p><p>
  * All line attributes are maintained relative to the line text, not the 
  * line index that is specified in this method call.
  * During text changes, when entire lines are inserted or removed, the line 
@@ -7157,10 +7083,11 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
  * will "move" with their respective text. An entire line is defined as 
  * extending from the first character on a line to the last and including the 
  * line delimiter. 
- * <p>
+ * </p><p>
  * When two lines are joined by deleting a line delimiter, the top line 
  * attributes take precedence and the attributes of the bottom line are deleted. 
- * For all other text changes line attributes will remain unchanged. 
+ * For all other text changes line attributes will remain unchanged.
+ * </p>
  *
  * @param startLine first line the bullet is applied to, 0 based
  * @param lineCount number of lines the bullet applies to.
@@ -7200,7 +7127,7 @@ void setVariableLineHeight () {
  * <p>
  * Should not be called if a LineStyleListener has been set since the listener 
  * maintains the line attributes.
- * <p>
+ * </p><p>
  * All line attributes are maintained relative to the line text, not the 
  * line index that is specified in this method call.
  * During text changes, when entire lines are inserted or removed, the line 
@@ -7208,10 +7135,11 @@ void setVariableLineHeight () {
  * will "move" with their respective text. An entire line is defined as 
  * extending from the first character on a line to the last and including the 
  * line delimiter. 
- * <p>
+ * </p><p>
  * When two lines are joined by deleting a line delimiter, the top line 
  * attributes take precedence and the attributes of the bottom line are deleted. 
- * For all other text changes line attributes will remain unchanged. 
+ * For all other text changes line attributes will remain unchanged.
+ * </p>
  *
  * @param startLine first line the indent is applied to, 0 based
  * @param lineCount number of lines the indent applies to.
@@ -7247,7 +7175,7 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
  * <p>
  * Should not be called if a LineStyleListener has been set since the listener 
  * maintains the line attributes.
- * <p>
+ * </p><p>
  * All line attributes are maintained relative to the line text, not the 
  * line index that is specified in this method call.
  * During text changes, when entire lines are inserted or removed, the line 
@@ -7255,10 +7183,11 @@ public void setLineIndent(int startLine, int lineCount, int indent) {
  * will "move" with their respective text. An entire line is defined as 
  * extending from the first character on a line to the last and including the 
  * line delimiter. 
- * <p>
+ * </p><p>
  * When two lines are joined by deleting a line delimiter, the top line 
  * attributes take precedence and the attributes of the bottom line are deleted. 
- * For all other text changes line attributes will remain unchanged. 
+ * For all other text changes line attributes will remain unchanged.
+ * </p>
  *  
  * @param startLine first line the justify is applied to, 0 based
  * @param lineCount number of lines the justify applies to.
@@ -7291,7 +7220,6 @@ public void setLineJustify(int startLine, int lineCount, boolean justify) {
 }
 /**
  * Sets the line spacing of the widget. The line spacing applies for all lines.
- * <p>
  * 
  * @param lineSpacing the line spacing
  * @exception SWTException <ul>
@@ -7332,7 +7260,6 @@ void setMouseWordSelectionAnchor() {
 /**
  * Sets the orientation of the receiver, which must be one
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
- * <p>
  *
  * @param orientation new orientation style
  * 
@@ -7427,7 +7354,6 @@ void setScrollBars(boolean vertical) {
 }
 /** 
  * Sets the selection to the given position and scrolls it into view.  Equivalent to setSelection(start,start).
- * <p>
  *
  * @param start new caret position
  * @see #setSelection(int,int)
@@ -7544,10 +7470,11 @@ public void setSelection(int start, int end) {
 	showSelection();
 }
 /** 
- * Sets the selection. 
+ * Sets the selection.
+ * <p>
  * The new selection may not be visible. Call showSelection to scroll 
  * the selection into view.
- * <p>
+ * </p>
  *
  * @param start offset of the first selected character, start >= 0 must be true.
  * @param length number of characters to select, 0 <= start + length 
@@ -7580,9 +7507,11 @@ void setSelection(int start, int length, boolean sendEvent) {
 	}
 }
 /** 
- * Sets the selection. The new selection may not be visible. Call showSelection to scroll 
- * the selection into view. A negative length places the caret at the visual start of the 
- * selection. <p>
+ * Sets the selection.
+ * <p>
+ * The new selection may not be visible. Call showSelection to scroll the selection
+ * into view. A negative length places the caret at the visual start of the selection.
+ * </p>
  *
  * @param start offset of the first selected character
  * @param length number of characters to select
@@ -7616,11 +7545,13 @@ public void setSelectionRange(int start, int length) {
 	setCaretLocation();
 }
 /** 
- * Adds the specified style. The new style overwrites existing styles for the
- * specified range.  Existing style ranges are adjusted if they partially 
- * overlap with the new style, To clear an individual style, call setStyleRange 
- * with a StyleRange that has null attributes. 
+ * Adds the specified style.
  * <p>
+ * The new style overwrites existing styles for the specified range.
+ * Existing style ranges are adjusted if they partially overlap with 
+ * the new style. To clear an individual style, call setStyleRange 
+ * with a StyleRange that has null attributes. 
+ * </p><p>
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * </p>
@@ -7652,16 +7583,16 @@ public void setStyleRange(StyleRange range) {
 /** 
  * Clears the styles in the range specified by <code>start</code> and 
  * <code>length</code> and adds the new styles.
+ * <p>
  * The ranges array contains start and length pairs.  Each pair refers to
  * the corresponding style in the styles array.  For example, the pair
  * that starts at ranges[n] with length ranges[n+1] uses the style
  * at styles[n/2].  The range fields within each StyleRange are ignored.
  * If ranges or styles is null, the specified range is cleared.
- * <p>
+ * </p><p>
  * Note: It is expected that the same instance of a StyleRange will occur
  * multiple times within the styles array, reducing memory usage.
- * </p>
- * <p>
+ * </p><p>
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * </p>
@@ -7694,18 +7625,18 @@ public void setStyleRanges(int start, int length, int[] ranges, StyleRange[] sty
 	}
 }
 /** 
- * Sets styles to be used for rendering the widget content. All styles 
- * in the widget will be replaced with the given set of ranges and styles.
+ * Sets styles to be used for rendering the widget content.
+ * <p>
+ * All styles in the widget will be replaced with the given set of ranges and styles.
  * The ranges array contains start and length pairs.  Each pair refers to
  * the corresponding style in the styles array.  For example, the pair
  * that starts at ranges[n] with length ranges[n+1] uses the style
  * at styles[n/2].  The range fields within each StyleRange are ignored.
  * If either argument is null, the styles are cleared.
- * <p>
+ * </p><p>
  * Note: It is expected that the same instance of a StyleRange will occur
  * multiple times within the styles array, reducing memory usage.
- * </p>
- * <p>
+ * </p><p>
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * </p>
@@ -7833,8 +7764,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
  * If the same style attributes, such as font and color, occur in
  * multiple StyleRanges, <code>setStyleRanges(int[], StyleRange[])</code>
  * can be used to share styles and reduce memory usage.
- * </p>
- * <p>
+ * </p><p>
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
  * </p>
@@ -7861,7 +7791,6 @@ public void setStyleRanges(StyleRange[] ranges) {
 }
 /** 
  * Sets the tab width. 
- * <p>
  *
  * @param tabs tab width measured in characters.
  * @exception SWTException <ul>
@@ -8036,8 +7965,9 @@ public void setTopPixel(int pixel) {
 }
 /**
  * Sets whether the widget wraps lines.
- * This overrides the creation style bit SWT.WRAP.
  * <p>
+ * This overrides the creation style bit SWT.WRAP.
+ * </p>
  *
  * @param wrap true=widget wraps lines, false=widget does not wrap lines
  * @since 2.0
@@ -8060,7 +7990,6 @@ public void setWordWrap(boolean wrap) {
 }
 /**
  * Scrolls the specified location into view.
- * <p>
  * 
  * @param x the x coordinate that should be made visible.
  * @param line the line that should be made visible. Relative to the
@@ -8103,10 +8032,12 @@ void showCaret() {
 	}
 }
 /**
- * Scrolls the selection into view.  The end of the selection will be scrolled into
- * view.  Note that if a right-to-left selection exists, the end of the selection is the
- * visual beginning of the selection (i.e., where the caret is located).
+ * Scrolls the selection into view.
  * <p>
+ * The end of the selection will be scrolled into view.
+ * Note that if a right-to-left selection exists, the end of the selection is
+ * the visual beginning of the selection (i.e., where the caret is located).
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -8148,12 +8079,13 @@ public void showSelection() {
 }
 /**
  * Updates the selection and caret position depending on the text change.
+ * <p>
  * If the selection intersects with the replaced text, the selection is 
  * reset and the caret moved to the end of the new text.
  * If the selection is behind the replaced text it is moved so that the
  * same text remains selected.  If the selection is before the replaced text 
  * it is left unchanged.
- * <p>
+ * </p>
  *
  * @param startOffset offset of the text change
  * @param replacedLength length of text being replaced
