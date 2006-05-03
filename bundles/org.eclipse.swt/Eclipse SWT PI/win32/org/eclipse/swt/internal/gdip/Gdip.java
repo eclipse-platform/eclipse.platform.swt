@@ -201,6 +201,7 @@ public static final native int Graphics_SetClip(int graphics, int hrgn, int comb
 public static final native int Graphics_SetClip(int graphics, int path);
 public static final native int Graphics_SetClip(int graphics, RectF rect);
 public static final native int Graphics_SetCompositingQuality(int graphics, int compositingQuality);
+public static final native int Graphics_SetPageUnit(int graphics, int unit);
 public static final native int Graphics_SetPixelOffsetMode(int graphics, int pixelOffsetMode);
 public static final native int Graphics_SetSmoothingMode(int graphics, int smoothingMode);
 public static final native int Graphics_SetTransform(int graphics, int matrix);

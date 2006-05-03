@@ -1079,6 +1079,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetInterpolationMode)
 }
 #endif
 
+#ifndef NO_Graphics_1SetPageUnit
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPageUnit)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetPageUnit_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetPageUnit((Unit)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetPageUnit_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Graphics_1SetPixelOffsetMode
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPixelOffsetMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

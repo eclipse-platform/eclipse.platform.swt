@@ -3278,6 +3278,7 @@ void initGdip(boolean draw, boolean fill) {
 		OS.SelectClipRgn(handle, 0);
 		gdipGraphics = data.gdipGraphics = Gdip.Graphics_new(handle);
 		if (gdipGraphics == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Gdip.Graphics_SetPageUnit(gdipGraphics, Gdip.UnitPixel);
 		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		if (result == 1) setClipping(hRgn);
 		OS.DeleteObject(hRgn);

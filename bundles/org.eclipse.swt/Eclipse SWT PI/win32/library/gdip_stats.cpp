@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 157;
-int Gdip_nativeFunctionCallCount[157];
+int Gdip_nativeFunctionCount = 158;
+int Gdip_nativeFunctionCallCount[158];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -102,6 +102,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2",
 	"Graphics_1SetCompositingQuality",
 	"Graphics_1SetInterpolationMode",
+	"Graphics_1SetPageUnit",
 	"Graphics_1SetPixelOffsetMode",
 	"Graphics_1SetSmoothingMode",
 	"Graphics_1SetTextRenderingHint",
