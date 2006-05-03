@@ -91,7 +91,7 @@ GC() {
  *            into another graphics context</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  * </ul>
  */
 public GC(Drawable drawable) {
@@ -119,7 +119,7 @@ public GC(Drawable drawable) {
  *            into another graphics context</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
  * </ul>
  *  
  * @since 2.1.2
@@ -1932,6 +1932,26 @@ public Pattern getForegroundPattern() {
 	return data.foregroundPattern;	
 }
 
+/** 
+ * Returns the GCData.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @return the receiver's GCData
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see GCData
+ * 
+ * @since 3.2
+ */
 public GCData getGCData() {	
 	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return data;	

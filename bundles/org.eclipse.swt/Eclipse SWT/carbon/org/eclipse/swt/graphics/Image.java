@@ -67,6 +67,12 @@ public final class Image extends Resource implements Drawable {
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int type;
 	
@@ -192,9 +198,8 @@ public Image(Device device, int width, int height) {
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or
- *          is otherwise in an invalid state</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the Image is not supported</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or is otherwise in an invalid state</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the image is not supported</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
@@ -449,11 +454,11 @@ public Image(Device device, ImageData source, ImageData mask) {
  *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the InputStream describes an image with an unsupported depth</li>
- *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
- *  * </ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the stream</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image stream contains invalid data </li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image stream describes an image with an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image stream contains an unrecognized format</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
@@ -482,9 +487,9 @@ public Image(Device device, InputStream stream) {
  *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
  * </ul>
  * @exception SWTException <ul>
+ *    <li>ERROR_IO - if an IO error occurs while reading from the file</li>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
- *    <li>ERROR_IO - if an IO error occurs while reading data</li>
- *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file has an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file describes an image with an unsupported depth</li>
  *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  * @exception SWTError <ul>

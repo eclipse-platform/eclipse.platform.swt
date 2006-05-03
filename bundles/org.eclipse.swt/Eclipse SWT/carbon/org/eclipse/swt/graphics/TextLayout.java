@@ -17,13 +17,11 @@ import org.eclipse.swt.*;
 /**
  * <code>TextLayout</code> is a graphic object that represents
  * styled text.
- *<p>
+ * <p>
  * Instances of this class provide support for drawing, cursor
  * navigation, hit testing, text wrapping, alignment, tab expansion
  * line breaking, etc.  These are aspects required for rendering internationalized text.
- * </p>
- * 
- * <p>
+ * </p><p>
  * Application code must explicitly invoke the <code>TextLayout#dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
@@ -689,11 +687,33 @@ public Font getFont () {
 	return font;
 }
 
+/**
+* Returns the receiver's indent.
+*
+* @return the receiver's indent
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+* 
+* @since 3.2
+*/
 public int getIndent () {
 	checkLayout();	
 	return indent;
 }
 
+/**
+* Returns the receiver's justification.
+*
+* @return the receiver's justification
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+* </ul>
+* 
+* @since 3.2
+*/
 public boolean getJustify () {
 	checkLayout();
 	int[] buffer = new int[1];
@@ -1069,6 +1089,20 @@ public int getPreviousOffset (int index, int movement) {
 	return _getOffset(index, movement, false);
 }
 
+/**
+ * Gets the ranges of text that are associated with a <code>TextStyle</code>.
+ *
+ * @return the ranges, an array of offsets representing the start and end of each
+ * text style. 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #getStyles()
+ * 
+ * @since 3.2
+ */
 public int[] getRanges () {
 	checkLayout();
 	int[] result = new int[styles.length * 2];
@@ -1141,6 +1175,19 @@ public TextStyle getStyle (int offset) {
 	return null;
 }
 
+/**
+ * Gets all styles of the receiver.
+ *
+ * @return the styles
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #getRanges()
+ * 
+ * @since 3.2
+ */
 public TextStyle[] getStyles () {
 	checkLayout();
 	TextStyle[] result = new TextStyle[styles.length];
@@ -1211,6 +1258,7 @@ public int getWidth () {
  * This method gets the dispose state for the text layout.
  * When a text layout has been disposed, it is an error to
  * invoke any other method using the text layout.
+ * </p>
  *
  * @return <code>true</code> when the text layout is disposed and <code>false</code> otherwise
  */
@@ -1226,7 +1274,7 @@ public boolean isDisposed () {
  * The default alignment is <code>SWT.LEFT</code>.  Note that the receiver's
  * width must be set in order to use <code>SWT.RIGHT</code> or <code>SWT.CENTER</code>
  * alignment.
- *</p>
+ * </p>
  *
  * @param alignment the new alignment 
  *
@@ -1348,6 +1396,18 @@ public void setFont (Font font) {
 	this.font = font;
 }
 
+/**
+ * Sets the indent of the receiver. This indent it applied of the first line of 
+ * each paragraph.  
+ *
+ * @param indent new indent
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setIndent (int indent) {
 	checkLayout ();
 	if (indent < 0) return;
@@ -1356,6 +1416,18 @@ public void setIndent (int indent) {
 	this.indent = indent;
 }
 
+/**
+ * Sets the justification of the receiver. Note that the receiver's
+ * width must be set in order to use justification. 
+ *
+ * @param justify new justify
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
 public void setJustify (boolean justify) {
 	checkLayout ();
 	if (justify == getJustify()) return;
@@ -1366,7 +1438,6 @@ public void setJustify (boolean justify) {
 /**
  * Sets the orientation of the receiver, which must be one
  * of <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
- * <p>
  *
  * @param orientation new orientation style
  * 
@@ -1392,11 +1463,12 @@ public void setOrientation(int orientation) {
  * override the default behaviour of the bidirectional algorithm.
  * Bidirectional reordering can happen within a text segment but not 
  * between two adjacent segments.
+ * <p>
  * Each text segment is determined by two consecutive offsets in the 
  * <code>segments</code> arrays. The first element of the array should 
  * always be zero and the last one should always be equals to length of
  * the text.
- * <p>
+ * </p>
  * 
  * @param segments the text segments offset
  * 
