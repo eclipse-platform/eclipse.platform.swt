@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/CDC-1.0%Foundation-1.0"/>
     <classpathentry kind="src" path="Eclipse SWT/motif"/>
     <classpathentry kind="src" path="Eclipse SWT/cairo"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/bidi"/>
@@ -41,5 +41,6 @@
     <classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
     <classpathentry kind="src" path="Eclipse SWT Theme/emulated"/>
+    <classpathentry kind="lib" path="extra_jars/exceptions.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
