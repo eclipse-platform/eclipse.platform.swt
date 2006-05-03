@@ -196,6 +196,20 @@ public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 
+/**
+ * Adds to the receiver a cubic bezier curve based on the parameters.
+ *
+ * @param cx1 the x coordinate of the first control point of the spline
+ * @param cy1 the y coordinate of the first control of the spline
+ * @param cx2 the x coordinate of the second control of the spline
+ * @param cy2 the y coordinate of the second control of the spline
+ * @param x the x coordinate of the end point of the spline
+ * @param y the y coordinate of the end point of the spline
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
@@ -241,6 +255,17 @@ public void getCurrentPoint(float[] point) {
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 
+/**
+ * Returns a device independent representation of the receiver.
+ * 
+ * @return the PathData for the receiver
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see PathData
+ */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return null;
