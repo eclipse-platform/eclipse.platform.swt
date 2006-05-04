@@ -2248,7 +2248,8 @@ void onTraverse (Event event) {
 		case SWT.TRAVERSE_RETURN:
 		case SWT.TRAVERSE_TAB_NEXT:
 		case SWT.TRAVERSE_TAB_PREVIOUS:
-			event.doit = true;
+			Control focusControl = getDisplay().getFocusControl();
+			if (focusControl == this) event.doit = true;
 			break;
 		case SWT.TRAVERSE_MNEMONIC:
 			event.doit = onMnemonic(event);
