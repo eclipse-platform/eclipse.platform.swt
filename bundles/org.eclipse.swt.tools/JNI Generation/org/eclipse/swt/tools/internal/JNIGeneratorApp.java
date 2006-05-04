@@ -53,6 +53,24 @@ public String getOutputDir() {
 	return outputDir;
 }
 
+public void generateAll() {
+	String mainClasses = new MetaData(getDefaultMainClass()).getMetaData("swt_main_classes", null);
+	if (mainClasses != null) {
+		String[] list = ItemData.split(mainClasses, ",");
+		for (int i = 0; i < list.length; i += 2) {
+			String className = list[i].trim();
+			try {
+				Class.forName(className, false, getClass().getClassLoader());
+			} catch (Throwable e) {
+				continue;
+			}
+			System.out.println("Generating \"" + className + "\"");
+			setMainClassName(className);
+			generate();
+		}
+	}
+}
+
 void generateSTATS_C(Class[] classes) {
 	try {
 		StatsGenerator gen = new StatsGenerator(false);
@@ -403,6 +421,10 @@ public static String getDefaultPlatform() {
 
 public static void main(String[] args) {
 	JNIGeneratorApp gen = new JNIGeneratorApp ();
+	if (args.length == 1 && args[0].equals("*")) {
+		gen.generateAll();
+		return;
+	}
 	if (args.length > 0) {
 		gen.setMainClassName(args[0]);
 		if (args.length > 1) gen.setOutputDir(args[1]);
