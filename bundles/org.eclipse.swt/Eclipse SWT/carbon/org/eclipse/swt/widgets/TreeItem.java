@@ -1022,6 +1022,7 @@ public void setChecked (boolean checked) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget ();
+	if (expanded == getExpanded ()) return;
 	parent.ignoreExpand = true;
 	if (expanded) {
 		OS.OpenDataBrowserContainer (parent.handle, id);
