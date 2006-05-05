@@ -1841,7 +1841,7 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 			case OS.TVI_FIRST:
 			case OS.TVI_LAST:
 				hFirstIndexOf = hLastIndexOf = hFirstItem = hNewItem;
-				itemCount = 0;
+				itemCount = lastIndexOf = 0;
 		}
 	}
 	if (hFirstItem == hFirstIndexOf && itemCount != -1) itemCount++;
