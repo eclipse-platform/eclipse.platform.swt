@@ -3284,6 +3284,8 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
+	hFirstIndexOf = hLastIndexOf = 0;
+	itemCount = -1;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
