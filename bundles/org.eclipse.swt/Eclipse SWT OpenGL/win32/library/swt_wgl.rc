@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -32,7 +32,7 @@ BEGIN
             VALUE "FileDescription", "SWT for Windows native library\0"
             VALUE "FileVersion", SWT_FILE_VERSION
             VALUE "InternalName", "SWT\0"
-            VALUE "LegalCopyright", "(c) Copyright 2000, 2005 IBM Corp.  All Rights Reserved.\0"
+            VALUE "LegalCopyright", "Copyright (c) 2000, 2006 IBM Corp.  All Rights Reserved.\0"
             VALUE "OriginalFilename", SWT_ORG_FILENAME
             VALUE "ProductName", "Standard Widget Toolkit\0"
             VALUE "ProductVersion", "0,0,0,0\0"
