@@ -4972,6 +4972,7 @@ void handleHorizontalScroll(Event event) {
  */
 void handleKey(Event event) {
 	int action;
+	caretAlignment = PREVIOUS_OFFSET_TRAILING;
 	if (event.keyCode != 0) {
 		// special key pressed (e.g., F1)
 		action = getKeyBinding(event.keyCode | event.stateMask);
