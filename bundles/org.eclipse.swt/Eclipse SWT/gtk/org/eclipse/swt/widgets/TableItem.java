@@ -1059,7 +1059,7 @@ public void setImage (int index, Image image) {
 	 * when the image is changed in the model.  The fix is to force it to recalculate the width if
 	 * more space is required.
 	 */
-	if ((parent.style & SWT.VIRTUAL) != 0) {
+	if ((parent.style & SWT.VIRTUAL) != 0 && parent.currentItem == null) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
 			if (image != null) {
 				int /*long*/parentHandle = parent.handle;
