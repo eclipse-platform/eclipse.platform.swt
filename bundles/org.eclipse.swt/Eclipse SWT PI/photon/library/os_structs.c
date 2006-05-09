@@ -1,13 +1,13 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2005 IBM Corporation and others.
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-*     IBM Corporation - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -1324,11 +1324,11 @@ PtFileSelectionInfo_t *getPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObj
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.dim);
-	getPhDim_tFields(env, lpObject1, &lpStruct->dim);
+	if (lpObject1 != NULL) getPhDim_tFields(env, lpObject1, &lpStruct->dim);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.pos);
-	getPhPoint_tFields(env, lpObject1, &lpStruct->pos);
+	if (lpObject1 != NULL) getPhPoint_tFields(env, lpObject1, &lpStruct->pos);
 	}
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
@@ -1364,11 +1364,11 @@ void setPtFileSelectionInfo_tFields(JNIEnv *env, jobject lpObject, PtFileSelecti
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.dim);
-	setPhDim_tFields(env, lpObject1, &lpStruct->dim);
+	if (lpObject1 != NULL) setPhDim_tFields(env, lpObject1, &lpStruct->dim);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.pos);
-	setPhPoint_tFields(env, lpObject1, &lpStruct->pos);
+	if (lpObject1 != NULL) setPhPoint_tFields(env, lpObject1, &lpStruct->pos);
 	}
 	{
 	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, PtFileSelectionInfo_tFc.format);
