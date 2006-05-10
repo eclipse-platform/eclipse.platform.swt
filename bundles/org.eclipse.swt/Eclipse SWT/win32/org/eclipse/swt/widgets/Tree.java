@@ -5683,7 +5683,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
 						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
 						rect.left = headerRect.right - gridWidth;
-						if (findImageControl () != null) {
+						if (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 							OS.InvalidateRect (handle, rect, true);
 						} else {
 							HDITEM oldItem = new HDITEM ();
