@@ -639,14 +639,12 @@ void hookEvents () {
 	int [] mask1 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
-		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
 		OS.kEventClassControl, OS.kEventControlTrack,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask1.length / 2, mask1, handle, null);
 	int [] mask2 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
-		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
 		OS.kEventClassControl, OS.kEventControlHitTest,
 		OS.kEventClassControl, OS.kEventControlTrack,
 	};
@@ -694,10 +692,6 @@ void invalWindowRgn (int window, int rgn) {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
-}
-
-int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
-	return parent.kEventControlContextualMenuClick (nextHandler, theEvent, userData);
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
