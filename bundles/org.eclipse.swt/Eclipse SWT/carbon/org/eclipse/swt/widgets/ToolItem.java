@@ -715,6 +715,15 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 
 int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
 	if (OS.HIVIEW) {
+		/*
+		* Feature in the Macintosh.  When kWindowCompositingAttribute is
+		* set in the window, controls within the window are selected when
+		* any button is pressed, not just the left one.  When the control
+		* has a menu, this causes both selection and a menu to be displayed.
+		* The fix is to check for button two and avoid setting the part
+		* code, which stops the selection from happening.
+		*/		
+		if (display.clickCountButton == 2) return OS.noErr;
 		int [] theControl = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
 		if (theControl [0] == labelHandle) {
