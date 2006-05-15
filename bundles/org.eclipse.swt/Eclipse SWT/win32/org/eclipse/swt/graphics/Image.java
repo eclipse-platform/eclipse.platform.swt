@@ -1354,6 +1354,18 @@ void init(Device device, int width, int height) {
 	type = SWT.BITMAP;
 	int hDC = device.internal_new_GC(null);
 	handle = OS.CreateCompatibleBitmap(hDC, width, height);
+	/*
+	* Feature in Windows.  CreateCompatibleBitmap() may fail
+	* for large images.  The fix is to create a DIB section
+	* in that case.
+	*/
+	if (handle == 0) {
+		int bits = OS.GetDeviceCaps(hDC, OS.BITSPIXEL);
+		int planes = OS.GetDeviceCaps(hDC, OS.PLANES);
+		int depth = bits * planes;
+		if (depth < 16) depth = 16;
+		handle = createDIB(width, height, depth);
+	}
 	if (handle != 0) {
 		int memDC = OS.CreateCompatibleDC(hDC);
 		int hOldBitmap = OS.SelectObject(memDC, handle);
@@ -1365,6 +1377,42 @@ void init(Device device, int width, int height) {
 	if (handle == 0) {
 		SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
 	}
+}
+
+static int createDIB(int width, int height, int depth) {
+	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+	bmiHeader.biWidth = width;
+	bmiHeader.biHeight = -height;
+	bmiHeader.biPlanes = 1;
+	bmiHeader.biBitCount = (short)depth;
+	if (OS.IsWinCE) bmiHeader.biCompression = OS.BI_BITFIELDS;
+	else bmiHeader.biCompression = OS.BI_RGB;
+	byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + (OS.IsWinCE ? 12 : 0)];
+	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+	/* Set the rgb colors into the bitmap info */
+	if (OS.IsWinCE) {
+		int redMask = 0xFF00;
+		int greenMask = 0xFF0000;
+		int blueMask = 0xFF000000;
+		/* big endian */
+		int offset = BITMAPINFOHEADER.sizeof;
+		bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
+		bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
+		bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
+		bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
+		bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
+		bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
+		bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
+		bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
+		bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
+		bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
+		bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
+		bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
+	}
+
+	int[] pBits = new int[1];
+	return OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 }
 
 /**
