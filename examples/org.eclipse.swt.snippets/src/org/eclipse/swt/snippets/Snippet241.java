@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /* 
- * Text snippet: Override Tab behavior to traverse out of Text.
+ * Text snippet: Override Tab behavior to traverse out of a Text.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
