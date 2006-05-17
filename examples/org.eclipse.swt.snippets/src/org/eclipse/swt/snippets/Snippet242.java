@@ -37,7 +37,9 @@ public static void main(String [] args) {
 	});
 
 	// create a cursor with a transparent image
-	PaletteData palette = new PaletteData (new RGB [] {});
+	Color white = display.getSystemColor (SWT.COLOR_WHITE);
+	Color black = display.getSystemColor (SWT.COLOR_BLACK);
+	PaletteData palette = new PaletteData (new RGB [] {white.getRGB(), black.getRGB()});
 	ImageData sourceData = new ImageData (16, 16, 1, palette);
 	sourceData.transparentPixel = 0;
 	Cursor cursor = new Cursor(display, sourceData, 0, 0);
