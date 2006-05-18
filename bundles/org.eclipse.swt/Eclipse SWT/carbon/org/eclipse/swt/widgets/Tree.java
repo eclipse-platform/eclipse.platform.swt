@@ -2792,6 +2792,7 @@ void setItemCount (TreeItem parentItem, int count) {
 					if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, new int [] {id}, 0) != OS.noErr) {
 						break;
 					}
+					visibleCount--;
 				}
 			}
 			index++;
@@ -2842,6 +2843,7 @@ void setItemCount (TreeItem parentItem, int count) {
 				if (OS.AddDataBrowserItems (handle, parentID, addIds.length, addIds, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 					error (SWT.ERROR_ITEM_NOT_ADDED);
 				}
+				visibleCount += (count - itemCount);
 				System.arraycopy (addIds, 0, ids, itemCount, addIds.length);
 			}
 		}
