@@ -5083,11 +5083,14 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	* When there are many columns in a table, scrolling performance
 	* can be improved by temporarily unsubclassing the window proc
 	* so that internal messages are dispatched directly to the table.
-	* If the application expects to see a paint event, the window
-	* proc cannot be unsubclassed or the event will not be seen.
+	* If the application expects to see a paint event or has a child
+	* whose font, foreground or background color might be needed,
+	* the window proc cannot be unsubclassed.
 	*/
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
-		unsubclass ();
+	if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
+		if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
+			unsubclass ();
+		}
 	}
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	subclass ();
@@ -5120,11 +5123,14 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	* When there are many columns in a table, scrolling performance
 	* can be improved by temporarily unsubclassing the window proc
 	* so that internal messages are dispatched directly to the table.
-	* If the application expects to see a paint event, the window
-	* proc cannot be unsubclassed or the event will not be seen.
+	* If the application expects to see a paint event or has a child
+	* whose font, foreground or background color might be needed,
+	* the window proc cannot be unsubclassed.
 	*/
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
-		unsubclass ();
+	if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
+		if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
+			unsubclass ();
+		}
 	}
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	subclass ();
