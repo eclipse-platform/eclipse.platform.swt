@@ -15,5 +15,5 @@ public class XPropertyEvent extends XAnyEvent {
 	public int atom;
 	public int time;
 	public int state;
-	public static final int sizeof = 40;
+	public static final int sizeof = 32;
 }
