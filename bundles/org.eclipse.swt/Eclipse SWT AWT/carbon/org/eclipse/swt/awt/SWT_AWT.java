@@ -99,7 +99,11 @@ public static Frame new_Frame(final Composite parent) {
 	Class clazz = null;
 	try {
 		String className = embeddedFrameClass != null ? embeddedFrameClass : "apple.awt.CHIViewEmbeddedFrame";
-		clazz = Class.forName(className);
+		if (embeddedFrameClass == null) {
+			clazz = Class.forName(className, true, ClassLoader.getSystemClassLoader());
+		} else {
+			clazz = Class.forName(className);
+		}
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e, " [need SWT compatibility pack from Apple]");		
 	}
