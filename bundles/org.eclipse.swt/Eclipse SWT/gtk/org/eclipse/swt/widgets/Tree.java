@@ -2124,7 +2124,6 @@ void releaseWidget () {
 }
 
 void remove (int /*long*/ parentIter, int start, int end) {
-	checkWidget();
 	if (start > end) return;
 	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, parentIter);
 	if (!(0 <= start && start <= end && end < itemCount)) {
@@ -2137,14 +2136,14 @@ void remove (int /*long*/ parentIter, int start, int end) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, parentIter, index);
 		int[] value = new int[1];
 		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
-		if (value [0] != -1) {
-			TreeItem item = items [value [0]];
-			if (item != null && !item.isDisposed ()) item.release (false);
-			items [value [0]] = null;
+		TreeItem item = value [0] != -1 ? items [value [0]] : null;
+		if (item != null && !item.isDisposed ()) {
+			item.dispose ();
+		} else {
+			OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.gtk_tree_store_remove (modelHandle, iter);
+			OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		}
-		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.gtk_tree_store_remove (modelHandle, iter);
-		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	}
 	OS.g_free (iter);
 }
