@@ -2782,22 +2782,23 @@ void setItemCount (TreeItem parentItem, int count) {
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	int[] ids = parentItem == null ? childIds : parentItem.childIds;
 	if (count < itemCount) {
-		int index = count;
-		while (index < ids.length) {
+		for (int index = ids.length - 1; index >= count; index--) {
 			int id = ids [index];
 			if (id != 0) {
 				TreeItem item = _getItem (id, false);
-				if (item != null) item.release (false);	
-				if (parentItem == null || parentItem.getExpanded ()) {
-					if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, new int [] {id}, 0) != OS.noErr) {
-						break;
+				if (item != null && !item.isDisposed ()) {
+					item.dispose ();
+				} else {
+					if (parentItem == null || parentItem.getExpanded ()) {
+						if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, new int [] {id}, 0) != OS.noErr) {
+							error (SWT.ERROR_ITEM_NOT_REMOVED);
+							break;
+						}
+						visibleCount--;
 					}
-					visibleCount--;
 				}
 			}
-			index++;
 		}
-		if (index < ids.length) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		//TODO - move shrink to paint event
 		// shrink items array
 		int lastIndex = items.length;
