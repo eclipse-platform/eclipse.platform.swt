@@ -36,10 +36,8 @@ public static void main(String[] args) {
 		public void handleEvent (Event event) {
 			TableItem item = (TableItem) event.item;
 			int index = table.indexOf (item);
-			int page = index / 64;
-			int start = page * PAGE_SIZE;
-			int end = (page + 1) * PAGE_SIZE;
-			end = Math.min (end, table.getItemCount ());
+			int start = index / 64 * PAGE_SIZE;
+			int end = Math.min (start + PAGE_SIZE, table.getItemCount ());
 			for (int i = start; i < end; i++) {
 				item = table.getItem (i);
 				item.setText ("Item " + i);
