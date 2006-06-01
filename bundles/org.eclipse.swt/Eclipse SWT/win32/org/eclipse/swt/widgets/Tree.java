@@ -5444,7 +5444,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (dragStarted) {
 		sendDragEvent ((short) (lParam & 0xFFFF), (short) (lParam >> 16));
 	} else {
-		sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.TVS_DISABLEDRAGDROP) == 0) {
+			sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
+		}
 	}
 	dragStarted = false;
 	return new LRESULT (code);
