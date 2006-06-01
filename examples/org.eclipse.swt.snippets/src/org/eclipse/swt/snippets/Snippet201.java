@@ -36,7 +36,7 @@ public static void main(String[] args) {
 		public void handleEvent (Event event) {
 			TableItem item = (TableItem) event.item;
 			int index = table.indexOf (item);
-			int start = index / 64 * PAGE_SIZE;
+			int start = index / PAGE_SIZE * PAGE_SIZE;
 			int end = Math.min (start + PAGE_SIZE, table.getItemCount ());
 			for (int i = start; i < end; i++) {
 				item = table.getItem (i);
