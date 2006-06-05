@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * example snippet: Usage of SWT.Settings event
+ * example snippet: detect a system settings change
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

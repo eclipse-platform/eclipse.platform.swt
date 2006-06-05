@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * GridLayout snippet: align widgets in a vertical column
+ * RowLayout snippet: align widgets in a column
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

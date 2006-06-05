@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /* 
- * Table snippet: Text that spans multiple columns
+ * Table snippet: make text span multiple columns
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

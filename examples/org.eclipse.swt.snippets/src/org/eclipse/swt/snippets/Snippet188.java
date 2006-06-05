@@ -17,7 +17,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 /*
- * Scroll widgets into view when they get focus
+ * Scroll a widget into view on focus in
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

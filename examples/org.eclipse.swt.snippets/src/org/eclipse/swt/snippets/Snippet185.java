@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Dropped data type depends on target item in table
+ * Make a dropped data type depend on a target item in table
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

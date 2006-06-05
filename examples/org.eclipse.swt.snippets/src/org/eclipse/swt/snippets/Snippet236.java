@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 /* 
- * Table example snippet: different foreground colour for text in a table cell.
+ * Table example snippet: draw different foreground colors for text in a TableItem.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
