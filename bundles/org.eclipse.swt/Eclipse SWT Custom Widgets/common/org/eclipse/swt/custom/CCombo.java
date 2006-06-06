@@ -374,7 +374,6 @@ void createPopup(String[] items, int selectionIndex) {
  */
 public void cut () {
 	checkWidget ();
-	if ((getStyle () & SWT.READ_ONLY) != 0) return;
 	text.cut ();
 }
 /**
@@ -989,7 +988,6 @@ void listEvent (Event event) {
  */
 public void paste () {
 	checkWidget ();
-	if ((getStyle () & SWT.READ_ONLY) != 0) return;
 	text.paste ();
 }
 void popupEvent(Event event) {
