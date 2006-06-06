@@ -3701,6 +3701,7 @@ void update (boolean all, boolean flush) {
 	int /*long*/ window = paintWindow ();
 	if (flush) display.flushExposes (window, all);
 	OS.gdk_window_process_updates (window, all);
+	OS.gdk_flush ();
 }
 
 void updateBackgroundMode () {
