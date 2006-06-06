@@ -320,26 +320,62 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width + 2*borderWidth, height + 2*borderWidth);
 }
+/**
+ * Copies the selected text.
+ * <p>
+ * The current selection is copied to the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void copy () {
+	checkWidget ();
+	text.copy ();
+}
 void createPopup(String[] items, int selectionIndex) {		
-		// create shell and list
-		popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
-		int style = getStyle ();
-		int listStyle = SWT.SINGLE | SWT.V_SCROLL;
-		if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
-		if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
-		list = new List (popup, listStyle);
-		if (font != null) list.setFont (font);
-		if (foreground != null) list.setForeground (foreground);
-		if (background != null) list.setBackground (background);
-		
-		int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
-		for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
-		int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.Dispose};
-		for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
-		
-		if (items != null) list.setItems (items);
-		if (selectionIndex != -1) list.setSelection (selectionIndex);
+	// create shell and list
+	popup = new Shell (getShell (), SWT.NO_TRIM | SWT.ON_TOP);
+	int style = getStyle ();
+	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
+	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
+	list = new List (popup, listStyle);
+	if (font != null) list.setFont (font);
+	if (foreground != null) list.setForeground (foreground);
+	if (background != null) list.setBackground (background);
+
+	int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
+	for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
+	int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.Dispose};
+	for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
+
+	if (items != null) list.setItems (items);
+	if (selectionIndex != -1) list.setSelection (selectionIndex);
+}
+/**
+ * Cuts the selected text.
+ * <p>
+ * The current selection is first copied to the
+ * clipboard and then deleted from the widget.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void cut () {
+	checkWidget ();
+	if ((getStyle () & SWT.READ_ONLY) != 0) return;
+	text.cut ();
 }
 /**
  * Deselects the item at the given zero-relative index in the receiver's 
@@ -937,7 +973,25 @@ void listEvent (Event event) {
 		}
 	}
 }
-
+/**
+ * Pastes text from clipboard.
+ * <p>
+ * The selected text is deleted from the widget
+ * and new text inserted from the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void paste () {
+	checkWidget ();
+	if ((getStyle () & SWT.READ_ONLY) != 0) return;
+	text.paste ();
+}
 void popupEvent(Event event) {
 	switch (event.type) {
 		case SWT.Paint:
