@@ -2969,7 +2969,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	* wrong, this is unexpected.  The fix is to detect the
 	* case and avoid calling the window proc.
 	*/
-	if ((style & SWT.SINGLE) != 0) {
+	if ((style & SWT.SINGLE) != 0 || hooks (SWT.MouseDown) || hooks (SWT.MouseUp)) {
 		if (pinfo.iItem == -1) {
 			if (!display.captureChanged && !isDisposed ()) {
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -5372,7 +5372,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		}
-		//case OS.LVN_MARQUEEBEGIN: return LRESULT.ONE;
+		case OS.LVN_MARQUEEBEGIN: {
+			if ((style & SWT.SINGLE) != 0) return LRESULT.ONE;
+			if (hooks (SWT.MouseDown) || hooks (SWT.MouseUp)) {
+				return LRESULT.ONE;
+			}
+			break;
+		}
 		case OS.LVN_BEGINDRAG:
 		case OS.LVN_BEGINRDRAG: {
 			dragStarted = true;
