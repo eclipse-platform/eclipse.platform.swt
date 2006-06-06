@@ -2969,11 +2969,13 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	* wrong, this is unexpected.  The fix is to detect the
 	* case and avoid calling the window proc.
 	*/
-	if (pinfo.iItem == -1) {
-		if (!display.captureChanged && !isDisposed ()) {
-			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	if ((style & SWT.SINGLE) != 0) {
+		if (pinfo.iItem == -1) {
+			if (!display.captureChanged && !isDisposed ()) {
+				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			}
+			return LRESULT.ZERO;
 		}
-		return LRESULT.ZERO;
 	}
 	
 	/*
@@ -4258,6 +4260,22 @@ public void showColumn (TableColumn column) {
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, itemRect);
 		ignoreCustomDraw = false;
 	}
+	/*
+	* Bug in Windows.  When a table that is drawing grid lines
+	* is slowly scrolled horizontally to the left, the table does
+	* not redraw the newly exposed vertical grid lines.  The fix
+	* is to save the old scroll position, call the window proc,
+	* get the new scroll position and redraw the new area.
+	*/
+	int oldPos = 0;
+	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_POS;
+		OS.GetScrollInfo (handle, OS.SB_HORZ, info);
+		oldPos = info.nPos;
+	}
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
 	if (itemRect.left < rect.left) {
@@ -4268,6 +4286,24 @@ public void showColumn (TableColumn column) {
 		if (itemRect.left + width > rect.right) {
 			int dx = itemRect.left + width - rect.right;
 			OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
+		}
+	}
+	/*
+	* Bug in Windows.  When a table that is drawing grid lines
+	* is slowly scrolled horizontally to the left, the table does
+	* not redraw the newly exposed vertical grid lines.  The fix
+	* is to save the old scroll position, call the window proc,
+	* get the new scroll position and redraw the new area.
+	*/
+	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_POS;
+		OS.GetScrollInfo (handle, OS.SB_HORZ, info);
+		int newPos = info.nPos;
+		if (newPos < oldPos) {
+			rect.right = oldPos - newPos + GRID_WIDTH;
+			OS.InvalidateRect (handle, rect, true);
 		}
 	}
 }
@@ -5336,7 +5372,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		}
-		case OS.LVN_MARQUEEBEGIN: return LRESULT.ONE;
+		//case OS.LVN_MARQUEEBEGIN: return LRESULT.ONE;
 		case OS.LVN_BEGINDRAG:
 		case OS.LVN_BEGINRDRAG: {
 			dragStarted = true;
