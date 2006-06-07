@@ -106,11 +106,11 @@ public class Display extends Device {
 	static final int WAKE_KIND = 1;
 	Event [] eventQueue;
 	Callback actionCallback, appleEventCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
-	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback;
+	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, trayItemCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback;
 	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback;
 	int actionProc, appleEventProc, commandProc, controlProc, appearanceProc, accessibilityProc;
-	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc;
+	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, trayItemProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
 	EventTable eventTable, filterTable;
@@ -1915,7 +1915,8 @@ public Image getSystemImage (int id) {
  */
 public Tray getSystemTray () {
 	checkDevice ();
-	return null;
+	if (tray != null) return tray;
+	return tray = new Tray (this, SWT.NONE);
 }
 
 /**
@@ -2038,6 +2039,9 @@ void initializeCallbacks () {
 	appearanceCallback = new Callback (this, "appearanceProc", 3);
 	appearanceProc = appearanceCallback.getAddress ();
 	if (appearanceProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	trayItemCallback = new Callback (this, "trayItemProc", 4);
+	trayItemProc = trayItemCallback.getAddress ();
+	if (trayItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -3043,12 +3047,13 @@ void releaseDisplay () {
 	colorCallback.dispose ();
 	textInputCallback.dispose ();
 	appearanceCallback.dispose ();
+	trayItemCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = appearanceCallback = null;
 	accessibilityCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
-	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = null;
+	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = trayItemCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = null;
 	textInputCallback = null;
-	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = 0;
+	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = trayItemProc = 0;
 	accessibilityProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
@@ -3936,6 +3941,12 @@ int trackingProc (int browser, int itemID, int property, int theRect, int startP
 	Widget widget = getWidget (browser);
 	if (widget != null) return widget.trackingProc (browser, itemID, property, theRect, startPt, modifiers);
 	return OS.noErr;
+}
+
+int trayItemProc (int target, int userData, int selector, int event) {
+	TrayItem item = (TrayItem) OS.JNIGetObject (userData);
+	if (item != null) return item.trayItemProc (target, userData, selector, event);
+	return 0;
 }
 
 /**

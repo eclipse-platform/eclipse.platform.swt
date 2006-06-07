@@ -40,6 +40,7 @@ public class ToolTip extends Widget {
 	boolean spikeAbove, autohide;
 	TextLayout layoutText, layoutMessage;
 	String text, message;
+	TrayItem item;
 	Region region;
 	Font boldFont;
 	Runnable runnable;
