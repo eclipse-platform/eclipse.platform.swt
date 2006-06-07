@@ -283,11 +283,11 @@ Point computeSize () {
 				imageHeight = rect.height;
 			}
 			if ((parent.style & SWT.RIGHT) != 0) {
-				width = stringWidth + imageWidth;
+				width = stringWidth + imageWidth + space;
 				height = Math.max (stringHeight, imageHeight);
 			} else {
 				width = Math.max (stringWidth, imageWidth);
-				height = stringHeight + imageHeight;
+				height = stringHeight + imageHeight + space;
 			}
 		} else {
 			width = DEFAULT_WIDTH;
@@ -297,8 +297,8 @@ Point computeSize () {
 			width += ARROW_WIDTH;
 		}
 		int inset = 3;
-		width += space + inset * 2;
-		height += space + inset * 2;
+		width += inset * 2;
+		height += inset * 2;
 	}
 	return new Point (width, height);
 }
