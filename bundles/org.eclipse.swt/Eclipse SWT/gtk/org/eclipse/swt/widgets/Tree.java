@@ -2182,7 +2182,7 @@ public void removeAll () {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	
 	/* Set the search column whenever the model changes */
-	if ((style & SWT.VIRTUAL) == 0) {
+	if ((style & SWT.VIRTUAL) != 0) {
 		/* Disable searching when using VIRTUAL */
 		OS.gtk_tree_view_set_enable_search (handle, false);
 	} else {
