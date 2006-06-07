@@ -15,13 +15,13 @@ include make_common.mak
 
 SWT_PREFIX=swt
 SWTPI_PREFIX=swt-pi
-SWTWEBKIT_PREFIX=swt-webkit
+SWTCOCOA_PREFIX=swt-cocoa
 SWTAGL_PREFIX=swt-agl
 WS_PREFIX=carbon
 SWT_VERSION=$(maj_ver)$(min_ver)
 SWT_LIB=lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 SWTPI_LIB=lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
-WEBKIT_LIB=lib$(SWTWEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
+COCOA_LIB=lib$(SWTCOCOA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 AGL_LIB=lib$(SWTAGL_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
 # Uncomment for Native Stats tool
@@ -31,15 +31,15 @@ AGL_LIB=lib$(SWTAGL_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 ARCHS = -arch i386 -arch ppc
 CFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Headers
 LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Carbon 
-WEBKITCFLAGS = -c $(ARCHS) -xobjective-c -I /System/Library/Frameworks/JavaVM.framework/Headers -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
-WEBKITLFLAGS = $(LFLAGS) -framework WebKit -framework Cocoa
+COCOACFLAGS = $(CFLAGS) -xobjective-c -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
+COCOALFLAGS = $(LFLAGS) -framework WebKit -framework Cocoa
 AGLLFLAGS = $(LFLAGS) -framework OpenGL -framework AGL
 SWT_OBJECTS = swt.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_custom.o os_structs.o os_stats.o
-WEBKIT_OBJECTS = webkit.o
+COCOA_OBJECTS = swt.o cocoa.o cocoa_custom.o cocoa_structs.o cocoa_stats.o 
 AGL_OBJECTS = swt.o agl.o agl_stats.o
 
-all: $(SWT_LIB) $(SWTPI_LIB) $(WEBKIT_LIB) $(AGL_LIB)
+all: $(SWT_LIB) $(SWTPI_LIB) $(COCOA_LIB) $(AGL_LIB)
 
 .c.o:
 	cc $(CFLAGS) $*.c
@@ -50,11 +50,17 @@ $(SWT_LIB): $(SWT_OBJECTS)
 $(SWTPI_LIB): $(SWTPI_OBJECTS)
 	cc -o $(SWTPI_LIB) $(LFLAGS) $(SWTPI_OBJECTS)
 
-webkit.o: webkit.c
-	cc $(WEBKITCFLAGS) webkit.c
+cocoa.o: cocoa.c
+	cc $(COCOACFLAGS) cocoa.c
 	
-$(WEBKIT_LIB): $(WEBKIT_OBJECTS)
-	cc -o $(WEBKIT_LIB) $(WEBKITLFLAGS) $(WEBKIT_OBJECTS)
+cocoa_custom.o: cocoa_custom.c
+	cc $(COCOACFLAGS) cocoa_custom.c
+	
+cocoa_structs.o: cocoa_structs.c
+	cc $(COCOACFLAGS) cocoa_structs.c
+		
+$(COCOA_LIB): $(COCOA_OBJECTS)
+	cc -o $(COCOA_LIB) $(COCOALFLAGS) $(COCOA_OBJECTS)
 
 $(AGL_LIB): $(AGL_OBJECTS)
 	cc -o $(AGL_LIB) $(AGLLFLAGS) $(AGL_OBJECTS)
