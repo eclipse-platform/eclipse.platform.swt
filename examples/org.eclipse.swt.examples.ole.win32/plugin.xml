@@ -4,7 +4,7 @@
 <plugin
    id="org.eclipse.swt.examples.ole.win32"
    name="%plugin.SWTOLEExample.name"
-   version="3.1.0"
+   version="3.1.100.qualifier"
    provider-name="%providerName"
    class="org.eclipse.swt.examples.ole.win32.OlePlugin">
 <!-- Required plugins -->
