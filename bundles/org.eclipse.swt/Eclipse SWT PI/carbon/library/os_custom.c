@@ -22,7 +22,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(NewGlobalRef)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, NewGlobalRef_FUNC);
 	rc = (jint)(*env)->NewGlobalRef(env, arg0);
-fail:
 	OS_NATIVE_EXIT(env, that, NewGlobalRef_FUNC);
 	return rc;
 }
@@ -45,7 +44,6 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 	jobject rc = 0;
 	OS_NATIVE_ENTER(env, that, JNIGetObject_FUNC);
 	rc = (jobject)arg0;
-fail:
 	OS_NATIVE_EXIT(env, that, JNIGetObject_FUNC);
 	return rc;
 }

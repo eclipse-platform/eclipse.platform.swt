@@ -15,7 +15,12 @@
 /*#define NDEBUG*/
 
 #include <Carbon/Carbon.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "os_custom.h"
+
+extern jint CPSEnableForegroundOperation(jint *, jint, jint, jint, jint);
+extern jint CPSSetProcessName(jint *, jbyte *);
 
 #endif /* INC_os_H */

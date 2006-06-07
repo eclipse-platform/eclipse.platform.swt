@@ -802,7 +802,7 @@ fail:
 JNIEXPORT jint JNICALL OS_NATIVE(AddDataBrowserListViewColumn)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
-	DataBrowserListViewColumnDesc _arg1={0}, *lparg1=NULL;
+	DataBrowserListViewColumnDesc _arg1, *lparg1=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, AddDataBrowserListViewColumn_FUNC);
 	if (arg1) if ((lparg1 = getDataBrowserListViewColumnDescFields(env, arg1, &_arg1)) == NULL) goto fail;

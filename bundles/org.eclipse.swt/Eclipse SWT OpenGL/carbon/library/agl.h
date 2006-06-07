@@ -13,5 +13,6 @@
 #define SWT_AGL_H_INCLUDED
 
 #include <OpenGL/gl.h>
+#include <AGL/agl.h>
 
 #endif /* SWT_AGL_H_INCLUDED */
