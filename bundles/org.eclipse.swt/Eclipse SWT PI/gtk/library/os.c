@@ -2618,7 +2618,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1get)
 	OS_NATIVE_ENTER(env, that, _1g_1object_1get_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	g_object_get((GObject *)arg0, (const gchar *)lparg1, lparg2, arg3);
+	g_object_get((GObject *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
@@ -2669,7 +2669,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BFI)
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1g_1object_1set__I_3BFI_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, (const gchar *)arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, _1g_1object_1set__I_3BFI_FUNC);
@@ -2683,7 +2683,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BII)
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1g_1object_1set__I_3BII_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, (const gchar *)arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, _1g_1object_1set__I_3BII_FUNC);
@@ -2697,7 +2697,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BJI)
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1g_1object_1set__I_3BJI_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, (const gchar *)arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, _1g_1object_1set__I_3BJI_FUNC);
@@ -2711,7 +2711,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BZI)
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1g_1object_1set__I_3BZI_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, (const gchar *)arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, _1g_1object_1set__I_3BZI_FUNC);
@@ -12197,7 +12197,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1style_1get__I_3B_3II)
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1style_1get__I_3B_3II_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, arg3);
+	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -12214,7 +12214,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1style_1get__I_3B_3JI)
 	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1style_1get__I_3B_3JI_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, arg3);
+	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);

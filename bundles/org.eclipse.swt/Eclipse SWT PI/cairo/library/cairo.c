@@ -533,7 +533,7 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1image_1surface_1create_1for_1data)
 {
 	jint rc = 0;
 	Cairo_NATIVE_ENTER(env, that, cairo_1image_1surface_1create_1for_1data_FUNC);
-	rc = (jint)cairo_image_surface_create_for_data((char *)arg0, arg1, arg2, arg3, arg4);
+	rc = (jint)cairo_image_surface_create_for_data((unsigned char *)arg0, arg1, arg2, arg3, arg4);
 	Cairo_NATIVE_EXIT(env, that, cairo_1image_1surface_1create_1for_1data_FUNC);
 	return rc;
 }
@@ -1136,7 +1136,7 @@ JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1select_1font_1face)
 	jbyte *lparg1=NULL;
 	Cairo_NATIVE_ENTER(env, that, cairo_1select_1font_1face_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_select_font_face((cairo_t *)arg0, lparg1, arg2, arg3);
+	cairo_select_font_face((cairo_t *)arg0, (const char *)lparg1, arg2, arg3);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	Cairo_NATIVE_EXIT(env, that, cairo_1select_1font_1face_FUNC);
@@ -1362,7 +1362,7 @@ JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1show_1text)
 	jbyte *lparg1=NULL;
 	Cairo_NATIVE_ENTER(env, that, cairo_1show_1text_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_show_text((cairo_t *)arg0, lparg1);
+	cairo_show_text((cairo_t *)arg0, (const char *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	Cairo_NATIVE_EXIT(env, that, cairo_1show_1text_FUNC);
@@ -1519,7 +1519,7 @@ JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1text_1extents)
 	jbyte *lparg1=NULL;
 	Cairo_NATIVE_ENTER(env, that, cairo_1text_1extents_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_text_extents((cairo_t *)arg0, lparg1, (cairo_text_extents_t *)arg2);
+	cairo_text_extents((cairo_t *)arg0, (const char *)lparg1, (cairo_text_extents_t *)arg2);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	Cairo_NATIVE_EXIT(env, that, cairo_1text_1extents_FUNC);
@@ -1533,7 +1533,7 @@ JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1text_1path)
 	jbyte *lparg1=NULL;
 	Cairo_NATIVE_ENTER(env, that, cairo_1text_1path_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_text_path((cairo_t *)arg0, lparg1);
+	cairo_text_path((cairo_t *)arg0, (const char *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	Cairo_NATIVE_EXIT(env, that, cairo_1text_1path_FUNC);
