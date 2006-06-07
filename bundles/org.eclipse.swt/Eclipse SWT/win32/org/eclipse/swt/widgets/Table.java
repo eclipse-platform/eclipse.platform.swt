@@ -1944,7 +1944,32 @@ public TableItem getItem (Point point) {
 	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
 	pinfo.x = point.x;  pinfo.y = point.y;
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	if (pinfo.iItem != -1) return _getItem (pinfo.iItem);
+	if (pinfo.iItem != -1) {
+		/*
+		* Bug in Windows.  When the point that is used by
+		* LVM_HITTEST is inside the header, Windows returns
+		* the first item in the table.  The fix is to check
+		* when LVM_HITTEST returns the first item and make
+		* sure that when the point is within the header,
+		* the first item is not returned.
+		*/
+		if (pinfo.iItem == 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) {
+				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+				if (hwndHeader != 0) {
+					RECT rect = new RECT ();					
+					OS.GetWindowRect (hwndHeader, rect);
+					POINT pt = new POINT ();
+					pt.x = pinfo.x;
+					pt.y = pinfo.y;
+					OS.MapWindowPoints (handle, 0, pt, 1);
+					if (OS.PtInRect (rect, pt)) return null;
+				}
+			}
+		}
+		return _getItem (pinfo.iItem);
+	}
 	return null;
 }
 
