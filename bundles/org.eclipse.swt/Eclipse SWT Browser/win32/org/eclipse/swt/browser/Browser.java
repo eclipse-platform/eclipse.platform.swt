@@ -109,6 +109,7 @@ public class Browser extends Composite {
 	static final int DOCHOSTUIFLAG_NO3DOUTERBORDER = 0x00200000;
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}";
 	static final String URL_DIRECTOR = "http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab"; //$NON-NLS-1$
 
 	/* Package Name */
@@ -149,8 +150,42 @@ public Browser(Composite parent, int style) {
 	info = Browser.DOCHOSTUIFLAG_THEME;
 	if ((style & SWT.BORDER) == 0) info |= Browser.DOCHOSTUIFLAG_NO3DOUTERBORDER;
 	frame = new OleFrame(this, SWT.NONE);
+
+	/*
+	* Registry entry HKEY_CLASSES_ROOT\Shell.Explorer\CLSID indicates which version of
+	* Shell.Explorer to use by default.  We usually want to use this value because it
+	* typically points at the newest one that is available.  However it is possible for
+	* this registry entry to be changed by another application to point at some other
+	* Shell.Explorer version.
+	*
+	* The Browser depends on the Shell.Explorer version being at least Shell.Explorer.2.
+	* If it is detected in the registry to be Shell.Explorer.1 then change the progId that
+	* will be embedded to explicitly specify Shell.Explorer.2.
+	*/
+	String progId = "Shell.Explorer";	//$NON-NLS-1$
+	TCHAR key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
+	int [] phkResult = new int [1];
+	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
+		int [] lpcbData = new int [] {256};
+		TCHAR lpData = new TCHAR (0, lpcbData [0]);
+		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
+		OS.RegCloseKey (phkResult [0]);
+		if (result == 0) {
+			String clsid = lpData.toString (0, lpData.strlen ());
+			if (clsid.equals (CLSID_SHELLEXPLORER1)) {
+				/* Shell.Explorer.1 is the default, ensure that Shell.Explorer.2 is available */
+				key = new TCHAR (0, "Shell.Explorer.2", true);	//$NON-NLS-1$
+				phkResult [0] = 0;
+				if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
+					/* specify that Shell.Explorer.2 is to be used */
+					OS.RegCloseKey (phkResult [0]);
+					progId = "Shell.Explorer.2";	//$NON-NLS-1$
+				}
+			}
+		}
+	}
 	try {
-		site = new WebSite(frame, SWT.NONE, "Shell.Explorer"); //$NON-NLS-1$
+		site = new WebSite(frame, SWT.NONE, progId); //$NON-NLS-1$
 	} catch (SWTException e) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
