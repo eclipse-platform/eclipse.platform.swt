@@ -450,7 +450,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
-	if (OS.COMCTL32_MAJOR >= 6) {
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if ((style & SWT.RADIO) != 0) state |= DRAW_BACKGROUND;
 	}
 }
