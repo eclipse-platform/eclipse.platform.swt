@@ -485,7 +485,7 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
 	* a static control, it sends WM_CTLCOLORSTATIC to get the
 	* foreground and background.  If any drawing happens in
-	* WM_CTLCOLORBTN, it overwrites the contents of the control.
+	* WM_CTLCOLORSTATIC, it overwrites the contents of the control.
 	* The fix is draw the static without drawing the background
 	* and avoid the static window proc.
 	*/
