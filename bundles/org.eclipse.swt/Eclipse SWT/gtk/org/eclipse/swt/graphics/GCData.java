@@ -45,6 +45,7 @@ public final class GCData {
 	public int interpolation = SWT.DEFAULT;
 
 	public int /*long*/ cairo;
+	public boolean disposeCairo;
 
 	public String string;
 	public int stringWidth = -1;

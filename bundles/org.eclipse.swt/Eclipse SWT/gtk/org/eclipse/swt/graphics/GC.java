@@ -267,9 +267,11 @@ public void dispose() {
 	if (handle == 0) return;
 	if (data.device.isDisposed()) return;
 	
-	int /*long*/ cairo = data.cairo;
-	if (cairo != 0) Cairo.cairo_destroy(cairo);
-	data.cairo = 0;
+	if (data.disposeCairo) {
+		int /*long*/ cairo = data.cairo;
+		if (cairo != 0) Cairo.cairo_destroy(cairo);
+		data.cairo = 0;
+	}
 
 	/* Free resources */
 	int /*long*/ clipRgn = data.clipRgn;
@@ -1239,17 +1241,43 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string.length() == 0) return;
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		//TODO - honor flags
-		cairo_font_extents_t extents = new cairo_font_extents_t();
-		Cairo.cairo_font_extents(cairo, extents);
-		double baseline = y + extents.ascent;
-		Cairo.cairo_move_to(cairo, x, baseline);
-		byte[] buffer = Converter.wcsToMbcs(null, string, true);
-		Cairo.cairo_show_text(cairo, buffer);
-		Cairo.cairo_new_path(cairo);
-		return;
+		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+			//TODO - honor flags
+			cairo_font_extents_t extents = new cairo_font_extents_t();
+			Cairo.cairo_font_extents(cairo, extents);
+			double baseline = y + extents.ascent;
+			Cairo.cairo_move_to(cairo, x, baseline);
+			byte[] buffer = Converter.wcsToMbcs(null, string, true);
+			Cairo.cairo_show_text(cairo, buffer);
+			Cairo.cairo_new_path(cairo);
+			return;
+		}
 	}
 	setString(string, flags);
+	if (cairo != 0) {
+		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+			Cairo.cairo_save(cairo);
+			if (data.backgroundPattern != null) {
+				Cairo.cairo_set_source(cairo, data.backgroundPattern.handle);
+			} else {
+				GdkGCValues values = new GdkGCValues();
+				OS.gdk_gc_get_values(handle, values);
+				GdkColor color = new GdkColor();
+				color.pixel = values.background_pixel;
+				int /*long*/ colormap = OS.gdk_colormap_get_system();
+				OS.gdk_colormap_query_color(colormap, color.pixel, color);
+				Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+			}
+			int[] width = new int[1], height = new int[1];
+			OS.pango_layout_get_size(data.layout, width, height);
+			Cairo.cairo_rectangle(cairo, x, y, OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
+			Cairo.cairo_fill(cairo);
+			Cairo.cairo_restore(cairo);
+		}
+		Cairo.cairo_move_to(cairo, x, y);
+		OS.pango_cairo_show_layout(cairo, data.layout);
+		return;
+	}
 	GdkColor background = null;
 	GdkGCValues values = null;
 	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
@@ -2411,7 +2439,7 @@ void init(Drawable drawable, GCData data, int /*long*/ gdkGC) {
 	OS.pango_context_set_base_dir(context, OS.PANGO_DIRECTION_LTR);
 	OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());
 	data.context = context;	
-	int /*long*/ layout = OS.pango_layout_new(context);
+	int /*long*/ layout = data.cairo != 0 ? OS.pango_cairo_create_layout(data.cairo) : OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.layout = layout;
 
@@ -2468,6 +2496,20 @@ void initCairo() {
 	data.cairo = cairo = Cairo.cairo_create(surface);
 	Cairo.cairo_surface_destroy(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.disposeCairo = true;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+		int /*long*/ oldlayout = data.layout;
+		if (oldlayout != 0) OS.g_object_unref(oldlayout);
+		int /*long*/ layout = OS.pango_cairo_create_layout(data.cairo);
+		if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		data.layout = layout;
+		data.string = null;
+		int /*long*/ font = data.font;
+	    if (font != 0) OS.pango_layout_set_font_description(layout, font);
+	    if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
+			OS.pango_layout_set_auto_dir(layout, false);
+		}
+	}
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
@@ -2590,12 +2632,25 @@ public void setAdvanced(boolean advanced) {
 			initCairo();
 		} catch (SWTException e) {}
 	} else {
+		if (!data.disposeCairo) return;
 		int /*long*/ cairo = data.cairo;
 		if (cairo != 0) Cairo.cairo_destroy(cairo);
 		data.cairo = 0;
 		data.interpolation = SWT.DEFAULT;
 		data.backgroundPattern = data.foregroundPattern = null;
 		setClipping(0);
+		if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+			int /*long*/ context = data.context;
+			int /*long*/ oldlayout = data.layout;
+			if (oldlayout != 0) OS.g_object_unref(oldlayout);
+			int /*long*/ layout = OS.pango_layout_new(context);
+			if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			data.layout = layout;
+			data.string = null;
+			if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
+				OS.pango_layout_set_auto_dir(layout, false);
+			}
+		}
 	}
 }
 
@@ -2921,9 +2976,11 @@ public void setFont(Font font) {
 	int /*long*/ fontHandle = data.font = font.handle;
 	OS.pango_layout_set_font_description(data.layout, fontHandle);
 	data.stringWidth = data.stringHeight = -1;
-	int /*long*/ cairo = data.cairo;
-	if (cairo != 0) {
-		setCairoFont(cairo, fontHandle);
+	if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+		int /*long*/ cairo = data.cairo;
+		if (cairo != 0) {
+			setCairoFont(cairo, fontHandle);
+		}
 	}
 }
 

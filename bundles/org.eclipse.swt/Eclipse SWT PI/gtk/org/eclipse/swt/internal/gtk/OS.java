@@ -8571,6 +8571,33 @@ public static final int /*long*/ pango_attr_weight_new(int weight) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _pango_cairo_create_layout(int /*long*/ cairo);
+public static final int /*long*/ pango_cairo_create_layout(int /*long*/ cairo) {
+	lock.lock();
+	try {
+		return _pango_cairo_create_layout(cairo);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_cairo_layout_path(int /*long*/ cairo, int /*long*/ layout);
+public static final void pango_cairo_layout_path(int /*long*/ cairo, int /*long*/ layout) {
+	lock.lock();
+	try {
+		_pango_cairo_layout_path(cairo, layout);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_cairo_show_layout(int /*long*/ cairo, int /*long*/ layout);
+public static final void pango_cairo_show_layout(int /*long*/ cairo, int /*long*/ layout) {
+	lock.lock();
+	try {
+		_pango_cairo_show_layout(cairo, layout);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _pango_context_get_base_dir(int /*long*/ context);
 public static final int pango_context_get_base_dir(int /*long*/ context) {
 	lock.lock();
