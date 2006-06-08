@@ -4034,13 +4034,16 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		color = logPen.lopnColor;
 		width = logPen.x;
 		style = logPen.lopnStyle;
+		if (capStyle != -1 || joinStyle != -1) {
+			changed = extPen = true;
+		}
 		/*
 		* Feature in Windows.  The default end caps is PS_ENDCAP_ROUND
 		* and the default line join is PS_JOIN_ROUND which are different
 		* from other platforms.  The fix is to change these values when
 		* line width is widened.
 		*/
-		if (width < 1 && (newWidth >= 1 || lineStyle == OS.PS_USERSTYLE)) {
+		if (width < 1 && (newWidth >= 1 || lineStyle == OS.PS_USERSTYLE || extPen)) {
 			if (capStyle == -1) capStyle = OS.PS_ENDCAP_FLAT;
 			if (joinStyle == -1) joinStyle = OS.PS_JOIN_MITER;
 		}
@@ -4062,7 +4065,7 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		if (newWidth == 0) {
 			if (dashes == null && (style & OS.PS_ENDCAP_MASK) == OS.PS_ENDCAP_FLAT && (style & OS.PS_JOIN_MASK) == OS.PS_JOIN_MITER) {
 				style &= ~(OS.PS_ENDCAP_MASK | OS.PS_JOIN_MASK | OS.PS_TYPE_MASK);
-				extPen = false;
+				changed = extPen = false;
 			}
 		}
 	}
