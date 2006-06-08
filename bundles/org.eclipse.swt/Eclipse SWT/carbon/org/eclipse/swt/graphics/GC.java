@@ -1200,6 +1200,16 @@ public void drawText (String string, int x, int y, int flags) {
 		case SWT.OFF: mode = false; break;
 	}
 	OS.CGContextSetShouldAntialias(handle, mode);
+	if (data.forePattern != 0) {
+		int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+		OS.CGContextSetFillColorSpace(handle, colorspace);
+		OS.CGContextSetFillPattern(handle, data.forePattern, data.foreground);
+		OS.CGColorSpaceRelease(colorspace);
+	} else {
+		int colorspace = data.device.colorspace;
+		OS.CGContextSetFillColorSpace(handle, colorspace);
+		OS.CGContextSetFillColor(handle, data.foreground);
+	}
 	length = setString(string, flags);
 	if ((flags & SWT.DRAW_DELIMITER) != 0) {
 		int layout = data.layout;
@@ -1233,10 +1243,20 @@ void drawText(int x, int y, int start, int length, int flags) {
 		rect.y = -(y + height);
 		rect.width = width;
 		rect.height = height;
-		OS.CGContextSetFillColor(handle, data.background);
+		OS.CGContextSaveGState(handle);
+		if (data.backPattern != 0) {
+			int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+			OS.CGContextSetFillColorSpace(handle, colorspace);
+			OS.CGContextSetFillPattern(handle, data.backPattern, data.foreground);
+			OS.CGColorSpaceRelease(colorspace);
+		} else {
+			int colorspace = data.device.colorspace;
+			OS.CGContextSetFillColorSpace(handle, colorspace);
+			OS.CGContextSetFillColor(handle, data.background);
+		}
 		OS.CGContextFillRect(handle, rect);
+		OS.CGContextRestoreGState(handle);
 	}
-	OS.CGContextSetFillColor(handle, data.foreground);
 	OS.ATSUDrawText(layout, start, length, OS.Long2Fix(x), OS.Long2Fix(-(y + data.fontAscent)));	
 }
 
