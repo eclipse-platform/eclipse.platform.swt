@@ -258,6 +258,36 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 }
 
+void createLayout() {
+	int /*long*/ layout, context, cairo = data.cairo;
+	if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+		int /*long*/ fontmap = OS.pango_cairo_font_map_get_default();
+		context = OS.pango_cairo_font_map_create_context(fontmap);
+	} else {
+		context = OS.gdk_pango_context_get();
+	}
+	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.context = context;
+	layout = OS.pango_layout_new(context);
+	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.layout = layout;
+	OS.pango_context_set_language(context, OS.gtk_get_default_language());
+	OS.pango_context_set_base_dir(context, OS.PANGO_DIRECTION_LTR);
+	OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());	
+	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
+		OS.pango_layout_set_auto_dir(layout, false);
+	}
+	int /*long*/ font = data.font;
+	if (font != 0) OS.pango_layout_set_font_description(layout, font);
+}
+
+void disposeLayout() {
+	data.string = null;
+	if (data.context != 0) OS.g_object_unref(data.context);
+	if (data.layout != 0) OS.g_object_unref(data.layout);
+	data.layout = data.context = 0;
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the graphics context. Applications must dispose of all GCs
@@ -282,16 +312,13 @@ public void dispose() {
 		if (image.transparentPixel != -1) image.createMask();
 	}
 	
-	int /*long*/ context = data.context;
-	if (context != 0) OS.g_object_unref(context);
-	int /*long*/ layout = data.layout;
-	if (layout != 0) OS.g_object_unref(layout);
+	disposeLayout();
 
 	/* Dispose the GC */
 	Device device = data.device;
 	drawable.internal_dispose_GC(handle, data);
 
-	data.layout = data.context = data.drawable = data.clipRgn = 0;
+	data.drawable = data.clipRgn = 0;
 	drawable = null;
 	handle = 0;
 	data.image = null;
@@ -2105,6 +2132,7 @@ public Font getFont() {
  */
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.context == 0) createLayout();
 	int /*long*/ context = data.context;
 	int /*long*/ lang = OS.pango_context_get_language(context);
 	int /*long*/ metrics = OS.pango_context_get_metrics(context, data.font, lang);
@@ -2433,25 +2461,10 @@ public int hashCode() {
 }
 
 void init(Drawable drawable, GCData data, int /*long*/ gdkGC) {
-	int /*long*/ context = OS.gdk_pango_context_get();
-	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.pango_context_set_language(context, OS.gtk_get_default_language());
-	OS.pango_context_set_base_dir(context, OS.PANGO_DIRECTION_LTR);
-	OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());
-	data.context = context;	
-	int /*long*/ layout = data.cairo != 0 ? OS.pango_cairo_create_layout(data.cairo) : OS.pango_layout_new(context);
-	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	data.layout = layout;
-
-	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-		OS.pango_layout_set_auto_dir(layout, false);
-	}
 	GdkColor foreground = data.foreground;
 	if (foreground != null) OS.gdk_gc_set_foreground(gdkGC, foreground);
 	GdkColor background = data.background;
-	if (background != null) OS.gdk_gc_set_background(gdkGC, background);	
-	int /*long*/ font = data.font;
-	if (font != 0) OS.pango_layout_set_font_description(layout, font);
+	if (background != null) OS.gdk_gc_set_background(gdkGC, background);
 
 	Image image = data.image;
 	if (image != null) {
@@ -2497,19 +2510,7 @@ void initCairo() {
 	Cairo.cairo_surface_destroy(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.disposeCairo = true;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
-		int /*long*/ oldlayout = data.layout;
-		if (oldlayout != 0) OS.g_object_unref(oldlayout);
-		int /*long*/ layout = OS.pango_cairo_create_layout(data.cairo);
-		if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		data.layout = layout;
-		data.string = null;
-		int /*long*/ font = data.font;
-	    if (font != 0) OS.pango_layout_set_font_description(layout, font);
-	    if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-			OS.pango_layout_set_auto_dir(layout, false);
-		}
-	}
+	disposeLayout();
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
@@ -2540,7 +2541,9 @@ void initCairo() {
 		}
 		Cairo.cairo_set_dash(cairo, dashes, dashes.length, 0);
 	}
-	setCairoFont(cairo, data.font);
+	if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+		setCairoFont(cairo, data.font);
+	}
 	setCairoClip(cairo, data.clipRgn);
 }
 
@@ -2639,18 +2642,7 @@ public void setAdvanced(boolean advanced) {
 		data.interpolation = SWT.DEFAULT;
 		data.backgroundPattern = data.foregroundPattern = null;
 		setClipping(0);
-		if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
-			int /*long*/ context = data.context;
-			int /*long*/ oldlayout = data.layout;
-			if (oldlayout != 0) OS.g_object_unref(oldlayout);
-			int /*long*/ layout = OS.pango_layout_new(context);
-			if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			data.layout = layout;
-			data.string = null;
-			if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-				OS.pango_layout_set_auto_dir(layout, false);
-			}
-		}
+		disposeLayout();
 	}
 }
 
@@ -2974,7 +2966,9 @@ public void setFont(Font font) {
 	if (font == null) font = data.device.systemFont;
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ fontHandle = data.font = font.handle;
-	OS.pango_layout_set_font_description(data.layout, fontHandle);
+	if (data.layout != 0) {
+		OS.pango_layout_set_font_description(data.layout, fontHandle);
+	}
 	data.stringWidth = data.stringHeight = -1;
 	if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
 		int /*long*/ cairo = data.cairo;
@@ -3362,6 +3356,7 @@ public void setLineWidth(int lineWidth) {
 }
 
 void setString(String string, int flags) {
+	if (data.layout == 0) createLayout();
 	if (string == data.string && (flags & ~SWT.DRAW_TRANSPARENT) == (data.drawFlags  & ~SWT.DRAW_TRANSPARENT)) {
 		return;
 	}

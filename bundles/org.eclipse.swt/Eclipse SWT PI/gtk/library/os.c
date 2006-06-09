@@ -12704,6 +12704,119 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 }
 #endif
 
+#ifndef NO__1pango_1cairo_1font_1map_1create_1context
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1create_1context)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1create_1context_FUNC);
+/*
+	rc = (jint)pango_cairo_font_map_create_context(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_cairo_font_map_create_context_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_cairo_font_map_create_context");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1create_1context_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1cairo_1font_1map_1get_1default
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1get_1default)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1get_1default_FUNC);
+/*
+	rc = (jint)pango_cairo_font_map_get_default();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_cairo_font_map_get_default_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_cairo_font_map_get_default");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1get_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1cairo_1font_1map_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1new_FUNC);
+/*
+	rc = (jint)pango_cairo_font_map_new();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_cairo_font_map_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_cairo_font_map_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1cairo_1font_1map_1set_1resolution
+JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1font_1map_1set_1resolution)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1font_1map_1set_1resolution_FUNC);
+/*
+	pango_cairo_font_map_set_resolution(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jdouble);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_cairo_font_map_set_resolution_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_cairo_font_map_set_resolution");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1font_1map_1set_1resolution_FUNC);
+}
+#endif
+
 #ifndef NO__1pango_1cairo_1layout_1path
 JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1layout_1path)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

@@ -8571,11 +8571,47 @@ public static final int /*long*/ pango_attr_weight_new(int weight) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _pango_cairo_font_map_get_default();
+public static final int /*long*/ pango_cairo_font_map_get_default() {
+	lock.lock();
+	try {
+		return _pango_cairo_font_map_get_default();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_cairo_font_map_new();
+public static final int /*long*/ pango_cairo_font_map_new() {
+	lock.lock();
+	try {
+		return _pango_cairo_font_map_new();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_cairo_font_map_create_context(int /*long*/ fontmap);
+public static final int /*long*/ pango_cairo_font_map_create_context(int /*long*/ fontmap) {
+	lock.lock();
+	try {
+		return _pango_cairo_font_map_create_context(fontmap);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _pango_cairo_create_layout(int /*long*/ cairo);
 public static final int /*long*/ pango_cairo_create_layout(int /*long*/ cairo) {
 	lock.lock();
 	try {
 		return _pango_cairo_create_layout(cairo);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_cairo_font_map_set_resolution(int /*long*/ fontmap, double dpi);
+public static final void pango_cairo_font_map_set_resolution(int /*long*/ fontmap, double dpi) {
+	lock.lock();
+	try {
+		_pango_cairo_font_map_set_resolution(fontmap, dpi);
 	} finally {
 		lock.unlock();
 	}
