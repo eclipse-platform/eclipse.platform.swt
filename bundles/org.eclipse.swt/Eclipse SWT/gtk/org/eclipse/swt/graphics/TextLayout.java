@@ -1573,6 +1573,7 @@ public void setText (String text) {
 public void setWidth (int width) {
 	checkLayout ();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	freeRuns();
 	OS.pango_layout_set_width(layout, width == -1 ? -1 : width * OS.PANGO_SCALE);
 }
 
