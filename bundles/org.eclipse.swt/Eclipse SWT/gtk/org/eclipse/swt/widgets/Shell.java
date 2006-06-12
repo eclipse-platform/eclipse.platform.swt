@@ -698,8 +698,6 @@ void forceResize () {
 }
 
 void forceResize (int width, int height) {
-	int flags = OS.GTK_WIDGET_FLAGS (vboxHandle);
-	OS.GTK_WIDGET_SET_FLAGS (vboxHandle, OS.GTK_VISIBLE);
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (vboxHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
@@ -709,9 +707,6 @@ void forceResize (int width, int height) {
 	allocation.width = width;
 	allocation.height = height;
 	OS.gtk_widget_size_allocate (vboxHandle, allocation);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS (vboxHandle, OS.GTK_VISIBLE);	
-	}
 }
 
 public Point getLocation () {

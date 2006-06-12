@@ -439,8 +439,6 @@ void forceResize () {
 	* must be preceded by a call to gtk_widget_size_request().
 	*/
 	int /*long*/ topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (topHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
@@ -449,9 +447,6 @@ void forceResize () {
 	allocation.width = OS.GTK_WIDGET_WIDTH (topHandle);
 	allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
 	OS.gtk_widget_size_allocate (topHandle, allocation);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
-	}
 }
 
 /**
@@ -561,7 +556,20 @@ void markLayout (boolean changed, boolean all) {
 void moveHandle (int x, int y) {
 	int /*long*/ topHandle = topHandle ();
 	int /*long*/ parentHandle = parent.parentingHandle ();
+	/*
+	* Feature in GTK.  Calling gtk_fixed_move() to move a child causes
+	* the whole parent to redraw.  This is a performance problem. The
+	* fix is temporarily make the parent not visible during the move.
+	* 
+	* NOTE: Because every widget in SWT has an X window, the new and
+	* old bounds of the child are correctly redrawn.
+	*/
+	int flags = OS.GTK_WIDGET_FLAGS (parentHandle);
+	OS.GTK_WIDGET_UNSET_FLAGS (parentHandle, OS.GTK_VISIBLE);
 	OS.gtk_fixed_move (parentHandle, topHandle, x, y);
+	if ((flags & OS.GTK_VISIBLE) != 0) {
+		OS.GTK_WIDGET_SET_FLAGS (parentHandle, OS.GTK_VISIBLE);	
+	}
 }
 
 void resizeHandle (int width, int height) {
@@ -572,8 +580,6 @@ void resizeHandle (int width, int height) {
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int /*long*/ topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
 	boolean sameOrigin = true, sameExtent = true;
 	if (move) {
 		int oldX = OS.GTK_WIDGET_X (topHandle);
@@ -626,9 +632,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			allocation.height = OS.GTK_WIDGET_HEIGHT (topHandle);
 		}
 		OS.gtk_widget_size_allocate (topHandle, allocation);
-	}
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
 	}
 	/*
 	* Bug in GTK.  Widgets cannot be sized smaller than 1x1.
