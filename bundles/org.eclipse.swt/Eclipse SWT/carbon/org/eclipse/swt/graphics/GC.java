@@ -1910,13 +1910,12 @@ public FontMetrics getFontMetrics() {
 	FontInfo info = new FontInfo();
 	OS.FetchFontInfo(font.id, font.size, font.style, info);
 	int ascent = info.ascent;
-	int descent = info.descent;
-	int leading = info.leading;
+	int descent = info.descent + info.leading;
 	/* This code is intentionaly comment. Not right for fixed width fonts. */
 	//fm.averageCharWidth = info.widMax / 3;
 	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
 	int averageCharWidth = stringExtent(s).x / s.length();
-	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, leading, ascent + leading + descent);
+	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, 0, ascent + descent);
 }
 
 /** 
@@ -2654,7 +2653,7 @@ void setGCFont() {
 	FontInfo info = new FontInfo();
 	OS.FetchFontInfo(font.id, font.size, font.style, info);
 	data.fontAscent = info.ascent;
-	data.fontDescent = info.descent;
+	data.fontDescent = info.descent + info.leading;
 	if (font.atsuiStyle == 0) {
 		if (data.atsuiStyle != 0) OS.ATSUDisposeStyle(data.atsuiStyle);
 		data.atsuiStyle = font.createStyle();

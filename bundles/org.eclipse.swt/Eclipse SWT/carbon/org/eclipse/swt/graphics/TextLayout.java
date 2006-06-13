@@ -586,9 +586,19 @@ public Rectangle getBounds() {
 	checkLayout();
 	computeRuns();
 	int width = 0, height = 0;
-	for (int i=0; i<breaks.length; i++) {
-		width = Math.max(width, lineWidth[i]);
-		height += lineHeight[i];
+	int length = text.length();
+	if (length == 0) {
+		Font font = this.font != null ? this.font : device.getSystemFont();
+		FontInfo info = new FontInfo();
+		OS.FetchFontInfo(font.id, font.size, font.style, info);
+		int ascent = Math.max(info.ascent, this.ascent);
+		int descent = Math.max(info.descent + info.leading, this.descent);
+		height = ascent + descent;
+	} else {
+		for (int i=0; i<breaks.length; i++) {
+			width = Math.max(width, lineWidth[i]);
+			height += lineHeight[i];
+		}
 	}
 	int[] buffer = new int[1];
 	OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
@@ -860,10 +870,9 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		Font font = this.font != null ? this.font : device.getSystemFont();
 		FontInfo info = new FontInfo();
 		OS.FetchFontInfo(font.id, font.size, font.style, info);
-		int ascent = info.ascent;
-		int descent = info.descent;
-		int leading = info.leading;
-		return FontMetrics.carbon_new(ascent, descent, 0, leading, ascent + leading + descent);
+		int ascent = Math.max(info.ascent, this.ascent);
+		int descent = Math.max(info.descent + info.leading, this.descent);
+		return FontMetrics.carbon_new(ascent, descent, 0, 0, ascent + descent);
 	}
 	int start = lineIndex == 0 ? 0 : breaks[lineIndex - 1];
 	int lineLength = breaks[lineIndex] - start;
