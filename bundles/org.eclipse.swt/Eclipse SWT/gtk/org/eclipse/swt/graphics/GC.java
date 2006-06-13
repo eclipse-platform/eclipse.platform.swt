@@ -137,6 +137,26 @@ public GC(Drawable drawable, int style) {
 	if (device.tracking) device.new_Object(this);
 }
 
+static void addCairoString(int /*long*/ cairo, String string, float x, float y, Font font) {
+	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+		int /*long*/ layout = OS.pango_cairo_create_layout(cairo);
+		if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.pango_layout_set_text(layout, buffer, -1);
+		OS.pango_layout_set_font_description(layout, font.handle);
+		Cairo.cairo_move_to(cairo, x, y);
+		OS.pango_cairo_layout_path(cairo, layout);
+		OS.g_object_unref(layout);
+	} else {
+		GC.setCairoFont(cairo, font);
+		cairo_font_extents_t extents = new cairo_font_extents_t();
+		Cairo.cairo_font_extents(cairo, extents);
+		double baseline = y + extents.ascent;
+		Cairo.cairo_move_to(cairo, x, baseline);
+		Cairo.cairo_text_path(cairo, buffer);
+	}
+}
+
 static int checkStyle (int style) {
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
