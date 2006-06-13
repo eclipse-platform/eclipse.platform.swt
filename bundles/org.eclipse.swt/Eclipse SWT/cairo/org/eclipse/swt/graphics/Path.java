@@ -13,7 +13,6 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
-import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Instances of this class represent paths through the two-dimensional
@@ -186,23 +185,7 @@ public void addString(String string, float x, float y, Font font) {
 	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	move = false;
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
-		int /*long*/ layout = OS.pango_cairo_create_layout(handle);
-		if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		OS.pango_layout_set_text(layout, buffer, -1);
-		OS.pango_layout_set_font_description(layout, font.handle);
-		Cairo.cairo_move_to(handle, x, y);
-		OS.pango_cairo_layout_path(handle, layout);
-		OS.g_object_unref(layout);
-	} else {
-		GC.setCairoFont(handle, font);
-		cairo_font_extents_t extents = new cairo_font_extents_t();
-		Cairo.cairo_font_extents(handle, extents);
-		double baseline = y + extents.ascent;
-		Cairo.cairo_move_to(handle, x, baseline);
-		Cairo.cairo_text_path(handle, buffer);
-	}
+	GC.addCairoString(handle, string, x, y, font);
 }
 
 /**

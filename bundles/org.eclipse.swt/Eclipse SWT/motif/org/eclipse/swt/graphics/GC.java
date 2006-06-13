@@ -134,6 +134,15 @@ public GC(Drawable drawable, int style) {
 	init(drawable, data, xGC);
 	if (device.tracking) device.new_Object(this);
 }
+static void addCairoString(int cairo, String string, float x, float y, Font font) {
+	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	GC.setCairoFont(cairo, font);
+	cairo_font_extents_t extents = new cairo_font_extents_t();
+	Cairo.cairo_font_extents(cairo, extents);
+	double baseline = y + extents.ascent;
+	Cairo.cairo_move_to(cairo, x, baseline);
+	Cairo.cairo_text_path(cairo, buffer);
+}
 static int checkStyle (int style) {
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
