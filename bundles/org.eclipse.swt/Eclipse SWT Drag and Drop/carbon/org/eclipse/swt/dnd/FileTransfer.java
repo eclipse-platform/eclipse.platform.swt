@@ -148,7 +148,7 @@ public Object nativeToJava(TransferData transferData) {
 			if (url == 0) return null;
 		}
 		if (transferData.type == FURLID) {
-			int encoding = OS.CFStringGetSystemEncoding();
+			int encoding = OS.kCFStringEncodingUTF8;
 			url = OS.CFURLCreateWithBytes(OS.kCFAllocatorDefault, data, data.length, encoding, 0);
 			if (url == 0) return null;
 		}
