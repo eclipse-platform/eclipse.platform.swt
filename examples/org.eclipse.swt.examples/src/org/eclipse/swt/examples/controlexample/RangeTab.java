@@ -55,7 +55,7 @@ abstract class RangeTab extends Tab {
 	
 		/* Create a Spinner widget */
 		maximumSpinner = new Spinner (maximumGroup, SWT.BORDER);
-		maximumSpinner.setMaximum (100);
+		maximumSpinner.setMaximum (100000);
 		maximumSpinner.setSelection (100);
 		maximumSpinner.setPageIncrement (10);
 		maximumSpinner.setIncrement (5);
