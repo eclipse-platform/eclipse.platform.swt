@@ -59,8 +59,6 @@ class ProgressBarTab extends RangeTab {
 
 		/* Create the example widgets */
 		progressBar1 = new ProgressBar (progressBarGroup, style);
-		progressBar1.setMaximum (100);
-		progressBar1.setSelection (50);
 	}
 
 	/**
@@ -119,9 +117,29 @@ class ProgressBarTab extends RangeTab {
 			minimumSpinner.setEnabled (true);
 			maximumSpinner.setEnabled (true);
 		}
-		maximumSpinner.setMaximum (progressBar1.getMaximum ());
 		smoothButton.setSelection ((progressBar1.getStyle () & SWT.SMOOTH) != 0);
 		indeterminateButton.setSelection ((progressBar1.getStyle () & SWT.INDETERMINATE) != 0);
+	}
+
+	/**
+	 * Gets the default maximum of the "Example" widgets.
+	 */
+	int getDefaultMaximum () {
+		return progressBar1.getMaximum();
+	}
+	
+	/**
+	 * Gets the default minimim of the "Example" widgets.
+	 */
+	int getDefaultMinimum () {
+		return progressBar1.getMinimum();
+	}
+	
+	/**
+	 * Gets the default selection of the "Example" widgets.
+	 */
+	int getDefaultSelection () {
+		return progressBar1.getSelection();
 	}
 
 	/**

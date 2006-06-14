@@ -81,6 +81,7 @@ public class ControlExample {
 			new MenuTab (this),
 			new ProgressBarTab (this),
 			new SashTab (this),
+			new ScaleTab (this),
 			shellTab = new ShellTab(this),
 			new SliderTab (this),
 			new SpinnerTab (this),

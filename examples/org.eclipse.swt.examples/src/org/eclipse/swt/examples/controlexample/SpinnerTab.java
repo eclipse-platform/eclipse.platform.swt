@@ -71,28 +71,6 @@ class SpinnerTab extends RangeTab {
 		
 		/* Create the example widgets */
 		spinner1 = new Spinner (spinnerGroup, style);
-		spinner1.setMaximum(100);
-		spinner1.setSelection(50);
-	}
-	
-	/**
-	 * Create a group of widgets to control the maximum
-	 * attribute of the example widget.
-	 */
-	void createMaximumGroup() {
-		super.createMaximumGroup();
-		maximumSpinner.setMaximum (1000);
-		maximumSpinner.setPageIncrement (100);
-	}
-	
-	/**
-	 * Create a group of widgets to control the selection
-	 * attribute of the example widget.
-	 */
-	void createSelectionGroup() {
-		super.createSelectionGroup();
-		selectionSpinner.setMaximum (1000);
-		selectionSpinner.setPageIncrement (100);
 	}
 	
 	/**
@@ -109,10 +87,10 @@ class SpinnerTab extends RangeTab {
 	
 		/* Create the Spinner widget */
 		incrementSpinner = new Spinner (incrementGroup, SWT.BORDER);
-		incrementSpinner.setMaximum (100);
-		incrementSpinner.setSelection (1);
-		incrementSpinner.setPageIncrement (10);
-		incrementSpinner.setIncrement (5);
+		incrementSpinner.setMaximum (100000);
+		incrementSpinner.setSelection (getDefaultIncrement());
+		incrementSpinner.setPageIncrement (100);
+		incrementSpinner.setIncrement (1);
 		incrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 	
 		/* Add the listeners */
@@ -137,10 +115,10 @@ class SpinnerTab extends RangeTab {
 			
 		/* Create the Spinner widget */
 		pageIncrementSpinner = new Spinner (pageIncrementGroup, SWT.BORDER);
-		pageIncrementSpinner.setMaximum (100);
-		pageIncrementSpinner.setSelection (10);
-		pageIncrementSpinner.setPageIncrement (10);
-		pageIncrementSpinner.setIncrement (5);
+		pageIncrementSpinner.setMaximum (100000);
+		pageIncrementSpinner.setSelection (getDefaultPageIncrement());
+		pageIncrementSpinner.setPageIncrement (100);
+		pageIncrementSpinner.setIncrement (1);
 		pageIncrementSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
@@ -165,9 +143,9 @@ class SpinnerTab extends RangeTab {
 	
 		/* Create the Spinner widget */
 		digitsSpinner = new Spinner (digitsGroup, SWT.BORDER);
-		digitsSpinner.setMaximum (8);
-		digitsSpinner.setSelection (0);
-		digitsSpinner.setPageIncrement (10);
+		digitsSpinner.setMaximum (100000);
+		digitsSpinner.setSelection (getDefaultDigits());
+		digitsSpinner.setPageIncrement (100);
 		digitsSpinner.setIncrement (1);
 		digitsSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 	
@@ -251,6 +229,48 @@ class SpinnerTab extends RangeTab {
 			setWidgetPageIncrement ();
 			setWidgetDigits ();
 		}
+	}
+
+	/**
+	 * Gets the default maximum of the "Example" widgets.
+	 */
+	int getDefaultMaximum () {
+		return spinner1.getMaximum();
+	}
+	
+	/**
+	 * Gets the default minimim of the "Example" widgets.
+	 */
+	int getDefaultMinimum () {
+		return spinner1.getMinimum();
+	}
+	
+	/**
+	 * Gets the default selection of the "Example" widgets.
+	 */
+	int getDefaultSelection () {
+		return spinner1.getSelection();
+	}
+
+	/**
+	 * Gets the default increment of the "Example" widgets.
+	 */
+	int getDefaultIncrement () {
+		return spinner1.getIncrement();
+	}
+	
+	/**
+	 * Gets the default page increment of the "Example" widgets.
+	 */
+	int getDefaultPageIncrement () {
+		return spinner1.getPageIncrement();
+	}
+	
+	/**
+	 * Gets the default digits of the "Example" widgets.
+	 */
+	int getDefaultDigits () {
+		return spinner1.getDigits();
 	}
 
 	/**

@@ -40,7 +40,7 @@ abstract class Tab {
 	Display display;
 	
 	/* Common control buttons */
-	Button borderButton, enabledButton, visibleButton, backgroundImageButton;
+	Button borderButton, enabledButton, visibleButton, backgroundImageButton, popupMenuButton;
 	Button preferredButton, tooSmallButton, smallButton, largeButton, fillHButton, fillVButton;
 
 	/* Common groups and composites */
@@ -108,6 +108,8 @@ abstract class Tab {
 		"MeasureItem",
 		"PaintItem",
 	};
+	
+	boolean samplePopup = false;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -333,7 +335,9 @@ abstract class Tab {
 		visibleButton.setText(ControlExample.getResourceString("Visible"));
 		backgroundImageButton = new Button(otherGroup, SWT.CHECK);
 		backgroundImageButton.setText(ControlExample.getResourceString("BackgroundImage"));
-	
+		popupMenuButton = new Button(otherGroup, SWT.CHECK);
+		popupMenuButton.setText(ControlExample.getResourceString("PopupMenu"));
+		
 		/* Add the listeners */
 		enabledButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
@@ -350,11 +354,17 @@ abstract class Tab {
 				setExampleWidgetBackgroundImage ();
 			}
 		});
+		popupMenuButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setExampleWidgetPopupMenu ();
+			}
+		});
 	
 		/* Set the default state */
 		enabledButton.setSelection(true);
 		visibleButton.setSelection(true);
 		backgroundImageButton.setSelection(false);
+		popupMenuButton.setSelection(false);
 	}
 	
 	/**
@@ -890,6 +900,33 @@ abstract class Tab {
 		return tabFolderPage;
 	}
 	
+	void setExampleWidgetPopupMenu() {
+		Control[] controls = getExampleWidgets();
+		for (int i = 0; i < controls.length; i++) {
+			final Control control = controls [i];
+			control.addListener(SWT.MenuDetect, new Listener() {
+				public void handleEvent(Event event) {
+		        	Menu menu = control.getMenu();
+		        	if (menu != null && samplePopup) {
+		        		menu.dispose();
+		        		menu = null;
+		        	}
+		        	if (menu == null && popupMenuButton.getSelection()) {
+			        	menu = new Menu(shell, SWT.POP_UP);
+			        	MenuItem item = new MenuItem(menu, SWT.PUSH);
+			        	item.setText("Sample popup menu item");
+			        	specialPopupMenuItems(menu, event);
+			        	control.setMenu(menu);
+		        		samplePopup = true;
+		        	}
+				}
+			});
+		}
+	}
+
+	protected void specialPopupMenuItems(final Menu menu, final Event event) {
+	}
+
 	/**
 	 * Disposes the "Example" widgets.
 	 */
@@ -1299,6 +1336,7 @@ abstract class Tab {
 			setExampleGroupBackgroundColor ();
 			setExampleGroupBackgroundImage ();
 			setExampleWidgetBackgroundImage ();
+			setExampleWidgetPopupMenu ();
 			setExampleWidgetSize ();
 		}
 		//TEMPORARY CODE

@@ -56,9 +56,9 @@ abstract class RangeTab extends Tab {
 		/* Create a Spinner widget */
 		maximumSpinner = new Spinner (maximumGroup, SWT.BORDER);
 		maximumSpinner.setMaximum (100000);
-		maximumSpinner.setSelection (100);
-		maximumSpinner.setPageIncrement (10);
-		maximumSpinner.setIncrement (5);
+		maximumSpinner.setSelection (getDefaultMaximum());
+		maximumSpinner.setPageIncrement (100);
+		maximumSpinner.setIncrement (1);
 		maximumSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 	
 		/* Add the listeners */
@@ -83,10 +83,10 @@ abstract class RangeTab extends Tab {
 	
 		/* Create a Spinner widget */
 		minimumSpinner = new Spinner (minimumGroup, SWT.BORDER);
-		minimumSpinner.setMaximum (100);
-		minimumSpinner.setSelection(0);
-		minimumSpinner.setPageIncrement (10);
-		minimumSpinner.setIncrement (5);
+		minimumSpinner.setMaximum (100000);
+		minimumSpinner.setSelection(getDefaultMinimum());
+		minimumSpinner.setPageIncrement (100);
+		minimumSpinner.setIncrement (1);
 		minimumSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
@@ -113,10 +113,10 @@ abstract class RangeTab extends Tab {
 	
 		/* Create a Spinner widget */
 		selectionSpinner = new Spinner (selectionGroup, SWT.BORDER);
-		selectionSpinner.setMaximum (100);
-		selectionSpinner.setSelection (50);
-		selectionSpinner.setPageIncrement (10);
-		selectionSpinner.setIncrement (5);
+		selectionSpinner.setMaximum (100000);
+		selectionSpinner.setSelection (getDefaultSelection());
+		selectionSpinner.setPageIncrement (100);
+		selectionSpinner.setIncrement (1);
 		selectionSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
 
 		/* Add the listeners */
@@ -165,6 +165,21 @@ abstract class RangeTab extends Tab {
 		}
 	}
 	
+	/**
+	 * Gets the default maximum of the "Example" widgets.
+	 */
+	abstract int getDefaultMaximum ();
+	
+	/**
+	 * Gets the default minimim of the "Example" widgets.
+	 */
+	abstract int getDefaultMinimum ();
+	
+	/**
+	 * Gets the default selection of the "Example" widgets.
+	 */
+	abstract int getDefaultSelection ();
+
 	/**
 	 * Sets the maximum of the "Example" widgets.
 	 */

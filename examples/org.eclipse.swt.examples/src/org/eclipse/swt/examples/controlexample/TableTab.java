@@ -60,6 +60,8 @@ class TableTab extends ScrollableTab {
 				ControlExample.getResourceString("TableLine2_2"),
 				ControlExample.getResourceString("TableLine2_3") } };
 
+	Point menuMouseCoords;
+	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -300,7 +302,6 @@ class TableTab extends ScrollableTab {
 			setItemText (item, i, ControlExample.getResourceString("Index") + i);
 		}
 		packColumns();
-		setColumnsMoveable();
 	}
 	
 	void setItemText(TableItem item, int i, String node) {
@@ -569,6 +570,7 @@ class TableTab extends ScrollableTab {
 	 * Sets the state of the "Example" widgets.
 	 */
 	void setExampleWidgetState () {
+		setColumnsMoveable ();
 		setItemBackground ();
 		setItemForeground ();
 		setItemFont ();
@@ -637,5 +639,17 @@ class TableTab extends ScrollableTab {
 	 */
 	void setWidgetLinesVisible () {
 		table1.setLinesVisible (linesVisibleButton.getSelection ());
+	}
+	
+	protected void specialPopupMenuItems(Menu menu, Event event) {
+    	MenuItem item = new MenuItem(menu, SWT.PUSH);
+    	item.setText("getItem(Point) on mouse coordinates");
+    	menuMouseCoords = table1.toControl(new Point(event.x, event.y));
+    	item.addSelectionListener(new SelectionAdapter() {
+    		public void widgetSelected(SelectionEvent e) {
+    			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + table1.getItem(menuMouseCoords));
+    			eventConsole.append ("\n");
+    		};
+    	});
 	}
 }

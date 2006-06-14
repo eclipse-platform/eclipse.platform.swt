@@ -16,18 +16,18 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
 
-class SliderTab extends RangeTab {
+class ScaleTab extends RangeTab {
 	/* Example widgets and groups that contain them */
-	Slider slider1;
-	Group sliderGroup;
+	Scale scale1;
+	Group scaleGroup;
 
 	/* Spinner widgets added to the "Control" group */
-	Spinner incrementSpinner, pageIncrementSpinner, thumbSpinner;
+	Spinner incrementSpinner, pageIncrementSpinner;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
-	SliderTab(ControlExample instance) {
+	ScaleTab(ControlExample instance) {
 		super(instance);
 	}
 
@@ -36,7 +36,6 @@ class SliderTab extends RangeTab {
 	 */
 	void createControlWidgets () {
 		super.createControlWidgets ();
-		createThumbGroup ();
 		createIncrementGroup ();
 		createPageIncrementGroup ();
 	}
@@ -47,11 +46,12 @@ class SliderTab extends RangeTab {
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
-		/* Create a group for the slider */
-		sliderGroup = new Group (exampleGroup, SWT.NONE);
-		sliderGroup.setLayout (new GridLayout ());
-		sliderGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
-		sliderGroup.setText ("Slider");
+		/* Create a group for the scale */
+		scaleGroup = new Group (exampleGroup, SWT.NONE);
+		scaleGroup.setLayout (new GridLayout ());
+		scaleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
+		scaleGroup.setText ("Scale");
+	
 	}
 	
 	/**
@@ -66,7 +66,7 @@ class SliderTab extends RangeTab {
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 	
 		/* Create the example widgets */
-		slider1 = new Slider(sliderGroup, style);
+		scale1 = new Scale (scaleGroup, style);
 	}
 	
 	/**
@@ -126,38 +126,10 @@ class SliderTab extends RangeTab {
 	}
 	
 	/**
-	 * Create a group of widgets to control the thumb
-	 * attribute of the example widget.
-	 */
-	void createThumbGroup() {
-	
-		/* Create the group */
-		Group thumbGroup = new Group (controlGroup, SWT.NONE);
-		thumbGroup.setLayout (new GridLayout ());
-		thumbGroup.setText (ControlExample.getResourceString("Thumb"));
-		thumbGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
-		
-		/* Create the Spinner widget */
-		thumbSpinner = new Spinner (thumbGroup, SWT.BORDER);
-		thumbSpinner.setMaximum (100000);
-		thumbSpinner.setSelection (getDefaultThumb());
-		thumbSpinner.setPageIncrement (100);
-		thumbSpinner.setIncrement (1);
-		thumbSpinner.setLayoutData (new GridData (SWT.FILL, SWT.CENTER, true, false));
-
-		/* Add the listeners */
-		thumbSpinner.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				setWidgetThumb ();
-			}
-		});
-	}
-	
-	/**
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {
-		return new Control [] {slider1};
+		return new Control [] {scale1};
 	}
 	
 	/**
@@ -172,7 +144,7 @@ class SliderTab extends RangeTab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return "Slider";
+		return "Scale";
 	}
 	
 	/**
@@ -183,7 +155,6 @@ class SliderTab extends RangeTab {
 		if (!instance.startup) {
 			setWidgetIncrement ();
 			setWidgetPageIncrement ();
-			setWidgetThumb ();
 		}
 	}
 	
@@ -191,83 +162,69 @@ class SliderTab extends RangeTab {
 	 * Gets the default maximum of the "Example" widgets.
 	 */
 	int getDefaultMaximum () {
-		return slider1.getMaximum();
+		return scale1.getMaximum();
 	}
 	
 	/**
 	 * Gets the default minimim of the "Example" widgets.
 	 */
 	int getDefaultMinimum () {
-		return slider1.getMinimum();
+		return scale1.getMinimum();
 	}
 	
 	/**
 	 * Gets the default selection of the "Example" widgets.
 	 */
 	int getDefaultSelection () {
-		return slider1.getSelection();
+		return scale1.getSelection();
 	}
 
 	/**
 	 * Gets the default increment of the "Example" widgets.
 	 */
 	int getDefaultIncrement () {
-		return slider1.getIncrement();
+		return scale1.getIncrement();
 	}
 	
 	/**
 	 * Gets the default page increment of the "Example" widgets.
 	 */
 	int getDefaultPageIncrement () {
-		return slider1.getPageIncrement();
+		return scale1.getPageIncrement();
 	}
 	
-	/**
-	 * Gets the default thumb of the "Example" widgets.
-	 */
-	int getDefaultThumb () {
-		return slider1.getThumb();
-	}
-
 	/**
 	 * Sets the increment of the "Example" widgets.
 	 */
 	void setWidgetIncrement () {
-		slider1.setIncrement (incrementSpinner.getSelection ());
+		scale1.setIncrement (incrementSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
 	void setWidgetMaximum () {
-		slider1.setMaximum (maximumSpinner.getSelection ());
+		scale1.setMaximum (maximumSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the minimim of the "Example" widgets.
 	 */
 	void setWidgetMinimum () {
-		slider1.setMinimum (minimumSpinner.getSelection ());
+		scale1.setMinimum (minimumSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the page increment of the "Example" widgets.
 	 */
 	void setWidgetPageIncrement () {
-		slider1.setPageIncrement (pageIncrementSpinner.getSelection ());
+		scale1.setPageIncrement (pageIncrementSpinner.getSelection ());
 	}
 	
 	/**
 	 * Sets the selection of the "Example" widgets.
 	 */
 	void setWidgetSelection () {
-		slider1.setSelection (selectionSpinner.getSelection ());
-	}
-	
-	/**
-	 * Sets the thumb of the "Example" widgets.
-	 */
-	void setWidgetThumb () {
-		slider1.setThumb (thumbSpinner.getSelection ());
+		scale1.setSelection (selectionSpinner.getSelection ());
 	}
 }

@@ -55,7 +55,6 @@ class ExpandBarTab extends Tab {
 	
 		/* Create the example widgets */		
 		expandBar1 = new ExpandBar (expandBarGroup, style);
-		expandBar1.setSpacing(4);
 		
 		// First item
 		Composite composite = new Composite (expandBar1, SWT.NONE);
