@@ -4415,19 +4415,23 @@ public Rectangle getTextBounds(int start, int end) {
 	for (int i = lineStart; i <= lineEnd; i++) {
 		int lineOffset = content.getOffsetAtLine(i);		
 		TextLayout layout = renderer.getTextLayout(i);
-		if (i == lineStart && i == lineEnd) {
-			rect = layout.getBounds(start - lineOffset, end - lineOffset);
-		} else if (i == lineStart) {
-			String line = content.getLine(i);
-			rect = layout.getBounds(start - lineOffset, line.length());
-		} else if (i == lineEnd) {
-			rect = layout.getBounds(0, end - lineOffset);
+		if (layout.getText().length() > 0) {
+			if (i == lineStart && i == lineEnd) {
+				rect = layout.getBounds(start - lineOffset, end - lineOffset);
+			} else if (i == lineStart) {
+				String line = content.getLine(i);
+				rect = layout.getBounds(start - lineOffset, line.length());
+			} else if (i == lineEnd) {
+				rect = layout.getBounds(0, end - lineOffset);
+			} else {
+				rect = layout.getBounds();
+			}
+			left = Math.min(left, rect.x);
+			right = Math.max(right, rect.x + rect.width);
+			height += rect.height;
 		} else {
-			rect = layout.getBounds();
+			height += renderer.getLineHeight();
 		}
-		left = Math.min (left, rect.x);
-		right = Math.max (right, rect.x + rect.width);
-		height += rect.height;
 		renderer.disposeTextLayout(layout);
 	}
 	rect = new Rectangle (left, y, right-left, height);
