@@ -342,11 +342,10 @@ void setFont() {
 	fontDialog.setFontList((text.getFont()).getFontData());
 	FontData fontData = fontDialog.open();
 	if (fontData != null) {
-		if (font != null) {
-			font.dispose();
-		}
-		font = new Font(shell.getDisplay(), fontData);
-		text.setFont(font);
+		Font newFont = new Font(shell.getDisplay(), fontData); 
+		text.setFont(newFont);
+		if (font != null) font.dispose();
+		font = newFont;
 	}
 }
 
