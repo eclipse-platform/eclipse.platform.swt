@@ -14,7 +14,7 @@ package org.eclipse.swt.internal.cocoa;
 
 import org.eclipse.swt.internal.*;
 
-public class Cocoa {
+public class Cocoa extends Platform {
 		
 static {
 	Library.loadLibrary("swt-cocoa"); //$NON-NLS-1$
