@@ -79,6 +79,8 @@
 #define pango_cairo_font_map_new_LIB "libpangocairo-1.0.so.0"
 #define pango_cairo_font_map_get_default_LIB "libpangocairo-1.0.so.0"
 #define pango_cairo_font_map_set_resolution_LIB "libpangocairo-1.0.so.0"
+#define gdk_cairo_set_source_color_LIB "libgdk-x11-2.0.so.0"
+#define gdk_cairo_region_LIB "libgdk-x11-2.0.so.0"
 
 /* Field accessors */
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1

@@ -2177,6 +2177,24 @@ public static final int /*long*/ gdk_bitmap_create_from_data(int /*long*/ window
 		lock.unlock();
 	}
 }
+public static final native void _gdk_cairo_region(int /*long*/ cairo, int /*long*/ region);
+public static final void gdk_cairo_region(int /*long*/ cairo, int /*long*/ region) {
+	lock.lock();
+	try {
+		_gdk_cairo_region(cairo, region);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor color);
+public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor color) {
+	lock.lock();
+	try {
+		_gdk_cairo_set_source_color(cairo, color);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _gdk_color_white(int /*long*/ colormap, GdkColor color);
 public static final boolean gdk_color_white(int /*long*/ colormap, GdkColor color) {
 	lock.lock();

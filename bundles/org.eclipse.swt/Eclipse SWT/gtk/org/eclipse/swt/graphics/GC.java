@@ -279,16 +279,10 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 }
 
 void createLayout() {
-	int /*long*/ layout, context, cairo = data.cairo;
-	if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
-		int /*long*/ fontmap = OS.pango_cairo_font_map_get_default();
-		context = OS.pango_cairo_font_map_create_context(fontmap);
-	} else {
-		context = OS.gdk_pango_context_get();
-	}
+	int /*long*/ context = OS.gdk_pango_context_get();
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.context = context;
-	layout = OS.pango_layout_new(context);
+	int /*long*/ layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.layout = layout;
 	OS.pango_context_set_language(context, OS.gtk_get_default_language());
@@ -2803,17 +2797,20 @@ static void setCairoFont(int /*long*/ cairo, int /*long*/ font) {
 static void setCairoClip(int /*long*/ cairo, int /*long*/ clipRgn) {
 	Cairo.cairo_reset_clip(cairo);
 	if (clipRgn == 0) return;
-	int[] nRects = new int[1];
-	int /*long*/[] rects = new int /*long*/[1];
-	OS.gdk_region_get_rectangles(clipRgn, rects, nRects);
-	GdkRectangle rect = new GdkRectangle();
-	for (int i=0; i<nRects[0]; i++) {
-		OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
-		Cairo.cairo_rectangle(cairo, rect.x, rect.y, rect.width, rect.height);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+		OS.gdk_cairo_region(cairo, clipRgn);
+	} else {
+		int[] nRects = new int[1];
+		int /*long*/[] rects = new int /*long*/[1];
+		OS.gdk_region_get_rectangles(clipRgn, rects, nRects);
+		GdkRectangle rect = new GdkRectangle();
+		for (int i=0; i<nRects[0]; i++) {
+			OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
+			Cairo.cairo_rectangle(cairo, rect.x, rect.y, rect.width, rect.height);
+		}
+		if (rects[0] != 0) OS.g_free(rects[0]);
 	}
 	Cairo.cairo_clip(cairo);
-	Cairo.cairo_new_path(cairo);
-	if (rects[0] != 0) OS.g_free(rects[0]);
 }
 
 static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int alpha) {
@@ -2919,7 +2916,6 @@ public void setClipping(Path path) {
 		Cairo.cairo_append_path(cairo, copy);
 		Cairo.cairo_path_destroy(copy);
 		Cairo.cairo_clip(cairo);
-		Cairo.cairo_new_path(cairo);
 	}
 }
 

@@ -3413,6 +3413,62 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1cairo_1region
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1region)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1region_FUNC);
+/*
+	gdk_cairo_region(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_cairo_region_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_cairo_region");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1region_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1cairo_1set_1source_1color
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1cairo_1set_1source_1color)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	GdkColor _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gdk_1cairo_1set_1source_1color_FUNC);
+	if (arg1) if ((lparg1 = getGdkColorFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	gdk_cairo_set_source_color(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, GdkColor *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_cairo_set_source_color_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_cairo_set_source_color");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setGdkColorFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, _1gdk_1cairo_1set_1source_1color_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1color_1white
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1color_1white)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)

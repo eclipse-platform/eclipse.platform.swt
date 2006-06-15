@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
@@ -275,11 +276,7 @@ public void dispose() {
  * </ul>
  */
 public void draw(GC gc, int x, int y) {
-	checkLayout ();
-	computeRuns();
-	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.gdk_draw_layout(gc.data.drawable, gc.handle, x, y, layout);
+	draw(gc, x, y, -1, -1, null, null);
 }
 
 /**
@@ -311,8 +308,15 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	int length = text.length();
 	if (length == 0) return;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
+	GCData data = gc.data;
+	int /*long*/ cairo = data.cairo;
 	if (!hasSelection) {
-		OS.gdk_draw_layout(gc.data.drawable, gc.handle, x, y, layout);
+		if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+			Cairo.cairo_move_to(cairo, x, y);
+			OS.pango_cairo_show_layout(cairo, layout);
+		} else {
+			OS.gdk_draw_layout(data.drawable, gc.handle, x, y, layout);
+		}
 	} else {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
@@ -323,28 +327,58 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
 		boolean fullSelection = selectionStart == 0 && selectionEnd == length - 1;
 		if (fullSelection) {
-			OS.gdk_draw_layout_with_colors(gc.data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
+			if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+				int /*long*/ ptr = OS.pango_layout_get_text(layout);
+				drawWithCairo(cairo, x, y, 0, OS.strlen(ptr), fullSelection, selectionBackground.handle, selectionForeground.handle);
+			} else {
+				OS.gdk_draw_layout_with_colors(data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
+			}
 		} else {
 			int /*long*/ ptr = OS.pango_layout_get_text(layout);
-			Region clipping = new Region();
-			gc.getClipping(clipping);
 			int byteSelStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, selectionStart) - ptr);
 			int byteSelEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, selectionEnd + 1) - ptr);
 			int strlen = OS.strlen(ptr);
 			byteSelStart = Math.min(byteSelStart, strlen);
 			byteSelEnd = Math.min(byteSelEnd, strlen);
-			OS.gdk_draw_layout(gc.data.drawable, gc.handle, x, y, layout);
-			int[] ranges = new int[]{byteSelStart, byteSelEnd};
-			int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
-			if (rgn != 0) {
-				OS.gdk_gc_set_clip_region(gc.handle, rgn);
-				OS.gdk_region_destroy(rgn);
+			if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+				drawWithCairo(cairo, x, y, byteSelStart, byteSelEnd, fullSelection, selectionBackground.handle, selectionForeground.handle);
+			} else {
+				Region clipping = new Region();
+				gc.getClipping(clipping);
+				OS.gdk_draw_layout(data.drawable, gc.handle, x, y, layout);
+				int[] ranges = new int[]{byteSelStart, byteSelEnd};
+				int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+				if (rgn != 0) {
+					OS.gdk_gc_set_clip_region(gc.handle, rgn);
+					OS.gdk_region_destroy(rgn);
+				}
+				OS.gdk_draw_layout_with_colors(data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
+				gc.setClipping(clipping);
+				clipping.dispose();
 			}
-			OS.gdk_draw_layout_with_colors(gc.data.drawable, gc.handle, x, y, layout, selectionForeground.handle, selectionBackground.handle);
-			gc.setClipping(clipping);
-			clipping.dispose();
 		}
 	}
+}
+
+void drawWithCairo(int /*long*/ cairo, int x, int y, int byteSelStart, int byteSelEnd, boolean fullSelection, GdkColor selectionBackground, GdkColor selectionForeground) {
+	Cairo.cairo_save(cairo);
+	if (!fullSelection) {
+		Cairo.cairo_move_to(cairo, x, y);
+		OS.pango_cairo_show_layout(cairo, layout);
+	}
+	int[] ranges = new int[]{byteSelStart, byteSelEnd};
+	int /*long*/ rgn = OS.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+	if (rgn != 0) {
+		OS.gdk_cairo_region(cairo, rgn);
+		Cairo.cairo_clip(cairo);
+		OS.gdk_cairo_set_source_color(cairo, selectionBackground);
+		Cairo.cairo_paint(cairo);
+		OS.gdk_region_destroy(rgn);
+	}
+	OS.gdk_cairo_set_source_color(cairo, selectionForeground);
+	Cairo.cairo_move_to(cairo, x, y);
+	OS.pango_cairo_show_layout(cairo, layout);
+	Cairo.cairo_restore(cairo);
 }
 
 void freeRuns() {
