@@ -52,8 +52,14 @@ case $OS in
 			fi
 			if [ "${GECKO_SDK}" = "" ]; then
 				GECKO_SDK=/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
-				GECKO_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/nspr/include -I${GECKO_SDK}/xpcom/include -I${GECKO_SDK}/string/include -I${GECKO_SDK}/embed_base/include -I${GECKO_SDK}/embedstring/include"
-				GECKO_LIBS="-L${GECKO_SDK}/embedstring/bin -lembedstring -L${GECKO_SDK}/embed_base/bin -lembed_base_s -L${GECKO_SDK}/xpcom/bin -lxpcomglue_s -lxpcom -L${GECKO_SDK}/nspr/bin -lnspr4 -lplds4 -lplc4"
+				GECKO_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/../include/xpcom -I${GECKO_SDK}/../include/nspr -I${GECKO_SDK}/../include/embed_base -I${GECKO_SDK}/../include/embedstring -I${GECKO_SDK}/../include/string -I${GECKO_SDK}/../include/profdirserviceprovider"
+				GECKO_LIBS="${GECKO_SDK}/../lib/libembed_base_s.a ${GECKO_SDK}/../lib/libprofdirserviceprovider_s.a ${GECKO_SDK}/../lib/libembedstring.a ${GECKO_SDK}/../lib/libxpcomglue_s.a -L${GECKO_SDK}/../bin -L${GECKO_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
+				PROFILE_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/../include/xpcom -I${GECKO_SDK}/../include/nspr -I${GECKO_SDK}/../include/string -I${GECKO_SDK}/../include/profdirserviceprovider"
+				PROFILE14_LIBS="${GECKO_SDK}/../lib/libembed_base_s.a ${GECKO_SDK}/../lib/libprofdirserviceprovider_s.a -L${GECKO_SDK}/../lib/ -lxpcom"
+ 			fi
+			if [ "${GECKO17_SDK}" = "" ]; then
+				GECKO17_SDK=/bluebird/teamswt/swt-builddir/mozilla/1.7/linux_gtk2/mozilla/builddir/dist/sdk
+				PROFILE17_LIBS="${GECKO17_SDK}/../lib/libembed_base_s.a ${GECKO17_SDK}/../lib/libprofdirserviceprovider_s.a -L${GECKO17_SDK}/../lib/ -lxpcom"
 			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
@@ -117,6 +123,6 @@ case $OS in
 		;;
 esac
 
-export JAVA_HOME MOTIF_HOME CDE_HOME GECKO_SDK GECKO_INCLUDES GECKO_LIBS OUTPUT_DIR
+export JAVA_HOME MOTIF_HOME CDE_HOME GECKO_SDK GECKO17_SDK GECKO_INCLUDES GECKO_LIBS OUTPUT_DIR PROFILE_INCLUDES PROFILE14_LIBS PROFILE17_LIBS
 
 make -f $makefile $1 $2 $3 $4
