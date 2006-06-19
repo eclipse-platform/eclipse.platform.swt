@@ -55,6 +55,13 @@ public final class MouseEvent extends TypedEvent {
 	 * at the time the mouse button was pressed or released
 	 */	
 	public int y;
+	
+	/**
+	 * the number times the mouse has been clicked, as defined
+	 * by the operating system; 1 for the first click, 2 for the
+	 * second click and so.
+	 */
+	public int count;
 
 	static final long serialVersionUID = 3257288037011566898L;
 	
@@ -70,6 +77,7 @@ public MouseEvent(Event e) {
 	this.y = e.y;
 	this.button = e.button;
 	this.stateMask = e.stateMask;
+	this.count = e.count;
 }
 
 /**
@@ -85,6 +93,7 @@ public String toString() {
 		+ " stateMask=" + stateMask
 		+ " x=" + x
 		+ " y=" + y
+		+ " count=" + count
 		+ "}";
 }
 }

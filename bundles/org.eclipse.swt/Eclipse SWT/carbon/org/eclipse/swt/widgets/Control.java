@@ -1718,10 +1718,10 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	int result = sendMouseEvent (SWT.MouseDown, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	int result = sendMouseEvent (SWT.MouseDown, button [0], display.clickCount, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 	if (isDisposed ()) return OS.noErr;
 	if (display.clickCount == 2) {
-		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], display.clickCount, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 		if (isDisposed ()) return OS.noErr;
 	}
 	if (hooks (SWT.DragDetect)) {
@@ -1757,7 +1757,7 @@ int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	return sendMouseEvent (SWT.MouseUp, button [0], 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	return sendMouseEvent (SWT.MouseUp, button [0], display.clickCount, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 }
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
@@ -2340,9 +2340,9 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 	return sendMouseEvent (type, button, count, detail, send, chord [0], (short) x, (short) y, modifiers [0]);
 }
 
-boolean sendMouseEvent (int type, short button, boolean send, int chord, short x, short y, int modifiers) {
+boolean sendMouseEvent (int type, short button, int count, boolean send, int chord, short x, short y, int modifiers) {
 	if (!hooks (type) && !filters (type)) return true;
-	return sendMouseEvent (type, button, 0, 0, send, chord, x, y, modifiers);
+	return sendMouseEvent (type, button, count, 0, send, chord, x, y, modifiers);
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {

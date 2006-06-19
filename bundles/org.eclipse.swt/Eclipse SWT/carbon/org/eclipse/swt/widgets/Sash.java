@@ -268,7 +268,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 					OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 					int chord = OS.GetCurrentEventButtonState ();
 					int modifiers = OS.GetCurrentEventKeyModifiers ();
-					sendMouseEvent (SWT.MouseUp, button [0], true, chord, (short) (x - rect.left), (short) (y - rect.top), modifiers);
+					sendMouseEvent (SWT.MouseUp, button [0], display.clickCount, true, chord, (short) (x - rect.left), (short) (y - rect.top), modifiers);
 				}
 				break;
 			}
