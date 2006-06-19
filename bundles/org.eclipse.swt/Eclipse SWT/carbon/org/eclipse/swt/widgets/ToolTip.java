@@ -128,7 +128,12 @@ void configure () {
 	int x = this.x;
 	int y = this.y;
 	if (x == -1 || y == -1) {
-		Point point = display.getCursorLocation ();
+		Point point;
+		if (item != null) {
+			point = item.getLocation ();
+		} else {
+			point = display.getCursorLocation ();
+		}
 		x = point.x;
 		y = point.y;
 	}
@@ -606,10 +611,17 @@ public void setVisible (boolean visible) {
 			// Show HMTag
 			if (tip != null) disposeTip ();
 			if (x == -1 || y == -1) {
-				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-				OS.GetGlobalMouse (pt);
-				x = pt.h;
-				y = pt.v;
+				Point point;
+				if (item != null) {
+					point = item.getLocation ();
+					x = point.x;
+					y = point.y;
+				} else {
+					org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+					OS.GetGlobalMouse (pt);
+					x = pt.h;
+					y = pt.v;
+				}
 			}
 			StringBuffer string = new StringBuffer (text);
 			if (text.length () > 0) string.append ("\n\n");

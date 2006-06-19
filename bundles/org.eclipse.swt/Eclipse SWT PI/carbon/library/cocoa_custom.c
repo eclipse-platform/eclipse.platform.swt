@@ -31,6 +31,16 @@
     return self;
 }
 
+- (void)getLocation:(NSPoint *)pt
+{
+	NSRect rect = [self frame];
+	NSRect windowRect = [[self window] frame];
+	pt->x += rect.size.width / 2;
+	pt->y += rect.size.height;
+	*pt = [self convertPoint: *pt toView: 0];
+	pt->x += windowRect.origin.x;
+}
+
 - (void)mouseDown:(NSEvent *)event
 {
 	proc((int)self, user_data, 0, event);

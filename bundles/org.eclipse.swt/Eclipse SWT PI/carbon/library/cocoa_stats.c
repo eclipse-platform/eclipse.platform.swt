@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Cocoa_nativeFunctionCount = 17;
-int Cocoa_nativeFunctionCallCount[17];
+int Cocoa_nativeFunctionCount = 18;
+int Cocoa_nativeFunctionCallCount[18];
 char * Cocoa_nativeFunctionNames[] = {
 	"HIWebViewCreate",
 	"HIWebViewGetWebView",
@@ -29,6 +29,7 @@ char * Cocoa_nativeFunctionNames[] = {
 	"objc_1msgSend__IIIII",
 	"objc_1msgSend__IIIIII",
 	"objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRect_2I",
+	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2",
 	"objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSRect_2I",

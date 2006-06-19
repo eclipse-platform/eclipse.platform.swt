@@ -110,6 +110,7 @@ public static final int S_clickCount = Cocoa.sel_registerName("clickCount"); //$
 public static final int S_drawStatusBarBackgroundInRect_withHighlight = Cocoa.sel_registerName("drawStatusBarBackgroundInRect:withHighlight:"); //$NON-NLS-1$
 public static final int S_drawRect = Cocoa.sel_registerName("drawRect:"); //$NON-NLS-1$
 public static final int S_setNeedsDisplay = Cocoa.sel_registerName("setNeedsDisplay:"); //$NON-NLS-1$
+public static final int S_getLocation = Cocoa.sel_registerName("getLocation:"); //$NON-NLS-1$
 
 /* WebKit */
 public static final native int HIWebViewCreate(int[] outView);
@@ -126,6 +127,7 @@ public static final native int objc_msgSend(int object, int selector, NSRect arg
 public static final native int objc_msgSend(int object, int selector, int arg0, NSRect arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1);
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0, int arg1);
+public static final native int objc_msgSend(int object, int selector, NSPoint arg0);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3);

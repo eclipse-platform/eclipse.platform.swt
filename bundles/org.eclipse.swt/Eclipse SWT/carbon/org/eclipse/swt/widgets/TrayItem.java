@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.cocoa.Cocoa;
+import org.eclipse.swt.internal.cocoa.NSPoint;
 import org.eclipse.swt.internal.cocoa.NSRect;
 import org.eclipse.swt.internal.cocoa.NSSize;
 
@@ -136,6 +137,12 @@ void createWidget () {
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
+}
+
+Point getLocation () {
+	NSPoint point = new NSPoint ();
+	Cocoa.objc_msgSend (view, Cocoa.S_getLocation, point);
+	return new Point ((int)point.x, (int)point.y);
 }
 
 /**
