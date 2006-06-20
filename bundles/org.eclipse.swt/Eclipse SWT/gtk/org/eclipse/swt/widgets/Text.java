@@ -327,6 +327,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	int width = OS.PANGO_PIXELS (w [0]);
 	int height = OS.PANGO_PIXELS (h [0]);
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
