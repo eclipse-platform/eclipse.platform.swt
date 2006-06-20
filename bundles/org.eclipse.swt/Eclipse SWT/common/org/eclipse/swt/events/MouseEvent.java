@@ -59,7 +59,7 @@ public final class MouseEvent extends TypedEvent {
 	/**
 	 * the number times the mouse has been clicked, as defined
 	 * by the operating system; 1 for the first click, 2 for the
-	 * second click and so.
+	 * second click and so on.
 	 */
 	public int count;
 
