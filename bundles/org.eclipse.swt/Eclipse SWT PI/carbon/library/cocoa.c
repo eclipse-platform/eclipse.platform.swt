@@ -95,18 +95,6 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II)
 }
 #endif
 
-#ifndef NO_objc_1msgSend__IIF
-JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIF)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2)
-{
-	jint rc = 0;
-	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__IIF_FUNC);
-	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1, arg2);
-	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__IIF_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_objc_1msgSend__III
 JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__III)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

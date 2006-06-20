@@ -13,6 +13,21 @@
 #include "cocoa_structs.h"
 #include "cocoa_stats.h"
 
+#define Cocoa_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_Cocoa_##func
+
+extern id objc_msgSend(id, SEL, ...);
+
+#ifndef NO_objc_1msgSend__IIF
+JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIF)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2)
+{
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__IIF_FUNC);	
+	rc = ((jint (*) (id, SEL, float))objc_msgSend)((id)arg0, (SEL)arg1, arg2);
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__IIF_FUNC);
+	return rc;
+}
+#endif
 
 @interface NSStatusItemImageView : NSImageView
 {
