@@ -1811,6 +1811,17 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	}
 	int result = kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
 	if (result == OS.noErr || consume [0]) return OS.noErr;
+	/*
+	* Feature in the Macintosh.  If the focus target is changed
+	* before the default handler for the widget has run, the key
+	* goes to the new focus widget.  The fix is to explicitly
+	* send the event to the original focus widget and stop
+	* the chain of handlers.
+	*/
+	if (!isDisposed () && !hasFocus ()) {
+		OS.SendEventToEventTarget (theEvent, OS.GetControlEventTarget (handle));
+		return OS.noErr;
+	}
 	return result;
 }
 
