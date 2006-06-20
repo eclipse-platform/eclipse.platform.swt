@@ -1161,6 +1161,29 @@ public Widget findWidget (int handle) {
  * @since 3.1
  */
 public Widget findWidget (int handle, int id) {
+	checkDevice ();
+	return null;
+}
+
+/**
+ * Given a widget and a widget-specific id, returns the
+ * instance of the <code>Widget</code> subclass which represents
+ * the widget/id pair in the currently running application,
+ * if such exists, or null if no matching widget can be found.
+ *
+ * @param widget the widget
+ * @param id the id for the subwidget (usually an item)
+ * @return the SWT subwidget (usually an item) that the widget/id pair represents
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Widget findWidget (Widget widget, int id) {
+	checkDevice ();
 	return null;
 }
 
