@@ -312,6 +312,7 @@ typedef enum {
 	_1gdk_1event_1get_1state_FUNC,
 	_1gdk_1event_1get_1time_FUNC,
 	_1gdk_1event_1handler_1set_FUNC,
+	_1gdk_1event_1peek_FUNC,
 	_1gdk_1event_1put_FUNC,
 	_1gdk_1flush_FUNC,
 	_1gdk_1free_1text_1list_FUNC,

@@ -2493,6 +2493,15 @@ public static final void gdk_event_handler_set(int /*long*/ func, int /*long*/ d
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gdk_event_peek();
+public static final int /*long*/ gdk_event_peek() {
+	lock.lock();
+	try {
+		return _gdk_event_peek();
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gdk_event_put(int /*long*/ event);
 public static final void gdk_event_put(int /*long*/ event) {
 	lock.lock();

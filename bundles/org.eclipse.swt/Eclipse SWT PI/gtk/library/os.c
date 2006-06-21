@@ -3969,6 +3969,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1event_1handler_1set)
 }
 #endif
 
+#ifndef NO__1gdk_1event_1peek
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1event_1peek)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1event_1peek_FUNC);
+	rc = (jint)gdk_event_peek();
+	OS_NATIVE_EXIT(env, that, _1gdk_1event_1peek_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1event_1put
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1event_1put)
 	(JNIEnv *env, jclass that, jint arg0)

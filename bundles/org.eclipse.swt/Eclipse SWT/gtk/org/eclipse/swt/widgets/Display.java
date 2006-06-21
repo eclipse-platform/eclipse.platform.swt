@@ -238,6 +238,9 @@ public class Display extends Device {
 	/* Popup Menus */
 	Menu [] popups;
 	
+	/* Click count*/
+	int clickCount = 1;
+	
 	/* Timestamp of the Last Received Events */
 	int lastEventTime, lastUserEventTime;
 	
