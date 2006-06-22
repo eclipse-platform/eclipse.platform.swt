@@ -1339,11 +1339,14 @@ int Ph_EV_BUT_PRESS (int widget, int info) {
 	PhPointerEvent_t pe = new PhPointerEvent_t ();
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	Event event = new Event ();
+	event.count = pe.click_count;
 	event.time = ev.timestamp;
 	setMouseState (event, SWT.MouseDown, pe, ev);
 	postEvent (SWT.MouseDown, event);
 	if (pe.click_count == 2) {
 		Event clickEvent = new Event ();
+		clickEvent.count = pe.click_count;
+		clickEvent.time = ev.timestamp;
 		setMouseState (clickEvent, SWT.MouseDoubleClick, pe, ev);
 		postEvent (SWT.MouseDoubleClick, clickEvent);
 	}
@@ -1396,6 +1399,7 @@ int Ph_EV_BUT_RELEASE (int widget, int info) {
 	PhPointerEvent_t pe = new PhPointerEvent_t ();
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	Event event = new Event ();
+	event.count = pe.click_count;
 	event.time = ev.timestamp;
 	setMouseState (event, SWT.MouseUp, pe, ev);
 	postEvent (SWT.MouseUp, event);
