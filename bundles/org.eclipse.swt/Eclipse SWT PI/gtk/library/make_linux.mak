@@ -80,7 +80,7 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
-MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
+MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic
 	
 SWT_OBJECTS = swt.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
