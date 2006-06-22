@@ -1073,7 +1073,7 @@ public int indexOf (String string, int start) {
 }
 
 int /*long*/ paintWindow () {
-	OS.gtk_widget_realize (handle);
+	OS.gtk_widget_realize (entryHandle);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (entryHandle);
 	int /*long*/ children = OS.gdk_window_get_children (window);
 	if (children != 0) window = OS.g_list_data (children);
