@@ -59,14 +59,17 @@ CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = -shared -fpic -fPIC -s `pkg-config --libs-only-L cairo` -lcairo
 
 MOZILLA_PREFIX = swt-mozilla
-PROFILE14_PREFIX = swt-mozilla14profile$(GCC_VERSION)
-PROFILE17_PREFIX = swt-mozilla17profile$(GCC_VERSION)
+PROFILE14_PREFIX = swt-mozilla14-profile$(GCC_VERSION)
+PROFILE17_PREFIX = swt-mozilla17-profile$(GCC_VERSION)
+PROFILE18_PREFIX = swt-mozilla18-profile$(GCC_VERSION)
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)$(GCC_VERSION)-$(WS_PREFIX)-$(SWT_VERSION).so
 PROFILE14_LIB = lib$(PROFILE14_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 PROFILE17_LIB = lib$(PROFILE17_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+PROFILE18_LIB = lib$(PROFILE18_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
-PROFILE_OBJECTS = xpcom_profile.o
+PROFILE14_OBJECTS = xpcom14_profile.o
 PROFILE17_OBJECTS = xpcom17_profile.o
+PROFILE18_OBJECTS = xpcom18_profile.o
 MOZILLACFLAGS = -O \
 	-DXPCOM_GLUE=1 \
 	-DMOZILLA_STRICT_API=1 \
@@ -145,7 +148,7 @@ cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_stats.c
 
-make_mozilla:$(MOZILLA_LIB) $(PROFILE14_LIB) $(PROFILE17_LIB)
+make_mozilla:$(MOZILLA_LIB) $(PROFILE14_LIB) $(PROFILE17_LIB) $(PROFILE18_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
 	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS) ${GECKO_LIBS}
@@ -159,14 +162,23 @@ xpcom_custom.o: xpcom_custom.cpp
 xpcom_stats.o: xpcom_stats.cpp
 	$(CXX) $(MOZILLACFLAGS) ${GECKO_INCLUDES} -c xpcom_stats.cpp
 
-$(PROFILE14_LIB): $(PROFILE_OBJECTS)
-	$(CXX) -o $(PROFILE14_LIB) $(PROFILE_OBJECTS) $(MOZILLALIBS) ${PROFILE14_LIBS}
+$(PROFILE14_OBJECTS): xpcom_profile.cpp
+	$(CXX) -o $(PROFILE14_OBJECTS) $(MOZILLACFLAGS) ${PROFILE14_INCLUDES} -c xpcom_profile.cpp	
 
-$(PROFILE17_LIB): $(PROFILE_OBJECTS)
-	$(CXX) -o $(PROFILE17_LIB) $(PROFILE_OBJECTS) $(MOZILLALIBS) ${PROFILE17_LIBS}
+$(PROFILE17_OBJECTS): xpcom_profile.cpp
+	$(CXX) -o $(PROFILE17_OBJECTS) $(MOZILLACFLAGS) ${PROFILE17_INCLUDES} -c xpcom_profile.cpp	
 
-xpcom_profile.o: xpcom_profile.cpp
-	$(CXX) $(MOZILLACFLAGS) ${PROFILE_INCLUDES} -c xpcom_profile.cpp	
+$(PROFILE18_OBJECTS): xpcom_profile.cpp
+	$(CXX) -o $(PROFILE18_OBJECTS) $(MOZILLACFLAGS) ${PROFILE18_INCLUDES} -c xpcom_profile.cpp	
+
+$(PROFILE14_LIB): $(PROFILE14_OBJECTS)
+	$(CXX) -o $(PROFILE14_LIB) $(PROFILE14_OBJECTS) $(MOZILLALIBS) ${PROFILE14_LIBS}
+
+$(PROFILE17_LIB): $(PROFILE17_OBJECTS)
+	$(CXX) -o $(PROFILE17_LIB) $(PROFILE17_OBJECTS) $(MOZILLALIBS) ${PROFILE17_LIBS}
+
+$(PROFILE18_LIB): $(PROFILE18_OBJECTS)
+	$(CXX) -o $(PROFILE18_LIB) $(PROFILE18_OBJECTS) $(MOZILLALIBS) ${PROFILE18_LIBS}
 
 make_glx: $(GLX_LIB)
 
