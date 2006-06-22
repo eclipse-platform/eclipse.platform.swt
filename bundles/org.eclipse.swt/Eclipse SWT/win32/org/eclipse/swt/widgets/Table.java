@@ -3330,9 +3330,26 @@ void setDeferResize (boolean defer) {
 	if (defer) {
 		if (resizeCount++ == 0) {
 			wasResized = false;
+			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+					OS.UpdateWindow (handle);
+					OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+				}
+			}
 		}
 	} else {
 		if (--resizeCount == 0) {
+			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+				if (drawCount == 0 /*&& OS.IsWindowVisible (handle)*/) {
+					OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+					if (OS.IsWinCE) {
+						OS.InvalidateRect (handle, null, false);
+					} else {
+						int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+						OS.RedrawWindow (handle, null, 0, flags);
+					}
+				}
+			}
 			if (wasResized) {
 				wasResized = false;
 				setResizeChildren (false);
