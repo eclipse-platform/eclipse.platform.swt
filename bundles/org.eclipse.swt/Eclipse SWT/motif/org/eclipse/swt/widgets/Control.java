@@ -1863,7 +1863,7 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	return sendMouseEvent (type, button, 0, 0, false, xEvent.time, x, y, xEvent.state);
+	return sendMouseEvent (type, button, display.clickCount, 0, false, xEvent.time, x, y, xEvent.state);
 }
 boolean sendMouseEvent (int type, XCrossingEvent xEvent) {
 	if (!hooks (type) && !filters (type)) return true;
@@ -3060,6 +3060,16 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	if ((shell.style & SWT.ON_TOP) != 0) shell.forceActive ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+	int clickTime = display.getDoubleClickTime ();
+	int lastTime = display.lastTime, eventTime = xEvent.time;
+	int lastButton = display.lastButton, eventButton = xEvent.button;
+	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
+		display.clickCount++;
+	} else {
+		display.clickCount = 1;
+	}
+	display.lastTime = eventTime == 0 ? 1 : eventTime;
+	display.lastButton = eventButton;
 	boolean dispatch = sendMouseEvent (SWT.MouseDown, xEvent);
 	if (isDisposed ()) return 1;
 	if (xEvent.button == 2) {
@@ -3077,15 +3087,10 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 		showMenu (xEvent.x_root, xEvent.y_root);
 		if (isDisposed ()) return 1;
 	}
-	int clickTime = display.getDoubleClickTime ();
-	int lastTime = display.lastTime, eventTime = xEvent.time;
-	int lastButton = display.lastButton, eventButton = xEvent.button;
-	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
+	if (display.clickCount == 2) {
 		dispatch = sendMouseEvent (SWT.MouseDoubleClick, xEvent);
 		// widget could be disposed at this point
 	}
-	display.lastTime = eventTime == 0 ? 1 : eventTime;
-	display.lastButton = eventButton;
 	if (!shell.isDisposed ()) shell.setActiveControl (this);
 	if (!dispatch) {
 		OS.memmove (continue_to_dispatch, new int [1], 4);

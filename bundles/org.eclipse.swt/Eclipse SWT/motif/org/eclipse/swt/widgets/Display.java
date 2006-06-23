@@ -277,7 +277,7 @@ public class Display extends Device {
 	static Display [] Displays = new Display [4];
 
 	/* Double Click */
-	int lastTime, lastButton;
+	int lastTime, lastButton, clickCount = 1;
 	
 	/* Current caret */
 	Caret currentCaret;
