@@ -53,7 +53,7 @@ import org.eclipse.swt.events.*;
  * @see List
  */
 public class Combo extends Composite {
-	int /*long*/ arrowHandle, entryHandle, listHandle;
+	int /*long*/ arrowHandle, entryHandle, listHandle, textRenderer;
 	int lastEventTime, visibleCount = 5;
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
@@ -129,7 +129,7 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	add(string, items.length);
+	add (string, items.length);
 }
 
 /**
@@ -166,23 +166,27 @@ public void add (String string, int index) {
 	newItems [index] = string;
 	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	items = newItems;
-	/*
-	* Feature in GTK. When the list is empty and the first item
-	* is added, the combo box selects that item replacing the
-	* text in the entry field.  The fix is to avoid this by
-	* stopping the "delete" and "insert_text" signal emission. 
-	*/
-	ignoreSelect = lockText = true;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
-	int /*long*/ label = OS.gtk_bin_get_child (item); 
-	OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, getForegroundColor ());
-	OS.gtk_widget_modify_font (label, getFontDescription ());
-	OS.gtk_widget_set_direction (label, OS.gtk_widget_get_direction (handle));
-	OS.gtk_widget_show (item);
-	int /*long*/ items = OS.g_list_append (0, item);
-	OS.gtk_list_insert_items (listHandle, items, index);
-	ignoreSelect = lockText = false;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		OS.gtk_combo_box_insert_text (handle, index, buffer);
+	} else {
+		/*
+		* Feature in GTK. When the list is empty and the first item
+		* is added, the combo box selects that item replacing the
+		* text in the entry field.  The fix is to avoid this by
+		* stopping the "delete" and "insert_text" signal emission. 
+		*/
+		ignoreSelect = lockText = true;
+		int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
+		int /*long*/ label = OS.gtk_bin_get_child (item); 
+		OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, getForegroundColor ());
+		OS.gtk_widget_modify_font (label, getFontDescription ());
+		OS.gtk_widget_set_direction (label, OS.gtk_widget_get_direction (handle));
+		OS.gtk_widget_show (item);
+		int /*long*/ items = OS.g_list_append (0, item);
+		OS.gtk_list_insert_items (listHandle, items, index);
+		ignoreSelect = lockText = false;
+	}
 }
 
 /**
@@ -322,12 +326,34 @@ protected void checkSubclass () {
  */
 public void clearSelection () {
 	checkWidget();
-	int position = OS.gtk_editable_get_position (entryHandle);
-	OS.gtk_editable_select_region (entryHandle, position, position);
+	if (entryHandle != 0) {
+		int position = OS.gtk_editable_get_position (entryHandle);
+		OS.gtk_editable_select_region (entryHandle, position, position);
+	}
+}
+
+void clearText () {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		if ((style & SWT.READ_ONLY) != 0) {
+			int str = OS.gtk_combo_box_get_active_text (handle);
+			if (str != 0) {
+				if (OS.strlen (str) > 0) postEvent (SWT.Modify);
+				OS.g_free (str);
+			}
+		} else {
+			OS.gtk_entry_set_text (entryHandle, new byte[1]);
+		}
+		OS.gtk_combo_box_set_active (handle, -1);
+ 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		return computeNativeSize (handle, wHint, hHint, changed);
+	}
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int[] w = new int [1], h = new int [1];
@@ -374,7 +400,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-	OS.gtk_editable_copy_clipboard (entryHandle);
+	if (entryHandle != 0) OS.gtk_editable_copy_clipboard (entryHandle);
 }
 
 void createHandle (int index) {
@@ -382,39 +408,57 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	handle = OS.gtk_combo_new ();
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (fixedHandle, handle);
-	GtkCombo combo = new GtkCombo ();
-	OS.memmove (combo, handle);
-	entryHandle = combo.entry;
-	listHandle = combo.list;
-	
-	/*
-	* Feature in GTK.  There is no API to query the arrow
-	* handle from a combo box although it is possible to
-	* get the list and text field.  The arrow handle is needed
-	* to hook events.  The fix is to find the first child that is
-	* not the entry or list and assume this is the arrow handle.
-	*/
-	int /*long*/ list = OS.gtk_container_get_children (handle);
-	if (list != 0) {
-		int i = 0, count = OS.g_list_length (list);
-		while (i<count) {
-			int /*long*/ childHandle = OS.g_list_nth_data (list, i);
-			if (childHandle != entryHandle && childHandle != listHandle) {
-				arrowHandle = childHandle;
-				break;
-			}
-			i++;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if ((style & SWT.READ_ONLY) != 0) {
+			handle = OS.gtk_combo_box_new_text ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		} else {
+			handle = OS.gtk_combo_box_entry_new_text ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			entryHandle = OS.gtk_bin_get_child (handle);
+			if (entryHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		}
-		OS.g_list_free (list);
+		OS.gtk_container_add (fixedHandle, handle);
+		textRenderer = OS.gtk_cell_renderer_text_new ();
+		if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_cell_layout_clear (handle);
+		OS.gtk_cell_layout_pack_start (handle, textRenderer, true);
+		OS.gtk_cell_layout_set_attributes (handle, textRenderer, OS.text, 0, 0);
+	} else {
+		handle = OS.gtk_combo_new ();
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (fixedHandle, handle);
+		GtkCombo combo = new GtkCombo ();
+		OS.memmove (combo, handle);
+		entryHandle = combo.entry;
+		listHandle = combo.list;
+		
+		/*
+		* Feature in GTK.  There is no API to query the arrow
+		* handle from a combo box although it is possible to
+		* get the list and text field.  The arrow handle is needed
+		* to hook events.  The fix is to find the first child that is
+		* not the entry or list and assume this is the arrow handle.
+		*/
+		int /*long*/ list = OS.gtk_container_get_children (handle);
+		if (list != 0) {
+			int i = 0, count = OS.g_list_length (list);
+			while (i<count) {
+				int /*long*/ childHandle = OS.g_list_nth_data (list, i);
+				if (childHandle != entryHandle && childHandle != listHandle) {
+					arrowHandle = childHandle;
+					break;
+				}
+				i++;
+			}
+			OS.g_list_free (list);
+		}
+		
+		boolean editable = (style & SWT.READ_ONLY) == 0;
+		OS.gtk_editable_set_editable (entryHandle, editable);
+		OS.gtk_combo_disable_activate (handle);
+		OS.gtk_combo_set_case_sensitive (handle, true);
 	}
-	
-	boolean editable = (style & SWT.READ_ONLY) == 0;
-	OS.gtk_editable_set_editable (entryHandle, editable);
-	OS.gtk_combo_disable_activate (handle);
-	OS.gtk_combo_set_case_sensitive (handle, true);
 }
 
 /**
@@ -433,14 +477,14 @@ void createHandle (int index) {
  */
 public void cut () {
 	checkWidget ();
-	OS.gtk_editable_cut_clipboard (entryHandle);
+	if (entryHandle != 0) OS.gtk_editable_cut_clipboard (entryHandle);
 }
 
 void deregister () {
 	super.deregister ();
 	if (arrowHandle != 0) display.removeWidget (arrowHandle);
-	display.removeWidget (entryHandle);
-	display.removeWidget (listHandle);
+	if (entryHandle != 0) display.removeWidget (entryHandle);
+	if (listHandle != 0) display.removeWidget (listHandle);
 	int /*long*/ imContext = imContext ();
 	if (imContext != 0) display.removeWidget (imContext);
 }
@@ -490,22 +534,36 @@ int /*long*/ focusHandle () {
 
 boolean hasFocus () {
 	if (super.hasFocus ()) return true;
-	if (OS.GTK_WIDGET_HAS_FOCUS (entryHandle)) return true;
-	if (OS.GTK_WIDGET_HAS_FOCUS (listHandle)) return true;
+	if (entryHandle != 0 && OS.GTK_WIDGET_HAS_FOCUS (entryHandle)) return true;
+	if (listHandle != 0 && OS.GTK_WIDGET_HAS_FOCUS (listHandle)) return true;
 	return false;
 }
 
 void hookEvents () {
-	//TODO - fix multiple enter/exit
 	super.hookEvents ();
-	OS.g_signal_connect_closure (entryHandle, OS.changed, display.closures [CHANGED], true);
-	OS.g_signal_connect_closure (entryHandle, OS.insert_text, display.closures [INSERT_TEXT], false);
-	OS.g_signal_connect_closure (entryHandle, OS.delete_text, display.closures [DELETE_TEXT], false);
-	OS.g_signal_connect_closure (entryHandle, OS.activate, display.closures [ACTIVATE], false);
+	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
+		OS.g_signal_connect_closure (handle, OS.changed, display.closures [CHANGED], true);
+	}
+	//TODO - fix multiple enter/exit
+	if (entryHandle != 0) {
+		OS.g_signal_connect_closure (entryHandle, OS.changed, display.closures [CHANGED], true);
+		OS.g_signal_connect_closure (entryHandle, OS.insert_text, display.closures [INSERT_TEXT], false);
+		OS.g_signal_connect_closure (entryHandle, OS.delete_text, display.closures [DELETE_TEXT], false);
+		OS.g_signal_connect_closure (entryHandle, OS.activate, display.closures [ACTIVATE], false);
+	}
 	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK |
 		OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_ENTER_NOTIFY_MASK |
 		OS.GDK_LEAVE_NOTIFY_MASK;
-	int /*long*/ [] handles = new int /*long*/ [] {arrowHandle, entryHandle, listHandle};
+	int /*long*/ [] handles;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
+		if (entryHandle != 0) {
+			handles = new int /*long*/ [] {entryHandle};
+		} else {
+			handles = new int /*long*/ [0];
+		}
+	} else {
+		handles = new int /*long*/ [] {arrowHandle, entryHandle, listHandle};
+	}
 	for (int i=0; i<handles.length; i++) {
 		int /*long*/ eventHandle = handles [i];
 		if (eventHandle != 0) {
@@ -539,11 +597,11 @@ void hookEvents () {
 		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 		int blockMask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		OS.g_signal_handlers_block_matched (imContext, blockMask, id, 0, 0, 0, entryHandle);
-	}	
+	}
 }
 
 int /*long*/ imContext () {
-	return OS.GTK_ENTRY_IM_CONTEXT (entryHandle);
+	return entryHandle != 0 ? OS.GTK_ENTRY_IM_CONTEXT (entryHandle) : 0;
 }
 
 /**
@@ -561,16 +619,22 @@ int /*long*/ imContext () {
 public void deselect (int index) {
 	checkWidget();
 	if (index < 0 || index >= items.length) return;
-	ignoreSelect = true;
-	int /*long*/ children = OS.gtk_container_get_children (listHandle);
-	int /*long*/ item = OS.g_list_nth_data (children, index);
-	boolean selected = OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
-	if (selected) {
-		OS.gtk_list_unselect_all (listHandle);
-		OS.gtk_entry_set_text (entryHandle, new byte[1]);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (OS.gtk_combo_box_get_active (handle) == index) {
+			clearText ();
+		}
+	} else {
+		ignoreSelect = true;
+		int /*long*/ children = OS.gtk_container_get_children (listHandle);
+		int /*long*/ item = OS.g_list_nth_data (children, index);
+		boolean selected = OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
+		if (selected) {
+			OS.gtk_list_unselect_all (listHandle);
+			OS.gtk_entry_set_text (entryHandle, new byte[1]);
+		}
+		OS.g_list_free (children);
+		ignoreSelect = false;
 	}
-	OS.g_list_free (children);
-	ignoreSelect = false;
 }
 
 /**
@@ -589,10 +653,14 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget();
-	ignoreSelect = true;
-	OS.gtk_list_unselect_all (listHandle);
-	OS.gtk_entry_set_text (entryHandle, new byte[1]);
-	ignoreSelect = false;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		clearText ();
+	} else {
+		ignoreSelect = true;
+		OS.gtk_list_unselect_all (listHandle);
+		OS.gtk_entry_set_text (entryHandle, new byte[1]);
+		ignoreSelect = false;
+	}
 }
 
 int /*long*/ eventWindow () {
@@ -723,9 +791,25 @@ public int getOrientation () {
  */
 public Point getSelection () {
 	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		int /*long*/ str = 0;
+		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+			str = OS.gtk_combo_box_get_active_text (handle);
+		} else {
+			str = OS.gtk_entry_get_text (entryHandle);
+		}
+		int length = 0;
+		if (str != 0) {
+			length = OS.g_utf8_strlen (str, -1);
+			if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) OS.g_free (str);
+		}
+		return new Point (0, length);
+	}
 	int [] start = new int [1];
 	int [] end = new int [1];
-	OS.gtk_editable_get_selection_bounds (entryHandle, start, end);
+	if (entryHandle != 0) {
+		OS.gtk_editable_get_selection_bounds (entryHandle, start, end);
+	}
 	return new Point(start [0], end [0]);
 }
 
@@ -742,6 +826,9 @@ public Point getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		return OS.gtk_combo_box_get_active (handle);
+	}
 	int index = 0, result = -1;
 	int /*long*/ children = OS.gtk_container_get_children (listHandle);
 	int /*long*/ temp = children;
@@ -772,10 +859,17 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget();
-	int /*long*/ address = OS.gtk_entry_get_text (entryHandle);
-	int length = OS.strlen (address);
+	int /*long*/ str = 0;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		str = OS.gtk_combo_box_get_active_text (handle);
+		if (str == 0) return "";
+	} else {
+		str = OS.gtk_entry_get_text (entryHandle);
+	}
+	int length = OS.strlen (str);
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
+	OS.memmove (buffer, str, length);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) OS.g_free (str);
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
@@ -820,7 +914,7 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget();
-	int limit = OS.gtk_entry_get_max_length (entryHandle);
+	int limit = entryHandle != 0 ? OS.gtk_entry_get_max_length (entryHandle) : 0;
 	return limit == 0 ? LIMIT : limit;
 }
 
@@ -852,16 +946,23 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_changed (int /*long*/ widget) {
-	if (!ignoreSelect) {
-		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
-		int length = OS.strlen (ptr);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, ptr, length);
-		String text = new String (Converter.mbcsToWcs (null, buffer));
-		for (int i = 0; i < items.length; i++) {
-			if (items [i].equals (text)) {
-				postEvent (SWT.Selection);
-				break;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (widget == handle) {
+			postEvent (SWT.Selection);
+			return 0;
+		}
+	} else {
+		if (!ignoreSelect) {
+			int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+			int length = OS.strlen (ptr);
+			byte [] buffer = new byte [length];
+			OS.memmove (buffer, ptr, length);
+			String text = new String (Converter.mbcsToWcs (null, buffer));
+			for (int i = 0; i < items.length; i++) {
+				if (items [i].equals (text)) {
+					postEvent (SWT.Selection);
+					break;
+				}
 			}
 		}
 	}
@@ -1073,8 +1174,9 @@ public int indexOf (String string, int start) {
 }
 
 int /*long*/ paintWindow () {
-	OS.gtk_widget_realize (entryHandle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (entryHandle);
+	int /*long*/ childHandle =  entryHandle != 0 ? entryHandle : handle;	
+	OS.gtk_widget_realize (childHandle);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (childHandle);
 	int /*long*/ children = OS.gdk_window_get_children (window);
 	if (children != 0) window = OS.g_list_data (children);
 	OS.g_list_free (children);
@@ -1097,7 +1199,7 @@ int /*long*/ paintWindow () {
  */
 public void paste () {
 	checkWidget ();
-	OS.gtk_editable_paste_clipboard (entryHandle);
+	if (entryHandle != 0) OS.gtk_editable_paste_clipboard (entryHandle);
 }
 
 int /*long*/ parentingHandle() {
@@ -1107,8 +1209,8 @@ int /*long*/ parentingHandle() {
 void register () {
 	super.register ();
 	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
-	display.addWidget (entryHandle, this);
-	display.addWidget (listHandle, this);
+	if (entryHandle != 0) display.addWidget (entryHandle, this);
+	if (listHandle != 0) display.addWidget (listHandle, this);
 	int /*long*/ imContext = imContext ();
 	if (imContext != 0) display.addWidget (imContext, this);
 }
@@ -1120,6 +1222,7 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	textRenderer = 0;
 	fixIM ();
 }
 
@@ -1147,18 +1250,23 @@ public void remove (int index) {
 	System.arraycopy (oldItems, 0, newItems, 0, index);
 	System.arraycopy (oldItems, index + 1, newItems, index, oldItems.length - index - 1);
 	items = newItems;
-	ignoreSelect = true;
-	int /*long*/ children = OS.gtk_container_get_children (listHandle);
-	int /*long*/ item = OS.g_list_nth_data (children, index);
-	boolean selected = OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
-	int /*long*/ items = OS.g_list_append (0, item);
-	OS.gtk_list_remove_items (listHandle, items);
-	OS.g_list_free (items);
-	OS.g_list_free (children);
-	if (selected) {
-		OS.gtk_entry_set_text (entryHandle, new byte[1]);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (OS.gtk_combo_box_get_active (handle) == index) clearText ();
+		OS.gtk_combo_box_remove_text (handle, index);
+	} else {
+		ignoreSelect = true;
+		int /*long*/ children = OS.gtk_container_get_children (listHandle);
+		int /*long*/ item = OS.g_list_nth_data (children, index);
+		boolean selected = OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
+		int /*long*/ items = OS.g_list_append (0, item);
+		OS.gtk_list_remove_items (listHandle, items);
+		OS.g_list_free (items);
+		OS.g_list_free (children);
+		if (selected) {
+			OS.gtk_entry_set_text (entryHandle, new byte[1]);
+		}
+		ignoreSelect = false;
 	}
-	ignoreSelect = false;
 }
 
 /**
@@ -1188,22 +1296,30 @@ public void remove (int start, int end) {
 	System.arraycopy (oldItems, 0, newItems, 0, start);
 	System.arraycopy (oldItems, end + 1, newItems, start, oldItems.length - end - 1);
 	items = newItems;
-	boolean selected = false;
-	ignoreSelect = true;
-	int /*long*/ items = 0;
-	int /*long*/ children = OS.gtk_container_get_children (listHandle);
-	for (int i = start; i <= end; i++) {
-		int /*long*/ item = OS.g_list_nth_data (children, i);
-		selected |= OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
-		items = OS.g_list_append (items, item);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		int index = OS.gtk_combo_box_get_active (handle);
+		if (start <= index && index <= end) clearText();
+		for (int i = end; i >= start; i--) {
+			OS.gtk_combo_box_remove_text (handle, i);
+		}
+	} else {
+		boolean selected = false;
+		ignoreSelect = true;
+		int /*long*/ items = 0;
+		int /*long*/ children = OS.gtk_container_get_children (listHandle);
+		for (int i = start; i <= end; i++) {
+			int /*long*/ item = OS.g_list_nth_data (children, i);
+			selected |= OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
+			items = OS.g_list_append (items, item);
+		}
+		OS.gtk_list_remove_items (listHandle, items);
+		OS.g_list_free (items);
+		OS.g_list_free (children);
+		if (selected) {
+			OS.gtk_entry_set_text (entryHandle, new byte[1]);
+		}
+		ignoreSelect = false;
 	}
-	OS.gtk_list_remove_items (listHandle, items);
-	OS.g_list_free (items);
-	OS.g_list_free (children);
-	if (selected) {
-		OS.gtk_entry_set_text (entryHandle, new byte[1]);
-	}
-	ignoreSelect = false;
 }
 
 /**
@@ -1241,11 +1357,19 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget();
-	ignoreSelect = true;
-	OS.gtk_list_clear_items (listHandle, 0, -1);
-	OS.gtk_entry_set_text (entryHandle, new byte[1]);
+	int count = items.length;
 	items = new String[0];
-	ignoreSelect = false;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		clearText ();
+		for (int i = count - 1; i >= 0; i--) {
+			OS.gtk_combo_box_remove_text (handle, i);
+		}
+	} else {
+		ignoreSelect = true;
+		OS.gtk_list_clear_items (listHandle, 0, -1);
+		OS.gtk_entry_set_text (entryHandle, new byte[1]);
+		ignoreSelect = false;
+	}
 }
 
 /**
@@ -1338,52 +1462,76 @@ public void removeVerifyListener (VerifyListener listener) {
 public void select (int index) {
 	checkWidget();
 	if (index < 0 || index >= items.length) return;
-	ignoreSelect = true;
-	OS.gtk_list_select_item (listHandle, index);
-	ignoreSelect = false;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.gtk_combo_box_set_active (handle, index);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	} else {
+		ignoreSelect = true;
+		OS.gtk_list_select_item (listHandle, index);
+		ignoreSelect = false;
+	}
 }
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
-	if (listHandle != 0) OS.gtk_widget_modify_base (listHandle, 0, color);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
+		OS.g_object_set (textRenderer, OS.background_gdk, color, 0);
+	} else {
+		OS.gtk_widget_modify_base (entryHandle, 0, color);
+		if (listHandle != 0) OS.gtk_widget_modify_base (listHandle, 0, color);
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		return super.setBounds (x, y, width, height, move, resize);
+	}
 	int newHeight = resize ? getTextHeight () : height;
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 
 void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
-	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
-	if (listHandle != 0) {
-		OS.gtk_widget_modify_font (listHandle, font);
-		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-		if (itemsList != 0) {
-			int count = OS.g_list_length (itemsList);
-			for (int i=count - 1; i>=0; i--) {
-				int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-				OS.gtk_widget_modify_font (widget, font);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
+		OS.g_object_set (textRenderer, OS.font_desc, font, 0);
+	} else {
+		OS.gtk_widget_modify_font (entryHandle, font);
+		if (listHandle != 0) {
+			OS.gtk_widget_modify_font (listHandle, font);
+			int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
+			if (itemsList != 0) {
+				int count = OS.g_list_length (itemsList);
+				for (int i=count - 1; i>=0; i--) {
+					int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+					OS.gtk_widget_modify_font (widget, font);
+				}
+				OS.g_list_free (itemsList);
 			}
-			OS.g_list_free (itemsList);
 		}
 	}
 }
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	if (entryHandle != 0) OS.gtk_widget_modify_text (entryHandle, 0, color);
-	if (listHandle != 0) {
-		OS.gtk_widget_modify_text (listHandle, 0, color);
-		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-		if (itemsList != 0) {
-			int count = OS.g_list_length (itemsList);
-			for (int i=count - 1; i>=0; i--) {
-				int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-				OS.gtk_widget_modify_fg (widget,  OS.GTK_STATE_NORMAL, color);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (entryHandle != 0) OS.gtk_widget_modify_text (entryHandle, 0, color);
+		OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
+	} else {
+		OS.gtk_widget_modify_text (entryHandle, 0, color);
+		if (listHandle != 0) {
+			OS.gtk_widget_modify_text (listHandle, 0, color);
+			int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
+			if (itemsList != 0) {
+				int count = OS.g_list_length (itemsList);
+				for (int i=count - 1; i>=0; i--) {
+					int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+					OS.gtk_widget_modify_fg (widget,  OS.GTK_STATE_NORMAL, color);
+				}
+				OS.g_list_free (itemsList);
 			}
-			OS.g_list_free (itemsList);
 		}
 	}
 }
@@ -1413,14 +1561,19 @@ public void setItem (int index, String string) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	items [index] = string;
-	ignoreSelect = true;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	int /*long*/ children = OS.gtk_container_get_children (listHandle);
-	int /*long*/ item = OS.g_list_nth_data (children, index);
-	int /*long*/ label = OS.gtk_bin_get_child (item);
-	OS.gtk_label_set_text (label, buffer);
-	OS.g_list_free (children);
-	ignoreSelect = false;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		OS.gtk_combo_box_remove_text (handle, index);
+		OS.gtk_combo_box_insert_text (handle, index, buffer);
+	} else {
+		ignoreSelect = true;
+		int /*long*/ children = OS.gtk_container_get_children (listHandle);
+		int /*long*/ item = OS.g_list_nth_data (children, index);
+		int /*long*/ label = OS.gtk_bin_get_child (item);
+		OS.gtk_label_set_text (label, buffer);
+		OS.g_list_free (children);
+		ignoreSelect = false;
+	}
 }
 
 /**
@@ -1443,37 +1596,62 @@ public void setItems (String [] items) {
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	lockText = ignoreSelect = true;
-	OS.gtk_list_clear_items (listHandle, 0, -1);
-	int /*long*/ font = getFontDescription ();
-	GdkColor color = getForegroundColor ();
-	int direction = OS.gtk_widget_get_direction (handle);
-	int i = 0;
-	while (i < items.length) {
-		String string = items [i];
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
-		int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
-		int /*long*/ label = OS.gtk_bin_get_child (item); 
-		OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, color);
-		OS.gtk_widget_modify_font (label, font);
-		OS.gtk_widget_set_direction (label, direction);
-		OS.gtk_container_add (listHandle, item);
-		OS.gtk_widget_show (item);
-		i++;
-	}
+	int count = this.items.length;
 	this.items = new String [items.length];
-	System.arraycopy (items, 0, this.items, 0, i);
-	lockText = ignoreSelect = false;
-	OS.gtk_entry_set_text (entryHandle, new byte[1]);
+	System.arraycopy (items, 0, this.items, 0, items.length);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		clearText ();
+		for (int i = count - 1; i >= 0; i--) {
+			OS.gtk_combo_box_remove_text (handle, i);
+		}
+		for (int i = 0; i < items.length; i++) {
+			String string = items [i];
+			byte [] buffer = Converter.wcsToMbcs (null, string, true);
+			OS.gtk_combo_box_insert_text (handle, i, buffer);
+		}
+	} else {
+		lockText = ignoreSelect = true;
+		OS.gtk_list_clear_items (listHandle, 0, -1);
+		int /*long*/ font = getFontDescription ();
+		GdkColor color = getForegroundColor ();
+		int direction = OS.gtk_widget_get_direction (handle);
+		int i = 0;
+		while (i < items.length) {
+			String string = items [i];
+			byte [] buffer = Converter.wcsToMbcs (null, string, true);
+			int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
+			int /*long*/ label = OS.gtk_bin_get_child (item); 
+			OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, color);
+			OS.gtk_widget_modify_font (label, font);
+			OS.gtk_widget_set_direction (label, direction);
+			OS.gtk_container_add (listHandle, item);
+			OS.gtk_widget_show (item);
+			i++;
+		}
+		lockText = ignoreSelect = false;
+		OS.gtk_entry_set_text (entryHandle, new byte[1]);
+	}
+}
+
+/*public*/ void setListVisible (boolean visible) {
+	checkWidget ();
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if (visible) {
+			OS.gtk_combo_box_popup (handle);
+		} else {
+			OS.gtk_combo_box_popdown (handle);
+		}
+	}
 }
 
 void setOrientation() {
 	super.setOrientation();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		OS.gtk_widget_set_direction (listHandle, OS.GTK_TEXT_DIR_RTL);
-		OS.gtk_widget_set_direction (entryHandle, OS.GTK_TEXT_DIR_RTL);
+		if (listHandle != 0) OS.gtk_widget_set_direction (listHandle, OS.GTK_TEXT_DIR_RTL);
+		if (entryHandle != 0) OS.gtk_widget_set_direction (entryHandle, OS.GTK_TEXT_DIR_RTL);
 	}
 }
+
 /**
  * Sets the orientation of the receiver, which must be one
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
@@ -1497,16 +1675,18 @@ public void setOrientation (int orientation) {
 	int dir = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
 	OS.gtk_widget_set_direction (fixedHandle, dir);
 	OS.gtk_widget_set_direction (handle, dir);
-	OS.gtk_widget_set_direction (listHandle, dir);
-	OS.gtk_widget_set_direction (entryHandle, dir);
-	int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-	if (itemsList != 0) {
-		int count = OS.g_list_length (itemsList);
-		for (int i=count - 1; i>=0; i--) {
-			int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-			OS.gtk_widget_set_direction (widget, dir);
+	if (entryHandle != 0) OS.gtk_widget_set_direction (entryHandle, dir);
+	if (listHandle != 0) {
+		OS.gtk_widget_set_direction (listHandle, dir);
+		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
+		if (itemsList != 0) {
+			int count = OS.g_list_length (itemsList);
+			for (int i=count - 1; i>=0; i--) {
+				int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+				OS.gtk_widget_set_direction (widget, dir);
+			}
+			OS.g_list_free (itemsList);
 		}
-		OS.g_list_free (itemsList);
 	}
 }
 
@@ -1529,8 +1709,11 @@ public void setOrientation (int orientation) {
 public void setSelection (Point selection) {
 	checkWidget();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.gtk_editable_set_position (entryHandle, selection.x);
-	OS.gtk_editable_select_region (entryHandle, selection.x, selection.y);
+	if ((style & SWT.READ_ONLY) != 0) return;
+	if (entryHandle != 0) {
+		OS.gtk_editable_set_position (entryHandle, selection.x);
+		OS.gtk_editable_select_region (entryHandle, selection.x, selection.y);
+	}
 }
 
 /**
@@ -1560,6 +1743,12 @@ public void setText (String string) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = indexOf (string);
 		if (index == -1) return;
+		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.gtk_combo_box_set_active (handle, index);
+			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			return;
+		}
 	}
 	/*
 	* Feature in gtk.  When text is set in gtk, separate events are fired for the deletion and 
@@ -1572,10 +1761,16 @@ public void setText (String string) {
 		if (string == null) return;
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	}
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 	OS.gtk_entry_set_text (entryHandle, buffer);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	}
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
@@ -1605,12 +1800,12 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	OS.gtk_entry_set_max_length (entryHandle, limit);
+	if (entryHandle != 0) OS.gtk_entry_set_max_length (entryHandle, limit);
 }
 
 void setToolTipText (Shell shell, String newString, String oldString) {
-	shell.setToolTipText (entryHandle, newString, oldString);
-	shell.setToolTipText (arrowHandle, newString, oldString);
+	if (entryHandle != 0) shell.setToolTipText (entryHandle, newString, oldString);
+	if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString, oldString);
 }
 
 /**
