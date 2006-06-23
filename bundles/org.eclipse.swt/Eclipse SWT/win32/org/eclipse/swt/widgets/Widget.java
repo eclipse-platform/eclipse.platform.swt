@@ -968,7 +968,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 }
 
 boolean sendMouseEvent (int type, int button, int hwnd, int msg, int wParam, int lParam) {
-	return sendMouseEvent (type, button, 0, 0, false, hwnd, msg, wParam, lParam);
+	return sendMouseEvent (type, button, display.getClickCount (type, button, hwnd, lParam), 0, false, hwnd, msg, wParam, lParam);
 }
 
 boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int hwnd, int msg, int wParam, int lParam) {

@@ -1179,25 +1179,26 @@ public static synchronized Display getCurrent () {
 int getClickCount (int type, int button, int hwnd, int lParam) {
 	switch (type) {
 		case SWT.MouseDown:
-		case SWT.MouseDoubleClick:
-			int eventTime = OS.GetMessageTime ();
 			int doubleClick = OS.GetDoubleClickTime ();
 			if (clickRect == null) clickRect = new RECT ();
+			int deltaTime = Math.abs (lastTime - OS.GetMessageTime ());
 			POINT pt = new POINT ();
 			pt.x = (short) (lParam & 0xFFFF);
 			pt.y = (short) (lParam >> 16);
-			int deltaTime = Math.abs (lastTime - eventTime);
 			if (lastHwnd == hwnd && lastButton == button && (deltaTime <= doubleClick) && OS.PtInRect (clickRect, pt)) {
 				clickCount++;
 			} else {
-				clickCount = 0;
+				clickCount = 1;
 			}
+			//FALL THROUGH
+		case SWT.MouseDoubleClick:
 			lastHwnd = hwnd;
 			lastButton = button;
-			lastTime = eventTime;
+			lastTime = OS.GetMessageTime ();
 			int xInset = OS.GetSystemMetrics (OS.SM_CXDOUBLECLK) / 2;
 			int yInset = OS.GetSystemMetrics (OS.SM_CYDOUBLECLK) / 2;
-			OS.SetRect (clickRect, pt.x - xInset, pt.y - yInset, pt.x + xInset, pt.y + yInset);
+			int x = (short) (lParam & 0xFFFF), y = (short) (lParam >> 16);
+			OS.SetRect (clickRect, x - xInset, y - yInset, x + xInset, y + yInset);
 			//FALL THROUGH
 		case SWT.MouseUp:
 			return clickCount;
