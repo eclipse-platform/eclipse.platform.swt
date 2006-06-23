@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1115;
-int OS_nativeFunctionCallCount[1115];
+int OS_nativeFunctionCount = 1128;
+int OS_nativeFunctionCallCount[1128];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -225,6 +225,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1object_1set__I_3BFI",
 	"_1g_1object_1set__I_3BII",
 	"_1g_1object_1set__I_3BJI",
+	"_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I",
 	"_1g_1object_1set__I_3BZI",
 	"_1g_1object_1set_1qdata",
 	"_1g_1object_1unref",
@@ -454,6 +455,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1button_1get_1relief",
 	"_1gtk_1button_1new",
 	"_1gtk_1button_1set_1relief",
+	"_1gtk_1cell_1layout_1clear",
+	"_1gtk_1cell_1layout_1pack_1start",
+	"_1gtk_1cell_1layout_1set_1attributes",
 	"_1gtk_1cell_1renderer_1get_1size",
 	"_1gtk_1cell_1renderer_1pixbuf_1new",
 	"_1gtk_1cell_1renderer_1text_1new",
@@ -471,6 +475,15 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1color_1selection_1get_1current_1color",
 	"_1gtk_1color_1selection_1set_1current_1color",
 	"_1gtk_1color_1selection_1set_1has_1palette",
+	"_1gtk_1combo_1box_1entry_1new_1text",
+	"_1gtk_1combo_1box_1get_1active",
+	"_1gtk_1combo_1box_1get_1active_1text",
+	"_1gtk_1combo_1box_1insert_1text",
+	"_1gtk_1combo_1box_1new_1text",
+	"_1gtk_1combo_1box_1popdown",
+	"_1gtk_1combo_1box_1popup",
+	"_1gtk_1combo_1box_1remove_1text",
+	"_1gtk_1combo_1box_1set_1active",
 	"_1gtk_1combo_1disable_1activate",
 	"_1gtk_1combo_1new",
 	"_1gtk_1combo_1set_1case_1sensitive",

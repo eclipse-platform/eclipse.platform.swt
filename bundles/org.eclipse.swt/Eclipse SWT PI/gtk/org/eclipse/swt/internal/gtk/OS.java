@@ -1745,6 +1745,15 @@ public static final void g_object_set(int /*long*/ object, byte[] first_property
 		lock.unlock();
 	}
 }
+public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, GdkColor data, int /*long*/ terminator);
+public static final void g_object_set(int /*long*/ object, byte[] first_property_name, GdkColor data, int /*long*/ terminator) {
+	lock.lock();
+	try {
+		_g_object_set(object, first_property_name, data, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _g_object_set(int /*long*/ object, byte[] first_property_name, int data, int /*long*/ terminator);
 public static final void g_object_set(int /*long*/ object, byte[] first_property_name, int data, int /*long*/ terminator) {
 	lock.lock();
@@ -3726,6 +3735,33 @@ public static final void gtk_button_set_relief(int /*long*/ button, int newstyle
 		lock.unlock();
 	}
 }
+public static final native void _gtk_cell_layout_clear(int /*long*/ cell_layout);
+public static final void gtk_cell_layout_clear(int /*long*/ cell_layout) {
+	lock.lock();
+	try {
+		_gtk_cell_layout_clear(cell_layout);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int sentinel);
+public static final void gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int sentinel) {
+	lock.lock();
+	try {
+		_gtk_cell_layout_set_attributes(cell_layout, cell, attribute, column, sentinel);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_cell_layout_pack_start(int /*long*/ cell_layout, int /*long*/ cell, boolean expand);
+public static final void gtk_cell_layout_pack_start(int /*long*/ cell_layout, int /*long*/ cell, boolean expand) {
+	lock.lock();
+	try {
+		_gtk_cell_layout_pack_start(cell_layout, cell, expand);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_cell_renderer_get_size(int /*long*/ cell, int /*long*/ widget, GdkRectangle area, int[] x_offset, int[] y_offset, int[] width, int[] height);
 public static final void gtk_cell_renderer_get_size(int /*long*/ cell, int /*long*/ widget, GdkRectangle area, int[] x_offset, int[] y_offset, int[] width, int[] height) {
 	lock.lock();
@@ -3911,6 +3947,87 @@ public static final void gtk_combo_set_popdown_strings(int /*long*/ combo, int /
 	lock.lock();
 	try {
 		_gtk_combo_set_popdown_strings(combo, strings);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_combo_box_entry_new_text();
+public static final int /*long*/ gtk_combo_box_entry_new_text() {
+	lock.lock();
+	try {
+		return _gtk_combo_box_entry_new_text();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_combo_box_new_text();
+public static final int /*long*/ gtk_combo_box_new_text() {
+	lock.lock();
+	try {
+		return _gtk_combo_box_new_text();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_combo_box_insert_text(int /*long*/ combo_box, int position, byte[] text);
+public static final void gtk_combo_box_insert_text(int /*long*/ combo_box, int position, byte[] text) {
+	lock.lock();
+	try {
+		_gtk_combo_box_insert_text(combo_box, position, text);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_combo_box_remove_text(int /*long*/ combo_box, int position);
+public static final void gtk_combo_box_remove_text(int /*long*/ combo_box, int position) {
+	lock.lock();
+	try {
+		_gtk_combo_box_remove_text(combo_box, position);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gtk_combo_box_get_active(int /*long*/ combo_box);
+public static final int gtk_combo_box_get_active(int /*long*/ combo_box) {
+	lock.lock();
+	try {
+		return _gtk_combo_box_get_active(combo_box);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_combo_box_get_active_text(int /*long*/ combo_box);
+public static final int /*long*/ gtk_combo_box_get_active_text(int /*long*/ combo_box) {
+	lock.lock();
+	try {
+		return _gtk_combo_box_get_active_text(combo_box);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_combo_box_set_active(int /*long*/ combo_box, int index);
+public static final void gtk_combo_box_set_active(int /*long*/ combo_box, int index) {
+	lock.lock();
+	try {
+		_gtk_combo_box_set_active(combo_box, index);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_combo_box_popup(int /*long*/ combo_box);
+public static final void gtk_combo_box_popup(int /*long*/ combo_box) {
+	lock.lock();
+	try {
+		_gtk_combo_box_popup(combo_box);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_combo_box_popdown(int /*long*/ combo_box);
+public static final void gtk_combo_box_popdown(int /*long*/ combo_box) {
+	lock.lock();
+	try {
+		_gtk_combo_box_popdown(combo_box);
 	} finally {
 		lock.unlock();
 	}

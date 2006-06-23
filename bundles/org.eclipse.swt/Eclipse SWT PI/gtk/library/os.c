@@ -2704,6 +2704,23 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	GdkColor _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
+	g_object_set((gpointer)arg0, (const gchar *)lparg1, lparg2, (const gchar *)arg3);
+fail:
+	if (arg2 && lparg2) setGdkColorFields(env, arg2, lparg2);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1object_1set__I_3BLorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1object_1set__I_3BZI
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1object_1set__I_3BZI)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2, jint arg3)
@@ -5888,6 +5905,88 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1set_1relief)
 }
 #endif
 
+#ifndef NO__1gtk_1cell_1layout_1clear
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1clear)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1clear_FUNC);
+/*
+	gtk_cell_layout_clear(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_cell_layout_clear_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_cell_layout_clear");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1clear_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1cell_1layout_1pack_1start
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1pack_1start)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1pack_1start_FUNC);
+/*
+	gtk_cell_layout_pack_start(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, jboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_cell_layout_pack_start_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_cell_layout_pack_start");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1pack_1start_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1cell_1layout_1set_1attributes
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jint arg4)
+{
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	gtk_cell_layout_set_attributes(arg0, arg1, lparg2, arg3, arg4);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, jbyte *, jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_cell_layout_set_attributes_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_cell_layout_set_attributes");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, lparg2, arg3, arg4);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1cell_1renderer_1get_1size
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1size)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
@@ -6108,6 +6207,256 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1set_1has_1palette)
 	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1set_1has_1palette_FUNC);
 	gtk_color_selection_set_has_palette((GtkColorSelection *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1set_1has_1palette_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1entry_1new_1text
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1entry_1new_1text)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1entry_1new_1text_FUNC);
+/*
+	rc = (jint)gtk_combo_box_entry_new_text();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_entry_new_text_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_entry_new_text");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1entry_1new_1text_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1get_1active
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1get_1active)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1get_1active_FUNC);
+/*
+	rc = (jint)gtk_combo_box_get_active(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_get_active_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_get_active");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1get_1active_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1get_1active_1text
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1get_1active_1text)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1get_1active_1text_FUNC);
+/*
+	rc = (jint)gtk_combo_box_get_active_text(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_get_active_text_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_get_active_text");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1get_1active_1text_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1insert_1text
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1insert_1text)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1insert_1text_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	gtk_combo_box_insert_text(arg0, arg1, lparg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, jbyte *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_insert_text_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_insert_text");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1insert_1text_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1new_1text
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1new_1text)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1new_1text_FUNC);
+/*
+	rc = (jint)gtk_combo_box_new_text();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_new_text_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_new_text");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1new_1text_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1popdown
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1popdown)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1popdown_FUNC);
+/*
+	gtk_combo_box_popdown(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_popdown_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_popdown");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1popdown_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1popup
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1popup)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1popup_FUNC);
+/*
+	gtk_combo_box_popup(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_popup_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_popup");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1popup_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1remove_1text
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1remove_1text)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1remove_1text_FUNC);
+/*
+	gtk_combo_box_remove_text(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_remove_text_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_remove_text");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1remove_1text_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1combo_1box_1set_1active
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1box_1set_1active)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1set_1active_FUNC);
+/*
+	gtk_combo_box_set_active(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_combo_box_set_active_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_set_active");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1set_1active_FUNC);
 }
 #endif
 
