@@ -345,20 +345,20 @@ public Browser(Composite parent, int style) {
 			profileDir = new nsIFile(result[0]);
 			result[0] = 0;
 
-			rc = XPCOM.NS_NewProfileDirServiceProvider(true, result);
+			rc = XPCOM_PROFILE.NS_NewProfileDirServiceProvider(true, result);
 			if (rc != XPCOM.NS_OK) error(rc);
 			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 
 			final int /*long*/ dirServiceProvider = result[0];
 			result[0] = 0;
-			rc = XPCOM.ProfileDirServiceProvider_Register(dirServiceProvider);
+			rc = XPCOM_PROFILE.ProfileDirServiceProvider_Register(dirServiceProvider);
 			if (rc != XPCOM.NS_OK) error(rc);
-			rc = XPCOM.ProfileDirServiceProvider_SetProfileDir(dirServiceProvider, profileDir.getAddress());
+			rc = XPCOM_PROFILE.ProfileDirServiceProvider_SetProfileDir(dirServiceProvider, profileDir.getAddress());
 			if (rc != XPCOM.NS_OK) error(rc);
 
 			getDisplay().addListener(SWT.Dispose, new Listener() {
 				public void handleEvent(Event e) {
-					XPCOM.ProfileDirServiceProvider_Shutdown(dirServiceProvider);
+					XPCOM_PROFILE.ProfileDirServiceProvider_Shutdown(dirServiceProvider);
 				}
 			});
 		}

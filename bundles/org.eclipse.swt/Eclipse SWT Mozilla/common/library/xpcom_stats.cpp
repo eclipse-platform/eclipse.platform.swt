@@ -31,21 +31,17 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 136;
-int XPCOM_nativeFunctionCallCount[136];
+int XPCOM_nativeFunctionCount = 132;
+int XPCOM_nativeFunctionCallCount[132];
 char * XPCOM_nativeFunctionNames[] = {
 	"Call",
 	"NS_1GetComponentManager",
 	"NS_1GetServiceManager",
 	"NS_1InitEmbedding",
 	"NS_1NewLocalFile",
-	"NS_1NewProfileDirServiceProvider",
 	"NS_1TermEmbedding",
 	"PR_1Free",
 	"PR_1Malloc",
-	"ProfileDirServiceProvider_1Register",
-	"ProfileDirServiceProvider_1SetProfileDir",
-	"ProfileDirServiceProvider_1Shutdown",
 	"VtblCall__II",
 	"VtblCall__IIF",
 	"VtblCall__III",

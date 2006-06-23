@@ -53,7 +53,6 @@ public class XPCOM extends Platform {
 	public static final String NS_DIRECTORYSERVICE_CONTRACTID = "@mozilla.org/file/directory_service;1"; //$NON-NLS-1$
 	public static final String NS_DOWNLOAD_CONTRACTID = "@mozilla.org/download;1"; //$NON-NLS-1$
 	public static final String NS_FILEPICKER_CONTRACTID = "@mozilla.org/filepicker;1"; //$NON-NLS-1$
-	public static final String NS_PROFILE_CONTRACTID = "@mozilla.org/profile/manager;1"; //$NON-NLS-1$
 	public static final String NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID = "@mozilla.org/helperapplauncherdialog;1"; //$NON-NLS-1$
 	public static final String NS_MEMORY_CONTRACTID = "@mozilla.org/xpcom/memory-service;1"; //$NON-NLS-1$
 	public static final String NS_PREFLOCALIZEDSTRING_CONTRACTID = "@mozilla.org/pref-localizedstring;1"; //$NON-NLS-1$
@@ -106,7 +105,6 @@ public static final native int NS_GetComponentManager(int /*long*/[] result);
 public static final native int NS_GetServiceManager(int /*long*/[] result);
 public static final native int NS_InitEmbedding(int /*long*/ aMozBinDirectory, int /*long*/ aAppFileLocProvider);
 public static final native int NS_NewLocalFile(int /*long*/ path, boolean followLinks, int /*long*/[] result);
-public static final native int NS_NewProfileDirServiceProvider (boolean aNotifyObservers, int /*long*/[] result);
 public static final native int NS_TermEmbedding();
 public static final native int strlen_PRUnichar(int /*long*/ s);
 public static final native int /*long*/ nsEmbedCString_new();
@@ -123,9 +121,6 @@ public static final native int /*long*/ nsEmbedString_new(char[] aString);
 public static final native void nsEmbedString_delete(int /*long*/ ptr);
 public static final native int nsEmbedString_Length(int /*long*/ ptr);
 public static final native int /*long*/ nsEmbedString_get(int /*long*/ ptr);
-public static final native int ProfileDirServiceProvider_Register(int /*long*/ ptr);
-public static final native int ProfileDirServiceProvider_SetProfileDir(int /*long*/ ptr, int /*long*/ aProfileDir);
-public static final native int ProfileDirServiceProvider_Shutdown(int /*long*/ ptr);
 public static final native void PR_Free(int /*long*/ ptr);
 public static final native int /*long*/ PR_Malloc(int Length);
 public static final native int strlen(int /*long*/ s);

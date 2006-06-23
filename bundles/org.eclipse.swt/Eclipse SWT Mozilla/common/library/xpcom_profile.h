@@ -26,23 +26,13 @@
 *
 * ***** END LICENSE BLOCK ***** */
   
-#ifndef INC_xpcom_H
-#define INC_xpcom_H
+#ifndef INC_xpcom_profile_H
+#define INC_xpcom_profile_H
 
 #define NDEBUG
 
-#include "nsXPCOM.h"
-#include "nsEmbedAPI.h"	
-#include "nsEmbedString.h"
-#include "nsIInputStream.h"
-#include "nsISupportsUtils.h"
-#include "prmem.h"
-#include "prenv.h"
+#include "nsCOMPtr.h"
+#include "nsProfileDirServiceProvider.h"
+#include "xpcom_stats.h"
 
-#ifdef _WIN32
-#define STDMETHODCALLTYPE __stdcall
-#else
-#define STDMETHODCALLTYPE
-#endif
-
-#endif /* INC_xpcom_H */
+#endif /* INC_xpcom_profile_H */
