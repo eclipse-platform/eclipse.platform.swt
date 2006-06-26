@@ -1254,9 +1254,9 @@ void createItem (TableItem item, int index) {
 
 	/* Insert the item */
 	setDeferResize (true);
-	ignoreSelect = true;
+	ignoreSelect = ignoreShrink = true;
 	int result = OS.SendMessage (handle, OS.LVM_INSERTITEM, 0, lvItem);
-	ignoreSelect = false;
+	ignoreSelect = ignoreShrink = false;
 	if (result == -1) error (SWT.ERROR_ITEM_NOT_ADDED);
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
@@ -3332,7 +3332,6 @@ void setDeferResize (boolean defer) {
 			wasResized = false;
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				if (drawCount == 0 && OS.IsWindowVisible (handle)) {
-					OS.UpdateWindow (handle);
 					OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 				}
 			}
