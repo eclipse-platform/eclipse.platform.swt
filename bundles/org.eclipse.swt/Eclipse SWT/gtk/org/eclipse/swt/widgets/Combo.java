@@ -336,7 +336,7 @@ void clearText () {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		if ((style & SWT.READ_ONLY) != 0) {
-			int str = OS.gtk_combo_box_get_active_text (handle);
+			int /*long*/ str = OS.gtk_combo_box_get_active_text (handle);
 			if (str != 0) {
 				if (OS.strlen (str) > 0) postEvent (SWT.Modify);
 				OS.g_free (str);
@@ -800,7 +800,7 @@ public Point getSelection () {
 		}
 		int length = 0;
 		if (str != 0) {
-			length = OS.g_utf8_strlen (str, -1);
+			length = (int)/*64*/OS.g_utf8_strlen (str, -1);
 			if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) OS.g_free (str);
 		}
 		return new Point (0, length);
