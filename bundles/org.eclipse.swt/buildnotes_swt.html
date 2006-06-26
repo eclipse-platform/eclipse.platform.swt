@@ -10,7 +10,39 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
+<h2> SWT Build 3.3 002 - Tuesday June 27, 2006 </h2>
+<h3><a NAME="New API"></a>New API</h3>
+<blockquote>
+<code>MouseEvent.count</code> field
+</blockquote>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+23614 - [DCR] Allow triple mouse click events  
+<br>62555 - Group border renders badly  
+<br>77321 - StyledText's font appears inconsistent with GC.drawString(..) font
+<br>80033 - SWT Browser does not display https
+<br>85783 - Editor font issues  
+<br>90856 - segfault while clicking in browser  
+<br>91348 - [Browser] Embedded web browser doesn't render visited links  
+<br>99697 - Can't navigate to external web sites  
+<br>115172 - Text clipped in editors if size reduced from platform default
+<br>115947 - Accessibility : Cannot set tooltip Text for image in Table Column
+<br>121114 - Inconsistent measurements from empty TextLayouts  
+<br>132500 - [Browser] DBCS3.2: Eclipse abended at the operation on WS Explorer with the internal web browser
+<br>139790 - Print Margin shows up in the wrong place  
+<br>140519 - StyledText error in getTextBounds (Does not count last newline)
+<br>141282 - DnD doesn't support special characters  
+<br>146575 - setCursor is ignored in the SWT Text under gtk-linux  
+<br>147423 - NPE when removing an item from a Table with custom draw hooks
+<br>147550 - VerifyEvent.doit=false does not work for Text  
+<br>148354 - Regression: Radio buttons fail to redraw background  
+</blockquote>
+
 <h2> SWT Build 3.3 001 - Tuesday June 13, 2006 </h2>
+<h3><a NAME="New API"></a>New API</h3>
+<blockquote>
+CCombo methods cut(), copy() and paste()
+</blockquote>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 56116 - System Tray not implemented for MAC  
@@ -28,10 +60,6 @@ SWT</h1>
 <br>145347 - Warnings with Fedora 5 compiler (gcc)  
 <br>145662 - Group control borders disappear when tabbing between child widgets
 <br>146264 - StyledText with SWT.WRAP flag does not shape arabic letters  
-</blockquote>
-<h3><a NAME="New API"></a>New API</h3>
-<blockquote>
-CCombo methods cut(), copy() and paste()
 </blockquote>
 
 <h2> SWT Build 3.2 032o - Friday June 9, 2006 </h2>
@@ -1308,7 +1336,6 @@ NoPR  Sort indicator stuck up on Windows
 <br>90152:  resizing Label flashes  
 <br>90222:  Device constructor  
 <br>90258:  Table item not updated when item count == 1  
-<br>90856:  segfault while clicking in browser  
 <br>90899:  Using PaintListener on Table destroys repainting (Button is the same case)  
 <br>90946:  gtk_entry_set_text crashes when passed a zero-length buffer  
 <br>91019:  SWT Rendering Problems  
@@ -1580,7 +1607,6 @@ int[] Table.getColumnOrder()
 <h2> SWT Build 3.1 022 - Tuesday February 8th, 2005 </h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
-<br>80033:  SWT Browser does not display https.  
 <br>54973:  [browser] Default WindowEvent to handle normal window open case - feature request  
 <br>81463:  [launcher] Launcher and Core issues regarding -showSplash  
 <br>81969:  [launcher] Launcher should be independent of startup.jar location  
