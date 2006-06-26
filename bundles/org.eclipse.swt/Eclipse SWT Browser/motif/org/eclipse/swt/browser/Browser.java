@@ -180,40 +180,42 @@ public Browser(Composite parent, int style) {
 		 * - mozilla17profile/mozilla17profile-gcc should succeed for mozilla 1.7.x and firefox
 		 * - mozilla18profile/mozilla18profile-gcc should succeed for mozilla 1.8.x (seamonkey)
 		 */
-		try {
-			Library.loadLibrary ("swt-mozilla14-profile"); //$NON-NLS-1$
-			usingProfile = true;
-		} catch (UnsatisfiedLinkError e1) {
-			try {
-				Library.loadLibrary ("swt-mozilla17-profile"); //$NON-NLS-1$
-				usingProfile = true;
-			} catch (UnsatisfiedLinkError e2) {
-				try {
-					Library.loadLibrary ("swt-mozilla14-profile-gcc3"); //$NON-NLS-1$
-					usingProfile = true;
-				} catch (UnsatisfiedLinkError e3) {
-					try {
-						Library.loadLibrary ("swt-mozilla17-profile-gcc3"); //$NON-NLS-1$
-						usingProfile = true;
-					} catch (UnsatisfiedLinkError e4) {
-						try {
-							Library.loadLibrary ("swt-mozilla18-profile"); //$NON-NLS-1$
-							usingProfile = true;
-						} catch (UnsatisfiedLinkError e5) {
-							try {
-								Library.loadLibrary ("swt-mozilla18-profile-gcc3"); //$NON-NLS-1$
-								usingProfile = true;
-							} catch (UnsatisfiedLinkError e6) {
-								/* 
-								* fail silently, the Browser will still work without profile support
-								* but will abort any attempts to navigate to HTTPS pages
-								*/
-							}
-						}
-					}
-				}
-			}
-		}
+		// The following is temporarily commented out because it is causing unit tests
+		// for several other components to crash.
+//		try {
+//			Library.loadLibrary ("swt-mozilla14-profile"); //$NON-NLS-1$
+//			usingProfile = true;
+//		} catch (UnsatisfiedLinkError e1) {
+//			try {
+//				Library.loadLibrary ("swt-mozilla17-profile"); //$NON-NLS-1$
+//				usingProfile = true;
+//			} catch (UnsatisfiedLinkError e2) {
+//				try {
+//					Library.loadLibrary ("swt-mozilla14-profile-gcc3"); //$NON-NLS-1$
+//					usingProfile = true;
+//				} catch (UnsatisfiedLinkError e3) {
+//					try {
+//						Library.loadLibrary ("swt-mozilla17-profile-gcc3"); //$NON-NLS-1$
+//						usingProfile = true;
+//					} catch (UnsatisfiedLinkError e4) {
+//						try {
+//							Library.loadLibrary ("swt-mozilla18-profile"); //$NON-NLS-1$
+//							usingProfile = true;
+//						} catch (UnsatisfiedLinkError e5) {
+//							try {
+//								Library.loadLibrary ("swt-mozilla18-profile-gcc3"); //$NON-NLS-1$
+//								usingProfile = true;
+//							} catch (UnsatisfiedLinkError e6) {
+//								/* 
+//								* fail silently, the Browser will still work without profile support
+//								* but will abort any attempts to navigate to HTTPS pages
+//								*/
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
 
 		int /*long*/[] retVal = new int /*long*/[1];
 		nsEmbedString pathString = new nsEmbedString(mozillaPath);
