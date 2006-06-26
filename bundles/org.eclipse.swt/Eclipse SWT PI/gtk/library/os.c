@@ -1183,6 +1183,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1PLUG)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1WINDOW
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1WINDOW)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1WINDOW_FUNC);
+	rc = (jboolean)GTK_IS_WINDOW(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1WINDOW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1STOCK_1CANCEL
 JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1STOCK_1CANCEL)
 	(JNIEnv *env, jclass that)
@@ -1415,6 +1427,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1G_1OBJECT_1TYPE)
 	OS_NATIVE_ENTER(env, that, _1G_1OBJECT_1TYPE_FUNC);
 	rc = (jint)G_OBJECT_TYPE(arg0);
 	OS_NATIVE_EXIT(env, that, _1G_1OBJECT_1TYPE_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1G_1OBJECT_1TYPE_1NAME
+JNIEXPORT jint JNICALL OS_NATIVE(_1G_1OBJECT_1TYPE_1NAME)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1G_1OBJECT_1TYPE_1NAME_FUNC);
+	rc = (jint)G_OBJECT_TYPE_NAME(arg0);
+	OS_NATIVE_EXIT(env, that, _1G_1OBJECT_1TYPE_1NAME_FUNC);
 	return rc;
 }
 #endif
@@ -7062,6 +7086,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1entry_1text_1index_1to_1layout_1index)
 }
 #endif
 
+#ifndef NO__1gtk_1enumerate_1printers
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1enumerate_1printers)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1enumerate_1printers_FUNC);
+/*
+	gtk_enumerate_printers(arg0, (gpointer)arg1, (GDestroyNotify)arg2, (gboolean)arg3);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, gpointer, GDestroyNotify, gboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_enumerate_printers_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_enumerate_printers");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, (gpointer)arg1, (GDestroyNotify)arg2, (gboolean)arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1enumerate_1printers_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1events_1pending
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1events_1pending)
 	(JNIEnv *env, jclass that)
@@ -8828,6 +8878,507 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1object_1sink)
 }
 #endif
 
+#ifndef NO__1gtk_1page_1setup_1get_1bottom_1margin
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1bottom_1margin)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1bottom_1margin_FUNC);
+/*
+	rc = (jdouble)gtk_page_setup_get_bottom_margin(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_bottom_margin_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_bottom_margin");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1bottom_1margin_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1left_1margin
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1left_1margin)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1left_1margin_FUNC);
+/*
+	rc = (jdouble)gtk_page_setup_get_left_margin(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_left_margin_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_left_margin");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1left_1margin_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1orientation
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1orientation)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1orientation_FUNC);
+/*
+	rc = (jint)gtk_page_setup_get_orientation(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_orientation_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_orientation");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1orientation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1page_1height
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1page_1height)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1page_1height_FUNC);
+/*
+	rc = (jdouble)gtk_page_setup_get_page_height(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_page_height_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_page_height");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1page_1height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1page_1width
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1page_1width)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1page_1width_FUNC);
+/*
+	rc = (jdouble)gtk_page_setup_get_page_width(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_page_width_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_page_width");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1page_1width_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1paper_1height
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1paper_1height)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1paper_1height_FUNC);
+/*
+	rc = (jdouble)gtk_page_setup_get_paper_height(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_paper_height_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_paper_height");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1paper_1height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1paper_1size
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1paper_1size)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1paper_1size_FUNC);
+/*
+	rc = (jint)gtk_page_setup_get_paper_size(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_paper_size_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_paper_size");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1paper_1size_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1paper_1width
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1paper_1width)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1paper_1width_FUNC);
+/*
+	rc = (jdouble)gtk_page_setup_get_paper_width(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_paper_width_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_paper_width");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1paper_1width_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1right_1margin
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1right_1margin)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1right_1margin_FUNC);
+/*
+	rc = (jdouble)gtk_page_setup_get_right_margin(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_right_margin_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_right_margin");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1right_1margin_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1get_1top_1margin
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1page_1setup_1get_1top_1margin)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1get_1top_1margin_FUNC);
+/*
+	rc = (jdouble)gtk_page_setup_get_top_margin(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_get_top_margin_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_get_top_margin");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1get_1top_1margin_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1page_1setup_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1new_FUNC);
+/*
+	rc = (jint)gtk_page_setup_new();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1set_1bottom_1margin
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1bottom_1margin)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1set_1bottom_1margin_FUNC);
+/*
+	gtk_page_setup_set_bottom_margin(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jdouble, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_set_bottom_margin_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_set_bottom_margin");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1set_1bottom_1margin_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1set_1left_1margin
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1left_1margin)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1set_1left_1margin_FUNC);
+/*
+	gtk_page_setup_set_left_margin(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jdouble, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_set_left_margin_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_set_left_margin");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1set_1left_1margin_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1set_1orientation
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1orientation)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1set_1orientation_FUNC);
+/*
+	gtk_page_setup_set_orientation(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_set_orientation_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_set_orientation");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1set_1orientation_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1set_1paper_1size
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1paper_1size)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1set_1paper_1size_FUNC);
+/*
+	gtk_page_setup_set_paper_size(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_set_paper_size_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_set_paper_size");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1set_1paper_1size_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins_FUNC);
+/*
+	gtk_page_setup_set_paper_size_and_default_margins(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_set_paper_size_and_default_margins_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_set_paper_size_and_default_margins");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1set_1right_1margin
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1right_1margin)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1set_1right_1margin_FUNC);
+/*
+	gtk_page_setup_set_right_margin(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jdouble, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_set_right_margin_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_set_right_margin");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1set_1right_1margin_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1page_1setup_1set_1top_1margin
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1top_1margin)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1set_1top_1margin_FUNC);
+/*
+	gtk_page_setup_set_top_margin(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jdouble, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_page_setup_set_top_margin_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_set_top_margin");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1set_1top_1margin_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1paint_1arrow
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1paint_1arrow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jbyteArray arg6, jint arg7, jboolean arg8, jint arg9, jint arg10, jint arg11, jint arg12)
@@ -9115,6 +9666,64 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1paper_1size_1get_1height
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1height)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1get_1height_FUNC);
+/*
+	rc = (jdouble)gtk_paper_size_get_height(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_get_height_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_get_height");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1get_1height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1paper_1size_1get_1width
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1width)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1get_1width_FUNC);
+/*
+	rc = (jdouble)gtk_paper_size_get_width(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_get_width_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_get_width");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1get_1width_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1plug_1get_1id
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1plug_1get_1id)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -9135,6 +9744,1169 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1plug_1new)
 	OS_NATIVE_ENTER(env, that, _1gtk_1plug_1new_FUNC);
 	rc = (jint)gtk_plug_new(arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1plug_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1job_1get_1printer
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1job_1get_1printer)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1job_1get_1printer_FUNC);
+/*
+	rc = (jint)gtk_print_job_get_printer(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_job_get_printer_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_job_get_printer");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1get_1printer_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1job_1get_1settings
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1job_1get_1settings)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1job_1get_1settings_FUNC);
+/*
+	rc = (jint)gtk_print_job_get_settings(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_job_get_settings_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_job_get_settings");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1get_1settings_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1job_1get_1status
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1job_1get_1status)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1job_1get_1status_FUNC);
+/*
+	rc = (jint)gtk_print_job_get_status(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_job_get_status_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_job_get_status");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1get_1status_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1job_1get_1surface
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1job_1get_1surface)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1job_1get_1surface_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_print_job_get_surface(arg0, (GError **)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, GError **);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_job_get_surface_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_job_get_surface");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, (GError **)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1get_1surface_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1job_1get_1title
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1job_1get_1title)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1job_1get_1title_FUNC);
+/*
+	rc = (jint)gtk_print_job_get_title(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_job_get_title_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_job_get_title");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1get_1title_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1job_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1job_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jint arg3)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1job_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_print_job_new((const gchar *)lparg0, arg1, arg2, arg3);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(const gchar *, jint, jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_job_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_job_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((const gchar *)lparg0, arg1, arg2, arg3);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1job_1send
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1job_1send)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1job_1send_FUNC);
+/*
+	gtk_print_job_send(arg0, arg1, (gpointer)arg2, (GDestroyNotify)arg3);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, gpointer, GDestroyNotify);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_job_send_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_job_send");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, (gpointer)arg2, (GDestroyNotify)arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1send_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1job_1set_1source_1file
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1print_1job_1set_1source_1file)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1job_1set_1source_1file_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gtk_print_job_set_source_file(arg0, (const gchar *)lparg1, (GError **)lparg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(jint, const gchar *, GError **);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_job_set_source_file_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_job_set_source_file");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(arg0, (const gchar *)lparg1, (GError **)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1set_1source_1file_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1copy
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1copy)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1copy_FUNC);
+/*
+	rc = (jint)gtk_print_settings_copy(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_copy_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_copy");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1copy_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1foreach
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1foreach)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1foreach_FUNC);
+/*
+	gtk_print_settings_foreach(arg0, arg1, (gpointer)arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, gpointer);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_foreach_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_foreach");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, (gpointer)arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1foreach_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_print_settings_get(arg0, (const gchar *)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, const gchar *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, (const gchar *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1collate
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1collate)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1collate_FUNC);
+/*
+	rc = (jboolean)gtk_print_settings_get_collate(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_collate_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_collate");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1collate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1n_1copies
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1n_1copies)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1n_1copies_FUNC);
+/*
+	rc = (jint)gtk_print_settings_get_n_copies(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_n_copies_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_n_copies");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1n_1copies_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1orientation
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1orientation)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1orientation_FUNC);
+/*
+	rc = (jint)gtk_print_settings_get_orientation(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_orientation_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_orientation");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1orientation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1page_1ranges
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1page_1ranges)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1page_1ranges_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_print_settings_get_page_ranges(arg0, (gint *)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, gint *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_page_ranges_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_page_ranges");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, (gint *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1page_1ranges_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1paper_1height
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1paper_1height)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1paper_1height_FUNC);
+/*
+	rc = (jdouble)gtk_print_settings_get_paper_height(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_paper_height_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_paper_height");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1paper_1height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1paper_1width
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1paper_1width)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1paper_1width_FUNC);
+/*
+	rc = (jdouble)gtk_print_settings_get_paper_width(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jdouble (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_paper_width_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_paper_width");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jdouble)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1paper_1width_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1print_1pages
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1print_1pages)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1print_1pages_FUNC);
+/*
+	rc = (jint)gtk_print_settings_get_print_pages(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_print_pages_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_print_pages");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1print_1pages_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1printer
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1printer)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1printer_FUNC);
+/*
+	rc = (jint)gtk_print_settings_get_printer(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_printer_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_printer");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1printer_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1get_1resolution
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1get_1resolution)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1get_1resolution_FUNC);
+/*
+	rc = (jint)gtk_print_settings_get_resolution(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_get_resolution_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_get_resolution");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1get_1resolution_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1new_FUNC);
+/*
+	rc = (jint)gtk_print_settings_new();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1set
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	gtk_print_settings_set(arg0, (const gchar *)lparg1, (const gchar *)lparg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, const gchar *, const gchar *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_set_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_set");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, (const gchar *)lparg1, (const gchar *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1set_1collate
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1collate)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1collate_FUNC);
+/*
+	gtk_print_settings_set_collate(arg0, (gboolean)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, gboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_set_collate_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_set_collate");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, (gboolean)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1collate_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1set_1n_1copies
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1n_1copies)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1n_1copies_FUNC);
+/*
+	gtk_print_settings_set_n_copies(arg0, (gint)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, gint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_set_n_copies_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_set_n_copies");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, (gint)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1n_1copies_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1set_1orientation
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1orientation)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1orientation_FUNC);
+/*
+	gtk_print_settings_set_orientation(arg0, (GtkPageOrientation)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, GtkPageOrientation);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_set_orientation_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_set_orientation");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, (GtkPageOrientation)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1orientation_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1set_1page_1ranges
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1page_1ranges)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1page_1ranges_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	gtk_print_settings_set_page_ranges(arg0, (GtkPageRange *)lparg1, (gint)arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, GtkPageRange *, gint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_set_page_ranges_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_set_page_ranges");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, (GtkPageRange *)lparg1, (gint)arg2);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1page_1ranges_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1set_1print_1pages
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1print_1pages)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1print_1pages_FUNC);
+/*
+	gtk_print_settings_set_print_pages(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_set_print_pages_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_set_print_pages");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1print_1pages_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1settings_1set_1printer
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1printer)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1printer_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	gtk_print_settings_set_printer(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jbyte *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_settings_set_printer_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_set_printer");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1printer_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1get_1current_1page
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1get_1current_1page)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1get_1current_1page_FUNC);
+/*
+	rc = (jint)gtk_print_unix_dialog_get_current_page(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_get_current_page_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_get_current_page");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1get_1current_1page_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1get_1page_1setup
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1get_1page_1setup)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1get_1page_1setup_FUNC);
+/*
+	rc = (jint)gtk_print_unix_dialog_get_page_setup(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_get_page_setup_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_get_page_setup");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1get_1page_1setup_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1get_1selected_1printer
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1get_1selected_1printer)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1get_1selected_1printer_FUNC);
+/*
+	rc = (jint)gtk_print_unix_dialog_get_selected_printer(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_get_selected_printer_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_get_selected_printer");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1get_1selected_1printer_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1get_1settings
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1get_1settings)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1get_1settings_FUNC);
+/*
+	rc = (jint)gtk_print_unix_dialog_get_settings(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_get_settings_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_get_settings");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1get_1settings_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_print_unix_dialog_new((const gchar *)lparg0, (GtkWindow *)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(const gchar *, GtkWindow *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((const gchar *)lparg0, (GtkWindow *)arg1);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1set_1current_1page
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1set_1current_1page)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1set_1current_1page_FUNC);
+/*
+	gtk_print_unix_dialog_set_current_page(arg0, (gint)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, gint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_set_current_page_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_set_current_page");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, (gint)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1set_1current_1page_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1set_1manual_1capabilities
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1set_1manual_1capabilities)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1set_1manual_1capabilities_FUNC);
+/*
+	gtk_print_unix_dialog_set_manual_capabilities(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_set_manual_capabilities_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_set_manual_capabilities");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1set_1manual_1capabilities_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1set_1page_1setup
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1set_1page_1setup)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1set_1page_1setup_FUNC);
+/*
+	gtk_print_unix_dialog_set_page_setup(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_set_page_setup_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_set_page_setup");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1set_1page_1setup_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1set_1settings
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1unix_1dialog_1set_1settings)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1set_1settings_FUNC);
+/*
+	gtk_print_unix_dialog_set_settings(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_print_unix_dialog_set_settings_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_unix_dialog_set_settings");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1set_1settings_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1printer_1get_1backend
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1printer_1get_1backend)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1printer_1get_1backend_FUNC);
+/*
+	rc = (jint)gtk_printer_get_backend(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_printer_get_backend_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_printer_get_backend");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1printer_1get_1backend_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1printer_1get_1name
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1printer_1get_1name)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1printer_1get_1name_FUNC);
+/*
+	rc = (jint)gtk_printer_get_name(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_printer_get_name_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_printer_get_name");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1printer_1get_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1printer_1is_1default
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1printer_1is_1default)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1printer_1is_1default_FUNC);
+/*
+	rc = (jboolean)gtk_printer_is_default(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_printer_is_default_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_printer_is_default");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1printer_1is_1default_FUNC);
 	return rc;
 }
 #endif

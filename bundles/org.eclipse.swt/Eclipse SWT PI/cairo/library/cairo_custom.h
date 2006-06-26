@@ -19,14 +19,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#ifndef INC_cairo_H
-#define INC_cairo_H
-
-#include <cairo.h>
-#include <cairo-xlib.h>
-#include <string.h>
-#include <dlfcn.h>
-
-#include "cairo_custom.h"
-
-#endif /* INC_cairo_H */
+/* Libraries for dynamic loaded functions */
+#define cairo_pdf_surface_set_size_LIB "libcairo.so.2"
+#define cairo_ps_surface_set_size_LIB "libcairo.so.2"

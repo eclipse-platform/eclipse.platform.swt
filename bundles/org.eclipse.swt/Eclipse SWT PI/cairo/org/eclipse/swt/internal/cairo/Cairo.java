@@ -71,6 +71,17 @@ public class Cairo {
 	public static final int CAIRO_STATUS_INVALID_MATRIX = 5;
 	public static final int CAIRO_STATUS_NO_TARGET_SURFACE = 6;
 	public static final int CAIRO_STATUS_NULL_POINTER =7;
+	public static final int CAIRO_SURFACE_TYPE_IMAGE = 0;
+	public static final int CAIRO_SURFACE_TYPE_PDF = 1;
+    public static final int CAIRO_SURFACE_TYPE_PS = 2;
+    public static final int CAIRO_SURFACE_TYPE_XLIB = 3;
+    public static final int CAIRO_SURFACE_TYPE_XCB = 4;
+    public static final int CAIRO_SURFACE_TYPE_GLITZ = 5;
+    public static final int CAIRO_SURFACE_TYPE_QUARTZ = 6;
+    public static final int CAIRO_SURFACE_TYPE_WIN32 = 7;
+    public static final int CAIRO_SURFACE_TYPE_BEOS = 8;
+    public static final int CAIRO_SURFACE_TYPE_DIRECTFB = 9;
+    public static final int CAIRO_SURFACE_TYPE_SVG = 10;
 	public static final int CAIRO_FILTER_FAST = 0;
 	public static final int CAIRO_FILTER_GOOD = 1;
 	public static final int CAIRO_FILTER_BEST = 2;
@@ -196,6 +207,9 @@ public static final synchronized native void cairo_surface_finish (int /*long*/ 
 public static final synchronized native int cairo_surface_set_user_data (int /*long*/ surface, int /*long*/ key, int /*long*/ user_data, int /*long*/ destroy);
 public static final synchronized native int /*long*/ cairo_surface_get_user_data (int /*long*/ surface, int /*long*/ key);
 public static final synchronized native void cairo_surface_set_device_offset (int /*long*/ surface, double x_offset, double y_offset);
+public static final synchronized native int cairo_surface_get_type (int /*long*/ surface);
+public static final synchronized native void cairo_pdf_surface_set_size (int /*long*/ surface, double width_in_points, double height_in_points);
+public static final synchronized native void cairo_ps_surface_set_size (int /*long*/ surface, double width_in_points, double height_in_points);
 public static final synchronized native int /*long*/ cairo_pattern_create_for_surface (int /*long*/ surface);
 public static final synchronized native int /*long*/ cairo_pattern_create_linear (double x0, double y0, double x1, double y1);
 public static final synchronized native int /*long*/ cairo_pattern_create_radial (double cx0, double cy0, double radius0, double cx1, double cy1, double radius1);
