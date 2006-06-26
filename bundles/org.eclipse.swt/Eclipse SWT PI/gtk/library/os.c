@@ -10465,12 +10465,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1orientation)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1orientation_FUNC);
 /*
-	gtk_print_settings_set_orientation(arg0, (GtkPageOrientation)arg1);
+	gtk_print_settings_set_orientation(arg0, arg1);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef void (*FPTR)(jint, GtkPageOrientation);
+		typedef void (*FPTR)(jint, jint);
 		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_print_settings_set_orientation_LIB, RTLD_LAZY);
@@ -10478,7 +10478,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1orientation)
 			initialized = 1;
 		}
 		if (fptr) {
-			(*fptr)(arg0, (GtkPageOrientation)arg1);
+			(*fptr)(arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1set_1orientation_FUNC);
@@ -10493,12 +10493,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1page_1ranges)
 	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1set_1page_1ranges_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	gtk_print_settings_set_page_ranges(arg0, (GtkPageRange *)lparg1, (gint)arg2);
+	gtk_print_settings_set_page_ranges(arg0, lparg1, (gint)arg2);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef void (*FPTR)(jint, GtkPageRange *, gint);
+		typedef void (*FPTR)(jint, jint *, gint);
 		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_print_settings_set_page_ranges_LIB, RTLD_LAZY);
@@ -10506,7 +10506,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1print_1settings_1set_1page_1ranges)
 			initialized = 1;
 		}
 		if (fptr) {
-			(*fptr)(arg0, (GtkPageRange *)lparg1, (gint)arg2);
+			(*fptr)(arg0, lparg1, (gint)arg2);
 		}
 	}
 fail:
