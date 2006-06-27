@@ -859,17 +859,20 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget();
+	boolean free = false;
 	int /*long*/ str = 0;
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		str = OS.gtk_combo_box_get_active_text (handle);
-		if (str == 0) return "";
-	} else {
+		free = str != 0;
+	}
+	if (str == 0 && entryHandle != 0) {
 		str = OS.gtk_entry_get_text (entryHandle);
 	}
+	if (str == 0) return "";
 	int length = OS.strlen (str);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, str, length);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) OS.g_free (str);
+	if (free) OS.g_free (str);
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
