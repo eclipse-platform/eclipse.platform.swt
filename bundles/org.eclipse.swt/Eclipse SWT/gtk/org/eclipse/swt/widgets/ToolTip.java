@@ -224,10 +224,10 @@ void createHandle (int index) {
 		handle = OS.gtk_tooltips_new ();
 		if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		/*
-		 * Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window
-		 * can cause a crash in older versions of GTK.  The workaround is
-		 * to not make this call if the GTK version is older than 2.2.x.
-		 */
+		* Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window()
+		* can cause a crash in older versions of GTK.  The fix is
+		* to avoid this call if the GTK version is older than 2.2.x.
+		*/
 		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) { 
 			OS.gtk_tooltips_force_window (handle);
 		}
