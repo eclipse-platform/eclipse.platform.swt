@@ -157,7 +157,7 @@ static Program getProgram (String key) {
 	/* Icon */
 	String DEFAULT_ICON = "\\DefaultIcon"; //$NON-NLS-1$
 	String iconName = getKeyValue (key + DEFAULT_ICON, true);
-	if (iconName == null || iconName.length () == 0) return null;
+	if (iconName == null) iconName = ""; //$NON-NLS-1$
 
 	Program program = new Program ();
 	program.name = name;
