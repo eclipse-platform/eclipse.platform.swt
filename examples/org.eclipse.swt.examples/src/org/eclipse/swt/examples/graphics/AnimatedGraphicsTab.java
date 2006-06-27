@@ -91,14 +91,13 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 		
 		// timer spinner
 		Composite comp = new Composite(parent, SWT.NONE);
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.type = SWT.VERTICAL;
-		comp.setLayout(fillLayout);
+		GridLayout gridLayout = new GridLayout(2, false);
+		comp.setLayout(gridLayout);
 
-		timerSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
-		timerSpinner.setMaximum(1000);
 		Label label = new Label(comp, SWT.CENTER);
 		label.setText(GraphicsExample.getResourceString("Animation")); //$NON-NLS-1$
+		timerSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
+		timerSpinner.setMaximum(1000);
 		
 		playItem.setEnabled(false);
 		animate = true;
