@@ -1647,9 +1647,16 @@ void setToolTipText (int /*long*/ widget, String newString, String oldString) {
 	* The fix is to connect to the size_allocate signal for
 	* the tooltip window and position it before it is mapped.
 	*/
-	OS.gtk_tooltips_force_window (tooltipsHandle);
+	/*
+	 * Bug in Solaris-GTK.  Invoking gtk_tooltips_force_window
+	 * can cause a crash in older versions of GTK.  The workaround is
+	 * to not make this call if the GTK version is older than 2.2.x.
+	 */
+	if (OS.GTK_VERSION >= OS.VERSION (2, 2, 1)) { 
+		OS.gtk_tooltips_force_window (tooltipsHandle);
+	}
 	int /*long*/ tipWindow = OS.GTK_TOOLTIPS_TIP_WINDOW (tooltipsHandle);
-	if (tipWindow != tooltipWindow) {
+	if (tipWindow != 0 && tipWindow != tooltipWindow) {
 		OS.g_signal_connect (tipWindow, OS.size_allocate, display.sizeAllocateProc, shellHandle);
 		tooltipWindow = tipWindow;
 	}
