@@ -142,23 +142,23 @@ void createCanvas(Composite parent) {
  * initialized, the image will be applied as a background pattern.
  */
 void paintBackground(GC gc, Rectangle rect) {
+	Pattern pattern = null;
 	if (background.getBgColor1() != null) {
 		if (background.getBgColor2() != null) { // gradient
-			Pattern pattern = new Pattern(Display.getCurrent(), 0, 0, rect.width, 
+			pattern = new Pattern(Display.getCurrent(), 0, 0, rect.width, 
 					rect.height,
 					background.getBgColor1(),
 					background.getBgColor2());
 			gc.setBackgroundPattern(pattern);
-			pattern.dispose();
 		} else {	// solid color
 			gc.setBackground(background.getBgColor1());
 		}
 	} else if (background.getBgImage() != null) {		// image
-		Pattern pattern = new Pattern(Display.getCurrent(), background.getBgImage());
+		pattern = new Pattern(Display.getCurrent(), background.getBgImage());
 		gc.setBackgroundPattern(pattern);
-		pattern.dispose();
 	}
-	gc.fillRectangle(rect);	
+	gc.fillRectangle(rect);
+	if (pattern != null) pattern.dispose();
 }
 
 /**
