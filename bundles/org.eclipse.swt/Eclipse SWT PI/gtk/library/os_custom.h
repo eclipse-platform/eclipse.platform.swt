@@ -44,7 +44,7 @@
 #define gtk_combo_box_insert_text_LIB "libgtk-x11-2.0.so.0"
 #define gtk_combo_box_remove_text_LIB "libgtk-x11-2.0.so.0"
 #define gtk_combo_box_get_active_LIB "libgtk-x11-2.0.so.0"
-#define gtk_combo_box_get_active_text_LIB "libgtk-x11-2.0.so.0"
+#define gtk_combo_box_get_model_LIB "libgtk-x11-2.0.so.0"
 #define gtk_combo_box_set_active_LIB "libgtk-x11-2.0.so.0"
 #define gtk_combo_box_popup_LIB "libgtk-x11-2.0.so.0"
 #define gtk_combo_box_popdown_LIB "libgtk-x11-2.0.so.0"

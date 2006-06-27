@@ -479,7 +479,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1color_1selection_1set_1has_1palette",
 	"_1gtk_1combo_1box_1entry_1new_1text",
 	"_1gtk_1combo_1box_1get_1active",
-	"_1gtk_1combo_1box_1get_1active_1text",
+	"_1gtk_1combo_1box_1get_1model",
 	"_1gtk_1combo_1box_1insert_1text",
 	"_1gtk_1combo_1box_1new_1text",
 	"_1gtk_1combo_1box_1popdown",

@@ -6292,14 +6292,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1get_1active)
 }
 #endif
 
-#ifndef NO__1gtk_1combo_1box_1get_1active_1text
-JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1get_1active_1text)
+#ifndef NO__1gtk_1combo_1box_1get_1model
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1get_1model)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1get_1active_1text_FUNC);
+	OS_NATIVE_ENTER(env, that, _1gtk_1combo_1box_1get_1model_FUNC);
 /*
-	rc = (jint)gtk_combo_box_get_active_text(arg0);
+	rc = (jint)gtk_combo_box_get_model(arg0);
 */
 	{
 		static int initialized = 0;
@@ -6308,15 +6308,15 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1combo_1box_1get_1active_1text)
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
-			if (!handle) handle = dlopen(gtk_combo_box_get_active_text_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_get_active_text");
+			if (!handle) handle = dlopen(gtk_combo_box_get_model_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_combo_box_get_model");
 			initialized = 1;
 		}
 		if (fptr) {
 			rc = (jint)(*fptr)(arg0);
 		}
 	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1get_1active_1text_FUNC);
+	OS_NATIVE_EXIT(env, that, _1gtk_1combo_1box_1get_1model_FUNC);
 	return rc;
 }
 #endif

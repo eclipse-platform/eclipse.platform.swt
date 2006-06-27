@@ -336,10 +336,16 @@ void clearText () {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		if ((style & SWT.READ_ONLY) != 0) {
-			int /*long*/ str = OS.gtk_combo_box_get_active_text (handle);
-			if (str != 0) {
-				if (OS.strlen (str) > 0) postEvent (SWT.Modify);
-				OS.g_free (str);
+			int index = OS.gtk_combo_box_get_active (handle);
+			if (index != -1) {
+				int /*long*/ modelHandle = OS.gtk_combo_box_get_model (handle);
+				int /*long*/ [] ptr = new int /*long*/ [1];
+				int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+				OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
+				OS.gtk_tree_model_get (modelHandle, iter, 0, ptr, -1);
+				OS.g_free (iter);
+				if (ptr [0] != 0 && OS.strlen (ptr [0]) > 0) postEvent (SWT.Modify);
+				OS.g_free (ptr [0]);
 			}
 		} else {
 			OS.gtk_entry_set_text (entryHandle, new byte[1]);
@@ -792,16 +798,13 @@ public int getOrientation () {
 public Point getSelection () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		int /*long*/ str = 0;
-		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-			str = OS.gtk_combo_box_get_active_text (handle);
-		} else {
-			str = OS.gtk_entry_get_text (entryHandle);
-		}
 		int length = 0;
-		if (str != 0) {
-			length = (int)/*64*/OS.g_utf8_strlen (str, -1);
-			if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) OS.g_free (str);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+			int index = OS.gtk_combo_box_get_active (handle);
+			if (index != -1) length = getItem (index).length ();
+		} else {
+			int /*long*/ str = OS.gtk_entry_get_text (entryHandle);
+			if (str != 0) length = (int)/*64*/OS.g_utf8_strlen (str, -1);
 		}
 		return new Point (0, length);
 	}
@@ -859,21 +862,17 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget();
-	boolean free = false;
-	int /*long*/ str = 0;
-	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		str = OS.gtk_combo_box_get_active_text (handle);
-		free = str != 0;
+	if (entryHandle != 0) {
+		int /*long*/ str = OS.gtk_entry_get_text (entryHandle);
+		if (str == 0) return "";
+		int length = OS.strlen (str);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, str, length);
+		return new String (Converter.mbcsToWcs (null, buffer));
+	} else {
+		int active = OS.gtk_combo_box_get_active (handle);		  
+		return active != -1 ? getItem (active) : "";
 	}
-	if (str == 0 && entryHandle != 0) {
-		str = OS.gtk_entry_get_text (entryHandle);
-	}
-	if (str == 0) return "";
-	int length = OS.strlen (str);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, str, length);
-	if (free) OS.g_free (str);
-	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
 String getText (int start, int stop) {
@@ -1500,6 +1499,18 @@ void setFontDescription (int /*long*/ font) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
 		OS.g_object_set (textRenderer, OS.font_desc, font, 0);
+		if ((style & SWT.READ_ONLY) != 0) {
+			/*
+			* Bug in GTK.  Setting the font can leave the combo box with an
+			* invalid minimum size.  The fix is to temporarily change the
+			* selected item to force the combo box to resize.
+			*/
+			int active = OS.gtk_combo_box_get_active (handle);
+			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.gtk_combo_box_set_active (handle, -1);
+			OS.gtk_combo_box_set_active (handle, active);
+			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		}
 	} else {
 		OS.gtk_widget_modify_font (entryHandle, font);
 		if (listHandle != 0) {

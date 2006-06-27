@@ -4029,11 +4029,11 @@ public static final int gtk_combo_box_get_active(int /*long*/ combo_box) {
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _gtk_combo_box_get_active_text(int /*long*/ combo_box);
-public static final int /*long*/ gtk_combo_box_get_active_text(int /*long*/ combo_box) {
+public static final native int /*long*/ _gtk_combo_box_get_model(int /*long*/ combo_box);
+public static final int /*long*/ gtk_combo_box_get_model(int /*long*/ combo_box) {
 	lock.lock();
 	try {
-		return _gtk_combo_box_get_active_text(combo_box);
+		return _gtk_combo_box_get_model(combo_box);
 	} finally {
 		lock.unlock();
 	}
