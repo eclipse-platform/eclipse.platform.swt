@@ -31,7 +31,11 @@ public void createControlPanel(Composite parent) {
 	fillRuleCb.add("FILL_EVEN_ODD");
 	fillRuleCb.add("FILL_WINDING");
 	fillRuleCb.select(0);
-	fillRuleCb.addListener(SWT.Selection, example.getRedrawListener());
+	fillRuleCb.addListener(SWT.Selection, new Listener() {
+		public void handleEvent (Event event) {
+			example.redraw();
+		}
+	});
 }
 
 public String getCategory() {

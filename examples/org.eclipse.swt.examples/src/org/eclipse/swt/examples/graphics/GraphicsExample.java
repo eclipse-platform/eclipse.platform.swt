@@ -10,44 +10,36 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Vector;
+import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * This class is the main class of the graphics application. Various "tabs" are
+ * created and made visible by this class.
+ */
 public class GraphicsExample {
 	
 	Composite parent;
-	GraphicsTab[] tabs;
-	GraphicsTab tab;
-	Object[] tabBackground;
+	GraphicsTab[] tabs;				// tabs to be found in the application
+	GraphicsTab tab;				// the current tab
+	GraphicsBackground background;	// used to store information about the background
 	
-	boolean animate;
-	
-	Listener redrawListener;
-	
-	ToolBar toolBar;
-	Tree tabList;
+	ToolBar toolBar;					// toolbar that contains backItem and dbItem
+	Tree tabList;						// tree structure of tabs
 	Canvas canvas;
-	Composite controlPanel, tabPanel;
-	ToolItem playItem, pauseItem, backItem, dbItem;
-	Spinner timerSpinner;
+	Composite mainControlPanel, tabControlPanel;  // control panel applicable to all tabs and 
+												  // control panel specific to a tab
+	ToolItem backItem, dbItem;		// background, double buffer items
 	
-	Menu backMenu;
-	MenuItem customMI;
-	Image customImage;
-	Color customColor;
+	Menu backMenu;						// background menu item
 	
-	Vector images;
-	
+	ArrayList resources;			// stores resources that will be disposed
+
 	static boolean advanceGraphics, advanceGraphicsInit;
 	
 	static final int TIMER = 30;
@@ -55,17 +47,12 @@ public class GraphicsExample {
 
 public GraphicsExample(final Composite parent) {
 	this.parent = parent;
-	redrawListener = new Listener() {
-		public void handleEvent(Event e) {
-			redraw();
-		}
-	};
 	GridData data;
 	GridLayout layout = new GridLayout(3, false);
 	layout.horizontalSpacing = 1;
 	parent.setLayout(layout);
-	tabs = createTabs();	
-	images = new Vector();	
+	tabs = createTabs();
+	resources = new ArrayList();
 	createToolBar(parent);
 	createTabList(parent);
 	final Sash sash = new Sash(parent, SWT.VERTICAL);
@@ -79,19 +66,25 @@ public GraphicsExample(final Composite parent) {
 	data = new GridData(SWT.CENTER, SWT.FILL, false, true);
 	sash.setLayoutData(data);
 	data = new GridData(SWT.FILL, SWT.FILL, true, true);
-	tabPanel.setLayoutData(data);
+	mainControlPanel.setLayoutData(data);
 	sash.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			if (event.detail != SWT.DRAG) {
 				GridData data = (GridData)tabList.getLayoutData();				
 				data.widthHint = event.x - tabList.computeTrim(0, 0, 0, 0).width;
 				parent.layout(true);
-				animate = pauseItem.getEnabled();
+				if (tab instanceof AnimatedGraphicsTab) {
+					AnimatedGraphicsTab agt = ((AnimatedGraphicsTab) tab);
+					agt.setAnimation(agt.pauseItem.getEnabled()); 
+				}
 			} else {
-				animate = false;
+				if (tab instanceof AnimatedGraphicsTab) {
+					AnimatedGraphicsTab agt = ((AnimatedGraphicsTab) tab);
+					agt.setAnimation(false);
+				}
 			}
 		}
-	});	
+	});
 	setTab(tab);
 	startAnimationTimer();
 }
@@ -141,152 +134,135 @@ void createCanvas(Composite parent) {
 	});
 }
 
+/**
+ * This method is used to paint the background.
+ * If both colors have been initialized, a gradient will be created for the
+ * background, otherwise; If only the first color is initialized, that color
+ * will be applied to the background, otherwise; If the image has been
+ * initialized, the image will be applied as a background pattern.
+ */
+void paintBackground(GC gc, Rectangle rect) {
+	if (background.getBgColor1() != null) {
+		if (background.getBgColor2() != null) { // gradient
+			Pattern pattern = new Pattern(Display.getCurrent(), 0, 0, rect.width, 
+					rect.height,
+					background.getBgColor1(),
+					background.getBgColor2());
+			gc.setBackgroundPattern(pattern);
+			pattern.dispose();
+		} else {	// solid color
+			gc.setBackground(background.getBgColor1());
+		}
+	} else if (background.getBgImage() != null) {		// image
+		Pattern pattern = new Pattern(Display.getCurrent(), background.getBgImage());
+		gc.setBackgroundPattern(pattern);
+		pattern.dispose();
+	}
+	gc.fillRectangle(rect);	
+}
+
+/**
+ * Creates the control panel 
+ * @param parent
+ */
 void createControlPanel(Composite parent) {
 	Group group;
-	controlPanel = group = new Group(parent, SWT.NONE);
+	tabControlPanel = group = new Group(parent, SWT.NONE);
 	group.setText(getResourceString("Settings")); //$NON-NLS-1$
-	controlPanel.setLayout(new RowLayout());
+	tabControlPanel.setLayout(new RowLayout());
 }
 
 void createTabPanel(Composite parent) {
-	tabPanel = new Composite(parent, SWT.NONE);
+	mainControlPanel = new Composite(parent, SWT.NONE);
 	GridData data;
 	GridLayout layout = new GridLayout(1, false);
 	layout.marginHeight = layout.marginWidth = 0;
-	tabPanel.setLayout(layout);
-	createCanvas(tabPanel);
-	createControlPanel(tabPanel);
+	mainControlPanel.setLayout(layout);
+	createCanvas(mainControlPanel);
+	createControlPanel(mainControlPanel);
 	data = new GridData(SWT.FILL, SWT.FILL, true, true);
 	canvas.setLayoutData(data);	
 	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-	controlPanel.setLayoutData(data);
+	tabControlPanel.setLayoutData(data);
 }
 
 void createToolBar(final Composite parent) {
 	final Display display = parent.getDisplay();
 	
 	toolBar = new ToolBar(parent, SWT.FLAT);
-	Listener toolBarListener = new Listener() {
-		public void handleEvent(Event event) {
-			switch (event.type) {
-				case SWT.Selection: {
-					if (event.widget == playItem) {
-						animate = true;
-						playItem.setEnabled(!animate);
-						pauseItem.setEnabled(animate);
-					} else if (event.widget == pauseItem) {
-						animate = false;
-						playItem.setEnabled(!animate);
-						pauseItem.setEnabled(animate);
-					} else if (event.widget == backItem) {
-						final ToolItem toolItem = (ToolItem) event.widget;
-						final ToolBar  toolBar = toolItem.getParent();			
-						Rectangle toolItemBounds = toolItem.getBounds();
-						Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
-						backMenu.setLocation(point.x, point.y + toolItemBounds.height);
-						backMenu.setVisible(true);
-					}
-				}
-				break;
-			}
+	
+	ColorMenu colorMenu = new ColorMenu();
+	
+	// setup items to be contained in the background menu
+	colorMenu.setColorItems(true);
+	colorMenu.setPatternItems(true);
+	colorMenu.setGradientItems(true);
+	
+	// create the background menu
+	backMenu = colorMenu.createMenu(parent, new ColorListener() {
+		public void setColor(GraphicsBackground gb) {
+			background = gb;
+			backItem.setImage(gb.getBgImage());
+			if (canvas != null) canvas.redraw();
 		}
-	};
+	});
 	
-	playItem = new ToolItem(toolBar, SWT.PUSH);
-	playItem.setText(getResourceString("Play")); //$NON-NLS-1$
-	playItem.setImage(loadImage(display, "play.gif")); //$NON-NLS-1$
-	playItem.addListener(SWT.Selection, toolBarListener);
+	// initialize the background to the first item in the menu
+	background =(GraphicsBackground)backMenu.getItem(0).getData();
 	
-	pauseItem = new ToolItem(toolBar, SWT.PUSH);
-	pauseItem.setText(getResourceString("Pause")); //$NON-NLS-1$
-	pauseItem.setImage(loadImage(display, "pause.gif")); //$NON-NLS-1$
-	pauseItem.addListener(SWT.Selection, toolBarListener);
-	
+	// background tool item
 	backItem = new ToolItem(toolBar, SWT.PUSH);
 	backItem.setText(getResourceString("Background")); //$NON-NLS-1$
-	backItem.addListener(SWT.Selection, toolBarListener);
-	String[] names = new String[]{
-		getResourceString("White"), //$NON-NLS-1$
-		getResourceString("Black"), //$NON-NLS-1$
-		getResourceString("Red"), //$NON-NLS-1$
-		getResourceString("Green"), //$NON-NLS-1$
-		getResourceString("Blue"), //$NON-NLS-1$
-		getResourceString("CustomColor"), //$NON-NLS-1$
-	};
-	Color[] colors = new Color[]{
-		display.getSystemColor(SWT.COLOR_WHITE),	
-		display.getSystemColor(SWT.COLOR_BLACK),	
-		display.getSystemColor(SWT.COLOR_RED),	
-		display.getSystemColor(SWT.COLOR_GREEN),	
-		display.getSystemColor(SWT.COLOR_BLUE),
-		null,
-	};	
-	backMenu = new Menu(parent);
-	Listener listener = new Listener() {
+	backItem.setImage(background.getBgImage());
+	backItem.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
-			MenuItem item = (MenuItem)event.widget;
-			if (customMI == item) {
-				ColorDialog dialog = new ColorDialog(parent.getShell());
-				RGB rgb = dialog.open();
-				if (rgb == null) return;
-				if (customColor != null) customColor.dispose();
-				customColor = new Color(display, rgb);
-				if (customImage != null) customImage.dispose();
-				customImage = createImage(display, customColor);
-				item.setData(new Object[]{customColor, customImage});
-				item.setImage(customImage);
+			if (event.widget == backItem) {
+				final ToolItem toolItem = (ToolItem) event.widget;
+				final ToolBar  toolBar = toolItem.getParent();
+				Rectangle toolItemBounds = toolItem.getBounds();
+				Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
+				backMenu.setLocation(point.x, point.y + toolItemBounds.height);
+				backMenu.setVisible(true);
 			}
-			tabBackground = (Object[])item.getData();
-			backItem.setImage((Image)tabBackground[1]);
-			canvas.redraw();
 		}
-	};
-	for (int i = 0; i < names.length; i++) {
-		MenuItem item = new MenuItem(backMenu, SWT.NONE);
-		item.setText(names[i]);
-		item.addListener(SWT.Selection, listener);
-		Image image = null;
-		if (colors[i] != null) {
-			image = createImage(display, colors[i]);
-			images.addElement(image);
-			item.setImage(image);
-		} else {
-			// custom menu item
-			customMI = item;
-		}
-		item.setData(new Object[]{colors[i], image});
-		if (tabBackground == null) {
-			tabBackground = (Object[])item.getData();
-			backItem.setImage((Image)tabBackground[1]);
-		}
-	}
+	});
 	
+	// double buffer tool item
 	dbItem = new ToolItem(toolBar, SWT.CHECK);
 	dbItem.setText(getResourceString("DoubleBuffer")); //$NON-NLS-1$
 	dbItem.setImage(loadImage(display, "db.gif")); //$NON-NLS-1$
-
-	ToolItem separator = new ToolItem(toolBar, SWT.SEPARATOR);
-	Composite comp = new Composite(toolBar, SWT.NONE);
-	GridData data;
-	GridLayout layout = new GridLayout(1, false);
-	layout.verticalSpacing = 0;
-	layout.marginWidth = layout.marginHeight = 3;
-	comp.setLayout(layout);
-	timerSpinner = new Spinner(comp, SWT.BORDER | SWT.WRAP);
-	data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-	timerSpinner.setLayoutData(data);
-	Label label = new Label(comp, SWT.NONE);
-	label.setText(getResourceString("Animation")); //$NON-NLS-1$
-	data = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-	label.setLayoutData(data);
-	timerSpinner.setMaximum(1000);
-	timerSpinner.setSelection(TIMER);
-	timerSpinner.setSelection(TIMER);
-	separator.setControl(comp);
-	separator.setWidth(comp.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
 }
 
-Image createImage(Display display, Color color) {
+/**
+ * Creates an image based on a gradient pattern made up of two colors.
+ * 
+ * @param display - The Display
+ * @param color1 - The first color used to create the image
+ * @param color2 - The second color used to create the image
+ * 
+ * */
+static Image createImage(Display display, Color color1, Color color2, int width, int height) {
+	Image image = new Image(display, width, height);
+	GC gc = new GC(image);
+	Rectangle rect = image.getBounds();
+	Pattern pattern = new Pattern(display, rect.x, rect.y, rect.width - 1,
+				rect.height - 1, color1, color2);
+	gc.setBackgroundPattern(pattern);
+	gc.fillRectangle(rect);
+	gc.drawRectangle(rect.x, rect.y, rect.width - 1, rect.height - 1);
+	gc.dispose();
+	pattern.dispose();
+	return image;
+}
+
+/**
+ * Creates an image based on the color provided and returns it.
+ * 
+ * @param display - The Display
+ * @param color - The color used to create the image
+ * 
+ * */
+static Image createImage(Display display, Color color) {
 	Image image = new Image(display, 16, 16);
 	GC gc = new GC(image);
 	gc.setBackground(color);
@@ -328,12 +304,17 @@ void createTabList(Composite parent) {
 		public void handleEvent(Event event) {
 			TreeItem item = (TreeItem)event.item;
 			if (item != null) {
+				GraphicsTab gt = (GraphicsTab)item.getData();
+				if (gt == tab) return;
 				setTab((GraphicsTab)item.getData());
 			}
 		}
 	});
 }
 
+/**
+ * Initializes the GraphicsTab instances that will be contained in GraphicsExample.
+ * */
 GraphicsTab[] createTabs() {
 	return new GraphicsTab[] {
 		new LineTab(this),
@@ -354,16 +335,19 @@ public void dispose() {
 		}
 	}
 	tabs = null;
-	if (images != null) {
-		for (int i = 0; i < images.size(); i++) {
-			((Image)images.elementAt(i)).dispose();
+	if (resources != null) {
+		for (int i = 0; i < resources.size(); i++) {
+			if (resources.get(i) instanceof Resource) {
+				((Resource)resources.get(i)).dispose();
+			}
 		}
 	}
-	images = null;
-	if (customColor != null) customColor.dispose();
-	customColor = null;
-	if (customImage != null) customImage.dispose();
-	customImage = null;
+	resources = null;
+	
+	if (backMenu != null) {
+		backMenu.dispose();
+		backMenu = null;
+	}
 }
 
 TreeItem findItemByData(TreeItem[] items, Object data) {
@@ -381,10 +365,6 @@ TreeItem findItemByData(TreeItem[] items, Object data) {
  */
 public GraphicsTab getTab() {
 	return tab;
-}
-
-Listener getRedrawListener() {
-	return redrawListener;
 }
 
 /**
@@ -419,13 +399,8 @@ static Image loadImage (Display display, Class clazz, String string) {
 
 Image loadImage(Display display, String name) {
 	Image image = loadImage(display, GraphicsExample.class, name);
-	if (image != null) images.addElement(image);
+	if (image != null) resources.add(image);
 	return image;
-}
-
-void paintBackground(GC gc, Rectangle rect) {
-	gc.setBackground((Color)tabBackground[0]);
-	gc.fillRectangle(rect);
 }
 
 /**
@@ -446,26 +421,25 @@ public void setFocus() {
  * Sets the current tab.
  */
 public void setTab(GraphicsTab tab) {
-	this.tab = tab;
-	Control[] children = controlPanel.getChildren();
+	Control[] children = tabControlPanel.getChildren();
 	for (int i = 0; i < children.length; i++) {
 		Control control = children[i];
 		control.dispose();
 	}
+	if (this.tab != null) this.tab.dispose();
+	this.tab = tab;
 	if (tab != null) {
-		tab.createControlPanel(controlPanel);
-		animate = tab.isAnimated();
+		tab.createControlPanel(tabControlPanel);
 	}
-	playItem.setEnabled(!animate);
-	pauseItem.setEnabled(animate);
-	GridData data = (GridData)controlPanel.getLayoutData();
-	children = controlPanel.getChildren();
+
+	GridData data = (GridData)tabControlPanel.getLayoutData();
+	children = tabControlPanel.getChildren();
 	data.exclude = children.length == 0;
-	controlPanel.setVisible(!data.exclude);
+	tabControlPanel.setVisible(!data.exclude);
 	if (data.exclude) {
-		tabPanel.layout();
+		mainControlPanel.layout();
 	} else {
-		tabPanel.layout(children);
+		mainControlPanel.layout(children);
 	}
 	if (tab != null) {
 		TreeItem[] selection = tabList.getSelection();
@@ -477,21 +451,27 @@ public void setTab(GraphicsTab tab) {
 	canvas.redraw();
 }
 
+/**
+ * Starts the animation if the animate flag is set.
+ */
 void startAnimationTimer() {
 	final Display display = Display.getCurrent();
-	display.timerExec(timerSpinner.getSelection(), new Runnable() {
+	display.timerExec(TIMER, new Runnable() {
 		public void run() {
 			if (canvas.isDisposed()) return;
-			if (animate) {
-				GraphicsTab tab = getTab();
-				if (tab != null && tab.isAnimated()) {
+			int timeout = TIMER;
+			GraphicsTab tab = getTab();
+			if (tab instanceof AnimatedGraphicsTab) {
+				AnimatedGraphicsTab animTab = (AnimatedGraphicsTab) tab;	
+				if (animTab.getAnimation()) {
 					Rectangle rect = canvas.getClientArea();
-					tab.next(rect.width, rect.height);
+					animTab.next(rect.width, rect.height);
 					canvas.redraw();
 					canvas.update();
 				}
+				timeout =  animTab.getSelectedAnimationTime();
 			}
-			display.timerExec(timerSpinner.getSelection(), this);
+			display.timerExec(timeout, this);
 		}
 	});
 }

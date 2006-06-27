@@ -16,7 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class IntroTab extends GraphicsTab {
+public class IntroTab extends AnimatedGraphicsTab {
 	
 	Font font;
 	Image image;
@@ -25,7 +25,7 @@ public class IntroTab extends GraphicsTab {
     float incX = 10.0f;
 	float incY = 5.0f;
 	int textWidth, textHeight;
-	String text = "SWT";
+	String text = GraphicsExample.getResourceString("SWT");
 	
 public IntroTab(GraphicsExample example) {
 	super(example);
@@ -44,10 +44,6 @@ public String getCategory() {
 
 public String getText() {
 	return GraphicsExample.getResourceString("SWT"); //$NON-NLS-1$
-}
-
-public boolean isAnimated() {
-	return true;
 }
 
 public void next(int width, int height) {
@@ -92,5 +88,7 @@ public void paint(GC gc, int width, int height) {
 	gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, width, height);
 	gc.setClipping((Rectangle)null);
 	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-	gc.drawPath(path);}
+	gc.drawPath(path);
+	path.dispose();
+}
 }

@@ -13,6 +13,11 @@ package org.eclipse.swt.examples.graphics;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * This class is the one used for creating a graphic. Override the paint()
+ * method to create the drawing. To create an animated graphic, use the
+ * AnimatedGraphicsTab class.
+ */
 public abstract class GraphicsTab {
 	
 GraphicsExample example;
@@ -43,19 +48,6 @@ public abstract String getText();
  */
 public String getCategory() {
 	return GraphicsExample.getResourceString("Misc"); //$NON-NLS-1$
-}
-
-/** 
- * Answer whether the receiver is animated or not. 
- */
-public boolean isAnimated() {
-	return false;
-}
-
-/** 
- * Advance the animation. 
- */
-public void next(int width, int height) {	
 }
 
 /** 

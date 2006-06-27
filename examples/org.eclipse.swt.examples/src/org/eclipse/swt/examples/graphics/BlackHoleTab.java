@@ -14,7 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
-public class BlackHoleTab extends GraphicsTab {
+public class BlackHoleTab extends AnimatedGraphicsTab {
 	
 	int size = 1;
 	
@@ -24,10 +24,6 @@ public BlackHoleTab(GraphicsExample example) {
 
 public String getText() {
 	return GraphicsExample.getResourceString("BlackHole"); //$NON-NLS-1$
-}
-
-public boolean isAnimated() {
-	return true;
 }
 
 public void next(int width, int height) {
