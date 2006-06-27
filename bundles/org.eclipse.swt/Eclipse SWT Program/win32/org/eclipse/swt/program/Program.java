@@ -56,13 +56,17 @@ public static Program findProgram (String extension) {
 	int [] phkResult = new int [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return null;
-	}	
-	int [] lpcbData = new int [] {256};
-	TCHAR lpData = new TCHAR (0, lpcbData [0]);
-	int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
+	}
+	Program program = null;
+	int [] lpcbData = new int [1];
+	int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
+	if (result == 0) {
+		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+		result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
+		if (result == 0) program = getProgram (lpData.toString (0, lpData.strlen ()));
+	}
 	OS.RegCloseKey (phkResult [0]);
-	if (result != 0) return null;
-	return getProgram (lpData.toString (0, lpData.strlen ()));
+	return program;
 }
 
 /**

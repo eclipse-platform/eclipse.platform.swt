@@ -1529,17 +1529,19 @@ public int getIconDepth () {
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, buffer1, 0, OS.KEY_READ, phkResult);
 	if (result != 0) return 4;
 	int depth = 4;
-	int [] lpcbData = {128};
+	int [] lpcbData = new int [1];
 	
 	/* Use the character encoding for the default locale */
-	TCHAR lpData = new TCHAR (0, lpcbData [0]);
 	TCHAR buffer2 = new TCHAR (0, "Shell Icon BPP", true); //$NON-NLS-1$
-	
-	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, lpData, lpcbData);
+	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, (TCHAR) null, lpcbData);
 	if (result == 0) {
-		try {
-			depth = Integer.parseInt (lpData.toString (0, lpData.strlen ()));
-		} catch (NumberFormatException e) {}
+		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+		result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, lpData, lpcbData);
+		if (result == 0) {
+			try {
+				depth = Integer.parseInt (lpData.toString (0, lpData.strlen ()));
+			} catch (NumberFormatException e) {}
+		}
 	}
 	OS.RegCloseKey (phkResult [0]);
 	return depth;

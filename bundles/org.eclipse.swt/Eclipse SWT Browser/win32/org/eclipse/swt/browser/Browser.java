@@ -166,23 +166,26 @@ public Browser(Composite parent, int style) {
 	TCHAR key = new TCHAR (0, "Shell.Explorer\\CLSID", true);	//$NON-NLS-1$
 	int [] phkResult = new int [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
-		int [] lpcbData = new int [] {256};
-		TCHAR lpData = new TCHAR (0, lpcbData [0]);
-		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
-		OS.RegCloseKey (phkResult [0]);
+		int [] lpcbData = new int [1];
+		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
 		if (result == 0) {
-			String clsid = lpData.toString (0, lpData.strlen ());
-			if (clsid.equals (CLSID_SHELLEXPLORER1)) {
-				/* Shell.Explorer.1 is the default, ensure that Shell.Explorer.2 is available */
-				key = new TCHAR (0, "Shell.Explorer.2", true);	//$NON-NLS-1$
-				phkResult [0] = 0;
-				if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) == 0) {
-					/* specify that Shell.Explorer.2 is to be used */
-					OS.RegCloseKey (phkResult [0]);
-					progId = "Shell.Explorer.2";	//$NON-NLS-1$
+			TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+			result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
+			if (result == 0) {
+				String clsid = lpData.toString (0, lpData.strlen ());
+				if (clsid.equals (CLSID_SHELLEXPLORER1)) {
+					/* Shell.Explorer.1 is the default, ensure that Shell.Explorer.2 is available */
+					key = new TCHAR (0, "Shell.Explorer.2", true);	//$NON-NLS-1$
+					int [] phkResult2 = new int [1];
+					if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult2) == 0) {
+						/* specify that Shell.Explorer.2 is to be used */
+						OS.RegCloseKey (phkResult2 [0]);
+						progId = "Shell.Explorer.2";	//$NON-NLS-1$
+					}
 				}
 			}
 		}
+		OS.RegCloseKey (phkResult [0]);
 	}
 	try {
 		site = new WebSite(frame, SWT.NONE, progId); //$NON-NLS-1$
