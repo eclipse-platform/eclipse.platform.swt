@@ -9301,32 +9301,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1paper_1size)
 }
 #endif
 
-#ifndef NO__1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins_FUNC);
-/*
-	gtk_page_setup_set_paper_size_and_default_margins(arg0, arg1);
-*/
-	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef void (*FPTR)(jint, jint);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(gtk_page_setup_set_paper_size_and_default_margins_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "gtk_page_setup_set_paper_size_and_default_margins");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0, arg1);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1page_1setup_1set_1right_1margin
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1page_1setup_1set_1right_1margin)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2)
@@ -9666,6 +9640,35 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1paper_1size_1get_1display_1name
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1display_1name)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1get_1display_1name_FUNC);
+/*
+	rc = (jint)gtk_paper_size_get_display_name(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_get_display_name_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_get_display_name");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1get_1display_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1paper_1size_1get_1height
 JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1height)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -9695,6 +9698,64 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1height)
 }
 #endif
 
+#ifndef NO__1gtk_1paper_1size_1get_1name
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1name)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1get_1name_FUNC);
+/*
+	rc = (jint)gtk_paper_size_get_name(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_get_name_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_get_name");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1get_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1paper_1size_1get_1ppd_1name
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1ppd_1name)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1get_1ppd_1name_FUNC);
+/*
+	rc = (jint)gtk_paper_size_get_ppd_name(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_get_ppd_name_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_get_ppd_name");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1get_1ppd_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1paper_1size_1get_1width
 JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1width)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -9720,6 +9781,140 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(_1gtk_1paper_1size_1get_1width)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1get_1width_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1paper_1size_1is_1custom
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1paper_1size_1is_1custom)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1is_1custom_FUNC);
+/*
+	rc = (jboolean)gtk_paper_size_is_custom(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_is_custom_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_is_custom");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1is_1custom_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1paper_1size_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1paper_1size_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_paper_size_new(lparg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jbyte *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1paper_1size_1new_1custom
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1paper_1size_1new_1custom)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jdouble arg2, jdouble arg3, jint arg4)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1new_1custom_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_paper_size_new_custom(lparg0, lparg1, arg2, arg3, arg4);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jbyte *, jbyte *, jdouble, jdouble, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_new_custom_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_new_custom");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(lparg0, lparg1, arg2, arg3, arg4);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1new_1custom_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1paper_1size_1new_1from_1ppd
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1paper_1size_1new_1from_1ppd)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jdouble arg2, jdouble arg3)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1paper_1size_1new_1from_1ppd_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_paper_size_new_from_ppd(lparg0, lparg1, arg2, arg3);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jbyte *, jbyte *, jdouble, jdouble);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_paper_size_new_from_ppd_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_paper_size_new_from_ppd");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(lparg0, lparg1, arg2, arg3);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1paper_1size_1new_1from_1ppd_FUNC);
 	return rc;
 }
 #endif
@@ -9988,35 +10183,6 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1print_1job_1set_1source_1file_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1gtk_1print_1settings_1copy
-JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1print_1settings_1copy)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1print_1settings_1copy_FUNC);
-/*
-	rc = (jint)gtk_print_settings_copy(arg0);
-*/
-	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef jint (*FPTR)(jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!handle) handle = dlopen(gtk_print_settings_copy_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "gtk_print_settings_copy");
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, _1gtk_1print_1settings_1copy_FUNC);
 	return rc;
 }
 #endif

@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1191;
-int OS_nativeFunctionCallCount[1191];
+int OS_nativeFunctionCount = 1196;
+int OS_nativeFunctionCallCount[1196];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -678,7 +678,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1page_1setup_1set_1left_1margin",
 	"_1gtk_1page_1setup_1set_1orientation",
 	"_1gtk_1page_1setup_1set_1paper_1size",
-	"_1gtk_1page_1setup_1set_1paper_1size_1and_1default_1margins",
 	"_1gtk_1page_1setup_1set_1right_1margin",
 	"_1gtk_1page_1setup_1set_1top_1margin",
 	"_1gtk_1paint_1arrow",
@@ -698,8 +697,15 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1paint_1slider",
 	"_1gtk_1paint_1tab",
 	"_1gtk_1paint_1vline",
+	"_1gtk_1paper_1size_1get_1display_1name",
 	"_1gtk_1paper_1size_1get_1height",
+	"_1gtk_1paper_1size_1get_1name",
+	"_1gtk_1paper_1size_1get_1ppd_1name",
 	"_1gtk_1paper_1size_1get_1width",
+	"_1gtk_1paper_1size_1is_1custom",
+	"_1gtk_1paper_1size_1new",
+	"_1gtk_1paper_1size_1new_1custom",
+	"_1gtk_1paper_1size_1new_1from_1ppd",
 	"_1gtk_1plug_1get_1id",
 	"_1gtk_1plug_1new",
 	"_1gtk_1print_1job_1get_1printer",
@@ -710,7 +716,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1print_1job_1new",
 	"_1gtk_1print_1job_1send",
 	"_1gtk_1print_1job_1set_1source_1file",
-	"_1gtk_1print_1settings_1copy",
 	"_1gtk_1print_1settings_1foreach",
 	"_1gtk_1print_1settings_1get",
 	"_1gtk_1print_1settings_1get_1collate",

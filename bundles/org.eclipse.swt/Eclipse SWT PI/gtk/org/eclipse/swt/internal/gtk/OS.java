@@ -5730,15 +5730,6 @@ public static final void gtk_page_setup_set_right_margin(int /*long*/ setup, dou
 		lock.unlock();
 	}
 }
-public static final native void _gtk_page_setup_set_paper_size_and_default_margins(int /*long*/ setup, int /*long*/ size);
-public static final void gtk_page_setup_set_paper_size_and_default_margins(int /*long*/ setup, int /*long*/ size) {
-	lock.lock();
-	try {
-		_gtk_page_setup_set_paper_size_and_default_margins(setup, size);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native double _gtk_page_setup_get_paper_width(int /*long*/ setup, int unit);
 public static final double gtk_page_setup_get_paper_width(int /*long*/ setup, int unit) {
 	lock.lock();
@@ -5929,6 +5920,60 @@ public static final void gtk_paint_vline(int /*long*/ style, int /*long*/ window
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_paper_size_new(byte [] name);
+public static final int /*long*/ gtk_paper_size_new(byte [] name) {
+	lock.lock();
+	try {
+		return _gtk_paper_size_new(name);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_paper_size_new_from_ppd(byte [] ppd_name, byte [] ppd_display_name, double width, double height);
+public static final int /*long*/ gtk_paper_size_new_from_ppd(byte [] ppd_name, byte [] ppd_display_name, double width, double height) {
+	lock.lock();
+	try {
+		return _gtk_paper_size_new_from_ppd(ppd_name, ppd_display_name, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_paper_size_new_custom(byte [] name, byte [] display_name, double width, double height, int unit);
+public static final int /*long*/ gtk_paper_size_new_custom(byte [] name, byte [] display_name, double width, double height, int unit) {
+	lock.lock();
+	try {
+		return _gtk_paper_size_new_custom(name, display_name, width, height, unit);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_paper_size_get_name(int /*long*/ size);
+public static final int /*long*/ gtk_paper_size_get_name(int /*long*/ size) {
+	lock.lock();
+	try {
+		return _gtk_paper_size_get_name(size);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_paper_size_get_display_name(int /*long*/ size);
+public static final int /*long*/ gtk_paper_size_get_display_name(int /*long*/ size) {
+	lock.lock();
+	try {
+		return _gtk_paper_size_get_display_name(size);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_paper_size_get_ppd_name(int /*long*/ size);
+public static final int /*long*/ gtk_paper_size_get_ppd_name(int /*long*/ size) {
+	lock.lock();
+	try {
+		return _gtk_paper_size_get_ppd_name(size);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native double _gtk_paper_size_get_width(int /*long*/ size, int unit);
 public static final double gtk_paper_size_get_width(int /*long*/ size, int unit) {
 	lock.lock();
@@ -5943,6 +5988,15 @@ public static final double gtk_paper_size_get_height(int /*long*/ size, int unit
 	lock.lock();
 	try {
 		return _gtk_paper_size_get_height(size, unit);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _gtk_paper_size_is_custom(int /*long*/ size);
+public static final boolean gtk_paper_size_is_custom(int /*long*/ size) {
+	lock.lock();
+	try {
+		return _gtk_paper_size_is_custom(size);
 	} finally {
 		lock.unlock();
 	}
@@ -6078,15 +6132,6 @@ public static final int /*long*/ gtk_print_settings_new() {
 	lock.lock();
 	try {
 		return _gtk_print_settings_new();
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native int /*long*/ _gtk_print_settings_copy(int /*long*/ settings);
-public static final int /*long*/ gtk_print_settings_copy(int /*long*/ settings) {
-	lock.lock();
-	try {
-		return _gtk_print_settings_copy(settings);
 	} finally {
 		lock.unlock();
 	}
