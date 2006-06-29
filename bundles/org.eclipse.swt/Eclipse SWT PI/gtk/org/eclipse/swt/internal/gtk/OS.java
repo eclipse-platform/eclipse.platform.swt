@@ -295,6 +295,7 @@ public class OS extends Platform {
 	public static final int GTK_RC_BG = 1 << 1;
 	public static final int GTK_RC_FG = 1 << 0;
 	public static final int GTK_RC_TEXT = 1 << 2;
+	public static final int GTK_RESPONSE_APPLY = 0xfffffff6;
 	public static final int GTK_RESPONSE_CANCEL = 0xfffffffa;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
 	public static final int GTK_SCROLL_NONE = 0;
