@@ -129,6 +129,7 @@
 #define NO_ActivateActCtx
 #define NO_ActivateKeyboardLayout
 #define NO_Arc
+#define NO_AttachThreadInput
 #define NO_AlphaBlend
 #define NO_BeginPath
 #define NO_CallNextHookEx
