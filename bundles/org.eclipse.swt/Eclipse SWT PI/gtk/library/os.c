@@ -11306,6 +11306,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1rc_1style_1set_1color_1flags)
 }
 #endif
 
+#ifndef NO__1gtk_1rc_1style_1set_1fg
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1rc_1style_1set_1fg)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	GdkColor _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1set_1fg_FUNC);
+	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
+	gtk_rc_style_set_fg((GtkRcStyle *)arg0, arg1, lparg2);
+fail:
+	OS_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1fg_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1rc_1style_1set_1text
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1rc_1style_1set_1text)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	GdkColor _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1rc_1style_1set_1text_FUNC);
+	if (arg2) if ((lparg2 = getGdkColorFields(env, arg2, &_arg2)) == NULL) goto fail;
+	gtk_rc_style_set_text((GtkRcStyle *)arg0, arg1, lparg2);
+fail:
+	OS_NATIVE_EXIT(env, that, _1gtk_1rc_1style_1set_1text_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1scale_1set_1digits
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1scale_1set_1digits)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

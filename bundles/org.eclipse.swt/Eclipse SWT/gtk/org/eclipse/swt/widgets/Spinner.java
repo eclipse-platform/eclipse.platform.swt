@@ -782,11 +782,6 @@ void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 }
 
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	OS.gtk_widget_modify_text (handle, 0, color);
-}
-
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down arrows are pressed to

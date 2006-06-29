@@ -194,6 +194,8 @@
 #define gtk_rc_style_set_bg(arg0, arg1, arg2) if (arg2) (arg0)->bg[arg1] = *arg2
 #define gtk_rc_style_set_bg_pixmap_name(arg0, arg1, arg2) (arg0)->bg_pixmap_name[arg1] = (char *)arg2
 #define gtk_rc_style_set_color_flags(arg0, arg1, arg2) (arg0)->color_flags[arg1] = arg2
+#define gtk_rc_style_set_fg(arg0, arg1, arg2) if (arg2) (arg0)->fg[arg1] = *arg2
+#define gtk_rc_style_set_text(arg0, arg1, arg2) if (arg2) (arg0)->text[arg1] = *arg2
 #define gtk_style_get_font_desc(arg0) (arg0)->font_desc
 #define gtk_style_get_base(arg0, arg1, arg2) *arg2 = (arg0)->base[arg1]
 #define gtk_style_get_bg(arg0, arg1, arg2) *arg2 = (arg0)->bg[arg1]

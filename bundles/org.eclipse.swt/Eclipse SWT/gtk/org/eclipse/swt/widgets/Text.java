@@ -1600,11 +1600,6 @@ void setFontDescription (int /*long*/ font) {
 	setTabStops (tabs);
 }
 
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	OS.gtk_widget_modify_text (handle, 0, color);
-}
-
 /**
  * Sets the orientation of the receiver, which must be one
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.

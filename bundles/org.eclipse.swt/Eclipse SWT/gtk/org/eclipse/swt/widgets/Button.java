@@ -620,9 +620,9 @@ boolean setRadioSelection (boolean value) {
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	OS.gtk_widget_modify_fg (fixedHandle, OS.GTK_STATE_NORMAL, color);
-	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle,  OS.GTK_STATE_NORMAL, color);
-	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle,  OS.GTK_STATE_NORMAL, color);
+	setForegroundColor (fixedHandle, color);
+	if (labelHandle != 0) setForegroundColor (labelHandle, color);
+	if (imageHandle != 0) setForegroundColor (imageHandle, color);
 }
 
 /**

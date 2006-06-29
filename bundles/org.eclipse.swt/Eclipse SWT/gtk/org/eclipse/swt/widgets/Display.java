@@ -3464,7 +3464,7 @@ void showIMWindow (Control control) {
 		Control widget = control.findBackgroundControl ();
 		if (widget == null) widget = control;
 		OS.gtk_widget_modify_bg (preeditWindow,  OS.GTK_STATE_NORMAL, widget.getBackgroundColor ());
-		OS.gtk_widget_modify_fg (preeditLabel,  OS.GTK_STATE_NORMAL, control.getForegroundColor ());		
+		widget.setForegroundColor (preeditLabel, control.getForegroundColor());
 		OS.gtk_widget_modify_font (preeditLabel, control.getFontDescription ());
 		if (pangoAttrs [0] != 0) OS.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		OS.gtk_label_set_text (preeditLabel, preeditString [0]);

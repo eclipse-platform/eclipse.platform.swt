@@ -2642,11 +2642,6 @@ void setFontDescription (int /*long*/ font) {
 	}
 }
 
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	OS.gtk_widget_modify_text (handle, 0, color);
-}
-
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 

@@ -1219,11 +1219,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
-void setForegroundColor (GdkColor color) {
-	super.setForegroundColor (color);
-	OS.gtk_widget_modify_text (handle, 0, color);
-}
-
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent

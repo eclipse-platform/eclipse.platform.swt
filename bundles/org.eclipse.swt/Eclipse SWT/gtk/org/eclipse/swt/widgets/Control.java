@@ -3017,7 +3017,7 @@ public void setForeground (Color color) {
 }
 
 void setForegroundColor (GdkColor color) {
-	OS.gtk_widget_modify_fg (handle, OS.GTK_STATE_NORMAL, color);
+	setForegroundColor (handle, color);
 }
 
 void setInitialBounds () {

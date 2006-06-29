@@ -294,6 +294,7 @@ public class OS extends Platform {
 	public static final int GTK_RELIEF_NORMAL = 0;
 	public static final int GTK_RC_BG = 1 << 1;
 	public static final int GTK_RC_FG = 1 << 0;
+	public static final int GTK_RC_TEXT = 1 << 2;
 	public static final int GTK_RESPONSE_CANCEL = 0xfffffffa;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
 	public static final int GTK_SCROLL_NONE = 0;
@@ -6573,6 +6574,24 @@ public static final void gtk_scale_set_draw_value(int /*long*/ scale, boolean dr
 	lock.lock();
 	try {
 		_gtk_scale_set_draw_value(scale, draw_value);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_rc_style_set_fg(int /*long*/ style, int index, GdkColor color);
+public static final void gtk_rc_style_set_fg(int /*long*/ style, int index, GdkColor color) {
+	lock.lock();
+	try {
+		_gtk_rc_style_set_fg(style, index, color);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_rc_style_set_text(int /*long*/ style, int index, GdkColor color);
+public static final void gtk_rc_style_set_text(int /*long*/ style, int index, GdkColor color) {
+	lock.lock();
+	try {
+		_gtk_rc_style_set_text(style, index, color);
 	} finally {
 		lock.unlock();
 	}

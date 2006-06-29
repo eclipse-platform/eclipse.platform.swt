@@ -771,6 +771,8 @@ typedef enum {
 	_1gtk_1rc_1style_1set_1bg_FUNC,
 	_1gtk_1rc_1style_1set_1bg_1pixmap_1name_FUNC,
 	_1gtk_1rc_1style_1set_1color_1flags_FUNC,
+	_1gtk_1rc_1style_1set_1fg_FUNC,
+	_1gtk_1rc_1style_1set_1text_FUNC,
 	_1gtk_1scale_1set_1digits_FUNC,
 	_1gtk_1scale_1set_1draw_1value_FUNC,
 	_1gtk_1scrolled_1window_1add_1with_1viewport_FUNC,

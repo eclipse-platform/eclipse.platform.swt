@@ -179,7 +179,7 @@ public void add (String string, int index) {
 		ignoreSelect = lockText = true;
 		int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
 		int /*long*/ label = OS.gtk_bin_get_child (item); 
-		OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, getForegroundColor ());
+		setForegroundColor (label, getForegroundColor ());
 		OS.gtk_widget_modify_font (label, getFontDescription ());
 		OS.gtk_widget_set_direction (label, OS.gtk_widget_get_direction (handle));
 		OS.gtk_widget_show (item);
@@ -1531,18 +1531,18 @@ void setFontDescription (int /*long*/ font) {
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
-		if (entryHandle != 0) OS.gtk_widget_modify_text (entryHandle, 0, color);
+		if (entryHandle != 0) setForegroundColor (entryHandle, color);
 		OS.g_object_set (textRenderer, OS.foreground_gdk, color, 0);
 	} else {
-		OS.gtk_widget_modify_text (entryHandle, 0, color);
+		setForegroundColor (entryHandle, color);
 		if (listHandle != 0) {
-			OS.gtk_widget_modify_text (listHandle, 0, color);
+			setForegroundColor (listHandle, color);
 			int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
 			if (itemsList != 0) {
 				int count = OS.g_list_length (itemsList);
 				for (int i=count - 1; i>=0; i--) {
 					int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-					OS.gtk_widget_modify_fg (widget,  OS.GTK_STATE_NORMAL, color);
+					setForegroundColor (widget, color);
 				}
 				OS.g_list_free (itemsList);
 			}
@@ -1635,7 +1635,7 @@ public void setItems (String [] items) {
 			byte [] buffer = Converter.wcsToMbcs (null, string, true);
 			int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
 			int /*long*/ label = OS.gtk_bin_get_child (item); 
-			OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, color);
+			setForegroundColor (label, color);
 			OS.gtk_widget_modify_font (label, font);
 			OS.gtk_widget_set_direction (label, direction);
 			OS.gtk_container_add (listHandle, item);
