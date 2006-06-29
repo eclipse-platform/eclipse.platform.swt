@@ -2714,6 +2714,7 @@ public static final native int ActivateKeyboardLayout(int hkl, int Flags);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
 public static final native boolean AlphaBlend(int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
 public static final native boolean Arc (int hdc,int nLeftRect,int nTopRect,int nRightRect,int nBottomRect,int nXStartArc,int nYStartArc,int nXEndArc,int nYEndArc);
+public static final native boolean AttachThreadInput (int idAttach, int idAttachTo, boolean fAttach);
 public static final native int BeginDeferWindowPos (int nNumWindows);
 public static final native int BeginPaint (int hWnd, PAINTSTRUCT lpPaint);
 public static final native boolean BeginPath(int hdc);

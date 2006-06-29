@@ -27,6 +27,7 @@ typedef enum {
 	AdjustWindowRectEx_FUNC,
 	AlphaBlend_FUNC,
 	Arc_FUNC,
+	AttachThreadInput_FUNC,
 	BeginDeferWindowPos_FUNC,
 	BeginPaint_FUNC,
 	BeginPath_FUNC,

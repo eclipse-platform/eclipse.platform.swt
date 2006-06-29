@@ -131,6 +131,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(Arc)
 }
 #endif
 
+#ifndef NO_AttachThreadInput
+JNIEXPORT jboolean JNICALL OS_NATIVE(AttachThreadInput)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, AttachThreadInput_FUNC);
+	rc = (jboolean)AttachThreadInput((DWORD)arg0, (DWORD)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, AttachThreadInput_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_BeginDeferWindowPos
 JNIEXPORT jint JNICALL OS_NATIVE(BeginDeferWindowPos)
 	(JNIEnv *env, jclass that, jint arg0)
