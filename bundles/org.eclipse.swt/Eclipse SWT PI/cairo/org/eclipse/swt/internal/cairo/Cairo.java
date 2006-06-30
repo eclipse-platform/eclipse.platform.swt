@@ -210,6 +210,7 @@ public static final synchronized native void cairo_surface_set_device_offset (in
 public static final synchronized native int cairo_surface_get_type (int /*long*/ surface);
 public static final synchronized native void cairo_pdf_surface_set_size (int /*long*/ surface, double width_in_points, double height_in_points);
 public static final synchronized native void cairo_ps_surface_set_size (int /*long*/ surface, double width_in_points, double height_in_points);
+public static final synchronized native void cairo_surface_set_fallback_resolution (int /*long*/ surface, double x_pixels_per_inch, double y_pixels_per_inch);
 public static final synchronized native int /*long*/ cairo_pattern_create_for_surface (int /*long*/ surface);
 public static final synchronized native int /*long*/ cairo_pattern_create_linear (double x0, double y0, double x1, double y1);
 public static final synchronized native int /*long*/ cairo_pattern_create_radial (double cx0, double cy0, double radius0, double cx1, double cy1, double radius1);

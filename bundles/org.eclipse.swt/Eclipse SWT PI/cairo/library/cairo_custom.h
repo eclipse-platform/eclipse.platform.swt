@@ -22,4 +22,5 @@
 /* Libraries for dynamic loaded functions */
 #define cairo_pdf_surface_set_size_LIB "libcairo.so.2"
 #define cairo_ps_surface_set_size_LIB "libcairo.so.2"
+#define cairo_surface_set_fallback_resolution_LIB "libcairo.so.2"
 #define cairo_surface_get_type_LIB "libcairo.so.2"

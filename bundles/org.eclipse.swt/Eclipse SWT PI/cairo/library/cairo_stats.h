@@ -159,6 +159,7 @@ typedef enum {
 	cairo_1surface_1get_1user_1data_FUNC,
 	cairo_1surface_1reference_FUNC,
 	cairo_1surface_1set_1device_1offset_FUNC,
+	cairo_1surface_1set_1fallback_1resolution_FUNC,
 	cairo_1surface_1set_1user_1data_FUNC,
 	cairo_1text_1extents_FUNC,
 	cairo_1text_1path_FUNC,

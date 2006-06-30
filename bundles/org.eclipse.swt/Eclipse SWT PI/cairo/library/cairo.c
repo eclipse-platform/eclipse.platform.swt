@@ -1526,7 +1526,24 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1surface_1get_1type)
 {
 	jint rc = 0;
 	Cairo_NATIVE_ENTER(env, that, cairo_1surface_1get_1type_FUNC);
+/*
 	rc = (jint)cairo_surface_get_type((cairo_surface_t *)arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(cairo_surface_t *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(cairo_surface_get_type_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "cairo_surface_get_type");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((cairo_surface_t *)arg0);
+		}
+	}
 	Cairo_NATIVE_EXIT(env, that, cairo_1surface_1get_1type_FUNC);
 	return rc;
 }
@@ -1561,6 +1578,32 @@ JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1surface_1set_1device_1offset)
 	Cairo_NATIVE_ENTER(env, that, cairo_1surface_1set_1device_1offset_FUNC);
 	cairo_surface_set_device_offset((cairo_surface_t *)arg0, arg1, arg2);
 	Cairo_NATIVE_EXIT(env, that, cairo_1surface_1set_1device_1offset_FUNC);
+}
+#endif
+
+#ifndef NO_cairo_1surface_1set_1fallback_1resolution
+JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1surface_1set_1fallback_1resolution)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2)
+{
+	Cairo_NATIVE_ENTER(env, that, cairo_1surface_1set_1fallback_1resolution_FUNC);
+/*
+	cairo_surface_set_fallback_resolution(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jdouble, jdouble);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(cairo_surface_set_fallback_resolution_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "cairo_surface_set_fallback_resolution");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	Cairo_NATIVE_EXIT(env, that, cairo_1surface_1set_1fallback_1resolution_FUNC);
 }
 #endif
 
