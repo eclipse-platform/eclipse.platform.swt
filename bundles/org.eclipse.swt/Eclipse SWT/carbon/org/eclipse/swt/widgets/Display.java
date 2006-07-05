@@ -107,11 +107,11 @@ public class Display extends Device {
 	Event [] eventQueue;
 	Callback actionCallback, appleEventCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, trayItemCallback;
-	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback;
+	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, pollingCallback;
 	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback;
 	int actionProc, appleEventProc, commandProc, controlProc, appearanceProc, accessibilityProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, trayItemProc;
-	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
+	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, pollingProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
@@ -2065,6 +2065,9 @@ void initializeCallbacks () {
 	trayItemCallback = new Callback (this, "trayItemProc", 4);
 	trayItemProc = trayItemCallback.getAddress ();
 	if (trayItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	pollingCallback = new Callback (this, "pollingProc", 2);
+	pollingProc = pollingCallback.getAddress ();
+	if (pollingProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -2291,6 +2294,11 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 		if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
+}
+
+int pollingProc (int inTimer, int inUserData) {
+	runAsyncMessages (false);
+	return 0;
 }
 
 /**
@@ -2760,7 +2768,11 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			if (eventKind == OS.kEventMouseDown) {
 				clearMenuFlags ();
 				if (menuBar == null || menuBar.isEnabled ()) {
+					int [] id = new int [1];
+					int eventLoop = OS.GetCurrentEventLoop ();
+					OS.InstallEventLoopTimer (eventLoop, 10 / 1000.0, 10 / 1000.0, pollingProc, 0, id);
 					OS.MenuSelect (where);
+					OS.RemoveEventLoopTimer (id [0]);
 				}					 
 				clearMenuFlags ();
 				return OS.noErr;
@@ -3071,14 +3083,15 @@ void releaseDisplay () {
 	textInputCallback.dispose ();
 	appearanceCallback.dispose ();
 	trayItemCallback.dispose ();
+	pollingCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = appearanceCallback = null;
 	accessibilityCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = trayItemCallback = null;
-	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = null;
+	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = pollingCallback = null;
 	textInputCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = trayItemProc = 0;
 	accessibilityProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
-	helpProc = hitTestProc = keyboardProc = menuProc = 0;
+	helpProc = hitTestProc = keyboardProc = menuProc = pollingProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
 	textInputProc = 0;
 	timerCallback.dispose ();

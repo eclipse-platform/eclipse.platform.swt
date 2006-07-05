@@ -209,7 +209,11 @@ void _setVisible (boolean visible) {
 	*/
 	if (left == where.h) left++;
 	if (top == where.v) top++;
+	int [] id = new int [1];
+	int eventLoop = OS.GetCurrentEventLoop ();
+	OS.InstallEventLoopTimer (eventLoop, 10 / 1000.0, 10 / 1000.0, display.pollingProc, 0, id);
 	OS.PopUpMenuSelect (handle, (short)top, (short)left, (short)-1);
+	OS.RemoveEventLoopTimer (id [0]);
 }
 
 /**
