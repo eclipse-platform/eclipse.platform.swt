@@ -26,27 +26,29 @@ import org.eclipse.swt.*;
  */
 public final class GCData {
 	public Device device;
-	public int style;
-	public Image image;
-	public int /*long*/ drawable;
+	public int style, state = -1;
 	public GdkColor foreground;
 	public GdkColor background;
+	public int /*long*/ font;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
-	public int /*long*/ font;
-	public int /*long*/ context;
-	public int /*long*/ layout;
-	public int /*long*/ clipRgn, damageRgn;
+	public int /*long*/ clipRgn;
 	public int lineWidth;
 	public int lineStyle = SWT.LINE_SOLID;
-	public int[] dashes;
+	public int[] lineDashes;
+	public int lineCap = SWT.CAP_FLAT;
+	public int lineJoin = SWT.JOIN_MITER;
 	public boolean xorMode;
 	public int alpha = 0xFF;
 	public int interpolation = SWT.DEFAULT;
 
+	public int /*long*/ context;
+	public int /*long*/ layout;
+	public int /*long*/ damageRgn;
+	public Image image;
+	public int /*long*/ drawable;	
 	public int /*long*/ cairo;
 	public boolean disposeCairo;
-
 	public String string;
 	public int stringWidth = -1;
 	public int stringHeight = -1;

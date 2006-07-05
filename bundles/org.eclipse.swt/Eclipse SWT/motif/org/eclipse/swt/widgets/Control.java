@@ -1176,10 +1176,14 @@ public int internal_new_GC (GCData data) {
 		data.device = display;
 		data.display = xDisplay;
 		data.drawable = xWindow;
-		data.foreground = getForegroundPixel ();
+		XColor foreground = new XColor ();
+		foreground.pixel = getForegroundPixel ();
+		data.foreground = foreground;
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
-		data.background = control.getBackgroundPixel ();
+		XColor background = new XColor ();
+		background.pixel = control.getBackgroundPixel ();
+		data.background = background;
 		data.backgroundImage = control.backgroundImage;
 		data.font = font;
 		int [] argList = {OS.XmNcolormap, 0};

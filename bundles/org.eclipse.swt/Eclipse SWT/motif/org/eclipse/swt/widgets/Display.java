@@ -2378,8 +2378,8 @@ public int internal_new_GC (GCData data) {
 		data.device = this;
 		data.display = xDisplay;
 		data.drawable = xDrawable;
-		data.background = getSystemColor (SWT.COLOR_WHITE).handle.pixel;
-		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle.pixel;
+		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = defaultFont;
 		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
 	}

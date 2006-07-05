@@ -232,6 +232,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - see Windows
 	gc.initCairo();
+	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
 	boolean result = false;
 	int /*long*/ cairo = gc.data.cairo;
 	int /*long*/ copy = Cairo.cairo_copy_path(handle);

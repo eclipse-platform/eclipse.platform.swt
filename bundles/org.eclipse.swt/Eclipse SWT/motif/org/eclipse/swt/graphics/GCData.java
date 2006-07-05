@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.motif.*;
 
 /**
  * Instances of this class are descriptions of GCs in terms
@@ -25,32 +26,33 @@ import org.eclipse.swt.*;
  */
 public final class GCData {
 	public Device device;
-	public int style;
-	public Image image;
-	public int display;
-	public int drawable;
-	public int foreground = -1;
-	public int background = -1;
-	public Image backgroundImage;
+	public int style, state = -1;
+	public XColor foreground;
+	public XColor background;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public Font font;
-	public int colormap;
-	public int clipRgn, damageRgn;
+	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
 	public int lineWidth;
-	public int[] dashes;
-	public int renderTable;
+	public int lineCap = SWT.CAP_FLAT;
+	public int lineJoin = SWT.JOIN_MITER;
+	public int[] lineDashes;
 	public int alpha = 0xFF;
 	public int interpolation = SWT.DEFAULT;
 
+	public int renderTable;
+	public int damageRgn;
+	public int colormap;
+	public Image backgroundImage;
+	public Image image;
+	public int display;
+	public int drawable;
 	public int /*long*/ cairo;
-
 	public String string;
 	public int stringWidth = -1;
 	public int stringHeight = -1;
 	public int xmString;
-
 	public String text;
 	public int textWidth = -1;
 	public int textHeight = -1;

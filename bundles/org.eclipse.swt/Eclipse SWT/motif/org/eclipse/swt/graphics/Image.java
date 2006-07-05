@@ -1154,8 +1154,8 @@ public int internal_new_GC (GCData data) {
 		data.device = device;
 		data.display = xDisplay;
 		data.drawable = pixmap;
-		data.background = device.COLOR_WHITE.handle.pixel;
-		data.foreground = device.COLOR_BLACK.handle.pixel;
+		data.background = device.COLOR_WHITE.handle;
+		data.foreground = device.COLOR_BLACK.handle;
 		data.font = device.systemFont;
 		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
 		data.image = this;
