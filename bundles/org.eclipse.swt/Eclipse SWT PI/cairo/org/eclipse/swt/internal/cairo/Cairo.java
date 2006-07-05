@@ -100,6 +100,7 @@ public class Cairo {
 public static final synchronized native int cairo_font_extents_t_sizeof ();
 public static final synchronized native int cairo_path_data_t_sizeof ();
 public static final synchronized native int cairo_path_t_sizeof ();
+public static final synchronized native int cairo_text_extents_t_sizeof ();
 	
 /** Natives */
 public static final synchronized native int /*long*/ cairo_create (int /*long*/ target);
@@ -174,7 +175,7 @@ public static final synchronized native void cairo_show_glyphs (int /*long*/ cr,
 public static final synchronized native int /*long*/ cairo_get_font_face (int /*long*/ cr);
 public static final synchronized native void cairo_font_extents (int /*long*/ cr, cairo_font_extents_t extents);
 public static final synchronized native void cairo_set_font_face (int /*long*/ cr, int /*long*/ font_face);
-public static final synchronized native void cairo_text_extents (int /*long*/ cr, byte[] utf8, int /*long*/ extents);
+public static final synchronized native void cairo_text_extents (int /*long*/ cr, byte[] utf8, cairo_text_extents_t extents);
 public static final synchronized native void cairo_glyph_extents (int /*long*/ cr, int /*long*/ glyphs, int num_glyphs, int /*long*/ extents);
 public static final synchronized native void cairo_text_path (int /*long*/ cr, byte[] utf8);
 public static final synchronized native void cairo_glyph_path (int /*long*/ cr, int /*long*/ glyphs, int num_glyphs);
