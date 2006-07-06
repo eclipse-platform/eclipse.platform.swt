@@ -4894,7 +4894,9 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					System.arraycopy (columns, 0, newColumns, 0, count);
 					for (int i=0; i<count; i++) {
 						TreeColumn column = newColumns [i];
-						if (!column.isDisposed ()) column.pack ();
+						if (!column.isDisposed () && column.getResizable ()) {
+							column.pack ();
+						}
 					}
 				}
 			}

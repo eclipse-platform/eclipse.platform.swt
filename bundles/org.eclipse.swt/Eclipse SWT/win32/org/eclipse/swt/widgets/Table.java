@@ -4648,12 +4648,19 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			return LRESULT.ZERO;
 		case OS.VK_ADD:
 			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-				if (hooks (SWT.MeasureItem)) {
+				int index = 0;
+				while (index < columnCount) {
+					if (!columns [index].getResizable ()) break;
+					index++;
+				}
+				if (index != columnCount || hooks (SWT.MeasureItem)) {
 					TableColumn [] newColumns = new TableColumn [columnCount];
 					System.arraycopy (columns, 0, newColumns, 0, columnCount);
 					for (int i=0; i<newColumns.length; i++) {
 						TableColumn column = newColumns [i];
-						if (!column.isDisposed ()) column.pack ();
+						if (!column.isDisposed () && column.getResizable ()) {
+							column.pack ();
+						}
 					}
 					return LRESULT.ZERO;
 				}
