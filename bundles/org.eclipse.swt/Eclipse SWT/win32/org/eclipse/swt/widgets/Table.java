@@ -4646,6 +4646,19 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			* performed in WM_KEYDOWN from WM_CHAR.
 			*/
 			return LRESULT.ZERO;
+		case OS.VK_ADD:
+			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+				if (hooks (SWT.MeasureItem)) {
+					TableColumn [] newColumns = new TableColumn [columnCount];
+					System.arraycopy (columns, 0, newColumns, 0, columnCount);
+					for (int i=0; i<newColumns.length; i++) {
+						TableColumn column = newColumns [i];
+						if (!column.isDisposed ()) column.pack ();
+					}
+					return LRESULT.ZERO;
+				}
+			}
+			break;
 		case OS.VK_PRIOR:
 		case OS.VK_NEXT:
 		case OS.VK_HOME:
