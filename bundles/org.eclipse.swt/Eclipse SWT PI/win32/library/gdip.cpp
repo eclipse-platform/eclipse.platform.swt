@@ -1674,6 +1674,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetLineJoin)
 }
 #endif
 
+#ifndef NO_Pen_1SetWidth
+JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetWidth)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Pen_1SetWidth_FUNC);
+	rc = (jint)((Pen *)arg0)->SetWidth((REAL)arg1);
+	Gdip_NATIVE_EXIT(env, that, Pen_1SetWidth_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Pen_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(Pen_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1690,7 +1702,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1new)
 {
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Pen_1new_FUNC);
-	rc = (jint)new Pen(*(Color *)arg0, (REAL)arg1);
+	rc = (jint)new Pen((Brush *)arg0, (REAL)arg1);
 	Gdip_NATIVE_EXIT(env, that, Pen_1new_FUNC);
 	return rc;
 }

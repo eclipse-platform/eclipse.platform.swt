@@ -157,6 +157,7 @@ typedef enum {
 	Pen_1SetDashStyle_FUNC,
 	Pen_1SetLineCap_FUNC,
 	Pen_1SetLineJoin_FUNC,
+	Pen_1SetWidth_FUNC,
 	Pen_1delete_FUNC,
 	Pen_1new_FUNC,
 	Point_1delete_FUNC,
