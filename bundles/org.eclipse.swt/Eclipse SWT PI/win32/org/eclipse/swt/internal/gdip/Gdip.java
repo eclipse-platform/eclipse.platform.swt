@@ -265,7 +265,7 @@ public static final native int PathGradientBrush_SetCenterColor(int brush, int c
 public static final native int PathGradientBrush_SetCenterPoint(int brush, PointF pt);
 public static final native int PathGradientBrush_SetSurroundColors(int brush, int[] colors, int[] count);
 public static final native int PathGradientBrush_SetGraphicsPath(int brush, int path);
-public static final native int Pen_new(int color, float width);
+public static final native int Pen_new(int brush, float width);
 public static final native void Pen_delete(int pen);
 public static final native int Pen_GetBrush(int pen);
 public static final native int Pen_SetBrush(int pen, int brush);
@@ -273,6 +273,7 @@ public static final native int Pen_SetDashPattern(int pen, float[] dashArray, in
 public static final native int Pen_SetDashStyle(int pen, int dashStyle);
 public static final native int Pen_SetLineCap(int pen, int startCap, int endCap, int dashCap);
 public static final native int Pen_SetLineJoin(int pen, int lineJoin);
+public static final native int Pen_SetWidth(int pen, float width);
 public static final native int Point_new(int x, int y);
 public static final native void Point_delete(int point);
 public static final native int Region_new(int hRgn);
