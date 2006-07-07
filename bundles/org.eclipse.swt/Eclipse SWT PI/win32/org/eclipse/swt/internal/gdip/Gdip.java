@@ -265,7 +265,7 @@ public static final native int PathGradientBrush_SetCenterColor(int brush, int c
 public static final native int PathGradientBrush_SetCenterPoint(int brush, PointF pt);
 public static final native int PathGradientBrush_SetSurroundColors(int brush, int[] colors, int[] count);
 public static final native int PathGradientBrush_SetGraphicsPath(int brush, int path);
-public static final native int Pen_new(int brush, float width);
+public static final native int Pen_new(int color, float width);
 public static final native void Pen_delete(int pen);
 public static final native int Pen_GetBrush(int pen);
 public static final native int Pen_SetBrush(int pen, int brush);
