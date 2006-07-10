@@ -1749,6 +1749,7 @@ public void fillPath (Path path) {
 public void fillPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	checkGC(FILL);
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
 		drawPolyline(cairo, pointArray, true);
