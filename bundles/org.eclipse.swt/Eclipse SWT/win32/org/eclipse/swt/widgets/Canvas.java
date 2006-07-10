@@ -145,7 +145,7 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	int hDC = gc.handle;
-	int pixel = background == -1 ? OS.GetBkColor (hDC) : -1;
+	int pixel = background == -1 ? gc.getBackground ().handle : -1;
 	drawBackground (hDC, rect, pixel);
 }
 

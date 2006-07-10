@@ -1702,7 +1702,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1new)
 {
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Pen_1new_FUNC);
-	rc = (jint)new Pen(*(Color *)arg0, (REAL)arg1);
+	rc = (jint)new Pen((Brush *)arg0, (REAL)arg1);
 	Gdip_NATIVE_EXIT(env, that, Pen_1new_FUNC);
 	return rc;
 }

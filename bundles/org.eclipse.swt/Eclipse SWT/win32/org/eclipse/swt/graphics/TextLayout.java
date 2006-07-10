@@ -499,6 +499,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);	
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	gc.checkGC(GC.FOREGROUND_TEXT);
 	int length = text.length();
 	if (length == 0) return;
 	int hdc = gc.handle;
