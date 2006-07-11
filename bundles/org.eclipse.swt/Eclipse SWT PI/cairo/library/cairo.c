@@ -1586,7 +1586,23 @@ JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1surface_1set_1fallback_1resolution)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2)
 {
 	Cairo_NATIVE_ENTER(env, that, cairo_1surface_1set_1fallback_1resolution_FUNC);
+/*
 	cairo_surface_set_fallback_resolution(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jdouble, jdouble);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(cairo_surface_set_fallback_resolution_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "cairo_surface_set_fallback_resolution");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
 	Cairo_NATIVE_EXIT(env, that, cairo_1surface_1set_1fallback_1resolution_FUNC);
 }
 #endif
