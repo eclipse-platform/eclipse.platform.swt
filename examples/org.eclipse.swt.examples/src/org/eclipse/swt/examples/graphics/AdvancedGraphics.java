@@ -16,9 +16,8 @@ package org.eclipse.swt.examples.graphics;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ResourceBundle;
+import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
