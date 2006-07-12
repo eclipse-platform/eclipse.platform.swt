@@ -26,14 +26,12 @@ import org.eclipse.swt.internal.carbon.Rect;
  */
 public final class GCData {
 	public Device device;
-	public int style;
-	public Image image;
+	public int style, state = -1;
 	public float[] foreground;
 	public float[] background;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
-	public int forePattern;
-	public int backPattern;
+	public Font font;
 	public int alpha = 0xFF;
 	public float[] transform = new float[]{1, 0, 0, 1, 0, 0};
 	public float[] inverseTransform = new float[]{1, 0, 0, 1, 0, 0};
@@ -42,28 +40,27 @@ public final class GCData {
 	public int lineStyle = SWT.LINE_SOLID;
 	public int lineCap = SWT.CAP_FLAT;
 	public int lineJoin = SWT.JOIN_MITER;
-	public int[] dashes;
+	public int[] lineDashes;
 	public boolean xorMode;
 	public int antialias = SWT.DEFAULT;
 	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
-	
-	public Font font;
+
+	public int forePattern;
+	public int backPattern;
+	public Image image;
 	public int fontAscent;
 	public int fontDescent;
 	public int layout;
 	public int atsuiStyle;
 	public int tabs;
-	
 	public String string;
 	public int stringLength;
 	public int stringWidth = -1;
 	public int stringHeight = -1;
 	public int drawFlags;
 	public int stringPtr;
-	
 	public Thread thread;
-
 	public int window;
 	public int paintEvent;
 	public int visibleRgn;

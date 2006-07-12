@@ -438,9 +438,11 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = translateOffset(text.length());
 	if (length == 0) return;
+	gc.checkGC(GC.FOREGROUND_FILL);
+	if (gc.data.updateClip) gc.setCGClipping();
+	OS.CGContextSaveGState(gc.handle);
 	setLayoutControl(OS.kATSUCGContextTag, gc.handle, 4);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	OS.CGContextSaveGState(gc.handle);
 	boolean restoreColor = false;
 	if (hasSelection && selectionBackground != null) {
 		if (OS.VERSION >= 0x1030) {
@@ -454,18 +456,13 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	* Feature in ATSU. There is no API to set a background attribute
 	* of an ATSU style. Draw the background of styles ourselfs.
 	*/
-	Rectangle rect = null;
-	Region clipping = null, region = null;
+	int rgn = 0;
+	CGRect rect = null;
+	Callback callback = null;
 	for (int j = 0; j < styles.length; j++) {
 		StyleItem run = styles[j];
-		if (run.style == null || run.style.background == null) continue;
-		OS.CGContextSetFillColor(gc.handle, run.style.background.handle);
-		if (clipping == null) {
-			region = new Region();
-			clipping = new Region();
-			gc.getClipping(clipping);
-			rect = clipping.getBounds();
-		}
+		TextStyle style = run.style;
+		if (style == null || style.background == null) continue;
 		int start = translateOffset(run.start);
 		int end = j + 1 < styles.length ? translateOffset(styles[j + 1].start - 1) : length;
 		for (int i=0, lineStart=0, lineY = 0; i<breaks.length; i++) {
@@ -476,10 +473,21 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				int highEnd = Math.min(lineEnd, end);
 				int highLen = highEnd - highStart + 1;
 				if (highLen > 0) {
-					OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, region.handle);
-					region.intersect(clipping);
-					gc.setClipping(region);
-					gc.fillRectangle(rect);
+					if (rgn == 0) rgn = OS.NewRgn();
+					OS.ATSUGetTextHighlight(layout, OS.Long2Fix(x), OS.Long2Fix(y + lineY + lineAscent[i]), highStart, highLen, rgn);
+					OS.CGContextSaveGState(gc.handle);
+					if (callback == null) {
+						callback = new Callback(this, "regionToRects", 4);
+						if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+					}
+					OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, callback.getAddress(), gc.handle);
+					if (rect == null) rect = new CGRect();
+					OS.CGContextGetPathBoundingBox(gc.handle, rect);
+					OS.CGContextEOClip(gc.handle);
+					OS.CGContextSetFillColorSpace(gc.handle, device.colorspace);
+					OS.CGContextSetFillColor(gc.handle, style.background.handle);
+					OS.CGContextFillRect(gc.handle, rect);
+					OS.CGContextRestoreGState(gc.handle);
 				}
 			}
 			if (lineEnd > end) break;
@@ -487,18 +495,12 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			lineStart = lineBreak;
 		}
 	}
-	if (clipping != null) {
-		gc.setClipping(clipping);
-		OS.CGContextRestoreGState(gc.handle);
-		OS.CGContextSaveGState(gc.handle);
-		clipping.dispose();
-		region.dispose();
-	}
+	if (callback != null) callback.dispose();
+	if (rgn != 0) OS.DisposeRgn(rgn);
 
 	selectionStart = translateOffset(selectionStart);
 	selectionEnd = translateOffset(selectionEnd);
 	OS.CGContextScaleCTM(gc.handle, 1, -1);
-	OS.CGContextSetFillColor(gc.handle, gc.data.foreground);
 	int drawX = OS.Long2Fix(x);
 	int drawY = y;
 	for (int i=0, start=0; i<breaks.length; i++) {
@@ -1273,6 +1275,19 @@ public int getWidth () {
  */
 public boolean isDisposed () {
 	return layout == 0;
+}
+
+int regionToRects(int message, int rgn, int r, int context) {
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		Rect rect = new Rect();
+		OS.memcpy(rect, r, Rect.sizeof);
+		OS.CGContextMoveToPoint(context, rect.left, rect.top);
+		OS.CGContextAddLineToPoint(context, rect.right, rect.top);
+		OS.CGContextAddLineToPoint(context, rect.right, rect.bottom);
+		OS.CGContextAddLineToPoint(context, rect.left, rect.bottom);
+		OS.CGContextClosePath(context);
+	}
+	return 0;
 }
 
 /**
