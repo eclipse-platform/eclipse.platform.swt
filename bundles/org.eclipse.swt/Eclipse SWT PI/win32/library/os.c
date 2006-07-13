@@ -8744,6 +8744,28 @@ fail:
 }
 #endif
 
+#ifndef NO_ScriptApplyDigitSubstitution
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptApplyDigitSubstitution)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)
+{
+	SCRIPT_DIGITSUBSTITUTE _arg0, *lparg0=NULL;
+	SCRIPT_CONTROL _arg1, *lparg1=NULL;
+	SCRIPT_STATE _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ScriptApplyDigitSubstitution_FUNC);
+	if (arg0) if ((lparg0 = getSCRIPT_DIGITSUBSTITUTEFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = getSCRIPT_CONTROLFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getSCRIPT_STATEFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)ScriptApplyDigitSubstitution((const SCRIPT_DIGITSUBSTITUTE*)lparg0, (SCRIPT_CONTROL*)lparg1, (SCRIPT_STATE*)lparg2);
+fail:
+	if (arg2 && lparg2) setSCRIPT_STATEFields(env, arg2, lparg2);
+	if (arg1 && lparg1) setSCRIPT_CONTROLFields(env, arg1, lparg1);
+	if (arg0 && lparg0) setSCRIPT_DIGITSUBSTITUTEFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, ScriptApplyDigitSubstitution_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ScriptBreak
 JNIEXPORT jint JNICALL OS_NATIVE(ScriptBreak)
 	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jobject arg2, jint arg3)
@@ -8938,6 +8960,22 @@ fail:
 	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
 	if (arg5 && lparg5) setSCRIPT_ANALYSISFields(env, arg5, lparg5);
 	OS_NATIVE_EXIT(env, that, ScriptPlace_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ScriptRecordDigitSubstitution
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptRecordDigitSubstitution)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	SCRIPT_DIGITSUBSTITUTE _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ScriptRecordDigitSubstitution_FUNC);
+	if (arg1) if ((lparg1 = getSCRIPT_DIGITSUBSTITUTEFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)ScriptRecordDigitSubstitution((LCID)arg0, (SCRIPT_DIGITSUBSTITUTE*)lparg1);
+fail:
+	if (arg1 && lparg1) setSCRIPT_DIGITSUBSTITUTEFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, ScriptRecordDigitSubstitution_FUNC);
 	return rc;
 }
 #endif

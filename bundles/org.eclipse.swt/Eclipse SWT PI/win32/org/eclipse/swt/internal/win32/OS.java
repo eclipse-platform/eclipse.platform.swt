@@ -3222,6 +3222,7 @@ public static final native boolean RestoreDC(int hdc, int nSavedDC);
 public static final native boolean RoundRect (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
 public static final native int SaveDC(int hdc);
 public static final native boolean ScreenToClient (int hWnd, POINT lpPoint);
+public static final native int ScriptApplyDigitSubstitution(SCRIPT_DIGITSUBSTITUTE psds, SCRIPT_CONTROL psc, SCRIPT_STATE pss);
 public static final native int ScriptBreak(char[] pwcChars, int cChars, SCRIPT_ANALYSIS psa, int psla);
 public static final native int ScriptGetProperties(int[] ppSp, int[] piNumScripts);
 public static final native int ScriptCacheGetHeight(int hdc, int psc, int[] tmHeight);
@@ -3233,6 +3234,7 @@ public static final native int ScriptItemize(char[] pwcInChars, int cInChars, in
 public static final native int ScriptJustify(int psva, int piAdvance, int cGlyphs, int iDx, int iMinKashida, int piJustify);
 public static final native int ScriptLayout(int cRuns, byte[] pbLevel, int[] piVisualToLogical, int[] piLogicalToVisual);
 public static final native int ScriptPlace(int hdc, int psc, int pwGlyphs, int cGlyphs, int psva, SCRIPT_ANALYSIS psa, int piAdvance, int pGoffset, int[] pABC);
+public static final native int ScriptRecordDigitSubstitution(int Locale, SCRIPT_DIGITSUBSTITUTE psds);
 public static final native int ScriptShape(int hdc, int psc, char[] pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS psa, int pwOutGlyphs, int pwLogClust, int psva, int[] pcGlyphs);
 public static final native int ScriptTextOut(int hdc, int psc, int x, int y, int fuOptions, RECT lprc, SCRIPT_ANALYSIS psa, int pwcReserved, int iReserved, int pwGlyphs, int cGlyphs, int piAdvance, int piJustify, int pGoffset);
 public static final native int ScriptXtoCP(int iX, int cChars, int cGlyphs, int pwLogClust, int psva, int piAdvance, SCRIPT_ANALYSIS psa, int[] piCP, int[] piTrailing);
