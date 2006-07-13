@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
@@ -499,10 +500,15 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);	
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	gc.checkGC(GC.FOREGROUND_TEXT);
 	int length = text.length();
 	if (length == 0) return;
 	int hdc = gc.handle;
+	Rectangle clip = gc.getClipping();
+	int foreground = gc.data.foreground;
+	int gdipGraphics = gc.data.gdipGraphics;
+	if (gdipGraphics != 0) {
+		hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+	}
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	if (hasSelection) {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
@@ -512,7 +518,6 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		selectionStart = translateOffset(selectionStart);
 		selectionEnd = translateOffset(selectionEnd);
 	}
-	int foreground = OS.GetTextColor(hdc);
 	int state = OS.SaveDC(hdc);
 	RECT rect = new RECT();
 	int selBrush = 0, selPen = 0;
@@ -529,7 +534,6 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 	int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
-	Rectangle clip = gc.getClipping();
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x + getLineIndent(line);
 		int drawY = y + lineY[line];
@@ -662,6 +666,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 	}
 	OS.RestoreDC(hdc, state);
+	if (gdipGraphics != 0) {
+		Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
+	}
 	if (selBrush != 0) OS.DeleteObject (selBrush);
 	if (selPen != 0) OS.DeleteObject (selPen);
 }
