@@ -506,8 +506,22 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	Rectangle clip = gc.getClipping();
 	int foreground = gc.data.foreground;
 	int gdipGraphics = gc.data.gdipGraphics;
+	float[] lpXform = null;
 	if (gdipGraphics != 0) {
+		int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+		if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+		if (!Gdip.Matrix_IsIdentity(matrix)) {
+			lpXform = new float[6];
+			Gdip.Matrix_GetElements(matrix, lpXform);
+		}
+		Gdip.Matrix_delete(matrix);
 		hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+	}
+	int state = OS.SaveDC(hdc);
+	if (lpXform != null) {
+		OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
+		OS.SetWorldTransform(hdc, lpXform);
 	}
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	if (hasSelection) {
@@ -518,7 +532,6 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		selectionStart = translateOffset(selectionStart);
 		selectionEnd = translateOffset(selectionEnd);
 	}
-	int state = OS.SaveDC(hdc);
 	RECT rect = new RECT();
 	int selBrush = 0, selPen = 0;
 	if (hasSelection) {
