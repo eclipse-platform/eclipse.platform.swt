@@ -2821,7 +2821,7 @@ public void getClipping (Region region) {
 		if (Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
 			Rect rect = new Rect();
 			Gdip.Graphics_GetVisibleClipBounds(gdipGraphics, rect);
-			OS.SetRectRgn(region.handle, rect.X, rect.Y, rect.Width, rect.Height);
+			OS.SetRectRgn(region.handle, rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
 		} else {
 			int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
 			int identity = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
