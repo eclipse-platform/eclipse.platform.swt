@@ -2815,12 +2815,13 @@ public void getClipping (Region region) {
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
-		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
 		int rgn = Gdip.Region_new();
 		Gdip.Graphics_GetClip(data.gdipGraphics, rgn);
 		if (Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
 			Rect rect = new Rect();
+			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
 			Gdip.Graphics_GetVisibleClipBounds(gdipGraphics, rect);
+			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 			OS.SetRectRgn(region.handle, rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height);
 		} else {
 			int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
@@ -2835,7 +2836,6 @@ public void getClipping (Region region) {
 			OS.DeleteObject(hRgn);
 		}
 		Gdip.Region_delete(rgn);
-		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
 	POINT pt = new POINT ();
