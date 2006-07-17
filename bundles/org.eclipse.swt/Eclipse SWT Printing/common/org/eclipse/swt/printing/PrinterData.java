@@ -35,15 +35,18 @@ public final class PrinterData extends DeviceData {
 	/**
 	 * the printer driver
 	 * On Windows systems, this is the name of the driver (often "winspool").
+	 * On Mac OSX, this is the destination type ("Printer", "Fax", "File", or "Preview").
 	 * On X/Window systems, this is the name of a display connection to the
 	 * Xprt server (the default is ":1").
+	 * On GTK+, this is the backend type name (eg. GtkPrintBackendCups).
 	 */
+	// TODO: note that this api is not finalized for GTK+
 	public String driver;
 	
 	/**
 	 * the name of the printer
 	 * On Windows systems, this is the name of the 'device'.
-	 * On X/Window systems, this is the printer's 'name'.
+	 * On Mac OSX, X/Window systems, and GTK+, this is the printer's 'name'.
 	 */
 	public String name;
 	
