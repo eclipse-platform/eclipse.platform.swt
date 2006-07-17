@@ -10,6 +10,35 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
+<h2> SWT Build 3.3 003 - Tuesday July 18, 2006 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+80033 - SWT Browser does not display https.  
+<br>87279 - 6 different methods cause pens to be constructed and selected
+<br>91348 - [Browser] Embedded web browser doesn't render visited links
+<br>102756 - Use GtkComboBox instead of GtkCombo  
+<br>105044 - Inefficient use of Pens and Brushes causing poor performance  
+<br>105618 - Graphics.setLineDash causes ruler guide redraw problems  
+<br>109843 - Non-resizable table columns resized by CTRL+KEYPAD_ADD  
+<br>112570 - Cairo incorrectly computes text extent  
+<br>125288 - GC.textExtent does not accurately predict text size  
+<br>127469 - When a GC uses advanced and alphas the clipping is ignored in some cases.
+<br>128200 - TextLayout ignores transformations on GC  
+<br>132500 - [Browser] Eclipse abended at the operation on WS Explorer with the internal web browser
+<br>133183 - Button widget with SWT.CHECK style is not showing foreground color when it is in selected/checked state
+<br>133928 - Program#getProgram(String) fails if the program doesn't have a \\DefaultIcon
+<br>134760 - Performance of GC.fill* methods on GTK  
+<br>140132 - GC.setLineDash no-op affects line drawing  
+<br>140244 - Eclipse 3.2 gtk RC2 dumps core on Solaris 9  
+<br>141138 - Pixel corruption involving SWT.DOUBLE_BUFFERED, GC.setAdvanced() and TextLayout
+<br>146250 - [SWT] Columns of Table widget cannot be resized, except for by dragging a mouse
+<br>149493 - UI-Thread blocked while Menu is visible  
+<br>149749 - MANIFEST.MF files must be up-to-date  
+<br>149952 - First TableColumn in a Table always left justified  
+<br>150086 - Eclipse execution problem.  
+<br>150314 - NullPointerException while creating a pattern  
+</blockquote>
+
 <h2> SWT Build 3.3 002 - Tuesday June 27, 2006 </h2>
 <h3><a NAME="New API"></a>New API</h3>
 <blockquote>
@@ -22,7 +51,6 @@ SWT</h1>
 <br>77321 - StyledText's font appears inconsistent with GC.drawString(..) font
 <br>85783 - Editor font issues  
 <br>90856 - segfault while clicking in browser  
-<br>91348 - [Browser] Embedded web browser doesn't render visited links  
 <br>99697 - Can't navigate to external web sites  
 <br>115172 - Text clipped in editors if size reduced from platform default
 <br>115947 - Accessibility : Cannot set tooltip Text for image in Table Column
