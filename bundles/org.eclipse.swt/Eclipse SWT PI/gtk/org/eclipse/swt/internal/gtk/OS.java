@@ -6311,7 +6311,7 @@ public static final int /*long*/ gtk_print_unix_dialog_new(byte[] title, int /*l
 	}
 }
 public static final native void _gtk_print_unix_dialog_set_page_setup(int /*long*/ dialog, int page_setup);
-public static final void gtk_print_unix_dialog_set_page_setup(int /*long*/ dialog, int page_setup) {
+public static final void gtk_print_unix_dialog_set_page_setup(int /*long*/ dialog, int /*long*/ page_setup) {
 	lock.lock();
 	try {
 		_gtk_print_unix_dialog_set_page_setup(dialog, page_setup);
@@ -6347,7 +6347,7 @@ public static final int gtk_print_unix_dialog_get_current_page(int /*long*/ dial
 	}
 }
 public static final native void _gtk_print_unix_dialog_set_settings(int /*long*/ dialog, int settings);
-public static final void gtk_print_unix_dialog_set_settings(int /*long*/ dialog, int settings) {
+public static final void gtk_print_unix_dialog_set_settings(int /*long*/ dialog, int /*long*/ settings) {
 	lock.lock();
 	try {
 		_gtk_print_unix_dialog_set_settings(dialog, settings);
