@@ -1060,6 +1060,10 @@ public class OS extends Platform {
 	public static final int PD_RETURNDC = 0x100;
 	public static final int PD_SELECTION = 0x1;
 	public static final int PD_USEDEVMODECOPIESANDCOLLATE = 0x40000;
+	public static final int PT_CLOSEFIGURE = 1;
+	public static final int PT_LINETO = 2;
+	public static final int PT_BEZIERTO = 4;
+	public static final int PT_MOVETO = 6;
 	public static final int PFM_TABSTOPS = 0x10;
 	public static final int PHYSICALHEIGHT = 0x6f;
 	public static final int PHYSICALOFFSETX = 0x70;
@@ -2942,6 +2946,7 @@ public static final native int GetObjectA (int hgdiobj, int cbBuffer, int lpvObj
 public static final native int GetObjectW (int hgdiobj, int cbBuffer, int lpvObject);
 public static final native boolean GetOpenFileNameW (OPENFILENAME lpofn);
 public static final native boolean GetOpenFileNameA (OPENFILENAME lpofn);
+public static final native int GetPath(int hdc, int[] lpPoints, byte[] lpTypes, int nSize);
 public static final native int GetPaletteEntries (int hPalette, int iStartIndex, int nEntries, byte[] logPalette);
 public static final native int GetParent (int hWnd);
 public static final native int GetPixel (int hdc, int x, int y);

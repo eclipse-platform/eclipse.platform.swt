@@ -252,6 +252,7 @@ typedef enum {
 	GetOpenFileNameW_FUNC,
 	GetPaletteEntries_FUNC,
 	GetParent_FUNC,
+	GetPath_FUNC,
 	GetPixel_FUNC,
 	GetPolyFillMode_FUNC,
 	GetProcAddress_FUNC,

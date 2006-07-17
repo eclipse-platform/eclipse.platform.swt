@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 694;
-int OS_nativeFunctionCallCount[694];
+int OS_nativeFunctionCount = 695;
+int OS_nativeFunctionCallCount[695];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -248,6 +248,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetOpenFileNameW",
 	"GetPaletteEntries",
 	"GetParent",
+	"GetPath",
 	"GetPixel",
 	"GetPolyFillMode",
 	"GetProcAddress",

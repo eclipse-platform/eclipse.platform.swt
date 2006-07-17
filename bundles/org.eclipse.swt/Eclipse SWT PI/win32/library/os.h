@@ -239,6 +239,7 @@
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2
 #define NO_GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2
 #define NO_GetOpenFileNameA
+#define NO_GetPath
 #define NO_GetPolyFillMode
 #define NO_GetProfileStringA
 #define NO_GetProfileStringW

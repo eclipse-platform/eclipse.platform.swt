@@ -212,4 +212,33 @@ fail:
 }
 #endif
 
+#ifndef NO_GraphicsPath_1new___3I_3BII
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1new___3I_3BII)
+	(JNIEnv *env, jclass that, jintArray arg0, jbyteArray arg1, jint arg2, jint arg3)
+{
+	Point *points = NULL;
+	jint *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1new___3I_3BII_FUNC);
+	if (arg0) if ((lparg0 = env->GetIntArrayElements(arg0, NULL)) == NULL) goto fail;
+	if (lparg0) {
+		points = new Point[arg2];
+		for (int i=0, j=0; i<arg2; i++, j+=2) {
+			Point *point = new Point(lparg0[j], lparg0[j + 1]);
+			points[i] = *point;
+			delete point;
+		}
+	}
+	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto fail;
+	rc = (jint)new GraphicsPath(points, (BYTE *)lparg1, arg2, (FillMode)arg3);
+fail:
+	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+	if (lparg0 && points) delete points;
+	if (arg0 && lparg0) env->ReleaseIntArrayElements(arg0, lparg0, 0);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1new___3I_3BII_FUNC);
+	return rc;
+}
+#endif
+
 }

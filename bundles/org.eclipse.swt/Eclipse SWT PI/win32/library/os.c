@@ -3885,6 +3885,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetParent)
 }
 #endif
 
+#ifndef NO_GetPath
+JNIEXPORT jint JNICALL OS_NATIVE(GetPath)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jbyteArray arg2, jint arg3)
+{
+	jint *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetPath_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)GetPath((HDC)arg0, (LPPOINT)lparg1, (LPBYTE)lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetPath_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetPixel
 JNIEXPORT jint JNICALL OS_NATIVE(GetPixel)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

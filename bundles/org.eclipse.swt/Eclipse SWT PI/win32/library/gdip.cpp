@@ -597,14 +597,14 @@ JNIEXPORT void JNICALL Gdip_NATIVE(GraphicsPath_1delete)
 }
 #endif
 
-#ifndef NO_GraphicsPath_1new
-JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1new)
+#ifndef NO_GraphicsPath_1new__I
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1new__I)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1new_FUNC);
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1new__I_FUNC);
 	rc = (jint)new GraphicsPath((FillMode)arg0);
-	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1new_FUNC);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1new__I_FUNC);
 	return rc;
 }
 #endif
@@ -1039,18 +1039,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__III)
 }
 #endif
 
-#ifndef NO_Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2
-JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+#ifndef NO_Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
-	RectF _arg1, *lparg1=NULL;
+	Rect _arg1, *lparg1=NULL;
 	jint rc = 0;
-	Gdip_NATIVE_ENTER(env, that, Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC);
-	if (arg1) if ((lparg1 = getRectFFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jint)((Graphics *)arg0)->SetClip(*lparg1);
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I_FUNC);
+	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)((Graphics *)arg0)->SetClip(*(Rect *)lparg1, (CombineMode)arg2);
 fail:
-	if (arg1 && lparg1) setRectFFields(env, arg1, lparg1);
-	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC);
+	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I_FUNC);
 	return rc;
 }
 #endif
