@@ -3198,13 +3198,13 @@ public void setTransform(Transform transform) {
 	}
 	if (data.forePattern != 0) {
 		OS.CGPatternRelease(data.forePattern);
-		data.forePattern = data.foregroundPattern.createPattern(handle);
-		OS.CGContextSetStrokePattern(handle, data.forePattern, data.foreground);
+		data.forePattern = 0;
+		data.state &= ~(FOREGROUND | FOREGROUND_FILL);
 	}
 	if (data.backPattern != 0) {
 		OS.CGPatternRelease(data.backPattern);
-		data.backPattern = data.backgroundPattern.createPattern(handle);
-		OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
+		data.backPattern = 0;
+		data.state &= ~BACKGROUND;
 	}
 	//TODO - rounds off problems
 	int clipRgn = data.clipRgn;
