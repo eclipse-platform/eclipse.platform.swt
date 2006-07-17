@@ -795,6 +795,9 @@ synchronized void createDisplay (DeviceData data) {
 	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
 		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
 	}
+	if (OS.GDK_WINDOWING_X11()) {
+		xDisplay = OS.GDK_DISPLAY ();
+	}
 	int /*long*/ ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);

@@ -282,6 +282,7 @@ public class OS extends Platform {
 	public static final int GTK_PRINT_CAPABILITY_SCALE        = 1 << 4;
 	public static final int GTK_PRINT_CAPABILITY_GENERATE_PDF = 1 << 5;
 	public static final int GTK_PRINT_CAPABILITY_GENERATE_PS  = 1 << 6;
+	public static final int GTK_PRINT_CAPABILITY_PREVIEW      = 1 << 7;
 	public static final int GTK_PRINT_PAGES_ALL = 0;
 	public static final int GTK_PRINT_PAGES_CURRENT = 1;
 	public static final int GTK_PRINT_PAGES_RANGES = 2;
