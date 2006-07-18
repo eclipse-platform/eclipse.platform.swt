@@ -82,7 +82,7 @@ public class SelectionEvent extends TypedEvent {
 	 * This will be either the text of the hyperlink or the value of its HREF,
 	 * if one was specified.
 	 * 
-	 * @see Link#setText(String)
+	 * @see org.eclipse.swt.widgets.Link#setText(String)
 	 * @since 3.1
 	 */
 	public String text;
