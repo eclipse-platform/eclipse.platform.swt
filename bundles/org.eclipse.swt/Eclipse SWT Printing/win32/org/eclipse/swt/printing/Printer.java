@@ -405,7 +405,7 @@ public Point getDPI() {
 
 /**
  * Returns a rectangle describing the receiver's size and location.
- * For a printer, this is the size of a page, in pixels.
+ * For a printer, this is the size of a physical page, in pixels.
  *
  * @return the bounding rectangle
  *
