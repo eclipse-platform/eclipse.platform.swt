@@ -296,6 +296,38 @@ void checkGC (int mask) {
 		OS.XSetLineAttributes(xDisplay, handle, width, line_style, cap_style, join_style);
 	}
 }
+int convertRgn(int rgn, double[] matrix) {
+	int /*long*/ newRgn = OS.XCreateRegion();
+	//TODO - get rectangles from region instead of clip box
+	XRectangle rect = new XRectangle();
+	OS.XClipBox(rgn, rect);
+	short[] pointArray = new short[8];
+	double[] x = new double[1], y = new double[1];
+	x[0] = rect.x;
+	y[0] = rect.y;
+	Cairo.cairo_matrix_transform_point(matrix, x, y);
+	pointArray[0] = (short)x[0];
+	pointArray[1] = (short)y[0];
+	x[0] = rect.x + rect.width;
+	y[0] = rect.y;
+	Cairo.cairo_matrix_transform_point(matrix, x, y);
+	pointArray[2] = (short)Math.round(x[0]);
+	pointArray[3] = (short)y[0];
+	x[0] = rect.x + rect.width;
+	y[0] = rect.y + rect.height;
+	Cairo.cairo_matrix_transform_point(matrix, x, y);
+	pointArray[4] = (short)Math.round(x[0]);
+	pointArray[5] = (short)Math.round(y[0]);
+	x[0] = rect.x;
+	y[0] = rect.y + rect.height;
+	Cairo.cairo_matrix_transform_point(matrix, x, y);
+	pointArray[6] = (short)x[0];
+	pointArray[7] = (short)Math.round(y[0]);
+	int /*long*/ polyRgn = OS.XPolygonRegion(pointArray, pointArray.length / 2, OS.EvenOddRule);
+	OS.XUnionRegion(newRgn, polyRgn, newRgn);
+	OS.XDestroyRegion(polyRgn);
+	return newRgn;
+}
 /**
  * Copies a rectangular area of the receiver at the source
  * position onto the receiver at the destination position.
@@ -2517,22 +2549,49 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int[] width = new int[1], height = new int[1], unused = new int[1];
-	OS.XGetGeometry(data.display, data.drawable, unused, unused, unused, width, height, unused, unused);
+	/* Calculate visible bounds in device space */
+	int x = 0, y = 0, width = 0, height = 0;
+	int[] w = new int[1], h = new int[1], unused = new int[1];
+	OS.XGetGeometry(data.display, data.drawable, unused, unused, unused, w, h, unused, unused);
+	width = w[0];
+	height = h[0];
+	/* Intersect visible bounds with clipping in device space and then convert then to user space */
+	int cairo = data.cairo;
 	int clipRgn = data.clipRgn;
-	if (clipRgn == 0) {
-		return new Rectangle(0, 0, width[0], height[0]);
-	} else {
+	if (clipRgn != 0 || cairo != 0) {
 		int rgn = OS.XCreateRegion ();
 		XRectangle rect = new XRectangle();
-		rect.width = (short)width[0];
-		rect.height = (short)height[0];
+		rect.width = (short)width;
+		rect.height = (short)height;
 		OS.XUnionRectWithRegion(rect, rgn, rgn);
-		OS.XIntersectRegion(rgn, clipRgn, rgn);
+		/* Intersect visible bounds with clipping */
+		if (clipRgn != 0) {
+			/* Convert clipping to device space if needed */
+			if (data.clippingTransform != null) {
+				clipRgn = convertRgn(clipRgn, data.clippingTransform);
+				OS.XIntersectRegion(rgn, clipRgn, rgn);
+				OS.XDestroyRegion(clipRgn);
+			} else {
+				OS.XIntersectRegion(rgn, clipRgn, rgn);
+			}
+		}
+		/* Convert to user space */
+		if (cairo != 0) {
+			double[] matrix = new double[6];
+			Cairo.cairo_get_matrix(cairo, matrix);
+			Cairo.cairo_matrix_invert(matrix);
+			clipRgn = convertRgn(rgn, matrix);
+			OS.XDestroyRegion(rgn);
+			rgn = clipRgn;
+		}
 		OS.XClipBox(rgn, rect);
 		OS.XDestroyRegion(rgn);
-		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+		x = rect.x;
+		y = rect.y;
+		width = rect.width;
+		height = rect.height;
 	}
+	return new Rectangle(x, y, width, height);
 }
 /** 
  * Sets the region managed by the argument to the current
@@ -2551,8 +2610,9 @@ public Rectangle getClipping() {
 public void getClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int hRegion = region.handle;
-	OS.XSubtractRegion (hRegion, hRegion, hRegion);
+	int clipping = region.handle;
+	OS.XSubtractRegion (clipping, clipping, clipping);
+	int /*long*/ cairo = data.cairo;
 	int clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		int[] width = new int[1], height = new int[1], unused = new int[1];
@@ -2562,18 +2622,29 @@ public void getClipping(Region region) {
 		rect.y = 0;
 		rect.width = (short)width[0];
 		rect.height = (short)height[0];
-		OS.XUnionRectWithRegion(rect, hRegion, hRegion);
+		OS.XUnionRectWithRegion(rect, clipping, clipping);
 	} else {
-		OS.XUnionRegion (hRegion, clipRgn, hRegion);
-		int /*long*/ cairo = data.cairo;
-		if (cairo != 0) {
-			double[] matrix = new double[]{1, 0, 0, 1, 0, 0};
-			Cairo.cairo_get_matrix(cairo, matrix);
-			if (!isIdentity(matrix)) return;
+		/* Convert clipping to device space if needed */
+		if (data.clippingTransform != null) {
+			int rgn = convertRgn(clipRgn, data.clippingTransform);
+			OS.XUnionRegion(clipping, rgn, clipping);
+			OS.XDestroyRegion(rgn);
+		} else {
+			OS.XUnionRegion(clipping, clipRgn, clipping);
 		}
 	}
 	if (data.damageRgn != 0) {
-		OS.XIntersectRegion(hRegion, data.damageRgn, hRegion);
+		OS.XIntersectRegion(clipping, data.damageRgn, clipping);
+	}
+	/* Convert to user space */
+	if (cairo != 0) {
+		double[] matrix = new double[6];
+		Cairo.cairo_get_matrix(cairo, matrix);
+		Cairo.cairo_matrix_invert(matrix);
+		int rgn = convertRgn(clipping, matrix);
+		OS.XSubtractRegion(clipping, clipping, clipping);
+		OS.XUnionRegion(clipping, rgn, clipping);
+		OS.XDestroyRegion(rgn);
 	}
 }
 String getCodePage () {
@@ -3438,6 +3509,7 @@ static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int 
 	Cairo.cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue, aa);
 }
 void setClipping(int clipRgn) {
+	int /*long*/ cairo = data.cairo;
 	if (clipRgn == 0) {
 		if (data.clipRgn != 0) {
 			OS.XDestroyRegion (data.clipRgn);
@@ -3445,27 +3517,34 @@ void setClipping(int clipRgn) {
 		} else {
 			return;
 		}
-		if (data.damageRgn == 0) {
-			OS.XSetClipMask (data.display, handle, OS.None);
+		if (cairo != 0) {
+			data.clippingTransform = null;
+			setCairoClip(cairo, clipRgn);
 		} else {
-			OS.XSetRegion (data.display, handle, data.damageRgn);			
+			if (data.damageRgn == 0) {
+				OS.XSetClipMask (data.display, handle, OS.None);
+			} else {
+				OS.XSetRegion (data.display, handle, data.damageRgn);			
+			}
 		}
 	} else {
 		if (data.clipRgn == 0) data.clipRgn = OS.XCreateRegion ();
 		OS.XSubtractRegion (data.clipRgn, data.clipRgn, data.clipRgn);
 		OS.XUnionRegion (clipRgn, data.clipRgn, data.clipRgn);
-		int clipping = clipRgn;
-		if (data.damageRgn != 0) {
-			clipping = OS.XCreateRegion();
-			OS.XUnionRegion(clipping, clipRgn, clipping);
-			OS.XIntersectRegion(clipping, data.damageRgn, clipping);
+		if (cairo != 0) {
+			if (data.clippingTransform == null) data.clippingTransform = new double[6];
+			Cairo.cairo_get_matrix(cairo, data.clippingTransform);
+			setCairoClip(cairo, clipRgn);
+		} else {
+			int clipping = clipRgn;
+			if (data.damageRgn != 0) {
+				clipping = OS.XCreateRegion();
+				OS.XUnionRegion(clipping, clipRgn, clipping);
+				OS.XIntersectRegion(clipping, data.damageRgn, clipping);
+			}
+			OS.XSetRegion (data.display, handle, clipping);
+			if (clipping != clipRgn) OS.XDestroyRegion(clipping);
 		}
-		OS.XSetRegion (data.display, handle, clipping);
-		if (clipping != clipRgn) OS.XDestroyRegion(clipping);
-	}
-	int /*long*/ cairo = data.cairo;
-	if (cairo != 0) {
-		setCairoClip(cairo, clipRgn);
 	}
 }
 /**
@@ -3981,44 +4060,6 @@ public void setTransform(Transform transform) {
 		Cairo.cairo_set_matrix(cairo, transform.handle);
 	} else {
 		Cairo.cairo_identity_matrix(cairo);
-	}
-	//TODO - round off problems
-	int /*long*/ clipRgn = data.clipRgn;
-	if (clipRgn != 0) {
-		double[] matrix = new double[]{1, 0, 0, 1, 0, 0};
-		Cairo.cairo_get_matrix(cairo, matrix);
-		Cairo.cairo_matrix_invert(matrix);
-		int /*long*/ newRgn = OS.XCreateRegion();
-		//TODO - get rectangles from region instead of clip box
-		XRectangle rect = new XRectangle();
-		OS.XClipBox(clipRgn, rect);
-		short[] pointArray = new short[8];
-		double[] x = new double[1], y = new double[1];
-		x[0] = rect.x;
-		y[0] = rect.y;
-		Cairo.cairo_matrix_transform_point(matrix, x, y);
-		pointArray[0] = (short)Math.round(x[0]);
-		pointArray[1] = (short)Math.round(y[0]);
-		x[0] = rect.x + rect.width;
-		y[0] = rect.y;
-		Cairo.cairo_matrix_transform_point(matrix, x, y);
-		pointArray[2] = (short)Math.round(x[0]);
-		pointArray[3] = (short)Math.round(y[0]);
-		x[0] = rect.x + rect.width;
-		y[0] = rect.y + rect.height;
-		Cairo.cairo_matrix_transform_point(matrix, x, y);
-		pointArray[4] = (short)Math.round(x[0]);
-		pointArray[5] = (short)Math.round(y[0]);
-		x[0] = rect.x;
-		y[0] = rect.y + rect.height;
-		Cairo.cairo_matrix_transform_point(matrix, x, y);
-		pointArray[6] = (short)Math.round(x[0]);
-		pointArray[7] = (short)Math.round(y[0]);
-		int /*long*/ polyRgn = OS.XPolygonRegion(pointArray, pointArray.length / 2, OS.EvenOddRule);
-		OS.XUnionRegion(handle, polyRgn, handle);
-		OS.XDestroyRegion(polyRgn);
-		OS.XDestroyRegion(clipRgn);
-		data.clipRgn = newRgn;
 	}
 }
 /** 

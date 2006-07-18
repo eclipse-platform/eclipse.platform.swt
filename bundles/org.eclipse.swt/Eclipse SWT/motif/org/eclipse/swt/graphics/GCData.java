@@ -49,6 +49,7 @@ public final class GCData {
 	public int display;
 	public int drawable;
 	public int /*long*/ cairo;
+	public double[] clippingTransform;
 	public String string;
 	public int stringWidth = -1;
 	public int stringHeight = -1;
