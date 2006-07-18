@@ -292,6 +292,52 @@ void checkGC (int mask) {
 	}
 }
 
+int convertRgn(int rgn, float[] transform) {
+	int newRgn = OS.NewRgn();
+	Callback callback = new Callback(this, "convertRgn", 4);
+	int proc = callback.getAddress();
+	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	float[] clippingTranform = data.clippingTransform;
+	data.clippingTransform = transform;
+	OS.QDRegionToRects(rgn, OS.kQDParseRegionFromTopLeft, proc, newRgn);
+	data.clippingTransform = clippingTranform;
+	callback.dispose();
+	return newRgn;
+}
+
+int convertRgn(int message, int rgn, int r, int newRgn) {
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		Rect rect = new Rect();
+		OS.memcpy(rect, r, Rect.sizeof);
+		CGPoint point = new CGPoint(); 
+		int polyRgn = OS.NewRgn();
+		OS.OpenRgn();
+		point.x = rect.left;
+		point.y = rect.top;
+		float[] transform = data.clippingTransform;
+		OS.CGPointApplyAffineTransform(point, transform, point);
+		short startX, startY;
+		OS.MoveTo(startX = (short)point.x, startY = (short)point.y);
+		point.x = rect.right;
+		point.y = rect.top;
+		OS.CGPointApplyAffineTransform(point, transform, point);
+		OS.LineTo((short)Math.round(point.x), (short)point.y);
+		point.x = rect.right;
+		point.y = rect.bottom;
+		OS.CGPointApplyAffineTransform(point, transform, point);
+		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
+		point.x = rect.left;
+		point.y = rect.bottom;
+		OS.CGPointApplyAffineTransform(point, transform, point);
+		OS.LineTo((short)point.x, (short)Math.round(point.y));
+		OS.LineTo(startX, startY);
+		OS.CloseRgn(polyRgn);
+		OS.UnionRgn(newRgn, polyRgn, newRgn);
+		OS.DisposeRgn(polyRgn);
+	}
+	return 0;
+}
+
 /**
  * Copies a rectangular area of the receiver at the specified
  * position into the image, which must be of type <code>SWT.BITMAP</code>.
@@ -1896,9 +1942,11 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rect rect = new Rect();
-	int width = 0, height = 0;
+	/* Calculate visible bounds in device space*/
+	Rect rect = null;
+	int x = 0, y = 0, width = 0, height = 0;
 	if (data.control != 0) {
+		if (rect == null) rect = new Rect();
 		OS.GetControlBounds(data.control, rect);
 		width = rect.right - rect.left;
 		height = rect.bottom - rect.top;
@@ -1909,17 +1957,37 @@ public Rectangle getClipping() {
 			height = OS.CGImageGetHeight(image);
 		}
 	}
+	/* Intersect visible bounds with clipping in device space and then convert the user space */
 	int clipRgn = data.clipRgn;
-	if (clipRgn == 0) {
-		return new Rectangle(0, 0, width, height);
-	} else {
+	if (clipRgn != 0 || data.inverseTransform != null) {
 		int rgn = OS.NewRgn();
-		OS.SetRectRgn(rgn, (short)0, (short)0, (short)width, (short)height);
-		OS.SectRgn(rgn, clipRgn, rgn);
+		OS.SetRectRgn(rgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
+		/* Intersect visible bounds with clipping */
+		if (clipRgn != 0) {
+			/* Convert clipping to device space if needed */
+			if (data.clippingTransform != null) {
+				clipRgn = convertRgn(clipRgn, data.clippingTransform);
+				OS.SectRgn(rgn, clipRgn, rgn);
+				OS.DisposeRgn(clipRgn);
+			} else {
+				OS.SectRgn(rgn, clipRgn, rgn);
+			}
+		}
+		/* Convert to user space */
+		if (data.inverseTransform != null) {
+			clipRgn = convertRgn(rgn, data.inverseTransform);
+			OS.DisposeRgn(rgn);
+			rgn = clipRgn;
+		}
+		if (rect == null) rect = new Rect();
 		OS.GetRegionBounds(rgn, rect);
 		OS.DisposeRgn(rgn);
-		return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+		x = rect.left;
+		y = rect.top;
+		width = rect.right - rect.left;
+		height = rect.bottom - rect.top;
 	}
+	return new Rectangle(x, y, width, height);
 }
 
 /** 
@@ -1958,8 +2026,14 @@ public void getClipping(Region region) {
 		}
 		OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
 	} else {
-		OS.CopyRgn(data.clipRgn, clipping);
-		if (!isIdentity(data.transform)) return;
+		/* Convert clipping to device space if needed */
+		if (data.clippingTransform != null) {
+			int rgn = convertRgn(data.clipRgn, data.clippingTransform);
+			OS.CopyRgn(rgn, clipping);
+			OS.DisposeRgn(rgn);
+		} else {
+			OS.CopyRgn(data.clipRgn, clipping);
+		}
 	}
 	if (data.paintEvent != 0 && data.visibleRgn != 0) {
 		if (bounds == null) bounds = new Rect();
@@ -1967,6 +2041,12 @@ public void getClipping(Region region) {
 		if (!(OS.HIVIEW && data.paintEvent != 0)) OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
 		OS.SectRgn(data.visibleRgn, clipping, clipping);
 		if (!(OS.HIVIEW && data.paintEvent != 0)) OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
+	}
+	/* Convert to user space */
+	if (data.inverseTransform != null) {
+		int rgn = convertRgn(clipping, data.inverseTransform);
+		OS.CopyRgn(rgn, clipping);
+		OS.DisposeRgn(rgn);
 	}
 }
 
@@ -2268,8 +2348,12 @@ public void getTransform (Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	float[] cmt = data.transform; 
-	transform.setElements(cmt[0], cmt[1], cmt[2], cmt[3], cmt[4], cmt[5]);
+	float[] cmt = data.transform;
+	if (cmt != null) {
+		transform.setElements(cmt[0], cmt[1], cmt[2], cmt[3], cmt[4], cmt[5]);
+	} else {
+		transform.setElements(1, 0, 0, 1, 0, 0);
+	}
 }
 
 /** 
@@ -2531,9 +2615,14 @@ void setClipping(int clipRgn) {
 //		} else {
 //			return;
 		}
+		data.clippingTransform = null;
 	} else {
 		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
 		OS.CopyRgn(clipRgn, data.clipRgn);
+		if (data.transform != null) {
+			if (data.clippingTransform == null) data.clippingTransform = new float[6];
+			System.arraycopy(data.transform, 0, data.clippingTransform, 0, data.transform.length);
+		}
 	}
 	data.updateClip = true;
 	setCGClipping();
@@ -3102,36 +3191,6 @@ public void setXORMode(boolean xor) {
 	data.xorMode = xor;
 }
 
-int regionToRects(int message, int rgn, int r, int newRgn) {
-	if (message == OS.kQDRegionToRectsMsgParse) {
-		Rect rect = new Rect();
-		OS.memcpy(rect, r, Rect.sizeof);
-		CGPoint point = new CGPoint(); 
-		int polyRgn = OS.NewRgn();
-		OS.OpenRgn();
-		point.x = rect.left;
-		point.y = rect.top;
-		OS.CGPointApplyAffineTransform(point, data.inverseTransform, point);
-		OS.MoveTo((short)Math.round(point.x), (short)Math.round(point.y));
-		point.x = rect.right;
-		point.y = rect.top;
-		OS.CGPointApplyAffineTransform(point, data.inverseTransform, point);
-		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
-		point.x = rect.right;
-		point.y = rect.bottom;
-		OS.CGPointApplyAffineTransform(point, data.inverseTransform, point);
-		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
-		point.x = rect.left;
-		point.y = rect.bottom;
-		OS.CGPointApplyAffineTransform(point, data.inverseTransform, point);
-		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
-		OS.CloseRgn(polyRgn);
-		OS.UnionRgn(newRgn, polyRgn, newRgn);
-		OS.DisposeRgn(polyRgn);
-	}
-	return 0;
-}
-
 /**
  * Sets the receiver's text anti-aliasing value to the parameter, 
  * which must be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code>
@@ -3186,15 +3245,16 @@ public void setTextAntialias(int antialias) {
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.CGContextConcatCTM(handle, data.inverseTransform);
+	if (data.inverseTransform != null) OS.CGContextConcatCTM(handle, data.inverseTransform);
 	if (transform != null) {
 		OS.CGContextConcatCTM(handle, transform.handle);
+		if (data.transform == null) data.transform = new float[6];
+		if (data.inverseTransform == null) data.inverseTransform = new float[6];
 		System.arraycopy(transform.handle, 0, data.transform, 0, data.transform.length);
 		System.arraycopy(transform.handle, 0, data.inverseTransform, 0, data.inverseTransform.length);
 		OS.CGAffineTransformInvert(data.inverseTransform, data.inverseTransform);
 	} else {
-		data.transform = new float[]{1, 0, 0, 1, 0, 0};
-		data.inverseTransform = new float[]{1, 0, 0, 1, 0, 0};
+		data.transform = data.inverseTransform = null;
 	}
 	if (data.forePattern != 0) {
 		OS.CGPatternRelease(data.forePattern);
@@ -3205,18 +3265,6 @@ public void setTransform(Transform transform) {
 		OS.CGPatternRelease(data.backPattern);
 		data.backPattern = 0;
 		data.state &= ~BACKGROUND;
-	}
-	//TODO - rounds off problems
-	int clipRgn = data.clipRgn;
-	if (clipRgn != 0) {
-		int newRgn = OS.NewRgn();
-		Callback callback = new Callback(this, "regionToRects", 4);
-		int proc = callback.getAddress();
-		if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.QDRegionToRects(clipRgn, OS.kQDParseRegionFromTopLeft, proc, newRgn);
-		callback.dispose();
-		OS.DisposeRgn(clipRgn);
-		data.clipRgn = newRgn;
 	}
 }
 

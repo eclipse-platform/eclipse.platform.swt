@@ -33,8 +33,9 @@ public final class GCData {
 	public Pattern backgroundPattern;
 	public Font font;
 	public int alpha = 0xFF;
-	public float[] transform = new float[]{1, 0, 0, 1, 0, 0};
-	public float[] inverseTransform = new float[]{1, 0, 0, 1, 0, 0};
+	public float[] transform;
+	public float[] inverseTransform;
+	public float[] clippingTransform;
 	public int clipRgn;
 	public int lineWidth;
 	public int lineStyle = SWT.LINE_SOLID;
