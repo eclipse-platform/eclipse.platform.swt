@@ -318,6 +318,44 @@ void checkGC (int mask) {
 	}
 }
 
+int convertRgn(int rgn, double[] matrix) {
+	int /*long*/ newRgn = OS.gdk_region_new();
+	int[] nRects = new int[1];
+	int /*long*/[] rects = new int /*long*/[1];
+	OS.gdk_region_get_rectangles(rgn, rects, nRects);
+	GdkRectangle rect = new GdkRectangle();
+	int[] pointArray = new int[8];
+	double[] x = new double[1], y = new double[1];
+	for (int i=0; i<nRects[0]; i++) {
+		OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
+		x[0] = rect.x;
+		y[0] = rect.y;
+		Cairo.cairo_matrix_transform_point(matrix, x, y);
+		pointArray[0] = (int)x[0];
+		pointArray[1] = (int)y[0];
+		x[0] = rect.x + rect.width;
+		y[0] = rect.y;
+		Cairo.cairo_matrix_transform_point(matrix, x, y);
+		pointArray[2] = (int)Math.round(x[0]);
+		pointArray[3] = (int)y[0];
+		x[0] = rect.x + rect.width;
+		y[0] = rect.y + rect.height;
+		Cairo.cairo_matrix_transform_point(matrix, x, y);
+		pointArray[4] = (int)Math.round(x[0]);
+		pointArray[5] = (int)Math.round(y[0]);
+		x[0] = rect.x;
+		y[0] = rect.y + rect.height;
+		Cairo.cairo_matrix_transform_point(matrix, x, y);
+		pointArray[6] = (int)x[0];
+		pointArray[7] = (int)Math.round(y[0]);
+		int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
+		OS.gdk_region_union(newRgn, polyRgn);
+		OS.gdk_region_destroy(polyRgn);
+	}
+	if (rects[0] != 0) OS.g_free(rects[0]);
+	return newRgn;
+}
+
 /**
  * Copies a rectangular area of the receiver at the specified
  * position into the image, which must be of type <code>SWT.BITMAP</code>.
@@ -2077,22 +2115,49 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int[] width = new int[1], height = new int[1];
-	OS.gdk_drawable_get_size(data.drawable, width, height);
+	/* Calculate visible bounds in device space */
+	int x = 0, y = 0, width = 0, height = 0;
+	int[] w = new int[1], h = new int[1];
+	OS.gdk_drawable_get_size(data.drawable, w, h);
+	width = w[0];
+	height = h[0];
+	/* Intersect visible bounds with clipping in device space and then convert then to user space */
+	int /*long*/ cairo = data.cairo;
 	int /*long*/ clipRgn = data.clipRgn;
-	if (clipRgn == 0) {
-		return new Rectangle(0, 0, width[0], height[0]);
-	} else {
+	if (clipRgn != 0 || cairo != 0) {
 		int /*long*/ rgn = OS.gdk_region_new();
 		GdkRectangle rect = new GdkRectangle();
-		rect.width = width[0];
-		rect.height = height[0];
+		rect.width = width;
+		rect.height = height;
 		OS.gdk_region_union_with_rect(rgn, rect);
-		OS.gdk_region_intersect(rgn, clipRgn);
+		/* Intersect visible bounds with clipping */
+		if (clipRgn != 0) {
+			/* Convert clipping to device space if needed */
+			if (data.clippingTransform != null) {
+				clipRgn = convertRgn(clipRgn, data.clippingTransform);
+				OS.gdk_region_intersect(rgn, clipRgn);
+				OS.gdk_region_destroy(clipRgn);
+			} else {
+				OS.gdk_region_intersect(rgn, clipRgn);
+			}
+		}
+		/* Convert to user space */
+		if (cairo != 0) {
+			double[] matrix = new double[6];
+			Cairo.cairo_get_matrix(cairo, matrix);
+			Cairo.cairo_matrix_invert(matrix);
+			clipRgn = convertRgn(rgn, matrix);
+			OS.gdk_region_destroy(rgn);
+			rgn = clipRgn;
+		}
 		OS.gdk_region_get_clipbox(rgn, rect);
 		OS.gdk_region_destroy(rgn);
-		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+		x = rect.x;
+		y = rect.y;
+		width = rect.width;
+		height = rect.height;
 	}
+	return new Rectangle(x, y, width, height);
 }
 
 /** 
@@ -2113,28 +2178,39 @@ public void getClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int /*long*/ hRegion = region.handle;
-	OS.gdk_region_subtract(hRegion, hRegion);
+	int /*long*/ clipping = region.handle;
+	OS.gdk_region_subtract(clipping, clipping);
+	int /*long*/ cairo = data.cairo;
 	int /*long*/ clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		int[] width = new int[1], height = new int[1];
 		OS.gdk_drawable_get_size(data.drawable, width, height);
 		GdkRectangle rect = new GdkRectangle();
-		rect.x = rect.y = 0;
 		rect.width = width[0];
 		rect.height = height[0];
-		OS.gdk_region_union_with_rect(hRegion, rect);
+		OS.gdk_region_union_with_rect(clipping, rect);
 	} else {
-		OS.gdk_region_union(hRegion, clipRgn);
-		int /*long*/ cairo = data.cairo;
-		if (cairo != 0) {
-			double[] matrix = new double[]{1, 0, 0, 1, 0, 0};
-			Cairo.cairo_get_matrix(cairo, matrix);
-			if (!isIdentity(matrix)) return;
+		/* Convert clipping to device space if needed */
+		if (data.clippingTransform != null) {
+			int rgn = convertRgn(clipRgn, data.clippingTransform);
+			OS.gdk_region_union(clipping, rgn);
+			OS.gdk_region_destroy(rgn);
+		} else {
+			OS.gdk_region_union(clipping, clipRgn);
 		}
 	}
 	if (data.damageRgn != 0) {
-		OS.gdk_region_intersect(hRegion, data.damageRgn);
+		OS.gdk_region_intersect(clipping, data.damageRgn);
+	}
+	/* Convert to user space */
+	if (cairo != 0) {
+		double[] matrix = new double[6];
+		Cairo.cairo_get_matrix(cairo, matrix);
+		Cairo.cairo_matrix_invert(matrix);
+		int rgn = convertRgn(clipping, matrix);
+		OS.gdk_region_subtract(clipping, clipping);
+		OS.gdk_region_union(clipping, rgn);
+		OS.gdk_region_destroy(rgn);
 	}
 }
 
@@ -2798,6 +2874,7 @@ static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int 
 }
 
 void setClipping(int /*long*/ clipRgn) {
+	int /*long*/ cairo = data.cairo;
 	if (clipRgn == 0) {
 		if (data.clipRgn != 0) {
 			OS.gdk_region_destroy(data.clipRgn);
@@ -2805,24 +2882,31 @@ void setClipping(int /*long*/ clipRgn) {
 		} else {
 			return;
 		}
-		int /*long*/ clipping = data.damageRgn != 0 ? data.damageRgn : 0;
-		OS.gdk_gc_set_clip_region(handle, clipping);
+		if (cairo != 0) {
+			data.clippingTransform = null;
+			setCairoClip(cairo, clipRgn);
+		} else {
+			int /*long*/ clipping = data.damageRgn != 0 ? data.damageRgn : 0;
+			OS.gdk_gc_set_clip_region(handle, clipping);
+		}
 	} else {
 		if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
 		OS.gdk_region_subtract(data.clipRgn, data.clipRgn);
 		OS.gdk_region_union(data.clipRgn, clipRgn);
-		int /*long*/ clipping = clipRgn;
-		if (data.damageRgn != 0) {
-			clipping = OS.gdk_region_new();
-			OS.gdk_region_union(clipping, clipRgn);
-			OS.gdk_region_intersect(clipping, data.damageRgn);
+		if (cairo != 0) {
+			if (data.clippingTransform == null) data.clippingTransform = new double[6];
+			Cairo.cairo_get_matrix(cairo, data.clippingTransform);
+			setCairoClip(cairo, clipRgn);
+		} else {
+			int /*long*/ clipping = clipRgn;
+			if (data.damageRgn != 0) {
+				clipping = OS.gdk_region_new();
+				OS.gdk_region_union(clipping, clipRgn);
+				OS.gdk_region_intersect(clipping, data.damageRgn);
+			}
+			OS.gdk_gc_set_clip_region(handle, clipping);
+			if (clipping != clipRgn) OS.gdk_region_destroy(clipping);
 		}
-		OS.gdk_gc_set_clip_region(handle, clipping);
-		if (clipping != clipRgn) OS.gdk_region_destroy(clipping);
-	}
-	int /*long*/ cairo = data.cairo;
-	if (cairo != 0) {
-		setCairoClip(cairo, clipRgn);
 	}
 }
 
@@ -3355,49 +3439,6 @@ public void setTransform(Transform transform) {
 		Cairo.cairo_set_matrix(cairo, transform.handle);
 	} else {
 		Cairo.cairo_identity_matrix(cairo);
-	}
-	//TODO - round off problems
-	int /*long*/ clipRgn = data.clipRgn;
-	if (clipRgn != 0) {
-		double[] matrix = new double[]{1, 0, 0, 1, 0, 0};
-		Cairo.cairo_get_matrix(cairo, matrix);
-		Cairo.cairo_matrix_invert(matrix);
-		int /*long*/ newRgn = OS.gdk_region_new();
-		int[] nRects = new int[1];
-		int /*long*/[] rects = new int /*long*/[1];
-		OS.gdk_region_get_rectangles(clipRgn, rects, nRects);
-		GdkRectangle rect = new GdkRectangle();
-		int[] pointArray = new int[8];
-		double[] x = new double[1], y = new double[1];
-		for (int i=0; i<nRects[0]; i++) {
-			OS.memmove(rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
-			x[0] = rect.x;
-			y[0] = rect.y;
-			Cairo.cairo_matrix_transform_point(matrix, x, y);
-			pointArray[0] = (int)Math.round(x[0]);
-			pointArray[1] = (int)Math.round(y[0]);
-			x[0] = rect.x + rect.width;
-			y[0] = rect.y;
-			Cairo.cairo_matrix_transform_point(matrix, x, y);
-			pointArray[2] = (int)Math.round(x[0]);
-			pointArray[3] = (int)Math.round(y[0]);
-			x[0] = rect.x + rect.width;
-			y[0] = rect.y + rect.height;
-			Cairo.cairo_matrix_transform_point(matrix, x, y);
-			pointArray[4] = (int)Math.round(x[0]);
-			pointArray[5] = (int)Math.round(y[0]);
-			x[0] = rect.x;
-			y[0] = rect.y + rect.height;
-			Cairo.cairo_matrix_transform_point(matrix, x, y);
-			pointArray[6] = (int)Math.round(x[0]);
-			pointArray[7] = (int)Math.round(y[0]);
-			int /*long*/ polyRgn = OS.gdk_region_polygon(pointArray, pointArray.length / 2, OS.GDK_EVEN_ODD_RULE);
-			OS.gdk_region_union(newRgn, polyRgn);
-			OS.gdk_region_destroy(polyRgn);
-		}
-		if (rects[0] != 0) OS.g_free(rects[0]);
-		OS.gdk_region_destroy(clipRgn);
-		data.clipRgn = newRgn;
 	}
 }
 
