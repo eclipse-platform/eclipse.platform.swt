@@ -318,7 +318,7 @@ void checkGC (int mask) {
 	}
 }
 
-int convertRgn(int rgn, double[] matrix) {
+int /*long*/ convertRgn(int /*long*/ rgn, double[] matrix) {
 	int /*long*/ newRgn = OS.gdk_region_new();
 	int[] nRects = new int[1];
 	int /*long*/[] rects = new int /*long*/[1];
@@ -2192,7 +2192,7 @@ public void getClipping(Region region) {
 	} else {
 		/* Convert clipping to device space if needed */
 		if (data.clippingTransform != null) {
-			int rgn = convertRgn(clipRgn, data.clippingTransform);
+			int /*long*/ rgn = convertRgn(clipRgn, data.clippingTransform);
 			OS.gdk_region_union(clipping, rgn);
 			OS.gdk_region_destroy(rgn);
 		} else {
@@ -2207,7 +2207,7 @@ public void getClipping(Region region) {
 		double[] matrix = new double[6];
 		Cairo.cairo_get_matrix(cairo, matrix);
 		Cairo.cairo_matrix_invert(matrix);
-		int rgn = convertRgn(clipping, matrix);
+		int /*long*/ rgn = convertRgn(clipping, matrix);
 		OS.gdk_region_subtract(clipping, clipping);
 		OS.gdk_region_union(clipping, rgn);
 		OS.gdk_region_destroy(rgn);
