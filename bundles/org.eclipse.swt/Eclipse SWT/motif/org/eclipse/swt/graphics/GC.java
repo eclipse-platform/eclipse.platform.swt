@@ -3843,7 +3843,7 @@ public void setLineDash(int[] dashes) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int[] lineDashes = data.lineDashes;
 	if (dashes != null && dashes.length > 0) {
-		boolean changed = lineDashes == null || lineDashes.length != dashes.length;
+		boolean changed = data.lineStyle != SWT.LINE_CUSTOM || lineDashes == null || lineDashes.length != dashes.length;
 		for (int i = 0; i < dashes.length; i++) {
 			int dash = dashes[i];
 			if (dash <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -3854,7 +3854,7 @@ public void setLineDash(int[] dashes) {
 		System.arraycopy(dashes, 0, data.lineDashes, 0, dashes.length);
 		data.lineStyle = SWT.LINE_CUSTOM;
 	} else {
-		if (lineDashes == null || lineDashes.length == 0) return;
+		if (data.lineStyle == SWT.LINE_SOLID && (lineDashes == null || lineDashes.length == 0)) return;
 		data.lineDashes = null;
 		data.lineStyle = SWT.LINE_SOLID;
 	}
