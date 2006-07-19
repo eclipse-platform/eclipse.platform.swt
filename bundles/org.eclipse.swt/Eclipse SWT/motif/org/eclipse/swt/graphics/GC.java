@@ -3514,8 +3514,6 @@ void setClipping(int clipRgn) {
 		if (data.clipRgn != 0) {
 			OS.XDestroyRegion (data.clipRgn);
 			data.clipRgn = 0;
-		} else {
-			return;
 		}
 		if (cairo != 0) {
 			data.clippingTransform = null;
@@ -3606,7 +3604,6 @@ public void setClipping(Path path) {
 	if (path != null) {
 		initCairo();
 		int /*long*/ cairo = data.cairo;
-		Cairo.cairo_reset_clip(cairo);
 		int /*long*/ copy = Cairo.cairo_copy_path(path.handle);
 		if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_append_path(cairo, copy);
