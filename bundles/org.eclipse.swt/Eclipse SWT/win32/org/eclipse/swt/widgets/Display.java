@@ -1181,7 +1181,7 @@ int getClickCount (int type, int button, int hwnd, int lParam) {
 		case SWT.MouseDown:
 			int doubleClick = OS.GetDoubleClickTime ();
 			if (clickRect == null) clickRect = new RECT ();
-			int deltaTime = Math.abs (lastTime - OS.GetMessageTime ());
+			int deltaTime = Math.abs (lastTime - getLastEventTime ());
 			POINT pt = new POINT ();
 			pt.x = (short) (lParam & 0xFFFF);
 			pt.y = (short) (lParam >> 16);
@@ -1194,7 +1194,7 @@ int getClickCount (int type, int button, int hwnd, int lParam) {
 		case SWT.MouseDoubleClick:
 			lastHwnd = hwnd;
 			lastButton = button;
-			lastTime = OS.GetMessageTime ();
+			lastTime = getLastEventTime ();
 			int xInset = OS.GetSystemMetrics (OS.SM_CXDOUBLECLK) / 2;
 			int yInset = OS.GetSystemMetrics (OS.SM_CYDOUBLECLK) / 2;
 			int x = (short) (lParam & 0xFFFF), y = (short) (lParam >> 16);
