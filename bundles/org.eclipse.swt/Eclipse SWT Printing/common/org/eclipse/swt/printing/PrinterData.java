@@ -64,12 +64,14 @@ public final class PrinterData extends DeviceData {
 	public int scope = ALL_PAGES;
 	
 	/**
-	 * the start page of a page range, used when scope is PAGE_RANGE
+	 * the start page of a page range, used when scope is PAGE_RANGE.
+	 * This value can be from 1 to the maximum number of pages for the platform.
 	 */
 	public int startPage = 0;
 
 	/**
-	 * the end page of a page range, used when scope is PAGE_RANGE
+	 * the end page of a page range, used when scope is PAGE_RANGE.
+	 * This value can be from 1 to the maximum number of pages for the platform.
 	 */
 	public int endPage = 0;
 	
