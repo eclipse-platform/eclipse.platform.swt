@@ -226,8 +226,8 @@ public int ConfirmEx(int parent, int dialogTitle, int text, int buttonFlags, int
 	}
 	
 	String button1Label = getLabel(buttonFlags, nsIPromptService.BUTTON_POS_0, button0Title);
-	String button2Label = getLabel(buttonFlags, nsIPromptService.BUTTON_POS_1, button0Title);
-	String button3Label = getLabel(buttonFlags, nsIPromptService.BUTTON_POS_2, button0Title);
+	String button2Label = getLabel(buttonFlags, nsIPromptService.BUTTON_POS_1, button1Title);
+	String button3Label = getLabel(buttonFlags, nsIPromptService.BUTTON_POS_2, button2Title);
 	
 	PromptDialog dialog = new PromptDialog(browser.getShell());
 	int[] check = new int[1], result = new int[1];
