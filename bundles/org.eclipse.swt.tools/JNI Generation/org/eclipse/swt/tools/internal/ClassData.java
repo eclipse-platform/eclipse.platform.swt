@@ -20,7 +20,7 @@ public ClassData(Class clazz, String str) {
 }
 	
 public static String[] getAllFlags() {
-	return new String[]{"no_gen", "cpp"};
+	return new String[]{FLAG_NO_GEN, FLAG_CPP};
 }
 
 public Class getClazz() {

@@ -16,7 +16,7 @@ import java.util.*;
 
 import org.eclipse.swt.SWT;
 
-public abstract class JNIGenerator {
+public abstract class JNIGenerator implements Flags {
 
 	Class mainClass;
 	Class[] classes;
@@ -275,7 +275,7 @@ public void generate() {
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
 		ClassData data = getMetaData().getMetaData(clazz);
-		if (data.getFlag("cpp")) {
+		if (data.getFlag(FLAG_CPP)) {
 			isCPP = true;
 			break;
 		}
@@ -302,7 +302,7 @@ public Class[] getClasses() {
 
 protected boolean getGenerate(Class clazz) {
 	ClassData data = getMetaData().getMetaData(clazz);
-	return !data.getFlag("no_gen");
+	return !data.getFlag(FLAG_NO_GEN);
 }
 
 public boolean getCPP() {

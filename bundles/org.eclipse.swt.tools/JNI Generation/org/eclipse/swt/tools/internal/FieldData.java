@@ -22,7 +22,7 @@ public FieldData(Field field, String str) {
 }
 
 public static String[] getAllFlags() {
-	return new String[]{"no_gen", "no_wince"};
+	return new String[]{FLAG_NO_GEN, FLAG_NO_WINCE};
 }
 
 public String getAccessor() {
