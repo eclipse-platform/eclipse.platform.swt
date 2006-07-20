@@ -83,4 +83,13 @@ public class StyledTextPrintOptions {
 	 * Print the line background color. Default value is <code>false</code>.
 	 */
 	public boolean printLineBackground = false;
+	
+	/**
+	 * Print line numbers. Default value is <code>false</code>.
+	 * 
+	 * @since 3.3
+	 */
+	public boolean printLineNumbers = false;
+	
+	
 }
