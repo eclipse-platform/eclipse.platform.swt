@@ -16,9 +16,12 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Compatibility;
 
 class PngPlteChunk extends PngChunk {
+	
+	int paletteSize;
 
 PngPlteChunk(PaletteData palette) {
 	super(palette.getRGBs().length * 3);
+	paletteSize = length / 3;
 	setType(TYPE_PLTE);
 	setPaletteData(palette);
 	setCRC(computeCRC());
@@ -26,6 +29,7 @@ PngPlteChunk(PaletteData palette) {
 
 PngPlteChunk(byte[] reference){
 	super(reference);
+	paletteSize = length / 3;
 }
 
 int getChunkType() {
@@ -36,7 +40,7 @@ int getChunkType() {
  * Get the number of colors in this palette.
  */
 int getPaletteSize() {
-	return getLength() / 3;
+	return paletteSize;
 }
 
 /**
@@ -46,9 +50,9 @@ int getPaletteSize() {
  * does not store the palette data created.
  */
 PaletteData getPaletteData() {
-	RGB[] rgbs = new RGB[getPaletteSize()];
+	RGB[] rgbs = new RGB[paletteSize];
 //	int start = DATA_OFFSET;
-//	int end = DATA_OFFSET + getLength();
+//	int end = DATA_OFFSET + length;
 	for (int i = 0; i < rgbs.length; i++) {
 		int offset = DATA_OFFSET + (i * 3);
 		int red = reference[offset] & 0xFF;
@@ -102,17 +106,17 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	// Palettes cannot have more entries than 2^bitDepth
 	// where bitDepth is the bit depth of the image given
 	// in the IHDR chunk.
-	if (Compatibility.pow2(headerChunk.getBitDepth()) < getPaletteSize()) {
+	if (Compatibility.pow2(headerChunk.getBitDepth()) < paletteSize) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 	
 	// Palettes cannot have more than 256 entries.
-	if (256 < getPaletteSize()) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	if (256 < paletteSize) SWT.error(SWT.ERROR_INVALID_IMAGE);
 }
 
 void contributeToString(StringBuffer buffer) {
 	buffer.append("\n\tPalette size:");
-	buffer.append(getPaletteSize());
+	buffer.append(paletteSize);
 }
 
 }
