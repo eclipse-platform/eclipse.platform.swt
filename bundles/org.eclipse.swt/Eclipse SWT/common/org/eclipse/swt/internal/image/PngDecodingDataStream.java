@@ -57,14 +57,12 @@ int getNextIdatBits(int length) {
 	return value;
 }
 
-byte getNextIdatBit() {
+int getNextIdatBit() {
 	if (nextBitIndex > MAX_BIT) {
 		currentByte = getNextIdatByte();
 		nextBitIndex = 0;
-	}	
-	int mask = 1 << nextBitIndex;
-	nextBitIndex++;
-	return ((currentByte & mask) > 0) ? (byte) 1 : (byte) 0;	
+	}
+	return (currentByte & (1 << nextBitIndex)) >> nextBitIndex++;
 }
 
 private PngIdatChunk getNextChunk() {

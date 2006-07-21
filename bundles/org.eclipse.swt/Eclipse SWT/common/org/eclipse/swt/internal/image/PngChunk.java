@@ -56,6 +56,8 @@ class PngChunk extends Object {
 		}	
 	}
 	
+	int length;
+	
 /**
  * Construct a PngChunk using the reference bytes
  * given.
@@ -63,6 +65,7 @@ class PngChunk extends Object {
 PngChunk(byte[] reference) {
 	super();
 	setReference(reference);
+	length = getInt32(LENGTH_OFFSET);
 }
 
 /**
@@ -137,7 +140,7 @@ void setInt32(int offset, int value) {
  * This is not the length of the entire chunk.
  */	
 int getLength() {
-	return getInt32(LENGTH_OFFSET);
+	return length;
 }
 
 /**
@@ -146,6 +149,7 @@ int getLength() {
  */	
 void setLength(int value) {
 	setInt32(LENGTH_OFFSET, value);
+	length = value;
 }
 
 /**
