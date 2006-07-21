@@ -28,6 +28,10 @@ PngPlteChunk(byte[] reference){
 	super(reference);
 }
 
+int getChunkType() {
+	return CHUNK_PLTE;
+}
+
 /**
  * Get the number of colors in this palette.
  */

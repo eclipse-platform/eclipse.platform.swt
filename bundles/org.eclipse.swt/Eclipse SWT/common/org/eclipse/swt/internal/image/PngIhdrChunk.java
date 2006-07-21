@@ -65,6 +65,10 @@ PngIhdrChunk(byte[] reference) {
 	super(reference);
 }
 
+int getChunkType() {
+	return CHUNK_IHDR;
+}
+
 /**
  * Get the image's width in pixels.
  */

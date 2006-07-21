@@ -25,6 +25,10 @@ PngIendChunk(byte[] reference){
 	super(reference);
 }
 
+int getChunkType() {
+	return CHUNK_IEND;
+}
+
 /**
  * Answer whether the chunk is a valid IEND chunk.
  */
