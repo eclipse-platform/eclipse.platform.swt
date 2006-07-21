@@ -17,6 +17,7 @@ public class PngHuffmanTable {
 	
 	static final int MAX_CODE_LENGTH = 15;
 	static final int BAD_CODE = 0xFFFFFFF;
+	static final int incs[] = {1391376, 463792, 198768, 86961, 33936, 13776, 4592, 1968, 861, 336, 112, 48, 21, 7, 3, 1};
 
 PngHuffmanTable (int[] lengths) {
 	super();
@@ -44,21 +45,20 @@ private void initialize(int[] lengths) {
 }
 	
 private void generateTable(int[] lengths) {
-	// Sort the values. Primary key is code size. Secondary key is value.
-	for (int i = 0; i < lengths.length - 1; i++) {
-		for (int j = i + 1; j < lengths.length; j++) {
-			if (lengths[j] < lengths[i]
-				|| (lengths[j] == lengths[i]
-				&& codeValues[j] < codeValues[i]))
-			{
-				int tmp;
-				tmp = lengths[j];
-				lengths[j] = lengths[i];
-				lengths[i] = tmp;
-				tmp = codeValues[j];
-				codeValues[j] = codeValues[i];
-				codeValues[i] = tmp;
+	// Sort the values using shellsort. Primary key is code size. Secondary key is value.
+	int codeValuesTemp;
+	for (int k = 0; k < 16; k++) {
+		for (int h = incs[k], i = h; i < lengths.length; i++) {
+			int v = lengths[i];
+			codeValuesTemp = codeValues[i];
+			int j = i;
+			while (j >= h && (lengths[j - h] > v || (lengths[j - h] == v && codeValues[j - h] > codeValuesTemp))) {
+				lengths[j] = lengths[j - h];
+				codeValues[j] = codeValues[j - h];
+				j -= h;
 			}
+			lengths[j] = v;
+			codeValues[j] = codeValuesTemp;
 		}
 	}
 
