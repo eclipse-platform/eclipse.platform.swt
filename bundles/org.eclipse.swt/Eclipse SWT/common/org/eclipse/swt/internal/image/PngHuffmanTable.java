@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.image;
 
+import java.io.*;
 
 public class PngHuffmanTable {
 	CodeLengthInfo[] codeLengthInfo;
@@ -90,7 +91,7 @@ private void generateTable(int[] lengths) {
 	}
 }
 
-int getNextValue(PngDecodingDataStream stream) {
+int getNextValue(PngDecodingDataStream stream) throws IOException {
 	int code = stream.getNextIdatBit();
 	int codelength = 0;
 

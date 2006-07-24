@@ -14,11 +14,11 @@ package org.eclipse.swt.internal.image;
 import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
 final class PNGFileFormat extends FileFormat {
 	static final int SIGNATURE_LENGTH = 8;
 	static final int PRIME = 65521;
-	PngDecodingDataStream decodingStream;
 	PngIhdrChunk headerChunk;
 	PngPlteChunk paletteChunk;
 	ImageData imageData;
@@ -83,7 +83,7 @@ ImageData[] loadFromByteStream() {
  * Read and handle the next chunk of data from the 
  * PNG file.
  */
-void readNextChunk(PngChunkReader chunkReader) {
+void readNextChunk(PngChunkReader chunkReader) throws IOException {
 	PngChunk chunk = chunkReader.readNextChunk();
 	switch (chunk.getChunkType()) {
 		case PngChunk.CHUNK_IEND:
@@ -286,16 +286,21 @@ void setImageDataValues(byte[] data, ImageData imageData) {
  * Read the image data from the data stream. This must handle
  * decoding the data, filtering, and interlacing.
  */
-void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) {
-	decodingStream = new PngDecodingDataStream(chunk, chunkReader);
+void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOException {
+	InputStream stream = new PngInputStream(chunk, chunkReader);
+	InputStream inflaterStream = Compatibility.newInflaterInputStream(stream);
+	if (inflaterStream != null) {
+		stream = new BufferedInputStream(inflaterStream);
+	} else {
+		stream = new PngDecodingDataStream(stream);
+	}
 	int interlaceMethod = headerChunk.getInterlaceMethod();
 	if (interlaceMethod == PngIhdrChunk.INTERLACE_METHOD_NONE) {
-		readNonInterlacedImage();
+		readNonInterlacedImage(stream);
 	} else {
-		readInterlacedImage();
+		readInterlacedImage(stream);
 	}
-	decodingStream.assertImageDataAtEnd();
-	decodingStream.checkAdler();
+	stream.close();
 }
 /**
  * Answer the number of bytes in a word-aligned row of pixel data.
@@ -341,11 +346,12 @@ int getBytesPerRow(int rowWidthInPixels) {
  * 3. Notify the image loader's listeners of the frame load.
  */
 void readInterlaceFrame(
+	InputStream inputStream,
 	int rowInterval,
 	int columnInterval,
 	int startRow,
 	int startColumn,
-	int frameCount) 
+	int frameCount) throws IOException 
 {
 	int width = headerChunk.getWidth();
 	int alignedBytesPerRow = getAlignedBytesPerRow();
@@ -359,9 +365,10 @@ void readInterlaceFrame(
 	byte[] currentRow = row1;	
 	byte[] lastRow = row2;	
 	for (int row = startRow; row < height; row += rowInterval) {
-		byte filterType = decodingStream.getNextDecodedByte();
-		for (int col = 0; col < bytesPerRow; col++) {
-			currentRow[col] = decodingStream.getNextDecodedByte();
+		byte filterType = (byte)inputStream.read();
+		int read = 0;
+		while (read != bytesPerRow) {
+			read += inputStream.read(currentRow, read, bytesPerRow - read);
 		}
 		filterRow(currentRow, lastRow, filterType);
 		if (headerChunk.getBitDepth() >= 8) {
@@ -406,14 +413,14 @@ void readInterlaceFrame(
  * Read the pixel data for an interlaced image from the
  * data stream.
  */
-void readInterlacedImage() {
-	readInterlaceFrame(8, 8, 0, 0, 0);
-	readInterlaceFrame(8, 8, 0, 4, 1);	
-	readInterlaceFrame(8, 4, 4, 0, 2);	
-	readInterlaceFrame(4, 4, 0, 2, 3);
-	readInterlaceFrame(4, 2, 2, 0, 4);
-	readInterlaceFrame(2, 2, 0, 1, 5);	
-	readInterlaceFrame(2, 1, 1, 0, 6);
+void readInterlacedImage(InputStream inputStream) throws IOException {
+	readInterlaceFrame(inputStream, 8, 8, 0, 0, 0);
+	readInterlaceFrame(inputStream, 8, 8, 0, 4, 1);	
+	readInterlaceFrame(inputStream, 8, 4, 4, 0, 2);	
+	readInterlaceFrame(inputStream, 4, 4, 0, 2, 3);
+	readInterlaceFrame(inputStream, 4, 2, 2, 0, 4);
+	readInterlaceFrame(inputStream, 2, 2, 0, 1, 5);	
+	readInterlaceFrame(inputStream, 2, 1, 1, 0, 6);
 }
 /**
  * Fire an event to let listeners know that an interlaced
@@ -433,7 +440,7 @@ void fireInterlacedFrameEvent(int frameCount) {
  * data stream.
  * Update the imageData to reflect the new data.
  */
-void readNonInterlacedImage() {
+void readNonInterlacedImage(InputStream inputStream) throws IOException {
 	int dataOffset = 0;
 	int alignedBytesPerRow = getAlignedBytesPerRow();
 	int bytesPerRow = getBytesPerRow();
@@ -441,10 +448,12 @@ void readNonInterlacedImage() {
 	byte[] row2 = new byte[bytesPerRow];
 	byte[] currentRow = row1;	
 	byte[] lastRow = row2;
-	for (int row = 0; row < headerChunk.getHeight(); row++) {
-		byte filterType = decodingStream.getNextDecodedByte();
-		for (int col = 0; col < bytesPerRow; col++) {
-			currentRow[col] = decodingStream.getNextDecodedByte();
+	int height = headerChunk.getHeight();
+	for (int row = 0; row < height; row++) {
+		byte filterType = (byte)inputStream.read();
+		int read = 0;
+		while (read != bytesPerRow) {
+			read += inputStream.read(currentRow, read, bytesPerRow - read);
 		}
 		filterRow(currentRow, lastRow, filterType);
 		System.arraycopy(currentRow, 0, data, dataOffset, bytesPerRow);
