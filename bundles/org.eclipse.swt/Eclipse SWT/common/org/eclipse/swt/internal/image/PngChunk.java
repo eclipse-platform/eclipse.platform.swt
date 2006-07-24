@@ -12,7 +12,6 @@ package org.eclipse.swt.internal.image;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Compatibility;
 import java.io.*;
 
 class PngChunk extends Object {
@@ -272,7 +271,8 @@ boolean typeMatchesArray(byte[] array) {
 }
 
 boolean isCritical() {
-	return Character.isUpperCase((char) getTypeBytes()[0]);
+	char c = (char) getTypeBytes()[0]; 
+	return 'A' <= c && c <= 'Z';
 }
 
 int getChunkType() {
@@ -331,11 +331,15 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	byte[] type = getTypeBytes();
 	
 	// The third character MUST be upper case.
-	if (!Character.isUpperCase((char) type[2])) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	char c = (char) type[2];
+	if (!('A' <= c && c <= 'Z')) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	
 	// All characters must be letters.
 	for (int i = 0; i < TYPE_FIELD_LENGTH; i++) {
-		if (!Compatibility.isLetter((char) type[i])) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		c = (char) type[i];
+		if (!(('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z'))) {
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		}
 	}
 	
 	// The stored CRC must match the data's computed CRC.
