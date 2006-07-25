@@ -1589,6 +1589,8 @@ public boolean forceFocus () {
 }
 
 boolean forceFocus (int /*long*/ focusHandle) {
+	/* When the control is zero sized it must be realized */
+	OS.gtk_widget_realize (focusHandle);
 	OS.gtk_widget_grab_focus (focusHandle);
 	Shell shell = getShell ();
 	int /*long*/ shellHandle = shell.shellHandle;
