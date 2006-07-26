@@ -373,6 +373,13 @@ void presetChooserDialog () {
 		}
 		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
 		OS.gtk_file_chooser_set_filename (handle, buffer);
+	} else {
+		if (fileName.length () > 0) {
+			if (fileName.charAt (0) == SEPARATOR) {
+				byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
+				OS.gtk_file_chooser_set_filename (handle, buffer);
+			}
+		}
 	}
 	if ((style & SWT.SAVE) != 0 && fileName.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
