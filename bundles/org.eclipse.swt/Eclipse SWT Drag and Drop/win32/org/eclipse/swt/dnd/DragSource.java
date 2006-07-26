@@ -483,7 +483,16 @@ private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 		if (topControl != null) OS.ImageList_DragLeave(topControl.handle);
 		return COM.DRAGDROP_S_CANCEL;
 	}
-	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+	/*
+	* Bug in Windows.  On some machines that do not have XBUTTONs,
+	* the MK_XBUTTON1 and OS.MK_XBUTTON2 bits are sometimes set,
+	* causing mouse capture to become stuck.  The fix is to test
+	* for the extra buttons only when they exist.
+	*/
+	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
+	if (OS.GetSystemMetrics (OS.SM_CMOUSEBUTTONS) > 3) {
+		mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+	}
 	if ((grfKeyState & mask) == 0) {
 		if (topControl != null) OS.ImageList_DragLeave(topControl.handle);
 		return COM.DRAGDROP_S_DROP;

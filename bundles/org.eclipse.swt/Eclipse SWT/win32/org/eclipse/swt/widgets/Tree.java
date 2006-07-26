@@ -5472,7 +5472,16 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
 	if (itemToolTipHandle != 0 && hwndHeader != 0) {
-		int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON | OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+		/*
+		* Bug in Windows.  On some machines that do not have XBUTTONs,
+		* the MK_XBUTTON1 and OS.MK_XBUTTON2 bits are sometimes set,
+		* causing mouse capture to become stuck.  The fix is to test
+		* for the extra buttons only when they exist.
+		*/
+		int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
+		if (OS.GetSystemMetrics (OS.SM_CMOUSEBUTTONS) > 3) {
+			mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+		}
 		if (((wParam & 0xFFFF) & mask) == 0) {
 			TVHITTESTINFO lpht = new TVHITTESTINFO ();
 			lpht.x = (short) (lParam & 0xFFFF);
