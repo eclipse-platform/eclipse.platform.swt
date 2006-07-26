@@ -26,8 +26,8 @@
 *
 * ***** END LICENSE BLOCK ***** */
   
-#ifndef INC_os_H
-#define INC_os_H
+#ifndef INC_xpcom_H
+#define INC_xpcom_H
 
 #define NDEBUG
 
@@ -45,4 +45,4 @@
 #define STDMETHODCALLTYPE
 #endif
 
-#endif /* INC_os_H */
+#endif /* INC_xpcom_H */

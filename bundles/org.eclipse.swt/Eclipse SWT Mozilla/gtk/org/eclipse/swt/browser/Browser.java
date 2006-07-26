@@ -71,7 +71,7 @@ public class Browser extends Composite {
 	static nsIAppShell AppShell;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
-	static boolean mozilla, ignoreDispose;
+	static boolean mozilla, ignoreDispose, usingProfile;
 	static Callback eventCallback;
 	static int /*long*/ eventProc;
 
@@ -85,7 +85,9 @@ public class Browser extends Composite {
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
 	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
+	static final String PROFILE_DIR = "/eclipse"; //$NON-NLS-1$
 	static final int STOP_PROPOGATE = 1;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -167,10 +169,51 @@ public Browser(Composite parent, int style) {
 			}
 		}
 
+		/*
+		 * Try to load the various profile libraries until one is found that loads successfully:
+		 * - mozilla14profile/mozilla14profile-gcc should succeed for mozilla 1.4 - 1.6
+		 * - mozilla17profile/mozilla17profile-gcc should succeed for mozilla 1.7.x and firefox
+		 * - mozilla18profile/mozilla18profile-gcc should succeed for mozilla 1.8.x (seamonkey)
+		 */
+		try {
+			Library.loadLibrary ("swt-mozilla14-profile"); //$NON-NLS-1$
+			usingProfile = true;
+		} catch (UnsatisfiedLinkError e1) {
+			try {
+				Library.loadLibrary ("swt-mozilla17-profile"); //$NON-NLS-1$
+				usingProfile = true;
+			} catch (UnsatisfiedLinkError e2) {
+				try {
+					Library.loadLibrary ("swt-mozilla14-profile-gcc3"); //$NON-NLS-1$
+					usingProfile = true;
+				} catch (UnsatisfiedLinkError e3) {
+					try {
+						Library.loadLibrary ("swt-mozilla17-profile-gcc3"); //$NON-NLS-1$
+						usingProfile = true;
+					} catch (UnsatisfiedLinkError e4) {
+						try {
+							Library.loadLibrary ("swt-mozilla18-profile"); //$NON-NLS-1$
+							usingProfile = true;
+						} catch (UnsatisfiedLinkError e5) {
+							try {
+								Library.loadLibrary ("swt-mozilla18-profile-gcc3"); //$NON-NLS-1$
+								usingProfile = true;
+							} catch (UnsatisfiedLinkError e6) {
+								/* 
+								* fail silently, the Browser will still work without profile support
+								* but will abort any attempts to navigate to HTTPS pages
+								*/
+							}
+						}
+					}
+				}
+			}
+		}
+
 		int /*long*/[] retVal = new int /*long*/[1];
-		nsEmbedString path = new nsEmbedString(mozillaPath);
-		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);
-		path.dispose();
+		nsEmbedString pathString = new nsEmbedString(mozillaPath);
+		int rc = XPCOM.NS_NewLocalFile(pathString.getAddress(), true, retVal);
+		pathString.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
 		
@@ -220,10 +263,71 @@ public Browser(Composite parent, int style) {
 		if (rc != XPCOM.NS_OK) error(rc);
 		windowWatcher.Release();
 
+		/* specify the user profile directory */
+		if (usingProfile) {
+			buffer = Converter.wcsToMbcs(null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID(buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+
+			nsIDirectoryService directoryService = new nsIDirectoryService(result[0]);
+			result[0] = 0;
+			rc = directoryService.QueryInterface(nsIProperties.NS_IPROPERTIES_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			directoryService.Release();
+
+			nsIProperties properties = new nsIProperties(result[0]);
+			result[0] = 0;
+			buffer = Converter.wcsToMbcs(null, XPCOM.NS_APP_APPLICATION_REGISTRY_DIR, true);
+			rc = properties.Get(buffer, nsIFile.NS_IFILE_IID, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			properties.Release();
+
+			nsIFile profileDir = new nsIFile(result[0]);
+			result[0] = 0;
+			int /*long*/ path = XPCOM.nsEmbedCString_new();
+			rc = profileDir.GetNativePath(path);
+			if (rc != XPCOM.NS_OK) error(rc);
+			profileDir.Release(); //
+
+			int length = XPCOM.nsEmbedCString_Length(path);
+			ptr = XPCOM.nsEmbedCString_get(path);
+			buffer = new byte [length];
+			XPCOM.memmove(buffer, ptr, length);
+			XPCOM.nsEmbedCString_delete(path);
+			String string = new String(Converter.mbcsToWcs(null, buffer)) + PROFILE_DIR; 
+			pathString = new nsEmbedString(string);
+			rc = XPCOM.NS_NewLocalFile(pathString.getAddress(), true, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
+			pathString.dispose(); //
+
+			profileDir = new nsIFile(result[0]);
+			result[0] = 0;
+
+			rc = XPCOM_PROFILE.NS_NewProfileDirServiceProvider(true, result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+
+			final int /*long*/ dirServiceProvider = result[0];
+			result[0] = 0;
+			rc = XPCOM_PROFILE.ProfileDirServiceProvider_Register(dirServiceProvider);
+			if (rc != XPCOM.NS_OK) error(rc);
+			rc = XPCOM_PROFILE.ProfileDirServiceProvider_SetProfileDir(dirServiceProvider, profileDir.getAddress());
+			if (rc != XPCOM.NS_OK) error(rc);
+
+			getDisplay().addListener(SWT.Dispose, new Listener() {
+				public void handleEvent(Event e) {
+					XPCOM_PROFILE.ProfileDirServiceProvider_Shutdown(dirServiceProvider);
+				}
+			});
+		}
+
 		/*
-		 * As a result of not using profiles, the user's locale and charset default
-		 * to en_us and iso-8859-1, which are not the correct values for users in
-		 * other locales.  The fix for this is to set mozilla's locale and charset
+		 * As a result of using a common profile (or none at all), the user cannot specify
+		 * their locale and charset.  The fix for this is to set mozilla's locale and charset
 		 * preference values according to the user's current locale and charset.
 		 */
 		buffer = XPCOM.NS_PREFSERVICE_CONTRACTID.getBytes();
@@ -2049,14 +2153,15 @@ int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
   
 int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStatus, int /*long*/ aMessage) {
 	/*
-	* Feature in Mozilla.  In Mozilla 1.7.5, navigating to an 
-	* HTTPS link without a user profile set causes a crash.
-	* Most requests for HTTPS pages are aborted in OnStartURIOpen.
-	* However, https page requests that do not initially specify
-	* https as their protocol will get past this check since they
-	* are resolved afterwards.  The workaround is to check the url
-	* whenever there is a status change, and to abort any https
-	* requests that are detected.
+	* Feature in Mozilla.  Navigating to an HTTPS link without a user profile
+	* set causes a crash.  The workaround is to abort attempts to navigate to
+	* HTTPS pages if a profile is not being used.
+	* 
+	* Most navigation requests for HTTPS pages are handled in OnStartURIOpen.
+	* However, https page requests that do not initially specify https as their
+	* protocol will get past this check since they are resolved afterwards.
+	* The workaround is to check the url whenever there is a status change, and
+	* to abort any detected https requests if a profile is not being used.
 	*/
 	nsIRequest request = new nsIRequest(aRequest);
 	int /*long*/ aName = XPCOM.nsEmbedCString_new();
@@ -2067,7 +2172,7 @@ int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, in
 	XPCOM.memmove(bytes, buffer, length);
 	XPCOM.nsEmbedCString_delete(aName);
 	String value = new String(bytes);
-	if (value.startsWith(XPCOM.HTTPS_PROTOCOL)) {
+	if (!usingProfile && value.startsWith(XPCOM.HTTPS_PROTOCOL)) {
 		request.Cancel(XPCOM.NS_BINDING_ABORTED);
 		return XPCOM.NS_OK;
 	}
@@ -2346,21 +2451,16 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 	XPCOM.nsEmbedCString_delete(aSpec);
 	String value = new String(dest);
 	/*
-	* Feature in Mozilla.  In Mozilla 1.7.5, navigating to an 
-	* HTTPS link without a user profile set causes a crash. 
-	* HTTPS requires a user profile to be set to persist security
-	* information.  This requires creating a new user profile
-	* (i.e. creating a new folder) or locking an existing Mozilla 
-	* user profile.  The Mozilla Profile API is not frozen and it is not 
-	* currently implemented.  The workaround is to not load 
-	* HTTPS resources to avoid the crash.
+	* Feature in Mozilla.  Navigating to an HTTPS link without a user profile
+	* set causes a crash.  The workaround is to abort attempts to navigate to
+	* HTTPS pages if a profile is not being used.
 	*/
 	boolean isHttps = value.startsWith(XPCOM.HTTPS_PROTOCOL);
 	if (locationListeners.length == 0) {
-		XPCOM.memmove(retval, new int[] {isHttps ? 1 : 0}, 4);
+		XPCOM.memmove(retval, new int[] {isHttps && !usingProfile ? 1 : 0}, 4);
 		return XPCOM.NS_OK;
 	}
-	boolean doit = !isHttps;
+	boolean doit = !isHttps || usingProfile;
 	if (request == 0) {
 		LocationEvent event = new LocationEvent(this);
 		event.display = getDisplay();
@@ -2377,7 +2477,7 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 		event.doit = doit;
 		for (int i = 0; i < locationListeners.length; i++)
 			locationListeners[i].changing(event);
-		if (!isHttps) doit = event.doit;
+		if (!isHttps || usingProfile) doit = event.doit;
 	}
 	/* Note. boolean remains of size 4 on 64 bit machine */
 	XPCOM.memmove(retval, new int[] {doit ? 0 : 1}, 4);

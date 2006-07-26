@@ -25,6 +25,9 @@ CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 GNOME_PREFIX = swt-gnome
 MOZILLA_PREFIX = swt-mozilla$(GCC_VERSION)
+PROFILE14_PREFIX = swt-mozilla14-profile$(GCC_VERSION)
+PROFILE17_PREFIX = swt-mozilla17-profile$(GCC_VERSION)
+PROFILE18_PREFIX = swt-mozilla18-profile$(GCC_VERSION)
 GLX_PREFIX = swt-glx
 
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -35,6 +38,9 @@ CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+PROFILE14_LIB = lib$(PROFILE14_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+PROFILE17_LIB = lib$(PROFILE17_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+PROFILE18_LIB = lib$(PROFILE18_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
@@ -73,10 +79,8 @@ MOZILLACFLAGS = -O \
 	-I. \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux \
-	${GECKO_INCLUDES} \
 	${SWT_PTR_CFLAGS}
-MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic \
-	${GECKO_LIBS}
+MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic
 	
 SWT_OBJECTS = swt.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
@@ -86,6 +90,9 @@ CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
+PROFILE14_OBJECTS = xpcom14_profile.o
+PROFILE17_OBJECTS = xpcom17_profile.o
+PROFILE18_OBJECTS = xpcom18_profile.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
 CFLAGS = -O -Wall \
@@ -195,22 +202,40 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 #
 # Mozilla lib
 #
-make_mozilla:$(MOZILLA_LIB)
+make_mozilla:$(MOZILLA_LIB) $(PROFILE14_LIB) $(PROFILE17_LIB) $(PROFILE18_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
-	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
+	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS) ${GECKO_LIBS}
 
 xpcom.o: xpcom.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp
+	$(CXX) $(MOZILLACFLAGS) ${GECKO_INCLUDES} -c xpcom.cpp
 
 xpcom_structs.o: xpcom_structs.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_structs.cpp
+	$(CXX) $(MOZILLACFLAGS) ${GECKO_INCLUDES} -c xpcom_structs.cpp
 	
 xpcom_custom.o: xpcom_custom.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_custom.cpp
+	$(CXX) $(MOZILLACFLAGS) ${GECKO_INCLUDES} -c xpcom_custom.cpp
 
 xpcom_stats.o: xpcom_stats.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
+	$(CXX) $(MOZILLACFLAGS) ${GECKO_INCLUDES} -c xpcom_stats.cpp	
+
+$(PROFILE14_OBJECTS): xpcom_profile.cpp
+	$(CXX) -o $(PROFILE14_OBJECTS) $(MOZILLACFLAGS) ${PROFILE14_INCLUDES} -c xpcom_profile.cpp	
+
+$(PROFILE17_OBJECTS): xpcom_profile.cpp
+	$(CXX) -o $(PROFILE17_OBJECTS) $(MOZILLACFLAGS) ${PROFILE17_INCLUDES} -c xpcom_profile.cpp	
+
+$(PROFILE18_OBJECTS): xpcom_profile.cpp
+	$(CXX) -o $(PROFILE18_OBJECTS) $(MOZILLACFLAGS) ${PROFILE18_INCLUDES} -c xpcom_profile.cpp	
+
+$(PROFILE14_LIB): $(PROFILE14_OBJECTS)
+	$(CXX) -o $(PROFILE14_LIB) $(PROFILE14_OBJECTS) $(MOZILLALIBS) ${PROFILE14_LIBS}
+
+$(PROFILE17_LIB): $(PROFILE17_OBJECTS)
+	$(CXX) -o $(PROFILE17_LIB) $(PROFILE17_OBJECTS) $(MOZILLALIBS) ${PROFILE17_LIBS}
+
+$(PROFILE18_LIB): $(PROFILE18_OBJECTS)
+	$(CXX) -o $(PROFILE18_LIB) $(PROFILE18_OBJECTS) $(MOZILLALIBS) ${PROFILE18_LIBS}
 
 #
 # GLX lib
