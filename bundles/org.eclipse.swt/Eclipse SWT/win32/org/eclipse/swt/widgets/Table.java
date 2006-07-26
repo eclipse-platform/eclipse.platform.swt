@@ -4695,16 +4695,13 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	/*
-	* Bug in Windows.  When LVS_SHOWSELALWAYS is not specified,
-	* Windows hides the selection when focus is lost but does
-	* not redraw anything other than the text, leaving the image
-	* and check box appearing selected.  The fix is to redraw
+	* Bug in Windows.  When focus is lost, Windows does not
+	* redraw the selection properly, leaving the image and
+	* check box appearing selected.  The fix is to redraw
 	* the table.
 	*/
-	if ((style & SWT.HIDE_SELECTION) != 0) {
-		if (imageList != null || (style & SWT.CHECK) != 0) {
-			OS.InvalidateRect (handle, null, false);
-		}
+	if (imageList != null || (style & SWT.CHECK) != 0) {
+		OS.InvalidateRect (handle, null, false);
 	}
 	return result;
 }
@@ -5103,6 +5100,18 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
+	/*
+	* Bug in Windows.  When focus is gained after the
+	* selection has been changed using LVM_SETITEMSTATE,
+	* Windows redraws the selected text but does not
+	* redraw the image or the check box, leaving them
+	* appearing unselected.  The fix is to redraw
+	* the table.
+	*/
+	if (imageList != null || (style & SWT.CHECK) != 0) {
+		OS.InvalidateRect (handle, null, false);
+	}
+	
 	/*
 	* Bug in Windows.  For some reason, the table does
 	* not set the default focus rectangle to be the first
