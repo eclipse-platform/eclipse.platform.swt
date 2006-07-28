@@ -1334,7 +1334,10 @@ public boolean isEnabled () {
  */
 public boolean isFocusControl () {
 	checkWidget ();
-	if (this == display.focusControl) return true;
+	Control focusControl = display.focusControl;
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return this == focusControl;
+	}
 	return hasFocus ();
 }
 
