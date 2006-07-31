@@ -441,7 +441,7 @@ boolean dragDetect (int x, int y) {
 		int [] trailing = new int [1];
 		OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
 		int /*long*/ ptr = OS.pango_layout_get_text (layout);
-		offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]);
+		offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
 	} else {
 		byte [] position = new byte [ITER_SIZEOF];
 		OS.gtk_text_view_get_iter_at_location (handle, position, x, y);
@@ -1018,26 +1018,18 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) 
 		GdkEventButton gdkEvent = new GdkEventButton ();
 		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 		int x = (int)gdkEvent.x, y = (int)gdkEvent.y;
-		
-		int offset;
 		if ((style & SWT.SINGLE) != 0) {
 			int /*long*/ layout = OS.gtk_entry_get_layout (handle);
 			int [] index = new int [1];
 			int [] trailing = new int [1];
 			OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
 			int /*long*/ ptr = OS.pango_layout_get_text (layout);
-			offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]);
-		} else {
-			byte [] position = new byte [ITER_SIZEOF];
-			OS.gtk_text_view_get_iter_at_location (handle, position, x, y);
-			offset = OS.gtk_text_iter_get_offset (position);
-		}
-		if ((style & SWT.SINGLE) != 0) {
+			int offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
 			OS.gtk_editable_set_position (handle, offset);
 		} else {
-			byte [] position =  new byte [ITER_SIZEOF];
-			OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, position, offset);
-			OS.gtk_text_buffer_place_cursor (bufferHandle, position);
+			byte [] iter = new byte [ITER_SIZEOF];
+			OS.gtk_text_view_get_iter_at_location (handle, iter, x, y);
+			OS.gtk_text_buffer_place_cursor (bufferHandle, iter);
 			int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 			OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 		}
