@@ -864,7 +864,13 @@ int _getOffset (int offset, int movement, boolean forward) {
 	while (0 < offset && offset < length) {
 		OS.memmove(logAttr, attrs[0] + offset * PangoLogAttr.sizeof, PangoLogAttr.sizeof);
 		if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) break; 
-		if (((movement & SWT.MOVEMENT_WORD) != 0) && (logAttr.is_word_start || logAttr.is_sentence_end)) break;
+		if ((movement & SWT.MOVEMENT_WORD) != 0) {
+			if (forward) {
+				if (logAttr.is_word_end) break;
+			} else {
+				if (logAttr.is_word_start) break;
+			}
+		}
 		offset = validateOffset(offset, step);
 	}
 	OS.g_free(attrs[0]);
