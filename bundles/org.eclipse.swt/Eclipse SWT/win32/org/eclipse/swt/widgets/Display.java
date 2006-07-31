@@ -191,7 +191,7 @@ public class Display extends Device {
 	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
-	boolean lockActiveWindow, captureChanged;
+	boolean lockActiveWindow, captureChanged, xMouse;
 	
 	/* Tool Tips */
 	int nextToolTipId;

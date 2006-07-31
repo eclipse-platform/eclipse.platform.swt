@@ -490,9 +490,7 @@ private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	* for the extra buttons only when they exist.
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
-	if (OS.GetSystemMetrics (OS.SM_CMOUSEBUTTONS) > 3) {
-		mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	}
+//	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if ((grfKeyState & mask) == 0) {
 		if (topControl != null) OS.ImageList_DragLeave(topControl.handle);
 		return COM.DRAGDROP_S_DROP;

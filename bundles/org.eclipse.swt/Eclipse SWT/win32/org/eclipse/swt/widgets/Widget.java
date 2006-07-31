@@ -1802,6 +1802,7 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 }
 
 LRESULT wmLButtonUp (int hwnd, int wParam, int lParam) {
+	Display display = this.display;
 	LRESULT result = null;
 	if (sendMouseEvent (SWT.MouseUp, 1, hwnd, OS.WM_LBUTTONUP, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONUP, wParam, lParam));
@@ -1815,9 +1816,7 @@ LRESULT wmLButtonUp (int hwnd, int wParam, int lParam) {
 	* for the extra buttons only when they exist.
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
-	if (OS.GetSystemMetrics (OS.SM_CMOUSEBUTTONS) > 3) {
-		mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	}
+	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
@@ -1869,6 +1868,7 @@ LRESULT wmMButtonDown (int hwnd, int wParam, int lParam) {
 }
 
 LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
+	Display display = this.display;
 	LRESULT result = null;
 	if (sendMouseEvent (SWT.MouseUp, 2, hwnd, OS.WM_MBUTTONUP, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_MBUTTONUP, wParam, lParam));
@@ -1882,9 +1882,7 @@ LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
 	* for the extra buttons only when they exist.
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
-	if (OS.GetSystemMetrics (OS.SM_CMOUSEBUTTONS) > 3) {
-		mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	}
+	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
@@ -2143,6 +2141,7 @@ LRESULT wmRButtonDown (int hwnd, int wParam, int lParam) {
 }
 
 LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
+	Display display = this.display;
 	LRESULT result = null;
 	if (sendMouseEvent (SWT.MouseUp, 3, hwnd, OS.WM_RBUTTONUP, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_RBUTTONUP, wParam, lParam));
@@ -2158,9 +2157,7 @@ LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
 	* for the extra buttons only when they exist.
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
-	if (OS.GetSystemMetrics (OS.SM_CMOUSEBUTTONS) > 3) {
-		mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	}
+	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
@@ -2345,6 +2342,7 @@ LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
 	LRESULT result = null;
 	Display display = this.display;
 	display.captureChanged = false;
+	display.xMouse = true;
 	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
 	if (sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_XBUTTONDOWN, wParam, lParam));
@@ -2358,6 +2356,7 @@ LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
 }
 
 LRESULT wmXButtonUp (int hwnd, int wParam, int lParam) {
+	Display display = this.display;
 	LRESULT result = null;
 	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
 	if (sendMouseEvent (SWT.MouseUp, button, hwnd, OS.WM_XBUTTONUP, wParam, lParam)) {
@@ -2372,9 +2371,7 @@ LRESULT wmXButtonUp (int hwnd, int wParam, int lParam) {
 	* for the extra buttons only when they exist.
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
-	if (OS.GetSystemMetrics (OS.SM_CMOUSEBUTTONS) > 3) {
-		mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	}
+	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 	if (((wParam & 0xFFFF) & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}

@@ -5482,6 +5482,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+	Display display = this.display;
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
 	if (itemToolTipHandle != 0 && hwndHeader != 0) {
@@ -5492,9 +5493,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 		* for the extra buttons only when they exist.
 		*/
 		int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
-		if (OS.GetSystemMetrics (OS.SM_CMOUSEBUTTONS) > 3) {
-			mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-		}
+		if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
 		if (((wParam & 0xFFFF) & mask) == 0) {
 			TVHITTESTINFO lpht = new TVHITTESTINFO ();
 			lpht.x = (short) (lParam & 0xFFFF);
