@@ -963,18 +963,28 @@ int _getOffset (int offset, int movement, boolean forward) {
 	}
 	if (forward) {
 		OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
+		offset = newOffset[0];
 		newOffset[0] = untranslateOffset(newOffset[0]);
 		if (movement == SWT.MOVEMENT_WORD) {
-			while (newOffset[0] < length && Compatibility.isWhitespace(text.charAt(newOffset[0]))) {
-				newOffset[0]++;
+			while (newOffset[0] < length && 
+					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) &&
+					Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
+				OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
+				offset = newOffset[0];
+				newOffset[0] = untranslateOffset(newOffset[0]);
 			}
 		}
 	} else {
 		OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
+		offset = newOffset[0];
 		newOffset[0] = untranslateOffset(newOffset[0]);
 		if (movement == SWT.MOVEMENT_WORD) {
-			while (newOffset[0] > 0 && !Compatibility.isWhitespace(text.charAt(newOffset[0] - 1))) {
-				newOffset[0]--;
+			while (newOffset[0] > 0 && 
+					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) && 
+					!Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
+				OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
+				offset = newOffset[0];
+				newOffset[0] = untranslateOffset(newOffset[0]);
 			}
 		}
 	}
