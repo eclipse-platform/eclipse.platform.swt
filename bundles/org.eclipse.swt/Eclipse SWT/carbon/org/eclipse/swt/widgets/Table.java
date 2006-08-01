@@ -1773,8 +1773,9 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 				short windowLeft = rect.left, windowTop = rect.top;
 				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-				pt.h = (short) ((inGlobalMouse & 0xFFFF) - windowLeft);
-				pt.v = (short) ((inGlobalMouse >> 16) - windowTop);
+				OS.memcpy(pt, new int[] {inGlobalMouse}, 4);
+				pt.h -= windowLeft;
+				pt.v -= windowTop;
 				if (!contains (pt.h, pt.v)) break;
 				String toolTipText = null;
 				int tagSide = OS.kHMAbsoluteCenterAligned;
@@ -1882,7 +1883,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 					helpContent.content1_contentType = OS.kHMCFStringContent;
 					helpContent.content1_tagCFString = display.helpString;
 					OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
-					OS.memcpy (outContentProvided, new int[]{OS.kHMContentProvided}, 4);
+					OS.memcpy (outContentProvided, new short[]{OS.kHMContentProvided}, 2);
 					return OS.noErr;
 				}
 			}

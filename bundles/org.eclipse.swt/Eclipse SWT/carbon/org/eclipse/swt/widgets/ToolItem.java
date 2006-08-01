@@ -596,7 +596,7 @@ int getVisibleRegion (int control, boolean clipChildren) {
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
     switch (inRequest) {
 		case OS.kHMSupplyContent: {
-			int [] contentProvided = new int [] { OS.kHMContentNotProvided };
+			short [] contentProvided = { OS.kHMContentNotProvided };
 			if (toolTipText != null && toolTipText.length () != 0) {
 				char [] buffer = new char [toolTipText.length ()];
 				toolTipText.getChars (0, buffer.length, buffer, 0);
@@ -619,7 +619,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
 				contentProvided [0] = OS.kHMContentProvided;
 			}
-			OS.memcpy (outContentProvided, contentProvided, 4);
+			OS.memcpy (outContentProvided, contentProvided, 2);
 			break;
 		}
 		case OS.kHMDisposeContent: {
