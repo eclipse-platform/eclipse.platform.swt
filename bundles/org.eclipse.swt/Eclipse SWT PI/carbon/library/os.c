@@ -12801,6 +12801,34 @@ fail:
 }
 #endif
 
+#ifndef NO_memcpy__I_3SI
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3SI)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jint arg2)
+{
+	jshort *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memcpy__I_3SI_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	}
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
+	OS_NATIVE_EXIT(env, that, memcpy__I_3SI_FUNC);
+}
+#endif
+
 #ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II
 JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -12896,6 +12924,37 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_PixMap
 fail:
 	if (arg0 && lparg0) setPixMapFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_Point_2_3II
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_Point_2_3II)
+	(JNIEnv *env, jclass that, jobject arg0, jintArray arg1, jint arg2)
+{
+	Point _arg0, *lparg0=NULL;
+	jint *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_Point_2_3II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	}
+	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
+	if (arg0 && lparg0) setPointFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_Point_2_3II_FUNC);
 }
 #endif
 

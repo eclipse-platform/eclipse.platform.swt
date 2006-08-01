@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 921;
-int OS_nativeFunctionCallCount[921];
+int OS_nativeFunctionCount = 923;
+int OS_nativeFunctionCallCount[923];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -921,6 +921,7 @@ char * OS_nativeFunctionNames[] = {
 	"memcpy__I_3CI",
 	"memcpy__I_3FI",
 	"memcpy__I_3II",
+	"memcpy__I_3SI",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II",
@@ -928,6 +929,7 @@ char * OS_nativeFunctionNames[] = {
 	"memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II",
+	"memcpy__Lorg_eclipse_swt_internal_carbon_Point_2_3II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2II",
 	"memcpy___3BII",
 	"memcpy___3B_3CI",
