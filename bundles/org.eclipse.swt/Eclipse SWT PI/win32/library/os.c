@@ -6229,11 +6229,27 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(LockWindowUpdate)
 
 #ifndef NO_MCIWndRegisterClass
 JNIEXPORT jboolean JNICALL OS_NATIVE(MCIWndRegisterClass)
-	(JNIEnv *env, jclass that, jint arg0)
+	(JNIEnv *env, jclass that)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, MCIWndRegisterClass_FUNC);
-	rc = (jboolean)MCIWndRegisterClass((HINSTANCE)arg0);
+/*
+	rc = (jboolean)MCIWndRegisterClass();
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(MCIWndRegisterClass_LIB);
+			if (hm) fp = GetProcAddress(hm, "MCIWndRegisterClass");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, MCIWndRegisterClass_FUNC);
 	return rc;
 }
