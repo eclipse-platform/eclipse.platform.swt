@@ -712,6 +712,18 @@ void fixShell (Shell newShell, Control control) {
 	}
 }
 
+void fixToolTip () {
+	if (toolTipHandle == 0) return;
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	if (OS.SendMessage (toolTipHandle, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+		if ((lpti.uFlags & OS.TTF_IDISHWND) != 0) {
+			OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
+			OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+		}
+	}
+}
+
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
