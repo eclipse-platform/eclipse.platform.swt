@@ -4668,7 +4668,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 //				if (result != null) return result.value;
 //				break;
 //			}
-			case OS.WM_CAPTURECHANGED:
+			case OS.WM_CAPTURECHANGED: {
 				/*
 				* Bug in Windows.  When the capture changes during a
 				* header drag, Windows does not redraw the header item
@@ -4688,6 +4688,19 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 					}
 				}
 				break;
+			}
+			case OS.WM_MOUSELEAVE: {
+				/*
+				* Bug in Windows.  On XP, when a tooltip is hidden
+				* due to a time out or mouse press, the tooltip
+				* remains active although no longer visible and
+				* won't show again until another tooltip becomes
+				* active.  The fix is to reset the tooltip bounds.
+				*/
+				if (OS.COMCTL32_MAJOR >= 6) updateHeaderToolTips ();
+				updateHeaderToolTips ();
+				break;
+			}
 			case OS.WM_NOTIFY: {
 				NMHDR hdr = new NMHDR ();
 				OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
