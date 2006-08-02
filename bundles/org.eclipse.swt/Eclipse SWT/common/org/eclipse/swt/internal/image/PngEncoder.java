@@ -101,7 +101,7 @@ void writeChunk(byte[] tag, byte[] buffer) {
 	else {
 		chunk.setCRC(chunk.computeCRC());
 	}
-	writeInt(bytes, (int) chunk.getCRC());
+	writeInt(bytes, chunk.getCRC());
 
 }
 
