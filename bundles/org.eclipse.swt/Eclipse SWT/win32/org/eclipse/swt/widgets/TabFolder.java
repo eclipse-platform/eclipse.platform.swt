@@ -759,6 +759,34 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	return new LRESULT (OS.DLGC_BUTTON);
 }
 
+LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
+	LRESULT result = super.WM_MOUSELEAVE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  On XP, when a tooltip is
+	* hidden due to a time out or mouse press,
+	* the tooltip remains active although no
+	* longer visible and won't show again until
+	* another tooltip becomes active.  If there
+	* is only one tooltip in the window,  it will
+	* never show again.  The fix is to remove the
+	* current tooltip and add it again every time
+	* the mouse leaves the control.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+		if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
+			if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
+				OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
+				OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
