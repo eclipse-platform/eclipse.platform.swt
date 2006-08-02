@@ -1236,20 +1236,20 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				gc.setForeground (getForeground ());
 				gc.setBackground (getBackground ());
 				gc.setFont (getFont ());
-				if ((style & SWT.NO_BACKGROUND) != 0) {
-					/* This code is intentionally commented because it may be slow to copy bits from the screen */
-					//paintGC.copyArea (image, ps.left, ps.top);
-				} else {
-					RECT rect = new RECT ();
-					OS.SetRect (rect, 0, 0, width, height);
-					drawBackground (gc.handle, rect);
-				}
 				OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
 				OS.SelectClipRgn (gc.handle, sysRgn);
 				OS.OffsetRgn (sysRgn, ps.left, ps.top);
 				OS.SetMetaRgn (gc.handle);	
 				OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
 				OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
+				if ((style & SWT.NO_BACKGROUND) != 0) {
+					/* This code is intentionally commented because it may be slow to copy bits from the screen */
+					//paintGC.copyArea (image, ps.left, ps.top);
+				} else {
+					RECT rect = new RECT ();
+					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+					drawBackground (gc.handle, rect);
+				}
 			}
 			Event event = new Event ();
 			event.gc = gc;			
