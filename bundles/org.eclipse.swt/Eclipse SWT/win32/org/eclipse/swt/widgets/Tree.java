@@ -2190,6 +2190,7 @@ void destroyItem (TreeColumn column) {
 	}
 	setScrollWidth ();
 	updateImageList ();
+	updateScrollBar ();
 	if (columnCount != 0) {
 		int [] newOrder = new int [columnCount];
 		OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, newOrder);
@@ -3941,9 +3942,9 @@ void setScrollWidth (int width) {
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
 		info.nPage = info.nMax + 1;
 		OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
-		OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
-		info.nPage = info.nMax + 1;
-		OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+//		OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
+//		info.nPage = info.nMax + 1;
+//		OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 	} else {
 		OS.GetClientRect (hwndParent, rect);
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
@@ -4733,6 +4734,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 					updateLayout (false, false);
 				}
 				setResizeChildren (true);
+				updateScrollBar ();
 				return code;
 			}
 			case OS.WM_NCPAINT: {
