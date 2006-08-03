@@ -8273,6 +8273,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1label_1get_1layout
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1label_1get_1layout)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1label_1get_1layout_FUNC);
+	rc = (jint)gtk_label_get_layout((GtkLabel *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1label_1get_1layout_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1label_1get_1mnemonic_1keyval
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1label_1get_1mnemonic_1keyval)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -15660,6 +15672,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1get_1attributes)
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1attributes_FUNC);
 	rc = (jint)pango_layout_get_attributes((PangoLayout *)arg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1attributes_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1layout_1get_1context
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1get_1context)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1context_FUNC);
+	rc = (jint)pango_layout_get_context((PangoLayout *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1context_FUNC);
 	return rc;
 }
 #endif
