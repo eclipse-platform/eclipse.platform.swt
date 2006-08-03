@@ -125,9 +125,7 @@ void showDropTargetEffect(int effect, int x, int y) {
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
 	int /*long*/ [] path = new int /*long*/ [1];
-	int clientX = coordinates.x - tree.getBorderWidth ();
-	int clientY = coordinates.y - tree.getHeaderHeight ();
-	OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY, path, null, null, null);
+	OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);
 	int index = -1;
 	if (path[0] != 0) {
 		int /*long*/ indices = OS.gtk_tree_path_get_indices(path[0]);
@@ -152,13 +150,13 @@ void showDropTargetEffect(int effect, int x, int y) {
 					OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
 				} else {
 					//scroll down
-					OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY + cellRect.height, path, null, null, null);
+					OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y + cellRect.height, path, null, null, null);
 					if (path[0] != 0) {
 						OS.gtk_tree_view_scroll_to_cell(handle, path[0], 0, false, 0, 0);
 						OS.gtk_tree_path_free(path[0]);
 						path[0] = 0;
 					}
-					OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY, path, null, null, null);	
+					OS.gtk_tree_view_get_path_at_pos (handle, coordinates.x, coordinates.y, path, null, null, null);	
 				}
 				scrollBeginTime = 0;
 				scrollIndex = -1;
