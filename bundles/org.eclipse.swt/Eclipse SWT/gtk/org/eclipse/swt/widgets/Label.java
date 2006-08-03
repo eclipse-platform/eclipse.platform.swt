@@ -135,6 +135,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (fixWrap) {
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth [0], labelHeight [0]);
 	}
+	/*
+	* Feature in GTK.  Instead of using the font height to determine
+	* the preferred height of the widget, GTK uses the text metrics.
+	* The fix is to ensure that the preferred height is at least as
+	* tall as the font height.
+	* 
+	* NOTE: This work around does not fix the case when there are
+	* muliple lines of text.
+	*/
 	if (hHint == SWT.DEFAULT && labelHandle != 0) {
 		int /*long*/ layout = OS.gtk_label_get_layout (labelHandle);
 		int /*long*/ context = OS.pango_layout_get_context (layout);
