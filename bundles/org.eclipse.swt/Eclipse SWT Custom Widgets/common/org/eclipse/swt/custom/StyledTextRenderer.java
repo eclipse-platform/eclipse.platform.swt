@@ -79,12 +79,14 @@ class StyledTextRenderer {
 		public LineInfo() {
 		}
 		public LineInfo(LineInfo info) {
-			flags = info.flags;
-			background = info.background;
-			alignment = info.alignment;
-			indent = info.indent;
-			justify = info.justify;
-			segments = info.segments;
+			if (info != null) {
+				flags = info.flags;
+				background = info.background;
+				alignment = info.alignment;
+				indent = info.indent;
+				justify = info.justify;
+				segments = info.segments;
+			}
 		}
 	}
 	
