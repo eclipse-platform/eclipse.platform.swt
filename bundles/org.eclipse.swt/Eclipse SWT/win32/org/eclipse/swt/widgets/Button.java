@@ -450,7 +450,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	if ((style & SWT.PUSH) == 0) state |= THEME_BACKGROUND;
-	if (OS.COMCTL32_MAJOR >= 6) {
+	/*
+	* Bug in Windows.  For some reason, the HBRUSH that
+	* is returned from WM_CTRLCOLOR is misaligned when
+	* the button uses it to draw.  If the brush is a solid
+	* color, this does not matter.  However, if the brush
+	* contains an image, the image is misaligned.  The
+	* fix is to draw the background in WM_CTRLCOLOR.
+	* 
+	* NOTE: For comctl32.dll 6.0 with themes disabled,
+	* drawing in WM_ERASEBKGND will draw on top of the
+	* text of the control.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if ((style & SWT.RADIO) != 0) state |= DRAW_BACKGROUND;
 	}
 }
@@ -948,7 +960,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* contains an image, the image is misaligned.  The
 	* fix is to draw the background in WM_ERASEBKGND.
 	*/
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (OS.COMCTL32_MAJOR < 6) {
 		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) {
 			if (findImageControl () != null) {
 				drawBackground (wParam);
@@ -1057,13 +1069,13 @@ LRESULT wmColorChild (int wParam, int lParam) {
 	/*
 	* Bug in Windows.  For some reason, the HBRUSH that
 	* is returned from WM_CTRLCOLOR is misaligned when
-	* the label uses it to draw.  If the brush is a solid
+	* the button uses it to draw.  If the brush is a solid
 	* color, this does not matter.  However, if the brush
 	* contains an image, the image is misaligned.  The
 	* fix is to draw the background in WM_ERASEBKGND.
 	*/
 	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+	if (OS.COMCTL32_MAJOR < 6) {
 		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) {
 			if (findImageControl () != null) {
 				OS.SetBkMode (wParam, OS.TRANSPARENT);
