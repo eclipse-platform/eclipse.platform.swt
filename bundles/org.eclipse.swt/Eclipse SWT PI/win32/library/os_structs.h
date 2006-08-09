@@ -1019,6 +1019,18 @@ void setSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpSt
 #define SCRIPT_CONTROL_sizeof() 0
 #endif
 
+#ifndef NO_SCRIPT_DIGITSUBSTITUTE
+void cacheSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject);
+SCRIPT_DIGITSUBSTITUTE *getSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject, SCRIPT_DIGITSUBSTITUTE *lpStruct);
+void setSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject, SCRIPT_DIGITSUBSTITUTE *lpStruct);
+#define SCRIPT_DIGITSUBSTITUTE_sizeof() sizeof(SCRIPT_DIGITSUBSTITUTE)
+#else
+#define cacheSCRIPT_DIGITSUBSTITUTEFields(a,b)
+#define getSCRIPT_DIGITSUBSTITUTEFields(a,b,c) NULL
+#define setSCRIPT_DIGITSUBSTITUTEFields(a,b,c)
+#define SCRIPT_DIGITSUBSTITUTE_sizeof() 0
+#endif
+
 #ifndef NO_SCRIPT_FONTPROPERTIES
 void cacheSCRIPT_FONTPROPERTIESFields(JNIEnv *env, jobject lpObject);
 SCRIPT_FONTPROPERTIES *getSCRIPT_FONTPROPERTIESFields(JNIEnv *env, jobject lpObject, SCRIPT_FONTPROPERTIES *lpStruct);

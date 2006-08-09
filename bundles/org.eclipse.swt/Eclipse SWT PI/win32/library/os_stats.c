@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 691;
-int OS_nativeFunctionCallCount[691];
+int OS_nativeFunctionCount = 693;
+int OS_nativeFunctionCallCount[693];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -540,6 +540,7 @@ char * OS_nativeFunctionNames[] = {
 	"SHSipPreference",
 	"SaveDC",
 	"ScreenToClient",
+	"ScriptApplyDigitSubstitution",
 	"ScriptBreak",
 	"ScriptCPtoX",
 	"ScriptCacheGetHeight",
@@ -551,6 +552,7 @@ char * OS_nativeFunctionNames[] = {
 	"ScriptJustify",
 	"ScriptLayout",
 	"ScriptPlace",
+	"ScriptRecordDigitSubstitution",
 	"ScriptShape",
 	"ScriptTextOut",
 	"ScriptXtoCP",

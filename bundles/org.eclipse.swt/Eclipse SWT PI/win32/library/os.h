@@ -78,6 +78,7 @@
 #define NO_PRINTDLG
 #define NO_SCRIPT_ANALYSIS
 #define NO_SCRIPT_CONTROL
+#define NO_SCRIPT_DIGITSUBSTITUTE
 #define NO_SCRIPT_ITEM
 #define NO_SCRIPT_LOGATTR
 #define NO_SCRIPT_FONTPROPERTIES
@@ -410,6 +411,7 @@
 #define NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSW_2I
 #define NO_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
 #define NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
+#define NO_ScriptApplyDigitSubstitution
 #define NO_ScriptBreak
 #define NO_ScriptCacheGetHeight
 #define NO_ScriptCPtoX
@@ -421,6 +423,7 @@
 #define NO_ScriptJustify
 #define NO_ScriptLayout
 #define NO_ScriptPlace
+#define NO_ScriptRecordDigitSubstitution
 #define NO_ScriptShape
 #define NO_ScriptTextOut
 #define NO_ScriptXtoCP

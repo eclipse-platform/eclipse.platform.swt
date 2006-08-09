@@ -1588,6 +1588,9 @@ StyleItem[] itemize () {
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		scriptState.uBidiLevel = 1;
 		scriptState.fArabicNumContext = true;
+		SCRIPT_DIGITSUBSTITUTE psds = new SCRIPT_DIGITSUBSTITUTE();
+		OS.ScriptRecordDigitSubstitution(OS.LOCALE_USER_DEFAULT, psds);
+		OS.ScriptApplyDigitSubstitution(psds, scriptControl, scriptState);
 	}
 	
 	int hHeap = OS.GetProcessHeap();
