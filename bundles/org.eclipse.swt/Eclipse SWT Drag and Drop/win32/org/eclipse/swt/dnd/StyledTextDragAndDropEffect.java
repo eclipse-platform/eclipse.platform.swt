@@ -43,16 +43,17 @@ void showDropTargetEffect(int effect, int x, int y) {
 					Rectangle area = text.getClientArea();
 					Rectangle bounds = text.getTextBounds(0, 0);
 					int charWidth = bounds.width;
-					if (pt.x < area.x + 2*charWidth) {
+					int scrollAmount = 10*charWidth;
+					if (pt.x < area.x + 3*charWidth) {
 						int leftPixel = text.getHorizontalPixel();
-						text.setHorizontalPixel(leftPixel - charWidth);
+						text.setHorizontalPixel(leftPixel - scrollAmount);
 						if (text.getHorizontalPixel() != leftPixel) {
 							text.redraw();
 						}
 					}
-					if (pt.x > area.width - 2*charWidth) {
+					if (pt.x > area.width - 3*charWidth) {
 						int leftPixel = text.getHorizontalPixel();
-						text.setHorizontalPixel(leftPixel + charWidth);
+						text.setHorizontalPixel(leftPixel + scrollAmount);
 						if (text.getHorizontalPixel() != leftPixel) {
 							text.redraw();
 						}
