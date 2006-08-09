@@ -452,6 +452,7 @@ public class OS extends Platform {
 	public static final byte[] pixbuf = ascii("pixbuf");
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
+	public static final byte[] ypad = ascii("ypad");
 	
 	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
 	
@@ -4950,6 +4951,15 @@ public static final boolean gtk_init_check(int /*long*/[] argc, int /*long*/[] a
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_label_get_layout(int /*long*/ label);
+public static final int /*long*/ gtk_label_get_layout(int /*long*/ label) {
+	lock.lock();
+	try {
+		return _gtk_label_get_layout(label);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _gtk_label_get_mnemonic_keyval(int /*long*/ label);
 public static final int gtk_label_get_mnemonic_keyval(int /*long*/ label) {
 	lock.lock();
@@ -8846,6 +8856,15 @@ public static final int pango_layout_get_alignment(int /*long*/ layout) {
 	lock.lock();
 	try {
 		return _pango_layout_get_alignment(layout);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_layout_get_context(int /*long*/ layout);
+public static final int /*long*/ pango_layout_get_context(int /*long*/ layout) {
+	lock.lock();
+	try {
+		return _pango_layout_get_context(layout);
 	} finally {
 		lock.unlock();
 	}

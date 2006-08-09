@@ -135,6 +135,35 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (fixWrap) {
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth [0], labelHeight [0]);
 	}
+	/*
+	* Feature in GTK.  Instead of using the font height to determine
+	* the preferred height of the widget, GTK uses the text metrics.
+	* The fix is to ensure that the preferred height is at least as
+	* tall as the font height.
+	* 
+	* NOTE: This work around does not fix the case when there are
+	* muliple lines of text.
+	*/
+	if (hHint == SWT.DEFAULT && labelHandle != 0) {
+		int /*long*/ layout = OS.gtk_label_get_layout (labelHandle);
+		int /*long*/ context = OS.pango_layout_get_context (layout);
+		int /*long*/ lang = OS.pango_context_get_language (context);
+		int /*long*/ font = getFontDescription ();
+		int /*long*/ metrics = OS.pango_context_get_metrics (context, font, lang);
+		int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
+		int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
+		OS.pango_font_metrics_unref (metrics);
+		int fontHeight = ascent + descent;
+		int [] buffer = new int [1];
+		OS.g_object_get (labelHandle, OS.ypad, buffer, 0);
+		fontHeight += 2 * buffer [0];
+		if (frameHandle != 0) {
+			int /*long*/ style = OS.gtk_widget_get_style (frameHandle);
+			fontHeight += 2 * OS.gtk_style_get_ythickness (style);
+			fontHeight += 2 * OS.gtk_container_get_border_width (frameHandle);
+		}
+		size.y = Math.max (size.y, fontHeight);
+	}
 	return size;
 }
 
