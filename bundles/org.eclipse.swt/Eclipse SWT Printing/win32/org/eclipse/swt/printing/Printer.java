@@ -457,10 +457,11 @@ public Rectangle getClientArea() {
  * (that is, not covered by the "trimmings") would be the
  * rectangle described by the arguments (relative to the
  * receiver's parent).
- * </p>
+ * </p><p>
  * Note that there is no setBounds for a printer. This method
  * is usually used by passing in the client area (the 'printable
  * area') of the printer. It can also be useful to pass in 0, 0, 0, 0.
+ * </p>
  * 
  * @param x the desired x coordinate of the client area
  * @param y the desired y coordinate of the client area
