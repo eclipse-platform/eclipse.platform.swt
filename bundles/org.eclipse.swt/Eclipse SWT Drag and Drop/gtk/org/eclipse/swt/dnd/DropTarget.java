@@ -682,7 +682,10 @@ boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent even
 	}
 	if (dataTypes.length == 0) return false;
 
-	Point coordinates = control.toDisplay( new Point( x, y) );
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW(control.handle);
+	int [] origin_x = new int[1], origin_y = new int[1];
+	OS.gdk_window_get_origin(window, origin_x, origin_y);
+	Point coordinates = new Point(origin_x[0] + x, origin_y[0] + y);
 	
 	event.widget = this;
 	event.x = coordinates.x;
