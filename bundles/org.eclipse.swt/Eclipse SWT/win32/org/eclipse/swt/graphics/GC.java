@@ -278,7 +278,7 @@ void checkGC(int mask) {
 			case SWT.LINE_DASHDOT: lineStyle = OS.PS_DASHDOT; break;
 			case SWT.LINE_DASHDOTDOT: lineStyle = OS.PS_DASHDOTDOT; break;
 			case SWT.LINE_CUSTOM: {
-				if (data.lineDashes == null) {
+				if (data.lineDashes != null) {
 					lineStyle = OS.PS_USERSTYLE;
 					dashes = data.lineDashes;
 				}
