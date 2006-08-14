@@ -318,27 +318,29 @@ void checkGC(int mask) {
 		}
 		OS.SelectObject(handle, newPen);
 		data.state |= PEN;
+		data.state &= ~NULL_PEN;
 		if (data.hPen != 0) OS.DeleteObject(data.hPen);
 		data.hPen = data.hOldPen = newPen;
 	} else if ((state & PEN) != 0) {
 		OS.SelectObject(handle, data.hOldPen);
+		data.state &= ~NULL_PEN;
+	} else if ((state & NULL_PEN) != 0) {
+		data.hOldPen = OS.SelectObject(handle, OS.GetStockObject(OS.NULL_PEN));
+		data.state &= ~PEN;
 	}
 	if ((state & BACKGROUND) != 0) {
 		int newBrush = OS.CreateSolidBrush(data.background);
 		OS.SelectObject(handle, newBrush);
 		data.state |= BRUSH;
+		data.state &= ~NULL_BRUSH;
 		if (data.hBrush != 0) OS.DeleteObject(data.hBrush);
 		data.hOldBrush = data.hBrush = newBrush;
 	} else if ((state & BRUSH) != 0) {
 		OS.SelectObject(handle, data.hOldBrush);
-	}
-	if ((state & NULL_BRUSH) != 0) {
+		data.state &= ~NULL_BRUSH;
+	} else if ((state & NULL_BRUSH) != 0) {
 		data.hOldBrush = OS.SelectObject(handle, OS.GetStockObject(OS.NULL_BRUSH));
 		data.state &= ~BRUSH;
-	}
-	if ((state & NULL_PEN) != 0) {
-		data.hOldPen = OS.SelectObject(handle, OS.GetStockObject(OS.NULL_PEN));
-		data.state &= ~PEN;
 	}
 	if ((state & BACKGROUND_TEXT) != 0) {
 		OS.SetBkColor(handle, data.background);
