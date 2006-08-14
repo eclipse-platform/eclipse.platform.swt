@@ -4756,6 +4756,19 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				info.cbSize = SCROLLINFO.sizeof;
 				info.fMask = OS.SIF_ALL;
 				OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
+				/*
+				* Update the nPos field to match the nTrackPos field
+				* so that the tree scrolls when the scroll bar of the
+				* parent is dragged.
+				* 
+				* NOTE: For some reason, this code is only necessary
+				* on Windows Vista.
+				*/
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					if ((wParam & 0xFFFF) == OS.SB_THUMBTRACK) {
+						info.nPos = info.nTrackPos;
+					}
+				}
 				OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
 				int code = OS.SendMessage (handle, OS.WM_VSCROLL, wParam, lParam);
 				OS.GetScrollInfo (handle, OS.SB_VERT, info);
