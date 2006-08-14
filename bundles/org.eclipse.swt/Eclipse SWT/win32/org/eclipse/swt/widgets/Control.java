@@ -3740,17 +3740,6 @@ LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
-	/*
-	* Bug in Windows.  On XP, when a tooltip is
-	* hidden due to a time out or mouse press,
-	* the tooltip remains active although no
-	* longer visible and won't show again until
-	* another tooltip becomes active.  If there
-	* is only one tooltip in the window,  it will
-	* never show again.  The fix is to remove the
-	* current tooltip and add it again every time
-	* the mouse leaves the control.
-	*/
 	if (OS.COMCTL32_MAJOR >= 6) getShell ().fixToolTip ();
 	return wmMouseLeave (handle, wParam, lParam);
 }
