@@ -299,21 +299,37 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		/* Create a destination image with no data */
 		ImageData newSource = new ImageData(
 			source.width, source.height, 1, ImageData.bwPalette(),
-			1, null, 0, null, null, -1, -1, source.type,
-			source.x, source.y, source.disposalMethod, source.delayTime);
+			1, null, 0, null, null, -1, -1, 0, 0, 0, 0, 0);
+
+		byte[] newReds = new byte[]{0, (byte)255}, newGreens = newReds, newBlues = newReds;
 
 		/* Convert the source to a black and white image of depth 1 */
 		PaletteData palette = source.palette;
-		if (palette.isDirect) ImageData.blit(ImageData.BLIT_SRC,
-			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, 0, 0, 0,
-			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-			newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, 0, 0, 0,
-			false, false);
-		else ImageData.blit(ImageData.BLIT_SRC,
-			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, null, null, null,
-			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-			newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, null, null, null,
-			false, false);
+		if (palette.isDirect) {
+			ImageData.blit(ImageData.BLIT_SRC,
+					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+					newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
+					false, false);
+		} else {
+			RGB[] rgbs = palette.getRGBs();
+			int length = rgbs.length;
+			byte[] srcReds = new byte[length];
+			byte[] srcGreens = new byte[length];
+			byte[] srcBlues = new byte[length];
+			for (int i = 0; i < rgbs.length; i++) {
+				RGB rgb = rgbs[i];
+				if (rgb == null) continue;
+				srcReds[i] = (byte)rgb.red;
+				srcGreens[i] = (byte)rgb.green;
+				srcBlues[i] = (byte)rgb.blue;
+			}
+			ImageData.blit(ImageData.BLIT_SRC,
+					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+					newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
+					false, false);
+		}
 		source = newSource;
 	}
 	type = OS.Ph_CURSOR_BITMAP;
