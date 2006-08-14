@@ -33,8 +33,8 @@ public class Snippet133 {
 	
 	Printer printer;
 	GC gc;
-	Font printerFont;
-	Color printerForegroundColor, printerBackgroundColor;
+	FontData[] printerFontData;
+	RGB printerForeground, printerBackground;
 
 	int lineHeight = 0;
 	int tabWidth = 0;
@@ -197,6 +197,11 @@ public class Snippet133 {
 		/* Get the text to print from the Text widget (you could get it from anywhere, i.e. your java model) */
 		textToPrint = text.getText();
 
+		/* Get the font & foreground & background data. */
+		printerFontData = text.getFont().getFontData();
+		printerForeground = text.getForeground().getRGB();
+		printerBackground = text.getBackground().getRGB();
+		
 		/* Do the printing in a background thread so that spooling does not freeze the UI. */
 		printer = new Printer(data);
 		Thread printingThread = new Thread("Printing") {
@@ -226,20 +231,15 @@ public class Snippet133 {
 
 			/* Create printer GC, and create and set the printer font & foreground color. */
 			gc = new GC(printer);
+			Font printerFont = new Font(printer, printerFontData);
+			Color printerForegroundColor = new Color(printer, printerForeground);
+			Color printerBackgroundColor = new Color(printer, printerBackground); 
 			
-			FontData fontData = text.getFont().getFontData()[0];
-			printerFont = new Font(printer, fontData.getName(), fontData.getHeight(), fontData.getStyle());
 			gc.setFont(printerFont);
+			gc.setForeground(printerForegroundColor);
+			gc.setBackground(printerBackgroundColor);
 			tabWidth = gc.stringExtent(tabs).x;
 			lineHeight = gc.getFontMetrics().getHeight();
-			
-			RGB rgb = text.getForeground().getRGB();
-			printerForegroundColor = new Color(printer, rgb);
-			gc.setForeground(printerForegroundColor);
-		
-			rgb = text.getBackground().getRGB();
-			printerBackgroundColor = new Color(printer, rgb);
-			gc.setBackground(printerBackgroundColor);
 		
 			/* Print text to current gc using word wrap */
 			printText();
