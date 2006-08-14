@@ -932,12 +932,12 @@ void destroyItem (TreeColumn column) {
 				
 				Font [] cellFont = item.cellFont;
 				if (cellFont != null) {
-					if (columnCount == 1) {
+					if (columnCount == 0) {
 						item.cellFont = null;
 					} else {
-						Font [] temp = new Font [columnCount - 1];
+						Font [] temp = new Font [columnCount];
 						System.arraycopy (cellFont, 0, temp, 0, index);
-						System.arraycopy (cellFont, index + 1, temp, index, columnCount - 1 - index);
+						System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
 						item.cellFont = temp;
 					}
 				}
