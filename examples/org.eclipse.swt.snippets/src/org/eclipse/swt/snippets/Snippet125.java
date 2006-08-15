@@ -46,6 +46,7 @@ public static void main (String[] args) {
 					e.item = (TableItem) label.getData ("_TABLEITEM");
 					// Assuming table is single select, set the selection as if
 					// the mouse down event went through to the table
+					table.setFocus();
 					table.setSelection (new TableItem [] {(TableItem) e.item});
 					table.notifyListeners (SWT.Selection, e);
 					// fall through
@@ -74,13 +75,16 @@ public static void main (String[] args) {
 					TableItem item = table.getItem (new Point (event.x, event.y));
 					if (item != null) {
 						if (tip != null  && !tip.isDisposed ()) tip.dispose ();
-						tip = new Shell (shell, SWT.ON_TOP | SWT.TOOL);
-						tip.setLayout (new FillLayout ());
+						tip = new Shell (shell, SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
+						tip.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+						FillLayout layout = new FillLayout ();
+						layout.marginWidth = 2;
+						tip.setLayout (layout);
 						label = new Label (tip, SWT.NONE);
 						label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
 						label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
 						label.setData ("_TABLEITEM", item);
-						label.setText ("tooltip "+item.getText ());
+						label.setText (item.getText ());
 						label.addListener (SWT.MouseExit, labelListener);
 						label.addListener (SWT.MouseDown, labelListener);
 						Point size = tip.computeSize (SWT.DEFAULT, SWT.DEFAULT);
@@ -97,6 +101,7 @@ public static void main (String[] args) {
 	table.addListener (SWT.KeyDown, tableListener);
 	table.addListener (SWT.MouseMove, tableListener);
 	table.addListener (SWT.MouseHover, tableListener);
+	shell.pack ();
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
