@@ -372,10 +372,11 @@ void presetChooserDialog () {
 			stringBuffer.append ('.');
 		}
 		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
-		/*  Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
-		 *  when setting a file name that is not a true canonical path. 
-		 *  The fix is to use the canonical path.
-		 */
+		/*
+		* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+		* when setting a file name that is not a true canonical path. 
+		* The fix is to use the canonical path.
+		*/
 		int /*long*/ ptr = OS.realpath (buffer, null);
 		if (ptr != 0) {
 			int length = OS.strlen (ptr);
@@ -388,10 +389,11 @@ void presetChooserDialog () {
 		if (fileName.length () > 0) {
 			if (fileName.charAt (0) == SEPARATOR) {
 				byte [] buffer = Converter.wcsToMbcs (null, fileName, true);
-				/*  Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
-				 *  when setting a file name that is not a true canonical path. 
-				 *  The fix is to use the canonical path.
-				 */
+				/*
+				* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+				* when setting a file name that is not a true canonical path. 
+				* The fix is to use the canonical path.
+				*/
 				int /*long*/ ptr = OS.realpath (buffer, null);
 				if (ptr != 0) {
 					int length = OS.strlen (ptr);
