@@ -669,7 +669,20 @@ public void setEnabled (boolean enabled) {
 				info.fState |= bits;
 			}
 			success = OS.SetMenuItemInfo (hMenu, id, false, info);
-			if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
+			if (!success) {
+				/*
+				* Bug in Windows.  For some reason SetMenuItemInfo(),
+				* returns a fail code when setting the enabled or
+				* selected state of a default item, but sets the
+				* state anyway.  The fix is to ignore the error.
+				* 
+				* NOTE:  This only happens on Vista.
+				*/
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					success = id == OS.GetMenuDefaultItem (hMenu, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
+				}
+				if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
+			}
 		}
 	}
 	parent.destroyAccelerators ();
@@ -915,7 +928,20 @@ public void setSelection (boolean selected) {
 		info.fState &= ~OS.MFS_CHECKED;
 		if (selected) info.fState |= OS.MFS_CHECKED;
 		success = OS.SetMenuItemInfo (hMenu, id, false, info);
-		if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
+		if (!success) {
+			/*
+			* Bug in Windows.  For some reason SetMenuItemInfo(),
+			* returns a fail code when setting the enabled or
+			* selected state of a default item, but sets the
+			* state anyway.  The fix is to ignore the error.
+			* 
+			* NOTE:  This only happens on Vista.
+			*/
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				success = id == OS.GetMenuDefaultItem (hMenu, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
+			}
+			if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
+		}
 	}
 	parent.redraw ();
 }
