@@ -1224,5 +1224,6 @@ typedef enum {
 	memmove___3I_3BI_FUNC,
 	memmove___3JII_FUNC,
 	memset_FUNC,
+	realpath_FUNC,
 	strlen_FUNC,
 } OS_FUNCS;

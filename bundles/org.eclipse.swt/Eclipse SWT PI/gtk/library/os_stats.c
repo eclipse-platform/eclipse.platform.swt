@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1200;
-int OS_nativeFunctionCallCount[1200];
+int OS_nativeFunctionCount = 1201;
+int OS_nativeFunctionCallCount[1201];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -1220,6 +1220,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove___3I_3BI",
 	"memmove___3JII",
 	"memset",
+	"realpath",
 	"strlen",
 };
 

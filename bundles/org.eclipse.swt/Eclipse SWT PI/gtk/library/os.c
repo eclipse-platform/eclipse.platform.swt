@@ -17214,6 +17214,25 @@ JNIEXPORT void JNICALL OS_NATIVE(memset)
 }
 #endif
 
+#ifndef NO_realpath
+JNIEXPORT jint JNICALL OS_NATIVE(realpath)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, realpath_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)realpath((const char *)lparg0, (char *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, realpath_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_strlen
 JNIEXPORT jint JNICALL OS_NATIVE(strlen)
 	(JNIEnv *env, jclass that, jint arg0)

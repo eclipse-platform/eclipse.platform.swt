@@ -553,6 +553,7 @@ public static final native int XWindowChanges_sizeof();
 public static final native int /*long*/ getenv(byte[] name);
 public static final native int /*long*/ localeconv_decimal_point();
 public static final native int strlen(int /*long*/ str);
+public static final native int /*long*/ realpath(byte[] path, byte[] realPath);
 
 /** Object private fields accessors */
 public static final native int GTK_WIDGET_HEIGHT(int /*long*/ widget);
