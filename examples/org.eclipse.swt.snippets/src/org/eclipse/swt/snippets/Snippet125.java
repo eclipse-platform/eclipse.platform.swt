@@ -46,10 +46,11 @@ public static void main (String[] args) {
 					e.item = (TableItem) label.getData ("_TABLEITEM");
 					// Assuming table is single select, set the selection as if
 					// the mouse down event went through to the table
-					table.setFocus();
 					table.setSelection (new TableItem [] {(TableItem) e.item});
 					table.notifyListeners (SWT.Selection, e);
-					// fall through
+					shell.dispose ();
+					table.setFocus();
+					break;
 				case SWT.MouseExit:
 					shell.dispose ();
 					break;
