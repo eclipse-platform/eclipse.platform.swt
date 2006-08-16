@@ -379,10 +379,7 @@ void presetChooserDialog () {
 		*/
 		int /*long*/ ptr = OS.realpath (buffer, null);
 		if (ptr != 0) {
-			int length = OS.strlen (ptr);
-			buffer = new byte [length];
-			OS.memmove (buffer, ptr, length);
-			OS.gtk_file_chooser_set_filename (handle, buffer);
+			OS.gtk_file_chooser_set_filename (handle, ptr);
 			OS.g_free (ptr);
 		}
 	} else {
@@ -396,10 +393,7 @@ void presetChooserDialog () {
 				*/
 				int /*long*/ ptr = OS.realpath (buffer, null);
 				if (ptr != 0) {
-					int length = OS.strlen (ptr);
-					buffer = new byte [length];
-					OS.memmove (buffer, ptr, length);
-					OS.gtk_file_chooser_set_filename (handle, buffer);
+					OS.gtk_file_chooser_set_filename (handle, ptr);
 					OS.g_free (ptr);
 				}
 			}

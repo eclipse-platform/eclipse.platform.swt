@@ -4619,8 +4619,8 @@ public static final void gtk_file_chooser_set_extra_widget(int /*long*/ chooser,
 		lock.unlock();
 	}
 }
-public static final native void _gtk_file_chooser_set_filename(int /*long*/ chooser, byte[] name);
-public static final void gtk_file_chooser_set_filename(int /*long*/ chooser, byte[] name) {
+public static final native void _gtk_file_chooser_set_filename(int /*long*/ chooser, int /*long*/ name);
+public static final void gtk_file_chooser_set_filename(int /*long*/ chooser, int /*long*/ name) {
 	lock.lock();
 	try {
 		_gtk_file_chooser_set_filename(chooser, name);
