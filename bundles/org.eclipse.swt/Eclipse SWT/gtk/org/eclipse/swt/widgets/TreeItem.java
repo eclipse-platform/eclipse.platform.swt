@@ -371,7 +371,7 @@ public Rectangle getBounds (int index) {
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
 	
-	if (OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		int [] buffer = new int [1];
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
@@ -440,7 +440,7 @@ public Rectangle getBounds () {
 	parent.ignoreSize = false;
 	rect.width = w [0];
 	int [] buffer = new int [1];
-	if (OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 	}
@@ -693,7 +693,7 @@ public Rectangle getImageBounds (int index) {
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
 	
-	if (OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		int [] buffer = new int [1];
 		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
 		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;

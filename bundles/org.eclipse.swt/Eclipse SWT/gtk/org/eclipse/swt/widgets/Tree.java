@@ -1342,23 +1342,23 @@ public TreeItem getItem (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int /*long*/ [] path = new int /*long*/ [1];
 	OS.gtk_widget_realize (handle);
-	if (!OS.gtk_tree_view_get_path_at_pos (handle, point.x, point.y, path, null, null, null)) return null;
+	int /*long*/ [] columnHandle = new int /*long*/ [1];
+	if (!OS.gtk_tree_view_get_path_at_pos (handle, point.x, point.y, path, columnHandle, null, null)) return null;
 	if (path [0] == 0) return null;
 	TreeItem item = null;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
 		boolean overExpander = false;
-		if (OS.gtk_tree_model_iter_n_children (modelHandle, iter) > 0) {
-			for (int i = 0; i <= columnCount; i++) {
-				int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
-				if (column != 0) {
-					int[] buffer = new int [1];
-					GdkRectangle rect = new GdkRectangle ();
-					OS.gtk_tree_view_get_cell_area (handle, path [0], column, rect);
-					OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
-					int expanderSize = buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-					overExpander = rect.x - 1 <= point.x && point.x < rect.x + expanderSize;
-				}
+		if (OS.gtk_tree_view_get_expander_column (handle) == columnHandle [0]) {
+			int [] buffer = new int [1];
+			GdkRectangle rect = new GdkRectangle ();
+			OS.gtk_tree_view_get_cell_area (handle, path [0], columnHandle [0], rect);
+			if (OS.GTK_VERSION < OS.VERSION (2, 8, 18)) {
+				OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
+				int expanderSize = buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+				overExpander = point.x < rect.x + expanderSize;
+			} else {
+				overExpander = point.x < rect.x;
 			}
 		}
 		if (!overExpander) {
@@ -2391,7 +2391,7 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 				OS.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect);
 				OS.gtk_tree_path_free (path);
-				if (OS.gtk_tree_view_get_expander_column (handle) == columnHandle) {
+				if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (handle) == columnHandle) {
 					int [] buffer = new int [1];
 					OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
 					rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
