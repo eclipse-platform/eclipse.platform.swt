@@ -313,6 +313,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int[] w = new int [1], h = new int [1];
 	if ((style & SWT.SINGLE) != 0) {
+		OS.gtk_widget_realize (handle);
 		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
 		OS.pango_layout_get_size (layout, w, h);
 	} else {
