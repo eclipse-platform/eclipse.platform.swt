@@ -34,15 +34,40 @@ public final class Variant
 	private short type; // OLE.VT_* type
 	
 	private boolean booleanData;
-	private double  doubleData;
-	private int     intData;
-	private float   floatData;
-	private long    longData;
+	private byte    byteData;
 	private short   shortData;
+	private char    charData;
+	private int     intData;
+	private long    longData;
+	private float   floatData;
+	private double  doubleData;
 	private String  stringData;
 	private int     byRefPtr;
 	private IDispatch dispatchData;
 	private IUnknown unknownData;
+
+
+/**	 
+ * Invokes platform specific functionality to wrap a variant.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param pVariant pointer to a variant
+ *
+ * @return a new <code>GC</code>
+ *
+ * @since 3.3
+ */
+public static Variant win32_new (int pVariant) {
+	Variant variant = new Variant ();
+	variant.setData (pVariant);
+	return variant;
+}
 
 /**
  * Create an empty Variant object with type VT_EMPTY.
@@ -192,15 +217,6 @@ public void dispose() {
 	}
 		
 	switch (type) {
-		case COM.VT_EMPTY :
-		case COM.VT_BOOL :
-		case COM.VT_BSTR :
-		case COM.VT_I2 :
-		case COM.VT_I4 :
-		case COM.VT_I8 :
-		case COM.VT_R4 :
-		case COM.VT_R8 :
-			break;
 		case COM.VT_DISPATCH :
 			dispatchData.Release();
 			break;
@@ -352,6 +368,86 @@ public int getByRef() {
 		
 	return 0;
 }
+/**
+ * Returns the Java byte represented by this Variant.
+ *
+ * <p>If this Variant does not contain a Java byte, an attempt is made to
+ * coerce the Variant type into a Java byte.  If this fails, an error is thrown.
+ *
+ * @return the Java byte represented by this Variant
+ *
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a byte</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public byte getByte() {
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_I1) {
+		return byteData;
+	}
+		
+	// try to coerce the value to the desired type
+	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	try {
+		getData(oldPtr);
+		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_I1);
+		if (result != COM.S_OK)
+			OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
+		Variant byteVar = new Variant();
+		byteVar.setData(newPtr);
+		return byteVar.getByte();
+	} finally {
+		COM.VariantClear(oldPtr);
+		OS.GlobalFree(oldPtr);
+		COM.VariantClear(newPtr);
+		OS.GlobalFree(newPtr);
+	}
+}
+/**
+ * Returns the Java char represented by this Variant.
+ *
+ * <p>If this Variant does not contain a Java char, an attempt is made to
+ * coerce the Variant type into a Java char.  If this fails, an error is thrown.
+ *
+ * @return the Java char represented by this Variant
+ *
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a char</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public char getChar() {
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_UI2) {
+		return charData;
+	}
+		
+	// try to coerce the value to the desired type
+	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	int newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	try {
+		getData(oldPtr);
+		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_UI2);
+		if (result != COM.S_OK)
+			OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
+		Variant charVar = new Variant();
+		charVar.setData(newPtr);
+		return charVar.getChar();
+	} finally {
+		COM.VariantClear(oldPtr);
+		OS.GlobalFree(oldPtr);
+		COM.VariantClear(newPtr);
+		OS.GlobalFree(newPtr);
+	}
+}
 void getData(int pData){
 	if (pData == 0) OLE.error(OLE.ERROR_OUT_OF_MEMORY);
 	
@@ -365,18 +461,24 @@ void getData(int pData){
 
 	switch (type) {
 		case COM.VT_EMPTY :
+		case COM.VT_NULL :
+            COM.MoveMemory(pData, new short[] {type}, 2);
 			break;
 		case COM.VT_BOOL :
 			COM.MoveMemory(pData, new short[] {type}, 2);
 			COM.MoveMemory(pData + 8, new int[]{(booleanData) ? COM.VARIANT_TRUE : COM.VARIANT_FALSE}, 2);
 			break;
-		case COM.VT_R4 :
+		case COM.VT_I1 :
 			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new float[]{floatData}, 4);
+			COM.MoveMemory(pData + 8, new byte[]{byteData}, 1);
 			break;
-		case COM.VT_R8 :
+		case COM.VT_I2 :
 			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new double[]{doubleData}, 8);
+			COM.MoveMemory(pData + 8, new short[]{shortData}, 2);
+			break;
+		case COM.VT_UI2 :
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new char[]{charData}, 2);
 			break;
 		case COM.VT_I4 :
 			COM.MoveMemory(pData, new short[] {type}, 2);
@@ -385,6 +487,14 @@ void getData(int pData){
 		case COM.VT_I8 :
 			COM.MoveMemory(pData, new short[] {type}, 2);
 			COM.MoveMemory(pData + 8, new long[]{longData}, 8);
+			break;
+		case COM.VT_R4 :
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new float[]{floatData}, 4);
+			break;
+		case COM.VT_R8 :
+			COM.MoveMemory(pData, new short[] {type}, 2);
+			COM.MoveMemory(pData + 8, new double[]{doubleData}, 8);
 			break;
 		case COM.VT_DISPATCH :
 			dispatchData.AddRef();
@@ -395,10 +505,6 @@ void getData(int pData){
 			unknownData.AddRef();
 			COM.MoveMemory(pData, new short[] {type}, 2);
 			COM.MoveMemory(pData + 8, new int[]{unknownData.getAddress()}, 4);
-			break;
-		case COM.VT_I2 :
-			COM.MoveMemory(pData, new short[] {type}, 2);
-			COM.MoveMemory(pData + 8, new short[]{shortData}, 2);
 			break;
 		case COM.VT_BSTR :
 			COM.MoveMemory(pData, new short[] {type}, 2);
@@ -790,21 +896,27 @@ void setData(int pData){
 	
 	switch (type) {
 		case COM.VT_EMPTY :
+		case COM.VT_NULL :
 			break;
 		case COM.VT_BOOL :
 			short[] newBooleanData = new short[1];
 			COM.MoveMemory(newBooleanData, pData + 8, 2);
 			booleanData = (newBooleanData[0] != COM.VARIANT_FALSE);
 			break;
-		case COM.VT_R4 :
-			float[] newFloatData = new float[1];
-			COM.MoveMemory(newFloatData, pData + 8, 4);
-			floatData = newFloatData[0];
+		case COM.VT_I1 :
+			byte[] newByteData = new byte[1];
+			COM.MoveMemory(newByteData, pData + 8, 1);
+			byteData = newByteData[0];
 			break;
-		case COM.VT_R8 :
-			double[] newDoubleData = new double[1];
-			COM.MoveMemory(newDoubleData, pData + 8, 8);
- 			doubleData = newDoubleData[0];
+		case COM.VT_I2 :
+			short[] newShortData = new short[1];
+			COM.MoveMemory(newShortData, pData + 8, 2);
+			shortData = newShortData[0];
+			break;
+		case COM.VT_UI2 :
+			char[] newCharData = new char[1];
+			COM.MoveMemory(newCharData, pData + 8, 2);
+			charData = newCharData[0];
 			break;
 		case COM.VT_I4 :
 			int[] newIntData = new int[1];
@@ -815,6 +927,16 @@ void setData(int pData){
 			long[] newLongData = new long[1];
 			OS.MoveMemory(newLongData, pData + 8, 8);
 			longData = newLongData[0];
+			break;
+		case COM.VT_R4 :
+			float[] newFloatData = new float[1];
+			COM.MoveMemory(newFloatData, pData + 8, 4);
+			floatData = newFloatData[0];
+			break;
+		case COM.VT_R8 :
+			double[] newDoubleData = new double[1];
+			COM.MoveMemory(newDoubleData, pData + 8, 8);
+ 			doubleData = newDoubleData[0];
 			break;
 		case COM.VT_DISPATCH : {
 			int[] ppvObject = new int[1];
@@ -838,11 +960,6 @@ void setData(int pData){
 			unknownData.AddRef();
 			break;
 		}
-		case COM.VT_I2 :
-			short[] newShortData = new short[1];
-			COM.MoveMemory(newShortData, pData + 8, 2);
-			shortData = newShortData[0];
-			break;
 		case COM.VT_BSTR :
 			// get the address of the memory in which the string resides
 			int[] hMem = new int[1];
@@ -890,8 +1007,12 @@ public String toString () {
     switch (type) {
 	    case COM.VT_BOOL :
 	        return "VT_BOOL{"+booleanData+"}";
+	    case COM.VT_I1 :
+	        return "VT_I1{"+byteData+"}";
 	    case COM.VT_I2 :
 	        return "VT_I2{"+shortData+"}";
+	    case COM.VT_UI2 :
+	        return "VT_UI2{"+charData+"}";
 	    case COM.VT_I4 :
 	        return "VT_I4{"+intData+"}";
 	    case COM.VT_I8 :
@@ -908,6 +1029,8 @@ public String toString () {
 	        return "VT_UNKNOWN{"+(unknownData == null ? 0 : unknownData.getAddress())+"}";
 	    case COM.VT_EMPTY :
 	        return "VT_EMPTY";
+	    case COM.VT_NULL :
+	        return "VT_NULL";
 	 }
     if ((type & COM.VT_BYREF) != 0) {
         return "VT_BYREF|"+(type & ~COM.VT_BYREF)+"{"+byRefPtr+"}";

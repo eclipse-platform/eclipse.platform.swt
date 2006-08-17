@@ -367,6 +367,7 @@ public class COM extends OS {
 	public static final short VT_DISPATCH = 9;
 	public static final short VT_EMPTY = 0;
 	public static final short VT_ERROR = 10;
+	public static final short VT_I1 = 16;
 	public static final short VT_I2 = 2;
 	public static final short VT_I4 = 3;
 	public static final short VT_I8 = 20;
@@ -374,6 +375,7 @@ public class COM extends OS {
 	public static final short VT_R4 = 4;
 	public static final short VT_R8 = 5;
 	public static final short VT_UI1 = 17;
+	public static final short VT_UI2 = 18;
 	public static final short VT_UI4 = 19;
 	public static final short VT_UNKNOWN = 13;
 	public static final short VT_VARIANT = 12;
