@@ -303,7 +303,7 @@ void computeRuns (GC gc) {
 							if (!logAttr.fWhiteSpace) start = -1;
 						}
 					}
-				}		
+				}
 				if (start >= 0 || i == lineStart) break;
 				run = allRuns[--i];
 				start = run.length - 1;
@@ -2296,6 +2296,11 @@ void shape (final int hdc, final StyleItem run) {
 					/* ReleaseFont() */
 					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
 					OS.SelectObject(hdc, hFont);
+					SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
+					OS.MoveMemory(properties, device.scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+					if (properties.fPrivateUseArea) {
+						run.analysis.fNoGlyphIndex = true;
+					}
 					OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
 					run.glyphCount = buffer[0];
 				}
