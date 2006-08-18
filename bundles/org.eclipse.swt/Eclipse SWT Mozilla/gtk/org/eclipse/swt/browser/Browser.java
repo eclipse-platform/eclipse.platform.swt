@@ -808,7 +808,8 @@ public Browser(Composite parent, int style) {
 		SWT.Resize,  
 		SWT.FocusIn, 
 		SWT.Deactivate,
-		SWT.Show
+		SWT.Show,
+		SWT.KeyDown		// needed to make browser traversable
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
