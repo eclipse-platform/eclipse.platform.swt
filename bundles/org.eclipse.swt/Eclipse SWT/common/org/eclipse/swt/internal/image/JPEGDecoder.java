@@ -6279,7 +6279,8 @@ static ImageData[] loadFromByteStream(InputStream inputStream) {
 		default:
 			error();
 	}
-	int row_stride = (((cinfo.output_width * cinfo.out_color_components * 8 + 7) / 8) + 3) / 4 * 4;
+	int scanlinePad = 4;
+	int row_stride = (((cinfo.output_width * cinfo.out_color_components * 8 + 7) / 8) + (scanlinePad - 1)) / scanlinePad * scanlinePad;
 	byte[][] buffer = new byte[1][row_stride];
 	byte[] data = new byte[row_stride * cinfo.output_height];
 	while (cinfo.output_scanline < cinfo.output_height) {
@@ -6288,7 +6289,23 @@ static ImageData[] loadFromByteStream(InputStream inputStream) {
 		System.arraycopy(buffer[0], 0, data, offset, row_stride);
 	}
 	jpeg_finish_decompress(cinfo);
-	ImageData imageData = new ImageData(cinfo.output_width, cinfo.output_height, palette.isDirect ? 24 : 8, palette, 4, data);
+	ImageData imageData = ImageData.internal_new(
+			cinfo.output_width,
+			cinfo.output_height, 
+			palette.isDirect ? 24 : 8,
+			palette,
+			scanlinePad,
+			data,
+			0,
+			null,
+			null,
+			-1,
+			-1,
+			SWT.IMAGE_JPEG,
+			0,
+			0,
+			0,
+			0);
 	jpeg_destroy_decompress(cinfo);
 	return new ImageData[]{imageData};
 }
