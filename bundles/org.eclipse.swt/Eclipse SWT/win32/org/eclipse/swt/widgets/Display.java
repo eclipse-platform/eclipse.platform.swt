@@ -117,8 +117,9 @@ public class Display extends Device {
 	EventTable eventTable, filterTable;
 
 	/* Widget Table */
-	int freeSlot;
 	int [] indexTable;
+	Control lastControl;
+	int freeSlot, lastHwnd;
 	Control [] controlTable;
 	static final int GROW_SIZE = 1024;
 	static final int SWT_OBJECT_INDEX;
@@ -186,7 +187,7 @@ public class Display extends Device {
 	
 	/* Keyboard and Mouse */
 	RECT clickRect;
-	int clickCount, lastTime, lastButton, lastHwnd;
+	int clickCount, lastTime, lastButton, lastClickHwnd;
 	int lastKey, lastAscii, lastMouse;
 	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];
@@ -1185,7 +1186,7 @@ int getClickCount (int type, int button, int hwnd, int lParam) {
 			POINT pt = new POINT ();
 			pt.x = (short) (lParam & 0xFFFF);
 			pt.y = (short) (lParam >> 16);
-			if (lastHwnd == hwnd && lastButton == button && (deltaTime <= doubleClick) && OS.PtInRect (clickRect, pt)) {
+			if (lastClickHwnd == hwnd && lastButton == button && (deltaTime <= doubleClick) && OS.PtInRect (clickRect, pt)) {
 				clickCount++;
 			} else {
 				clickCount = 1;
@@ -1237,6 +1238,9 @@ public Rectangle getClientArea () {
 
 Control getControl (int handle) {
 	if (handle == 0) return null;
+	if (lastControl != null && lastHwnd == handle) {
+		return lastControl;
+	}
 	int index;
 	if (USE_PROPERTY) {
 		index = OS.GetProp (handle, SWT_OBJECT_INDEX) - 1;
@@ -3164,6 +3168,7 @@ void releaseDisplay () {
 	bars = popups = null;
 	indexTable = null;
 	controlTable = null;
+	lastControl = null;
 	lastHittestControl = null;
 	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
 }
@@ -3316,6 +3321,7 @@ void removeBar (Menu menu) {
 
 Control removeControl (int handle) {
 	if (handle == 0) return null;
+	lastControl = null;
 	Control control = null;
 	int index;
 	if (USE_PROPERTY) {
@@ -4042,6 +4048,9 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	} else {
 		hitCount = 0;
 	}
+	if (lastControl != null && lastHwnd == hwnd) {
+		return lastControl.windowProc (hwnd, msg, wParam, lParam);
+	}
 	int index;
 	if (USE_PROPERTY) {
 		index = OS.GetProp (hwnd, SWT_OBJECT_INDEX) - 1;
@@ -4051,6 +4060,8 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (0 <= index && index < controlTable.length) {
 		Control control = controlTable [index];
 		if (control != null) {
+			lastHwnd = hwnd;
+			lastControl = control;
 			return control.windowProc (hwnd, msg, wParam, lParam);
 		}
 	}
