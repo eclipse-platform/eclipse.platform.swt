@@ -1105,6 +1105,8 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	Control control = null;
 	int /*long*/ window = 0;
 	switch (eventType) {
+		case OS.GDK_KEY_PRESS:
+		case OS.GDK_KEY_RELEASE:
 		case OS.GDK_ENTER_NOTIFY:
 		case OS.GDK_LEAVE_NOTIFY:
 		case OS.GDK_BUTTON_PRESS:
