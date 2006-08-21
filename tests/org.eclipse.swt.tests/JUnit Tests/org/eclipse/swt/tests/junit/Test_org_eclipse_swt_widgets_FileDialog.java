@@ -42,7 +42,7 @@ protected void tearDown() {
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	// Test FileDialog(Shell)
-	FileDialog fd = new FileDialog(shell);
+	new FileDialog(shell);
 	try {
 		new FileDialog(null);
 		fail("No exception thrown for parent == null");

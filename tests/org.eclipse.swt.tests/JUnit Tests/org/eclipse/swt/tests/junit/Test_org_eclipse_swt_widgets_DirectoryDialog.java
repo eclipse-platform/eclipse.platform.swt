@@ -41,7 +41,7 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
-	DirectoryDialog dd = new DirectoryDialog(shell);
+	new DirectoryDialog(shell);
 	try {
 		new DirectoryDialog(null);
 		fail("No exception thrown for null parent");

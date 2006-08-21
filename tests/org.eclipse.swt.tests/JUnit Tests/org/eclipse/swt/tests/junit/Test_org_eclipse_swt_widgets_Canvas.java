@@ -53,9 +53,8 @@ protected void setWidget(Widget w) {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	Canvas newCanvas;
 	try {
-		newCanvas = new Canvas(null, SWT.NONE);
+		new Canvas(null, SWT.NONE);
 		fail("No exception thrown for parent == null");
 	}
 	catch (IllegalArgumentException e) {

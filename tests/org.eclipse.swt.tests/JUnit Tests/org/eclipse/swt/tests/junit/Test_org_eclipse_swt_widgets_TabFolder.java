@@ -42,9 +42,8 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	TabFolder newTabFolder;
 	try {
-		newTabFolder = new TabFolder(null, 0);
+		new TabFolder(null, 0);
 		fail("No exception thrown for parent == null");
 	}
 	catch (IllegalArgumentException e) {
@@ -69,10 +68,9 @@ public void test_getClientArea() {
 
 public void test_getItemCount() {
 	int number = 10;
-	TabItem ti;
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:" + i, tabFolder.getItemCount()==i);
-	  	ti = new TabItem(tabFolder, 0);
+	  	new TabItem(tabFolder, 0);
 	}
 }
 
@@ -224,9 +222,8 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TabItem() {
 
 public void test_setSelectionI() {
 	int number = 10;
-	TabItem ti;
 	for (int i = 0; i<number ; i++){
-	  	ti = new TabItem(tabFolder, 0);
+	  	new TabItem(tabFolder, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		tabFolder.setSelection(i);
@@ -237,7 +234,7 @@ public void test_setSelectionI() {
 	makeCleanEnvironment();
 	
 	for (int i = 0; i<number ; i++){
-	  	ti = new TabItem(tabFolder, 0);
+	  	new TabItem(tabFolder, 0);
 	  	assertEquals("i=" + i, 0, tabFolder.getSelectionIndex());
 	}
 

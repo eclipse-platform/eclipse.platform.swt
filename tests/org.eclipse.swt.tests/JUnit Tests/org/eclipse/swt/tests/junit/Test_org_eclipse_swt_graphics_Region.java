@@ -173,7 +173,7 @@ public void test_containsII() {
 	Region reg = new Region(display);
 	reg.dispose();
 	try {
-		boolean res = reg.contains(pointInRect1.x, pointInRect1.y);
+		reg.contains(pointInRect1.x, pointInRect1.y);
 		fail("no exception thrown on disposed region");
 	}
 	catch (Exception e) {
@@ -212,7 +212,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Region reg = new Region(display);
 	reg.dispose();
 	try {
-		boolean res = reg.contains(pointInRect1);
+		reg.contains(pointInRect1);
 		fail("no exception thrown on disposed region");
 	}
 	catch (Exception e) {
@@ -308,7 +308,7 @@ public void test_getBounds() {
 	reg.dispose();
 	
 	try {
-		Rectangle rect = reg.getBounds();
+		reg.getBounds();
 		fail("Region disposed should throw Exception");
 	}
 	catch (Exception e) {
@@ -535,7 +535,7 @@ public void test_intersectsIIII() {
 	Region reg = new Region(display);
 	reg.dispose();
 	try {
-		boolean res = reg.intersects(rectInter1.x, rectInter1.y, rectInter1.width, rectInter1.height);
+		reg.intersects(rectInter1.x, rectInter1.y, rectInter1.width, rectInter1.height);
 		fail("no exception thrown on disposed region");
 	}
 	catch (Exception e) {
@@ -589,7 +589,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	Region reg = new Region(display);
 	reg.dispose();
 	try {
-		boolean res = reg.intersects(rectInter1);
+		reg.intersects(rectInter1);
 		fail("no exception thrown on disposed region");
 	}
 	catch (Exception e) {

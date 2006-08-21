@@ -38,7 +38,7 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	LocationAdapter adapter = new LocationAdapter() {};
+	new LocationAdapter() {};
 }
 
 public void test_changedLorg_eclipse_swt_browser_LocationEvent() {

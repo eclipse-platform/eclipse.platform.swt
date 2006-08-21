@@ -50,11 +50,11 @@ public void test_getClientArea() {
 }
 
 public void test_getHorizontalBar() {
-	ScrollBar hbar = scrollable.getHorizontalBar();
+	scrollable.getHorizontalBar();
 }
 
 public void test_getVerticalBar() {
-	ScrollBar vbar = scrollable.getVerticalBar();
+	scrollable.getVerticalBar();
 }
 
 public static Test suite() {

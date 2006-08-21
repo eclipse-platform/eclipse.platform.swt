@@ -108,9 +108,9 @@ Sash sash;
 private void createSash() {
     tearDown();
     super.setUp();
-    Button b1 = new Button(shell, SWT.PUSH);
+    new Button(shell, SWT.PUSH);
     Sash sash = new Sash(shell, SWT.VERTICAL);
-    Button b2 = new Button(shell, SWT.PUSH);
+    new Button(shell, SWT.PUSH);
     setWidget(sash);
 }
 

@@ -114,7 +114,7 @@ private void testStyleRangeSegmenting(final int[] segments, int[] boldRanges) {
 		for (int i=0; i<boldRanges.length; i+=2) {
 			StyleRange styleRange = new StyleRange(boldRanges[i], boldRanges[i+1], null, null, SWT.BOLD);
 			text.setStyleRange(styleRange);
-		};
+		}
 		text.getLocationAtOffset(0);
 	}
 	catch (IllegalArgumentException e) {

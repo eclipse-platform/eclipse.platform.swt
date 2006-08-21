@@ -38,7 +38,7 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	ProgressAdapter adapter = new ProgressAdapter() {};
+	new ProgressAdapter() {};
 }
 
 public void test_changedLorg_eclipse_swt_browser_ProgressEvent() {

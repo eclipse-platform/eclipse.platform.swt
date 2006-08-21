@@ -83,7 +83,7 @@ public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
 	ArmListener listener = new ArmListener() {
 		public void widgetArmed(ArmEvent e) {
 			listenerCalled = true;
-		};
+		}
 	};
 	
 	try {
@@ -112,7 +112,7 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	HelpListener listener = new HelpListener() {
 		public void helpRequested(HelpEvent e) {
 			listenerCalled = true;
-		};
+		}
 	};
 	
 	try {
@@ -141,9 +141,9 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	SelectionListener listener = new SelectionListener() {
 		public void widgetSelected(SelectionEvent e) {
 			listenerCalled = true;
-		};
+		}
 		public void widgetDefaultSelected(SelectionEvent e) {
-		};
+		}
 	};
 	
 	try {

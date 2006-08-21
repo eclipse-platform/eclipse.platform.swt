@@ -52,7 +52,7 @@ public void test_addExpandListenerLorg_eclipse_swt_events_ExpandListener() {
 		}
 		public void itemExpanded(ExpandEvent e) {
 			listenerCalled[0] = true;			
-		};
+		}
 	};
 
 	try {
@@ -92,10 +92,9 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 public void test_getItemCount() {
 	int number = 10;
-	ExpandItem item;
 	for (int i = 0; i < number; i++) {
 		assertTrue(":a:" + i, expandBar.getItemCount() == i);
-	  	item = new ExpandItem(expandBar, 0);
+	  	new ExpandItem(expandBar, 0);
 	}
 }
 

@@ -61,10 +61,9 @@ public void test_computeTrimIIII() {
 
 public void test_getItemCount() {
 	int number = 10;
-	ToolItem ti;
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:" + i, toolBar.getItemCount()==i);
-	  	ti = new ToolItem(toolBar, 0);
+	  	new ToolItem(toolBar, 0);
 	}
 }
 

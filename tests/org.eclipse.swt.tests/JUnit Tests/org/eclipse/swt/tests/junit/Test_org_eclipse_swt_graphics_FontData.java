@@ -39,7 +39,7 @@ protected void tearDown() {
 
 public void test_Constructor() {
 	// Test new FontData()
-	FontData fd = new FontData();
+	new FontData();
 }
 
 public void test_ConstructorLjava_lang_String() {
@@ -52,39 +52,39 @@ public void test_ConstructorLjava_lang_String() {
 public void test_ConstructorLjava_lang_StringII() {
 	// Test new FontData(String name, int height, int style)
 	// valid font data with no name (strange, but apparently valid)
-	FontData fd = new FontData("", 10, SWT.NORMAL);
+	new FontData("", 10, SWT.NORMAL);
 
 	// valid font data with unknown name (strange, but apparently valid)
-	fd = new FontData("bad-font", 10, SWT.NORMAL);
+	new FontData("bad-font", 10, SWT.NORMAL);
 
 	// valid font data with 0 height (strange, but apparently valid)
-	fd = new FontData(SwtJunit.testFontName, 0, SWT.NORMAL);
+	new FontData(SwtJunit.testFontName, 0, SWT.NORMAL);
 
 	// valid font data with 1000 height (pretty big, but apparently valid)
-	fd = new FontData(SwtJunit.testFontName, 1000, SWT.NORMAL);
+	
 
 	// valid normal 10-point font data
-	fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 
 	// valid bold 10-point font data
-	fd = new FontData(SwtJunit.testFontName, 10, SWT.BOLD);
+	new FontData(SwtJunit.testFontName, 10, SWT.BOLD);
 
 	// valid italic 10-point font data
-	fd = new FontData(SwtJunit.testFontName, 10, SWT.ITALIC);
+	new FontData(SwtJunit.testFontName, 10, SWT.ITALIC);
 
 	// valid bold italic 10-point font data
-	fd = new FontData(SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
+	new FontData(SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 
 	// illegal argument, name == null
 	try {
-		fd = new FontData(null, 10, SWT.NORMAL);
+		new FontData(null, 10, SWT.NORMAL);
 		fail("No exception thrown for name == null");
 	} catch (IllegalArgumentException e) {
 	}
 
 	// illegal argument, height < 0
 	try {
-		fd = new FontData(SwtJunit.testFontName, -10, SWT.NORMAL);
+		new FontData(SwtJunit.testFontName, -10, SWT.NORMAL);
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
 	}

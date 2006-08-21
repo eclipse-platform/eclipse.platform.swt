@@ -95,7 +95,6 @@ public class Browser1 {
 		if (verbose) System.out.println("URL Loading Filtering - args: "+url+" Expected Event Sequence: Location.changing cancel true > no Location.changed, no Progress.completed");
 		locationChanging = locationChanged = progressCompleted = false;
 		passed = false;
-		final String[] locationCancelled = new String[1];
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
@@ -113,7 +112,7 @@ public class Browser1 {
 				new Thread() {
 					public void run() {
 						if (verbose) System.out.println("timer start");
-						try { sleep(2000); } catch (Exception e) {};
+						try { sleep(2000); } catch (Exception e) {}
 						if (!display.isDisposed())
 							display.asyncExec(new Runnable(){
 								public void run() {
@@ -122,7 +121,7 @@ public class Browser1 {
 								}
 							});
 						if (verbose) System.out.println("timer over");
-					};
+					}
 				}.start();
 			}
 			public void changed(LocationEvent event) {

@@ -325,7 +325,7 @@ public void test_getItemCount() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
+			new TableItem(table, 0);
 		}
 		assertEquals("j="+ j, cases[j], table.getItemCount());
 		table.removeAll();
@@ -335,7 +335,7 @@ public void test_getItemCount() {
 	makeCleanEnvironment(true);	
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
+			new TableItem(table, 0);
 		}
 		assertEquals("j="+ j, cases[j], table.getItemCount());
 		table.removeAll();
@@ -401,7 +401,7 @@ public void test_getItems() {
 	int[] cases = {0, 10, 100};
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
+			new TableItem(table, 0);
 		}
 		assertEquals("j=" + j, cases[j], table.getItems().length);
 		table.removeAll();
@@ -424,7 +424,7 @@ public void test_getItems() {
 	
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
-			TableItem ti = new TableItem(table, 0);
+			new TableItem(table, 0);
 		}
 		assertEquals("j=" + j, cases[j], table.getItems().length);
 		table.removeAll();

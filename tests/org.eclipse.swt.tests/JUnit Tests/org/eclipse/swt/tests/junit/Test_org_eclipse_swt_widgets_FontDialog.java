@@ -41,7 +41,7 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
-	FontDialog fd = new FontDialog(shell);
+	new FontDialog(shell);
 	try {
 		new FontDialog(null);
 		fail("No exception thrown for parent == null");

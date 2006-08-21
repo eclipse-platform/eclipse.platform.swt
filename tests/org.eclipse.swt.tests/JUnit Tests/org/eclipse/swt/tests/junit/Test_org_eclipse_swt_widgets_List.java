@@ -220,8 +220,6 @@ public void test_computeSizeIIZ() {
 
 public void test_deselect$I() {
 	String[] items = { "item0", "item1", "item2", "item3" };
-	String[] empty = {
-	};
 	list.setItems(items);
 	list.setSelection(items);
 	assertSame(":a:", list.getSelection(), items);
@@ -298,8 +296,6 @@ public void test_deselectI() {
 	list.setItems(items);
 
 	String[] items2 = { "item0", "item1", "item2", "item3" };
-	String[] empty = {
-	};
 	list.setItems(items2);
 	list.setSelection(items2);
 	assertSame(items2, list.getSelection());
@@ -354,8 +350,6 @@ public void test_deselectII() {
 	// done
 
 	String[] items2 = { "item0", "item1", "item2", "item3" };
-	String[] empty = {
-	};
 	list.setItems(items2);
 	list.setSelection(items2);
 	assertSame(":a:", items2, list.getSelection());
@@ -471,18 +465,15 @@ public void test_getItemHeight() {
 
 public void test_getItemI() {
 	String[] items = { "item0", "item1", "item2", "item3" };
-	String[] empty = {
-	};
 	list.setItems(items);
-	String item = null;
 	try {
-		item = list.getItem(5);
+		list.getItem(5);
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
 
 	try {
-		item = list.getItem(-1);
+		list.getItem(-1);
 		fail("No exception thrown for index < 0");
 	} catch (IllegalArgumentException e) {
 	}
@@ -493,13 +484,13 @@ public void test_getItemI() {
 	setSingleList();
 	list.setItems(items);
 	try {
-		item = list.getItem(5);
+		list.getItem(5);
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
 	
 	try {
-		item = list.getItem(-1);
+		list.getItem(-1);
 		fail("No exception thrown for index < 0");
 	} catch (IllegalArgumentException e) {
 	}
@@ -734,9 +725,8 @@ public void test_indexOfLjava_lang_String() {
 	assertEquals(list.indexOf("text3"), 2);
 	assertEquals(list.indexOf("text4"), -1);
 
-	int ind;
 	try {
-		ind = list.indexOf(null);
+		list.indexOf(null);
 		fail("No exception thrown for item == null");
 	} catch (IllegalArgumentException e) {
 	}
@@ -760,7 +750,7 @@ public void test_indexOfLjava_lang_String() {
 
 	
 	try {
-		ind = list.indexOf(null);
+		list.indexOf(null);
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}

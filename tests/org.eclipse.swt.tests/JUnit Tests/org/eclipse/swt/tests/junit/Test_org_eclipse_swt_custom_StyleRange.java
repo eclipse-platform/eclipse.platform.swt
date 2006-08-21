@@ -56,7 +56,7 @@ protected void setUp() {
 protected void tearDown() {
 	Enumeration elements = colors.keys();
 	while (elements.hasMoreElements()) {
-		Color color = (Color)colors.get((RGB)elements.nextElement());
+		Color color = (Color)colors.get(elements.nextElement());
 		color.dispose();
 	}
 }

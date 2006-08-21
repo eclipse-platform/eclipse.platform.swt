@@ -70,7 +70,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	for (int i = 0; i < validDepths.length; i++) {
 		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	};
+	}
 }
 
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
@@ -107,7 +107,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	for (int i = 0; i < validDepths.length; i++) {
 		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 1, new byte[] {});
-	};
+	}
 	
 	// illegal argument, data is null
 	try {
@@ -354,7 +354,6 @@ public void test_getPixelII() {
 }
 
 public void test_getPixelsIII$BI() {
-	byte value;
 	final int SIZE = 20; 
 	final int GET_WIDTH = 10;
 	final int OFFSET = 10;
@@ -492,7 +491,6 @@ public void test_getPixelsIII$BI() {
 }
 
 public void test_getPixelsIII$II() {
-	int value;
 	final int SIZE = 20; 
 	final int GET_WIDTH = 10;
 	final int OFFSET = 10;
@@ -898,7 +896,6 @@ public void test_setPixelIII() {
 }
 
 public void test_setPixelsIII$BI() {
-	byte value;
 	final int SIZE = 20; 
 	final int OFFSET = 1;
 	byte[] pixelData = new byte[SIZE];
@@ -1007,7 +1004,6 @@ public void test_setPixelsIII$BI() {
 }
 
 public void test_setPixelsIII$II() {
-	int value;
 	final int SIZE = 20; 
 	final int OFFSET = 1;
 	int[] pixelData = new int[SIZE];

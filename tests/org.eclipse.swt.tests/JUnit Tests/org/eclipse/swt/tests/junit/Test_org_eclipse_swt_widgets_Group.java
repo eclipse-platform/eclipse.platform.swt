@@ -70,7 +70,7 @@ public void test_setTextLjava_lang_String() {
 	for (int i = 0; i < cases.length; i++) {
 		group.setText(cases[i]);
 		assertTrue("case: " + String.valueOf(i), group.getText().equals(cases[i]));
-	};
+	}
 }
 
 public static Test suite() {

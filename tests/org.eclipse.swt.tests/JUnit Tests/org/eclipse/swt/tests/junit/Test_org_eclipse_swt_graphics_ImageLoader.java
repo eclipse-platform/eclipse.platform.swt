@@ -41,7 +41,7 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	ImageLoader loader = new ImageLoader();
+	new ImageLoader();
 }
 
 public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
@@ -49,7 +49,7 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 	ImageLoaderListener loaderListener = new ImageLoaderListener() {
 		public void imageDataLoaded(ImageLoaderEvent e) {
 			loaderListenerCalled = true;
-		};
+		}
 	};
 	
 	try {

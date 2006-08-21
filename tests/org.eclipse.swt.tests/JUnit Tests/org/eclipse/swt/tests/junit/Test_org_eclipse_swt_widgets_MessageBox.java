@@ -52,7 +52,7 @@ protected void tearDown() {
  * </ul>
  */
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell(){
-	MessageBox mb = new MessageBox(shell);
+	new MessageBox(shell);
 	try {
 		new MessageBox(null);
 		fail("No exception thrown for parent == null");

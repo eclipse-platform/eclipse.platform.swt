@@ -69,7 +69,7 @@ public void test_addFilterILorg_eclipse_swt_widgets_Listener() {
 				callbackReceived[CLOSE_CALLBACK] = true;
 			else if (e.type == SWT.Dispose)
 				callbackReceived[DISPOSE_CALLBACK] = true;
-		};
+		}
 	};
 	
 	Display display = new Display();
@@ -100,7 +100,7 @@ public void test_addListenerILorg_eclipse_swt_widgets_Listener() {
 				callbackReceived[CLOSE_CALLBACK] = true;
 			else if (e.type == SWT.Dispose)
 				callbackReceived[DISPOSE_CALLBACK] = true;
-		};
+		}
 	};
 	
 	Display display = new Display();
@@ -794,7 +794,7 @@ public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
 				callbackReceived[CLOSE_CALLBACK] = true;
 			else if (e.type == SWT.Dispose)
 				callbackReceived[DISPOSE_CALLBACK] = true;
-		};
+		}
 	};
 	
 	Display display = new Display();
@@ -826,7 +826,7 @@ public void test_removeListenerILorg_eclipse_swt_widgets_Listener() {
 				callbackReceived[CLOSE_CALLBACK] = true;
 			else if (e.type == SWT.Dispose)
 				callbackReceived[DISPOSE_CALLBACK] = true;
-		};
+		}
 	};
 	
 	Display display = new Display();
@@ -1234,7 +1234,7 @@ public void test_getFontListLjava_lang_StringZ() {
 public void test_getWarnings() {
 	Display display = new Display();
 	try {
-		boolean result = display.getWarnings();
+		display.getWarnings();
 		// Since the behavior is platform specific, there's
 		// no good test for the result value.
 	} finally {

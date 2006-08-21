@@ -45,10 +45,10 @@ protected void tearDown() {
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarI() {
 	CoolBar coolBar = new CoolBar(shell, 0);
-	CoolItem coolItem = new CoolItem(coolBar, 0);
+	new CoolItem(coolBar, 0);
 	
 	try {
-		coolItem = new CoolItem(null, 0);
+		new CoolItem(null, 0);
 		fail("No exception thrown for parent == null");	
 	}
 	catch (IllegalArgumentException e) {

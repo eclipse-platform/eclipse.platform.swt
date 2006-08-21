@@ -44,7 +44,7 @@ protected void tearDown() {
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
 	Composite comp = new Composite(shell, SWT.NULL);
-	Menu testMenu = new Menu(comp);
+	new Menu(comp);
 	comp.dispose();
 }
 
@@ -62,8 +62,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_DecorationsI() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Menu() {
-	Menu newMenu;
-	newMenu = new Menu(menu);
+	new Menu(menu);
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuItem() {
@@ -85,7 +84,7 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	HelpListener listener = new HelpListener() {
 		public void helpRequested(HelpEvent e) {
 			listenerCalled = true;
-		};
+		}
 	};
 	
 	try {
@@ -115,10 +114,10 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	MenuListener menuListener = new MenuListener() {
 		public void menuShown(MenuEvent e) {
 			listenerCalled = true;
-		};
+		}
 		public void menuHidden(MenuEvent e) {
 			listenerCalled = true;
-		};
+		}
 	};
 
 	try {
@@ -157,10 +156,9 @@ public void test_getEnabled() {
 
 public void test_getItemCount() {
 	int number = 10;
-	MenuItem ti;
 	for (int i = 0; i<number ; i++){
 		assertEquals(menu.getItemCount(), i);
-	  	ti = new MenuItem(menu, 0);
+	  	new MenuItem(menu, 0);
 	}
 }
 

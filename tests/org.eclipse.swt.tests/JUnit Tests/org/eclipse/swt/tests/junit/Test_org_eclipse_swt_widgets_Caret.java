@@ -47,9 +47,8 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CanvasI() {
-	Caret newCaret;
 	try {
-		newCaret = new Caret(null, 0);
+		new Caret(null, 0);
 		fail("No exception thrown for parent == null");
 	}
 	catch (IllegalArgumentException e) {

@@ -95,7 +95,7 @@ public class Browser3 {
 				new Thread() {
 					public void run() {
 						if (verbose) System.out.println("timer start");
-						try { sleep(2000); } catch (Exception e) {};
+						try { sleep(2000); } catch (Exception e) {}
 						passed = true;
 						if (!display.isDisposed())
 							display.asyncExec(new Runnable(){
@@ -105,7 +105,7 @@ public class Browser3 {
 								}
 							});
 						if (verbose) System.out.println("timer over");
-					};
+					}
 				}.start();
 			}
 		});

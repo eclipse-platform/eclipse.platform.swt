@@ -292,7 +292,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 		String fileName = SwtTestCase.invalidImageFilenames[0];
 		Display[] displays = {display, null};
 		for (int j = 0; j < displays.length; j++) {
-			Display tempDisplay = displays[j];
+//			Display tempDisplay = displays[j];
 			for (int i=0; i<numFormats; i++) {
 				String format = SwtTestCase.imageFormats[i];
 				stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
@@ -381,7 +381,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 		fileName = SwtTestCase.invalidImageFilenames[0];
 		Display[] displays = {display, null};
 		for (int j = 0; j < displays.length; j++) {
-			Display tempDisplay = displays[j];
+//			Display tempDisplay = displays[j];
 			for (int i=0; i<numFormats; i++) {
 				String format = SwtTestCase.imageFormats[i];
 	
@@ -409,7 +409,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 	
 		// create valid images
 		for (int j = 0; j < displays.length; j++) {
-			Display tempDisplay = displays[j];
+//			Display tempDisplay = displays[j];
 			int numFileNames = SwtTestCase.imageFilenames.length;
 			for (int k=0; k<numFileNames; k++) {
 				fileName = SwtTestCase.imageFilenames[k];
@@ -430,7 +430,7 @@ public void test_dispose() {
 
 public void test_equalsLjava_lang_Object() {
 	Image image = null;
-	Image image1 = null;;
+	Image image1 = null;
 
 	try {
 		image = new Image(display, 10, 10);
@@ -501,7 +501,7 @@ public void test_getImageData() {
 
 public void test_hashCode() {
 	Image image = null;
-	Image image1 = null;;
+	Image image1 = null;
 
 	try {
 		image = new Image(display, 10, 10);

@@ -65,9 +65,9 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	SelectionListener listener = new SelectionListener() {
 		public void widgetSelected(SelectionEvent e) {
 			listenerCalled = true;
-		};
+		}
 		public void widgetDefaultSelected(SelectionEvent e) {
-		};
+		}
 	};
 	
 	try {
