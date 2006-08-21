@@ -1193,8 +1193,8 @@ int getClickCount (int type, int button, int hwnd, int lParam) {
 			}
 			//FALL THROUGH
 		case SWT.MouseDoubleClick:
-			lastHwnd = hwnd;
 			lastButton = button;
+			lastClickHwnd = hwnd;
 			lastTime = getLastEventTime ();
 			int xInset = OS.GetSystemMetrics (OS.SM_CXDOUBLECLK) / 2;
 			int yInset = OS.GetSystemMetrics (OS.SM_CYDOUBLECLK) / 2;
