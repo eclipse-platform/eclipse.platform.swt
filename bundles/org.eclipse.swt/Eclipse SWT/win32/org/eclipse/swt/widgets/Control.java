@@ -3494,7 +3494,6 @@ LRESULT WM_HELP (int wParam, int lParam) {
 }
 
 LRESULT WM_HSCROLL (int wParam, int lParam) {
-	if (lParam == 0) return null;
 	Control control = display.getControl (lParam);
 	if (control == null) return null;
 	return control.wmScrollChild (wParam, lParam);
@@ -3794,11 +3793,8 @@ LRESULT WM_NCPAINT (int wParam, int lParam) {
 LRESULT WM_NOTIFY (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-	int hwnd = hdr.hwndFrom;
-	if (hwnd == 0) return null;
-	Control control = display.getControl (hwnd);
-	if (control == null) return null;
-	return control.wmNotifyChild (wParam, lParam);
+	Control control = display.getControl (hdr.hwndFrom);
+	return control != null ? control.wmNotifyChild (wParam, lParam) : null;
 }
 
 LRESULT WM_PAINT (int wParam, int lParam) {
@@ -4031,7 +4027,6 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 }
 
 LRESULT WM_VSCROLL (int wParam, int lParam) {
-	if (lParam == 0) return null;
 	Control control = display.getControl (lParam);
 	if (control == null) return null;
 	return control.wmScrollChild (wParam, lParam);

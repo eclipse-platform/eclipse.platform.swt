@@ -912,9 +912,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 		}
 		return string;
 	}
-	int hwnd = hdr.idFrom;
-	if (hwnd == 0) return null;
-	Control control = display.getControl (hwnd);
+	Control control = display.getControl (hdr.idFrom);
 	OS.SendMessage (hdr.hwndFrom, OS.TTM_SETTITLE, 0, 0);
 	OS.SendMessage (hdr.hwndFrom, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 	return control != null ? control.toolTipText : null;
