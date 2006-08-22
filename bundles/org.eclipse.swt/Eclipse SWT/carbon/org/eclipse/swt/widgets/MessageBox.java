@@ -211,6 +211,7 @@ public int open () {
 	if (defaultStr != 0) OS.CFRelease(defaultStr);
 	if (cancelStr != 0) OS.CFRelease(cancelStr);
 	if (otherStr != 0) OS.CFRelease(otherStr);
+	
 	if (dialogRef[0] != 0) {
 		/* Force a system modal message box to the front */
 		if ((style & SWT.SYSTEM_MODAL) != 0) {
