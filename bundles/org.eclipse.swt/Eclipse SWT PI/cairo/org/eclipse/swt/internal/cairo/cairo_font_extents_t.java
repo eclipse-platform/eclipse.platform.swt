@@ -22,10 +22,10 @@ package org.eclipse.swt.internal.cairo;
 
 
 public class cairo_font_extents_t {
-	public float ascent;
-	public float descent;
-	public float height;
-	public float max_x_advance;
-	public float max_y_advance;
+	public double ascent;
+	public double descent;
+	public double height;
+	public double max_x_advance;
+	public double max_y_advance;
 	public static final int sizeof = Cairo.cairo_font_extents_t_sizeof();
 }

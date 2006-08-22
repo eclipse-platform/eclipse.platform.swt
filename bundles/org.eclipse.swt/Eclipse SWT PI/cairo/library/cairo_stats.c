@@ -24,8 +24,8 @@
 
 #ifdef NATIVE_STATS
 
-int Cairo_nativeFunctionCount = 138;
-int Cairo_nativeFunctionCallCount[138];
+int Cairo_nativeFunctionCount = 139;
+int Cairo_nativeFunctionCallCount[139];
 char * Cairo_nativeFunctionNames[] = {
 	"cairo_1append_1path",
 	"cairo_1arc",
@@ -154,6 +154,7 @@ char * Cairo_nativeFunctionNames[] = {
 	"cairo_1surface_1set_1device_1offset",
 	"cairo_1surface_1set_1user_1data",
 	"cairo_1text_1extents",
+	"cairo_1text_1extents_1t_1sizeof",
 	"cairo_1text_1path",
 	"cairo_1transform",
 	"cairo_1translate",

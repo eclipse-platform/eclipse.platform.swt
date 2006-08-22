@@ -72,6 +72,14 @@
 #define gdk_x11_screen_lookup_visual_LIB "libgdk-x11-2.0.so.0"
 #define atk_object_add_relationship_LIB "libatk-1.0.so.0"
 #define pango_layout_set_auto_dir_LIB "libpango-1.0.so.0"
+#define pango_cairo_create_layout_LIB "libpangocairo-1.0.so.0"
+#define pango_cairo_layout_path_LIB "libpangocairo-1.0.so.0"
+#define pango_cairo_show_layout_LIB "libpangocairo-1.0.so.0"
+#define pango_cairo_font_map_create_context_LIB "libpangocairo-1.0.so.0"
+#define pango_cairo_font_map_new_LIB "libpangocairo-1.0.so.0"
+#define pango_cairo_font_map_get_default_LIB "libpangocairo-1.0.so.0"
+#define gdk_cairo_set_source_color_LIB "libgdk-x11-2.0.so.0"
+#define gdk_cairo_region_LIB "libgdk-x11-2.0.so.0"
 
 /* Field accessors */
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1

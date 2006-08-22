@@ -57,3 +57,15 @@ void setcairo_path_tFields(JNIEnv *env, jobject lpObject, cairo_path_t *lpStruct
 #define cairo_path_t_sizeof() 0
 #endif
 
+#ifndef NO_cairo_text_extents_t
+void cachecairo_text_extents_tFields(JNIEnv *env, jobject lpObject);
+cairo_text_extents_t *getcairo_text_extents_tFields(JNIEnv *env, jobject lpObject, cairo_text_extents_t *lpStruct);
+void setcairo_text_extents_tFields(JNIEnv *env, jobject lpObject, cairo_text_extents_t *lpStruct);
+#define cairo_text_extents_t_sizeof() sizeof(cairo_text_extents_t)
+#else
+#define cachecairo_text_extents_tFields(a,b)
+#define getcairo_text_extents_tFields(a,b,c) NULL
+#define setcairo_text_extents_tFields(a,b,c)
+#define cairo_text_extents_t_sizeof() 0
+#endif
+

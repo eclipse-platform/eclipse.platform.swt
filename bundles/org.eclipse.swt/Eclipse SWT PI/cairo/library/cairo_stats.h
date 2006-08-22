@@ -158,6 +158,7 @@ typedef enum {
 	cairo_1surface_1set_1device_1offset_FUNC,
 	cairo_1surface_1set_1user_1data_FUNC,
 	cairo_1text_1extents_FUNC,
+	cairo_1text_1extents_1t_1sizeof_FUNC,
 	cairo_1text_1path_FUNC,
 	cairo_1transform_FUNC,
 	cairo_1translate_FUNC,

@@ -2178,6 +2178,24 @@ public static final int /*long*/ gdk_bitmap_create_from_data(int /*long*/ window
 		lock.unlock();
 	}
 }
+public static final native void _gdk_cairo_region(int /*long*/ cairo, int /*long*/ region);
+public static final void gdk_cairo_region(int /*long*/ cairo, int /*long*/ region) {
+	lock.lock();
+	try {
+		_gdk_cairo_region(cairo, region);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor color);
+public static final void gdk_cairo_set_source_color(int /*long*/ cairo, GdkColor color) {
+	lock.lock();
+	try {
+		_gdk_cairo_set_source_color(cairo, color);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _gdk_color_white(int /*long*/ colormap, GdkColor color);
 public static final boolean gdk_color_white(int /*long*/ colormap, GdkColor color) {
 	lock.lock();
@@ -8577,6 +8595,60 @@ public static final int /*long*/ pango_attr_weight_new(int weight) {
 	lock.lock();
 	try {
 		return _pango_attr_weight_new(weight);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_cairo_font_map_get_default();
+public static final int /*long*/ pango_cairo_font_map_get_default() {
+	lock.lock();
+	try {
+		return _pango_cairo_font_map_get_default();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_cairo_font_map_new();
+public static final int /*long*/ pango_cairo_font_map_new() {
+	lock.lock();
+	try {
+		return _pango_cairo_font_map_new();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_cairo_font_map_create_context(int /*long*/ fontmap);
+public static final int /*long*/ pango_cairo_font_map_create_context(int /*long*/ fontmap) {
+	lock.lock();
+	try {
+		return _pango_cairo_font_map_create_context(fontmap);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_cairo_create_layout(int /*long*/ cairo);
+public static final int /*long*/ pango_cairo_create_layout(int /*long*/ cairo) {
+	lock.lock();
+	try {
+		return _pango_cairo_create_layout(cairo);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_cairo_layout_path(int /*long*/ cairo, int /*long*/ layout);
+public static final void pango_cairo_layout_path(int /*long*/ cairo, int /*long*/ layout) {
+	lock.lock();
+	try {
+		_pango_cairo_layout_path(cairo, layout);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_cairo_show_layout(int /*long*/ cairo, int /*long*/ layout);
+public static final void pango_cairo_show_layout(int /*long*/ cairo, int /*long*/ layout) {
+	lock.lock();
+	try {
+		_pango_cairo_show_layout(cairo, layout);
 	} finally {
 		lock.unlock();
 	}

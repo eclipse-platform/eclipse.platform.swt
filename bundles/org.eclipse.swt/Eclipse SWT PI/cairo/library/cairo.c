@@ -1514,15 +1514,30 @@ JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1surface_1set_1user_1data)
 
 #ifndef NO_cairo_1text_1extents
 JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1text_1extents)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2)
 {
 	jbyte *lparg1=NULL;
+	cairo_text_extents_t _arg2, *lparg2=NULL;
 	Cairo_NATIVE_ENTER(env, that, cairo_1text_1extents_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	cairo_text_extents((cairo_t *)arg0, lparg1, (cairo_text_extents_t *)arg2);
+	if (arg2) if ((lparg2 = getcairo_text_extents_tFields(env, arg2, &_arg2)) == NULL) goto fail;
+	cairo_text_extents((cairo_t *)arg0, lparg1, (cairo_text_extents_t *)lparg2);
 fail:
+	if (arg2 && lparg2) setcairo_text_extents_tFields(env, arg2, lparg2);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	Cairo_NATIVE_EXIT(env, that, cairo_1text_1extents_FUNC);
+}
+#endif
+
+#ifndef NO_cairo_1text_1extents_1t_1sizeof
+JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1text_1extents_1t_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, cairo_1text_1extents_1t_1sizeof_FUNC);
+	rc = (jint)cairo_text_extents_t_sizeof();
+	Cairo_NATIVE_EXIT(env, that, cairo_1text_1extents_1t_1sizeof_FUNC);
+	return rc;
 }
 #endif
 
