@@ -451,7 +451,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		ignoreResize = false;
 		if (redraw) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			OS.InvalidateRect (handle, null, true);
+			OS.InvalidateRect (handle, null, false);
 		}
 	}
 	return super.WM_PAINT (wParam, lParam);
