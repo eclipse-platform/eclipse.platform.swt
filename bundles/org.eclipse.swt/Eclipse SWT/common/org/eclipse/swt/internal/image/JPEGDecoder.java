@@ -327,6 +327,8 @@ public class JPEGDecoder {
 		/* When doing block smoothing, we latch coefficient Al values here */
 		int[] coef_bits_latch;
 		
+		short[] workspace;
+
 		void start_input_pass (jpeg_decompress_struct cinfo) {
 			cinfo.input_iMCU_row = 0;
 			start_iMCU_row(cinfo);
@@ -3832,7 +3834,8 @@ static int decompress_smooth_data (jpeg_decompress_struct cinfo, byte[][][] outp
 	jpeg_component_info compptr;
 //	inverse_DCT_method_ptr inverse_DCT;
 	boolean first_row, last_row;
-	short[] workspace;
+	short[] workspace = coef.workspace;
+	if (workspace == null) workspace = coef.workspace = new short[DCTSIZE2];
 	int[] coef_bits;
 	JQUANT_TBL quanttbl;
 	int Q00,Q01,Q02,Q10,Q11,Q20, num;
@@ -3898,7 +3901,7 @@ static int decompress_smooth_data (jpeg_decompress_struct cinfo, byte[][][] outp
 		Q02 = quanttbl.quantval[Q02_POS];
 //		inverse_DCT = cinfo.idct.inverse_DCT[ci];
 		output_ptr = output_buf[ci];
-		int output_ptr_offset = 0;
+		int output_ptr_offset = output_buf_offset[ci];
 		/* Loop over all DCT blocks to be processed. */
 		for (block_row = 0; block_row < block_rows; block_row++) {
 			buffer_ptr = buffer[block_row+buffer_offset];
@@ -3928,7 +3931,7 @@ static int decompress_smooth_data (jpeg_decompress_struct cinfo, byte[][][] outp
 			for (block_num = 0; block_num <= last_block_column; block_num++) {
 				/* Fetch current DCT block into workspace so we can modify it. */
 //				jcopy_block_row(buffer_ptr, workspace, 1);
-				workspace = buffer_ptr[buffer_ptr_offset];
+				System.arraycopy(buffer_ptr[buffer_ptr_offset], 0, workspace, 0, workspace.length);
 				/* Update DC values */
 				if (block_num < last_block_column) {
 					DC3 = prev_block_row[1+prev_block_row_offset][0];
@@ -5359,6 +5362,48 @@ static void jpeg_destroy_decompress (jpeg_decompress_struct cinfo) {
 	jpeg_destroy(cinfo); /* use common routine */
 }
 
+static boolean jpeg_input_complete (jpeg_decompress_struct cinfo) {
+	/* Check for valid jpeg object */
+	if (cinfo.global_state < DSTATE_START || cinfo.global_state > DSTATE_STOPPING)
+		error();
+//		ERREXIT1(cinfo, JERR_BAD_STATE, cinfo.global_state);
+	return cinfo.inputctl.eoi_reached;
+}
+
+static boolean jpeg_start_output (jpeg_decompress_struct cinfo, int scan_number) {
+	if (cinfo.global_state != DSTATE_BUFIMAGE && cinfo.global_state != DSTATE_PRESCAN)
+		error();
+//		ERREXIT1(cinfo, JERR_BAD_STATE, cinfo.global_state);
+	/* Limit scan number to valid range */
+	if (scan_number <= 0)
+		scan_number = 1;
+	if (cinfo.inputctl.eoi_reached && scan_number > cinfo.input_scan_number)
+		scan_number = cinfo.input_scan_number;
+	cinfo.output_scan_number = scan_number;
+	/* Perform any dummy output passes, and set up for the real pass */
+	return output_pass_setup(cinfo);
+}
+
+static boolean jpeg_finish_output (jpeg_decompress_struct cinfo) {
+	if ((cinfo.global_state == DSTATE_SCANNING || cinfo.global_state == DSTATE_RAW_OK) && cinfo.buffered_image) {
+		/* Terminate this pass. */
+		/* We do not require the whole pass to have been completed. */
+		finish_output_pass (cinfo);
+		cinfo.global_state = DSTATE_BUFPOST;
+	} else if (cinfo.global_state != DSTATE_BUFPOST) {
+		/* BUFPOST = repeat call after a suspension, anything else is error */
+		error();
+//		ERREXIT1(cinfo, JERR_BAD_STATE, cinfo.global_state);
+	}
+	/* Read markers looking for SOS or EOI */
+	while (cinfo.input_scan_number <= cinfo.output_scan_number && !cinfo.inputctl.eoi_reached) {
+		if (consume_input (cinfo) == JPEG_SUSPENDED)
+			return false;		/* Suspend, come back later */
+	}
+	cinfo.global_state = DSTATE_BUFIMAGE;
+	return true;
+}
+
 static boolean jpeg_finish_decompress (jpeg_decompress_struct cinfo) {
 	if ((cinfo.global_state == DSTATE_SCANNING || cinfo.global_state == DSTATE_RAW_OK) && ! cinfo.buffered_image) {
 		/* Terminate final pass of non-buffered mode */
@@ -6258,11 +6303,12 @@ static boolean isFileFormat(LEDataInputStream stream) {
 	}
 }
 	
-static ImageData[] loadFromByteStream(InputStream inputStream) {
+static ImageData[] loadFromByteStream(InputStream inputStream, ImageLoader loader) {
 	jpeg_decompress_struct cinfo = new jpeg_decompress_struct();
 	cinfo.inputStream = inputStream;
 	jpeg_create_decompress(cinfo);
 	jpeg_read_header(cinfo, true);
+	cinfo.buffered_image = cinfo.progressive_mode && loader.hasListeners();
 	jpeg_start_decompress(cinfo);
 	PaletteData palette = null;
 	switch (cinfo.out_color_space) {
@@ -6283,29 +6329,36 @@ static ImageData[] loadFromByteStream(InputStream inputStream) {
 	int row_stride = (((cinfo.output_width * cinfo.out_color_components * 8 + 7) / 8) + (scanlinePad - 1)) / scanlinePad * scanlinePad;
 	byte[][] buffer = new byte[1][row_stride];
 	byte[] data = new byte[row_stride * cinfo.output_height];
-	while (cinfo.output_scanline < cinfo.output_height) {
-		int offset = row_stride * cinfo.output_scanline;
-		jpeg_read_scanlines(cinfo, buffer, 1);
-		System.arraycopy(buffer[0], 0, data, offset, row_stride);
+	if (cinfo.buffered_image) {
+		boolean done;
+		do {
+			int incrementCount = cinfo.input_scan_number - 1;
+			jpeg_start_output(cinfo, cinfo.input_scan_number);
+			while (cinfo.output_scanline < cinfo.output_height) {
+				int offset = row_stride * cinfo.output_scanline;
+				jpeg_read_scanlines(cinfo, buffer, 1);
+				System.arraycopy(buffer[0], 0, data, offset, row_stride);
+			}
+			jpeg_finish_output(cinfo);
+			ImageData imageData = ImageData.internal_new(
+				cinfo.output_width, cinfo.output_height, palette.isDirect ? 24 : 8, palette, scanlinePad, data,
+				0, null, null, -1, -1, SWT.IMAGE_JPEG, 0, 0, 0, 0);
+			loader.notifyListeners(new ImageLoaderEvent(loader, imageData, incrementCount, done = jpeg_input_complete(cinfo)));
+			byte[] newData = new byte[data.length];
+			if (done) System.arraycopy(data, 0, newData, 0, data.length);
+			data = newData;
+		} while (!done);
+	} else {
+		while (cinfo.output_scanline < cinfo.output_height) {
+			int offset = row_stride * cinfo.output_scanline;
+			jpeg_read_scanlines(cinfo, buffer, 1);
+			System.arraycopy(buffer[0], 0, data, offset, row_stride);
+		}
 	}
 	jpeg_finish_decompress(cinfo);
 	ImageData imageData = ImageData.internal_new(
-			cinfo.output_width,
-			cinfo.output_height, 
-			palette.isDirect ? 24 : 8,
-			palette,
-			scanlinePad,
-			data,
-			0,
-			null,
-			null,
-			-1,
-			-1,
-			SWT.IMAGE_JPEG,
-			0,
-			0,
-			0,
-			0);
+		cinfo.output_width, cinfo.output_height, palette.isDirect ? 24 : 8, palette, scanlinePad, data,
+		0, null, null, -1, -1, SWT.IMAGE_JPEG, 0, 0, 0, 0);
 	jpeg_destroy_decompress(cinfo);
 	return new ImageData[]{imageData};
 }
