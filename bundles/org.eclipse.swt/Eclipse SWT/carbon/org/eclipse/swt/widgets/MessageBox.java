@@ -211,8 +211,11 @@ public int open () {
 	if (defaultStr != 0) OS.CFRelease(defaultStr);
 	if (cancelStr != 0) OS.CFRelease(cancelStr);
 	if (otherStr != 0) OS.CFRelease(otherStr);
-	
 	if (dialogRef[0] != 0) {
+		/* Force a system modal message box to the front */
+		if ((style & SWT.SYSTEM_MODAL) != 0) {
+			OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
+		}
 		short [] outItemHit = new short [1];
 		OS.RunStandardAlert(dialogRef[0], 0, outItemHit);
 		if (outItemHit [0] != 0) {
