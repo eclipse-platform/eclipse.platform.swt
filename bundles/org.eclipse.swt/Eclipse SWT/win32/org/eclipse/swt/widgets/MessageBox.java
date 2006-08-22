@@ -163,6 +163,8 @@ public int open () {
 	if ((bits & OS.MB_SYSTEMMODAL) != 0) {
 		bits |= OS.MB_TASKMODAL;
 		bits &= ~OS.MB_SYSTEMMODAL;
+		/* Force a system modal message box to the front */
+		bits |= OS.MB_TOPMOST;
 	}
 
 	/*

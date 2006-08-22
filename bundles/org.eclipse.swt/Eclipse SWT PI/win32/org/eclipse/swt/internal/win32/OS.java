@@ -917,6 +917,7 @@ public class OS extends Platform {
 	public static final int MB_RTLREADING = 0x100000;
 	public static final int MB_SYSTEMMODAL = 0x1000;
 	public static final int MB_TASKMODAL = 0x2000;
+	public static final int MB_TOPMOST = 0x00040000;
 	public static final int MB_YESNO = 0x4;
 	public static final int MB_YESNOCANCEL = 0x3;
 	public static final int MDIS_ALLCHILDSTYLES = 0x0001;
