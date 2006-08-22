@@ -551,6 +551,7 @@ typedef enum {
 	HIViewGetFirstSubview_FUNC,
 	HIViewGetFrame_FUNC,
 	HIViewGetLastSubview_FUNC,
+	HIViewGetNeedsDisplay_FUNC,
 	HIViewGetNextView_FUNC,
 	HIViewGetRoot_FUNC,
 	HIViewGetSizeConstraints_FUNC,

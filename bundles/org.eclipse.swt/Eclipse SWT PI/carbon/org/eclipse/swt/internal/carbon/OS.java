@@ -1431,6 +1431,7 @@ public static final native int HIViewGetFirstSubview(int inView);
 public static final native int HIViewGetLastSubview(int inView);
 public static final native int HIViewGetNextView(int inView);
 public static final native int HIViewGetFrame(int inView, CGRect outRect);
+public static final native boolean HIViewGetNeedsDisplay(int inView);
 public static final native int HIViewGetRoot(int wHandle);
 public static final native int HIViewGetSizeConstraints(int inView, CGRect outMinSize, CGRect outMaxSize);
 public static final native int HIViewGetSubviewHit(int inView, CGPoint inPoint, boolean inDeep, int[] outView);

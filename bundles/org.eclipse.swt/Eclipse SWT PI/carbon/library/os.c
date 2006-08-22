@@ -7788,6 +7788,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetLastSubview)
 }
 #endif
 
+#ifndef NO_HIViewGetNeedsDisplay
+JNIEXPORT jboolean JNICALL OS_NATIVE(HIViewGetNeedsDisplay)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewGetNeedsDisplay_FUNC);
+	rc = (jboolean)HIViewGetNeedsDisplay((HIViewRef)arg0);
+	OS_NATIVE_EXIT(env, that, HIViewGetNeedsDisplay_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIViewGetNextView
 JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetNextView)
 	(JNIEnv *env, jclass that, jint arg0)
