@@ -9022,6 +9022,15 @@ public static final int /*long*/ gtk_window_get_icon_list(int /*long*/ window) {
 		lock.unlock();
 	}
 }
+public static final native boolean _gtk_window_get_modal(int /*long*/ window);
+public static final boolean gtk_window_get_modal(int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gtk_window_get_modal(window);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _gtk_window_get_mnemonic_modifier(int /*long*/ window);
 public static final int gtk_window_get_mnemonic_modifier(int /*long*/ window) {
 	lock.lock();
