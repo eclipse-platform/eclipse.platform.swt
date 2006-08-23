@@ -96,7 +96,9 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	super.validate(readState, headerChunk);
 	
 	// Palettes cannot be included in grayscale images.
-	if (!headerChunk.getCanHavePalette()) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	// 
+	// Note: just ignore the palette.
+//	if (!headerChunk.getCanHavePalette()) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	
 	// Palette chunks' data fields must be event multiples
 	// of 3. Each 3-byte group represents an RGB value.
