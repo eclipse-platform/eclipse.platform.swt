@@ -44,11 +44,13 @@ ImageData[] loadFromByteStream() {
 		readSignature();
 		PngChunkReader chunkReader = new PngChunkReader(inputStream);
 		headerChunk = chunkReader.getIhdrChunk();
-		int imageSize = getAlignedBytesPerRow() * headerChunk.getHeight();
+		int width = headerChunk.getWidth(), height = headerChunk.getHeight();
+		if (width <= 0 || height <= 0) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		int imageSize = getAlignedBytesPerRow() * height;
 		data = new byte[imageSize];		
 		imageData = ImageData.internal_new(
-			headerChunk.getWidth(),
-			headerChunk.getHeight(),
+			width,
+			height,
 			headerChunk.getSwtBitsPerPixel(),
 			new PaletteData(0, 0, 0),
 			4,

@@ -65,6 +65,9 @@ PngIhdrChunk(int width, int height, byte bitDepth, byte colorType, byte compress
  */	
 PngIhdrChunk(byte[] reference) {
 	super(reference);
+	if (reference.length <= IHDR_DATA_LENGTH) {
+		SWT.error(SWT.ERROR_INVALID_IMAGE);
+	}
 	width = getInt32(WIDTH_DATA_OFFSET);
 	height = getInt32(HEIGHT_DATA_OFFSET);
 	bitDepth = reference[BIT_DEPTH_OFFSET];
