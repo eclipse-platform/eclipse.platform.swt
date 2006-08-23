@@ -302,6 +302,12 @@ void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOExce
 	} else {
 		readInterlacedImage(stream);
 	}
+	/*
+	* InflaterInputStream does not consume all bytes in the stream
+	* when it is closed. This may leave unread IDAT chunks. The fix
+	* is to read all available bytes before closing it.
+	*/
+	while (stream.available() > 0) stream.read();
 	stream.close();
 }
 /**
