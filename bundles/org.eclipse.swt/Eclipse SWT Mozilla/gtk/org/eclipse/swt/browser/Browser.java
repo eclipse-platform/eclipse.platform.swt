@@ -2447,7 +2447,9 @@ int /*long*/ SetFocus() {
 }	
 
 int /*long*/ GetVisibility(int /*long*/ aVisibility) {
-	return XPCOM.NS_OK;     	
+	/* Note. boolean remains of size 4 on 64 bit machine */
+	XPCOM.memmove(aVisibility, new int[] {isVisible() ? 1 : 0}, 4);
+	return XPCOM.NS_OK; 
 }
    
 int /*long*/ SetVisibility(int /*long*/ aVisibility) {
