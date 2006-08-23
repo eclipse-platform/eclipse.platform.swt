@@ -6329,6 +6329,9 @@ static ImageData[] loadFromByteStream(InputStream inputStream, ImageLoader loade
 	int row_stride = (((cinfo.output_width * cinfo.out_color_components * 8 + 7) / 8) + (scanlinePad - 1)) / scanlinePad * scanlinePad;
 	byte[][] buffer = new byte[1][row_stride];
 	byte[] data = new byte[row_stride * cinfo.output_height];
+	ImageData imageData = ImageData.internal_new(
+			cinfo.output_width, cinfo.output_height, palette.isDirect ? 24 : 8, palette, scanlinePad, data,
+			0, null, null, -1, -1, SWT.IMAGE_JPEG, 0, 0, 0, 0);
 	if (cinfo.buffered_image) {
 		boolean done;
 		do {
@@ -6340,13 +6343,7 @@ static ImageData[] loadFromByteStream(InputStream inputStream, ImageLoader loade
 				System.arraycopy(buffer[0], 0, data, offset, row_stride);
 			}
 			jpeg_finish_output(cinfo);
-			ImageData imageData = ImageData.internal_new(
-				cinfo.output_width, cinfo.output_height, palette.isDirect ? 24 : 8, palette, scanlinePad, data,
-				0, null, null, -1, -1, SWT.IMAGE_JPEG, 0, 0, 0, 0);
-			loader.notifyListeners(new ImageLoaderEvent(loader, imageData, incrementCount, done = jpeg_input_complete(cinfo)));
-			byte[] newData = new byte[data.length];
-			if (done) System.arraycopy(data, 0, newData, 0, data.length);
-			data = newData;
+			loader.notifyListeners(new ImageLoaderEvent(loader, (ImageData)imageData.clone(), incrementCount, done = jpeg_input_complete(cinfo)));
 		} while (!done);
 	} else {
 		while (cinfo.output_scanline < cinfo.output_height) {
@@ -6356,9 +6353,6 @@ static ImageData[] loadFromByteStream(InputStream inputStream, ImageLoader loade
 		}
 	}
 	jpeg_finish_decompress(cinfo);
-	ImageData imageData = ImageData.internal_new(
-		cinfo.output_width, cinfo.output_height, palette.isDirect ? 24 : 8, palette, scanlinePad, data,
-		0, null, null, -1, -1, SWT.IMAGE_JPEG, 0, 0, 0, 0);
 	jpeg_destroy_decompress(cinfo);
 	return new ImageData[]{imageData};
 }
