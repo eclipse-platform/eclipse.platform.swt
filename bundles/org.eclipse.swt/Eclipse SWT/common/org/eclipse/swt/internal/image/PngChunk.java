@@ -64,7 +64,7 @@ class PngChunk extends Object {
 PngChunk(byte[] reference) {
 	super();
 	setReference(reference);
-	if (reference.length < MIN_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
+	if (reference.length < LENGTH_OFFSET + LENGTH_FIELD_LENGTH) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	length = getInt32(LENGTH_OFFSET);
 }
 
