@@ -1814,10 +1814,19 @@ public Monitor getMonitor () {
 		monitor.y = dest.y;
 		monitor.width = dest.width;
 		monitor.height = dest.height;
-		monitor.clientX = monitor.x;
-		monitor.clientY = monitor.y;
-		monitor.clientWidth = monitor.width;
-		monitor.clientHeight = monitor.height;
+		Rectangle workArea = null;
+		if (monitorNumber == 0) workArea = display.getWorkArea ();
+		if (workArea != null) {
+			monitor.clientX = workArea.x;
+			monitor.clientY = workArea.y;
+			monitor.clientWidth = workArea.width;
+			monitor.clientHeight = workArea.height;
+		} else {
+			monitor.clientX = monitor.x;
+			monitor.clientY = monitor.y;
+			monitor.clientWidth = monitor.width;
+			monitor.clientHeight = monitor.height;
+		}
 	} else {
 		monitor = display.getPrimaryMonitor ();
 	}
