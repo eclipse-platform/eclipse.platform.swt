@@ -255,7 +255,13 @@ void releaseWidget () {
 				lpti.cbSize = TOOLINFO.sizeof;
 				if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
 					if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
-						if (lpti.uId == id) OS.KillTimer (hwndToolTip, TIMER_ID);
+						if (lpti.uId == id) {
+							OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
+							OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
+							OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+							OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
+							OS.KillTimer (hwndToolTip, TIMER_ID);
+						}
 					}
 				}
 			}
