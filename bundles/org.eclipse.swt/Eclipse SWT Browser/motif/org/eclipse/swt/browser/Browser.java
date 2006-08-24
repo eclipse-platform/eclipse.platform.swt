@@ -2294,7 +2294,8 @@ int /*long*/ SetFocus() {
 }	
 
 int /*long*/ GetVisibility(int /*long*/ aVisibility) {
-	return XPCOM.NS_OK;     	
+	XPCOM.memmove(aVisibility, new int[] {isVisible() ? 1 : 0}, 4);
+	return XPCOM.NS_OK; 	
 }
    
 int /*long*/ SetVisibility(int /*long*/ aVisibility) {
