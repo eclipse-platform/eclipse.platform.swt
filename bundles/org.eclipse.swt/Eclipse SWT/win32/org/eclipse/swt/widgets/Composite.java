@@ -1148,7 +1148,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					
 					if (hdr.code == OS.TTN_GETDISPINFOA) {
 						byte [] bytes = new byte [chars.length * 2];
-						OS.WideCharToMultiByte (OS.CP_ACP, 0, chars, chars.length, bytes, bytes.length, null, null);
+						OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
 						shell.setToolTipText (lpnmtdi, bytes);
 						OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
 					} else {
