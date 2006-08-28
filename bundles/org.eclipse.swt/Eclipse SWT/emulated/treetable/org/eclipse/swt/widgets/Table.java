@@ -1117,6 +1117,7 @@ public TableItem[] getSelection () {
 	checkWidget ();
 	TableItem[] result = new TableItem [selectedItems.length];
 	System.arraycopy (selectedItems, 0, result, 0, selectedItems.length);
+	sortAscent (result);
 	return result;
 }
 /**
@@ -1181,6 +1182,7 @@ public int [] getSelectionIndices () {
 	for (int i = 0; i < selectedItems.length; i++) {
 		result [i] = selectedItems [i].index;
 	}
+	sortAscent (result);
 	return result;
 }
 /**
@@ -2987,7 +2989,7 @@ public void remove (int [] indices) {
 	if (indices.length == 0) return;
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
-	sort (newIndices);
+	sortDescent (newIndices);
 	int start = newIndices [newIndices.length - 1], end = newIndices [0];
 	if (!(0 <= start && start <= end && end < itemsCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
@@ -3832,7 +3834,7 @@ public void showSelection () {
 	if (selectedItems.length == 0) return;
 	showItem (selectedItems [0]);
 }
-void sort (int [] items) {
+void sortDescent (int [] items) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
 	for (int gap=length/2; gap>0; gap/=2) {
@@ -3840,6 +3842,36 @@ void sort (int [] items) {
 			for (int j=i-gap; j>=0; j-=gap) {
 				if (items [j] <= items [j + gap]) {
 					int swap = items [j];
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
+				}
+			}
+		}
+	}
+}
+void sortAscent (int [] items) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = items.length;
+	for (int gap=length/2; gap>0; gap/=2) {
+		for (int i=gap; i<length; i++) {
+			for (int j=i-gap; j>=0; j-=gap) {
+				if (items [j] >= items [j + gap]) {
+					int swap = items [j];
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
+				}
+			}
+		}
+	}
+}
+void sortAscent (TableItem [] items) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = items.length;
+	for (int gap=length/2; gap>0; gap/=2) {
+		for (int i=gap; i<length; i++) {
+			for (int j=i-gap; j>=0; j-=gap) {
+				if (items [j].index >= items [j + gap].index) {
+					TableItem swap = items [j];
 					items [j] = items [j + gap];
 					items [j + gap] = swap;
 				}

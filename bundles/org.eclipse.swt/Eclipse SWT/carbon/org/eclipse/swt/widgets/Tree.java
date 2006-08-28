@@ -1681,25 +1681,65 @@ public TreeItem getParentItem () {
  */
 public TreeItem [] getSelection () {
 	checkWidget ();
-	int ptr = OS.NewHandle (0);
-	if (OS.GetDataBrowserItems (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, ptr) != OS.noErr) {
+	int [] count = new int [1];
+	if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, count) != OS.noErr) {
+		error (SWT.ERROR_CANNOT_GET_COUNT);
+	}
+	TreeItem [] result = new TreeItem [count[0]];
+	if (count[0] > 0) {
+		int ptr = OS.NewHandle (0);
+		if (count[0] == 1) {
+			if (OS.GetDataBrowserItems (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, ptr) != OS.noErr) {
+				error (SWT.ERROR_CANNOT_GET_SELECTION);
+			}
+			OS.HLock (ptr);
+			int [] id = new int [1];
+			OS.memcpy (id, ptr, 4);
+			OS.memcpy (id, id [0], 4);
+			result [0] = _getItem (id [0], true);
+			OS.HUnlock (ptr);
+		} else {
+			getSelection (result, OS.kDataBrowserNoItem, ptr, 0);
+		}
+		OS.DisposeHandle (ptr);
+	}
+	return result;
+}
+
+int getSelection(TreeItem[] result, int item, int ptr, int index) {
+	OS.SetHandleSize (ptr, 0);
+	if (OS.GetDataBrowserItems (handle, item, false, OS.kDataBrowserItemIsSelected, ptr) != OS.noErr) {
 		error (SWT.ERROR_CANNOT_GET_SELECTION);
 	}
 	int count = OS.GetHandleSize (ptr) / 4;
-	TreeItem [] result = new TreeItem [count];
 	if (count > 0) {
 		OS.HLock (ptr);
-		int [] start = new int [1];
-		OS.memcpy (start, ptr, 4);
-		int [] id = new int [1];
+		int [] id = new int [count];
+		OS.memcpy (id, ptr, 4);
+		OS.memcpy (id, id [0], count * 4);
 		for (int i=0; i<count; i++) {
-			OS.memcpy (id, start [0] + (i * 4), 4);
-			result [i] = _getItem (id [0], true);
+			result [index++] = _getItem (id [count - i - 1], true);
+		}
+		OS.HUnlock (ptr);
+		if (index == result.length) return index;
+	}
+	OS.SetHandleSize (ptr, 0);
+	if (OS.GetDataBrowserItems (handle, item, false, OS.kDataBrowserContainerIsOpen, ptr) != OS.noErr) {
+		error (SWT.ERROR_CANNOT_GET_SELECTION);
+	}
+	count = OS.GetHandleSize (ptr) / 4;
+	if (count > 0) {
+		OS.HLock (ptr);
+		int [] id = new int [count];
+		OS.memcpy (id, ptr, 4);
+		OS.memcpy (id, id [0], count * 4);
+		for (int i=0; i<count; i++) {
+			index = getSelection(result, id [count - i - 1], ptr, index);
+			if (index == result.length) return index;
 		}
 		OS.HUnlock (ptr);
 	}
-	OS.DisposeHandle (ptr);
-	return result;
+	return index;
 }
 
 /**

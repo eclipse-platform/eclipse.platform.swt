@@ -1168,9 +1168,31 @@ public TreeItem getParentItem () {
  */
 public TreeItem[] getSelection () {
 	checkWidget ();
-	TreeItem[] result = new TreeItem [selectedItems.length];
-	System.arraycopy (selectedItems, 0, result, 0, selectedItems.length);
+	int count = selectedItems.length;
+	TreeItem[] result = new TreeItem [count];
+	if (count > 0) {
+		if (count == 1) {
+			System.arraycopy (selectedItems, 0, result, 0, count);
+		} else {
+			getSelection (result, items, selectedItems, 0);
+		}
+	}
 	return result;
+}
+int getSelection (TreeItem[] result, TreeItem[] items, TreeItem[] selection, int index) {
+	for (int i = 0; i < items.length; i++) {
+		TreeItem item = items[i];
+		for (int j = 0; j < selection.length; j++) {
+			if (selection [j] == item) {
+				result [index++] = item;
+				break;
+			}
+		}
+		if (index == result.length) break;
+		index = getSelection (result, items[i].items, selection, index);
+		if (index == result.length) break;
+	}
+	return index;
 }
 /**
  * Returns the number of selected items contained in the receiver.

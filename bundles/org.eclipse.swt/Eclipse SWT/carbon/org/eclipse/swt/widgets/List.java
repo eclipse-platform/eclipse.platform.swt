@@ -593,15 +593,17 @@ public String [] getSelection () {
 	}
 	int count = OS.GetHandleSize (ptr) / 4;
 	String [] result = new String [count];
-	OS.HLock (ptr);
-	int [] start = new int [1];
-	OS.memcpy (start, ptr, 4);
-	int [] id = new int [1];
-	for (int i=0; i<count; i++) {
-		OS.memcpy (id, start [0] + (i * 4), 4);
-		result [i] = items [id [0] - 1];
+	if (count > 0) {
+		OS.HLock (ptr);
+		int [] id = new int [1];
+		OS.memcpy (id, ptr, 4);
+		int offset = id [0] + (count - 1) * 4;
+		for (int i=0; i<count; i++, offset -= 4) {
+			OS.memcpy (id, offset, 4);
+			result [i] = items [id [0] - 1];
+		}
+		OS.HUnlock (ptr);
 	}
-	OS.HUnlock (ptr);
 	OS.DisposeHandle (ptr);
 	return result;
 }
@@ -667,15 +669,17 @@ public int [] getSelectionIndices () {
 	}
 	int count = OS.GetHandleSize (ptr) / 4;
 	int [] result = new int [count];
-	OS.HLock (ptr);
-	int [] start = new int [1];
-	OS.memcpy (start, ptr, 4);
-	int [] id = new int [1];
-	for (int i=0; i<count; i++) {
-		OS.memcpy (id, start [0] + (i * 4), 4);
-		result [i] = id [0] - 1;
+	if (count > 0) {
+		OS.HLock (ptr);
+		OS.memcpy (result, ptr, 4);
+		OS.memcpy (result, result [0], count * 4);
+		OS.HUnlock (ptr);
+		for (int i=0, end=count / 2 + 1; i<end; i++) {
+			int temp = result [i];
+			result [i] = result [count - i - 1] - 1;
+			result [count - i - 1] = temp - 1;
+		}
 	}
-	OS.HUnlock (ptr);
 	OS.DisposeHandle (ptr);
 	return result;
 }
