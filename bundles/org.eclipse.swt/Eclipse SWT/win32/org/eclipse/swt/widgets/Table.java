@@ -129,7 +129,7 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.MeasureItem:
 		case SWT.EraseItem:
 		case SWT.PaintItem:
-			customDraw = true;
+			setCustomDraw (true);
 			style |= SWT.DOUBLE_BUFFERED;
 			setBackgroundTransparent (true);
 			//TODO - LVS_EX_LABELTIP causes white rectangles (turn it off)
@@ -186,10 +186,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSelect) {
 	if (handle == 0) return 0;
 	if (handle != hwnd) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		if (hwnd == hwndHeader) {
-			return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
-		}
+		return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
 	}
 	int topIndex = 0;
 	boolean checkSelection = false, checkActivate = false, redraw = false;
@@ -652,8 +649,7 @@ boolean checkData (TableItem item, int index, boolean redraw) {
 
 boolean checkHandle (int hwnd) {
 	if (hwnd == handle) return true;
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	return hwnd == hwndHeader;
+	return hwnd == OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 }
 
 protected void checkSubclass () {
@@ -1284,17 +1280,6 @@ void createWidget () {
 	itemHeight = -1;
 	items = new TableItem [4];
 	columns = new TableColumn [4];
-	/*
-	* Force virtual tables to use custom draw.  This
-	* is necessary to support colors and fonts for table
-	* items.  When the application is queried for data,
-	* setting the custom draw flag at that time is too
-	* late.  The current item is not redrawn in order
-	* to avoid recursion and NM_CUSTOMDRAW has already
-	* been avoided because at the time of the message,
-	* there were no items that required custom drawing.
-	*/
-	if ((style & SWT.VIRTUAL) != 0) customDraw = true;
 }
 
 int defaultBackground () {
@@ -3339,6 +3324,14 @@ public void setColumnOrder (int [] order) {
 	}
 }
 
+void setCustomDraw (boolean customDraw) {
+	if (this.customDraw == customDraw) return;
+	if (!this.customDraw && customDraw && currentItem != null) {
+		OS.InvalidateRect (handle, null, true);
+	}
+	this.customDraw = customDraw;
+}
+
 void setDeferResize (boolean defer) {
 	if (defer) {
 		if (resizeCount++ == 0) {
@@ -4186,10 +4179,8 @@ void setTableEmpty () {
 		imageList = null;
 		if (itemHeight != -1) setItemHeight (false);
 	}
-	if ((style & SWT.VIRTUAL) == 0) {
-		if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
-			customDraw = false;
-		}
+	if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+		setCustomDraw (false);
 	}
 	items = new TableItem [4];
 	if (columnCount == 0) {
@@ -4534,62 +4525,61 @@ int windowProc () {
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
 	if (hwnd != handle) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		if (hwnd == hwndHeader) {
-			switch (msg) {
-				/* This code is intentionally commented */
-//				case OS.WM_CONTEXTMENU: {
-//					LRESULT result = wmContextMenu (hwnd, wParam, lParam);
-//					if (result != null) return result.value;
-//					break;
-//				}
-				case OS.WM_CAPTURECHANGED: {
-					/*
-					* Bug in Windows.  When the capture changes during a
-					* header drag, Windows does not redraw the header item
-					* such that the header remains pressed.  For example,
-					* when focus is assigned to a push button, the mouse is
-					* pressed (but not released), then the SPACE key is
-					* pressed to activate the button, the capture changes,
-					* the header not notified and NM_RELEASEDCAPTURE is not
-					* sent.  The fix is to redraw the header when the capture
-					* changes to another control.
-					* 
-					* This does not happen on XP.
-					*/
-					if (OS.COMCTL32_MAJOR < 6) {
-						if (lParam != 0 && lParam != hwndHeader) {
-							OS.InvalidateRect (hwndHeader, null, true);
-						}
-					}
-					break;
-				}
-				case OS.WM_MOUSELEAVE: {
-					/*
-					* Bug in Windows.  On XP, when a tooltip is hidden
-					* due to a time out or mouse press, the tooltip
-					* remains active although no longer visible and
-					* won't show again until another tooltip becomes
-					* active.  The fix is to reset the tooltip bounds.
-					*/
-					if (OS.COMCTL32_MAJOR >= 6) updateHeaderToolTips ();
-					updateHeaderToolTips ();
-					break;
-				}
-				case OS.WM_NOTIFY: {
-					NMHDR hdr = new NMHDR ();
-					OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-					switch (hdr.code) {
-						case OS.TTN_SHOW:
-						case OS.TTN_POP: 
-						case OS.TTN_GETDISPINFOA:
-						case OS.TTN_GETDISPINFOW:
-							return OS.SendMessage (handle, msg, wParam, lParam);
+		switch (msg) {
+			/* This code is intentionally commented */
+//			case OS.WM_CONTEXTMENU: {
+//				LRESULT result = wmContextMenu (hwnd, wParam, lParam);
+//				if (result != null) return result.value;
+//				break;
+//			}
+			case OS.WM_CAPTURECHANGED: {
+				/*
+				* Bug in Windows.  When the capture changes during a
+				* header drag, Windows does not redraw the header item
+				* such that the header remains pressed.  For example,
+				* when focus is assigned to a push button, the mouse is
+				* pressed (but not released), then the SPACE key is
+				* pressed to activate the button, the capture changes,
+				* the header not notified and NM_RELEASEDCAPTURE is not
+				* sent.  The fix is to redraw the header when the capture
+				* changes to another control.
+				* 
+				* This does not happen on XP.
+				*/
+				if (OS.COMCTL32_MAJOR < 6) {
+					if (lParam != 0) {
+						int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+						if (lParam != hwndHeader) OS.InvalidateRect (hwndHeader, null, true);
 					}
 				}
+				break;
 			}
-			return callWindowProc (hwnd, msg, wParam, lParam);
+			case OS.WM_MOUSELEAVE: {
+				/*
+				* Bug in Windows.  On XP, when a tooltip is hidden
+				* due to a time out or mouse press, the tooltip
+				* remains active although no longer visible and
+				* won't show again until another tooltip becomes
+				* active.  The fix is to reset the tooltip bounds.
+				*/
+				if (OS.COMCTL32_MAJOR >= 6) updateHeaderToolTips ();
+				updateHeaderToolTips ();
+				break;
+			}
+			case OS.WM_NOTIFY: {
+				NMHDR hdr = new NMHDR ();
+				OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+				switch (hdr.code) {
+					case OS.TTN_SHOW:
+					case OS.TTN_POP: 
+					case OS.TTN_GETDISPINFOA:
+					case OS.TTN_GETDISPINFOW:
+						return OS.SendMessage (handle, msg, wParam, lParam);
+				}
+				break;
+			}
 		}
+		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
@@ -5414,13 +5404,26 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (!tipRequested && string.length () == 0 && plvfi.iSubItem == 0) {
 						string = " "; //$NON-NLS-1$
 					}
-					TCHAR buffer = new TCHAR (getCodePage (), string, false);
-					int byteCount = Math.min (buffer.length (), plvfi.cchTextMax - 1) * TCHAR.sizeof;
-					OS.MoveMemory (plvfi.pszText, buffer, byteCount);
-					OS.MoveMemory (plvfi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
-					plvfi.cchTextMax = Math.min (plvfi.cchTextMax, string.length () + 1);
+
+					int length = Math.min (string.length (), plvfi.cchTextMax - 1);
+					char [] chars = new char [length + 1];
+					string.getChars (0, length, chars, 0);
+					if (OS.IsUnicode) {
+						OS.MoveMemory (plvfi.pszText, chars, chars.length * 2);
+					} else {
+						//TODO - UNTESTED
+						OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, plvfi.pszText, plvfi.cchTextMax, null, null);
+						OS.MoveMemory (plvfi.pszText + plvfi.cchTextMax - 1, new byte [1], 1);
+					}
+					
+//					TCHAR buffer = new TCHAR (getCodePage (), string, false);
+//					int byteCount = Math.min (buffer.length (), plvfi.cchTextMax - 1) * TCHAR.sizeof;
+//					OS.MoveMemory (plvfi.pszText, buffer, byteCount);
+//					OS.MoveMemory (plvfi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
+//					plvfi.cchTextMax = Math.min (plvfi.cchTextMax, string.length () + 1);
 				}
 			}
+			boolean move = false;
 			if ((plvfi.mask & OS.LVIF_IMAGE) != 0) {
 				Image image = null;
 				if (plvfi.iSubItem == 0) {
@@ -5429,7 +5432,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					Image [] images = item.images;
 					if (images != null) image = images [plvfi.iSubItem];
 				}
-				if (image != null) plvfi.iImage = imageIndex (image);
+				if (image != null) {
+					plvfi.iImage = imageIndex (image);
+					move = true;
+				}
 			}
 			if ((plvfi.mask & OS.LVIF_STATE) != 0) {
 				if (plvfi.iSubItem == 0) {
@@ -5438,12 +5444,16 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (item.grayed) state +=2;
 					plvfi.state = state << 12;
 					plvfi.stateMask = OS.LVIS_STATEIMAGEMASK;
+					move = true;
 				}
 			}
 			if ((plvfi.mask & OS.LVIF_INDENT) != 0) {
-				if (plvfi.iSubItem == 0) plvfi.iIndent = item.imageIndent;
+				if (plvfi.iSubItem == 0) {
+					plvfi.iIndent = item.imageIndent;
+					move = true;
+				}
 			}
-			OS.MoveMemory (lParam, plvfi, NMLVDISPINFO.sizeof);
+			if (move) OS.MoveMemory (lParam, plvfi, NMLVDISPINFO.sizeof);
 			break;
 		}
 		case OS.NM_CUSTOMDRAW: {

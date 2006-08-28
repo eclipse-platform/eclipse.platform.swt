@@ -638,7 +638,7 @@ public void setBackground (Color color) {
 	}
 	int pixel = -1;
 	if (color != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		pixel = color.handle;
 	}
 	if (background == pixel) return;
@@ -674,7 +674,7 @@ public void setBackground (int index, Color color) {
 	if (0 > index || index > count - 1) return;
 	int pixel = -1;
 	if (color != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		pixel = color.handle;
 	}
 	if (cellBackground == null) {
@@ -743,7 +743,7 @@ public void setFont (Font font){
 	}
 	int hFont = -1;
 	if (font != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		hFont = font.handle;
 	}
 	if (this.font == hFont) return;
@@ -804,7 +804,7 @@ public void setFont (int index, Font font) {
 	if (0 > index || index > count - 1) return;
 	int hFont = -1;
 	if (font != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		hFont = font.handle;
 	}
 	if (cellFont == null) {
@@ -869,7 +869,7 @@ public void setForeground (Color color){
 	}
 	int pixel = -1;
 	if (color != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		pixel = color.handle;
 	}
 	if (foreground == pixel) return;
@@ -905,7 +905,7 @@ public void setForeground (int index, Color color){
 	if (0 > index || index > count - 1) return;
 	int pixel = -1;
 	if (color != null) {
-		parent.customDraw = true;
+		parent.setCustomDraw (true);
 		pixel = color.handle;
 	}
 	if (cellForeground == null) {
