@@ -2878,28 +2878,35 @@ public TreeItem getParentItem () {
 	return null;
 }
 
-int getSelection (int hItem, TVITEM tvItem, TreeItem [] selection, int count) {
+int getSelection (int hItem, TVITEM tvItem, TreeItem [] selection, int count, boolean full) {
 	while (hItem != 0) {
-		if (tvItem != null && selection != null && count < selection.length) {
+		if (OS.IsWinCE) {
 			tvItem.hItem = hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				selection [count++] = _getItem (hItem, tvItem.lParam);
+				if (selection != null && count < selection.length) {
+					selection [count] = _getItem (hItem, tvItem.lParam);
+				}
+				count++;
 			}
 		} else {
-			int state = 0;
-			if (OS.IsWinCE) {
-				tvItem.hItem = hItem;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				state = tvItem.state;
-			} else {
-				state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+			int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+			if ((state & OS.TVIS_SELECTED) != 0) {
+				if (tvItem != null && selection != null && count < selection.length) {
+					tvItem.hItem = hItem;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					selection [count] = _getItem (hItem, tvItem.lParam);
+				}
+				count++;
 			}
-			if ((state & OS.TVIS_SELECTED) != 0) count++;
 		}
-		int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-		count = getSelection (hFirstItem, tvItem, selection, count);
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		if (full) {
+			int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
+			count = getSelection (hFirstItem, tvItem, selection, count, full);
+			hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		} else {
+			hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+		}
 	}
 	return count;
 }
@@ -2933,14 +2940,14 @@ public TreeItem [] getSelection () {
 		return new TreeItem [] {_getItem (tvItem.hItem, tvItem.lParam)};
 	}
 	int count = 0;
-	TreeItem [] guess = new TreeItem [8];
+	TreeItem [] guess = new TreeItem [(style & SWT.VIRTUAL) != 0 ? 8 : 1];
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
 	if ((style & SWT.VIRTUAL) != 0) {
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		count = getSelection (hItem, tvItem, guess, 0);
+		count = getSelection (hItem, tvItem, guess, 0, true);
 	} else {
 		TVITEM tvItem = null;
 		if (OS.IsWinCE) {
@@ -2974,34 +2981,11 @@ public TreeItem [] getSelection () {
 		return result;
 	}
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	if ((style & SWT.VIRTUAL) != 0) {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
-		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		getSelection (hItem, tvItem, result, 0);
-	} else {
-		TVITEM tvItem = null;
-		if (OS.IsWinCE) {
-			tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
-		}
-		int index = 0;
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
-			if (item != null) {
-				int hItem = item.handle, state = 0;
-				if (OS.IsWinCE) {
-					tvItem.hItem = hItem;
-					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					state = tvItem.state;
-				} else {
-					state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
-				}
-				if ((state & OS.TVIS_SELECTED) != 0) {
-					result [index++] = item;
-				}
-			}
-		}
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	if (count != getSelection (hItem, tvItem, result, 0, false)) {
+		getSelection (hItem, tvItem, result, 0, true);
 	}
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 	return result;
@@ -3044,7 +3028,7 @@ public int getSelectionCount () {
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
 	if ((style & SWT.VIRTUAL) != 0) {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		count = getSelection (hItem, tvItem, null, 0);
+		count = getSelection (hItem, tvItem, null, 0, true);
 	} else {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
