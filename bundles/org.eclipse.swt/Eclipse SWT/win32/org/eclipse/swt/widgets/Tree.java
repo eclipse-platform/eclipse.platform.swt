@@ -2878,37 +2878,39 @@ public TreeItem getParentItem () {
 	return null;
 }
 
-int getSelection (int hItem, TVITEM tvItem, TreeItem [] selection, int count, boolean full) {
+int getSelection (int hItem, TVITEM tvItem, TreeItem [] selection, int index, boolean full) {
 	while (hItem != 0) {
 		if (OS.IsWinCE) {
 			tvItem.hItem = hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				if (selection != null && count < selection.length) {
-					selection [count] = _getItem (hItem, tvItem.lParam);
+				if (selection != null && index < selection.length) {
+					selection [index] = _getItem (hItem, tvItem.lParam);
 				}
-				count++;
+				index++;
 			}
 		} else {
 			int state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
 			if ((state & OS.TVIS_SELECTED) != 0) {
-				if (tvItem != null && selection != null && count < selection.length) {
+				if (tvItem != null && selection != null && index < selection.length) {
 					tvItem.hItem = hItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					selection [count] = _getItem (hItem, tvItem.lParam);
+					selection [index] = _getItem (hItem, tvItem.lParam);
 				}
-				count++;
+				index++;
 			}
 		}
+		if (selection != null && index == selection.length) break;
 		if (full) {
 			int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hItem);
-			count = getSelection (hFirstItem, tvItem, selection, count, full);
+			index = getSelection (hFirstItem, tvItem, selection, index, full);
+			if (selection != null && index == selection.length) break;
 			hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		} else {
 			hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
 		}
 	}
-	return count;
+	return index;
 }
 
 /**
