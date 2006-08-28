@@ -315,15 +315,15 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 }
 
-int calculateWidth (int [] ids, GC gc) {
+int calculateWidth (int [] ids, GC gc, boolean recurse) {
 	if (ids == null) return 0;
 	int width = 0;
 	for (int i=0; i<ids.length; i++) {
 		TreeItem item = _getItem (ids [i], false);
 		if (item != null) {
 			width = Math.max (width, item.calculateWidth (0, gc));
-			if (item._getExpanded ()) {
-				width = Math.max (width, calculateWidth (item.childIds, gc));
+			if (recurse && item._getExpanded ()) {
+				width = Math.max (width, calculateWidth (item.childIds, gc, recurse));
 			}
 		}
 	}
@@ -2313,7 +2313,9 @@ int itemNotificationProc (int browser, int id, int message) {
 			}
 			OS.AddDataBrowserItems (handle, id, item.itemCount, item.childIds, OS.kDataBrowserItemNoProperty);
 			visibleCount += item.itemCount;
-			setScrollWidth (false);
+			if (!ignoreExpand) {
+				setScrollWidth (false, item.childIds, false);
+			}
 			break;
 		}
 	}
@@ -2974,10 +2976,14 @@ boolean setScrollWidth (TreeItem item) {
 }
 
 boolean setScrollWidth (boolean set) {
+	return setScrollWidth(set, childIds, true);
+}
+
+boolean setScrollWidth (boolean set, int[] childIds, boolean recurse) {
 	if (ignoreRedraw || drawCount != 0) return false;
 	if (columnCount != 0 || childIds == null) return false;
 	GC gc = new GC (this);
-	int newWidth = calculateWidth (childIds, gc);
+	int newWidth = calculateWidth (childIds, gc, recurse);
 	gc.dispose ();
 	newWidth += getInsetWidth (column_id, false);
 	if (!set) {

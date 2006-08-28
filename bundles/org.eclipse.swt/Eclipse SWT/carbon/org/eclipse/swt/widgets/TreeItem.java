@@ -1031,8 +1031,12 @@ public void setExpanded (boolean expanded) {
 	}
 	parent.ignoreExpand = false;
 	cached = true;
-	parent.setScrollWidth (true);
-	parent.fixScrollBar ();
+	if (expanded) {
+		parent.setScrollWidth (false, childIds, false);
+	} else {
+		parent.setScrollWidth (true);
+		parent.fixScrollBar ();
+	}
 }
 
 /**
