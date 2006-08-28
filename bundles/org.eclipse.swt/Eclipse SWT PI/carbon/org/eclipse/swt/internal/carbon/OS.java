@@ -1685,6 +1685,7 @@ public static final native int SetEventParameter(int inEvent, int inName, int in
 public static final native int SetFontInfoForSelection(int iStyleType, int iNumStyles, int iStyles, int iFPEventTarget);
 public static final native int SetFrontProcess(int[] psn);
 public static final native int SetFrontProcessWithOptions(int[] psn, int inOptions);
+public static final native void SetHandleSize(int handle, int size);
 public static final native void SetGWorld(int portHandle, int gdHandle);
 public static final native int SetIconFamilyData(int iconFamily, int iconType, int h);
 public static final native void SetItemMark(int theMenu, short item, short markChar);

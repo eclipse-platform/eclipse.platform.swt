@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 924;
-int OS_nativeFunctionCallCount[924];
+int OS_nativeFunctionCount = 925;
+int OS_nativeFunctionCallCount[925];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -807,6 +807,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetFrontProcess",
 	"SetFrontProcessWithOptions",
 	"SetGWorld",
+	"SetHandleSize",
 	"SetIconFamilyData",
 	"SetItemMark",
 	"SetKeyboardFocus",

@@ -11268,6 +11268,16 @@ JNIEXPORT void JNICALL OS_NATIVE(SetGWorld)
 }
 #endif
 
+#ifndef NO_SetHandleSize
+JNIEXPORT void JNICALL OS_NATIVE(SetHandleSize)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, SetHandleSize_FUNC);
+	SetHandleSize((Handle)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, SetHandleSize_FUNC);
+}
+#endif
+
 #ifndef NO_SetIconFamilyData
 JNIEXPORT jint JNICALL OS_NATIVE(SetIconFamilyData)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

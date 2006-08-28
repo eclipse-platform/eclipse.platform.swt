@@ -811,6 +811,7 @@ typedef enum {
 	SetFrontProcess_FUNC,
 	SetFrontProcessWithOptions_FUNC,
 	SetGWorld_FUNC,
+	SetHandleSize_FUNC,
 	SetIconFamilyData_FUNC,
 	SetItemMark_FUNC,
 	SetKeyboardFocus_FUNC,
