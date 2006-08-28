@@ -118,8 +118,8 @@ public class Display extends Device {
 
 	/* Widget Table */
 	int [] indexTable;
-	Control lastControl;
-	int freeSlot, lastHwnd;
+	Control lastControl, lastGetControl;
+	int freeSlot, lastHwnd, lastGetHwnd;
 	Control [] controlTable;
 	static final int GROW_SIZE = 1024;
 	static final int SWT_OBJECT_INDEX;
@@ -1241,6 +1241,9 @@ Control getControl (int handle) {
 	if (lastControl != null && lastHwnd == handle) {
 		return lastControl;
 	}
+	if (lastGetControl != null && lastGetHwnd == handle) {
+		return lastGetControl;
+	}
 	int index;
 	if (USE_PROPERTY) {
 		index = OS.GetProp (handle, SWT_OBJECT_INDEX) - 1;
@@ -1258,6 +1261,8 @@ Control getControl (int handle) {
 		* against the handle that provided the GWL_USERDATA.
 		*/
 		if (control != null && control.checkHandle (handle)) {
+			lastGetHwnd = handle;
+			lastGetControl = control;
 			return control;
 		}
 	}
@@ -3168,8 +3173,7 @@ void releaseDisplay () {
 	bars = popups = null;
 	indexTable = null;
 	controlTable = null;
-	lastControl = null;
-	lastHittestControl = null;
+	lastControl = lastGetControl = lastHittestControl = null;
 	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
 }
 
@@ -3321,7 +3325,7 @@ void removeBar (Menu menu) {
 
 Control removeControl (int handle) {
 	if (handle == 0) return null;
-	lastControl = null;
+	lastControl = lastGetControl = null;
 	Control control = null;
 	int index;
 	if (USE_PROPERTY) {
