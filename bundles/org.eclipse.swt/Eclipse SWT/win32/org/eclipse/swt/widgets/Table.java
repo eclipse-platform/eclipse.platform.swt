@@ -5404,23 +5404,15 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (!tipRequested && string.length () == 0 && plvfi.iSubItem == 0) {
 						string = " "; //$NON-NLS-1$
 					}
-
 					int length = Math.min (string.length (), plvfi.cchTextMax - 1);
 					char [] chars = new char [length + 1];
 					string.getChars (0, length, chars, 0);
 					if (OS.IsUnicode) {
 						OS.MoveMemory (plvfi.pszText, chars, chars.length * 2);
 					} else {
-						//TODO - UNTESTED
 						OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, plvfi.pszText, plvfi.cchTextMax, null, null);
 						OS.MoveMemory (plvfi.pszText + plvfi.cchTextMax - 1, new byte [1], 1);
 					}
-					
-//					TCHAR buffer = new TCHAR (getCodePage (), string, false);
-//					int byteCount = Math.min (buffer.length (), plvfi.cchTextMax - 1) * TCHAR.sizeof;
-//					OS.MoveMemory (plvfi.pszText, buffer, byteCount);
-//					OS.MoveMemory (plvfi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
-//					plvfi.cchTextMax = Math.min (plvfi.cchTextMax, string.length () + 1);
 				}
 			}
 			boolean move = false;
