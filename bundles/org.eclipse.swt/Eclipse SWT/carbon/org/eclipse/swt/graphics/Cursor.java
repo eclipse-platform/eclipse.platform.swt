@@ -307,7 +307,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		maskData[y * 2] = (byte)(m >> 8);
 		maskData[y * 2 + 1] = (byte)(m & 0xFF);
 	}
-	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotY - minX));
+	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotX - minX));
 	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
 	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -463,7 +463,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		maskData[y * 2] = (byte)(m >> 8);
 		maskData[y * 2 + 1] = (byte)(m & 0xFF);
 	}
-	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotY - minX));
+	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotX - minX));
 	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
 	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
