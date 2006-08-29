@@ -1072,7 +1072,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 					if (OS.IsWindowEnabled (handle)) drawBackground (hDC, rect);
 				}
 				nmcd.uItemState &= ~OS.CDIS_FOCUS;
-				OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 			}
 		}
 	}

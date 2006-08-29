@@ -283,7 +283,7 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 void setBackgroundImage (int hImage) {
-	super.setBackgroundPixel (hImage);
+	super.setBackgroundImage (hImage);
 	/*
 	* Bug in Windows.  Changing the background color of the Scale
 	* widget and calling InvalidateRect() still draws with the old
