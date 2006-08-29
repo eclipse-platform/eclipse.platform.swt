@@ -1028,7 +1028,7 @@ void createHandle () {
 	OS.HeapFree (hHeap, 0, pszText);
 
 	/* Set the extended style bits */
-	int bits1 = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP;
+	int bits1 = OS.LVS_EX_LABELTIP;
 	if ((style & SWT.FULL_SELECTION) != 0) bits1 |= OS.LVS_EX_FULLROWSELECT;
 	if (OS.COMCTL32_MAJOR >= 6) bits1 |= OS.LVS_EX_DOUBLEBUFFER;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits1, bits1);
@@ -4153,6 +4153,13 @@ public void setSortDirection (int direction) {
 	if (sortColumn != null && !sortColumn.isDisposed ()) {
 		sortColumn.setSortDirection (direction);
 	}
+}
+
+void setSubImagesVisible (boolean visible) {
+	int dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+	if ((dwExStyle & OS.LVS_EX_SUBITEMIMAGES) != 0 == visible) return;
+	int bits = visible ? OS.LVS_EX_SUBITEMIMAGES : 0;
+	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_SUBITEMIMAGES, bits);
 }
 
 void setTableEmpty () {
