@@ -3759,13 +3759,12 @@ void setItemHeight (boolean fixScroll) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
-	int newBits = 0;
+	int newBits = show  ? OS.LVS_EX_GRIDLINES : 0;
+	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_GRIDLINES, newBits);
 	if (show) {
-		newBits = OS.LVS_EX_GRIDLINES;
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
 		if ((bits & OS.LVS_NOCOLUMNHEADER) == 0) fixItemHeight (true);
 	}
-	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_GRIDLINES, newBits);
 }
 
 public void setRedraw (boolean redraw) {
