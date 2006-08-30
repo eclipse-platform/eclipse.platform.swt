@@ -223,6 +223,9 @@ public class Display extends Device {
 	/* Sort Indicators */
 	Image upArrow, downArrow;
 	
+	/* Table */
+	char [] tableBuffer;
+	
 	/* Display Data */
 	Object data;
 	String [] keys;
