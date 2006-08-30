@@ -4902,190 +4902,6 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	return super.WM_PAINT (wParam, lParam);
 }
 
-LRESULT WM_NOTIFY (int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	if (hdr.hwndFrom == hwndHeader) {
-		/*
-		* Feature in Windows.  On NT, the automatically created
-		* header control is created as a UNICODE window, not an
-		* ANSI window despite the fact that the parent is created
-		* as an ANSI window.  This means that it sends UNICODE
-		* notification messages to the parent window on NT for
-		* no good reason.  The data and size in the NMHEADER and
-		* HDITEM structs is identical between the platforms so no
-		* different message is actually necessary.  Despite this,
-		* Windows sends different messages.  The fix is to look
-		* for both messages, despite the platform.  This works
-		* because only one will be sent on either platform, never
-		* both.
-		*/
-		switch (hdr.code) {
-			case OS.HDN_BEGINTRACKW:
-			case OS.HDN_BEGINTRACKA:
-			case OS.HDN_DIVIDERDBLCLICKW:
-			case OS.HDN_DIVIDERDBLCLICKA: {
-				if (columnCount == 0) return LRESULT.ONE;
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				TableColumn column = columns [phdn.iItem];
-				if (column != null && !column.getResizable ()) {
-					return LRESULT.ONE;
-				}
-				ignoreColumnMove = true;
-				switch (hdr.code) {
-					case OS.HDN_DIVIDERDBLCLICKW:
-					case OS.HDN_DIVIDERDBLCLICKA:
-						if (column != null && hooks (SWT.MeasureItem)) {
-							column.pack ();
-							return LRESULT.ONE;
-						}
-				}
-				break;
-			}
-			case OS.NM_RELEASEDCAPTURE: {
-				if (!ignoreColumnMove) {
-					for (int i=0; i<columnCount; i++) {
-						TableColumn column = columns [i];
-						column.updateToolTip (i);
-					}
-				}
-				ignoreColumnMove = false;
-				break;
-			}
-			case OS.HDN_BEGINDRAG: {
-				if (ignoreColumnMove) return LRESULT.ONE;
-				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break; 
-				if (columnCount == 0) return LRESULT.ONE;
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.iItem != -1) {
-					TableColumn column = columns [phdn.iItem];
-					if (column != null && !column.getMoveable ()) {
-						ignoreColumnMove = true;
-						return LRESULT.ONE;
-					}
-				}
-				break;
-			}
-			case OS.HDN_ENDDRAG: {
-				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.iItem != -1 && phdn.pitem != 0) {
-					HDITEM pitem = new HDITEM ();
-					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
-					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-						if (columnCount == 0) break;
-						int [] order = new int [columnCount];
-						OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
-						int index = 0;
-						while (index < order.length) {
-						 	if (order [index] == phdn.iItem) break;
-							index++;
-						}
-						if (index == order.length) index = 0;
-						if (index == pitem.iOrder) break;
-						int start = Math.min (index, pitem.iOrder);
-						int end = Math.max (index, pitem.iOrder);
-						ignoreColumnMove = false;
-						for (int i=start; i<=end; i++) {
-							TableColumn column = columns [order [i]];
-							if (!column.isDisposed ()) {
-								column.postEvent (SWT.Move);
-							}
-						}
-					}
-				}
-				break;
-			}
-			case OS.HDN_ITEMCHANGEDW:
-			case OS.HDN_ITEMCHANGEDA: {
-				/*
-				* Bug in Windows.  When a table has the LVS_EX_GRIDLINES extended
-				* style and the user drags any column over the first column in the
-				* table, making the size become zero, when the user drags a column
-				* such that the size of the first column becomes non-zero, the grid
-				* lines are not redrawn.  The fix is to detect the case and force
-				* a redraw of the first column.
-				*/
-				int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-				if (lastWidth == 0 && width > 0) {
-					int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
-					if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
-						RECT rect = new RECT ();
-						OS.GetClientRect (handle, rect);
-						rect.right = rect.left + width;
-						OS.InvalidateRect (handle, rect, true);
-					}
-				}
-				lastWidth = width;
-				if (!ignoreColumnResize) {
-					NMHEADER phdn = new NMHEADER ();
-					OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-					if (phdn.pitem != 0) {
-						HDITEM pitem = new HDITEM ();
-						OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
-						if ((pitem.mask & OS.HDI_WIDTH) != 0) {
-							TableColumn column = columns [phdn.iItem];
-							if (column != null) {
-								column.updateToolTip (phdn.iItem);
-								column.sendEvent (SWT.Resize);
-								if (isDisposed ()) return LRESULT.ZERO;
-								/*
-								* It is possible (but unlikely), that application
-								* code could have disposed the column in the move
-								* event.  If this happens, process the move event
-								* for those columns that have not been destroyed.
-								*/
-								TableColumn [] newColumns = new TableColumn [columnCount];
-								System.arraycopy (columns, 0, newColumns, 0, columnCount);
-								int [] order = new int [columnCount];
-								OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
-								boolean moved = false;
-								for (int i=0; i<columnCount; i++) {
-									TableColumn nextColumn = newColumns [order [i]];
-									if (moved && !nextColumn.isDisposed ()) {
-										nextColumn.updateToolTip (order [i]);
-										nextColumn.sendEvent (SWT.Move);
-									}
-									if (nextColumn == column) moved = true;
-								}
-							}
-						}
-					}
-				}
-				break;
-			}
-			case OS.HDN_ITEMDBLCLICKW:
-			case OS.HDN_ITEMDBLCLICKA: {
-				NMHEADER phdn = new NMHEADER ();
-				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				TableColumn column = columns [phdn.iItem];
-				if (column != null) {
-					column.postEvent (SWT.DefaultSelection);
-				}
-				break;
-			}
-		}
-	}
-	LRESULT result = super.WM_NOTIFY (wParam, lParam);
-	if (result != null) return result;
-	switch (hdr.code) {
-		case OS.TTN_GETDISPINFOA:
-		case OS.TTN_GETDISPINFOW: {
-			tipRequested = true;
-			int code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
-			tipRequested = false;
-			return new LRESULT (code);
-		}
-	}
-	return result;
-}
-
 LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the user selects outside of
@@ -5325,9 +5141,189 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmNotifyChild (int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	if (hdr.hwndFrom == hwndHeader) {
+		/*
+		* Feature in Windows.  On NT, the automatically created
+		* header control is created as a UNICODE window, not an
+		* ANSI window despite the fact that the parent is created
+		* as an ANSI window.  This means that it sends UNICODE
+		* notification messages to the parent window on NT for
+		* no good reason.  The data and size in the NMHEADER and
+		* HDITEM structs is identical between the platforms so no
+		* different message is actually necessary.  Despite this,
+		* Windows sends different messages.  The fix is to look
+		* for both messages, despite the platform.  This works
+		* because only one will be sent on either platform, never
+		* both.
+		*/
+		switch (hdr.code) {
+			case OS.HDN_BEGINTRACKW:
+			case OS.HDN_BEGINTRACKA:
+			case OS.HDN_DIVIDERDBLCLICKW:
+			case OS.HDN_DIVIDERDBLCLICKA: {
+				if (columnCount == 0) return LRESULT.ONE;
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				TableColumn column = columns [phdn.iItem];
+				if (column != null && !column.getResizable ()) {
+					return LRESULT.ONE;
+				}
+				ignoreColumnMove = true;
+				switch (hdr.code) {
+					case OS.HDN_DIVIDERDBLCLICKW:
+					case OS.HDN_DIVIDERDBLCLICKA:
+						if (column != null && hooks (SWT.MeasureItem)) {
+							column.pack ();
+							return LRESULT.ONE;
+						}
+				}
+				break;
+			}
+			case OS.NM_RELEASEDCAPTURE: {
+				if (!ignoreColumnMove) {
+					for (int i=0; i<columnCount; i++) {
+						TableColumn column = columns [i];
+						column.updateToolTip (i);
+					}
+				}
+				ignoreColumnMove = false;
+				break;
+			}
+			case OS.HDN_BEGINDRAG: {
+				if (ignoreColumnMove) return LRESULT.ONE;
+				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break; 
+				if (columnCount == 0) return LRESULT.ONE;
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.iItem != -1) {
+					TableColumn column = columns [phdn.iItem];
+					if (column != null && !column.getMoveable ()) {
+						ignoreColumnMove = true;
+						return LRESULT.ONE;
+					}
+				}
+				break;
+			}
+			case OS.HDN_ENDDRAG: {
+				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.iItem != -1 && phdn.pitem != 0) {
+					HDITEM pitem = new HDITEM ();
+					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
+						if (columnCount == 0) break;
+						int [] order = new int [columnCount];
+						OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
+						int index = 0;
+						while (index < order.length) {
+						 	if (order [index] == phdn.iItem) break;
+							index++;
+						}
+						if (index == order.length) index = 0;
+						if (index == pitem.iOrder) break;
+						int start = Math.min (index, pitem.iOrder);
+						int end = Math.max (index, pitem.iOrder);
+						ignoreColumnMove = false;
+						for (int i=start; i<=end; i++) {
+							TableColumn column = columns [order [i]];
+							if (!column.isDisposed ()) {
+								column.postEvent (SWT.Move);
+							}
+						}
+					}
+				}
+				break;
+			}
+			case OS.HDN_ITEMCHANGEDW:
+			case OS.HDN_ITEMCHANGEDA: {
+				/*
+				* Bug in Windows.  When a table has the LVS_EX_GRIDLINES extended
+				* style and the user drags any column over the first column in the
+				* table, making the size become zero, when the user drags a column
+				* such that the size of the first column becomes non-zero, the grid
+				* lines are not redrawn.  The fix is to detect the case and force
+				* a redraw of the first column.
+				*/
+				int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+				if (lastWidth == 0 && width > 0) {
+					int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+					if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+						RECT rect = new RECT ();
+						OS.GetClientRect (handle, rect);
+						rect.right = rect.left + width;
+						OS.InvalidateRect (handle, rect, true);
+					}
+				}
+				lastWidth = width;
+				if (!ignoreColumnResize) {
+					NMHEADER phdn = new NMHEADER ();
+					OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+					if (phdn.pitem != 0) {
+						HDITEM pitem = new HDITEM ();
+						OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+						if ((pitem.mask & OS.HDI_WIDTH) != 0) {
+							TableColumn column = columns [phdn.iItem];
+							if (column != null) {
+								column.updateToolTip (phdn.iItem);
+								column.sendEvent (SWT.Resize);
+								if (isDisposed ()) return LRESULT.ZERO;
+								/*
+								* It is possible (but unlikely), that application
+								* code could have disposed the column in the move
+								* event.  If this happens, process the move event
+								* for those columns that have not been destroyed.
+								*/
+								TableColumn [] newColumns = new TableColumn [columnCount];
+								System.arraycopy (columns, 0, newColumns, 0, columnCount);
+								int [] order = new int [columnCount];
+								OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
+								boolean moved = false;
+								for (int i=0; i<columnCount; i++) {
+									TableColumn nextColumn = newColumns [order [i]];
+									if (moved && !nextColumn.isDisposed ()) {
+										nextColumn.updateToolTip (order [i]);
+										nextColumn.sendEvent (SWT.Move);
+									}
+									if (nextColumn == column) moved = true;
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+			case OS.HDN_ITEMDBLCLICKW:
+			case OS.HDN_ITEMDBLCLICKA: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				TableColumn column = columns [phdn.iItem];
+				if (column != null) {
+					column.postEvent (SWT.DefaultSelection);
+				}
+				break;
+			}
+		}
+	}
+	LRESULT result = super.wmNotify (hdr, wParam, lParam);
+	if (result != null) return result;
+	switch (hdr.code) {
+		case OS.TTN_GETDISPINFOA:
+		case OS.TTN_GETDISPINFOW: {
+			tipRequested = true;
+			int code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
+			tipRequested = false;
+			return new LRESULT (code);
+		}
+	}
+	return result;
+}
+
+LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	switch (hdr.code) {
 		case OS.LVN_ODFINDITEMA:
 		case OS.LVN_ODFINDITEMW: {
@@ -5586,7 +5582,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 	}
-	return super.wmNotifyChild (wParam, lParam);
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
 }

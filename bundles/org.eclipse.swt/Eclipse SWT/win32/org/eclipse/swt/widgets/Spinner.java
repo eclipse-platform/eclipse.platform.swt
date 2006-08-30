@@ -1299,9 +1299,7 @@ LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
 	return super.wmKillFocus (hwnd, wParam, lParam);
 }
 
-LRESULT wmNotifyChild(int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	switch (hdr.code) {
 		case OS.UDN_DELTAPOS:
 			NMUPDOWN lpnmud = new NMUPDOWN ();
@@ -1327,7 +1325,7 @@ LRESULT wmNotifyChild(int wParam, int lParam) {
 			}
 			return LRESULT.ONE;
 	}
-	return super.wmNotifyChild (wParam, lParam);
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
 LRESULT wmScrollChild (int wParam, int lParam) {

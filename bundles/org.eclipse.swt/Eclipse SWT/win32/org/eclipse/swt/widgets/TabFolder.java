@@ -930,9 +930,7 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmNotifyChild (int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	int code = hdr.code;
 	switch (code) {
 		case OS.TCN_SELCHANGE: 
@@ -955,7 +953,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				postEvent (SWT.Selection, event);
 			}
 	}
-	return super.wmNotifyChild (wParam, lParam);
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
 }

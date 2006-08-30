@@ -1057,113 +1057,6 @@ LRESULT WM_NCPAINT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_NOTIFY (int wParam, int lParam) {
-	if (!OS.IsWinCE) {
-		NMHDR hdr = new NMHDR ();
-		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-		switch (hdr.code) {
-			/*
-			* Feature in Windows.  When the tool tip control is
-			* created, the parent of the tool tip is the shell.
-			* If SetParent () is used to reparent the tool bar
-			* into a new shell, the tool tip is not reparented
-			* and pops up underneath the new shell.  The fix is
-			* to make sure the tool tip is a topmost window.
-			*/
-			case OS.TTN_SHOW:
-			case OS.TTN_POP: {
-				/*
-				* Bug in Windows 98 and NT.  Setting the tool tip to be the
-				* top most window using HWND_TOPMOST can result in a parent
-				* dialog shell being moved behind its parent if the dialog
-				* has a sibling that is currently on top.  The fix is to
-				* lock the z-order of the active window.
-				* 
-				* Feature in Windows.  Using SetWindowPos() with HWND_NOTOPMOST
-				* to clear the topmost state of a window whose parent is already
-				* topmost clears the topmost state of the parent.  The fix is to
-				* check if the parent is already on top and neither set or clear
-				* the topmost status of the tool tip.
-				*/
-				int hwndParent = hdr.hwndFrom;
-				do {
-					hwndParent = OS.GetParent (hwndParent);
-					if (hwndParent == 0) break;
-					int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
-					if ((bits & OS.WS_EX_TOPMOST) != 0) break;
-				} while (true);
-				if (hwndParent != 0) break;
-				display.lockActiveWindow = true;
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-				int hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
-				SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
-				display.lockActiveWindow = false;
-				break;
-			}
-			/*
-			* Bug in Windows 98.  For some reason, the tool bar control
-			* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get
-			* the tool tip text and the tab folder control sends only 
-			* TTN_GETDISPINFOW.  The fix is to handle only TTN_GETDISPINFOW,
-			* even though it should never be sent on Windows 98.
-			*
-			* NOTE:  Because the size of NMTTDISPINFO differs between
-			* Windows 98 and NT, guard against the case where the wrong
-			* kind of message occurs by inlining the memory moves and
-			* the UNICODE conversion code.
-			*/
-			case OS.TTN_GETDISPINFOA:
-			case OS.TTN_GETDISPINFOW: {
-				NMTTDISPINFO lpnmtdi;
-				if (hdr.code == OS.TTN_GETDISPINFOA) {
-					lpnmtdi = new NMTTDISPINFOA ();
-					OS.MoveMemory ((NMTTDISPINFOA)lpnmtdi, lParam, NMTTDISPINFOA.sizeof);
-				} else {
-					lpnmtdi = new NMTTDISPINFOW ();
-					OS.MoveMemory ((NMTTDISPINFOW)lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
-				}
-				String string = toolTipText (lpnmtdi);
-				if (string != null) {
-					Shell shell = getShell ();
-					string = Display.withCrLf (string);
-					int length = string.length ();
-					char [] chars = new char [length + 1];
-					string.getChars (0, length, chars, 0);
-					
-					/*
-					* Ensure that the orientation of the tool tip matches
-					* the orientation of the control.
-					*/
-					int hwnd = hdr.idFrom;
-					if (hwnd != 0 && ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0)) {
-						Control control = display.getControl (hwnd);
-						if (control != null) {
-							if ((control.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
-								lpnmtdi.uFlags |= OS.TTF_RTLREADING;
-							} else {
-								lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
-							}
-						}
-					}
-					
-					if (hdr.code == OS.TTN_GETDISPINFOA) {
-						byte [] bytes = new byte [chars.length * 2];
-						OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
-						shell.setToolTipText (lpnmtdi, bytes);
-						OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
-					} else {
-						shell.setToolTipText (lpnmtdi, chars);
-						OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
-					}
-					return LRESULT.ZERO;
-				}
-				break;
-			}
-		}
-	}
-	return super.WM_NOTIFY (wParam, lParam);
-}
-
 LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		if ((wParam & 0xFFFF) == OS.WM_CREATE) {
@@ -1482,6 +1375,111 @@ LRESULT wmNCPaint (int hwnd, int wParam, int lParam) {
 		}
 	}
 	return null;
+}
+
+LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
+	if (!OS.IsWinCE) {
+		switch (hdr.code) {
+			/*
+			* Feature in Windows.  When the tool tip control is
+			* created, the parent of the tool tip is the shell.
+			* If SetParent () is used to reparent the tool bar
+			* into a new shell, the tool tip is not reparented
+			* and pops up underneath the new shell.  The fix is
+			* to make sure the tool tip is a topmost window.
+			*/
+			case OS.TTN_SHOW:
+			case OS.TTN_POP: {
+				/*
+				* Bug in Windows 98 and NT.  Setting the tool tip to be the
+				* top most window using HWND_TOPMOST can result in a parent
+				* dialog shell being moved behind its parent if the dialog
+				* has a sibling that is currently on top.  The fix is to
+				* lock the z-order of the active window.
+				* 
+				* Feature in Windows.  Using SetWindowPos() with HWND_NOTOPMOST
+				* to clear the topmost state of a window whose parent is already
+				* topmost clears the topmost state of the parent.  The fix is to
+				* check if the parent is already on top and neither set or clear
+				* the topmost status of the tool tip.
+				*/
+				int hwndParent = hdr.hwndFrom;
+				do {
+					hwndParent = OS.GetParent (hwndParent);
+					if (hwndParent == 0) break;
+					int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+					if ((bits & OS.WS_EX_TOPMOST) != 0) break;
+				} while (true);
+				if (hwndParent != 0) break;
+				display.lockActiveWindow = true;
+				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
+				int hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
+				SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
+				display.lockActiveWindow = false;
+				break;
+			}
+			/*
+			* Bug in Windows 98.  For some reason, the tool bar control
+			* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get
+			* the tool tip text and the tab folder control sends only 
+			* TTN_GETDISPINFOW.  The fix is to handle only TTN_GETDISPINFOW,
+			* even though it should never be sent on Windows 98.
+			*
+			* NOTE:  Because the size of NMTTDISPINFO differs between
+			* Windows 98 and NT, guard against the case where the wrong
+			* kind of message occurs by inlining the memory moves and
+			* the UNICODE conversion code.
+			*/
+			case OS.TTN_GETDISPINFOA:
+			case OS.TTN_GETDISPINFOW: {
+				NMTTDISPINFO lpnmtdi;
+				if (hdr.code == OS.TTN_GETDISPINFOA) {
+					lpnmtdi = new NMTTDISPINFOA ();
+					OS.MoveMemory ((NMTTDISPINFOA)lpnmtdi, lParam, NMTTDISPINFOA.sizeof);
+				} else {
+					lpnmtdi = new NMTTDISPINFOW ();
+					OS.MoveMemory ((NMTTDISPINFOW)lpnmtdi, lParam, NMTTDISPINFOW.sizeof);
+				}
+				String string = toolTipText (lpnmtdi);
+				if (string != null) {
+					Shell shell = getShell ();
+					string = Display.withCrLf (string);
+					int length = string.length ();
+					char [] chars = new char [length + 1];
+					string.getChars (0, length, chars, 0);
+					
+					/*
+					* Ensure that the orientation of the tool tip matches
+					* the orientation of the control.
+					*/
+					int hwnd = hdr.idFrom;
+					if (hwnd != 0 && ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0)) {
+						Control control = display.getControl (hwnd);
+						if (control != null) {
+							if ((control.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
+								lpnmtdi.uFlags |= OS.TTF_RTLREADING;
+							} else {
+								lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
+							}
+						}
+					}
+					
+					if (hdr.code == OS.TTN_GETDISPINFOA) {
+						byte [] bytes = new byte [chars.length * 2];
+						OS.WideCharToMultiByte (getCodePage (), 0, chars, chars.length, bytes, bytes.length, null, null);
+						shell.setToolTipText (lpnmtdi, bytes);
+						OS.MoveMemory (lParam, (NMTTDISPINFOA)lpnmtdi, NMTTDISPINFOA.sizeof);
+					} else {
+						shell.setToolTipText (lpnmtdi, chars);
+						OS.MoveMemory (lParam, (NMTTDISPINFOW)lpnmtdi, NMTTDISPINFOW.sizeof);
+					}
+					return LRESULT.ZERO;
+				}
+				break;
+			}
+		}
+	}
+	return super.wmNotify (hdr, wParam, lParam);
 }
 
 }

@@ -909,10 +909,8 @@ LRESULT wmColorChild (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT wmNotifyChild (int wParam, int lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	if (OS.COMCTL32_MAJOR >= 6) {
-		NMHDR hdr = new NMHDR ();
-		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 		switch (hdr.code) {
 			case OS.NM_RETURN:
 			case OS.NM_CLICK:
@@ -924,6 +922,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				break;
 		}
 	}
-	return super.wmNotifyChild (wParam, lParam);
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 }

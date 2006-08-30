@@ -3793,8 +3793,7 @@ LRESULT WM_NCPAINT (int wParam, int lParam) {
 LRESULT WM_NOTIFY (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-	Control control = display.getControl (hdr.hwndFrom);
-	return control != null ? control.wmNotifyChild (wParam, lParam) : null;
+	return wmNotify (hdr, wParam, lParam);
 }
 
 LRESULT WM_PAINT (int wParam, int lParam) {
@@ -4138,7 +4137,13 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT wmNotifyChild (int wParam, int lParam) {
+LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
+	Control control = display.getControl (hdr.hwndFrom);
+	if (control == null) return null;
+	return control.wmNotifyChild (hdr, wParam, lParam);
+}
+
+LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	return null;
 }
 

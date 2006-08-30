@@ -1293,9 +1293,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	return child.wmCommandChild (wParam, lParam);
 }
 
-LRESULT wmNotifyChild (int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	switch (hdr.code) {
 		case OS.TBN_DROPDOWN:
 			NMTOOLBAR lpnmtb = new NMTOOLBAR ();
@@ -1363,7 +1361,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 	}
-	return super.wmNotifyChild (wParam, lParam);
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
 }

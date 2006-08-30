@@ -5631,9 +5631,226 @@ LRESULT WM_MOVE (int wParam, int lParam) {
 	return super.WM_MOVE (wParam, lParam);
 }
 
-LRESULT WM_NOTIFY (int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  The receiver uses WM_RBUTTONDOWN
+	* to initiate a drag/drop operation depending on how the
+	* user moves the mouse.  If the user clicks the right button,
+	* without moving the mouse, the tree consumes the corresponding
+	* WM_RBUTTONUP.  The fix is to avoid calling the window proc for
+	* the tree.
+	*/
+	Display display = this.display;
+	display.captureChanged = false;
+	if (!sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam)) {
+		if (!display.captureChanged && !isDisposed ()) {
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		}
+		return LRESULT.ZERO;
+	}
+	/*
+	* This code is intentionally commented.
+	*/
+//	if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	setFocus ();
+	
+	/*
+	* Feature in Windows.  When the user selects a tree item
+	* with the right mouse button, the item remains selected
+	* only as long as the user does not release or move the
+	* mouse.  As soon as this happens, the selection snaps
+	* back to the previous selection.  This behavior can be
+	* observed in the Explorer but is not instantly apparent
+	* because the Explorer explicity sets the selection when
+	* the user chooses a menu item.  If the user cancels the
+	* menu, the selection snaps back.  The fix is to avoid
+	* calling the window proc and do the selection ourselves.
+	* This behavior is consistent with the table.
+	*/
+	TVHITTESTINFO lpht = new TVHITTESTINFO ();
+	lpht.x = (short) (lParam & 0xFFFF);
+	lpht.y = (short) (lParam >> 16);
+	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+	if (lpht.hItem != 0) {
+		int flags = OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL;
+		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & flags) != 0) {
+			if ((wParam & (OS.MK_CONTROL | OS.MK_SHIFT)) == 0) {
+				TVITEM tvItem = new TVITEM ();
+				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+				tvItem.stateMask = OS.TVIS_SELECTED;
+				tvItem.hItem = lpht.hItem;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
+					ignoreSelect = true;
+					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+					ignoreSelect = false;
+					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
+				}
+			}
+		}
+	}
+	return LRESULT.ZERO;
+}
+
+LRESULT WM_PAINT (int wParam, int lParam) {
+	if (shrink && !ignoreShrink) {
+		/* Resize the item array to fit the last item */
+		int count = items.length - 1;
+		while (count >= 0) {
+			if (items [count] != null) break;
+			--count;
+		}
+		count++;
+		if (items.length > 4 && items.length - count > 3) {
+			int length = Math.max (4, (count + 3) / 4 * 4);
+			TreeItem [] newItems = new TreeItem [length];
+			System.arraycopy (items, 0, newItems, 0, count);
+			items = newItems;
+		}
+		shrink = false;
+	}
+	if ((style & SWT.DOUBLE_BUFFERED) != 0 || findImageControl () != null) {
+		GC gc = null;
+		int paintDC = 0;
+		PAINTSTRUCT ps = new PAINTSTRUCT ();
+		if (hooks (SWT.Paint)) {
+			GCData data = new GCData ();
+			data.ps = ps;
+			data.hwnd = handle;
+			gc = GC.win32_new (this, data);
+			paintDC = gc.handle;
+		} else {
+			paintDC = OS.BeginPaint (handle, ps);
+		}
+
+		//TODO - only double buffer the damage
+//		int x = ps.left, y = ps.top;
+//		int width = ps.right - ps.left;
+//		int height = ps.bottom - ps.top;
+		forceResize ();
+		RECT rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		int x = rect.left, y = rect.top;
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+
+		int hDC = OS.CreateCompatibleDC (paintDC);
+		int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
+		int hOldBitmap = OS.SelectObject (hDC, hBitmap);
+		drawBackground (hDC, rect);
+		int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
+		OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
+		OS.SelectObject (hDC, hOldBitmap);
+		OS.DeleteObject (hBitmap);
+		OS.DeleteObject (hDC);
+		if (hooks (SWT.Paint)) {
+			Event event = new Event ();
+			event.gc = gc;
+			event.x = ps.left;
+			event.y = ps.top;
+			event.width = ps.right - ps.left;
+			event.height = ps.bottom - ps.top;
+			sendEvent (SWT.Paint, event);
+			// widget could be disposed at this point
+			event.gc = null;
+			gc.dispose ();
+		} else {
+			OS.EndPaint (handle, ps);
+		}
+		return new LRESULT (code);
+	}
+	return super.WM_PAINT (wParam, lParam);
+}
+
+LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  For some reason, when WM_PRINT is used
+	* to capture an image of a hierarchy that contains a tree with
+	* columns, the clipping that is used to stop the first column
+	* from drawing on top of subsequent columns stops the first
+	* column and the tree lines from drawing.  This does not happen
+	* during WM_PAINT.  The fix is to draw without clipping and
+	* then draw the rest of the columns on top.  Since the drawing
+	* is happening in WM_PRINTCLIENT, the redrawing is not visible.
+	*/
+	printClient = true;
+	int code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
+	printClient = false;
+	return new LRESULT (code);
+}
+
+LRESULT WM_SETFOCUS (int wParam, int lParam) {
+	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
+	if ((style & SWT.SINGLE) != 0) return result;
+	/*
+	* Feature in Windows.  When multiple item have
+	* the TVIS_SELECTED state, Windows redraws only
+	* the focused item in the color used to show the
+	* selection when the tree loses or gains focus.
+	* The fix is to force Windows to redraw all the
+	* visible items when focus is gained or lost.
+	*/
+	OS.InvalidateRect (handle, null, false);
+	return result;
+}
+
+LRESULT WM_SETFONT (int wParam, int lParam) {
+	LRESULT result = super.WM_SETFONT (wParam, lParam);
+	if (result != null) return result;
+	if (hwndHeader != 0) {
+		OS.SendMessage (hwndHeader, OS.WM_SETFONT, wParam, lParam);
+	}
+	if (itemToolTipHandle != 0) {
+		OS.SendMessage (itemToolTipHandle, OS.WM_SETFONT, wParam, lParam);
+	}
+	if (headerToolTipHandle != 0) {
+		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
+	}
+	return result;
+}
+
+LRESULT WM_SIZE (int wParam, int lParam) {
+	/*
+	 * Bug in Windows.  When TVS_NOHSCROLL is set when the
+	 * size of the tree is zero, the scrol bar is shown the
+	 * next time the tree resizes.  The fix is to hide the
+	 * scroll bar every time the tree is resized.
+	 */
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.TVS_NOHSCROLL) != 0) {
+		if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
+	}
+	if (ignoreResize) return null;
+	return super.WM_SIZE (wParam, lParam);
+}
+
+LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
+	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
+	if (result != null) return result;
+	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	return result;
+}
+
+LRESULT wmColorChild (int wParam, int lParam) {
+	if (findImageControl () != null) {
+		if (OS.COMCTL32_MAJOR < 6) {
+			return super.wmColorChild (wParam, lParam);
+		}
+		return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+	}
+	/*
+	* Feature in Windows.  Tree controls send WM_CTLCOLOREDIT
+	* to allow application code to change the default colors.
+	* This is undocumented and conflicts with TVM_SETTEXTCOLOR
+	* and TVM_SETBKCOLOR, the documented way to do this.  The
+	* fix is to ignore WM_CTLCOLOREDIT messages from trees.
+	*/
+	return null;
+}
+
+LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 	if (hdr.hwndFrom == itemToolTipHandle && hwndHeader != 0) {
 		if (!OS.IsWinCE) {
 			switch (hdr.code) {
@@ -5884,231 +6101,10 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			}
 		}
 	}
-	return super.WM_NOTIFY (wParam, lParam);
+	return super.wmNotify (hdr, wParam, lParam);
 }
 
-LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
-	/*
-	* Feature in Windows.  The receiver uses WM_RBUTTONDOWN
-	* to initiate a drag/drop operation depending on how the
-	* user moves the mouse.  If the user clicks the right button,
-	* without moving the mouse, the tree consumes the corresponding
-	* WM_RBUTTONUP.  The fix is to avoid calling the window proc for
-	* the tree.
-	*/
-	Display display = this.display;
-	display.captureChanged = false;
-	if (!sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam)) {
-		if (!display.captureChanged && !isDisposed ()) {
-			if (OS.GetCapture () != handle) OS.SetCapture (handle);
-		}
-		return LRESULT.ZERO;
-	}
-	/*
-	* This code is intentionally commented.
-	*/
-//	if (OS.GetCapture () != handle) OS.SetCapture (handle);
-	setFocus ();
-	
-	/*
-	* Feature in Windows.  When the user selects a tree item
-	* with the right mouse button, the item remains selected
-	* only as long as the user does not release or move the
-	* mouse.  As soon as this happens, the selection snaps
-	* back to the previous selection.  This behavior can be
-	* observed in the Explorer but is not instantly apparent
-	* because the Explorer explicity sets the selection when
-	* the user chooses a menu item.  If the user cancels the
-	* menu, the selection snaps back.  The fix is to avoid
-	* calling the window proc and do the selection ourselves.
-	* This behavior is consistent with the table.
-	*/
-	TVHITTESTINFO lpht = new TVHITTESTINFO ();
-	lpht.x = (short) (lParam & 0xFFFF);
-	lpht.y = (short) (lParam >> 16);
-	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-	if (lpht.hItem != 0) {
-		int flags = OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL;
-		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & flags) != 0) {
-			if ((wParam & (OS.MK_CONTROL | OS.MK_SHIFT)) == 0) {
-				TVITEM tvItem = new TVITEM ();
-				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-				tvItem.stateMask = OS.TVIS_SELECTED;
-				tvItem.hItem = lpht.hItem;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
-					ignoreSelect = true;
-					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
-					ignoreSelect = false;
-					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
-				}
-			}
-		}
-	}
-	return LRESULT.ZERO;
-}
-
-LRESULT WM_PAINT (int wParam, int lParam) {
-	if (shrink && !ignoreShrink) {
-		/* Resize the item array to fit the last item */
-		int count = items.length - 1;
-		while (count >= 0) {
-			if (items [count] != null) break;
-			--count;
-		}
-		count++;
-		if (items.length > 4 && items.length - count > 3) {
-			int length = Math.max (4, (count + 3) / 4 * 4);
-			TreeItem [] newItems = new TreeItem [length];
-			System.arraycopy (items, 0, newItems, 0, count);
-			items = newItems;
-		}
-		shrink = false;
-	}
-	if ((style & SWT.DOUBLE_BUFFERED) != 0 || findImageControl () != null) {
-		GC gc = null;
-		int paintDC = 0;
-		PAINTSTRUCT ps = new PAINTSTRUCT ();
-		if (hooks (SWT.Paint)) {
-			GCData data = new GCData ();
-			data.ps = ps;
-			data.hwnd = handle;
-			gc = GC.win32_new (this, data);
-			paintDC = gc.handle;
-		} else {
-			paintDC = OS.BeginPaint (handle, ps);
-		}
-
-		//TODO - only double buffer the damage
-//		int x = ps.left, y = ps.top;
-//		int width = ps.right - ps.left;
-//		int height = ps.bottom - ps.top;
-		forceResize ();
-		RECT rect = new RECT ();
-		OS.GetClientRect (handle, rect);
-		int x = rect.left, y = rect.top;
-		int width = rect.right - rect.left;
-		int height = rect.bottom - rect.top;
-
-		int hDC = OS.CreateCompatibleDC (paintDC);
-		int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
-		int hOldBitmap = OS.SelectObject (hDC, hBitmap);
-		drawBackground (hDC, rect);
-		int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
-		OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
-		OS.SelectObject (hDC, hOldBitmap);
-		OS.DeleteObject (hBitmap);
-		OS.DeleteObject (hDC);
-		if (hooks (SWT.Paint)) {
-			Event event = new Event ();
-			event.gc = gc;
-			event.x = ps.left;
-			event.y = ps.top;
-			event.width = ps.right - ps.left;
-			event.height = ps.bottom - ps.top;
-			sendEvent (SWT.Paint, event);
-			// widget could be disposed at this point
-			event.gc = null;
-			gc.dispose ();
-		} else {
-			OS.EndPaint (handle, ps);
-		}
-		return new LRESULT (code);
-	}
-	return super.WM_PAINT (wParam, lParam);
-}
-
-LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
-	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Feature in Windows.  For some reason, when WM_PRINT is used
-	* to capture an image of a hierarchy that contains a tree with
-	* columns, the clipping that is used to stop the first column
-	* from drawing on top of subsequent columns stops the first
-	* column and the tree lines from drawing.  This does not happen
-	* during WM_PAINT.  The fix is to draw without clipping and
-	* then draw the rest of the columns on top.  Since the drawing
-	* is happening in WM_PRINTCLIENT, the redrawing is not visible.
-	*/
-	printClient = true;
-	int code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
-	printClient = false;
-	return new LRESULT (code);
-}
-
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
-	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	if ((style & SWT.SINGLE) != 0) return result;
-	/*
-	* Feature in Windows.  When multiple item have
-	* the TVIS_SELECTED state, Windows redraws only
-	* the focused item in the color used to show the
-	* selection when the tree loses or gains focus.
-	* The fix is to force Windows to redraw all the
-	* visible items when focus is gained or lost.
-	*/
-	OS.InvalidateRect (handle, null, false);
-	return result;
-}
-
-LRESULT WM_SETFONT (int wParam, int lParam) {
-	LRESULT result = super.WM_SETFONT (wParam, lParam);
-	if (result != null) return result;
-	if (hwndHeader != 0) {
-		OS.SendMessage (hwndHeader, OS.WM_SETFONT, wParam, lParam);
-	}
-	if (itemToolTipHandle != 0) {
-		OS.SendMessage (itemToolTipHandle, OS.WM_SETFONT, wParam, lParam);
-	}
-	if (headerToolTipHandle != 0) {
-		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
-	}
-	return result;
-}
-
-LRESULT WM_SIZE (int wParam, int lParam) {
-	/*
-	 * Bug in Windows.  When TVS_NOHSCROLL is set when the
-	 * size of the tree is zero, the scrol bar is shown the
-	 * next time the tree resizes.  The fix is to hide the
-	 * scroll bar every time the tree is resized.
-	 */
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & OS.TVS_NOHSCROLL) != 0) {
-		if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
-	}
-	if (ignoreResize) return null;
-	return super.WM_SIZE (wParam, lParam);
-}
-
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
-	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
-	if (result != null) return result;
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
-	return result;
-}
-
-LRESULT wmColorChild (int wParam, int lParam) {
-	if (findImageControl () != null) {
-		if (OS.COMCTL32_MAJOR < 6) {
-			return super.wmColorChild (wParam, lParam);
-		}
-		return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-	}
-	/*
-	* Feature in Windows.  Tree controls send WM_CTLCOLOREDIT
-	* to allow application code to change the default colors.
-	* This is undocumented and conflicts with TVM_SETTEXTCOLOR
-	* and TVM_SETBKCOLOR, the documented way to do this.  The
-	* fix is to ignore WM_CTLCOLOREDIT messages from trees.
-	*/
-	return null;
-}
-
-LRESULT wmNotifyChild (int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	switch (hdr.code) {
 		case OS.TVN_GETDISPINFOA:
 		case OS.TVN_GETDISPINFOW: {
@@ -6453,7 +6449,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 	}
-	return super.wmNotifyChild (wParam, lParam);
+	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
 }
