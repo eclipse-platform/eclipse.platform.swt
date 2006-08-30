@@ -5404,10 +5404,11 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 					* from drawing the selection when LVS_EX_FULLROWSELECT
 					* is set.
 					*/
-					if (!tipRequested && string.length () == 0 && plvfi.iSubItem == 0) {
-						string = " "; //$NON-NLS-1$
-					}
 					int length = Math.min (string.length (), plvfi.cchTextMax - 1);
+					if (!tipRequested && plvfi.iSubItem == 0 && length == 0) {
+						string = " "; //$NON-NLS-1$
+						length = 1;
+					}
 					char [] chars = new char [length + 1];
 					string.getChars (0, length, chars, 0);
 					if (OS.IsUnicode) {
