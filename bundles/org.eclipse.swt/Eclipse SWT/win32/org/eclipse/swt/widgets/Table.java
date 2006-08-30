@@ -2212,6 +2212,16 @@ public int getTopIndex () {
 	return Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
 }
 
+boolean hasChildren () {
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	while (hwndChild != 0) {
+		if (hwndChild != hwndHeader) return true;
+		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+	}
+	return false;
+}
+
 int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
@@ -4461,6 +4471,23 @@ void unsubclass () {
 	}
 }
 
+void update (boolean all) {
+//	checkWidget ();
+	/*
+	* When there are many columns in a table, scrolling performance
+	* can be improved by temporarily unsubclassing the window proc
+	* so that internal messages are dispatched directly to the table.
+	* If the application expects to see a paint event or has a child
+	* whose font, foreground or background color might be needed,
+	* the window proc cannot be unsubclassed.
+	*/
+	if (!hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint)) {
+		unsubclass ();
+	}
+	super.update (all);
+	subclass ();
+}
+
 void updateHeaderToolTips () {
 	if (headerToolTipHandle == 0) return;
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
@@ -5032,10 +5059,8 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	* whose font, foreground or background color might be needed,
 	* the window proc cannot be unsubclassed.
 	*/
-	if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-		if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
-			unsubclass ();
-		}
+	if (!hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint)) {
+		unsubclass ();
 	}
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	subclass ();
@@ -5072,10 +5097,8 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	* whose font, foreground or background color might be needed,
 	* the window proc cannot be unsubclassed.
 	*/
-	if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-		if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
-			unsubclass ();
-		}
+	if (!hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint)) {
+		unsubclass ();
 	}
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	subclass ();
