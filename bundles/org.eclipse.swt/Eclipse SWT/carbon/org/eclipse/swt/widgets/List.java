@@ -674,10 +674,10 @@ public int [] getSelectionIndices () {
 		OS.memcpy (result, ptr, 4);
 		OS.memcpy (result, result [0], count * 4);
 		OS.HUnlock (ptr);
-		for (int i=0, end=count / 2 + 1; i<end; i++) {
-			int temp = result [i];
-			result [i] = result [count - i - 1] - 1;
-			result [count - i - 1] = temp - 1;
+		for (int start=0, end=count - 1; start<=end; start++, end--) {
+			int temp = result [start];
+			result [start] = result [end] - 1;
+			result [end] = temp - 1;
 		}
 	}
 	OS.DisposeHandle (ptr);
