@@ -5410,7 +5410,8 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 						length = 1;
 					}
 					if (display.tableBuffer == null) display.tableBuffer = new char [plvfi.cchTextMax];
-					string.getChars (0, length++, display.tableBuffer, 0);
+					string.getChars (0, length, display.tableBuffer, 0);
+					display.tableBuffer [length++] = 0;
 					if (OS.IsUnicode) {
 						OS.MoveMemory (plvfi.pszText, display.tableBuffer, length * 2);
 					} else {
