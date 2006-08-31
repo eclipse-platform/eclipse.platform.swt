@@ -1869,7 +1869,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	* order to support Activate and Deactivate
 	* events for embedded widgets that have
 	* their own event loop.  In that case, the
-	* cursor location reported by GetMessagePos
+	* cursor location reported by GetMessagePos()
 	* is the one for our event loop, not the
 	* embedded widget's event loop.
 	*/
@@ -2020,21 +2020,22 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 			Control control = display.getControl (wParam);
 			if (control == this && cursor != null) {
 				POINT pt = new POINT ();
-				if (OS.GetCursorPos (pt)) {
-					OS.ScreenToClient (handle, pt);
-					RECT rect = new RECT ();
-					OS.GetClientRect (handle, rect);
-					if (OS.PtInRect (rect, pt)) {
-						OS.SetCursor (cursor.handle);
-						switch (msg) {
-							case OS.WM_LBUTTONDOWN:
-							case OS.WM_RBUTTONDOWN:
-							case OS.WM_MBUTTONDOWN:
-							case OS.WM_XBUTTONDOWN:
-								OS.MessageBeep (OS.MB_OK);
-						}
-						return LRESULT.ONE;
+				int pos = OS.GetMessagePos ();
+				pt.x = (short) (pos & 0xFFFF);
+				pt.y = (short) (pos >> 16);
+				OS.ScreenToClient (handle, pt);
+				RECT rect = new RECT ();
+				OS.GetClientRect (handle, rect);
+				if (OS.PtInRect (rect, pt)) {
+					OS.SetCursor (cursor.handle);
+					switch (msg) {
+						case OS.WM_LBUTTONDOWN:
+						case OS.WM_RBUTTONDOWN:
+						case OS.WM_MBUTTONDOWN:
+						case OS.WM_XBUTTONDOWN:
+							OS.MessageBeep (OS.MB_OK);
 					}
+					return LRESULT.ONE;
 				}
 			}
 		}
