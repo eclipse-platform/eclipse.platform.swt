@@ -56,9 +56,8 @@ public void paint(GC gc, int width, int height) {
         radial[i*2+1] = (int)((1+Math.sin(r))*centerY);
         pos = (pos + POINTS/2) % POINTS;
     }
-	Display display = Display.getCurrent();
 	gc.setFillRule(fillRuleCb.getSelectionIndex() != 0 ? SWT.FILL_WINDING : SWT.FILL_EVEN_ODD);
-	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+	gc.setBackground(gc.getDevice().getSystemColor(SWT.COLOR_WHITE));
     gc.fillPolygon(radial);
     gc.drawPolygon(radial);
 }

@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
-import java.util.Random;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 
 public class IntroTab extends AnimatedGraphicsTab {
 	
@@ -70,24 +69,24 @@ public void next(int width, int height) {
 
 public void paint(GC gc, int width, int height) {
 	if (!example.checkAdvancedGraphics()) return;
-	Display display = Display.getCurrent();
+	Device device = gc.getDevice();
 	if (image == null) {
-		image = example.loadImage(Display.getCurrent(), "irmaos.jpg");
+		image = example.loadImage(device, "irmaos.jpg");
 		Rectangle rect = image.getBounds();
-		FontData fd = display.getSystemFont().getFontData()[0];
-		font = new Font(display, fd.getName(), rect.height / 4, SWT.BOLD);
+		FontData fd = device.getSystemFont().getFontData()[0];
+		font = new Font(device, fd.getName(), rect.height / 4, SWT.BOLD);
 		gc.setFont(font);
 		Point size = gc.stringExtent(text);
 		textWidth = size.x;
 		textHeight = size.y;
 	}
-	Path path = new Path(display);
+	Path path = new Path(device);
 	path.addString(text, x, y, font);
 	gc.setClipping(path);
 	Rectangle rect = image.getBounds();
 	gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, width, height);
 	gc.setClipping((Rectangle)null);
-	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+	gc.setForeground(device.getSystemColor(SWT.COLOR_BLUE));
 	gc.drawPath(path);
 	path.dispose();
 }

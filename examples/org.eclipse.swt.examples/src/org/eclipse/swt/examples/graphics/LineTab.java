@@ -10,12 +10,16 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.*;
 
 public class LineTab extends GraphicsTab {
-	
+
 public LineTab(GraphicsExample example) {
 	super(example);
+}
+
+public String getCategory() {
+	return GraphicsExample.getResourceString("Lines"); //$NON-NLS-1$
 }
 
 public String getText() {

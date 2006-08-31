@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 
 public class BlackHoleTab extends AnimatedGraphicsTab {
 	
@@ -32,8 +31,8 @@ public void next(int width, int height) {
 }
 
 public void paint(GC gc, int width, int height) {
-	Display display = Display.getCurrent();
-	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+	Device device = gc.getDevice();
+	gc.setBackground(device.getSystemColor(SWT.COLOR_BLACK));
 	gc.fillOval((width - size) / 2, (height - size) / 2, size, size);
 }
 }
