@@ -445,6 +445,7 @@ public class OS extends Platform {
 	public static final int CS_HREDRAW = 0x2;
 	public static final int CS_VREDRAW = 0x1;
 	public static final int CW_USEDEFAULT = 0x80000000;
+	public static final String DATETIMEPICK_CLASS = "SysDateTimePick32"; //$NON-NLS-1$
 	public static final int DCX_CACHE = 0x2;
 	public static final int DCX_CLIPCHILDREN = 0x8;
 	public static final int DCX_CLIPSIBLINGS = 0x10;
@@ -491,6 +492,17 @@ public class OS extends Platform {
 	public static final int DT_TOP = 0;
 	public static final int DT_VCENTER = 4;
 	public static final int DT_WORDBREAK = 0x10;
+	public static final int DTM_FIRST = 0x1000;
+	public static final int DTM_GETSYSTEMTIME = DTM_FIRST + 1; 
+	public static final int DTM_SETFORMAT = IsUnicode ? DTM_FIRST + 50 : DTM_FIRST + 5;
+	public static final int DTM_SETSYSTEMTIME = DTM_FIRST + 2;
+	public static final int DTN_FIRST = 0xFFFFFD08;
+	public static final int DTN_DATETIMECHANGE = DTN_FIRST + 1;
+	public static final int DTS_LONGDATEFORMAT = 0x0004;
+	public static final int DTS_SHORTDATECENTURYFORMAT = 0x000C;
+	public static final int DTS_SHORTDATEFORMAT = 0x0000;
+	public static final int DTS_TIMEFORMAT = 0x0009;
+	public static final int DTS_UPDOWN = 0x0001;
 	public static final int EBP_NORMALGROUPBACKGROUND = 5;
 	public static final int EBP_NORMALGROUPCOLLAPSE = 6;
 	public static final int EBP_NORMALGROUPEXPAND = 7;
@@ -574,6 +586,7 @@ public class OS extends Platform {
 	public static final int GBS_DISABLED = 2;
 	public static final int GCS_COMPSTR = 0x8;
 	public static final int GCS_RESULTSTR = 0x800;
+	public static final int GDT_VALID = 0;
 	public static final int GLPS_CLOSED = 1;
 	public static final int GLPS_OPENED = 2;
 	public static final int GM_ADVANCED = 2;
@@ -929,6 +942,12 @@ public class OS extends Platform {
 	public static final int MB_TOPMOST = 0x00040000;
 	public static final int MB_YESNO = 0x4;
 	public static final int MB_YESNOCANCEL = 0x3;
+	public static final int MCM_FIRST = 0x1000;
+	public static final int MCM_GETCURSEL = MCM_FIRST + 1;
+	public static final int MCM_SETCURSEL = MCM_FIRST + 2;
+	public static final int MCN_FIRST = 0xFFFFFD12;
+	public static final int MCN_SELCHANGE = MCN_FIRST + 1; 
+	public static final int MCM_GETMINREQRECT = MCM_FIRST + 9;
 	public static final int MDIS_ALLCHILDSTYLES = 0x0001;
 	public static final int MFS_CHECKED = 0x8;
 	public static final int MFS_DISABLED = 0x3;
@@ -968,6 +987,7 @@ public class OS extends Platform {
 	public static final int MNS_CHECKORBMP = 0x4000000;
 	public static final int MONITOR_DEFAULTTONEAREST = 0x2;
 	public static final int MONITORINFOF_PRIMARY = 0x1;
+	public static final String MONTHCAL_CLASS = "SysMonthCal32"; //$NON-NLS-1$
 	public static final int MOUSEEVENTF_ABSOLUTE = 0x8000;
 	public static final int MOUSEEVENTF_LEFTDOWN = 0x0002; 
 	public static final int MOUSEEVENTF_LEFTUP = 0x0004; 
@@ -2570,6 +2590,11 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, RECT lParam)
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int SendMessage (int hWnd, int Msg, int wParam, SYSTEMTIME lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int SendMessage (int hWnd, int Msg, int wParam, TBBUTTON lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -3274,6 +3299,7 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, MARG
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, POINT lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, REBARBANDINFO lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, RECT lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, SYSTEMTIME lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TBBUTTON lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TBBUTTONINFO lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TCITEM lParam);
@@ -3300,6 +3326,7 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, MARG
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, POINT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, REBARBANDINFO lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, RECT lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, SYSTEMTIME lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TBBUTTON lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TBBUTTONINFO lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TCITEM lParam);

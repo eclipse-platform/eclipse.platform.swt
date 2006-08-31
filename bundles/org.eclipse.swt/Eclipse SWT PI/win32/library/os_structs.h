@@ -1175,6 +1175,18 @@ void setSIZEFields(JNIEnv *env, jobject lpObject, SIZE *lpStruct);
 #define SIZE_sizeof() 0
 #endif
 
+#ifndef NO_SYSTEMTIME
+void cacheSYSTEMTIMEFields(JNIEnv *env, jobject lpObject);
+SYSTEMTIME *getSYSTEMTIMEFields(JNIEnv *env, jobject lpObject, SYSTEMTIME *lpStruct);
+void setSYSTEMTIMEFields(JNIEnv *env, jobject lpObject, SYSTEMTIME *lpStruct);
+#define SYSTEMTIME_sizeof() sizeof(SYSTEMTIME)
+#else
+#define cacheSYSTEMTIMEFields(a,b)
+#define getSYSTEMTIMEFields(a,b,c) NULL
+#define setSYSTEMTIMEFields(a,b,c)
+#define SYSTEMTIME_sizeof() 0
+#endif
+
 #ifndef NO_TBBUTTON
 void cacheTBBUTTONFields(JNIEnv *env, jobject lpObject);
 TBBUTTON *getTBBUTTONFields(JNIEnv *env, jobject lpObject, TBBUTTON *lpStruct);

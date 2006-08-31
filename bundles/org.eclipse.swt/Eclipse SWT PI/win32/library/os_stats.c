@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 696;
-int OS_nativeFunctionCallCount[696];
+int OS_nativeFunctionCount = 698;
+int OS_nativeFunctionCallCount[698];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -577,6 +577,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SIZE_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2",
@@ -603,6 +604,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SIZE_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TCITEM_2",

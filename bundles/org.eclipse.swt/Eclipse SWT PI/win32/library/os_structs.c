@@ -5261,6 +5261,58 @@ void setSIZEFields(JNIEnv *env, jobject lpObject, SIZE *lpStruct)
 }
 #endif
 
+#ifndef NO_SYSTEMTIME
+typedef struct SYSTEMTIME_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID wYear, wMonth, wDayOfWeek, wDay, wHour, wMinute, wSecond, wMilliseconds;
+} SYSTEMTIME_FID_CACHE;
+
+SYSTEMTIME_FID_CACHE SYSTEMTIMEFc;
+
+void cacheSYSTEMTIMEFields(JNIEnv *env, jobject lpObject)
+{
+	if (SYSTEMTIMEFc.cached) return;
+	SYSTEMTIMEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SYSTEMTIMEFc.wYear = (*env)->GetFieldID(env, SYSTEMTIMEFc.clazz, "wYear", "S");
+	SYSTEMTIMEFc.wMonth = (*env)->GetFieldID(env, SYSTEMTIMEFc.clazz, "wMonth", "S");
+	SYSTEMTIMEFc.wDayOfWeek = (*env)->GetFieldID(env, SYSTEMTIMEFc.clazz, "wDayOfWeek", "S");
+	SYSTEMTIMEFc.wDay = (*env)->GetFieldID(env, SYSTEMTIMEFc.clazz, "wDay", "S");
+	SYSTEMTIMEFc.wHour = (*env)->GetFieldID(env, SYSTEMTIMEFc.clazz, "wHour", "S");
+	SYSTEMTIMEFc.wMinute = (*env)->GetFieldID(env, SYSTEMTIMEFc.clazz, "wMinute", "S");
+	SYSTEMTIMEFc.wSecond = (*env)->GetFieldID(env, SYSTEMTIMEFc.clazz, "wSecond", "S");
+	SYSTEMTIMEFc.wMilliseconds = (*env)->GetFieldID(env, SYSTEMTIMEFc.clazz, "wMilliseconds", "S");
+	SYSTEMTIMEFc.cached = 1;
+}
+
+SYSTEMTIME *getSYSTEMTIMEFields(JNIEnv *env, jobject lpObject, SYSTEMTIME *lpStruct)
+{
+	if (!SYSTEMTIMEFc.cached) cacheSYSTEMTIMEFields(env, lpObject);
+	lpStruct->wYear = (*env)->GetShortField(env, lpObject, SYSTEMTIMEFc.wYear);
+	lpStruct->wMonth = (*env)->GetShortField(env, lpObject, SYSTEMTIMEFc.wMonth);
+	lpStruct->wDayOfWeek = (*env)->GetShortField(env, lpObject, SYSTEMTIMEFc.wDayOfWeek);
+	lpStruct->wDay = (*env)->GetShortField(env, lpObject, SYSTEMTIMEFc.wDay);
+	lpStruct->wHour = (*env)->GetShortField(env, lpObject, SYSTEMTIMEFc.wHour);
+	lpStruct->wMinute = (*env)->GetShortField(env, lpObject, SYSTEMTIMEFc.wMinute);
+	lpStruct->wSecond = (*env)->GetShortField(env, lpObject, SYSTEMTIMEFc.wSecond);
+	lpStruct->wMilliseconds = (*env)->GetShortField(env, lpObject, SYSTEMTIMEFc.wMilliseconds);
+	return lpStruct;
+}
+
+void setSYSTEMTIMEFields(JNIEnv *env, jobject lpObject, SYSTEMTIME *lpStruct)
+{
+	if (!SYSTEMTIMEFc.cached) cacheSYSTEMTIMEFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, SYSTEMTIMEFc.wYear, (jshort)lpStruct->wYear);
+	(*env)->SetShortField(env, lpObject, SYSTEMTIMEFc.wMonth, (jshort)lpStruct->wMonth);
+	(*env)->SetShortField(env, lpObject, SYSTEMTIMEFc.wDayOfWeek, (jshort)lpStruct->wDayOfWeek);
+	(*env)->SetShortField(env, lpObject, SYSTEMTIMEFc.wDay, (jshort)lpStruct->wDay);
+	(*env)->SetShortField(env, lpObject, SYSTEMTIMEFc.wHour, (jshort)lpStruct->wHour);
+	(*env)->SetShortField(env, lpObject, SYSTEMTIMEFc.wMinute, (jshort)lpStruct->wMinute);
+	(*env)->SetShortField(env, lpObject, SYSTEMTIMEFc.wSecond, (jshort)lpStruct->wSecond);
+	(*env)->SetShortField(env, lpObject, SYSTEMTIMEFc.wMilliseconds, (jshort)lpStruct->wMilliseconds);
+}
+#endif
+
 #ifndef NO_TBBUTTON
 typedef struct TBBUTTON_FID_CACHE {
 	int cached;
