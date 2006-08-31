@@ -119,6 +119,18 @@ fail:
 }
 #endif
 
+#ifndef NO_AnimateWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(AnimateWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, AnimateWindow_FUNC);
+	rc = (jboolean)AnimateWindow((HWND)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, AnimateWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Arc
 JNIEXPORT jboolean JNICALL OS_NATIVE(Arc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)

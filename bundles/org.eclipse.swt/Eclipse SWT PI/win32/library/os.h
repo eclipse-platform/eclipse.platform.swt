@@ -132,6 +132,7 @@
 #define NO_Arc
 #define NO_AttachThreadInput
 #define NO_AlphaBlend
+#define NO_AnimateWindow
 #define NO_BeginPath
 #define NO_CallNextHookEx
 #define NO_CallWindowProcA

@@ -26,6 +26,7 @@ typedef enum {
 	ActivateKeyboardLayout_FUNC,
 	AdjustWindowRectEx_FUNC,
 	AlphaBlend_FUNC,
+	AnimateWindow_FUNC,
 	Arc_FUNC,
 	AttachThreadInput_FUNC,
 	BeginDeferWindowPos_FUNC,

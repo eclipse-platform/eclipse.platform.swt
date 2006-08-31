@@ -205,6 +205,8 @@ public class OS extends Platform {
 	public static final int ABS_UPHOT = 2;
 	public static final int ABS_UPNORMAL = 1;
 	public static final int ABS_UPPRESSED = 3;
+	public static final int AC_SRC_OVER = 0;
+	public static final int AC_SRC_ALPHA = 1;
 	public static final int ACTCTX_FLAG_PROCESSOR_ARCHITECTURE_VALID = 0x00000001;
 	public static final int ACTCTX_FLAG_LANGID_VALID = 0x00000002;
 	public static final int ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID = 0x00000004;
@@ -212,9 +214,16 @@ public class OS extends Platform {
 	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
 	public static final int ACTCTX_FLAG_APPLICATION_NAME_VALID = 0x00000020;
 	public static final int ACTCTX_FLAG_HMODULE_VALID = 0x00000080;
-	public static final int AC_SRC_OVER = 0;
-	public static final int AC_SRC_ALPHA = 1;
 	public static final int ALTERNATE = 1;
+	public static final int AW_SLIDE = 0x00040000;
+	public static final int AW_ACTIVATE = 0x00020000;
+	public static final int AW_BLEND = 0x00080000;
+	public static final int AW_HIDE = 0x00010000;
+	public static final int AW_CENTER = 0x00000010;
+	public static final int AW_HOR_POSITIVE = 0x00000001;
+	public static final int AW_HOR_NEGATIVE = 0x00000002;
+	public static final int AW_VER_POSITIVE = 0x00000004;
+	public static final int AW_VER_NEGATIVE = 0x00000008;
 	public static final int BDR_RAISEDOUTER = 0x0001;
 	public static final int BDR_SUNKENOUTER = 0x0002;
 	public static final int BDR_RAISEDINNER = 0x0004;
@@ -2719,6 +2728,7 @@ public static final native boolean ActivateActCtx (int hActCtx, int [] lpCookie)
 public static final native int ActivateKeyboardLayout(int hkl, int Flags);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
 public static final native boolean AlphaBlend(int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
+public static final native boolean AnimateWindow(int hwnd, int dwTime, int dwFlags);
 public static final native boolean Arc (int hdc,int nLeftRect,int nTopRect,int nRightRect,int nBottomRect,int nXStartArc,int nYStartArc,int nXEndArc,int nYEndArc);
 public static final native boolean AttachThreadInput (int idAttach, int idAttachTo, boolean fAttach);
 public static final native int BeginDeferWindowPos (int nNumWindows);
