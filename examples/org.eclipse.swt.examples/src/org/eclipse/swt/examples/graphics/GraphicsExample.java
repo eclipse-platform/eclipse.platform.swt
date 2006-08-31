@@ -14,7 +14,6 @@ import java.io.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -370,8 +369,8 @@ void createLeftPanel(Composite parentComp) {
 	tabDesc.setLayoutData(data);
 	
 	// add listener
-	hSash.addSelectionListener (new SelectionAdapter () {
-		public void widgetSelected (SelectionEvent event) {
+	hSash.addListener (SWT.Selection, new Listener () {
+		public void handleEvent (Event event) {
 			Rectangle rect = vSash.getParent().getClientArea();
 			event.y = Math.min (Math.max (event.y, 40), rect.height - 40);
 			if (event.detail != SWT.DRAG) {
