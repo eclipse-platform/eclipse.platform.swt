@@ -119,7 +119,7 @@ public class ColorMenu {
 	/** Adds the colors items to the menu. */
 	private void addColorItems(Menu menu, MenuItemListener menuListener,
 			ArrayList menuResources) {
-		Display display = Display.getCurrent();
+		Display display = menu.getDisplay();
 		
 		if (menu.getItemCount() != 0) {
 			new MenuItem(menu, SWT.SEPARATOR);
@@ -157,6 +157,7 @@ public class ColorMenu {
 			Image image = GraphicsExample.createImage(display, color);
 			gb.setBgColor1(color);
 			gb.setBgImage(image);
+			gb.setThumbNail(image);
 			menuResources.add(image);
 			item.setImage(image);
 			item.setData(gb);
@@ -173,7 +174,7 @@ public class ColorMenu {
 	/** Adds the pattern items to the menu. */
 	private void addPatternItems(Menu menu, MenuItemListener menuListener,
 			ArrayList menuResources) {
-		Display display = Display.getCurrent();
+		Display display = menu.getDisplay();
 		
 		if (menu.getItemCount() != 0) {
 			new MenuItem(menu, SWT.SEPARATOR);
@@ -201,6 +202,7 @@ public class ColorMenu {
 			Image image = images[i];
 			GraphicsBackground gb = new GraphicsBackground();			
 			gb.setBgImage(image);
+			gb.setThumbNail(image);
 			item.setImage(image);
 			item.setData(gb);
 		}
@@ -252,7 +254,7 @@ public class ColorMenu {
 	static class MenuItemListener implements Listener {
 		MenuItem customColorMI, customPatternMI, customGradientMI;	// custom menu items
 		Control parent;
-		Image customImage;
+		Image customImage, customImageThumb;
 		Color customColor;
 		GraphicsBackground background;	// used to store information about the background
 		ColorListener colorListener;
@@ -276,7 +278,7 @@ public class ColorMenu {
 		public ArrayList getMenuResources() {
 			return resources;
 		}
-		
+
 		public void handleEvent(Event event) {
 			switch (event.type) {
 
@@ -287,7 +289,7 @@ public class ColorMenu {
 				resources = new ArrayList();
 				break;
 			case SWT.Selection:
-				Display display = Display.getCurrent();
+				Display display = event.display;
 				MenuItem item = (MenuItem) event.widget;
 				if (customColorMI == item) {
 					ColorDialog dialog = new ColorDialog(parent.getShell());
@@ -304,9 +306,12 @@ public class ColorMenu {
 					customImage = GraphicsExample.createImage(display, customColor);
 					GraphicsBackground gb = new GraphicsBackground();
 					gb.setBgImage(customImage);
+					gb.setThumbNail(customImage);
 					gb.setBgColor1(customColor);
 					item.setData(gb);
 					item.setImage(customImage);
+					resources.add(customColor);
+					resources.add(customImage);
 				} else if (customPatternMI == item) {
 					FileDialog dialog = new FileDialog(parent.getShell());
 					dialog.setFilterExtensions(new String[] { "*.jpg", "*.gif",	"*.*" });
@@ -316,20 +321,26 @@ public class ColorMenu {
 					if (customGradientMI != null) customGradientMI.setImage(null);
 					if (customColor != null) customColor.dispose();
 					if (customImage != null) customImage.dispose();
+					if (customImageThumb != null) customImageThumb.dispose();
 					customImage = new Image(display, name);
+					customImageThumb = GraphicsExample.createThumbnail(display, name);
 					GraphicsBackground gb = new GraphicsBackground();
 					gb.setBgImage(customImage);
+					gb.setThumbNail(customImageThumb);
 					item.setData(gb);
-					item.setImage(customImage);
+					item.setImage(customImageThumb);
+					resources.add(customImageThumb);
 				} else if (customGradientMI == item) {
 					GradientDialog dialog = new GradientDialog(parent.getShell());
 					if (background != null) {
-					dialog.setFirstColor(background.getBgColor1());
-					dialog.setSecondColor(background.getBgColor2());
-					}
+						if (background.getBgColor1() != null)
+							dialog.setFirstRGB(background.getBgColor1().getRGB());
+						if (background.getBgColor2() != null)
+							dialog.setSecondRGB(background.getBgColor2().getRGB());						
+					}					
 					if (dialog.open() != SWT.OK) return;
-					Color colorA = dialog.getFirstColor();
-					Color colorB = dialog.getSecondColor();
+					Color colorA = new Color(display, dialog.getFirstRGB());
+					Color colorB = new Color(display, dialog.getSecondRGB());
 					if (colorA == null || colorB == null) return;
 					if (customColorMI != null) customColorMI.setImage(null);
 					if (customPatternMI != null) customPatternMI.setImage(null);
@@ -339,12 +350,14 @@ public class ColorMenu {
 							colorB, 16, 16);
 					GraphicsBackground gb = new GraphicsBackground();
 					gb.setBgImage(customImage);
+					gb.setThumbNail(customImage);
 					gb.setBgColor1(colorA);
 					gb.setBgColor2(colorB);
 					item.setData(gb);
 					item.setImage(customImage);
 					resources.add(colorA);
 					resources.add(colorB);
+					resources.add(customImage);
 				} else {
 					if (customColorMI != null) customColorMI.setImage(null);
 					if (customPatternMI != null) customPatternMI.setImage(null);

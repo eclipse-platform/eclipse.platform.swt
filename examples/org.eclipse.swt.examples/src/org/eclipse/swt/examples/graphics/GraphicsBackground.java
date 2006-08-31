@@ -20,11 +20,13 @@ import org.eclipse.swt.graphics.Image;
 public class GraphicsBackground {
 	
 	private Image bgImage;
+	private Image thumbNail;
 	private Color bgColor1;
 	private Color bgColor2;
 	
 	public GraphicsBackground() {
 		bgImage = null;
+		thumbNail = null;
 		bgColor1 = null;
 		bgColor2 = null;
 	}
@@ -51,5 +53,13 @@ public class GraphicsBackground {
 
 	public void setBgColor2(Color bgColor2) {
 		this.bgColor2 = bgColor2;
-	}	
+	}
+
+	public Image getThumbNail() {
+		return thumbNail;
+	}
+
+	public void setThumbNail(Image thumbNail) {
+		this.thumbNail = thumbNail;
+	}
 }

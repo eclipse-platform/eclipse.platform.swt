@@ -92,7 +92,7 @@ public GraphicsExample(final Composite parent) {
 boolean checkAdvancedGraphics() {
 	if (advanceGraphicsInit) return advanceGraphics;
 	advanceGraphicsInit = true;
-	Display display = Display.getCurrent();
+	Display display = parent.getDisplay();
 	try {
 		Path path = new Path(display);
 		path.dispose();
@@ -142,10 +142,11 @@ void createCanvas(Composite parent) {
  * initialized, the image will be applied as a background pattern.
  */
 void paintBackground(GC gc, Rectangle rect) {
+	Device device = gc.getDevice();
 	Pattern pattern = null;
 	if (background.getBgColor1() != null) {
 		if (background.getBgColor2() != null) { // gradient
-			pattern = new Pattern(Display.getCurrent(), 0, 0, rect.width, 
+			pattern = new Pattern(device, 0, 0, rect.width, 
 					rect.height,
 					background.getBgColor1(),
 					background.getBgColor2());
@@ -154,7 +155,7 @@ void paintBackground(GC gc, Rectangle rect) {
 			gc.setBackground(background.getBgColor1());
 		}
 	} else if (background.getBgImage() != null) {		// image
-		pattern = new Pattern(Display.getCurrent(), background.getBgImage());
+		pattern = new Pattern(device, background.getBgImage());
 		gc.setBackgroundPattern(pattern);
 	}
 	gc.fillRectangle(rect);
@@ -202,18 +203,18 @@ void createToolBar(final Composite parent) {
 	backMenu = colorMenu.createMenu(parent, new ColorListener() {
 		public void setColor(GraphicsBackground gb) {
 			background = gb;
-			backItem.setImage(gb.getBgImage());
+			backItem.setImage(gb.getThumbNail());
 			if (canvas != null) canvas.redraw();
 		}
 	});
 	
 	// initialize the background to the first item in the menu
-	background =(GraphicsBackground)backMenu.getItem(0).getData();
+	background = (GraphicsBackground)backMenu.getItem(0).getData();
 	
 	// background tool item
 	backItem = new ToolItem(toolBar, SWT.PUSH);
 	backItem.setText(getResourceString("Background")); //$NON-NLS-1$
-	backItem.setImage(background.getBgImage());
+	backItem.setImage(background.getThumbNail());
 	backItem.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			if (event.widget == backItem) {
@@ -234,18 +235,44 @@ void createToolBar(final Composite parent) {
 }
 
 /**
+ * Creates and returns a thumbnail image.
+ * 
+ * @param device
+ * 			a device
+ * @param name
+ * 			filename of the image
+ */
+static Image createThumbnail(Device device, String name) {
+	Image image = new Image(device, name);
+	Rectangle src = image.getBounds();
+	Image result = null;
+	if (src.width != 16 || src.height != 16) {
+		result = new Image(device, 16, 16);
+		GC gc = new GC(result);
+		Rectangle dest = result.getBounds();
+		gc.drawImage(image, src.x, src.y, src.width, src.height, dest.x, dest.y, dest.width, dest.height);
+		gc.dispose();				
+	}
+	if (result != null) {
+		image.dispose();
+		return result;
+	}
+	return image;
+}
+
+/**
  * Creates an image based on a gradient pattern made up of two colors.
  * 
- * @param display - The Display
+ * @param device - The Device
  * @param color1 - The first color used to create the image
  * @param color2 - The second color used to create the image
  * 
  * */
-static Image createImage(Display display, Color color1, Color color2, int width, int height) {
-	Image image = new Image(display, width, height);
+static Image createImage(Device device, Color color1, Color color2, int width, int height) {
+	Image image = new Image(device, width, height);
 	GC gc = new GC(image);
 	Rectangle rect = image.getBounds();
-	Pattern pattern = new Pattern(display, rect.x, rect.y, rect.width - 1,
+	Pattern pattern = new Pattern(device, rect.x, rect.y, rect.width - 1,
 				rect.height - 1, color1, color2);
 	gc.setBackgroundPattern(pattern);
 	gc.fillRectangle(rect);
@@ -258,18 +285,18 @@ static Image createImage(Display display, Color color1, Color color2, int width,
 /**
  * Creates an image based on the color provided and returns it.
  * 
- * @param display - The Display
+ * @param device - The Device
  * @param color - The color used to create the image
  * 
  * */
-static Image createImage(Display display, Color color) {
-	Image image = new Image(display, 16, 16);
+static Image createImage(Device device, Color color) {
+	Image image = new Image(device, 16, 16);
 	GC gc = new GC(image);
 	gc.setBackground(color);
 	Rectangle rect = image.getBounds();
 	gc.fillRectangle(rect);
-	if (color.equals(display.getSystemColor(SWT.COLOR_BLACK))) {
-		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+	if (color.equals(device.getSystemColor(SWT.COLOR_BLACK))) {
+		gc.setForeground(device.getSystemColor(SWT.COLOR_WHITE));
 	}
 	gc.drawRectangle(rect.x, rect.y, rect.width - 1, rect.height - 1);
 	gc.dispose();
@@ -382,12 +409,12 @@ static String getResourceString(String key) {
 	}			
 }
 
-static Image loadImage (Display display, Class clazz, String string) {
+static Image loadImage (Device device, Class clazz, String string) {
 	InputStream stream = clazz.getResourceAsStream (string);
 	if (stream == null) return null;
 	Image image = null;
 	try {
-		image = new Image (display, stream);
+		image = new Image (device, stream);
 	} catch (SWTException ex) {
 	} finally {
 		try {
@@ -397,8 +424,8 @@ static Image loadImage (Display display, Class clazz, String string) {
 	return image;
 }
 
-Image loadImage(Display display, String name) {
-	Image image = loadImage(display, GraphicsExample.class, name);
+Image loadImage(Device device, String name) {
+	Image image = loadImage(device, GraphicsExample.class, name);
 	if (image != null) resources.add(image);
 	return image;
 }
@@ -455,7 +482,7 @@ public void setTab(GraphicsTab tab) {
  * Starts the animation if the animate flag is set.
  */
 void startAnimationTimer() {
-	final Display display = Display.getCurrent();
+	final Display display = parent.getDisplay();
 	display.timerExec(TIMER, new Runnable() {
 		public void run() {
 			if (canvas.isDisposed()) return;

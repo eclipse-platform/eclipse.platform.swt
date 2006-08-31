@@ -32,7 +32,7 @@ public class GradientDialog extends Dialog {
 
 	Menu menu1, menu2;
 	
-	Color color1, color2;	// first and second color used in gradient
+	RGB rgb1, rgb2;			// first and second color used in gradient
 	int returnVal; 			// value to be returned by open(), set to SWT.OK 
 							// if the ok button has been pressed		
 	ArrayList resources;
@@ -43,7 +43,7 @@ public class GradientDialog extends Dialog {
 	
 	public GradientDialog(Shell parent, int style) {
 		super(parent, style);
-		color1 = color2 = null;
+		rgb1 = rgb2 = null;
 		returnVal = SWT.CANCEL;
 		resources = new ArrayList();
 	}
@@ -107,7 +107,7 @@ public class GradientDialog extends Dialog {
 	 * Creates the controls of the dialog.
 	 * */
 	public void createDialogControls(final Shell parent) {
-		final Display display = Display.getCurrent();
+		final Display display = parent.getDisplay();
 		
 		// message
 		Label message = new Label(parent, SWT.NONE); 
@@ -117,9 +117,9 @@ public class GradientDialog extends Dialog {
 		message.setLayoutData(gridData);
 		
 		// default colors are white and black
-		if (color1 == null || color2 == null) {
-			color1 = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
-			color2 = Display.getCurrent().getSystemColor(SWT.COLOR_BLACK);
+		if (rgb1 == null || rgb2 == null) {
+			rgb1 = display.getSystemColor(SWT.COLOR_WHITE).getRGB();
+			rgb2 = display.getSystemColor(SWT.COLOR_BLACK).getRGB();
 		}			
 
 		// canvas
@@ -132,11 +132,15 @@ public class GradientDialog extends Dialog {
 			public void handleEvent (Event e) {
 				Image preview = null;
 				Point size = canvas.getSize();
+				Color color1 = new Color(display, rgb1);
+				Color color2 = new Color(display, rgb2);
 				preview = GraphicsExample.createImage(display, color1, color2, size.x, size.y);
 				if (preview != null) {
 					e.gc.drawImage (preview, 0, 0);
 				}
 				preview.dispose();
+				color1.dispose();
+				color2.dispose();
 			}
 		});
 		
@@ -158,13 +162,15 @@ public class GradientDialog extends Dialog {
 		// color controls: first color
 		colorButton1 = new Button(colorButtonComp, SWT.PUSH);
 		colorButton1.setText(GraphicsExample.getResourceString("GradientDlgButton1"));
-		Image img1 = GraphicsExample.createImage(Display.getCurrent(), color1);
+		Color color1 = new Color(display, rgb1);
+		Image img1 = GraphicsExample.createImage(display, color1);
+		color1.dispose();
 		colorButton1.setImage(img1);
 		resources.add(img1);
 		menu1 = colorMenu.createMenu(parent.getParent(), new ColorListener() {
 			public void setColor(GraphicsBackground gb) {
-				color1 = gb.getBgColor1();
-				colorButton1.setImage(gb.getBgImage());
+				rgb1 = gb.getBgColor1().getRGB();
+				colorButton1.setImage(gb.getThumbNail());
 				if (canvas != null) canvas.redraw();
 			}
 		});
@@ -182,13 +188,15 @@ public class GradientDialog extends Dialog {
 		// color controls: second color 
 		colorButton2 = new Button(colorButtonComp, SWT.PUSH);
 		colorButton2.setText(GraphicsExample.getResourceString("GradientDlgButton2"));
-		Image img2 = GraphicsExample.createImage(Display.getCurrent(), color2);
+		Color color2 = new Color(display, rgb2);
+		Image img2 = GraphicsExample.createImage(display, color2);
+		color2.dispose();
 		colorButton2.setImage(img2);
 		resources.add(img2);
 		menu2 = colorMenu.createMenu(parent.getParent(), new ColorListener() {
 			public void setColor(GraphicsBackground gb) {
-				color2 = gb.getBgColor1();
-				colorButton2.setImage(gb.getBgImage());
+				rgb2 = gb.getBgColor1().getRGB();
+				colorButton2.setImage(gb.getThumbNail());
 				if (canvas != null) canvas.redraw();
 			}
 		});
@@ -238,32 +246,32 @@ public class GradientDialog extends Dialog {
 	}
 	
 	/**
-	 * Returns the first color selected by the user.
+	 * Returns the first RGB selected by the user.
 	 * */
-	public Color getFirstColor() {
-		return color1;		
+	public RGB getFirstRGB() {
+		return rgb1;		
 	}
 	
 	/**
-	 * Sets the first color.
-	 * @param color
+	 * Sets the first RGB.
+	 * @param rgb
 	 */
-	public void setFirstColor(Color color) {
-		this.color1 = color;
+	public void setFirstRGB(RGB rgb) {
+		this.rgb1 = rgb;
 	}
 	
 	/**
-	 * Returns the second color selected by the user.
+	 * Returns the second RGB selected by the user.
 	 * */
-	public Color getSecondColor() {
-		return color2;
+	public RGB getSecondRGB() {
+		return rgb2;
 	}
 
 	/**
-	 * Sets the second color.
-	 * @param color
+	 * Sets the second RGB.
+	 * @param rgb
 	 */
-	public void setSecondColor(Color color) {
-		this.color2 = color;
+	public void setSecondRGB(RGB rgb) {
+		this.rgb2 = rgb;
 	}
 }
