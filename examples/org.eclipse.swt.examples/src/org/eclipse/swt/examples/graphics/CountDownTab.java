@@ -204,6 +204,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 			gc.setLineWidth(lineWidthSpinner.getSelection());
 			gc.setLineCap(lineCap); // round line ends
 			gc.setAntialias(antialias); // smooth jagged edges
+			gc.setTextAntialias(antialias); // smooth jagged edges
 
 			// draw the circles
 			Path path = new Path(device);
