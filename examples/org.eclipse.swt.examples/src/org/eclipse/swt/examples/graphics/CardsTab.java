@@ -49,6 +49,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("Cards"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("CardsDescription"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (ace_club != null) {
 		ace_club.dispose();

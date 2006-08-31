@@ -46,6 +46,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("StarPolygon"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("StarPolygonDescription"); //$NON-NLS-1$
+}
+
 public void paint(GC gc, int width, int height) {
     int centerX = width / 2;
     int centerY = height / 2;

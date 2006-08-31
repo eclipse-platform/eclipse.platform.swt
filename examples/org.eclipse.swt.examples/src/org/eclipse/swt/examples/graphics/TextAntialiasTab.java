@@ -44,6 +44,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("Text"); //$NON-NLS-1$ 
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("AntialiasingTextDesc"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();

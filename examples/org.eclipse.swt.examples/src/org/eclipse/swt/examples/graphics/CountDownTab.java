@@ -132,6 +132,10 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	public String getText() {
 		return GraphicsExample.getResourceString("Countdown"); //$NON-NLS-1$
 	}
+	
+	public String getDescription() {
+		return GraphicsExample.getResourceString("CountdownDescription"); //$NON-NLS-1$
+	}
 
 	/*
 	 * (non-Javadoc)

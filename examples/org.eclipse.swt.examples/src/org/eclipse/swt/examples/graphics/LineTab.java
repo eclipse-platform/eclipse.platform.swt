@@ -26,6 +26,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("Line"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("LineDescription"); //$NON-NLS-1$
+}
+
 public void paint(GC gc, int width, int height) {
 	gc.drawLine(0, 0, width, height);
 	gc.drawLine(width, 0, 0, height);

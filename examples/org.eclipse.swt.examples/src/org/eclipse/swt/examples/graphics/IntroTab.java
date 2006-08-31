@@ -45,6 +45,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("SWT"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("IntroductionDescription"); //$NON-NLS-1$
+}
+
 public void next(int width, int height) {
     x += incX;
     y += incY;

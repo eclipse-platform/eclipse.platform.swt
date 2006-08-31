@@ -36,6 +36,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("Interpolation"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("ImageInterpolationDesc"); //$NON-NLS-1$
+}
+
 public void createControlPanel(Composite parent) {
 	
 	Composite comp;

@@ -71,6 +71,10 @@ public class BallTab extends AnimatedGraphicsTab {
 		return GraphicsExample.getResourceString("Ball"); //$NON-NLS-1$
 	}
 
+	public String getDescription() {
+		return GraphicsExample.getResourceString("BallDescription"); //$NON-NLS-1$
+	}
+	
 	public int getInitialAnimationTime() {
 		return 10;
 	}

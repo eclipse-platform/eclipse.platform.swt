@@ -15,8 +15,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * This tab demonstrates alpha blending. It draws various shapes and images with
- * as alpha values change.
+ * This tab demonstrates alpha blending. It draws various shapes and images as
+ * alpha values change.
  */
 public class AlphaTab extends AnimatedGraphicsTab {
 	/**
@@ -47,6 +47,10 @@ public class AlphaTab extends AnimatedGraphicsTab {
 
 	public String getText() {
 		return GraphicsExample.getResourceString("Alpha"); //$NON-NLS-1$
+	}
+	
+	public String getDescription() {
+		return GraphicsExample.getResourceString("AlphaDescription"); //$NON-NLS-1$
 	}
 	
 	public int getInitialAnimationTime() {

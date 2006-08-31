@@ -14,6 +14,7 @@ import java.io.*;
 import java.util.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -23,22 +24,28 @@ import org.eclipse.swt.widgets.*;
  * created and made visible by this class.
  */
 public class GraphicsExample {
-	
+		
 	Composite parent;
 	GraphicsTab[] tabs;				// tabs to be found in the application
 	GraphicsTab tab;				// the current tab
 	GraphicsBackground background;	// used to store information about the background
 	
-	ToolBar toolBar;					// toolbar that contains backItem and dbItem
-	Tree tabList;						// tree structure of tabs
+	ToolBar toolBar;				// toolbar that contains backItem and dbItem
+	Tree tabList;					// tree structure of tabs
+	Text tabDesc;					// multi-line text widget that displays a tab description
+	Sash hSash, vSash;
 	Canvas canvas;
-	Composite mainControlPanel, tabControlPanel;  // control panel applicable to all tabs and 
-												  // control panel specific to a tab
+	Composite leftPanel, rightPanel, tabControlPanel;
+
 	ToolItem backItem, dbItem;		// background, double buffer items
 	
-	Menu backMenu;						// background menu item
+	Menu backMenu;					// background menu item
 	
 	ArrayList resources;			// stores resources that will be disposed
+	ArrayList tabs_in_order;		// stores GraphicsTabs in the order that they appear in the tree
+	
+
+	boolean animate = true;			// whether animation should happen
 
 	static boolean advanceGraphics, advanceGraphicsInit;
 	
@@ -54,34 +61,38 @@ public GraphicsExample(final Composite parent) {
 	tabs = createTabs();
 	resources = new ArrayList();
 	createToolBar(parent);
-	createTabList(parent);
-	final Sash sash = new Sash(parent, SWT.VERTICAL);
+	createLeftPanel(parent);	
+	vSash = new Sash(parent, SWT.VERTICAL);
 	createTabPanel(parent);
+	
+	// set toolBar layout data
 	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
 	data.horizontalSpan = 3;
-	toolBar.setLayoutData(data);	
+	toolBar.setLayoutData(data);
+	
 	data = new GridData(SWT.CENTER, SWT.FILL, false, true);
-	data.widthHint = tabList.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 50;
-	tabList.setLayoutData(data);
+	leftPanel.setLayoutData(data);
+	
+	// set sash layout data
 	data = new GridData(SWT.CENTER, SWT.FILL, false, true);
-	sash.setLayoutData(data);
+	vSash.setLayoutData(data);
+	
+	// set rightPanel layout data
 	data = new GridData(SWT.FILL, SWT.FILL, true, true);
-	mainControlPanel.setLayoutData(data);
-	sash.addListener(SWT.Selection, new Listener() {
+	rightPanel.setLayoutData(data);
+	
+	vSash.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
 			if (event.detail != SWT.DRAG) {
-				GridData data = (GridData)tabList.getLayoutData();				
-				data.widthHint = event.x - tabList.computeTrim(0, 0, 0, 0).width;
+				GridData data = (GridData)tabList.getLayoutData();
+				int widthHint = event.x - tabList.computeTrim(0, 0, 0, 0).width - 14;
+				data.widthHint = widthHint;
+				data = (GridData)tabDesc.getLayoutData();
+				data.widthHint = widthHint;
 				parent.layout(true);
-				if (tab instanceof AnimatedGraphicsTab) {
-					AnimatedGraphicsTab agt = ((AnimatedGraphicsTab) tab);
-					agt.setAnimation(agt.pauseItem.getEnabled()); 
-				}
+				animate = true;
 			} else {
-				if (tab instanceof AnimatedGraphicsTab) {
-					AnimatedGraphicsTab agt = ((AnimatedGraphicsTab) tab);
-					agt.setAnimation(false);
-				}
+				animate = false;
 			}
 		}
 	});
@@ -174,13 +185,13 @@ void createControlPanel(Composite parent) {
 }
 
 void createTabPanel(Composite parent) {
-	mainControlPanel = new Composite(parent, SWT.NONE);
+	rightPanel = new Composite(parent, SWT.NONE);
 	GridData data;
 	GridLayout layout = new GridLayout(1, false);
 	layout.marginHeight = layout.marginWidth = 0;
-	mainControlPanel.setLayout(layout);
-	createCanvas(mainControlPanel);
-	createControlPanel(mainControlPanel);
+	rightPanel.setLayout(layout);
+	createCanvas(rightPanel);
+	createControlPanel(rightPanel);
 	data = new GridData(SWT.FILL, SWT.FILL, true, true);
 	canvas.setLayoutData(data);	
 	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -191,6 +202,29 @@ void createToolBar(final Composite parent) {
 	final Display display = parent.getDisplay();
 	
 	toolBar = new ToolBar(parent, SWT.FLAT);
+	
+	ToolItem  back = new ToolItem(toolBar, SWT.PUSH);
+	back.setText(getResourceString("Back")); //$NON-NLS-1$
+	back.setImage(loadImage(display, "back.gif")); //$NON-NLS-1$
+	
+	back.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			int index = tabs_in_order.indexOf(tab) - 1;
+			if (index < 0)
+				index = tabs_in_order.size() - 1;
+			setTab((GraphicsTab)tabs_in_order.get(index));
+		}
+	});
+	
+	ToolItem  next = new ToolItem(toolBar, SWT.PUSH);
+	next.setText(getResourceString("Next")); //$NON-NLS-1$
+	next.setImage(loadImage(display, "next.gif")); //$NON-NLS-1$
+	next.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			int index = (tabs_in_order.indexOf(tab) + 1)%tabs_in_order.size();
+			setTab((GraphicsTab)tabs_in_order.get(index));
+		}
+	});
 	
 	ColorMenu colorMenu = new ColorMenu();
 	
@@ -303,6 +337,53 @@ static Image createImage(Device device, Color color) {
 	return image;
 }
 
+/**
+ * This method creates the leftPanel composite. It contains the tree
+ * structure of tabs (tabList), a horizontal sash (hSash) and the
+ * description of the selected tab (tabDesc).
+ */
+void createLeftPanel(Composite parentComp) {
+	leftPanel = new Composite(parentComp, SWT.NONE);
+	GridData data;
+	GridLayout compLayout = new GridLayout(1, false);
+	compLayout.marginHeight = compLayout.marginWidth = 0;
+	compLayout.verticalSpacing = 1;
+	leftPanel.setLayout(compLayout);
+	createTabList(leftPanel);
+	hSash = new Sash(leftPanel, SWT.HORIZONTAL);
+	createTabDesc(leftPanel);
+
+	// set tabList layout data
+	int width = tabList.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 50;
+	data = new GridData(SWT.FILL, SWT.FILL, true, true);
+	data.widthHint = width;
+	tabList.setLayoutData(data);
+
+	// set sash layout data
+	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+	hSash.setLayoutData(data);
+	
+	// set tabDesc layout data
+	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+	data.widthHint = width;
+	data.heightHint = tabDesc.getLineHeight() * 10;
+	tabDesc.setLayoutData(data);
+	
+	// add listener
+	hSash.addSelectionListener (new SelectionAdapter () {
+		public void widgetSelected (SelectionEvent event) {
+			Rectangle rect = vSash.getParent().getClientArea();
+			event.y = Math.min (Math.max (event.y, 40), rect.height - 40);
+			if (event.detail != SWT.DRAG) {
+				GridData data = (GridData)tabDesc.getLayoutData();
+				data.heightHint = toolBar.getBounds().height + leftPanel.getBounds().height - event.y - leftPanel.getBounds().y;
+				hSash.setBounds (event.x, event.y, event.width, event.height);
+				parent.layout(true, true);
+			}
+		}
+	});
+}
+
 void createTabList(Composite parent) {
 	tabList = new Tree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 	HashSet set = new HashSet();
@@ -315,6 +396,7 @@ void createTabList(Composite parent) {
 		TreeItem item = new TreeItem(tabList, SWT.NONE);
 		item.setText(text);
 	}
+	tabs_in_order = new ArrayList();
 	TreeItem[] items = tabList.getItems();
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items[i];
@@ -324,6 +406,7 @@ void createTabList(Composite parent) {
 				TreeItem item1 = new TreeItem(item, SWT.NONE);
 				item1.setText(tab.getText());
 				item1.setData(tab);
+				tabs_in_order.add(tab);
 			}
 		}
 	}
@@ -337,6 +420,15 @@ void createTabList(Composite parent) {
 			}
 		}
 	});
+}
+
+/**
+ * Creates the multi-line text widget that will contain the tab description. 
+ * */
+void createTabDesc(Composite parent) {
+	tabDesc = new Text(parent, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.WRAP | SWT.BORDER);
+	tabDesc.setEditable(false);
+	tabDesc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
 }
 
 /**
@@ -483,6 +575,9 @@ public void setTab(GraphicsTab tab) {
 	this.tab = tab;
 	if (tab != null) {
 		tab.createControlPanel(tabControlPanel);
+		tabDesc.setText(tab.getDescription());
+	} else {
+		tabDesc.setText("");
 	}
 
 	GridData data = (GridData)tabControlPanel.getLayoutData();
@@ -490,9 +585,9 @@ public void setTab(GraphicsTab tab) {
 	data.exclude = children.length == 0;
 	tabControlPanel.setVisible(!data.exclude);
 	if (data.exclude) {
-		mainControlPanel.layout();
+		rightPanel.layout();
 	} else {
-		mainControlPanel.layout(children);
+		rightPanel.layout(children);
 	}
 	if (tab != null) {
 		TreeItem[] selection = tabList.getSelection();
@@ -516,7 +611,7 @@ void startAnimationTimer() {
 			GraphicsTab tab = getTab();
 			if (tab instanceof AnimatedGraphicsTab) {
 				AnimatedGraphicsTab animTab = (AnimatedGraphicsTab) tab;	
-				if (animTab.getAnimation()) {
+				if (animate && animTab.getAnimation()) {
 					Rectangle rect = canvas.getClientArea();
 					animTab.next(rect.width, rect.height);
 					canvas.redraw();

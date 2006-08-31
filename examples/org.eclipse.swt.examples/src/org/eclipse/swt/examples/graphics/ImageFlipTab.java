@@ -31,6 +31,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("Flip"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("FlipDescription"); //$NON-NLS-1$
+}
+
 public void paint(GC gc, int width, int height) {
 	Device device = gc.getDevice();
 	

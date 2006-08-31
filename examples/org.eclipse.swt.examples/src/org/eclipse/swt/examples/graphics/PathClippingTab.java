@@ -39,6 +39,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("PathClipping"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("PathClippingDesc"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();

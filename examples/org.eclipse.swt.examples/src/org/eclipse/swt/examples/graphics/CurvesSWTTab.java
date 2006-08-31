@@ -76,6 +76,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("SWT"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("CurvesSWTDescription"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (mouseListener != null)
 		example.canvas.removeMouseListener(mouseListener);

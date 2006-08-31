@@ -68,6 +68,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("CustomFont"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("CustomFontDescription"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();

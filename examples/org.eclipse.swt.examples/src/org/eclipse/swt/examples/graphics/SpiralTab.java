@@ -17,7 +17,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * This tab presents a spiral to with the number of petals specified.
+ * This tab presents a spiral consisting of the number of petals specified.
  * */
 public class SpiralTab extends AnimatedGraphicsTab {
 	
@@ -104,6 +104,10 @@ public String getCategory() {
 
 public String getText() {
 	return GraphicsExample.getResourceString("Spiral"); //$NON-NLS-1$
+}
+
+public String getDescription() {
+	return GraphicsExample.getResourceString("SpiralDescription"); //$NON-NLS-1$
 }
 
 /* (non-Javadoc)

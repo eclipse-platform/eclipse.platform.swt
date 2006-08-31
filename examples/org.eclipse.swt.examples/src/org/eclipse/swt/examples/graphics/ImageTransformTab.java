@@ -41,6 +41,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("Image"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("TransformImgDescription"); //$NON-NLS-1$
+}
+
 /**
  * This method creates the controls specific to the tab. The call to the
  * createControlPanel method in the super class create the controls that are

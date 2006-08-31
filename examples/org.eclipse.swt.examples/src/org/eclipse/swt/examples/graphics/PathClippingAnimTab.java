@@ -40,7 +40,11 @@ public class PathClippingAnimTab extends AnimatedGraphicsTab {
 	}
 
 	public String getText() {
-		return "Animated Path Clipping";
+		return GraphicsExample.getResourceString("AnimPathClipping"); //$NON-NLS-1$
+	}
+	
+	public String getDescription() {
+		return GraphicsExample.getResourceString("AnimPathClippingDesc"); //$NON-NLS-1$
 	}
 
 	public void dispose() {

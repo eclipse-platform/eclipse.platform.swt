@@ -39,6 +39,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("RegionClipping"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("RegionClippingDescription"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (menu1 != null) {
 		menu1.dispose();

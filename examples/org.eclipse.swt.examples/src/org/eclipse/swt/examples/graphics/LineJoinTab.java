@@ -40,6 +40,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("LineJoin"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("LineJoinDescription"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();

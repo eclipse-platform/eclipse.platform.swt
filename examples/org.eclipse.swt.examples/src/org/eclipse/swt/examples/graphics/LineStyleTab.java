@@ -39,6 +39,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("LineStyles"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("LineStylesDescription"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();

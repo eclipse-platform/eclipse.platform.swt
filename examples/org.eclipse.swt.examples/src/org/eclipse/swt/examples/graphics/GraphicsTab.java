@@ -50,6 +50,13 @@ public String getCategory() {
 	return GraphicsExample.getResourceString("Misc"); //$NON-NLS-1$
 }
 
+/**
+ *  Answer the receiver's description.
+ * */
+public String getDescription() {
+	return "";
+}
+
 /** 
  * Paint the receiver into the specified GC. 
  */

@@ -25,6 +25,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("BlackHole"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("BlackHoleDescription"); //$NON-NLS-1$
+}
+
 public void next(int width, int height) {
 	if (size > width * 3 / 2) size = 0;
 	else size += 10;

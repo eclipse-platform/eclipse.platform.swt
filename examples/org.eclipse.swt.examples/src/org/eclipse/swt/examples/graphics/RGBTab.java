@@ -41,6 +41,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("rgb"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("rgbDescription"); //$NON-NLS-1$
+}
+
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.AnimatedGraphicsTab#next(int, int)
  */

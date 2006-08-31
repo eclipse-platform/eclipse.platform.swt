@@ -63,6 +63,9 @@ public String getText() {
 	return GraphicsExample.getResourceString("GradImage"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("GradientImageDescription"); //$NON-NLS-1$
+}
 
 /* (non-Javadoc)
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#createControlPanel(org.eclipse.swt.widgets.Composite)

@@ -38,6 +38,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("PathOper"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("PathOperDescription"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (menu != null) {
 		menu.dispose();

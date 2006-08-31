@@ -104,6 +104,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("Maze"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("MazeDescription"); //$NON-NLS-1$
+}
+
 public int getInitialAnimationTime() {
 	return 50;
 }

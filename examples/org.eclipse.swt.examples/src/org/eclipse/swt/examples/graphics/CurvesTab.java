@@ -65,6 +65,10 @@ public String getText() {
 	return GraphicsExample.getResourceString("Curves"); //$NON-NLS-1$
 }
 
+public String getDescription() {
+	return GraphicsExample.getResourceString("CurvesDescription"); //$NON-NLS-1$
+}
+
 public void dispose() {
 	if (mouseListener != null)
 		example.canvas.removeMouseListener(mouseListener);
