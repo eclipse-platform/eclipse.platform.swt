@@ -29,7 +29,7 @@ class TableTab extends ScrollableTab {
 	Button checkButton, fullSelectionButton, hideSelectionButton;
 
 	/* Other widgets added to the "Other" group */
-	Button multipleColumns, moveableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, linesVisibleButton, subImagesButton;
+	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, linesVisibleButton, subImagesButton;
 	
 	/* Controls and resources added to the "Colors and Fonts" group */
 	static final int ITEM_FOREGROUND_COLOR = 3;
@@ -205,6 +205,8 @@ class TableTab extends ScrollableTab {
 		sortIndicatorButton.setText (ControlExample.getResourceString("Sort_Indicator"));
 		moveableColumns = new Button (otherGroup, SWT.CHECK);
 		moveableColumns.setText (ControlExample.getResourceString("Moveable_Columns"));
+		resizableColumns = new Button (otherGroup, SWT.CHECK);
+		resizableColumns.setText (ControlExample.getResourceString("Resizable_Columns"));
 		headerImagesButton = new Button (otherGroup, SWT.CHECK);
 		headerImagesButton.setText (ControlExample.getResourceString("Header_Images"));
 		subImagesButton = new Button (otherGroup, SWT.CHECK);
@@ -234,6 +236,11 @@ class TableTab extends ScrollableTab {
 		moveableColumns.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setColumnsMoveable ();
+			}
+		});
+		resizableColumns.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setColumnsResizable ();
 			}
 		});
 		headerImagesButton.addSelectionListener (new SelectionAdapter () {
@@ -567,10 +574,22 @@ class TableTab extends ScrollableTab {
 	}
 
 	/**
+	 * Sets the resizable columns state of the "Example" widgets.
+	 */
+	void setColumnsResizable () {
+		boolean selection = resizableColumns.getSelection();
+		TableColumn[] columns = table1.getColumns();
+		for (int i = 0; i < columns.length; i++) {
+			columns[i].setResizable(selection);
+		}
+	}
+
+	/**
 	 * Sets the state of the "Example" widgets.
 	 */
 	void setExampleWidgetState () {
 		setColumnsMoveable ();
+		setColumnsResizable ();
 		setItemBackground ();
 		setItemForeground ();
 		setItemFont ();
