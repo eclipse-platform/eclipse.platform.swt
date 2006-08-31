@@ -149,8 +149,8 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 		for (int i = 0; i < items.length; i++) {
 			ToolItem item = items [i];
 			if (item.toolTipText != null) {
-				item.setToolTipText(oldShell, null, item.toolTipText);
-				item.setToolTipText(newShell, item.toolTipText, null);
+				item.setToolTipText(oldShell, null);
+				item.setToolTipText(newShell, item.toolTipText);
 			}
 		}
 	}
@@ -444,8 +444,7 @@ public void setToolTipText (String string) {
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		String newString = string != null ? null : items [i].toolTipText;
-		String oldString = string == null ? null : items [i].toolTipText;
-		shell.setToolTipText (items [i].handle, newString, oldString);
+		shell.setToolTipText (items [i].handle, newString);
 	}
 }
 

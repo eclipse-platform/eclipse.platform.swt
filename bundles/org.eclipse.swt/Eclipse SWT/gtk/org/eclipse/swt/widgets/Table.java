@@ -1024,8 +1024,8 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	for (int i=0; i<columnCount; i++) {
 		TableColumn column = columns [i];
 		if (column.toolTipText != null) {
-			column.setToolTipText(oldShell, null, column.toolTipText);
-			column.setToolTipText(newShell, column.toolTipText, null);
+			column.setToolTipText(oldShell, null);
+			column.setToolTipText(newShell, column.toolTipText);
 		}
 	}
 }

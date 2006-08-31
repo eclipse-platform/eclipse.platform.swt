@@ -612,12 +612,12 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	Shell shell = parent._getShell ();
-	setToolTipText (shell, string, toolTipText);
+	setToolTipText (shell, string);
 	toolTipText = string;
 }
 
-void setToolTipText (Shell shell, String newString, String oldString) {
-	shell.setToolTipText (buttonHandle, newString, oldString);
+void setToolTipText (Shell shell, String newString) {
+	shell.setToolTipText (buttonHandle, newString);
 }
 
 /**

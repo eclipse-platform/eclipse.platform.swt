@@ -1001,13 +1001,13 @@ public void setToolTipText (String string) {
 	checkWidget();
 	if (parent.toolTipText == null) {
 		Shell shell = parent._getShell ();
-		setToolTipText (shell, string, toolTipText);
+		setToolTipText (shell, string);
 	}
 	toolTipText = string;
 }
 
-void setToolTipText (Shell shell, String newString, String oldString) {
-	shell.setToolTipText (handle, newString, oldString);
+void setToolTipText (Shell shell, String newString) {
+	shell.setToolTipText (handle, newString);
 }
 
 /**

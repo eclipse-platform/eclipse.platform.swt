@@ -685,8 +685,8 @@ void fixShell (Shell newShell, Control control) {
 	if (control == lastActive) setActiveControl (null);
 	String toolTipText = control.toolTipText;
 	if (toolTipText != null) {
-		control.setToolTipText (this, null, toolTipText);
-		control.setToolTipText (newShell, toolTipText, null);
+		control.setToolTipText (this, null);
+		control.setToolTipText (newShell, toolTipText);
 	}
 }
 
@@ -1630,10 +1630,10 @@ void releaseWidget () {
 	lastActive = null;
 }
 
-void setToolTipText (int /*long*/ widget, String newString, String oldString) {
+void setToolTipText (int /*long*/ widget, String string) {
 	byte [] buffer = null;
-	if (newString != null && newString.length () > 0) {
-		buffer = Converter.wcsToMbcs (null, newString, true);
+	if (string != null && string.length () > 0) {
+		buffer = Converter.wcsToMbcs (null, string, true);
 	}
 	if (tooltipsHandle == 0) {
 		tooltipsHandle = OS.gtk_tooltips_new ();
@@ -1663,26 +1663,21 @@ void setToolTipText (int /*long*/ widget, String newString, String oldString) {
 	
 	/*
 	* Bug in GTK.  If the cursor is inside the window when a new
-	* tooltip is set and the old tooltip is null, the new tooltip
-	* is not displayed until the mouse enters the window.  The
-	* fix is to cause and enter/leave event to happen by creating
-	* a temporary INPUT_ONLY GDK window.
+	* tooltip is set and the old tooltip is hidden, the new tooltip
+	* is not displayed until the mouse re-enters the window.  The
+	* fix is force the new tooltip active.
 	*/
 	if ((OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_REALIZED) == 0) return;
 	if ((OS.GTK_WIDGET_FLAGS (widget) & OS.GTK_VISIBLE) == 0) return;
-	if (oldString == null || oldString.length () == 0) {
-		if (newString != null && newString.length () != 0) {
-			int[] x = new int [1], y = new int [1];
-			int /*long*/ window = OS.gdk_window_at_pointer (x, y);
-			if (window != 0) {
-				int /*long*/ [] user_data = new int /*long*/ [1];
-				OS.gdk_window_get_user_data (window, user_data);
-				if (widget == user_data [0]) {
-					int /*long*/ data = OS.gtk_tooltips_data_get (widget);
-					OS.GTK_TOOLTIPS_SET_ACTIVE (tooltipsHandle, data);
-					OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
-				}
-			}
+	int[] x = new int [1], y = new int [1];
+	int /*long*/ window = OS.gdk_window_at_pointer (x, y);
+	if (window != 0) {
+		int /*long*/ [] user_data = new int /*long*/ [1];
+		OS.gdk_window_get_user_data (window, user_data);
+		if (widget == user_data [0]) {
+			int /*long*/ data = OS.gtk_tooltips_data_get (widget);
+			OS.GTK_TOOLTIPS_SET_ACTIVE (tooltipsHandle, data);
+			OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
 		}
 	}
 }
