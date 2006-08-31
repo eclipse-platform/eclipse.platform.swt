@@ -644,6 +644,7 @@ public class OS extends Platform {
 	public static final int HDM_GETITEM = IsUnicode ? HDM_GETITEMW : HDM_GETITEMA;
 	public static final int HDM_GETITEMRECT = HDM_FIRST + 7;
 	public static final int HDM_GETORDERARRAY = HDM_FIRST + 17;
+	public static final int HDM_HITTEST = HDM_FIRST + 6;
 	public static final int HDM_INSERTITEMA = HDM_FIRST + 1;
 	public static final int HDM_INSERTITEMW = HDM_FIRST + 10;
 	public static final int HDM_INSERTITEM = IsUnicode ? HDM_INSERTITEMW : HDM_INSERTITEMA;
@@ -679,6 +680,8 @@ public class OS extends Platform {
 	public static final int HDS_HIDDEN = 0x8;
 	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int HELPINFO_MENUITEM = 0x2;
+	public static final int HHT_ONDIVIDER = 0x4;
+	public static final int HHT_ONDIVOPEN = 0x8;
 	public static final int HICF_ARROWKEYS = 0x2;
 	public static final int HINST_COMMCTRL = 0xffffffff;
 	public static final int HKEY_CLASSES_ROOT = 0x80000000;
@@ -2635,6 +2638,11 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, UDACCEL lPar
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int SendMessage (int hWnd, int Msg, int wParam, HDHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int SendMessage (int hWnd, int Msg, int wParam, HDITEM lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -3308,6 +3316,7 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVHI
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVINSERTSTRUCT lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVITEM lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, UDACCEL lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, HDHITTESTINFO lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, HDITEM lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, HDLAYOUT lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, BUTTON_IMAGELIST lParam);
@@ -3335,6 +3344,7 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVHI
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVINSERTSTRUCT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVITEM lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, UDACCEL lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, HDHITTESTINFO lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, HDITEM lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, HDLAYOUT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, BUTTON_IMAGELIST lParam);

@@ -4776,6 +4776,30 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 					case OS.TTN_GETDISPINFOW:
 						return OS.SendMessage (handle, msg, wParam, lParam);
 				}
+				break;
+			}
+			case OS.WM_SETCURSOR: {
+				if (wParam == hwnd) {
+					int hitTest = (short) (lParam & 0xFFFF);
+					if (hitTest == OS.HTCLIENT) {
+						HDHITTESTINFO pinfo = new HDHITTESTINFO ();
+						int pos = OS.GetMessagePos ();
+						POINT pt = new POINT ();
+						pt.x = (short) (pos & 0xFFFF);
+						pt.y = (short) (pos >> 16); 
+						OS.ScreenToClient (hwnd, pt);
+						pinfo.x = pt.x;
+						pinfo.y = pt.y;
+						int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+						int index = OS.SendMessage (hwndHeader, OS.HDM_HITTEST, 0, pinfo);
+						if (0 <= index && index < columnCount && !columns [index].resizable) {
+							if ((pinfo.flags & (OS.HHT_ONDIVIDER | OS.HHT_ONDIVOPEN)) != 0) {
+								return OS.DefWindowProc (hwnd, OS.WM_SETCURSOR, wParam, lParam);
+							}
+						}
+					}
+				}
+				break;
 			}
 		}
 		return callWindowProc (hwnd, msg, wParam, lParam);

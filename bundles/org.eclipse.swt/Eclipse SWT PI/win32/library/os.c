@@ -9188,6 +9188,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	HDHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2_FUNC);
+	if (arg3) if ((lparg3 = getHDHITTESTINFOFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setHDHITTESTINFOFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
@@ -9615,6 +9631,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win3
 fail:
 	if (arg3 && lparg3) setBUTTON_IMAGELISTFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	HDHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2_FUNC);
+	if (arg3) if ((lparg3 = getHDHITTESTINFOFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setHDHITTESTINFOFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2_FUNC);
 	return rc;
 }
 #endif

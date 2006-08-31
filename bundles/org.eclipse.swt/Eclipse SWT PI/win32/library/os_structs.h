@@ -275,6 +275,18 @@ void setGUITHREADINFOFields(JNIEnv *env, jobject lpObject, GUITHREADINFO *lpStru
 #define GUITHREADINFO_sizeof() 0
 #endif
 
+#ifndef NO_HDHITTESTINFO
+void cacheHDHITTESTINFOFields(JNIEnv *env, jobject lpObject);
+HDHITTESTINFO *getHDHITTESTINFOFields(JNIEnv *env, jobject lpObject, HDHITTESTINFO *lpStruct);
+void setHDHITTESTINFOFields(JNIEnv *env, jobject lpObject, HDHITTESTINFO *lpStruct);
+#define HDHITTESTINFO_sizeof() sizeof(HDHITTESTINFO)
+#else
+#define cacheHDHITTESTINFOFields(a,b)
+#define getHDHITTESTINFOFields(a,b,c) NULL
+#define setHDHITTESTINFOFields(a,b,c)
+#define HDHITTESTINFO_sizeof() 0
+#endif
+
 #ifndef NO_HDITEM
 void cacheHDITEMFields(JNIEnv *env, jobject lpObject);
 HDITEM *getHDITEMFields(JNIEnv *env, jobject lpObject, HDITEM *lpStruct);

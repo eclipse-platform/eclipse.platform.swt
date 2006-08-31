@@ -1174,6 +1174,46 @@ void setGUITHREADINFOFields(JNIEnv *env, jobject lpObject, GUITHREADINFO *lpStru
 }
 #endif
 
+#ifndef NO_HDHITTESTINFO
+typedef struct HDHITTESTINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, flags, iItem;
+} HDHITTESTINFO_FID_CACHE;
+
+HDHITTESTINFO_FID_CACHE HDHITTESTINFOFc;
+
+void cacheHDHITTESTINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (HDHITTESTINFOFc.cached) return;
+	HDHITTESTINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HDHITTESTINFOFc.x = (*env)->GetFieldID(env, HDHITTESTINFOFc.clazz, "x", "I");
+	HDHITTESTINFOFc.y = (*env)->GetFieldID(env, HDHITTESTINFOFc.clazz, "y", "I");
+	HDHITTESTINFOFc.flags = (*env)->GetFieldID(env, HDHITTESTINFOFc.clazz, "flags", "I");
+	HDHITTESTINFOFc.iItem = (*env)->GetFieldID(env, HDHITTESTINFOFc.clazz, "iItem", "I");
+	HDHITTESTINFOFc.cached = 1;
+}
+
+HDHITTESTINFO *getHDHITTESTINFOFields(JNIEnv *env, jobject lpObject, HDHITTESTINFO *lpStruct)
+{
+	if (!HDHITTESTINFOFc.cached) cacheHDHITTESTINFOFields(env, lpObject);
+	lpStruct->pt.x = (*env)->GetIntField(env, lpObject, HDHITTESTINFOFc.x);
+	lpStruct->pt.y = (*env)->GetIntField(env, lpObject, HDHITTESTINFOFc.y);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, HDHITTESTINFOFc.flags);
+	lpStruct->iItem = (*env)->GetIntField(env, lpObject, HDHITTESTINFOFc.iItem);
+	return lpStruct;
+}
+
+void setHDHITTESTINFOFields(JNIEnv *env, jobject lpObject, HDHITTESTINFO *lpStruct)
+{
+	if (!HDHITTESTINFOFc.cached) cacheHDHITTESTINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HDHITTESTINFOFc.x, (jint)lpStruct->pt.x);
+	(*env)->SetIntField(env, lpObject, HDHITTESTINFOFc.y, (jint)lpStruct->pt.y);
+	(*env)->SetIntField(env, lpObject, HDHITTESTINFOFc.flags, (jint)lpStruct->flags);
+	(*env)->SetIntField(env, lpObject, HDHITTESTINFOFc.iItem, (jint)lpStruct->iItem);
+}
+#endif
+
 #ifndef NO_HDITEM
 typedef struct HDITEM_FID_CACHE {
 	int cached;
