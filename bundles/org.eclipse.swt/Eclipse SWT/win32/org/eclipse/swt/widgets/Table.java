@@ -4483,18 +4483,17 @@ void update (boolean all) {
 	* NOTE: The header tooltip can subclass the header proc so the
 	* current proc must be restored or header tooltips stop working.
 	*/
-	int oldProc = 0;
+	int oldHeaderProc = 0, oldTableProc = 0;
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
 	if (fixSubclass) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		oldProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
-		unsubclass ();
+		oldTableProc = OS.SetWindowLong (handle, OS.GWL_WNDPROC, TableProc);
+		oldHeaderProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
 	}
 	super.update (all);
 	if (fixSubclass) {
-		subclass ();
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldProc);
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldTableProc);
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldHeaderProc);
 	}
 }
 
@@ -4764,19 +4763,18 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			* NOTE: The header tooltip can subclass the header proc so the
 			* current proc must be restored or header tooltips stop working.
 			*/
-			int oldProc = 0;
+			int oldHeaderProc = 0, oldTableProc = 0;
+			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
 			if (fixSubclass) {
-				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-				oldProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
-				unsubclass ();
+				oldTableProc = OS.SetWindowLong (handle, OS.GWL_WNDPROC, TableProc);
+				oldHeaderProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
 			}
 			int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 			result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 			if (fixSubclass) {
-				subclass ();
-				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-				OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldProc);
+				OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldTableProc);
+				OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldHeaderProc);
 			}
 			//FALL THROUGH
 		case OS.VK_UP:
@@ -5107,18 +5105,17 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	* NOTE: The header tooltip can subclass the header proc so the
 	* current proc must be restored or header tooltips stop working.
 	*/
-	int oldProc = 0;
+	int oldHeaderProc = 0, oldTableProc = 0;
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
 	if (fixSubclass) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		oldProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
-		unsubclass ();
+		oldTableProc = OS.SetWindowLong (handle, OS.GWL_WNDPROC, TableProc);
+		oldHeaderProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
 	}
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
 	if (fixSubclass) {
-		subclass ();
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldProc);
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldTableProc);
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldHeaderProc);
 	}
 	
 	/*
@@ -5156,18 +5153,17 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	* NOTE: The header tooltip can subclass the header proc so the
 	* current proc must be restored or header tooltips stop working.
 	*/
-	int oldProc = 0;
+	int oldHeaderProc = 0, oldTableProc = 0;
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
 	if (fixSubclass) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		oldProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
-		unsubclass ();
+		oldTableProc = OS.SetWindowLong (handle, OS.GWL_WNDPROC, TableProc);
+		oldHeaderProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
 	}
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
 	if (fixSubclass) {
-		subclass ();
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldProc);
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldTableProc);
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldHeaderProc);
 	}
 	
 	/*
@@ -5188,25 +5184,21 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 				break;
 			case OS.SB_LINEDOWN:
 			case OS.SB_LINEUP:
-				int headerHeight = 0;
-				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-				if (hwndHeader != 0) {
-					RECT rect = new RECT ();					
-					OS.GetWindowRect (hwndHeader, rect);
-					headerHeight = rect.bottom - rect.top;
-				}
-				RECT rect = new RECT ();
-				OS.GetClientRect (handle, rect);
-				rect.top += headerHeight;
+				RECT rect = new RECT ();					
+				OS.GetWindowRect (hwndHeader, rect);
+				int headerHeight = rect.bottom - rect.top;
+				RECT clientRect = new RECT ();
+				OS.GetClientRect (handle, clientRect);
+				clientRect.top += headerHeight;
 				int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 				int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 				int itemHeight = (oneItem >> 16) - (empty >> 16);
 				if (code == OS.SB_LINEDOWN) {
-					rect.top = rect.bottom - itemHeight - GRID_WIDTH;
+					clientRect.top = clientRect.bottom - itemHeight - GRID_WIDTH;
 				} else {
-					rect.bottom = rect.top + itemHeight + GRID_WIDTH;
+					clientRect.bottom = clientRect.top + itemHeight + GRID_WIDTH;
 				}
-				OS.InvalidateRect (handle, rect, true);
+				OS.InvalidateRect (handle, clientRect, true);
 				break;
 			case OS.SB_PAGEDOWN:
 			case OS.SB_PAGEUP:
