@@ -139,6 +139,9 @@ void createControls(final Composite parent) {
 	
 	vSash.addListener(SWT.Selection, new Listener() {
 		public void handleEvent(Event event) {
+			Rectangle rect = hSash.getParent().getClientArea();
+			event.x = Math.min (Math.max (event.x, 60), rect.width - 60);
+			System.out.println(event.x);
 			if (event.detail != SWT.DRAG) {
 				FormData data = (FormData)vSash.getLayoutData();
 				data.left.offset = event.x;
@@ -152,7 +155,7 @@ void createControls(final Composite parent) {
 	hSash.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
 			Rectangle rect = vSash.getParent().getClientArea();
-			event.y = Math.min (Math.max (event.y, 40), rect.height - 40);
+			event.y = Math.min (Math.max (event.y, tabList.getLocation().y + 60), rect.height - 60);
 			if (event.detail != SWT.DRAG) {
 				FormData data = (FormData)hSash.getLayoutData();
 				data.top.offset = event.y;
