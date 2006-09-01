@@ -367,13 +367,21 @@ static Image createImage(Device device, Color color) {
 
 void createTabList(Composite parent) {
 	tabList = new Tree(parent, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+	Arrays.sort(tabs, new Comparator() {
+		public int compare(Object tab0, Object tab1) {
+			return ((GraphicsTab)tab0).getText().compareTo(((GraphicsTab)tab1).getText());
+		}
+	});
 	HashSet set = new HashSet();
 	for (int i = 0; i < tabs.length; i++) {
 		GraphicsTab tab = tabs[i];
 		set.add(tab.getCategory());
 	}
-	for (Iterator iter = set.iterator(); iter.hasNext();) {
-		String text = (String) iter.next();
+	String[] categories = new String[set.size()];
+	set.toArray(categories);
+	Arrays.sort(categories);
+	for (int i = 0; i < categories.length; i++) {
+		String text = categories[i];
 		TreeItem item = new TreeItem(tabList, SWT.NONE);
 		item.setText(text);
 	}
