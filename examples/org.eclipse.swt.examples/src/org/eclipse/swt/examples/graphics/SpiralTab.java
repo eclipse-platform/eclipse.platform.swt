@@ -69,7 +69,7 @@ public void createControlPanel(Composite parent) {
 	comp.setLayout(new GridLayout());
 	
 	ColorMenu cm = new ColorMenu();
-	cm.setPatternItems(true);
+	cm.setPatternItems(example.checkAdvancedGraphics());
 	menu = cm.createMenu(parent.getParent(), new ColorListener() {
 		public void setColor(GraphicsBackground gb) {
 			foreground = gb;		
@@ -131,6 +131,7 @@ public void next(int width, int height) {
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
 public void paint(GC gc, int width, int height) {
+	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 	
 	// set line attributes

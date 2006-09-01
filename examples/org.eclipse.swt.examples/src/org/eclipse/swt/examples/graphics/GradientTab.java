@@ -152,6 +152,7 @@ public void createControlPanel(final Composite parent) {
  * consists of 4 rows, each consisting of 4 gradient patterns (total of 16).
  */
 public void paint(GC gc, int width, int height) {
+	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 	
 	Image image = createImage(device, colorGB1.getBgColor1(), colorGB2.getBgColor1(), width, height);

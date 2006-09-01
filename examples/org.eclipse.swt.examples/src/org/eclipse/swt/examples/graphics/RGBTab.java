@@ -67,6 +67,7 @@ public void next(int width, int height) {
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
 public void paint(GC gc, int width, int height) {
+	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 	
 	// horizontal rectangle

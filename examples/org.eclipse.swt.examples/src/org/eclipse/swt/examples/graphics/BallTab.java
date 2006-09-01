@@ -121,6 +121,7 @@ public class BallTab extends AnimatedGraphicsTab {
 	}
 
 	public void paint(GC gc, int width, int height) {
+		if (!example.checkAdvancedGraphics()) return;
 		Device device = gc.getDevice();
 
 		if (bc[0] == null) {

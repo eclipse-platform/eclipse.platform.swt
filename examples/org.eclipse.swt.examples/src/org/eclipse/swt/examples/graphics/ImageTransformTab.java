@@ -121,6 +121,7 @@ public void createControlPanel(Composite parent) {
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
 public void paint(GC gc, int width, int height) {
+	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 
 	Image image = GraphicsExample.loadImage(device, GraphicsExample.class, "ace_club.jpg"); 

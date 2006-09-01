@@ -134,7 +134,7 @@ public void createControlPanel(Composite parent) {
 
 	ColorMenu cm = new ColorMenu();
 	cm.setColorItems(true);
-	cm.setPatternItems(true);
+	cm.setPatternItems(example.checkAdvancedGraphics());
 	menu = cm.createMenu(parent.getParent(), new ColorListener() {
 		public void setColor(GraphicsBackground gb) {
 			fontForeground = gb;
@@ -169,6 +169,7 @@ public void createControlPanel(Composite parent) {
  * @see org.eclipse.swt.examples.graphics.GraphicsTab#paint(org.eclipse.swt.graphics.GC, int, int)
  */
 public void paint(GC gc, int width, int height) {
+	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 	
 	String fontFace = (String)fontNames.get(fontFaceCb.getSelectionIndex());

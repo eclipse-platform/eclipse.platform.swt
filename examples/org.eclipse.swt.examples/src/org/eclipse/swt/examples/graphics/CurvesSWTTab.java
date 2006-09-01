@@ -265,6 +265,7 @@ public void createControlPanel(Composite parent) {
 }
 
 public void paint(GC gc, int width, int height) {
+	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 	
 	Font font = new Font(device, getPlatformFont(), 16, SWT.ITALIC);

@@ -70,7 +70,7 @@ public void createControlPanel(Composite parent) {
 	});
 		
 	ColorMenu cm = new ColorMenu();
-	cm.setPatternItems(true);
+	cm.setPatternItems(example.checkAdvancedGraphics());
 	menu = cm.createMenu(parent.getParent(), new ColorListener() {
 		public void setColor(GraphicsBackground gb) {
 			lineColor = gb;		

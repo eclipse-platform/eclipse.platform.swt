@@ -67,6 +67,7 @@ public void createControlPanel(Composite parent) {
 }
 
 public void paint(GC gc, int width, int height) {
+	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 
 	float scaleX = 10f;

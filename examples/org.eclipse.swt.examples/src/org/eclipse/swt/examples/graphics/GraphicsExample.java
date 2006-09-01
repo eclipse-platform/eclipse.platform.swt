@@ -258,8 +258,8 @@ void createToolBar(final Composite parent) {
 	
 	// setup items to be contained in the background menu
 	colorMenu.setColorItems(true);
-	colorMenu.setPatternItems(true);
-	colorMenu.setGradientItems(true);
+	colorMenu.setPatternItems(checkAdvancedGraphics());
+	colorMenu.setGradientItems(checkAdvancedGraphics());
 	
 	// create the background menu
 	backMenu = colorMenu.createMenu(parent, new ColorListener() {

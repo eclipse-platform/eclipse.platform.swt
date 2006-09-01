@@ -171,6 +171,7 @@ public class CountDownTab extends AnimatedGraphicsTab {
 	 *      int, int)
 	 */
 	public void paint(GC gc, int width, int height) {
+		if (!example.checkAdvancedGraphics()) return;
 		Device device = gc.getDevice();
 
 		// diameter of the circle in pixels

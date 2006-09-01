@@ -77,7 +77,7 @@ public void createControlPanel(Composite parent) {
 	
 	// color menu
 	ColorMenu cm = new ColorMenu();
-	cm.setPatternItems(true);
+	cm.setPatternItems(example.checkAdvancedGraphics());
 	menu = cm.createMenu(parent.getParent(), new ColorListener() {
 		public void setColor(GraphicsBackground gb) {
 			background = gb;		
@@ -115,6 +115,7 @@ public void next(int width, int height) {
 }
 
 public void paint(GC gc, int width, int height) {
+	if (!example.checkAdvancedGraphics()) return;
 	Device device = gc.getDevice();
 
 	Pattern pattern = null;

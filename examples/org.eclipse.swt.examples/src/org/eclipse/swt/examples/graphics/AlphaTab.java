@@ -86,6 +86,7 @@ public class AlphaTab extends AnimatedGraphicsTab {
 	 * Paint the receiver into the specified GC. 
 	 */
 	public void paint(GC gc, int width, int height) {
+		if (!example.checkAdvancedGraphics()) return;
 		Device device = gc.getDevice();
 
 		if (alphaImg1 == null) {
