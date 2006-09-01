@@ -166,28 +166,27 @@ void createControls(final Composite parent) {
 }
 
 void createCanvas(Composite parent) {
-	canvas = new Canvas(parent, SWT.NO_BACKGROUND);
+	int style = SWT.NO_BACKGROUND;
+	if (dbItem.getSelection()) style |= SWT.DOUBLE_BUFFERED;
+	canvas = new Canvas(parent, style);
 	canvas.addListener(SWT.Paint, new Listener() {
 		public void handleEvent(Event event) {
-			GC gc;
+			GC gc = event.gc;
 			Rectangle rect = canvas.getClientArea();
-			Image buffer = null;
-			if (dbItem.getSelection()) {
-				buffer = new Image(canvas.getDisplay(), rect);
-				gc = new GC(buffer);
-			} else {
-				gc = event.gc;
-			}
 			paintBackground(gc, rect);
 			GraphicsTab tab = getTab();
 			if (tab != null) tab.paint(gc, rect.width, rect.height);
-			if (gc != event.gc) gc.dispose();
-			if (buffer != null) {
-				event.gc.drawImage(buffer, 0, 0);
-				buffer.dispose();
-			}
 		}
 	});
+}
+
+void recreateCanvas() {
+	if (dbItem.getSelection() == ((canvas.getStyle() & SWT.DOUBLE_BUFFERED) != 0)) return;
+	Object data = canvas.getLayoutData();
+	if (canvas != null) canvas.dispose();
+	createCanvas(parent);
+	canvas.setLayoutData(data);
+	parent.layout(true, true);
 }
 
 /**
@@ -297,6 +296,11 @@ void createToolBar(final Composite parent) {
 	dbItem = new ToolItem(toolBar, SWT.CHECK);
 	dbItem.setText(getResourceString("DoubleBuffer")); //$NON-NLS-1$
 	dbItem.setImage(loadImage(display, "db.gif")); //$NON-NLS-1$
+	dbItem.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			setDoubleBuffered(dbItem.getSelection());
+		}
+	});
 }
 
 /**
@@ -545,6 +549,14 @@ Image loadImage(Device device, String name) {
  */
 public void redraw() {
 	canvas.redraw();
+}
+
+/**
+ * Sets wheter the canvas is double buffered or not.
+ */
+public void setDoubleBuffered(boolean doubleBuffered) {
+	dbItem.setSelection(doubleBuffered);
+	recreateCanvas();
 }
 
 /**
