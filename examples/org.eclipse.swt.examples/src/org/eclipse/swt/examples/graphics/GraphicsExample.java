@@ -34,67 +34,25 @@ public class GraphicsExample {
 	Text tabDesc;					// multi-line text widget that displays a tab description
 	Sash hSash, vSash;
 	Canvas canvas;
-	Composite leftPanel, rightPanel, tabControlPanel;
-
+	Composite tabControlPanel;
 	ToolItem backItem, dbItem;		// background, double buffer items
-	
 	Menu backMenu;					// background menu item
 	
 	ArrayList resources;			// stores resources that will be disposed
 	ArrayList tabs_in_order;		// stores GraphicsTabs in the order that they appear in the tree
-	
-
 	boolean animate = true;			// whether animation should happen
 
 	static boolean advanceGraphics, advanceGraphicsInit;
 	
+	static final int MARGIN = 5;
+	static final int SASH_SPACING = 1;
 	static final int TIMER = 30;
 	static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("examples_graphics"); //$NON-NLS-1$
 
 public GraphicsExample(final Composite parent) {
 	this.parent = parent;
-	GridData data;
-	GridLayout layout = new GridLayout(3, false);
-	layout.horizontalSpacing = 1;
-	parent.setLayout(layout);
-	tabs = createTabs();
 	resources = new ArrayList();
-	createToolBar(parent);
-	createLeftPanel(parent);	
-	vSash = new Sash(parent, SWT.VERTICAL);
-	createTabPanel(parent);
-	
-	// set toolBar layout data
-	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-	data.horizontalSpan = 3;
-	toolBar.setLayoutData(data);
-	
-	data = new GridData(SWT.CENTER, SWT.FILL, false, true);
-	leftPanel.setLayoutData(data);
-	
-	// set sash layout data
-	data = new GridData(SWT.CENTER, SWT.FILL, false, true);
-	vSash.setLayoutData(data);
-	
-	// set rightPanel layout data
-	data = new GridData(SWT.FILL, SWT.FILL, true, true);
-	rightPanel.setLayoutData(data);
-	
-	vSash.addListener(SWT.Selection, new Listener() {
-		public void handleEvent(Event event) {
-			if (event.detail != SWT.DRAG) {
-				GridData data = (GridData)tabList.getLayoutData();
-				int widthHint = event.x - tabList.computeTrim(0, 0, 0, 0).width - 14;
-				data.widthHint = widthHint;
-				data = (GridData)tabDesc.getLayoutData();
-				data.widthHint = widthHint;
-				parent.layout(true);
-				animate = true;
-			} else {
-				animate = false;
-			}
-		}
-	});
+	createControls(parent);
 	setTab(tab);
 	startAnimationTimer();
 }
@@ -117,6 +75,91 @@ boolean checkAdvancedGraphics() {
 		return false;
 	}
 	return advanceGraphics = true;
+}
+
+void createControls(final Composite parent) {
+	tabs = createTabs();
+	createToolBar(parent);
+	createTabList(parent);
+	hSash = new Sash(parent, SWT.HORIZONTAL);
+	createTabDesc(parent);	
+	vSash = new Sash(parent, SWT.VERTICAL);
+	createCanvas(parent);
+	createControlPanel(parent);
+	
+	FormData data;
+	FormLayout layout = new FormLayout();
+	parent.setLayout(layout);
+	
+	data = new FormData();
+	data.left = new FormAttachment(0, MARGIN);
+	data.top = new FormAttachment(0, MARGIN);
+	data.right = new FormAttachment(100, -MARGIN);
+	toolBar.setLayoutData(data);
+
+	data = new FormData();
+	data.left = new FormAttachment(0, MARGIN);
+	data.top = new FormAttachment(toolBar, MARGIN);
+	data.right = new FormAttachment(vSash, -SASH_SPACING);
+	data.bottom = new FormAttachment(hSash, -SASH_SPACING);
+	tabList.setLayoutData(data);
+
+	data = new FormData();
+	data.left = new FormAttachment(0, MARGIN);
+	int offset = parent.getBounds().height - tabDesc.computeSize(SWT.DEFAULT, tabDesc.getLineHeight() * 10).y;
+	data.top = new FormAttachment(null, offset);
+	data.right = new FormAttachment(vSash, -SASH_SPACING);
+	hSash.setLayoutData(data);
+
+	data = new FormData();
+	data.left = new FormAttachment(0, MARGIN);
+	data.top = new FormAttachment(hSash, SASH_SPACING);
+	data.right = new FormAttachment(vSash, -SASH_SPACING);
+	data.bottom = new FormAttachment(100, -MARGIN);
+	tabDesc.setLayoutData(data);
+	
+	data = new FormData();
+	data.left = new FormAttachment(null, tabList.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 50);
+	data.top = new FormAttachment(toolBar, MARGIN);
+	data.bottom = new FormAttachment(100, -MARGIN);
+	vSash.setLayoutData(data);
+
+	data = new FormData();
+	data.left = new FormAttachment(vSash, SASH_SPACING);
+	data.top = new FormAttachment(toolBar, MARGIN);
+	data.right = new FormAttachment(100, -MARGIN);
+	data.bottom = new FormAttachment(tabControlPanel);
+	canvas.setLayoutData(data);
+
+	data = new FormData();
+	data.left = new FormAttachment(vSash, SASH_SPACING);
+	data.right = new FormAttachment(100, -MARGIN);
+	data.bottom = new FormAttachment(100, -MARGIN);
+	tabControlPanel.setLayoutData(data);
+	
+	vSash.addListener(SWT.Selection, new Listener() {
+		public void handleEvent(Event event) {
+			if (event.detail != SWT.DRAG) {
+				FormData data = (FormData)vSash.getLayoutData();
+				data.left.offset = event.x;
+				parent.layout(true);
+				animate = true;
+			} else {
+				animate = false;
+			}
+		}
+	});
+	hSash.addListener (SWT.Selection, new Listener () {
+		public void handleEvent (Event event) {
+			Rectangle rect = vSash.getParent().getClientArea();
+			event.y = Math.min (Math.max (event.y, 40), rect.height - 40);
+			if (event.detail != SWT.DRAG) {
+				FormData data = (FormData)hSash.getLayoutData();
+				data.top.offset = event.y;
+				parent.layout(true);
+			}
+		}
+	});
 }
 
 void createCanvas(Composite parent) {
@@ -181,20 +224,6 @@ void createControlPanel(Composite parent) {
 	tabControlPanel = group = new Group(parent, SWT.NONE);
 	group.setText(getResourceString("Settings")); //$NON-NLS-1$
 	tabControlPanel.setLayout(new RowLayout());
-}
-
-void createTabPanel(Composite parent) {
-	rightPanel = new Composite(parent, SWT.NONE);
-	GridData data;
-	GridLayout layout = new GridLayout(1, false);
-	layout.marginHeight = layout.marginWidth = 0;
-	rightPanel.setLayout(layout);
-	createCanvas(rightPanel);
-	createControlPanel(rightPanel);
-	data = new GridData(SWT.FILL, SWT.FILL, true, true);
-	canvas.setLayoutData(data);	
-	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-	tabControlPanel.setLayoutData(data);
 }
 
 void createToolBar(final Composite parent) {
@@ -334,53 +363,6 @@ static Image createImage(Device device, Color color) {
 	gc.drawRectangle(rect.x, rect.y, rect.width - 1, rect.height - 1);
 	gc.dispose();
 	return image;
-}
-
-/**
- * This method creates the leftPanel composite. It contains the tree
- * structure of tabs (tabList), a horizontal sash (hSash) and the
- * description of the selected tab (tabDesc).
- */
-void createLeftPanel(Composite parentComp) {
-	leftPanel = new Composite(parentComp, SWT.NONE);
-	GridData data;
-	GridLayout compLayout = new GridLayout(1, false);
-	compLayout.marginHeight = compLayout.marginWidth = 0;
-	compLayout.verticalSpacing = 1;
-	leftPanel.setLayout(compLayout);
-	createTabList(leftPanel);
-	hSash = new Sash(leftPanel, SWT.HORIZONTAL);
-	createTabDesc(leftPanel);
-
-	// set tabList layout data
-	int width = tabList.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 50;
-	data = new GridData(SWT.FILL, SWT.FILL, true, true);
-	data.widthHint = width;
-	tabList.setLayoutData(data);
-
-	// set sash layout data
-	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-	hSash.setLayoutData(data);
-	
-	// set tabDesc layout data
-	data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-	data.widthHint = width;
-	data.heightHint = tabDesc.getLineHeight() * 10;
-	tabDesc.setLayoutData(data);
-	
-	// add listener
-	hSash.addListener (SWT.Selection, new Listener () {
-		public void handleEvent (Event event) {
-			Rectangle rect = vSash.getParent().getClientArea();
-			event.y = Math.min (Math.max (event.y, 40), rect.height - 40);
-			if (event.detail != SWT.DRAG) {
-				GridData data = (GridData)tabDesc.getLayoutData();
-				data.heightHint = toolBar.getBounds().height + leftPanel.getBounds().height - event.y - leftPanel.getBounds().y;
-				hSash.setBounds (event.x, event.y, event.width, event.height);
-				parent.layout(true, true);
-			}
-		}
-	});
 }
 
 void createTabList(Composite parent) {
@@ -578,16 +560,14 @@ public void setTab(GraphicsTab tab) {
 	} else {
 		tabDesc.setText("");
 	}
-
-	GridData data = (GridData)tabControlPanel.getLayoutData();
+	FormData data = (FormData)tabControlPanel.getLayoutData();
 	children = tabControlPanel.getChildren();
-	data.exclude = children.length == 0;
-	tabControlPanel.setVisible(!data.exclude);
-	if (data.exclude) {
-		rightPanel.layout();
+	if (children.length != 0) {
+		data.top = null;
 	} else {
-		rightPanel.layout(children);
+		data.top = new FormAttachment(100, -MARGIN);
 	}
+	parent.layout(true, true);
 	if (tab != null) {
 		TreeItem[] selection = tabList.getSelection();
 		if (selection.length == 0 || selection[0].getData() != tab) {
