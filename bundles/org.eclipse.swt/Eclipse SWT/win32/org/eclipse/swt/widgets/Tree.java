@@ -4794,7 +4794,8 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 						int index = OS.SendMessage (hwndHeader, OS.HDM_HITTEST, 0, pinfo);
 						if (0 <= index && index < columnCount && !columns [index].resizable) {
 							if ((pinfo.flags & (OS.HHT_ONDIVIDER | OS.HHT_ONDIVOPEN)) != 0) {
-								return OS.DefWindowProc (hwnd, OS.WM_SETCURSOR, wParam, lParam);
+								OS.SetCursor (OS.LoadCursor (0, OS.IDC_ARROW));
+								return 1;
 							}
 						}
 					}
