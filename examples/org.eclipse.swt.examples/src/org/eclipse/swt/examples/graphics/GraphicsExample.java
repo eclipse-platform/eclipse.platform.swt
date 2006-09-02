@@ -592,6 +592,7 @@ public void setTab(GraphicsTab tab) {
 	}
 	parent.layout(true, true);
 	if (tab != null) {
+		setDoubleBuffered(tab instanceof AnimatedGraphicsTab);
 		TreeItem[] selection = tabList.getSelection();
 		if (selection.length == 0 || selection[0].getData() != tab) {
 			TreeItem item = findItemByData(tabList.getItems(), tab);

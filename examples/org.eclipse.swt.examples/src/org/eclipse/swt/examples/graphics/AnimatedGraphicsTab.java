@@ -44,9 +44,6 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 		parent.setLayout(layout);
 		
 		createToolBar(parent);
-		
-		// set double buffering
-		example.setDoubleBuffered(true);
 	}
 	
 	/**
