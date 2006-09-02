@@ -46,7 +46,7 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 		createToolBar(parent);
 		
 		// set double buffering
-		example.dbItem.setSelection(true);
+		example.setDoubleBuffered(true);
 	}
 	
 	/**
@@ -121,7 +121,7 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 	 * interval between calls to the next method). Should be overridden to
 	 * return a value that is more appropriate for the tab.
 	 */
-	public int getSelectedAnimationTime() {
+	public int getAnimationTime() {
 		return timerSpinner.getSelection();
 	}
 	

@@ -619,7 +619,7 @@ void startAnimationTimer() {
 					canvas.redraw();
 					canvas.update();
 				}
-				timeout =  animTab.getSelectedAnimationTime();
+				timeout =  animTab.getAnimationTime();
 			}
 			display.timerExec(timeout, this);
 		}
