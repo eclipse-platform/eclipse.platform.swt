@@ -128,8 +128,6 @@ public void paint(GC gc, int width, int height) {
 	gc.setLineStyle(SWT.LINE_DASHDOTDOT);
 	gc.drawLine(3*width/16, 5*height/6, 13*width/16, 5*height/6);
 	
-	if (pattern != null) pattern.dispose();
-	
 	// draw labels
 	Font font = new Font(device, getPlatformFont(), 20, SWT.NORMAL);
 	gc.setFont(font);
@@ -138,19 +136,19 @@ public void paint(GC gc, int width, int height) {
 	
 	String text = GraphicsExample.getResourceString("Solid"); //$NON-NLS-1$
 	Point size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 1*height/12);
+	gc.drawString(text, (width-size.x)/2, 1*height/12, true);
 	text = GraphicsExample.getResourceString("Dash"); //$NON-NLS-1$
 	size = gc.stringExtent(text);	
-	gc.drawString(text, (width-size.x)/2, 3*height/12);
+	gc.drawString(text, (width-size.x)/2, 3*height/12, true);
 	text = GraphicsExample.getResourceString("Dot"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 5*height/12);
+	gc.drawString(text, (width-size.x)/2, 5*height/12, true);
 	text = GraphicsExample.getResourceString("DashDot"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 7*height/12);
+	gc.drawString(text, (width-size.x)/2, 7*height/12, true);
 	text = GraphicsExample.getResourceString("DashDotDot"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 9*height/12);
+	gc.drawString(text, (width-size.x)/2, 9*height/12, true);
 	font.dispose();
 }
 

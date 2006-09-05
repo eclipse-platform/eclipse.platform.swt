@@ -103,13 +103,13 @@ public void paint(GC gc, int width, int height) {
 
 	String text = GraphicsExample.getResourceString("Flat"); //$NON-NLS-1$
 	Point size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 3*height/12);
+	gc.drawString(text, (width-size.x)/2, 3*height/12, true);
 	text = GraphicsExample.getResourceString("Square"); //$NON-NLS-1$
 	size = gc.stringExtent(text);	
-	gc.drawString(text, (width-size.x)/2, 5*height/12);
+	gc.drawString(text, (width-size.x)/2, 5*height/12, true);
 	text = GraphicsExample.getResourceString("Round"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 7*height/12);
+	gc.drawString(text, (width-size.x)/2, 7*height/12, true);
 	font.dispose();
 
 	Pattern pattern = null;

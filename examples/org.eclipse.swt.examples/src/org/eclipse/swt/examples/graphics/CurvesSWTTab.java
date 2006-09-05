@@ -288,7 +288,7 @@ public void paint(GC gc, int width, int height) {
 	transform.dispose();
 
 	gc.setForeground(device.getSystemColor(SWT.COLOR_DARK_BLUE));
-	gc.drawString(GraphicsExample.getResourceString("Cubic"), 0, 175);
+	gc.drawString(GraphicsExample.getResourceString("Cubic"), 0, 175, true);
 	
 	Path path = new Path(device);
 	path.cubicTo(-200 + sDiffX1, 50 + sDiffY1, 200 + sDiffX2, 100 + sDiffY2, 0, 150);
@@ -310,8 +310,8 @@ public void paint(GC gc, int width, int height) {
 	transform.dispose();
 	
 	gc.setForeground(device.getSystemColor(SWT.COLOR_GRAY));
-	gc.drawString(GraphicsExample.getResourceString("Quadratic"), 0, -50);
-	gc.drawString(GraphicsExample.getResourceString("Quadratic"), 110, -50);
+	gc.drawString(GraphicsExample.getResourceString("Quadratic"), 0, -50, true);
+	gc.drawString(GraphicsExample.getResourceString("Quadratic"), 110, -50, true);
 	
 	path = new Path(device);
 	path.quadTo(100 + wDiffX1, 300 + wDiffY1, 100, 0);
@@ -334,7 +334,7 @@ public void paint(GC gc, int width, int height) {
 	transform.dispose();
 	
 	gc.setForeground(device.getSystemColor(SWT.COLOR_YELLOW));
-	gc.drawString(GraphicsExample.getResourceString("Cubic"), 25, -50);
+	gc.drawString(GraphicsExample.getResourceString("Cubic"), 25, -50, true);
 	
 	path = new Path(device);
 	path.cubicTo(33 + tTopDiffX1, -20 + tTopDiffY1, 66 + tTopDiffX2, 20 + tTopDiffY2, 100, 0);
@@ -356,7 +356,7 @@ public void paint(GC gc, int width, int height) {
 	transform.dispose();
 	
 	gc.setForeground(device.getSystemColor(SWT.COLOR_RED));
-	gc.drawString(GraphicsExample.getResourceString("Cubic"), 0, 175);
+	gc.drawString(GraphicsExample.getResourceString("Cubic"), 0, 175, true);
 	
 	path = new Path(device);
 	path.cubicTo(-33 + tBotDiffX1, 50 + tBotDiffY1, 33 + tBotDiffX2, 100 + tBotDiffY2, 0, 150);

@@ -124,49 +124,49 @@ public void paint(GC gc, int width, int height) {
 	Font font = new Font(device, getPlatformFontFace(0), 100, SWT.NORMAL);
 	gc.setFont(font);
 	Point size = gc.stringExtent(text);
-	gc.drawString(text, width/4 - size.x/2, height/4 - size.y/2);
+	gc.drawString(text, width/4 - size.x/2, height/4 - size.y/2, true);
 	font.dispose();
 	
 	// column 1, row 2
 	font = new Font(device, getPlatformFontFace(1), 100, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
-	gc.drawString(text, width/4 - size.x/2, 3*height/4 - size.y/2);
+	gc.drawString(text, width/4 - size.x/2, 3*height/4 - size.y/2, true);
 	font.dispose();
 	
 	// column 2, row 1
 	font = new Font(device, getPlatformFontFace(2), 50, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, 0);
+	gc.drawString(text, (width-size.x)/2, 0, true);
 	font.dispose();
 	
 	// column 2, row 2
 	font = new Font(device, getPlatformFontFace(3), 100, SWT.ITALIC);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, (height-size.y)/2);
+	gc.drawString(text, (width-size.x)/2, (height-size.y)/2, true);
 	font.dispose();
 	
 	// column 2, row 3
 	font = new Font(device, getPlatformFontFace(4), 50, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
-	gc.drawString(text, (width-size.x)/2, height-size.y);
+	gc.drawString(text, (width-size.x)/2, height-size.y, true);
 	font.dispose();
 	
 	// column 3, row 1
 	font = new Font(device, getPlatformFontFace(5), 100, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
-	gc.drawString(text, 3*width/4 - size.x/2, height/4 - size.y/2);
+	gc.drawString(text, 3*width/4 - size.x/2, height/4 - size.y/2, true);
 	font.dispose();
 	
 	// column 3, row 2
 	font = new Font(device, getPlatformFontFace(6), 100, SWT.NORMAL);
 	gc.setFont(font);
 	size = gc.stringExtent(text);
-	gc.drawString(text, 3*width/4 - size.x/2, 3*height/4 - size.y/2);
+	gc.drawString(text, 3*width/4 - size.x/2, 3*height/4 - size.y/2, true);
 	font.dispose();
 }
 

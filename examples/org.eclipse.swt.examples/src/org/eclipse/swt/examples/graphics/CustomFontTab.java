@@ -192,7 +192,7 @@ public void paint(GC gc, int width, int height) {
 		gc.setForegroundPattern(pattern);
 	}
 	
-	gc.drawString(text, (width-textWidth)/2, (height-textHeight)/2);
+	gc.drawString(text, (width-textWidth)/2, (height-textHeight)/2, true);
 
 	font.dispose();
 	if (pattern != null) pattern.dispose();	

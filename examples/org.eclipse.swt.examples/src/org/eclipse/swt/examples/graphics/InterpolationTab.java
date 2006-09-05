@@ -115,7 +115,7 @@ public void paint(GC gc, int width, int height) {
 	// write some text below the original image
 	String text = GraphicsExample.getResourceString("OriginalImg"); //$NON-NLS-1$
 	Point size = gc.stringExtent(text);	
-	gc.drawString(text, (width-size.x)/2, 25 + bounds.height);
+	gc.drawString(text, (width-size.x)/2, 25 + bounds.height, true);
 	
 	Transform transform = new Transform(device);
 	transform.translate((width - (bounds.width * scaleX + 10) * 4) / 2, 25 + bounds.height + size.y +
@@ -129,28 +129,28 @@ public void paint(GC gc, int width, int height) {
 	point[0] = (scaleX*bounds.width + 5 - size.x)/(2*scaleX);
 	point[1] = bounds.height;
 	transform.transform(point);
-	gc.drawString(text, (int)point[0], (int)point[1]);
+	gc.drawString(text, (int)point[0], (int)point[1], true);
 	
 	text = GraphicsExample.getResourceString("Low"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
 	point[0] = (scaleX*bounds.width + 5 - size.x)/(2*scaleX) + bounds.width;
 	point[1] = bounds.height;
 	transform.transform(point);
-	gc.drawString(text, (int)point[0], (int)point[1]);
+	gc.drawString(text, (int)point[0], (int)point[1], true);
 	
 	text = GraphicsExample.getResourceString("Default"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
 	point[0] = (scaleX*bounds.width + 5 - size.x)/(2*scaleX) + 2*bounds.width;
 	point[1] = bounds.height;
 	transform.transform(point);
-	gc.drawString(text, (int)point[0], (int)point[1]);
+	gc.drawString(text, (int)point[0], (int)point[1], true);
 	
 	text = GraphicsExample.getResourceString("High"); //$NON-NLS-1$
 	size = gc.stringExtent(text);
 	point[0] = (scaleX*bounds.width + 5 - size.x)/(2*scaleX) + 3*bounds.width;
 	point[1] = bounds.height;
 	transform.transform(point);
-	gc.drawString(text, (int)point[0], (int)point[1]);
+	gc.drawString(text, (int)point[0], (int)point[1], true);
 
 	gc.setTransform(transform);
 	transform.dispose();
