@@ -41,6 +41,8 @@ public class Path extends Resource {
 	 */
 	public int handle;
 	
+	boolean moved;
+
 /**
  * Constructs a new empty Path.
  * 
@@ -95,6 +97,7 @@ public Path (Device device) {
  */
 public void addArc(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	moved = true;
 	float[] cmt = new float[6];
 	OS.CGAffineTransformMake(width / 2f, 0, 0, height / 2f, x + width / 2f, y + height / 2f, cmt);
 	if (arcAngle < 0) {
@@ -102,6 +105,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	} else {
 		OS.CGPathAddArc(handle, cmt, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
 	}
+	if (Math.abs(arcAngle) >= 360) close();
 }
 
 /**
@@ -122,6 +126,7 @@ public void addPath(Path path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.CGPathAddPath(handle, null, path.handle);
+	moved = false;
 }
 
 /**
@@ -144,6 +149,7 @@ public void addRectangle(float x, float y, float width, float height) {
 	rect.width = width;
 	rect.height = height;
 	OS.CGPathAddRect(handle, null, rect);
+	moved = false;
 }
 
 int newPathProc(int data) {
@@ -206,6 +212,7 @@ public void addString(String string, float x, float y, Font font) {
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = string.length();
 	if (length == 0) return;
+	moved = false;
 	
 	Callback newPathCallback = new Callback(this, "newPathProc", 1);
 	int newPathProc = newPathCallback.getAddress();
@@ -312,6 +319,7 @@ int applierFunc(int info, int elementPtr) {
 public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGPathCloseSubpath(handle);
+	moved = false;
 }
 
 /**
@@ -389,6 +397,12 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
  */
 public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (!moved) {
+		CGPoint pt = new CGPoint();
+		OS.CGPathGetCurrentPoint(handle, pt);
+		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
+		moved = true;
+	}
 	OS.CGPathAddCurveToPoint(handle, null, cx1, cy1, cx2, cy2, x, y);
 }
 
@@ -518,6 +532,12 @@ public boolean isDisposed() {
  */
 public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (!moved) {
+		CGPoint pt = new CGPoint();
+		OS.CGPathGetCurrentPoint(handle, pt);
+		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
+		moved = true;
+	}
 	OS.CGPathAddLineToPoint(handle, null, x, y);
 }
 
@@ -536,6 +556,13 @@ public void lineTo(float x, float y) {
 public void moveTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGPathMoveToPoint(handle, null, x, y);
+	/*
+	* Bug in Quartz.  If CGPathMoveToPoint() is not called at the
+	* begining of a subpath, the following segments do not output
+	* anything.  The fix is to detect that the app did not call
+	* CGPathMoveToPoint() and call it explicitly.
+	*/
+	moved = true;
 }
 
 /**
@@ -552,6 +579,12 @@ public void moveTo(float x, float y) {
  */
 public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (!moved) {
+		CGPoint pt = new CGPoint();
+		OS.CGPathGetCurrentPoint(handle, pt);
+		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
+		moved = true;
+	}
 	OS.CGPathAddQuadCurveToPoint(handle, null, cx, cy, x, y);
 }
 
