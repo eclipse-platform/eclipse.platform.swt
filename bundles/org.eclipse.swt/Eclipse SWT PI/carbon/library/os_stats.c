@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 925;
-int OS_nativeFunctionCallCount[925];
+int OS_nativeFunctionCount = 928;
+int OS_nativeFunctionCallCount[928];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -248,6 +248,7 @@ char * OS_nativeFunctionNames[] = {
 	"CreateBevelButtonControl",
 	"CreateCGContextForPort",
 	"CreateCheckBoxControl",
+	"CreateClockControl",
 	"CreateDataBrowserControl",
 	"CreateEditUnicodeTextControl",
 	"CreateEvent",
@@ -356,6 +357,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetControlBounds",
 	"GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2_3I",
 	"GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I",
+	"GetControlData__ISIILorg_eclipse_swt_internal_carbon_LongDateRec_2_3I",
 	"GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I",
 	"GetControlData__ISII_3B_3I",
 	"GetControlData__ISII_3I_3I",
@@ -755,6 +757,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlButtonContentInfo_2",
 	"SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlEditTextSelectionRec_2",
 	"SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2",
+	"SetControlData__IIIILorg_eclipse_swt_internal_carbon_LongDateRec_2",
 	"SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2",
 	"SetControlData__IIII_3B",
 	"SetControlData__IIII_3I",

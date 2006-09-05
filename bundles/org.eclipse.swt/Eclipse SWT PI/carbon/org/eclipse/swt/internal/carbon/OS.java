@@ -177,6 +177,12 @@ public class OS extends Platform {
 	public static final int kControlBevelButtonGraphicAlignTag = ('g'<<24) + ('a'<<16) + ('l'<<8) + 'i';
 	public static final int kControlBoundsChangeSizeChanged = 1 << 2;
 	public static final int kControlBoundsChangePositionChanged = 1 << 3;
+	public static final int kControlClockTypeHourMinuteSecond = 1;
+	public static final int kControlClockTypeMonthDayYear = 2;
+	public static final int kControlClockFlagStandard = 0;
+	public static final int kControlClockFlagDisplayOnly = 1;
+	public static final int kControlClockFlagLive = 2;
+	public static final int kControlClockLongDateTag = ('d'<<24) + ('a'<<16) + ('t'<<8) + 'e';
 	public static final int kControlCheckBoxAutoToggleProc = 371;
 	public static final int kControlContentCGImageRef = 134;
 	public static final int kControlContentCIconHandle = 130;
@@ -1128,6 +1134,7 @@ public static final native int CountDragItemFlavors(int theDrag, int theItemRef,
 public static final native short CountMenuItems(int mHandle);
 public static final native int CountSubControls(int cHandle, short[] count);
 public static final native int CreateBevelButtonControl(int window, Rect boundsRect, int title, short thickness, short behavior, int info, short menuID, short menuBehavior, short menuPlacement, int[] outControl);
+public static final native int CreateClockControl(int window, Rect boundsRect, int clockType, int clockFlags, int[] outControl);
 public static final native int CreateCheckBoxControl(int window, Rect boundsRect, int title, int initialValue, boolean autoToggle, int[] outControl);
 public static final native int CreateCGContextForPort(int inPort, int[] outContext);
 public static final native int CreateDataBrowserControl(int window, Rect boundsRect, int style,int[] outControl);
@@ -1241,6 +1248,7 @@ public static final native int GetControlData(int inControl, short inPart, int i
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, short[] inBuffer, int[] outActualSize);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, byte[] inBuffer, int[] outActualSize);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, ControlEditTextSelectionRec inBuffer, int[] outActualSize);
+public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, LongDateRec inBuffer, int[] outActualSize);
 public static final native int GetControlEventTarget(int cHandle);
 public static final native int GetControlFeatures(int inControl, int[] outFeatures);
 public static final native int GetControlKind(int inControl, ControlKind kind);
@@ -1631,6 +1639,7 @@ public static final native void SetControlAction(int cHandle, int actionProc);
 public static final native void SetControlBounds(int cHandle, Rect bounds);
 public static final native int SetControlColorProc(int inControl, int inProc);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, ControlButtonContentInfo inData);
+public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, LongDateRec inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, ControlTabInfoRecV1 inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, Rect inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, short[] inData);

@@ -563,6 +563,18 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 #define HMHelpContentRec_sizeof() 0
 #endif
 
+#ifndef NO_LongDateRec
+void cacheLongDateRecFields(JNIEnv *env, jobject lpObject);
+LongDateRec *getLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct);
+void setLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct);
+#define LongDateRec_sizeof() sizeof(LongDateRec)
+#else
+#define cacheLongDateRecFields(a,b)
+#define getLongDateRecFields(a,b,c) NULL
+#define setLongDateRecFields(a,b,c)
+#define LongDateRec_sizeof() 0
+#endif
+
 #ifndef NO_MenuTrackingData
 void cacheMenuTrackingDataFields(JNIEnv *env, jobject lpObject);
 MenuTrackingData *getMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct);

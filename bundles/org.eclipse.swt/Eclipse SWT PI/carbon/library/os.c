@@ -3022,6 +3022,25 @@ fail:
 }
 #endif
 
+#ifndef NO_CreateClockControl
+JNIEXPORT jint JNICALL OS_NATIVE(CreateClockControl)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateClockControl_FUNC);
+	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)CreateClockControl((WindowRef)arg0, (const Rect *)lparg1, (ControlClockType)arg2, (ControlClockFlags)arg3, (ControlRef *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CreateClockControl_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateDataBrowserControl
 JNIEXPORT jint JNICALL OS_NATIVE(CreateDataBrowserControl)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
@@ -4677,6 +4696,25 @@ fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) setControlFontStyleRecFields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetControlData__ISIILorg_eclipse_swt_internal_carbon_LongDateRec_2_3I
+JNIEXPORT jint JNICALL OS_NATIVE(GetControlData__ISIILorg_eclipse_swt_internal_carbon_LongDateRec_2_3I)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jobject arg4, jintArray arg5)
+{
+	LongDateRec _arg4, *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetControlData__ISIILorg_eclipse_swt_internal_carbon_LongDateRec_2_3I_FUNC);
+	if (arg4) if ((lparg4 = getLongDateRecFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)GetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (void *)lparg4, (Size *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) setLongDateRecFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, GetControlData__ISIILorg_eclipse_swt_internal_carbon_LongDateRec_2_3I_FUNC);
 	return rc;
 }
 #endif
@@ -10570,6 +10608,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetControlData__IIIILorg_eclipse_swt_internal_c
 fail:
 	if (arg4 && lparg4) setControlTabInfoRecV1Fields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, SetControlData__IIIILorg_eclipse_swt_internal_carbon_ControlTabInfoRecV1_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_LongDateRec_2
+JNIEXPORT jint JNICALL OS_NATIVE(SetControlData__IIIILorg_eclipse_swt_internal_carbon_LongDateRec_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	LongDateRec _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetControlData__IIIILorg_eclipse_swt_internal_carbon_LongDateRec_2_FUNC);
+	if (arg4) if ((lparg4 = getLongDateRecFields(env, arg4, &_arg4)) == NULL) goto fail;
+	rc = (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)lparg4);
+fail:
+	if (arg4 && lparg4) setLongDateRecFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, SetControlData__IIIILorg_eclipse_swt_internal_carbon_LongDateRec_2_FUNC);
 	return rc;
 }
 #endif

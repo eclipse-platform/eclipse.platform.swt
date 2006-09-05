@@ -2249,6 +2249,76 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 }
 #endif
 
+#ifndef NO_LongDateRec
+typedef struct LongDateRec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID era, year, month, day, hour, minute, second, dayOfWeek, dayOfYear, weekOfYear, pm, res1, res2, res3;
+} LongDateRec_FID_CACHE;
+
+LongDateRec_FID_CACHE LongDateRecFc;
+
+void cacheLongDateRecFields(JNIEnv *env, jobject lpObject)
+{
+	if (LongDateRecFc.cached) return;
+	LongDateRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	LongDateRecFc.era = (*env)->GetFieldID(env, LongDateRecFc.clazz, "era", "S");
+	LongDateRecFc.year = (*env)->GetFieldID(env, LongDateRecFc.clazz, "year", "S");
+	LongDateRecFc.month = (*env)->GetFieldID(env, LongDateRecFc.clazz, "month", "S");
+	LongDateRecFc.day = (*env)->GetFieldID(env, LongDateRecFc.clazz, "day", "S");
+	LongDateRecFc.hour = (*env)->GetFieldID(env, LongDateRecFc.clazz, "hour", "S");
+	LongDateRecFc.minute = (*env)->GetFieldID(env, LongDateRecFc.clazz, "minute", "S");
+	LongDateRecFc.second = (*env)->GetFieldID(env, LongDateRecFc.clazz, "second", "S");
+	LongDateRecFc.dayOfWeek = (*env)->GetFieldID(env, LongDateRecFc.clazz, "dayOfWeek", "S");
+	LongDateRecFc.dayOfYear = (*env)->GetFieldID(env, LongDateRecFc.clazz, "dayOfYear", "S");
+	LongDateRecFc.weekOfYear = (*env)->GetFieldID(env, LongDateRecFc.clazz, "weekOfYear", "S");
+	LongDateRecFc.pm = (*env)->GetFieldID(env, LongDateRecFc.clazz, "pm", "S");
+	LongDateRecFc.res1 = (*env)->GetFieldID(env, LongDateRecFc.clazz, "res1", "S");
+	LongDateRecFc.res2 = (*env)->GetFieldID(env, LongDateRecFc.clazz, "res2", "S");
+	LongDateRecFc.res3 = (*env)->GetFieldID(env, LongDateRecFc.clazz, "res3", "S");
+	LongDateRecFc.cached = 1;
+}
+
+LongDateRec *getLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct)
+{
+	if (!LongDateRecFc.cached) cacheLongDateRecFields(env, lpObject);
+	lpStruct->ld.era = (*env)->GetShortField(env, lpObject, LongDateRecFc.era);
+	lpStruct->ld.year = (*env)->GetShortField(env, lpObject, LongDateRecFc.year);
+	lpStruct->ld.month = (*env)->GetShortField(env, lpObject, LongDateRecFc.month);
+	lpStruct->ld.day = (*env)->GetShortField(env, lpObject, LongDateRecFc.day);
+	lpStruct->ld.hour = (*env)->GetShortField(env, lpObject, LongDateRecFc.hour);
+	lpStruct->ld.minute = (*env)->GetShortField(env, lpObject, LongDateRecFc.minute);
+	lpStruct->ld.second = (*env)->GetShortField(env, lpObject, LongDateRecFc.second);
+	lpStruct->ld.dayOfWeek = (*env)->GetShortField(env, lpObject, LongDateRecFc.dayOfWeek);
+	lpStruct->ld.dayOfYear = (*env)->GetShortField(env, lpObject, LongDateRecFc.dayOfYear);
+	lpStruct->ld.weekOfYear = (*env)->GetShortField(env, lpObject, LongDateRecFc.weekOfYear);
+	lpStruct->ld.pm = (*env)->GetShortField(env, lpObject, LongDateRecFc.pm);
+	lpStruct->ld.res1 = (*env)->GetShortField(env, lpObject, LongDateRecFc.res1);
+	lpStruct->ld.res2 = (*env)->GetShortField(env, lpObject, LongDateRecFc.res2);
+	lpStruct->ld.res3 = (*env)->GetShortField(env, lpObject, LongDateRecFc.res3);
+	return lpStruct;
+}
+
+void setLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct)
+{
+	if (!LongDateRecFc.cached) cacheLongDateRecFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.era, (jshort)lpStruct->ld.era);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.year, (jshort)lpStruct->ld.year);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.month, (jshort)lpStruct->ld.month);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.day, (jshort)lpStruct->ld.day);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.hour, (jshort)lpStruct->ld.hour);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.minute, (jshort)lpStruct->ld.minute);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.second, (jshort)lpStruct->ld.second);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.dayOfWeek, (jshort)lpStruct->ld.dayOfWeek);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.dayOfYear, (jshort)lpStruct->ld.dayOfYear);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.weekOfYear, (jshort)lpStruct->ld.weekOfYear);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.pm, (jshort)lpStruct->ld.pm);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.res1, (jshort)lpStruct->ld.res1);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.res2, (jshort)lpStruct->ld.res2);
+	(*env)->SetShortField(env, lpObject, LongDateRecFc.res3, (jshort)lpStruct->ld.res3);
+}
+#endif
+
 #ifndef NO_MenuTrackingData
 typedef struct MenuTrackingData_FID_CACHE {
 	int cached;
