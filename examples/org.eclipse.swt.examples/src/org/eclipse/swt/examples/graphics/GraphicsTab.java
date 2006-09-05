@@ -57,6 +57,13 @@ public String getDescription() {
 	return "";
 }
 
+/**
+ *  Answer whether the receiver's drawing should be double bufferer.
+ */
+public boolean getDoubleBuffered() {
+	return false;
+}
+
 /** 
  * Paint the receiver into the specified GC. 
  */

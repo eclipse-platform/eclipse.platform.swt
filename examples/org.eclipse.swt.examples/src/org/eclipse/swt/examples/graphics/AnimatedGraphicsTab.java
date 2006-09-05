@@ -103,6 +103,13 @@ public abstract class AnimatedGraphicsTab extends GraphicsTab {
 	}
 	
 	/**
+	 *  Answer whether the receiver's drawing should be double bufferer.
+	 */
+	public boolean getDoubleBuffered() {
+		return true;
+	}
+	
+	/**
 	 * Gets the initial animation time to be used by the tab. Animation time:
 	 * number of milliseconds between the current drawing and the next (the time
 	 * interval between calls to the next method). Should be overridden to

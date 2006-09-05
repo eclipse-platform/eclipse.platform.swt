@@ -578,6 +578,7 @@ public void setTab(GraphicsTab tab) {
 	if (this.tab != null) this.tab.dispose();
 	this.tab = tab;
 	if (tab != null) {
+		setDoubleBuffered(tab.getDoubleBuffered());
 		tab.createControlPanel(tabControlPanel);
 		tabDesc.setText(tab.getDescription());
 	} else {
@@ -592,7 +593,6 @@ public void setTab(GraphicsTab tab) {
 	}
 	parent.layout(true, true);
 	if (tab != null) {
-		setDoubleBuffered(tab instanceof AnimatedGraphicsTab);
 		TreeItem[] selection = tabList.getSelection();
 		if (selection.length == 0 || selection[0].getData() != tab) {
 			TreeItem item = findItemByData(tabList.getItems(), tab);

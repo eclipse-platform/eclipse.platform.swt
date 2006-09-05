@@ -80,6 +80,10 @@ public String getDescription() {
 	return GraphicsExample.getResourceString("CurvesSWTDescription"); //$NON-NLS-1$
 }
 
+public boolean getDoubleBuffered() {
+	return true;
+}
+
 public void dispose() {
 	if (mouseListener != null)
 		example.canvas.removeMouseListener(mouseListener);
