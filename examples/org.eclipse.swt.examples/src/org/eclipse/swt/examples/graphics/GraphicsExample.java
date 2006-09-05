@@ -172,10 +172,27 @@ void createCanvas(Composite parent) {
 	canvas.addListener(SWT.Paint, new Listener() {
 		public void handleEvent(Event event) {
 			GC gc = event.gc;
-			Rectangle rect = canvas.getClientArea();
-			paintBackground(gc, rect);
+			Rectangle rect = canvas.getClientArea();			
+			Device device = gc.getDevice();
+			Pattern pattern = null;
+			if (background.getBgColor1() != null) {
+				if (background.getBgColor2() != null) { // gradient
+					pattern = new Pattern(device, 0, 0, rect.width, 
+							rect.height,
+							background.getBgColor1(),
+							background.getBgColor2());
+					gc.setBackgroundPattern(pattern);
+				} else {	// solid color
+					gc.setBackground(background.getBgColor1());
+				}
+			} else if (background.getBgImage() != null) {		// image
+				pattern = new Pattern(device, background.getBgImage());
+				gc.setBackgroundPattern(pattern);
+			}
+			gc.fillRectangle(rect);
 			GraphicsTab tab = getTab();
 			if (tab != null) tab.paint(gc, rect.width, rect.height);
+			if (pattern != null) pattern.dispose();
 		}
 	});
 }
@@ -187,34 +204,6 @@ void recreateCanvas() {
 	createCanvas(parent);
 	canvas.setLayoutData(data);
 	parent.layout(true, true);
-}
-
-/**
- * This method is used to paint the background.
- * If both colors have been initialized, a gradient will be created for the
- * background, otherwise; If only the first color is initialized, that color
- * will be applied to the background, otherwise; If the image has been
- * initialized, the image will be applied as a background pattern.
- */
-void paintBackground(GC gc, Rectangle rect) {
-	Device device = gc.getDevice();
-	Pattern pattern = null;
-	if (background.getBgColor1() != null) {
-		if (background.getBgColor2() != null) { // gradient
-			pattern = new Pattern(device, 0, 0, rect.width, 
-					rect.height,
-					background.getBgColor1(),
-					background.getBgColor2());
-			gc.setBackgroundPattern(pattern);
-		} else {	// solid color
-			gc.setBackground(background.getBgColor1());
-		}
-	} else if (background.getBgImage() != null) {		// image
-		pattern = new Pattern(device, background.getBgImage());
-		gc.setBackgroundPattern(pattern);
-	}
-	gc.fillRectangle(rect);
-	if (pattern != null) pattern.dispose();
 }
 
 /**
