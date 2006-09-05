@@ -3837,9 +3837,9 @@ public void showSelection () {
 void sortDescent (int [] items) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
-	for (int gap=length/2; gap>0; gap/=2) {
-		for (int i=gap; i<length; i++) {
-			for (int j=i-gap; j>=0; j-=gap) {
+	for (int gap = length / 2; gap > 0; gap /= 2) {
+		for (int i = gap; i < length; i++) {
+			for (int j = i - gap; j >= 0; j -= gap) {
 				if (items [j] <= items [j + gap]) {
 					int swap = items [j];
 					items [j] = items [j + gap];
@@ -3852,9 +3852,9 @@ void sortDescent (int [] items) {
 void sortAscent (int [] items) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
-	for (int gap=length/2; gap>0; gap/=2) {
-		for (int i=gap; i<length; i++) {
-			for (int j=i-gap; j>=0; j-=gap) {
+	for (int gap = length / 2; gap > 0; gap /= 2) {
+		for (int i = gap; i < length; i++) {
+			for (int j = i - gap; j >= 0; j -= gap) {
 				if (items [j] >= items [j + gap]) {
 					int swap = items [j];
 					items [j] = items [j + gap];
@@ -3867,9 +3867,9 @@ void sortAscent (int [] items) {
 void sortAscent (TableItem [] items) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = items.length;
-	for (int gap=length/2; gap>0; gap/=2) {
-		for (int i=gap; i<length; i++) {
-			for (int j=i-gap; j>=0; j-=gap) {
+	for (int gap = length / 2; gap > 0; gap /= 2) {
+		for (int i = gap; i < length; i++) {
+			for (int j = i - gap; j >= 0; j -= gap) {
 				if (items [j].index >= items [j + gap].index) {
 					TableItem swap = items [j];
 					items [j] = items [j + gap];

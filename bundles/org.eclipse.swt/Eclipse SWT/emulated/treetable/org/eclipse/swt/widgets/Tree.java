@@ -1181,7 +1181,7 @@ public TreeItem[] getSelection () {
 }
 int getSelection (TreeItem[] result, TreeItem[] items, TreeItem[] selection, int index) {
 	for (int i = 0; i < items.length; i++) {
-		TreeItem item = items[i];
+		TreeItem item = items [i];
 		for (int j = 0; j < selection.length; j++) {
 			if (selection [j] == item) {
 				result [index++] = item;
@@ -1189,7 +1189,7 @@ int getSelection (TreeItem[] result, TreeItem[] items, TreeItem[] selection, int
 			}
 		}
 		if (index == result.length) break;
-		index = getSelection (result, items[i].items, selection, index);
+		index = getSelection (result, items [i].items, selection, index);
 		if (index == result.length) break;
 	}
 	return index;
