@@ -1233,10 +1233,10 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_editable_insert_text (handle, buffer3, buffer3.length, pos);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			newEnd [0] = pos [0];
+			newStart [0] = newEnd [0] = pos [0];
 		}
 		pos [0] = newEnd [0];
-		if (newStart [0] != newEnd [0] && newEnd [0] != pos [0]) {
+		if (newStart [0] != newEnd [0]) {
 			fixStart = newStart [0];
 			fixEnd = newEnd [0];
 		}
