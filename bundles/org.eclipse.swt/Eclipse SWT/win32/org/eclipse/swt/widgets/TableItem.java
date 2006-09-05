@@ -1005,7 +1005,7 @@ public void setImage (int index, Image image) {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	
 	/* Ensure that the image list is created */
-	parent.imageIndex (image);
+	parent.imageIndex (image, index);
 	
 	if (index == 0) {
 		parent.setScrollWidth (this, false);

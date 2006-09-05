@@ -69,7 +69,7 @@ public class Table extends Composite {
 	TableItem currentItem;
 	TableColumn sortColumn;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawSelection;
-	boolean customDraw, dragStarted, fixScrollWidth, tipRequested, wasSelected, wasResized;
+	boolean customDraw, dragStarted, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
 	static /*final*/ int HeaderProc;
@@ -2222,8 +2222,9 @@ boolean hasChildren () {
 	return false;
 }
 
-int imageIndex (Image image) {
+int imageIndex (Image image, int column) {
 	if (image == null) return OS.I_IMAGENONE;
+	if (column == 0) firstColumnImage = true;
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
@@ -5256,7 +5257,15 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 				switch (hdr.code) {
 					case OS.HDN_DIVIDERDBLCLICKW:
 					case OS.HDN_DIVIDERDBLCLICKA:
-						if (column != null && hooks (SWT.MeasureItem)) {
+						/*
+						* Bug in Windows.  When the first column of a table does not
+						* have an image and the user double clicks on the divider,
+						* Windows packs the column but does not take into account
+						* the empty space left for the image.  The fix is to measure
+						* each items ourselves rather than letting Windows do it.
+						*/
+						boolean fixPack = phdn.iItem == 0 && !firstColumnImage;
+						if (column != null && (fixPack || hooks (SWT.MeasureItem))) {
 							column.pack ();
 							return LRESULT.ONE;
 						}
@@ -5512,7 +5521,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 					if (images != null) image = images [plvfi.iSubItem];
 				}
 				if (image != null) {
-					plvfi.iImage = imageIndex (image);
+					plvfi.iImage = imageIndex (image, plvfi.iSubItem);
 					move = true;
 				}
 			}

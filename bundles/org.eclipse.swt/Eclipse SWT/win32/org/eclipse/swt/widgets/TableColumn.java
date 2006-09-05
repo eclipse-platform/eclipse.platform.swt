@@ -353,7 +353,14 @@ public void pack () {
 	}
 	parent.ignoreColumnResize = true;
 	int columnWidth = 0;
-	if (parent.hooks (SWT.MeasureItem)) {
+	/*
+	* Bug in Windows.  When the first column of a table does not
+	* have an image and the user double clicks on the divider,
+	* Windows packs the column but does not take into account
+	* the empty space left for the image.  The fix is to measure
+	* each items ourselves rather than letting Windows do it.
+	*/
+	if ((index == 0 && !parent.firstColumnImage) || parent.hooks (SWT.MeasureItem)) {
 		RECT headerRect = new RECT ();
 		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
