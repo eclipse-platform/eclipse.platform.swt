@@ -1007,11 +1007,7 @@ public void setImage (int index, Image image) {
 	/* Ensure that the image list is created */
 	parent.imageIndex (image, index);
 	
-	if (index == 0) {
-		parent.setScrollWidth (this, false);
-	} else {
-		parent.setSubImagesVisible (true);
-	}
+	if (index == 0) parent.setScrollWidth (this, false);
 	boolean drawText = (image == null && oldImage != null) || (image != null && oldImage == null);
 	redraw (index, drawText, true);
 }

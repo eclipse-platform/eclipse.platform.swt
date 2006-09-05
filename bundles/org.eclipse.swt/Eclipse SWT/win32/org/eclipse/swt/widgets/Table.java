@@ -2224,7 +2224,11 @@ boolean hasChildren () {
 
 int imageIndex (Image image, int column) {
 	if (image == null) return OS.I_IMAGENONE;
-	if (column == 0) firstColumnImage = true;
+	if (column == 0) {
+		firstColumnImage = true;
+	} else {
+		setSubImagesVisible (true);
+	}
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
