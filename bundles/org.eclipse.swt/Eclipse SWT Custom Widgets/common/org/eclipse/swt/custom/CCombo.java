@@ -29,7 +29,7 @@ import org.eclipse.swt.accessibility.*;
  * <dt><b>Styles:</b>
  * <dd>BORDER, READ_ONLY, FLAT</dd>
  * <dt><b>Events:</b>
- * <dd>Selection</dd>
+ * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
  */
 public final class CCombo extends Composite {
@@ -122,7 +122,7 @@ public CCombo (Composite parent, int style) {
 	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn};
+	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn, SWT.Verify};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 	
 	int [] arrowEvents = {SWT.Selection, SWT.FocusIn};
@@ -238,6 +238,33 @@ public void addSelectionListener(SelectionListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
+}
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's text is verified, by sending
+ * it one of the messages defined in the <code>VerifyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #removeVerifyListener
+ * 
+ * @since 3.3
+ */
+public void addVerifyListener (VerifyListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Verify,typedListener);
 }
 void arrowEvent (Event event) {
 	switch (event.type) {
@@ -1137,6 +1164,30 @@ public void removeSelectionListener (SelectionListener listener) {
 	removeListener(SWT.DefaultSelection,listener);	
 }
 /**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is verified.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #addVerifyListener
+ * 
+ * @since 3.3
+ */
+public void removeVerifyListener (VerifyListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	removeListener(SWT.Verify, listener);
+}
+/**
  * Selects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
@@ -1506,6 +1557,18 @@ void textEvent (Event event) {
 			notifyListeners (SWT.Traverse, e);
 			event.doit = e.doit;
 			event.detail = e.detail;
+			break;
+		}
+		case SWT.Verify: {
+			Event e = new Event ();
+			e.text = event.text;
+			e.start = event.start;
+			e.end = event.end;
+			e.character = event.character;
+			e.keyCode = event.keyCode;
+			e.stateMask = event.stateMask;
+			notifyListeners (SWT.Verify, e);
+			event.doit = e.doit;
 			break;
 		}
 	}
