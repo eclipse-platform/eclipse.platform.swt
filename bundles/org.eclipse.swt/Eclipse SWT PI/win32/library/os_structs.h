@@ -815,6 +815,18 @@ void setNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct
 #define NMTVDISPINFO_sizeof() 0
 #endif
 
+#ifndef NO_NMTVITEMCHANGE
+void cacheNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject);
+NMTVITEMCHANGE *getNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject, NMTVITEMCHANGE *lpStruct);
+void setNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject, NMTVITEMCHANGE *lpStruct);
+#define NMTVITEMCHANGE_sizeof() sizeof(NMTVITEMCHANGE)
+#else
+#define cacheNMTVITEMCHANGEFields(a,b)
+#define getNMTVITEMCHANGEFields(a,b,c) NULL
+#define setNMTVITEMCHANGEFields(a,b,c)
+#define NMTVITEMCHANGE_sizeof() 0
+#endif
+
 #ifndef NO_NMUPDOWN
 void cacheNMUPDOWNFields(JNIEnv *env, jobject lpObject);
 NMUPDOWN *getNMUPDOWNFields(JNIEnv *env, jobject lpObject, NMUPDOWN *lpStruct);
