@@ -3486,7 +3486,10 @@ static void setCairoFont(int /*long*/ cairo, Font font) {
 	if ((style & SWT.ITALIC) != 0) slant = Cairo.CAIRO_FONT_SLANT_ITALIC;
 	int weight = Cairo.CAIRO_FONT_WEIGHT_NORMAL;
 	if ((style & SWT.BOLD) != 0) weight = Cairo.CAIRO_FONT_WEIGHT_BOLD;
-	byte[] buffer = Converter.wcsToMbcs(null, fd.getName(), true);
+	String name = fd.getName();
+	int index = name.indexOf('-');
+	if (index != -1) name = name.substring(index + 1);
+	byte[] buffer = Converter.wcsToMbcs(null, name, true);
 	Cairo.cairo_select_font_face(cairo, buffer, slant, weight);
 	Cairo.cairo_set_font_size(cairo, fd.getHeight());
 }
