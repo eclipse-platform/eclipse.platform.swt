@@ -165,7 +165,8 @@ int GetDropTarget(int pDropTarget, int ppDropTarget) {
 }
 
 int GetExternal(int ppDispatch) {
-	return COM.E_NOTIMPL;
+	OS.MoveMemory(ppDispatch, new int[] {0}, 4);
+	return COM.S_FALSE;
 }
 
 int GetHostInfo(int pInfo) {
