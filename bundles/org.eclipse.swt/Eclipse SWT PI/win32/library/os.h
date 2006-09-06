@@ -493,6 +493,16 @@
 
 #define TrackMouseEvent _TrackMouseEvent
 
+#if (_WIN32_IE <= 0x0600)
+typedef struct tagTVITEMCHANGE {
+    NMHDR hdr;
+    UINT uChanged;
+    HTREEITEM hItem;
+    UINT uStateNew;
+    UINT uStateOld;
+    LPARAM lParam;
+} NMTVITEMCHANGE;
+
 #include "os_custom.h"
 
 #endif /* INC_os_H */

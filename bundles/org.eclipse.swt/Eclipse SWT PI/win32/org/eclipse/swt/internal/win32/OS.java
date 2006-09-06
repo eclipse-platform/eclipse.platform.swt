@@ -1613,6 +1613,8 @@ public class OS extends Platform {
 	public static final int TVN_FIRST = 0xfffffe70;
 	public static final int TVN_GETDISPINFOA = TVN_FIRST - 3;
 	public static final int TVN_GETDISPINFOW = TVN_FIRST - 52;
+	public static final int TVN_ITEMCHANGINGW = TVN_FIRST - 17;
+	public static final int TVN_ITEMCHANGINGA = TVN_FIRST - 16;
 	public static final int TVN_ITEMEXPANDEDA = TVN_FIRST -6;
 	public static final int TVN_ITEMEXPANDEDW = TVN_FIRST - 55;
 	public static final int TVN_ITEMEXPANDINGW = 0xfffffe3a;
@@ -3180,6 +3182,7 @@ public static final native void MoveMemory (NMCUSTOMDRAW Destination, int Source
 public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (NMTBHOTITEM Destination, int Source, int Length);
 public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Source, int Length);
+public static final native void MoveMemory (NMTVITEMCHANGE Destination, int Source, int Length);
 public static final native void MoveMemory (NMUPDOWN Destination, int Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int Destination, NMTVCUSTOMDRAW Source, int Length);
