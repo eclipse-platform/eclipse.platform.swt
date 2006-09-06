@@ -3065,6 +3065,10 @@ void setZOrder () {
 	OS.HIViewAddSubview (parentHandle, topHandle);
 	if (OS.HIVIEW) {
 		OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
+		Rect rect = getInset ();
+		rect.right = rect.left;
+		rect.bottom = rect.top;
+		OS.SetControlBounds (topHandle, rect);
 	} else {
 		//OS.EmbedControl (topHandle, parentHandle);
 		/* Place the child at (0, 0) in the parent */
