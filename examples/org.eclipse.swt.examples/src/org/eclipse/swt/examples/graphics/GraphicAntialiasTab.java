@@ -120,8 +120,9 @@ public void paint(GC gc, int width, int height) {
 	gc.setAntialias(aliasValues[aliasCombo.getSelectionIndex()]);
 
 	Path path = new Path(device);
-	for(int i=0; i < 75; i++) {
-		path.addArc(2*width/3-(25*i), height/3-(10*i), 50+(50*i), 30+(20*i), 0, 360);
+	float offsetX = 2*width/3f, offsetY = height/3f;
+	for(int i=0; i < 25; i++) {
+		path.addArc(offsetX-(50*i), offsetY-(25*i), 50+(100*i), 25+(50*i), 0, 360);
 	}
 	gc.fillPath(path);
 	path.dispose();
