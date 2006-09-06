@@ -7317,6 +7317,7 @@ public void setOrientation(int orientation) {
 	}
 	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
 	caretDirection = SWT.NULL;
+	resetCache(0, content.getLineCount());
 	setCaretLocation();
 	keyActionMap.clear();
 	createKeyBindings();
