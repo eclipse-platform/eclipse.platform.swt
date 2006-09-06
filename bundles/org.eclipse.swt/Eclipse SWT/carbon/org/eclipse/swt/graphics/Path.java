@@ -41,7 +41,7 @@ public class Path extends Resource {
 	 */
 	public int handle;
 	
-	boolean moved;
+	boolean moved, closed = true;
 
 /**
  * Constructs a new empty Path.
@@ -97,14 +97,19 @@ public Path (Device device) {
  */
 public void addArc(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	moved = true;
 	float[] cmt = new float[6];
 	OS.CGAffineTransformMake(width / 2f, 0, 0, height / 2f, x + width / 2f, y + height / 2f, cmt);
 	if (arcAngle < 0) {
-		OS.CGPathAddArc(handle, cmt, 0, 0, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180, true);
+		float angle = -(startAngle + arcAngle) * (float)Compatibility.PI / 180;
+		if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
+		OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -startAngle * (float)Compatibility.PI / 180, true);
 	} else {
-		OS.CGPathAddArc(handle, cmt, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
+		float angle = -startAngle * (float)Compatibility.PI / 180;
+		if (closed) OS.CGPathMoveToPoint(handle, cmt, (float)Math.cos(angle), (float)Math.sin(angle));
+		OS.CGPathAddArc(handle, cmt, 0, 0, 1, angle, -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
 	}
+	moved = true;
+	closed = false;
 	if (Math.abs(arcAngle) >= 360) close();
 }
 
@@ -127,6 +132,7 @@ public void addPath(Path path) {
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.CGPathAddPath(handle, null, path.handle);
 	moved = false;
+	closed = path.closed;
 }
 
 /**
@@ -150,6 +156,7 @@ public void addRectangle(float x, float y, float width, float height) {
 	rect.height = height;
 	OS.CGPathAddRect(handle, null, rect);
 	moved = false;
+	closed = true;
 }
 
 int newPathProc(int data) {
@@ -213,6 +220,7 @@ public void addString(String string, float x, float y, Font font) {
 	int length = string.length();
 	if (length == 0) return;
 	moved = false;
+	closed = true;
 	
 	Callback newPathCallback = new Callback(this, "newPathProc", 1);
 	int newPathProc = newPathCallback.getAddress();
@@ -320,6 +328,7 @@ public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGPathCloseSubpath(handle);
 	moved = false;
+	closed = true;
 }
 
 /**
@@ -403,6 +412,7 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
 		moved = true;
 	}
+	closed = false;
 	OS.CGPathAddCurveToPoint(handle, null, cx1, cy1, cx2, cy2, x, y);
 }
 
@@ -538,6 +548,7 @@ public void lineTo(float x, float y) {
 		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
 		moved = true;
 	}
+	closed = false;
 	OS.CGPathAddLineToPoint(handle, null, x, y);
 }
 
@@ -562,6 +573,7 @@ public void moveTo(float x, float y) {
 	* anything.  The fix is to detect that the app did not call
 	* CGPathMoveToPoint() and call it explicitly.
 	*/
+	closed = true;
 	moved = true;
 }
 
@@ -585,6 +597,7 @@ public void quadTo(float cx, float cy, float x, float y) {
 		OS.CGPathMoveToPoint(handle, null, pt.x, pt.y);
 		moved = true;
 	}
+	closed = false;
 	OS.CGPathAddQuadCurveToPoint(handle, null, cx, cy, x, y);
 }
 
