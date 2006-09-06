@@ -1631,7 +1631,35 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	if (OS.HIVIEW && txnObject == 0 && resize) bounds = getBounds ();
 	int result = super.setBounds(x, y, width, height, move, resize, events);
 	if (bounds != null && (result & RESIZED) != 0) {
-		if (bounds.width == 0) showSelection ();
+		/*
+		* Feature in the Macintosh.  When the caret is moved,
+		* the text widget scrolls to show the new location.
+		* This means that the text widget may be scrolled
+		* to the right in order to show the caret when the
+		* widget is not large enough to show both the caret
+		* location and all the text.  Unfortunately, when
+		* the text widget is resized such that all the text
+		* and the caret could be visible, Macintosh does not
+		* scroll the widget back.  The fix is to reset the
+		* selection or the text depend on if the widget
+		* is on focus or not.
+		*/
+		Rect inset = getInset ();
+		int minWidth = inset.left + inset.right;
+		if (bounds.width <= minWidth && width > minWidth) {
+			if (hasFocus ()) {
+				ControlEditTextSelectionRec selection = new ControlEditTextSelectionRec ();
+				if (OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null) == OS.noErr) {
+					OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
+				}
+			} else {
+				int [] ptr = new int [1];
+				if (OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, null) == OS.noErr) {
+					OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr);
+				}
+				if (ptr [0] != 0) OS.CFRelease (ptr [0]);				
+			}
+		}
 	}
 	if (!OS.HIVIEW) {
 		if ((result & (RESIZED | MOVED)) != 0) setTXNBounds ();
