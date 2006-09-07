@@ -1476,7 +1476,7 @@ public static final native int InitDataBrowserCustomCallbacks(DataBrowserCustomC
 public static final native void InsertMenu(int mHandle, short beforeID);
 public static final native int InsertMenuItemTextWithCFString(int mHandle, int sHandle, short index, int attributes, int commandID);
 public static final native int InstallEventHandler(int inTarget, int inHandler, int inNumTypes, int[] inList, int inUserData, int[] outRef);
-public static final native int InstallEventLoopIdleTimer(int inEventLoop, double inFireDelay,double inInterval, int inTimerProc, int inTimerData, int[] outTimer);
+public static final native int InstallEventLoopIdleTimer(int inEventLoop, double inFireDelay, double inInterval, int inTimerProc, int inTimerData, int[] outTimer);
 public static final native int InstallEventLoopTimer(int inEventLoop, double inFireDelay, double inInterval, int inTimerProc, int inTimerData, int[] outTimer);
 public static final native int InstallReceiveHandler(int receiveHandler,int theWindow, int[] handlerRefCon);
 public static final native int InstallTrackingHandler(int trackingHandler,int theWindow, int[] handlerRefCon);

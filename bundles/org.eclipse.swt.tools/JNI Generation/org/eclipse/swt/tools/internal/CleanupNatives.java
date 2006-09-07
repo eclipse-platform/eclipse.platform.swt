@@ -73,45 +73,46 @@ public void generate(Method method) {
 		Object key = keys.nextElement();
 		String str = (String)files.get(key);
 		if (str.indexOf(name) != -1) {
-			int modifiers = method.getModifiers();
-			Class clazz = method.getDeclaringClass();
-			String modifiersStr = Modifier.toString(modifiers);
-			output(modifiersStr);
-			if (modifiersStr.length() > 0) output(" ");
-			output(getTypeSignature3(method.getReturnType()));
-			output(" " );
-			output(method.getName());
-			output("(");
-			Class[] paramTypes = method.getParameterTypes();
-			String[] paramNames = getArgNames(method);
-			for (int i = 0; i < paramTypes.length; i++) {
-				Class paramType = paramTypes[i];
-				if (i != 0) output(", ");
-				String sig = getTypeSignature3(paramType);
-				if (clazz.getPackage().equals(paramType.getPackage())) sig = getClassName(paramType);
-				output(sig);
-				output(" ");
-				output(paramNames[i]);
-			}
-			outputln(");");
+//			int modifiers = method.getModifiers();
+//			Class clazz = method.getDeclaringClass();
+//			String modifiersStr = Modifier.toString(modifiers);
+//			output(modifiersStr);
+//			if (modifiersStr.length() > 0) output(" ");
+//			output(getTypeSignature3(method.getReturnType()));
+//			output(" " );
+//			output(method.getName());
+//			output("(");
+//			Class[] paramTypes = method.getParameterTypes();
+//			String[] paramNames = getArgNames(method);
+//			for (int i = 0; i < paramTypes.length; i++) {
+//				Class paramType = paramTypes[i];
+//				if (i != 0) output(", ");
+//				String sig = getTypeSignature3(paramType);
+//				if (clazz.getPackage().equals(paramType.getPackage())) sig = getClassName(paramType);
+//				output(sig);
+//				output(" ");
+//				output(paramNames[i]);
+//			}
+//			outputln(");");
 			usedCount++;
 			return;
 		}
 	}
 	unusedCount++;
-//	output("NOT USED=" + method.toString() + "\n");
+	output("NOT USED=" + method.toString() + "\n");
 }
 
 public static void main(String[] args) {
 	if (args.length < 2) {
-		System.out.println("Usage: java CleanupNatives <OS className> <src path> <class source>");
+		System.out.println("Usage: java CleanupNatives <OS className> <OS class source> <src path0> <src path1>");
 		return;
 	}
 	try {
 		CleanupNatives gen = new CleanupNatives();
 		String clazzName = args[0];
-		String[] sourcePath = new String[]{args[1]};
-		String classSource = args[2]; 
+		String classSource = args[1]; 
+		String[] sourcePath = new String[args.length - 2];
+		System.arraycopy(args, 2, sourcePath, 0, sourcePath.length);
 		Class clazz = Class.forName(clazzName);
 		gen.setSourcePath(sourcePath);
 		gen.setClassSourcePath(classSource);
