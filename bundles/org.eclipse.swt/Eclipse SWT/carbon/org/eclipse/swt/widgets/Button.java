@@ -142,6 +142,20 @@ void click () {
 	postEvent (SWT.Selection);
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	int [] context = null;
+	if (OS.HIVIEW & (style & SWT.ARROW) != 0 && (style & SWT.UP) != 0) {
+		context = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+		OS.CGContextSaveGState (context[0]);
+		OS.CGContextScaleCTM (context[0], 1f, -1);
+		OS.CGContextTranslateCTM (context[0], 0, -getBounds().height);
+	}
+	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	if (context != null) OS.CGContextRestoreGState (context[0]);
+	return result;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	// NEEDS WORK - empty string
@@ -230,7 +244,7 @@ void createHandle () {
 				
 	if ((style & SWT.ARROW) != 0) {
 		int orientation = OS.kThemeDisclosureRight;
-		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureDown;
 		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
 		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
 		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
@@ -567,7 +581,7 @@ void _setAlignment (int alignment) {
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		int orientation = OS.kThemeDisclosureRight;
-		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureDown;
 		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
 		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
 		OS.SetControl32BitValue (handle, orientation);
