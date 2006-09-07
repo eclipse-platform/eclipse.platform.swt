@@ -73,7 +73,7 @@ public class Tree extends Composite {
 	ImageList imageList, headerImageList;
 	TreeItem currentItem;
 	TreeColumn sortColumn;
-	int hwndParent, hwndHeader, hAnchor, hInsert, lastID;
+	int hwndParent, hwndHeader, hAnchor, hInsert, lastID, hSelect;
 	int hFirstIndexOf, hLastIndexOf, lastIndexOf, itemCount, sortDirection;
 	boolean dragStarted, gestureCompleted, insertAfter, shrink, ignoreShrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
@@ -1251,12 +1251,14 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 					tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
 					tvItem.hItem = hItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					hSelect = hItem;
 					ignoreDeselect = ignoreSelect = lockSelection = true;
 					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
+					ignoreDeselect = ignoreSelect = lockSelection = false;
+					hSelect = 0;
 					if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
 						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 					}
-					ignoreDeselect = ignoreSelect = lockSelection = false;
 				}
 			}
 			break;
@@ -4086,9 +4088,11 @@ public void setSelection (TreeItem [] items) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
+		hSelect = hNewItem;
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 		ignoreSelect = false;
+		hSelect = 0;
 		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hNewItem);
 		}
@@ -5014,9 +5018,11 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 							*/
 //							OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 						}
+						hSelect = hNewItem;
 						ignoreSelect = true;
 						OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 						ignoreSelect = false;
+						hSelect = 0;
 						if (oldSelected) {
 							tvItem.state = OS.TVIS_SELECTED;
 							tvItem.hItem = hItem;
@@ -5032,6 +5038,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 							rect1.left = hItem;  rect2.left = hNewItem;
 							int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
 							if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = 0;
+							if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = 0;
 							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
 							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
 							/*
@@ -5302,6 +5309,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		}
 		return LRESULT.ZERO;
 	}
+	hSelect = lpht.hItem;
 	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
 	int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
@@ -5323,6 +5331,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		}
 	}
 	ignoreDeselect = ignoreSelect = false;
+	hSelect = 0;
 	if (dragStarted) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -5376,6 +5385,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				rect1.left = hOldItem;  rect2.left = hNewItem;
 				int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
 				if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = 0;
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = 0;
 				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
 				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
 				/*
@@ -6197,6 +6207,29 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			updateScrollBar ();
 			break;
 		}
+		/*
+		* Bug in Windows.  On Vista, when TVM_SELECTITEM is called
+		* with TVGN_CARET in order to set the selection, for some
+		* reason, Windows deselects the previous two items that
+		* were selected.  The fix is to stop the selection from
+		* changing on all but the item that is supposed to be
+		* selected.
+		*/
+		case OS.TVN_ITEMCHANGINGA:
+		case OS.TVN_ITEMCHANGINGW:{
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if ((style & SWT.MULTI) != 0) {
+					if (hSelect != 0) {
+						NMTVITEMCHANGE pItemChange = new NMTVITEMCHANGE ();
+						OS.MoveMemory (pItemChange, lParam, NMTVITEMCHANGE.sizeof);
+						if (hSelect == pItemChange.hItem) break;
+						return LRESULT.ONE;
+					}
+					if (lockSelection) return LRESULT.ONE;
+				}
+			}
+			break;
+		}
 		case OS.TVN_SELCHANGINGA:
 		case OS.TVN_SELCHANGINGW: {
 			if ((style & SWT.MULTI) != 0) {
@@ -6314,9 +6347,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
 			OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
 			if (tvItem.hItem != 0 && (tvItem.state & OS.TVIS_SELECTED) == 0) {
+				hSelect = tvItem.hItem;
 				ignoreSelect = ignoreDeselect = true;
 				OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, tvItem.hItem);
 				ignoreSelect = ignoreDeselect = false;
+				hSelect = 0;
 			}
 			dragStarted = true;
 			break;

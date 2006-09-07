@@ -3382,6 +3382,52 @@ void setNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct
 }
 #endif
 
+#ifndef NO_NMTVITEMCHANGE
+typedef struct NMTVITEMCHANGE_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID uChanged, hItem, uStateNew, uStateOld, lParam;
+} NMTVITEMCHANGE_FID_CACHE;
+
+NMTVITEMCHANGE_FID_CACHE NMTVITEMCHANGEFc;
+
+void cacheNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMTVITEMCHANGEFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMTVITEMCHANGEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMTVITEMCHANGEFc.uChanged = (*env)->GetFieldID(env, NMTVITEMCHANGEFc.clazz, "uChanged", "I");
+	NMTVITEMCHANGEFc.hItem = (*env)->GetFieldID(env, NMTVITEMCHANGEFc.clazz, "hItem", "I");
+	NMTVITEMCHANGEFc.uStateNew = (*env)->GetFieldID(env, NMTVITEMCHANGEFc.clazz, "uStateNew", "I");
+	NMTVITEMCHANGEFc.uStateOld = (*env)->GetFieldID(env, NMTVITEMCHANGEFc.clazz, "uStateOld", "I");
+	NMTVITEMCHANGEFc.lParam = (*env)->GetFieldID(env, NMTVITEMCHANGEFc.clazz, "lParam", "I");
+	NMTVITEMCHANGEFc.cached = 1;
+}
+
+NMTVITEMCHANGE *getNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject, NMTVITEMCHANGE *lpStruct)
+{
+	if (!NMTVITEMCHANGEFc.cached) cacheNMTVITEMCHANGEFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->uChanged = (*env)->GetIntField(env, lpObject, NMTVITEMCHANGEFc.uChanged);
+	lpStruct->hItem = (HTREEITEM)(*env)->GetIntField(env, lpObject, NMTVITEMCHANGEFc.hItem);
+	lpStruct->uStateNew = (*env)->GetIntField(env, lpObject, NMTVITEMCHANGEFc.uStateNew);
+	lpStruct->uStateOld = (*env)->GetIntField(env, lpObject, NMTVITEMCHANGEFc.uStateOld);
+	lpStruct->lParam = (*env)->GetIntField(env, lpObject, NMTVITEMCHANGEFc.lParam);
+	return lpStruct;
+}
+
+void setNMTVITEMCHANGEFields(JNIEnv *env, jobject lpObject, NMTVITEMCHANGE *lpStruct)
+{
+	if (!NMTVITEMCHANGEFc.cached) cacheNMTVITEMCHANGEFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMTVITEMCHANGEFc.uChanged, (jint)lpStruct->uChanged);
+	(*env)->SetIntField(env, lpObject, NMTVITEMCHANGEFc.hItem, (jint)lpStruct->hItem);
+	(*env)->SetIntField(env, lpObject, NMTVITEMCHANGEFc.uStateNew, (jint)lpStruct->uStateNew);
+	(*env)->SetIntField(env, lpObject, NMTVITEMCHANGEFc.uStateOld, (jint)lpStruct->uStateOld);
+	(*env)->SetIntField(env, lpObject, NMTVITEMCHANGEFc.lParam, (jint)lpStruct->lParam);
+}
+#endif
+
 #ifndef NO_NMUPDOWN
 typedef struct NMUPDOWN_FID_CACHE {
 	int cached;

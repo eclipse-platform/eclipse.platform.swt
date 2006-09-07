@@ -72,6 +72,7 @@
 #define NO_NMTTDISPINFO
 #define NO_NMTTDISPINFOA
 #define NO_NMTTDISPINFOW
+#define NO_NMTVITEMCHANGE
 #define NO_NONCLIENTMETRICS
 #define NO_NONCLIENTMETRICSA
 #define NO_NONCLIENTMETRICSW
@@ -311,6 +312,7 @@
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I
+#define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVITEMCHANGE_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II
@@ -489,6 +491,17 @@
 #endif /* _WIN32_WCE */
 
 #define TrackMouseEvent _TrackMouseEvent
+
+#if (_WIN32_IE <= 0x0600)
+typedef struct tagTVITEMCHANGE {
+    NMHDR hdr;
+    UINT uChanged;
+    HTREEITEM hItem;
+    UINT uStateNew;
+    UINT uStateOld;
+    LPARAM lParam;
+} NMTVITEMCHANGE;
+#endif /* _WIN32_IE <= 0x0600 */
 
 #include "os_custom.h"
 

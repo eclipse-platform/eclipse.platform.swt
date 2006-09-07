@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 693;
-int OS_nativeFunctionCallCount[693];
+int OS_nativeFunctionCount = 694;
+int OS_nativeFunctionCallCount[694];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -454,6 +454,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVDISPINFO_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVITEMCHANGE_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMUPDOWN_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II",
