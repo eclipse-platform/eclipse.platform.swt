@@ -46,9 +46,29 @@ public final class Variant
 	private IDispatch dispatchData;
 	private IUnknown unknownData;
 
+/**	 
+ * Invokes platform specific functionality to copy a variant
+ * into operating system memory.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param pVarDest destination pointer to a variant
+ * @param varSrc source <code>Variant</code>
+ *
+ * @since 3.3
+ */
+public static void win32_copy (int pVarDest, Variant varSrc) {
+	varSrc.getData (pVarDest);
+}
 
 /**	 
- * Invokes platform specific functionality to wrap a variant.
+ * Invokes platform specific functionality to wrap a variant
+ * that was allocated in operating system memory.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
  * API for <code>GC</code>. It is marked public only so that it
@@ -59,7 +79,7 @@ public final class Variant
  *
  * @param pVariant pointer to a variant
  *
- * @return a new <code>GC</code>
+ * @return a new <code>Variant</code>
  *
  * @since 3.3
  */
