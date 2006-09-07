@@ -26,6 +26,7 @@ String[] getArgNames(Method method) {
 	int index = 0;
 	while (true) {
 		index = classSource.indexOf(name, index + 1);
+		if (!Character.isWhitespace(classSource.charAt(index - 1))) continue;
 		if (index == -1) return null;
 		int parantesesStart = classSource.indexOf("(", index);
 		if (classSource.substring(index + name.length(), parantesesStart).trim().length() == 0) {
