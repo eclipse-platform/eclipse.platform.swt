@@ -32,6 +32,10 @@ PngTrnsChunk(byte[] reference){
 	super(reference);
 }
 
+int getChunkType() {
+	return CHUNK_tRNS;
+}
+
 void validateLength(PngIhdrChunk header, PngPlteChunk paletteChunk) {
 	boolean valid;
 	switch (header.getColorType()) {

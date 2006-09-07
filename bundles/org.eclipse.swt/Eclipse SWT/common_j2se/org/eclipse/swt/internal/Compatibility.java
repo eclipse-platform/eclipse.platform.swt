@@ -15,6 +15,8 @@ import java.io.*;
 import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.zip.InflaterInputStream;
+
 import org.eclipse.swt.SWT;
 
 /**
@@ -164,6 +166,19 @@ public static InputStream newFileInputStream(String filename) throws IOException
  */
 public static OutputStream newFileOutputStream(String filename) throws IOException {
 	return new FileOutputStream(filename);
+}
+
+/**
+ * Create an InflaterInputStream if such things are supported.
+ * 
+ * @param stream the input stream
+ * @return a inflater stream or <code>null</code>
+ * @exception IOException
+ * 
+ * @since 3.2.1
+ */
+public static InputStream newInflaterInputStream(InputStream stream) throws IOException {
+	return new InflaterInputStream(stream);
 }
 
 /**

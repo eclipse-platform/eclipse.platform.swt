@@ -35,6 +35,10 @@ PngIdatChunk(byte[] reference) {
 	super(reference);
 }
 
+int getChunkType() {
+	return CHUNK_IDAT;
+}
+
 /**
  * Answer whether the chunk is a valid IDAT chunk.
  */

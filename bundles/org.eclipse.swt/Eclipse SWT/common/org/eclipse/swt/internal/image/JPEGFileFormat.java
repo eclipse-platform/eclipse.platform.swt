@@ -1372,6 +1372,10 @@ boolean isZeroInRow(int[] dataUnit, int rIndex) {
 			&& dataUnit[rIndex + 7] == 0;
 }
 ImageData[] loadFromByteStream() {
+	//TEMPORARY CODE
+	if (System.getProperty("org.eclipse.swt.internal.image.JPEGFileFormat_3.2") == null) {
+		return JPEGDecoder.loadFromByteStream(inputStream, loader);
+	}
 	JPEGStartOfImage soi = new JPEGStartOfImage(inputStream);
 	if (!soi.verify()) SWT.error(SWT.ERROR_INVALID_IMAGE);
 	restartInterval = 0;

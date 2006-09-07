@@ -211,6 +211,19 @@ public static OutputStream newFileOutputStream (String filename) throws IOExcept
 }
 
 /**
+ * Create an InflaterInputStream if such things are supported.
+ * 
+ * @param stream the input stream
+ * @return a inflater stream or <code>null</code>
+ * @exception IOException
+ * 
+ * @since 3.2.1
+ */
+public static InputStream newInflaterInputStream(InputStream stream) throws IOException {
+	return null;
+}
+
+/**
  * Answers whether the character is a letter.
  *
  * @param c the character
