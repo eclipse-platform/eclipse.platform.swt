@@ -51,7 +51,7 @@ public final class Variant
  * into operating system memory.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>GC</code>. It is marked public only so that it
+ * API for <code>Variant</code>. It is marked public only so that it
  * can be shared within the packages provided by SWT. It is not
  * available on all platforms, and should never be called from
  * application code.
@@ -71,7 +71,7 @@ public static void win32_copy (int pVarDest, Variant varSrc) {
  * that was allocated in operating system memory.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>GC</code>. It is marked public only so that it
+ * API for <code>Variant</code>. It is marked public only so that it
  * can be shared within the packages provided by SWT. It is not
  * available on all platforms, and should never be called from
  * application code.
