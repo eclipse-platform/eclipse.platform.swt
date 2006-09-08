@@ -3353,7 +3353,7 @@ void setDeferResize (boolean defer) {
 			wasResized = false;
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				if (drawCount == 0 && OS.IsWindowVisible (handle)) {
-					OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 				}
 			}
 		}
@@ -3361,7 +3361,7 @@ void setDeferResize (boolean defer) {
 		if (--resizeCount == 0) {
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				if (drawCount == 0 /*&& OS.IsWindowVisible (handle)*/) {
-					OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 					if (OS.IsWinCE) {
 						int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
 						if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, true);
