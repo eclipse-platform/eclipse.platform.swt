@@ -588,7 +588,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	});
 	
 	//Edit -> Edit
-	MenuItem subItem = new MenuItem(menu, SWT.CASCADE);
+	MenuItem subItem = new MenuItem(menu, SWT.PUSH);
 	subItem.setText(resAddressBook.getString("Edit"));
 	subItem.setAccelerator(SWT.MOD1 + 'E');
 	subItem.addSelectionListener(new SelectionAdapter() {
@@ -746,7 +746,7 @@ private Menu createPopUpMenu() {
 	});
 
 	//New
-	MenuItem item = new MenuItem(popUpMenu, SWT.CASCADE);
+	MenuItem item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_new"));
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -757,7 +757,7 @@ private Menu createPopUpMenu() {
 	new MenuItem(popUpMenu, SWT.SEPARATOR);	
 	
 	//Edit
-	item = new MenuItem(popUpMenu, SWT.CASCADE);
+	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_edit"));
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -768,7 +768,7 @@ private Menu createPopUpMenu() {
 	});
 
 	//Copy
-	item = new MenuItem(popUpMenu, SWT.CASCADE);
+	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_copy"));
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -782,7 +782,7 @@ private Menu createPopUpMenu() {
 	});
 	
 	//Paste
-	item = new MenuItem(popUpMenu, SWT.CASCADE);
+	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_paste"));
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -794,7 +794,7 @@ private Menu createPopUpMenu() {
 	});
 	
 	//Delete
-	item = new MenuItem(popUpMenu, SWT.CASCADE);
+	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_delete"));
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
@@ -808,7 +808,7 @@ private Menu createPopUpMenu() {
 	new MenuItem(popUpMenu, SWT.SEPARATOR);	
 	
 	//Find...
-	item = new MenuItem(popUpMenu, SWT.NONE);
+	item = new MenuItem(popUpMenu, SWT.PUSH);
 	item.setText(resAddressBook.getString("Pop_up_find"));
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
