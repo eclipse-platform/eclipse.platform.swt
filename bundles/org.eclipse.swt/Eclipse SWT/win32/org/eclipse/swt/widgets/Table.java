@@ -5487,7 +5487,6 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			* tables to indicate that Windows has asked at least once
 			* for a table item.
 			*/
-			System.out.println(plvfi.iItem + " " + item);
 			if (!item.cached) {
 				if ((style & SWT.VIRTUAL) != 0) {
 					lastIndexOf = plvfi.iItem;
