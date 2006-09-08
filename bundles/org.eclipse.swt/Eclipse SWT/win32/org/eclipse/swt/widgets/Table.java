@@ -3809,6 +3809,10 @@ public void setRedraw (boolean redraw) {
 }
 
 boolean setScrollWidth (TableItem item, boolean force) {
+	return setScrollWidth (item, force, false);
+}
+
+boolean setScrollWidth (TableItem item, boolean force, boolean fixRedraw) {
 	if (currentItem != null) {
 		if (currentItem != item) fixScrollWidth = true;
 		return false;
@@ -3903,7 +3907,29 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		newWidth += INSET * 2;
 		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		if (newWidth > oldWidth) {
+			/*
+			* Feature in Windows.  When LVM_SETCOLUMNWIDTH is sent,
+			* Windows draws right away instead of queuing a WM_PAINT.
+			* This can cause recursive calls when called from paint
+			* or from messages that are retrieving the item data,
+			* such as WM_NOTIFY, causing a stack overflow.  The fix
+			* is to turn off redraw and queue a repaint, collapsing
+			* the recursive calls.
+			*/
+			boolean redraw = fixRedraw && drawCount == 0 && OS.IsWindowVisible (handle);
+			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, newWidth);
+			if (redraw) {
+				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+				if (OS.IsWinCE) {
+					int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+					if (hwndHeader != 0) OS.InvalidateRect (hwndHeader, null, false);
+					OS.InvalidateRect (handle, null, false);
+				} else {
+					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (handle, null, 0, flags);
+				}
+			}
 			return true;
 		}
 	}
@@ -5261,7 +5287,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					lastIndexOf = plvfi.iItem;
 					if (!checkData (item, lastIndexOf, false)) break;
 					TableItem newItem = fixScrollWidth ? null : item;
-					if (setScrollWidth (newItem, true)) {
+					if (setScrollWidth (newItem, true, true)) {
 						OS.InvalidateRect (handle, null, true);
 					}
 				}
