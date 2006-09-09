@@ -6293,6 +6293,49 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			if (hooks (SWT.DefaultSelection)) return LRESULT.ONE;
 			break;
 		}
+		/*
+		* Bug in Windows.  On Vista, when TVM_SELECTITEM is called
+		* with TVGN_CARET in order to set the selection, for some
+		* reason, Windows deselects the previous two items that
+		* were selected.  The fix is to stop the selection from
+		* changing on all but the item that is supposed to be
+		* selected.
+		*/
+		case OS.TVN_ITEMCHANGINGA:
+		case OS.TVN_ITEMCHANGINGW: {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if ((style & SWT.MULTI) != 0) {
+					if (hSelect != 0) {
+						NMTVITEMCHANGE pnm = new NMTVITEMCHANGE ();
+						OS.MoveMemory (pnm, lParam, NMTVITEMCHANGE.sizeof);
+						if (hSelect == pnm.hItem) break;
+						return LRESULT.ONE;
+					}
+					if (lockSelection) return LRESULT.ONE;
+				}
+			}
+			break;
+		}
+		case OS.TVN_SELCHANGINGA:
+		case OS.TVN_SELCHANGINGW: {
+			if ((style & SWT.MULTI) != 0) {
+				if (lockSelection) {
+					/* Save the old selection state for both items */
+					TVITEM tvItem = new TVITEM ();
+					int offset1 = NMHDR.sizeof + 4;
+					OS.MoveMemory (tvItem, lParam + offset1, TVITEM.sizeof);
+					oldSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
+					int offset2 = NMHDR.sizeof + 4 + TVITEM.sizeof;
+					OS.MoveMemory (tvItem, lParam + offset2, TVITEM.sizeof);
+					newSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
+				}
+			}
+			if (!ignoreSelect && !ignoreDeselect) {
+				hAnchor = 0;
+				if ((style & SWT.MULTI) != 0) deselectAll ();
+			}
+			break;
+		}
 		case OS.TVN_SELCHANGEDA:
 		case OS.TVN_SELCHANGEDW: {
 			if ((style & SWT.MULTI) != 0) {
@@ -6328,49 +6371,6 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 				postEvent (SWT.Selection, event);
 			}
 			updateScrollBar ();
-			break;
-		}
-		/*
-		* Bug in Windows.  On Vista, when TVM_SELECTITEM is called
-		* with TVGN_CARET in order to set the selection, for some
-		* reason, Windows deselects the previous two items that
-		* were selected.  The fix is to stop the selection from
-		* changing on all but the item that is supposed to be
-		* selected.
-		*/
-		case OS.TVN_ITEMCHANGINGA:
-		case OS.TVN_ITEMCHANGINGW:{
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				if ((style & SWT.MULTI) != 0) {
-					if (hSelect != 0) {
-						NMTVITEMCHANGE pItemChange = new NMTVITEMCHANGE ();
-						OS.MoveMemory (pItemChange, lParam, NMTVITEMCHANGE.sizeof);
-						if (hSelect == pItemChange.hItem) break;
-						return LRESULT.ONE;
-					}
-					if (lockSelection) return LRESULT.ONE;
-				}
-			}
-			break;
-		}
-		case OS.TVN_SELCHANGINGA:
-		case OS.TVN_SELCHANGINGW: {
-			if ((style & SWT.MULTI) != 0) {
-				if (lockSelection) {
-					/* Save the old selection state for both items */
-					TVITEM tvItem = new TVITEM ();
-					int offset1 = NMHDR.sizeof + 4;
-					OS.MoveMemory (tvItem, lParam + offset1, TVITEM.sizeof);
-					oldSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
-					int offset2 = NMHDR.sizeof + 4 + TVITEM.sizeof;
-					OS.MoveMemory (tvItem, lParam + offset2, TVITEM.sizeof);
-					newSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
-				}
-			}
-			if (!ignoreSelect && !ignoreDeselect) {
-				hAnchor = 0;
-				if ((style & SWT.MULTI) != 0) deselectAll ();
-			}
 			break;
 		}
 		case OS.TVN_ITEMEXPANDINGA:
