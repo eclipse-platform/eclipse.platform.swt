@@ -557,8 +557,6 @@ class TreeTab extends ScrollableTab {
 	 * Sets the state of the "Example" widgets.
 	 */
 	void setExampleWidgetState () {
-		setColumnsMoveable ();
-		setColumnsResizable ();
 		setItemBackground ();
 		setItemForeground ();
 		setItemFont ();
@@ -566,6 +564,8 @@ class TreeTab extends ScrollableTab {
 		setCellForeground ();
 		setCellFont ();
 		if (!instance.startup) {
+			setColumnsMoveable ();
+			setColumnsResizable ();
 			setWidgetHeaderVisible ();
 			setWidgetSortIndicator ();
 			setWidgetLinesVisible ();
@@ -575,6 +575,13 @@ class TreeTab extends ScrollableTab {
 		checkButton.setSelection ((tree2.getStyle () & SWT.CHECK) != 0);
 		fullSelectionButton.setSelection ((tree1.getStyle () & SWT.FULL_SELECTION) != 0);
 		fullSelectionButton.setSelection ((tree2.getStyle () & SWT.FULL_SELECTION) != 0);
+		try {
+			TreeColumn column = tree1.getColumn(0);
+			moveableColumns.setSelection (column.getMoveable());
+			resizableColumns.setSelection (column.getResizable());
+		} catch (IllegalArgumentException ex) {}
+		headerVisibleButton.setSelection (tree1.getHeaderVisible());
+		linesVisibleButton.setSelection (tree1.getLinesVisible());
 	}
 	
 	/**
