@@ -8673,7 +8673,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(LSCopyAllRoleHandlersForContentType)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, LSCopyAllRoleHandlersForContentType_FUNC);
+/*
 	rc = (jint)LSCopyAllRoleHandlersForContentType((CFStringRef)arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(CFStringRef, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(LSCopyAllRoleHandlersForContentType_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("LSCopyAllRoleHandlersForContentType"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((CFStringRef)arg0, arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, LSCopyAllRoleHandlersForContentType_FUNC);
 	return rc;
 }
@@ -8767,7 +8784,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(LSOpenItemsWithRole)
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getLSApplicationParametersFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
 	rc = (jint)LSOpenItemsWithRole((const FSRef *)lparg0, arg1, arg2, (const AEKeyDesc *)arg3, (const LSApplicationParameters *)lparg4, (ProcessSerialNumber *)lparg5, arg6);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(const FSRef *, jint, jint, const AEKeyDesc *, const LSApplicationParameters *, ProcessSerialNumber *, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(LSOpenItemsWithRole_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("LSOpenItemsWithRole"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((const FSRef *)lparg0, arg1, arg2, (const AEKeyDesc *)arg3, (const LSApplicationParameters *)lparg4, (ProcessSerialNumber *)lparg5, arg6);
+		}
+	}
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) setLSApplicationParametersFields(env, arg4, lparg4);

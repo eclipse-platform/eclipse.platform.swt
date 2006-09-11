@@ -19,3 +19,5 @@
 #define HICreateTransformedCGImage_LIB "com.apple.Carbon"
 #define HIThemeSetFill_LIB "com.apple.Carbon"
 #define NavDialogSetFilterTypeIdentifiers_LIB "com.apple.Carbon"
+#define LSCopyAllRoleHandlersForContentType_LIB "com.apple.Carbon"
+#define LSOpenItemsWithRole_LIB "com.apple.Carbon"
