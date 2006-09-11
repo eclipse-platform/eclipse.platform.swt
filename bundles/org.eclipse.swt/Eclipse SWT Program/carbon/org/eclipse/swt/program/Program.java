@@ -247,53 +247,59 @@ public static String [] getExtensions () {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	if (OS.VERSION < 0x1040) {
-		return new Program[]{};
-	}
 	Hashtable bundles = new Hashtable();
 	String[] extensions = getExtensions();
-	for (int i = 0; i < extensions.length; i++) {
-		String extension = extensions[i];
-		char[] chars = new char[extension.length() - 1];
-		extension.getChars(1, extension.length(), chars, 0);
-		int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-		if (ext != 0) {
-			int utis = OS.UTTypeCreateAllIdentifiersForTag(OS.kUTTagClassFilenameExtension(), ext, 0);
-			if (utis != 0) {
-				int utiCount = OS.CFArrayGetCount(utis);
-				for (int j = 0; j < utiCount; j++) {
-					int uti = OS.CFArrayGetValueAtIndex(utis, j);
-					if (uti != 0) {
-						int apps = OS.LSCopyAllRoleHandlersForContentType(uti, OS.kLSRolesAll);
-						if (apps != 0) {
-							int appCount = OS.CFArrayGetCount(apps);
-							for (int k = 0; k < appCount; k++) {
-								int app = OS.CFArrayGetValueAtIndex(apps, k);
-								if (app != 0) {
-									int length = OS.CFStringGetLength(app);
-									if (length != 0) {
-										char[] buffer= new char[length];
-										CFRange range = new CFRange();
-										range.length = length;
-										OS.CFStringGetCharacters(app, range, buffer);
-										String bundleID = new String(buffer);
-										if (bundles.get(bundleID) == null) {
-											byte[] fsRef = new byte[80];
-											if (OS.LSFindApplicationForInfo(OS.kLSUnknownCreator, app,	0, fsRef, null) == OS.noErr) {
-												Program program = getProgram(fsRef);
-												bundles.put(bundleID, program);
+	if (OS.VERSION < 0x1040) {
+		for (int i = 0; i < extensions.length; i++) {
+			Program program = findProgram(extensions[i]);
+			if (program != null && bundles.get(program.getName()) == null) {
+				bundles.put(program.getName(), program);
+			}
+		}
+	} else {
+		for (int i = 0; i < extensions.length; i++) {
+			String extension = extensions[i];
+			char[] chars = new char[extension.length() - 1];
+			extension.getChars(1, extension.length(), chars, 0);
+			int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+			if (ext != 0) {
+				int utis = OS.UTTypeCreateAllIdentifiersForTag(OS.kUTTagClassFilenameExtension(), ext, 0);
+				if (utis != 0) {
+					int utiCount = OS.CFArrayGetCount(utis);
+					for (int j = 0; j < utiCount; j++) {
+						int uti = OS.CFArrayGetValueAtIndex(utis, j);
+						if (uti != 0) {
+							int apps = OS.LSCopyAllRoleHandlersForContentType(uti, OS.kLSRolesAll);
+							if (apps != 0) {
+								int appCount = OS.CFArrayGetCount(apps);
+								for (int k = 0; k < appCount; k++) {
+									int app = OS.CFArrayGetValueAtIndex(apps, k);
+									if (app != 0) {
+										int length = OS.CFStringGetLength(app);
+										if (length != 0) {
+											char[] buffer= new char[length];
+											CFRange range = new CFRange();
+											range.length = length;
+											OS.CFStringGetCharacters(app, range, buffer);
+											String bundleID = new String(buffer);
+											if (bundles.get(bundleID) == null) {
+												byte[] fsRef = new byte[80];
+												if (OS.LSFindApplicationForInfo(OS.kLSUnknownCreator, app,	0, fsRef, null) == OS.noErr) {
+													Program program = getProgram(fsRef);
+													bundles.put(bundleID, program);
+												}
 											}
 										}
 									}
 								}
+								OS.CFRelease(apps);
 							}
-							OS.CFRelease(apps);
 						}
 					}
+					OS.CFRelease(utis);
 				}
-				OS.CFRelease(utis);
+				OS.CFRelease(ext);
 			}
-			OS.CFRelease(ext);
 		}
 	}
 	int count = 0;
