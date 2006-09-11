@@ -5886,6 +5886,31 @@ fail:
 }
 #endif
 
+#ifndef NO_GetIconRefFromFileInfo
+JNIEXPORT jint JNICALL OS_NATIVE(GetIconRefFromFileInfo)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jcharArray arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jintArray arg7)
+{
+	jbyte *lparg0=NULL;
+	jchar *lparg2=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetIconRefFromFileInfo_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	rc = (jint)GetIconRefFromFileInfo((const FSRef *)lparg0, arg1, (const UniChar *)lparg2, (FSCatalogInfoBitmap)arg3, (const FSCatalogInfo *)arg4, arg5, (IconRef *)lparg6, (SInt16 *)lparg7);
+fail:
+	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, GetIconRefFromFileInfo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetIconRefFromIconFamilyPtr
 JNIEXPORT jint JNICALL OS_NATIVE(GetIconRefFromIconFamilyPtr)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
@@ -8639,6 +8664,116 @@ JNIEXPORT void JNICALL OS_NATIVE(KillPoly)
 	OS_NATIVE_ENTER(env, that, KillPoly_FUNC);
 	KillPoly((PolyHandle)arg0);
 	OS_NATIVE_EXIT(env, that, KillPoly_FUNC);
+}
+#endif
+
+#ifndef NO_LSCopyAllRoleHandlersForContentType
+JNIEXPORT jint JNICALL OS_NATIVE(LSCopyAllRoleHandlersForContentType)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LSCopyAllRoleHandlersForContentType_FUNC);
+	rc = (jint)LSCopyAllRoleHandlersForContentType((CFStringRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, LSCopyAllRoleHandlersForContentType_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LSCopyDisplayNameForRef
+JNIEXPORT jint JNICALL OS_NATIVE(LSCopyDisplayNameForRef)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LSCopyDisplayNameForRef_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)LSCopyDisplayNameForRef((const FSRef *)lparg0, (CFStringRef *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, LSCopyDisplayNameForRef_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LSFindApplicationForInfo
+JNIEXPORT jint JNICALL OS_NATIVE(LSFindApplicationForInfo)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jintArray arg4)
+{
+	jbyte *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LSFindApplicationForInfo_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)LSFindApplicationForInfo((OSType)arg0, (CFStringRef)arg1, (CFStringRef)arg2, (FSRef *)lparg3, (CFURLRef *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, LSFindApplicationForInfo_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LSGetApplicationForInfo
+JNIEXPORT jint JNICALL OS_NATIVE(LSGetApplicationForInfo)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4, jintArray arg5)
+{
+	jbyte *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LSGetApplicationForInfo_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)LSGetApplicationForInfo((OSType)arg0, (OSType)arg1, (CFStringRef)arg2, (LSRolesMask)arg3, (FSRef *)lparg4, (CFURLRef *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, LSGetApplicationForInfo_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LSOpenFSRef
+JNIEXPORT jint JNICALL OS_NATIVE(LSOpenFSRef)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LSOpenFSRef_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)LSOpenFSRef((const FSRef *)lparg0, (FSRef *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, LSOpenFSRef_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LSOpenItemsWithRole
+JNIEXPORT jint JNICALL OS_NATIVE(LSOpenItemsWithRole)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jintArray arg5, jint arg6)
+{
+	jbyte *lparg0=NULL;
+	LSApplicationParameters _arg4, *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LSOpenItemsWithRole_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getLSApplicationParametersFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)LSOpenItemsWithRole((const FSRef *)lparg0, arg1, arg2, (const AEKeyDesc *)arg3, (const LSApplicationParameters *)lparg4, (ProcessSerialNumber *)lparg5, arg6);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) setLSApplicationParametersFields(env, arg4, lparg4);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, LSOpenItemsWithRole_FUNC);
+	return rc;
 }
 #endif
 
@@ -12405,6 +12540,18 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) setPointFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, TrackMouseLocationWithOptions_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_UTTypeCreateAllIdentifiersForTag
+JNIEXPORT jint JNICALL OS_NATIVE(UTTypeCreateAllIdentifiersForTag)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UTTypeCreateAllIdentifiersForTag_FUNC);
+	rc = (jint)UTTypeCreateAllIdentifiersForTag((CFStringRef)arg0, (CFStringRef)arg1, (CFStringRef)arg2);
+	OS_NATIVE_EXIT(env, that, UTTypeCreateAllIdentifiersForTag_FUNC);
 	return rc;
 }
 #endif

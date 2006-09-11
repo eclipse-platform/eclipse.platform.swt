@@ -563,6 +563,18 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 #define HMHelpContentRec_sizeof() 0
 #endif
 
+#ifndef NO_LSApplicationParameters
+void cacheLSApplicationParametersFields(JNIEnv *env, jobject lpObject);
+LSApplicationParameters *getLSApplicationParametersFields(JNIEnv *env, jobject lpObject, LSApplicationParameters *lpStruct);
+void setLSApplicationParametersFields(JNIEnv *env, jobject lpObject, LSApplicationParameters *lpStruct);
+#define LSApplicationParameters_sizeof() sizeof(LSApplicationParameters)
+#else
+#define cacheLSApplicationParametersFields(a,b)
+#define getLSApplicationParametersFields(a,b,c) NULL
+#define setLSApplicationParametersFields(a,b,c)
+#define LSApplicationParameters_sizeof() 0
+#endif
+
 #ifndef NO_LongDateRec
 void cacheLongDateRecFields(JNIEnv *env, jobject lpObject);
 LongDateRec *getLongDateRecFields(JNIEnv *env, jobject lpObject, LongDateRec *lpStruct);

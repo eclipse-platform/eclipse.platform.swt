@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 928;
-int OS_nativeFunctionCallCount[928];
+int OS_nativeFunctionCount = 936;
+int OS_nativeFunctionCallCount[936];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -430,6 +430,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetHandleSize",
 	"GetIconFamilyData",
 	"GetIconRef",
+	"GetIconRefFromFileInfo",
 	"GetIconRefFromIconFamilyPtr",
 	"GetIndMenuItemWithCommandID",
 	"GetIndexedSubControl",
@@ -612,6 +613,12 @@ char * OS_nativeFunctionNames[] = {
 	"JNIGetObject",
 	"KeyTranslate",
 	"KillPoly",
+	"LSCopyAllRoleHandlersForContentType",
+	"LSCopyDisplayNameForRef",
+	"LSFindApplicationForInfo",
+	"LSGetApplicationForInfo",
+	"LSOpenFSRef",
+	"LSOpenItemsWithRole",
 	"LineTo",
 	"LoWord",
 	"LockPortBits",
@@ -894,6 +901,7 @@ char * OS_nativeFunctionNames[] = {
 	"TextWidth",
 	"TrackDrag",
 	"TrackMouseLocationWithOptions",
+	"UTTypeCreateAllIdentifiersForTag",
 	"UTTypeCreatePreferredIdentifierForTag",
 	"UnionRect",
 	"UnionRgn",

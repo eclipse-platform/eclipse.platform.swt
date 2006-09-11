@@ -2249,6 +2249,55 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 }
 #endif
 
+#ifndef NO_LSApplicationParameters
+typedef struct LSApplicationParameters_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, flags, application, asyncLaunchRefCon, environment, argv, initialEvent;
+} LSApplicationParameters_FID_CACHE;
+
+LSApplicationParameters_FID_CACHE LSApplicationParametersFc;
+
+void cacheLSApplicationParametersFields(JNIEnv *env, jobject lpObject)
+{
+	if (LSApplicationParametersFc.cached) return;
+	LSApplicationParametersFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	LSApplicationParametersFc.version = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "version", "I");
+	LSApplicationParametersFc.flags = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "flags", "I");
+	LSApplicationParametersFc.application = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "application", "I");
+	LSApplicationParametersFc.asyncLaunchRefCon = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "asyncLaunchRefCon", "I");
+	LSApplicationParametersFc.environment = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "environment", "I");
+	LSApplicationParametersFc.argv = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "argv", "I");
+	LSApplicationParametersFc.initialEvent = (*env)->GetFieldID(env, LSApplicationParametersFc.clazz, "initialEvent", "I");
+	LSApplicationParametersFc.cached = 1;
+}
+
+LSApplicationParameters *getLSApplicationParametersFields(JNIEnv *env, jobject lpObject, LSApplicationParameters *lpStruct)
+{
+	if (!LSApplicationParametersFc.cached) cacheLSApplicationParametersFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, LSApplicationParametersFc.version);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, LSApplicationParametersFc.flags);
+	lpStruct->application = (const FSRef *)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.application);
+	lpStruct->asyncLaunchRefCon = (void *)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.asyncLaunchRefCon);
+	lpStruct->environment = (CFDictionaryRef)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.environment);
+	lpStruct->argv = (CFArrayRef)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.argv);
+	lpStruct->initialEvent = (AppleEvent *)(*env)->GetIntField(env, lpObject, LSApplicationParametersFc.initialEvent);
+	return lpStruct;
+}
+
+void setLSApplicationParametersFields(JNIEnv *env, jobject lpObject, LSApplicationParameters *lpStruct)
+{
+	if (!LSApplicationParametersFc.cached) cacheLSApplicationParametersFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.flags, (jint)lpStruct->flags);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.application, (jint)lpStruct->application);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.asyncLaunchRefCon, (jint)lpStruct->asyncLaunchRefCon);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.environment, (jint)lpStruct->environment);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.argv, (jint)lpStruct->argv);
+	(*env)->SetIntField(env, lpObject, LSApplicationParametersFc.initialEvent, (jint)lpStruct->initialEvent);
+}
+#endif
+
 #ifndef NO_LongDateRec
 typedef struct LongDateRec_FID_CACHE {
 	int cached;
