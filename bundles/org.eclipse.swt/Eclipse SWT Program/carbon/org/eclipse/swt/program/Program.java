@@ -247,6 +247,9 @@ public static String [] getExtensions () {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
+	if (OS.VERSION < 0x1040) {
+		return new Program[]{};
+	}
 	Hashtable bundles = new Hashtable();
 	String[] extensions = getExtensions();
 	for (int i = 0; i < extensions.length; i++) {
@@ -261,7 +264,7 @@ public static Program [] getPrograms () {
 				for (int j = 0; j < utiCount; j++) {
 					int uti = OS.CFArrayGetValueAtIndex(utis, j);
 					if (uti != 0) {
-						int apps = OS.LSCopyAllRoleHandlersForContentType(uti, 0xFFFFFFFF);
+						int apps = OS.LSCopyAllRoleHandlersForContentType(uti, OS.kLSRolesAll);
 						if (apps != 0) {
 							int appCount = OS.CFArrayGetCount(apps);
 							for (int k = 0; k < appCount; k++) {
@@ -351,6 +354,9 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (OS.VERSION < 0x1040) {
+		return launch(fileName);
+	}
 	int rc = -1;
 	char[] chars = new char[fileName.length()];
 	fileName.getChars(0, chars.length, chars, 0);
