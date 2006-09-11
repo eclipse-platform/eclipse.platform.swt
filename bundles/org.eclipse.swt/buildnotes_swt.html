@@ -11,6 +11,43 @@
 Eclipse Platform Build Notes<br>
 SWT</h1>
 
+<h2> SWT Build 3.3 008 - Tuesday September 12, 2006 </h2>
+<h3><a NAME="New API"></a>New API</h3>
+<blockquote>
+CCombo now fires <code>SWT.Verify</code> events
+<br><code>CCombo.addVerifyListener(VerifyListener)</code>
+<br><code>CCombo.removeVerifyListener(VerifyListener)</code>
+<br><code>StyledTextPrintOptions.printLineNumbers</code> field
+<br><code>Variant.getByte()</code>
+<br><code>Variant.getChar()</code>
+</blockquote>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+32683 - "up" arrow button displays as "right".  
+<br>110163 - X Window System error, using Swing system look and feel, rendering SVG using SWT_AWT in non-top stack layout
+<br>114169 - [Program] Program.getImageData() not implemented on Mac  
+<br>150300 - path.close() has no effect  
+<br>150304 - cubicTo and quadTo methods of Path not working  
+<br>150306 - trouble with drawing a string  
+<br>151150 - Multi Selection Tree only last 2 items are 'really' selected  
+<br>152769 - StackOverflowError (recursive callWindowProc)  
+<br>153841 - Macintosh only: values in some text fields of launch configuration dialog are slightly shifted, obscuring first character
+<br>153939 - Problem with gc.drawString()  
+<br>154052 - Table tooltip does not show after selection of a table item  
+<br>154736 - All Fonts appear the same  
+<br>154746 - Path Clipping does not work properly on Mac, GTK and Motif  
+<br>154928 - CCombo should fire Verify events  
+<br>154943 - JavaScript error with generated content from GWT  
+<br>155162 - Alt+Numpad_Divide issues two key events  
+<br>155224 - NPE in CCombo.setVisible(false) if some of affected listeners has disposed it
+<br>155390 - Cursor ignores horizontal hotspot location and uses vertical instead
+<br>155624 - SWT Table column resize issue  
+<br>155801 - Table column tooltip disappears after scrolling  
+<br>155916 - Classes in org.eclipse.swt.opengl have warning comments in Javadoc
+<br>156027 - VerifyEvent e.doit inconsistent behavior on Linux GTK  
+<br>156213 - BDI: Styledetxt setOrientation does not work, on the fly  
+</blockquote>
+
 <h2> SWT Build 3.3 007a - Wednesday August 30, 2006 </h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
