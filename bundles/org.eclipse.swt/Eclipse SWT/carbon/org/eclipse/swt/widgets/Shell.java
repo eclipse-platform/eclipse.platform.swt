@@ -476,12 +476,8 @@ void createHandle () {
 	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 //	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 	int [] theRoot = new int [1];
-	if (OS.HIVIEW) {
-		OS.HIViewFindByID (OS.HIViewGetRoot (shellHandle), OS.kHIViewWindowContentID (), theRoot);
-	} else {
-		OS.CreateRootControl (shellHandle, theRoot);
-		OS.GetRootControl (shellHandle, theRoot);
-	}
+	if (!OS.HIVIEW) OS.CreateRootControl (shellHandle, theRoot);
+	OS.GetRootControl (shellHandle, theRoot);
 	if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 		createScrolledHandle (theRoot [0]);
