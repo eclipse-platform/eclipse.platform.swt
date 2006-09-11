@@ -2221,7 +2221,15 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 	
 	/* Ignore well known system keys */
 	switch (wParam) {
-		case OS.VK_F4: return null;
+		case OS.VK_F4: {
+			int hwndShell = hwnd;
+			while (OS.GetParent (hwndShell) != 0) {
+				if (OS.GetWindow (hwndShell, OS.GW_OWNER) != 0) break;
+				hwndShell = OS.GetParent (hwndShell);
+			}
+			int bits = OS.GetWindowLong (hwndShell, OS.GWL_STYLE);
+			if ((bits & OS.WS_SYSMENU) != 0) return null;
+		}
 	}
 	
 	/* Ignore repeating modifier keys by testing key down state */
