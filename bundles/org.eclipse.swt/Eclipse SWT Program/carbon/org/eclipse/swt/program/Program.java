@@ -10,13 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.program;
 
- 
-import org.eclipse.swt.internal.*;
+
+import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.carbon.LSApplicationParameters;
+import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-import java.io.IOException;
-import java.util.Vector;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * Instances of this class represent programs and
@@ -25,8 +27,7 @@ import java.util.Vector;
  */
 public final class Program {
 	String name;
-	String command;
-	String iconName;
+	byte[] fsRef;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -50,8 +51,24 @@ Program () {
 public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
-	if (extension.charAt (0) != '.') extension = '.' + extension;
-	return getProgram(extension);
+	char[] chars;
+	if (extension.charAt (0) != '.') {
+		chars = new char[extension.length()];
+		extension.getChars(0, chars.length, chars, 0);
+	} else {
+		chars = new char[extension.length() - 1];
+		extension.getChars(1, extension.length(), chars, 0);		
+	}
+	int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	Program program = null;
+	if (ext != 0) {
+		byte[] fsRef = new byte[80];
+		if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
+			program = getProgram(fsRef);
+		}
+		OS.CFRelease(ext);
+	}
+	return program;
 }
 
 /**
@@ -63,46 +80,163 @@ public static Program findProgram (String extension) {
  */
 public static String [] getExtensions () {
 	return new String [] {
-		".xml",
-		".html",
-		".java",
-		".properties",
-		".jar",
-		".zip",
+		// From System-Declared Uniform Type Identifiers
 		".txt",
-		".jpeg",
+		".rtf",
+		".html",
+		".htm",
+		".xml",
+		".c",
+		".m",
+		".cp", ".cpp", ".c++", ".cc", ".cxx",
+		".mm",
+		".h",
+		".hpp",
+		".h++",
+		".hxx",
+		".java",
+		".jav",
+		".s",
+		".r",
+		".defs",
+		".mig",
+		".exp",
+		".js",
+		".jscript",
+		".javascript",
+		".sh",
+		".command",
+		".csh",
+		".pl",
+		".pm",
+		".py",
+		".rb",
+		".rbw",
+		".php",
+		".php3",
+		".php4",
+		".ph3",
+		".ph4",
+		".phtml",
+		".jnlp",
+		".applescript",
+		".scpt",
+		".o",
+		".exe",
+		".dll",
+		".class",
+		".jar",
+		".qtz",
+		".gtar",
+		".tar",
+		".gz",
+		".gzip",
+		".tgz",
+		".hqx",
+		".bin",
+		".vcf",
+		".vcard",
 		".jpg",
+		".jpeg",
+		".jp2",
+		".tif",
 		".tiff",
-		".gif",
+		".pic",
+		".pct",
+		".pict",
+		".pntg",
 		".png",
+		".xbm",
+		".qif",
+		".qtif",
+		".icns",
+		".mov",
+		".qt",
+		".avi",
+		".vfw",
+		".mpg",
+		".mpeg",
+		".m75",
+		".m15",
+		".mp4",
+		".3gp",
+		".3gpp",
+		".3g2",
+		".3gp2",
+		".mp3",
+		".m4a",
+		".m4p",
+		".m4b",
+		".au",
+		".ulw",
+		".snd",
+		".aifc",
+		".aiff",
+		".aif",
+		".aiff",
+		".aif",
+		".caf",
+		".bundle",
+		".app",
+		".plugin",
+		".mdimporter",
+		".wdgt",
+		".cpio",
+		".zip",
+		".framework",
+		".rtfd",
+		".dfont",
+		".otf",
+		".ttf",
+		".ttc",
+		".suit",
+		".pfb",
+		".pfa",
+		".icc",
+		".icm",
+		".pf",
+		".pdf",
+		".ps",
+		".eps",
+		".psd",
+		".ai",
+		".gif",
+		".bmp",
+		".ico",
+		".doc",
+		".xls",
+		".ppt",
+		".wav",
+		".wave",
+		".asf",
+		".wm",
+		".wmv",
+		".wmp",
+		".wma",
+		".asx",
+		".wmx",
+		".wvx",
+		".wax",
+		".key",
+		".kth",
+		".tga",
+		".sgi",
+		".exr",
+		".fpx",
+		".jfx",
+		".efx",
+		".sd2",
+		".rm",
+		".ram",
+		".ra",
+		".smil",
+		".sit",
+		".sitx",
+		// Others
+		".plist",
+		".nib",
+		".lproj",
 	};
-}
-
-static Program getProgram (String key) {
-	String[] extentions = getExtensions();
-	int i = 0;
-	while (i < extentions.length) {
-		String ext = extentions[i];
-		if (ext.equals(key)) break;
-		i++;
-	}
-	if (i == extentions.length) return null;
-
-	/* Name */
-	String name = key;
-	if (name == null || name.length () == 0) return null;
-
-	/* Command */
-	String command = "/usr/bin/open %f";
-
-	/* Icon */
-	String iconName = "icon";
-
-	Program program = new Program ();
-	program.name = name;
-	program.command = command;
-	program.iconName = iconName;
-	return program;
 }
 
 /**
@@ -113,9 +247,59 @@ static Program getProgram (String key) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	return new Program [] {
-		getProgram(".html"),
-	};
+	Hashtable bundles = new Hashtable();
+	String[] extensions = getExtensions();
+	for (int i = 0; i < extensions.length; i++) {
+		String extension = extensions[i];
+		char[] chars = new char[extension.length() - 1];
+		extension.getChars(1, extension.length(), chars, 0);
+		int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+		if (ext != 0) {
+			int utis = OS.UTTypeCreateAllIdentifiersForTag(OS.kUTTagClassFilenameExtension(), ext, 0);
+			if (utis != 0) {
+				int utiCount = OS.CFArrayGetCount(utis);
+				for (int j = 0; j < utiCount; j++) {
+					int uti = OS.CFArrayGetValueAtIndex(utis, j);
+					if (uti != 0) {
+						int apps = OS.LSCopyAllRoleHandlersForContentType(uti, 0xFFFFFFFF);
+						if (apps != 0) {
+							int appCount = OS.CFArrayGetCount(apps);
+							for (int k = 0; k < appCount; k++) {
+								int app = OS.CFArrayGetValueAtIndex(apps, k);
+								if (app != 0) {
+									int length = OS.CFStringGetLength(app);
+									if (length != 0) {
+										char[] buffer= new char[length];
+										CFRange range = new CFRange();
+										range.length = length;
+										OS.CFStringGetCharacters(app, range, buffer);
+										String bundleID = new String(buffer);
+										if (bundles.get(bundleID) == null) {
+											byte[] fsRef = new byte[80];
+											if (OS.LSFindApplicationForInfo(OS.kLSUnknownCreator, app,	0, fsRef, null) == OS.noErr) {
+												Program program = getProgram(fsRef);
+												bundles.put(bundleID, program);
+											}
+										}
+									}
+								}
+							}
+							OS.CFRelease(apps);
+						}
+					}
+				}
+				OS.CFRelease(utis);
+			}
+			OS.CFRelease(ext);
+		}
+	}
+	int count = 0;
+	Program[] programs = new Program[bundles.size()];
+	Enumeration values = bundles.elements();
+	while (values.hasMoreElements()) {
+		programs[count++] = (Program)values.nextElement();
+	}
+	return programs;
 }
 
 /**
@@ -134,55 +318,22 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	String[] args= new String[] {"/usr/bin/open", fileName};
-	try {
-		Compatibility.exec(args);
-		return true;
-	} catch(IOException ex) {}	
-	return false;
-}
-
-static String[] parseCommand(String cmd) {
-	Vector args = new Vector();
-	int sIndex = 0;
-	int eIndex;
-	while (sIndex < cmd.length()) {
-		/* Trim initial white space of argument. */
-		while (sIndex < cmd.length() && Compatibility.isWhitespace(cmd.charAt(sIndex))) {
-			sIndex++;
-		}
-		if (sIndex < cmd.length()) {
-			/* If the command is a quoted string */
-			if (cmd.charAt(sIndex) == '"' || cmd.charAt(sIndex) == '\'') {
-				/* Find the terminating quote (or end of line).
-				 * This code currently does not handle escaped characters (e.g., " a\"b").
-				 */
-				eIndex = sIndex + 1;
-				while (eIndex < cmd.length() && cmd.charAt(eIndex) != cmd.charAt(sIndex)) eIndex++;
-				if (eIndex >= cmd.length()) { 
-					/* The terminating quote was not found
-					 * Add the argument as is with only one initial quote.
-					 */
-					args.addElement(cmd.substring(sIndex, eIndex));
-				}
-				else {
-					/* Add the argument, trimming off the quotes. */
-					args.addElement(cmd.substring(sIndex+1, eIndex));
-				}
-				sIndex = eIndex + 1;
-			}			
-			else {
-				/* Use white space for the delimiters. */
-				eIndex = sIndex;
-				while (eIndex < cmd.length() && !Compatibility.isWhitespace(cmd.charAt(eIndex))) eIndex++;
-				args.addElement(cmd.substring(sIndex, eIndex));
-				sIndex = eIndex + 1;
+	int rc = -1;
+	char[] chars = new char[fileName.length()];
+	fileName.getChars(0, chars.length, chars, 0);
+	int arg = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+	if (arg != 0) {
+		int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, arg, OS.kCFURLPOSIXPathStyle, false);
+		if (url != 0) {
+			byte[] itemRef = new byte[80];
+			if (OS.CFURLGetFSRef(url, itemRef)) {				
+				rc = OS.LSOpenFSRef(itemRef, null);
 			}
+			OS.CFRelease(url);
 		}
-	}	
-	String[] result = new String[args.size()];
-	args.copyInto(result);
-	return result;
+		OS.CFRelease(arg);
+	}
+	return rc == OS.noErr;
 }
 
 /**
@@ -200,35 +351,67 @@ static String[] parseCommand(String cmd) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
-	/* Parse the command into its individual arguments. */
-	String[] args = parseCommand(command);
-	int fileArg = -1;
-	int index;
-	for (index = 0; index < args.length; index++) {
-		int j = args[index].indexOf("%f");
-		if (j != -1) {
-			String value = args[index];
-			fileArg = index;
-			args[index] = value.substring(0, j) + fileName + value.substring(j + 2);
+	int rc = -1;
+	char[] chars = new char[fileName.length()];
+	fileName.getChars(0, chars.length, chars, 0);
+	int arg = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+	if (arg != 0) {
+		int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, arg, OS.kCFURLPOSIXPathStyle, false);
+		if (url != 0) {
+			byte[] itemRef = new byte[80];
+			if (OS.CFURLGetFSRef(url, itemRef)) {
+				int fsRefPtr = OS.NewPtr(fsRef.length);
+				if (fsRefPtr != 0) {
+					OS.memcpy(fsRefPtr, fsRef, fsRef.length);
+					LSApplicationParameters params = new LSApplicationParameters();
+					params.version = 0;
+					params.flags = 0;
+					params.application = fsRefPtr;
+					rc = OS.LSOpenItemsWithRole(itemRef, 1, OS.kLSRolesAll, 0, params, null, 0);
+					OS.DisposePtr(fsRefPtr);
+				}
+			}
+			OS.CFRelease(url);
 		}
+		OS.CFRelease(arg);
 	}
+	return rc == OS.noErr;
+}
 
-	/* If a file name was given but the command did not have "%f" */
-	if ((fileName.length() > 0) && (fileArg < 0)) {
-		String[] newArgs = new String[args.length + 1];
-		for (index = 0; index < args.length; index++) newArgs[index] = args[index];
-		newArgs[args.length] = fileName;
-		args = newArgs;
+ImageData createImageFromFamily (int family, int type, int maskType, int width, int height) {
+	int dataHandle = OS.NewHandle (0);
+	int result = OS.GetIconFamilyData (family, type, dataHandle);
+	if (result != OS.noErr) {
+		OS.DisposeHandle (dataHandle);
+		return null;
 	}
+	int maskHandle = OS.NewHandle (0);
+	result = OS.GetIconFamilyData (family, maskType, maskHandle);
+	if (result != OS.noErr) {
+		OS.DisposeHandle (maskHandle);
+		OS.DisposeHandle (dataHandle);
+		return null;
+	}
+	int dataSize = OS.GetHandleSize (dataHandle);
+	OS.HLock (dataHandle);
+	OS.HLock (maskHandle);
+	int[] iconPtr = new int [1];
+	int[] maskPtr = new int [1];
+	OS.memcpy (iconPtr, dataHandle, 4);
+	OS.memcpy (maskPtr, maskHandle, 4);
+	byte[] data = new byte[dataSize];
+	OS.memcpy (data, iconPtr [0], dataSize);
+	byte[] alphaData = new byte[width * height];
+	OS.memcpy(alphaData, maskPtr[0], alphaData.length);
+	OS.HUnlock (maskHandle);
+	OS.HUnlock (dataHandle);
+	OS.DisposeHandle (maskHandle);
+	OS.DisposeHandle (dataHandle);
 
-	/* Execute the command. */
-	try {
-		Compatibility.exec(args);
-	} catch (IOException e) {
-		return false;
-	}
-	return true;
+	ImageData image = new ImageData(width, height, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF), 4, data);
+	image.alphaData = alphaData;
+
+	return image;
 }
 
 /**
@@ -239,39 +422,50 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-	RGB[] rgbs = new RGB[] {
-		new RGB(0xff, 0xff, 0xff), 
-		new RGB(0x5f, 0x5f, 0x5f),
-		new RGB(0x80, 0x80, 0x80),
-		new RGB(0xC0, 0xC0, 0xC0),
-		new RGB(0xDF, 0xDF, 0xBF),
-		new RGB(0xFF, 0xDF, 0x9F),
-		new RGB(0x00, 0x00, 0x00),
-	};  
-	ImageData data = new ImageData(16, 16, 4, new PaletteData(rgbs)	);
-	data.transparentPixel = 6; // use black for transparency
-	String[] p= {
-		"CCCCCCCCGGG",
-		"CFAAAAACBGG",
-		"CAAAAAACFBG",
-		"CAAAAAACBBB",
-		"CAAAAAAAAEB",
-		"CAAAAAAAAEB",
-		"CAAAAAAAAEB",
-		"CAAAAAAAAEB",
-		"CAAAAAAAAEB",
-		"CAAAAAAAAEB",
-		"CAAAAAAAAEB",
-		"CAAAAAAAAEB",
-		"CDDDDDDDDDB",
-		"CBBBBBBBBBB",
-	};
-	for (int y= 0; y < p.length; y++) {
-		for (int x= 0; x < 11; x++) {
-			data.setPixel(x+3, y+1, p[y].charAt(x)-'A');
+	int[] iconRef = new int[1];
+	OS.GetIconRefFromFileInfo(fsRef, 0, null, 0, 0, 0, iconRef, null);
+	int[] family = new int[1];
+	int rc = OS.IconRefToIconFamily(iconRef[0], OS.kSelectorAlLAvailableData, family);
+	OS.ReleaseIconRef(iconRef[0]);
+	if (rc != OS.noErr) return null;
+//	ImageData result = createImageFromFamily(family[0], OS.kLarge32BitData, OS.kLarge8BitMask, 32, 32);
+	ImageData result = createImageFromFamily(family[0], OS.kSmall32BitData, OS.kSmall8BitMask, 16, 16);
+	OS.DisposeHandle(family[0]);
+	if (result == null) {
+		RGB[] rgbs = new RGB[] {
+			new RGB(0xff, 0xff, 0xff), 
+			new RGB(0x5f, 0x5f, 0x5f),
+			new RGB(0x80, 0x80, 0x80),
+			new RGB(0xC0, 0xC0, 0xC0),
+			new RGB(0xDF, 0xDF, 0xBF),
+			new RGB(0xFF, 0xDF, 0x9F),
+			new RGB(0x00, 0x00, 0x00),
+		};  
+		result = new ImageData(16, 16, 4, new PaletteData(rgbs)	);
+		result.transparentPixel = 6; // use black for transparency
+		String[] p= {
+			"CCCCCCCCGGG",
+			"CFAAAAACBGG",
+			"CAAAAAACFBG",
+			"CAAAAAACBBB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CAAAAAAAAEB",
+			"CDDDDDDDDDB",
+			"CBBBBBBBBBB",
+		};
+		for (int y= 0; y < p.length; y++) {
+			for (int x= 0; x < 11; x++) {
+				result.setPixel(x+3, y+1, p[y].charAt(x)-'A');
+			}
 		}
-	}		
-	return data;
+	}
+	return result;
 }
 
 /**
@@ -284,6 +478,27 @@ public ImageData getImageData () {
  */
 public String getName () {
 	return name;
+}
+
+static Program getProgram(byte[] fsRef) {
+	String name = "";
+	int[] namePtr = new int[1];
+	OS.LSCopyDisplayNameForRef(fsRef, namePtr);
+	if (namePtr[0] != 0) {
+		int length = OS.CFStringGetLength(namePtr[0]);
+		if (length != 0) {
+			char[] buffer= new char[length];
+			CFRange range = new CFRange();
+			range.length = length;
+			OS.CFStringGetCharacters(namePtr[0], range, buffer);
+			name = new String(buffer);
+		}
+		OS.CFRelease(namePtr[0]);
+	}
+	Program program = new Program();
+	program.fsRef = fsRef;
+	program.name = name;
+	return program;
 }
 
 /**
@@ -300,8 +515,7 @@ public boolean equals(Object other) {
 	if (this == other) return true;
 	if (other instanceof Program) {
 		final Program program = (Program) other;
-		return name.equals(program.name) && command.equals(program.command)
-			&& iconName.equals(program.iconName);
+		return name.equals(program.name);
 	}
 	return false;
 }
@@ -317,7 +531,7 @@ public boolean equals(Object other) {
  * @see #equals(Object)
  */
 public int hashCode() {
-	return name.hashCode() ^ command.hashCode() ^ iconName.hashCode();
+	return name.hashCode();
 }
 
 /**
