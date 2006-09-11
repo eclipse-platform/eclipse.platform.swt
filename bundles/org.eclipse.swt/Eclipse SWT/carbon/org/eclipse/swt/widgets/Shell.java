@@ -476,8 +476,19 @@ void createHandle () {
 	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 //	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 	int [] theRoot = new int [1];
-	if (!OS.HIVIEW) OS.CreateRootControl (shellHandle, theRoot);
-	OS.GetRootControl (shellHandle, theRoot);
+	if (OS.HIVIEW) {
+		OS.HIViewFindByID (shellHandle, OS.kHIViewWindowContentID (), theRoot);
+		/*
+		* Bug in the Macintosh.  When the window class is kMovableModalWindowClass or
+		* kModalWindowClass, HIViewFindByID() fails to find the control identified by
+		* kHIViewWindowContentID.  The fix is to call GetRootControl() if the call
+		* failed.
+		*/
+		if (theRoot [0] == 0) OS.GetRootControl (shellHandle, theRoot);		
+	} else {
+		OS.CreateRootControl (shellHandle, theRoot);
+		OS.GetRootControl (shellHandle, theRoot);
+	}
 	if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 		createScrolledHandle (theRoot [0]);
