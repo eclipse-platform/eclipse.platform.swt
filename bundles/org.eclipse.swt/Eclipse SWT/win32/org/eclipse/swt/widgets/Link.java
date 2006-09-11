@@ -175,7 +175,11 @@ void createHandle () {
 	state |= THEME_BACKGROUND;
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout = new TextLayout (display);
-		linkColor = new Color (display, LINK_FOREGROUND);
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+			linkColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_HOTLIGHT));
+		} else {
+			linkColor = new Color (display, LINK_FOREGROUND);
+		}
 		disabledColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_GRAYTEXT));
 		offsets = new Point [0];
 		ids = new String [0];

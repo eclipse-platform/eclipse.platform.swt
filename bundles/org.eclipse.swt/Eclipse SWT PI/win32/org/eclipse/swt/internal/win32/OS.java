@@ -423,6 +423,7 @@ public class OS extends Platform {
 	public static final int COLOR_GRAYTEXT = 0x11 | SYS_COLOR_INDEX_FLAG;
 	public static final int COLOR_HIGHLIGHT = 0xd | SYS_COLOR_INDEX_FLAG;
 	public static final int COLOR_HIGHLIGHTTEXT = 0xe | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_HOTLIGHT = 26 | SYS_COLOR_INDEX_FLAG;
 	public static final int COLOR_INACTIVECAPTION = 0x3 | SYS_COLOR_INDEX_FLAG;
 	public static final int COLOR_INACTIVECAPTIONTEXT = 0x13 | SYS_COLOR_INDEX_FLAG;
 	public static final int COLOR_INFOBK = 0x18 | SYS_COLOR_INDEX_FLAG;
