@@ -1410,6 +1410,11 @@ public void setToolTipText (String string) {
 
 public void setVisible (boolean visible) {
 	super.setVisible(visible);
+	/* 
+	 * At this point the widget may have been disposed in a FocusOut event.
+	 * If so then do not continue.
+	 */
+	if (isDisposed ()) return;
 	if (!visible) popup.setVisible(false);
 }
 /**
