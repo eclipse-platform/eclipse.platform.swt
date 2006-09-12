@@ -329,13 +329,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
 	String[] items = list.getItems ();
-	int textWidth = 0;
 	GC gc = new GC (text);
 	int spacer = gc.stringExtent (" ").x; //$NON-NLS-1$
+	int textWidth = gc.stringExtent (text.getText ()).x;
 	for (int i = 0; i < items.length; i++) {
 		textWidth = Math.max (gc.stringExtent (items[i]).x, textWidth);
 	}
-	gc.dispose();
+	gc.dispose ();
 	Point textSize = text.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
 	Point arrowSize = arrow.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
 	Point listSize = list.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
