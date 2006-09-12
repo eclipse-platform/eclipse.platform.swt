@@ -1510,6 +1510,7 @@ public static final native int LSFindApplicationForInfo(int inCreator, int inBun
 public static final native int LSCopyAllRoleHandlersForContentType(int inContentType, int inRoleMask);
 public static final native int LSGetApplicationForInfo(int inType, int inCreator,int inExtension, int inRoleMask, byte[] outAppRef, int[] outAppURL);
 public static final native int LSOpenItemsWithRole(byte[] inItems, int inItemCount, int inRole, int inAEParam, LSApplicationParameters inAppParams, int[] outPSNs, int inMaxPSNCount);
+public static final native int LSOpenApplication (LSApplicationParameters inAppParams, int[] outPSN);
 public static final native int LSOpenFSRef(byte[] inRef, byte[] outLaunchedRef);
 public static final native int LSCopyDisplayNameForRef(byte[] inRef, int[] outDisplayName);
 public static final native int LockPortBits(int portHandle);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 936;
-int OS_nativeFunctionCallCount[936];
+int OS_nativeFunctionCount = 937;
+int OS_nativeFunctionCallCount[937];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -617,6 +617,7 @@ char * OS_nativeFunctionNames[] = {
 	"LSCopyDisplayNameForRef",
 	"LSFindApplicationForInfo",
 	"LSGetApplicationForInfo",
+	"LSOpenApplication",
 	"LSOpenFSRef",
 	"LSOpenItemsWithRole",
 	"LineTo",

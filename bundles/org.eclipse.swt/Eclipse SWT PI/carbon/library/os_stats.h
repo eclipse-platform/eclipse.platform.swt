@@ -621,6 +621,7 @@ typedef enum {
 	LSCopyDisplayNameForRef_FUNC,
 	LSFindApplicationForInfo_FUNC,
 	LSGetApplicationForInfo_FUNC,
+	LSOpenApplication_FUNC,
 	LSOpenFSRef_FUNC,
 	LSOpenItemsWithRole_FUNC,
 	LineTo_FUNC,

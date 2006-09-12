@@ -8753,6 +8753,25 @@ fail:
 }
 #endif
 
+#ifndef NO_LSOpenApplication
+JNIEXPORT jint JNICALL OS_NATIVE(LSOpenApplication)
+	(JNIEnv *env, jclass that, jobject arg0, jintArray arg1)
+{
+	LSApplicationParameters _arg0, *lparg0=NULL;
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LSOpenApplication_FUNC);
+	if (arg0) if ((lparg0 = getLSApplicationParametersFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)LSOpenApplication(lparg0, (ProcessSerialNumber *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) setLSApplicationParametersFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, LSOpenApplication_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LSOpenFSRef
 JNIEXPORT jint JNICALL OS_NATIVE(LSOpenFSRef)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)

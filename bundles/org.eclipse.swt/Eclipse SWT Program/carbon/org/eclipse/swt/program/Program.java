@@ -390,28 +390,32 @@ public boolean execute (String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (OS.VERSION < 0x1040) return launch(fileName);
 	int rc = -1;
-	char[] chars = new char[fileName.length()];
-	fileName.getChars(0, chars.length, chars, 0);
-	int arg = OS.CFStringCreateWithCharacters(0, chars, chars.length);
-	if (arg != 0) {
-		int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, arg, OS.kCFURLPOSIXPathStyle, false);
-		if (url != 0) {
-			byte[] itemRef = new byte[80];
-			if (OS.CFURLGetFSRef(url, itemRef)) {
-				int fsRefPtr = OS.NewPtr(fsRef.length);
-				if (fsRefPtr != 0) {
-					OS.memcpy(fsRefPtr, fsRef, fsRef.length);
-					LSApplicationParameters params = new LSApplicationParameters();
-					params.version = 0;
-					params.flags = 0;
-					params.application = fsRefPtr;
-					rc = OS.LSOpenItemsWithRole(itemRef, 1, OS.kLSRolesAll, 0, params, null, 0);
-					OS.DisposePtr(fsRefPtr);
+	int fsRefPtr = OS.NewPtr(fsRef.length);
+	if (fsRefPtr != 0) {
+		OS.memcpy(fsRefPtr, fsRef, fsRef.length);
+		LSApplicationParameters params = new LSApplicationParameters();
+		params.version = 0;
+		params.flags = 0;
+		params.application = fsRefPtr;
+		if (fileName.length() == 0) {
+			rc = OS.LSOpenApplication(params, null);
+		} else {
+			char[] chars = new char[fileName.length()];
+			fileName.getChars(0, chars.length, chars, 0);
+			int arg = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+			if (arg != 0) {
+				int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, arg, OS.kCFURLPOSIXPathStyle, false);
+				if (url != 0) {
+					byte[] itemRef = new byte[80];
+					if (OS.CFURLGetFSRef(url, itemRef)) {
+						rc = OS.LSOpenItemsWithRole(itemRef, 1, OS.kLSRolesAll, 0, params, null, 0);
+					}
+					OS.CFRelease(url);
 				}
+				OS.CFRelease(arg);
 			}
-			OS.CFRelease(url);
 		}
-		OS.CFRelease(arg);
+		OS.DisposePtr(fsRefPtr);
 	}
 	return rc == OS.noErr;
 }
