@@ -173,8 +173,6 @@ public static String [] getExtensions () {
 		".aifc",
 		".aiff",
 		".aif",
-		".aiff",
-		".aif",
 		".caf",
 		".bundle",
 		".app",
@@ -236,6 +234,43 @@ public static String [] getExtensions () {
 		".plist",
 		".nib",
 		".lproj",
+		// iChat
+		".iPhoto",
+		// iChat
+		".iChat",
+		".chat",
+		// acrobat reader
+		".rmf",
+		".xfdf",
+		".fdf",
+		// Chess
+		".game",
+		".pgn",
+		// iCal
+		".ics",
+		".vcs",
+		".aplmodel",
+		".icbu",
+		".icalevent",
+		".icaltodo",
+		// Mail
+		".mailhold",
+		".mbox",
+		".imapmbox",
+		".emlx",
+		".mailextract",
+		// Sherlock
+		".sherlock",
+		// Stickies
+		".tpl",
+		// System Preferences
+		".prefPane",
+		".sliderSaver",
+		".saver",
+		// Console
+		".log",
+		// Grapher
+		".gcx",
 	};
 }
 
@@ -249,20 +284,21 @@ public static String [] getExtensions () {
 public static Program [] getPrograms () {
 	Hashtable bundles = new Hashtable();
 	String[] extensions = getExtensions();
-	if (OS.VERSION < 0x1040) {
-		for (int i = 0; i < extensions.length; i++) {
-			Program program = findProgram(extensions[i]);
-			if (program != null && bundles.get(program.getName()) == null) {
-				bundles.put(program.getName(), program);
+	byte[] fsRef = new byte[80];
+	for (int i = 0; i < extensions.length; i++) {
+		String extension = extensions[i];
+		char[] chars = new char[extension.length() - 1];
+		extension.getChars(1, extension.length(), chars, 0);
+		int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+		if (ext != 0) {
+			if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
+				Program program = getProgram(fsRef);
+				if (program != null && bundles.get(program.getName()) == null) {
+					bundles.put(program.getName(), program);
+					fsRef = new byte[80];
+				}
 			}
-		}
-	} else {
-		for (int i = 0; i < extensions.length; i++) {
-			String extension = extensions[i];
-			char[] chars = new char[extension.length() - 1];
-			extension.getChars(1, extension.length(), chars, 0);
-			int ext = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-			if (ext != 0) {
+			if (OS.VERSION >= 0x1040) {
 				int utis = OS.UTTypeCreateAllIdentifiersForTag(OS.kUTTagClassFilenameExtension(), ext, 0);
 				if (utis != 0) {
 					int utiCount = OS.CFArrayGetCount(utis);
@@ -274,20 +310,12 @@ public static Program [] getPrograms () {
 								int appCount = OS.CFArrayGetCount(apps);
 								for (int k = 0; k < appCount; k++) {
 									int app = OS.CFArrayGetValueAtIndex(apps, k);
-									if (app != 0) {
-										int length = OS.CFStringGetLength(app);
-										if (length != 0) {
-											char[] buffer= new char[length];
-											CFRange range = new CFRange();
-											range.length = length;
-											OS.CFStringGetCharacters(app, range, buffer);
-											String bundleID = new String(buffer);
-											if (bundles.get(bundleID) == null) {
-												byte[] fsRef = new byte[80];
-												if (OS.LSFindApplicationForInfo(OS.kLSUnknownCreator, app,	0, fsRef, null) == OS.noErr) {
-													Program program = getProgram(fsRef);
-													bundles.put(bundleID, program);
-												}
+									if (app != 0) {;
+										if (OS.LSFindApplicationForInfo(OS.kLSUnknownCreator, app, 0, fsRef, null) == OS.noErr) {
+											Program program = getProgram(fsRef);
+											if (program != null && bundles.get(program.getName()) == null) {
+												bundles.put(program.getName(), program);
+												fsRef = new byte[80];
 											}
 										}
 									}
@@ -298,8 +326,8 @@ public static Program [] getPrograms () {
 					}
 					OS.CFRelease(utis);
 				}
-				OS.CFRelease(ext);
 			}
+			OS.CFRelease(ext);
 		}
 	}
 	int count = 0;
@@ -360,9 +388,7 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (OS.VERSION < 0x1040) {
-		return launch(fileName);
-	}
+	if (OS.VERSION < 0x1040) return launch(fileName);
 	int rc = -1;
 	char[] chars = new char[fileName.length()];
 	fileName.getChars(0, chars.length, chars, 0);
