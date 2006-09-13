@@ -5835,6 +5835,14 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFONT (wParam, lParam);
 	if (result != null) return result;
 	if (hwndHeader != 0) {
+		/*
+		* Bug in Windows.  When a header has a sort indicator
+		* triangle, Windows resizes the indicator based on the
+		* size of the n-1th font.  The fix is to always make
+		* the n-1th font be the default.  This makes the sort
+		* indicator always be the default size.
+		*/
+		OS.SendMessage (hwndHeader, OS.WM_SETFONT, 0, lParam);
 		OS.SendMessage (hwndHeader, OS.WM_SETFONT, wParam, lParam);
 	}
 	if (itemToolTipHandle != 0) {

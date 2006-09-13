@@ -5074,6 +5074,21 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 LRESULT WM_SETFONT (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFONT (wParam, lParam);
 	if (result != null) return result;
+	
+	/*
+	* Bug in Windows.  When a header has a sort indicator
+	* triangle, Windows resizes the indicator based on the
+	* size of the n-1th font.  The fix is to always make
+	* the n-1th font be the default.  This makes the sort
+	* indicator always be the default size.
+	* 
+	* NOTE: The table window proc sets the actual font in
+	* the header so that all that is necessary here is to
+	* set the default first.
+	*/
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	OS.SendMessage (hwndHeader, OS.WM_SETFONT, 0, lParam);
+	
 	if (headerToolTipHandle != 0) {
 		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
 	}
