@@ -789,6 +789,9 @@ public class OS extends Platform {
 	public static final int kThemePushButtonFont = 105;
 	public static final int kThemeRadioButton = 2;
 	public static final int kThemeResizeLeftRightCursor = 17;
+	public static final int kThemeResizeUpDownCursor = 21;
+	public static final int kThemeResizeUpCursor = 19;
+	public static final int kThemeResizeDownCursor = 20;
 	public static final int kThemeResizeLeftCursor = 15;
 	public static final int kThemeResizeRightCursor = 16;
 	public static final int kThemeRoundedBevelButton = 15;

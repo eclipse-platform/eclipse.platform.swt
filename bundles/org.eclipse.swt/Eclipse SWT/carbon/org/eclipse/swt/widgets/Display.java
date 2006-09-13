@@ -3589,6 +3589,9 @@ void setCursor (int cursor) {
 		case OS.kThemeResizeLeftRightCursor:
 		case OS.kThemeResizeLeftCursor:
 		case OS.kThemeResizeRightCursor:
+		case OS.kThemeResizeUpDownCursor:
+		case OS.kThemeResizeUpCursor:
+		case OS.kThemeResizeDownCursor:
 			OS.SetThemeCursor (cursor);
 			break;
 		default:

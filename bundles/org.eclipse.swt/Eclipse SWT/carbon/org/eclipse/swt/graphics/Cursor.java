@@ -154,20 +154,24 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_SIZEALL: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZENESW: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZENS: {
-			org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-			cursor.data = SIZENS_SOURCE;
-			cursor.mask = SIZENS_MASK;
-			cursor.hotSpot_h = 7;
-			cursor.hotSpot_v = 7;
-			handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
-			if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);	
+			if (OS.VERSION >= 0x1030) {
+				handle = OS.kThemeResizeUpDownCursor; break;
+			} else {
+				org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
+				cursor.data = SIZENS_SOURCE;
+				cursor.mask = SIZENS_MASK;
+				cursor.hotSpot_h = 7;
+				cursor.hotSpot_v = 7;
+				handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
+				if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
+			}
 	 		break;
 		}
 		case SWT.CURSOR_SIZENWSE: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEWE: 		handle = OS.kThemeResizeLeftRightCursor; break;
-		case SWT.CURSOR_SIZEN: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZES: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZEN: 		handle = OS.VERSION >= 0x1030 ? OS.kThemeResizeUpCursor : OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZES: 		handle = OS.VERSION >= 0x1030 ? OS.kThemeResizeDownCursor : OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEE: 		handle = OS.kThemeResizeRightCursor; break;
 		case SWT.CURSOR_SIZEW: 		handle = OS.kThemeResizeLeftCursor; break;
 		case SWT.CURSOR_SIZENE: 		handle = OS.kThemeCrossCursor; break;
@@ -489,6 +493,9 @@ public void dispose () {
 		case OS.kThemeResizeLeftRightCursor:
 		case OS.kThemeResizeLeftCursor:
 		case OS.kThemeResizeRightCursor:
+		case OS.kThemeResizeUpDownCursor:
+		case OS.kThemeResizeUpCursor:
+		case OS.kThemeResizeDownCursor:
 			break;
 		default:
 			OS.DisposePtr(handle);
