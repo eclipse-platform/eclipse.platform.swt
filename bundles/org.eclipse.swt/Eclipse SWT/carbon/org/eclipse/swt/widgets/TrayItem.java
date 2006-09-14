@@ -16,10 +16,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.cocoa.Cocoa;
-import org.eclipse.swt.internal.cocoa.NSPoint;
-import org.eclipse.swt.internal.cocoa.NSRect;
-import org.eclipse.swt.internal.cocoa.NSSize;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent icons that can be placed on the
