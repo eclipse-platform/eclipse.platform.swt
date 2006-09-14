@@ -284,12 +284,16 @@ void drag(Event dragEvent) {
 	event.y = dragEvent.y;
 	event.time = dragEvent.time;
 	event.doit = true;
+	event.feedback = DND.FEEDBACK_DEFAULT;
 	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
 	if (targetList == 0) return;
 	
 	int actions = opToOsOp(getStyle());
-	ImageData imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
+	ImageData imageData = null; 
+	if (event.feedback == DND.FEEDBACK_DEFAULT) {
+		imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
+	}
 	int /*long*/ context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
 	if (context != 0 && imageData != null) {
 		Image image = new Image(getDisplay(), imageData);
