@@ -62,6 +62,17 @@ public class DragSourceEvent extends TypedEvent {
 	 * Data provided in the data field must be of the same type.
  	 */
 	public TransferData dataType;
+	
+	/**
+	 * The drag effect feedback to be displayed to the user.
+	 * <p>A value of DND.FEEDBACK_NONE indicates that no drag under effect will be displayed.</p>
+	 * <p>Feedback effects will only be applied if they are applicable.</p>
+	 * <p>The default value is DND.FEEDBACK_DEFAULT.</p>
+	 * 
+	 * @see DND#FEEDBACK_NONE
+	 * @see DND#FEEDBACK_DEFAULT
+	 */
+	public int feedback;
 
 	static final long serialVersionUID = 3257002142513770808L;
 	
@@ -79,6 +90,7 @@ public DragSourceEvent(DNDEvent e) {
 	this.dataType = e.dataType;
 	this.x = e.x;
 	this.y = e.y;
+	this.feedback = e.feedback;
 }
 void updateEvent(DNDEvent e) {
 	e.widget = this.widget;
@@ -89,5 +101,6 @@ void updateEvent(DNDEvent e) {
 	e.dataType = this.dataType;
 	e.x = this.x;
 	e.y = this.y;
+	e.feedback = this.feedback;
 }
 }

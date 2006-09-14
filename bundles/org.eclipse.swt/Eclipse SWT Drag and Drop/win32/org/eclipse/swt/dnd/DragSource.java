@@ -281,6 +281,7 @@ private void drag(Event dragEvent) {
 	event.y = dragEvent.y;
 	event.time = OS.GetMessageTime();
 	event.doit = true;
+	event.feedback = DND.FEEDBACK_DEFAULT;
 	notifyListeners(DND.DragStart,event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
 	
@@ -290,7 +291,10 @@ private void drag(Event dragEvent) {
 	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	Object oldValue = display.getData(key);
 	display.setData(key, new Boolean(true));
-	ImageData imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
+	ImageData imageData = null;
+	if (event.feedback == DND.FEEDBACK_DEFAULT) {
+		imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
+	}
 	Image image = null;
 	int imagelist = 0;
 	if (imageData != null) {

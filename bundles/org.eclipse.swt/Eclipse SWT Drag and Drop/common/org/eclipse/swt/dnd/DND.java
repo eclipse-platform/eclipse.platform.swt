@@ -173,6 +173,13 @@ public class DND {
 	public static final int FEEDBACK_EXPAND = 16;
 	
 	/**
+	 * DropTarget drag under effect: The default feedback for a control; (value is 25).
+	 * 
+	 * @since 3.3
+	 */	
+	public static final int FEEDBACK_DEFAULT = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL | DND.FEEDBACK_EXPAND;
+	
+	/**
 	 * Error code: drag source can not be initialized (value is 2000).
 	 */
 	public static final int ERROR_CANNOT_INIT_DRAG = 2000;
