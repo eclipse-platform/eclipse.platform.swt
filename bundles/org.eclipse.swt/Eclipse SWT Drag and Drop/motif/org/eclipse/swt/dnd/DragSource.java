@@ -330,6 +330,7 @@ void drag(Event dragEvent) {
 	event.y = dragEvent.y;
 	event.time = xEvent.time;
 	event.doit = true;
+	event.feedback = DND.FEEDBACK_DEFAULT;
 	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) { 
 		int time = xEvent.time;
