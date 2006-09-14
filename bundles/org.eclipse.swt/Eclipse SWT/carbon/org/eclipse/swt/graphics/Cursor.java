@@ -12,9 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.internal.carbon.*;
-import org.eclipse.swt.internal.cocoa.Cocoa;
-import org.eclipse.swt.internal.cocoa.NSPoint;
-import org.eclipse.swt.internal.cocoa.NSSize;
+import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.*;
 
 /**
@@ -160,7 +158,7 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_SIZENESW: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZENS: {
 			if (OS.VERSION >= 0x1030) {
-				handle = OS.kThemeResizeUpDownCursor; break;
+				handle = OS.kThemeResizeUpDownCursor;
 			} else {
 				org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
 				cursor.data = SIZENS_SOURCE;
