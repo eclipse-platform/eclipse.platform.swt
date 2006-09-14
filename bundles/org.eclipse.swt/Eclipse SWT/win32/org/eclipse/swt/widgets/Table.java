@@ -2202,6 +2202,16 @@ public int getTopIndex () {
 	return Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
 }
 
+boolean hasChildren () {
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	while (hwndChild != 0) {
+		if (hwndChild != hwndHeader) return true;
+		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+	}
+	return false;
+}
+
 int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
@@ -4618,13 +4628,23 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			* so that internal messages are dispatched directly to the table.
 			* If the application expects to see a paint event, the window
 			* proc cannot be unsubclassed or the event will not be seen.
+			* 
+			* NOTE: The header tooltip can subclass the header proc so the
+			* current proc must be restored or header tooltips stop working.
 			*/
-			if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
-				unsubclass ();
+			int oldHeaderProc = 0, oldTableProc = 0;
+			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+			boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
+			if (fixSubclass) {
+				oldTableProc = OS.SetWindowLong (handle, OS.GWL_WNDPROC, TableProc);
+				oldHeaderProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
 			}
 			int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 			result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
-			subclass ();
+			if (fixSubclass) {
+				OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldTableProc);
+				OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldHeaderProc);
+			}
 			//FALL THROUGH
 		case OS.VK_UP:
 		case OS.VK_DOWN:
@@ -5124,15 +5144,23 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	* so that internal messages are dispatched directly to the table.
 	* If the application expects to see a paint event or has a child
 	* whose font, foreground or background color might be needed,
-	* the window proc cannot be unsubclassed.
+	* the window proc cannot be unsubclassed
+	* 
+	* NOTE: The header tooltip can subclass the header proc so the
+	* current proc must be restored or header tooltips stop working.
 	*/
-	if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-		if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
-			unsubclass ();
-		}
+	int oldHeaderProc = 0, oldTableProc = 0;
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
+	if (fixSubclass) {
+		oldTableProc = OS.SetWindowLong (handle, OS.GWL_WNDPROC, TableProc);
+		oldHeaderProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
 	}
 	LRESULT result = super.WM_HSCROLL (wParam, lParam);
-	subclass ();
+	if (fixSubclass) {
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldTableProc);
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldHeaderProc);
+	}
 	
 	/*
 	* Bug in Windows.  When a table that is drawing grid lines
@@ -5165,14 +5193,22 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	* If the application expects to see a paint event or has a child
 	* whose font, foreground or background color might be needed,
 	* the window proc cannot be unsubclassed.
+	*
+	* NOTE: The header tooltip can subclass the header proc so the
+	* current proc must be restored or header tooltips stop working.
 	*/
-	if (OS.GetWindow (handle, OS.GW_CHILD) == 0) {
-		if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
-			unsubclass ();
-		}
+	int oldHeaderProc = 0, oldTableProc = 0;
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	boolean fixSubclass = !hasChildren () && !hooks (SWT.Paint) && !filters (SWT.Paint);
+	if (fixSubclass) {
+		oldTableProc = OS.SetWindowLong (handle, OS.GWL_WNDPROC, TableProc);
+		oldHeaderProc = OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
 	}
 	LRESULT result = super.WM_VSCROLL (wParam, lParam);
-	subclass ();
+	if (fixSubclass) {
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldTableProc);
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, oldHeaderProc);
+	}
 	
 	/*
 	* Bug in Windows.  When a table is drawing grid lines and the
@@ -5193,7 +5229,6 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 			case OS.SB_LINEDOWN:
 			case OS.SB_LINEUP:
 				int headerHeight = 0;
-				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 				if (hwndHeader != 0) {
 					RECT rect = new RECT ();					
 					OS.GetWindowRect (hwndHeader, rect);
