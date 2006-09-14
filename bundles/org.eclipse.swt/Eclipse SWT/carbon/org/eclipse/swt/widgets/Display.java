@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.HICommand;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.RGBColor;
+import org.eclipse.swt.internal.cocoa.Cocoa;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -3595,7 +3596,11 @@ void setCursor (int cursor) {
 			OS.SetThemeCursor (cursor);
 			break;
 		default:
-			OS.SetCursor (cursor);
+			if (OS.VERSION >= 0x1040) {
+				Cocoa.objc_msgSend (cursor, Cocoa.S_set);
+			} else {
+				OS.SetCursor (cursor);
+			}
 	}
 }
 

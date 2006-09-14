@@ -43,6 +43,18 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(HIWebViewGetWebView)
 }
 #endif
 
+#ifndef NO_NSDeviceRGBColorSpace
+JNIEXPORT jint JNICALL Cocoa_NATIVE(NSDeviceRGBColorSpace)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, NSDeviceRGBColorSpace_FUNC);
+	rc = (jint)NSDeviceRGBColorSpace;
+	Cocoa_NATIVE_EXIT(env, that, NSDeviceRGBColorSpace_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_WebInitForCarbon
 JNIEXPORT void JNICALL Cocoa_NATIVE(WebInitForCarbon)
 	(JNIEnv *env, jclass that)
@@ -143,6 +155,22 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIIIII)
 }
 #endif
 
+#ifndef NO_objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2
+JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	NSPoint _arg3, *lparg3=NULL;
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+	if (arg3) if ((lparg3 = getNSPointFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1, arg2, *lparg3);
+fail:
+	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRect_2I
 JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIILorg_eclipse_swt_internal_cocoa_NSRect_2I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
@@ -235,6 +263,22 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IILorg_eclipse_swt_internal_c
 fail:
 	if (arg2 && lparg2) setNSSizeFields(env, arg2, lparg2);
 	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__IILorg_eclipse_swt_internal_cocoa_NSSize_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_objc_1msgSend__II_3IIIIIIIIIII
+JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__II_3IIIIIIIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, objc_1msgSend__II_3IIIIIIIIIII_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)objc_msgSend((id)arg0, (SEL)arg1, lparg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	Cocoa_NATIVE_EXIT(env, that, objc_1msgSend__II_3IIIIIIIIIII_FUNC);
 	return rc;
 }
 #endif

@@ -12,6 +12,9 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.cocoa.Cocoa;
+import org.eclipse.swt.internal.cocoa.NSPoint;
+import org.eclipse.swt.internal.cocoa.NSSize;
 import org.eclipse.swt.*;
 
 /**
@@ -52,7 +55,9 @@ public final class Cursor extends Resource {
 	 * </p>
 	 */
 	public int handle;
-	
+
+	static boolean initialized;
+
 	/**
 	 * data and mask used to create a Resize NS Cursor
 	 */
@@ -237,6 +242,35 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (OS.VERSION >= 0x1040) {
+		byte[] data = new byte[source.width * source.height * 4];
+		for (int y = 0; y < source.height; y++) {
+			int offset = y * source.width * 4;
+			for (int x = 0; x < source.width; x++) {
+				int pixel = source.getPixel(x, y);
+				int maskPixel = mask.getPixel(x, y);
+				if (pixel == 0 && maskPixel == 0) {
+					// BLACK
+					data[offset] = (byte)0xFF;
+				} else if (pixel == 0 && maskPixel == 1) {
+					// WHITE - cursor color
+					data[offset] = data[offset + 1] = data[offset + 2] = data[offset + 3] = (byte)0xFF;
+				} else if (pixel == 1 && maskPixel == 0) {
+					// SCREEN
+				} else {
+					/*
+					* Feature in the Macintosh. It is not possible to have
+					* the reverse screen case using NSCursor.
+					* Reverse screen will be the same as screen.
+					*/
+					// REVERSE SCREEN -> SCREEN
+				}
+				offset += 4;
+			}
+		}
+		createNSCursor(device, hotspotX, hotspotY, data, source.width, source.height);
+		return;
+	}
 	/* Convert depth to 1 */
 	mask = ImageData.convertMask(mask);
 	source = ImageData.convertMask(source);
@@ -318,6 +352,37 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
 }
 
+void createNSCursor(Device device, int hotspotX, int hotspotY, byte[] buffer, int width, int height) {
+	
+	if (!initialized) {
+		initialized = true;
+		int window = Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.C_NSWindow, Cocoa.S_alloc), Cocoa.S_init);
+		Cocoa.objc_msgSend(window, Cocoa.S_release);
+	}
+	int nsImage = Cocoa.objc_msgSend(Cocoa.C_NSImage, Cocoa.S_alloc);
+	if (nsImage == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int nsImageRep = Cocoa.objc_msgSend(Cocoa.C_NSBitmapImageRep, Cocoa.S_alloc);
+	if (nsImageRep == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	this.handle = Cocoa.objc_msgSend(Cocoa.C_NSCursor, Cocoa.S_alloc);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	NSSize size = new NSSize();
+	size.width = width;
+	size.height =  height;
+	nsImage = Cocoa.objc_msgSend(nsImage, Cocoa.S_initWithSize, size);
+	nsImageRep = Cocoa.objc_msgSend(nsImageRep, Cocoa.S_initWithBitmapDataPlanes, null, width, height,
+			8, 4, 1, 0, Cocoa.NSDeviceRGBColorSpace(),
+			Cocoa.NSAlphaFirstBitmapFormat | Cocoa.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+	int bitmapData = Cocoa.objc_msgSend(nsImageRep, Cocoa.S_bitmapData);
+	OS.memcpy(bitmapData, buffer, buffer.length);
+	Cocoa.objc_msgSend(nsImage, Cocoa.S_addRepresentation, nsImageRep);
+	NSPoint point = new NSPoint();
+	point.x = hotspotX;
+	point.y = hotspotY;
+	handle = Cocoa.objc_msgSend(handle, Cocoa.S_initWithImage_hotSpot, nsImage, point);
+	Cocoa.objc_msgSend(nsImage, Cocoa.S_release);
+	Cocoa.objc_msgSend(nsImageRep, Cocoa.S_release);
+}
+
 /**	 
  * Constructs a new cursor given a device, image data describing
  * the desired cursor appearance, and the x and y coordinates of
@@ -354,6 +419,62 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+
+	if (OS.VERSION >= 0x1040) {
+		byte[] data = new byte[source.width * source.height * 4];
+		PaletteData palette = source.palette;
+		if (palette.isDirect) {
+			ImageData.blit(ImageData.BLIT_SRC,
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
+				data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
+				false, false);
+		} else {
+			RGB[] rgbs = palette.getRGBs();
+			int length = rgbs.length;
+			byte[] srcReds = new byte[length];
+			byte[] srcGreens = new byte[length];
+			byte[] srcBlues = new byte[length];
+			for (int i = 0; i < rgbs.length; i++) {
+				RGB rgb = rgbs[i];
+				if (rgb == null) continue;
+				srcReds[i] = (byte)rgb.red;
+				srcGreens[i] = (byte)rgb.green;
+				srcBlues[i] = (byte)rgb.blue;
+			}
+			ImageData.blit(ImageData.BLIT_SRC,
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+				data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
+				false, false);
+		}
+		if (source.maskData != null || source.transparentPixel != -1) {
+			ImageData mask = source.getTransparencyMask();
+			byte[] maskData = mask.data;
+			int maskBpl = mask.bytesPerLine;
+			int offset = 0, maskOffset = 0;
+			for (int y = 0; y<source.height; y++) {
+				for (int x = 0; x<source.width; x++) {
+					data[offset] = ((maskData[maskOffset + (x >> 3)]) & (1 << (7 - (x & 0x7)))) != 0 ? (byte)0xff : 0;
+					offset += 4;
+				}
+				maskOffset += maskBpl;
+			}
+		} else if (source.alpha != -1) {
+			byte alpha = (byte)source.alpha;
+			for (int i=0; i<data.length; i+=4) {
+				data[i] = alpha;				
+			}
+		} else if (source.alphaData != null) {
+			byte[] alphaData = source.alphaData;
+			for (int i=0; i<data.length; i+=4) {
+				data[i] = alphaData[i/4];
+			}
+		}
+		createNSCursor(device, hotspotX, hotspotY, data, source.width, source.height);
+		return;
+	}
+
 	ImageData mask = source.getTransparencyMask();
 
 	/* Ensure depth is equal to 1 */
@@ -498,7 +619,11 @@ public void dispose () {
 		case OS.kThemeResizeDownCursor:
 			break;
 		default:
-			OS.DisposePtr(handle);
+			if (OS.VERSION >= 0x1040) {
+				Cocoa.objc_msgSend(handle, Cocoa.S_release);
+			} else {
+				OS.DisposePtr(handle);
+			}
 	}
 	handle = -1;
 	device = null;

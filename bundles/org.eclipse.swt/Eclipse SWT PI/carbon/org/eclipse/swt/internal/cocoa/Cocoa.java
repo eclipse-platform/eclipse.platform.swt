@@ -34,7 +34,10 @@ public static final int C_NSStatusBar = Cocoa.objc_getClass("NSStatusBar"); //$N
 public static final int C_NSImage = Cocoa.objc_getClass("NSImage"); //$NON-NLS-1$
 public static final int C_NSGraphicsContext = Cocoa.objc_getClass("NSGraphicsContext"); //$NON-NLS-1$
 public static final int C_NSStatusItemImageView = Cocoa.objc_getClass("NSStatusItemImageView"); //$NON-NLS-1$
-	
+public static final int C_NSCursor = Cocoa.objc_getClass("NSCursor"); //$NON-NLS-1$
+public static final int C_NSWindow = Cocoa.objc_getClass("NSWindow"); //$NON-NLS-1$
+public static final int C_NSBitmapImageRep = Cocoa.objc_getClass("NSBitmapImageRep"); //$NON-NLS-1$
+
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
 public static final int S_addObserver_selector_name_object = Cocoa.sel_registerName("addObserver:selector:name:object:"); //$NON-NLS-1$
@@ -111,6 +114,15 @@ public static final int S_drawStatusBarBackgroundInRect_withHighlight = Cocoa.se
 public static final int S_drawRect = Cocoa.sel_registerName("drawRect:"); //$NON-NLS-1$
 public static final int S_setNeedsDisplay = Cocoa.sel_registerName("setNeedsDisplay:"); //$NON-NLS-1$
 public static final int S_getLocation = Cocoa.sel_registerName("getLocation:"); //$NON-NLS-1$
+public static final int S_initWithImage_hotSpot = Cocoa.sel_registerName("initWithImage:hotSpot:"); //$NON-NLS-1$
+public static final int S_set = Cocoa.sel_registerName("set"); //$NON-NLS-1$
+public static final int S_init = Cocoa.sel_registerName("init"); //$NON-NLS-1$
+public static final int S_addRepresentation = Cocoa.sel_registerName("addRepresentation:"); //$NON-NLS-1$
+public static final int S_initWithBitmapDataPlanes = Cocoa.sel_registerName("initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:"); //$NON-NLS-1$
+public static final int S_bitmapData = Cocoa.sel_registerName("bitmapData"); //$NON-NLS-1$
+
+public static final int NSAlphaFirstBitmapFormat = 1 << 0;
+public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
 
 /* WebKit */
 public static final native int HIWebViewCreate(int[] outView);
@@ -127,11 +139,15 @@ public static final native int objc_msgSend(int object, int selector, NSRect arg
 public static final native int objc_msgSend(int object, int selector, int arg0, NSRect arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, NSRect arg0, int arg1);
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0, int arg1);
+public static final native int objc_msgSend(int object, int selector, int arg0, NSPoint arg1);
 public static final native int objc_msgSend(int object, int selector, NSPoint arg0);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2);
 public static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3);
+public static final native int objc_msgSend(int object, int selector, int[] arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9, int arg10);
 public static final native int sel_registerName(byte[] selectorName);
+
+public static final native int NSDeviceRGBColorSpace();
 
 public static final native void memcpy(NSRect dest, int src, int size);
 
