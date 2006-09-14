@@ -673,7 +673,7 @@ public class SWT {
 	 * @since 3.3
 	 */
 	/* UNDER DEVELOPMENT - DO NOT USE */
-	public static final int DATE = 1 << 3;
+	public static final int DATE = 1 << 5;
 
 	/*
 	 * Style constant for time display (value is 1&lt;&lt;2).
@@ -684,7 +684,7 @@ public class SWT {
 	 * @since 3.3
 	 */
 	/* UNDER DEVELOPMENT - DO NOT USE */
-	public static final int TIME = 1 << 4;
+	public static final int TIME = 1 << 7;
 	
 	/*
 	 * Style constant for calendar display (value is 1&lt;&lt;3).
@@ -695,7 +695,7 @@ public class SWT {
 	 * @since 3.3
 	 */
 	/* UNDER DEVELOPMENT - DO NOT USE */
-	public static final int CALENDAR = 1 << 5;
+	public static final int CALENDAR = 1 << 10;
 
 	/**
 	 * Style constant for menu bar behavior (value is 1&lt;&lt;1).
