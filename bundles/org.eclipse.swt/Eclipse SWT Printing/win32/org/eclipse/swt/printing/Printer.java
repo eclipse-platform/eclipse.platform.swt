@@ -211,6 +211,7 @@ protected void create(DeviceData deviceData) {
 	byte buffer [] = data.otherData;
 	int hHeap = OS.GetProcessHeap();
 	if (buffer != null && buffer.length != 0) {
+		/* If user setup info from a print dialog was specified, restore the DEVMODE struct. */
 		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 		OS.MoveMemory(lpInitData, buffer, buffer.length);
 	}
