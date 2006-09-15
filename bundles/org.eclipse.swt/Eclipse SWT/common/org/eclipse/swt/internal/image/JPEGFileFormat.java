@@ -1373,7 +1373,7 @@ boolean isZeroInRow(int[] dataUnit, int rIndex) {
 }
 ImageData[] loadFromByteStream() {
 	//TEMPORARY CODE
-	if (true) {
+	if (System.getProperty("org.eclipse.swt.internal.image.JPEGFileFormat_3.2") == null) {
 		return JPEGDecoder.loadFromByteStream(inputStream, loader);
 	}
 	JPEGStartOfImage soi = new JPEGStartOfImage(inputStream);

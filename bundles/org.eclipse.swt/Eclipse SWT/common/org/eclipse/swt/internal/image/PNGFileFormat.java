@@ -290,7 +290,9 @@ void setImageDataValues(byte[] data, ImageData imageData) {
  */
 void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOException {
 	InputStream stream = new PngInputStream(chunk, chunkReader);
-	InputStream inflaterStream = Compatibility.newInflaterInputStream(stream);
+	//TEMPORARY CODE
+	boolean use3_2 = System.getProperty("org.eclipse.swt.internal.image.PNGFileFormat_3.2") != null;
+	InputStream inflaterStream = use3_2 ? null : Compatibility.newInflaterInputStream(stream);
 	if (inflaterStream != null) {
 		stream = new BufferedInputStream(inflaterStream);
 	} else {
