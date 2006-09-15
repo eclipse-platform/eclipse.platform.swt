@@ -46,6 +46,7 @@ import org.eclipse.swt.graphics.*;
 		OS.GetClassInfo (0, CalendarClass, lpWndClass);
 		CalendarProc = lpWndClass.lpfnWndProc;
 	}
+	static final int MARGIN = 4;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -124,13 +125,43 @@ public void addSelectionListener (SelectionListener listener) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 64, height = 64;
-	if ((style & SWT.CALENDAR) != 0) {
-		RECT rect = new RECT ();
-		OS.SendMessage(handle, OS.MCM_GETMINREQRECT, 0, rect);
-		width = rect.right;
-		height = rect.bottom;
+	int width = 0, height = 0;
+	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		if ((style & SWT.CALENDAR) != 0) {
+			RECT rect = new RECT ();
+			OS.SendMessage(handle, OS.MCM_GETMINREQRECT, 0, rect);
+			width = rect.right;
+			height = rect.bottom;
+		} else {
+			int newFont, oldFont = 0;
+			int hDC = OS.GetDC (handle);
+			newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+			OS.GetTextMetrics (hDC, tm);
+			height = tm.tmHeight;
+			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
+			height = Math.max (height, upDownHeight);
+			String string = "00/00/0000";
+			if ((style & SWT.TIME) != 0) string = "00:00:00 PM";
+			RECT rect = new RECT ();
+			TCHAR buffer = new TCHAR (getCodePage (), string, false);
+			int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
+			OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+			width = rect.right - rect.left;
+			if (newFont != 0) OS.SelectObject (hDC, oldFont);
+			OS.ReleaseDC (handle, hDC);
+			int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+			width += upDownWidth + MARGIN;
+			// TODO: On Vista, can send DTM_GETDATETIMEPICKERINFO to ask the Edit control what its margins are
+		}
 	}
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	int border = getBorderWidth ();
+	width += border * 2; height += border * 2;
 	return new Point (width, height);
 }
 
