@@ -1119,12 +1119,6 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_popup_menu (int /*long*/ widget) {
-	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, null);
-	return showMenu (x [0], y [0]) ? 1 : 0;
-}
-
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 

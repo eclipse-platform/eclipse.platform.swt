@@ -1953,6 +1953,11 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 			display.dragOverride = dragOverride () && dragDetect (display.dragStartX, display.dragStartY);
 			if (display.dragOverride) result = 1;
 		}
+		/*
+		* Pop up the context menu in the button press event for widgets
+		* that have default operating system menus in order to stop the
+		* operating system from displaying the menu if necessary.
+		*/
 		if ((state & MENU) != 0) {
 			if (gdkEvent.button == 3) {
 				if (showMenu ((int)gdkEvent.x_root, (int)gdkEvent.y_root)) {
@@ -2014,6 +2019,11 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	switch (event.type) {
 		case OS.GDK_BUTTON_PRESS: {
 			if (widget != eventHandle ()) break;
+			/*
+			* Pop up the context menu in the event_after signal to allow
+			* the widget to process the button press.  This allows widgets
+			* such as GtkTreeView to select items before a menu is shown.
+			*/
 			if ((state & MENU) == 0) {
 				GdkEventButton gdkEventButton = new GdkEventButton ();
 				OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
@@ -2186,7 +2196,8 @@ int /*long*/ gtk_popup_menu (int /*long*/ widget) {
 	if (!hasFocus()) return 0;
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
-	showMenu (x [0], y [0]);
+	boolean showMenu = showMenu (x [0], y [0]);
+	if ((state & MENU) != 0) return showMenu ? 1 : 0;
 	return 0;
 }
 
