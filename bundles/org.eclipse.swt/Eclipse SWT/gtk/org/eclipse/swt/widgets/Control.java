@@ -2196,9 +2196,7 @@ int /*long*/ gtk_popup_menu (int /*long*/ widget) {
 	if (!hasFocus()) return 0;
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
-	boolean showMenu = showMenu (x [0], y [0]);
-	if ((state & MENU) != 0) return showMenu ? 1 : 0;
-	return 0;
+	return showMenu (x [0], y [0]) ? 1 : 0;
 }
 
 int /*long*/ gtk_preedit_changed (int /*long*/ imcontext) {
