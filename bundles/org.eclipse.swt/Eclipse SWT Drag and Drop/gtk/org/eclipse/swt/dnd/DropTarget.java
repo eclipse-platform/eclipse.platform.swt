@@ -364,6 +364,9 @@ void drag_data_received ( int /*long*/ widget, int /*long*/ context, int x, int 
 	if ((allowedOperations & event.detail) == event.detail) {
 		selectedOperation = event.detail;
 	}
+	//stop native handler
+	OS.g_signal_stop_emission_by_name(widget, OS.drag_data_received);
+	
 	//notify source of action taken
 	OS.gtk_drag_finish(context, selectedOperation != DND.DROP_NONE, selectedOperation== DND.DROP_MOVE, time); 			
 	return;	
