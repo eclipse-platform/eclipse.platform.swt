@@ -418,6 +418,7 @@ void deregister () {
 }
 
 boolean dragDetect (int x, int y) {
+	if (!hooks (SWT.DragDetect)) return false;
 	int start = 0, end = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		int [] s = new int [1], e = new int [1];
