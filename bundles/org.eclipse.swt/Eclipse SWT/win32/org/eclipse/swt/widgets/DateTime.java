@@ -143,7 +143,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
 			height = Math.max (height, upDownHeight);
 			String string = "00/00/0000";
-			if ((style & SWT.TIME) != 0) string = "00:00:00 PM";
+			if ((style & SWT.TIME) != 0) string = "00:00:00 AM";
 			RECT rect = new RECT ();
 			TCHAR buffer = new TCHAR (getCodePage (), string, false);
 			int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
@@ -163,6 +163,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidth ();
 	width += border * 2; height += border * 2;
 	return new Point (width, height);
+}
+
+int defaultBackground () {
+	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
 /**
@@ -438,9 +442,15 @@ int windowProc () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarProc : DateTimeProc;
 }
 
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	super.WM_ERASEBKGND (wParam, lParam);
+	drawBackground (wParam);
+	return LRESULT.ONE;
+}
+
 LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	switch (hdr.code) {
-		case OS.MCN_SELCHANGE: //SENT WHEN YOU SET IT?
+		case OS.MCN_SELCHANGE:
 		case OS.DTN_DATETIMECHANGE:
 			sendEvent (SWT.Selection);
 			break;
