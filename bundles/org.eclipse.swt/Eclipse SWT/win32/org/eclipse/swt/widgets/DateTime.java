@@ -442,15 +442,9 @@ int windowProc () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarProc : DateTimeProc;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
-	super.WM_ERASEBKGND (wParam, lParam);
-	drawBackground (wParam);
-	return LRESULT.ONE;
-}
-
 LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 	switch (hdr.code) {
-		case OS.MCN_SELCHANGE:
+		case OS.MCN_SELCHANGE: //SENT WHEN YOU SET IT?
 		case OS.DTN_DATETIMECHANGE:
 			sendEvent (SWT.Selection);
 			break;
