@@ -5543,13 +5543,16 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 						string = " "; //$NON-NLS-1$
 						length = 1;
 					}
-					if (display.tableBuffer == null) display.tableBuffer = new char [plvfi.cchTextMax];
-					string.getChars (0, length, display.tableBuffer, 0);
-					display.tableBuffer [length++] = 0;
+					char [] buffer = display.tableBuffer;
+					if (buffer == null || plvfi.cchTextMax > buffer.length) {
+						buffer = display.tableBuffer = new char [plvfi.cchTextMax];
+					}
+					string.getChars (0, length, buffer, 0);
+					buffer [length++] = 0;
 					if (OS.IsUnicode) {
-						OS.MoveMemory (plvfi.pszText, display.tableBuffer, length * 2);
+						OS.MoveMemory (plvfi.pszText, buffer, length * 2);
 					} else {
-						OS.WideCharToMultiByte (getCodePage (), 0, display.tableBuffer, length, plvfi.pszText, plvfi.cchTextMax, null, null);
+						OS.WideCharToMultiByte (getCodePage (), 0, buffer, length, plvfi.pszText, plvfi.cchTextMax, null, null);
 						OS.MoveMemory (plvfi.pszText + plvfi.cchTextMax - 1, new byte [1], 1);
 					}
 				}
