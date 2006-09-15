@@ -1845,6 +1845,20 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	return result;
 }
 
+int /*long*/ gtk_popup_menu (int /*long*/ widget) {
+	int result = super.gtk_popup_menu (widget);
+	/*
+	* Bug in GTK.  The context menu for the typeahead in GtkTreeViewer
+	* opens in the bottom right corner of the screen when Shift+F10
+	* is pressed and the typeahead window was not visible.  The fix is
+	* to prevent the context menu from opening by stopping the default
+	* handler.
+	* 
+	* NOTE: The bug only happens in GTK 2.6.5 and lower.
+	*/
+	return OS.GTK_VERSION < OS.VERSION (2, 6, 5) ? 1 : result;
+}
+
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ window = OS.GDK_EVENT_WINDOW (event);
 	if (window != OS.gtk_tree_view_get_bin_window (handle)) return 0;
