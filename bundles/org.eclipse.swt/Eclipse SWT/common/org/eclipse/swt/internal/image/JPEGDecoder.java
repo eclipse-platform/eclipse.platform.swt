@@ -5546,7 +5546,7 @@ static int consume_input (jpeg_decompress_struct cinfo) {
 static boolean fill_input_buffer(jpeg_decompress_struct cinfo) {
 	try {
 		InputStream inputStream = cinfo.inputStream;
-		int nbytes = inputStream.read(cinfo.buffer, 0, Math.min(cinfo.buffer.length, inputStream.available()));
+		int nbytes = inputStream.read(cinfo.buffer);
 		if (nbytes <= 0) {
 			if (cinfo.start_of_file)	/* Treat empty input file as fatal error */
 				error();
