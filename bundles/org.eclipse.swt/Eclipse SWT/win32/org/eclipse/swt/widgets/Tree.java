@@ -4903,6 +4903,21 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			* performed in WM_KEYDOWN from WM_CHAR.
 			*/
 			return LRESULT.ZERO;
+		case OS.VK_ADD:
+			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+				if (hwndHeader != 0) {
+					int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+					TreeColumn [] newColumns = new TreeColumn [count];
+					System.arraycopy (columns, 0, newColumns, 0, count);
+					for (int i=0; i<count; i++) {
+						TreeColumn column = newColumns [i];
+						if (!column.isDisposed () && column.getResizable ()) {
+							column.pack ();
+						}
+					}
+				}
+			}
+			break;
 		case OS.VK_UP:
 		case OS.VK_DOWN:
 		case OS.VK_PRIOR:
