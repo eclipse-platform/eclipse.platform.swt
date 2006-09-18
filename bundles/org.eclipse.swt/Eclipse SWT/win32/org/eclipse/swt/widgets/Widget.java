@@ -1979,7 +1979,7 @@ LRESULT wmMouseWheel (int hwnd, int wParam, int lParam) {
 	pt.x = (short) (lParam & 0xFFFF);
 	pt.y = (short) (lParam >> 16); 
 	OS.ScreenToClient (hwnd, pt);
-	lParam = pt.x | (pt.y << 16);
+	lParam = (pt.x & 0xFFFF) | ((pt.y << 16) & 0xFFFF0000);
 	if (!sendMouseEvent (SWT.MouseWheel, 0, count, detail, true, hwnd, OS.WM_MOUSEWHEEL, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
