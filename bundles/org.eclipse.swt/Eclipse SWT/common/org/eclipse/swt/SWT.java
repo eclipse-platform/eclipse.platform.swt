@@ -558,7 +558,7 @@ public class SWT {
 	public static final int MouseWheel = 37;
 
 	/**
-	 * The settings changed event type (value is 38).
+	 * The settings changed event type (value is 39).
 	 * <p>
 	 * The settings changed event is sent when an operating system
 	 * property, such as a system font or color, has been changed.
