@@ -1846,7 +1846,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 }
 
 int /*long*/ gtk_popup_menu (int /*long*/ widget) {
-	int result = super.gtk_popup_menu (widget);
+	int /*long*/ result = super.gtk_popup_menu (widget);
 	/*
 	* Bug in GTK.  The context menu for the typeahead in GtkTreeViewer
 	* opens in the bottom right corner of the screen when Shift+F10
