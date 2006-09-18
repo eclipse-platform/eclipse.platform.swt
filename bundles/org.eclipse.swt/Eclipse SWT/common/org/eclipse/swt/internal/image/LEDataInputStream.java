@@ -81,17 +81,14 @@ final class LEDataInputStream extends InputStream {
 	 * of bytes when you can actually read them all.
 	 */
 	public int read(byte b[], int off, int len) throws IOException {
-		int result;
-		int left = len;
-		result = readData(b, off, len);
-		while (true) {
-			if (result == -1) return -1;
-			position += result;
-			if (result == left) return len;
-			left -= result;
-			off += result;
-			result = readData(b, off, left);
+		int read = 0, count;
+		while (read != len && (count = readData(b, off, len - read)) != -1) {
+			off += count;
+			read += count;
 		}
+		position += read;
+		if (read == 0 && read != len) return -1;
+		return read;
 	}
 	
 	/**
