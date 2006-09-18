@@ -346,7 +346,7 @@ byte[] loadData(byte[] infoHeader, int stride) {
 	int dataSize = height * stride;
 	byte[] data = new byte[dataSize];
 	int cmp = (infoHeader[16] & 0xFF) | ((infoHeader[17] & 0xFF) << 8) | ((infoHeader[18] & 0xFF) << 16) | ((infoHeader[19] & 0xFF) << 24);
-	if (cmp == 0) { // BMP_NO_COMPRESSION
+	if (cmp == 0 || cmp == 3) { // BMP_NO_COMPRESSION
 		try {
 			if (inputStream.read(data) != dataSize)
 				SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -392,6 +392,7 @@ ImageData[] loadFromByteStream() {
 	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
 	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
+	this.compression = (infoHeader[16] & 0xFF) | ((infoHeader[17] & 0xFF) << 8) | ((infoHeader[18] & 0xFF) << 16) | ((infoHeader[19] & 0xFF) << 24);
 	PaletteData palette = loadPalette(infoHeader);
 	if (inputStream.getPosition() < fileHeader[4]) {
 		// Seek to the specified offset
@@ -402,7 +403,6 @@ ImageData[] loadFromByteStream() {
 		}
 	}
 	byte[] data = loadData(infoHeader);
-	this.compression = (infoHeader[16] & 0xFF) | ((infoHeader[17] & 0xFF) << 8) | ((infoHeader[18] & 0xFF) << 16) | ((infoHeader[19] & 0xFF) << 24);
 	this.importantColors = (infoHeader[36] & 0xFF) | ((infoHeader[37] & 0xFF) << 8) | ((infoHeader[38] & 0xFF) << 16) | ((infoHeader[39] & 0xFF) << 24);
 	int xPelsPerMeter = (infoHeader[24] & 0xFF) | ((infoHeader[25] & 0xFF) << 8) | ((infoHeader[26] & 0xFF) << 16) | ((infoHeader[27] & 0xFF) << 24);
 	int yPelsPerMeter = (infoHeader[28] & 0xFF) | ((infoHeader[29] & 0xFF) << 8) | ((infoHeader[30] & 0xFF) << 16) | ((infoHeader[31] & 0xFF) << 24);
@@ -447,8 +447,24 @@ PaletteData loadPalette(byte[] infoHeader) {
 		}
 		return paletteFromBytes(buf, numColors);
 	}
-	if (depth == 16) return new PaletteData(0x7C00, 0x3E0, 0x1F);
+	if (depth == 16) {
+		if (this.compression == 3) {
+			try {
+				return new PaletteData(inputStream.readInt(), inputStream.readInt(), inputStream.readInt());
+			} catch (IOException e) {
+				SWT.error(SWT.ERROR_IO, e);
+			}
+		}
+		return new PaletteData(0x7C00, 0x3E0, 0x1F);
+	}
 	if (depth == 24) return new PaletteData(0xFF, 0xFF00, 0xFF0000);
+	if (this.compression == 3) {
+		try {
+			return new PaletteData(inputStream.readInt(), inputStream.readInt(), inputStream.readInt());
+		} catch (IOException e) {
+			SWT.error(SWT.ERROR_IO, e);
+		}
+	}
 	return new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 }
 PaletteData paletteFromBytes(byte[] bytes, int numColors) {

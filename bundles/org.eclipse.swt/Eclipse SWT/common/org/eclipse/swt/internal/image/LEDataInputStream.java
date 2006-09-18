@@ -71,9 +71,13 @@ final class LEDataInputStream extends InputStream {
 	 */
 	public int read() throws IOException {
 		if (buf == null) throw new IOException();
-		position++;
-		if (pos < buf.length) return (buf[pos++] & 0xFF);
-		return in.read();
+		if (pos < buf.length) {
+			position++;
+			return (buf[pos++] & 0xFF);
+		}
+		int c = in.read();
+		if (c != -1) position++;
+		return c;
 	}
 	
 	/**
@@ -144,8 +148,8 @@ final class LEDataInputStream extends InputStream {
 	public int readInt() throws IOException {
 		byte[] buf = new byte[4];
 		read(buf);
-		return ((((((buf[3] & 0xFF) << 8) | 
-			(buf[2] & 0xFF)) << 8) | 
+		return ((((((buf[3] & 0xFF) << 24) | 
+			(buf[2] & 0xFF)) << 16) | 
 			(buf[1] & 0xFF)) << 8) | 
 			(buf[0] & 0xFF);
 	}
