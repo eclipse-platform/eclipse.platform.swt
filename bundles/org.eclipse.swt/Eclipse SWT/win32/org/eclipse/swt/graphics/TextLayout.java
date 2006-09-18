@@ -405,7 +405,7 @@ void computeRuns (GC gc) {
 			}
 			this.lineWidth[line] = lineWidth;
 			
-			runs[line] = reorder(runs[line]);
+			runs[line] = reorder(runs[line], i == allRuns.length - 1);
 			StyleItem lastRun = runs[line][lineRunCount - 1];
 			if (run.softBreak && run != lastRun) {
 				run.softBreak = run.lineBreak = false;
@@ -1829,7 +1829,7 @@ StyleItem[] merge (int items, int itemCount) {
 /* 
  *  Reorder the run 
  */
-StyleItem[] reorder (StyleItem[] runs) {
+StyleItem[] reorder (StyleItem[] runs, boolean terminate) {
 	int length = runs.length;
 	if (length <= 1) return runs;
 	byte[] bidiLevels = new byte[length];
@@ -1853,10 +1853,11 @@ StyleItem[] reorder (StyleItem[] runs) {
 		result[log2vis[i]] = runs[i];
 	}	
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-		for (int i = 0; i < (length - 1) / 2 ; i++) {
+		if (terminate) length--;
+		for (int i = 0; i < length / 2 ; i++) {
 			StyleItem tmp = result[i];
-			result[i] = result[length - i - 2];
-			result[length - i - 2] = tmp;
+			result[i] = result[length - i - 1];
+			result[length - i - 1] = tmp;
 		}
 	}
 	return result;
