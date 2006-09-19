@@ -79,7 +79,6 @@ public CCombo (Composite parent, int style) {
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
 	if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
 	text = new Text (this, textStyle);
-	setBackground (text.getBackground ());
 	int arrowStyle = SWT.ARROW | SWT.DOWN;
 	if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
 	arrow = new Button (this, arrowStyle);
@@ -904,9 +903,7 @@ void internalLayout (boolean changed) {
 	int width = rect.width;
 	int height = rect.height;
 	Point arrowSize = arrow.computeSize (SWT.DEFAULT, height, changed);
-	int textHeight = text.computeSize (SWT.DEFAULT, SWT.DEFAULT).y;
-	int textY = Math.max (0, (height - textHeight) / 2);
-	text.setBounds (0, textY, width - arrowSize.x, textHeight);
+	text.setBounds (0, 0, width - arrowSize.x, height);
 	arrow.setBounds (width - arrowSize.x, 0, arrowSize.x, arrowSize.y);
 }
 void listEvent (Event event) {
