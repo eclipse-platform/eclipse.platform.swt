@@ -372,13 +372,6 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
-	LRESULT result = super.WM_SIZE (wParam, lParam);
-	if (OS.IsWinCE) return result;
-	OS.InvalidateRect (handle, null, true);
-	return result;
-}
-
 LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
@@ -406,6 +399,49 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 		OS.InvalidateRect (handle, null, false);
 		int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
 		return new LRESULT (code);
+	}
+	return result;
+}
+
+LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Invalidate the portion of the group widget that needs to
+	* be redrawn.  Note that for some reason, invalidating the
+	* group from inside WM_SIZE causes pixel corruption for
+	* radio button children.
+	*/
+	if (OS.IsWinCE) return result;
+	if (!OS.IsWindowVisible (handle)) return result;
+	WINDOWPOS lpwp = new WINDOWPOS ();
+	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+	if ((lpwp.flags & (OS.SWP_NOSIZE | OS.SWP_NOREDRAW)) != 0) {
+		return result;
+	}
+	RECT rect = new RECT ();
+	OS.SetRect (rect, 0, 0, lpwp.cx, lpwp.cy);
+	OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
+	int newWidth = rect.right - rect.left;
+	int newHeight = rect.bottom - rect.top;
+	OS.GetClientRect (handle, rect);
+	int oldWidth = rect.right - rect.left;
+	int oldHeight = rect.bottom - rect.top;
+	if (newWidth == oldWidth && newHeight == oldHeight) {
+		return result;
+	}
+	if (newWidth != oldWidth) {
+		int left = oldWidth;
+		if (newWidth < oldWidth) left = newWidth;
+		OS.SetRect (rect, left - CLIENT_INSET, 0, newWidth, newHeight);
+		OS.InvalidateRect (handle, rect, true);
+	}
+	if (newHeight != oldHeight) {
+		int bottom = oldHeight;
+		if (newHeight < oldHeight) bottom = newHeight;
+		if (newWidth < oldWidth) oldWidth -= CLIENT_INSET;
+		OS.SetRect (rect, 0, bottom - CLIENT_INSET, oldWidth, newHeight);
+		OS.InvalidateRect (handle, rect, true);
 	}
 	return result;
 }
