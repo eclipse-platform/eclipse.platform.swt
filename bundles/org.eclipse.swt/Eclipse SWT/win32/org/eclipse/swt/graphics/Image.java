@@ -584,124 +584,143 @@ public Image (Device device, String filename) {
 		char[] chars = new char[length+1];
 		filename.getChars(0, length, chars, 0);
 		int bitmap = Gdip.Bitmap_new(chars, false);
-		int status = Gdip.Image_GetLastStatus(bitmap);
-		if (bitmap != 0 && status == 0) {
-			int transparentColor = -1;
+		if (bitmap != 0) {
 			int error = SWT.ERROR_NO_HANDLES;
-			int width = Gdip.Image_GetWidth(bitmap);
-			int height = Gdip.Image_GetHeight(bitmap);
-			if (filename.toLowerCase().endsWith(".ico")) {
-				this.type = SWT.ICON;
-				int[] hicon = new int[1];
-				Gdip.Bitmap_GetHICON(bitmap, hicon);
-				this.handle = hicon[0];
-			} else {
-				this.type = SWT.BITMAP;
-				int pixelFormat = Gdip.Image_GetPixelFormat(bitmap);
-				switch (pixelFormat) {
-					case Gdip.PixelFormat32bppARGB:
-						int lockedBitmapData = Gdip.BitmapData_new();
-						if (lockedBitmapData == 0) break;
-						Gdip.Bitmap_LockBits(bitmap, 0, 0, pixelFormat, lockedBitmapData);
-						BitmapData bitmapData = new BitmapData();
-						Gdip.MoveMemory(bitmapData, lockedBitmapData, BitmapData.sizeof);
-						int stride = bitmapData.Stride;
-						int pixels = bitmapData.Scan0;
-						byte[] line = new byte[stride];
-		 		 		alphaData = new byte[width * height];
-		 		 		for (int y = 0; y < height; y++) {
-		 		 			OS.MoveMemory(line, pixels + (y * stride), stride);
-		 		 		 	for (int x = 0; x < width; x++) {
-		 		 		 		alphaData[y*width+x] = line[x*4 + 3];
-		 		 		 	}
-		 		 		}
-		 		 		Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
-						Gdip.BitmapData_delete(lockedBitmapData);
-						this.handle = createDIB(width, height, 32);
-						break;
-					case Gdip.PixelFormat1bppIndexed:
-					case Gdip.PixelFormat4bppIndexed:
-					case Gdip.PixelFormat8bppIndexed:
-						int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
-						int hHeap = OS.GetProcessHeap();
-						int palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
-						if (palette == 0) break;
-						Gdip.Image_GetPalette(bitmap, palette, paletteSize);
-						ColorPalette colorPalette = new ColorPalette();
-						Gdip.MoveMemory(colorPalette, palette, ColorPalette.sizeof);
-						int[] entries = new int[colorPalette.Count];
-						OS.MoveMemory(entries, palette + 8, entries.length * 4);
-						OS.HeapFree(hHeap, 0, palette);
-						BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
-						bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
-						bmiHeader.biWidth = width;
-						bmiHeader.biHeight = -height;
-						bmiHeader.biPlanes = 1;
-						bmiHeader.biBitCount = (short)8;
-						bmiHeader.biCompression = OS.BI_RGB;
-						byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + colorPalette.Count * 4];
-						OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);					
-						int offset = BITMAPINFOHEADER.sizeof;
-						for (int i = 0; i < entries.length; i++) {
-							if (((entries[i] >> 24) & 0xFF) == 0 && (colorPalette.Flags & Gdip.PaletteFlagsHasAlpha) != 0) {
-								transparentPixel = i;
-								transparentColor = entries[i] & 0xFFFFFF;
-							}
-							bmi[offset] = (byte)((entries[i] & 0xFF) >> 0);
-							bmi[offset + 1] = (byte)((entries[i] & 0xFF00) >> 8);
-							bmi[offset + 2] = (byte)((entries[i] & 0xFF0000) >> 16);
-							bmi[offset + 3] = 0;
-							offset += 4;
-						}
-						int[] pBits = new int[1];
-						this.handle = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);						
-						break;
-					case Gdip.PixelFormat16bppGrayScale:
-					case Gdip.PixelFormat16bppRGB555:
-					case Gdip.PixelFormat16bppRGB565:
-						this.handle = createDIB(width, height, 16);
-						break;
-					case Gdip.PixelFormat24bppRGB:
-						this.handle = createDIB(width, height, 24);
-						break;
-					default:
-						this.handle = createDIB(width, height, 32);
-				}
-				if (handle != 0) {
-					int hDC = device.internal_new_GC(null);
-					int srcHDC = OS.CreateCompatibleDC(hDC);
-					int oldSrcBitmap = OS.SelectObject(srcHDC, handle);
-					int graphics = Gdip.Graphics_new(srcHDC);
-					if (graphics != 0) {
-						if (transparentColor != -1) {
-							int color = Gdip.Color_new(transparentColor | 0xFF000000);
-							if (color != 0) {
-								int brush = Gdip.SolidBrush_new(color);
-								if (brush != 0) {
-									Gdip.Graphics_FillRectangle(graphics, brush, 0, 0, width, height);
-									Gdip.SolidBrush_delete(brush);
-								}
-								Gdip.Color_delete(color);
-							}
-						}
-						Rect rect = new Rect();
-						rect.Width = width;
-						rect.Height = height;
-						status = Gdip.Graphics_DrawImage(graphics, bitmap, rect, 0, 0, width, height, Gdip.UnitPixel, 0, 0, 0);
-						if (status != 0) {
-							error = SWT.ERROR_INVALID_IMAGE;
-							OS.DeleteObject(handle);
-							handle = 0;
-						}
-						Gdip.Graphics_delete(graphics);
+			int status = Gdip.Image_GetLastStatus(bitmap);			
+			if (status == 0) {
+				if (filename.toLowerCase().endsWith(".ico")) {
+					this.type = SWT.ICON;
+					int[] hicon = new int[1];
+					Gdip.Bitmap_GetHICON(bitmap, hicon);
+					this.handle = hicon[0];
+				} else {
+					this.type = SWT.BITMAP;
+					int width = Gdip.Image_GetWidth(bitmap);
+					int height = Gdip.Image_GetHeight(bitmap);
+					int pixelFormat = Gdip.Image_GetPixelFormat(bitmap);
+					switch (pixelFormat) {
+						case Gdip.PixelFormat16bppRGB555:
+						case Gdip.PixelFormat16bppRGB565:
+							this.handle = createDIB(width, height, 16);
+							break;
+						case Gdip.PixelFormat24bppRGB:
+							this.handle = createDIB(width, height, 24);
+							break;
+						case Gdip.PixelFormat32bppRGB:
+						// These will loose either precision or transparency
+						case Gdip.PixelFormat16bppGrayScale:
+						case Gdip.PixelFormat48bppRGB:
+						case Gdip.PixelFormat32bppPARGB:
+						case Gdip.PixelFormat64bppARGB:
+						case Gdip.PixelFormat64bppPARGB:
+							this.handle = createDIB(width, height, 32);
+							break;
 					}
-					OS.SelectObject(srcHDC, oldSrcBitmap);
-					OS.DeleteDC(srcHDC);
-					device.internal_dispose_GC(hDC, null);
+					if (this.handle != 0) {
+						/* 
+						* This performs better than getting the bits with Bitmap.LockBits(),
+						* but it cannot be used when there is transparency.
+						*/
+						int hDC = device.internal_new_GC(null);
+						int srcHDC = OS.CreateCompatibleDC(hDC);
+						int oldSrcBitmap = OS.SelectObject(srcHDC, this.handle);
+						int graphics = Gdip.Graphics_new(srcHDC);
+						if (graphics != 0) {
+							Rect rect = new Rect();
+							rect.Width = width;
+							rect.Height = height;
+							status = Gdip.Graphics_DrawImage(graphics, bitmap, rect, 0, 0, width, height, Gdip.UnitPixel, 0, 0, 0);
+							if (status != 0) {
+								error = SWT.ERROR_INVALID_IMAGE;
+								OS.DeleteObject(handle);
+								this.handle = 0;
+							}
+							Gdip.Graphics_delete(graphics);
+						}
+						OS.SelectObject(srcHDC, oldSrcBitmap);
+						OS.DeleteDC(srcHDC);
+						device.internal_dispose_GC(hDC, null);
+					} else {
+						int lockedBitmapData = Gdip.BitmapData_new();
+						if (lockedBitmapData != 0) {
+							Gdip.Bitmap_LockBits(bitmap, 0, 0, pixelFormat, lockedBitmapData);
+							BitmapData bitmapData = new BitmapData();
+							Gdip.MoveMemory(bitmapData, lockedBitmapData, BitmapData.sizeof);
+							int stride = bitmapData.Stride;
+							int pixels = bitmapData.Scan0;
+							int depth = 0, scanlinePad = 4, transparentPixel = -1;
+							switch (bitmapData.PixelFormat) {
+								case Gdip.PixelFormat1bppIndexed: depth = 1; break;
+								case Gdip.PixelFormat4bppIndexed: depth = 4; break;
+								case Gdip.PixelFormat8bppIndexed: depth = 8; break;
+								case Gdip.PixelFormat16bppARGB1555:
+								case Gdip.PixelFormat16bppRGB555:
+								case Gdip.PixelFormat16bppRGB565: depth = 16; break;
+								case Gdip.PixelFormat24bppRGB: depth = 24; break;
+								case Gdip.PixelFormat32bppRGB:
+								case Gdip.PixelFormat32bppARGB: depth = 32; break;
+							}
+							if (depth != 0) {
+								PaletteData paletteData = null;
+								switch (bitmapData.PixelFormat) {
+									case Gdip.PixelFormat1bppIndexed:
+									case Gdip.PixelFormat4bppIndexed:
+									case Gdip.PixelFormat8bppIndexed:
+										int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
+										int hHeap = OS.GetProcessHeap();
+										int palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
+										if (palette == 0) break;
+										Gdip.Image_GetPalette(bitmap, palette, paletteSize);
+										ColorPalette colorPalette = new ColorPalette();
+										Gdip.MoveMemory(colorPalette, palette, ColorPalette.sizeof);
+										int[] entries = new int[colorPalette.Count];
+										OS.MoveMemory(entries, palette + 8, entries.length * 4);
+										OS.HeapFree(hHeap, 0, palette);
+										RGB[] rgbs = new RGB[colorPalette.Count];
+										paletteData = new PaletteData(rgbs);
+										for (int i = 0; i < entries.length; i++) {
+											if (((entries[i] >> 24) & 0xFF) == 0 && (colorPalette.Flags & Gdip.PaletteFlagsHasAlpha) != 0) {
+												transparentPixel = i;
+											}
+											rgbs[i] = new RGB(((entries[i] & 0xFF0000) >> 16), ((entries[i] & 0xFF00) >> 8), ((entries[i] & 0xFF) >> 0));
+										}
+										break;
+									case Gdip.PixelFormat16bppARGB1555:
+									case Gdip.PixelFormat16bppRGB555: paletteData = new PaletteData(0x7C00, 0x3E0, 0x1F); break;
+									case Gdip.PixelFormat16bppRGB565: paletteData = new PaletteData(0xF800, 0x7E0, 0x1F); break;
+									case Gdip.PixelFormat24bppRGB: paletteData = new PaletteData(0xFF, 0xFF00, 0xFF0000); break;
+									case Gdip.PixelFormat32bppRGB:
+									case Gdip.PixelFormat32bppARGB: paletteData = new PaletteData(0xFF00, 0xFF0000, 0xFF000000); break;
+								}
+								byte[] data = new byte[stride * height], alphaData = null;
+								OS.MoveMemory(data, pixels, data.length);
+								switch (bitmapData.PixelFormat) {
+									case Gdip.PixelFormat16bppARGB1555:
+						 		 		alphaData = new byte[width * height];
+						 		 		for (int i = 1, j = 0; i < data.length; i += 2, j++) {
+						 		 			alphaData[j] = (byte)((data[i] & 0x80) != 0 ? 255 : 0);
+						 		 		}
+										break;
+									case Gdip.PixelFormat32bppARGB:
+						 		 		alphaData = new byte[width * height];
+						 		 		for (int i = 3, j = 0; i < data.length; i += 4, j++) {
+						 		 			alphaData[j] = data[i];
+						 		 		}
+										break;
+								}
+				 		 		Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
+								Gdip.BitmapData_delete(lockedBitmapData);
+								ImageData img = new ImageData(width, height, depth, paletteData, scanlinePad, data);
+								img.transparentPixel = transparentPixel;
+								img.alphaData = alphaData;
+								init(device, img);
+							}
+						}
+					}
 				}
 			}
 			Gdip.Bitmap_delete(bitmap);
-			if (handle == 0) SWT.error(error);
+			if (this.handle == 0) SWT.error(error);
 			return;
 		}
 	} catch (SWTException e) {}
