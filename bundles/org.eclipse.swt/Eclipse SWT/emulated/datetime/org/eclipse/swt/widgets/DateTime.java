@@ -13,28 +13,30 @@ import org.eclipse.swt.layout.*;
 	Color foreground, background;
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
-	Text text;
 	Button monthDown, monthUp, yearDown, yearUp;
+	Text text;
+	boolean ignore = false;
 	
-static final int MARGIN_WIDTH = 2; 
-static final int MARGIN_HEIGHT = 1; 
+	static final int HOURS = 0, COLON1 = 2, MINUTES = 3, COLON2 = 5, SECONDS = 6, SP = 8, AM_PM = 9;
+	static final int MONTH = 0, SL1 = 2, DAY = 3, SL2 = 5, YEAR = 6;
+	static final int MARGIN_WIDTH = 2;
+	static final int MARGIN_HEIGHT = 1;
 
 public DateTime(Composite parent, int style) {
 	super(parent, checkStyle (style) | SWT.NO_REDRAW_RESIZE | (((style & SWT.CALENDAR) != 0)? 0 : SWT.BORDER));
 	calendar = Calendar.getInstance();
-	formatSymbols = new DateFormatSymbols();
-	if ((style & SWT.CALENDAR) != 0) {
-		Listener listener = new Listener() {
-			public void handleEvent(Event e) {
-				DateTime.this.handleEvent(e);
-			}
-		};
+	Listener listener = new Listener() {
+		public void handleEvent(Event e) {
+			DateTime.this.handleEvent(e);
+		}
+	};
+	if ((this.style & SWT.CALENDAR) != 0) {
+		formatSymbols = new DateFormatSymbols();
 		addListener(SWT.Paint, listener);
 		addListener(SWT.Resize, listener);
 		addListener(SWT.KeyDown, listener);
 		addListener(SWT.Traverse, listener);
 		addListener(SWT.MouseDown, listener);
-	
 		monthDown = new Button(this, SWT.ARROW | SWT.LEFT);
 		monthUp = new Button(this, SWT.ARROW | SWT.RIGHT);
 		yearDown = new Button(this, SWT.ARROW | SWT.LEFT);
@@ -43,7 +45,7 @@ public DateTime(Composite parent, int style) {
 		monthUp.addListener(SWT.Selection, listener);
 		yearDown.addListener(SWT.Selection, listener);
 		yearUp.addListener(SWT.Selection, listener);
-	} else if ((style & SWT.TIME) != 0) {
+	} else {
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
@@ -51,221 +53,19 @@ public DateTime(Composite parent, int style) {
 		layout.verticalSpacing = 0;
 		super.setLayout(layout); // TODO: use resize, not layout
 		text = new Text(this, SWT.SINGLE);
-		int h = calendar.get(Calendar.HOUR);
-		int m = calendar.get(Calendar.MINUTE);
-		int s = calendar.get(Calendar.SECOND);
-		int a = calendar.get(Calendar.AM_PM);
-		text.setText("" + (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + " " + (a == Calendar.AM ? "AM" : "PM"));
-		text.addListener(SWT.Verify, new Listener() {
-			final int HOURS = 0, COLON1 = 2, MINUTES = 3, COLON2 = 5, SECONDS = 6, SP = 8, AM_PM = 9, MAX = 10;
-			boolean ignore = false;
-			public void handleEvent(Event e) {
-				if (ignore) return;
-				e.doit = false;
-				int start = e.start;
-				if (start > MAX) return;
-				StringBuffer buffer = new StringBuffer(e.text);
-				char[] chars = new char[buffer.length()];
-				buffer.getChars(0, chars.length, chars, 0);
-				if (e.character == '\b') {
-					for (int i = start; i < e.end; i++) {
-						switch (i) {
-							case HOURS:
-							case HOURS+1:
-							case MINUTES:
-							case MINUTES+1:
-							case SECONDS:
-							case SECONDS+1: {
-								buffer.append(' '); break;
-							}
-							case COLON1:
-							case COLON2: {
-								buffer.append(':'); break;
-							}
-							default:
-								return;
-						}
-					}
-					text.setSelection(start, start + buffer.length());
-					ignore = true;
-					text.insert(buffer.toString());
-					ignore = false;
-					text.setSelection(start, start);
-					return;
-				}
-			
-				int index = 0;
-				for (int i = 0; i < chars.length; i++) {
-					if (start + index == COLON1 || start + index == COLON2) {
-						if (chars[i] == ':') {
-							index++;
-							continue;
-						}
-						buffer.insert(index++, ':');
-					}
-					if (start + index == SP) {
-						if (chars[i] == ' ') {
-							index++;
-							continue;
-						}
-						buffer.insert(index++, ' ');
-					}
-					char c = Character.toUpperCase(chars[i]);
-					if (start + index == AM_PM) {
-						if (c == 'A' || c == 'P') {
-							buffer.setCharAt(index++, c);
-							continue;
-						}
-					}
-					if (start + index == AM_PM+1) {
-						if (c == 'M') {
-							buffer.setCharAt(index++, c);
-							continue;
-						}
-					}
-					if (chars[i] < '0' || '9' < chars[i]) return;
-					if (start + index == HOURS &&  '1' < chars[i]) return;
-					if (start + index == MINUTES &&  '5' < chars[i]) return;
-					if (start + index == SECONDS &&  '5' < chars[i]) return;
-					index++;
-				}
-				String newText = buffer.toString();
-				int length = newText.length();
-				StringBuffer time = new StringBuffer(text.getText());
-				time.replace(start, start + length, newText);
-				String hh = time.substring(HOURS, HOURS+2);
-				if (hh.indexOf(' ') == -1) {
-					int hour = Integer.parseInt(hh);
-					int maxHour = calendar.getActualMaximum(Calendar.HOUR);
-					if (0 > hour || hour > maxHour) return;
-					calendar.set(Calendar.HOUR, hour);
-				}
-				String mm = time.substring(MINUTES, MINUTES+2);
-				if (mm.indexOf(' ') == -1) {
-					int minute = Integer.parseInt(mm);
-					int maxMinute = calendar.getActualMaximum(Calendar.MINUTE);
-					if (0 > minute || minute > maxMinute) return;
-					calendar.set(Calendar.MINUTE, minute);
-				}
-				String ss = time.substring(SECONDS, SECONDS+2);
-				if (ss.indexOf(' ') == -1) {
-					int second = Integer.parseInt(ss);
-					int maxSec = calendar.getActualMaximum(Calendar.SECOND);
-					if (0 > second || second > maxSec) return;
-					calendar.set(Calendar.SECOND, second);
-				}
-				String ap = time.substring(AM_PM, AM_PM+2);
-				if (ap.equalsIgnoreCase("AM")) {
-					calendar.set(Calendar.AM_PM, Calendar.AM);
-				} else if (ap.equalsIgnoreCase("PM")) {
-					calendar.set(Calendar.AM_PM, Calendar.PM);
-				} else return;
-				text.setSelection(start, start + length);
-				ignore = true;
-				text.insert(newText);
-				ignore = false;
-			}
-		});
-	} else { /* SWT.DATE */
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
-		layout.horizontalSpacing = 0;
-		layout.verticalSpacing = 0;
-		super.setLayout(layout); // TODO: use resize, not layout
-		text = new Text(this, SWT.SINGLE);
-		int y = calendar.get(Calendar.YEAR);
-		int m = calendar.get(Calendar.MONTH);
-		int d = calendar.get(Calendar.DATE);
-		text.setText("" + (m < 10 ? "0" : "") + m + "/" + (d < 10 ? "0" : "") + d + "/" + y);
-		text.addListener(SWT.Verify, new Listener() {
-			final int MONTH = 0, SL1 = 2, DAY = 3, SL2 = 5, YEAR = 6, MAX = 9;
-			boolean ignore = false;
-			public void handleEvent(Event e) {
-				if (ignore) return;
-				e.doit = false;
-				int start = e.start;
-				if (start > MAX) return;
-				StringBuffer buffer = new StringBuffer(e.text);
-				char[] chars = new char[buffer.length()];
-				buffer.getChars(0, chars.length, chars, 0);
-				if (e.character == '\b') {
-					for (int i = start; i < e.end; i++) {
-						switch (i) {
-							case MONTH:
-							case MONTH+1:
-							case DAY:
-							case DAY+1:
-							case YEAR:
-							case YEAR+1:
-							case YEAR+2:
-							case YEAR+3: {
-								buffer.append(' '); break;
-							}
-							case SL1:
-							case SL2: {
-								buffer.append('/'); break;
-							}
-							default:
-								return;
-						}
-					}
-					text.setSelection(start, start + buffer.length());
-					ignore = true;
-					text.insert(buffer.toString());
-					ignore = false;
-					text.setSelection(start, start);
-					return;
-				}
-			
-				int index = 0;
-				for (int i = 0; i < chars.length; i++) {
-					if (start + index == SL1 || start + index == SL2) {
-						if (chars[i] == '/') {
-							index++;
-							continue;
-						}
-						buffer.insert(index++, '/');
-					}
-					if (chars[i] < '0' || '9' < chars[i]) return;
-					if (start + index == MONTH &&  '1' < chars[i]) return;
-					if (start + index == DAY &&  '3' < chars[i]) return;
-					index++;
-				}
-				String newText = buffer.toString();
-				int length = newText.length();
-				StringBuffer date = new StringBuffer(text.getText());
-				date.replace(start, start + length, newText);
-				String yyyy = date.substring(YEAR, YEAR+4);
-				if (yyyy.indexOf(' ') == -1) {
-					int year = Integer.parseInt(yyyy);
-					calendar.set(Calendar.YEAR, year);
-				}
-				String mm = date.substring(MONTH, MONTH+2);
-				if (mm.indexOf(' ') == -1) {
-					int month = Integer.parseInt(mm) - 1;
-					int maxMonth = calendar.getActualMaximum(Calendar.MONTH);
-					if (0 > month || month > maxMonth) return;
-					calendar.set(Calendar.MONTH, month);
-				}
-				String dd = date.substring(DAY, DAY+2);
-				if (dd.indexOf(' ') == -1) {
-					int day = Integer.parseInt(dd);
-					int maxDay = calendar.getActualMaximum(Calendar.DATE);
-					if (1 > day || day > maxDay) return;
-					calendar.set(Calendar.DATE, day);
-				} else {
-					if (calendar.get(Calendar.MONTH) == Calendar.FEBRUARY) {
-						char firstChar = date.charAt(DAY);
-						if (firstChar != ' ' && '2' < firstChar) return;
-					}
-				}
-				text.setSelection(start, start + length);
-				ignore = true;
-				text.insert(newText);
-				ignore = false;
-			}
-		});
+		if ((this.style & SWT.TIME) != 0) {
+			int h = calendar.get(Calendar.HOUR);
+			int m = calendar.get(Calendar.MINUTE);
+			int s = calendar.get(Calendar.SECOND);
+			int a = calendar.get(Calendar.AM_PM);
+			text.setText("" + (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + " " + (a == Calendar.AM ? "AM" : "PM"));
+		} else { /* SWT.DATE */
+			int y = calendar.get(Calendar.YEAR);
+			int m = calendar.get(Calendar.MONTH);
+			int d = calendar.get(Calendar.DATE);
+			text.setText("" + (m < 10 ? "0" : "") + m + "/" + (d < 10 ? "0" : "") + d + "/" + y);
+		}
+		text.addListener(SWT.Verify, listener);
 	}
 }
 
@@ -464,6 +264,9 @@ void handleEvent(Event event) {
 		case SWT.Selection:
 			handleSelection(event);
 			break;
+		case SWT.Verify:
+			handleVerify(event);
+			break;
 	}
 }
 
@@ -542,6 +345,195 @@ void handleTraverse(Event event) {
 	}	
 }
 
+void handleVerify(Event event) {
+	if (ignore) return;
+	event.doit = false;
+	int start = event.start;
+	String newText = "";
+	int length = 0;
+	if ((style & SWT.DATE) != 0) {
+		final int MAX = 9;
+		if (start > MAX) return;
+		StringBuffer buffer = new StringBuffer(event.text);
+		char[] chars = new char[buffer.length()];
+		buffer.getChars(0, chars.length, chars, 0);
+		if (event.character == '\b') {
+			for (int i = start; i < event.end; i++) {
+				switch (i) {
+					case MONTH:
+					case MONTH+1:
+					case DAY:
+					case DAY+1:
+					case YEAR:
+					case YEAR+1:
+					case YEAR+2:
+					case YEAR+3: {
+						buffer.append(' '); break;
+					}
+					case SL1:
+					case SL2: {
+						buffer.append('/'); break;
+					}
+					default:
+						return;
+				}
+			}
+			text.setSelection(start, start + buffer.length());
+			ignore = true;
+			text.insert(buffer.toString());
+			ignore = false;
+			text.setSelection(start, start);
+			return;
+		}
+	
+		int index = 0;
+		for (int i = 0; i < chars.length; i++) {
+			if (start + index == SL1 || start + index == SL2) {
+				if (chars[i] == '/') {
+					index++;
+					continue;
+				}
+				buffer.insert(index++, '/');
+			}
+			if (chars[i] < '0' || '9' < chars[i]) return;
+			if (start + index == MONTH &&  '1' < chars[i]) return;
+			if (start + index == DAY &&  '3' < chars[i]) return;
+			index++;
+		}
+		newText = buffer.toString();
+		length = newText.length();
+		StringBuffer date = new StringBuffer(text.getText());
+		date.replace(start, start + length, newText);
+		String yyyy = date.substring(YEAR, YEAR+4);
+		if (yyyy.indexOf(' ') == -1) {
+			int year = Integer.parseInt(yyyy);
+			calendar.set(Calendar.YEAR, year);
+		}
+		String mm = date.substring(MONTH, MONTH+2);
+		if (mm.indexOf(' ') == -1) {
+			int month = Integer.parseInt(mm) - 1;
+			int maxMonth = calendar.getActualMaximum(Calendar.MONTH);
+			if (0 > month || month > maxMonth) return;
+			calendar.set(Calendar.MONTH, month);
+		}
+		String dd = date.substring(DAY, DAY+2);
+		if (dd.indexOf(' ') == -1) {
+			int day = Integer.parseInt(dd);
+			int maxDay = calendar.getActualMaximum(Calendar.DATE);
+			if (1 > day || day > maxDay) return;
+			calendar.set(Calendar.DATE, day);
+		} else {
+			if (calendar.get(Calendar.MONTH) == Calendar.FEBRUARY) {
+				char firstChar = date.charAt(DAY);
+				if (firstChar != ' ' && '2' < firstChar) return;
+			}
+		}
+	} else { /* SWT.TIME */
+		final int MAX = 10;
+		if (start > MAX) return;
+		StringBuffer buffer = new StringBuffer(event.text);
+		char[] chars = new char[buffer.length()];
+		buffer.getChars(0, chars.length, chars, 0);
+		if (event.character == '\b') {
+			for (int i = start; i < event.end; i++) {
+				switch (i) {
+					case HOURS:
+					case HOURS+1:
+					case MINUTES:
+					case MINUTES+1:
+					case SECONDS:
+					case SECONDS+1: {
+						buffer.append(' '); break;
+					}
+					case COLON1:
+					case COLON2: {
+						buffer.append(':'); break;
+					}
+					default:
+						return;
+				}
+			}
+			text.setSelection(start, start + buffer.length());
+			ignore = true;
+			text.insert(buffer.toString());
+			ignore = false;
+			text.setSelection(start, start);
+			return;
+		}
+	
+		int index = 0;
+		for (int i = 0; i < chars.length; i++) {
+			if (start + index == COLON1 || start + index == COLON2) {
+				if (chars[i] == ':') {
+					index++;
+					continue;
+				}
+				buffer.insert(index++, ':');
+			}
+			if (start + index == SP) {
+				if (chars[i] == ' ') {
+					index++;
+					continue;
+				}
+				buffer.insert(index++, ' ');
+			}
+			char c = Character.toUpperCase(chars[i]);
+			if (start + index == AM_PM) {
+				if (c == 'A' || c == 'P') {
+					buffer.setCharAt(index++, c);
+					continue;
+				}
+			}
+			if (start + index == AM_PM+1) {
+				if (c == 'M') {
+					buffer.setCharAt(index++, c);
+					continue;
+				}
+			}
+			if (chars[i] < '0' || '9' < chars[i]) return;
+			if (start + index == HOURS &&  '1' < chars[i]) return;
+			if (start + index == MINUTES &&  '5' < chars[i]) return;
+			if (start + index == SECONDS &&  '5' < chars[i]) return;
+			index++;
+		}
+		newText = buffer.toString();
+		length = newText.length();
+		StringBuffer time = new StringBuffer(text.getText());
+		time.replace(start, start + length, newText);
+		String hh = time.substring(HOURS, HOURS+2);
+		if (hh.indexOf(' ') == -1) {
+			int hour = Integer.parseInt(hh);
+			int maxHour = calendar.getActualMaximum(Calendar.HOUR);
+			if (0 > hour || hour > maxHour) return;
+			calendar.set(Calendar.HOUR, hour);
+		}
+		String mm = time.substring(MINUTES, MINUTES+2);
+		if (mm.indexOf(' ') == -1) {
+			int minute = Integer.parseInt(mm);
+			int maxMinute = calendar.getActualMaximum(Calendar.MINUTE);
+			if (0 > minute || minute > maxMinute) return;
+			calendar.set(Calendar.MINUTE, minute);
+		}
+		String ss = time.substring(SECONDS, SECONDS+2);
+		if (ss.indexOf(' ') == -1) {
+			int second = Integer.parseInt(ss);
+			int maxSec = calendar.getActualMaximum(Calendar.SECOND);
+			if (0 > second || second > maxSec) return;
+			calendar.set(Calendar.SECOND, second);
+		}
+		String ap = time.substring(AM_PM, AM_PM+2);
+		if (ap.equalsIgnoreCase("AM")) {
+			calendar.set(Calendar.AM_PM, Calendar.AM);
+		} else if (ap.equalsIgnoreCase("PM")) {
+			calendar.set(Calendar.AM_PM, Calendar.PM);
+		} else return;
+	}
+	text.setSelection(start, start + length);
+	ignore = true;
+	text.insert(newText);
+	ignore = false;
+}
+	
 public void removeSelectionListener (SelectionListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
