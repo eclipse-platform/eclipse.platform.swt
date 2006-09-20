@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
-public class DateTime extends Canvas {
+/*public*/ class DateTime extends Canvas {
 	Color foreground, background;
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
@@ -626,47 +626,5 @@ public void setYear(int year) {
 	checkWidget();
 	calendar.set(Calendar.YEAR, year);
 	redraw();
-}
-
-public static void main(String[] args) {
-//	java.util.Locale.setDefault(java.util.Locale.GERMAN);
-	final Display display = new Display();
-	Shell shell = new Shell();
-	shell.setText("Date Picker");
-	FillLayout layout = new FillLayout ();
-	layout.marginWidth = layout.marginHeight = 20;
-	shell.setLayout(layout);		
-	
-	final DateTime picker = new DateTime(shell, SWT.CALENDAR | SWT.BORDER);
-//	Font font = new Font(display, "Monaco", 29, SWT.ITALIC);
-//	picker.setFont(font);
-//	picker.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
-//	picker.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-	final Calendar calendar = Calendar.getInstance();
-	calendar.setTimeInMillis(System.currentTimeMillis());
-	picker.setMonth(calendar.get(Calendar.MONTH));
-	picker.setYear(calendar.get(Calendar.YEAR));
-	picker.setDay(calendar.get(Calendar.DAY_OF_MONTH));
-	picker.addListener(SWT.Selection, new Listener() {
-		public void handleEvent(Event e) {
-			System.out.println("selected day=" + picker.getDay() + ", month=" + picker.getMonth() + ", year=" + picker.getYear()
-					+ ", hours=" + picker.getHour() + ", minutes=" + picker.getMinute() + ", seconds=" + picker.getSecond());
-		}
-	});
-
-//	Button button = new Button(shell, SWT.PUSH);
-//	button.addListener(SWT.Selection, new Listener() {
-//		public void handleEvent(Event e) {
-//			picker.setDate(calendar.get(Calendar.DAY_OF_MONTH));
-//		}
-//	});
-
-	shell.pack();	
-	shell.open();
-	while (!shell.isDisposed()) {
-		if (!display.readAndDispatch()) display.sleep();
-	}
-//	font.dispose();
-	display.dispose();
 }
 }
