@@ -277,7 +277,7 @@ int decompressRLE8Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 					y++;
 					x = 0;
 					dp = y * stride;
-					if (dp >= de)
+					if (dp > de)
 						return -1;
 					break;
 				case 1: /* end of bitmap */
