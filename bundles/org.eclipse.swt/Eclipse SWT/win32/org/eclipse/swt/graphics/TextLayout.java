@@ -405,8 +405,10 @@ void computeRuns (GC gc) {
 			}
 			this.lineWidth[line] = lineWidth;
 			
-			runs[line] = reorder(runs[line], i == allRuns.length - 1);
 			StyleItem lastRun = runs[line][lineRunCount - 1];
+			int lastOffset = lastRun.start + lastRun.length;
+			runs[line] = reorder(runs[line], i == allRuns.length - 1);
+			lastRun = runs[line][lineRunCount - 1];
 			if (run.softBreak && run != lastRun) {
 				run.softBreak = run.lineBreak = false;
 				lastRun.softBreak = lastRun.lineBreak = true;
@@ -419,7 +421,7 @@ void computeRuns (GC gc) {
 			}
 			line++;
 			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacing;
-			lineOffset[line] = lastRun.start + lastRun.length;
+			lineOffset[line] = lastOffset;
 			lineRunCount = lineWidth = 0;
 			ascent = Math.max(0, this.ascent);
 			descent = Math.max(0, this.descent);
