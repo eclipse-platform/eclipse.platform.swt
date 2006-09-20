@@ -928,12 +928,10 @@ public Rectangle getBounds (int start, int end) {
 	end = translateOffset(end);
 	int left = 0x7fffffff, right = 0;
 	int top = 0x7fffffff, bottom = 0;
-	int lineIndex = 0;
 	boolean isRTL = (orientation & SWT.RIGHT_TO_LEFT) != 0;
 	for (int i = 0; i < allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		int runEnd = run.start + run.length;
-		if (run.lineBreak) lineIndex++;
 		if (runEnd <= start) continue;
 		if (run.start > end) break;
 		int runLead = run.x;
@@ -972,10 +970,14 @@ public Rectangle getBounds (int start, int end) {
 				runTrail = run.x + cx;
 			}
 		}
+		int lineIndex = 0;
+		while (lineIndex < runs.length && lineOffset[lineIndex + 1] <= run.start) {
+			lineIndex++;
+		}
 		left = Math.min(left, runLead);
 		right = Math.max(right, runTrail);
-		top = Math.min(top, lineY[run.lineBreak ? lineIndex - 1 : lineIndex]);
-		bottom = Math.max(bottom, lineY[run.lineBreak ? lineIndex : lineIndex + 1] - lineSpacing);
+		top = Math.min(top, lineY[lineIndex]);
+		bottom = Math.max(bottom, lineY[lineIndex + 1] - lineSpacing);
 	}
 	return new Rectangle(left, top, right - left, bottom - top);
 }
