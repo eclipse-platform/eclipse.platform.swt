@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 937;
-int OS_nativeFunctionCallCount[937];
+int OS_nativeFunctionCount = 938;
+int OS_nativeFunctionCallCount[938];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -99,6 +99,7 @@ char * OS_nativeFunctionNames[] = {
 	"CFURLCreateFromFileSystemRepresentation",
 	"CFURLCreateWithBytes",
 	"CFURLCreateWithFileSystemPath",
+	"CFURLCreateWithString",
 	"CFURLGetFSRef",
 	"CGAffineTransformConcat",
 	"CGAffineTransformInvert",
@@ -618,8 +619,8 @@ char * OS_nativeFunctionNames[] = {
 	"LSFindApplicationForInfo",
 	"LSGetApplicationForInfo",
 	"LSOpenApplication",
-	"LSOpenFSRef",
-	"LSOpenItemsWithRole",
+	"LSOpenCFURLRef",
+	"LSOpenURLsWithRole",
 	"LineTo",
 	"LoWord",
 	"LockPortBits",

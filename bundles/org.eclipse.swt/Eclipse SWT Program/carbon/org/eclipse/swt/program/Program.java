@@ -356,16 +356,14 @@ public static Program [] getPrograms () {
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int rc = -1;
+	if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
 	char[] chars = new char[fileName.length()];
 	fileName.getChars(0, chars.length, chars, 0);
 	int arg = OS.CFStringCreateWithCharacters(0, chars, chars.length);
 	if (arg != 0) {
-		int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, arg, OS.kCFURLPOSIXPathStyle, false);
+		int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, arg, 0);
 		if (url != 0) {
-			byte[] itemRef = new byte[80];
-			if (OS.CFURLGetFSRef(url, itemRef)) {				
-				rc = OS.LSOpenFSRef(itemRef, null);
-			}
+			rc = OS.LSOpenCFURLRef(url, null);
 			OS.CFRelease(url);
 		}
 		OS.CFRelease(arg);
@@ -400,17 +398,19 @@ public boolean execute (String fileName) {
 		if (fileName.length() == 0) {
 			rc = OS.LSOpenApplication(params, null);
 		} else {
+			if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
 			char[] chars = new char[fileName.length()];
 			fileName.getChars(0, chars.length, chars, 0);
 			int arg = OS.CFStringCreateWithCharacters(0, chars, chars.length);
 			if (arg != 0) {
-				int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, arg, OS.kCFURLPOSIXPathStyle, false);
-				if (url != 0) {
-					byte[] itemRef = new byte[80];
-					if (OS.CFURLGetFSRef(url, itemRef)) {
-						rc = OS.LSOpenItemsWithRole(itemRef, 1, OS.kLSRolesAll, 0, params, null, 0);
+				int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
+				if (urls != 0) {
+					int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, arg, 0);
+					if (url != 0) {
+						OS.CFArrayAppendValue(urls, url);
+						rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
 					}
-					OS.CFRelease(url);
+					OS.CFRelease(urls);
 				}
 				OS.CFRelease(arg);
 			}
