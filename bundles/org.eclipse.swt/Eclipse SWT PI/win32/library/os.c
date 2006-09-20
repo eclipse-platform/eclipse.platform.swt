@@ -423,6 +423,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(CloseClipboard)
 }
 #endif
 
+#ifndef NO_CloseHandle
+JNIEXPORT jboolean JNICALL OS_NATIVE(CloseHandle)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CloseHandle_FUNC);
+	rc = (jboolean)CloseHandle((HANDLE)arg0);
+	OS_NATIVE_EXIT(env, that, CloseHandle_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CloseThemeData
 JNIEXPORT jint JNICALL OS_NATIVE(CloseThemeData)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1018,6 +1030,44 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreatePopupMenu)
 	OS_NATIVE_ENTER(env, that, CreatePopupMenu_FUNC);
 	rc = (jint)CreatePopupMenu();
 	OS_NATIVE_EXIT(env, that, CreatePopupMenu_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateProcessA
+JNIEXPORT jboolean JNICALL OS_NATIVE(CreateProcessA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jboolean arg4, jint arg5, jint arg6, jint arg7, jobject arg8, jobject arg9)
+{
+	STARTUPINFO _arg8, *lparg8=NULL;
+	PROCESS_INFORMATION _arg9, *lparg9=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateProcessA_FUNC);
+	if (arg8) if ((lparg8 = getSTARTUPINFOFields(env, arg8, &_arg8)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = getPROCESS_INFORMATIONFields(env, arg9, &_arg9)) == NULL) goto fail;
+	rc = (jboolean)CreateProcessA((LPCSTR)arg0, (LPSTR)arg1, (LPSECURITY_ATTRIBUTES)arg2, (LPSECURITY_ATTRIBUTES)arg3, arg4, arg5, (LPVOID)arg6, (LPSTR)arg7, (LPSTARTUPINFOA)lparg8, (LPPROCESS_INFORMATION)lparg9);
+fail:
+	if (arg9 && lparg9) setPROCESS_INFORMATIONFields(env, arg9, lparg9);
+	if (arg8 && lparg8) setSTARTUPINFOFields(env, arg8, lparg8);
+	OS_NATIVE_EXIT(env, that, CreateProcessA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateProcessW
+JNIEXPORT jboolean JNICALL OS_NATIVE(CreateProcessW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jboolean arg4, jint arg5, jint arg6, jint arg7, jobject arg8, jobject arg9)
+{
+	STARTUPINFO _arg8, *lparg8=NULL;
+	PROCESS_INFORMATION _arg9, *lparg9=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateProcessW_FUNC);
+	if (arg8) if ((lparg8 = getSTARTUPINFOFields(env, arg8, &_arg8)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = getPROCESS_INFORMATIONFields(env, arg9, &_arg9)) == NULL) goto fail;
+	rc = (jboolean)CreateProcessW((LPCWSTR)arg0, (LPWSTR)arg1, (LPSECURITY_ATTRIBUTES)arg2, (LPSECURITY_ATTRIBUTES)arg3, arg4, arg5, (LPVOID)arg6, (LPWSTR)arg7, (LPSTARTUPINFOW)lparg8, (LPPROCESS_INFORMATION)lparg9);
+fail:
+	if (arg9 && lparg9) setPROCESS_INFORMATIONFields(env, arg9, lparg9);
+	if (arg8 && lparg8) setSTARTUPINFOFields(env, arg8, lparg8);
+	OS_NATIVE_EXIT(env, that, CreateProcessW_FUNC);
 	return rc;
 }
 #endif
@@ -4157,6 +4207,34 @@ fail:
 	if (arg2 && lparg2) setSCROLLINFOFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, GetScrollInfo_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_GetStartupInfoA
+JNIEXPORT void JNICALL OS_NATIVE(GetStartupInfoA)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	STARTUPINFO _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, GetStartupInfoA_FUNC);
+	if (arg0) if ((lparg0 = getSTARTUPINFOFields(env, arg0, &_arg0)) == NULL) goto fail;
+	GetStartupInfoA((LPSTARTUPINFOA)lparg0);
+fail:
+	if (arg0 && lparg0) setSTARTUPINFOFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, GetStartupInfoA_FUNC);
+}
+#endif
+
+#ifndef NO_GetStartupInfoW
+JNIEXPORT void JNICALL OS_NATIVE(GetStartupInfoW)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	STARTUPINFO _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, GetStartupInfoW_FUNC);
+	if (arg0) if ((lparg0 = getSTARTUPINFOFields(env, arg0, &_arg0)) == NULL) goto fail;
+	GetStartupInfoW((LPSTARTUPINFOW)lparg0);
+fail:
+	if (arg0 && lparg0) setSTARTUPINFOFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, GetStartupInfoW_FUNC);
 }
 #endif
 

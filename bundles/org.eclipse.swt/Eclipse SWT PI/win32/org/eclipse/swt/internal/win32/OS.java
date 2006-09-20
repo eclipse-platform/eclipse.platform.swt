@@ -1936,6 +1936,11 @@ public static final int CreateFontIndirect (LOGFONT lplf) {
 	return CreateFontIndirectA ((LOGFONTA)lplf);
 }
 
+public static final boolean CreateProcess (int lpApplicationName, int lpCommandLine, int lpProcessAttributes, int lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, int lpEnvironment, int lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation) {
+	if (IsUnicode) return CreateProcessW (lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+	return CreateProcessA (lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+}
+
 public static final int CreateWindowEx (int dwExStyle, TCHAR lpClassName, TCHAR lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam) {
 	if (IsUnicode) {
 		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
@@ -2220,6 +2225,14 @@ public static int GetProp (int hWnd, int lpString) {
 public static final boolean GetSaveFileName (OPENFILENAME lpofn) {
 	if (IsUnicode) return GetSaveFileNameW (lpofn);
 	return GetSaveFileNameA (lpofn);
+}
+
+public static final void GetStartupInfo (STARTUPINFO lpStartupInfo) {
+	if (IsUnicode) {
+		GetStartupInfoW (lpStartupInfo);
+	} else {
+		GetStartupInfoA (lpStartupInfo);
+	}
 }
 
 public static final boolean GetTextExtentPoint32 (int hdc, TCHAR lpString, int cbString, SIZE lpSize) {
@@ -2788,6 +2801,7 @@ public static final native boolean ChooseFontW (CHOOSEFONT chooseFont);
 public static final native boolean ChooseFontA (CHOOSEFONT chooseFont);
 public static final native boolean ClientToScreen (int hWnd, POINT lpPoint);
 public static final native boolean CloseClipboard ();
+public static final native boolean CloseHandle (int hObject);
 public static final native int CloseThemeData (int hTheme);
 public static final native int CoCreateInstance(byte[] rclsid, int pUnkOuter, int dwClsContext, byte[] riid, int[] ppv);
 public static final native int CombineRgn (int hrgnDest, int hrgnSrc1, int hrgnSrc2, int fnCombineMode);
@@ -2823,6 +2837,8 @@ public static final native int CreatePatternBrush (int colorRef);
 public static final native int CreatePen (int fnPenStyle, int nWidth, int crColor);
 public static final native int CreatePolygonRgn(int[] lppt, int cPoints, int fnPolyFillMode);
 public static final native int CreatePopupMenu ();
+public static final native boolean CreateProcessW (int lpApplicationName, int lpCommandLine, int lpProcessAttributes, int lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, int lpEnvironment, int lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
+public static final native boolean CreateProcessA (int lpApplicationName, int lpCommandLine, int lpProcessAttributes, int lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, int lpEnvironment, int lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
 public static final native int CreateRectRgn (int left, int top, int right, int bottom);
 public static final native int CreateSolidBrush (int colorRef);
 public static final native int CreateStreamOnHGlobal(int hGlobal, boolean fDeleteOnRelease, int[] ppstm);
@@ -3013,6 +3029,8 @@ public static final native int GetROP2 (int hdc);
 public static final native boolean GetSaveFileNameW (OPENFILENAME lpofn);
 public static final native boolean GetSaveFileNameA (OPENFILENAME lpofn);
 public static final native boolean GetScrollInfo (int hwnd, int flags, SCROLLINFO info);
+public static final native void GetStartupInfoW (STARTUPINFO lpStartupInfo);
+public static final native void GetStartupInfoA (STARTUPINFO lpStartupInfo);
 public static final native int GetStockObject (int fnObject);
 public static final native int GetSysColor (int nIndex);
 public static final native int GetSysColorBrush (int nIndex);

@@ -995,6 +995,18 @@ void setPRINTDLGFields(JNIEnv *env, jobject lpObject, PRINTDLG *lpStruct);
 #define PRINTDLG_sizeof() 0
 #endif
 
+#ifndef NO_PROCESS_INFORMATION
+void cachePROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject);
+PROCESS_INFORMATION *getPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct);
+void setPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct);
+#define PROCESS_INFORMATION_sizeof() sizeof(PROCESS_INFORMATION)
+#else
+#define cachePROCESS_INFORMATIONFields(a,b)
+#define getPROCESS_INFORMATIONFields(a,b,c) NULL
+#define setPROCESS_INFORMATIONFields(a,b,c)
+#define PROCESS_INFORMATION_sizeof() 0
+#endif
+
 #ifndef NO_REBARBANDINFO
 void cacheREBARBANDINFOFields(JNIEnv *env, jobject lpObject);
 REBARBANDINFO *getREBARBANDINFOFields(JNIEnv *env, jobject lpObject, REBARBANDINFO *lpStruct);
@@ -1197,6 +1209,18 @@ void setSIZEFields(JNIEnv *env, jobject lpObject, SIZE *lpStruct);
 #define getSIZEFields(a,b,c) NULL
 #define setSIZEFields(a,b,c)
 #define SIZE_sizeof() 0
+#endif
+
+#ifndef NO_STARTUPINFO
+void cacheSTARTUPINFOFields(JNIEnv *env, jobject lpObject);
+STARTUPINFO *getSTARTUPINFOFields(JNIEnv *env, jobject lpObject, STARTUPINFO *lpStruct);
+void setSTARTUPINFOFields(JNIEnv *env, jobject lpObject, STARTUPINFO *lpStruct);
+#define STARTUPINFO_sizeof() sizeof(STARTUPINFO)
+#else
+#define cacheSTARTUPINFOFields(a,b)
+#define getSTARTUPINFOFields(a,b,c) NULL
+#define setSTARTUPINFOFields(a,b,c)
+#define STARTUPINFO_sizeof() 0
 #endif
 
 #ifndef NO_SYSTEMTIME

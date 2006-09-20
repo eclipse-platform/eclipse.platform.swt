@@ -153,6 +153,7 @@
 #define NO_CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2
 #define NO_CreateFontIndirectA__I
 #define NO_CreatePolygonRgn
+#define NO_CreateProcessA
 #define NO_CreateStreamOnHGlobal
 #define NO_CreateWindowExA
 #define NO_DefFrameProcA
@@ -250,6 +251,8 @@
 #define NO_GetRandomRgn
 #define NO_GetROP2
 #define NO_GetSaveFileNameA
+#define NO_GetStartupInfoA
+#define NO_GetStartupInfoW
 #define NO_GetSystemDefaultUILanguage
 #define NO_GetTextCharset
 #define NO_GetTextExtentPoint32A

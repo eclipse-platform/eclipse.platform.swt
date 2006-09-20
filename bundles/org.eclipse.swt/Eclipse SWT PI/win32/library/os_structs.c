@@ -4432,6 +4432,46 @@ void setPRINTDLGFields(JNIEnv *env, jobject lpObject, PRINTDLG *lpStruct)
 }
 #endif
 
+#ifndef NO_PROCESS_INFORMATION
+typedef struct PROCESS_INFORMATION_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hProcess, hThread, dwProcessId, dwThreadId;
+} PROCESS_INFORMATION_FID_CACHE;
+
+PROCESS_INFORMATION_FID_CACHE PROCESS_INFORMATIONFc;
+
+void cachePROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject)
+{
+	if (PROCESS_INFORMATIONFc.cached) return;
+	PROCESS_INFORMATIONFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PROCESS_INFORMATIONFc.hProcess = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "hProcess", "I");
+	PROCESS_INFORMATIONFc.hThread = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "hThread", "I");
+	PROCESS_INFORMATIONFc.dwProcessId = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "dwProcessId", "I");
+	PROCESS_INFORMATIONFc.dwThreadId = (*env)->GetFieldID(env, PROCESS_INFORMATIONFc.clazz, "dwThreadId", "I");
+	PROCESS_INFORMATIONFc.cached = 1;
+}
+
+PROCESS_INFORMATION *getPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct)
+{
+	if (!PROCESS_INFORMATIONFc.cached) cachePROCESS_INFORMATIONFields(env, lpObject);
+	lpStruct->hProcess = (HANDLE)(*env)->GetIntField(env, lpObject, PROCESS_INFORMATIONFc.hProcess);
+	lpStruct->hThread = (HANDLE)(*env)->GetIntField(env, lpObject, PROCESS_INFORMATIONFc.hThread);
+	lpStruct->dwProcessId = (*env)->GetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwProcessId);
+	lpStruct->dwThreadId = (*env)->GetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwThreadId);
+	return lpStruct;
+}
+
+void setPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct)
+{
+	if (!PROCESS_INFORMATIONFc.cached) cachePROCESS_INFORMATIONFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.hProcess, (jint)lpStruct->hProcess);
+	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.hThread, (jint)lpStruct->hThread);
+	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwProcessId, (jint)lpStruct->dwProcessId);
+	(*env)->SetIntField(env, lpObject, PROCESS_INFORMATIONFc.dwThreadId, (jint)lpStruct->dwThreadId);
+}
+#endif
+
 #ifndef NO_REBARBANDINFO
 typedef struct REBARBANDINFO_FID_CACHE {
 	int cached;
@@ -5344,6 +5384,88 @@ void setSIZEFields(JNIEnv *env, jobject lpObject, SIZE *lpStruct)
 	if (!SIZEFc.cached) cacheSIZEFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, SIZEFc.cx, (jint)lpStruct->cx);
 	(*env)->SetIntField(env, lpObject, SIZEFc.cy, (jint)lpStruct->cy);
+}
+#endif
+
+#ifndef NO_STARTUPINFO
+typedef struct STARTUPINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cb, lpReserved, lpDesktop, lpTitle, dwX, dwY, dwXSize, dwYSize, dwXCountChars, dwYCountChars, dwFillAttribute, dwFlags, wShowWindow, cbReserved2, lpReserved2, hStdInput, hStdOutput, hStdError;
+} STARTUPINFO_FID_CACHE;
+
+STARTUPINFO_FID_CACHE STARTUPINFOFc;
+
+void cacheSTARTUPINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (STARTUPINFOFc.cached) return;
+	STARTUPINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	STARTUPINFOFc.cb = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "cb", "I");
+	STARTUPINFOFc.lpReserved = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "lpReserved", "I");
+	STARTUPINFOFc.lpDesktop = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "lpDesktop", "I");
+	STARTUPINFOFc.lpTitle = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "lpTitle", "I");
+	STARTUPINFOFc.dwX = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "dwX", "I");
+	STARTUPINFOFc.dwY = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "dwY", "I");
+	STARTUPINFOFc.dwXSize = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "dwXSize", "I");
+	STARTUPINFOFc.dwYSize = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "dwYSize", "I");
+	STARTUPINFOFc.dwXCountChars = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "dwXCountChars", "I");
+	STARTUPINFOFc.dwYCountChars = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "dwYCountChars", "I");
+	STARTUPINFOFc.dwFillAttribute = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "dwFillAttribute", "I");
+	STARTUPINFOFc.dwFlags = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "dwFlags", "I");
+	STARTUPINFOFc.wShowWindow = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "wShowWindow", "S");
+	STARTUPINFOFc.cbReserved2 = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "cbReserved2", "S");
+	STARTUPINFOFc.lpReserved2 = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "lpReserved2", "I");
+	STARTUPINFOFc.hStdInput = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "hStdInput", "I");
+	STARTUPINFOFc.hStdOutput = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "hStdOutput", "I");
+	STARTUPINFOFc.hStdError = (*env)->GetFieldID(env, STARTUPINFOFc.clazz, "hStdError", "I");
+	STARTUPINFOFc.cached = 1;
+}
+
+STARTUPINFO *getSTARTUPINFOFields(JNIEnv *env, jobject lpObject, STARTUPINFO *lpStruct)
+{
+	if (!STARTUPINFOFc.cached) cacheSTARTUPINFOFields(env, lpObject);
+	lpStruct->cb = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.cb);
+	lpStruct->lpReserved = (LPTSTR)(*env)->GetIntField(env, lpObject, STARTUPINFOFc.lpReserved);
+	lpStruct->lpDesktop = (LPTSTR)(*env)->GetIntField(env, lpObject, STARTUPINFOFc.lpDesktop);
+	lpStruct->lpTitle = (LPTSTR)(*env)->GetIntField(env, lpObject, STARTUPINFOFc.lpTitle);
+	lpStruct->dwX = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.dwX);
+	lpStruct->dwY = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.dwY);
+	lpStruct->dwXSize = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.dwXSize);
+	lpStruct->dwYSize = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.dwYSize);
+	lpStruct->dwXCountChars = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.dwXCountChars);
+	lpStruct->dwYCountChars = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.dwYCountChars);
+	lpStruct->dwFillAttribute = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.dwFillAttribute);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, STARTUPINFOFc.dwFlags);
+	lpStruct->wShowWindow = (*env)->GetShortField(env, lpObject, STARTUPINFOFc.wShowWindow);
+	lpStruct->cbReserved2 = (*env)->GetShortField(env, lpObject, STARTUPINFOFc.cbReserved2);
+	lpStruct->lpReserved2 = (LPBYTE)(*env)->GetIntField(env, lpObject, STARTUPINFOFc.lpReserved2);
+	lpStruct->hStdInput = (HANDLE)(*env)->GetIntField(env, lpObject, STARTUPINFOFc.hStdInput);
+	lpStruct->hStdOutput = (HANDLE)(*env)->GetIntField(env, lpObject, STARTUPINFOFc.hStdOutput);
+	lpStruct->hStdError = (HANDLE)(*env)->GetIntField(env, lpObject, STARTUPINFOFc.hStdError);
+	return lpStruct;
+}
+
+void setSTARTUPINFOFields(JNIEnv *env, jobject lpObject, STARTUPINFO *lpStruct)
+{
+	if (!STARTUPINFOFc.cached) cacheSTARTUPINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.cb, (jint)lpStruct->cb);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.lpReserved, (jint)lpStruct->lpReserved);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.lpDesktop, (jint)lpStruct->lpDesktop);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.lpTitle, (jint)lpStruct->lpTitle);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.dwX, (jint)lpStruct->dwX);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.dwY, (jint)lpStruct->dwY);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.dwXSize, (jint)lpStruct->dwXSize);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.dwYSize, (jint)lpStruct->dwYSize);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.dwXCountChars, (jint)lpStruct->dwXCountChars);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.dwYCountChars, (jint)lpStruct->dwYCountChars);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.dwFillAttribute, (jint)lpStruct->dwFillAttribute);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetShortField(env, lpObject, STARTUPINFOFc.wShowWindow, (jshort)lpStruct->wShowWindow);
+	(*env)->SetShortField(env, lpObject, STARTUPINFOFc.cbReserved2, (jshort)lpStruct->cbReserved2);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.lpReserved2, (jint)lpStruct->lpReserved2);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.hStdInput, (jint)lpStruct->hStdInput);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.hStdOutput, (jint)lpStruct->hStdOutput);
+	(*env)->SetIntField(env, lpObject, STARTUPINFOFc.hStdError, (jint)lpStruct->hStdError);
 }
 #endif
 

@@ -10,13 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.program;
 
- 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-
-import java.io.IOException;
 
 /**
  * Instances of this class represent programs and
@@ -27,6 +23,7 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
+	static final String [] ARGUMENTS = new String [] {"%1", "%l", "%L"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -249,27 +246,32 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	boolean quote = true;
+	int index = 0;
 	String prefix = command, suffix = ""; //$NON-NLS-1$
-	int index = command.indexOf ("%1"); //$NON-NLS-1$
-	if (index != -1) {
-		int count=0;
-		int i=index + 2, length = command.length ();
-		while (i < length) {
-			if (command.charAt (i) == '"') count++;
-			i++;
+	while (index < ARGUMENTS.length) {
+		int i = command.indexOf (ARGUMENTS [index]);
+		if (i != -1) {
+			prefix = command.substring (0, i);
+			suffix = command.substring (i + ARGUMENTS [index].length (), command.length ());
+			break;
 		}
-		quote = count % 2 == 0;
-		prefix = command.substring (0, index);
-		suffix = command.substring (index + 2, length);
+		index++;
 	}
-	if (quote) fileName = " \"" + fileName + "\""; //$NON-NLS-1$ //$NON-NLS-2$
-	try {
-		Compatibility.exec(prefix + fileName + suffix);
-	} catch (IOException e) {
-		return false;
-	}
-	return true;
+	String commandLine = prefix + fileName + suffix;
+	int hHeap = OS.GetProcessHeap ();
+	/* Use the character encoding for the default locale */
+	TCHAR buffer = new TCHAR (0, commandLine, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int lpCommandLine = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpCommandLine, buffer, byteCount);
+	STARTUPINFO lpStartupInfo = new STARTUPINFO ();
+	lpStartupInfo.cb = STARTUPINFO.sizeof;
+	PROCESS_INFORMATION lpProcessInformation = new PROCESS_INFORMATION ();
+	boolean success = OS.CreateProcess (0, lpCommandLine, 0, 0, false, 0, 0, 0, lpStartupInfo, lpProcessInformation);
+	if (lpCommandLine != 0) OS.HeapFree (hHeap, 0, lpCommandLine);
+	if (lpProcessInformation.hProcess != 0) OS.CloseHandle (lpProcessInformation.hProcess);
+	if (lpProcessInformation.hThread != 0) OS.CloseHandle (lpProcessInformation.hThread);
+	return success;
 }
 
 /**

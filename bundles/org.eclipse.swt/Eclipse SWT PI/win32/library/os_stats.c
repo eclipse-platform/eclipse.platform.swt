@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 701;
-int OS_nativeFunctionCallCount[701];
+int OS_nativeFunctionCount = 706;
+int OS_nativeFunctionCallCount[706];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -45,6 +45,7 @@ char * OS_nativeFunctionNames[] = {
 	"ChooseFontW",
 	"ClientToScreen",
 	"CloseClipboard",
+	"CloseHandle",
 	"CloseThemeData",
 	"CoCreateInstance",
 	"CombineRgn",
@@ -80,6 +81,8 @@ char * OS_nativeFunctionNames[] = {
 	"CreatePen",
 	"CreatePolygonRgn",
 	"CreatePopupMenu",
+	"CreateProcessA",
+	"CreateProcessW",
 	"CreateRectRgn",
 	"CreateSolidBrush",
 	"CreateStreamOnHGlobal",
@@ -265,6 +268,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetSaveFileNameA",
 	"GetSaveFileNameW",
 	"GetScrollInfo",
+	"GetStartupInfoA",
+	"GetStartupInfoW",
 	"GetStockObject",
 	"GetSysColor",
 	"GetSysColorBrush",
