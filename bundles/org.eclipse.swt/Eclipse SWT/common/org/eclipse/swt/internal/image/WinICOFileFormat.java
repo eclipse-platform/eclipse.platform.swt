@@ -131,6 +131,7 @@ ImageData loadIcon(int[] iconHeader) {
 	byte[] shapeData = bmpFormat.loadData(infoHeader);
 	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
 	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
+	if (height < 0) height = -height;
 	int depth = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	infoHeader[14] = 1;
 	infoHeader[15] = 0;
