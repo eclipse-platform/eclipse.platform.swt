@@ -37,20 +37,53 @@ public void addSelectionListener (SelectionListener listener) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 64, height = 64;
+	int width = 0, height = 0;
+	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		if ((style & SWT.CALENDAR) != 0) {
+			// TODO
+			width = 100;
+			height = 100;
+		} else {
+			// TODO: get the height of the current font
+			height = 20;
+			// TODO: max with the height of the up/down buttons
+			int upDownHeight = 24;
+			height = Math.max (height, upDownHeight);
+			
+			// TODO: determine the stringWidth of date or time string in current font (take code from GC)
+			String string = "00/00/0000";
+			if ((style & SWT.TIME) != 0) string = "00:00:00 AM";
+			GC gc = new GC(this);
+			width = gc.stringExtent(string).x;
+			gc.dispose();
+			// TODO: max with the height of the up/down buttons (maybe plus some margin?)
+			int upDownWidth = 20;
+			width += upDownWidth + 5; // MARGIN
+		}
+	}
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	int border = getBorderWidth ();
+	width += border * 2; height += border * 2;
 	return new Point (width, height);
 }
 
 void createHandle () {
 	int clockType = 0;
-	int clockFlags = OS.kControlClockFlagStandard;
 	if ((style & SWT.TIME) != 0) clockType = OS.kControlClockTypeHourMinuteSecond;
 	if ((style & SWT.DATE) != 0) clockType = OS.kControlClockTypeMonthDayYear;
-	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateClockControl(window, null, clockType, clockFlags, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
+	if (clockType != 0) { /* SWT.DATE and SWT.TIME */
+		int clockFlags = OS.kControlClockFlagStandard;
+		int [] outControl = new int [1];
+		int window = OS.GetControlOwner (parent.handle);
+		OS.CreateClockControl(window, null, clockType, clockFlags, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+	} else { /* SWT.CALENDAR */
+		// TODO: on Cocoa, can use NSDatePicker - otherwise, need to use emulated
+	}
 }
 
 void createWidget() {
