@@ -1246,6 +1246,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateWithFileSystemPath)
 }
 #endif
 
+#ifndef NO_CFURLCreateWithString
+JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateWithString)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateWithString_FUNC);
+	rc = (jint)CFURLCreateWithString((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFURLRef)arg2);
+	OS_NATIVE_EXIT(env, that, CFURLCreateWithString_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFURLGetFSRef
 JNIEXPORT jboolean JNICALL OS_NATIVE(CFURLGetFSRef)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
@@ -8772,60 +8784,37 @@ fail:
 }
 #endif
 
-#ifndef NO_LSOpenFSRef
-JNIEXPORT jint JNICALL OS_NATIVE(LSOpenFSRef)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+#ifndef NO_LSOpenCFURLRef
+JNIEXPORT jint JNICALL OS_NATIVE(LSOpenCFURLRef)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
 {
-	jbyte *lparg0=NULL;
-	jbyte *lparg1=NULL;
+	jint *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, LSOpenFSRef_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)LSOpenFSRef((const FSRef *)lparg0, (FSRef *)lparg1);
+	OS_NATIVE_ENTER(env, that, LSOpenCFURLRef_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)LSOpenCFURLRef((CFURLRef)arg0, (CFURLRef *)lparg1);
 fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, LSOpenFSRef_FUNC);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, LSOpenCFURLRef_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_LSOpenItemsWithRole
-JNIEXPORT jint JNICALL OS_NATIVE(LSOpenItemsWithRole)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jintArray arg5, jint arg6)
+#ifndef NO_LSOpenURLsWithRole
+JNIEXPORT jint JNICALL OS_NATIVE(LSOpenURLsWithRole)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jintArray arg4, jint arg5)
 {
-	jbyte *lparg0=NULL;
-	LSApplicationParameters _arg4, *lparg4=NULL;
-	jint *lparg5=NULL;
+	LSApplicationParameters _arg3, *lparg3=NULL;
+	jint *lparg4=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, LSOpenItemsWithRole_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = getLSApplicationParametersFields(env, arg4, &_arg4)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)LSOpenItemsWithRole((const FSRef *)lparg0, arg1, arg2, (const AEKeyDesc *)arg3, (const LSApplicationParameters *)lparg4, (ProcessSerialNumber *)lparg5, arg6);
-*/
-	{
-		static int initialized = 0;
-		static CFBundleRef bundle = NULL;
-		typedef jint (*FPTR)(const FSRef *, jint, jint, const AEKeyDesc *, const LSApplicationParameters *, ProcessSerialNumber *, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(LSOpenItemsWithRole_LIB));
-			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("LSOpenItemsWithRole"));
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)((const FSRef *)lparg0, arg1, arg2, (const AEKeyDesc *)arg3, (const LSApplicationParameters *)lparg4, (ProcessSerialNumber *)lparg5, arg6);
-		}
-	}
+	OS_NATIVE_ENTER(env, that, LSOpenURLsWithRole_FUNC);
+	if (arg3) if ((lparg3 = getLSApplicationParametersFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)LSOpenURLsWithRole((CFArrayRef)arg0, arg1, (const AEKeyDesc *)arg2, (const LSApplicationParameters *)lparg3, (ProcessSerialNumber *)lparg4, arg5);
 fail:
-	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
-	if (arg4 && lparg4) setLSApplicationParametersFields(env, arg4, lparg4);
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, LSOpenItemsWithRole_FUNC);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) setLSApplicationParametersFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, LSOpenURLsWithRole_FUNC);
 	return rc;
 }
 #endif
