@@ -543,6 +543,8 @@ typedef enum {
 	SHBrowseForFolderA_FUNC,
 	SHBrowseForFolderW_FUNC,
 	SHCreateMenuBar_FUNC,
+	SHGetFileInfoA_FUNC,
+	SHGetFileInfoW_FUNC,
 	SHGetMalloc_FUNC,
 	SHGetPathFromIDListA_FUNC,
 	SHGetPathFromIDListW_FUNC,

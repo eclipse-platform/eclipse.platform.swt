@@ -1163,6 +1163,18 @@ void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *
 #define SHELLEXECUTEINFO_sizeof() 0
 #endif
 
+#ifndef NO_SHFILEINFO
+void cacheSHFILEINFOFields(JNIEnv *env, jobject lpObject);
+SHFILEINFO *getSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct);
+void setSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct);
+#define SHFILEINFO_sizeof() sizeof(SHFILEINFO)
+#else
+#define cacheSHFILEINFOFields(a,b)
+#define getSHFILEINFOFields(a,b,c) NULL
+#define setSHFILEINFOFields(a,b,c)
+#define SHFILEINFO_sizeof() 0
+#endif
+
 #ifndef NO_SHMENUBARINFO
 void cacheSHMENUBARINFOFields(JNIEnv *env, jobject lpObject);
 SHMENUBARINFO *getSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct);

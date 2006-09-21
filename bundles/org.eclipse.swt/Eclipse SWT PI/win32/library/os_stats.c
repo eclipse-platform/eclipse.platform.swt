@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 706;
-int OS_nativeFunctionCallCount[706];
+int OS_nativeFunctionCount = 708;
+int OS_nativeFunctionCallCount[708];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -539,6 +539,8 @@ char * OS_nativeFunctionNames[] = {
 	"SHBrowseForFolderA",
 	"SHBrowseForFolderW",
 	"SHCreateMenuBar",
+	"SHGetFileInfoA",
+	"SHGetFileInfoW",
 	"SHGetMalloc",
 	"SHGetPathFromIDListA",
 	"SHGetPathFromIDListW",

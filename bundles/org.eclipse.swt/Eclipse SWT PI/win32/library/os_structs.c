@@ -5194,6 +5194,43 @@ void setSHELLEXECUTEINFOFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *
 }
 #endif
 
+#ifndef NO_SHFILEINFO
+typedef struct SHFILEINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hIcon, iIcon, dwAttributes;
+} SHFILEINFO_FID_CACHE;
+
+SHFILEINFO_FID_CACHE SHFILEINFOFc;
+
+void cacheSHFILEINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (SHFILEINFOFc.cached) return;
+	SHFILEINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SHFILEINFOFc.hIcon = (*env)->GetFieldID(env, SHFILEINFOFc.clazz, "hIcon", "I");
+	SHFILEINFOFc.iIcon = (*env)->GetFieldID(env, SHFILEINFOFc.clazz, "iIcon", "I");
+	SHFILEINFOFc.dwAttributes = (*env)->GetFieldID(env, SHFILEINFOFc.clazz, "dwAttributes", "I");
+	SHFILEINFOFc.cached = 1;
+}
+
+SHFILEINFO *getSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct)
+{
+	if (!SHFILEINFOFc.cached) cacheSHFILEINFOFields(env, lpObject);
+	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, SHFILEINFOFc.hIcon);
+	lpStruct->iIcon = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.iIcon);
+	lpStruct->dwAttributes = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.dwAttributes);
+	return lpStruct;
+}
+
+void setSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct)
+{
+	if (!SHFILEINFOFc.cached) cacheSHFILEINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.hIcon, (jint)lpStruct->hIcon);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.iIcon, (jint)lpStruct->iIcon);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.dwAttributes, (jint)lpStruct->dwAttributes);
+}
+#endif
+
 #ifndef NO_SHMENUBARINFO
 typedef struct SHMENUBARINFO_FID_CACHE {
 	int cached;

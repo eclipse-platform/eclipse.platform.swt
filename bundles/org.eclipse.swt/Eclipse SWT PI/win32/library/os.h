@@ -353,6 +353,7 @@
 #define NO_Shell_1NotifyIconA
 #define NO_SHBrowseForFolderA
 #define NO_SHBrowseForFolderW
+#define NO_SHGetFileInfoA
 #define NO_SHGetPathFromIDListA
 #define NO_SHGetPathFromIDListW
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2
@@ -456,6 +457,7 @@
 #define NOTIFYICONDATAW NOTIFYICONDATA
 #define Shell_NotifyIconW Shell_NotifyIcon
 #define ShellExecuteExW ShellExecuteEx
+#define SHGetFileInfoW SHGetFileInfo
 #define LPSHELLEXECUTEINFOW LPSHELLEXECUTEINFO
 #endif /* _WIN32_WCE */
 

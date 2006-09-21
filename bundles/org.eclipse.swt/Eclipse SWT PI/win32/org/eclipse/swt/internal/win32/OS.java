@@ -577,6 +577,7 @@ public class OS extends Platform {
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
 	public static final int FE_FONTSMOOTHINGCLEARTYPE = 0x0002;
+	public static final int FILE_ATTRIBUTE_NORMAL = 0x00000080; 
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
 	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
@@ -1254,6 +1255,9 @@ public class OS extends Platform {
 	public static final int SHCMBM_OVERRIDEKEY = 0x400 + 403;
 	public static final int SHCMBM_SETSUBMENU = 0x590;
 	public static final int SHCMBM_GETSUBMENU = 0x591;
+	public static final int SHGFI_ICON = 0x000000100;
+	public static final int SHGFI_SMALLICON= 0x1;
+	public static final int SHGFI_USEFILEATTRIBUTES = 0x000000010;
 	public static final int SHMBOF_NODEFAULT = 0x1;
 	public static final int SHMBOF_NOTIFY = 0x2;
 	public static final int SHRG_RETURNCMD = 0x1;
@@ -2715,6 +2719,15 @@ public static final boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo) {
 	return ShellExecuteExA (lpExecInfo);
 }
 
+public static int SHGetFileInfo (TCHAR pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags) {
+	if (IsUnicode) {
+		char [] pszPath1 = pszPath == null ? null : pszPath.chars;
+		return SHGetFileInfoW (pszPath1, dwFileAttributes, (SHFILEINFOW) psfi, cbFileInfo, uFlags);
+	}
+	byte [] pszPath1 = pszPath == null ? null : pszPath.bytes;
+	return SHGetFileInfoA (pszPath1, dwFileAttributes, (SHFILEINFOA) psfi, cbFileInfo, uFlags);
+}
+
 public static final boolean Shell_NotifyIcon (int dwMessage, NOTIFYICONDATA lpData) {
 	if (IsUnicode) return Shell_NotifyIconW (dwMessage, (NOTIFYICONDATAW)lpData);
 	return Shell_NotifyIconA (dwMessage, (NOTIFYICONDATAA)lpData);
@@ -3422,6 +3435,8 @@ public static final native boolean SetWorldTransform(int hdc, float[] lpXform);
 public static final native int SHBrowseForFolderW (BROWSEINFO lpbi);
 public static final native int SHBrowseForFolderA (BROWSEINFO lpbi);
 public static final native boolean SHCreateMenuBar(SHMENUBARINFO pmb);
+public static final native int SHGetFileInfoW (char [] pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags);
+public static final native int SHGetFileInfoA (byte [] pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags);
 public static final native boolean SHHandleWMSettingChange (int hwnd, int wParam, int lParam, SHACTIVATEINFO psai);
 public static final native int SHRecognizeGesture(SHRGINFO shrg);
 public static final native void SHSendBackToFocusWindow (int uMsg, int wp, int lp);
