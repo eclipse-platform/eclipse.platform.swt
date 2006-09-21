@@ -1321,6 +1321,7 @@ public class OS extends Platform {
 	public static final int SS_REALSIZEIMAGE = 0x800;
 	public static final int SS_RIGHT = 0x2;
 	public static final int STANDARD_RIGHTS_READ = 0x20000;
+	public static final int STARTF_USESHOWWINDOW = 0x1;
 	public static final int STD_COPY = 0x1;
 	public static final int STD_CUT = 0x0;
 	public static final int STD_FILENEW = 0x6;
