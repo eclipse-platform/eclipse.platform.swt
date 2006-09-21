@@ -1903,7 +1903,7 @@ LRESULT wmMouseLeave (int hwnd, int wParam, int lParam) {
 	pt.x = (short) (pos & 0xFFFF);
 	pt.y = (short) (pos >> 16); 
 	OS.ScreenToClient (hwnd, pt);
-	lParam = pt.x | (pt.y << 16);
+	lParam = (pt.x & 0xFFFF) | ((pt.y << 16) & 0xFFFF0000);
 	if (!sendMouseEvent (SWT.MouseExit, 0, hwnd, OS.WM_MOUSELEAVE, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
