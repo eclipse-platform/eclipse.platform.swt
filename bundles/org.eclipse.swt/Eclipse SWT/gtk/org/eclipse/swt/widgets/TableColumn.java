@@ -322,14 +322,16 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 	* There is no API to get a double click on a table column.  Normally, when
 	* the mouse is double clicked, this is indicated by GDK_2BUTTON_PRESS
 	* but the table column sends the click signal on button release.  The fix is to
-	* test for doublc click by remembering the last click time and mouse button
+	* test for double click by remembering the last click time and mouse button
 	* and testing for the double click interval.
 	*/
 	boolean doubleClick = false;
+	boolean postEvent = true;
 	int /*long*/ eventPtr = OS.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		GdkEventButton gdkEvent = new GdkEventButton ();
 		OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
+		OS.gdk_event_free (eventPtr);
 		switch (gdkEvent.type) {
 			case OS.GDK_BUTTON_RELEASE: {
 				int clickTime = display.getDoubleClickTime ();
@@ -339,11 +341,21 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 				}
 				lastTime = eventTime == 0 ? 1: eventTime;
 				lastButton = eventButton;
+				break;
+			}
+			case OS.GDK_MOTION_NOTIFY: {
+				/*
+				* Bug in GTK.  Dragging a column in a GtkTreeView causes a clicked 
+				* signal to be emitted even though the mouse button was never released.
+				* The fix to ignore the signal if the current GDK event is a motion notify.
+				* The GTK bug was fixed in version 2.6
+				*/
+				if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) postEvent = false;
+				break;
 			}
 		}
-		OS.gdk_event_free (eventPtr);
 	}
-	postEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
+	if (postEvent) postEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
 	return 0;
 }
 
