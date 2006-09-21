@@ -132,6 +132,16 @@ public class Display extends Device {
 		}
 	}
 	
+	/* Startup info */
+	static STARTUPINFO lpStartupInfo;
+	static {
+		if (!OS.IsWinCE) {
+			lpStartupInfo = new STARTUPINFO ();
+			lpStartupInfo.cb = STARTUPINFO.sizeof;
+			OS.GetStartupInfo (lpStartupInfo);
+		}
+	}
+	
 	/* Focus */
 	int focusEvent;
 	Control focusControl;
@@ -2999,6 +3009,7 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	lpStartupInfo = null;
 	drawMenuBars ();
 	runPopups ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {

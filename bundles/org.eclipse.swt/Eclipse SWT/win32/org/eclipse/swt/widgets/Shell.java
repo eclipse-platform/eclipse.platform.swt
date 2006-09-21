@@ -1019,8 +1019,11 @@ int hwndMDIClient () {
  */
 public void open () {
 	checkWidget ();
-	bringToTop ();
-	if (isDisposed ()) return;
+	STARTUPINFO lpStartUpInfo = Display.lpStartupInfo;
+	if (lpStartUpInfo == null || (lpStartUpInfo.dwFlags & OS.STARTF_USESHOWWINDOW) == 0) {
+		bringToTop ();
+		if (isDisposed ()) return;
+	}
 	/*
 	* Feature on WinCE PPC.  A new application becomes
 	* the foreground application only if it has at least

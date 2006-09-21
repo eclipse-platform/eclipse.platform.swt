@@ -1329,7 +1329,12 @@ public void setVisible (boolean visible) {
 					display.removeBar (menuBar);
 					OS.DrawMenuBar (handle);
 				}
-				OS.ShowWindow (handle, swFlags);
+				STARTUPINFO lpStartUpInfo = Display.lpStartupInfo;
+				if (lpStartUpInfo != null && (lpStartUpInfo.dwFlags & OS.STARTF_USESHOWWINDOW) != 0) {
+					OS.ShowWindow (handle, lpStartUpInfo.wShowWindow);
+				} else {
+					OS.ShowWindow (handle, swFlags);
+				}
 			}
 			if (isDisposed ()) return;
 			opened = true;
