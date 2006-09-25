@@ -621,6 +621,7 @@ public class OS extends Platform {
 	public static final int GW_HWNDPREV = 0x3;
 	public static final int GW_OWNER = 0x4;
 	public static final int HBMMENU_CALLBACK = 0xffffffff;
+	public static final int HCBT_CREATEWND = 3;
 	public static final int HCF_HIGHCONTRASTON = 0x1;
 	public static final int HDF_BITMAP = 0x2000;
 	public static final int HDF_BITMAP_ON_RIGHT = 0x1000;
@@ -1734,6 +1735,7 @@ public class OS extends Platform {
 	public static final String WC_TABCONTROL = "SysTabControl32"; //$NON-NLS-1$
 	public static final String WC_TREEVIEW = "SysTreeView32"; //$NON-NLS-1$
 	public static final int WINDING = 2;
+	public static final int WH_CBT = 5;
 	public static final int WH_GETMESSAGE = 0x3;
 	public static final int WH_MSGFILTER = 0xFFFFFFFF;
 	public static final int WH_FOREGROUNDIDLE = 11;

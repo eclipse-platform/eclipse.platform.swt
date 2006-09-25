@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -291,6 +292,19 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
+int CBTProc (int nCode, int wParam, int lParam) {
+	if (nCode == OS.HCBT_CREATEWND) {
+		TCHAR buffer = new TCHAR (0, 128);
+		OS.GetClassName (wParam, buffer, buffer.length ());
+		String className = buffer.toString (0, buffer.strlen ());
+		if (className.equals ("Edit") || className.equals ("EDIT")) { //$NON-NLS-1$  //$NON-NLS-2$
+			int bits = OS.GetWindowLong (wParam, OS.GWL_STYLE);
+			OS.SetWindowLong (wParam, OS.GWL_STYLE, bits & ~OS.ES_NOHIDESEL);
+		}
+	}
+	return 0;
+}
+
 boolean checkHandle (int hwnd) {
 	return hwnd == handle || hwnd == OS.GetDlgItem (handle, CBID_EDIT) || hwnd == OS.GetDlgItem (handle, CBID_LIST);
 }
@@ -446,7 +460,28 @@ public void copy () {
 }
 
 void createHandle () {
-	super.createHandle ();
+	/*
+	* Feature in Windows.  When the selection changes in a combo box,
+	* Windows draws the selection, even when the combo box does not
+	* have focus.  Strictly speaking, this is the correct Windows
+	* behavior because the combo box sets ES_NOHIDESEL on the text
+	* control that it creates.  Despite this, it looks strange because
+	* Windows also clears the selection and selects all the text when
+	* the combo box gets focus.  The fix is use the CBT hook to clear
+	* the ES_NOHIDESEL style bit when the text control is created.
+	*/
+	if (OS.IsWinCE || (style & (SWT.READ_ONLY | SWT.SIMPLE)) != 0) {
+		super.createHandle ();
+	} else {
+		int threadId = OS.GetCurrentThreadId ();
+		Callback cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
+		int cbtProc = cbtCallback.getAddress ();
+		if (cbtProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		int cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtProc, 0, threadId);
+		super.createHandle ();
+		if (cbtHook != 0) OS.UnhookWindowsHookEx (cbtHook);
+		cbtCallback.dispose ();
+	}
 	state &= ~(CANVAS | THEME_BACKGROUND);
 
 	/* Get the text and list window procs */
