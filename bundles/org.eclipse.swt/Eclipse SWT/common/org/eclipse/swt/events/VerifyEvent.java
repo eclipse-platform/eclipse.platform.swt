@@ -45,9 +45,6 @@ public final class VerifyEvent extends KeyEvent {
  */
 public VerifyEvent(Event e) {
 	super(e);
-	this.character = e.character;
-	this.keyCode = e.keyCode;
-	this.stateMask = e.stateMask;
 	this.start = e.start;
 	this.end = e.end;
 	this.text = e.text;
