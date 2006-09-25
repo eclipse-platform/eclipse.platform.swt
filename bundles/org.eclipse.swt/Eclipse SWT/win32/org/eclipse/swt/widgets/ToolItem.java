@@ -179,7 +179,7 @@ void click (boolean dropDown) {
 	* properly.
 	*/
 	int y = rect.top + (rect.bottom - rect.top) / 2;
-	int lParam = (dropDown ? rect.right - 1 : rect.left) | (y << 16);
+	int lParam = ((dropDown ? rect.right - 1 : rect.left) & 0xFFFF) | ((y << 16) & 0xFFFF0000);
 	parent.ignoreMouse = true;
 	OS.SendMessage (hwnd, OS.WM_LBUTTONDOWN, 0, lParam);
 	OS.SendMessage (hwnd, OS.WM_LBUTTONUP, 0, lParam);

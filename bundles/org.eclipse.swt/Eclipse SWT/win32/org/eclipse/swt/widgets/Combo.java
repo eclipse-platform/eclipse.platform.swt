@@ -1697,7 +1697,7 @@ public void setSelection (Point selection) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
 	}
-	int bits = start | (end << 16);
+	int bits = (start & 0xFFFF) | ((end << 16) & 0xFFFF0000);
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 }
 
@@ -2123,7 +2123,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (isDisposed ()) return result;
 		if (buffer != null) {
 			OS.SetWindowText (handle, buffer);
-			int bits = start [0] | (end [0] << 16);
+			int bits = (start [0] & 0xFFFF) | ((end [0] << 16) & 0xFFFF0000);
 			OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 			if (redraw) setRedraw (true);
 		}

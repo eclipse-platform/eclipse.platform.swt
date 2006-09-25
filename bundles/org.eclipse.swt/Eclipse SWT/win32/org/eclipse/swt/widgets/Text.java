@@ -420,7 +420,7 @@ boolean dragDetect (int x, int y) {
 		int [] start = new int [1], end = new int [1];
 		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 		if (start[0] < end[0]) {
-			int pt = x | y << 16;
+			int pt = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
 			int charFromPos = OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, pt);
 			int position = charFromPos & 0xFFFF;
 			return position > start [0] && position < end [0];
