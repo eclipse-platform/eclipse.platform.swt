@@ -125,7 +125,23 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AnimateWindow)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, AnimateWindow_FUNC);
+/*
 	rc = (jboolean)AnimateWindow((HWND)arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(AnimateWindow_LIB);
+			if (hm) fp = GetProcAddress(hm, "AnimateWindow");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HWND)arg0, arg1, arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, AnimateWindow_FUNC);
 	return rc;
 }

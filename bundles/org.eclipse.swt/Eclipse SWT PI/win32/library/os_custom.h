@@ -12,6 +12,7 @@
 /* Libraries for dynamic loaded functions */
 #define ActivateActCtx_LIB "kernel32.dll"
 #define AlphaBlend_LIB "msimg32.dll"
+#define AnimateWindow_LIB "user32.dll"
 #define CloseThemeData_LIB "uxtheme.dll"
 #define CreateActCtxW_LIB "kernel32.dll"
 #define CreateActCtxA_LIB "kernel32.dll"
