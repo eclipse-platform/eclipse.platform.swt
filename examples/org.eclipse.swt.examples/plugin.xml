@@ -164,7 +164,7 @@
          category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.examples.graphics.standalonelauncher">
       <program
-            mainClass="org.eclipse.swt.examples.graphics.AdvancedGraphics"
+            mainClass="org.eclipse.swt.examples.graphics.GraphicsExample"
             pluginId="org.eclipse.swt.examples"/>
    </item>
 </extension>

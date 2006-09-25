@@ -49,6 +49,13 @@ public class GraphicsExample {
 	static final int TIMER = 30;
 	static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("examples_graphics"); //$NON-NLS-1$
 
+/*
+ * Default constructor is needed so that example launcher can create an instance. 
+ */
+public GraphicsExample() {
+	super();
+}
+
 public GraphicsExample(final Composite parent) {
 	this.parent = parent;
 	resources = new ArrayList();
@@ -533,6 +540,19 @@ Image loadImage(Device device, String name) {
 	return image;
 }
 
+public Shell open(final Display display) {
+	Shell shell = new Shell(display);
+	shell.setText(getResourceString("AdvancedGraphics")); //$NON-NLS-1$
+	final GraphicsExample example = new GraphicsExample(shell);
+	shell.addListener(SWT.Close, new Listener() {
+		public void handleEvent(Event event) {
+			example.dispose();
+		}
+	});	
+	shell.open();
+	return shell;
+}
+
 /**
  * Redraws the current tab.
  */
@@ -618,17 +638,11 @@ void startAnimationTimer() {
 
 public static void main(String[] args) {
 	Display display = new Display();
-	Shell shell = new Shell(display);
-	shell.setText(getResourceString("SWTGraphics")); //$NON-NLS-1$
-	final GraphicsExample example = new GraphicsExample(shell);
-	shell.addListener(SWT.Close, new Listener() {
-		public void handleEvent(Event event) {
-			example.dispose();
-		}
-	});	
-	shell.open();
-	while (!shell.isDisposed()) {
-		if (!display.readAndDispatch()) display.sleep();
+	Shell shell = new GraphicsExample().open(display);
+	while (shell != null && !shell.isDisposed()) {
+		if (!display.readAndDispatch())
+			display.sleep();
 	}
+	display.dispose();
 }
 }
