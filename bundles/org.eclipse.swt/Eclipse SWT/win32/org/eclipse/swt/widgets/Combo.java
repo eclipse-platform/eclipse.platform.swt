@@ -55,7 +55,7 @@ import org.eclipse.swt.events.*;
 
 public class Combo extends Composite {
 	boolean noSelection, ignoreModify, ignoreCharacter;
-	int scrollWidth, visibleCount = 5;
+	int cbtHook, scrollWidth, visibleCount = 5;
 	
 	/**
 	 * the operating system limit for the number of characters
@@ -302,7 +302,7 @@ int CBTProc (int nCode, int wParam, int lParam) {
 			OS.SetWindowLong (wParam, OS.GWL_STYLE, bits & ~OS.ES_NOHIDESEL);
 		}
 	}
-	return 0;
+	return OS.CallNextHookEx (cbtHook, nCode, wParam, lParam);
 }
 
 boolean checkHandle (int hwnd) {
@@ -477,9 +477,10 @@ void createHandle () {
 		Callback cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
 		int cbtProc = cbtCallback.getAddress ();
 		if (cbtProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		int cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtProc, 0, threadId);
+		cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtProc, 0, threadId);
 		super.createHandle ();
 		if (cbtHook != 0) OS.UnhookWindowsHookEx (cbtHook);
+		cbtHook = 0;
 		cbtCallback.dispose ();
 	}
 	state &= ~(CANVAS | THEME_BACKGROUND);
