@@ -1123,9 +1123,7 @@ public void setFont (Font font) {
 
 /**
  * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument. This is equivalent
- * to <code>remove</code>'ing the old item at the index, and then
- * <code>add</code>'ing the new item at that index.
+ * zero-relative index to the string argument.
  *
  * @param index the index for the item
  * @param string the new text for the item
