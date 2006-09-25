@@ -991,6 +991,10 @@ void register () {
  */
 public void remove (int index) {
 	checkWidget ();
+	remove (index, true);
+}
+
+void remove (int index, boolean notify) {
 	TCHAR buffer = null;
 	if ((style & SWT.H_SCROLL) != 0) {
 		int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
@@ -1015,7 +1019,7 @@ public void remove (int index) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	if ((style & SWT.H_SCROLL) != 0) setScrollWidth (buffer, true);
-	if (length != OS.GetWindowTextLength (handle)) {
+	if (notify && length != OS.GetWindowTextLength (handle)) {
 		sendEvent (SWT.Modify);
 		if (isDisposed ()) return;
 	}
@@ -1409,9 +1413,7 @@ void setForegroundPixel (int pixel) {
 
 /**
  * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument. This is equivalent
- * to removing the old item at the index, and then adding the new
- * item at that index.
+ * zero-relative index to the string argument.
  *
  * @param index the index for the item
  * @param string the new text for the item
@@ -1428,13 +1430,11 @@ void setForegroundPixel (int pixel) {
 public void setItem (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
-	remove (index);
+	int selection = getSelectionIndex ();
+	remove (index, false);
 	if (isDisposed ()) return;
 	add (string, index);
-	if (selection != -1) {
-		OS.SendMessage (handle, OS.CB_SETCURSEL, selection, 0);
-	}
+	if (selection != -1) select (selection);
 }
 
 /**
