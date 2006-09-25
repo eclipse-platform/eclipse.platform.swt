@@ -2284,14 +2284,21 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 		/* When a keypad key is typed, a WM_SYSCHAR is not issued */
 		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
 			/*
-			* Feature in Windows.  Calling to ToAscii() or ToUnicode(), clears
-			* the accented state such that the next WM_CHAR loses the accent.
-			* This makes is critical that the accent key is detected.  Also,
-			* these functions clear the character that is entered using the
-			* special Windows keypad sequence when NumLock is down (ie. typing 
-			* ALT+0231 should gives 'c' with a cedilla when NumLock is down).
+			* A WM_SYSCHAR will be issued for '*', '+', '-', '.' and '/'
+			* on the numeric keypad.  Avoid issuing the key event twice
+			* by checking for these keys.  Note that calling to ToAscii()
+			* or ToUnicode(), clear the character that is entered using
+			* the special Windows keypad sequence when NumLock is down
+			* (ie. typing ALT+0231 should gives 'c' with a cedilla when
+			* NumLock is down).  Do not call either of these from here.
 			*/
-			if (display.asciiKey (display.lastKey) != 0) return null;
+			switch (display.lastKey) {
+				case OS.VK_MULTIPLY:
+				case OS.VK_ADD:
+				case OS.VK_SUBTRACT:
+				case OS.VK_DECIMAL:
+				case OS.VK_DIVIDE: return null;
+			}
 			display.lastAscii = display.numpadKey (display.lastKey);
 		}
 	} else {
