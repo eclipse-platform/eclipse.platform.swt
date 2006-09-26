@@ -35,7 +35,6 @@ import org.eclipse.swt.events.*;
  */
 
 public class List extends Scrollable {
-	static final int INSET = 3;
 	static final int ListProc;
 	static final TCHAR ListClass = new TCHAR (0, "LISTBOX", true);
 	static {
@@ -188,7 +187,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT) {
 		if ((style & SWT.H_SCROLL) != 0) {
 			width = OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0);
-			width -= INSET;
 		} else {
 			int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 			int newFont, oldFont = 0;
@@ -226,7 +224,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int border = getBorderWidth ();
-	width += border * 2 + INSET;
+	width += border * 2 + 3;
 	height += border * 2;
 	if ((style & SWT.V_SCROLL) != 0) {
 		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
@@ -1125,7 +1123,9 @@ public void setFont (Font font) {
 
 /**
  * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument.
+ * zero-relative index to the string argument. This is equivalent
+ * to <code>remove</code>'ing the old item at the index, and then
+ * <code>add</code>'ing the new item at that index.
  *
  * @param index the index for the item
  * @param string the new text for the item
@@ -1205,7 +1205,7 @@ public void setItems (String [] items) {
 	if ((style & SWT.H_SCROLL) != 0) {
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
-		OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, newWidth + INSET, 0);
+		OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, newWidth + 3, 0);
 	}
 	if (redraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
@@ -1247,7 +1247,7 @@ void setScrollWidth () {
 	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, newWidth + INSET, 0);
+	OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, newWidth + 3, 0);
 }
 
 void setScrollWidth (TCHAR buffer, boolean grow) {
@@ -1264,11 +1264,10 @@ void setScrollWidth (TCHAR buffer, boolean grow) {
 }
 
 void setScrollWidth (int newWidth, boolean grow) {
-	newWidth += INSET;
 	int width = OS.SendMessage (handle, OS.LB_GETHORIZONTALEXTENT, 0, 0);
 	if (grow) {
 		if (newWidth <= width) return;
-		OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, newWidth, 0);
+		OS.SendMessage (handle, OS.LB_SETHORIZONTALEXTENT, newWidth + 3, 0);
 	} else {
 		if (newWidth < width) return;
 		setScrollWidth ();
