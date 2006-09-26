@@ -86,7 +86,7 @@ public class TabFolder extends Composite {
 		OS.MoveMemory (lpszClassName, TabFolderClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
-//		OS.HeapFree (hHeap, 0, lpszClassName);	
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 
 /**

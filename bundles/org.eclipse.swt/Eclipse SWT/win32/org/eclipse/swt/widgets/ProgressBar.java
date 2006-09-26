@@ -69,7 +69,7 @@ public class ProgressBar extends Control {
 		OS.MoveMemory (lpszClassName, ProgressBarClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
-//		OS.HeapFree (hHeap, 0, lpszClassName);	
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 
 /**

@@ -70,7 +70,7 @@ public class Scale extends Control {
 		OS.MoveMemory (lpszClassName, TrackBarClass, byteCount);
 		lpWndClass.lpszClassName = lpszClassName;
 		OS.RegisterClass (lpWndClass);
-//		OS.HeapFree (hHeap, 0, lpszClassName);	
+		OS.HeapFree (hHeap, 0, lpszClassName);
 	}
 
 /**

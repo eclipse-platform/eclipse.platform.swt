@@ -72,7 +72,7 @@ public class Group extends Composite {
 				OS.MoveMemory (lpszClassName, GroupClass, byteCount);
 				lpWndClass.lpszClassName = lpszClassName;
 				OS.RegisterClass (lpWndClass);
-//				OS.HeapFree (hHeap, 0, lpszClassName);
+				OS.HeapFree (hHeap, 0, lpszClassName);
 			}
 		}
 	}
