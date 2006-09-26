@@ -720,8 +720,10 @@ public Image (Device device, String filename) {
 				}
 			}
 			Gdip.Bitmap_delete(bitmap);
-			if (this.handle == 0) SWT.error(error);
-			return;
+			if (status == 0) {
+				if (this.handle == 0) SWT.error(error);
+				return;
+			}
 		}
 	} catch (SWTException e) {}
 	init(device, new ImageData(filename));
