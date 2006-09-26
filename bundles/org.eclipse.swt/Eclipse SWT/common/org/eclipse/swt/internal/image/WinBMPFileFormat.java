@@ -211,7 +211,7 @@ int decompressRLE4Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 					y++;
 					x = 0;
 					dp = y * stride;
-					if (dp >= de)
+					if (dp > de)
 						return -1;
 					break;
 				case 1: /* end of bitmap */
@@ -222,7 +222,7 @@ int decompressRLE4Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 					y += src[sp] & 0xFF;
 					sp++;
 					dp = y * stride + x / 2;
-					if (dp >= de)
+					if (dp > de)
 						return -1;
 					break;
 				default: /* absolute mode run */
@@ -288,7 +288,7 @@ int decompressRLE8Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 					y += src[sp] & 0xFF;
 					sp++;
 					dp = y * stride + x;
-					if (dp >= de)
+					if (dp > de)
 						return -1;
 					break;
 				default: /* absolute mode run */
