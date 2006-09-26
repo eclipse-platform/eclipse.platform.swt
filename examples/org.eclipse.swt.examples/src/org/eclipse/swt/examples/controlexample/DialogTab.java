@@ -146,7 +146,14 @@ class DialogTab extends Tab {
 			dialog.setText (ControlExample.getResourceString("Title"));
 			String result = dialog.open();
 			textWidget.append (ControlExample.getResourceString("FileDialog") + Text.DELIMITER);
-			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (ControlExample.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER);
+			if ((dialog.getStyle () & SWT.MULTI) != 0) {
+				String [] files = dialog.getFileNames ();
+				for (int i=0; i<files.length; i++) {
+					textWidget.append ("\t" + files [i] + Text.DELIMITER);
+				}
+			}
+			textWidget.append (Text.DELIMITER);
 			return;
 		}
 		
