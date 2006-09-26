@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
@@ -138,6 +139,34 @@ public String getFilterPath () {
 	return filterPath;
 }
 
+int OFNHookProc (int hdlg, int uiMsg, int wParam, int lParam) {
+	switch (uiMsg) {
+		case OS.WM_NOTIFY:
+			OFNOTIFY ofn = new OFNOTIFY ();
+			OS.MoveMemory (ofn, lParam, OFNOTIFY.sizeof);
+			if (ofn.code == OS.CDN_SELCHANGE) {
+				int lResult = OS.SendMessage (ofn.hwndFrom, OS.CDM_GETSPEC, 0, 0);
+				if (lResult > 0) {
+					lResult += OS.MAX_PATH;
+					OPENFILENAME lpofn = new OPENFILENAME ();
+					OS.MoveMemory (lpofn, ofn.lpOFN, OPENFILENAME.sizeof);
+					if (lpofn.nMaxFile < lResult) {
+						int hHeap = OS.GetProcessHeap ();
+						int lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, lResult * TCHAR.sizeof);
+						if (lpstrFile != 0) {
+							if (lpofn.lpstrFile != 0) OS.HeapFree (hHeap, 0, lpofn.lpstrFile);
+							lpofn.lpstrFile = lpstrFile;
+							lpofn.nMaxFile = lResult;
+							OS.MoveMemory (ofn.lpOFN, lpofn, OPENFILENAME.sizeof);
+						}
+					}
+			  }
+		  }
+		  break;
+	}
+	return 0;
+}
+
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -215,8 +244,16 @@ public String open () {
 	OPENFILENAME struct = new OPENFILENAME ();
 	struct.lStructSize = OPENFILENAME.sizeof;
 	struct.Flags = OS.OFN_HIDEREADONLY | OS.OFN_NOCHANGEDIR;
+	Callback callback = null;
 	if ((style & SWT.MULTI) != 0) {
 		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER;
+		if (!OS.IsWinCE) {
+			callback = new Callback (this, "OFNHookProc", 4); //$NON-NLS-1$
+			int lpfnHook = callback.getAddress ();
+			if (lpfnHook == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			struct.lpfnHook = lpfnHook;
+			struct.Flags |= OS.OFN_ENABLEHOOK;
+		}
 	}
 	struct.hwndOwner = hwndOwner;
 	struct.lpstrTitle = lpstrTitle;
@@ -276,7 +313,11 @@ public String open () {
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		display.setModalDialogShell (oldModal);
 	}
-	
+
+	/* Dispose the callback and reassign the buffer */
+	if (callback != null) callback.dispose ();
+	lpstrFile = struct.lpstrFile;
+
 	/* Set the new path, file name and filter */
 	fileNames = new String [0];
 	String fullPath = null;
