@@ -122,6 +122,10 @@ public int getYear () {
 	return dateRec.year;
 }
 
+int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
+	// TODO: Tiger (10.4) and up only: kEventClassClockView / kEventClockDateOrTimeChanged
+}
+
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
