@@ -2266,7 +2266,7 @@ protected void init () {
 	OS.RegisterClass (lpWndClass);
 
 	/* Register the SWT drop shadow window class */
-	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) lpWndClass.style |= OS.CS_DROPSHADOW;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) lpWndClass.style |= OS.CS_DROPSHADOW;
 	byteCount = windowShadowClass.length () * TCHAR.sizeof;
 	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
@@ -3122,12 +3122,12 @@ void releaseDisplay () {
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
 	WNDCLASS lpWndClass = new WNDCLASS ();
-	OS.GetClassInfo (0, windowClass, lpWndClass);
+	OS.GetClassInfo (hInstance, windowClass, lpWndClass);
 	OS.UnregisterClass (windowClass, hInstance);
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
 	
 	/* Unregister the SWT drop shadow window class */
-	OS.GetClassInfo (0, windowShadowClass, lpWndClass);
+	OS.GetClassInfo (hInstance, windowShadowClass, lpWndClass);
 	OS.UnregisterClass (windowShadowClass, hInstance);
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
 	windowClass = windowShadowClass = null;
