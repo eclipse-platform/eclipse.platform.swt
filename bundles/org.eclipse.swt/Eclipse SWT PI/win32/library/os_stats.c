@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 708;
-int OS_nativeFunctionCallCount[708];
+int OS_nativeFunctionCount = 711;
+int OS_nativeFunctionCallCount[711];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -424,6 +424,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVDISPINFO_2I",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_OPENFILENAME_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_UDACCEL_2I",
@@ -464,6 +465,8 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVDISPINFO_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVITEMCHANGE_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMUPDOWN_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_OFNOTIFY_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_OPENFILENAME_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II",

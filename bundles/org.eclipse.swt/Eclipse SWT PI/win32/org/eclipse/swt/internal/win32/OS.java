@@ -373,6 +373,10 @@ public class OS extends Platform {
 	public static final int CDIS_HOT = 0x0040;
 	public static final int CDIS_MARKED = 0x0080;
 	public static final int CDIS_INDETERMINATE = 0x0100;
+	public static final int CDM_FIRST = 0x0400 + 100;
+	public static final int CDM_GETSPEC = CDM_FIRST;
+	public static final int CDN_FIRST = -601;
+	public static final int CDN_SELCHANGE = CDN_FIRST - 1;
 	public static final int CDRF_DODEFAULT = 0x00000000;
 	public static final int CDRF_NEWFONT = 0x00000002;
 	public static final int CDRF_NOTIFYITEMDRAW = 0x00000020;
@@ -1064,6 +1068,7 @@ public class OS extends Platform {
 	public static final int ODT_MENU = 0x1;
 	public static final int OFN_ALLOWMULTISELECT = 0x200;
 	public static final int OFN_EXPLORER = 0x80000;
+	public static final int OFN_ENABLEHOOK = 0x20;
 	public static final int OFN_HIDEREADONLY = 0x4;
 	public static final int OFN_NOCHANGEDIR = 0x8;
 	public static final int OIC_BANG = 0x7F03;
@@ -1078,7 +1083,7 @@ public class OS extends Platform {
 	public static final int PBM_GETRANGE = 0x407;
 	public static final int PBM_SETBARCOLOR = 0x409;
 	public static final int PBM_SETBKCOLOR = 0x2001;
-	public static final int PBM_SETMARQUEE = OS.WM_USER + 10;
+	public static final int PBM_SETMARQUEE = 0x400 + 10;
 	public static final int PBM_SETPOS = 0x402;
 	public static final int PBM_SETRANGE32 = 0x406;
 	public static final int PBM_STEPIT = 0x405;
@@ -3199,6 +3204,7 @@ public static final native void MoveMemory (int Destination, MSG Source, int Len
 public static final native void MoveMemory (int Destination, UDACCEL Source, int Length);
 public static final native void MoveMemory (int Destination, NMTTDISPINFOW Source, int Length);
 public static final native void MoveMemory (int Destination, NMTTDISPINFOA Source, int Length);
+public static final native void MoveMemory (int Destination, OPENFILENAME Source, int Length);
 public static final native void MoveMemory (int Destination, RECT Source, int Length);
 public static final native void MoveMemory (int Destination, TRIVERTEX Source, int Length);
 public static final native void MoveMemory (int Destination, WINDOWPOS Source, int Length);
@@ -3211,6 +3217,8 @@ public static final native void MoveMemory (LOGFONTW Destination, int Source, in
 public static final native void MoveMemory (LOGFONTA Destination, int Source, int Length);
 public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (MINMAXINFO Destination, int Source, int Length);
+public static final native void MoveMemory (OFNOTIFY Destination, int Source, int Length);
+public static final native void MoveMemory (OPENFILENAME Destination, int Source, int Length);
 public static final native void MoveMemory (POINT Destination, int Source, int Length);
 public static final native void MoveMemory (NMHDR Destination, int Source, int Length);
 public static final native void MoveMemory (NMRGINFO Destination, int Source, int Length);

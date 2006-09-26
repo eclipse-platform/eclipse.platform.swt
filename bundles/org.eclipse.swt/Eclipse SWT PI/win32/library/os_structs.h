@@ -911,6 +911,18 @@ void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lp
 #define NOTIFYICONDATAW_sizeof() 0
 #endif
 
+#ifndef NO_OFNOTIFY
+void cacheOFNOTIFYFields(JNIEnv *env, jobject lpObject);
+OFNOTIFY *getOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct);
+void setOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct);
+#define OFNOTIFY_sizeof() sizeof(OFNOTIFY)
+#else
+#define cacheOFNOTIFYFields(a,b)
+#define getOFNOTIFYFields(a,b,c) NULL
+#define setOFNOTIFYFields(a,b,c)
+#define OFNOTIFY_sizeof() 0
+#endif
+
 #ifndef NO_OPENFILENAME
 void cacheOPENFILENAMEFields(JNIEnv *env, jobject lpObject);
 OPENFILENAME *getOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct);

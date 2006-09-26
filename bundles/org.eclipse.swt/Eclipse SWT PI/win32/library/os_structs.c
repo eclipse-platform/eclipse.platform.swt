@@ -4025,6 +4025,43 @@ void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lp
 }
 #endif
 
+#ifndef NO_OFNOTIFY
+typedef struct OFNOTIFY_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID lpOFN, pszFile;
+} OFNOTIFY_FID_CACHE;
+
+OFNOTIFY_FID_CACHE OFNOTIFYFc;
+
+void cacheOFNOTIFYFields(JNIEnv *env, jobject lpObject)
+{
+	if (OFNOTIFYFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	OFNOTIFYFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	OFNOTIFYFc.lpOFN = (*env)->GetFieldID(env, OFNOTIFYFc.clazz, "lpOFN", "I");
+	OFNOTIFYFc.pszFile = (*env)->GetFieldID(env, OFNOTIFYFc.clazz, "pszFile", "I");
+	OFNOTIFYFc.cached = 1;
+}
+
+OFNOTIFY *getOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct)
+{
+	if (!OFNOTIFYFc.cached) cacheOFNOTIFYFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->lpOFN = (LPOPENFILENAME)(*env)->GetIntField(env, lpObject, OFNOTIFYFc.lpOFN);
+	lpStruct->pszFile = (LPTSTR)(*env)->GetIntField(env, lpObject, OFNOTIFYFc.pszFile);
+	return lpStruct;
+}
+
+void setOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct)
+{
+	if (!OFNOTIFYFc.cached) cacheOFNOTIFYFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, OFNOTIFYFc.lpOFN, (jint)lpStruct->lpOFN);
+	(*env)->SetIntField(env, lpObject, OFNOTIFYFc.pszFile, (jint)lpStruct->pszFile);
+}
+#endif
+
 #ifndef NO_OPENFILENAME
 typedef struct OPENFILENAME_FID_CACHE {
 	int cached;
