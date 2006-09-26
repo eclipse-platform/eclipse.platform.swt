@@ -175,8 +175,8 @@ public String open () {
 
 	/* Create the BrowseCallbackProc */
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
-	int address = callback.getAddress ();
-	if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	int lpfn = callback.getAddress ();
+	if (lpfn == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Make the parent shell be temporary modal */
 	Shell oldModal = null;
@@ -191,7 +191,7 @@ public String open () {
 	lpbi.hwndOwner = hwndOwner;
 	lpbi.lpszTitle = lpszTitle;
 	lpbi.ulFlags = OS.BIF_NEWDIALOGSTYLE | OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
-	lpbi.lpfn = address;
+	lpbi.lpfn = lpfn;
 	/*
 	* Bug in Windows.  On some hardware configurations, SHBrowseForFolder()
 	* causes warning dialogs with the message "There is no disk in the drive
