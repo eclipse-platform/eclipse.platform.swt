@@ -124,6 +124,7 @@ public int getYear () {
 
 int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
 	// TODO: Tiger (10.4) and up only: kEventClassClockView / kEventClockDateOrTimeChanged
+	return OS.noErr;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
