@@ -798,10 +798,10 @@ public boolean forceFocus () {
 	* focus events to happen.  The fix is to ignore focus events and issue them only
 	* if the focus control changed.
 	*/
-	Control oldFocus = display.getFocusControl ();
-	display.ignoreFocus = true;
 	int focusHandle = focusHandle ();
 	int window = OS.GetControlOwner (focusHandle);
+	Control oldFocus = display.getFocusControl (window, true);
+	display.ignoreFocus = true;
 	OS.SetKeyboardFocus (window, focusHandle, (short) OS.kControlFocusNextPart);
 	display.ignoreFocus = false;
 	Control newFocus = display.getFocusControl ();

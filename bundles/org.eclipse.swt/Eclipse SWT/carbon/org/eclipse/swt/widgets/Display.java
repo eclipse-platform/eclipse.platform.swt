@@ -1517,10 +1517,10 @@ public Control getFocusControl () {
 	}
 	int theWindow = OS.GetUserFocusWindow ();
 	if (theWindow == 0) return null;
-	return getFocusControl (theWindow);
+	return getFocusControl (theWindow, false);
 }
 
-Control getFocusControl (int window) {
+Control getFocusControl (int window, boolean disabled) {
 	int [] theControl = new int [1];
 	OS.GetKeyboardFocus (window, theControl);
 	if (theControl [0] == 0) return null;
@@ -1528,6 +1528,7 @@ Control getFocusControl (int window) {
 		Widget widget = getWidget (theControl [0]);
 		if (widget != null && widget instanceof Control) {
 			Control control = (Control) widget;
+			if (disabled) return control;
 			return control.isEnabled () ? control : null;
 		}
 		OS.GetSuperControl (theControl [0], theControl);

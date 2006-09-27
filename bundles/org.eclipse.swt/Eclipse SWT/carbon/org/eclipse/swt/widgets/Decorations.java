@@ -390,7 +390,7 @@ boolean restoreFocus () {
 
 void saveFocus () {
 	int window = OS.GetControlOwner (handle);
-	Control control = display.getFocusControl (window);
+	Control control = display.getFocusControl (window, false);
 	if (control != null && control != this && this == control.menuShell ()) {
 		setSavedFocus (control);
 	}
