@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
-public class DateTime extends Canvas {
+/*public*/ class DateTime extends Composite {
 	Color foreground, background;
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
