@@ -18,8 +18,8 @@ import org.eclipse.swt.widgets.Event;
  * keys being pressed and released on the keyboard.
  * <p>
  * When a key listener is added to a control, the control
- * is expected to take part in widget traversal.  By default,
- * all traversal keys (such as the tab key and so on) are
+ * will take part in widget traversal.  By default, all
+ * traversal keys (such as the tab key and so on) are
  * delivered to the control.  In order for a control to take
  * part in traversal, it should listen for traversal events.
  * Otherwise, the user can traverse into a control but not
