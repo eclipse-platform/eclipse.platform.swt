@@ -122,23 +122,20 @@ public int getYear () {
 	return dateRec.year;
 }
 
+void hookEvents () {
+	super.hookEvents ();
+	int clockProc = display.clockProc;
+	int [] mask = new int [] {
+		OS.kEventClassClockView, OS.kEventClockDateOrTimeChanged,
+	};
+	int controlTarget = OS.GetControlEventTarget (handle);
+	OS.InstallEventHandler (controlTarget, clockProc, mask.length / 2, mask, handle, null);
+}
+
 int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
 	// TODO: Tiger (10.4) and up only: kEventClassClockView / kEventClockDateOrTimeChanged
+	sendSelectionEvent ();
 	return OS.noErr;
-}
-
-int kEventControlHit (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlHit (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	sendSelectionEvent ();
-	return result;
-}
-
-int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	sendSelectionEvent ();
-	return result;
 }
 
 void releaseWidget () {
