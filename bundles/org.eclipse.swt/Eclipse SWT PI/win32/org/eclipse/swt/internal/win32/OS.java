@@ -985,6 +985,7 @@ public class OS extends Platform {
 	public static final int MIIM_STATE = 0x1;
 	public static final int MIIM_SUBMENU = 0x4;
 	public static final int MIIM_TYPE = 0x10;
+	public static final int MIM_BACKGROUND = 0x2;
 	public static final int MIM_STYLE = 0x10;
 	public static final int MK_CONTROL = 0x8;
 	public static final int MK_LBUTTON = 0x1;
@@ -3336,7 +3337,7 @@ public static final native int ScriptShape(int hdc, int psc, char[] pwcChars, in
 public static final native int ScriptTextOut(int hdc, int psc, int x, int y, int fuOptions, RECT lprc, SCRIPT_ANALYSIS psa, int pwcReserved, int iReserved, int pwGlyphs, int cGlyphs, int piAdvance, int piJustify, int pGoffset);
 public static final native int ScriptXtoCP(int iX, int cChars, int cGlyphs, int pwLogClust, int psva, int piAdvance, SCRIPT_ANALYSIS psa, int[] piCP, int[] piTrailing);
 public static final native int ScrollWindowEx (int hWnd, int dx, int dy, RECT prcScroll, RECT prcClip, int hrgnUpdate, RECT prcUpdate, int flags);
-public static final native  int SelectClipRgn (int hdc, int hrgn);
+public static final native int SelectClipRgn (int hdc, int hrgn);
 public static final native int SelectObject(int hDC, int HGDIObj);
 public static final native int SelectPalette(int hDC, int hpal, boolean bForceBackground);
 public static final native int SendInput (int nInputs, int pInputs, int cbSize);
@@ -3487,7 +3488,8 @@ public static final native boolean TranslateCharsetInfo(int lpSrc, int [] lpCs, 
 public static final native boolean TranslateMDISysAccel (int hWndClient, MSG lpMsg);
 public static final native boolean TranslateMessage (MSG lpmsg);
 public static final native boolean TransparentBlt(int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int hHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int crTransparent);
-public static final native boolean TransparentImage (int hdcDest, int DstX, int DstY, int DstCx, int DstCy,int hSrc, int SrcX, int SrcY, int SrcCx, int SrcCy, int TransparentColor);public static final native boolean UnhookWindowsHookEx(int hhk);
+public static final native boolean TransparentImage (int hdcDest, int DstX, int DstY, int DstCx, int DstCy,int hSrc, int SrcX, int SrcY, int SrcCx, int SrcCy, int TransparentColor);
+public static final native boolean UnhookWindowsHookEx (int hhk);
 public static final native boolean UnregisterClassW (char [] lpClassName, int hInstance);
 public static final native boolean UnregisterClassA (byte [] lpClassName, int hInstance);
 public static final native boolean UpdateWindow (int hWnd);
