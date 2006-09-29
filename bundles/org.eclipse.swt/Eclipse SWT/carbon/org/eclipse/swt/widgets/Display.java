@@ -106,11 +106,11 @@ public class Display extends Device {
 	static final int WAKE_CLASS = 'S' << 24 | 'W' << 16 | 'T' << 8 | '-';
 	static final int WAKE_KIND = 1;
 	Event [] eventQueue;
-	Callback actionCallback, appleEventCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
+	Callback actionCallback, appleEventCallback, clockCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, trayItemCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, pollingCallback;
 	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback;
-	int actionProc, appleEventProc, commandProc, controlProc, appearanceProc, accessibilityProc;
+	int actionProc, appleEventProc, clockProc, commandProc, controlProc, appearanceProc, accessibilityProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, trayItemProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, pollingProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
@@ -832,6 +832,12 @@ Rect computeInset (int control) {
 	rect.right = (short) (rgnRect.right - rect.right);
 	rect.bottom = (short) (rgnRect.bottom - rect.bottom);
 	return rect; 
+}
+
+int clockProc (int nextHandler, int theEvent, int userData) {
+	Widget widget = getWidget (userData);
+	if (widget != null) return widget.clockProc (nextHandler, theEvent, userData);
+	return OS.eventNotHandledErr;
 }
 
 int controlProc (int nextHandler, int theEvent, int userData) {
@@ -2007,6 +2013,9 @@ void initializeCallbacks () {
 	caretCallback = new Callback(this, "caretProc", 2);
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	clockCallback = new Callback (this, "clockProc", 3);
+	clockProc = clockCallback.getAddress ();
+	if (clockProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	commandCallback = new Callback (this, "commandProc", 3);
 	commandProc = commandCallback.getAddress ();
 	if (commandProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -3066,6 +3075,7 @@ void releaseDisplay () {
 	actionCallback.dispose ();
 	appleEventCallback.dispose ();
 	caretCallback.dispose ();
+	clockCallback.dispose ();
 	commandCallback.dispose ();
 	controlCallback.dispose ();
 	accessibilityCallback.dispose ();
@@ -3087,12 +3097,12 @@ void releaseDisplay () {
 	trayItemCallback.dispose ();
 	pollingCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = appearanceCallback = null;
-	accessibilityCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
+	accessibilityCallback = clockCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = trayItemCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = pollingCallback = null;
 	textInputCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = trayItemProc = 0;
-	accessibilityProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
+	accessibilityProc = clockProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = pollingProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
 	textInputProc = 0;

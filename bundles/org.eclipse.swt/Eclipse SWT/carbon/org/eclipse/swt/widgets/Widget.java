@@ -340,6 +340,14 @@ boolean contains (int shellX, int shellY) {
 	return true;
 }
 
+int clockProc (int nextHandler, int theEvent, int userData) {
+	int kind = OS.GetEventKind (theEvent);
+	switch (kind) {
+		case OS.kEventClockDateOrTimeChanged: return kEventClockDateOrTimeChanged (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
+}
+
 int controlProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
@@ -958,6 +966,10 @@ int kEventAccessibleGetNamedAttribute (int nextHandler, int theEvent, int userDa
 }
 
 int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 

@@ -340,6 +340,7 @@ public class OS extends Platform {
 	public static final int kEventClassAppleEvent = ('e'<<24) + ('p'<<16) + ('p'<<8) + 'c';
 	public static final int kEventClassApplication = ('a'<<24) + ('p'<<16) + ('p'<<8) + 'l';
 	public static final int kEventClassCommand = ('c'<<24) + ('m'<<16) + ('d'<<8) + 's';
+	public static final int kEventClassClockView = ('c'<<24) + ('l'<<16) + ('o'<<8) + 'c';
 	public static final int kEventClassControl = ('c'<<24) + ('n'<<16) + ('t'<<8) + 'l';
 	public static final int kEventClassFont= ('f'<<24) + ('o'<<16) + ('n'<<8) + 't';
 	public static final int kEventClassHIObject = ('h'<<24) + ('i'<<16) + ('o'<<8) + 'b';
@@ -349,6 +350,7 @@ public class OS extends Platform {
 	public static final int kEventClassScrollable = ('s'<<24) + ('c'<<16) + ('r'<<8) + 'l';
 	public static final int kEventClassTextInput = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kEventClassWindow = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
+	public static final int kEventClockDateOrTimeChanged = 1;
 	public static final int kEventControlApplyBackground = 5;
 	public static final int kEventControlActivate = 9;
   	public static final int kEventControlAddedSubControl = 152;
