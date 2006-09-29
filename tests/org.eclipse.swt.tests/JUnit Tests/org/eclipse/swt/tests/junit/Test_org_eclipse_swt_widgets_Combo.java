@@ -178,6 +178,8 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	combo.addSelectionListener(listener);
 	combo.select(0);
 	assertTrue(":a:", listenerCalled == false);
@@ -188,6 +190,7 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_clearSelection() {

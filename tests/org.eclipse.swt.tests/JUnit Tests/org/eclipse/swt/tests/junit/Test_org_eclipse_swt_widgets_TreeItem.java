@@ -587,11 +587,11 @@ public void test_getImageBoundsI() {
 	makeCleanEnvironment();
 	
 	Image image = images[0];	
-	int imageWidth = image.getBounds().width;
-	int imageHeight;
+//	int imageWidth = image.getBounds().width;
+//	int imageHeight;
 	
 	treeItem.setImage(0, image);
-	imageHeight = tree.getItemHeight() - tree.getGridLineWidth();
+//	imageHeight = tree.getItemHeight() - tree.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(-1));
 	
 	bounds = treeItem.getImageBounds(0);
@@ -606,9 +606,9 @@ public void test_getImageBoundsI() {
 	tree2 = new Tree(shell, SWT.CHECK);
 	treeItem2.dispose();
 	treeItem2 = new TreeItem(tree2, SWT.NULL);
-	Rectangle imageBounds = image.getBounds();
-	imageWidth = imageBounds.width; 	treeItem2.setImage(0, image);
-	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
+//	Rectangle imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width; 	treeItem2.setImage(0, image);
+//	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(-1));
 	
 	bounds = treeItem2.getImageBounds(0);	// bounds.width should be check box width if they are wider than image
@@ -624,10 +624,10 @@ public void test_getImageBoundsI() {
 	treeItem2.dispose();
 	treeItem2 = new TreeItem(tree2, SWT.NULL);
 	image = images[1];
-	imageBounds = image.getBounds();
-	imageWidth = imageBounds.width;
+//	imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width;
  	treeItem2.setImage(0, image);
-	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
+//	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(-1));
  	bounds = treeItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
 //	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);

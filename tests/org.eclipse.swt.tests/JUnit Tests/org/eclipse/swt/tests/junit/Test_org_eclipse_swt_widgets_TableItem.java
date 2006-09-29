@@ -372,11 +372,11 @@ public void test_getImageBoundsI() {
 	makeCleanEnvironment();
 	
 	Image image = images[0];	
-	int imageWidth = image.getBounds().width;
-	int imageHeight;
+//	int imageWidth = image.getBounds().width;
+//	int imageHeight;
 	
 	tableItem.setImage(0, image);
-	imageHeight = table.getItemHeight() - table.getGridLineWidth();
+//	imageHeight = table.getItemHeight() - table.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(-1));
 	
 	bounds = tableItem.getImageBounds(0);
@@ -391,9 +391,9 @@ public void test_getImageBoundsI() {
 	table2 = new Table(shell, SWT.CHECK);
 	tableItem2.dispose();
 	tableItem2 = new TableItem(table2, SWT.NULL);
-	Rectangle imageBounds = image.getBounds();
-	imageWidth = imageBounds.width; 	tableItem2.setImage(0, image);
-	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
+//	Rectangle imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width; 	tableItem2.setImage(0, image);
+//	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
 	
 	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if they are wider than image
@@ -409,10 +409,10 @@ public void test_getImageBoundsI() {
 	tableItem2.dispose();
 	tableItem2 = new TableItem(table2, SWT.NULL);
 	image = images[1];
-	imageBounds = image.getBounds();
-	imageWidth = imageBounds.width;
+//	imageBounds = image.getBounds();
+//	imageWidth = imageBounds.width;
  	tableItem2.setImage(0, image);
-	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
+//	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
  	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
 //	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
@@ -451,8 +451,8 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	assertEquals(tableItem.getBackground(), tableItem.getBackground(10));
 	
 	// with columns
-	TableColumn column1 = new TableColumn(table, SWT.LEFT);
-	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
 	
 	// index beyond range - no error
 	tableItem.setBackground(10, red);
@@ -548,8 +548,8 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	assertTrue(tableItem.getFont().equals(tableItem.getFont(10)));
 	
 	// with columns
-	TableColumn column1 = new TableColumn(table, SWT.LEFT);
-	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
 	
 	// index beyond range - no error
 	tableItem.setFont(10, font);
@@ -599,8 +599,8 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	assertEquals(tableItem.getForeground(), tableItem.getForeground(10));
 	
 	// with columns
-	TableColumn column1 = new TableColumn(table, SWT.LEFT);
-	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
+	new TableColumn(table, SWT.LEFT);
 	
 	// index beyond range - no error
 	tableItem.setForeground(10, red);

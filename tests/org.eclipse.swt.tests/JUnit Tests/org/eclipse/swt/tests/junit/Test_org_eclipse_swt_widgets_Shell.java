@@ -124,6 +124,8 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	shell.addShellListener(listener);
 	shell.forceActive();
 	/* can't assume listener is synchronously called when forceActive returned */
@@ -140,6 +142,7 @@ public void test_addShellListenerLorg_eclipse_swt_events_ShellListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_close() {
