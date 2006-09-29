@@ -131,7 +131,12 @@ public class OS extends Platform {
 	public static final int kCFStringEncodingUTF8 = 0x08000100;
 	public static final int kCFStringEncodingUnicode = 0x0100;
 	public static final int kCGEncodingMacRoman = 1;
+	public static final int kCGImageAlphaNone = 0;
+	public static final int kCGImageAlphaPremultipliedLast = 1;
+	public static final int kCGImageAlphaPremultipliedFirst = 2;
+	public static final int kCGImageAlphaLast = 3;
 	public static final int kCGImageAlphaFirst = 4;
+	public static final int kCGImageAlphaNoneSkipLast = 5;
 	public static final int kCGImageAlphaNoneSkipFirst = 6;
 	public static final int kCGInterpolationDefault = 0;
 	public static final int kCGInterpolationNone = 1;
@@ -1009,6 +1014,7 @@ public static final native int CGColorCreate(int colorspace, float[] components)
 public static final native void CGColorRelease(int color);
 public static final native int CGColorSpaceCreatePattern(int baseSpace);
 public static final native int CGColorSpaceCreateDeviceRGB ();
+public static final native int CGBitmapContextCreateImage(int context);
 public static final native void CGColorSpaceRelease (int cs);
 public static final native void CGContextAddArc (int ctx, float x, float y, float radius, float startAngle, float endAngle, boolean clockwise);
 public static final native void CGContextAddArcToPoint (int ctx, float x1, float y1, float x2, float y2, float radius);

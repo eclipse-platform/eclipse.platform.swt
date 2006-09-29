@@ -1286,6 +1286,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGBitmapContextCreate)
 }
 #endif
 
+#ifndef NO_CGBitmapContextCreateImage
+JNIEXPORT jint JNICALL OS_NATIVE(CGBitmapContextCreateImage)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGBitmapContextCreateImage_FUNC);
+/*
+	rc = (jint)CGBitmapContextCreateImage(arg0);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(CGBitmapContextCreateImage_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("CGBitmapContextCreateImage"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CGBitmapContextCreateImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGColorCreate
 JNIEXPORT jint JNICALL OS_NATIVE(CGColorCreate)
 	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)

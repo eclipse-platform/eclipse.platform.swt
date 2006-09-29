@@ -21,3 +21,4 @@
 #define NavDialogSetFilterTypeIdentifiers_LIB "com.apple.Carbon"
 #define LSCopyAllRoleHandlersForContentType_LIB "com.apple.Carbon"
 #define LSOpenItemsWithRole_LIB "com.apple.Carbon"
+#define CGBitmapContextCreateImage_LIB "com.apple.Carbon"
