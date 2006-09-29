@@ -227,7 +227,7 @@ public Browser(Composite parent, int style) {
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, null, " [NS_InitEmbedding "+mozillaPath+" error "+rc+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [MOZILLA_FIVE_HOME may not point at an embeddable GRE] [NS_InitEmbedding " + mozillaPath + " error " + rc + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 		rc = XPCOM.NS_GetComponentManager(result);
