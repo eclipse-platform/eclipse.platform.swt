@@ -400,18 +400,18 @@ public void copyArea(Image image, int x, int y) {
 				int bpr = OS.CGDisplayBytesPerRow(display);
 				int bpp = OS.CGDisplayBitsPerPixel(display);
 				int bps = OS.CGDisplayBitsPerSample(display);
+				int bitmapInfo = OS.kCGImageAlphaNoneSkipFirst;
+				switch (bpp) {
+					case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
+					case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
+				}
 				int srcImage = 0;
-				if (OS.VERSION >= 0x1040) {
-					int context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, data.device.colorspace, OS.kCGImageAlphaNoneSkipFirst);
+				if (OS.__BIG_ENDIAN__() && OS.VERSION >= 0x1040) {
+					int context = OS.CGBitmapContextCreate(address, width, height, bps, bpr, data.device.colorspace, bitmapInfo);
 					srcImage = OS.CGBitmapContextCreateImage(context);
 					OS.CGContextRelease(context);
 				} else {
 					int provider = OS.CGDataProviderCreateWithData(0, address, bpr * height, 0);
-					int bitmapInfo = OS.kCGImageAlphaNoneSkipFirst;
-					switch (bpp) {
-						case 16: bitmapInfo |= OS.kCGBitmapByteOrder16Host; break;
-						case 32: bitmapInfo |= OS.kCGBitmapByteOrder32Host; break;
-					}
 					srcImage = OS.CGImageCreate(width, height, bps, bpp, bpr, data.device.colorspace, bitmapInfo, provider, null, true, 0);
 					OS.CGDataProviderRelease(provider);
 				}
