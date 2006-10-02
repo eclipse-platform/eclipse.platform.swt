@@ -1101,11 +1101,12 @@ boolean paint (GC gc, TableColumn column, boolean backgroundOnly) {
 
 	boolean isSelected = isSelected ();
 	boolean isFocusItem = parent.focusItem == this;
-	boolean drawBackground = background != null || (cellBackgrounds != null && cellBackgrounds [columnIndex] != null);
+	boolean drawBackground = true;
 	boolean drawForeground = true;
 	boolean drawSelection = isSelected;
 	boolean drawFocus = isFocusItem;
 	if (parent.hooks (SWT.EraseItem)) {
+		drawBackground = background != null || (cellBackgrounds != null && cellBackgrounds [columnIndex] != null);
 		gc.setFont (getFont (columnIndex, false));
 		if (isSelected && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));

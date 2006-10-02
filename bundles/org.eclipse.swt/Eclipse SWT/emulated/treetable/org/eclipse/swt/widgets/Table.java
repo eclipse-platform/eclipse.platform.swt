@@ -141,8 +141,8 @@ public boolean isFocusControl() {
  */
 public Table (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED));
-	setForeground (display.getSystemColor (SWT.COLOR_LIST_FOREGROUND));
-	setBackground (display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
+	setForeground (null);	/* set foreground and background to chosen default colors */
+	setBackground (null);
 	GC gc = new GC (this);
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
@@ -3199,6 +3199,16 @@ void selectItem (TableItem item, boolean addToSelection) {
 		System.arraycopy (oldSelectedItems, 0, selectedItems, 0, oldSelectedItems.length);
 		selectedItems [selectedItems.length - 1] = item;
 	}
+}
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_BACKGROUND); 
+	super.setBackground (color);
+}
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_FOREGROUND); 
+	super.setForeground (color);
 }
 /**
  * Sets the order that the items in the receiver should 

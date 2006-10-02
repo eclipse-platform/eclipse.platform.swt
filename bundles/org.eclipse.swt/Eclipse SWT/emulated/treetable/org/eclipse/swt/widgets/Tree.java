@@ -154,8 +154,8 @@ public boolean isFocusControl() {
  */
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED));
-	setForeground (display.getSystemColor (SWT.COLOR_LIST_FOREGROUND));
-	setBackground (display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
+	setForeground (null);	/* set foreground and background to chosen default colors */
+	setBackground (null);
 	GC gc = new GC (this);
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
@@ -3323,6 +3323,11 @@ void selectItem (TreeItem item, boolean addToSelection) {
 		selectedItems [selectedItems.length - 1] = item;
 	}
 }
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_BACKGROUND); 
+	super.setBackground (color);
+}
 /**
  * Sets the order that the items in the receiver should 
  * be displayed in to the given argument which is described
@@ -3453,6 +3458,11 @@ public void setFont (Font value) {
 	topIndex = vBar.getSelection ();
 	vBar.setVisible (thumb < vBar.getMaximum ());
 	redraw ();
+}
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color == null) color = display.getSystemColor (SWT.COLOR_LIST_FOREGROUND); 
+	super.setForeground (color);
 }
 void setHeaderImageHeight (int value) {
 	headerImageHeight = value;
