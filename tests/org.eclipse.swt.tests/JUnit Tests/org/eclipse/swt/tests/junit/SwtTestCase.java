@@ -185,13 +185,6 @@ static public void assertEquals(String message, int expected[], int actual[]) {
 static public void assertEquals(int expected[], int actual[]) {
     assertEquals(null, expected, actual);
 }
-// copied exactly from junit.framework.TestCase so that it can be called from here even though private
-static private void failNotEquals(String message, Object expected, Object actual) {
-	String formatted= "";
-	if (message != null)
-		formatted= message+" ";
-	fail(formatted+"expected:<"+expected+"> but was:<"+actual+">");
-}
 
 static private void failNotEquals(String message, Object[] expected, Object[] actual) {
 	String formatted= "";
