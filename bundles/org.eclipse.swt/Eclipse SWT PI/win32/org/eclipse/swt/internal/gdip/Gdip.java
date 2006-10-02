@@ -294,6 +294,6 @@ public static final native int StringFormat_SetFormatFlags(int format, int flags
 public static final native int StringFormat_SetTabStops(int format, float firstTabOffset, int count, float[] tabStops);
 public static final native int TextureBrush_new(int image, int wrapMode, float dstX, float dstY, float dstWidth, float dstHeight);
 public static final native void TextureBrush_delete(int brush);
-public static final native void TextureBrush_SetTransform(int brush, int matrix);
+public static final native int TextureBrush_SetTransform(int brush, int matrix);
 
 }
