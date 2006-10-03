@@ -155,7 +155,9 @@ public abstract class Widget {
 	static final int VISIBILITY_NOTIFY_EVENT = 57;
 	static final int WINDOW_STATE_EVENT = 58;
 	static final int ACTIVATE_INVERSE = 59;
-	static final int LAST_SIGNAL = 60;
+	static final int DAY_SELECTED = 60;
+	static final int MONTH_CHANGED = 61;
+	static final int LAST_SIGNAL = 62;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -589,6 +591,10 @@ int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
+int /*long*/ gtk_day_selected (int /*long*/ widget) {
+	return 0;
+}
+
 int /*long*/ gtk_delete_event (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
@@ -674,6 +680,10 @@ int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
+	return 0;
+}
+
+int /*long*/ gtk_month_changed (int /*long*/ widget) {
 	return 0;
 }
 
@@ -1418,9 +1428,11 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 		case ACTIVATE: return gtk_activate (handle);
 		case CHANGED: return gtk_changed (handle);
 		case CLICKED: return gtk_clicked (handle);
+		case DAY_SELECTED: return gtk_day_selected (handle);
 		case HIDE: return gtk_hide (handle);
 		case GRAB_FOCUS: return gtk_grab_focus (handle);
 		case MAP: return gtk_map (handle);
+		case MONTH_CHANGED: return gtk_month_changed (handle);
 		case OUTPUT: return gtk_output (handle);
 		case POPUP_MENU: return gtk_popup_menu (handle);
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);

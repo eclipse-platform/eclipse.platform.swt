@@ -237,6 +237,11 @@ public class OS extends Platform {
 	public static final int GTK_ARROW_LEFT = 0x2;
 	public static final int GTK_ARROW_RIGHT = 0x3;
 	public static final int GTK_ARROW_UP = 0x0;
+	public static final int GTK_CALENDAR_SHOW_HEADING = 1 << 0;
+	public static final int GTK_CALENDAR_SHOW_DAY_NAMES = 1 << 1;
+	public static final int GTK_CALENDAR_NO_MONTH_CHANGE = 1 << 2;
+	public static final int GTK_CALENDAR_SHOW_WEEK_NUMBERS = 1 << 3;
+	public static final int GTK_CALENDAR_WEEK_START_MONDAY = 1 << 4;
 	public static final int GTK_CAN_DEFAULT = 0x2000;
 	public static final int GTK_CAN_FOCUS = 0x800;
 	public static final int GTK_CELL_RENDERER_MODE_ACTIVATABLE = 1;
@@ -394,6 +399,7 @@ public class OS extends Platform {
 	public static final byte[] commit = ascii("commit");
 	public static final byte[] configure_event = ascii("configure-event");
 	public static final byte[] delete_event = ascii("delete-event");
+	public static final byte[] day_selected = ascii("day-selected");
 	public static final byte[] delete_range = ascii("delete-range");
 	public static final byte[] delete_text = ascii("delete-text");
 	public static final byte[] drag_data_delete = ascii("drag_data_delete");
@@ -421,6 +427,7 @@ public class OS extends Platform {
 	public static final byte[] map = ascii("map");
 	public static final byte[] map_event = ascii("map-event");
 	public static final byte[] mnemonic_activate = ascii("mnemonic-activate");
+	public static final byte[] month_changed = ascii("month-changed");
 	public static final byte[] motion_notify_event = ascii("motion-notify-event");
 	public static final byte[] move_focus = ascii("move-focus");
 	public static final byte[] output = ascii("output");
@@ -3769,6 +3776,51 @@ public static final void gtk_button_set_relief(int /*long*/ button, int newstyle
 	lock.lock();
 	try {
 		_gtk_button_set_relief(button, newstyle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gtk_calendar_new();
+public static final int /*long*/ gtk_calendar_new() {
+	lock.lock();
+	try {
+		return _gtk_calendar_new();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean /*long*/ _gtk_calendar_select_month(int /*long*/ calendar, int month, int year);
+public static final boolean /*long*/ gtk_calendar_select_month(int /*long*/ calendar, int month, int year) {
+	lock.lock();
+	try {
+		return _gtk_calendar_select_month(calendar, month, year);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_calendar_select_day(int /*long*/ calendar, int day);
+public static final void gtk_calendar_select_day(int /*long*/ calendar, int day) {
+	lock.lock();
+	try {
+		_gtk_calendar_select_day(calendar, day);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_calendar_set_display_options(int /*long*/ calendar, int flags);
+public static final void gtk_calendar_set_display_options(int /*long*/ calendar, int flags) {
+	lock.lock();
+	try {
+		_gtk_calendar_set_display_options(calendar, flags);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_calendar_get_date(int /*long*/ calendar, int[] year, int[] month, int[] day);
+public static final void gtk_calendar_get_date(int /*long*/ calendar, int[] year, int[] month, int[] day) {
+	lock.lock();
+	try {
+		_gtk_calendar_get_date(calendar, year, month, day);
 	} finally {
 		lock.unlock();
 	}

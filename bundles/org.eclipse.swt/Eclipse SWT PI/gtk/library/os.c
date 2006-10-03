@@ -5929,6 +5929,70 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1set_1relief)
 }
 #endif
 
+#ifndef NO__1gtk_1calendar_1get_1date
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1get_1date)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1get_1date_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	gtk_calendar_get_date((GtkCalendar *)arg0, (guint *)lparg1, (guint *)lparg2, (guint *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1get_1date_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1calendar_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1calendar_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1new_FUNC);
+	rc = (jint)gtk_calendar_new();
+	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1calendar_1select_1day
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1select_1day)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1select_1day_FUNC);
+	gtk_calendar_select_day((GtkCalendar *)arg0, (guint)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1select_1day_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1calendar_1select_1month
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1calendar_1select_1month)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1select_1month_FUNC);
+	rc = (jboolean)gtk_calendar_select_month((GtkCalendar *)arg0, (guint)arg1, (guint)arg2);
+	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1select_1month_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1calendar_1set_1display_1options
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1set_1display_1options)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1set_1display_1options_FUNC);
+	gtk_calendar_set_display_options((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1set_1display_1options_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1cell_1layout_1clear
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1clear)
 	(JNIEnv *env, jclass that, jint arg0)
