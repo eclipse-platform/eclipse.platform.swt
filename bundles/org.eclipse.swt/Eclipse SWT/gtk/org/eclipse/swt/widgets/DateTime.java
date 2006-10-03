@@ -149,7 +149,6 @@ void sendSelectionEvent () {
 	int [] m = new int [1];
 	int [] d = new int [1];
 	OS.gtk_calendar_get_date(handle, y, m, d);
-	System.out.println("year=" + year + ", month=" + month + ", day=" + day);
 	//TODO: hour, minute, second?
 	if (d[0] != day ||
 		m[0] != month ||
