@@ -1729,6 +1729,7 @@ void releaseWidget () {
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}
+	backgroundImage = null;
 	menu = null;
 	cursor = null;
 	deregister ();
