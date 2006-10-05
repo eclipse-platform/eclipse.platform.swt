@@ -726,7 +726,7 @@ void generateReturn(Method method, Class returnType, boolean needsReturn) {
 	}
 }
 
-void generateGTKmemmove(Method method, String function, Class[] paramTypes) {
+void generateMemmove(Method method, String function, Class[] paramTypes) {
 	generateEnterMacro(method, function);
 	output("\t");
 	boolean get = paramTypes[0].isPrimitive();
@@ -746,9 +746,9 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 	/* Custom GTK memmoves. */
 	String name = method.getName();
 	if (name.startsWith("_")) name = name.substring(1);
-	boolean isGTKmemove = name.equals("memmove") && paramTypes.length == 2 && returnType == Void.TYPE;
-	if (isGTKmemove) {
-		generateGTKmemmove(method, function, paramTypes);
+	boolean isMemove = (name.equals("memmove") || name.equals("MoveMemory")) && paramTypes.length == 2 && returnType == Void.TYPE;
+	if (isMemove) {
+		generateMemmove(method, function, paramTypes);
 	} else {
 		boolean needsReturn = generateLocalVars(method, paramTypes, returnType);
 		generateEnterMacro(method, function);
