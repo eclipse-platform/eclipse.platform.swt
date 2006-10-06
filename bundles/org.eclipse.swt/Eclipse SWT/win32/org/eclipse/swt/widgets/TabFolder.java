@@ -300,9 +300,9 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
-	int hTheme = OS.OpenThemeData (handle, TAB);
-	OS.DrawThemeBackground (hTheme, hDC, OS.TABP_BODY, 0, rect2, null);
-	OS.CloseThemeData (hTheme);	
+	if (OS.IntersectRect (new RECT (), rect2, rect)) {
+		OS.DrawThemeBackground (display.hTabTheme (), hDC, OS.TABP_BODY, 0, rect2, null);
+	}
 }
 
 Control findThemeControl () {

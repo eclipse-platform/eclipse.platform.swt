@@ -82,13 +82,6 @@ public abstract class Widget {
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 
-	/* Windows XP Theme Classes */
-	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
-	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
-	final static char [] EXPLORERBAR = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 'B', 'A', 'R', 0};
-	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
-	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
-
 	/* Check and initialize the Common Controls DLL */
 	static final int MAJOR = 5, MINOR = 80;
 	static {
@@ -2086,9 +2079,7 @@ LRESULT wmPrint (int hwnd, int wParam, int lParam) {
 				rect.left = rect.top = 0;
 				int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
 				OS.ExcludeClipRect (wParam, border, border, rect.right - border, rect.bottom - border);
-				int hTheme = OS.OpenThemeData (hwnd, EDIT);
-				OS.DrawThemeBackground (hTheme, wParam, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
-				OS.CloseThemeData (hwnd);
+				OS.DrawThemeBackground (display.hEditTheme (), wParam, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
 				return new LRESULT (code);
 			}
 		}

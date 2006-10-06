@@ -1367,9 +1367,7 @@ LRESULT wmNCPaint (int hwnd, int wParam, int lParam) {
 			rect.left = rect.top = 0;
 			int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
 			OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
-			int hTheme = OS.OpenThemeData (hwnd, EDIT);
-			OS.DrawThemeBackground (hTheme, hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
-			OS.CloseThemeData (hwnd);
+			OS.DrawThemeBackground (display.hEditTheme (), hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
 			OS.ReleaseDC (hwnd, hDC);
 			return new LRESULT (code);
 		}

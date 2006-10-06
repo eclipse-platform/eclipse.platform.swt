@@ -142,6 +142,14 @@ public class Display extends Device {
 		}
 	}
 	
+	/* XP Themes */
+	int hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
+	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
+	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
+	final static char [] EXPLORERBAR = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 'B', 'A', 'R', 0};
+	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
+	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
+	
 	/* Focus */
 	int focusEvent;
 	Control focusControl;
@@ -2190,6 +2198,31 @@ public Thread getThread () {
 	return thread;
 }
 
+int hButtonTheme () {
+	if (hButtonTheme != 0) return hButtonTheme;
+	return hButtonTheme = OS.OpenThemeData (hwndMessage, BUTTON);
+}
+
+int hEditTheme () {
+	if (hEditTheme != 0) return hEditTheme;
+	return hEditTheme = OS.OpenThemeData (hwndMessage, EDIT);
+}
+
+int hExplorerBarTheme () {
+	if (hExplorerBarTheme != 0) return hExplorerBarTheme;
+	return hExplorerBarTheme = OS.OpenThemeData (hwndMessage, EXPLORERBAR);
+}
+
+int hScrollBarTheme () {
+	if (hScrollBarTheme != 0) return hScrollBarTheme;
+	return hScrollBarTheme = OS.OpenThemeData (hwndMessage, SCROLLBAR);
+}
+
+int hTabTheme () {
+	if (hTabTheme != 0) return hTabTheme;
+	return hTabTheme = OS.OpenThemeData (hwndMessage, TAB);
+}
+
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -2738,6 +2771,17 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			break;
 		}
+		case OS.WM_THEMECHANGED: {
+			if (OS.COMCTL32_MAJOR >= 6) {
+				if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);
+				if (hEditTheme != 0) OS.CloseThemeData (hEditTheme);
+				if (hExplorerBarTheme != 0) OS.CloseThemeData (hExplorerBarTheme);
+				if (hScrollBarTheme != 0) OS.CloseThemeData (hScrollBarTheme);
+				if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
+				hButtonTheme = hEditTheme = hExplorerBarTheme = hScrollBarTheme = hTabTheme = 0;
+			}
+			break;
+		}
 		case OS.WM_TIMER: {
 			if (wParam == SETTINGS_ID) {
 				OS.KillTimer (hwndMessage, SETTINGS_ID);
@@ -3088,7 +3132,17 @@ void releaseDisplay () {
 	if (embeddedHwnd != 0) {
 		OS.PostMessage (embeddedHwnd, SWT_DESTROY, 0, 0);
 	}
-
+	
+	/* Release XP Themes */
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);
+		if (hEditTheme != 0) OS.CloseThemeData (hEditTheme);
+		if (hExplorerBarTheme != 0) OS.CloseThemeData (hExplorerBarTheme);
+		if (hScrollBarTheme != 0) OS.CloseThemeData (hScrollBarTheme);
+		if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
+		hButtonTheme = hEditTheme = hExplorerBarTheme = hScrollBarTheme = hTabTheme = 0;
+	}
+	
 	/* Unhook the message hook */
 	if (!OS.IsWinCE) {
 		if (msgHook != 0) OS.UnhookWindowsHookEx (msgHook);

@@ -1093,7 +1093,6 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 	RECT rect = new RECT ();
 	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int hTheme = OS.OpenThemeData (handle, SCROLLBAR);
 		int iStateId = OS.ABS_LEFTNORMAL;
 		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
 			case SWT.UP: iStateId = OS.ABS_UPNORMAL; break;
@@ -1108,8 +1107,7 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		*/
 		if (!getEnabled ()) iStateId += OS.ABS_UPDISABLED - OS.ABS_UPNORMAL;
 		if ((struct.itemState & OS.ODS_SELECTED) != 0) iStateId += OS.ABS_UPPRESSED - OS.ABS_UPNORMAL;
-		OS.DrawThemeBackground (hTheme, struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
-		OS.CloseThemeData (hTheme);
+		OS.DrawThemeBackground (display.hScrollBarTheme (), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
 	} else {
 		int uState = OS.DFCS_SCROLLLEFT;
 		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {

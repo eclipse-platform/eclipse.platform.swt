@@ -3847,7 +3847,7 @@ void setCheckboxImageList () {
 	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
 	OS.SetRect (rect, left + width, top, left + width + itemWidth, top + itemHeight);
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		int hTheme = OS.OpenThemeData (handle, BUTTON);
+		int hTheme = display.hButtonTheme ();
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
 		rect.left += width;  rect.right += width;
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
@@ -3855,7 +3855,6 @@ void setCheckboxImageList () {
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
 		rect.left += width;  rect.right += width;
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_MIXEDNORMAL, rect, null);
-		OS.CloseThemeData (hTheme);
 	} else {
 		OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
 		rect.left += width;  rect.right += width;

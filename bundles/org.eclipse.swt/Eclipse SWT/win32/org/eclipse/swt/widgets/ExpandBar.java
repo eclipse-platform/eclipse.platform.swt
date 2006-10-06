@@ -128,7 +128,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int hDC = OS.GetDC (handle);
 			int hTheme = 0;
 			if (isAppThemed ()) {
-				hTheme = OS.OpenThemeData (handle, EXPLORERBAR);
+				hTheme = display.hExplorerBarTheme ();
 			}
 			int hCurrentFont = 0, oldFont = 0;
 			if (hTheme == 0) {
@@ -161,7 +161,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				if (hCurrentFont != hFont) OS.DeleteObject (hCurrentFont);
 			}
 			OS.ReleaseDC (handle, hDC);
-			if (hTheme != 0) OS.CloseThemeData (hTheme);
 		}
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
@@ -237,15 +236,13 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
-	int hTheme = OS.OpenThemeData (handle, EXPLORERBAR);
-	OS.DrawThemeBackground (hTheme, hDC, OS.EBP_NORMALGROUPBACKGROUND, 0, rect2, null);
-	OS.CloseThemeData (hTheme);
+	OS.DrawThemeBackground (display.hExplorerBarTheme (), hDC, OS.EBP_NORMALGROUPBACKGROUND, 0, rect2, null);
 }
 
 void drawWidget (GC gc, RECT clipRect) {
 	int hTheme = 0;
 	if (isAppThemed ()) {
-		hTheme = OS.OpenThemeData (handle, EXPLORERBAR); 
+		hTheme = display.hExplorerBarTheme ();
 	}
 	if (hTheme != 0) {
 		RECT rect = new RECT ();
@@ -279,7 +276,6 @@ void drawWidget (GC gc, RECT clipRect) {
 		OS.SelectObject (gc.handle, oldFont);
 		OS.DeleteObject (hCaptionFont);
 	}
-	if (hTheme != 0) OS.CloseThemeData (hTheme);
 }
 
 Control findBackgroundControl () {
