@@ -91,7 +91,7 @@ public class OS extends Platform {
 			OS.MoveMemory (pszText, buffer, byteCount);	
 			ACTCTX pActCtx = new ACTCTX ();
 			pActCtx.cbSize = ACTCTX.sizeof;
-			pActCtx.dwFlags = OS.ACTCTX_FLAG_RESOURCE_NAME_VALID;
+			pActCtx.dwFlags = OS.ACTCTX_FLAG_RESOURCE_NAME_VALID | OS.ACTCTX_FLAG_SET_PROCESS_DEFAULT;
 			pActCtx.lpSource = pszText;
 			pActCtx.lpResourceName = OS.MANIFEST_RESOURCE_ID;
 			int hActCtx = OS.CreateActCtx (pActCtx);
@@ -207,13 +207,8 @@ public class OS extends Platform {
 	public static final int ABS_UPPRESSED = 3;
 	public static final int AC_SRC_OVER = 0;
 	public static final int AC_SRC_ALPHA = 1;
-	public static final int ACTCTX_FLAG_PROCESSOR_ARCHITECTURE_VALID = 0x00000001;
-	public static final int ACTCTX_FLAG_LANGID_VALID = 0x00000002;
-	public static final int ACTCTX_FLAG_ASSEMBLY_DIRECTORY_VALID = 0x00000004;
 	public static final int ACTCTX_FLAG_RESOURCE_NAME_VALID = 0x00000008;
 	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
-	public static final int ACTCTX_FLAG_APPLICATION_NAME_VALID = 0x00000020;
-	public static final int ACTCTX_FLAG_HMODULE_VALID = 0x00000080;
 	public static final int ALTERNATE = 1;
 	public static final int AW_SLIDE = 0x00040000;
 	public static final int AW_ACTIVATE = 0x00020000;
