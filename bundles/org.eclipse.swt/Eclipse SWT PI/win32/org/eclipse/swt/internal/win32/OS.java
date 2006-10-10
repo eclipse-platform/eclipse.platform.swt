@@ -1110,9 +1110,6 @@ public class OS extends Platform {
 	public static final int PLANES = 0xe;
 	public static final int PM_NOREMOVE = 0x0;
 	public static final int PM_NOYIELD = 0x2;
-	public static final int PRF_CLIENT = 0x4;
-	public static final int PRF_ERASEBKGND = 0x8;
-	public static final int PRF_NONCLIENT = 0x2; 
 	public static final int QS_HOTKEY = 0x0080;
 	public static final int QS_KEY = 0x0001;
 	public static final int QS_MOUSEMOVE = 0x0002;
@@ -1124,8 +1121,6 @@ public class OS extends Platform {
 	public static final int QS_PAINT = 0x0020;
 	public static final int QS_SENDMESSAGE = 0x0040;
 	public static final int QS_ALLINPUT = QS_MOUSEMOVE | QS_MOUSEBUTTON | QS_KEY | QS_POSTMESSAGE | QS_TIMER | QS_PAINT | QS_SENDMESSAGE;
-	public static final int PROGRESSCHUNKSIZE = 2411;
-	public static final int PROGRESSSPACESIZE = 2412;
 	public static final int PM_QS_INPUT = QS_INPUT << 16;
 	public static final int PM_QS_POSTMESSAGE = (QS_POSTMESSAGE | QS_HOTKEY | QS_TIMER) << 16;
 	public static final int PM_QS_PAINT = QS_PAINT << 16;
@@ -1136,6 +1131,12 @@ public class OS extends Platform {
 	public static final int PP_BARVERT = 2;
 	public static final int PP_CHUNK = 3;
 	public static final int PP_CHUNKVERT = 4;
+	public static final int PRF_CHILDREN = 16;
+	public static final int PRF_CLIENT = 0x4;
+	public static final int PRF_ERASEBKGND = 0x8;
+	public static final int PRF_NONCLIENT = 0x2;
+	public static final int PROGRESSCHUNKSIZE = 2411;
+	public static final int PROGRESSSPACESIZE = 2412;
 	public static final int PS_DASH = 0x1;
 	public static final int PS_DASHDOT = 0x3;
 	public static final int PS_DASHDOTDOT = 0x4;
