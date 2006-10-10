@@ -5940,7 +5940,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1get_1date)
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
 	gtk_calendar_get_date((GtkCalendar *)arg0, (guint *)lparg1, (guint *)lparg2, (guint *)lparg3);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkCalendar *, guint *, guint *, guint *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_calendar_get_date_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_calendar_get_date");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkCalendar *)arg0, (guint *)lparg1, (guint *)lparg2, (guint *)lparg3);
+		}
+	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
@@ -5955,7 +5971,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1calendar_1new)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1new_FUNC);
+/*
 	rc = (jint)gtk_calendar_new();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_calendar_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_calendar_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1new_FUNC);
 	return rc;
 }
@@ -5966,7 +5999,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1select_1day)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1select_1day_FUNC);
+/*
 	gtk_calendar_select_day((GtkCalendar *)arg0, (guint)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkCalendar *, guint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_calendar_select_day_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_calendar_select_day");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkCalendar *)arg0, (guint)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1select_1day_FUNC);
 }
 #endif
@@ -5977,7 +6026,24 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1calendar_1select_1month)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1select_1month_FUNC);
+/*
 	rc = (jboolean)gtk_calendar_select_month((GtkCalendar *)arg0, (guint)arg1, (guint)arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(GtkCalendar *, guint, guint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_calendar_select_month_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_calendar_select_month");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)((GtkCalendar *)arg0, (guint)arg1, (guint)arg2);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1select_1month_FUNC);
 	return rc;
 }
@@ -5988,7 +6054,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1set_1display_1options)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1set_1display_1options_FUNC);
+/*
 	gtk_calendar_set_display_options((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkCalendar *, GtkCalendarDisplayOptions);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_calendar_set_display_options_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_calendar_set_display_options");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1set_1display_1options_FUNC);
 }
 #endif
