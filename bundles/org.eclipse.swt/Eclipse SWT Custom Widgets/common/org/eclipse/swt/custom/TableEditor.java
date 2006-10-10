@@ -87,10 +87,10 @@ public TableEditor (Table table) {
 	
 	columnListener = new ControlListener() {
 		public void controlMoved(ControlEvent e){
-			_resize ();
+			layout ();
 		}
 		public void controlResized(ControlEvent e){
-			_resize ();
+			layout ();
 		}
 	};
 	
@@ -180,7 +180,7 @@ public void setColumn(int column) {
 	// In this situation, there is a single default column.
 	if (columnCount == 0) {
 		this.column = (column == 0) ? 0 : -1;
-		_resize();
+		layout();
 		return;
 	}
 	if (this.column > -1 && this.column < columnCount){
@@ -194,11 +194,11 @@ public void setColumn(int column) {
 	this.column = column;
 	TableColumn tableColumn = table.getColumn(this.column);
 	tableColumn.addControlListener(columnListener);
-	_resize();
+	layout();
 }
 public void setItem (TableItem item) {	
 	this.item = item;
-	_resize();
+	layout();
 }
 
 /**
@@ -216,12 +216,12 @@ public void setEditor (Control editor, TableItem item, int column) {
 	setColumn(column);
 	setEditor(editor);
 }
-void _resize () {
+public void layout () {
 	if (table.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;
 	int columnCount = table.getColumnCount();
 	if (columnCount == 0 && column != 0) return;
 	if (columnCount > 0 && (column < 0 || column >= columnCount)) return;
-	super._resize();
+	super.layout();
 }
 }

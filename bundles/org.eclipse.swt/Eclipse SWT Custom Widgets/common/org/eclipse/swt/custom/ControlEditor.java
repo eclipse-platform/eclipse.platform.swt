@@ -118,7 +118,7 @@ public ControlEditor (Composite parent) {
 
 	tableListener = new Listener() {
 		public void handleEvent(Event e) {
-			_resize ();
+			layout ();
 		}
 	};	
 	parent.addListener (SWT.Resize, tableListener);
@@ -206,9 +206,6 @@ public Control getEditor () {
  * @since 2.1
  */
 public void layout () {
-	_resize();
-}
-void _resize () {
 	if (editor == null || editor.isDisposed()) return;
 	if (editor.getVisible ()) {
 		hadFocus = editor.isFocusControl();
@@ -223,7 +220,7 @@ void _resize () {
 }
 void scroll (Event e) {
 	if (editor == null || editor.isDisposed()) return;
-	editor.setBounds (computeBounds ());
+	layout();
 }
 /**
 * Specify the Control that is to be displayed.
@@ -243,7 +240,7 @@ public void setEditor (Control editor) {
 	}
 	
 	this.editor = editor;
-	_resize();
+	layout();
 	if (this.editor == null || this.editor.isDisposed()) return;
 	editor.setVisible(true);
 }
