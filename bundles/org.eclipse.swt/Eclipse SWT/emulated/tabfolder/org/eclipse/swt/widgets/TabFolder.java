@@ -468,8 +468,8 @@ public Rectangle getClientArea() {
 	}
 	clientArea.x = xClient;
 	clientArea.y = yClient;
-	clientArea.width -= xClient + CLIENT_MARGIN_WIDTH + 1;
-	clientArea.height -= yClient + CLIENT_MARGIN_WIDTH + 1;
+	clientArea.width = Math.max (0, clientArea.width - (xClient + CLIENT_MARGIN_WIDTH + 1));
+	clientArea.height = Math.max (0, clientArea.height - (yClient + CLIENT_MARGIN_WIDTH + 1));
 	return clientArea;
 }
 /**
