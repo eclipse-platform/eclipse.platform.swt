@@ -10607,6 +10607,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetPolyFillMode)
 }
 #endif
 
+#ifndef NO_SetProcessDPIAware
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetProcessDPIAware)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetProcessDPIAware_FUNC);
+/*
+	rc = (jboolean)SetProcessDPIAware();
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(SetProcessDPIAware_LIB);
+			if (hm) fp = GetProcAddress(hm, "SetProcessDPIAware");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, SetProcessDPIAware_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetPropA
 JNIEXPORT jboolean JNICALL OS_NATIVE(SetPropA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

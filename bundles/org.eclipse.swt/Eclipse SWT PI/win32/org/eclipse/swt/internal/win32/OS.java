@@ -104,6 +104,11 @@ public class OS extends Platform {
 			* and released by Windows when the program exits.
 			*/
 		}
+		
+		/* Make the process DPI aware for Windows Vista */
+		if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			OS.SetProcessDPIAware ();
+		}
 
 		/* Get the DBCS flag */
 		boolean dbcsEnabled = OS.GetSystemMetrics (OS.SM_DBCSENABLED) != 0;
@@ -3419,6 +3424,7 @@ public static final native int SetPaletteEntries (int hPal, int iStart, int cEnt
 public static final native int SetParent (int hWndChild, int hWndNewParent);
 public static final native int SetPixel (int hdc, int X, int Y, int crColor);
 public static final native int SetPolyFillMode(int hdc, int iPolyFillMode);
+public static final native boolean SetProcessDPIAware();
 public static final native boolean SetRect(RECT lprc, int xLeft, int yTop, int xRight, int yBottom);
 public static final native boolean SetRectRgn (int hrgn, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 public static final native int SetROP2 (int hdc, int fnDrawMode);

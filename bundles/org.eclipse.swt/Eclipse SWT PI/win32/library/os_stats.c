@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 711;
-int OS_nativeFunctionCallCount[711];
+int OS_nativeFunctionCount = 712;
+int OS_nativeFunctionCallCount[712];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -656,6 +656,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetParent",
 	"SetPixel",
 	"SetPolyFillMode",
+	"SetProcessDPIAware",
 	"SetPropA",
 	"SetPropW",
 	"SetROP2",

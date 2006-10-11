@@ -350,6 +350,7 @@
 #define NO_RemovePropA
 #define NO_RemovePropW
 #define NO_SetLayout
+#define NO_SetProcessDPIAware
 #define NO_Shell_1NotifyIconA
 #define NO_SHBrowseForFolderA
 #define NO_SHBrowseForFolderW

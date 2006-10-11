@@ -660,6 +660,7 @@ typedef enum {
 	SetParent_FUNC,
 	SetPixel_FUNC,
 	SetPolyFillMode_FUNC,
+	SetProcessDPIAware_FUNC,
 	SetPropA_FUNC,
 	SetPropW_FUNC,
 	SetROP2_FUNC,
