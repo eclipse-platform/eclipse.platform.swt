@@ -42,7 +42,7 @@ public class Tracker extends Widget {
 	Control parent;
 	boolean tracking, cancelled, stippled;
 	Cursor clientCursor, resizeCursor;
-	Rectangle [] rectangles, proportions;
+	Rectangle [] rectangles = new Rectangle [0], proportions = rectangles;
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
@@ -190,6 +190,7 @@ public void addKeyListener(KeyListener listener) {
 }
 
 Point adjustMoveCursor () {
+	if (bounds == null) return null;
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	/*
@@ -208,6 +209,7 @@ Point adjustMoveCursor () {
 }
 
 Point adjustResizeCursor (boolean movePointer) {
+	if (bounds == null) return null;
 	int newX, newY;
 
 	if ((cursorOrientation & SWT.LEFT) != 0) {
@@ -307,6 +309,7 @@ public void close () {
 	tracking = false;
 }
 Rectangle computeBounds () {
+	if (rectangles.length == 0) return null;
 	int xMin = rectangles [0].x;
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
@@ -327,21 +330,23 @@ Rectangle computeBounds () {
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
 	bounds = computeBounds ();
-	for (int i = 0; i < rects.length; i++) {
-		int x = 0, y = 0, width = 0, height = 0;
-		if (bounds.width != 0) {
-			x = (rects [i].x - bounds.x) * 100 / bounds.width;
-			width = rects [i].width * 100 / bounds.width;
-		} else {
-			width = 100;
+	if (bounds != null) {
+		for (int i = 0; i < rects.length; i++) {
+			int x = 0, y = 0, width = 0, height = 0;
+			if (bounds.width != 0) {
+				x = (rects [i].x - bounds.x) * 100 / bounds.width;
+				width = rects [i].width * 100 / bounds.width;
+			} else {
+				width = 100;
+			}
+			if (bounds.height != 0) {
+				y = (rects [i].y - bounds.y) * 100 / bounds.height;
+				height = rects [i].height * 100 / bounds.height;
+			} else {
+				height = 100;
+			}
+			result [i] = new Rectangle (x, y, width, height);			
 		}
-		if (bounds.height != 0) {
-			y = (rects [i].y - bounds.y) * 100 / bounds.height;
-			height = rects [i].height * 100 / bounds.height;
-		} else {
-			height = 100;
-		}
-		result [i] = new Rectangle (x, y, width, height);			
 	}
 	return result;
 }
@@ -395,10 +400,8 @@ void drawRectangles (int window, Rectangle [] rects, boolean erase) {
  */
 public Rectangle [] getRectangles () {
 	checkWidget();
-	int length = 0;
-	if (rectangles != null) length = rectangles.length;
-	Rectangle [] result = new Rectangle [length];
-	for (int i = 0; i < length; i++) {
+	Rectangle [] result = new Rectangle [rectangles.length];
+	for (int i = 0; i < rectangles.length; i++) {
 		Rectangle current = rectangles [i];
 		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
 	}
@@ -478,8 +481,10 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 				drawRectangles (window, rectangles, false);
 			}
 			Point cursorPos = adjustResizeCursor (orientationInit);
-			newX = cursorPos.x;
-			newY = cursorPos.y;
+			if (cursorPos != null) {
+				newX = cursorPos.x;
+				newY = cursorPos.y;
+			}
 		} else {
 			moveRectangles (newX - oldX, newY - oldY);
 			inEvent = true;
@@ -660,8 +665,10 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			}
 			cursorPos = adjustMoveCursor ();
 		}
-		oldX = cursorPos.x;
-		oldY = cursorPos.y;
+		if (cursorPos != null) {
+			oldX = cursorPos.x;
+			oldY = cursorPos.y;
+		}
 	}
 	return 0;
 }
@@ -675,6 +682,7 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 }
 
 void moveRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) xChange = 0;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) xChange = 0;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
@@ -701,7 +709,6 @@ void moveRectangles (int xChange, int yChange) {
  */
 public boolean open () {
 	checkWidget ();
-	if (rectangles == null) return false;
 	cancelled = false;
 	tracking = true;
 	window = display.createOverlayWindow ();
@@ -733,8 +740,10 @@ public boolean open () {
 			cursorPos = adjustMoveCursor ();
 		}
 	}
-	oldX = cursorPos.x;
-	oldY = cursorPos.y;
+	if (cursorPos != null) {
+		oldX = cursorPos.x;
+		oldY = cursorPos.y;
+	}
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */
 	int [] outEvent  = new int [1];
@@ -785,6 +794,13 @@ public boolean open () {
 	display.grabControl = null;
 	window = 0;
 	return !cancelled;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	parent = null;
+	rectangles = proportions = null;
+	bounds = null;
 }
 
 /**
@@ -842,6 +858,7 @@ public void removeKeyListener(KeyListener listener) {
  * and false otherwise.
  */
 boolean resizeRectangles (int xChange, int yChange) {
+	if (bounds == null) return false;
 	boolean orientationInit = false;
 	/*
 	* If the cursor orientation has not been set in the orientation of
