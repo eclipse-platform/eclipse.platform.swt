@@ -619,6 +619,22 @@ public void drawFocus(int x, int y, int width, int height) {
 	* from a widget.
 	*/
 	int /*long*/ style = OS.gtk_widget_get_style(data.device.shellHandle);
+	int /*long*/ cairo = data.cairo;
+	if (cairo != 0) {
+		checkGC(FOREGROUND);
+		int[] lineWidth = new int[1];
+		OS.gtk_widget_style_get(data.device.shellHandle, OS.focus_line_width, lineWidth, 0);
+		Cairo.cairo_save(cairo);		
+		Cairo.cairo_set_line_width(cairo, lineWidth[0]);
+		double[] dashes = new double[]{1, 1};
+		double dash_offset = -lineWidth[0] / 2f;
+		while (dash_offset < 0) dash_offset += 2;
+		Cairo.cairo_set_dash(cairo, dashes, dashes.length, dash_offset);
+		Cairo.cairo_rectangle(cairo, x + lineWidth[0] / 2f, y + lineWidth[0] / 2f, width, height);
+		Cairo.cairo_stroke(cairo);
+		Cairo.cairo_restore(cairo);
+		return;
+	}
 	OS.gtk_paint_focus(style, data.drawable, OS.GTK_STATE_NORMAL, null, data.device.shellHandle, new byte[1], x, y, width, height);
 }
 
