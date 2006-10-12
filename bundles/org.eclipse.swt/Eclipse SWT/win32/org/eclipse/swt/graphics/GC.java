@@ -721,9 +721,46 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
  */	 
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int hdc = handle, state = 0;
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
+		int clipRgn = 0;
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		int rgn = Gdip.Region_new();
+		if (rgn == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Gdip.Graphics_GetClip(gdipGraphics, rgn);
+		if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
+			clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
+		}
+		Gdip.Region_delete(rgn);
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+		float[] lpXform = null;
+		int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+		if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+		if (!Gdip.Matrix_IsIdentity(matrix)) {
+			lpXform = new float[6];
+			Gdip.Matrix_GetElements(matrix, lpXform);
+		}
+		Gdip.Matrix_delete(matrix);
+		hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+		state = OS.SaveDC(hdc);
+		if (lpXform != null) {
+			OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
+			OS.SetWorldTransform(hdc, lpXform);
+		}
+		if (clipRgn != 0) {
+			OS.SelectClipRgn(hdc, clipRgn);
+			OS.DeleteObject(clipRgn);
+		}
+	}
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, x + width, y + height);
-	OS.DrawFocusRect(handle, rect);
+	OS.DrawFocusRect(hdc, rect);
+	if (gdipGraphics != 0) {
+		OS.RestoreDC(hdc, state);
+		Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
+	}
 }
 
 /**

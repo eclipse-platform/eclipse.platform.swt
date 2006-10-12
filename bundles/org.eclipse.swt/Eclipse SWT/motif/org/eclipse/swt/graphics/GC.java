@@ -579,6 +579,20 @@ public void drawFocus (int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
+	int cairo = data.cairo;
+	if (cairo != 0) {
+		int lineWidth = 1;
+		Cairo.cairo_save(cairo);		
+		Cairo.cairo_set_line_width(cairo, lineWidth);
+		XColor color = new XColor();
+		color.pixel = highlightColor;
+		OS.XQueryColor (data.display, data.colormap, color);
+		Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, 1);
+		Cairo.cairo_rectangle(cairo, x + lineWidth / 2f, y + lineWidth / 2f, width, height);
+		Cairo.cairo_stroke(cairo);
+		Cairo.cairo_restore(cairo);
+		return;
+	}
 	OS.XSetForeground (xDisplay, handle, highlightColor);
 	OS.XDrawRectangle (xDisplay, xDrawable, handle, x, y, width - 1, height - 1);
 	data.state &= ~(BACKGROUND | FOREGROUND);
