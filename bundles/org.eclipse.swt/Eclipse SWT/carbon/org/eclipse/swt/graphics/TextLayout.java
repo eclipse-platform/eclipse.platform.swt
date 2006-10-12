@@ -1667,7 +1667,7 @@ public void setTabs(int[] tabs) {
 		int ptr = tabsPtr = OS.NewPtr(ATSUTab.sizeof * length), i, offset;
 		for (i=0, offset=ptr; i<tabs.length; i++, offset += ATSUTab.sizeof) {
 			tab.tabType = (short)OS.kATSULeftTab;
-			tab.tabPosition += OS.Long2Fix(tabs[i]);
+			tab.tabPosition = OS.Long2Fix(tabs[i]);
 			OS.memcpy(offset, tab, ATSUTab.sizeof);
 		}
 		int width = i - 2 >= 0 ? tabs[i - 1] - tabs[i - 2] : tabs[i - 1];
