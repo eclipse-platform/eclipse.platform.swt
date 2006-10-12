@@ -668,6 +668,7 @@ public void setSelection (int index) {
 
 void setSelection (int index, boolean notify) {
 	int oldIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
+	if (oldIndex == index) return;
 	if (oldIndex != -1) {
 		TabItem item = items [oldIndex];
 		Control control = item.control;

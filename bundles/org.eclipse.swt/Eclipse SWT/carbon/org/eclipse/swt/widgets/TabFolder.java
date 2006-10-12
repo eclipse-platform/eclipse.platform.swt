@@ -261,7 +261,7 @@ void destroyItem (TabItem item) {
 		items [i].update ();
 	}
 	if (count > 0 && index == selectionIndex) {
-		setSelection (Math.max (0, selectionIndex - 1), true);
+		setSelection (Math.max (0, selectionIndex - 1), true, true);
 	}
 	invalidateVisibleRegion (handle);
 }
@@ -603,11 +603,11 @@ public void setSelection (TabItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (items.length == 0) {
-		setSelection (-1, false);
+		setSelection (-1, false, false);
 	} else {
 		for (int i=items.length - 1; i>=0; --i) {
 			int index = indexOf (items [i]);
-			if (index != -1) setSelection (index, false);
+			if (index != -1) setSelection (index, false, false);
 		}
 	}
 }
@@ -629,12 +629,13 @@ public void setSelection (int index) {
 	checkWidget ();
 	int count = OS.GetControl32BitMaximum (handle);
 	if (!(0 <= index && index < count)) return;
-	setSelection (index, false);
+	setSelection (index, false, false);
 }
 
-void setSelection (int index, boolean notify) {
+void setSelection (int index, boolean notify, boolean force) {
 	if (index >= OS.GetControl32BitMaximum (handle)) return;
 	int currentIndex = OS.GetControl32BitValue (handle) - 1;
+	if (!force && currentIndex == index) return;
 	if (currentIndex != -1) {
 		TabItem item = items [currentIndex];
 		if (item != null) {
@@ -674,7 +675,7 @@ boolean traversePage (boolean next) {
 		int offset = (next) ? 1 : -1;
 		index = (index + offset + count) % count;
 	}
-	setSelection (index, true);
+	setSelection (index, true, false);
 	return index == getSelectionIndex ();
 }
 }

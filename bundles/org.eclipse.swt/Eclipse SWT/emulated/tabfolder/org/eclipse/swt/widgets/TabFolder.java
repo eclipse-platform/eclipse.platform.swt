@@ -1125,7 +1125,7 @@ public void setSelection(TabItem selectedItems[]) {
  * Set the selection to the tab at the specified index.
  */
 void setSelection(int index, boolean notify) {
-	
+	if (selectedIndex == index) return;
 	int oldIndex = selectedIndex;
 	
 	if (selectedIndex == index || index >= getItemCount()) return;

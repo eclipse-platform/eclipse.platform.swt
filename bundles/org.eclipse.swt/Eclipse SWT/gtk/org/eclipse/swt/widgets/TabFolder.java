@@ -602,6 +602,7 @@ public void setSelection (int index) {
 void setSelection (int index, boolean notify) {
 	if (index < 0) return;
 	int oldIndex = OS.gtk_notebook_get_current_page (handle);
+	if (oldIndex == index) return;
 	if (oldIndex != -1) {
 		TabItem item = items [oldIndex];
 		Control control = item.control;
