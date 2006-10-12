@@ -573,12 +573,19 @@ public void setText (String string) {
 	text = string;	
 	if (OS.COMCTL32_MAJOR >= 6) {
 		boolean enabled = OS.IsWindowEnabled (handle);
+		/*
+		* Bug in Windows.  For some reason, when SetWindowText()
+		* is used to set the text of a link control to the empty
+		* string, the old text remains.  The fix is to set the
+		* text to a space instead.
+		*/
+		if (string.length () == 0) string = " ";  //$NON-NLS-1$
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (handle, buffer);
-		parse (string);
+		parse (text);
 		enableWidget (enabled);
 	} else {
-		layout.setText (parse (string));	
+		layout.setText (parse (text));	
 		focusIndex = offsets.length > 0 ? 0 : -1;
 		selection.x = selection.y = -1;
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
