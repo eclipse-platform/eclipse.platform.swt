@@ -9,9 +9,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
-// TODO: try incrementing/typing in AMPM field - broken!
-
-// TODO: Make sure losing focus works.
+// TODO: AMPM field in calendar won't change value to AM (0)?
 
 // TODO: Make sure that SWT.Selection works correctly for all styles and all cases (including Win & emulated)
 
@@ -28,6 +26,7 @@ import org.eclipse.swt.layout.*;
 
 // TODO: bug in our API - get/setHour is only 12-hour - need to figure out whether to go with 24 hour,
 // or add a get/setAmPm API, and/or maybe add a get/setHour24 (Java Calendar calls this HOUR_OF_DAY).
+// see spreadsheet for platform details
 
 // TODO: Make sure all set/get API's work - see below for min-max details - maybe even write the spec for these.
 // make sure to test for all styles and for Win & emulated (Mac & GTK later)
@@ -476,7 +475,7 @@ void onFocusIn(Event event) {
 }
 
 void onFocusOut(Event event) {
-	if (false && characterCount > 0) { // TODO: take out false after done debugging
+	if (characterCount > 0) {
 		characterCount = 0;
 		int fieldName = fieldNames[currentField];
 		setTextField(fieldName, Integer.parseInt(text.getSelectionText()), true);
@@ -503,15 +502,19 @@ void onVerify(Event event) {
 	int end = fieldIndices[currentField].y;
 	int length = end - start;
 	String newText = event.text;
+	if (fieldName == Calendar.AM_PM) {
+		if (newText.equalsIgnoreCase("A") || newText.equalsIgnoreCase("AM")) {
+			setTextField(fieldName, Calendar.AM, true);
+		} else if (newText.equalsIgnoreCase("P") || newText.equalsIgnoreCase("PM")) {
+			setTextField(fieldName, Calendar.PM, true);
+		}
+		return;
+	}
 	if (characterCount > 0) {
 		newText = "" + text.getSelectionText() + newText;
 	}
 	int newTextLength = newText.length();
-	if (newTextLength + characterCount < length) {
-		characterCount += newTextLength;
-	} else {
-		characterCount = 0;
-	}
+	characterCount = (newTextLength < length) ? newTextLength : 0;
 	try {
 		int max = calendar.getActualMaximum(fieldName);
 		int min = calendar.getActualMinimum(fieldName);
@@ -520,7 +523,9 @@ void onVerify(Event event) {
 			setTextField(fieldName, newValue, characterCount == 0);
 		} else {
 			if (newTextLength >= length) {
-				newValue = Integer.parseInt(newText.substring(newTextLength - length + 1));
+				newText = newText.substring(newTextLength - length + 1);
+				newValue = Integer.parseInt(newText);
+				characterCount = length - 1;
 				if (min <= newValue && newValue <= max) {
 					setTextField(fieldName, newValue, characterCount == 0);
 				}
@@ -550,7 +555,7 @@ void selectField(int index) {
 	display.asyncExec(new Runnable() {
 		public void run() {
 			if (!text.isDisposed()) {
-				String value = text.getText(start, end);
+				String value = text.getText(start, end - 1);
 				int s = value.lastIndexOf(' ');
 				if (s == -1) s = start;
 				else s = start + s + 1;
@@ -571,21 +576,27 @@ void setTextField(int fieldName, int value, boolean commit) {
 	if (commit) {
 		if (fieldName == Calendar.YEAR) {
 			/* Special case: convert 2-digit years into reasonable 4-digit years. */
-			if (value < 30) value += 1900;
-			else if (value <= 99) value += 2000;
+			if (value < 30) value += 2000;
+			else if (value <= 99) value += 1900;
 		}
 		if (value < min) value = max; // wrap
 	}
 	int start = fieldIndices[currentField].x;
 	int end = fieldIndices[currentField].y;
 	text.setSelection(start, end);
-	StringBuffer buffer = new StringBuffer(String.valueOf(value));
-	int prependCount = end - start - buffer.length();
-	for (int i = 0; i < prependCount; i++) {
-		buffer.insert(0, ' ');
+	String newValue;
+	if (fieldName == Calendar.AM_PM) {
+		newValue = value == Calendar.AM ? "AM" : "PM";
+	} else {
+		StringBuffer buffer = new StringBuffer(String.valueOf(value));
+		int prependCount = end - start - buffer.length();
+		for (int i = 0; i < prependCount; i++) {
+			buffer.insert(0, ' ');
+		}
+		newValue = buffer.toString();
 	}
 	ignoreVerify = true;
-	text.insert(buffer.toString()); // TODO: ampm needs special treatment
+	text.insert(newValue);
 	ignoreVerify = false;
 	selectField(currentField);
 	if (commit) setField(fieldName, value);
