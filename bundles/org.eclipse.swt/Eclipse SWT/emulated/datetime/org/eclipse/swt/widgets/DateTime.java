@@ -9,42 +9,107 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 
+// TODO: try incrementing/typing in AMPM field - broken!
+
+// TODO: Make sure losing focus works.
+
+// TODO: Make sure that SWT.Selection works correctly for all styles and all cases (including Win & emulated)
+
+// TODO: Make sure setting the day/month/etc programmatically does NOT send selection callback.
+
+// TODO: Update all text fields after setting one text field, because others can change too
+
+// TODO: Use roll for increment/decrement? (should be ok - do the update all fields first)
+
+// TODO: Note that on Win, time 'roll' modifies am/pm (i.e. it 'rolls' through 24 hours, not 12). Verify.
+
+// TODO: Windows returns 1-12 for MONTH. Java returns 0-11. GTK calendar returns 0-11. Mac text date returns 1-12.
+// TODO: need to be consistent. Show 1-12 AND spec that setting is 1-12. Ignore Java, and fix GTK.
+
+// TODO: bug in our API - get/setHour is only 12-hour - need to figure out whether to go with 24 hour,
+// or add a get/setAmPm API, and/or maybe add a get/setHour24 (Java Calendar calls this HOUR_OF_DAY).
+
+// TODO: Make sure all set/get API's work - see below for min-max details - maybe even write the spec for these.
+// make sure to test for all styles and for Win & emulated (Mac & GTK later)
+
+// TODO: do the layout work for time/date in Resize.
+// TODO: Add updown buttons.
+
+// TODO: implement setFormat - figure out what formats the Mac supports. Figure out the semantics
+// of setFormat for Calendar widget (Win, GTK, Mac cocoa)... Felipe was saying maybe just have long/short...
+// if possible, make it API.
+
+// TODO: Figure out what happens in different locales, i.e. I assume the native guys change somehow.
+// currently only Mac & Win have the text guys - what happens in those? (how to create for different locale?)
+// (maybe the Nebula guys Locale changers could be useful for this)
+
+// TODO: Consider adding set/get day-of-week API, i.e. 1-7 (Sun-Sat)
+// Otherwise people have to go look it up, and Win, Mac, and Java all provide this - we should, too
+
+// TODO: Write the little print calendar month app
+
+// TODO: Would be nice to allow an optional drop-down calendar for SWT.DATE - figure out semantics.
+
 /*public*/ class DateTime extends Composite {
 	Color foreground, background;
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
 	Button monthDown, monthUp, yearDown, yearUp;
 	Text text;
-	boolean ignore = false;
+	String format;
+	Point[] fieldIndices;
+	int[] fieldNames;
+	int fieldCount, currentField = 0, characterCount = 0;
+	boolean ignoreVerify = false;
 	
-	static final int HOURS = 0, COLON1 = 2, MINUTES = 3, COLON2 = 5, SECONDS = 6, SP = 8, AM_PM = 9;
-	static final int MONTH = 0, SL1 = 2, DAY = 3, SL2 = 5, YEAR = 6;
+	static int[] validSeparators = {'/', ':', '-', '.', SWT.KEYPAD_DIVIDE}; // TODO might not need this
+	static String defaultDateFormat = "MM/DD/YYYY";
+	static String defaultTimeFormat = "HH:MM:SS AM";
 	static final int MARGIN_WIDTH = 2;
 	static final int MARGIN_HEIGHT = 1;
 
 public DateTime(Composite parent, int style) {
-	super(parent, checkStyle (style) | SWT.NO_REDRAW_RESIZE | (((style & SWT.CALENDAR) != 0)? 0 : SWT.BORDER));
+	super(parent, checkStyle(style) | SWT.NO_REDRAW_RESIZE | (((style & SWT.CALENDAR) != 0)? 0 : SWT.BORDER));
 	calendar = Calendar.getInstance();
-	Listener listener = new Listener() {
-		public void handleEvent(Event e) {
-			DateTime.this.handleEvent(e);
-		}
-	};
 	if ((this.style & SWT.CALENDAR) != 0) {
 		formatSymbols = new DateFormatSymbols();
+		Listener listener = new Listener() {
+			public void handleEvent(Event event) {
+				switch(event.type) {
+					case SWT.Paint:		handlePaint(event); break;
+					case SWT.Resize:	handleResize(event); break;
+					case SWT.MouseDown:	handleMouseDown(event); break;
+					case SWT.KeyDown:	handleKeyDown(event); break;
+					case SWT.Traverse:	handleTraverse(event); break;
+				}
+			}
+		};
 		addListener(SWT.Paint, listener);
 		addListener(SWT.Resize, listener);
+		addListener(SWT.MouseDown, listener);
 		addListener(SWT.KeyDown, listener);
 		addListener(SWT.Traverse, listener);
-		addListener(SWT.MouseDown, listener);
-		monthDown = new Button(this, SWT.ARROW | SWT.LEFT);
-		monthUp = new Button(this, SWT.ARROW | SWT.RIGHT);
+		// TODO: move tooltip strings to .properties
 		yearDown = new Button(this, SWT.ARROW | SWT.LEFT);
+		yearDown.setToolTipText("Last Year");
+		monthDown = new Button(this, SWT.ARROW | SWT.LEFT);
+		monthDown.setToolTipText("Last Month");
+		monthUp = new Button(this, SWT.ARROW | SWT.RIGHT);
+		monthUp.setToolTipText("Next Month");
 		yearUp = new Button(this, SWT.ARROW | SWT.RIGHT);
+		yearUp.setToolTipText("Next Year");
+		listener = new Listener() {
+			public void handleEvent(Event event) {
+				switch(event.type) {
+					case SWT.Selection: handleSelection(event); break;
+				}
+			}
+		};
+		yearDown.addListener(SWT.Selection, listener);
 		monthDown.addListener(SWT.Selection, listener);
 		monthUp.addListener(SWT.Selection, listener);
-		yearDown.addListener(SWT.Selection, listener);
 		yearUp.addListener(SWT.Selection, listener);
+		// TODO: add accessibility - hmmm... win32 calendar is not accessible... but text guys are...
 	} else {
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = 0;
@@ -53,28 +118,69 @@ public DateTime(Composite parent, int style) {
 		layout.verticalSpacing = 0;
 		super.setLayout(layout); // TODO: use resize, not layout
 		text = new Text(this, SWT.SINGLE);
-		if ((this.style & SWT.TIME) != 0) {
-			int h = calendar.get(Calendar.HOUR);
-			int m = calendar.get(Calendar.MINUTE);
-			int s = calendar.get(Calendar.SECOND);
-			int a = calendar.get(Calendar.AM_PM);
-			text.setText("" + (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s + " " + (a == Calendar.AM ? "AM" : "PM"));
-		} else { /* SWT.DATE */
-			int y = calendar.get(Calendar.YEAR);
-			int m = calendar.get(Calendar.MONTH);
-			int d = calendar.get(Calendar.DATE);
-			text.setText("" + (m < 10 ? "0" : "") + m + "/" + (d < 10 ? "0" : "") + d + "/" + y);
-		}
+		setFormat((this.style == SWT.DATE ? defaultDateFormat : defaultTimeFormat));
+		text.setText(getComputeSizeString(this.style));
+		Listener listener = new Listener() {
+			public void handleEvent(Event event) {
+				switch(event.type) {
+					case SWT.KeyDown: onKeyDown(event); break;
+					case SWT.FocusIn: onFocusIn(event); break;
+					case SWT.FocusOut: onFocusOut(event); break;
+					case SWT.MouseDown: onMouseClick(event); break;
+					case SWT.MouseUp: onMouseClick(event); break;
+					case SWT.Verify: onVerify(event); break;
+				}
+			}
+		};
+		text.addListener(SWT.KeyDown, listener);
+		text.addListener(SWT.FocusIn, listener);
+		text.addListener(SWT.FocusOut, listener);
+		text.addListener(SWT.MouseDown, listener);
+		text.addListener(SWT.MouseUp, listener);
 		text.addListener(SWT.Verify, listener);
 	}
 }
 
+//TODO: switch to using resize instead of layout for sizing. Then may not need this method?
+String getComputeSizeString(int style) {
+	// TODO: this method needs to be more generic (see setFormat)
+	if ((style & SWT.TIME) != 0) {
+		int h = calendar.get(Calendar.HOUR);
+		int m = calendar.get(Calendar.MINUTE);
+		int s = calendar.get(Calendar.SECOND);
+		int a = calendar.get(Calendar.AM_PM);
+		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + ":" + (s < 10 ? " " : "") + s + " " + (a == Calendar.AM ? "AM" : "PM");
+	}
+	/* SWT.DATE */
+	int y = calendar.get(Calendar.YEAR);
+	int m = calendar.get(Calendar.MONTH);
+	int d = calendar.get(Calendar.DAY_OF_MONTH);
+	return "" + (m < 10 ? " " : "") + m + "/" + (d < 10 ? " " : "") + d + "/" + y;
+}
+
+//TODO: method not currently used.
+String getFormattedString(int style) {
+	// TODO: this method needs to be more generic (see setFormat)
+	if ((style & SWT.TIME) != 0) {
+		int h = calendar.get(Calendar.HOUR);
+		int m = calendar.get(Calendar.MINUTE);
+		int s = calendar.get(Calendar.SECOND);
+		int a = calendar.get(Calendar.AM_PM);
+		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + ":" + (s < 10 ? " " : "") + s + " " + (a == Calendar.AM ? "AM" : "PM");
+	}
+	/* SWT.DATE */
+	int y = calendar.get(Calendar.YEAR);
+	int m = calendar.get(Calendar.MONTH);
+	int d = calendar.get(Calendar.DAY_OF_MONTH);
+	return "" + (m < 10 ? " " : "") + m + "/" + (d < 10 ? " " : "") + d + "/" + y;
+}
+
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addListener (SWT.Selection, typedListener);
+	addListener (SWT.DefaultSelection, typedListener);
 }
 
 static int checkStyle (int style) {
@@ -244,32 +350,6 @@ public int getYear() {
 	return calendar.get(Calendar.YEAR);
 }
 
-void handleEvent(Event event) {
-	switch(event.type) {
-		case SWT.Paint:
-			handlePaint(event);
-			break;
-		case SWT.Resize:
-			handleResize(event);
-			break;
-		case SWT.MouseDown:
-			handleMouseDown(event);
-			break;
-		case SWT.KeyDown:
-			handleKeyDown(event);
-			break;
-		case SWT.Traverse:
-			handleTraverse(event);
-			break;
-		case SWT.Selection:
-			handleSelection(event);
-			break;
-		case SWT.Verify:
-			handleVerify(event);
-			break;
-	}
-}
-
 void handleKeyDown(Event event) {
 	int newDay = calendar.get(Calendar.DAY_OF_MONTH);
 	switch (event.keyCode) {
@@ -301,19 +381,19 @@ void handlePaint(Event event) {
 }
 
 void handleResize(Event event) {
+	yearDown.pack();
 	monthDown.pack();
 	monthUp.pack();
-	yearDown.pack();
 	yearUp.pack();
 	Point cellSize = getCellSize(null);
 	Point size = monthDown.getSize();
 	int height = Math.max(cellSize.y, size.y);
 	int y = cellSize.y * 7 + (height - size.y) / 2;
-	monthDown.setLocation(0, y);
-	monthUp.setLocation(size.x, y);
+	yearDown.setLocation(0, y);
+	monthDown.setLocation(size.x, y);
 	int x = cellSize.x * 7 - size.x;
+	monthUp.setLocation(x - size.x, y);
 	yearUp.setLocation(x, y);
-	yearDown.setLocation(x - size.x, y);
 }
 
 void handleSelection(Event event) {
@@ -345,171 +425,187 @@ void handleTraverse(Event event) {
 	}	
 }
 
-void handleVerify(Event event) {
-	if (ignore) return;
-	event.doit = false;
-	int start = event.start;
-	String newText = "";
-	int length = 0;
-	boolean notify = false;
-	int back = 0;
-	if ((style & SWT.DATE) != 0) {
-		final int MAX = 9;
-		if (start > MAX) return;
-		StringBuffer buffer = new StringBuffer(event.text);
-		char[] chars = new char[buffer.length()];
-		buffer.getChars(0, chars.length, chars, 0);
-		int index = 0;
-		for (int i = 0; i < chars.length; i++) {
-			if (start + index == SL1 || start + index == SL2) {
-				if (chars[i] != '/') {
-					buffer.insert(index, '/');
-				}
-				index++;
-				continue;
+void onKeyDown(Event event) {
+	int fieldName;
+	switch (event.keyCode) {
+		case SWT.ARROW_RIGHT:
+		case SWT.KEYPAD_DIVIDE:
+			// a right arrow or a valid separator navigates to the field on the right, with wraping
+			selectField((currentField + 1) % fieldCount);
+			break;
+		case SWT.ARROW_LEFT:
+			// navigate to the field on the left, with wrapping
+			int index = currentField - 1;
+			selectField(index < 0 ? fieldCount - 1 : index);
+			break;
+		case SWT.ARROW_UP:
+		case SWT.KEYPAD_ADD:
+			// set the value of the current field to value + 1, with wrapping
+			incrementField(+1);
+			break;
+		case SWT.ARROW_DOWN:
+		case SWT.KEYPAD_SUBTRACT:
+			// set the value of the current field to value - 1, with wrapping
+			incrementField(-1);
+			break;
+		case SWT.HOME:
+			// set the value of the current field to its minimum
+			fieldName = fieldNames[currentField];
+			setTextField(fieldName, calendar.getActualMinimum(fieldName), true);
+			break;
+		case SWT.END:
+			// set the value of the current field to its maximum
+			fieldName = fieldNames[currentField];
+			setTextField(fieldName, calendar.getActualMaximum(fieldName), true);
+			break;
+		default:
+			switch (event.character) {
+				case '/':
+				case ':':
+				case '-':
+				case '.':
+					// a valid separator navigates to the field on the right, with wraping
+					selectField((currentField + 1) % fieldCount);
+					break;
 			}
-			if (chars[i] < '0' || chars[i] > '9') return;
-			if (start + index == MONTH && chars[i] > '1') return;
-			if (start + index == DAY && chars[i] > '3') return;
-			index++;
-		}
-		newText = buffer.toString();
-		length = newText.length();
-		StringBuffer date = new StringBuffer(text.getText());
-		date.replace(start, start + length, newText);
-
-		String yyyy = date.substring(YEAR, YEAR+4);
-		int year = Integer.parseInt(yyyy);
-		if (calendar.get(Calendar.YEAR) != year) {
-			calendar.set(Calendar.YEAR, year);
-			notify = true;
-		}
-		String mm = date.substring(MONTH, MONTH+2);
-		int month = Integer.parseInt(mm) - 1;
-		int maxMonth = calendar.getActualMaximum(Calendar.MONTH);
-		if (month < 0) return;
-		if (month > maxMonth) {
-			if (start + length - 1 == MONTH) {
-				newText += "0";
-				length = newText.length();
-				back = 1;
-			} else return;
-		}
-		if (calendar.get(Calendar.MONTH) != month) {
-			calendar.set(Calendar.MONTH, month);
-			notify = true;
-		}
-		String dd = date.substring(DAY, DAY+2);
-		int day = Integer.parseInt(dd);
-		int maxDay = calendar.getActualMaximum(Calendar.DATE);
-		if (day < 1) return;
-		if (day > maxDay)  {
-			if (start + length - 1 == DAY) {
-				newText += "0";
-				length = newText.length();
-				back = 1;
-			} else return;
-		}
-		if (calendar.get(Calendar.DATE) != day) {
-			calendar.set(Calendar.DATE, day);
-			notify = true;
-		}
-	} else { /* SWT.TIME */
-		final int MAX = 10;
-		if (start > MAX) return;
-		StringBuffer buffer = new StringBuffer(event.text);
-		char[] chars = new char[buffer.length()];
-		buffer.getChars(0, chars.length, chars, 0);
-		int index = 0;
-		for (int i = 0; i < chars.length; i++) {
-			if (start + index == COLON1 || start + index == COLON2) {
-				if (chars[i] == ':') {
-					index++;
-					continue;
-				}
-				buffer.insert(index++, ':');
-			}
-			if (start + index == SP) {
-				if (chars[i] == ' ') {
-					index++;
-					continue;
-				}
-				buffer.insert(index++, ' ');
-			}
-			char c = Character.toUpperCase(chars[i]);
-			if (start + index == AM_PM) {
-				if (c == 'A' || c == 'P') {
-					buffer.setCharAt(index++, c);
-					continue;
-				}
-			}
-			if (start + index == AM_PM+1) {
-				if (c == 'M') {
-					buffer.setCharAt(index++, c);
-					continue;
-				}
-			}
-			if (chars[i] < '0' || chars[i] > '9') return;
-			if (start + index == HOURS && chars[i] > '1') return;
-			if (start + index == MINUTES && chars[i] > '5') return;
-			if (start + index == SECONDS && chars[i] > '5') return;
-			index++;
-		}
-		newText = buffer.toString();
-		length = newText.length();
-		StringBuffer time = new StringBuffer(text.getText());
-		time.replace(start, start + length, newText);
-
-		String hh = time.substring(HOURS, HOURS+2);
-		int hour = Integer.parseInt(hh);
-		int maxHour = calendar.getActualMaximum(Calendar.HOUR);
-		if (0 > hour || hour > maxHour) return;
-		if (calendar.get(Calendar.HOUR) != hour) {
-			calendar.set(Calendar.HOUR, hour);
-			notify = true;
-		}
-		String mm = time.substring(MINUTES, MINUTES+2);
-		int minute = Integer.parseInt(mm);
-		int maxMinute = calendar.getActualMaximum(Calendar.MINUTE);
-		if (0 > minute || minute > maxMinute) return;
-		if (calendar.get(Calendar.MINUTE) != minute) {
-			calendar.set(Calendar.MINUTE, minute);
-			notify = true;
-		}
-		String ss = time.substring(SECONDS, SECONDS+2);
-		int second = Integer.parseInt(ss);
-		int maxSec = calendar.getActualMaximum(Calendar.SECOND);
-		if (0 > second || second > maxSec) return;
-		if (calendar.get(Calendar.SECOND) != second) {
-			calendar.set(Calendar.SECOND, second);
-			notify = true;
-		}
-		String ap = time.substring(AM_PM, AM_PM+2);
-		if (ap.equals("AM")) {
-			if (calendar.get(Calendar.AM_PM) != Calendar.AM) {
-				calendar.set(Calendar.AM_PM, Calendar.AM);
-				notify = true;
-			}
-		} else if (ap.equals("PM")) {
-			if (calendar.get(Calendar.AM_PM) != Calendar.PM) {
-				calendar.set(Calendar.AM_PM, Calendar.PM);
-				notify = true;
-			}
-		} else return;
 	}
-	text.setSelection(start, start + length);
-	ignore = true;
-	text.insert(newText);
-	ignore = false;
-	if (back > 0) text.setSelection(start + length - back);
-	if (notify) notifyListeners(SWT.Selection, new Event());
 }
-	
+
+void onFocusIn(Event event) {
+	selectField(currentField);
+}
+
+void onFocusOut(Event event) {
+	if (false && characterCount > 0) { // TODO: take out false after done debugging
+		characterCount = 0;
+		int fieldName = fieldNames[currentField];
+		setTextField(fieldName, Integer.parseInt(text.getSelectionText()), true);
+	}
+}
+
+void onMouseClick(Event event) {
+	if (event.button != 1) return;
+	Point sel = text.getSelection();
+	for (int i = 0; i < fieldCount; i++) {
+		if (sel.x >= fieldIndices[i].x && sel.x <= fieldIndices[i].y) {
+			currentField = i;
+			break;
+		}
+	}
+	selectField(currentField);
+}
+
+void onVerify(Event event) {
+	if (ignoreVerify) return;
+	event.doit = false;
+	int fieldName = fieldNames[currentField];
+	int start = fieldIndices[currentField].x;
+	int end = fieldIndices[currentField].y;
+	int length = end - start;
+	String newText = event.text;
+	if (characterCount > 0) {
+		newText = "" + text.getSelectionText() + newText;
+	}
+	int newTextLength = newText.length();
+	if (newTextLength + characterCount < length) {
+		characterCount += newTextLength;
+	} else {
+		characterCount = 0;
+	}
+	try {
+		int max = calendar.getActualMaximum(fieldName);
+		int min = calendar.getActualMinimum(fieldName);
+		int newValue = Integer.parseInt(newText);
+		if (min <= newValue && newValue <= max) {
+			setTextField(fieldName, newValue, characterCount == 0);
+		} else {
+			if (newTextLength >= length) {
+				newValue = Integer.parseInt(newText.substring(newTextLength - length + 1));
+				if (min <= newValue && newValue <= max) {
+					setTextField(fieldName, newValue, characterCount == 0);
+				}
+			}
+		}
+	} catch (NumberFormatException ex) {
+	}
+}
+
+void incrementField(int amount) {
+	int fieldName = fieldNames[currentField];
+	int value = calendar.get(fieldName);
+	setTextField(fieldName, value + amount, true);
+}
+
+void selectField(int index) {
+	if (characterCount > 0 && index != currentField) {
+		characterCount = 0;
+		int fieldName = fieldNames[currentField];
+		setTextField(fieldName, Integer.parseInt(text.getSelectionText()), true);
+	}	
+	final int start = fieldIndices[index].x;
+	final int end = fieldIndices[index].y;
+	Point pt = text.getSelection();
+	if (index == currentField && start == pt.x && end == pt.y) return;
+	currentField = index;
+	display.asyncExec(new Runnable() {
+		public void run() {
+			if (!text.isDisposed()) {
+				String value = text.getText(start, end);
+				int s = value.lastIndexOf(' ');
+				if (s == -1) s = start;
+				else s = start + s + 1;
+				text.setSelection(s, end);
+			}
+		}
+	});	
+}
+
+void setTextField(int fieldName, int value, boolean commit) {
+	int max = calendar.getActualMaximum(fieldName);
+	int min = calendar.getActualMinimum(fieldName);
+	if (fieldName == Calendar.YEAR) {
+		max = 9999;
+		min = 1000;
+	}
+	if (value > max) value = min; // wrap
+	if (commit) {
+		if (fieldName == Calendar.YEAR) {
+			/* Special case: convert 2-digit years into reasonable 4-digit years. */
+			if (value < 30) value += 1900;
+			else if (value <= 99) value += 2000;
+		}
+		if (value < min) value = max; // wrap
+	}
+	int start = fieldIndices[currentField].x;
+	int end = fieldIndices[currentField].y;
+	text.setSelection(start, end);
+	StringBuffer buffer = new StringBuffer(String.valueOf(value));
+	int prependCount = end - start - buffer.length();
+	for (int i = 0; i < prependCount; i++) {
+		buffer.insert(0, ' ');
+	}
+	ignoreVerify = true;
+	text.insert(buffer.toString()); // TODO: ampm needs special treatment
+	ignoreVerify = false;
+	selectField(currentField);
+	if (commit) setField(fieldName, value);
+}
+
+void setField(int fieldName, int value) {
+	// TODO: make sure this is called on focus lost, field change, and field 'full' (plus home, end, increment)
+	// assumes that the value is already valid for this field
+	if (calendar.get(fieldName) == value) return;
+	// TODO: other fields can change value also, so when current field changes,
+	// check whether other fields changes and set edit fields accordingly
+	calendar.set(fieldName, value);
+	notifyListeners(SWT.Selection, new Event());
+}
+
 public void removeSelectionListener (SelectionListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	removeListener(SWT.Selection, listener);
-	removeListener(SWT.DefaultSelection,listener);	
+	removeListener (SWT.Selection, listener);
+	removeListener (SWT.DefaultSelection,listener);	
 }
 
 void redraw(int cell, Point cellSize) {
@@ -557,6 +653,34 @@ public void setForeground(Color color) {
 	foreground = color;
 }
 
+/*public*/ void setFormat(String string) {
+	checkWidget();
+	// TODO: this function needs to be more generic.
+	// i.e. parse string (e.g. look for hh:mm:ss, etc), and set fieldNames and fieldIndices according to string
+	fieldCount = (style & SWT.DATE) != 0 ? 3 : 4;
+	fieldIndices = new Point[fieldCount];
+	fieldNames = new int[fieldCount];
+	if ((style & SWT.DATE) != 0) {
+		fieldNames[0] = Calendar.MONTH;
+		fieldIndices[0] = new Point(0, 2);
+		fieldNames[1] = Calendar.DAY_OF_MONTH;
+		fieldIndices[1] = new Point(3, 5);
+		fieldNames[2] = Calendar.YEAR;
+		fieldIndices[2] = new Point(6, 10);
+	} else { /* SWT.TIME */
+		fieldNames[0] = Calendar.HOUR;
+		fieldIndices[0] = new Point(0, 2);
+		fieldNames[1] = Calendar.MINUTE;
+		fieldIndices[1] = new Point(3, 5);
+		fieldNames[2] = Calendar.SECOND;
+		fieldIndices[2] = new Point(6, 8);
+		fieldNames[3] = Calendar.AM_PM;
+		fieldIndices[3] = new Point(9, 11);
+	}
+	// TODO: if the format string is bogus, ignore? or throw illegal parameter?
+	format = string;
+}
+
 public void setHour (int hour) {
 	checkWidget ();
 	calendar.set(Calendar.HOUR, hour);
@@ -565,6 +689,7 @@ public void setHour (int hour) {
 
 public void setLayout(Layout layout) {
 	checkWidget();
+	// TODO: Get the comment that says that it does not make sense to set a layout on this
 }
 
 public void setMinute (int minute) {
