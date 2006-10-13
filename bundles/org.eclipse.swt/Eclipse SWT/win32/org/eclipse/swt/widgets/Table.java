@@ -3482,6 +3482,16 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hStateList);
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
+	/*
+	* Bug in Windows.  Setting the LVSIL_STATE state image list
+	* when the table already has a LVSIL_SMALL image list causes
+	* pixel corruption of the images.  The fix is to reset the
+	* LVSIL_SMALL image list.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+	}
 	if (fixScroll && topIndex != 0) {
 		setTopIndex (topIndex);
 		setRedraw (true);
