@@ -1101,6 +1101,12 @@ public void paste () {
 		newText = verifyText (newText, start, end, null);
 		if (newText == null) return;
 	}
+	if (textLimit != LIMIT) {
+		int charCount = text.length ();
+		if (charCount - (end - start) + newText.length() > textLimit) {
+			newText = newText.substring(0, textLimit - charCount + (end - start));
+		}
+	}
 	setText (leftText + newText + rightText, false);
 	start += newText.length ();
 	setSelection (new Point (start, start));
@@ -1599,7 +1605,7 @@ void setText (String string, boolean notify) {
 			if (notify) sendEvent (SWT.Modify);
 		}
 	} else {
-		char [] buffer = new char [string.length ()];
+		char [] buffer = new char [Math.min(string.length (), textLimit)];
 		string.getChars (0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
