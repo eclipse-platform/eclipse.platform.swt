@@ -1044,6 +1044,30 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
+	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
+	* a button, it sends WM_CTLCOLORBTN to get the foreground
+	* and background.  If drawing happens in WM_CTLCOLORBTN,
+	* it will overwrite the contents of the control.  The
+	* fix is draw the button without drawing the background
+	* and avoid the button window proc.
+	* 
+	* NOTE:  This only happens for radio, check and toggle
+	* buttons.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if ((style & (SWT.RADIO | SWT.CHECK | SWT.TOGGLE)) != 0) {
+			OS.InvalidateRect (handle, null, false);
+			int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+			return new LRESULT (code);
+		}
+	}
+	return result;
+}
+
 LRESULT wmCommandChild (int wParam, int lParam) {
 	int code = wParam >> 16;
 	switch (code) {
