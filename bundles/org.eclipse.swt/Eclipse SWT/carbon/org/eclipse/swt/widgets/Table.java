@@ -1098,7 +1098,11 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		 }
 	}
 	if ((drawState & SWT.BACKGROUND) != 0) {
-		gc.fillRectangle (itemX, itemY, itemWidth, itemHeight);
+		if (columnCount == 0) {
+			gc.fillRectangle (stringX - 1, y, extent.x + 2, itemHeight - 1);
+		} else {
+			gc.fillRectangle (itemX, itemY, itemWidth, itemHeight);
+		}
 	}
 	if ((drawState & SWT.FOREGROUND) != 0) {
 		if (image != null) {
