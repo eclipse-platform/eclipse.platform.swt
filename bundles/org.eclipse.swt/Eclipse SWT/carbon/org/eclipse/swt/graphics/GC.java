@@ -2751,8 +2751,8 @@ void setCGClipping () {
 		return;
 	}
 	int port = data.port;
+	int window = OS.GetControlOwner(data.control);
 	if (port == 0) {
-		int window = OS.GetControlOwner(data.control);
 		port = OS.GetWindowPort(window);
 	}
 	Rect portRect = data.portRect;
@@ -2766,6 +2766,17 @@ void setCGClipping () {
 		rect.right += rect.left;
 		rect.bottom += rect.top;
 		rect.left = rect.top = 0;
+	} else {
+		if (OS.HIVIEW) {
+			int [] contentView = new int [1];
+			OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+			CGPoint pt = new CGPoint ();
+			OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (data.control), contentView [0]);
+			rect.left += (int) pt.x;
+			rect.top += (int) pt.y;
+			rect.right += (int) pt.x;
+			rect.bottom += (int) pt.y;
+		}
 	}
 	if (data.clipRgn != 0) {
 		int rgn = OS.NewRgn();
