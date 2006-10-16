@@ -94,8 +94,8 @@ GC() {
 /**	 
  * Constructs a new instance of this class which has been
  * configured to draw on the specified drawable. Sets the
- * foreground and background color in the GC to match those
- * in the drawable.
+ * foreground color, background color and font in the GC
+ * to match those in the drawable.
  * <p>
  * You must dispose the graphics context when it is no longer required. 
  * </p>
@@ -119,8 +119,8 @@ public GC(Drawable drawable) {
 /**	 
  * Constructs a new instance of this class which has been
  * configured to draw on the specified drawable. Sets the
- * foreground and background color in the GC to match those
- * in the drawable.
+ * foreground color, background color and font in the GC
+ * to match those in the drawable.
  * <p>
  * You must dispose the graphics context when it is no longer required. 
  * </p>
