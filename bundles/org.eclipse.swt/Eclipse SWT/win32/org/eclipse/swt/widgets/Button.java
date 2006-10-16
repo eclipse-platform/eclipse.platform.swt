@@ -1060,9 +1060,20 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		if ((style & (SWT.RADIO | SWT.CHECK | SWT.TOGGLE)) != 0) {
-			OS.InvalidateRect (handle, null, false);
-			int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
-			return new LRESULT (code);
+			boolean redraw = findImageControl () != null;
+			if (!redraw) {
+				if ((state & THEME_BACKGROUND) != 0) {
+					if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+						redraw = findThemeControl () != null;
+					}
+				}
+				if (!redraw) redraw = findBackgroundControl () != null;
+			}
+			if (redraw) {
+				OS.InvalidateRect (handle, null, false);
+				int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+				return new LRESULT (code);
+			}
 		}
 	}
 	return result;
