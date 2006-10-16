@@ -1653,6 +1653,8 @@ public void setText (String string) {
 		string = verifyText (string, 0, length, null);
 		if (string == null) return;
 	}
+	int limit = OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0);
+	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 	/*

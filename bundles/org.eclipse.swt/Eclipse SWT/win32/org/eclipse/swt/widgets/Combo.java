@@ -1731,6 +1731,12 @@ public void setText (String string) {
 		if (index != -1) select (index);
 		return;
 	}
+	int limit = LIMIT;
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0) {
+		limit = OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0);
+	}
+	if (string.length () > limit) string = string.substring (0, limit);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	if (OS.SetWindowText (handle, buffer)) {
 		sendEvent (SWT.Modify);
