@@ -351,7 +351,6 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 }
 
 void createNSCursor(Device device, int hotspotX, int hotspotY, byte[] buffer, int width, int height) {
-	
 	if (!initialized) {
 		initialized = true;
 		int window = Cocoa.objc_msgSend(Cocoa.objc_msgSend(Cocoa.C_NSWindow, Cocoa.S_alloc), Cocoa.S_init);
