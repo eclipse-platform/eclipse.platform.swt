@@ -725,7 +725,12 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget ();
 	if (txnObject == 0) {
-		return getText ().length ();
+		int [] ptr = new int [1];
+		int result = OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr, null);
+		if (result != OS.noErr) return 0;
+		int length = OS.CFStringGetLength (ptr [0]);
+		OS.CFRelease (ptr[0]);
+		return length;
 	}
 	return OS.TXNDataSize (txnObject) / 2;
 }
@@ -1210,16 +1215,29 @@ public void insert (String string) {
 }
 
 void insertEditText (String string) {
+	int length = string.length ();
+	Point selection = getSelection ();
 	if (hasFocus () && hiddenText == null) {
-		char [] buffer = new char [string.length ()];
+		if (textLimit != LIMIT) {
+			int charCount = getCharCount();
+			if (charCount - (selection.y - selection.x) + length > textLimit) {
+				length = textLimit - charCount + (selection.y - selection.x);
+			}
+		}
+		char [] buffer = new char [length];
 		string.getChars (0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextInsertCFStringRefTag, 4, new int[] {ptr});
 		OS.CFRelease (ptr);
 	} else {
-		Point selection = getSelection ();
 		String oldText = getText ();
+		if (textLimit != LIMIT) {
+			int charCount = oldText.length ();
+			if (charCount - (selection.y - selection.x) + length > textLimit) {
+				string = string.substring(0, textLimit - charCount + (selection.y - selection.x));
+			}
+		}
 		String newText = oldText.substring (0, selection.x) + string + oldText.substring (selection.y);
 		setEditText (newText);
 		setSelection (selection.x + string.length ());
@@ -1416,7 +1434,13 @@ public void paste () {
 			if (oldText == null) oldText = getClipboardText ();
 			insertEditText (oldText);
 		} else {
-			OS.TXNPaste (txnObject);
+			if (textLimit != LIMIT) {
+				if (oldText == null) oldText = getClipboardText ();
+				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, oldText);
+				OS.TXNShowSelection (txnObject, false);
+			} else {
+				OS.TXNPaste (txnObject);
+			}
 		}
 	}
 	sendEvent (SWT.Modify);
@@ -2002,11 +2026,11 @@ void setEditText (String string) {
 	char [] buffer;
 	if ((style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
 		hiddenText = string;
-		buffer = new char [hiddenText.length ()];
+		buffer = new char [Math.min(hiddenText.length (), textLimit)];
 		for (int i = 0; i < buffer.length; i++) buffer [i] = echoCharacter;
 	} else {
 		hiddenText = null;
-		buffer = new char [string.length ()];
+		buffer = new char [Math.min(string.length (), textLimit)];
 		string.getChars (0, buffer.length, buffer, 0);
 	}
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
@@ -2057,7 +2081,22 @@ void setTXNBounds () {
 }
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
-	char [] buffer = new char [string.length ()];
+	int length = string.length ();
+	if (textLimit != LIMIT) {
+		int charCount = OS.TXNDataSize (txnObject) / 2;
+		int start = iStartOffset, end = iEndOffset;
+		if (iStartOffset == OS.kTXNUseCurrentSelection || iEndOffset == OS.kTXNUseCurrentSelection) {
+			int [] oStartOffset = new int [1], oEndOffset = new int [1];
+			OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
+			start = oStartOffset [0];
+			end = oEndOffset [0];
+		} else {
+			if (iStartOffset == OS.kTXNEndOffset) start = charCount;
+			if (iEndOffset == OS.kTXNEndOffset) end = charCount;
+		}
+		if (charCount - (end - start) + length > textLimit) length = textLimit - charCount + (end - start);
+	}
+	char [] buffer = new char [length];
 	string.getChars (0, buffer.length, buffer, 0);
 	boolean readOnly = (style & SWT.READ_ONLY) != 0;
 	int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
