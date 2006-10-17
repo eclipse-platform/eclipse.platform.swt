@@ -1187,6 +1187,30 @@ void setSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct);
 #define SHFILEINFO_sizeof() 0
 #endif
 
+#ifndef NO_SHFILEINFOA
+void cacheSHFILEINFOAFields(JNIEnv *env, jobject lpObject);
+SHFILEINFOA *getSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct);
+void setSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct);
+#define SHFILEINFOA_sizeof() sizeof(SHFILEINFOA)
+#else
+#define cacheSHFILEINFOAFields(a,b)
+#define getSHFILEINFOAFields(a,b,c) NULL
+#define setSHFILEINFOAFields(a,b,c)
+#define SHFILEINFOA_sizeof() 0
+#endif
+
+#ifndef NO_SHFILEINFOW
+void cacheSHFILEINFOWFields(JNIEnv *env, jobject lpObject);
+SHFILEINFOW *getSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct);
+void setSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct);
+#define SHFILEINFOW_sizeof() sizeof(SHFILEINFOW)
+#else
+#define cacheSHFILEINFOWFields(a,b)
+#define getSHFILEINFOWFields(a,b,c) NULL
+#define setSHFILEINFOWFields(a,b,c)
+#define SHFILEINFOW_sizeof() 0
+#endif
+
 #ifndef NO_SHMENUBARINFO
 void cacheSHMENUBARINFOFields(JNIEnv *env, jobject lpObject);
 SHMENUBARINFO *getSHMENUBARINFOFields(JNIEnv *env, jobject lpObject, SHMENUBARINFO *lpStruct);

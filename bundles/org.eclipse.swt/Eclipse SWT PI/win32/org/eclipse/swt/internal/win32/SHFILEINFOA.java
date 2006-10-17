@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class SHFILEINFOA extends SHFILEINFO {
-	byte [] szDisplayName = new byte [OS.MAX_PATH];
-	byte [] szTypeName = new byte [80];
+	public byte [] szDisplayName = new byte [OS.MAX_PATH];
+	public byte [] szTypeName = new byte [80];
 	public static int sizeof = 352;
 }

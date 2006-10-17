@@ -5268,6 +5268,112 @@ void setSHFILEINFOFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpStruct)
 }
 #endif
 
+#ifndef NO_SHFILEINFOA
+typedef struct SHFILEINFOA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID szDisplayName, szTypeName;
+} SHFILEINFOA_FID_CACHE;
+
+SHFILEINFOA_FID_CACHE SHFILEINFOAFc;
+
+void cacheSHFILEINFOAFields(JNIEnv *env, jobject lpObject)
+{
+	if (SHFILEINFOAFc.cached) return;
+	cacheSHFILEINFOFields(env, lpObject);
+	SHFILEINFOAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SHFILEINFOAFc.szDisplayName = (*env)->GetFieldID(env, SHFILEINFOAFc.clazz, "szDisplayName", "[B");
+	SHFILEINFOAFc.szTypeName = (*env)->GetFieldID(env, SHFILEINFOAFc.clazz, "szTypeName", "[B");
+	SHFILEINFOAFc.cached = 1;
+}
+
+SHFILEINFOA *getSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct)
+{
+	if (!SHFILEINFOAFc.cached) cacheSHFILEINFOAFields(env, lpObject);
+	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, SHFILEINFOFc.hIcon);
+	lpStruct->iIcon = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.iIcon);
+	lpStruct->dwAttributes = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.dwAttributes);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOAFc.szDisplayName);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName), (jbyte *)lpStruct->szDisplayName);
+	}
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOAFc.szTypeName);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName), (jbyte *)lpStruct->szTypeName);
+	}
+	return lpStruct;
+}
+
+void setSHFILEINFOAFields(JNIEnv *env, jobject lpObject, SHFILEINFOA *lpStruct)
+{
+	if (!SHFILEINFOAFc.cached) cacheSHFILEINFOAFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.hIcon, (jint)lpStruct->hIcon);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.iIcon, (jint)lpStruct->iIcon);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.dwAttributes, (jint)lpStruct->dwAttributes);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOAFc.szDisplayName);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName), (jbyte *)lpStruct->szDisplayName);
+	}
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOAFc.szTypeName);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName), (jbyte *)lpStruct->szTypeName);
+	}
+}
+#endif
+
+#ifndef NO_SHFILEINFOW
+typedef struct SHFILEINFOW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID szDisplayName, szTypeName;
+} SHFILEINFOW_FID_CACHE;
+
+SHFILEINFOW_FID_CACHE SHFILEINFOWFc;
+
+void cacheSHFILEINFOWFields(JNIEnv *env, jobject lpObject)
+{
+	if (SHFILEINFOWFc.cached) return;
+	cacheSHFILEINFOFields(env, lpObject);
+	SHFILEINFOWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	SHFILEINFOWFc.szDisplayName = (*env)->GetFieldID(env, SHFILEINFOWFc.clazz, "szDisplayName", "[C");
+	SHFILEINFOWFc.szTypeName = (*env)->GetFieldID(env, SHFILEINFOWFc.clazz, "szTypeName", "[C");
+	SHFILEINFOWFc.cached = 1;
+}
+
+SHFILEINFOW *getSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct)
+{
+	if (!SHFILEINFOWFc.cached) cacheSHFILEINFOWFields(env, lpObject);
+	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, SHFILEINFOFc.hIcon);
+	lpStruct->iIcon = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.iIcon);
+	lpStruct->dwAttributes = (*env)->GetIntField(env, lpObject, SHFILEINFOFc.dwAttributes);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOWFc.szDisplayName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName) / 2, (jchar *)lpStruct->szDisplayName);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOWFc.szTypeName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName) / 2, (jchar *)lpStruct->szTypeName);
+	}
+	return lpStruct;
+}
+
+void setSHFILEINFOWFields(JNIEnv *env, jobject lpObject, SHFILEINFOW *lpStruct)
+{
+	if (!SHFILEINFOWFc.cached) cacheSHFILEINFOWFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.hIcon, (jint)lpStruct->hIcon);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.iIcon, (jint)lpStruct->iIcon);
+	(*env)->SetIntField(env, lpObject, SHFILEINFOFc.dwAttributes, (jint)lpStruct->dwAttributes);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOWFc.szDisplayName);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szDisplayName) / 2, (jchar *)lpStruct->szDisplayName);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, SHFILEINFOWFc.szTypeName);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTypeName) / 2, (jchar *)lpStruct->szTypeName);
+	}
+}
+#endif
+
 #ifndef NO_SHMENUBARINFO
 typedef struct SHMENUBARINFO_FID_CACHE {
 	int cached;
