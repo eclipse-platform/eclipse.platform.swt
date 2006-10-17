@@ -8804,14 +8804,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(SHGetFileInfoA)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jobject arg2, jint arg3, jint arg4)
 {
 	jbyte *lparg0=NULL;
-	SHFILEINFO _arg2, *lparg2=NULL;
+	SHFILEINFOA _arg2, *lparg2=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SHGetFileInfoA_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getSHFILEINFOFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getSHFILEINFOAFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)SHGetFileInfoA((LPCSTR)lparg0, arg1, (SHFILEINFOA *)lparg2, arg3, arg4);
 fail:
-	if (arg2 && lparg2) setSHFILEINFOFields(env, arg2, lparg2);
+	if (arg2 && lparg2) setSHFILEINFOAFields(env, arg2, lparg2);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, SHGetFileInfoA_FUNC);
 	return rc;
@@ -8823,14 +8823,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(SHGetFileInfoW)
 	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jobject arg2, jint arg3, jint arg4)
 {
 	jchar *lparg0=NULL;
-	SHFILEINFO _arg2, *lparg2=NULL;
+	SHFILEINFOW _arg2, *lparg2=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SHGetFileInfoW_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getSHFILEINFOFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getSHFILEINFOWFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jint)SHGetFileInfoW((LPCWSTR)lparg0, arg1, (SHFILEINFOW *)lparg2, arg3, arg4);
 fail:
-	if (arg2 && lparg2) setSHFILEINFOFields(env, arg2, lparg2);
+	if (arg2 && lparg2) setSHFILEINFOWFields(env, arg2, lparg2);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, SHGetFileInfoW_FUNC);
 	return rc;
