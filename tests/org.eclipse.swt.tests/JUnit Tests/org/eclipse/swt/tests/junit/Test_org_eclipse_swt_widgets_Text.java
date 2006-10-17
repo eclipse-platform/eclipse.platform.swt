@@ -73,6 +73,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 		exceptionThrown = true;
 	}
 	assertTrue("Expected exception not thrown", exceptionThrown);
+	exceptionThrown = false;
 	
 	// test whether all content modifying API methods send a Modify event	
 	text.addModifyListener(listener);
@@ -91,6 +92,7 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
@@ -1079,8 +1081,7 @@ public void test_setTextLimitI() {
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
-	assertTrue(":c:", exceptionThrown == true);
-	exceptionThrown = false;
+	assertTrue(":c:", exceptionThrown);
 }
 
 public void test_setTextLjava_lang_String() {
