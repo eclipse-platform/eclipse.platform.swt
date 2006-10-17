@@ -597,7 +597,7 @@ public int getCaretPosition () {
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 	/*
 	* In Windows, there is no API to get the position of the caret
-	* when the selection is an i-beam.  The best that can be done
+	* when the selection is not an i-beam.  The best that can be done
 	* is to query the pixel position of the current caret and compare
 	* it to the pixel position of the start and end of the selection.
 	* 
@@ -789,6 +789,30 @@ public int getLineHeight () {
 public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+/**
+ * Returns the character position at the given point in the receiver
+ * or -1 if no such position exists. The point is in the coordinate
+ * system of the receiver.
+ * <p>
+ * Indexing is zero based.
+ * </p>
+ *
+ * @return the position of the caret
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ int getPosition (Point point) {
+	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int lParam = (point.x & 0xFFFF) | ((point.y << 16) & 0xFFFF0000);
+	return OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
 }
 
 /**
