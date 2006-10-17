@@ -735,7 +735,7 @@ Point getClientLocation () {
 String getCodePage () {
 	return font.codePage;
 }
-Cursor getCursor () {
+public Cursor getCursor () {
 	checkWidget ();
 	return cursor;
 }
