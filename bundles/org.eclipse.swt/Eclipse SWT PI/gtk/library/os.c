@@ -6127,36 +6127,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1pack_1start)
 }
 #endif
 
-#ifndef NO__1gtk_1cell_1layout_1set_1attributes
-JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1layout_1set_1attributes)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jint arg4)
-{
-	jbyte *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gtk_cell_layout_set_attributes(arg0, arg1, lparg2, arg3, arg4);
-*/
-	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef void (*FPTR)(jint, jint, jbyte *, jint, jint);
-		static FPTR fptr;
-		if (!initialized) {
-			if (!handle) handle = dlopen(gtk_cell_layout_set_attributes_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "gtk_cell_layout_set_attributes");
-			initialized = 1;
-		}
-		if (fptr) {
-			(*fptr)(arg0, arg1, lparg2, arg3, arg4);
-		}
-	}
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1cell_1layout_1set_1attributes_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1cell_1renderer_1get_1size
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1cell_1renderer_1get_1size)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)

@@ -3834,8 +3834,8 @@ public static final void gtk_cell_layout_clear(int /*long*/ cell_layout) {
 		lock.unlock();
 	}
 }
-public static final native void _gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int sentinel);
-public static final void gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int sentinel) {
+public static final native void _gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int /*long*/ sentinel);
+public static final void gtk_cell_layout_set_attributes(int /*long*/ cell_layout, int /*long*/ cell, byte[] attribute, int column, int /*long*/ sentinel) {
 	lock.lock();
 	try {
 		_gtk_cell_layout_set_attributes(cell_layout, cell, attribute, column, sentinel);
