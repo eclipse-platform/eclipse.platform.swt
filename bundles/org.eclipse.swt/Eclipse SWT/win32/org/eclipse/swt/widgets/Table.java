@@ -905,6 +905,28 @@ public void clearAll () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (fixScrollWidth) setScrollWidth (null, true);
+	//This code is intentionally commented
+//	if (itemHeight == -1 && hooks (SWT.MeasureItem)) {
+//		int i = 0;
+//		TableItem item = items [i];
+//		if (item != null) {
+//			int hDC = OS.GetDC (handle);
+//			int oldFont = 0, newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+//			if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+//			int index = 0, count = Math.max (1, columnCount);
+//			while (index < count) {
+//				int hFont = item.cellFont != null ? item.cellFont [index] : -1;
+//				if (hFont == -1) hFont = item.font;
+//				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+//				sendMeasureItemEvent (item, i, index, hDC);
+//				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
+//				if (isDisposed () || item.isDisposed ()) break;
+//				index++;
+//			}
+//			if (newFont != 0) OS.SelectObject (hDC, oldFont);
+//			OS.ReleaseDC (handle, hDC);
+//		}
+//	}
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	RECT rect = new RECT ();					
 	OS.GetWindowRect (hwndHeader, rect);
@@ -3009,7 +3031,8 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	* WM_NOTIFY because the item state has not changed.
 	* This is strictly correct but is inconsistent with the
 	* list widget and other widgets in Windows.  The fix is
-	* to detect the case when an item is mark it as selected.
+	* to detect the case when an item is reselected and mark
+	* it as selected.
 	*/
 	boolean forceSelect = false;
 	int count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
@@ -3023,9 +3046,11 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 			forceSelect = true;
 		}
 	}
-	dragStarted = false;
+	boolean dragDetect = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
+	if (!dragDetect) display.runDragDrop = false;
 	int code = callWindowProc (handle, msg, wParam, lParam, forceSelect);
-	if (dragStarted) {
+	if (!dragDetect) display.runDragDrop = true;
+	if (dragStarted || !dragDetect) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 		}
@@ -4873,7 +4898,6 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	
 	/*
 	* Feature in Windows.  For some reason, capturing
 	* the mouse after processing the mouse event for the
@@ -4906,7 +4930,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			}
 		}	
 	}
-	
 	return result;
 }
 

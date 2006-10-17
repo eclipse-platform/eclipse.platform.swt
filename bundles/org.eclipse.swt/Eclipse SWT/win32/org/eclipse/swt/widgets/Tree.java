@@ -152,9 +152,11 @@ void _addListener (int eventType, Listener listener) {
 	super._addListener (eventType, listener);
 	switch (eventType) {
 		case SWT.DragDetect: {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			bits &= ~OS.TVS_DISABLEDRAGDROP;
-			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			if ((state & DRAG_DETECT) != 0) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				bits &= ~OS.TVS_DISABLEDRAGDROP;
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+			}
 			break;
 		}
 		case SWT.MeasureItem:
@@ -2298,6 +2300,16 @@ void destroyItem (TreeItem item, int hItem) {
 		scrollWidth = 0;
 	}
 	updateScrollBar ();
+}
+
+void enableDrag (boolean enabled) {
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if (enabled && hooks (SWT.DragDetect)) {
+		bits &= ~OS.TVS_DISABLEDRAGDROP;		
+	} else {
+		bits |= OS.TVS_DISABLEDRAGDROP;
+	}
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 }
 
 void enableWidget (boolean enabled) {

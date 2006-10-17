@@ -171,6 +171,7 @@ public class Display extends Device {
 	Callback msgFilterCallback;
 	int msgFilterProc, filterHook;
 	MSG hookMsg = new MSG ();
+	boolean runDragDrop = true;
 	
 	/* Idle Hook */
 	Callback foregroundIdleCallback;
@@ -2830,7 +2831,16 @@ int monitorEnumProc (int hmonitor, int hdc, int lprcMonitor, int dwData) {
 }
 
 int msgFilterProc (int code, int wParam, int lParam) {
-	if (runMessages) {
+	switch (code) {
+		case OS.MSGF_COMMCTRL_BEGINDRAG: {
+			if (!runDragDrop) {
+				OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
+				if (hookMsg.message == OS.WM_MOUSEMOVE) {
+					OS.SendMessage (hookMsg.hwnd, OS.WM_CANCELMODE, 0, 0);
+				}
+			}
+			break;
+		}
 		/*
 		* Feature in Windows.  For some reason, when the user clicks
 		* a table or tree, the Windows hook WH_MSGFILTER is sent when
@@ -2838,15 +2848,15 @@ int msgFilterProc (int code, int wParam, int lParam) {
 		* bar did not occur, causing async messages to run at the wrong
 		* time.  The fix is to check the message filter code.
 		*/
-		switch (code) {
-			case OS.MSGF_DIALOGBOX:
-			case OS.MSGF_MAINLOOP:
-			case OS.MSGF_MENU:
-			case OS.MSGF_MOVE:
-			case OS.MSGF_MESSAGEBOX:
-			case OS.MSGF_NEXTWINDOW:
-			case OS.MSGF_SCROLLBAR:
-			case OS.MSGF_SIZE: {
+		case OS.MSGF_DIALOGBOX:
+		case OS.MSGF_MAINLOOP:
+		case OS.MSGF_MENU:
+		case OS.MSGF_MOVE:
+		case OS.MSGF_MESSAGEBOX:
+		case OS.MSGF_NEXTWINDOW:
+		case OS.MSGF_SCROLLBAR:
+		case OS.MSGF_SIZE: {
+			if (runMessages) {
 				OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
 				if (hookMsg.message == OS.WM_NULL) {
 					MSG msg = new MSG ();
@@ -2856,6 +2866,7 @@ int msgFilterProc (int code, int wParam, int lParam) {
 					}
 				}
 			}
+			break;
 		}
 	}
 	return OS.CallNextHookEx (filterHook, code, wParam, lParam);

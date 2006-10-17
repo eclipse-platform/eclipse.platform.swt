@@ -75,8 +75,9 @@ public abstract class Widget {
 	static final int RELEASED		= 1<<11;
 	static final int DISPOSE_SENT	= 1<<12;
 	
-	/* Mouse track flag */
+	/* Mouse track and drag detect flags */
 	static final int TRACK_MOUSE	= 1<<13;
+	static final int DRAG_DETECT	= 1<<14;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -408,12 +409,15 @@ public void dispose () {
 	release (true);
 }
 
-boolean dragDetect (int x, int y) {
-	return hooks (SWT.DragDetect);
-}
-
-boolean dragOverride () {
-	return false;
+boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
+	if (!hooks (SWT.DragDetect)) return false;
+	if (consume != null) consume [0] = false;
+	if (detect != null) detect [0] = true;
+	POINT pt = new POINT ();
+	pt.x = x;
+	pt.y = y;
+	OS.ClientToScreen (hwnd, pt);
+	return OS.DragDetect (hwnd, pt);
 }
 
 /**
@@ -1707,11 +1711,11 @@ LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
 
 LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 	LRESULT result = null;
-	boolean dragging = false, mouseDown = true;
 	int x = (short) (lParam & 0xFFFF);
 	int y = (short) (lParam >> 16);
-	boolean dragDetect = dragDetect (x, y);
-	if (dragDetect) {
+	boolean [] consume = null, detect = null;
+	boolean dragging = false, mouseDown = true;
+	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 		if (!OS.IsWinCE) {
 			/*
 			* Feature in Windows.  It's possible that the drag
@@ -1721,19 +1725,16 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 			* to cancel the drag.  The fix is to query the state
 			* of the mouse and capture the mouse accordingly.
 			*/
-			POINT pt = new POINT ();
-			pt.x = x;
-			pt.y = y;
-			OS.ClientToScreen (hwnd, pt);
-			dragging = OS.DragDetect (hwnd, pt);
+			detect = new boolean [1];
+			consume = new boolean [1];
+			dragging = dragDetect (hwnd, x, y, true, detect, consume);
 			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 		}
 	}
 	Display display = this.display;
 	display.captureChanged = false;
-	boolean dragOverride = dragging && dragOverride ();
 	boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
-	if (dispatch && !dragOverride) {
+	if (dispatch && (consume == null || !consume [0])) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));	
 	} else {
 		result = LRESULT.ZERO;
@@ -1763,9 +1764,9 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 		}
 	}
 	if (dragging) {
-		sendDragEvent ((short) (lParam & 0xFFFF), (short) (lParam >> 16));
+		sendDragEvent (x, y);
 	} else {
-		if (dragDetect) {
+		if (detect != null && detect [0]) {
 			/*
 			* Feature in Windows.  DragDetect() captures the mouse
 			* and tracks its movement until the user releases the

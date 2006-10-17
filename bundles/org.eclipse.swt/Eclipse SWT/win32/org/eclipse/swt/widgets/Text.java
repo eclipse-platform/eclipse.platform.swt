@@ -415,22 +415,24 @@ int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
-boolean dragDetect (int x, int y) {
-	if (hooks (SWT.DragDetect)) {
+boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
+	if (!hooks (SWT.DragDetect)) return false;
+	if (filter) {
 		int [] start = new int [1], end = new int [1];
 		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-		if (start[0] < end[0]) {
-			int pt = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
-			int charFromPos = OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, pt);
-			int position = charFromPos & 0xFFFF;
-			return position > start [0] && position < end [0];
+		if (start [0] < end [0]) {
+			int lParam = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
+			int position = (short) (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF);
+			if (start [0] < position && position < end [0]) {
+				if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
+					if (consume != null) consume [0] = true;
+					return true;
+				}
+			}
 		}
+		return false;
 	}
-	return false;
-}
-
-boolean dragOverride () {
-	return true;
+	return super.dragDetect (hwnd, x, y, filter, detect, consume);
 }
 
 void fixAlignment () {

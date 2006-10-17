@@ -505,6 +505,7 @@ Control [] computeTabList () {
 }
 
 void createHandle () {
+	state |= DRAG_DETECT;
 	int hwndParent = widgetParent ();
 	handle = OS.CreateWindowEx (
 		widgetExtStyle (),
@@ -618,6 +619,10 @@ void drawImageBackground (int hDC, int hwnd, int hBitmap, RECT rect) {
 }
 
 void drawThemeBackground (int hDC, int hwnd, RECT rect) {
+	/* Do nothing */
+}
+
+void enableDrag (boolean enabled) {
 	/* Do nothing */
 }
 
@@ -933,6 +938,24 @@ String getClipboardText () {
 public Cursor getCursor () {
 	checkWidget ();
 	return cursor;
+}
+
+/**
+ * Returns <code>true</code> if the receiver is detecting
+ * drag gestures, and  <code>false</code> otherwise. 
+ *
+ * @return the receiver's drag detect state
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ boolean getDragDetect () {
+	checkWidget ();
+	return (state & DRAG_DETECT) != 0;
 }
 
 /**
@@ -2293,6 +2316,30 @@ void setDefaultFont () {
 }
 
 /**
+ * Sets the receiver's drag detect state. If the argument is
+ * <code>true</code>, the receiver will detect drag gestures,
+ * otherwise these gestures will be ignored.
+ *
+ * @param dragDetect the new drag detect state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	if (dragDetect) {
+		state |= DRAG_DETECT;
+	} else {
+		state &= ~DRAG_DETECT;
+	}
+	enableDrag (dragDetect);
+}
+
+/**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
  * not selectable from the user interface and draws with an
@@ -3331,7 +3378,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_NCCALCSIZE:			result = WM_NCCALCSIZE (wParam, lParam); break;
 		case OS.WM_NCHITTEST:			result = WM_NCHITTEST (wParam, lParam); break;
 		case OS.WM_NCLBUTTONDOWN:		result = WM_NCLBUTTONDOWN (wParam, lParam); break;
-		case OS.WM_NCPAINT:		result = WM_NCPAINT (wParam, lParam); break;
+		case OS.WM_NCPAINT:				result = WM_NCPAINT (wParam, lParam); break;
 		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
