@@ -915,6 +915,11 @@ int getDrawCount (int control) {
 	return parent.getDrawCount (control);
 }
 
+public Cursor getCursor () {
+	checkWidget();
+	return cursor;
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
