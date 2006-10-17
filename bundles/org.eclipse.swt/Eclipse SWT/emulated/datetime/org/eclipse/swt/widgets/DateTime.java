@@ -6,10 +6,18 @@ import java.util.Calendar;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
 
-// TODO: AMPM field in calendar won't change value to AM (0)?
+// TODO: Windows returns 1-12 for MONTH. Java returns 0-11. GTK calendar returns 0-11. Mac text date returns 1-12.
+// TODO: need to be consistent. Show 1-12 AND spec that setting is 1-12. Ignore Java, and fix GTK.
+
+// TODO: bug in emulated get/setHour - should be 24 hour. Win is ok - check Mac.
+
+// TODO: Make sure all set/get API's work - write the spec for these (incl min/max?).
+// make sure to test for all styles and for Win & emulated (Mac & GTK later)
+
+// TODO: AMPM field in calendar won't change to AM (0)??
 
 // TODO: Make sure that SWT.Selection works correctly for all styles and all cases (including Win & emulated)
 
@@ -20,19 +28,6 @@ import org.eclipse.swt.layout.*;
 // TODO: Use roll for increment/decrement? (should be ok - do the update all fields first)
 
 // TODO: Note that on Win, time 'roll' modifies am/pm (i.e. it 'rolls' through 24 hours, not 12). Verify.
-
-// TODO: Windows returns 1-12 for MONTH. Java returns 0-11. GTK calendar returns 0-11. Mac text date returns 1-12.
-// TODO: need to be consistent. Show 1-12 AND spec that setting is 1-12. Ignore Java, and fix GTK.
-
-// TODO: bug in our API - get/setHour is only 12-hour - need to figure out whether to go with 24 hour,
-// or add a get/setAmPm API, and/or maybe add a get/setHour24 (Java Calendar calls this HOUR_OF_DAY).
-// see spreadsheet for platform details
-
-// TODO: Make sure all set/get API's work - see below for min-max details - maybe even write the spec for these.
-// make sure to test for all styles and for Win & emulated (Mac & GTK later)
-
-// TODO: do the layout work for time/date in Resize.
-// TODO: Add updown buttons.
 
 // TODO: implement setFormat - figure out what formats the Mac supports. Figure out the semantics
 // of setFormat for Calendar widget (Win, GTK, Mac cocoa)... Felipe was saying maybe just have long/short...
@@ -49,11 +44,11 @@ import org.eclipse.swt.layout.*;
 
 // TODO: Would be nice to allow an optional drop-down calendar for SWT.DATE - figure out semantics.
 
-/*public*/ class DateTime extends Composite {
+public class DateTime extends Composite {
 	Color foreground, background;
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
-	Button monthDown, monthUp, yearDown, yearUp;
+	Button down, up, monthDown, monthUp, yearDown, yearUp;
 	Text text;
 	String format;
 	Point[] fieldIndices;
@@ -68,7 +63,7 @@ import org.eclipse.swt.layout.*;
 	static final int MARGIN_HEIGHT = 1;
 
 public DateTime(Composite parent, int style) {
-	super(parent, checkStyle(style) | SWT.NO_REDRAW_RESIZE | (((style & SWT.CALENDAR) != 0)? 0 : SWT.BORDER));
+	super(parent, checkStyle(style) | SWT.NO_REDRAW_RESIZE);
 	calendar = Calendar.getInstance();
 	if ((this.style & SWT.CALENDAR) != 0) {
 		formatSymbols = new DateFormatSymbols();
@@ -99,9 +94,7 @@ public DateTime(Composite parent, int style) {
 		yearUp.setToolTipText("Next Year");
 		listener = new Listener() {
 			public void handleEvent(Event event) {
-				switch(event.type) {
-					case SWT.Selection: handleSelection(event); break;
-				}
+				handleSelection(event);
 			}
 		};
 		yearDown.addListener(SWT.Selection, listener);
@@ -110,15 +103,9 @@ public DateTime(Composite parent, int style) {
 		yearUp.addListener(SWT.Selection, listener);
 		// TODO: add accessibility - hmmm... win32 calendar is not accessible... but text guys are...
 	} else {
-		GridLayout layout = new GridLayout();
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
-		layout.horizontalSpacing = 0;
-		layout.verticalSpacing = 0;
-		super.setLayout(layout); // TODO: use resize, not layout
 		text = new Text(this, SWT.SINGLE);
 		setFormat((this.style == SWT.DATE ? defaultDateFormat : defaultTimeFormat));
-		text.setText(getComputeSizeString(this.style));
+		text.setText(getFormattedString(this.style));
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
 				switch(event.type) {
@@ -137,27 +124,31 @@ public DateTime(Composite parent, int style) {
 		text.addListener(SWT.MouseDown, listener);
 		text.addListener(SWT.MouseUp, listener);
 		text.addListener(SWT.Verify, listener);
+		// TODO: move tooltip strings to .properties
+		up = new Button(this, SWT.ARROW | SWT.UP);
+		up.setToolTipText("Up");
+		down = new Button(this, SWT.ARROW | SWT.DOWN);
+		down.setToolTipText("Down");
+		up.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				incrementField(+1);
+				text.setFocus();
+			}
+		});
+		down.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				incrementField(-1);
+				text.setFocus();
+			}
+		});
+		addListener(SWT.Resize, new Listener() {
+			public void handleEvent(Event event) {
+				onResize(event);
+			}
+		});
 	}
 }
 
-//TODO: switch to using resize instead of layout for sizing. Then may not need this method?
-String getComputeSizeString(int style) {
-	// TODO: this method needs to be more generic (see setFormat)
-	if ((style & SWT.TIME) != 0) {
-		int h = calendar.get(Calendar.HOUR);
-		int m = calendar.get(Calendar.MINUTE);
-		int s = calendar.get(Calendar.SECOND);
-		int a = calendar.get(Calendar.AM_PM);
-		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + ":" + (s < 10 ? " " : "") + s + " " + (a == Calendar.AM ? "AM" : "PM");
-	}
-	/* SWT.DATE */
-	int y = calendar.get(Calendar.YEAR);
-	int m = calendar.get(Calendar.MONTH);
-	int d = calendar.get(Calendar.DAY_OF_MONTH);
-	return "" + (m < 10 ? " " : "") + m + "/" + (d < 10 ? " " : "") + d + "/" + y;
-}
-
-//TODO: method not currently used.
 String getFormattedString(int style) {
 	// TODO: this method needs to be more generic (see setFormat)
 	if ((style & SWT.TIME) != 0) {
@@ -174,6 +165,11 @@ String getFormattedString(int style) {
 	return "" + (m < 10 ? " " : "") + m + "/" + (d < 10 ? " " : "") + d + "/" + y;
 }
 
+String getComputeSizeString(int style) {
+	// TODO: this method needs to be more generic (see setFormat)
+	return (style & SWT.TIME) != 0 ? defaultTimeFormat : defaultDateFormat;
+}
+
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -188,15 +184,30 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
+	int width = 0, height = 0;
+	Rectangle trim;
 	if ((style & SWT.CALENDAR) != 0) {
 		Point cellSize = getCellSize(null);
-		Point buttonSize = monthDown.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		int width = wHint == SWT.DEFAULT ? cellSize.x * 7 : wHint;
-		int height = hHint == SWT.DEFAULT ? cellSize.y * 7 + Math.max(cellSize.y, buttonSize.y) : hHint;
-		Rectangle trim = computeTrim(0, 0, width, height);
-		return new Point(trim.width, trim.height);
+		Point buttonSize = monthDown.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
+		width = cellSize.x * 7;
+		height = cellSize.y * 7 + Math.max(cellSize.y, buttonSize.y);
+	} else { /* SWT.DATE and SWT.TIME */
+		GC gc = new GC(text);
+		Point textSize = gc.stringExtent(getComputeSizeString(style));
+		gc.dispose();
+		trim = text.computeTrim(0, 0, textSize.x, textSize.y);
+		Point buttonSize = up.computeSize(SWT.DEFAULT, SWT.DEFAULT, changed);
+		width = trim.width + buttonSize.x;
+		height = Math.max(trim.height, buttonSize.y);
 	}
-	return super.computeSize (wHint, hHint, changed);
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	int borderWidth = getBorderWidth ();
+	return new Point (width + 2*borderWidth, height + 2*borderWidth);
+}
+
+int defaultBackground () {
+	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
 void drawDay(GC gc, Point cellSize, int day) {
@@ -336,7 +347,7 @@ public int getMinute () {
 
 public int getMonth() {
 	checkWidget();
-	return calendar.get(Calendar.MONTH);
+	return calendar.get(Calendar.MONTH) + 1;
 }
 
 public int getSecond () {
@@ -494,6 +505,17 @@ void onMouseClick(Event event) {
 	selectField(currentField);
 }
 
+void onResize(Event event) {
+	Rectangle rect = getClientArea ();
+	int width = rect.width;
+	int height = rect.height;
+	Point buttonSize = up.computeSize(SWT.DEFAULT, height);
+	int buttonHeight = buttonSize.y / 2;
+	text.setBounds(0, 0, width - buttonSize.x, height);
+	up.setBounds(width - buttonSize.x, 0, buttonSize.x, buttonHeight);
+	down.setBounds(width - buttonSize.x, buttonHeight, buttonSize.x, buttonHeight);
+}
+
 void onVerify(Event event) {
 	if (ignoreVerify) return;
 	event.doit = false;
@@ -628,6 +650,7 @@ public void setBackground(Color color) {
 	checkWidget();
 	super.setBackground(color);
 	background = color;
+	if (text != null) text.setBackground(color);
 }
 
 //public void setDate(long date) {
@@ -655,6 +678,7 @@ void setDay(int newDay, boolean notify) {
 public void setFont(Font font) {
 	checkWidget();
 	super.setFont(font);
+	if (text != null) text.setFont(font);
 	redraw();
 }
 
@@ -662,6 +686,7 @@ public void setForeground(Color color) {
 	checkWidget();
 	super.setForeground(color);
 	foreground = color;
+	if (text != null) text.setForeground(color);
 }
 
 /*public*/ void setFormat(String string) {
@@ -711,7 +736,7 @@ public void setMinute (int minute) {
 
 public void setMonth(int month) {
 	checkWidget();
-	calendar.set(Calendar.MONTH, month);
+	calendar.set(Calendar.MONTH, month - 1);
 	redraw();
 }
 
