@@ -47,7 +47,9 @@ public class Menu extends Widget {
 	 */
 	public int handle;
 	
-	int x, y, hwndCB, id0, id1;
+	int x, y, hBrush, hwndCB, id0, id1;
+	int foreground = -1, background = -1;
+	Image backgroundImage;	
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
@@ -506,16 +508,10 @@ void createWidget () {
 	parent.addMenu (this);
 }
 
-/*
-* Currently not used.
-*/
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_MENU);
 }
 
-/*
-* Currently not used.
-*/
 int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_MENUTEXT);
 }
@@ -585,6 +581,40 @@ void fixMenus (Decorations newParent) {
 	parent.removeMenu (this);
 	newParent.addMenu (this);
 	this.parent = newParent;
+}
+
+/**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ Color getBackground () {
+	checkWidget ();
+	return Color.win32_new (display, background != -1 ? background : defaultBackground ());
+}
+
+/**
+ * Returns the receiver's background image.
+ *
+ * @return the background image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ Image getBackgroundImage () {
+	checkWidget ();
+	return backgroundImage;
 }
 
 /**
@@ -684,6 +714,21 @@ public MenuItem getDefaultItem () {
 public boolean getEnabled () {
 	checkWidget ();
 	return (state & DISABLED) == 0;
+}
+
+/**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+/*public*/ Color getForeground () {
+	checkWidget ();
+	return Color.win32_new (display, foreground != -1 ? foreground : defaultForeground ());
 }
 
 /**
@@ -1081,6 +1126,9 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	backgroundImage = null;
+	if (hBrush == 0) OS.DeleteObject (hBrush);
+	hBrush = 0;
 	if (OS.IsPPC && hwndCB != 0) {
 		if (imageList != null) {
 			OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, 0);
@@ -1140,6 +1188,94 @@ public void removeMenuListener (MenuListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Hide, listener);
 	eventTable.unhook (SWT.Show, listener);
+}
+
+/**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setBackground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == background) return;
+	background = pixel;
+	updateBackground ();
+}
+
+/**
+ * Sets the receiver's background image to the image specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.  The background image is tiled to fill
+ * the available space.
+ *
+ * @param image the new image (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument is not a bitmap</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setBackgroundImage (Image image) {
+	checkWidget ();
+	if (image != null) {
+		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (image.type != SWT.BITMAP) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (backgroundImage == image) return;
+	backgroundImage = image;
+	updateBackground ();
+}
+
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the control
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setForeground (Color color) {
+	checkWidget ();
+	int pixel = -1;
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
+	if (pixel == foreground) return;
+	foreground = pixel;
+	updateForeground ();
 }
 
 /**
@@ -1338,8 +1474,8 @@ void update () {
 		for (int i=0; i<items.length; i++) {
 			MenuItem item = items [i];
 			if ((style & SWT.SEPARATOR) == 0) {
-				if (item.image == null) {
-					info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
+				if (item.image == null || foreground != -1) {
+					info.hbmpItem = hasImage || foreground != -1 ? OS.HBMMENU_CALLBACK : 0;
 					OS.SetMenuItemInfo (handle, item.id, false, info);
 				}
 			}
@@ -1359,4 +1495,32 @@ void update () {
 	OS.SetMenuInfo (handle, lpcmi);
 }
 
+void updateBackground () {
+	if (hBrush == 0) OS.DeleteObject (hBrush);
+	hBrush = 0;
+	if (backgroundImage != null) {
+		hBrush = OS.CreatePatternBrush (backgroundImage.handle);
+	} else {
+		if (background != -1) hBrush = OS.CreateSolidBrush (background);
+	}
+	MENUINFO lpcmi = new MENUINFO ();
+	lpcmi.cbSize = MENUINFO.sizeof;
+	lpcmi.fMask = OS.MIM_BACKGROUND;
+	lpcmi.hbrBack = hBrush;
+	OS.SetMenuInfo (handle, lpcmi);
+}
+
+void updateForeground () {
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	int index = 0;
+	while (OS.GetMenuItemInfo (handle, index, true, info)) {
+		info.fMask = OS.MIIM_BITMAP;
+		info.hbmpItem = OS.HBMMENU_CALLBACK;
+		OS.SetMenuItemInfo (handle, index, true, info);
+		index++;
+	}
+	redraw ();
+}
 }

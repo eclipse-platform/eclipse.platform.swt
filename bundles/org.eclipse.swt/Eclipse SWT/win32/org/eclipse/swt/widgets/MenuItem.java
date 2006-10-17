@@ -718,13 +718,13 @@ public void setImage (Image image) {
 		}
 		return;
 	}
-	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) {
-		return;
-	}
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_BITMAP;
-	if (image != null) info.hbmpItem = OS.HBMMENU_CALLBACK;
+	if (image != null || parent.foreground != -1) {
+		info.hbmpItem = OS.HBMMENU_CALLBACK;
+	}
 	int hMenu = parent.handle;
 	OS.SetMenuItemInfo (hMenu, id, false, info);
 	parent.redraw ();
@@ -818,7 +818,7 @@ public void setMenu (Menu menu) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			info.fMask = OS.MIIM_BITMAP;
 			OS.GetMenuItemInfo (hMenu, index, true, info);
-			hasBitmap = info.hbmpItem != 0;
+			hasBitmap = info.hbmpItem != 0 || parent.foreground != -1;
 			if (hasBitmap) {
 				info.hbmpItem = 0;
 				success = OS.SetMenuItemInfo (hMenu, id, false, info);
@@ -1034,7 +1034,7 @@ public void setText (String string) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			info.fMask = OS.MIIM_BITMAP;
 			OS.GetMenuItemInfo (hMenu, id, false, info);
-			hasBitmap = info.hbmpItem != 0;
+			hasBitmap = info.hbmpItem != 0 || parent.foreground != -1;
 		}
 		
 		/* Use the character encoding for the default locale */
@@ -1119,6 +1119,7 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		if (this.image != image) image.dispose ();
 		gc.dispose ();
 	}
+	if (parent.foreground != -1) OS.SetTextColor (struct.hDC, parent.foreground);
 	return null;
 }
 
