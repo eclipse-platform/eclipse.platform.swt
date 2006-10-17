@@ -38,6 +38,7 @@ import org.eclipse.swt.accessibility.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
+	Cursor cursor;
 	Menu menu;
 	Object layoutData;
 	String toolTipText;
@@ -723,6 +724,11 @@ public Rectangle getBounds () {
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
+}
+
+public Cursor getCursor () {
+	checkWidget ();
+	return cursor;
 }
 
 /**
@@ -1637,6 +1643,7 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
+	cursor = null;
 	layoutData = null;
 }
 
@@ -2073,6 +2080,7 @@ public void setCursor (Cursor cursor) {
 		type = cursor.type;
 		bitmap = cursor.bitmap;
 	}
+	this.cursor = cursor;
 	int [] args = new int []{
 		OS.Pt_ARG_CURSOR_TYPE, type, 0,
 		OS.Pt_ARG_BITMAP_CURSOR, bitmap, 0,
