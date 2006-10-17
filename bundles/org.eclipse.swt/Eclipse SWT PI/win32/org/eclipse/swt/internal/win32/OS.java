@@ -34,6 +34,8 @@ public class OS extends Platform {
 	public static final int COMCTL32_MAJOR, COMCTL32_MINOR, COMCTL32_VERSION;
 	public static final int SHELL32_MAJOR, SHELL32_MINOR, SHELL32_VERSION;
 
+	public static final String NO_MANIFEST = "org.eclipse.swt.internal.win32.OS.NO_MANIFEST";
+
 	/*
 	* Flags for Window API GetVersionEx()
 	*/
@@ -79,30 +81,32 @@ public class OS extends Platform {
 		IsUnicode = !IsWin32s && !IsWin95;
 
 		/* Load the manifest to force the XP Theme */
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-			TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
-			int hModule = OS.GetLibraryHandle ();
-			while (OS.GetModuleFileName (hModule, buffer, buffer.length ()) == buffer.length ()) {
-				buffer = new TCHAR (0, buffer.length () + OS.MAX_PATH);
+		if (System.getProperty (NO_MANIFEST) == null) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+				TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
+				int hModule = OS.GetLibraryHandle ();
+				while (OS.GetModuleFileName (hModule, buffer, buffer.length ()) == buffer.length ()) {
+					buffer = new TCHAR (0, buffer.length () + OS.MAX_PATH);
+				}
+				int hHeap = OS.GetProcessHeap ();
+				int byteCount = buffer.length () * TCHAR.sizeof;
+				int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				OS.MoveMemory (pszText, buffer, byteCount);	
+				ACTCTX pActCtx = new ACTCTX ();
+				pActCtx.cbSize = ACTCTX.sizeof;
+				pActCtx.dwFlags = OS.ACTCTX_FLAG_RESOURCE_NAME_VALID | OS.ACTCTX_FLAG_SET_PROCESS_DEFAULT;
+				pActCtx.lpSource = pszText;
+				pActCtx.lpResourceName = OS.MANIFEST_RESOURCE_ID;
+				int hActCtx = OS.CreateActCtx (pActCtx);
+				if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+				int [] lpCookie = new int [1];
+				OS.ActivateActCtx (hActCtx, lpCookie);
+				/*
+				* NOTE:  A single activation context is created and activated
+				* for the entire lifetime of the program.  It is deactivated
+				* and released by Windows when the program exits.
+				*/
 			}
-			int hHeap = OS.GetProcessHeap ();
-			int byteCount = buffer.length () * TCHAR.sizeof;
-			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-			OS.MoveMemory (pszText, buffer, byteCount);	
-			ACTCTX pActCtx = new ACTCTX ();
-			pActCtx.cbSize = ACTCTX.sizeof;
-			pActCtx.dwFlags = OS.ACTCTX_FLAG_RESOURCE_NAME_VALID | OS.ACTCTX_FLAG_SET_PROCESS_DEFAULT;
-			pActCtx.lpSource = pszText;
-			pActCtx.lpResourceName = OS.MANIFEST_RESOURCE_ID;
-			int hActCtx = OS.CreateActCtx (pActCtx);
-			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-			int [] lpCookie = new int [1];
-			OS.ActivateActCtx (hActCtx, lpCookie);
-			/*
-			* NOTE:  A single activation context is created and activated
-			* for the entire lifetime of the program.  It is deactivated
-			* and released by Windows when the program exits.
-			*/
 		}
 		
 		/* Make the process DPI aware for Windows Vista */
