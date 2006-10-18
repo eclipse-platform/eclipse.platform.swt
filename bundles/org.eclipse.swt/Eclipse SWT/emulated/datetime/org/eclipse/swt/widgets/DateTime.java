@@ -9,19 +9,23 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.events.*;
 
-// TODO: bug in emulated get/setHour - should be 24 hour. Win is ok - check Mac.
-// TODO: Note that on Win, time 'roll' modifies am/pm (i.e. it 'rolls' through 24 hours, not 12). Verify.
-// TODO: AMPM field in calendar won't change to AM (0)??
+// TODO: Note that on Win, time 'roll' modifies am/pm (i.e. it 'rolls' through 24 hours, not 12).
+// TODO: Need to be able to type "12" for hour (and not 0).
 
 // TODO: Make sure all set/get API's work - test all styles and platforms (Win, emulated, Mac & GTK)
 // TODO: Make sure setting the day/month/etc programmatically does NOT send selection callback.
 // TODO: Make sure that SWT.Selection works correctly for all styles, all cases, and all platforms
+// TODO: Test emulated on ALL platforms, including Motif.
 
+// TODO: Check if Mac get/setHour is 24 hour.
 // TODO: Fix GTK to return 1-12 for MONTH.
 
 // TODO: implement setFormat - figure out what formats the Mac supports. Figure out the semantics
 // of setFormat for Calendar widget (Win, GTK, Mac cocoa)... Felipe was saying maybe just have long/short...
 // if possible, make it API.
+
+// TODO: Consider allowing an optional drop-down calendar for date (i.e. if style is SWT.DATE | SWT.CALENDAR)
+// would this have to be a hint? Native on Win; Mac might not work - could use fully emulated if necessary.
 
 // TODO: Figure out what happens in different locales, i.e. I assume the native guys change somehow.
 // currently only Mac & Win have the text guys - what happens in those? (how to create for different locale?)
@@ -32,10 +36,8 @@ import org.eclipse.swt.events.*;
 
 // TODO: Write the little print calendar month app
 
-// TODO: Would be nice to allow an optional drop-down calendar for SWT.DATE - figure out semantics.
-
-// TODO: Spec notes: show (default format) and set/get 1-12 for MONTH, show 1-12 (by default) but set/get 0-23 for HOUR.
-// note that spec for what is displayed should wait and go in set/getFormat api if/when we add it.
+// TODO: Spec notes: show (default) and set/get 1-12 for MONTH; show 1-12 (default) but set/get 0-23 for HOUR.
+// note that spec for what is shown should wait and go in set/getFormat api if/when we add it.
 
 public class DateTime extends Composite {
 	Color foreground, background;
@@ -621,8 +623,14 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjustMonth)
 	String newValue;
 	if (fieldName == Calendar.AM_PM) {
 		newValue = value == Calendar.AM ? "AM" : "PM";
+		calendar.roll(Calendar.HOUR_OF_DAY, 12);
 	} else {
-		StringBuffer buffer = new StringBuffer(String.valueOf(fieldName == Calendar.MONTH && adjustMonth ? value + 1 : value));
+		if (fieldName == Calendar.HOUR && value == 0) {
+			newValue = String.valueOf(12); // TODO: if we add setFormat, then this is not generic enough
+		} else {
+			newValue = String.valueOf(fieldName == Calendar.MONTH && adjustMonth ? value + 1 : value);
+		}
+		StringBuffer buffer = new StringBuffer(newValue);
 		int prependCount = end - start - buffer.length();
 		for (int i = 0; i < prependCount; i++) {
 			buffer.insert(0, ' ');
@@ -637,11 +645,7 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjustMonth)
 }
 
 void setField(int fieldName, int value) {
-	// TODO: make sure this is called on focus lost, field change, and field 'full' (plus home, end, increment)
-	// assumes that the value is already valid for this field
 	if (calendar.get(fieldName) == value) return;
-	// TODO: other fields can change value also, so when current field changes,
-	// check whether other fields changes and set edit fields accordingly
 	calendar.set(fieldName, value);
 	notifyListeners(SWT.Selection, new Event());
 }
