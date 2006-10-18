@@ -462,7 +462,7 @@ void createItem (TableColumn column, int index) {
 void createItem (TableItem item) {
 	int index = item.index;
 	if (itemsCount == items.length) {
-		int grow = drawCount == 0 ? 4 : Math.max (4, items.length * 3 / 2);
+		int grow = drawCount <= 0 ? 4 : Math.max (4, items.length * 3 / 2);
 		TableItem[] newItems = new TableItem [items.length + grow];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -671,7 +671,7 @@ void destroyItem (TableColumn column) {
 		if (selection != horizontalOffset) {
 			horizontalOffset = selection;
 			redraw ();
-			if (header.isVisible () && drawCount == 0) header.redraw ();
+			if (header.isVisible () && drawCount <= 0) header.redraw ();
 		}
 	}
 	TableColumn[] orderedColumns = getOrderedColumns ();
@@ -705,7 +705,7 @@ void destroyItem (TableItem item) {
 	}
 	itemsCount--;
 	
-	if (drawCount == 0 && items.length - itemsCount == 4) {
+	if (drawCount <= 0 && items.length - itemsCount == 4) {
 		/* shrink the items array */
 		TableItem[] newItems = new TableItem [itemsCount];
 		System.arraycopy (items, 0, newItems, 0, newItems.length);
@@ -2782,7 +2782,7 @@ void onScrollHorizontal (Event event) {
 		redraw ();	/* ensure that static focus rectangle updates properly */
 	}
 
-	if (drawCount == 0 && header.isVisible ()) {
+	if (drawCount <= 0 && header.isVisible ()) {
 		header.update ();
 		Rectangle headerClientArea = header.getClientArea ();
 		GC gc = new GC (header);
@@ -2856,11 +2856,11 @@ void reassignFocus () {
 }
 public void redraw () {
 	checkWidget ();
-	if (drawCount == 0) super.redraw ();
+	if (drawCount <= 0) super.redraw ();
 }
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	if (drawCount == 0) super.redraw (x, y, width, height, all);
+	if (drawCount <= 0) super.redraw (x, y, width, height, all);
 }
 /* 
  * Redraws from the specified index down to the last available item inclusive.  Note
@@ -2884,7 +2884,7 @@ void redrawItem (int itemIndex, boolean focusBoundsOnly) {
  * for the end index value to extend beyond the last available item.
  */
 void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
-	if (drawCount != 0) return;
+	if (drawCount > 0) return;
 
 	int startY = (startIndex - topIndex) * itemHeight + getHeaderHeight ();
 	int height = (endIndex - startIndex + 1) * itemHeight;
@@ -3271,7 +3271,7 @@ public void setColumnOrder (int [] order) {
 	}
 
 	redraw ();
-	if (drawCount == 0 && header.isVisible ()) header.redraw ();
+	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
 }
 void setFocusItem (TableItem item, boolean redrawOldFocus) {
 	if (item == focusItem) return;
@@ -3313,7 +3313,7 @@ public void setFont (Font value) {
 	
 	gc.dispose ();
 	
-	if (drawCount == 0 && header.isVisible ()) header.redraw ();
+	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
 	
 	/* update scrollbars */
 	if (columns.length == 0) updateHorizontalBar ();
@@ -3740,7 +3740,7 @@ public void setTopIndex (int index) {
 	int change = topIndex - index;
 	topIndex = index;
 	getVerticalBar ().setSelection (topIndex);
-	if (drawCount == 0) {
+	if (drawCount <= 0) {
 		GC gc = new GC (this);
 		gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
 		gc.dispose ();
@@ -3787,7 +3787,7 @@ public void showColumn (TableColumn column) {
 	}
 	getHorizontalBar ().setSelection (horizontalOffset);
 	redraw ();
-	if (drawCount == 0 && header.isVisible ()) header.redraw ();
+	if (drawCount <= 0 && header.isVisible ()) header.redraw ();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,
@@ -3911,7 +3911,7 @@ void updateColumnWidth (TableColumn column, int width) {
 	if (focusItem != null) redrawItem (focusItem.index, true);
 
 	GC headerGC = new GC (header);
-	if (drawCount == 0 && header.getVisible ()) {
+	if (drawCount <= 0 && header.getVisible ()) {
 		Rectangle headerBounds = header.getClientArea ();
 		header.update ();
 		x -= 1;	/* -1 ensures that full header column separator is included */
@@ -3955,7 +3955,7 @@ void updateColumnWidth (TableColumn column, int width) {
 	if (selection != oldHorizontalOffset) {
 		horizontalOffset = selection;
 		redraw ();
-		if (drawCount == 0 && header.getVisible ()) header.redraw ();
+		if (drawCount <= 0 && header.getVisible ()) header.redraw ();
 	}
 
 	column.sendEvent (SWT.Resize);
@@ -3972,7 +3972,7 @@ void updateColumnWidth (TableColumn column, int width) {
  * This is a naive implementation that computes the value from scratch.
  */
 void updateHorizontalBar () {
-	if (drawCount != 0) return;
+	if (drawCount > 0) return;
 
 	ScrollBar hBar = getHorizontalBar ();
 	int maxX = 0;
@@ -4018,7 +4018,7 @@ void updateHorizontalBar () {
  * newRightX (so oldRightX + rightXchange = newRightX)
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
-	if (drawCount != 0) return;
+	if (drawCount > 0) return;
 
 	newRightX += horizontalOffset;
 	ScrollBar hBar = getHorizontalBar ();
@@ -4046,7 +4046,7 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 	updateHorizontalBar ();		/* must search for the new rightmost item */
 }
 void updateVerticalBar () {
-	if (drawCount != 0) return;
+	if (drawCount > 0) return;
 
 	int pageSize = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	int maximum = Math.max (1, itemsCount);	/* setting a value of 0 here is ignored */

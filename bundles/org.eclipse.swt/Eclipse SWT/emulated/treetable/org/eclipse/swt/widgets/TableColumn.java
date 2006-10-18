@@ -261,13 +261,13 @@ public void dispose () {
 				int newColumn0x = newColumn0.getX (); 
 				parent.redraw (newColumn0x, 0, newColumn0.width, parentBounds.height, false);
 				/* if the alignment changed then the header text must be repainted with its new alignment */
-				if (nextColumnAlignment != SWT.LEFT && parent.getHeaderVisible () && parent.drawCount == 0) {
+				if (nextColumnAlignment != SWT.LEFT && parent.getHeaderVisible () && parent.drawCount <= 0) {
 					parent.header.redraw (newColumn0x, 0, newColumn0.width, parent.header.getClientArea ().height, false);
 				}
 			}
 		}
 	}
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);
 	}
 }
@@ -573,7 +573,7 @@ public void setAlignment (int alignment) {
 	style |= alignment;
 	int x = getX ();
 	parent.redraw (x, 0, width, parent.clientArea.height, false);
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);		
 	}
 }
@@ -597,7 +597,7 @@ public void setImage (Image value) {
 		parent.setHeaderImageHeight (value.getBounds ().height);
 		if (oldHeaderHeight != parent.getHeaderHeight ()) {
 			/* parent header height changed */
-			if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+			if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 				parent.header.redraw ();
 			}
 			parent.redraw ();
@@ -605,7 +605,7 @@ public void setImage (Image value) {
 		}
 	}
 	
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
 }
@@ -665,7 +665,7 @@ void setSortDirection (int value) {
 		computeDisplayText (gc);
 		gc.dispose ();
 	}
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
 }
@@ -677,7 +677,7 @@ public void setText (String value) {
 	GC gc = new GC (parent);
 	computeDisplayText (gc);
 	gc.dispose ();
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
 }

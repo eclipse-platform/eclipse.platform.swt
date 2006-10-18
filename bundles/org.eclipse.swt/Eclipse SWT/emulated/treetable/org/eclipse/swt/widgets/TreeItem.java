@@ -2225,7 +2225,7 @@ public void setExpanded (boolean value) {
 			Rectangle clientArea = parent.clientArea;
 			int y = parent.getItemY (this) + parent.itemHeight;
 			if (0 < y && y < clientArea.height) {
-				if (parent.drawCount == 0) {
+				if (parent.drawCount <= 0) {
 					parent.update ();
 					GC gc = new GC (parent);
 					gc.copyArea (
@@ -2269,7 +2269,7 @@ public void setExpanded (boolean value) {
 		int y = parent.getItemY (this) + parent.itemHeight;
 		int startY = y + (descendents.length - 1) * parent.itemHeight;
 		if (y < clientArea.height && 0 < startY) {	/* determine whether any visual update is actually needed */
-			if (parent.drawCount == 0) {
+			if (parent.drawCount <= 0) {
 				parent.update ();
 				GC gc = new GC (parent);
 				gc.copyArea (0, startY, clientArea.width, clientArea.height - startY, 0, y);

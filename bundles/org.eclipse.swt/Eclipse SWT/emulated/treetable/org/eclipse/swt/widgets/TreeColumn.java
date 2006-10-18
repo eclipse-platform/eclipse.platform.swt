@@ -245,7 +245,7 @@ public void dispose () {
 	dispose (true);
 	int width = parentBounds.width - x;
 	parent.redraw (x, 0, width, parentBounds.height, false);
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);
 	}
 }
@@ -551,7 +551,7 @@ public void setAlignment (int alignment) {
 	if (getOrderIndex () == 0) return;	/* no update needed since first ordered column appears left-aligned */
 	int x = getX ();
 	parent.redraw (x, 0, width, parent.clientArea.height, false);
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);		
 	}
 }
@@ -575,7 +575,7 @@ public void setImage (Image value) {
 		parent.setHeaderImageHeight (value.getBounds ().height);
 		if (oldHeaderHeight != parent.getHeaderHeight ()) {
 			/* parent header height changed */
-			if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+			if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 				parent.header.redraw ();
 			}
 			parent.redraw ();
@@ -583,7 +583,7 @@ public void setImage (Image value) {
 		}
 	}
 	
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
 }
@@ -641,7 +641,7 @@ void setSortDirection (int value) {
 		computeDisplayText (gc);
 		gc.dispose ();
 	}
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
 }
@@ -653,7 +653,7 @@ public void setText (String value) {
 	GC gc = new GC (parent);
 	computeDisplayText (gc);
 	gc.dispose ();
-	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+	if (parent.drawCount <= 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
 }
