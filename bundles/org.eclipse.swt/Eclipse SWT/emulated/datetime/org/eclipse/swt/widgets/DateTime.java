@@ -39,7 +39,7 @@ import org.eclipse.swt.events.*;
 // TODO: Spec notes: show (default) and set/get 1-12 for MONTH; show 1-12 (default) but set/get 0-23 for HOUR.
 // note that spec for what is shown should wait and go in set/getFormat api if/when we add it.
 
-public class DateTime extends Composite {
+/*public*/ class DateTime extends Composite {
 	Color foreground, background;
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
