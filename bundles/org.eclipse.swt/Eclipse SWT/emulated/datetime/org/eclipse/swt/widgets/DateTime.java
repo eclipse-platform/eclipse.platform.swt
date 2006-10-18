@@ -9,25 +9,15 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.events.*;
 
-// TODO: Windows returns 1-12 for MONTH. Java returns 0-11. GTK calendar returns 0-11. Mac text date returns 1-12.
-// TODO: need to be consistent. Show 1-12 AND spec that setting is 1-12. Ignore Java, and fix GTK.
-
 // TODO: bug in emulated get/setHour - should be 24 hour. Win is ok - check Mac.
-
-// TODO: Make sure all set/get API's work - write the spec for these (incl min/max?).
-// make sure to test for all styles and for Win & emulated (Mac & GTK later)
-
+// TODO: Note that on Win, time 'roll' modifies am/pm (i.e. it 'rolls' through 24 hours, not 12). Verify.
 // TODO: AMPM field in calendar won't change to AM (0)??
 
-// TODO: Make sure that SWT.Selection works correctly for all styles and all cases (including Win & emulated)
-
+// TODO: Make sure all set/get API's work - test all styles and platforms (Win, emulated, Mac & GTK)
 // TODO: Make sure setting the day/month/etc programmatically does NOT send selection callback.
+// TODO: Make sure that SWT.Selection works correctly for all styles, all cases, and all platforms
 
-// TODO: Update all text fields after setting one text field, because others can change too
-
-// TODO: Use roll for increment/decrement? (should be ok - do the update all fields first)
-
-// TODO: Note that on Win, time 'roll' modifies am/pm (i.e. it 'rolls' through 24 hours, not 12). Verify.
+// TODO: Fix GTK to return 1-12 for MONTH.
 
 // TODO: implement setFormat - figure out what formats the Mac supports. Figure out the semantics
 // of setFormat for Calendar widget (Win, GTK, Mac cocoa)... Felipe was saying maybe just have long/short...
@@ -43,6 +33,9 @@ import org.eclipse.swt.events.*;
 // TODO: Write the little print calendar month app
 
 // TODO: Would be nice to allow an optional drop-down calendar for SWT.DATE - figure out semantics.
+
+// TODO: Spec notes: show (default format) and set/get 1-12 for MONTH, show 1-12 (by default) but set/get 0-23 for HOUR.
+// note that spec for what is displayed should wait and go in set/getFormat api if/when we add it.
 
 public class DateTime extends Composite {
 	Color foreground, background;
@@ -160,7 +153,7 @@ String getFormattedString(int style) {
 	}
 	/* SWT.DATE */
 	int y = calendar.get(Calendar.YEAR);
-	int m = calendar.get(Calendar.MONTH);
+	int m = calendar.get(Calendar.MONTH) + 1;
 	int d = calendar.get(Calendar.DAY_OF_MONTH);
 	return "" + (m < 10 ? " " : "") + m + "/" + (d < 10 ? " " : "") + d + "/" + y;
 }
@@ -180,6 +173,15 @@ public void addSelectionListener(SelectionListener listener) {
 
 static int checkStyle (int style) {
 	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
+}
+
+void commitCurrentField() {
+	if (characterCount > 0) {
+		characterCount = 0;
+		int fieldName = fieldNames[currentField];
+		int newValue = newValue(fieldName, text.getSelectionText(), calendar.getActualMaximum(fieldName));
+		if (newValue != -1) setTextField(fieldName, newValue, true, true);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -337,7 +339,7 @@ public Color getForeground() {
 
 public int getHour () {
 	checkWidget ();
-	return calendar.get(Calendar.HOUR);
+	return calendar.get(Calendar.HOUR_OF_DAY);
 }
 
 public int getMinute () {
@@ -451,22 +453,24 @@ void onKeyDown(Event event) {
 		case SWT.ARROW_UP:
 		case SWT.KEYPAD_ADD:
 			// set the value of the current field to value + 1, with wrapping
+			commitCurrentField();
 			incrementField(+1);
 			break;
 		case SWT.ARROW_DOWN:
 		case SWT.KEYPAD_SUBTRACT:
 			// set the value of the current field to value - 1, with wrapping
+			commitCurrentField();
 			incrementField(-1);
 			break;
 		case SWT.HOME:
 			// set the value of the current field to its minimum
 			fieldName = fieldNames[currentField];
-			setTextField(fieldName, calendar.getActualMinimum(fieldName), true);
+			setTextField(fieldName, calendar.getActualMinimum(fieldName), true, true);
 			break;
 		case SWT.END:
 			// set the value of the current field to its maximum
 			fieldName = fieldNames[currentField];
-			setTextField(fieldName, calendar.getActualMaximum(fieldName), true);
+			setTextField(fieldName, calendar.getActualMaximum(fieldName), true, true);
 			break;
 		default:
 			switch (event.character) {
@@ -486,11 +490,7 @@ void onFocusIn(Event event) {
 }
 
 void onFocusOut(Event event) {
-	if (characterCount > 0) {
-		characterCount = 0;
-		int fieldName = fieldNames[currentField];
-		setTextField(fieldName, Integer.parseInt(text.getSelectionText()), true);
-	}
+	commitCurrentField();
 }
 
 void onMouseClick(Event event) {
@@ -526,9 +526,9 @@ void onVerify(Event event) {
 	String newText = event.text;
 	if (fieldName == Calendar.AM_PM) {
 		if (newText.equalsIgnoreCase("A") || newText.equalsIgnoreCase("AM")) {
-			setTextField(fieldName, Calendar.AM, true);
+			setTextField(fieldName, Calendar.AM, true, false);
 		} else if (newText.equalsIgnoreCase("P") || newText.equalsIgnoreCase("PM")) {
-			setTextField(fieldName, Calendar.PM, true);
+			setTextField(fieldName, Calendar.PM, true, false);
 		}
 		return;
 	}
@@ -536,39 +536,53 @@ void onVerify(Event event) {
 		newText = "" + text.getSelectionText() + newText;
 	}
 	int newTextLength = newText.length();
+	boolean first = characterCount == 0;
 	characterCount = (newTextLength < length) ? newTextLength : 0;
-	try {
-		int max = calendar.getActualMaximum(fieldName);
-		int min = calendar.getActualMinimum(fieldName);
-		int newValue = Integer.parseInt(newText);
-		if (min <= newValue && newValue <= max) {
-			setTextField(fieldName, newValue, characterCount == 0);
-		} else {
-			if (newTextLength >= length) {
-				newText = newText.substring(newTextLength - length + 1);
-				newValue = Integer.parseInt(newText);
+	int max = calendar.getActualMaximum(fieldName);
+	int min = calendar.getActualMinimum(fieldName);
+	int newValue = newValue(fieldName, newText, max);
+	if (first && newValue == 0 && length > 1) {
+		setTextField(fieldName, newValue, false, false);
+	} else if (min <= newValue && newValue <= max) {
+		setTextField(fieldName, newValue, characterCount == 0, characterCount == 0);
+	} else {
+		if (newTextLength >= length) {
+			newText = newText.substring(newTextLength - length + 1);
+			newValue = newValue(fieldName, newText, max);
+			if (newValue != -1) {
 				characterCount = length - 1;
 				if (min <= newValue && newValue <= max) {
-					setTextField(fieldName, newValue, characterCount == 0);
+					setTextField(fieldName, newValue, characterCount == 0, true);
 				}
 			}
 		}
-	} catch (NumberFormatException ex) {
 	}
+}
+
+int newValue(int fieldName, String newText, int max) {
+	int newValue;
+	try {
+		newValue = Integer.parseInt(newText);
+	} catch (NumberFormatException ex) {
+		return -1;
+	}
+	if (fieldName == Calendar.MONTH && characterCount == 0) {
+		newValue--;
+		if (newValue == -1) newValue = max;
+	}
+	return newValue;
 }
 
 void incrementField(int amount) {
 	int fieldName = fieldNames[currentField];
 	int value = calendar.get(fieldName);
-	setTextField(fieldName, value + amount, true);
+	setTextField(fieldName, value + amount, true, true);
 }
 
 void selectField(int index) {
-	if (characterCount > 0 && index != currentField) {
-		characterCount = 0;
-		int fieldName = fieldNames[currentField];
-		setTextField(fieldName, Integer.parseInt(text.getSelectionText()), true);
-	}	
+	if (index != currentField) {
+		commitCurrentField();
+	}
 	final int start = fieldIndices[index].x;
 	final int end = fieldIndices[index].y;
 	Point pt = text.getSelection();
@@ -587,20 +601,18 @@ void selectField(int index) {
 	});	
 }
 
-void setTextField(int fieldName, int value, boolean commit) {
-	int max = calendar.getActualMaximum(fieldName);
-	int min = calendar.getActualMinimum(fieldName);
-	if (fieldName == Calendar.YEAR) {
-		max = 9999;
-		min = 1000;
-	}
-	if (value > max) value = min; // wrap
+void setTextField(int fieldName, int value, boolean commit, boolean adjustMonth) {
 	if (commit) {
+		int max = calendar.getActualMaximum(fieldName);
+		int min = calendar.getActualMinimum(fieldName);
 		if (fieldName == Calendar.YEAR) {
-			/* Special case: convert 2-digit years into reasonable 4-digit years. */
+			/* Special case: don't allow more than 4-digit years. */
+			max = 9999;
+			/* Special case: convert 1 or 2-digit years into reasonable 4-digit years. */
 			if (value < 30) value += 2000;
 			else if (value <= 99) value += 1900;
 		}
+		if (value > max) value = min; // wrap
 		if (value < min) value = max; // wrap
 	}
 	int start = fieldIndices[currentField].x;
@@ -610,7 +622,7 @@ void setTextField(int fieldName, int value, boolean commit) {
 	if (fieldName == Calendar.AM_PM) {
 		newValue = value == Calendar.AM ? "AM" : "PM";
 	} else {
-		StringBuffer buffer = new StringBuffer(String.valueOf(value));
+		StringBuffer buffer = new StringBuffer(String.valueOf(fieldName == Calendar.MONTH && adjustMonth ? value + 1 : value));
 		int prependCount = end - start - buffer.length();
 		for (int i = 0; i < prependCount; i++) {
 			buffer.insert(0, ' ');
@@ -656,12 +668,17 @@ public void setBackground(Color color) {
 //public void setDate(long date) {
 //	checkWidget();
 //	calendar.setTimeInMillis(date);
-//	redraw();
+//	updateControl();
 //}
 //
 public void setDay(int day) {
 	checkWidget();
-	setDay(day, false);
+	if ((style & SWT.CALENDAR) != 0) {
+		setDay(day, false);
+	} else {
+		calendar.set(Calendar.DAY_OF_MONTH, day);
+		updateControl();
+	}
 }
 
 void setDay(int newDay, boolean notify) {
@@ -719,8 +736,8 @@ public void setForeground(Color color) {
 
 public void setHour (int hour) {
 	checkWidget ();
-	calendar.set(Calendar.HOUR, hour);
-	redraw();
+	calendar.set(Calendar.HOUR_OF_DAY, hour);
+	updateControl();
 }
 
 public void setLayout(Layout layout) {
@@ -731,24 +748,34 @@ public void setLayout(Layout layout) {
 public void setMinute (int minute) {
 	checkWidget ();
 	calendar.set(Calendar.MINUTE, minute);
-	redraw();
+	updateControl();
 }
 
 public void setMonth(int month) {
 	checkWidget();
 	calendar.set(Calendar.MONTH, month - 1);
-	redraw();
+	updateControl();
 }
 
 public void setSecond (int second) {
 	checkWidget ();
 	calendar.set(Calendar.SECOND, second);
-	redraw();
+	updateControl();
 }
 
 public void setYear(int year) {
 	checkWidget();
 	calendar.set(Calendar.YEAR, year);
-	redraw();
+	updateControl();
+}
+
+public void updateControl() {
+	if (text != null) {
+		String string = getFormattedString(style);
+		ignoreVerify = true;
+		text.setText(string);
+		ignoreVerify = false;
+	}
+	redraw();	
 }
 }
