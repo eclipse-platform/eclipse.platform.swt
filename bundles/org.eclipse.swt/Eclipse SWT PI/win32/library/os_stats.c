@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 712;
-int OS_nativeFunctionCallCount[712];
+int OS_nativeFunctionCount = 716;
+int OS_nativeFunctionCallCount[716];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -257,6 +257,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetPolyFillMode",
 	"GetProcAddress",
 	"GetProcessHeap",
+	"GetProcessHeaps",
 	"GetProfileStringA",
 	"GetProfileStringW",
 	"GetPropA",
@@ -322,6 +323,7 @@ char * OS_nativeFunctionNames[] = {
 	"GradientFill",
 	"HeapAlloc",
 	"HeapFree",
+	"HeapValidate",
 	"HideCaret",
 	"HitTestThemeBackground",
 	"IIDFromString",
@@ -374,6 +376,8 @@ char * OS_nativeFunctionNames[] = {
 	"InvalidateRect",
 	"InvalidateRgn",
 	"IsAppThemed",
+	"IsBadReadPtr",
+	"IsBadWritePtr",
 	"IsDBCSLeadByte",
 	"IsHungAppWindow",
 	"IsIconic",

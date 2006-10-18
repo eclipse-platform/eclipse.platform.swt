@@ -4034,6 +4034,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetProcessHeap)
 }
 #endif
 
+#ifndef NO_GetProcessHeaps
+JNIEXPORT jint JNICALL OS_NATIVE(GetProcessHeaps)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetProcessHeaps_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)GetProcessHeaps(arg0, (PHANDLE)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetProcessHeaps_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetProfileStringA
 JNIEXPORT jint JNICALL OS_NATIVE(GetProfileStringA)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jbyteArray arg2, jbyteArray arg3, jint arg4)
@@ -5239,6 +5255,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HeapFree)
 }
 #endif
 
+#ifndef NO_HeapValidate
+JNIEXPORT jboolean JNICALL OS_NATIVE(HeapValidate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, HeapValidate_FUNC);
+	rc = (jboolean)HeapValidate((HANDLE)arg0, arg1, (LPCVOID)arg2);
+	OS_NATIVE_EXIT(env, that, HeapValidate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HideCaret
 JNIEXPORT jboolean JNICALL OS_NATIVE(HideCaret)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6001,6 +6029,30 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsAppThemed)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, IsAppThemed_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_IsBadReadPtr
+JNIEXPORT jboolean JNICALL OS_NATIVE(IsBadReadPtr)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, IsBadReadPtr_FUNC);
+	rc = (jboolean)IsBadReadPtr((LPVOID)arg0, (UINT_PTR)arg1);
+	OS_NATIVE_EXIT(env, that, IsBadReadPtr_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_IsBadWritePtr
+JNIEXPORT jboolean JNICALL OS_NATIVE(IsBadWritePtr)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, IsBadWritePtr_FUNC);
+	rc = (jboolean)IsBadWritePtr((LPVOID)arg0, (UINT_PTR)arg1);
+	OS_NATIVE_EXIT(env, that, IsBadWritePtr_FUNC);
 	return rc;
 }
 #endif
