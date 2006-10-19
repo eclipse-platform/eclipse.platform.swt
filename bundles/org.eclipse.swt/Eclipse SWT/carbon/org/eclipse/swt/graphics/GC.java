@@ -360,29 +360,42 @@ public void copyArea(Image image, int x, int y) {
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.image != null) {
 		copyArea(image, x, y, data.image.handle);
-	} else if (data.window != 0 || data.control != 0) {
+	} else if (data.control != 0) {
 		int imageHandle = image.handle;
-		if (data.control != 0) {
-			Rect rect = new Rect ();
-			int window = OS.GetControlOwner (data.control);
-			if (OS.HIVIEW) {
-				CGPoint pt = new CGPoint ();
-				OS.HIViewConvertPoint (pt, data.control, 0);
-				x += (int) pt.x;
-				y += (int) pt.y;
-				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-			} else {
-				OS.GetControlBounds (data.control, rect);
-				x += rect.left;
-				y += rect.top;
-				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			}
-			x += rect.left;
-			y += rect.top;
-			rect = data.insetRect;
-			x -= rect.left;
-			y -= rect.top;
+		int width = OS.CGImageGetWidth(imageHandle);
+		int height = OS.CGImageGetHeight(imageHandle);
+		int window = OS.GetControlOwner(data.control);
+		Rect srcRect = new Rect ();
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			int[] contentView = new int[1];
+			OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
+			OS.HIViewConvertPoint (pt, data.control, contentView[0]);
+			x += (int) pt.x;
+			y += (int) pt.y;
+		} else {
+			OS.GetControlBounds (data.control, srcRect);
+			x += srcRect.left;
+			y += srcRect.top;
 		}
+		Rect inset = data.insetRect;
+		x -= inset.left;
+		y -= inset.top;
+		srcRect.left = (short)x;
+		srcRect.top = (short)y;
+		srcRect.right = (short)(x + width);
+		srcRect.bottom = (short)(y + height);
+		Rect destRect = new Rect();
+		destRect.right = (short)width;
+		destRect.bottom = (short)height;
+		int bpl = width * 4;
+		int[] gWorld = new int[1];
+		int port = OS.GetWindowPort(window);		
+		OS.NewGWorldFromPtr(gWorld, OS.k32ARGBPixelFormat, destRect, 0, 0, 0, image.data, bpl);
+		OS.CopyBits(OS.GetPortBitMapForCopyBits(port), OS.GetPortBitMapForCopyBits(gWorld[0]), srcRect, destRect, (short)OS.srcCopy, 0);			
+		OS.DisposeGWorld(gWorld [0]);
+	} else if (data.window != 0) {
+		int imageHandle = image.handle;
 		CGRect rect = new CGRect();
 		rect.x = x;
 		rect.y = y;
