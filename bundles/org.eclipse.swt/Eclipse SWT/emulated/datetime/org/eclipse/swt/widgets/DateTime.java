@@ -17,6 +17,10 @@ import org.eclipse.swt.events.*;
 // TODO: Make sure that SWT.Selection works correctly for all styles, all cases, and all platforms
 // TODO: Test emulated on ALL platforms, including Motif.
 
+// TODO: move tooltip and other strings to .properties
+
+// TODO: add accessibility - note: win32 calendar is not accessible... but win32 text guys are...
+
 // TODO: Check if Mac get/setHour is 24 hour.
 // TODO: Fix GTK to return 1-12 for MONTH.
 
@@ -38,6 +42,7 @@ import org.eclipse.swt.events.*;
 
 // TODO: Spec notes: show (default) and set/get 1-12 for MONTH; show 1-12 (default) but set/get 0-23 for HOUR.
 // note that spec for what is shown should wait and go in set/getFormat api if/when we add it.
+// TODO: Get the comment that says that it does not make sense to set a layout on this
 
 /*public*/ class DateTime extends Composite {
 	Color foreground, background;
@@ -51,7 +56,6 @@ import org.eclipse.swt.events.*;
 	int fieldCount, currentField = 0, characterCount = 0;
 	boolean ignoreVerify = false;
 	
-	static int[] validSeparators = {'/', ':', '-', '.', SWT.KEYPAD_DIVIDE}; // TODO might not need this
 	static String defaultDateFormat = "MM/DD/YYYY";
 	static String defaultTimeFormat = "HH:MM:SS AM";
 	static final int MARGIN_WIDTH = 2;
@@ -78,7 +82,6 @@ public DateTime(Composite parent, int style) {
 		addListener(SWT.MouseDown, listener);
 		addListener(SWT.KeyDown, listener);
 		addListener(SWT.Traverse, listener);
-		// TODO: move tooltip strings to .properties
 		yearDown = new Button(this, SWT.ARROW | SWT.LEFT);
 		yearDown.setToolTipText("Last Year");
 		monthDown = new Button(this, SWT.ARROW | SWT.LEFT);
@@ -96,7 +99,6 @@ public DateTime(Composite parent, int style) {
 		monthDown.addListener(SWT.Selection, listener);
 		monthUp.addListener(SWT.Selection, listener);
 		yearUp.addListener(SWT.Selection, listener);
-		// TODO: add accessibility - hmmm... win32 calendar is not accessible... but text guys are...
 	} else {
 		text = new Text(this, SWT.SINGLE);
 		setFormat((this.style == SWT.DATE ? defaultDateFormat : defaultTimeFormat));
@@ -119,7 +121,6 @@ public DateTime(Composite parent, int style) {
 		text.addListener(SWT.MouseDown, listener);
 		text.addListener(SWT.MouseUp, listener);
 		text.addListener(SWT.Verify, listener);
-		// TODO: move tooltip strings to .properties
 		up = new Button(this, SWT.ARROW | SWT.UP);
 		up.setToolTipText("Up");
 		down = new Button(this, SWT.ARROW | SWT.DOWN);
@@ -144,10 +145,25 @@ public DateTime(Composite parent, int style) {
 	}
 }
 
+String formattedStringValue(int fieldName, int value, boolean adjust) {
+	if (fieldName == Calendar.AM_PM) {
+		return value == Calendar.AM ? "AM" : "PM"; // TODO: needs more work for setFormat and locale
+	}
+	if (adjust) {
+		if (fieldName == Calendar.HOUR && value == 0) {
+			return String.valueOf(12); // TODO: needs more work for setFormat and locale
+		}
+		if (fieldName == Calendar.MONTH) {
+			return String.valueOf(value + 1);
+		}
+	}
+	return String.valueOf(value);
+}
+
 String getFormattedString(int style) {
-	// TODO: this method needs to be more generic (see setFormat)
+	// TODO: needs more work for setFormat and locale
 	if ((style & SWT.TIME) != 0) {
-		int h = calendar.get(Calendar.HOUR);
+		int h = calendar.get(Calendar.HOUR); if (h == 0) h = 12;
 		int m = calendar.get(Calendar.MINUTE);
 		int s = calendar.get(Calendar.SECOND);
 		int a = calendar.get(Calendar.AM_PM);
@@ -161,7 +177,7 @@ String getFormattedString(int style) {
 }
 
 String getComputeSizeString(int style) {
-	// TODO: this method needs to be more generic (see setFormat)
+	// TODO: needs more work for setFormat and locale
 	return (style & SWT.TIME) != 0 ? defaultTimeFormat : defaultDateFormat;
 }
 
@@ -181,7 +197,7 @@ void commitCurrentField() {
 	if (characterCount > 0) {
 		characterCount = 0;
 		int fieldName = fieldNames[currentField];
-		int newValue = newValue(fieldName, text.getSelectionText(), calendar.getActualMaximum(fieldName));
+		int newValue = unformattedIntValue(fieldName, text.getSelectionText(), characterCount == 0, calendar.getActualMaximum(fieldName));
 		if (newValue != -1) setTextField(fieldName, newValue, true, true);
 	}
 }
@@ -542,7 +558,7 @@ void onVerify(Event event) {
 	characterCount = (newTextLength < length) ? newTextLength : 0;
 	int max = calendar.getActualMaximum(fieldName);
 	int min = calendar.getActualMinimum(fieldName);
-	int newValue = newValue(fieldName, newText, max);
+	int newValue = unformattedIntValue(fieldName, newText, characterCount == 0, max);
 	if (first && newValue == 0 && length > 1) {
 		setTextField(fieldName, newValue, false, false);
 	} else if (min <= newValue && newValue <= max) {
@@ -550,7 +566,7 @@ void onVerify(Event event) {
 	} else {
 		if (newTextLength >= length) {
 			newText = newText.substring(newTextLength - length + 1);
-			newValue = newValue(fieldName, newText, max);
+			newValue = unformattedIntValue(fieldName, newText, characterCount == 0, max);
 			if (newValue != -1) {
 				characterCount = length - 1;
 				if (min <= newValue && newValue <= max) {
@@ -559,20 +575,6 @@ void onVerify(Event event) {
 			}
 		}
 	}
-}
-
-int newValue(int fieldName, String newText, int max) {
-	int newValue;
-	try {
-		newValue = Integer.parseInt(newText);
-	} catch (NumberFormatException ex) {
-		return -1;
-	}
-	if (fieldName == Calendar.MONTH && characterCount == 0) {
-		newValue--;
-		if (newValue == -1) newValue = max;
-	}
-	return newValue;
 }
 
 void incrementField(int amount) {
@@ -603,7 +605,7 @@ void selectField(int index) {
 	});	
 }
 
-void setTextField(int fieldName, int value, boolean commit, boolean adjustMonth) {
+void setTextField(int fieldName, int value, boolean commit, boolean adjust) {
 	if (commit) {
 		int max = calendar.getActualMaximum(fieldName);
 		int min = calendar.getActualMinimum(fieldName);
@@ -611,8 +613,10 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjustMonth)
 			/* Special case: don't allow more than 4-digit years. */
 			max = 9999;
 			/* Special case: convert 1 or 2-digit years into reasonable 4-digit years. */
-			if (value < 30) value += 2000;
-			else if (value <= 99) value += 1900;
+			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+			int currentCentury = (currentYear / 100) * 100;
+			if (value < (currentYear + 30) % 100) value += currentCentury;
+			else if (value < 100) value += currentCentury - 100;
 		}
 		if (value > max) value = min; // wrap
 		if (value < min) value = max; // wrap
@@ -620,23 +624,14 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjustMonth)
 	int start = fieldIndices[currentField].x;
 	int end = fieldIndices[currentField].y;
 	text.setSelection(start, end);
-	String newValue;
-	if (fieldName == Calendar.AM_PM) {
-		newValue = value == Calendar.AM ? "AM" : "PM";
-		calendar.roll(Calendar.HOUR_OF_DAY, 12);
-	} else {
-		if (fieldName == Calendar.HOUR && value == 0) {
-			newValue = String.valueOf(12); // TODO: if we add setFormat, then this is not generic enough
-		} else {
-			newValue = String.valueOf(fieldName == Calendar.MONTH && adjustMonth ? value + 1 : value);
-		}
-		StringBuffer buffer = new StringBuffer(newValue);
-		int prependCount = end - start - buffer.length();
-		for (int i = 0; i < prependCount; i++) {
-			buffer.insert(0, ' ');
-		}
-		newValue = buffer.toString();
+	String newValue = formattedStringValue(fieldName, value, adjust);
+	StringBuffer buffer = new StringBuffer(newValue);
+	/* Convert leading 0's into spaces. */
+	int prependCount = end - start - buffer.length();
+	for (int i = 0; i < prependCount; i++) {
+		buffer.insert(0, ' ');
 	}
+	newValue = buffer.toString();
 	ignoreVerify = true;
 	text.insert(newValue);
 	ignoreVerify = false;
@@ -646,6 +641,9 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjustMonth)
 
 void setField(int fieldName, int value) {
 	if (calendar.get(fieldName) == value) return;
+	if (fieldName == Calendar.AM_PM) {
+		calendar.roll(Calendar.HOUR_OF_DAY, 12); // TODO: needs more work for setFormat and locale
+	}
 	calendar.set(fieldName, value);
 	notifyListeners(SWT.Selection, new Event());
 }
@@ -712,8 +710,8 @@ public void setForeground(Color color) {
 
 /*public*/ void setFormat(String string) {
 	checkWidget();
-	// TODO: this function needs to be more generic.
-	// i.e. parse string (e.g. look for hh:mm:ss, etc), and set fieldNames and fieldIndices according to string
+	// TODO: to go public, this function needs more work. (also, may need to think about locale)
+	// i.e. parse string (e.g. look for hh:mm:ss, or mm/dd/yyyy, etc), and set fieldNames and fieldIndices accordingly
 	fieldCount = (style & SWT.DATE) != 0 ? 3 : 4;
 	fieldIndices = new Point[fieldCount];
 	fieldNames = new int[fieldCount];
@@ -734,7 +732,7 @@ public void setForeground(Color color) {
 		fieldNames[3] = Calendar.AM_PM;
 		fieldIndices[3] = new Point(9, 11);
 	}
-	// TODO: if the format string is bogus, ignore? or throw illegal parameter?
+	// TODO: if the format string is bogus, use previous? or throw illegal parameter?
 	format = string;
 }
 
@@ -746,7 +744,6 @@ public void setHour (int hour) {
 
 public void setLayout(Layout layout) {
 	checkWidget();
-	// TODO: Get the comment that says that it does not make sense to set a layout on this
 }
 
 public void setMinute (int minute) {
@@ -771,6 +768,23 @@ public void setYear(int year) {
 	checkWidget();
 	calendar.set(Calendar.YEAR, year);
 	updateControl();
+}
+
+int unformattedIntValue(int fieldName, String newText, boolean adjust, int max) {
+	int newValue;
+	try {
+		newValue = Integer.parseInt(newText);
+	} catch (NumberFormatException ex) {
+		return -1;
+	}
+	if (fieldName == Calendar.MONTH && adjust) {
+		newValue--;
+		if (newValue == -1) newValue = max;
+	}
+	if (fieldName == Calendar.HOUR && adjust) {
+		if (newValue == 12) newValue = 0; // TODO: needs more work for setFormat and locale
+	}
+	return newValue;
 }
 
 public void updateControl() {
