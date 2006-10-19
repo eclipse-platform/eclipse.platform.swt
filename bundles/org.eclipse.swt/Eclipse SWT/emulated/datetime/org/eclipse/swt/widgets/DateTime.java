@@ -758,10 +758,6 @@ public void setHour (int hour) {
 	updateControl();
 }
 
-public void setLayout(Layout layout) {
-	checkWidget();
-}
-
 public void setMinute (int minute) {
 	checkWidget ();
 	calendar.set(Calendar.MINUTE, minute);
