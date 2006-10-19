@@ -14,10 +14,6 @@ import org.eclipse.swt.events.*;
 // TODO: Make sure that SWT.Selection works correctly for all styles, all cases, and all platforms
 // TODO: Test emulated on ALL platforms, including Motif.
 
-// TODO: move tooltip and other strings to .properties
-
-// TODO: add accessibility - note: win32 calendar is not accessible... but win32 text guys are...
-
 // TODO: Check if Mac get/setHour is 24 hour.
 // TODO: Fix GTK to return 1-12 for MONTH.
 
@@ -25,21 +21,21 @@ import org.eclipse.swt.events.*;
 // of setFormat for Calendar widget (Win, GTK, Mac cocoa)... Felipe was saying maybe just have long/short...
 // if possible, make it API.
 
-// TODO: Consider allowing an optional drop-down calendar for date (i.e. if style is SWT.DATE | SWT.CALENDAR)
-// would this have to be a hint? Native on Win; Mac might not work - could use fully emulated if necessary.
-
 // TODO: Figure out what happens in different locales, i.e. I assume the native guys change somehow.
 // currently only Mac & Win have the text guys - what happens in those? (how to create for different locale?)
 // (maybe the Nebula guys Locale changers could be useful for this)
+
+// TODO: move strings to .properties - done except for am/pm and other strings affected by setFormat/locale
+
+// TODO: add accessibility to calendar - note: win32 calendar is not accessible... test gtk
+
+// TODO: Consider allowing an optional drop-down calendar for date (i.e. if style is SWT.DATE | SWT.CALENDAR)
+// would this have to be a hint? Native on Win; Mac might not work - could use fully emulated if necessary.
 
 // TODO: Consider adding set/get day-of-week API, i.e. 1-7 (Sun-Sat)
 // Otherwise people have to go look it up, and Win, Mac, and Java all provide this - we should, too
 
 // TODO: Write the little print calendar month app
-
-// TODO: Spec notes: show (default) and set/get 1-12 for MONTH; show 1-12 (default) but set/get 0-23 for HOUR.
-// note that spec for what is shown should wait and go in set/getFormat api if/when we add it.
-// TODO: Get the comment that says that it does not make sense to set a layout on this
 
 /*public*/ class DateTime extends Composite {
 	Color foreground, background;
@@ -80,13 +76,13 @@ public DateTime(Composite parent, int style) {
 		addListener(SWT.KeyDown, listener);
 		addListener(SWT.Traverse, listener);
 		yearDown = new Button(this, SWT.ARROW | SWT.LEFT);
-		yearDown.setToolTipText("Last Year");
+		yearDown.setToolTipText(SWT.getMessage ("SWT_Last_Year")); //$NON-NLS-1$
 		monthDown = new Button(this, SWT.ARROW | SWT.LEFT);
-		monthDown.setToolTipText("Last Month");
+		monthDown.setToolTipText(SWT.getMessage ("SWT_Last_Month")); //$NON-NLS-1$
 		monthUp = new Button(this, SWT.ARROW | SWT.RIGHT);
-		monthUp.setToolTipText("Next Month");
+		monthUp.setToolTipText(SWT.getMessage ("SWT_Next_Month")); //$NON-NLS-1$
 		yearUp = new Button(this, SWT.ARROW | SWT.RIGHT);
-		yearUp.setToolTipText("Next Year");
+		yearUp.setToolTipText(SWT.getMessage ("SWT_Next_Year")); //$NON-NLS-1$
 		listener = new Listener() {
 			public void handleEvent(Event event) {
 				handleSelection(event);
@@ -119,9 +115,9 @@ public DateTime(Composite parent, int style) {
 		text.addListener(SWT.MouseUp, listener);
 		text.addListener(SWT.Verify, listener);
 		up = new Button(this, SWT.ARROW | SWT.UP);
-		up.setToolTipText("Up");
+		up.setToolTipText(SWT.getMessage ("SWT_Up")); //$NON-NLS-1$
 		down = new Button(this, SWT.ARROW | SWT.DOWN);
-		down.setToolTipText("Down");
+		down.setToolTipText(SWT.getMessage ("SWT_Down")); //$NON-NLS-1$
 		up.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				incrementField(+1);
