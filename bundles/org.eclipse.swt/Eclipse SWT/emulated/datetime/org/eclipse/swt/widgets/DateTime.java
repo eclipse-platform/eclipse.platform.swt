@@ -9,9 +9,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.events.*;
 
-// TODO: Note that on Win, time 'roll' modifies am/pm (i.e. it 'rolls' through 24 hours, not 12).
-// TODO: Need to be able to type "12" for hour (and not 0).
-
 // TODO: Make sure all set/get API's work - test all styles and platforms (Win, emulated, Mac & GTK)
 // TODO: Make sure setting the day/month/etc programmatically does NOT send selection callback.
 // TODO: Make sure that SWT.Selection works correctly for all styles, all cases, and all platforms
@@ -179,6 +176,15 @@ String getFormattedString(int style) {
 String getComputeSizeString(int style) {
 	// TODO: needs more work for setFormat and locale
 	return (style & SWT.TIME) != 0 ? defaultTimeFormat : defaultDateFormat;
+}
+
+int getFieldIndex(int fieldName) {
+	for (int i = 0; i < fieldCount; i++) {
+		if (fieldNames[i] == fieldName) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 public void addSelectionListener(SelectionListener listener) {
@@ -559,6 +565,10 @@ void onVerify(Event event) {
 	int max = calendar.getActualMaximum(fieldName);
 	int min = calendar.getActualMinimum(fieldName);
 	int newValue = unformattedIntValue(fieldName, newText, characterCount == 0, max);
+	if (newValue == -1) {
+		characterCount = 0;
+		return;
+	}
 	if (first && newValue == 0 && length > 1) {
 		setTextField(fieldName, newValue, false, false);
 	} else if (min <= newValue && newValue <= max) {
@@ -580,6 +590,16 @@ void onVerify(Event event) {
 void incrementField(int amount) {
 	int fieldName = fieldNames[currentField];
 	int value = calendar.get(fieldName);
+	if (fieldName == Calendar.HOUR) {
+		int max = calendar.getMaximum(Calendar.HOUR);
+		int min = calendar.getMinimum(Calendar.HOUR);
+		if ((value == max && amount == 1) || (value == min && amount == -1)) {
+			int temp = currentField;
+			currentField = getFieldIndex(Calendar.AM_PM);
+			setTextField(Calendar.AM_PM, (calendar.get(Calendar.AM_PM) + 1) % 2, true, true);
+			currentField = temp;
+		}
+	}
 	setTextField(fieldName, value + amount, true, true);
 }
 
