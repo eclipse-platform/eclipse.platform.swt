@@ -21,6 +21,9 @@ import org.eclipse.swt.events.*;
  * objects that allow the user to enter and modify numeric
  * values.
  * <p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add children to it, or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>READ_ONLY, WRAP</dd>
