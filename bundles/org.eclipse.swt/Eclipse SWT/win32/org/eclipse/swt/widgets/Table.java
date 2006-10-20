@@ -4933,6 +4933,29 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
+	if (result != null) return result;
+	//This code is intentionally commented
+//	/*
+//	* Bug in Windows.  For some reason, when a custom
+//	* draw table has the LVS_OWNERDATA, custom draw is
+//	* called every time the mouse moves over a selected
+//	* item in the first column.  This happens even when
+//	* mouse is not pressed.  Although this causes too
+//	* many redraws, this is only really a problem
+//	* because the background is not filled during the
+//	* custom draw sequence.  The fix is to avoid calling
+//	* the table window proc.
+//	*/
+//	if ((style & SWT.VIRTUAL) != 0) {
+//		if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+//			return LRESULT.ZERO;
+//		}
+//	}
+	return result;
+}
+
 LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  Despite the fact that hot
