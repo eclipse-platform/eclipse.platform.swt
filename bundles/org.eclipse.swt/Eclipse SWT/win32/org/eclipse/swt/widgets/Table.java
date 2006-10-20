@@ -3046,7 +3046,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 			forceSelect = true;
 		}
 	}
-	boolean dragDetect = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
+	boolean dragDetect = (state & DRAG_DETECT) != 0;
 	if (!dragDetect) display.runDragDrop = false;
 	int code = callWindowProc (handle, msg, wParam, lParam, forceSelect);
 	if (!dragDetect) display.runDragDrop = true;
@@ -4946,36 +4946,6 @@ LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 	int mask = OS.LVS_EX_ONECLICKACTIVATE | OS.LVS_EX_TRACKSELECT | OS.LVS_EX_TWOCLICKACTIVATE;
 	if ((bits & mask) != 0) return result;
 	return LRESULT.ZERO;
-}
-
-LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
-	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Bug in Windows.  For some reason, when a custom
-	* draw table has the LVS_OWNERDATA, custom draw is
-	* called every time the mouse moves over a selected
-	* item in the first column.  This happens even when
-	* mouse is not pressed.  Although this causes too
-	* many redraws, this is only really a problem
-	* because the background is not filled during the
-	* custom draw sequence.  The fix is to avoid calling
-	* the table window proc.
-	*/
-	if ((style & SWT.VIRTUAL) != 0) {
-		if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
-			/*
-			* Bug in Windows.  On some machines that do not have XBUTTONs,
-			* the MK_XBUTTON1 and OS.MK_XBUTTON2 bits are sometimes set,
-			* causing mouse capture to become stuck.  The fix is to test
-			* for the extra buttons only when they exist.
-			*/
-			int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
-			if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-			if (((wParam & 0xFFFF) & mask) == 0) return LRESULT.ZERO;
-		}
-	}
-	return result;
 }
 
 LRESULT WM_PAINT (int wParam, int lParam) {
