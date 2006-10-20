@@ -1420,9 +1420,9 @@ public void setVisible (boolean visible) {
 		* the shell not will be mapped until the parent is
 		* unminimized or shown on the desktop.
 		*/
+		OS.gtk_widget_show (shellHandle);
 		if (!OS.GTK_IS_PLUG (shellHandle)) {
 			mapped = false;
-			OS.gtk_widget_show (shellHandle);
 			if (isDisposed ()) return;
 			display.dispatchEvents = new int [] {
 				OS.GDK_EXPOSE,
