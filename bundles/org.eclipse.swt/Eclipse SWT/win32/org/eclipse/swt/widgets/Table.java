@@ -4948,6 +4948,36 @@ LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
+LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  For some reason, when a custom
+	* draw table has the LVS_OWNERDATA, custom draw is
+	* called every time the mouse moves over a selected
+	* item in the first column.  This happens even when
+	* mouse is not pressed.  Although this causes too
+	* many redraws, this is only really a problem
+	* because the background is not filled during the
+	* custom draw sequence.  The fix is to avoid calling
+	* the table window proc.
+	*/
+	if ((style & SWT.VIRTUAL) != 0) {
+		if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+			/*
+			* Bug in Windows.  On some machines that do not have XBUTTONs,
+			* the MK_XBUTTON1 and OS.MK_XBUTTON2 bits are sometimes set,
+			* causing mouse capture to become stuck.  The fix is to test
+			* for the extra buttons only when they exist.
+			*/
+			int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
+			if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
+			if (((wParam & 0xFFFF) & mask) == 0) return LRESULT.ZERO;
+		}
+	}
+	return result;
+}
+
 LRESULT WM_PAINT (int wParam, int lParam) {
 	if (!ignoreShrink) {
 		/* Resize the item array to match the item count */
