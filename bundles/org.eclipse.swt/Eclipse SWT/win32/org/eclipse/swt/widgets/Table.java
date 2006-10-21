@@ -438,6 +438,9 @@ LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
 	if (ignoreCustomDraw) return null;
 	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+	if (nmcd.left == nmcd.right) {
+		return new LRESULT (OS.CDRF_DODEFAULT);
+	}
 	int hDC = nmcd.hdc;
 	if (ignoreDrawForeground) OS.RestoreDC (hDC, -1);
 	if (OS.IsWindowVisible (handle)) {
@@ -463,7 +466,7 @@ LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
 	*/
 	TableItem item = _getItem (nmcd.dwItemSpec);
 	if (item == null) return null;
-	if (ignoreCustomDraw) {
+	if (ignoreCustomDraw || (nmcd.left == nmcd.right)) {
 		int hDC = nmcd.hdc;
 		int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
 		if (hFont == -1) hFont = item.font;
