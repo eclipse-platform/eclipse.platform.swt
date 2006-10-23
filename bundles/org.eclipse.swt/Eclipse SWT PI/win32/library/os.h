@@ -244,6 +244,7 @@
 #define NO_GetOpenFileNameA
 #define NO_GetPath
 #define NO_GetPolyFillMode
+#define NO_GetProcessHeaps
 #define NO_GetProfileStringA
 #define NO_GetProfileStringW
 #define NO_GetPropA
