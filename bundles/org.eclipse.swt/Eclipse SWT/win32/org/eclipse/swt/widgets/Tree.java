@@ -3971,8 +3971,10 @@ public void setRedraw (boolean redraw) {
 	* items are added and removed.  The fix is to call
 	* the default window proc to stop all drawing.
 	*/
-	if (!redraw && drawCount == 1) {
-		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+	if (redraw) {
+		if (drawCount == 0) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+	} else {
+		if (drawCount == 1) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	if (hItem != 0) {
 		ignoreShrink = true;
