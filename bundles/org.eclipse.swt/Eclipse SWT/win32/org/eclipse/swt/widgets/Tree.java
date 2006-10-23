@@ -3965,6 +3965,15 @@ public void setRedraw (boolean redraw) {
 		}
 	}
 	super.setRedraw (redraw);
+	/*
+	* Feature in Windows.  When WM_SETREDRAW is used to
+	* turn off redraw, the scroll bars are updated when
+	* items are added and removed.  The fix is to call
+	* the default window proc to stop all drawing.
+	*/
+	if (!redraw && drawCount == 1) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+	}
 	if (hItem != 0) {
 		ignoreShrink = true;
 		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
@@ -4520,13 +4529,6 @@ public void showSelection () {
 		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 	}
 	if (hItem != 0) showItem (hItem);
-}
-
-void showWidget (boolean visible) {
-	super.showWidget (visible);
-	if (hwndParent != 0) {
-		OS.ShowWindow (hwndParent, visible ? OS.SW_SHOW : OS.SW_HIDE);
-	}
 }
 
 void subclass () {
@@ -5868,7 +5870,7 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 LRESULT WM_SIZE (int wParam, int lParam) {
 	/*
 	 * Bug in Windows.  When TVS_NOHSCROLL is set when the
-	 * size of the tree is zero, the scrol bar is shown the
+	 * size of the tree is zero, the scroll bar is shown the
 	 * next time the tree resizes.  The fix is to hide the
 	 * scroll bar every time the tree is resized.
 	 */
