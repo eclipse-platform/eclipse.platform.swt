@@ -217,7 +217,7 @@ public class Display extends Device {
 	int /*long*/ [] flushData = new int /*long*/ [1];
 
 	/* Drag Detect */
-	int dragStartX,dragStartY;
+	int dragStartX, dragStartY;
 	boolean dragging, dragOverride;
 	
 	/* System Resources */
