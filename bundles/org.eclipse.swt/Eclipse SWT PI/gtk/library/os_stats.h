@@ -409,6 +409,7 @@ typedef enum {
 	_1gdk_1window_1get_1origin_FUNC,
 	_1gdk_1window_1get_1parent_FUNC,
 	_1gdk_1window_1get_1pointer_FUNC,
+	_1gdk_1window_1get_1position_FUNC,
 	_1gdk_1window_1get_1user_1data_FUNC,
 	_1gdk_1window_1hide_FUNC,
 	_1gdk_1window_1invalidate_1rect_FUNC,

@@ -5301,6 +5301,23 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1window_1get_1position
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1get_1position)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1gdk_1window_1get_1position_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gdk_window_get_position((GdkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1window_1get_1position_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1window_1get_1user_1data
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1window_1get_1user_1data)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
@@ -17368,4 +17385,3 @@ JNIEXPORT jint JNICALL OS_NATIVE(strlen)
 	return rc;
 }
 #endif
-

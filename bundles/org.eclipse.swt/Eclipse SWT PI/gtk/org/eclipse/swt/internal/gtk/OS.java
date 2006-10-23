@@ -3393,6 +3393,15 @@ public static final int /*long*/ gdk_window_get_pointer(int /*long*/ window, int
 		lock.unlock();
 	}
 }
+public static final native void _gdk_window_get_position(int /*long*/ window, int[] x, int[] y);
+public static final void gdk_window_get_position(int /*long*/ window, int[] x, int[] y) {
+	lock.lock();
+	try {
+		_gdk_window_get_position(window, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gdk_window_get_user_data(int /*long*/ window, int /*long*/[] data);
 public static final void gdk_window_get_user_data(int /*long*/ window, int /*long*/[] data) {
 	lock.lock();
