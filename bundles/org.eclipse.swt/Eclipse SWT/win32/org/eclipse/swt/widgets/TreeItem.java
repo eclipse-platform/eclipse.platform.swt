@@ -1130,6 +1130,78 @@ public void setChecked (boolean checked) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget ();
+	
+	/* Do nothing when the item is a leaf or already expanded */
+	int hwnd = parent.handle;
+	if (OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle) == 0) {
+		return;
+	}
+	int state = 0;
+	if (OS.IsWinCE) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.hItem = handle;
+		tvItem.mask = OS.TVIF_STATE;
+		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+		state = tvItem.state;
+	} else {
+		/*
+		* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
+		* to return only the bits specified by the stateMask, when called
+		* with TVIS_EXPANDED, the entire state is returned.  The fix is
+		* to explicitly check for the TVIS_EXPANDED bit.
+		*/
+		state = OS.SendMessage (hwnd, OS.TVM_GETITEMSTATE, handle, OS.TVIS_EXPANDED);
+	}
+	if (((state & OS.TVIS_EXPANDED) != 0) == expanded) return;
+	
+	/*
+	* Feature in Windows.  When TVM_EXPAND is used to expand
+	* an item, the widget scrolls to show the root item and
+	* the newly expanded items.  While not strictly incorrect,
+	* this means that application code that expands tree items
+	* in a background thread can scroll the widget while the
+	* user is interacting with it.  The fix is to remember
+	* the top item and the bounds of every tree item, turn
+	* redraw off, expand the item, scroll back to the top
+	* item.  If none of the rectangles have moved, then
+	* it is safe to turn redraw back on without redrawing
+	* the control.
+	*/
+	RECT [] rects = null;
+	boolean redraw = false, noScroll = true;
+	int count = 0, hTopItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+	if (noScroll && hTopItem != 0) {
+		if (parent.drawCount == 0 && OS.IsWindowVisible (hwnd)) {
+			boolean noAnimate = true;
+			count = OS.SendMessage (hwnd, OS.TVM_GETVISIBLECOUNT, 0, 0);
+			rects = new RECT [count + 1];
+			int hItem = hTopItem, index = 0;
+			while (hItem != 0 && (noAnimate || hItem != handle) && index < count) {
+				RECT rect = new RECT ();
+				rect.left = hItem;
+				if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+					rects [index++] = rect;
+				}
+				hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+			}
+			if (noAnimate || hItem != handle) {
+				redraw = true;
+				count = index;
+				int topHandle = parent.topHandle ();
+				OS.UpdateWindow (topHandle);
+				OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 0, 0);
+				if (hwnd != topHandle) {
+					OS.UpdateWindow (hwnd);
+					OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
+				}
+				/*
+				* This code is intentionally commented.
+				*/
+//				OS.SendMessage (hwnd, OS.WM_SETREDRAW, 0, 0);
+			}
+		}
+	}
+	
 	/*
 	* Feature in Windows.  When the user collapses the root
 	* of a subtree that has the focus item, Windows moves
@@ -1138,14 +1210,67 @@ public void setExpanded (boolean expanded) {
 	* seletion has changed.  When the programmer collapses
 	* the same subtree using TVM_EXPAND, Windows does not
 	* send the selection changed notification.  This is not
-	* strictly wrong but is inconsistent.  The fix is to notice
-	* that the selection has changed and issue the event.
+	* strictly wrong but is inconsistent.  The fix is to
+	* check whether the selection has changed and issue
+	* the event.
 	*/
-	int hwnd = parent.handle;
 	int hOldItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+	
+	/* Expand or collapse the item */
 	parent.ignoreExpand = true;
 	OS.SendMessage (hwnd, OS.TVM_EXPAND, expanded ? OS.TVE_EXPAND : OS.TVE_COLLAPSE, handle);
 	parent.ignoreExpand = false;
+	
+	/* Scroll back to the top item */
+	if (noScroll && hTopItem != 0) {
+		OS.SendMessage (hwnd, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hTopItem);
+		if (redraw) {
+			boolean fixRedraw = false;
+			if (hTopItem == OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0)) {
+				int hItem = hTopItem, index = 0;
+				while (hItem != 0 && index < count) {
+					RECT rect = new RECT ();
+					rect.left = hItem;
+					if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+						if (!OS.EqualRect (rect, rects [index])) {
+							break;
+						}
+					}
+					hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+					index++;
+				}
+				fixRedraw = index == count;
+			}
+			int topHandle = parent.topHandle ();
+			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
+			if (hwnd != topHandle) {
+				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
+			}
+			/*
+			* This code is intentionally commented.
+			*/
+//			OS.SendMessage (hwnd, OS.WM_SETREDRAW, 1, 0);
+			if (fixRedraw) {
+				parent.updateScrollBar ();
+				SCROLLINFO info = new SCROLLINFO ();
+				info.cbSize = SCROLLINFO.sizeof;
+				info.fMask = OS.SIF_ALL;
+				if (OS.GetScrollInfo (hwnd, OS.SB_VERT, info)) {
+					OS.SetScrollInfo (hwnd, OS.SB_VERT, info, true);
+				}
+			} else {
+				if (OS.IsWinCE) {
+					OS.InvalidateRect (topHandle, null, true);
+					if (hwnd != topHandle) OS.InvalidateRect (hwnd, null, true);
+				} else {
+					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (topHandle, null, 0, flags);
+				}
+			}
+		}
+	}
+
+	/* Check for a selection event */
 	int hNewItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 	if (hNewItem != hOldItem) {
 		Event event = new Event ();
