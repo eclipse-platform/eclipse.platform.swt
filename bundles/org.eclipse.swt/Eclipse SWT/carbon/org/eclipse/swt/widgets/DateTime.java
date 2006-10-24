@@ -17,6 +17,7 @@ import org.eclipse.swt.internal.carbon.LongDateRec;
 import org.eclipse.swt.internal.carbon.OS;
 
 /*public*/ class DateTime extends Control {
+	// TODO: needs to be sub of Composite
 	LongDateRec dateRec;
 	
 public DateTime (Composite parent, int style) {
@@ -170,6 +171,7 @@ public void setDay (int day) {
 	dateRec.day = (short)day;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+	redraw();
 }
 
 public void setHour (int hour) {
@@ -177,6 +179,7 @@ public void setHour (int hour) {
 	dateRec.hour = (short)hour;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+	redraw();
 }
 
 public void setMinute (int minute) {
@@ -184,6 +187,7 @@ public void setMinute (int minute) {
 	dateRec.minute = (short)minute;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+	redraw();
 }
 
 public void setMonth (int month) {
@@ -191,6 +195,7 @@ public void setMonth (int month) {
 	dateRec.month = (short)month;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+	redraw();
 }
 
 public void setSecond (int second) {
@@ -198,6 +203,7 @@ public void setSecond (int second) {
 	dateRec.second = (short)second;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+	redraw();
 }
 
 public void setYear (int year) {
@@ -205,6 +211,7 @@ public void setYear (int year) {
 	dateRec.year = (short)year;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
+	redraw();
 }
 
 }
