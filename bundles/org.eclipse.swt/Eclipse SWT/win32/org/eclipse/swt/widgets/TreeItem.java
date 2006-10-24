@@ -1169,8 +1169,15 @@ public void setExpanded (boolean expanded) {
 	*/
 	RECT [] rects = null;
 	boolean redraw = false, noScroll = true;
+	SCROLLINFO oldInfo = null;
 	int count = 0, hTopItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	if (noScroll && hTopItem != 0) {
+		oldInfo = new SCROLLINFO ();
+		oldInfo.cbSize = SCROLLINFO.sizeof;
+		oldInfo.fMask = OS.SIF_ALL;
+		if (!OS.GetScrollInfo (hwnd, OS.SB_HORZ, oldInfo)) {
+			oldInfo = null;
+		}
 		if (parent.drawCount == 0 && OS.IsWindowVisible (hwnd)) {
 			boolean noAnimate = true;
 			count = OS.SendMessage (hwnd, OS.TVM_GETVISIBLECOUNT, 0, 0);
@@ -1224,6 +1231,17 @@ public void setExpanded (boolean expanded) {
 	/* Scroll back to the top item */
 	if (noScroll && hTopItem != 0) {
 		OS.SendMessage (hwnd, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hTopItem);
+		if (oldInfo != null) {
+			SCROLLINFO newInfo = new SCROLLINFO ();
+			newInfo.cbSize = SCROLLINFO.sizeof;
+			newInfo.fMask = OS.SIF_ALL;
+			if (OS.GetScrollInfo (hwnd, OS.SB_HORZ, newInfo)) {
+				if (oldInfo.nPos != newInfo.nPos) {
+					int lParam = OS.SB_THUMBPOSITION | ((oldInfo.nPos << 16) & 0xFFFF0000);
+					OS.SendMessage (hwnd, OS.WM_HSCROLL, lParam, 0);
+				}
+			}
+		}
 		if (redraw) {
 			boolean fixRedraw = false;
 			if (hTopItem == OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0)) {
