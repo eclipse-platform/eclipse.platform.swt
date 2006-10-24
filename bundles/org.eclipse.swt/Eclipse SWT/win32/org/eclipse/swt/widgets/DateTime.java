@@ -16,6 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
+//TODO - note: locale is currently hard-coded to EN_US. This needs to be fixed.
 //TODO - features not yet implemented: setFormat (short/long?), read-only, drop-down calendar for date
 //TODO - font, colors, background image not yet implemented (works on some platforms)
 
@@ -244,11 +245,10 @@ public int getMinute () {
 /**
  * Returns the receiver's month.
  * <p>
- * The first month of the year is 1, and the last month depends on the locale.
- * For example, in a US locale, the first month is 1 (January) and the last month is 12 (December).
+ * The first month of the year is 1, and the last month is 12.
  * </p>
  *
- * @return a positive integer beginning with 1
+ * @return an integer between 1 and 12
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -291,10 +291,10 @@ public int getSecond () {
 /**
  * Returns the receiver's year.
  * <p>
- * The first year is 1.
+ * The first year is 1752 and the last year is 9999.
  * </p>
  *
- * @return a positive integer beginning with 1
+ * @return an integer between 1752 and 9999
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -406,11 +406,10 @@ public void setMinute (int minute) {
 /**
  * Sets the receiver's month.
  * <p>
- * The first month of the year is 1, and the last month depends on the locale.
- * In a US locale, the first month is 1 (January) and the last month is 12 (December).
+ * The first month of the year is 1, and the last month is 12.
  * </p>
  *
- * @param month a positive integer beginning with 1
+ * @param month an integer between 1 and 12
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -453,10 +452,10 @@ public void setSecond (int second) {
 /**
  * Sets the receiver's year.
  * <p>
- * The first year is 1.
+ * The first year is 1752 and the last year is 9999.
  * </p>
  *
- * @param year a positive integer beginning with 1
+ * @param year an integer between 1752 and 9999
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
