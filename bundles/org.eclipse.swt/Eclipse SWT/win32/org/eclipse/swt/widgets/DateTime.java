@@ -16,9 +16,17 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
+//TODO - features not yet implemented: setFormat (short/long?), read-only, drop-down calendar for date
+//TODO - font, colors, background image not yet implemented (works on some platforms)
+
 /**
- * Instances of this class represent ....
- * 
+ * Instances of this class are selectable user interface
+ * objects that allow the user to enter and modify date
+ * or time values.
+ * <p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add children to it, or set a layout on it.
+ * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>DATE, TIME, CALENDAR</dd>
@@ -26,15 +34,16 @@ import org.eclipse.swt.graphics.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
- * IMPORTANT: This class is intended to be subclassed <em>only</em>
- * within the SWT implementation.
+ * Note: Only one of the styles DATE, TIME, or CALENDAR may be specified.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ *
+ * @since 3.3
  */
+
 /* UNDER DEVELOPMENT - DO NOT USE */
 /*public*/ class DateTime extends Control {
-	//TODO - features: short/long format, read-only
-	//TODO - missing font, colors, check events
-	//TODO - check background image
 	static final int DateTimeProc;
 	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
 	static final int CalendarProc;
@@ -97,7 +106,7 @@ static int checkStyle (int style) {
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control's value changes.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -170,9 +179,12 @@ int defaultBackground () {
 }
 
 /**
- * Returns the receiver's ...
+ * Returns the receiver's date, or day of the month.
+ * <p>
+ * The first day of the month is 1, and the last day depends on the month and year.
+ * </p>
  *
- * @return the receiver's ...
+ * @return a positive integer beginning with 1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -188,9 +200,12 @@ public int getDay () {
 }
 
 /**
- * Returns the receiver's ...
+ * Returns the receiver's hour.
+ * <p>
+ * The hour is an integer between 0 and 23.
+ * </p>
  *
- * @return the receiver's ...
+ * @return an integer between 0 and 23
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -206,9 +221,12 @@ public int getHour () {
 }
 
 /**
- * Returns the receiver's ...
+ * Returns the receiver's minute.
+ * <p>
+ * The minute is an integer between 0 and 59.
+ * </p>
  *
- * @return the receiver's ...
+ * @return an integer between 0 and 59
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -224,9 +242,13 @@ public int getMinute () {
 }
 
 /**
- * Returns the receiver's ...
+ * Returns the receiver's month.
+ * <p>
+ * The first month of the year is 1, and the last month depends on the locale.
+ * For example, in a US locale, the first month is 1 (January) and the last month is 12 (December).
+ * </p>
  *
- * @return the receiver's ...
+ * @return a positive integer beginning with 1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -246,9 +268,12 @@ String getNameText () {
 }
 
 /**
- * Returns the receiver's ...
+ * Returns the receiver's second.
+ * <p>
+ * The second is an integer between 0 and 59.
+ * </p>
  *
- * @return the receiver's ...
+ * @return an integer between 0 and 59
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -264,9 +289,12 @@ public int getSecond () {
 }
 
 /**
- * Returns the receiver's ...
+ * Returns the receiver's year.
+ * <p>
+ * The first year is 1.
+ * </p>
  *
- * @return the receiver's ...
+ * @return a positive integer beginning with 1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -307,9 +335,12 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 /**
- * Sets the receiver's ...
+ * Sets the receiver's date, or day of the month, to the specified day.
+ * <p>
+ * The first day of the month is 1, and the last day depends on the month and year.
+ * </p>
  *
- * @param ...
+ * @param day a positive integer beginning with 1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -327,9 +358,12 @@ public void setDay (int day) {
 }
 
 /**
- * Sets the receiver's ...
+ * Sets the receiver's hour to the specified hour.
+ * <p>
+ * The hour is an integer between 0 and 23.
+ * </p>
  *
- * @param ...
+ * @param hour an integer between 0 and 23
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -347,9 +381,12 @@ public void setHour (int hour) {
 }
 
 /**
- * Sets the receiver's ...
+ * Sets the receiver's minute.
+ * <p>
+ * The minute is an integer between 0 and 59.
+ * </p>
  *
- * @param ...
+ * @param minute an integer between 0 and 59
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -367,9 +404,13 @@ public void setMinute (int minute) {
 }
 
 /**
- * Sets the receiver's ...
+ * Sets the receiver's month.
+ * <p>
+ * The first month of the year is 1, and the last month depends on the locale.
+ * In a US locale, the first month is 1 (January) and the last month is 12 (December).
+ * </p>
  *
- * @param ...
+ * @param month a positive integer beginning with 1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -387,9 +428,12 @@ public void setMonth (int month) {
 }
 
 /**
- * Sets the receiver's ...
+ * Sets the receiver's second.
+ * <p>
+ * The second is an integer between 0 and 59.
+ * </p>
  *
- * @param ...
+ * @param second an integer between 0 and 59
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -407,9 +451,12 @@ public void setSecond (int second) {
 }
 
 /**
- * Sets the receiver's ...
+ * Sets the receiver's year.
+ * <p>
+ * The first year is 1.
+ * </p>
  *
- * @param ...
+ * @param year a positive integer beginning with 1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
