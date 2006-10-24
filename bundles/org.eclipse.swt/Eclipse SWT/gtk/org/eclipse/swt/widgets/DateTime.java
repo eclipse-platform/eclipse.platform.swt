@@ -73,18 +73,23 @@ void createHandle (int index) {
 void createWidget (int index) {
 	super.createWidget (index);
 //	if ((style & SWT.CALENDAR) != 0) {
-		int [] y = new int [1];
-		int [] m = new int [1];
-		int [] d = new int [1];
-		OS.gtk_calendar_get_date(handle, y, m, d);
-		year = y[0];
-		month = m[0];
-		day = d[0];
+		getDate();
 //	}
+}
+
+void getDate() {
+	int [] y = new int [1];
+	int [] m = new int [1];
+	int [] d = new int [1];
+	OS.gtk_calendar_get_date(handle, y, m, d);
+	year = y[0];
+	month = m[0];
+	day = d[0];
 }
 
 public int getDay () {
 	checkWidget ();
+	getDate();
 	return day;
 }
 
@@ -100,6 +105,7 @@ public int getMinute () {
 
 public int getMonth () {
 	checkWidget ();
+	getDate();
 	return month;
 }
 
@@ -110,6 +116,7 @@ public int getSecond () {
 
 public int getYear () {
 	checkWidget ();
+	getDate();
 	return year;
 }
 
