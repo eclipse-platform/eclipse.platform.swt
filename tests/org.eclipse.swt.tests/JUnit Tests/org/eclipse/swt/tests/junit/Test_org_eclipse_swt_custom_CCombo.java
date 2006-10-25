@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.graphics.Point;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -44,6 +45,22 @@ protected void tearDown() {
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
+}
+
+public void test_copy() {
+	ccombo.setText("123456");
+	ccombo.setSelection(new Point(1,3));
+	ccombo.copy();
+	ccombo.setSelection(new Point(0,0));
+	ccombo.paste();
+	assertTrue(":a:", ccombo.getText().equals("23123456"));
+}
+
+public void test_cut() {
+	ccombo.setText("123456");
+	ccombo.setSelection(new Point(1,3));
+	ccombo.cut();
+	assertTrue(":a:", ccombo.getText().equals("1456"));
 }
 
 public void test_addLjava_lang_String() {
@@ -136,6 +153,15 @@ public void test_indexOfLjava_lang_StringI() {
 
 public void test_isFocusControl() {
 	warnUnimpl("Test test_isFocusControl not written");
+}
+
+public void test_paste() {
+	ccombo.setText("123456");
+	ccombo.setSelection(new Point(1,3));
+	ccombo.cut();
+	assertTrue(":a:", ccombo.getText().equals("1456"));
+	ccombo.paste();
+	assertTrue(":a:", ccombo.getText().equals("123456"));
 }
 
 public void test_redraw() {
@@ -245,6 +271,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_clearSelection");
 	methodNames.addElement("test_computeSizeIIZ");
+	methodNames.addElement("test_copy");
+	methodNames.addElement("test_cut");
 	methodNames.addElement("test_deselectAll");
 	methodNames.addElement("test_deselectI");
 	methodNames.addElement("test_getChildren");
@@ -262,6 +290,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_indexOfLjava_lang_String");
 	methodNames.addElement("test_indexOfLjava_lang_StringI");
 	methodNames.addElement("test_isFocusControl");
+	methodNames.addElement("test_paste");
 	methodNames.addElement("test_redraw");
 	methodNames.addElement("test_redrawIIIIZ");
 	methodNames.addElement("test_removeAll");
@@ -301,6 +330,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_clearSelection")) test_clearSelection();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
+	else if (getName().equals("test_copy")) test_copy();
+	else if (getName().equals("test_cut")) test_cut();
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
 	else if (getName().equals("test_deselectI")) test_deselectI();
 	else if (getName().equals("test_getChildren")) test_getChildren();
@@ -318,6 +349,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_indexOfLjava_lang_String")) test_indexOfLjava_lang_String();
 	else if (getName().equals("test_indexOfLjava_lang_StringI")) test_indexOfLjava_lang_StringI();
 	else if (getName().equals("test_isFocusControl")) test_isFocusControl();
+	else if (getName().equals("test_paste")) test_paste();
 	else if (getName().equals("test_redraw")) test_redraw();
 	else if (getName().equals("test_redrawIIIIZ")) test_redrawIIIIZ();
 	else if (getName().equals("test_removeAll")) test_removeAll();
