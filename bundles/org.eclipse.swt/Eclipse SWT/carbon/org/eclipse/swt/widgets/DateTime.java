@@ -16,8 +16,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.LongDateRec;
 import org.eclipse.swt.internal.carbon.OS;
 
-/*public*/ class DateTime extends Control {
-	// TODO: needs to be sub of Composite
+/*public*/ class DateTime extends Composite {
 	LongDateRec dateRec;
 	
 public DateTime (Composite parent, int style) {
@@ -26,6 +25,10 @@ public DateTime (Composite parent, int style) {
 
 static int checkStyle (int style) {
 	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
+}
+
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
 public void addSelectionListener (SelectionListener listener) {
@@ -89,37 +92,47 @@ void createHandle () {
 
 void createWidget() {
 	super.createWidget ();
+	getDate();
+}
+
+void getDate() {
 	dateRec = new LongDateRec ();
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
 }
 
 public int getDay () {
 	checkWidget ();
+	getDate();
 	return dateRec.day;
 }
 
 public int getHour () {
 	checkWidget ();
+	getDate();
 	return dateRec.hour;
 }
 
 public int getMinute () {
 	checkWidget ();
+	getDate();
 	return dateRec.minute;
 }
 
 public int getMonth () {
 	checkWidget ();
+	getDate();
 	return dateRec.month;
 }
 
 public int getSecond () {
 	checkWidget ();
+	getDate();
 	return dateRec.second;
 }
 
 public int getYear () {
 	checkWidget ();
+	getDate();
 	return dateRec.year;
 }
 
