@@ -106,7 +106,7 @@ public int getMinute () {
 public int getMonth () {
 	checkWidget ();
 	getDate();
-	return month;
+	return month + 1;
 }
 
 public int getSecond () {
@@ -185,7 +185,7 @@ public void setMinute (int minute) {
 
 public void setMonth (int month) {
 	checkWidget ();
-	this.month = month;
+	this.month = --month;
 	OS.gtk_calendar_select_month(handle, month, year);
 }
 
