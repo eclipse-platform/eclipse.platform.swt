@@ -16,7 +16,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
-//TODO - note: locale is currently hard-coded to EN_US. This needs to be fixed.
 //TODO - features not yet implemented: setFormat (short/long?), read-only, drop-down calendar for date
 //TODO - font, colors, background image not yet implemented (works on some platforms)
 
@@ -44,7 +43,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 /* UNDER DEVELOPMENT - DO NOT USE */
-/*public*/ class DateTime extends Control {
+/*public*/ class DateTime extends Composite {
 	static final int DateTimeProc;
 	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
 	static final int CalendarProc;
@@ -98,7 +97,19 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
+	/*
+	* Even though it is legal to create this widget
+	* with scroll bars, they serve no useful purpose
+	* because they do not automatically scroll the
+	* widget's client area.  The fix is to clear
+	* the SWT style.
+	*/
+	style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
 	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
+}
+
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
 /**
@@ -173,6 +184,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidth ();
 	width += border * 2; height += border * 2;
 	return new Point (width, height);
+}
+
+void createHandle () {
+	super.createHandle ();
+	state &= ~(CANVAS | THEME_BACKGROUND);
 }
 
 int defaultBackground () {
@@ -475,6 +491,12 @@ public void setYear (int year) {
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
 	if ((style & SWT.CALENDAR) != 0) return bits;
+	/*
+	* Bug in Windows: When WS_CLIPCHILDREN is set in a
+	* Date and Time Picker, the widget draws on top of
+	* the updown control. The fix is to clear the bits.
+	*/
+	bits &= ~OS.WS_CLIPCHILDREN;
 	if ((style & SWT.TIME) != 0) bits |= OS.DTS_TIMEFORMAT;
 	if ((style & SWT.DATE) != 0) bits |= OS.DTS_SHORTDATECENTURYFORMAT | OS.DTS_UPDOWN;
 	return bits;
