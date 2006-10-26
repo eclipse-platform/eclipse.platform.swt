@@ -24,6 +24,14 @@ public DateTime (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
+	/*
+	* Even though it is legal to create this widget
+	* with scroll bars, they serve no useful purpose
+	* because they do not automatically scroll the
+	* widget's client area.  The fix is to clear
+	* the SWT style.
+	*/
+	style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
 	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
 }
 
@@ -55,7 +63,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height = Math.max (height, upDownHeight);
 			
 			// TODO: determine the stringWidth of date or time string in current font (take code from GC)
-			String string = "00/00/0000";
+			String string = "00/00/0000"; // TODO: these strings should be locale-specific
 			if ((style & SWT.TIME) != 0) string = "00:00:00 AM";
 			GC gc = new GC(this);
 			width = gc.stringExtent(string).x;
