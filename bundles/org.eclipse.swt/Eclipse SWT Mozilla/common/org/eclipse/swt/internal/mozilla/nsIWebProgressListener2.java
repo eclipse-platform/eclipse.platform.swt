@@ -27,21 +27,21 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDirectoryServiceProvider2 extends nsIDirectoryServiceProvider {
+public class nsIWebProgressListener2 extends nsIWebProgressListener {
 
-	static final int LAST_METHOD_ID = nsIDirectoryServiceProvider.LAST_METHOD_ID + 1;
+	static final int LAST_METHOD_ID = nsIWebProgressListener.LAST_METHOD_ID + 1;
 
-	public static final String NS_IDIRECTORYSERVICEPROVIDER2_IID_STR =
-		"2f977d4b-5485-11d4-87e2-0010a4e75ef2";
+	public static final String NS_IWEBPROGRESSLISTENER2_IID_STR =
+		"3f24610d-1e1f-4151-9d2e-239884742324";
 
-	public static final nsID NS_IDIRECTORYSERVICEPROVIDER2_IID =
-		new nsID(NS_IDIRECTORYSERVICEPROVIDER2_IID_STR);
+	public static final nsID NS_IWEBPROGRESSLISTENER2_IID =
+		new nsID(NS_IWEBPROGRESSLISTENER2_IID_STR);
 
-	public nsIDirectoryServiceProvider2(int /*long*/ address) {
+	public nsIWebProgressListener2(int /*long*/ address) {
 		super(address);
 	}
 
-	public int GetFiles(byte[] prop, int /*long*/[] _retval) {
-		return XPCOM.VtblCall(nsIDirectoryServiceProvider.LAST_METHOD_ID + 1, getAddress(), prop, _retval);
+	public int OnProgressChange64(int /*long*/ aWebProgress, int /*long*/ aRequest, long aCurSelfProgress, long aMaxSelfProgress, long aCurTotalProgress, long aMaxTotalProgress) {
+		return XPCOM.VtblCall(nsIWebProgressListener.LAST_METHOD_ID + 1, getAddress(), aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress);
 	}
 }

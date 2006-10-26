@@ -577,7 +577,6 @@ public Browser(Composite parent, int style) {
 		
 		HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory();
 		dialogFactory.AddRef();
-		
 		buffer = XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID.getBytes();
 		aContractID = new byte[buffer.length + 1];
 		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
@@ -590,10 +589,9 @@ public Browser(Composite parent, int style) {
 			error(rc);
 		}
 		dialogFactory.Release();
-		
+
 		DownloadFactory downloadFactory = new DownloadFactory();
 		downloadFactory.AddRef();
-		
 		buffer = XPCOM.NS_DOWNLOAD_CONTRACTID.getBytes();
 		aContractID = new byte[buffer.length + 1];
 		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
@@ -606,10 +604,24 @@ public Browser(Composite parent, int style) {
 			error(rc);
 		}
 		downloadFactory.Release();
-		
+
+		DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8();
+		downloadFactory_1_8.AddRef();
+		buffer = XPCOM.NS_TRANSFER_CONTRACTID.getBytes();
+		aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		buffer = "Transfer".getBytes(); //$NON-NLS-1$
+		aClassName = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		rc = componentRegistrar.RegisterFactory(XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress());
+		if (rc != XPCOM.NS_OK) {
+			dispose();
+			error(rc);
+		}
+		downloadFactory_1_8.Release();
+
 		FilePickerFactory pickerFactory = new FilePickerFactory();
 		pickerFactory.AddRef();
-
 		buffer = XPCOM.NS_FILEPICKER_CONTRACTID.getBytes();
 		aContractID = new byte[buffer.length + 1];
 		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
@@ -1539,18 +1551,6 @@ void Deactivate() {
 	webBrowserFocus.Release();
 }
 
-void SetFocusAtFirstElement() {
-	int /*long*/[] result = new int /*long*/[1];
-	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	
-	nsIWebBrowserFocus webBrowserFocus = new nsIWebBrowserFocus(result[0]);
-	rc = webBrowserFocus.SetFocusAtFirstElement();
-	if (rc != XPCOM.NS_OK) error(rc);
-	webBrowserFocus.Release();
-}
-
 void onResize() {
 	Rectangle rect = getClientArea();
 	int /*long*/[] result = new int /*long*/[1];
@@ -2219,18 +2219,16 @@ int /*long*/ OnStateChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int
 
 int /*long*/ OnProgressChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aCurSelfProgress, int /*long*/ aMaxSelfProgress, int /*long*/ aCurTotalProgress, int /*long*/ aMaxTotalProgress) {
 	if (progressListeners.length == 0) return XPCOM.NS_OK;
-	
-	int /*long*/ total = aMaxTotalProgress;
-	if (total <= 0) total = Integer.MAX_VALUE;
 	ProgressEvent event = new ProgressEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
 	event.current = (int)/*64*/aCurTotalProgress;
 	event.total = (int)/*64*/aMaxTotalProgress;
-	for (int i = 0; i < progressListeners.length; i++)
-		progressListeners[i].changed(event);			
+	for (int i = 0; i < progressListeners.length; i++) {
+		progressListeners[i].changed(event);
+	}
 	return XPCOM.NS_OK;
-}		
+}	
 
 int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aLocation) {
 	/*
@@ -2288,7 +2286,7 @@ int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 		locationListeners[i].changed(event);
 	return XPCOM.NS_OK;
 }
-  
+
 int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStatus, int /*long*/ aMessage) {
 	/*
 	* Feature in Mozilla.  Navigating to an HTTPS link without a user profile

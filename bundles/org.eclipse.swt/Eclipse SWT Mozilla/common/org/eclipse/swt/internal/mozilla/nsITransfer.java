@@ -27,21 +27,21 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDirectoryServiceProvider extends nsISupports {
+public class nsITransfer extends nsIWebProgressListener2 {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
+	static final int LAST_METHOD_ID = nsIWebProgressListener2.LAST_METHOD_ID + 1;
 
-	public static final String NS_IDIRECTORYSERVICEPROVIDER_IID_STR =
-		"bbf8cab0-d43a-11d3-8cc2-00609792278c";
+	public static final String NS_ITRANSFER_IID_STR =
+		"23c51569-e9a1-4a92-adeb-3723db82ef7c";
 
-	public static final nsID NS_IDIRECTORYSERVICEPROVIDER_IID =
-		new nsID(NS_IDIRECTORYSERVICEPROVIDER_IID_STR);
+	public static final nsID NS_ITRANSFER_IID =
+		new nsID(NS_ITRANSFER_IID_STR);
 
-	public nsIDirectoryServiceProvider(int /*long*/ address) {
+	public nsITransfer(int /*long*/ address) {
 		super(address);
 	}
 
-	public int GetFile(byte[] prop, boolean[] persistent, int /*long*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), prop, persistent, _retval);
+	public int Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName, int /*long*/ aMIMEInfo, long startTime, int /*long*/ aTempFile, int /*long*/ aCancelable) {
+		return XPCOM.VtblCall(nsIWebProgressListener2.LAST_METHOD_ID + 1, getAddress(), aSource, aTarget, aDisplayName, aMIMEInfo, startTime, aTempFile, aCancelable);
 	}
 }

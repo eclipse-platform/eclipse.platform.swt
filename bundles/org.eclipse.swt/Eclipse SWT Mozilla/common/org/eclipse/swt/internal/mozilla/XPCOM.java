@@ -58,13 +58,14 @@ public class XPCOM extends Platform {
 	public static final String NS_PREFLOCALIZEDSTRING_CONTRACTID = "@mozilla.org/pref-localizedstring;1"; //$NON-NLS-1$
 	public static final String NS_PREFSERVICE_CONTRACTID = "@mozilla.org/preferences-service;1"; //$NON-NLS-1$
 	public static final String NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1"; //$NON-NLS-1$
+	public static final String NS_TRANSFER_CONTRACTID = "@mozilla.org/transfer;1"; //$NON-NLS-1$
 	public static final String NS_WINDOWWATCHER_CONTRACTID = "@mozilla.org/embedcomp/window-watcher;1"; //$NON-NLS-1$
 	public static final String NS_COOKIEMANAGER_CONTRACTID = "@mozilla.org/cookiemanager;1"; //$NON-NLS-1$
 
 	/* XPCOM constants */
 	public static final int NS_OK =  0;
 	public static final int NS_COMFALSE = 1;
-	public static final int NS_BINDING_ABORTED = 2;
+	public static final int NS_BINDING_ABORTED = 0x804B0002;
 	public static final int NS_ERROR_BASE = 0xc1f30000;
 	public static final int NS_ERROR_NOT_INITIALIZED =  NS_ERROR_BASE + 1;
 	public static final int NS_ERROR_ALREADY_INITIALIZED = NS_ERROR_BASE + 2;
@@ -223,5 +224,6 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0,
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, byte[] arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, int[] arg1, int /*long*/[] arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, nsID arg1, int /*long*/ arg2);
-static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, boolean[] arg1, int /*long*/[] arg2);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, long arg2, long arg3, long arg4, long arg5);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, long arg4, int /*long*/ arg5, int /*long*/ arg6);
 }
