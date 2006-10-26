@@ -407,6 +407,7 @@
 #define NO_SetWindowOrgEx
 #define NO_SetWindowPlacement
 #define NO_SetWindowTextA
+#define NO_SetWindowTheme
 #define NO_SetWindowsHookExA
 #define NO_SetWindowsHookExW
 #define NO_SetWorldTransform

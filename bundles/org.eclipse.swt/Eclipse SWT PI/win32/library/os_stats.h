@@ -683,6 +683,7 @@ typedef enum {
 	SetWindowRgn_FUNC,
 	SetWindowTextA_FUNC,
 	SetWindowTextW_FUNC,
+	SetWindowTheme_FUNC,
 	SetWindowsHookExA_FUNC,
 	SetWindowsHookExW_FUNC,
 	SetWorldTransform_FUNC,

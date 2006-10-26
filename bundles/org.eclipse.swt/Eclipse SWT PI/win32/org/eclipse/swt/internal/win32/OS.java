@@ -3451,6 +3451,7 @@ public static final native boolean SetWindowPos(int hWnd, int hWndInsertAfter, i
 public static final native int SetWindowRgn(int hWnd, int hRgn, boolean bRedraw);
 public static final native boolean SetWindowTextW (int hWnd, char [] lpString);
 public static final native boolean SetWindowTextA (int hWnd, byte [] lpString);
+public static final native int SetWindowTheme (int hwnd, char [] pszSubAppName, char [] pszSubIdList);
 public static final native int SetWindowsHookExW (int idHook, int lpfn,  int hMod,  int dwThreadId);
 public static final native int SetWindowsHookExA (int idHook, int lpfn,  int hMod,  int dwThreadId);
 public static final native boolean SetWorldTransform(int hdc, float[] lpXform);

@@ -10927,6 +10927,41 @@ fail:
 }
 #endif
 
+#ifndef NO_SetWindowTheme
+JNIEXPORT jint JNICALL OS_NATIVE(SetWindowTheme)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jcharArray arg2)
+{
+	jchar *lparg1=NULL;
+	jchar *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetWindowTheme_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)SetWindowTheme((HWND)arg0, (LPCWSTR)lparg1, (LPCWSTR)lparg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(SetWindowTheme_LIB);
+			if (hm) fp = GetProcAddress(hm, "SetWindowTheme");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HWND)arg0, (LPCWSTR)lparg1, (LPCWSTR)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, SetWindowTheme_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetWindowsHookExA
 JNIEXPORT jint JNICALL OS_NATIVE(SetWindowsHookExA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)

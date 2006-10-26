@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 716;
-int OS_nativeFunctionCallCount[716];
+int OS_nativeFunctionCount = 717;
+int OS_nativeFunctionCallCount[717];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -679,6 +679,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetWindowRgn",
 	"SetWindowTextA",
 	"SetWindowTextW",
+	"SetWindowTheme",
 	"SetWindowsHookExA",
 	"SetWindowsHookExW",
 	"SetWorldTransform",
