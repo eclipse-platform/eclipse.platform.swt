@@ -1156,8 +1156,8 @@ public void setExpanded (boolean expanded) {
 	
 	/*
 	* Feature in Windows.  When TVM_EXPAND is used to expand
-	* an item, the widget scrolls to show the root item and
-	* the newly expanded items.  While not strictly incorrect,
+	* an item, the widget scrolls to show the item and the
+	* newly expanded items.  While not strictly incorrect,
 	* this means that application code that expands tree items
 	* in a background thread can scroll the widget while the
 	* user is interacting with it.  The fix is to remember
@@ -1230,8 +1230,21 @@ public void setExpanded (boolean expanded) {
 	
 	/* Scroll back to the top item */
 	if (noScroll && hTopItem != 0) {
-		OS.SendMessage (hwnd, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hTopItem);
-		if (oldInfo != null) {
+		boolean collapsed = false;
+		if (!expanded) {
+			RECT rect = new RECT ();
+			rect.left = hTopItem;
+			while (hTopItem != 0 && OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) == 0) {
+				hTopItem = rect.left = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hTopItem);
+				collapsed = true;
+			}
+		}
+		boolean scrolled = true;
+		if (hTopItem != 0) {
+			OS.SendMessage (hwnd, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hTopItem);
+			scrolled = hTopItem != OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+		}
+		if (!collapsed && !scrolled && oldInfo != null) {
 			SCROLLINFO newInfo = new SCROLLINFO ();
 			newInfo.cbSize = SCROLLINFO.sizeof;
 			newInfo.fMask = OS.SIF_ALL;
@@ -1243,8 +1256,8 @@ public void setExpanded (boolean expanded) {
 			}
 		}
 		if (redraw) {
-			boolean fixRedraw = false;
-			if (hTopItem == OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0)) {
+			boolean fixScroll = false;
+			if (!collapsed && !scrolled) {
 				int hItem = hTopItem, index = 0;
 				while (hItem != 0 && index < count) {
 					RECT rect = new RECT ();
@@ -1257,7 +1270,7 @@ public void setExpanded (boolean expanded) {
 					hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
 					index++;
 				}
-				fixRedraw = index == count;
+				fixScroll = index == count;
 			}
 			int topHandle = parent.topHandle ();
 			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
@@ -1268,7 +1281,7 @@ public void setExpanded (boolean expanded) {
 			* This code is intentionally commented.
 			*/
 //			OS.SendMessage (hwnd, OS.WM_SETREDRAW, 1, 0);
-			if (fixRedraw) {
+			if (fixScroll) {
 				parent.updateScrollBar ();
 				SCROLLINFO info = new SCROLLINFO ();
 				info.cbSize = SCROLLINFO.sizeof;
