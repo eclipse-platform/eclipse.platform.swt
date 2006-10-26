@@ -164,7 +164,8 @@ int Release() {
 public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int startTime1, int startTime2, int aPersist) {
 	nsIURI source = new nsIURI(aSource);
 	int aSpec = XPCOM.nsEmbedCString_new();
-	source.GetHost(aSpec);
+	int rc = source.GetHost(aSpec);
+	if (rc != XPCOM.NS_OK) Browser.error(rc);
 	int length = XPCOM.nsEmbedCString_Length(aSpec);
 	int buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
@@ -172,16 +173,43 @@ public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int s
 	XPCOM.nsEmbedCString_delete(aSpec);
 	String url = new String(dest);
 	
-	nsILocalFile target = new nsILocalFile(aTarget);
-	int aNativeTarget = XPCOM.nsEmbedCString_new();
-	target.GetNativeLeafName(aNativeTarget);
-	length = XPCOM.nsEmbedCString_Length(aSpec);
-	buffer = XPCOM.nsEmbedCString_get(aSpec);
-	dest = new byte[length];
-	XPCOM.memmove(dest, buffer, length);
-	XPCOM.nsEmbedCString_delete(aNativeTarget);
-	String file = new String(dest);
-	
+	/*
+	* As of mozilla 1.7 the second argument of the nsIDownload interface's 
+	* Init function changed from nsILocalFile to nsIURI.  Detect which of
+	* these interfaces the second argument implements and act accordingly.  
+	*/
+	String filename = null;
+	nsISupports supports = new nsISupports(aTarget);
+	int [] result = new int [1];
+	rc = supports.QueryInterface(nsIURI.NS_IURI_IID, result);
+	if (rc == 0) {	/* >= 1.7 */
+		nsIURI target = new nsIURI(result[0]);
+		result[0] = 0;
+		int aPath = XPCOM.nsEmbedCString_new();
+		rc = target.GetPath(aPath);
+		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		length = XPCOM.nsEmbedCString_Length(aPath);
+		buffer = XPCOM.nsEmbedCString_get(aPath);
+		dest = new byte[length];
+		XPCOM.memmove(dest, buffer, length);
+		XPCOM.nsEmbedCString_delete(aPath);
+		filename = new String(dest);
+		int separator = filename.lastIndexOf(System.getProperty("file.separator"));	//$NON-NLS-1$
+		filename = filename.substring(separator + 1);
+		target.Release();
+	} else {	/* < 1.7 */
+		nsILocalFile target = new nsILocalFile(aTarget);
+		int aNativeTarget = XPCOM.nsEmbedCString_new();
+		rc = target.GetNativeLeafName(aNativeTarget);
+		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		length = XPCOM.nsEmbedCString_Length(aNativeTarget);
+		buffer = XPCOM.nsEmbedCString_get(aNativeTarget);
+		dest = new byte[length];
+		XPCOM.memmove(dest, buffer, length);
+		XPCOM.nsEmbedCString_delete(aNativeTarget);
+		filename = new String(dest);
+	}
+
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			if (event.widget == cancel) {
@@ -196,17 +224,17 @@ public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int s
 		}
 	};
 	shell = new Shell(SWT.DIALOG_TRIM);
-	String msg = Compatibility.getMessage("SWT_Download_File", new Object[] {file});
+	String msg = Compatibility.getMessage("SWT_Download_File", new Object[] {filename}); //$NON-NLS-1$
 	shell.setText(msg);
 	GridLayout gridLayout = new GridLayout();
 	gridLayout.marginHeight = 15;
 	gridLayout.marginWidth = 15;
 	gridLayout.verticalSpacing = 20;
 	shell.setLayout(gridLayout);
-	msg = Compatibility.getMessage("SWT_Download_Location", new Object[] {file, url});	
+	msg = Compatibility.getMessage("SWT_Download_Location", new Object[] {filename, url}); //$NON-NLS-1$
 	new Label(shell, SWT.SIMPLE).setText(msg);
 	status = new Label(shell, SWT.SIMPLE);
-	msg = Compatibility.getMessage("SWT_Download_Started");	
+	msg = Compatibility.getMessage("SWT_Download_Started"); //$NON-NLS-1$
 	status.setText(msg);
 	GridData data = new GridData ();
 	data.grabExcessHorizontalSpace = true;
@@ -214,7 +242,7 @@ public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int s
 	status.setLayoutData (data);
 	
 	cancel = new Button(shell, SWT.PUSH);
-	cancel.setText(SWT.getMessage("SWT_Cancel"));
+	cancel.setText(SWT.getMessage("SWT_Cancel")); //$NON-NLS-1$
 	data = new GridData ();
 	data.horizontalAlignment = GridData.CENTER;
 	cancel.setLayoutData (data);
@@ -275,8 +303,7 @@ public int SetObserver(int aObserver) {
 		int[] result = new int[1];
 		int rc = supports.QueryInterface(nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
 		if (rc != XPCOM.NS_OK) Browser.error(rc);
-		if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);	
-		
+		if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
 		helperAppLauncher = new nsIHelperAppLauncher(result[0]);
 	}
 	return XPCOM.NS_OK;
@@ -313,21 +340,20 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 		shell = null;
 	}
 	return XPCOM.NS_OK;
-}	
+}
 
 int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
-	int currentBytes = aCurTotalProgress / 1024;
-	int totalBytes = aMaxTotalProgress / 1024;
+	int currentKBytes = aCurTotalProgress / 1024;
+	int totalKBytes = aMaxTotalProgress / 1024;
 	if (shell != null & !shell.isDisposed()) {
-		Object[] arguments = {new Integer(currentBytes), new Integer(totalBytes)};
-		String statusMsg = Compatibility.getMessage("SWT_Download_Status", arguments);
+		Object[] arguments = {new Integer(currentKBytes), new Integer(totalKBytes)};
+		String statusMsg = Compatibility.getMessage("SWT_Download_Status", arguments); //$NON-NLS-1$
 		status.setText(statusMsg);
-		
 		shell.layout(true);
 		shell.getDisplay().update();
 	}
 	return XPCOM.NS_OK;
-}		
+}
 
 int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	return XPCOM.NS_OK;

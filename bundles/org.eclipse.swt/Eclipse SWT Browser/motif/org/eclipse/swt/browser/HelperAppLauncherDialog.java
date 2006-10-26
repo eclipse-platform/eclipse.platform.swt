@@ -96,38 +96,70 @@ int Release() {
 /* nsIHelperAppLauncherDialog */
 
 public int Show(int aLauncher, int aContext, int aForced) {
-	nsIHelperAppLauncher helperAppLauncher = new nsIHelperAppLauncher(aLauncher);
+	/*
+	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8.  Query the received
+	 * nsIHelperAppLauncher for the new interface, and if it is not found then fall back to
+	 * the old interface. 
+	 */
+	nsISupports supports = new nsISupports(aLauncher);
+	int [] result = new int [1];
+	int rc = supports.QueryInterface(nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
+	if (rc == 0) {	/* >= 1.8 */
+		nsIHelperAppLauncher_1_8 helperAppLauncher = new nsIHelperAppLauncher_1_8(aLauncher);
+		rc = helperAppLauncher.SaveToDisk(0, false);
+		helperAppLauncher.Release();
+		return rc;
+	}
+	nsIHelperAppLauncher helperAppLauncher = new nsIHelperAppLauncher(aLauncher);	/* < 1.8 */
 	return helperAppLauncher.SaveToDisk(0, false);
 }
 
 public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4) {
-	nsIHelperAppLauncher helperAppLauncher = null;
 	int aDefaultFile, aSuggestedFileExtension, _retval;
+	boolean hasLauncher = false;
+
 	/*
-	* Feature in Mozilla.  The nsIHelperAppLauncherDialog interface is not frozen 
-	* despite being the only way to download files when embedding Mozilla.  Starting 
-	* with Mozilla 1.5, the method PromptForSaveToFile takes an extra argument and 
-	* previous arguments are shifted by one position.  The workaround is to provide 
-	* an XPCOMObject that fits the newer API.  In all cases the first argument is a 
-	* nsISupports reference. In the newer versions, that argument is nsIHelperAppLauncher,
-	* a subclass of nsISupports.  The ordering of the arguments is inferred from the 
-	* type of the first argument. 
+	* The interface for nsIHelperAppLauncherDialog changed as of mozilla 1.5 when an
+	* extra argument was added to the PromptForSaveToFile method (this resulted in all
+	* subsequent arguments shifting right).  The workaround is to provide an XPCOMObject 
+	* that fits the newer API, and to use the first argument's type to infer whether
+	* the old or new nsIHelperAppLauncherDialog interface is being used (and by extension
+	* the ordering of the arguments).  In mozilla >= 1.5 the first argument is an
+	* nsIHelperAppLauncher. 
 	*/
+	/*
+	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8, so the first
+	 * argument must be queried for both the old and new nsIHelperAppLauncher interfaces. 
+	 */
 	nsISupports support = new nsISupports(arg0);
-	int[] result = new int[1];
-	int rc = support.QueryInterface(nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
-	if (rc != XPCOM.NS_OK || result[0] != arg0) { 
+	int [] result = new int [1];
+	int rc = support.QueryInterface(nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
+	boolean usingMozilla18 = rc == 0;
+	if (usingMozilla18) {
+		hasLauncher = true;
+		nsISupports supports = new nsISupports(result[0]);
+		supports.Release();
+	} else {
+		result[0] = 0;
+		rc = support.QueryInterface(nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
+		if (rc == 0) {
+			hasLauncher = true;
+			nsISupports supports = new nsISupports(result[0]);
+			supports.Release();
+		}
+	}
+	result[0] = 0;
+
+	if (hasLauncher) {	/* >= 1.5 */
+		aDefaultFile = arg2;
+		aSuggestedFileExtension = arg3;
+		_retval = arg4;
+	} else {			/* 1.4 */
 		aDefaultFile = arg1;
 		aSuggestedFileExtension = arg2;
 		_retval = arg3;
 	}
-	else {
-		helperAppLauncher = new nsIHelperAppLauncher(arg0);
-		aDefaultFile = arg2;
-		aSuggestedFileExtension = arg3;
-		_retval = arg4;
-	}
-	result[0] = 0;
+
 	int length = XPCOM.strlen_PRUnichar(aDefaultFile);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aDefaultFile, length * 2);
@@ -137,7 +169,7 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 	dest = new char[length];
 	XPCOM.memmove(dest, aSuggestedFileExtension, length * 2);
 	String suggestedFileExtension = new String(dest);
-	
+
 	Shell shell = new Shell();
 	FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
 	fileDialog.setFileName(defaultFile);
@@ -145,8 +177,14 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 	String name = fileDialog.open();
 	shell.close();
 	if (name == null) {
-		if (helperAppLauncher != null) {
-			rc = helperAppLauncher.Cancel();
+		if (hasLauncher) {
+			if (usingMozilla18) {
+				nsIHelperAppLauncher_1_8 launcher = new nsIHelperAppLauncher_1_8(arg0);
+				rc = launcher.Cancel(XPCOM.NS_BINDING_ABORTED);
+			} else {
+				nsIHelperAppLauncher launcher = new nsIHelperAppLauncher(arg0);
+				rc = launcher.Cancel();
+			}
 			if (rc != XPCOM.NS_OK) Browser.error(rc);
 			return XPCOM.NS_OK;
 		}
@@ -161,5 +199,4 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 	XPCOM.memmove(_retval, result, 4);	
 	return XPCOM.NS_OK;
 }
-
 }
