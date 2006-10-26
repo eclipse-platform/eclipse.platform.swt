@@ -9,31 +9,24 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.events.*;
 
+// TODO: Add max/min checks to all 6 setters on all platforms.
+
 // TODO: Make sure all set/get API's work - test all styles and platforms (Win, emulated, Mac & GTK)
 // TODO: Make sure setting the day/month/etc programmatically does NOT send selection callback.
 // TODO: Make sure that SWT.Selection works correctly for all styles, all cases, and all platforms
 // TODO: Test emulated on ALL platforms, including Motif.
 
-// TODO: Check if Mac get/setHour is 24 hour.
-// TODO: Fix GTK to return 1-12 for MONTH.
+// TODO: note: locale is currently hard-coded to EN_US. This needs to be fixed.
 
-// TODO: implement setFormat - figure out what formats the Mac supports. Figure out the semantics
-// of setFormat for Calendar widget (Win, GTK, Mac cocoa)... Felipe was saying maybe just have long/short...
-// if possible, make it API.
-
-// TODO: Figure out what happens in different locales, i.e. I assume the native guys change somehow.
-// currently only Mac & Win have the text guys - what happens in those? (how to create for different locale?)
-// (maybe the Nebula guys Locale changers could be useful for this)
-
-// TODO: move strings to .properties - done except for am/pm and other strings affected by setFormat/locale
+// TODO: implement setFormat API - maybe just support long/short format. What formats does Mac support?
+// Figure out the semantics of setFormat for Calendar (Win, GTK, Mac cocoa).
 
 // TODO: add accessibility to calendar - note: win32 calendar is not accessible... test gtk
 
-// TODO: Consider allowing an optional drop-down calendar for date (i.e. if style is SWT.DATE | SWT.CALENDAR)
-// would this have to be a hint? Native on Win; Mac might not work - could use fully emulated if necessary.
+// TODO: Consider allowing an optional drop-down calendar for SWT.DATE | SWT.DROP_DOWN
 
 // TODO: Consider adding set/get day-of-week API, i.e. 1-7 (Sun-Sat)
-// Otherwise people have to go look it up, and Win, Mac, and Java all provide this - we should, too
+// Win, Mac, and Java all provide this (but GTK does not).
 
 // TODO: Write the little print calendar month app
 
@@ -138,6 +131,10 @@ public DateTime(Composite parent, int style) {
 	}
 }
 
+static int checkStyle (int style) {
+	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
+}
+
 String formattedStringValue(int fieldName, int value, boolean adjust) {
 	if (fieldName == Calendar.AM_PM) {
 		return value == Calendar.AM ? "AM" : "PM"; // TODO: needs more work for setFormat and locale
@@ -191,8 +188,8 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
-static int checkStyle (int style) {
-	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
 void commitCurrentField() {
