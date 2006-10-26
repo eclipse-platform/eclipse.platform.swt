@@ -16,6 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
+//TODO - note: locale is currently hard-coded to EN_US. This needs to be fixed.
 //TODO - features not yet implemented: setFormat (short/long?), read-only, drop-down calendar for date
 //TODO - font, colors, background image not yet implemented (works on some platforms)
 
@@ -163,7 +164,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height = tm.tmHeight;
 			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
 			height = Math.max (height, upDownHeight);
-			String string = "00/00/0000";
+			String string = "00/00/0000"; // TODO: take locale and format into account
 			if ((style & SWT.TIME) != 0) string = "00:00:00 AM";
 			RECT rect = new RECT ();
 			TCHAR buffer = new TCHAR (getCodePage (), string, false);
