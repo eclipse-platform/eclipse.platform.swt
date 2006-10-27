@@ -6,7 +6,6 @@ import java.util.Calendar; // TODO: Gregorian not in CLDC
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.events.*;
 
 // TODO: note: locale is currently hard-coded to EN_US. This needs to be fixed. Use java.text.DateFormat?
@@ -218,10 +217,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int borderWidth = getBorderWidth ();
 	return new Point (width + 2*borderWidth, height + 2*borderWidth);
-}
-
-int defaultBackground () {
-	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
 void drawDay(GC gc, Point cellSize, int day) {
