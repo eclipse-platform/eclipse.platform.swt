@@ -9,14 +9,9 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.events.*;
 
-// TODO: Add max/min checks to all 6 setters on all platforms.
-
-// TODO: Make sure all set/get API's work - test all styles and platforms (Win, emulated, Mac & GTK)
-// TODO: Make sure setting the day/month/etc programmatically does NOT send selection callback.
-// TODO: Make sure that SWT.Selection works correctly for all styles, all cases, and all platforms
 // TODO: Test emulated on ALL platforms, including Motif.
 
-// TODO: note: locale is currently hard-coded to EN_US. This needs to be fixed.
+// TODO: note: locale is currently hard-coded to EN_US. This needs to be fixed. Use java.text.DateFormat?
 
 // TODO: implement setFormat API - maybe just support long/short format. What formats does Mac support?
 // Figure out the semantics of setFormat for Calendar (Win, GTK, Mac cocoa).
@@ -27,8 +22,6 @@ import org.eclipse.swt.events.*;
 
 // TODO: Consider adding set/get day-of-week API, i.e. 1-7 (Sun-Sat)
 // Win, Mac, and Java all provide this (but GTK does not).
-
-// TODO: Write the little print calendar month app
 
 /*public*/ class DateTime extends Composite {
 	Color foreground, background;
@@ -42,6 +35,7 @@ import org.eclipse.swt.events.*;
 	int fieldCount, currentField = 0, characterCount = 0;
 	boolean ignoreVerify = false;
 	
+	// TODO: default format strings need more work for locale and setFormat
 	static String defaultDateFormat = "MM/DD/YYYY";
 	static String defaultTimeFormat = "HH:MM:SS AM";
 	static final int MARGIN_WIDTH = 2;
@@ -52,8 +46,8 @@ import org.eclipse.swt.events.*;
 public DateTime(Composite parent, int style) {
 	super(parent, checkStyle(style) | SWT.NO_REDRAW_RESIZE);
 	calendar = Calendar.getInstance();
+	formatSymbols = new DateFormatSymbols();
 	if ((this.style & SWT.CALENDAR) != 0) {
-		formatSymbols = new DateFormatSymbols();
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
 				switch(event.type) {
@@ -139,7 +133,8 @@ static int checkStyle (int style) {
 
 String formattedStringValue(int fieldName, int value, boolean adjust) {
 	if (fieldName == Calendar.AM_PM) {
-		return value == Calendar.AM ? "AM" : "PM"; // TODO: needs more work for setFormat and locale
+		String[] ampm = formatSymbols.getAmPmStrings();
+		return ampm[value];
 	}
 	if (adjust) {
 		if (fieldName == Calendar.HOUR && value == 0) {
@@ -155,11 +150,12 @@ String formattedStringValue(int fieldName, int value, boolean adjust) {
 String getFormattedString(int style) {
 	// TODO: needs more work for setFormat and locale
 	if ((style & SWT.TIME) != 0) {
+		String[] ampm = formatSymbols.getAmPmStrings();
 		int h = calendar.get(Calendar.HOUR); if (h == 0) h = 12;
 		int m = calendar.get(Calendar.MINUTE);
 		int s = calendar.get(Calendar.SECOND);
 		int a = calendar.get(Calendar.AM_PM);
-		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + ":" + (s < 10 ? " " : "") + s + " " + (a == Calendar.AM ? "AM" : "PM");
+		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + ":" + (s < 10 ? " " : "") + s + " " + ampm[a];
 	}
 	/* SWT.DATE */
 	int y = calendar.get(Calendar.YEAR);
@@ -169,7 +165,6 @@ String getFormattedString(int style) {
 }
 
 String getComputeSizeString(int style) {
-	// TODO: needs more work for setFormat and locale
 	return (style & SWT.TIME) != 0 ? defaultTimeFormat : defaultDateFormat;
 }
 
@@ -545,9 +540,10 @@ void onVerify(Event event) {
 	int length = end - start;
 	String newText = event.text;
 	if (fieldName == Calendar.AM_PM) {
-		if (newText.equalsIgnoreCase("A") || newText.equalsIgnoreCase("AM")) {
+		String[] ampm = formatSymbols.getAmPmStrings();
+		if (newText.equalsIgnoreCase(ampm[Calendar.AM].substring(0, 1)) || newText.equalsIgnoreCase(ampm[Calendar.AM])) {
 			setTextField(fieldName, Calendar.AM, true, false);
-		} else if (newText.equalsIgnoreCase("P") || newText.equalsIgnoreCase("PM")) {
+		} else if (newText.equalsIgnoreCase(ampm[Calendar.PM].substring(0, 1)) || newText.equalsIgnoreCase(ampm[Calendar.PM])) {
 			setTextField(fieldName, Calendar.PM, true, false);
 		}
 		return;
