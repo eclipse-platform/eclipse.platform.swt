@@ -41,7 +41,7 @@ import org.eclipse.swt.events.*;
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
 
-/*public*/ DateTime(Composite parent, int style) {
+public DateTime(Composite parent, int style) {
 	super(parent, checkStyle(style) | SWT.NO_REDRAW_RESIZE);
 	calendar = Calendar.getInstance();
 	formatSymbols = new DateFormatSymbols();
