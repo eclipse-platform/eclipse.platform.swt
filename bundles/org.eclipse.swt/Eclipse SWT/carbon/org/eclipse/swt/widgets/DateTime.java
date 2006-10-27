@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.Calendar;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -18,7 +20,10 @@ import org.eclipse.swt.internal.carbon.OS;
 
 /*public*/ class DateTime extends Composite {
 	LongDateRec dateRec;
-	
+
+	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
+	static final int MAX_YEAR = 9999;
+
 public DateTime (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -154,6 +159,15 @@ void hookEvents () {
 	OS.InstallEventHandler (controlTarget, clockProc, mask.length / 2, mask, handle, null);
 }
 
+boolean isValid(int fieldName, int value) {
+	Calendar calendar = Calendar.getInstance();
+	calendar.set(Calendar.YEAR, dateRec.year);
+	calendar.set(Calendar.MONTH, dateRec.month - 1);
+	int min = calendar.getActualMinimum(fieldName);
+	int max = calendar.getActualMaximum(fieldName);
+	return value >= min && value <= max;
+}
+
 int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
 	// TODO: Tiger (10.4) and up only: kEventClassClockView / kEventClockDateOrTimeChanged
 	sendSelectionEvent ();
@@ -189,6 +203,7 @@ void sendSelectionEvent () {
 
 public void setDay (int day) {
 	checkWidget ();
+	if (!isValid(Calendar.DAY_OF_MONTH, day)) return;
 	dateRec.day = (short)day;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
@@ -197,6 +212,7 @@ public void setDay (int day) {
 
 public void setHour (int hour) {
 	checkWidget ();
+	if (!isValid(Calendar.HOUR_OF_DAY, hour)) return;
 	dateRec.hour = (short)hour;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
@@ -205,6 +221,7 @@ public void setHour (int hour) {
 
 public void setMinute (int minute) {
 	checkWidget ();
+	if (!isValid(Calendar.MINUTE, minute)) return;
 	dateRec.minute = (short)minute;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
@@ -213,6 +230,7 @@ public void setMinute (int minute) {
 
 public void setMonth (int month) {
 	checkWidget ();
+	if (!isValid(Calendar.MONTH, month)) return;
 	dateRec.month = (short)month;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
@@ -221,6 +239,7 @@ public void setMonth (int month) {
 
 public void setSecond (int second) {
 	checkWidget ();
+	if (!isValid(Calendar.SECOND, second)) return;
 	dateRec.second = (short)second;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
@@ -229,6 +248,8 @@ public void setSecond (int second) {
 
 public void setYear (int year) {
 	checkWidget ();
+	//if (!isValid(Calendar.YEAR, year)) return;
+	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	dateRec.year = (short)year;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
