@@ -46,6 +46,8 @@ import org.eclipse.swt.events.*;
 	static String defaultTimeFormat = "HH:MM:SS AM";
 	static final int MARGIN_WIDTH = 2;
 	static final int MARGIN_HEIGHT = 1;
+	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
+	static final int MAX_YEAR = 9999;
 
 public DateTime(Composite parent, int style) {
 	super(parent, checkStyle(style) | SWT.NO_REDRAW_RESIZE);
@@ -341,11 +343,6 @@ public int getDay() {
 	return calendar.get(Calendar.DAY_OF_MONTH);
 }
 
-//public long getDate() {
-//	checkWidget();
-//	return calendar.getTimeInMillis();
-//}
-//
 public Color getForeground() {
 	checkWidget();
 	if (foreground == null) {
@@ -452,6 +449,12 @@ void handleTraverse(Event event) {
 			event.doit = true;
 			break;
 	}	
+}
+
+boolean isValid(int fieldName, int value) {
+	int min = calendar.getActualMinimum(fieldName);
+	int max = calendar.getActualMaximum(fieldName);
+	return value >= min && value <= max;
 }
 
 void onKeyDown(Event event) {
@@ -623,8 +626,8 @@ void setTextField(int fieldName, int value, boolean commit, boolean adjust) {
 		int max = calendar.getActualMaximum(fieldName);
 		int min = calendar.getActualMinimum(fieldName);
 		if (fieldName == Calendar.YEAR) {
-			/* Special case: don't allow more than 4-digit years. */
-			max = 9999;
+			max = MAX_YEAR;
+			min = MIN_YEAR;
 			/* Special case: convert 1 or 2-digit years into reasonable 4-digit years. */
 			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 			int currentCentury = (currentYear / 100) * 100;
@@ -680,14 +683,9 @@ public void setBackground(Color color) {
 	if (text != null) text.setBackground(color);
 }
 
-//public void setDate(long date) {
-//	checkWidget();
-//	calendar.setTimeInMillis(date);
-//	updateControl();
-//}
-//
 public void setDay(int day) {
 	checkWidget();
+	if (!isValid(Calendar.DAY_OF_MONTH, day)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		setDay(day, false);
 	} else {
@@ -751,30 +749,36 @@ public void setForeground(Color color) {
 
 public void setHour (int hour) {
 	checkWidget ();
+	if (!isValid(Calendar.HOUR_OF_DAY, hour)) return;
 	calendar.set(Calendar.HOUR_OF_DAY, hour);
 	updateControl();
 }
 
 public void setMinute (int minute) {
 	checkWidget ();
+	if (!isValid(Calendar.MINUTE, minute)) return;
 	calendar.set(Calendar.MINUTE, minute);
 	updateControl();
 }
 
 public void setMonth(int month) {
 	checkWidget();
+	if (!isValid(Calendar.MONTH, month - 1)) return;
 	calendar.set(Calendar.MONTH, month - 1);
 	updateControl();
 }
 
 public void setSecond (int second) {
 	checkWidget ();
+	if (!isValid(Calendar.SECOND, second)) return;
 	calendar.set(Calendar.SECOND, second);
 	updateControl();
 }
 
 public void setYear(int year) {
 	checkWidget();
+	//if (!isValid(Calendar.YEAR, year)) return;
+	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	calendar.set(Calendar.YEAR, year);
 	updateControl();
 }
