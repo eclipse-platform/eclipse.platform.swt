@@ -151,12 +151,14 @@ public int getYear () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int clockProc = display.clockProc;
-	int [] mask = new int [] {
-		OS.kEventClassClockView, OS.kEventClockDateOrTimeChanged,
-	};
-	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, clockProc, mask.length / 2, mask, handle, null);
+	if (OS.VERSION >= 0x1040) {
+		int clockProc = display.clockProc;
+		int [] mask = new int [] {
+				OS.kEventClassClockView, OS.kEventClockDateOrTimeChanged,
+		};
+		int controlTarget = OS.GetControlEventTarget (handle);
+		OS.InstallEventHandler (controlTarget, clockProc, mask.length / 2, mask, handle, null);
+	}
 }
 
 boolean isValid(int fieldName, int value) {
@@ -169,9 +171,22 @@ boolean isValid(int fieldName, int value) {
 }
 
 int kEventClockDateOrTimeChanged (int nextHandler, int theEvent, int userData) {
-	// TODO: Tiger (10.4) and up only: kEventClassClockView / kEventClockDateOrTimeChanged
 	sendSelectionEvent ();
 	return OS.noErr;
+}
+
+int kEventControlHit (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlHit (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (OS.VERSION < 0x1040) sendSelectionEvent ();
+	return result;
+}
+
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (OS.VERSION < 0x1040) sendSelectionEvent ();
+	return result;
 }
 
 void releaseWidget () {
@@ -230,7 +245,7 @@ public void setMinute (int minute) {
 
 public void setMonth (int month) {
 	checkWidget ();
-	if (!isValid(Calendar.MONTH, month)) return;
+	if (!isValid(Calendar.MONTH, month - 1)) return;
 	dateRec.month = (short)month;
 	OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
