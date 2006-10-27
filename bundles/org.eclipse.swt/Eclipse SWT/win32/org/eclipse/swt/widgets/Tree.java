@@ -4154,11 +4154,9 @@ public void setSelection (TreeItem [] items) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
-		hSelect = hNewItem;
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 		ignoreSelect = false;
-		hSelect = 0;
 		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hNewItem);
 		}
@@ -5865,6 +5863,28 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	}
 	if (headerToolTipHandle != 0) {
 		OS.SendMessage (headerToolTipHandle, OS.WM_SETFONT, wParam, lParam);
+	}
+	return result;
+}
+
+LRESULT WM_SETREDRAW (int wParam, int lParam) {
+	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  Under certain circumstances, when
+	* WM_SETREDRAW is used to turn off drawing and then
+	* WM_GETITEMRECT is sent to get the bounds of an item
+	* that is not inside the client area, Windows segment
+	* faults.  The fix is to call the default window proc
+	* rather than the default tree proc.
+	* 
+	* NOTE:  This problem is intermittent and happens on
+	* Windows Vista running under the theme manager.
+	* 
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		int code = OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+		return code == 0 ? LRESULT.ZERO : new LRESULT (code);
 	}
 	return result;
 }
