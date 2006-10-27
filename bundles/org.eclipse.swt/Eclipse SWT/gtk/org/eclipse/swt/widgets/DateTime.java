@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.Calendar;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -18,6 +20,9 @@ import org.eclipse.swt.internal.gtk.OS;
 /*public*/ class DateTime extends Composite {
 	int day, month, year, hour, minute, second;
 	
+	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
+	static final int MAX_YEAR = 9999;
+
 public DateTime (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -51,7 +56,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
 //		if ((style & SWT.CALENDAR) != 0) {
-			// TODO
+			// TODO: CALENDAR computeSize
 			width = 300;
 			height = 200;
 //		} else {
@@ -150,6 +155,15 @@ void hookEvents () {
 //	}
 }
 
+boolean isValid(int fieldName, int value) {
+	Calendar calendar = Calendar.getInstance();
+	calendar.set(Calendar.YEAR, year);
+	calendar.set(Calendar.MONTH, month);
+	int min = calendar.getActualMinimum(fieldName);
+	int max = calendar.getActualMaximum(fieldName);
+	return value >= min && value <= max;
+}
+
 void releaseWidget () {
 	super.releaseWidget();
 	//TODO: need to do anything here?
@@ -181,33 +195,41 @@ void sendSelectionEvent () {
 
 public void setDay (int day) {
 	checkWidget ();
+	if (!isValid(Calendar.DAY_OF_MONTH, day)) return;
 	this.day = day;
 	OS.gtk_calendar_select_day(handle, day);
 }
 
 public void setHour (int hour) {
 	checkWidget ();
+	if (!isValid(Calendar.HOUR_OF_DAY, hour)) return;
 	this.hour = hour;
 }
 
 public void setMinute (int minute) {
 	checkWidget ();
+	if (!isValid(Calendar.MINUTE, minute)) return;
 	this.minute = minute;
 }
 
 public void setMonth (int month) {
 	checkWidget ();
-	this.month = --month;
+	month--;
+	if (!isValid(Calendar.MONTH, month)) return;
+	this.month = month;
 	OS.gtk_calendar_select_month(handle, month, year);
 }
 
 public void setSecond (int second) {
 	checkWidget ();
+	if (!isValid(Calendar.SECOND, second)) return;
 	this.second = second;
 }
 
 public void setYear (int year) {
 	checkWidget ();
+	//if (!isValid(Calendar.YEAR, year)) return;
+	if (year < MIN_YEAR || year > MAX_YEAR) return;
 	this.year = year;
 	OS.gtk_calendar_select_month(handle, month, year);
 }
