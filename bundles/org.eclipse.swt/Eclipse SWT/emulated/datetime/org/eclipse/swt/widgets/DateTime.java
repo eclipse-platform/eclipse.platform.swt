@@ -1,15 +1,13 @@
 package org.eclipse.swt.widgets;
 
 
-import java.text.DateFormatSymbols;
-import java.util.Calendar;
+import java.text.DateFormatSymbols; //TODO: not in CLDC
+import java.util.Calendar; // TODO: Gregorian not in CLDC
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.events.*;
-
-// TODO: Test emulated on ALL platforms, including Motif.
 
 // TODO: note: locale is currently hard-coded to EN_US. This needs to be fixed. Use java.text.DateFormat?
 
@@ -43,7 +41,7 @@ import org.eclipse.swt.events.*;
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
 
-public DateTime(Composite parent, int style) {
+/*public*/ DateTime(Composite parent, int style) {
 	super(parent, checkStyle(style) | SWT.NO_REDRAW_RESIZE);
 	calendar = Calendar.getInstance();
 	formatSymbols = new DateFormatSymbols();
