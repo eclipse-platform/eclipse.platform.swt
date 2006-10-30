@@ -118,7 +118,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, moved, drawing, reshape, update, deferDispose, activate, active, disposed, opened;
+	boolean resized, moved, drawing, reshape, update, deferDispose, active, disposed, opened;
 	int invalRgn;
 	Control lastActive;
 	Region region;
@@ -650,8 +650,7 @@ Cursor findCursor () {
  */
 public void forceActive () {
 	checkWidget ();
-	if (activate) return;
-	if(!isVisible()) return;
+	if (!isVisible ()) return;
 	OS.SelectWindow (shellHandle);
 	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 }
@@ -810,11 +809,6 @@ float getThemeAlpha () {
 	return 1;
 }
 
-public boolean getVisible () {
-	checkWidget();
-    return OS.IsWindowVisible (shellHandle);
-}
-
 boolean hasBorder () {
 	return false;
 }
@@ -908,13 +902,15 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
 	if (!active) {
 		active = true;
+		Display display = this.display;
+		display.activeShell = this;
 		display.setMenuBar (menuBar);
 		if (menuBar != null) OS.DrawMenuBar ();
-		activate = true;
 		sendEvent (SWT.Activate);
-		if (isDisposed ()) return result;
-		if (!restoreFocus () && !traverseGroup (true)) setFocus ();
-		activate = false;
+		if (!isDisposed ()) {
+			if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+		}
+		display.activeShell = null;
 	}
 	return result;
 }
@@ -1255,8 +1251,7 @@ public void removeShellListener(ShellListener listener) {
  */
 public void setActive () {
 	checkWidget ();
-	if (activate) return;
-	if(!isVisible()) return;
+	if (!isVisible ()) return;
 	OS.SelectWindow (shellHandle);
 }
 
@@ -1377,7 +1372,7 @@ public void setMinimized (boolean minimized) {
 	if (this.minimized == minimized) return;
 	super.setMinimized (minimized);
 	if (!minimized && OS.IsWindowCollapsed (shellHandle)) {
-		if (!activate) OS.SelectWindow (shellHandle);
+		OS.SelectWindow (shellHandle);
 	}
 	OS.CollapseWindow (shellHandle, minimized);
 }

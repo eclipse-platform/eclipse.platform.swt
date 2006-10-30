@@ -1613,7 +1613,7 @@ boolean isTabItem () {
  */
 public boolean isVisible () {
 	checkWidget();
-	return OS.IsControlVisible (topHandle ());
+	return getVisible () && parent.isVisible ();
 }
 
 Decorations menuShell () {

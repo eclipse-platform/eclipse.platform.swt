@@ -143,6 +143,7 @@ public class Display extends Device {
 	Control focusControl;
 	Combo focusCombo;
 	boolean ignoreFocus;
+	Shell activeShell;
 
 	/* Menus */
 	Menu menuBar;
@@ -1228,6 +1229,9 @@ public static synchronized Display findDisplay (Thread thread) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
+	if (activeShell != null && !activeShell.isDisposed ()) {
+		return activeShell;
+	}
 	for (int i=0; i<widgetTable.length; i++) {
 		Widget widget = widgetTable [i];
 		if (widget != null && widget instanceof Shell) {
