@@ -513,6 +513,25 @@ void sendSelectionEvent () {
 	}
 }
 
+public void setBackground(Color color) {
+	checkWidget();
+	super.setBackground(color);
+	if (text != null) text.setBackground(color);
+}
+
+public void setFont(Font font) {
+	checkWidget();
+	super.setFont(font);
+	if (text != null) text.setFont(font);
+	redraw();
+}
+
+public void setForeground(Color color) {
+	checkWidget();
+	super.setForeground(color);
+	if (text != null) text.setForeground(color);
+}
+
 /*public*/ void setFormat(String string) {
 	checkWidget();
 	fieldCount = (style & SWT.DATE) != 0 ? 3 : 4;
