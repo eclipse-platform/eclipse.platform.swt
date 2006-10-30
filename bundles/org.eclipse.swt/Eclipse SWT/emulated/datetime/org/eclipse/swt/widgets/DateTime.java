@@ -8,7 +8,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-// TODO: note: locale is currently hard-coded to EN_US. This needs to be fixed. Use java.text.DateFormat?
+// TODO: locale is currently hard-coded to EN_US. This needs to be fixed. Use java.text.DateFormat?
 
 // TODO: implement setFormat API - maybe just support long/short format. What formats does Mac support?
 // Figure out the semantics of setFormat for Calendar (Win, GTK, Mac cocoa).
@@ -62,13 +62,13 @@ public DateTime(Composite parent, int style) {
 		addListener(SWT.KeyDown, listener);
 		addListener(SWT.Traverse, listener);
 		yearDown = new Button(this, SWT.ARROW | SWT.LEFT);
-		yearDown.setToolTipText(SWT.getMessage ("SWT_Last_Year")); //$NON-NLS-1$
+		//yearDown.setToolTipText(SWT.getMessage ("SWT_Last_Year")); //$NON-NLS-1$
 		monthDown = new Button(this, SWT.ARROW | SWT.LEFT);
-		monthDown.setToolTipText(SWT.getMessage ("SWT_Last_Month")); //$NON-NLS-1$
+		//monthDown.setToolTipText(SWT.getMessage ("SWT_Last_Month")); //$NON-NLS-1$
 		monthUp = new Button(this, SWT.ARROW | SWT.RIGHT);
-		monthUp.setToolTipText(SWT.getMessage ("SWT_Next_Month")); //$NON-NLS-1$
+		//monthUp.setToolTipText(SWT.getMessage ("SWT_Next_Month")); //$NON-NLS-1$
 		yearUp = new Button(this, SWT.ARROW | SWT.RIGHT);
-		yearUp.setToolTipText(SWT.getMessage ("SWT_Next_Year")); //$NON-NLS-1$
+		//yearUp.setToolTipText(SWT.getMessage ("SWT_Next_Year")); //$NON-NLS-1$
 		listener = new Listener() {
 			public void handleEvent(Event event) {
 				handleSelection(event);
@@ -101,9 +101,9 @@ public DateTime(Composite parent, int style) {
 		text.addListener(SWT.MouseUp, listener);
 		text.addListener(SWT.Verify, listener);
 		up = new Button(this, SWT.ARROW | SWT.UP);
-		up.setToolTipText(SWT.getMessage ("SWT_Up")); //$NON-NLS-1$
+		//up.setToolTipText(SWT.getMessage ("SWT_Up")); //$NON-NLS-1$
 		down = new Button(this, SWT.ARROW | SWT.DOWN);
-		down.setToolTipText(SWT.getMessage ("SWT_Down")); //$NON-NLS-1$
+		//down.setToolTipText(SWT.getMessage ("SWT_Down")); //$NON-NLS-1$
 		up.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				incrementField(+1);
