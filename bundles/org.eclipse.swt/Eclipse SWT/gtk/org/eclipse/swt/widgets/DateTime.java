@@ -18,13 +18,13 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.OS;
 
-/*public*/ class DateTime extends Composite {
+public class DateTime extends Composite {
 	int day, month, year, hour, minute, second;
 	
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
 
-	// Emulated DATE and TIME variables
+	/* Emulated DATE and TIME variables */
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
 	Button down, up;

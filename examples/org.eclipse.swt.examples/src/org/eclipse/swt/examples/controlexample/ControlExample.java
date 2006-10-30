@@ -72,7 +72,7 @@ public class ControlExample {
 			new CanvasTab (this),
 			new ComboTab (this),
 			new CoolBarTab (this),
-			//new DateTimeTab (this),
+			new DateTimeTab (this),
 			new DialogTab (this),
 			new ExpandBarTab (this),
 			new GroupTab (this),

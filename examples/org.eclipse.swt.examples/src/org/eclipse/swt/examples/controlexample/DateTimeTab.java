@@ -15,14 +15,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 
-// TEMPORARY CODE until DateTime is public
-class DateTime extends Canvas {
-	DateTime (Composite parent, int style) {
-		super (parent, style);
-	}
-}
-// END TEMPORARY CODE
-
 class DateTimeTab extends Tab {
 	/* Example widgets and groups that contain them */
 	DateTime dateTime1;

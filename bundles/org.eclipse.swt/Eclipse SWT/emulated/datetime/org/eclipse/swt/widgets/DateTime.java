@@ -20,7 +20,7 @@ import org.eclipse.swt.events.*;
 // TODO: Consider adding set/get day-of-week API, i.e. 1-7 (Sun-Sat)
 // Win, Mac, and Java all provide this (but GTK does not).
 
-/*public*/ class DateTime extends Composite {
+public class DateTime extends Composite {
 	Color foreground, background;
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;

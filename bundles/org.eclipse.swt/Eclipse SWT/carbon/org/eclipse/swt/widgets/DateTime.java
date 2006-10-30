@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.LongDateRec;
 import org.eclipse.swt.internal.carbon.OS;
 
-/*public*/ class DateTime extends Composite {
+public class DateTime extends Composite {
 	LongDateRec dateRec;
 
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752

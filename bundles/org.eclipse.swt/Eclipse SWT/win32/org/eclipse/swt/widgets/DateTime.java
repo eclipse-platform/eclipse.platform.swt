@@ -43,8 +43,7 @@ import org.eclipse.swt.graphics.*;
  * @since 3.3
  */
 
-/* UNDER DEVELOPMENT - DO NOT USE */
-/*public*/ class DateTime extends Composite {
+public class DateTime extends Composite {
 	static final int DateTimeProc;
 	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
 	static final int CalendarProc;
