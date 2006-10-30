@@ -335,7 +335,7 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 		if (resize) {
 			item.setBounds (x, y, size.x, itemHeight);
 			boolean visible = x + size.x <= width && y + itemHeight <= height;
-			item.setVisible (item.handle, visible);
+			item.setVisible (visible);
 			Control control = item.control;
 			if (control != null) {
 				int controlY = y + (itemHeight - size.y) / 2;
@@ -375,7 +375,7 @@ int [] layoutVertical (int width, int height, boolean resize) {
 		if (resize) {
 			item.setBounds (x, y, itemWidth, size.y);
 			boolean visible = x + itemWidth <= width && y + size.y <= height;
-			item.setVisible (item.handle, visible);
+			item.setVisible (visible);
 			Control control = item.control;
 			if (control != null) {
 				int controlX = x + (itemWidth - size.x) / 2;

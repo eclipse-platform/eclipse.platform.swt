@@ -862,7 +862,7 @@ void register () {
 
 void releaseParent () {
 	super.releaseParent ();
-	setVisible (handle, false);
+	setVisible (false);
 }
 
 void releaseHandle () {
@@ -1206,6 +1206,17 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+}
+
+void setVisible (boolean visible) {
+	if (visible) {
+		if ((state & HIDDEN) == 0) return;
+		state &= ~HIDDEN;
+	} else {
+		if ((state & HIDDEN) != 0) return;
+		state |= HIDDEN;
+	}
+	setVisible (handle, visible);
 }
 
 /**
