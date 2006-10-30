@@ -5946,6 +5946,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1button_1set_1relief)
 }
 #endif
 
+#ifndef NO__1gtk_1calendar_1display_1options
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1display_1options)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1calendar_1display_1options_FUNC);
+/*
+	gtk_calendar_display_options((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkCalendar *, GtkCalendarDisplayOptions);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_calendar_display_options_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_calendar_display_options");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1calendar_1display_1options_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1calendar_1get_1date
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1calendar_1get_1date)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jintArray arg3)
@@ -17385,3 +17411,4 @@ JNIEXPORT jint JNICALL OS_NATIVE(strlen)
 	return rc;
 }
 #endif
+

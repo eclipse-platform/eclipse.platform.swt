@@ -36,6 +36,7 @@
 #define XRenderFreePicture_LIB "libXrender.so"
 #define XRenderSetPictureClipRectangles_LIB "libXrender.so"
 #define XRenderSetPictureTransform_LIB "libXrender.so"
+#define gtk_calendar_display_options_LIB "libgtk-x11-2.0.so.0"
 #define gtk_calendar_get_date_LIB "libgtk-x11-2.0.so.0"
 #define gtk_calendar_new_LIB "libgtk-x11-2.0.so.0"
 #define gtk_calendar_select_day_LIB "libgtk-x11-2.0.so.0"

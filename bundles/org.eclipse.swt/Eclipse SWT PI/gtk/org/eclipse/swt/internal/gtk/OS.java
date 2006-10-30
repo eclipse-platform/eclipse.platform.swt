@@ -3825,6 +3825,15 @@ public static final void gtk_calendar_set_display_options(int /*long*/ calendar,
 		lock.unlock();
 	}
 }
+public static final native void _gtk_calendar_display_options(int /*long*/ calendar, int flags);
+public static final void gtk_calendar_display_options(int /*long*/ calendar, int flags) {
+	lock.lock();
+	try {
+		_gtk_calendar_display_options(calendar, flags);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_calendar_get_date(int /*long*/ calendar, int[] year, int[] month, int[] day);
 public static final void gtk_calendar_get_date(int /*long*/ calendar, int[] year, int[] month, int[] day) {
 	lock.lock();
