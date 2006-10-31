@@ -420,9 +420,9 @@ boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, b
 	if (filter) {
 		int [] start = new int [1], end = new int [1];
 		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-		if (start [0] < end [0]) {
+		if (start [0] != end [0]) {
 			int lParam = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
-			int position = (short) (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF);
+			int position = OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
 			if (start [0] < position && position < end [0]) {
 				if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
 					if (consume != null) consume [0] = true;
@@ -810,11 +810,14 @@ public int getOrientation () {
  * 
  * @since 3.3
  */
+//TODO - Javadoc
 /*public*/ int getPosition (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int lParam = (point.x & 0xFFFF) | ((point.y << 16) & 0xFFFF0000);
-	return OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
+	int position = OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
+	if (!OS.IsUnicode && OS.IsDBLocale) position = mbcsToWcsPos (position);
+	return position;
 }
 
 /**
