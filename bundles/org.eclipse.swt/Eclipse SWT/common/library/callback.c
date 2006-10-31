@@ -30,9 +30,28 @@ static int initialized = 0;
 static int counter = 0;
 #endif
 
+SWT_PTR callback(int index, ...);
+
+/*
+* Note that only x86 assembler is supported
+*/
+#if !(defined(__i386__) || defined(_M_IX86) || defined(_X86_))
+#undef USE_ASSEMBLER
+#endif
+
+#ifdef USE_ASSEMBLER
+
+#if !(defined (_WIN32) || defined (_WIN32_WCE))
+#include <sys/mman.h>
+#endif
+
+static unsigned char *callbackCode = NULL;
+#define CALLBACK_THUNK_SIZE 64
+
+#else
+
 /* --------------- callback functions --------------- */
 
-SWT_PTR callback(int index, ...);
 
 /* Function name from index and number of arguments */
 #define FN(index, args) fn##index##_##args
@@ -142,6 +161,7 @@ SWT_PTR * fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = {
 	FN_A_BLOCK(12)    
 };
 
+#endif // USE_ASSEMBLER
 
 /* --------------- callback class calls --------------- */
 
@@ -152,7 +172,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_PTR_1sizeof
 }
 
 JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
-  (JNIEnv *env, jclass that, jobject callback, jobject object, jstring method, jstring signature, jint argCount, jboolean isStatic, jboolean isArrayBased, SWT_PTR errorResult)
+  (JNIEnv *env, jclass that, jobject callbackObject, jobject object, jstring method, jstring signature, jint argCount, jboolean isStatic, jboolean isArrayBased, SWT_PTR errorResult)
 {
 	int i;
 	jmethodID mid = NULL;
@@ -175,19 +195,83 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 	}
 	if (method && methodString) (*env)->ReleaseStringUTFChars(env, method, methodString);
 	if (signature && sigString) (*env)->ReleaseStringUTFChars(env, signature, sigString);
-    if (mid == 0) goto fail;
-    for (i=0; i<MAX_CALLBACKS; i++) {
-        if (!callbackData[i].callback) {
-            if ((callbackData[i].callback = (*env)->NewGlobalRef(env, callback)) == NULL) goto fail;
-            if ((callbackData[i].object = (*env)->NewGlobalRef(env, object)) == NULL) goto fail;
-            callbackData[i].isStatic = isStatic;
-            callbackData[i].isArrayBased = isArrayBased;
-            callbackData[i].argCount = argCount;
-            callbackData[i].errorResult = errorResult;
-            callbackData[i].methodID = mid;
-            return (SWT_PTR) fnx_array[argCount][i];
-        }
-    }
+	if (mid == 0) goto fail;
+	for (i=0; i<MAX_CALLBACKS; i++) {
+		if (!callbackData[i].callback) {
+			if ((callbackData[i].callback = (*env)->NewGlobalRef(env, callbackObject)) == NULL) goto fail;
+			if ((callbackData[i].object = (*env)->NewGlobalRef(env, object)) == NULL) goto fail;
+			callbackData[i].isStatic = isStatic;
+			callbackData[i].isArrayBased = isArrayBased;
+			callbackData[i].argCount = argCount;
+			callbackData[i].errorResult = errorResult;
+			callbackData[i].methodID = mid;
+#ifndef USE_ASSEMBLER
+			return (SWT_PTR) fnx_array[argCount][i];
+#else
+			{
+			int j = 0, k;
+			unsigned char* code;
+			if (callbackCode == NULL) {
+#if defined (_WIN32) || defined (_WIN32_WCE)
+				callbackCode = VirtualAlloc(NULL, CALLBACK_THUNK_SIZE * MAX_CALLBACKS, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+				if (callbackCode == NULL) return 0;
+#else 
+				callbackCode = mmap(NULL, CALLBACK_THUNK_SIZE * MAX_CALLBACKS, PROT_EXEC | PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
+				if (callbackCode == MAP_FAILED) return 0;
+#endif
+			}
+			code = (unsigned char *)(callbackCode + (i * CALLBACK_THUNK_SIZE));
+
+			//PUSH EBP - 1 byte
+			code[j++] = 0x55;
+
+			//MOV EBP,ESP - 2 bytes
+			code[j++] = 0x8b;
+			code[j++] = 0xec;
+
+			// 3*argCount bytes
+			for (k=(argCount + 1) * sizeof(SWT_PTR); k >= sizeof(SWT_PTR)*2; k -= sizeof(SWT_PTR)) {
+				//PUSH SS:[EBP+k]
+				code[j++] = 0xff;
+				code[j++] = 0x75;
+				code[j++] = k;
+			}
+
+			//PUSH i - 2 bytes
+			code[j++] = 0x6a;
+			code[j++] = i;
+
+			//MOV EAX callback - 1 + sizeof(SWT_PTR) bytes
+			code[j++] = 0xb8;
+			((SWT_PTR *)&code[j])[0] = (SWT_PTR)&callback;
+			j += sizeof(SWT_PTR);
+
+			//CALL EAX - 2 bytes
+			code[j++] = 0xff;
+			code[j++] = 0xd0;
+
+			//ADD ESP,(argCount + 1) * sizeof(SWT_PTR) - 3 bytes
+			code[j++] = 0x83;
+			code[j++] = 0xc4;
+			code[j++] = ((argCount + 1) * sizeof(SWT_PTR));
+
+			//POP EBP - 1 byte
+			code[j++] = 0x5d;
+
+#if defined (_WIN32) || defined (_WIN32_WCE)
+			//RETN argCount * sizeof(SWT_PTR) - 3 bytes
+			code[j++] = 0xc2;
+			code[j++] = (argCount * sizeof(SWT_PTR));
+			code[j++] = 0x00;
+#else
+			//RETN - 1 byte
+			code[j++] = 0xc3;
+#endif
+			return (SWT_PTR)code;
+			}
+#endif // USE_ASSEMBLER
+		}
+	}
 fail:
     return 0;
 }
