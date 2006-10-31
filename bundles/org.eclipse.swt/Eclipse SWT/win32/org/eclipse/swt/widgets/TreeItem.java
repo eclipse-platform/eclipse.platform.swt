@@ -1167,10 +1167,12 @@ public void setExpanded (boolean expanded) {
 	* it is safe to turn redraw back on without redrawing
 	* the control.
 	*/
+	RECT oldRect = null;
 	RECT [] rects = null;
 	boolean redraw = false, noScroll = true;
 	SCROLLINFO oldInfo = null;
-	int count = 0, hTopItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+	int count = 0, hBottomItem = 0;
+	int hTopItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	if (noScroll && hTopItem != 0) {
 		oldInfo = new SCROLLINFO ();
 		oldInfo.cbSize = SCROLLINFO.sizeof;
@@ -1194,6 +1196,9 @@ public void setExpanded (boolean expanded) {
 			if (noAnimate || hItem != handle) {
 				redraw = true;
 				count = index;
+				hBottomItem = hItem;
+				oldRect = new RECT ();
+				OS.GetClientRect (hwnd, oldRect);
 				int topHandle = parent.topHandle ();
 				OS.UpdateWindow (topHandle);
 				OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 0, 0);
@@ -1258,19 +1263,23 @@ public void setExpanded (boolean expanded) {
 		if (redraw) {
 			boolean fixScroll = false;
 			if (!collapsed && !scrolled) {
-				int hItem = hTopItem, index = 0;
-				while (hItem != 0 && index < count) {
-					RECT rect = new RECT ();
-					rect.left = hItem;
-					if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
-						if (!OS.EqualRect (rect, rects [index])) {
-							break;
+				RECT newRect = new RECT ();
+				OS.GetClientRect (hwnd, newRect);
+				if (OS.EqualRect (oldRect, newRect)) {
+					int hItem = hTopItem, index = 0;
+					while (hItem != 0 && index < count) {
+						RECT rect = new RECT ();
+						rect.left = hItem;
+						if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+							if (!OS.EqualRect (rect, rects [index])) {
+								break;
+							}
 						}
+						hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+						index++;
 					}
-					hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
-					index++;
+					fixScroll = index == count && hItem == hBottomItem;
 				}
-				fixScroll = index == count;
 			}
 			int topHandle = parent.topHandle ();
 			OS.DefWindowProc (topHandle, OS.WM_SETREDRAW, 1, 0);
