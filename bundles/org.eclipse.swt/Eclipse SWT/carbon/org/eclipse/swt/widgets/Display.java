@@ -138,12 +138,12 @@ public class Display extends Device {
 	static final int GROW_SIZE = 1024;
 	static final int SWT0 = ('s'<<24) + ('w'<<16) + ('t'<<8) + '0';
 	
-	/* Focus */
+	/* Focus and Activation */
+	Shell activeShell;
 	int focusEvent;
 	Control focusControl;
 	Combo focusCombo;
 	boolean ignoreFocus;
-	Shell activeShell;
 
 	/* Menus */
 	Menu menuBar;
