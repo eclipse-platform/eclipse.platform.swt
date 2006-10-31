@@ -362,7 +362,7 @@ public int getDay () {
 	return dateRec.day;
 }
 
-public int getHour () {
+public int getHours () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.HOUR_OF_DAY);
@@ -371,7 +371,7 @@ public int getHour () {
 	return dateRec.hour;
 }
 
-public int getMinute () {
+public int getMinutes () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.MINUTE);
@@ -389,7 +389,7 @@ public int getMonth () {
 	return dateRec.month;
 }
 
-public int getSecond () {
+public int getSeconds () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
 		return calendar.get(Calendar.SECOND);
@@ -515,26 +515,26 @@ public void setDay (int day) {
 	}
 }
 
-public void setHour (int hour) {
+public void setHours (int hours) {
 	checkWidget ();
-	if (!isValid(Calendar.HOUR_OF_DAY, hour)) return;
+	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
 	if ((style & SWT.CALENDAR) != 0) {
-		calendar.set(Calendar.HOUR_OF_DAY, hour);
+		calendar.set(Calendar.HOUR_OF_DAY, hours);
 	} else {
-		dateRec.hour = (short)hour;
+		dateRec.hour = (short)hours;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
 	}
 	redraw();
 }
 
-public void setMinute (int minute) {
+public void setMinutes (int minutes) {
 	checkWidget ();
-	if (!isValid(Calendar.MINUTE, minute)) return;
+	if (!isValid(Calendar.MINUTE, minutes)) return;
 	if ((style & SWT.CALENDAR) != 0) {
-		calendar.set(Calendar.MINUTE, minute);
+		calendar.set(Calendar.MINUTE, minutes);
 	} else {
-		dateRec.minute = (short)minute;
+		dateRec.minute = (short)minutes;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
 	}
@@ -554,13 +554,13 @@ public void setMonth (int month) {
 	redraw();
 }
 
-public void setSecond (int second) {
+public void setSeconds (int seconds) {
 	checkWidget ();
-	if (!isValid(Calendar.SECOND, second)) return;
+	if (!isValid(Calendar.SECOND, seconds)) return;
 	if ((style & SWT.CALENDAR) != 0) {
-		calendar.set(Calendar.SECOND, second);
+		calendar.set(Calendar.SECOND, seconds);
 	} else {
-		dateRec.second = (short)second;
+		dateRec.second = (short)seconds;
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
 	}

@@ -221,9 +221,9 @@ public int getDay () {
 }
 
 /**
- * Returns the receiver's hour.
+ * Returns the receiver's hours.
  * <p>
- * The hour is an integer between 0 and 23.
+ * Hours is an integer between 0 and 23.
  * </p>
  *
  * @return an integer between 0 and 23
@@ -233,7 +233,7 @@ public int getDay () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int getHour () {
+public int getHours () {
 	checkWidget ();
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
@@ -242,9 +242,9 @@ public int getHour () {
 }
 
 /**
- * Returns the receiver's minute.
+ * Returns the receiver's minutes.
  * <p>
- * The minute is an integer between 0 and 59.
+ * Minutes is an integer between 0 and 59.
  * </p>
  *
  * @return an integer between 0 and 59
@@ -254,7 +254,7 @@ public int getHour () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int getMinute () {
+public int getMinutes () {
 	checkWidget ();
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
@@ -288,9 +288,9 @@ String getNameText () {
 }
 
 /**
- * Returns the receiver's second.
+ * Returns the receiver's seconds.
  * <p>
- * The second is an integer between 0 and 59.
+ * Seconds is an integer between 0 and 59.
  * </p>
  *
  * @return an integer between 0 and 59
@@ -300,7 +300,7 @@ String getNameText () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int getSecond () {
+public int getSeconds () {
 	checkWidget ();
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
@@ -378,48 +378,48 @@ public void setDay (int day) {
 }
 
 /**
- * Sets the receiver's hour to the specified hour.
+ * Sets the receiver's hours.
  * <p>
- * The hour is an integer between 0 and 23.
+ * Hours is an integer between 0 and 23.
  * </p>
  *
- * @param hour an integer between 0 and 23
+ * @param hours an integer between 0 and 23
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setHour (int hour) {
+public void setHours (int hours) {
 	checkWidget ();
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
-	systime.wHour = (short)hour;
+	systime.wHour = (short)hours;
 	OS.SendMessage (handle, msg, 0, systime);
 }
 
 /**
- * Sets the receiver's minute.
+ * Sets the receiver's minutes.
  * <p>
- * The minute is an integer between 0 and 59.
+ * Minutes is an integer between 0 and 59.
  * </p>
  *
- * @param minute an integer between 0 and 59
+ * @param minutes an integer between 0 and 59
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setMinute (int minute) {
+public void setMinutes (int minutes) {
 	checkWidget ();
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
-	systime.wMinute = (short)minute;
+	systime.wMinute = (short)minutes;
 	OS.SendMessage (handle, msg, 0, systime);
 }
 
@@ -447,25 +447,25 @@ public void setMonth (int month) {
 }
 
 /**
- * Sets the receiver's second.
+ * Sets the receiver's seconds.
  * <p>
- * The second is an integer between 0 and 59.
+ * Seconds is an integer between 0 and 59.
  * </p>
  *
- * @param second an integer between 0 and 59
+ * @param seconds an integer between 0 and 59
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setSecond (int second) {
+public void setSeconds (int seconds) {
 	checkWidget ();
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
-	systime.wSecond = (short)second;
+	systime.wSecond = (short)seconds;
 	OS.SendMessage (handle, msg, 0, systime);
 }
 

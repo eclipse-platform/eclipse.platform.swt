@@ -339,12 +339,12 @@ public Color getForeground() {
 	return foreground;
 }
 
-public int getHour () {
+public int getHours () {
 	checkWidget ();
 	return calendar.get(Calendar.HOUR_OF_DAY);
 }
 
-public int getMinute () {
+public int getMinutes () {
 	checkWidget ();
 	return calendar.get(Calendar.MINUTE);
 }
@@ -354,7 +354,7 @@ public int getMonth() {
 	return calendar.get(Calendar.MONTH) + 1;
 }
 
-public int getSecond () {
+public int getSeconds () {
 	checkWidget ();
 	return calendar.get(Calendar.SECOND);
 }
@@ -736,17 +736,17 @@ public void setForeground(Color color) {
 	format = string;
 }
 
-public void setHour (int hour) {
+public void setHours (int hours) {
 	checkWidget ();
-	if (!isValid(Calendar.HOUR_OF_DAY, hour)) return;
-	calendar.set(Calendar.HOUR_OF_DAY, hour);
+	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
+	calendar.set(Calendar.HOUR_OF_DAY, hours);
 	updateControl();
 }
 
-public void setMinute (int minute) {
+public void setMinutes (int minutes) {
 	checkWidget ();
-	if (!isValid(Calendar.MINUTE, minute)) return;
-	calendar.set(Calendar.MINUTE, minute);
+	if (!isValid(Calendar.MINUTE, minutes)) return;
+	calendar.set(Calendar.MINUTE, minutes);
 	updateControl();
 }
 
@@ -757,10 +757,10 @@ public void setMonth(int month) {
 	updateControl();
 }
 
-public void setSecond (int second) {
+public void setSeconds (int seconds) {
 	checkWidget ();
-	if (!isValid(Calendar.SECOND, second)) return;
-	calendar.set(Calendar.SECOND, second);
+	if (!isValid(Calendar.SECOND, seconds)) return;
+	calendar.set(Calendar.SECOND, seconds);
 	updateControl();
 }
 

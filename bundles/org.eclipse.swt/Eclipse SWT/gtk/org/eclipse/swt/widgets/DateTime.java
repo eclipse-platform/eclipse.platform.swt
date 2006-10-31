@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.OS;
 
 public class DateTime extends Composite {
-	int day, month, year, hour, minute, second;
+	int day, month, year, hours, minutes, seconds;
 	
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
 	static final int MAX_YEAR = 9999;
@@ -240,19 +240,19 @@ public int getDay () {
 	}
 }
 
-public int getHour () {
+public int getHours () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
-		return hour;
+		return hours;
 	} else {
 		return calendar.get(Calendar.HOUR_OF_DAY);
 	}
 }
 
-public int getMinute () {
+public int getMinutes () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
-		return minute;
+		return minutes;
 	} else {
 		return calendar.get(Calendar.MINUTE);
 	}
@@ -268,10 +268,10 @@ public int getMonth () {
 	}
 }
 
-public int getSecond () {
+public int getSeconds () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
-		return second;
+		return seconds;
 	} else {
 		return calendar.get(Calendar.SECOND);
 	}
@@ -502,7 +502,7 @@ void sendSelectionEvent () {
 	int [] m = new int [1];
 	int [] d = new int [1];
 	OS.gtk_calendar_get_date(handle, y, m, d);
-	//TODO: hour, minute, second?
+	//TODO: hours, minutes, seconds?
 	if (d[0] != day ||
 		m[0] != month ||
 		y[0] != year) {
@@ -612,24 +612,24 @@ public void setDay (int day) {
 	}
 }
 
-public void setHour (int hour) {
+public void setHours (int hours) {
 	checkWidget ();
-	if (!isValid(Calendar.HOUR_OF_DAY, hour)) return;
+	if (!isValid(Calendar.HOUR_OF_DAY, hours)) return;
 	if ((style & SWT.CALENDAR) != 0) {
-		this.hour = hour;
+		this.hours = hours;
 	} else {
-		calendar.set(Calendar.HOUR_OF_DAY, hour);
+		calendar.set(Calendar.HOUR_OF_DAY, hours);
 		updateControl();
 	}
 }
 
-public void setMinute (int minute) {
+public void setMinutes (int minutes) {
 	checkWidget ();
-	if (!isValid(Calendar.MINUTE, minute)) return;
+	if (!isValid(Calendar.MINUTE, minutes)) return;
 	if ((style & SWT.CALENDAR) != 0) {
-		this.minute = minute;
+		this.minutes = minutes;
 	} else {
-		calendar.set(Calendar.MINUTE, minute);
+		calendar.set(Calendar.MINUTE, minutes);
 		updateControl();
 	}
 }
@@ -647,13 +647,13 @@ public void setMonth (int month) {
 	}
 }
 
-public void setSecond (int second) {
+public void setSeconds (int seconds) {
 	checkWidget ();
-	if (!isValid(Calendar.SECOND, second)) return;
+	if (!isValid(Calendar.SECOND, seconds)) return;
 	if ((style & SWT.CALENDAR) != 0) {
-		this.second = second;
+		this.seconds = seconds;
 	} else {
-		calendar.set(Calendar.SECOND, second);
+		calendar.set(Calendar.SECOND, seconds);
 		updateControl();
 	}
 }
