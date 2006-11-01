@@ -78,6 +78,7 @@ public class Table extends Composite {
 	static final int SORT_WIDTH = 10;
 	static final int HEADER_MARGIN = 12;
 	static final int HEADER_EXTRA = 3;
+	static final boolean EXPLORER_THEME = true;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static {
@@ -134,6 +135,11 @@ void _addListener (int eventType, Listener listener) {
 			setBackgroundTransparent (true);
 			//TODO - LVS_EX_LABELTIP causes white rectangles (turn it off)
 			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
+			if (EXPLORER_THEME) {
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					OS.SetWindowTheme (handle, null, null);
+				}
+			}
 			break;
 	}
 }
@@ -969,6 +975,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
+	
+	/* Use the Explorer theme */
+	if (EXPLORER_THEME) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			String name = "Explorer";
+			char [] pszSubAppName = new char [name.length () + 1];
+			name.getChars(0, name.length (), pszSubAppName, 0);
+			OS.SetWindowTheme (handle, pszSubAppName, null);
+		}
+	}
 	
 	/* Get the header window proc */
 	if (HeaderProc == 0) {

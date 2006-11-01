@@ -1605,6 +1605,7 @@ public class OS extends Platform {
 	public static final int TVM_EXPAND = 0x1102;
 	public static final int TVM_GETBKCOLOR = 0x111f;
 	public static final int TVM_GETCOUNT = 0x1105;
+	public static final int TVM_GETEXTENDEDSTYLE = TV_FIRST + 45;
 	public static final int TVM_GETIMAGELIST = 0x1108;
 	public static final int TVM_GETITEM = IsUnicode ? 0x113e : 0x110c;
 	public static final int TVM_GETITEMHEIGHT = 0x111c;
@@ -1620,6 +1621,7 @@ public class OS extends Platform {
 	public static final int TVM_MAPHTREEITEMTOACCID = TV_FIRST + 43;
 	public static final int TVM_SELECTITEM = 0x110b;
 	public static final int TVM_SETBKCOLOR = 0x111d;
+	public static final int TVM_SETEXTENDEDSTYLE = OS.TV_FIRST + 44;
 	public static final int TVM_SETIMAGELIST = 0x1109;
 	public static final int TVM_SETINSERTMARK = 0x111a;
 	public static final int TVM_SETITEM = IsUnicode ? 0x113f : 0x110d;
@@ -1647,6 +1649,16 @@ public class OS extends Platform {
 	public static final int TVSIL_NORMAL = 0x0;
 	public static final int TVSIL_STATE = 0x2;
 	public static final int TVS_DISABLEDRAGDROP = 0x10;
+	public static final int TVS_EX_MULTISELECT = 0x0002;
+	public static final int TVS_EX_DOUBLEBUFFER = 0x0004;
+	public static final int TVS_EX_NOINDENTSTATE = 0x0008;
+	public static final int TVS_EX_RICHTOOLTIP = 0x0010;
+	public static final int TVS_EX_AUTOHSCROLL = 0x0020;
+	public static final int TVS_EX_FADEINOUTEXPANDOS = 0x0040;
+	public static final int TVS_EX_PARTIALCHECKBOXES = 0x0080;
+	public static final int TVS_EX_EXCLUSIONCHECKBOXES = 0x0100;
+	public static final int TVS_EX_DIMMEDCHECKBOXES = 0x0200;
+	public static final int TVS_EX_DRAWIMAGEASYNC = 0x0400;
 	public static final int TVS_FULLROWSELECT = 0x1000;
 	public static final int TVS_HASBUTTONS = 0x1;
 	public static final int TVS_HASLINES = 0x2;
@@ -1655,6 +1667,7 @@ public class OS extends Platform {
 	public static final int TVS_NONEVENHEIGHT = 0x4000;
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
+	public static final int TVS_TRACKSELECT = 0x200;
 	public static final int UDM_GETACCEL = 0x046C;
 	public static final int UDM_GETRANGE32 = 0x0470;
 	public static final int UDM_GETPOS = 0x468;

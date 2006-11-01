@@ -88,6 +88,7 @@ public class Tree extends Composite {
 	static final int HEADER_MARGIN = 12;
 	static final int HEADER_EXTRA = 3;
 	static final int INCREMENT = 5;
+	static final boolean EXPLORER_THEME = true;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static final int HeaderProc;
@@ -167,6 +168,11 @@ void _addListener (int eventType, Listener listener) {
 			OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 			newBits |= OS.TVS_NOHSCROLL | OS.TVS_NOTOOLTIPS;
+			if (EXPLORER_THEME) {
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					newBits &= ~OS.TVS_TRACKSELECT;
+				}
+			}
 			/*
 			* Feature in Windows.  When the tree has the style
 			* TVS_FULLROWSELECT, the background color for the
@@ -176,6 +182,12 @@ void _addListener (int eventType, Listener listener) {
 			*/
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				if (eventType != SWT.MeasureItem) newBits &= ~OS.TVS_FULLROWSELECT;
+			} else {
+				if (EXPLORER_THEME) {
+					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+						newBits |= OS.TVS_HASLINES;
+					}
+				}
 			}
 			if (newBits != oldBits) {
 				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
@@ -189,6 +201,11 @@ void _addListener (int eventType, Listener listener) {
 				int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
 				if (count != 0) {
 					if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
+				}
+			}
+			if (EXPLORER_THEME) {
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					OS.SetWindowTheme (handle, null, null);
 				}
 			}
 			break;
@@ -298,6 +315,9 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 	if (ignoreCustomDraw) return null;
 	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
+	if (nmcd.left == nmcd.right) {
+		return new LRESULT (OS.CDRF_DODEFAULT);
+	}
 	int hDC = nmcd.hdc;
 	OS.RestoreDC (hDC, -1);
 
@@ -817,14 +837,6 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 		}
 	}
 	TreeItem item = _getItem (nmcd.dwItemSpec, id);
-	if (ignoreCustomDraw) {
-		int hDC = nmcd.hdc;
-		int index = hwndHeader != 0 ? OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) : 0;
-		int hFont = item.cellFont != null ? item.cellFont [index] : -1;
-		if (hFont == -1) hFont = item.font;
-		if (hFont != -1) OS.SelectObject (hDC, hFont);
-		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
-	}
 	/*
 	* Feature in Windows.  When a new tree item is inserted
 	* using TVM_INSERTITEM and the tree is using custom draw,
@@ -836,6 +848,14 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	* COMCTL32.DLL,
 	*/
 	if (item == null) return null;
+	if (ignoreCustomDraw || (nmcd.left == nmcd.right)) {
+		int hDC = nmcd.hdc;
+		int index = hwndHeader != 0 ? OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) : 0;
+		int hFont = item.cellFont != null ? item.cellFont [index] : -1;
+		if (hFont == -1) hFont = item.font;
+		if (hFont != -1) OS.SelectObject (hDC, hFont);
+		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
+	}
 	RECT clipRect = null;
 	int index = 0, count = 0;
 	if (hwndHeader != 0) {
@@ -1143,6 +1163,9 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	OS.SaveDC (hDC);
 	if (clipRect != null) {
 		int hRgn = OS.CreateRectRgn (clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+		POINT lpPoint = new POINT ();
+		OS.GetWindowOrgEx (hDC, lpPoint);
+		OS.OffsetRgn (hRgn, -lpPoint.x, -lpPoint.y);
 		OS.SelectClipRgn (hDC, hRgn);
 		OS.DeleteObject (hRgn);
 	}
@@ -1392,6 +1415,12 @@ void checkBuffered () {
 		style |= SWT.DOUBLE_BUFFERED;
 		OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 	}
+	if (EXPLORER_THEME) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			int exStyle = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+			if ((exStyle & OS.TVS_EX_DOUBLEBUFFER) != 0) style |= SWT.DOUBLE_BUFFERED;
+		}
+	}
 }
 
 boolean checkData (TreeItem item, boolean redraw) {
@@ -1587,7 +1616,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
-	
+
+	/* Use the Explorer theme */
+	if (EXPLORER_THEME) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			String name = "Explorer";
+			char [] pszSubAppName = new char [name.length () + 1];
+			name.getChars(0, name.length (), pszSubAppName, 0);
+			OS.SetWindowTheme (handle, pszSubAppName, null);
+			int exStyle = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_AUTOHSCROLL;
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, exStyle);
+		}
+	}
+
 	/*
 	* Feature in Windows.  In version 5.8 of COMCTL32.DLL,
 	* if the font is changed for an item, the bounds for the
@@ -1819,7 +1860,9 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 			tvInsert.state = 1 << 12;
 			tvInsert.stateMask = OS.TVIS_STATEIMAGEMASK;
 		}
+		ignoreCustomDraw = true;
 		hNewItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
+		ignoreCustomDraw = false;
 		if (hNewItem == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 		/*
 		* This code is intentionally commented.
@@ -3629,6 +3672,17 @@ public void selectAll () {
 
 void setBackgroundImage (int hBitmap) {
 	super.setBackgroundImage (hBitmap);
+	if (EXPLORER_THEME) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			int exStyle = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+			if (hBitmap != 0) {
+				exStyle &= ~(OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS);
+			} else {
+				exStyle |= OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
+			}
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, exStyle);
+		}
+	}
 	if (hBitmap != 0) {
 		/*
 		* Feature in Windows.  If TVM_SETBKCOLOR is never
@@ -4727,7 +4781,11 @@ int widgetStyle () {
 	if ((style & SWT.FULL_SELECTION) != 0) {
 		bits |= OS.TVS_FULLROWSELECT;
 	} else {
-		bits |= OS.TVS_HASLINES;
+		if (EXPLORER_THEME && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			bits |= OS.TVS_TRACKSELECT;
+		} else {
+			bits |= OS.TVS_HASLINES;
+		}
 	}
 //	bits |= OS.TVS_NOTOOLTIPS | OS.TVS_DISABLEDRAGDROP;
 	return bits | OS.TVS_DISABLEDRAGDROP;
@@ -5758,54 +5816,63 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		shrink = false;
 	}
 	if ((style & SWT.DOUBLE_BUFFERED) != 0 || findImageControl () != null) {
-		GC gc = null;
-		int paintDC = 0;
-		PAINTSTRUCT ps = new PAINTSTRUCT ();
-		if (hooks (SWT.Paint)) {
-			GCData data = new GCData ();
-			data.ps = ps;
-			data.hwnd = handle;
-			gc = GC.win32_new (this, data);
-			paintDC = gc.handle;
-		} else {
-			paintDC = OS.BeginPaint (handle, ps);
+		boolean doubleBuffer = true;
+		if (EXPLORER_THEME) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				int exStyle = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+				if ((exStyle & OS.TVS_EX_DOUBLEBUFFER) != 0) doubleBuffer = false;
+			}
 		}
-
-		//TODO - only double buffer the damage
-//		int x = ps.left, y = ps.top;
-//		int width = ps.right - ps.left;
-//		int height = ps.bottom - ps.top;
-		forceResize ();
-		RECT rect = new RECT ();
-		OS.GetClientRect (handle, rect);
-		int x = rect.left, y = rect.top;
-		int width = rect.right - rect.left;
-		int height = rect.bottom - rect.top;
-
-		int hDC = OS.CreateCompatibleDC (paintDC);
-		int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
-		int hOldBitmap = OS.SelectObject (hDC, hBitmap);
-		drawBackground (hDC, rect);
-		int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
-		OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
-		OS.SelectObject (hDC, hOldBitmap);
-		OS.DeleteObject (hBitmap);
-		OS.DeleteObject (hDC);
-		if (hooks (SWT.Paint)) {
-			Event event = new Event ();
-			event.gc = gc;
-			event.x = ps.left;
-			event.y = ps.top;
-			event.width = ps.right - ps.left;
-			event.height = ps.bottom - ps.top;
-			sendEvent (SWT.Paint, event);
-			// widget could be disposed at this point
-			event.gc = null;
-			gc.dispose ();
-		} else {
-			OS.EndPaint (handle, ps);
+		if (doubleBuffer) {
+			GC gc = null;
+			int paintDC = 0;
+			PAINTSTRUCT ps = new PAINTSTRUCT ();
+			if (hooks (SWT.Paint)) {
+				GCData data = new GCData ();
+				data.ps = ps;
+				data.hwnd = handle;
+				gc = GC.win32_new (this, data);
+				paintDC = gc.handle;
+			} else {
+				paintDC = OS.BeginPaint (handle, ps);
+			}
+	
+			//TODO - only double buffer the damage
+//			int x = ps.left, y = ps.top;
+//			int width = ps.right - ps.left;
+//			int height = ps.bottom - ps.top;
+			forceResize ();
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			int x = rect.left, y = rect.top;
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+	
+			int hDC = OS.CreateCompatibleDC (paintDC);
+			int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
+			int hOldBitmap = OS.SelectObject (hDC, hBitmap);
+			drawBackground (hDC, rect);
+			int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
+			OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
+			OS.SelectObject (hDC, hOldBitmap);
+			OS.DeleteObject (hBitmap);
+			OS.DeleteObject (hDC);
+			if (hooks (SWT.Paint)) {
+				Event event = new Event ();
+				event.gc = gc;
+				event.x = ps.left;
+				event.y = ps.top;
+				event.width = ps.right - ps.left;
+				event.height = ps.bottom - ps.top;
+				sendEvent (SWT.Paint, event);
+				// widget could be disposed at this point
+				event.gc = null;
+				gc.dispose ();
+			} else {
+				OS.EndPaint (handle, ps);
+			}
+			return new LRESULT (code);
 		}
-		return new LRESULT (code);
 	}
 	return super.WM_PAINT (wParam, lParam);
 }
