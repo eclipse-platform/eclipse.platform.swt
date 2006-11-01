@@ -265,10 +265,10 @@ public int getMinutes () {
 /**
  * Returns the receiver's month.
  * <p>
- * The first month of the year is 1, and the last month is 12.
+ * The first month of the year is 0, and the last month is 11.
  * </p>
  *
- * @return an integer between 1 and 12
+ * @return an integer between 0 and 11
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -280,7 +280,7 @@ public int getMonth () {
 	SYSTEMTIME systime = new SYSTEMTIME ();
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
-	return systime.wMonth;
+	return systime.wMonth - 1;
 }
 
 String getNameText () {
@@ -426,10 +426,10 @@ public void setMinutes (int minutes) {
 /**
  * Sets the receiver's month.
  * <p>
- * The first month of the year is 1, and the last month is 12.
+ * The first month of the year is 0, and the last month is 11.
  * </p>
  *
- * @param month an integer between 1 and 12
+ * @param month an integer between 0 and 11
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -442,7 +442,7 @@ public void setMonth (int month) {
 	int msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_GETCURSEL : OS.DTM_GETSYSTEMTIME;
 	OS.SendMessage (handle, msg, 0, systime);
 	msg = (style & SWT.CALENDAR) != 0 ? OS.MCM_SETCURSEL : OS.DTM_SETSYSTEMTIME;
-	systime.wMonth = (short)month;
+	systime.wMonth = (short)(month + 1);
 	OS.SendMessage (handle, msg, 0, systime);
 }
 
