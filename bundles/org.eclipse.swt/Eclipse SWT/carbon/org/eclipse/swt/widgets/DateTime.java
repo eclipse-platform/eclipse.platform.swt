@@ -383,10 +383,10 @@ public int getMinutes () {
 public int getMonth () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
-		return calendar.get(Calendar.MONTH) + 1;
+		return calendar.get(Calendar.MONTH);
 	}
 	getDate();
-	return dateRec.month;
+	return dateRec.month - 1;
 }
 
 public int getSeconds () {
@@ -543,11 +543,11 @@ public void setMinutes (int minutes) {
 
 public void setMonth (int month) {
 	checkWidget ();
-	if (!isValid(Calendar.MONTH, month - 1)) return;
+	if (!isValid(Calendar.MONTH, month)) return;
 	if ((style & SWT.CALENDAR) != 0) {
-		calendar.set(Calendar.MONTH, month - 1);
+		calendar.set(Calendar.MONTH, month);
 	} else {
-		dateRec.month = (short)month;
+		dateRec.month = (short)(month + 1);
 		OS.SetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec);
 		OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlClockLongDateTag, LongDateRec.sizeof, dateRec, null);
 	}

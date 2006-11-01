@@ -6352,8 +6352,19 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 						NMTVITEMCHANGE pnm = new NMTVITEMCHANGE ();
 						OS.MoveMemory (pnm, lParam, NMTVITEMCHANGE.sizeof);
 						if (hSelect == pnm.hItem) break;
-						return LRESULT.ONE;
+						if ((pnm.uStateOld & OS.TVIS_SELECTED) != 0) {
+							if ((pnm.uStateNew & OS.TVIS_SELECTED) == 0) {
+								TVITEM tvItem = new TVITEM ();
+								tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+								tvItem.state = OS.TVIS_SELECTED;
+								tvItem.stateMask = OS.TVIS_SELECTED;
+								tvItem.hItem = pnm.hItem;
+								OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+								return LRESULT.ONE;
+							}
+						}
 					}
+//					if (lockSelection) return LRESULT.ONE;
 				}
 			}			
 			break;
