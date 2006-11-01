@@ -351,7 +351,7 @@ public int getMinutes () {
 
 public int getMonth() {
 	checkWidget();
-	return calendar.get(Calendar.MONTH) + 1;
+	return calendar.get(Calendar.MONTH);
 }
 
 public int getSeconds () {
@@ -752,8 +752,8 @@ public void setMinutes (int minutes) {
 
 public void setMonth(int month) {
 	checkWidget();
-	if (!isValid(Calendar.MONTH, month - 1)) return;
-	calendar.set(Calendar.MONTH, month - 1);
+	if (!isValid(Calendar.MONTH, month)) return;
+	calendar.set(Calendar.MONTH, month);
 	updateControl();
 }
 
