@@ -262,9 +262,9 @@ public int getMonth () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
 		getDate();
-		return month + 1;
+		return month;
 	} else {
-		return calendar.get(Calendar.MONTH) + 1;
+		return calendar.get(Calendar.MONTH);
 	}
 }
 
@@ -636,7 +636,6 @@ public void setMinutes (int minutes) {
 
 public void setMonth (int month) {
 	checkWidget ();
-	month--;
 	if (!isValid(Calendar.MONTH, month)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.month = month;
