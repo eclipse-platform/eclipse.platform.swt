@@ -7804,6 +7804,22 @@ fail:
 }
 #endif
 
+#ifndef NO_HIViewDrawCGImage
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewDrawCGImage)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	CGRect _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewDrawCGImage_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIViewDrawCGImage((CGContextRef)arg0, lparg1, (CGImageRef)arg2);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, HIViewDrawCGImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIViewFindByID
 JNIEXPORT jint JNICALL OS_NATIVE(HIViewFindByID)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)

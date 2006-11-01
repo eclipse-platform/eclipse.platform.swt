@@ -550,6 +550,7 @@ typedef enum {
 	HIViewConvertRect_FUNC,
 	HIViewConvertRegion_FUNC,
 	HIViewCreateOffscreenImage_FUNC,
+	HIViewDrawCGImage_FUNC,
 	HIViewFindByID_FUNC,
 	HIViewGetBounds_FUNC,
 	HIViewGetFeatures_FUNC,
