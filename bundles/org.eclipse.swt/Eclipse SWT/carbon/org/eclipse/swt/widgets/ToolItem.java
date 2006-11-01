@@ -141,9 +141,9 @@ public ToolItem (ToolBar parent, int style, int index) {
 }
 
 int actionProc (int theControl, int partCode) {
-	if (OS.HIVIEW && text.length () > 0) {
+	if (OS.HIVIEW) {
 		this.partCode = partCode;
-		if (theControl == labelHandle) {
+		if (text.length () > 0 && theControl == labelHandle) {
 			if (image != null && iconHandle != 0) {
 				int transform = partCode != 0 ? OS.kTransformSelected : 0;
 				OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
@@ -151,7 +151,7 @@ int actionProc (int theControl, int partCode) {
 			}
 			redrawWidget (labelHandle, false);		
 		}
-		if (theControl == iconHandle) {
+		if (image != null && theControl == iconHandle) {
 			redrawWidget (labelHandle, false);
 		}
 	}
@@ -217,6 +217,36 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		OS.HIThemeDrawTextBox (ptr [0], rect, info, context [0], OS.kHIThemeOrientationNormal);
 		OS.CFRelease (ptr [0]);
 		return OS.noErr;
+	}
+	if (OS.HIVIEW && control == iconHandle && OS.VERSION >= 0x1040) {
+		Image image = null;
+		if (hotImage != null) {
+			image = hotImage;
+		} else {
+			if (this.image != null) {
+				image = this.image;
+			} else {
+				image = disabledImage;
+			}
+		}
+		if (image != null) {
+			int imageHandle = image.handle;
+			int alphaInfo = OS.CGImageGetAlphaInfo (imageHandle);
+			if (alphaInfo == OS.kCGImageAlphaFirst) {
+				int [] buffer = new int [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
+				int context = buffer [0];
+				CGRect rect = new CGRect ();
+				OS.HIViewGetBounds (iconHandle, rect);
+				if (partCode != 0) {
+					OS.HICreateTransformedCGImage (imageHandle, OS.kHITransformSelected, buffer);
+					imageHandle = buffer [0];
+				}
+				OS.HIViewDrawCGImage (context, rect, imageHandle);
+				if (imageHandle != image.handle) OS.CGImageRelease (imageHandle);
+				return OS.noErr;
+			}
+		}
 	}
 	return super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
 }
@@ -801,9 +831,11 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	tracking = false;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
 	if (tracking) {
-		if (OS.HIVIEW && text.length () > 0) {
+		if (OS.HIVIEW) {
 			partCode = 0;
-			if (labelHandle != 0) redrawWidget (labelHandle, false);
+			if (text.length () > 0 && labelHandle != 0) {
+				redrawWidget (labelHandle, false);
+			}
 			if (image != null && iconHandle != 0) {
 				OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short) 0});
 				redrawWidget (iconHandle, false);
