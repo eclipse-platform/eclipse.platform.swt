@@ -1832,8 +1832,17 @@ public boolean setText(String html) {
 		if (rc != XPCOM.NS_OK) error(rc);
 		int /*long*/ ptr = XPCOM.PR_Malloc(data.length);
 		XPCOM.memmove(ptr, data, data.length);
-		rc = stream.AppendToStream(ptr, data.length);
-		if (rc != XPCOM.NS_OK) error(rc);
+		int pageSize = 8192;
+		int pageCount = data.length / pageSize + 1;
+		int /*long*/ current = ptr;
+		for (int i = 0; i < pageCount; i++) {
+			int length = i == pageCount - 1 ? data.length % pageSize : pageSize;
+			if (length > 0) {
+				rc = stream.AppendToStream(current, length);
+				if (rc != XPCOM.NS_OK) error(rc);
+			}
+			current += pageSize;
+		}
 		rc = stream.CloseStream();
 		if (rc != XPCOM.NS_OK) error(rc);
 		XPCOM.PR_Free(ptr);
