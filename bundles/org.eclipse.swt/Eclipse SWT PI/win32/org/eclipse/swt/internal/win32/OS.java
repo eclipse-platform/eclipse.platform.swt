@@ -91,7 +91,7 @@ public class OS extends Platform {
 			OS.MoveMemory (pszText, buffer, byteCount);	
 			ACTCTX pActCtx = new ACTCTX ();
 			pActCtx.cbSize = ACTCTX.sizeof;
-			pActCtx.dwFlags = OS.ACTCTX_FLAG_RESOURCE_NAME_VALID;
+			pActCtx.dwFlags = OS.ACTCTX_FLAG_RESOURCE_NAME_VALID | OS.ACTCTX_FLAG_SET_PROCESS_DEFAULT;
 			pActCtx.lpSource = pszText;
 			pActCtx.lpResourceName = OS.MANIFEST_RESOURCE_ID;
 			int hActCtx = OS.CreateActCtx (pActCtx);
