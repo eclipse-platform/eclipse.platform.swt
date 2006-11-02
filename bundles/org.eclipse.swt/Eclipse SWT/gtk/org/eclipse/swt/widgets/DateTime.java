@@ -170,7 +170,12 @@ void commitCurrentField() {
 	if (characterCount > 0) {
 		characterCount = 0;
 		int fieldName = fieldNames[currentField];
-		int newValue = unformattedIntValue(fieldName, text.getSelectionText(), characterCount == 0, calendar.getActualMaximum(fieldName));
+		int start = fieldIndices[currentField].x;
+		int end = fieldIndices[currentField].y;
+		String value = text.getText(start, end - 1);
+		int s = value.lastIndexOf(' ');
+		if (s != -1) value = value.substring(s + 1);
+		int newValue = unformattedIntValue(fieldName, value, characterCount == 0, calendar.getActualMaximum(fieldName));
 		if (newValue != -1) setTextField(fieldName, newValue, true, true);
 	}
 }
@@ -262,9 +267,9 @@ public int getMonth () {
 	checkWidget ();
 	if ((style & SWT.CALENDAR) != 0) {
 		getDate();
-		return month + 1;
+		return month;
 	} else {
-		return calendar.get(Calendar.MONTH) + 1;
+		return calendar.get(Calendar.MONTH);
 	}
 }
 
@@ -432,7 +437,15 @@ void onVerify(Event event) {
 		return;
 	}
 	if (characterCount > 0) {
-		newText = "" + text.getSelectionText() + newText;
+		try {
+			Integer.parseInt(newText);
+		} catch (NumberFormatException ex) {
+			return;
+		}
+		String value = text.getText(start, end - 1);
+		int s = value.lastIndexOf(' ');
+		if (s != -1) value = value.substring(s + 1);
+		newText = "" + value + newText;
 	}
 	int newTextLength = newText.length();
 	boolean first = characterCount == 0;
@@ -636,7 +649,6 @@ public void setMinutes (int minutes) {
 
 public void setMonth (int month) {
 	checkWidget ();
-	month--;
 	if (!isValid(Calendar.MONTH, month)) return;
 	if ((style & SWT.CALENDAR) != 0) {
 		this.month = month;
