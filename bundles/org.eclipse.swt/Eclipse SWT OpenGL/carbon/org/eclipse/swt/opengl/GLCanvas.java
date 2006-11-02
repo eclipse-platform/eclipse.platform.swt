@@ -28,6 +28,7 @@ public class GLCanvas extends Canvas {
 	int context;
 	int pixelFormat;
 	static final int MAX_ATTRIBUTES = 32;
+	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
 
 /**
  * Create a GLCanvas widget using the attributes described in the GLData
@@ -121,65 +122,50 @@ public GLCanvas (Composite parent, int style, GLData data) {
 			case SWT.Dispose:
 				AGL.aglDestroyContext (context);
 				AGL.aglDestroyPixelFormat (pixelFormat);
-				// Remove listeners
-				Shell shell = getShell();
-				shell.removeListener(SWT.Resize, this);
-				shell.removeListener(SWT.Show, this);
-				shell.removeListener(SWT.Hide, this);
-				Control c = GLCanvas.this;
-				do {
-					c.removeListener(SWT.Show, this);
-					c.removeListener(SWT.Hide, this);
-					c = c.getParent();
-				} while (c != shell);
-				break;
-			case SWT.Resize:
-			case SWT.Hide:
-			case SWT.Show:
-				getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						if (isDisposed()) return;
-						fixBounds();
-					}
-				});
 				break;
 			}
 		}
 	};
-	addListener (SWT.Resize, listener);
-	Shell shell = getShell();
-	shell.addListener(SWT.Resize, listener);
-	shell.addListener(SWT.Show, listener);
-	shell.addListener(SWT.Hide, listener);
-	Control c = this;
-	do {
-		c.addListener(SWT.Show, listener);
-		c.addListener(SWT.Hide, listener);
-		c = c.getParent();
-	} while (c != shell);
 	addListener (SWT.Dispose, listener);
+	setData (RESET_VISIBLE_REGION, new Runnable() {
+		public void run() {
+			if (isDisposed ()) return;
+			fixBounds ();
+		}
+	});
 }
 
 void fixBounds () {
-	GCData data = new GCData ();
-	int gc = internal_new_GC (data);
 	Rect bounds = new Rect ();
-	OS.GetRegionBounds (data.visibleRgn, bounds);
+	OS.GetControlBounds (handle, bounds);
+	int window = OS.GetControlOwner (handle);
+	if (OS.HIVIEW) {
+		int [] contentView = new int [1];
+		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
+		bounds.left += (int) pt.x;
+		bounds.top += (int) pt.y;
+		bounds.right += (int) pt.x;
+		bounds.bottom += (int) pt.y;
+	}
+	int x = bounds.left;
+	int y = bounds.top;
 	int width = bounds.right - bounds.left;
 	int height = bounds.bottom - bounds.top;
-	Rect rect = new Rect ();
-	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);
-	OS.GetPortBounds (port, rect);
+	OS.GetPortBounds (port, bounds);
 	int [] glbounds = new int [4];
-	glbounds[0] = bounds.left;
-	glbounds[1] = rect.bottom - rect.top - bounds.top - height;
+	glbounds[0] = x;
+	glbounds[1] = bounds.bottom - bounds.top - y - height;
 	glbounds[2] = width;
 	glbounds[3] = height;
 	AGL.aglSetInteger (context, AGL.AGL_BUFFER_RECT, glbounds);
 	AGL.aglEnable (context, AGL.AGL_BUFFER_RECT);
+	GCData data = new GCData ();
+	int gc = internal_new_GC (data);
 	AGL.aglSetInteger (context, AGL.AGL_CLIP_REGION, data.visibleRgn);
-	AGL.aglUpdateContext (context);
+	AGL.aglEnable (context, AGL.AGL_CLIP_REGION);
 	internal_dispose_GC (gc, data);
 }
 

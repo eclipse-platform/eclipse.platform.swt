@@ -1101,6 +1101,7 @@ int kEventWindowHitTest (int nextHandler, int theEvent, int userData) {
 int kEventWindowShown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowShown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	invalidateVisibleRegion (topHandle ());
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1525,7 +1526,6 @@ void setWindowVisible (boolean visible) {
 		}
 		int topHandle = topHandle ();
 		OS.SetControlVisibility (topHandle, true, false);
-		invalidateVisibleRegion (topHandle);
 		int [] scope = new int [1];
 		if ((style & SWT.ON_TOP) != 0) {
 			OS.GetWindowActivationScope (shellHandle, scope);

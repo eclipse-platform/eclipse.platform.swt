@@ -67,6 +67,8 @@ public abstract class Control extends Widget implements Drawable {
 	GCData gcs[];
 	Accessible accessible;
 
+	static final String RESET_VISIBLE_REGION = "org.eclipse.swt.internal.resetVisibleRegion";
+
 Control () {
 	/* Do nothing */
 }
@@ -2281,6 +2283,10 @@ void resetVisibleRegion (int control) {
 			}
 		}
 		OS.DisposeRgn (visibleRgn);
+	}
+	Object runnable = getData (RESET_VISIBLE_REGION);
+	if (runnable != null && runnable instanceof Runnable) {
+		((Runnable) runnable).run ();
 	}
 }
 
