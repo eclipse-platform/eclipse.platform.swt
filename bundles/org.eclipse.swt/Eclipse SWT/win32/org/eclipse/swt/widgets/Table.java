@@ -186,10 +186,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSelect) {
 	if (handle == 0) return 0;
 	if (handle != hwnd) {
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		if (hwnd == hwndHeader) {
-			return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
-		}
+		return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
 	}
 	int topIndex = 0;
 	boolean checkSelection = false, checkActivate = false, redraw = false;
