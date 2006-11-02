@@ -23,6 +23,8 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet249 {
 
+	static int pageNum = -1;
+
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
@@ -34,36 +36,28 @@ public static void main (String [] args) {
 	contentPanel.setLayout (layout);
 
 	// create the first page's content
-	final Composite page1 = new Composite (contentPanel, SWT.NONE);
-	page1.setLayout (new RowLayout ());
-	Label label = new Label (page1, SWT.NONE);
+	final Composite page0 = new Composite (contentPanel, SWT.NONE);
+	page0.setLayout (new RowLayout ());
+	Label label = new Label (page0, SWT.NONE);
 	label.setText ("Label on page 1");
 	label.pack ();
 
 	// create the second page's content	
-	final Composite page2 = new Composite (contentPanel, SWT.NONE);
-	page2.setLayout (new RowLayout ());
-	Button button = new Button (page2, SWT.NONE);
+	final Composite page1 = new Composite (contentPanel, SWT.NONE);
+	page1.setLayout (new RowLayout ());
+	Button button = new Button (page1, SWT.NONE);
 	button.setText ("Button on page 2");
 	button.pack ();
 
-	// create the buttons that will switch between the pages
-	Button page1button = new Button (shell, SWT.PUSH);
-	page1button.setText ("Page 1");
-	page1button.setBounds (10, 10, 80, 25);
-	page1button.addListener (SWT.Selection, new Listener () {
+	// create the button that will switch between the pages
+	Button pageButton = new Button (shell, SWT.PUSH);
+	pageButton.setText ("Push");
+	pageButton.setBounds (10, 10, 80, 25);
+	pageButton.addListener (SWT.Selection, new Listener () {
 		public void handleEvent (Event event) {
-			layout.topControl = page1;
+			pageNum = ++pageNum % 2;
+			layout.topControl = pageNum == 0 ? page0 : page1;
 			contentPanel.layout ();
-		}
-	});
-	Button page2button = new Button (shell, SWT.PUSH);
-	page2button.setText ("Page 2");
-	page2button.setBounds (10, 40, 80, 25);
-	page2button.addListener(SWT.Selection, new Listener() {
-		public void handleEvent(Event event) {
-			layout.topControl = page2;
-			contentPanel.layout();
 		}
 	});
 
