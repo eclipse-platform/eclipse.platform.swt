@@ -1722,8 +1722,56 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }	
 
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-//	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, theEvent);
-	return OS.eventNotHandledErr;
+	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	/*
+	* Feature in the Macintosh.  Some controls call TrackControl() to track
+	* the mouse.  Unfortunately, mouse move events and the mouse up events are
+	* consumed.  The fix is to call the default handler and send a fake mouse up
+	* when tracking is finished if the mouse event was consumed.
+	* 
+	* NOTE: No mouse move events are sent while tracking.  There is no
+	* fix for this at this time.
+	*/
+	display.grabControl = null;
+	display.runDeferredEvents ();
+	int oldChord = OS.GetCurrentEventButtonState ();
+	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	int newChord = OS.GetCurrentEventButtonState ();
+	if (newChord != oldChord) {
+		int [] masks = {OS.kEventClassMouse, OS.kEventMouseUp};
+		int mouseUpEvent = OS.AcquireFirstMatchingEventInQueue (OS.GetCurrentEventQueue (), masks.length, masks, OS.kEventQueueOptionsNone);
+		if (mouseUpEvent != 0) {
+			OS.ReleaseEvent (mouseUpEvent);
+		} else {
+			org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+			OS.GetGlobalMouse (outPt);
+			Rect rect = new Rect ();
+			int window = OS.GetControlOwner (handle);
+			int x, y;
+			if (OS.HIVIEW) {
+				CGPoint pt = new CGPoint ();
+				pt.x = outPt.h;
+				pt.y = outPt.v;
+				OS.HIViewConvertPoint (pt, 0, handle);
+				x = (int) pt.x;
+				y = (int) pt.y;
+				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+			} else {
+				OS.GetControlBounds (handle, rect);
+				x = outPt.h - rect.left;
+				y = outPt.v - rect.top;
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			}
+			x -= rect.left;
+			y -=  rect.top;
+			short [] button = new short [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+			int modifiers = OS.GetCurrentEventKeyModifiers ();
+			sendMouseEvent (SWT.MouseUp, button [0], display.clickCount, false, newChord, (short)x, (short)y, modifiers);
+		}
+	}
+	return result;
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {

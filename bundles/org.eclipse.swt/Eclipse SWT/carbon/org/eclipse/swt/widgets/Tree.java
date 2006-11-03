@@ -2394,43 +2394,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			}
 		}
 	}
-	/*
-	* Feature in the Macintosh.  Some controls call TrackControl() or
-	* HandleControlClick() to track the mouse.  Unfortunately, mouse move
-	* events and the mouse up events are consumed.  The fix is to call the
-	* default handler and send a fake mouse up when tracking is finished.
-	* 
-	* NOTE: No mouse move events are sent while tracking.  There is no
-	* fix for this at this time.
-	*/
-	if (wasExpanded) {
-		org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetGlobalMouse (outPt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		int x, y;
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			pt.x = outPt.h;
-			pt.y = outPt.v;
-			OS.HIViewConvertPoint (pt, 0, handle);
-			x = (int) pt.x;
-			y = (int) pt.y;
-			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		} else {
-			OS.GetControlBounds (handle, rect);
-			x = outPt.h - rect.left;
-			y = outPt.v - rect.top;
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		}
-		x -= rect.left;
-		y -=  rect.top;
-		short [] button = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-		int chord = OS.GetCurrentEventButtonState ();
-		int modifiers = OS.GetCurrentEventKeyModifiers ();
-		sendMouseEvent (SWT.MouseUp, button [0], display.clickCount, true, chord, (short)x, (short)y, modifiers);
-	}
 	wasSelected = wasExpanded = false;
 	return result;
 }
