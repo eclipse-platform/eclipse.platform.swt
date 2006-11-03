@@ -5666,7 +5666,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 				pt.x = (short) (pos & 0xFFFF);
 				pt.y = (short) (pos >> 16); 
 				OS.ScreenToClient (handle, pt);
-				sendDragEvent (pt.x, pt.y);
+				sendDragEvent (1, pt.x, pt.y);
 			}
 			break;
 		}

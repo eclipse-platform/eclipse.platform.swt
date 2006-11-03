@@ -1103,7 +1103,8 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			pt.x = (short) (pos & 0xFFFF);
 			pt.y = (short) (pos >> 16); 
 			OS.ScreenToClient (handle, pt);
-			if (!sendDragEvent (pt.x, pt.y)) return LRESULT.ONE;
+			int button = display.lastButton != 0 ? display.lastButton : 1;
+			if (!sendDragEvent (button, pt.x, pt.y)) return LRESULT.ONE;
 			break;
 		}
 		case OS.RBN_CHILDSIZE: {

@@ -571,9 +571,13 @@ void destroyWidget () {
 }
 
 /**
- * ...
+ * Detects a drag and drop gesture.  If the gesture occurs
+ * then an event is returned that can be used to notify listeners
+ * that a drag detect has happened.  If no gesture is detected,
+ * then <code>null</code> is returned.
  *
  * @param event the mouse down event
+ * @return the drag detect event
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
@@ -583,6 +587,8 @@ void destroyWidget () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see notifyListeners
+ * 
  * @since 3.3
  */
 //TODO - Javadoc
@@ -592,11 +598,9 @@ void destroyWidget () {
 	if (!dragDetect (handle, event.x, event.y, false, null, null)) return null;
 	Event dragEvent = new Event ();
 	dragEvent.button = event.button;
-	dragEvent.detail = event.detail;
-	dragEvent.count = event.count;
-	dragEvent.stateMask = event.stateMask;
 	dragEvent.x = event.x;
 	dragEvent.y = event.y;
+	dragEvent.stateMask = event.stateMask;
 	return dragEvent;
 }
 

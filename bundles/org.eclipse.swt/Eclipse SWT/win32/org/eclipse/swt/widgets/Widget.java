@@ -910,10 +910,12 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-boolean sendDragEvent (int x, int y) {
+boolean sendDragEvent (int button, int x, int y) {
 	Event event = new Event ();
+	event.button = button;
 	event.x = x;
 	event.y = y;
+	setInputState (event, SWT.DragDetect);
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
 	return event.doit;
@@ -1764,7 +1766,7 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 		}
 	}
 	if (dragging) {
-		sendDragEvent (x, y);
+		sendDragEvent (1, x, y);
 	} else {
 		if (detect != null && detect [0]) {
 			/*

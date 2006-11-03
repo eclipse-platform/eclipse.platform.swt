@@ -5655,7 +5655,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* issue a fake mouse up.
 	*/
 	if (dragStarted) {
-		sendDragEvent ((short) (lParam & 0xFFFF), (short) (lParam >> 16));
+		sendDragEvent (1, (short) (lParam & 0xFFFF), (short) (lParam >> 16));
 	} else {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.TVS_DISABLEDRAGDROP) == 0) {
