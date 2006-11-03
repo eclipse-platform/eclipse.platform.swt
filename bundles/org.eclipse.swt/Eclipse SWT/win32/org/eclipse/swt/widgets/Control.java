@@ -1715,8 +1715,8 @@ void releaseWidget () {
 	}
 	menu = null;
 	cursor = null;
-	deregister ();
 	unsubclass ();
+	deregister ();
 	layoutData = null;
 	if (accessible != null) {
 		accessible.internal_dispose_Accessible ();
