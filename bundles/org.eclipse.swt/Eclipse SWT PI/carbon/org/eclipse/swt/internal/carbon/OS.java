@@ -441,6 +441,7 @@ public class OS extends Platform {
 	public static final int kEventParamWindowRef = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int kEventParamWindowRegionCode   = ('w'<<24) + ('s'<<16) + ('h'<<8) + 'p';
 	public static final int kEventProcessCommand = 1;
+	public static final int kEventQueueOptionsNone = 0;
 	public static final int kEventRawKeyDown = 1;
 	public static final int kEventRawKeyRepeat = 2;
 	public static final int kEventRawKeyUp = 3;
@@ -971,6 +972,7 @@ public static final native int AddDataBrowserItems(int cHandle, int containerID,
 public static final native int AddDataBrowserListViewColumn(int browser, DataBrowserListViewColumnDesc columnDesc, int position);
 public static final native int AddDragItemFlavor(int theDrag, int theItemRef, int theType, byte[] dataPtr, int dataSize, int theFlags);  
 public static final native int AppendMenuItemTextWithCFString(int mHandle, int sHandle, int attributes, int commandID, short[] outItemIndex);
+public static final native int AcquireFirstMatchingEventInQueue(int inQueue, int inNumTypes, int[] inList, int inOptions);
 public static final native int AutoSizeDataBrowserListViewColumns(int cHandle);
 public static final native void BeginUpdate(int wHandle);
 public static final native void BringToFront(int wHandle);
@@ -1223,6 +1225,7 @@ public static final native void EraseRect(Rect bounds);
 public static final native void EraseRgn(int rgnHandle);
 public static final native int FetchFontInfo(short fontID, short fontSize, short fontStyle, FontInfo info); 
 public static final native int Fix2Long(int x);
+public static final native int FindSpecificEventInQueue(int inQueue, int inComparator, int inCompareData);
 public static final native double Fix2X(int x);
 public static final native int FMCreateFontFamilyInstanceIterator(short iFontFamily, int ioIterator);
 public static final native int FMCreateFontFamilyIterator(int iFilter, int iRefCon, int iOptions, int ioIterator);

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 940;
-int OS_nativeFunctionCallCount[940];
+int OS_nativeFunctionCount = 942;
+int OS_nativeFunctionCallCount[942];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -63,6 +63,7 @@ char * OS_nativeFunctionNames[] = {
 	"AXUIElementCreateWithHIObjectAndIdentifier",
 	"AXUIElementGetIdentifier",
 	"AXValueCreate",
+	"AcquireFirstMatchingEventInQueue",
 	"ActiveNonFloatingWindow",
 	"AddDataBrowserItems",
 	"AddDataBrowserListViewColumn",
@@ -336,6 +337,7 @@ char * OS_nativeFunctionNames[] = {
 	"FSpGetFInfo",
 	"FSpMakeFSRef",
 	"FetchFontInfo",
+	"FindSpecificEventInQueue",
 	"FindWindow",
 	"Fix2Long",
 	"Fix2X",

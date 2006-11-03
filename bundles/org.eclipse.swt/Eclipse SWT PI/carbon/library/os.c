@@ -770,6 +770,22 @@ fail:
 }
 #endif
 
+#ifndef NO_AcquireFirstMatchingEventInQueue
+JNIEXPORT jint JNICALL OS_NATIVE(AcquireFirstMatchingEventInQueue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AcquireFirstMatchingEventInQueue_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)AcquireFirstMatchingEventInQueue((EventQueueRef)arg0, arg1, (const EventTypeSpec *)lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, AcquireFirstMatchingEventInQueue_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ActiveNonFloatingWindow
 JNIEXPORT jint JNICALL OS_NATIVE(ActiveNonFloatingWindow)
 	(JNIEnv *env, jclass that)
@@ -4421,6 +4437,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(FetchFontInfo)
 fail:
 	if (arg3 && lparg3) setFontInfoFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, FetchFontInfo_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FindSpecificEventInQueue
+JNIEXPORT jint JNICALL OS_NATIVE(FindSpecificEventInQueue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FindSpecificEventInQueue_FUNC);
+	rc = (jint)FindSpecificEventInQueue((EventQueueRef)arg0, (EventComparatorUPP)arg1, (void *)arg2);
+	OS_NATIVE_EXIT(env, that, FindSpecificEventInQueue_FUNC);
 	return rc;
 }
 #endif
