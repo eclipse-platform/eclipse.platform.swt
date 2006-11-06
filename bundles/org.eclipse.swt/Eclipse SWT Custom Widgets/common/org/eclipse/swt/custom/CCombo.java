@@ -28,7 +28,7 @@ import org.eclipse.swt.accessibility.*;
  * anywhere that having the increased flexibility is more important than
  * getting native L&F, but the decision should not be taken lightly. 
  * There is no is no strict requirement that CCombo look or behave
- * the same as a native combo box.
+ * the same as the native combo box.
  * </p>
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
