@@ -12,10 +12,10 @@ package org.eclipse.swt.internal.win32;
 
 public class SHACTIVATEINFO {
 	public int cbSize;
-	public int hwndLastFocus;
+	public int /*long*/ hwndLastFocus;
 	public int fSipUp; // :1
 	public int fSipOnDeactivation; // :1
 	public int fActive; // :1
 	public int fReserved; // :29
-	public static final int sizeof = 12;
+	public static final int sizeof = OS.SHACTIVATEINFO_sizeof ();
 }

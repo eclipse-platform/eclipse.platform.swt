@@ -16,21 +16,21 @@ public class REBARBANDINFO {
 	public int fStyle;
 	public int clrFore;
 	public int clrBack;
-	public int lpText;
+	public int /*long*/ lpText;
 	public int cch;
 	public int iImage;
-	public int hwndChild;
+	public int /*long*/ hwndChild;
 	public int cxMinChild;
 	public int cyMinChild;
 	public int cx;
-	public int hbmBack;
+	public int /*long*/ hbmBack;
 	public int wID;
 	public int cyChild;  
 	public int cyMaxChild;
 	public int cyIntegral;
 	public int cxIdeal;
-	public int lParam;
+	public int /*long*/ lParam;
 	public int cxHeader;
 	/* Note in WinCE.  The field cxHeader is not defined. */ 
-	public static final int sizeof = OS.IsWinCE ? 76 : 80;
+	public static final int sizeof = OS.REBARBANDINFO_sizeof ();
 }

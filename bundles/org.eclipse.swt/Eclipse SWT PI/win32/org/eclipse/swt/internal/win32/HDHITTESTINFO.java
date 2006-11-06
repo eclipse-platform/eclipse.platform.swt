@@ -16,5 +16,5 @@ public class HDHITTESTINFO {
 	public int y;
 	public int flags;
 	public int iItem;
-	public static int sizeof = 16;
+	public static int sizeof = OS.HDHITTESTINFO_sizeof ();
 }

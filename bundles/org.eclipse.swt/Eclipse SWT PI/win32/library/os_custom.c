@@ -18,11 +18,11 @@
 __declspec(dllexport) HRESULT DllGetVersion(DLLVERSIONINFO *dvi);
 HRESULT DllGetVersion(DLLVERSIONINFO *dvi)
 {
-     dvi->dwMajorVersion = SWT_VERSION / 1000;
-     dvi->dwMinorVersion = SWT_VERSION % 1000;
-     dvi->dwBuildNumber = 0;
-     dvi->dwPlatformID = DLLVER_PLATFORM_WINDOWS;
-     return 1;
+	dvi->dwMajorVersion = SWT_VERSION / 1000;
+	dvi->dwMinorVersion = SWT_VERSION % 1000;
+	dvi->dwBuildNumber = 0;
+	dvi->dwPlatformID = DLLVER_PLATFORM_WINDOWS;
+	return 1;
 }
 
 HINSTANCE g_hInstance = NULL;
@@ -35,12 +35,12 @@ BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
 }
 
 #ifndef NO_GetLibraryHandle
-JNIEXPORT jint JNICALL OS_NATIVE(GetLibraryHandle)
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(GetLibraryHandle)
 	(JNIEnv *env, jclass that)
 {
-	jint rc;
+	SWT_PTR rc;
 	OS_NATIVE_ENTER(env, that, GetLibraryHandle_FUNC)
-	rc = (jint)g_hInstance;
+	rc = (SWT_PTR)g_hInstance;
 	OS_NATIVE_EXIT(env, that, GetLibraryHandle_FUNC)
 	return rc;
 }
@@ -78,16 +78,20 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsSP)
 }
 #endif
 
+#ifdef SWT_PTR_SIZE_64
+#define SendMessageW__II_3I_3I SendMessageW__JI_3J_3J
+#define SendMessageW__II_3I_3I_FUNC SendMessageW__JI_3J_3J_FUNC
+#endif
 #ifndef NO_SendMessageW__II_3I_3I
-JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
+	(JNIEnv *env, jclass that, SWT_PTR arg0, jint arg1, SWT_PTRArray arg2, SWT_PTRArray arg3)
 {
-	jint *lparg2=NULL;
-	jint *lparg3=NULL;
-	jint rc;
+	SWT_PTR *lparg2=NULL;
+	SWT_PTR *lparg3=NULL;
+	SWT_PTR rc;
 	OS_NATIVE_ENTER(env, that, SendMessageW__II_3I_3I_FUNC)
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetSWT_PTRArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetSWT_PTRArrayElements(env, arg3, NULL)) == NULL) goto fail;
 #ifdef _WIN32_WCE
 	/*
 	* Bug on WinCE.  SendMessage can fail (return 0) when being passed references
@@ -98,24 +102,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 	switch (arg1) {
 		case EM_GETSEL:
 		case CB_GETEDITSEL: {
-			jint wParam = 0, lParam = 0;
-			jint *lpwParam = NULL, *lplParam = NULL;
+			SWT_PTR wParam = 0, lParam = 0;
+			SWT_PTR *lpwParam = NULL, *lplParam = NULL;
 			if (lparg2 != NULL) lpwParam = &wParam;
 			if (lparg3 != NULL) lplParam = &lParam;
-			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lpwParam, (LPARAM)lplParam);
+			rc = (SWT_PTR)SendMessageW((HWND)arg0, arg1, (WPARAM)lpwParam, (LPARAM)lplParam);
 			if (lparg2 != NULL) lparg2[0] = wParam;
 			if (lparg3 != NULL) lparg3[0] = lParam;
 			break;
 		}
 		default:
-			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+			rc = (SWT_PTR)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 	}
 #else
-	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+	rc = (SWT_PTR)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
 #endif
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseSWT_PTRArrayElements(env, arg2, lparg2, 0);
+	if (arg3 && lparg3) (*env)->ReleaseSWT_PTRArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, SendMessageW__II_3I_3I_FUNC)
 	return rc;
 }

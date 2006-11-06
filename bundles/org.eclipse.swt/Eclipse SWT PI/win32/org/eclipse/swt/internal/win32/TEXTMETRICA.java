@@ -15,5 +15,5 @@ public class TEXTMETRICA extends TEXTMETRIC {
 	public byte tmLastChar;
 	public byte tmDefaultChar; 
 	public byte tmBreakChar;
-	public static final int sizeof = 56;
+	public static final int sizeof = OS.TEXTMETRICA_sizeof ();
 }

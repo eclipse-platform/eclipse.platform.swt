@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.win32;
 public class TRACKMOUSEEVENT {
 	public int cbSize;
 	public int dwFlags;
-	public int hwndTrack;
+	public int /*long*/ hwndTrack;
 	public int dwHoverTime;
-	public static final int sizeof = 16;
+	public static final int sizeof = OS.TRACKMOUSEEVENT_sizeof ();
 }

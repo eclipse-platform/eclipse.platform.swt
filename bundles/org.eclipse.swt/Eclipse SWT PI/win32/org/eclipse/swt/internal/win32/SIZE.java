@@ -13,5 +13,5 @@ package org.eclipse.swt.internal.win32;
 public class SIZE {
 	public int cx;
 	public int cy;
-	public static final int sizeof = 8;
+	public static final int sizeof = OS.SIZE_sizeof ();
 }

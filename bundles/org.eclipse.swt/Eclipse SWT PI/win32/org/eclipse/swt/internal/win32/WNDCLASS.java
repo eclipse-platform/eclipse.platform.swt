@@ -12,14 +12,14 @@ package org.eclipse.swt.internal.win32;
 
 public class WNDCLASS {
 	public int style; 
-	public int lpfnWndProc; 
+	public int /*long*/ lpfnWndProc; 
 	public int cbClsExtra; 
 	public int cbWndExtra; 
-	public int hInstance; 
-	public int hIcon; 
-	public int hCursor; 
-	public int hbrBackground; 
-	public int lpszMenuName; 
-	public int lpszClassName; 
-	public static final int sizeof = 40;
+	public int /*long*/ hInstance; 
+	public int /*long*/ hIcon; 
+	public int /*long*/ hCursor; 
+	public int /*long*/ hbrBackground; 
+	public int /*long*/ lpszMenuName; 
+	public int /*long*/ lpszClassName; 
+	public static final int sizeof = OS.WNDCLASS_sizeof ();
 }

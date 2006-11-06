@@ -14,5 +14,5 @@ public final class LICINFO {
 	public int cbLicInfo;
 	public boolean fRuntimeKeyAvail;
 	public boolean fLicVerified;
-	public static final int sizeof = 12;
+	public static final int sizeof = COM.LICINFO_sizeof ();
 }

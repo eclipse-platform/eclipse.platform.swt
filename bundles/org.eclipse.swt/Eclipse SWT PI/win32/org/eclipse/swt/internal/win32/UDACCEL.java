@@ -13,5 +13,5 @@ package org.eclipse.swt.internal.win32;
 public class UDACCEL {
 	public int nSec;
 	public int nInc;
-	public static final int sizeof = 8;
+	public static final int sizeof = OS.UDACCEL_sizeof ();
 }

@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.gdip;
 
 public class ColorPalette {
 	public int Flags;
-    public int Count;
-    public int[] Entries = new int[1];
-	public static final int sizeof = 12;
+	public int Count;
+	public int[] Entries = new int[1];
+	public static final int sizeof = Gdip.ColorPalette_sizeof ();
 }

@@ -12,9 +12,9 @@ package org.eclipse.swt.internal.win32;
 
 public class DOCINFO {
 	public int cbSize; 
-	public int lpszDocName; // LPCTSTR
-	public int lpszOutput; // LPCTSTR
-	public int lpszDatatype;// LPCTSTR
+	public int /*long*/ lpszDocName; // LPCTSTR
+	public int /*long*/ lpszOutput; // LPCTSTR
+	public int /*long*/ lpszDatatype;// LPCTSTR
 	public int fwType; // DWORD
-	public static final int sizeof = 20;
+	public static final int sizeof = OS.DOCINFO_sizeof ();
 }

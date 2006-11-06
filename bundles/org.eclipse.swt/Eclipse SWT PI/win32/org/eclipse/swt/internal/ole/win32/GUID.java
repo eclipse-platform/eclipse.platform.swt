@@ -15,5 +15,5 @@ public final class GUID {
 	public short Data2;
 	public short Data3;
 	public byte[] Data4 = new byte[8];
-	public static final int sizeof = 16;
+	public static final int sizeof = COM.GUID_sizeof ();
 }

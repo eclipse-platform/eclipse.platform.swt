@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,5 +13,5 @@ package org.eclipse.swt.internal.win32;
 public class SHFILEINFOA extends SHFILEINFO {
 	public byte [] szDisplayName = new byte [OS.MAX_PATH];
 	public byte [] szTypeName = new byte [80];
-	public static int sizeof = 352;
+	public static int sizeof = OS.SHFILEINFOA_sizeof ();
 }

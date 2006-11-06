@@ -13,13 +13,13 @@ package org.eclipse.swt.internal.win32;
 public class GUITHREADINFO {
 	public int cbSize;
 	public int flags;
-	public int hwndActive;
-	public int hwndFocus;
-	public int hwndCapture;
-	public int hwndMenuOwner;
-	public int hwndMoveSize; 
-	public int hwndCaret;
+	public int /*long*/ hwndActive;
+	public int /*long*/ hwndFocus;
+	public int /*long*/ hwndCapture;
+	public int /*long*/ hwndMenuOwner;
+	public int /*long*/ hwndMoveSize; 
+	public int /*long*/ hwndCaret;
 //	RECT rcCaret;
 	public int left, top, right, bottom;
-	public static int sizeof = 48;
+	public static int sizeof = OS.GUITHREADINFO_sizeof ();
 }

@@ -25,7 +25,7 @@ public class DIBSECTION extends BITMAP {
 	public int dsBitfields0;
 	public int dsBitfields1;
 	public int dsBitfields2;
-	public int dshSection;
+	public int /*long*/ dshSection;
 	public int dsOffset;
-	public static final int sizeof = 84;
+	public static final int sizeof = OS.DIBSECTION_sizeof ();
 }

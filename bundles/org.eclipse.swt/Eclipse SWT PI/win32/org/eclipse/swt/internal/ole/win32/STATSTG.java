@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class STATSTG {
-	public int pwcsName;
+	public int /*long*/ pwcsName;
 	public int type; 
 	public long cbSize;
 //	FILETIME mtime;
@@ -32,5 +32,5 @@ public class STATSTG {
 	public byte[] clsid_Data4 = new byte[8];
 	public int grfStateBits; 
 	public int reserved;
-	public static final int sizeof = 72;
+	public static final int sizeof = COM.STATSTG_sizeof ();
 }

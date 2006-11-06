@@ -15,5 +15,5 @@ public class NMRGINFO extends NMHDR {
 	public int x;
 	public int y;
 	public int dwItemSpec;
-	public static int sizeof = 24;
+	public static int sizeof = OS.NMRGINFO_sizeof ();
 }

@@ -19,5 +19,5 @@ public class SCRIPT_ANALYSIS {
 	public boolean fLogicalOrder; 
 	public boolean fNoGlyphIndex;
 	public SCRIPT_STATE s = new SCRIPT_STATE(); 
-	public static final int sizeof = 4;
+	public static final int sizeof = OS.SCRIPT_ANALYSIS_sizeof ();
 }

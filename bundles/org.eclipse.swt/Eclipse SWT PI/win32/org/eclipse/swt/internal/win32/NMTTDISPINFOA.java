@@ -12,5 +12,5 @@ package org.eclipse.swt.internal.win32;
 
 public class NMTTDISPINFOA extends NMTTDISPINFO {
 	public byte[] szText = new byte[80];
-	public static final int sizeof = 108;
+	public static final int sizeof = OS.NMTTDISPINFOA_sizeof ();
 }

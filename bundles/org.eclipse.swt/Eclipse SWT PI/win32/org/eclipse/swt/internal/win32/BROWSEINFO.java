@@ -11,13 +11,13 @@
 package org.eclipse.swt.internal.win32;
 
 public class BROWSEINFO {
-	public int hwndOwner;
-	public int pidlRoot;
-	public int pszDisplayName;
-	public int lpszTitle;
+	public int /*long*/ hwndOwner;
+	public int /*long*/ pidlRoot;
+	public int /*long*/ pszDisplayName;
+	public int /*long*/ lpszTitle;
 	public int ulFlags;
-	public int lpfn;
-	public int lParam;
+	public int /*long*/ lpfn;
+	public int /*long*/ lParam;
 	public int iImage;
-	public static final int sizeof = 32;
+	public static final int sizeof = OS.BROWSEINFO_sizeof ();
 }

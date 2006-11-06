@@ -20,7 +20,7 @@ public final class TYPEATTR {
 	public int dwReserved;
 	public int memidConstructor;
 	public int memidDestructor;
-	public int lpstrSchema;
+	public int /*long*/ lpstrSchema;
 	public int cbSizeInstance;
 	public int typekind;
 	public short cFuncs;
@@ -32,10 +32,10 @@ public final class TYPEATTR {
 	public short wMajorVerNum;
 	public short wMinorVerNum;
 //	TYPEDESC tdescAlias
-	public int tdescAlias_unionField;
+	public int /*long*/ tdescAlias_unionField;
 	public short tdescAlias_vt;
 //	IDLDESC idldesctype
 	public int idldescType_dwReserved;
 	public short idldescType_wIDLFlags;
-	public static final int sizeof = 74;
+	public static final int sizeof = COM.TYPEATTR_sizeof ();
 }

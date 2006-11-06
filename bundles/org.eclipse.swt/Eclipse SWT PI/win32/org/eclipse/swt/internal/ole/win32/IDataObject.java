@@ -11,10 +11,10 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IDataObject extends IUnknown {
-public IDataObject(int address) {
+public IDataObject(int /*long*/ address) {
 	super(address);
 }
-public int EnumFormatEtc(int dwDirection, int[] ppenumFormatetc) {
+public int EnumFormatEtc(int dwDirection, int /*long*/[] ppenumFormatetc) {
 	return COM.VtblCall(8, address, dwDirection, ppenumFormatetc);
 }
 public int GetData(FORMATETC pFormatetc, STGMEDIUM pmedium) {

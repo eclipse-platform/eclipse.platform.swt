@@ -12,5 +12,5 @@ package org.eclipse.swt.internal.win32;
 
 public class LOGFONTW extends LOGFONT {
 	public char[] lfFaceName = new char[OS.LF_FACESIZE];
-	public static final int sizeof = 92;
+	public static final int sizeof = OS.LOGFONTW_sizeof ();
 }

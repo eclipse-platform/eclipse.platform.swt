@@ -19,5 +19,5 @@ public class SYSTEMTIME {
 	public short wMinute;
 	public short wSecond;
 	public short wMilliseconds;
-	public static final int sizeof = 16;
+	public static final int sizeof = OS.SYSTEMTIME_sizeof ();
 }

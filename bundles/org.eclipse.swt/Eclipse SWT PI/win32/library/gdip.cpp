@@ -181,6 +181,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Brush_1GetType)
 }
 #endif
 
+#ifndef NO_ColorPalette_1sizeof
+JNIEXPORT jint JNICALL Gdip_NATIVE(ColorPalette_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, ColorPalette_1sizeof_FUNC);
+	rc = (jint)ColorPalette_sizeof();
+	Gdip_NATIVE_EXIT(env, that, ColorPalette_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Color_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(Color_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -329,14 +341,10 @@ fail:
 
 #ifndef NO_GdiplusShutdown
 JNIEXPORT void JNICALL Gdip_NATIVE(GdiplusShutdown)
-	(JNIEnv *env, jclass that, jintArray arg0)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-	jint *lparg0=NULL;
 	Gdip_NATIVE_ENTER(env, that, GdiplusShutdown_FUNC);
-	if (arg0) if ((lparg0 = env->GetIntArrayElements(arg0, NULL)) == NULL) goto fail;
-	GdiplusShutdown((ULONG_PTR)lparg0);
-fail:
-	if (arg0 && lparg0) env->ReleaseIntArrayElements(arg0, lparg0, 0);
+	GdiplusShutdown((ULONG_PTR)arg0);
 	Gdip_NATIVE_EXIT(env, that, GdiplusShutdown_FUNC);
 }
 #endif
@@ -356,6 +364,18 @@ fail:
 	if (arg1 && lparg1) setGdiplusStartupInputFields(env, arg1, lparg1);
 	if (arg0 && lparg0) env->ReleaseIntArrayElements(arg0, lparg0, 0);
 	Gdip_NATIVE_EXIT(env, that, GdiplusStartup_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GdiplusStartupInput_1sizeof
+JNIEXPORT jint JNICALL Gdip_NATIVE(GdiplusStartupInput_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GdiplusStartupInput_1sizeof_FUNC);
+	rc = (jint)GdiplusStartupInput_sizeof();
+	Gdip_NATIVE_EXIT(env, that, GdiplusStartupInput_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -1508,17 +1528,13 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1new)
 }
 #endif
 
-#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2II
-JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I
+JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
-	BitmapData _arg0, *lparg0=NULL;
-	Gdip_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2II_FUNC);
-	if (arg0) if ((lparg0 = getBitmapDataFields(env, arg0, &_arg0)) == NULL) goto fail;
-	MoveMemory((PVOID)lparg0, (CONST VOID*)arg1, arg2);
-fail:
-	if (arg0 && lparg0) setBitmapDataFields(env, arg0, lparg0);
-	Gdip_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2II_FUNC);
+	Gdip_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I_FUNC);
+	if (arg0) setBitmapDataFields(env, arg0, (BitmapData *)arg1);
+	Gdip_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I_FUNC);
 }
 #endif
 
@@ -1909,12 +1925,14 @@ JNIEXPORT void JNICALL Gdip_NATIVE(StringFormat_1delete)
 #endif
 
 #ifndef NO_TextureBrush_1SetTransform
-JNIEXPORT void JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)
+JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
+	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, TextureBrush_1SetTransform_FUNC);
-	((TextureBrush *)arg0)->SetTransform((Matrix *)arg1);
+	rc = (jint)((TextureBrush *)arg0)->SetTransform((Matrix *)arg1);
 	Gdip_NATIVE_EXIT(env, that, TextureBrush_1SetTransform_FUNC);
+	return rc;
 }
 #endif
 

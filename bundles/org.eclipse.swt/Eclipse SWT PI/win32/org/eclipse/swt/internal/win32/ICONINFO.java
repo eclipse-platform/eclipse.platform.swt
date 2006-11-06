@@ -14,7 +14,7 @@ public class ICONINFO {
 	public boolean fIcon;
 	public int xHotspot; 
 	public int yHotspot;
-	public int hbmMask;
-	public int hbmColor;
-	public static final int sizeof = 20;
+	public int /*long*/ hbmMask;
+	public int /*long*/ hbmColor;
+	public static final int sizeof = OS.ICONINFO_sizeof ();
 }

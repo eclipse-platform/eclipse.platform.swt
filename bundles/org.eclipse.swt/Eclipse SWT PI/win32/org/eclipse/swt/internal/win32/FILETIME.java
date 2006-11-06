@@ -13,6 +13,6 @@ package org.eclipse.swt.internal.win32;
 public class FILETIME {
 	public int dwLowDateTime;
 	public int dwHighDateTime;
-	static final public int sizeof = 8;
+	static final public int sizeof = OS.FILETIME_sizeof ();
 }
 

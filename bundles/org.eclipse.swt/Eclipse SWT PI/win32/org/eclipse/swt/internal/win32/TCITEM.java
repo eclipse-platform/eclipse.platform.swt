@@ -14,9 +14,9 @@ public class TCITEM {
 	public int mask;
 	public int dwState;
 	public int dwStateMask;
-	public int pszText;
+	public int /*long*/ pszText;
 	public int cchTextMax;
 	public int iImage;
-	public int lParam;
-	public static final int sizeof = 28;
+	public int /*long*/ lParam;
+	public static final int sizeof = OS.TCITEM_sizeof ();
 }

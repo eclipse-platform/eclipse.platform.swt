@@ -215,3 +215,15 @@ void setVARDESCFields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct);
 #define VARDESC_sizeof() 0
 #endif
 
+#ifndef NO_VARIANT
+void cacheVARIANTFields(JNIEnv *env, jobject lpObject);
+VARIANT *getVARIANTFields(JNIEnv *env, jobject lpObject, VARIANT *lpStruct);
+void setVARIANTFields(JNIEnv *env, jobject lpObject, VARIANT *lpStruct);
+#define VARIANT_sizeof() sizeof(VARIANT)
+#else
+#define cacheVARIANTFields(a,b)
+#define getVARIANTFields(a,b,c) NULL
+#define setVARIANTFields(a,b,c)
+#define VARIANT_sizeof() 0
+#endif
+

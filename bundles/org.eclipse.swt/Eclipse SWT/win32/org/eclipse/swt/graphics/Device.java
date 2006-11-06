@@ -789,7 +789,7 @@ void new_Object (Object object) {
  */
 protected void release () {
 	if (gdipToken != null) {
-		Gdip.GdiplusShutdown (gdipToken);
+		Gdip.GdiplusShutdown (gdipToken[0]);
 	}
 	gdipToken = null;
 	scripts = null;

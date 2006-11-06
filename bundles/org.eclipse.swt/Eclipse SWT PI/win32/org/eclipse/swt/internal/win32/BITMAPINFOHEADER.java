@@ -22,5 +22,5 @@ public class BITMAPINFOHEADER {
 	public int biYPelsPerMeter;
 	public int biClrUsed;
 	public int biClrImportant;
-	public static final int sizeof = 40;
+	public static final int sizeof = OS.BITMAPINFOHEADER_sizeof ();
 }

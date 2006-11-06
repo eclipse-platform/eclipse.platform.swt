@@ -18,5 +18,5 @@ public class SCROLLINFO {
 	public int nPage;
 	public int nPos;
 	public int nTrackPos;
-	public static final int sizeof = 28;
+	public static final int sizeof = OS.SCROLLINFO_sizeof ();
 }

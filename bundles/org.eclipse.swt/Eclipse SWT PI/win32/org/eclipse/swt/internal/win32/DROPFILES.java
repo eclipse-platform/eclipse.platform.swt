@@ -21,5 +21,5 @@ public class DROPFILES {
 	public int fWide; // Value that indicates whether the file contains ANSI or Unicode 
 					  // characters. If it is zero, it contains ANSI characters. Otherwise, it 
 				      // contains Unicode characters.
-	public static final int sizeof = 20;
+	public static final int sizeof = OS.DROPFILES_sizeof ();
 }

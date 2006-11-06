@@ -15,5 +15,5 @@ public class MARGINS {
 	public int cxRightWidth;
 	public int cyTopHeight;
 	public int cyBottomHeight;
-	public static final int sizeof = 16;
+	public static final int sizeof = OS.MARGINS_sizeof ();
 }

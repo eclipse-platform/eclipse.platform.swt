@@ -15,5 +15,5 @@ public class SCRIPT_DIGITSUBSTITUTE {
 	public short TraditionalDigitLanguage;
 	public byte DigitSubstitute;
 	public int dwReserved;
-	public static final int sizeof = 12;
+	public static final int sizeof = OS.SCRIPT_DIGITSUBSTITUTE_sizeof ();
 }

@@ -17,10 +17,13 @@ public class NMLVDISPINFO extends NMHDR {
 	public int iSubItem;
 	public int state;
 	public int stateMask;
-	public int pszText;
+	public int /*long*/ pszText;
 	public int cchTextMax;
 	public int iImage;
-	public int lParam;
+	public int /*long*/ lParam;
 	public int iIndent;
-	public static final int sizeof = 52;
+	public int iGroupId;
+	public int cColumns;
+	public int /*long*/ puColumns;
+	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.NMLVDISPINFO_sizeof () : 52;
 }

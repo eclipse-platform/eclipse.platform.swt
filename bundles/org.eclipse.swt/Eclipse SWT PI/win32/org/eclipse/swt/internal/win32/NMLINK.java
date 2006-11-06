@@ -18,5 +18,5 @@ public class NMLINK extends NMHDR {
 	public int stateMask;
 	public char[] szID = new char[OS.MAX_LINKID_TEXT];
 	public char[] szUrl = new char[OS.L_MAX_URL_LENGTH];
-	public static final int sizeof = 4292;
+	public static final int sizeof = OS.NMLINK_sizeof ();
 }

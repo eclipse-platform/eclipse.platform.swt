@@ -11,12 +11,12 @@
 package org.eclipse.swt.internal.win32;
 
 public class MSG {
-	public int hwnd;     
+	public int /*long*/ hwnd;
 	public int message; 
-	public int wParam; 
-	public int lParam; 
+	public int /*long*/ wParam; 
+	public int /*long*/ lParam; 
 	public int time; 
 //	POINT pt;
 	public int x, y;
-	public static final int sizeof = 28;
+	public static final int sizeof = OS.MSG_sizeof ();
 }

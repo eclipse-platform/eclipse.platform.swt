@@ -15,8 +15,8 @@ public class MENUINFO {
 	public int fMask;
 	public int dwStyle;
 	public int cyMax;
-	public int hbrBack;
+	public int /*long*/ hbrBack;
 	public int dwContextHelpID;
-	public int dwMenuData;
-	public static final int sizeof = 28;
+	public int /*long*/ dwMenuData;
+	public static final int sizeof = OS.MENUINFO_sizeof ();
 }

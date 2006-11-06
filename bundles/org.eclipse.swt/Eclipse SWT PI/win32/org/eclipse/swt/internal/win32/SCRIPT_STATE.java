@@ -22,5 +22,5 @@ public class SCRIPT_STATE {
 	public boolean fGcpClusters; 
 	public boolean fReserved; 
 	public short fEngineReserved;
-	public static final int sizeof = 2;
+	public static final int sizeof = OS.SCRIPT_STATE_sizeof ();
 }

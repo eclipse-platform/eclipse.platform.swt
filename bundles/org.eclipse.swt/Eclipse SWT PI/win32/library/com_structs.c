@@ -875,3 +875,46 @@ void setVARDESCFields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct)
 }
 #endif
 
+#ifndef NO_VARIANT
+typedef struct VARIANT_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID vt, wReserved1, wReserved2, wReserved3, lVal;
+} VARIANT_FID_CACHE;
+
+VARIANT_FID_CACHE VARIANTFc;
+
+void cacheVARIANTFields(JNIEnv *env, jobject lpObject)
+{
+	if (VARIANTFc.cached) return;
+	VARIANTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	VARIANTFc.vt = (*env)->GetFieldID(env, VARIANTFc.clazz, "vt", "S");
+	VARIANTFc.wReserved1 = (*env)->GetFieldID(env, VARIANTFc.clazz, "wReserved1", "S");
+	VARIANTFc.wReserved2 = (*env)->GetFieldID(env, VARIANTFc.clazz, "wReserved2", "S");
+	VARIANTFc.wReserved3 = (*env)->GetFieldID(env, VARIANTFc.clazz, "wReserved3", "S");
+	VARIANTFc.lVal = (*env)->GetFieldID(env, VARIANTFc.clazz, "lVal", "I");
+	VARIANTFc.cached = 1;
+}
+
+VARIANT *getVARIANTFields(JNIEnv *env, jobject lpObject, VARIANT *lpStruct)
+{
+	if (!VARIANTFc.cached) cacheVARIANTFields(env, lpObject);
+	lpStruct->vt = (*env)->GetShortField(env, lpObject, VARIANTFc.vt);
+	lpStruct->wReserved1 = (*env)->GetShortField(env, lpObject, VARIANTFc.wReserved1);
+	lpStruct->wReserved2 = (*env)->GetShortField(env, lpObject, VARIANTFc.wReserved2);
+	lpStruct->wReserved3 = (*env)->GetShortField(env, lpObject, VARIANTFc.wReserved3);
+	lpStruct->lVal = (*env)->GetIntField(env, lpObject, VARIANTFc.lVal);
+	return lpStruct;
+}
+
+void setVARIANTFields(JNIEnv *env, jobject lpObject, VARIANT *lpStruct)
+{
+	if (!VARIANTFc.cached) cacheVARIANTFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, VARIANTFc.vt, (jshort)lpStruct->vt);
+	(*env)->SetShortField(env, lpObject, VARIANTFc.wReserved1, (jshort)lpStruct->wReserved1);
+	(*env)->SetShortField(env, lpObject, VARIANTFc.wReserved2, (jshort)lpStruct->wReserved2);
+	(*env)->SetShortField(env, lpObject, VARIANTFc.wReserved3, (jshort)lpStruct->wReserved3);
+	(*env)->SetIntField(env, lpObject, VARIANTFc.lVal, (jint)lpStruct->lVal);
+}
+#endif
+

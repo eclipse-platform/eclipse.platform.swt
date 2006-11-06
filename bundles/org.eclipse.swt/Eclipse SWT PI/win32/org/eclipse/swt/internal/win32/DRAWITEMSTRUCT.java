@@ -16,10 +16,10 @@ public class DRAWITEMSTRUCT {
 	public int itemID;
 	public int itemAction;
 	public int itemState;
-	public int hwndItem;
-	public int hDC;
+	public int /*long*/ hwndItem;
+	public int /*long*/ hDC;
 // 	RECT rcItem;
 	public int left, top, bottom, right;
-	public int itemData;
-	public static final int sizeof = 48;
+	public int /*long*/ itemData;
+	public static final int sizeof = OS.DRAWITEMSTRUCT_sizeof ();
 }

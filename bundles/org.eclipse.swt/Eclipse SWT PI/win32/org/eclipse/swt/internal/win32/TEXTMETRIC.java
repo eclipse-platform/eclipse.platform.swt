@@ -27,5 +27,5 @@ public abstract class TEXTMETRIC {
 	public byte tmStruckOut;
 	public byte tmPitchAndFamily;
 	public byte tmCharSet;
-	public static final int sizeof = OS.IsUnicode ? 60 : 56;
+	public static final int sizeof = OS.IsUnicode ? OS.TEXTMETRICW_sizeof():  OS.TEXTMETRICA_sizeof ();
 }

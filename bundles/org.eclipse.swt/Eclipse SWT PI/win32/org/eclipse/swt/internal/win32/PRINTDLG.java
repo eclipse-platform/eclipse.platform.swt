@@ -12,23 +12,23 @@ package org.eclipse.swt.internal.win32;
 
 public class PRINTDLG {
 	public int lStructSize; // DWORD
-	public int hwndOwner; // HWND
-	public int hDevMode; // HGLOBAL
-	public int hDevNames; // HGLOBAL
-	public int hDC; // HDC
+	public int /*long*/ hwndOwner; // HWND
+	public int /*long*/ hDevMode; // HGLOBAL
+	public int /*long*/ hDevNames; // HGLOBAL
+	public int /*long*/ hDC; // HDC
 	public int Flags; // DWORD
 	public short nFromPage; // WORD
 	public short nToPage; // WORD
 	public short nMinPage; // WORD
 	public short nMaxPage; // WORD
 	public short nCopies; // WORD
-	public int hInstance; // HINSTANCE
-	public int lCustData; // LPARAM
-	public int lpfnPrintHook; // LPPRINTHOOKPROC
-	public int lpfnSetupHook; // LPSETUPHOOKPROC
-	public int lpPrintTemplateName; // LPCTSTR
-	public int lpSetupTemplateName; // LPCTSTR
-	public int hPrintTemplate; // HGLOBAL
-	public int hSetupTemplate; // HGLOBAL
-	public static final int sizeof = 66;
+	public int /*long*/ hInstance; // HINSTANCE
+	public int /*long*/ lCustData; // LPARAM
+	public int /*long*/ lpfnPrintHook; // LPPRINTHOOKPROC
+	public int /*long*/ lpfnSetupHook; // LPSETUPHOOKPROC
+	public int /*long*/ lpPrintTemplateName; // LPCTSTR
+	public int /*long*/ lpSetupTemplateName; // LPCTSTR
+	public int /*long*/ hPrintTemplate; // HGLOBAL
+	public int /*long*/ hSetupTemplate; // HGLOBAL
+	public static final int sizeof = OS.PRINTDLG_sizeof ();
 }

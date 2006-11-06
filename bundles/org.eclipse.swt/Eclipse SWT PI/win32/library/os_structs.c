@@ -1218,7 +1218,7 @@ void setHDHITTESTINFOFields(JNIEnv *env, jobject lpObject, HDHITTESTINFO *lpStru
 typedef struct HDITEM_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID mask, cxy, pszText, hbm, cchTextMax, fmt, lParam, iImage, iOrder;
+	jfieldID mask, cxy, pszText, hbm, cchTextMax, fmt, lParam, iImage, iOrder, type, pvFilter;
 } HDITEM_FID_CACHE;
 
 HDITEM_FID_CACHE HDITEMFc;
@@ -1236,6 +1236,8 @@ void cacheHDITEMFields(JNIEnv *env, jobject lpObject)
 	HDITEMFc.lParam = (*env)->GetFieldID(env, HDITEMFc.clazz, "lParam", "I");
 	HDITEMFc.iImage = (*env)->GetFieldID(env, HDITEMFc.clazz, "iImage", "I");
 	HDITEMFc.iOrder = (*env)->GetFieldID(env, HDITEMFc.clazz, "iOrder", "I");
+	HDITEMFc.type = (*env)->GetFieldID(env, HDITEMFc.clazz, "type", "I");
+	HDITEMFc.pvFilter = (*env)->GetFieldID(env, HDITEMFc.clazz, "pvFilter", "I");
 	HDITEMFc.cached = 1;
 }
 
@@ -1251,6 +1253,12 @@ HDITEM *getHDITEMFields(JNIEnv *env, jobject lpObject, HDITEM *lpStruct)
 	lpStruct->lParam = (*env)->GetIntField(env, lpObject, HDITEMFc.lParam);
 	lpStruct->iImage = (*env)->GetIntField(env, lpObject, HDITEMFc.iImage);
 	lpStruct->iOrder = (*env)->GetIntField(env, lpObject, HDITEMFc.iOrder);
+#ifndef _WIN32_WCE
+	lpStruct->type = (*env)->GetIntField(env, lpObject, HDITEMFc.type);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->pvFilter = (void *)(*env)->GetIntField(env, lpObject, HDITEMFc.pvFilter);
+#endif
 	return lpStruct;
 }
 
@@ -1266,6 +1274,12 @@ void setHDITEMFields(JNIEnv *env, jobject lpObject, HDITEM *lpStruct)
 	(*env)->SetIntField(env, lpObject, HDITEMFc.lParam, (jint)lpStruct->lParam);
 	(*env)->SetIntField(env, lpObject, HDITEMFc.iImage, (jint)lpStruct->iImage);
 	(*env)->SetIntField(env, lpObject, HDITEMFc.iOrder, (jint)lpStruct->iOrder);
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, HDITEMFc.type, (jint)lpStruct->type);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, HDITEMFc.pvFilter, (jint)lpStruct->pvFilter);
+#endif
 }
 #endif
 
@@ -1969,7 +1983,7 @@ void setLVHITTESTINFOFields(JNIEnv *env, jobject lpObject, LVHITTESTINFO *lpStru
 typedef struct LVITEM_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID mask, iItem, iSubItem, state, stateMask, pszText, cchTextMax, iImage, lParam, iIndent;
+	jfieldID mask, iItem, iSubItem, state, stateMask, pszText, cchTextMax, iImage, lParam, iIndent, iGroupId, cColumns, puColumns;
 } LVITEM_FID_CACHE;
 
 LVITEM_FID_CACHE LVITEMFc;
@@ -1988,6 +2002,9 @@ void cacheLVITEMFields(JNIEnv *env, jobject lpObject)
 	LVITEMFc.iImage = (*env)->GetFieldID(env, LVITEMFc.clazz, "iImage", "I");
 	LVITEMFc.lParam = (*env)->GetFieldID(env, LVITEMFc.clazz, "lParam", "I");
 	LVITEMFc.iIndent = (*env)->GetFieldID(env, LVITEMFc.clazz, "iIndent", "I");
+	LVITEMFc.iGroupId = (*env)->GetFieldID(env, LVITEMFc.clazz, "iGroupId", "I");
+	LVITEMFc.cColumns = (*env)->GetFieldID(env, LVITEMFc.clazz, "cColumns", "I");
+	LVITEMFc.puColumns = (*env)->GetFieldID(env, LVITEMFc.clazz, "puColumns", "I");
 	LVITEMFc.cached = 1;
 }
 
@@ -2004,6 +2021,15 @@ LVITEM *getLVITEMFields(JNIEnv *env, jobject lpObject, LVITEM *lpStruct)
 	lpStruct->iImage = (*env)->GetIntField(env, lpObject, LVITEMFc.iImage);
 	lpStruct->lParam = (*env)->GetIntField(env, lpObject, LVITEMFc.lParam);
 	lpStruct->iIndent = (*env)->GetIntField(env, lpObject, LVITEMFc.iIndent);
+#ifndef _WIN32_WCE
+	lpStruct->iGroupId = (*env)->GetIntField(env, lpObject, LVITEMFc.iGroupId);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->cColumns = (*env)->GetIntField(env, lpObject, LVITEMFc.cColumns);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->puColumns = (PUINT)(*env)->GetIntField(env, lpObject, LVITEMFc.puColumns);
+#endif
 	return lpStruct;
 }
 
@@ -2020,6 +2046,15 @@ void setLVITEMFields(JNIEnv *env, jobject lpObject, LVITEM *lpStruct)
 	(*env)->SetIntField(env, lpObject, LVITEMFc.iImage, (jint)lpStruct->iImage);
 	(*env)->SetIntField(env, lpObject, LVITEMFc.lParam, (jint)lpStruct->lParam);
 	(*env)->SetIntField(env, lpObject, LVITEMFc.iIndent, (jint)lpStruct->iIndent);
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, LVITEMFc.iGroupId, (jint)lpStruct->iGroupId);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, LVITEMFc.cColumns, (jint)lpStruct->cColumns);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, LVITEMFc.puColumns, (jint)lpStruct->puColumns);
+#endif
 }
 #endif
 
@@ -2747,7 +2782,7 @@ void setNMLISTVIEWFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpStruct)
 typedef struct NMLVCUSTOMDRAW_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID clrText, clrTextBk, iSubItem;
+	jfieldID clrText, clrTextBk, iSubItem, dwItemType, clrFace, iIconEffect, iIconPhase, iPartId, iStateId, left, top, right, bottom, uAlign;
 } NMLVCUSTOMDRAW_FID_CACHE;
 
 NMLVCUSTOMDRAW_FID_CACHE NMLVCUSTOMDRAWFc;
@@ -2760,6 +2795,17 @@ void cacheNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject)
 	NMLVCUSTOMDRAWFc.clrText = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "clrText", "I");
 	NMLVCUSTOMDRAWFc.clrTextBk = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "clrTextBk", "I");
 	NMLVCUSTOMDRAWFc.iSubItem = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "iSubItem", "I");
+	NMLVCUSTOMDRAWFc.dwItemType = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "dwItemType", "I");
+	NMLVCUSTOMDRAWFc.clrFace = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "clrFace", "I");
+	NMLVCUSTOMDRAWFc.iIconEffect = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "iIconEffect", "I");
+	NMLVCUSTOMDRAWFc.iIconPhase = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "iIconPhase", "I");
+	NMLVCUSTOMDRAWFc.iPartId = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "iPartId", "I");
+	NMLVCUSTOMDRAWFc.iStateId = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "iStateId", "I");
+	NMLVCUSTOMDRAWFc.left = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "left", "I");
+	NMLVCUSTOMDRAWFc.top = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "top", "I");
+	NMLVCUSTOMDRAWFc.right = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "right", "I");
+	NMLVCUSTOMDRAWFc.bottom = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "bottom", "I");
+	NMLVCUSTOMDRAWFc.uAlign = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "uAlign", "I");
 	NMLVCUSTOMDRAWFc.cached = 1;
 }
 
@@ -2770,6 +2816,39 @@ NMLVCUSTOMDRAW *getNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTO
 	lpStruct->clrText = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrText);
 	lpStruct->clrTextBk = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrTextBk);
 	lpStruct->iSubItem = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iSubItem);
+#ifndef _WIN32_WCE
+	lpStruct->dwItemType = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.dwItemType);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->clrFace = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrFace);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->iIconEffect = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iIconEffect);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->iIconPhase = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iIconPhase);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->iPartId = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iPartId);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->iStateId = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iStateId);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->rcText.left = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.left);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->rcText.top = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.top);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->rcText.right = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.right);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->rcText.bottom = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.bottom);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->uAlign = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.uAlign);
+#endif
 	return lpStruct;
 }
 
@@ -2780,6 +2859,39 @@ void setNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpSt
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrText, (jint)lpStruct->clrText);
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrTextBk, (jint)lpStruct->clrTextBk);
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iSubItem, (jint)lpStruct->iSubItem);
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.dwItemType, (jint)lpStruct->dwItemType);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.clrFace, (jint)lpStruct->clrFace);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iIconEffect, (jint)lpStruct->iIconEffect);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iIconPhase, (jint)lpStruct->iIconPhase);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iPartId, (jint)lpStruct->iPartId);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iStateId, (jint)lpStruct->iStateId);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.left, (jint)lpStruct->rcText.left);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.top, (jint)lpStruct->rcText.top);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.right, (jint)lpStruct->rcText.right);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.bottom, (jint)lpStruct->rcText.bottom);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.uAlign, (jint)lpStruct->uAlign);
+#endif
 }
 #endif
 
@@ -2787,7 +2899,7 @@ void setNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpSt
 typedef struct NMLVDISPINFO_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID mask, iItem, iSubItem, state, stateMask, pszText, cchTextMax, iImage, lParam, iIndent;
+	jfieldID mask, iItem, iSubItem, state, stateMask, pszText, cchTextMax, iImage, lParam, iIndent, iGroupId, cColumns, puColumns;
 } NMLVDISPINFO_FID_CACHE;
 
 NMLVDISPINFO_FID_CACHE NMLVDISPINFOFc;
@@ -2807,6 +2919,9 @@ void cacheNMLVDISPINFOFields(JNIEnv *env, jobject lpObject)
 	NMLVDISPINFOFc.iImage = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "iImage", "I");
 	NMLVDISPINFOFc.lParam = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "lParam", "I");
 	NMLVDISPINFOFc.iIndent = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "iIndent", "I");
+	NMLVDISPINFOFc.iGroupId = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "iGroupId", "I");
+	NMLVDISPINFOFc.cColumns = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "cColumns", "I");
+	NMLVDISPINFOFc.puColumns = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "puColumns", "I");
 	NMLVDISPINFOFc.cached = 1;
 }
 
@@ -2824,6 +2939,15 @@ NMLVDISPINFO *getNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO 
 	lpStruct->item.iImage = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iImage);
 	lpStruct->item.lParam = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.lParam);
 	lpStruct->item.iIndent = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iIndent);
+#ifndef _WIN32_WCE
+	lpStruct->item.iGroupId = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iGroupId);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->item.cColumns = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.cColumns);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->item.puColumns = (PUINT)(*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.puColumns);
+#endif
 	return lpStruct;
 }
 
@@ -2841,6 +2965,15 @@ void setNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO *lpStruct
 	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iImage, (jint)lpStruct->item.iImage);
 	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.lParam, (jint)lpStruct->item.lParam);
 	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iIndent, (jint)lpStruct->item.iIndent);
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iGroupId, (jint)lpStruct->item.iGroupId);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.cColumns, (jint)lpStruct->item.cColumns);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.puColumns, (jint)lpStruct->item.puColumns);
+#endif
 }
 #endif
 
@@ -4066,7 +4199,7 @@ void setOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct)
 typedef struct OPENFILENAME_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID lStructSize, hwndOwner, hInstance, lpstrFilter, lpstrCustomFilter, nMaxCustFilter, nFilterIndex, lpstrFile, nMaxFile, lpstrFileTitle, nMaxFileTitle, lpstrInitialDir, lpstrTitle, Flags, nFileOffset, nFileExtension, lpstrDefExt, lCustData, lpfnHook, lpTemplateName;
+	jfieldID lStructSize, hwndOwner, hInstance, lpstrFilter, lpstrCustomFilter, nMaxCustFilter, nFilterIndex, lpstrFile, nMaxFile, lpstrFileTitle, nMaxFileTitle, lpstrInitialDir, lpstrTitle, Flags, nFileOffset, nFileExtension, lpstrDefExt, lCustData, lpfnHook, lpTemplateName, pvReserved, dwReserved, FlagsEx;
 } OPENFILENAME_FID_CACHE;
 
 OPENFILENAME_FID_CACHE OPENFILENAMEFc;
@@ -4095,6 +4228,9 @@ void cacheOPENFILENAMEFields(JNIEnv *env, jobject lpObject)
 	OPENFILENAMEFc.lCustData = (*env)->GetFieldID(env, OPENFILENAMEFc.clazz, "lCustData", "I");
 	OPENFILENAMEFc.lpfnHook = (*env)->GetFieldID(env, OPENFILENAMEFc.clazz, "lpfnHook", "I");
 	OPENFILENAMEFc.lpTemplateName = (*env)->GetFieldID(env, OPENFILENAMEFc.clazz, "lpTemplateName", "I");
+	OPENFILENAMEFc.pvReserved = (*env)->GetFieldID(env, OPENFILENAMEFc.clazz, "pvReserved", "I");
+	OPENFILENAMEFc.dwReserved = (*env)->GetFieldID(env, OPENFILENAMEFc.clazz, "dwReserved", "I");
+	OPENFILENAMEFc.FlagsEx = (*env)->GetFieldID(env, OPENFILENAMEFc.clazz, "FlagsEx", "I");
 	OPENFILENAMEFc.cached = 1;
 }
 
@@ -4121,6 +4257,15 @@ OPENFILENAME *getOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME 
 	lpStruct->lCustData = (*env)->GetIntField(env, lpObject, OPENFILENAMEFc.lCustData);
 	lpStruct->lpfnHook = (LPOFNHOOKPROC)(*env)->GetIntField(env, lpObject, OPENFILENAMEFc.lpfnHook);
 	lpStruct->lpTemplateName = (LPCTSTR)(*env)->GetIntField(env, lpObject, OPENFILENAMEFc.lpTemplateName);
+#ifndef _WIN32_WCE
+	lpStruct->pvReserved = (void *)(*env)->GetIntField(env, lpObject, OPENFILENAMEFc.pvReserved);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->dwReserved = (*env)->GetIntField(env, lpObject, OPENFILENAMEFc.dwReserved);
+#endif
+#ifndef _WIN32_WCE
+	lpStruct->FlagsEx = (*env)->GetIntField(env, lpObject, OPENFILENAMEFc.FlagsEx);
+#endif
 	return lpStruct;
 }
 
@@ -4147,6 +4292,15 @@ void setOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct
 	(*env)->SetIntField(env, lpObject, OPENFILENAMEFc.lCustData, (jint)lpStruct->lCustData);
 	(*env)->SetIntField(env, lpObject, OPENFILENAMEFc.lpfnHook, (jint)lpStruct->lpfnHook);
 	(*env)->SetIntField(env, lpObject, OPENFILENAMEFc.lpTemplateName, (jint)lpStruct->lpTemplateName);
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, OPENFILENAMEFc.pvReserved, (jint)lpStruct->pvReserved);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, OPENFILENAMEFc.dwReserved, (jint)lpStruct->dwReserved);
+#endif
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, OPENFILENAMEFc.FlagsEx, (jint)lpStruct->FlagsEx);
+#endif
 }
 #endif
 
@@ -6080,7 +6234,7 @@ void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct)
 typedef struct TOOLINFO_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID cbSize, uFlags, hwnd, uId, left, top, right, bottom, hinst, lpszText, lParam;
+	jfieldID cbSize, uFlags, hwnd, uId, left, top, right, bottom, hinst, lpszText, lParam, lpReserved;
 } TOOLINFO_FID_CACHE;
 
 TOOLINFO_FID_CACHE TOOLINFOFc;
@@ -6100,6 +6254,7 @@ void cacheTOOLINFOFields(JNIEnv *env, jobject lpObject)
 	TOOLINFOFc.hinst = (*env)->GetFieldID(env, TOOLINFOFc.clazz, "hinst", "I");
 	TOOLINFOFc.lpszText = (*env)->GetFieldID(env, TOOLINFOFc.clazz, "lpszText", "I");
 	TOOLINFOFc.lParam = (*env)->GetFieldID(env, TOOLINFOFc.clazz, "lParam", "I");
+	TOOLINFOFc.lpReserved = (*env)->GetFieldID(env, TOOLINFOFc.clazz, "lpReserved", "I");
 	TOOLINFOFc.cached = 1;
 }
 
@@ -6117,6 +6272,7 @@ TOOLINFO *getTOOLINFOFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpStruct)
 	lpStruct->hinst = (HINSTANCE)(*env)->GetIntField(env, lpObject, TOOLINFOFc.hinst);
 	lpStruct->lpszText = (LPTSTR)(*env)->GetIntField(env, lpObject, TOOLINFOFc.lpszText);
 	lpStruct->lParam = (*env)->GetIntField(env, lpObject, TOOLINFOFc.lParam);
+	lpStruct->lpReserved = (void *)(*env)->GetIntField(env, lpObject, TOOLINFOFc.lpReserved);
 	return lpStruct;
 }
 
@@ -6134,6 +6290,7 @@ void setTOOLINFOFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpStruct)
 	(*env)->SetIntField(env, lpObject, TOOLINFOFc.hinst, (jint)lpStruct->hinst);
 	(*env)->SetIntField(env, lpObject, TOOLINFOFc.lpszText, (jint)lpStruct->lpszText);
 	(*env)->SetIntField(env, lpObject, TOOLINFOFc.lParam, (jint)lpStruct->lParam);
+	(*env)->SetIntField(env, lpObject, TOOLINFOFc.lpReserved, (jint)lpStruct->lpReserved);
 }
 #endif
 

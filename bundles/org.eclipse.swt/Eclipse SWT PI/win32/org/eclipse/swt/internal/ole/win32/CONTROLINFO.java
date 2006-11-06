@@ -12,8 +12,8 @@ package org.eclipse.swt.internal.ole.win32;
 
 public final class CONTROLINFO {
 	public int cb;
-	public int hAccel;
+	public int /*long*/ hAccel;
 	public short cAccel;
 	public int dwFlags;
-	public static final int sizeof = 16;
+	public static final int sizeof = COM.CONTROLINFO_sizeof ();
 }

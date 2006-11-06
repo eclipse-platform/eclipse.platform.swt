@@ -12,8 +12,8 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class FUNCDESC {
 	public int memid;
-	public int lprgscode;
-	public int lprgelemdescParam;
+	public int /*long*/ lprgscode;
+	public int /*long*/ lprgelemdescParam;
 	public int funckind;
 	public int invkind;
 	public int callconv;
@@ -23,11 +23,11 @@ public class FUNCDESC {
 	public short cScodes;
 //	ELEMDESC elemdescFunc;
 //	TYPEDESC elemdescFunc.tdesc
-	public int elemdescFunc_tdesc_union;
+	public int /*long*/ elemdescFunc_tdesc_union;
 	public short elemdescFunc_tdesc_vt;
 //	PARAMDESC elemdescFunc.paramdesc
-	public int elemdescFunc_paramdesc_pparamdescex;
+	public int /*long*/ elemdescFunc_paramdesc_pparamdescex;
 	public short elemdescFunc_paramdesc_wParamFlags;
 	public short wFuncFlags;
-	public static final int sizeof = 50;
+	public static final int sizeof = COM.FUNCDESC_sizeof ();
 }

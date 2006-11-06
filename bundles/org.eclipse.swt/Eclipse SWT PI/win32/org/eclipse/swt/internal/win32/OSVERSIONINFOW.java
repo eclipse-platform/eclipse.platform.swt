@@ -12,5 +12,5 @@ package org.eclipse.swt.internal.win32;
 
 public class OSVERSIONINFOW extends OSVERSIONINFO {
 	public char[] szCSDVersion = new char[128];
-	public static final int sizeof = 276;
+	public static final int sizeof = OS.OSVERSIONINFOW_sizeof ();
 }

@@ -24,6 +24,6 @@ public class SIPINFO {
 	public int rcSipRect_right;
 	public int rcSipRect_bottom;
 	public int dwImDataSize;
-	public int pvImData;
-	public static final int sizeof = 48;
+	public int /*long*/ pvImData;
+	public static final int sizeof = OS.SIPINFO_sizeof ();
 }

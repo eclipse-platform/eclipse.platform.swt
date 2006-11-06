@@ -11,10 +11,10 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IOleWindow extends IUnknown {
-public IOleWindow(int address) {
+public IOleWindow(int /*long*/ address) {
 	super(address);
 }
-public int GetWindow(int phwnd[]) {
+public int GetWindow(int /*long*/[] phwnd) {
 	return COM.VtblCall(3, address, phwnd);
 }
 }

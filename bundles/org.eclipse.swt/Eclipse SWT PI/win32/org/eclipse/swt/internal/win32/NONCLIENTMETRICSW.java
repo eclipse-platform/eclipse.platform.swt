@@ -16,6 +16,6 @@ public class NONCLIENTMETRICSW extends NONCLIENTMETRICS {
 	public LOGFONTW lfMenuFont = new LOGFONTW ();
 	public LOGFONTW lfStatusFont = new LOGFONTW ();
 	public LOGFONTW lfMessageFont = new LOGFONTW ();
-	public static final int sizeof = 500;
+	public static final int sizeof = OS.NONCLIENTMETRICSW_sizeof ();
 }
 

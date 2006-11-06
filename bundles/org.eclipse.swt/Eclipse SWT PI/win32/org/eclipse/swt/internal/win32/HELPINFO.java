@@ -14,10 +14,10 @@ public class HELPINFO {
 	public int cbSize;
 	public int iContextType;
 	public int iCtrlId;
-	public int hItemHandle;
+	public int /*long*/ hItemHandle;
 	public int dwContextId;
 //	POINT MousePos
 	public int x;
 	public int y;
-	public static final int sizeof = 28;
+	public static final int sizeof = OS.HELPINFO_sizeof ();
 }

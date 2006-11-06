@@ -26,5 +26,5 @@ public class SCRIPT_PROPERTIES {
 	public boolean fAmbiguousCharSet;
 	public boolean fClusterSizeVaries;
 	public boolean fRejectInvalid;
-	public static final int sizeof = 8;
+	public static final int sizeof = OS.SCRIPT_PROPERTIES_sizeof ();
 }

@@ -21,8 +21,8 @@ public class COMBOBOXINFO {
 	public int buttonRight;
 	public int buttonBottom;
 	public int stateButton;
-	public int hwndCombo;
-	public int hwndItem;
-	public int hwndList;
-	public static final int sizeof = 52;    
+	public int /*long*/ hwndCombo;
+	public int /*long*/ hwndItem;
+	public int /*long*/ hwndList;
+	public static final int sizeof = OS.COMBOBOXINFO_sizeof ();
 }

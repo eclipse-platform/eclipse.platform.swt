@@ -14,5 +14,14 @@ public class NMLVCUSTOMDRAW extends NMCUSTOMDRAW {
 	public int clrText;
 	public int clrTextBk;
 	public int iSubItem;
-	public static final int sizeof = 60;
+	public int dwItemType;
+	public int clrFace;
+	public int iIconEffect;
+	public int iIconPhase;
+	public int iPartId;
+	public int iStateId;
+//	RECT rcText;
+	public int left, top, right, bottom;
+	public int uAlign; 
+	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.NMLVCUSTOMDRAW_sizeof () : 60;
 }

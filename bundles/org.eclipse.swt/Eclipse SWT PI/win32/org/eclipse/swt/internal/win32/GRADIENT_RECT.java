@@ -13,6 +13,6 @@ package org.eclipse.swt.internal.win32;
 public class GRADIENT_RECT {
 	public int UpperLeft;
 	public int LowerRight;
-	public static final int sizeof = 8;
+	public static final int sizeof = OS.GRADIENT_RECT_sizeof ();
 }
 

@@ -116,8 +116,8 @@ void cacheGdiplusStartupInputFields(JNIEnv *env, jobject lpObject)
 	GdiplusStartupInputFc.clazz = env->GetObjectClass(lpObject);
 	GdiplusStartupInputFc.GdiplusVersion = env->GetFieldID(GdiplusStartupInputFc.clazz, "GdiplusVersion", "I");
 	GdiplusStartupInputFc.DebugEventCallback = env->GetFieldID(GdiplusStartupInputFc.clazz, "DebugEventCallback", "I");
-	GdiplusStartupInputFc.SuppressBackgroundThread = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressBackgroundThread", "I");
-	GdiplusStartupInputFc.SuppressExternalCodecs = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressExternalCodecs", "I");
+	GdiplusStartupInputFc.SuppressBackgroundThread = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressBackgroundThread", "Z");
+	GdiplusStartupInputFc.SuppressExternalCodecs = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressExternalCodecs", "Z");
 	GdiplusStartupInputFc.cached = 1;
 }
 
@@ -126,8 +126,8 @@ GdiplusStartupInput *getGdiplusStartupInputFields(JNIEnv *env, jobject lpObject,
 	if (!GdiplusStartupInputFc.cached) cacheGdiplusStartupInputFields(env, lpObject);
 	lpStruct->GdiplusVersion = env->GetIntField(lpObject, GdiplusStartupInputFc.GdiplusVersion);
 	lpStruct->DebugEventCallback = (DebugEventProc)env->GetIntField(lpObject, GdiplusStartupInputFc.DebugEventCallback);
-	lpStruct->SuppressBackgroundThread = (BOOL)env->GetIntField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread);
-	lpStruct->SuppressExternalCodecs = (BOOL)env->GetIntField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs);
+	lpStruct->SuppressBackgroundThread = (BOOL)env->GetBooleanField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread);
+	lpStruct->SuppressExternalCodecs = (BOOL)env->GetBooleanField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs);
 	return lpStruct;
 }
 
@@ -136,8 +136,8 @@ void setGdiplusStartupInputFields(JNIEnv *env, jobject lpObject, GdiplusStartupI
 	if (!GdiplusStartupInputFc.cached) cacheGdiplusStartupInputFields(env, lpObject);
 	env->SetIntField(lpObject, GdiplusStartupInputFc.GdiplusVersion, (jint)lpStruct->GdiplusVersion);
 	env->SetIntField(lpObject, GdiplusStartupInputFc.DebugEventCallback, (jint)lpStruct->DebugEventCallback);
-	env->SetIntField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread, (jint)lpStruct->SuppressBackgroundThread);
-	env->SetIntField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs, (jint)lpStruct->SuppressExternalCodecs);
+	env->SetBooleanField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread, (jboolean)lpStruct->SuppressBackgroundThread);
+	env->SetBooleanField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs, (jboolean)lpStruct->SuppressExternalCodecs);
 }
 #endif
 

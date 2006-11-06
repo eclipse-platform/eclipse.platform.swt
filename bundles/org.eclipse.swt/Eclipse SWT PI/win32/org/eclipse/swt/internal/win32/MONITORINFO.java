@@ -23,5 +23,5 @@ public class MONITORINFO {
 	public int rcWork_right;
 	public int rcWork_bottom;
 	public int dwFlags;
-	public static final int sizeof = 40;
+	public static final int sizeof = OS.MONITORINFO_sizeof ();
 }

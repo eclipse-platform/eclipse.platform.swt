@@ -21,6 +21,6 @@ public abstract class NONCLIENTMETRICS {
 	public int iSmCaptionHeight;
 	public int iMenuWidth; 
 	public int iMenuHeight;
-	public static final int sizeof = OS.IsUnicode ? 500 : 340;
+	public static final int sizeof = OS.IsUnicode ? OS.NONCLIENTMETRICSW_sizeof () : OS.NONCLIENTMETRICSA_sizeof ();
 }
 

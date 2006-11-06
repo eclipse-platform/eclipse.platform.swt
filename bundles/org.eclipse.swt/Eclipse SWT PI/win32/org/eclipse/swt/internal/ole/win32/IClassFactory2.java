@@ -12,16 +12,16 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IClassFactory2 extends IUnknown
 {
-public IClassFactory2(int address) {
+public IClassFactory2(int /*long*/ address) {
 	super(address);
 }
-public int CreateInstanceLic(int pUnkOuter, int pUnkReserved, GUID riid, int bstrKey, int ppvObject[]) {
+public int CreateInstanceLic(int /*long*/ pUnkOuter, int /*long*/ pUnkReserved, GUID riid, int /*long*/ bstrKey, int /*long*/ ppvObject[]) {
 	return COM.VtblCall(7, address, pUnkOuter, pUnkReserved, riid, bstrKey, ppvObject);
 }
 public int GetLicInfo(LICINFO licInfo) {
 	return COM.VtblCall(5, address, licInfo);
 }
-public int RequestLicKey(int dwReserved, int[] pBstrKey) {
+public int RequestLicKey(int dwReserved, int /*long*/[] pBstrKey) {
 	return COM.VtblCall(6, address, dwReserved, pBstrKey);
 }
 }

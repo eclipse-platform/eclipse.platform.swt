@@ -13,5 +13,5 @@ package org.eclipse.swt.internal.win32;
 public class NMUPDOWN extends NMHDR {
 	public int iPos;
 	public int iDelta;
-	public static final int sizeof = 20;
+	public static final int sizeof = OS.NMUPDOWN_sizeof ();
 }

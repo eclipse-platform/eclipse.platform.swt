@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IMoniker extends IPersist
 {
-public IMoniker(int address) {
+public IMoniker(int /*long*/ address) {
 	super(address);
 }
 }

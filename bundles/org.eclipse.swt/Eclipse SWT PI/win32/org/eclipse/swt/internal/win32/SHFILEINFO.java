@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,8 +11,8 @@
 package org.eclipse.swt.internal.win32;
 
 public class SHFILEINFO {
-	public int hIcon;
+	public int /*long*/ hIcon;
 	public int iIcon;
 	public int dwAttributes;
-	public static int sizeof = OS.IsUnicode ? 692 : 352;
+	public static int sizeof = OS.IsUnicode ? OS.SHFILEINFOW_sizeof ():  OS.SHFILEINFOA_sizeof ();
 }

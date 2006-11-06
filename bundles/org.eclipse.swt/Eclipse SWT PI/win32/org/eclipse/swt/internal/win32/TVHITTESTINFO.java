@@ -15,6 +15,6 @@ public class TVHITTESTINFO {
 	public int x;
 	public int y;
 	public int flags;
-	public int hItem;
-	public static int sizeof = 16;
+	public int /*long*/ hItem;
+	public static int sizeof = OS.TVHITTESTINFO_sizeof ();
 }

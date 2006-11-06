@@ -16,6 +16,6 @@ public class MEASUREITEMSTRUCT {
   	public int itemID;
 	public int itemWidth;
 	public int itemHeight; 
-	public int itemData;
-	public static final int sizeof = 24;
+	public int /*long*/ itemData;
+	public static final int sizeof = OS.MEASUREITEMSTRUCT_sizeof ();
 }

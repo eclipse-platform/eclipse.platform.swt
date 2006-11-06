@@ -17,6 +17,6 @@ public class TRIVERTEX {
 	public short Green;
 	public short Blue;
 	public short Alpha;
-	public static final int sizeof = 16;
+	public static final int sizeof = OS.TRIVERTEX_sizeof ();
 }
 

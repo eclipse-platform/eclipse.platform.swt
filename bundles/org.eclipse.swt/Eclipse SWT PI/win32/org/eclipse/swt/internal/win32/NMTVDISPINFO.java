@@ -13,14 +13,14 @@ package org.eclipse.swt.internal.win32;
 public class NMTVDISPINFO extends NMHDR {
 //	TVITEM item;
 	public int mask;
-	public int hItem;
+	public int /*long*/ hItem;
 	public int state;
 	public int stateMask;
-	public int pszText;
+	public int /*long*/ pszText;
   	public int cchTextMax;
   	public int iImage;
   	public int iSelectedImage;
 	public int cChildren;
-	public int lParam;
-	public static final int sizeof = 52;
+	public int /*long*/ lParam;
+	public static final int sizeof = OS.NMTVDISPINFO_sizeof ();
 }

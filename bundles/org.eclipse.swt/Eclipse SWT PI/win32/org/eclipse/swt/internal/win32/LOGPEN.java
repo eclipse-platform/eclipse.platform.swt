@@ -16,5 +16,5 @@ public class LOGPEN {
 	public int x;
 	public int y;
 	public int lopnColor;
-	public static final int sizeof = 16;
+	public static final int sizeof = OS.LOGPEN_sizeof ();
 }

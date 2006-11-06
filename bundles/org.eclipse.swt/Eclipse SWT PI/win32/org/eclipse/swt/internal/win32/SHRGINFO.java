@@ -12,10 +12,10 @@ package org.eclipse.swt.internal.win32;
 
 public class SHRGINFO {
 	public int cbSize;
-	public int hwndClient;
+	public int /*long*/ hwndClient;
 //	POINT ptDown
 	public int ptDown_x;
 	public int ptDown_y;
 	public int dwFlags;
-	public static final int sizeof = 20;
+	public static final int sizeof = OS.SHRGINFO_sizeof ();
 }

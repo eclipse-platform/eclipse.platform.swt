@@ -13,12 +13,13 @@ package org.eclipse.swt.internal.win32;
 public class TOOLINFO {
 	public int cbSize; 
 	public int uFlags;
-	public int hwnd; 
-	public int uId; 
+	public int /*long*/ hwnd; 
+	public int /*long*/ uId; 
 //	public RECT rect;
 	public int left, top, right, bottom;
-	public int hinst; 
-	public int lpszText;
-	public int lParam;
-	public static int sizeof = 44;
+	public int /*long*/ hinst; 
+	public int /*long*/ lpszText;
+	public int /*long*/ lParam;
+	public int /*long*/ lpReserved;
+	public static int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1) ? OS.TOOLINFO_sizeof () : 44;
 }

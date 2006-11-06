@@ -12,16 +12,16 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class VARDESC {
 	public int memid;
-	public int lpstrSchema;
-	public int oInst;
+	public int /*long*/ lpstrSchema;
+	public int /*long*/ oInst;
 //	ELEMDESC elemdescVar
 //	TYPEDESC elemdescVar.tdesc
-	public int elemdescVar_tdesc_union;
+	public int /*long*/ elemdescVar_tdesc_union;
 	public short elemdescVar_tdesc_vt;
 //	PARAMDESC elemdescFunc.paramdesc
-	public int elemdescVar_paramdesc_pparamdescex;
+	public int /*long*/ elemdescVar_paramdesc_pparamdescex;
 	public short elemdescVar_paramdesc_wParamFlags;
 	public short wVarFlags;
 	public int varkind;
-	public static final int sizeof = 36;
+	public static final int sizeof = COM.VARDESC_sizeof ();
 }

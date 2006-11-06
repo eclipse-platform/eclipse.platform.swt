@@ -11,9 +11,9 @@
 package org.eclipse.swt.internal.win32;
 
 public abstract class NMTTDISPINFO extends NMHDR {
-	public int lpszText;
-	public int hinst;   
+	public int /*long*/ lpszText;
+	public int /*long*/ hinst;   
 	public int uFlags;
-	public int lParam;
-	public static final int sizeof = OS.IsUnicode ? 188 : 108;
+	public int /*long*/ lParam;
+	public static final int sizeof = OS.IsUnicode ? OS.NMTTDISPINFOW_sizeof () : OS.NMTTDISPINFOA_sizeof ();
 }

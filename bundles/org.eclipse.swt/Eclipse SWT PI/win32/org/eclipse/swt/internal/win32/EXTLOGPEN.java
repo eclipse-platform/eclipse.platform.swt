@@ -15,8 +15,8 @@ public class EXTLOGPEN {
 	public int elpWidth;
 	public int elpBrushStyle;
 	public int elpColor;
-	public int elpHatch;
+	public int /*long*/ elpHatch;
 	public int elpNumEntries;
 	public int[] elpStyleEntry = new int[1];
-	public static final int sizeof = 28;
+	public static final int sizeof = OS.EXTLOGPEN_sizeof ();
 }

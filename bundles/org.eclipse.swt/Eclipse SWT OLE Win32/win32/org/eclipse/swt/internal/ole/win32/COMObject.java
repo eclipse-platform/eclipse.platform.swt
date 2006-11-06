@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.win32.*;
 
 public class COMObject {
 
-	private int ppVtable;
+	public int ppVtable;
 	
 	static private final int MAX_ARG_COUNT = 12;
 	static private final int MAX_VTABLE_LENGTH = 80;

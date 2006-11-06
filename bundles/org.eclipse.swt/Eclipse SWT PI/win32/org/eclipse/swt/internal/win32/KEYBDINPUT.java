@@ -15,6 +15,6 @@ public class KEYBDINPUT {
 	public short wScan;
 	public int dwFlags;
 	public int time;
-	public int dwExtraInfo;
-	public static final int sizeof = 16;
+	public int /*long*/ dwExtraInfo;
+	public static final int sizeof = OS.KEYBDINPUT_sizeof ();
 }

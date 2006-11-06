@@ -17,9 +17,9 @@ public class MENUBARINFO {
 	public int top;
 	public int right;
 	public int bottom;
-	public int hMenu;
-	public int hwndMenu;
+	public int /*long*/ hMenu;
+	public int /*long*/ hwndMenu;
 	public boolean fBarFocused;
 	public boolean fFocused;
-	public static final int sizeof = 32;
+	public static final int sizeof = OS.MENUBARINFO_sizeof ();
 }

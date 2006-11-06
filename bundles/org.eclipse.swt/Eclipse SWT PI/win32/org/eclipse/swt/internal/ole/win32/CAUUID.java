@@ -12,6 +12,6 @@ package org.eclipse.swt.internal.ole.win32;
 
 public final class CAUUID {
 	public int cElems;
-	public int pElems;
-	public static final int sizeof = 8;
+	public int /*long*/ pElems;
+	public static final int sizeof = COM.CAUUID_sizeof ();
 }

@@ -23,5 +23,5 @@ public class NMREBARCHILDSIZE extends NMHDR {
 	public int rcBand_top;
 	public int rcBand_right;
 	public int rcBand_bottom;
-	public static final int sizeof = 52;
+	public static final int sizeof = OS.NMREBARCHILDSIZE_sizeof ();
 }

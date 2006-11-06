@@ -12,17 +12,17 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IUnknown
 {
-	int address;
-public IUnknown(int address) {
+	int /*long*/ address;
+public IUnknown(int /*long*/ address) {
 	this.address = address;
 }
 public int AddRef() {
 	return COM.VtblCall(1, address);
 }
-public int getAddress() {
+public int /*long*/ getAddress() {
 	return address;
 }
-public int QueryInterface(GUID riid, int ppvObject[]) {
+public int QueryInterface(GUID riid, int /*long*/[] ppvObject) {
 	return COM.VtblCall(0, address, riid, ppvObject);
 }
 public int Release() {

@@ -12,6 +12,5 @@ package org.eclipse.swt.internal.gdip;
 
 public class PointF {
 	public float X;
-    public float Y;
-	public static final int sizeof = 8;
+	public float Y;
 }

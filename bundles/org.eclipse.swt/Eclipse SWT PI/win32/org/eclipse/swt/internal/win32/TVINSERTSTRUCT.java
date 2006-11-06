@@ -11,19 +11,19 @@
 package org.eclipse.swt.internal.win32;
 
 public class TVINSERTSTRUCT {
-	public int hParent;
-	public int hInsertAfter;
+	public int /*long*/ hParent;
+	public int /*long*/ hInsertAfter;
 //	public TVITEMEX item;
 	public int mask;
-	public int hItem;
+	public int /*long*/ hItem;
 	public int state;
 	public int stateMask;
-	public int pszText;
+	public int /*long*/ pszText;
   	public int cchTextMax;
   	public int iImage;
   	public int iSelectedImage;
 	public int cChildren;
-	public int lParam;
+	public int /*long*/ lParam;
 	public int iIntegral;
-	public static final int sizeof = 48 + (OS.IsWinCE ? 0 : 4);
+	public static final int sizeof = OS.TVINSERTSTRUCT_sizeof ();
 }

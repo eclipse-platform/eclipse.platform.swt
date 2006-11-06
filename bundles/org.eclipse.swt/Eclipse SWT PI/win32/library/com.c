@@ -15,6 +15,18 @@
 
 #define COM_NATIVE(func) Java_org_eclipse_swt_internal_ole_win32_COM_##func
 
+#ifndef NO_CAUUID_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(CAUUID_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, CAUUID_1sizeof_FUNC);
+	rc = (jint)CAUUID_sizeof();
+	COM_NATIVE_EXIT(env, that, CAUUID_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CLSIDFromProgID
 JNIEXPORT jint JNICALL COM_NATIVE(CLSIDFromProgID)
 	(JNIEnv *env, jclass that, jcharArray arg0, jobject arg1)
@@ -49,6 +61,30 @@ fail:
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 	COM_NATIVE_EXIT(env, that, CLSIDFromString_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CONTROLINFO_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(CONTROLINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, CONTROLINFO_1sizeof_FUNC);
+	rc = (jint)CONTROLINFO_sizeof();
+	COM_NATIVE_EXIT(env, that, CONTROLINFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_COSERVERINFO_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(COSERVERINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, COSERVERINFO_1sizeof_FUNC);
+	rc = (jint)COSERVERINFO_sizeof();
+	COM_NATIVE_EXIT(env, that, COSERVERINFO_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -176,6 +212,30 @@ fail:
 }
 #endif
 
+#ifndef NO_DISPPARAMS_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(DISPPARAMS_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, DISPPARAMS_1sizeof_FUNC);
+	rc = (jint)DISPPARAMS_sizeof();
+	COM_NATIVE_EXIT(env, that, DISPPARAMS_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DVTARGETDEVICE_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(DVTARGETDEVICE_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, DVTARGETDEVICE_1sizeof_FUNC);
+	rc = (jint)DVTARGETDEVICE_sizeof();
+	COM_NATIVE_EXIT(env, that, DVTARGETDEVICE_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DoDragDrop
 JNIEXPORT jint JNICALL COM_NATIVE(DoDragDrop)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
@@ -188,6 +248,54 @@ JNIEXPORT jint JNICALL COM_NATIVE(DoDragDrop)
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, DoDragDrop_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_EXCEPINFO_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(EXCEPINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, EXCEPINFO_1sizeof_FUNC);
+	rc = (jint)EXCEPINFO_sizeof();
+	COM_NATIVE_EXIT(env, that, EXCEPINFO_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FORMATETC_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(FORMATETC_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, FORMATETC_1sizeof_FUNC);
+	rc = (jint)FORMATETC_sizeof();
+	COM_NATIVE_EXIT(env, that, FORMATETC_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FUNCDESC_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(FUNCDESC_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, FUNCDESC_1sizeof_FUNC);
+	rc = (jint)FUNCDESC_sizeof();
+	COM_NATIVE_EXIT(env, that, FUNCDESC_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GUID_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(GUID_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, GUID_1sizeof_FUNC);
+	rc = (jint)GUID_sizeof();
+	COM_NATIVE_EXIT(env, that, GUID_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -245,6 +353,18 @@ fail:
 	if (arg1 && lparg1) setGUIDFields(env, arg1, lparg1);
 	if (arg0 && lparg0) setGUIDFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, IsEqualGUID_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LICINFO_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(LICINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, LICINFO_1sizeof_FUNC);
+	rc = (jint)LICINFO_sizeof();
+	COM_NATIVE_EXIT(env, that, LICINFO_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -458,6 +578,20 @@ fail:
 }
 #endif
 
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_ole_win32_VARIANT_2II
+JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_ole_win32_VARIANT_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	VARIANT _arg0, *lparg0=NULL;
+	COM_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_VARIANT_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setVARIANTFields(env, arg0, lparg0);
+	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_ole_win32_VARIANT_2II_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2II
 JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -469,6 +603,30 @@ JNIEXPORT void JNICALL COM_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_RE
 fail:
 	if (arg0 && lparg0) setRECTFields(env, arg0, lparg0);
 	COM_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2II_FUNC);
+}
+#endif
+
+#ifndef NO_OLECMD_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(OLECMD_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, OLECMD_1sizeof_FUNC);
+	rc = (jint)OLECMD_sizeof();
+	COM_NATIVE_EXIT(env, that, OLECMD_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OLEINPLACEFRAMEINFO_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(OLEINPLACEFRAMEINFO_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, OLEINPLACEFRAMEINFO_1sizeof_FUNC);
+	rc = (jint)OLEINPLACEFRAMEINFO_sizeof();
+	COM_NATIVE_EXIT(env, that, OLEINPLACEFRAMEINFO_1sizeof_FUNC);
+	return rc;
 }
 #endif
 
@@ -756,6 +914,30 @@ JNIEXPORT jint JNICALL COM_NATIVE(RevokeDragDrop)
 }
 #endif
 
+#ifndef NO_STATSTG_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(STATSTG_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, STATSTG_1sizeof_FUNC);
+	rc = (jint)STATSTG_sizeof();
+	COM_NATIVE_EXIT(env, that, STATSTG_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_STGMEDIUM_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(STGMEDIUM_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, STGMEDIUM_1sizeof_FUNC);
+	rc = (jint)STGMEDIUM_sizeof();
+	COM_NATIVE_EXIT(env, that, STGMEDIUM_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_StgCreateDocfile
 JNIEXPORT jint JNICALL COM_NATIVE(StgCreateDocfile)
 	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2, jintArray arg3)
@@ -863,6 +1045,42 @@ JNIEXPORT jint JNICALL COM_NATIVE(SysStringByteLen)
 	COM_NATIVE_ENTER(env, that, SysStringByteLen_FUNC);
 	rc = (jint)SysStringByteLen((BSTR)arg0);
 	COM_NATIVE_EXIT(env, that, SysStringByteLen_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TYPEATTR_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(TYPEATTR_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, TYPEATTR_1sizeof_FUNC);
+	rc = (jint)TYPEATTR_sizeof();
+	COM_NATIVE_EXIT(env, that, TYPEATTR_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VARDESC_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(VARDESC_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VARDESC_1sizeof_FUNC);
+	rc = (jint)VARDESC_sizeof();
+	COM_NATIVE_EXIT(env, that, VARDESC_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VARIANT_1sizeof
+JNIEXPORT jint JNICALL COM_NATIVE(VARIANT_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VARIANT_1sizeof_FUNC);
+	rc = (jint)VARIANT_sizeof();
+	COM_NATIVE_EXIT(env, that, VARIANT_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -1023,6 +1241,38 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIII_3I)
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IIII_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIII_3J
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIII_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jlongArray arg4)
+{
+	jlong *lparg4=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IIII_3J_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
+	COM_NATIVE_EXIT(env, that, VtblCall__IIII_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIIJ_3I
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIIJ_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jlong arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IIIJ_3I_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jlong, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	COM_NATIVE_EXIT(env, that, VtblCall__IIIJ_3I_FUNC);
 	return rc;
 }
 #endif
@@ -1225,6 +1475,54 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__III_3I_3I_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__III_3J
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__III_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jlongArray arg3)
+{
+	jlong *lparg3=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__III_3J_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jlong *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	COM_NATIVE_EXIT(env, that, VtblCall__III_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJI_3I
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIJI_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IIJI_3I_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	COM_NATIVE_EXIT(env, that, VtblCall__IIJI_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIJ_3I
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIJ_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IIJ_3I_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jint *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	COM_NATIVE_EXIT(env, that, VtblCall__IIJ_3I_FUNC);
 	return rc;
 }
 #endif
@@ -1560,6 +1858,44 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__II_3CIII_3J
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3CIII_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jint arg4, jint arg5, jlongArray arg6)
+{
+	jchar *lparg2=NULL;
+	jlong *lparg6=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__II_3CIII_3J_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jint, jint, jint, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseLongArrayElements(env, arg6, lparg6, 0);
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	COM_NATIVE_EXIT(env, that, VtblCall__II_3CIII_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3CJII_3J
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3CJII_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jlong arg3, jint arg4, jint arg5, jlongArray arg6)
+{
+	jchar *lparg2=NULL;
+	jlong *lparg6=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__II_3CJII_3J_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jchar *, jlong, jint, jint, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseLongArrayElements(env, arg6, lparg6, 0);
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	COM_NATIVE_EXIT(env, that, VtblCall__II_3CJII_3J_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__II_3C_3C
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3C_3C)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jcharArray arg3)
@@ -1591,6 +1927,46 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3I)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__II_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3J
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3J)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__II_3J_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong *))(*(jint **)arg1)[arg0])(arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	COM_NATIVE_EXIT(env, that, VtblCall__II_3J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IJIIIIJ
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIIIIJ)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jlong arg6)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IJIIIIJ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jint, jint, jint, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6);
+	COM_NATIVE_EXIT(env, that, VtblCall__IJIIIIJ_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IJJIIIII
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jlong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IJJIIIII_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jint, jint, jint, jint, jint))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	COM_NATIVE_EXIT(env, that, VtblCall__IJJIIIII_FUNC);
 	return rc;
 }
 #endif

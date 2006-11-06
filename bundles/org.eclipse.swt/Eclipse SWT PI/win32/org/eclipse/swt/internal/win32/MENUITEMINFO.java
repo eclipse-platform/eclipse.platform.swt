@@ -16,15 +16,13 @@ public class MENUITEMINFO {
 	public int fType;
 	public int fState;
 	public int wID;
-	public int hSubMenu;
-	public int hbmpChecked;
-	public int hbmpUnchecked;
-	public int dwItemData;
-	public int dwTypeData;
+	public int /*long*/ hSubMenu;
+	public int /*long*/ hbmpChecked;
+	public int /*long*/ hbmpUnchecked;
+	public int /*long*/ dwItemData;
+	public int /*long*/ dwTypeData;
 	public int cch;
-	public int hbmpItem;
-	public static final int sizeof;
-
+	public int /*long*/ hbmpItem;
 	/*
 	* Feature in Windows.  The hbmpItem field requires Windows 4.10
 	* or greater.  On Windows NT 4.0, passing in a larger struct size
@@ -32,7 +30,5 @@ public class MENUITEMINFO {
 	* calls fail when the struct size is too large.  The fix is to ensure
 	* that the correct struct size is used for the Windows platform.
 	*/
-	static {
-		sizeof = OS.WIN32_VERSION < OS.VERSION (4, 10) ? 44 : 48;
-	}
+	public static final int sizeof = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 0) ? OS.MENUITEMINFO_sizeof () : 44;
 }

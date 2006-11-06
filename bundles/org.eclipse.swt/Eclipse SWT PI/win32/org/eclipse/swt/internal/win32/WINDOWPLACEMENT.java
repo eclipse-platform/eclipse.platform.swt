@@ -25,5 +25,5 @@ public class WINDOWPLACEMENT {
 	public int top;
 	public int right;
 	public int bottom;
-	public static final int sizeof = 44;
+	public static final int sizeof = OS.WINDOWPLACEMENT_sizeof ();
 }

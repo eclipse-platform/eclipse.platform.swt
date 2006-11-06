@@ -15,5 +15,5 @@ public class BLENDFUNCTION {
 	public byte BlendFlags;
 	public byte SourceConstantAlpha;
 	public byte AlphaFormat;
-	public static final int sizeof = 4;
+	public static final int sizeof = OS.BLENDFUNCTION_sizeof ();
 }

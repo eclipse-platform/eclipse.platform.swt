@@ -13,12 +13,14 @@ package org.eclipse.swt.internal.win32;
 public class HDITEM {
 	public int mask;
 	public int cxy;
-	public int pszText;
-	public int hbm;
+	public int /*long*/ pszText;
+	public int /*long*/ hbm;
 	public int cchTextMax;
 	public int fmt;
-	public int lParam; 
+	public int /*long*/ lParam; 
 	public int iImage;
 	public int iOrder;
-	public static int sizeof = 36;
+	public int type;
+	public int /*long*/ pvFilter; 
+	public static int sizeof = OS.HDITEM_sizeof ();
 }

@@ -17,5 +17,5 @@ public class LVHITTESTINFO {
 	public int flags;
 	public int iItem;
 	public int iSubItem;
-	public static int sizeof = 20;
+	public static int sizeof = OS.LVHITTESTINFO_sizeof ();
 }

@@ -11,12 +11,12 @@
 package org.eclipse.swt.internal.win32;
 
 public class PAINTSTRUCT {
-	public int hdc; 
+	public int /*long*/  hdc; 
 	public boolean fErase;
 //	public RECT rcPaint;
 	public int left, top, right, bottom;
 	public boolean fRestore; 
 	public boolean fIncUpdate; 
 	public byte[] rgbReserved = new byte[32];
-	public static final int sizeof = 64;
+	public static final int sizeof = OS.PAINTSTRUCT_sizeof ();
 }

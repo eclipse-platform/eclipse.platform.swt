@@ -17,12 +17,12 @@ public class NMTOOLBAR extends NMHDR {
 	public int idCommand;
 	public byte fsState;
 	public byte fsStyle;
-	public int dwData;
-	public int iString;
+	public int /*long*/ dwData;
+	public int /*long*/ iString;
 	public int cchText;
-	public int pszText;
+	public int /*long*/ pszText;
 //	RECT rcButton;
 	public int left, top, right, bottom;
 	/* Note in WinCE.  The field rcButton is not defined. */
-	public static final int sizeof = OS.IsWinCE ? 44 : 60;
+	public static final int sizeof = OS.NMTOOLBAR_sizeof ();
 }

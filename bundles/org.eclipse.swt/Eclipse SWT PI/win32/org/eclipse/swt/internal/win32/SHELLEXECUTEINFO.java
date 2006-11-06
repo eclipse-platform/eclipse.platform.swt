@@ -13,24 +13,24 @@ package org.eclipse.swt.internal.win32;
 public class SHELLEXECUTEINFO {
 	public int cbSize;
 	public int fMask; 
-	public int hwnd;
-	public int lpVerb;
-	public int lpFile; 
-	public int lpParameters;
-	public int lpDirectory;
+	public int /*long*/ hwnd;
+	public int /*long*/ lpVerb;
+	public int /*long*/ lpFile; 
+	public int /*long*/ lpParameters;
+	public int /*long*/ lpDirectory;
 	public int nShow; 
-	public int hInstApp;
+	public int /*long*/ hInstApp;
 	// Optional members
-	public int lpIDList; 
-	public int lpClass;
-	public int hkeyClass;
+	public int /*long*/ lpIDList; 
+	public int /*long*/ lpClass;
+	public int /*long*/ hkeyClass;
 	public int dwHotKey;
 //	union {
 //		HANDLE hIcon;		
 //		HANDLE hMonitor;
 //	};
-	public int hIcon;
-	public int hProcess; 
-	public static final int sizeof = 60;
+	public int /*long*/ hIcon;
+	public int /*long*/ hProcess; 
+	public static final int sizeof = OS.SHELLEXECUTEINFO_sizeof ();
 }
 

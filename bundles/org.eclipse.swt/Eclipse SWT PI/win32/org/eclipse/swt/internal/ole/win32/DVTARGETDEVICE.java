@@ -17,5 +17,5 @@ public final class DVTARGETDEVICE {
 	public short tdPortNameOffset;
 	public short tdExtDevmodeOffset;
 	public byte[] tdData = new byte[1];
-	public static final int sizeof = 13;
+	public static final int sizeof = COM.DVTARGETDEVICE_sizeof ();
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,10 +8,13 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.win32;
+package org.eclipse.swt.internal.ole.win32;
 
-public class POINT {
-	public int x;
-	public int y;
-	public static final int sizeof = OS.POINT_sizeof ();
+public class VARIANT {
+	public short vt;
+	public short wReserved1;
+	public short wReserved2;
+	public short wReserved3;
+	public int /*long*/ lVal;
+	public static final int sizeof = COM.VARIANT_sizeof();
 }

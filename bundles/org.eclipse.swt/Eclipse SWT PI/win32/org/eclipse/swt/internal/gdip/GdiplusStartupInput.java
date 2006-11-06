@@ -12,8 +12,8 @@ package org.eclipse.swt.internal.gdip;
 
 public class GdiplusStartupInput {
 	public int GdiplusVersion;
-    public int DebugEventCallback;
-    public int SuppressBackgroundThread;
-    public int SuppressExternalCodecs;
-	public static final int sizeof = 16;
+	public int /*long*/ DebugEventCallback;
+	public boolean SuppressBackgroundThread;
+	public boolean SuppressExternalCodecs;
+	public static final int sizeof = Gdip.GdiplusStartupInput_sizeof ();
 }

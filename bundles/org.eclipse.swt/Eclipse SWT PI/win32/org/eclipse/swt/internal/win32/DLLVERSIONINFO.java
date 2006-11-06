@@ -16,5 +16,5 @@ public class DLLVERSIONINFO {
 	public int dwMinorVersion;
 	public int dwBuildNumber;
 	public int dwPlatformID;
-	public static final int sizeof = 20;
+	public static final int sizeof = OS.DLLVERSIONINFO_sizeof ();
 }

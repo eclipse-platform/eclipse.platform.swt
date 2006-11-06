@@ -16,5 +16,5 @@ public abstract class OSVERSIONINFO {
 	public int dwMinorVersion;
 	public int dwBuildNumber;
 	public int dwPlatformId;
-	public static /*final*/ int sizeof = OS.IsUnicode ? 276 : 148;
+	public static /*final*/ int sizeof = OS.IsUnicode ? OS.OSVERSIONINFOW_sizeof () : OS.OSVERSIONINFOA_sizeof ();
 }

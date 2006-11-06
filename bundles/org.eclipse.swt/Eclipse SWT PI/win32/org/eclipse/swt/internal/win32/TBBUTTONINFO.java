@@ -18,8 +18,8 @@ public class TBBUTTONINFO {
 	public byte fsState;
 	public byte fsStyle;
 	public short cx;
-	public int lParam;
-	public int pszText;
+	public int /*long*/ lParam;
+	public int /*long*/ pszText;
 	public int cchText;
-	public static final int sizeof = 32;
+	public static final int sizeof = OS.TBBUTTONINFO_sizeof ();
 }

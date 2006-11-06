@@ -15,5 +15,5 @@ public class RECT {
 	public int top;
 	public int right;
 	public int bottom;
-	public static final int sizeof = 16;
+	public static final int sizeof = OS.RECT_sizeof ();
 }

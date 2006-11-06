@@ -17,5 +17,5 @@ public class LITEM {
 	public int stateMask;
 	public char[] szID = new char[OS.MAX_LINKID_TEXT];
 	public char[] szUrl = new char[OS.L_MAX_URL_LENGTH];
-	public static final int sizeof = 4280;
+	public static final int sizeof = OS.LITEM_sizeof ();
 }

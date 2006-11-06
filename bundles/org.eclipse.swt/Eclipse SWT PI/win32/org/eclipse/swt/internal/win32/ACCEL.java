@@ -14,5 +14,5 @@ public class ACCEL {
 	public byte fVirt;
 	public short key;
 	public short cmd;
-	public static final int sizeof = OS.IsWinCE ? 8 : 6;
+	public static final int sizeof = OS.ACCEL_sizeof ();
 }

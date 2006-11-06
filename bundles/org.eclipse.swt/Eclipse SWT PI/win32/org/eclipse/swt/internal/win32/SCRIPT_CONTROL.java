@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class SCRIPT_CONTROL {
-	public int	uDefaultLanguage; 
+	public int uDefaultLanguage; 
 	public boolean fContextDigits; 
 	public boolean fInvertPreBoundDir; 
 	public boolean fInvertPostBoundDir; 
@@ -21,5 +21,5 @@ public class SCRIPT_CONTROL {
 	public boolean fNumericOverride;
 	public boolean fLegacyBidiClass;
 	public int fReserved;
-	public static final int sizeof = 4;
+	public static final int sizeof = OS.SCRIPT_CONTROL_sizeof ();
 }

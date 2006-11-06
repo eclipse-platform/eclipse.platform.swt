@@ -26,5 +26,5 @@ public class MINMAXINFO {
 //	POINT ptMaxTrackSize;
 	public int ptMaxTrackSize_x;
 	public int ptMaxTrackSize_y;
-	public static final int sizeof = 40;
+	public static final int sizeof = OS.MINMAXINFO_sizeof ();
 }

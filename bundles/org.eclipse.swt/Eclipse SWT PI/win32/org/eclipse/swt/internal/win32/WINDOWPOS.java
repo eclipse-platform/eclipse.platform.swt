@@ -11,12 +11,12 @@
 package org.eclipse.swt.internal.win32;
 
 public class WINDOWPOS {
-	public int hwnd;                     
-	public int hwndInsertAfter;
-	public int x;                        
+	public int /*long*/ hwnd;
+	public int /*long*/ hwndInsertAfter;
+	public int x;
 	public int y;
-	public int cx;                       
+	public int cx;
 	public int cy;
 	public int flags;  
-	public static final int sizeof = 28;
+	public static final int sizeof = OS.WINDOWPOS_sizeof ();
 }

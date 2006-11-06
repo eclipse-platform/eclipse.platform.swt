@@ -12,5 +12,5 @@ package org.eclipse.swt.internal.win32;
 
 public class NMTTDISPINFOW extends NMTTDISPINFO {
 	public char[] szText = new char[80];
-	public static final int sizeof = 188;
+	public static final int sizeof = OS.NMTTDISPINFOW_sizeof ();
 }

@@ -11,17 +11,17 @@
 package org.eclipse.swt.internal.win32;
 
 public class CREATESTRUCT {
-	public int lpCreateParams; 
-	public int hInstance; 
-	public int hMenu; 
-	public int hwndParent; 
+	public int /*long*/ lpCreateParams; 
+	public int /*long*/ hInstance; 
+	public int /*long*/ hMenu; 
+	public int /*long*/ hwndParent; 
 	public int cy; 
 	public int cx; 
 	public int y; 
 	public int x; 
 	public int style; 
-	public int lpszName; 
-	public int lpszClass; 
+	public int /*long*/ lpszName; 
+	public int /*long*/ lpszClass; 
 	public int dwExStyle;
-	public static final int sizeof = 48;
+	public static final int sizeof = OS.CREATESTRUCT_sizeof ();
 }

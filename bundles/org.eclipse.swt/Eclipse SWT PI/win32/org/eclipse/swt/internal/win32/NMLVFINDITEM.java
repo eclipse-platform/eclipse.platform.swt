@@ -14,11 +14,11 @@ public class NMLVFINDITEM extends NMHDR {
 	public int iStart;
 //	LVFINDINFO lvfi;
 	public int flags;
-	public int psz;
-	public int lParam;
+	public int /*long*/ psz;
+	public int /*long*/ lParam;
 //	POINT pt;
 	public int x;
 	public int y;
 	public int vkDirection;
-	public static final int sizeof = 40;
+	public static final int sizeof = OS.NMLVFINDITEM_sizeof ();
 }

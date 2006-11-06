@@ -11,10 +11,10 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IFont extends IUnknown {
-public IFont(int address) {
+public IFont(int /*long*/ address) {
 	super(address);
 }
-public int get_hFont(int[] phfont){
+public int get_hFont(int /*long*/[] phfont){
 	return COM.VtblCall(3, address, phfont);
 }
 }
