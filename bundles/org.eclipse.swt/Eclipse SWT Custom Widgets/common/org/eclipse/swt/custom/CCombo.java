@@ -22,6 +22,15 @@ import org.eclipse.swt.accessibility.*;
  * that combines a text field and a list and issues notification
  * when an item is selected from the list.
  * <p>
+ * CCombo was written to work around certain limitations in the native
+ * combo box. Specifically, on win32, the height of a CCombo can be set;
+ * attempts to set the hieght of a Combo are ignored. CCombo can be used
+ * anywhere that having the increased flexibility is more important than
+ * getting native L&F, but the decision should not be taken lightly. 
+ * There is no is no strict requirement that CCombo look or behave
+ * the same as a native combo box.
+ * </p>
+ * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to add children to it, or set a layout on it.
  * </p>
