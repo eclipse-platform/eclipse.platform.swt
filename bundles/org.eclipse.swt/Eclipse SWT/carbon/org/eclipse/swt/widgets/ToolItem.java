@@ -141,6 +141,7 @@ public ToolItem (ToolBar parent, int style, int index) {
 }
 
 int actionProc (int theControl, int partCode) {
+	int result = parent.actionProc (theControl, partCode);
 	if (OS.HIVIEW) {
 		this.partCode = partCode;
 		if (text.length () > 0 && theControl == labelHandle) {
@@ -155,7 +156,7 @@ int actionProc (int theControl, int partCode) {
 			redrawWidget (labelHandle, false);
 		}
 	}
-	return OS.noErr;
+	return result;
 }
 
 /**

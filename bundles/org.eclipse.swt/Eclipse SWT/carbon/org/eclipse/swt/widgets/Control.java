@@ -107,6 +107,17 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
+int actionProc (int theControl, int partCode) {
+	if (display.pollingTimer != 0) {
+		OS.SetEventLoopTimerNextFireTime (display.pollingTimer, Display.POLLING_TIMEOUT / 1000.0);
+	}
+	if (!OS.HIVIEW) {
+		if ((state & GRAB) != 0) getShell ().update (true);
+	}
+	sendTrackEvents ();
+	return OS.noErr;
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -1290,6 +1301,7 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
 		OS.kEventClassControl, OS.kEventControlGetFocusPart,
 		OS.kEventClassControl, OS.kEventControlTrack,
+		OS.kEventClassControl, OS.kEventControlHitTest,
 		OS.kEventClassControl, OS.kEventControlGetClickActivation,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
@@ -1305,6 +1317,9 @@ void hookEvents () {
 	OS.HMInstallControlContentCallback (handle, helpProc);
 	int colorProc = display.colorProc;
 	OS.SetControlColorProc (handle, colorProc);
+	if (OS.GetControlAction (handle) == 0) {
+		OS.SetControlAction (handle, display.actionProc);
+	}
 }
 
 /**	 
@@ -1687,6 +1702,22 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlHitTest (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if ((state & GRAB) != 0) {
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (handle, rect);
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		if (OS.CGRectContainsPoint (rect, pt) != 0) {
+			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{1});
+		}
+		return OS.noErr;
+	}
+	return result;
+}
+
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	if (!isEnabledCursor ()) return OS.noErr;
 	Cursor cursor = null;
@@ -1722,55 +1753,20 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }	
 
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
 	/*
-	* Feature in the Macintosh.  Some controls call TrackControl() to track
-	* the mouse.  Unfortunately, mouse move events and the mouse up events are
-	* consumed.  The fix is to call the default handler and send a fake mouse up
-	* when tracking is finished if the mouse event was consumed.
-	* 
-	* NOTE: No mouse move events are sent while tracking.  There is no
-	* fix for this at this time.
+	* Feature in the Macintosh.  The default handler of kEventControlTrack
+	* calls TrackControl() which consumes key and mouse events until the
+	* tracking is canceled.  The fix is to send those events from the
+	* action proc of the widget by diffing the mouse and modifier keys
+	* state.
 	*/
-	display.grabControl = null;
 	display.runDeferredEvents ();
-	int oldChord = OS.GetCurrentEventButtonState ();
-	result = OS.CallNextEventHandler (nextHandler, theEvent);
-	int newChord = OS.GetCurrentEventButtonState ();
-	if (newChord != oldChord) {
-		int [] masks = {OS.kEventClassMouse, OS.kEventMouseUp};
-		int mouseUpEvent = OS.AcquireFirstMatchingEventInQueue (OS.GetCurrentEventQueue (), masks.length, masks, OS.kEventQueueOptionsNone);
-		if (mouseUpEvent != 0) {
-			OS.ReleaseEvent (mouseUpEvent);
-		} else {
-			org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-			OS.GetGlobalMouse (outPt);
-			Rect rect = new Rect ();
-			int window = OS.GetControlOwner (handle);
-			int x, y;
-			if (OS.HIVIEW) {
-				CGPoint pt = new CGPoint ();
-				pt.x = outPt.h;
-				pt.y = outPt.v;
-				OS.HIViewConvertPoint (pt, 0, handle);
-				x = (int) pt.x;
-				y = (int) pt.y;
-				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-			} else {
-				OS.GetControlBounds (handle, rect);
-				x = outPt.h - rect.left;
-				y = outPt.v - rect.top;
-				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			}
-			x -= rect.left;
-			y -=  rect.top;
-			short [] button = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-			int modifiers = OS.GetCurrentEventKeyModifiers ();
-			sendMouseEvent (SWT.MouseUp, button [0], display.clickCount, false, newChord, (short)x, (short)y, modifiers);
-		}
-	}
+	display.lastState = OS.GetCurrentEventButtonState ();
+	display.lastModifiers = OS.GetCurrentEventKeyModifiers ();
+	display.grabControl = this;
+	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
+	display.grabControl = null;
+	sendTrackEvents ();
 	return result;
 }
 
@@ -1791,7 +1787,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		display.dragMouseStart = pt;
 		display.dragging = false;
 	}
-	if ((state & GRAB) != 0) display.grabControl = this;
 	if (!shell.isDisposed ()) shell.setActiveControl (this);
 	return result;
 }
@@ -2387,7 +2382,6 @@ void sendFocusEvent (int type, boolean post) {
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int theEvent) {
-	if (!hooks (type) && !filters (type)) return true;
 	int x, y;
 	if (OS.HIVIEW) {
 		CGPoint pt = new CGPoint ();
@@ -2408,6 +2402,8 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 		x -= rect.left;
 		y -= rect.top;
 	}
+	display.lastX = x;
+	display.lastY = y;
 	int [] chord = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
 	int [] modifiers = new int [1];
@@ -2416,12 +2412,11 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 }
 
 boolean sendMouseEvent (int type, short button, int count, boolean send, int chord, short x, short y, int modifiers) {
-	if (!hooks (type) && !filters (type)) return true;
 	return sendMouseEvent (type, button, count, 0, send, chord, x, y, modifiers);
 }
 
 boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
-//	if (!hooks (type) && !filters (type)) return true;
+	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
 	switch (button) {
 		case 1: event.button = 1; break;
@@ -2446,6 +2441,92 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 
 boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 	return false;
+}
+
+void sendTrackEvents () {
+	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (outPt);
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	int newX, newY;
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		pt.x = outPt.h;
+		pt.y = outPt.v;
+		OS.HIViewConvertPoint (pt, 0, handle);
+		newX = (int) pt.x;
+		newY = (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	} else {
+		OS.GetControlBounds (handle, rect);
+		newX = outPt.h - rect.left;
+		newY = outPt.v - rect.top;
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	}
+	newX -= rect.left;
+	newY -=  rect.top;
+	int newModifiers = OS.GetCurrentEventKeyModifiers ();
+	int newState = OS.GetCurrentEventButtonState ();
+	Display display = this.display;
+	int oldX = display.lastX;
+	int oldY = display.lastY;
+	int oldState = display.lastState;
+	int oldModifiers = display.lastModifiers;
+	display.lastX = newX;
+	display.lastY = newY;
+	display.lastModifiers = newModifiers;
+	display.lastState = newState;
+	boolean events = false;
+	if (newState != oldState) {
+		int button = 0, type = SWT.MouseDown;
+		if ((oldState & 0x1) == 0 && (newState & 0x1) != 0) button = 1;
+		if ((oldState & 0x2) == 0 && (newState & 0x2) != 0) button = 2;
+		if ((oldState & 0x4) == 0 && (newState & 0x4) != 0) button = 3;
+		if ((oldState & 0x8) == 0 && (newState & 0x8) != 0) button = 4;
+		if ((oldState & 0x10) == 0 && (newState & 0x10) != 0) button = 5;
+		if (button == 0) {
+			type = SWT.MouseUp;
+			if ((oldState & 0x1) != 0 && (newState & 0x1) == 0) button = 1;
+			if ((oldState & 0x2) != 0 && (newState & 0x2) == 0) button = 2;
+			if ((oldState & 0x4) != 0 && (newState & 0x4) == 0) button = 3;
+			if ((oldState & 0x8) != 0 && (newState & 0x8) == 0) button = 4;
+			if ((oldState & 0x10) != 0 && (newState & 0x10) == 0) button = 5;
+		}
+		if (button != 0) {
+			sendMouseEvent (type, (short)button, 1, true, newState, (short)newX, (short)newY, newModifiers);
+			events = true;
+		}
+	}
+	if (newModifiers != oldModifiers && !isDisposed ()) {
+		int key = 0, type = SWT.KeyDown;
+		if ((newModifiers & OS.alphaLock) != 0 && (oldModifiers & OS.alphaLock) == 0) key = SWT.CAPS_LOCK;
+		if ((newModifiers & OS.shiftKey) != 0 && (oldModifiers & OS.shiftKey) == 0) key = SWT.SHIFT;
+		if ((newModifiers & OS.controlKey) != 0 && (oldModifiers & OS.controlKey) == 0) key = SWT.CONTROL;
+		if ((newModifiers & OS.cmdKey) != 0 && (oldModifiers & OS.cmdKey) == 0)  key = SWT.COMMAND;
+		if ((newModifiers & OS.optionKey) != 0 && (oldModifiers & OS.optionKey) == 0) key = SWT.ALT;
+		if (key == 0) {
+			type = SWT.KeyUp;
+			if ((newModifiers & OS.alphaLock) == 0 && (oldModifiers & OS.alphaLock) != 0) key = SWT.CAPS_LOCK;
+			if ((newModifiers & OS.shiftKey) == 0 && (oldModifiers & OS.shiftKey) != 0) key = SWT.SHIFT;
+			if ((newModifiers & OS.controlKey) == 0 && (oldModifiers & OS.controlKey) != 0) key = SWT.CONTROL;
+			if ((newModifiers & OS.cmdKey) == 0 && (oldModifiers & OS.cmdKey) != 0)  key = SWT.COMMAND;
+			if ((newModifiers & OS.optionKey) == 0 && (oldModifiers & OS.optionKey) != 0) key = SWT.ALT;
+		}
+		if (key != 0) {
+			Event event = new Event ();
+			event.keyCode = key;
+			setInputState (event, type, newState, newModifiers);
+			sendKeyEvent (type, event);
+			events = true;
+		}
+	}
+	if (newX != oldX || newY != oldY && !isDisposed ()) {
+		display.dragDetect (this);
+		display.mouseMoved = true;
+		sendMouseEvent (SWT.MouseMove, (short)0, 0, true, newState, (short)newX, (short)newY, newModifiers);
+		events = true;
+	}
+	if (events) display.runDeferredEvents ();
 }
 
 void setBackground () {

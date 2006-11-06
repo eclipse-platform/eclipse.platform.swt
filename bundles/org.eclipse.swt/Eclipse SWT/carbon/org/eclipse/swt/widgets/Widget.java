@@ -1061,7 +1061,20 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
+	int timer = 0;
+	Display display = this.display;
+	if (display.pollingTimer == 0) {
+		int [] id = new int [1];
+		int eventLoop = OS.GetCurrentEventLoop ();
+		OS.InstallEventLoopTimer (eventLoop, Display.POLLING_TIMEOUT / 1000.0, Display.POLLING_TIMEOUT / 1000.0, display.pollingProc, 0, id);
+		display.pollingTimer = timer = id [0];
+	}
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	if (timer != 0) {
+		OS.RemoveEventLoopTimer (timer);
+		display.pollingTimer = 0;
+	}
+	return result;
 }
 
 int kEventMenuCalculateSize (int nextHandler, int theEvent, int userData) {

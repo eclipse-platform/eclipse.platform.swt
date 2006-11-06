@@ -80,6 +80,7 @@ public Spinner (Composite parent, int style) {
 }
 
 int actionProc (int theControl, int partCode) {
+	int result = super.actionProc (theControl, partCode);
 	int value = getSelectionText ();
 	int newValue = value;
     switch (partCode) {
@@ -98,7 +99,7 @@ int actionProc (int theControl, int partCode) {
 	}
 	newValue = Math.min (Math.max (min, newValue), max);
 	if (value != newValue) setSelection (newValue, true);
-	return 0;
+	return result;
 }
 
 /**

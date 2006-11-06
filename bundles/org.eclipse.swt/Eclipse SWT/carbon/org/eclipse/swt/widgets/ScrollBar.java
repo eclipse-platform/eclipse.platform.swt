@@ -142,7 +142,8 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-int actionProc (int theControl, int partCode) {	
+int actionProc (int theControl, int partCode) {
+	int result = super.actionProc (theControl, partCode);
 	Event event = new Event ();
 	int inc = 0;
 	switch (partCode) {
@@ -167,7 +168,7 @@ int actionProc (int theControl, int partCode) {
 			event.detail = SWT.DRAG;
 	        break;
 		default:
-			return 0;
+			return result;
 	}
 	if (oldActionProc != 0) {
 		OS.Call (oldActionProc, theControl, partCode);
@@ -178,7 +179,7 @@ int actionProc (int theControl, int partCode) {
 	}
 	sendEvent (SWT.Selection, event);
 	if (!OS.HIVIEW) parent.update (true);
-	return 0;
+	return result;
 }
 
 void destroyWidget () {
@@ -414,6 +415,12 @@ void hookEvents () {
 		int controlTarget = OS.GetControlEventTarget (handle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
 	}
+	int controlProc = display.controlProc;
+	int [] mask = new int [] {
+		OS.kEventClassControl, OS.kEventControlTrack,
+	};
+	int controlTarget = OS.GetControlEventTarget (handle);
+	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
 	if ((parent.state & CANVAS) == 0) {
 		oldActionProc = OS.GetControlAction (handle);
 		OS.SetControlAction (handle, display.actionProc);

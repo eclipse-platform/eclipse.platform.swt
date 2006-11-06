@@ -73,12 +73,13 @@ public Scale (Composite parent, int style) {
 }
 
 int actionProc (int theControl, int partCode) {
+	int result = super.actionProc (theControl, partCode);
 	sendEvent (SWT.Selection);
 	if (!OS.HIVIEW) {
 		Shell shell = getShell ();
 		shell.update (true);
 	}
-	return 0;
+	return result;
 }
 
 /**

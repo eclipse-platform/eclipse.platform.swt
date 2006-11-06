@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -38,7 +37,8 @@ import org.eclipse.swt.events.*;
  */
 public class Sash extends Control {
 	Cursor sizeCursor;
-	int lastX, lastY;
+	boolean dragging;
+	int lastX, lastY, startX, startY;
 	private final static int INCREMENT = 1;
 	private final static int PAGE_INCREMENT = 9;
 
@@ -136,7 +136,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= THEME_BACKGROUND;
+	state |= GRAB | THEME_BACKGROUND;
 	int features = OS.kControlSupportsFocus;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
@@ -164,119 +164,6 @@ int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	display.setCursor (sizeCursor.handle);
-	return OS.noErr;
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-
-	Shell shell = getShell ();
-	shell.bringToTop (true);
-	if (isDisposed ()) return OS.noErr;
-
-	display.grabControl = null;
-	display.runDeferredEvents ();
-	
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	int startX = rect.left;
-	int startY = rect.top;			
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		startX -= rect.left;
-		startY -= rect.top;
-	}
-	Event event = new Event ();
-	event.x = startX;
-	event.y = startY;
-	event.width = width;
-	event.height = height;
-	sendEvent (SWT.Selection, event);
-	if (isDisposed ()) return result;
-	if (!event.doit) return result;
-	
-	int offsetX, offsetY;
-	int window = OS.GetControlOwner (handle);
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		OS.HIViewConvertPoint (pt, 0, handle);
-		offsetX = (int) pt.x;
-		offsetY = (int) pt.y;		
-	} else {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		offsetX = pt.h - rect.left;
-		offsetY = pt.v - rect.top;
-		OS.GetControlBounds (handle, rect);
-		offsetX -= rect.left;
-		offsetY -= rect.top;
-	}
-
-	int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
-	int [] outModifiers = new int [1];
-	short [] outResult = new short [1];
-	CGPoint pt = new CGPoint ();
-	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-	while (outResult [0] != OS.kMouseTrackingMouseUp) {
-		OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
-		switch (outResult [0]) {
-			case OS.kMouseTrackingMouseDown:
-			case OS.kMouseTrackingMouseUp:
-			case OS.kMouseTrackingMouseDragged: {
-				int x, y;
-				if (OS.HIVIEW) {
-					OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-					pt.x = outPt.h - rect.left;
-					pt.y = outPt.v - rect.top;
-					OS.HIViewConvertPoint (pt, 0, parent.handle);
-					x = (int) pt.x;
-					y = (int) pt.y;
-				} else {
-					OS.GetControlBounds (parent.handle, rect);
-					x = outPt.h - rect.left;
-					y = outPt.v - rect.top;
-				}
-				int newX = startX, newY = startY;
-				if ((style & SWT.VERTICAL) != 0) {
-					int clientWidth = rect.right - rect.left;
-					newX = Math.min (Math.max (0, x - offsetX), clientWidth - width);
-				} else {
-					int clientHeight = rect.bottom - rect.top;
-					newY = Math.min (Math.max (0, y - offsetY), clientHeight - height);
-				}
-				event = new Event ();
-				event.x = newX;
-				event.y = newY;
-				event.width = width;
-				event.height = height;
-				sendEvent (SWT.Selection, event);
-				if (isDisposed ()) return result;
-				if (event.doit) {
-					setBounds (event.x, event.y, width, height);
-					if (isDisposed ()) return result;
-					if (!OS.HIVIEW) parent.update (true);
-				}
-				if (outResult [0] == OS.kMouseTrackingMouseUp)  {
-					OS.GetControlBounds (handle, rect);
-					short [] button = new short [1];
-					OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-					int chord = OS.GetCurrentEventButtonState ();
-					int modifiers = OS.GetCurrentEventKeyModifiers ();
-					sendMouseEvent (SWT.MouseUp, button [0], display.clickCount, true, chord, (short) (x - rect.left), (short) (y - rect.top), modifiers);
-				}
-				break;
-			}
-			default:
-				outResult [0] = OS.kMouseTrackingMouseUp;
-				break;
-		}
-	}
 	return OS.noErr;
 }
 
@@ -384,6 +271,80 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
+}
+
+boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
+	boolean result = super.sendMouseEvent (type, button, count, detail, send, chord, x, y, modifiers);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	int controlX = rect.left;
+	int controlY = rect.top;
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	OS.GetControlBounds (parent.handle, rect);
+	if (!OS.HIVIEW) {
+		controlX -= rect.left;
+		controlY -= rect.top;
+	}
+	int parentWidth = rect.right - rect.left;
+	int parentHeight = rect.bottom - rect.top;
+	switch (type) {
+		case SWT.MouseDown:
+			if (button != 1 || count != 1) break;
+			startX = x;
+			startY = y;
+			Event event = new Event ();
+			event.x = controlX;
+			event.y = controlY;
+			event.width = width;
+			event.height = height;
+			postEvent (SWT.Selection, event);
+			if (isDisposed ()) return result;
+			if (event.doit) {
+				lastX = event.x;
+				lastY = event.y;
+				dragging = true;
+				setBounds (event.x, event.y, width, height);
+			}
+			break;
+		case SWT.MouseUp:
+			if (!dragging) break;
+			dragging = false;
+			event = new Event ();
+			event.x = lastX;
+			event.y = lastY;
+			event.width = width;
+			event.height = height;
+			postEvent (SWT.Selection, event);
+			if (isDisposed ()) return result;
+			if (event.doit) {
+				setBounds (event.x, event.y, width, height);
+			}
+			break;
+		case SWT.MouseMove:
+			if (!dragging) break;
+			int newX = lastX, newY = lastY;
+			if ((style & SWT.VERTICAL) != 0) {
+				newX = Math.min (Math.max (0, x + controlX - startX), parentWidth - width);
+			} else {
+				newY = Math.min (Math.max (0, y + controlY - startY), parentHeight - height);
+			}
+			if (newX == lastX && newY == lastY) return result;
+			event = new Event ();
+			event.x = newX;
+			event.y = newY;
+			event.width = width;
+			event.height = height;
+			postEvent (SWT.Selection, event);
+			if (isDisposed ()) return result;
+			if (event.doit) {
+				lastX = event.x;
+				lastY = event.y;
+				setBounds (event.x, event.y, width, height);
+			}
+			break;
+	}
+	return result;
 }
 
 int traversalCode (int key, int theEvent) {

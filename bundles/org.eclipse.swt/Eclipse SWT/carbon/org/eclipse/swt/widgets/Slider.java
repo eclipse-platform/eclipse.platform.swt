@@ -148,6 +148,7 @@ static int checkStyle (int style) {
 }
 
 int actionProc (int theControl, int partCode) {
+	int result = super.actionProc (theControl, partCode);
 	Event event = new Event ();
 	int value = OS.GetControl32BitValue (handle);
     switch (partCode) {
@@ -172,7 +173,7 @@ int actionProc (int theControl, int partCode) {
 			event.detail = SWT.DRAG;
 	        break;
 		default:
-			return 0;
+			return result;
 	}
 	OS.SetControl32BitValue (handle, value);
 	sendEvent (SWT.Selection, event);
@@ -180,7 +181,7 @@ int actionProc (int theControl, int partCode) {
 		Shell shell = getShell ();
 		shell.update (true);
 	}
-	return 0;
+	return result;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {

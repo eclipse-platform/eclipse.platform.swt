@@ -143,7 +143,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	state |= THEME_BACKGROUND;
+	state |= GRAB | THEME_BACKGROUND;
 	int features = OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
@@ -272,117 +272,6 @@ int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) redraw ();
-	return result;
-}
-
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	int [] clickCount = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-	if (button [0] == 1 && clickCount [0] == 1) {
-		int x, y;
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-			OS.HIViewConvertPoint (pt, 0, handle);
-			x = (int) pt.x;
-			y = (int) pt.y;
-		} else {
-			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-			Rect rect = new Rect ();
-			int window = OS.GetControlOwner (handle);
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			x = pt.h - rect.left;
-			y = pt.v - rect.top;
-			OS.GetControlBounds (handle, rect);
-			x -= rect.left;
-			y -= rect.top;
-		}
-		int offset = layout.getOffset (x, y, null);
-		int oldSelectionX = selection.x;
-		int oldSelectionY = selection.y;
-		selection.x = offset;
-		selection.y = -1;
-		if (oldSelectionX != -1 && oldSelectionY != -1) {
-			if (oldSelectionX > oldSelectionY) {
-				int temp = oldSelectionX;
-				oldSelectionX = oldSelectionY;
-				oldSelectionY = temp;
-			}
-			Rectangle rectangle = layout.getBounds (oldSelectionX, oldSelectionY);
-			redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
-		}		
-		for (int j = 0; j < offsets.length; j++) {
-			Rectangle [] rects = getRectangles (j);
-			for (int i = 0; i < rects.length; i++) {
-				Rectangle rectangle = rects [i];
-				if (rectangle.contains (x, y)) {
-					focusIndex = j;
-					redraw ();
-					return result;
-				}
-			}
-		}
-	}
-	
-	int window = OS.GetControlOwner (handle);
-	int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
-	int [] outModifiers = new int [1];
-	short [] outResult = new short [1];
-	CGPoint pt = new CGPoint ();
-	Rect rect = new Rect ();
-	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-	while (outResult [0] != OS.kMouseTrackingMouseUp) {
-		OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
-		switch (outResult [0]) {
-			case OS.kMouseTrackingMouseDown:
-			case OS.kMouseTrackingMouseUp:
-			case OS.kMouseTrackingMouseDragged: {
-				int chord = OS.GetCurrentEventButtonState ();
-				if ((chord & 0x01) != 0) {
-					int x, y;
-					if (OS.HIVIEW) {
-						OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-						pt.x = outPt.h - rect.left;
-						pt.y = outPt.v - rect.top;
-						OS.HIViewConvertPoint (pt, 0, handle);
-						x = (int) pt.x;
-						y = (int) pt.y;
-					} else {
-						OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-						x = outPt.h;
-						y = outPt.v;
-						OS.GetControlBounds (handle, rect);
-						x -= rect.left;
-						y -= rect.top;
-					}
-					int oldSelection = selection.y;
-					selection.y = layout.getOffset (x, y, null);
-					if (selection.y != oldSelection) {
-						int newSelection = selection.y;
-						if (oldSelection > newSelection) {
-							int temp = oldSelection;
-							oldSelection = newSelection;
-							newSelection = temp;
-						}
-						Rectangle rectangle = layout.getBounds (oldSelection, newSelection);
-						redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
-						if (!OS.HIVIEW) update ();
-					}
-				}
-				break;
-			}
-			default:
-				outResult [0] = OS.kMouseTrackingMouseUp;
-				break;
-		}
-	}
-	
 	return result;
 }
 
@@ -687,6 +576,59 @@ int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
 		index++;
 	}
 	return mnemonic;
+}
+
+boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int chord, short x, short y, int modifiers) {
+	boolean result = super.sendMouseEvent (type, button, count, detail, send, chord, x, y, modifiers);
+	switch (type) {
+		case SWT.MouseDown:
+			if (button == 1 && count == 1) {
+				int offset = layout.getOffset (x, y, null);
+				int oldSelectionX = selection.x;
+				int oldSelectionY = selection.y;
+				selection.x = offset;
+				selection.y = -1;
+				if (oldSelectionX != -1 && oldSelectionY != -1) {
+					if (oldSelectionX > oldSelectionY) {
+						int temp = oldSelectionX;
+						oldSelectionX = oldSelectionY;
+						oldSelectionY = temp;
+					}
+					Rectangle rectangle = layout.getBounds (oldSelectionX, oldSelectionY);
+					redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
+				}		
+				for (int j = 0; j < offsets.length; j++) {
+					Rectangle [] rects = getRectangles (j);
+					for (int i = 0; i < rects.length; i++) {
+						Rectangle rectangle = rects [i];
+						if (rectangle.contains (x, y)) {
+							focusIndex = j;
+							redraw ();
+							return result;
+						}
+					}
+				}
+			}
+			break;
+		case SWT.MouseMove:
+			if ((chord & 0x01) != 0) {
+				int oldSelection = selection.y;
+				selection.y = layout.getOffset (x, y, null);
+				if (selection.y != oldSelection) {
+					int newSelection = selection.y;
+					if (oldSelection > newSelection) {
+						int temp = oldSelection;
+						oldSelection = newSelection;
+						newSelection = temp;
+					}
+					Rectangle rectangle = layout.getBounds (oldSelection, newSelection);
+					redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
+				}
+			}
+			break;
+	}
+	
+	return result;
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {

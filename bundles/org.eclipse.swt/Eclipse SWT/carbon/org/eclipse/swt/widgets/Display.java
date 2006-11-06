@@ -115,7 +115,7 @@ public class Display extends Device {
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, pollingProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
 	EventTable eventTable, filterTable;
-	int queue, lastModifiers;
+	int queue, lastModifiers, lastState, lastX, lastY;
 	boolean closing;
 	
 	boolean inPaint, needsPaint;
@@ -158,11 +158,13 @@ public class Display extends Device {
 	Tray tray;
 	
 	/* Timers */
+	int pollingTimer;
 	int [] timerIds;
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
 	boolean allowTimers = true;
+	static final int POLLING_TIMEOUT = 10;
 		
 	/* Current caret */
 	Caret currentCaret;
@@ -170,8 +172,7 @@ public class Display extends Device {
 	int caretID, caretProc;
 	
 	/* Grabs */
-	Control grabControl, mouseUpControl;
-	boolean grabbing;
+	Control grabControl;
 
 	/* Hover Help */
 	int helpString;
@@ -2765,14 +2766,6 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventMouseMoved:
 			mouseMoved = true;
 	}
-	if (mouseUpControl != null && eventKind == OS.kEventMouseUp) {
-		if (!mouseUpControl.isDisposed ()) {
-			mouseUpControl.mouseProc (nextHandler, theEvent, userData);
-			mouseUpControl = null;
-			return OS.noErr;
-		}
-		mouseUpControl = null;
-	}
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, where);
@@ -2783,11 +2776,18 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			if (eventKind == OS.kEventMouseDown) {
 				clearMenuFlags ();
 				if (menuBar == null || menuBar.isEnabled ()) {
-					int [] id = new int [1];
-					int eventLoop = OS.GetCurrentEventLoop ();
-					OS.InstallEventLoopTimer (eventLoop, 10 / 1000.0, 10 / 1000.0, pollingProc, 0, id);
+					int timer = 0;
+					if (pollingTimer == 0) {
+						int [] id = new int [1];
+						int eventLoop = OS.GetCurrentEventLoop ();
+						OS.InstallEventLoopTimer (eventLoop, Display.POLLING_TIMEOUT / 1000.0, Display.POLLING_TIMEOUT / 1000.0, pollingProc, 0, id);
+						pollingTimer = timer = id [0];
+					}
 					OS.MenuSelect (where);
-					OS.RemoveEventLoopTimer (id [0]);
+					if (timer != 0) {
+						OS.RemoveEventLoopTimer (timer);
+						pollingTimer = 0;
+					}
 				}					 
 				clearMenuFlags ();
 				return OS.noErr;
@@ -2954,7 +2954,6 @@ public boolean readAndDispatch () {
 	events |= runTimers ();
 	events |= runEnterExit ();
 	events |= runPopups ();
-	events |= runGrabs ();
 	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
 	if (status == OS.noErr) {
@@ -3113,7 +3112,8 @@ void releaseDisplay () {
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;
-	grabControl = currentControl = mouseUpControl = focusControl = focusCombo = null;
+	currentControl = focusControl = focusCombo = null;
+	activeShell = null;
 	helpWidget = null;
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
@@ -3389,100 +3389,6 @@ boolean runEventLoopTimers () {
 	return result;
 }
 
-boolean runGrabs () {
-	if (grabControl == null || grabbing) return false;
-	if (!OS.StillDown ()) {
-		grabControl = null;
-		return false;
-	}
-	Rect rect = new Rect ();
-	int [] outModifiers = new int [1];
-	short [] outResult = new short [1];
-	CGPoint pt = new CGPoint ();
-	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
-	grabbing = true;
-	mouseUpControl = null;
-	try {
-		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
-			if (!OS.HIVIEW) grabControl.getShell().update (true);
-			lastModifiers = OS.GetCurrentEventKeyModifiers ();
-			int oldState = OS.GetCurrentEventButtonState ();
-			int handle = grabControl.handle;
-			int window = OS.GetControlOwner (handle);
-			int port = OS.HIVIEW ? -1 : OS.GetWindowPort (window);
-			OS.TrackMouseLocationWithOptions (port, OS.kTrackMouseLocationOptionDontConsumeMouseUp, 10 / 1000.0, outPt, outModifiers, outResult);
-			int type = 0, button = 0;
-			switch ((int) outResult [0]) {
-				case OS.kMouseTrackingTimedOut: {
-					runAsyncMessages (false);
-					break;
-				}
-				case OS.kMouseTrackingMouseDown: {
-					type = SWT.MouseDown;
-					int newState = OS.GetCurrentEventButtonState ();
-					if ((oldState & 0x1) == 0 && (newState & 0x1) != 0) button = 1;
-					if ((oldState & 0x2) == 0 && (newState & 0x2) != 0) button = 2;
-					if ((oldState & 0x4) == 0 && (newState & 0x4) != 0) button = 3;
-					break;
-				}
-				case OS.kMouseTrackingMouseUp: {
-					type = SWT.MouseUp;
-					int newState = OS.GetCurrentEventButtonState ();
-					if ((oldState & 0x1) != 0 && (newState & 0x1) == 0) button = 1;
-					if ((oldState & 0x2) != 0 && (newState & 0x2) == 0) button = 2;
-					if ((oldState & 0x4) != 0 && (newState & 0x4) == 0) button = 3;
-					break;
-				}
-//				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
-//				case OS.kMouseTrackingMouseEntered: 			type = SWT.MouseEnter; break;
-				case OS.kMouseTrackingMouseDragged: {
-					mouseMoved = true;
-					type = SWT.MouseMove;
-					dragDetect (grabControl);
-					break;
-				}
-				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
-				case OS.kMouseTrackingUserCancelled:	 break;
-				case OS.kMouseTrackingMouseMoved: {
-					mouseMoved = true;
-					type = SWT.MouseMove;
-					break;
-				}
-			}
-			boolean events = type != 0;
-			if (type != 0) {
-				int x = outPt.h;
-				int y = outPt.v;
-				if (OS.HIVIEW) {
-					OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-					pt.x = x - rect.left;
-					pt.y = y - rect.top;
-					OS.HIViewConvertPoint (pt, 0, handle);
-					x = (int) pt.x;
-					y = (int) pt.y;
-				} else {
-					OS.GetControlBounds (handle, rect);
-					x -= rect.left;
-					y -= rect.top;
-				}
-				int chord = OS.GetCurrentEventButtonState ();
-				if (grabControl != null && !grabControl.isDisposed ()) {
-					if (type == SWT.MouseUp) {
-						mouseUpControl = grabControl;
-					} else {
-						grabControl.sendMouseEvent (type, (short)button, 0, true, chord, (short)x, (short)y, outModifiers [0]);
-					}
-				}
-			}
-			if (events) runDeferredEvents ();
-		}
-	} finally {
-		grabbing = false;
-		grabControl = null;
-	}
-	return true;
-}
-
 boolean runPaint () {
 	if (!needsPaint) return false;
 	needsPaint = false;
@@ -3503,7 +3409,6 @@ boolean runPaint () {
 
 boolean runPopups () {
 	if (popups == null) return false;
-	grabControl = null;
 	boolean result = false;
 	while (popups != null) {
 		Menu menu = popups [0];

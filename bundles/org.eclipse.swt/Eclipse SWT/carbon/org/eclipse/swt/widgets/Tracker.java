@@ -791,7 +791,6 @@ public boolean open () {
 	}
 	OS.DisposeWindow (window);
 	tracking = false;
-	display.grabControl = null;
 	window = 0;
 	return !cancelled;
 }
