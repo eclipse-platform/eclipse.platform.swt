@@ -1476,13 +1476,20 @@ void setToolTipTitle (int hwndToolTip, String text, int icon) {
 	* 
 	* NOTE:  This only happens on Vista.
 	*/
+	if (hwndToolTip != toolTipHandle && hwndToolTip != balloonTipHandle) {
+		return;
+	}
 	if (hwndToolTip == toolTipHandle) {
-		if (text == toolTitle && icon == toolIcon) return;
+		if (text == toolTitle || (toolTitle != null && toolTitle.equals (text))) {
+			if (icon == toolIcon) return;
+		}
 		toolTitle = text;
 		toolIcon = icon;
 	} else {
 		if (hwndToolTip == balloonTipHandle) {
-			if (text == balloonTitle && icon == balloonIcon) return;
+			if (text == balloonTitle || (balloonTitle != null && balloonTitle.equals (text))) {
+				if (icon == toolIcon) return;
+			}
 			balloonTitle = text;
 			balloonIcon = icon;
 		}
