@@ -2147,23 +2147,8 @@ int itemNotificationProc (int browser, int id, int message) {
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	/*
-	* Feature in the Macintosh.  For some reason, when the user
-	* clicks on the data browser, focus is assigned, then lost
-	* and then reassigned causing kEvenControlSetFocusPart events.
-	* The fix is to ignore kEvenControlSetFocusPart when the user
-	* clicks and send the focus events from kEventMouseDown.
-	*/
-	Display display = this.display;
-	Control oldFocus = display.getFocusControl ();
-	display.ignoreFocus = true;
 	wasSelected = false;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
-	display.ignoreFocus = false;
-	if (oldFocus != this) {
-		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (SWT.FocusOut, false);
-		if (!isDisposed () && isEnabled ()) sendFocusEvent (SWT.FocusIn, false);
-	}
 	if (isDisposed ()) return OS.noErr;
 	if (!wasSelected) {
 		if (OS.IsDataBrowserItemSelected (handle, lastHittest)) {
