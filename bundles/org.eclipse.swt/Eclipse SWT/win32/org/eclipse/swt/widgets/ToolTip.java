@@ -499,8 +499,6 @@ public void setVisible (boolean visible) {
 			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
 		} else {
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 			OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
 			OS.KillTimer (hwndToolTip, TIMER_ID);
 		}
