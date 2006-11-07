@@ -590,6 +590,7 @@ public class OS extends Platform {
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
 	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
 	public static final int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
+	public static final int FR_PRIVATE = 0x10;
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
 	public static final int GBS_NORMAL = 1;
@@ -2951,6 +2952,7 @@ public static final short VkKeyScan (short ch) {
 public static final native int AbortDoc (int /*long*/ hdc);
 public static final native boolean ActivateActCtx (int /*long*/ hActCtx, int /*long*/ [] lpCookie);
 public static final native int /*long*/ ActivateKeyboardLayout(int /*long*/ hkl, int Flags);
+public static final native int AddFontResourceExW(char[] lpszFilename, int fl, int /*long*/ pdv);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
 public static final native boolean AlphaBlend(int /*long*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int /*long*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
 public static final native boolean AnimateWindow(int /*long*/ hwnd, int dwTime, int dwFlags);
@@ -3473,6 +3475,7 @@ public static final native int RegQueryValueExA (int /*long*/ hKey, byte[] lpVal
 public static final native int RegQueryValueExA (int /*long*/ hKey, byte[] lpValueName, int /*long*/ lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
 public static final native boolean ReleaseCapture ();
 public static final native int ReleaseDC (int /*long*/ hWnd, int /*long*/ hDC);
+public static final native boolean RemoveFontResourceExW(char[] lpszFilename, int fl, int /*long*/ pdv);
 public static final native boolean RemoveMenu (int /*long*/ hMenu, int uPosition, int uFlags);
 public static final native int /*long*/ RemovePropA (int /*long*/ hWnd, int /*long*/ lpString);
 public static final native int /*long*/ RemovePropW (int /*long*/ hWnd, int /*long*/ lpString);

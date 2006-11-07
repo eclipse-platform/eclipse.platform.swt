@@ -14,14 +14,15 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 843;
-int OS_nativeFunctionCallCount[843];
+int OS_nativeFunctionCount = 845;
+int OS_nativeFunctionCallCount[845];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
 	"AbortDoc",
 	"ActivateActCtx",
 	"ActivateKeyboardLayout",
+	"AddFontResourceExW",
 	"AdjustWindowRectEx",
 	"AlphaBlend",
 	"AnimateWindow",
@@ -623,6 +624,7 @@ char * OS_nativeFunctionNames[] = {
 	"RegisterWindowMessageW",
 	"ReleaseCapture",
 	"ReleaseDC",
+	"RemoveFontResourceExW",
 	"RemoveMenu",
 	"RemovePropA",
 	"RemovePropW",

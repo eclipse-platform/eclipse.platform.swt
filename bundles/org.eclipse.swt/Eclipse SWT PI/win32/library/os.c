@@ -95,6 +95,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(ActivateKeyboardLayout)
 }
 #endif
 
+#ifndef NO_AddFontResourceExW
+JNIEXPORT jint JNICALL OS_NATIVE(AddFontResourceExW)
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
+{
+	jchar *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AddFontResourceExW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)AddFontResourceExW(lparg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(AddFontResourceExW_LIB);
+			if (hm) fp = GetProcAddress(hm, "AddFontResourceExW");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(lparg0, arg1, arg2);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, AddFontResourceExW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AdjustWindowRectEx
 JNIEXPORT jboolean JNICALL OS_NATIVE(AdjustWindowRectEx)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jboolean arg2, jint arg3)
@@ -9764,6 +9796,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(ReleaseDC)
 	OS_NATIVE_ENTER(env, that, ReleaseDC_FUNC);
 	rc = (jint)ReleaseDC((HWND)arg0, (HDC)arg1);
 	OS_NATIVE_EXIT(env, that, ReleaseDC_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RemoveFontResourceExW
+JNIEXPORT jboolean JNICALL OS_NATIVE(RemoveFontResourceExW)
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
+{
+	jchar *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, RemoveFontResourceExW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)RemoveFontResourceExW(lparg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(RemoveFontResourceExW_LIB);
+			if (hm) fp = GetProcAddress(hm, "RemoveFontResourceExW");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(lparg0, arg1, arg2);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, RemoveFontResourceExW_FUNC);
 	return rc;
 }
 #endif
