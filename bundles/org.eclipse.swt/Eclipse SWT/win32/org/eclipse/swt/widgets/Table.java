@@ -78,6 +78,7 @@ public class Table extends Composite {
 	static final int SORT_WIDTH = 10;
 	static final int HEADER_MARGIN = 12;
 	static final int HEADER_EXTRA = 3;
+	static final int EXPLORER_EXTRA = 2;
 	static final boolean EXPLORER_THEME = true;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
@@ -3994,6 +3995,11 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		}
 		newWidth += INSET * 2;
 		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+		if (EXPLORER_THEME) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				newWidth += EXPLORER_EXTRA;
+			}
+		}
 		if (newWidth > oldWidth) {
 			/*
 			* Feature in Windows.  When LVM_SETCOLUMNWIDTH is sent,
