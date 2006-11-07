@@ -119,6 +119,8 @@ public class Shell extends Decorations {
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
 	int [] brushes;
 	boolean showWithParent;
+	String toolTitle, balloonTitle;
+	int toolIcon, balloonIcon;
 	Control lastActive;
 	SHACTIVATEINFO psai;
 	Region region;
@@ -1115,6 +1117,7 @@ void releaseWidget () {
 	}
 	lastActive = null;
 	region = null;
+	toolTitle = balloonTitle = null;
 }
 
 void removeMenu (Menu menu) {
@@ -1454,6 +1457,42 @@ void setToolTipText (NMTTDISPINFO lpnmtdi, char [] buffer) {
 	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpstrTip, buffer, byteCount);
 	lpnmtdi.lpszText = lpstrTip;
+}
+
+void setToolTipTitle (int hwndToolTip, String text, int icon) {
+	/*
+	* Bug in Windows.  For some reason, when TTM_SETTITLE
+	* is used to set the title of a tool tip, Windows leaks
+	* GDI objects.  This happens even when TTM_SETTITLE is
+	* called with TTI_NONE and NULL.  The documentation
+	* states that Windows copies the icon and that the 
+	* programmer must free the copy but does not provide
+	* API to get the icon.  For example, when TTM_SETTITLE
+	* is called with ICON_ERROR, when TTM_GETTITLE is used
+	* to query the title and the icon, the uTitleBitmap
+	* field in the TTGETTITLE struct is zero.  The fix
+	* is to remember these values, only set them when then
+	* change and leak less.
+	* 
+	* NOTE:  This only happens on Vista.
+	*/
+	if (hwndToolTip == toolTipHandle) {
+		if (text == toolTitle && icon == toolIcon) return;
+		toolTitle = text;
+		toolIcon = icon;
+	} else {
+		if (hwndToolTip == balloonTipHandle) {
+			if (text == balloonTitle && icon == balloonIcon) return;
+			balloonTitle = text;
+			balloonIcon = icon;
+		}
+	}
+	if (text != null) {
+		TCHAR pszTitle = new TCHAR (getCodePage (), text, true);
+		OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, pszTitle);
+	} else {
+		OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
+	}
 }
 
 public void setVisible (boolean visible) {

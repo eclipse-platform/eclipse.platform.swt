@@ -902,9 +902,9 @@ boolean setTabGroupFocus () {
 }
 
 String toolTipText (NMTTDISPINFO hdr) {
+	Shell shell = getShell ();
 	if ((hdr.uFlags & OS.TTF_IDISHWND) == 0) {
 		String string = null;
-		Shell shell = getShell ();
 		ToolTip toolTip = shell.findToolTip (hdr.idFrom);
 		if (toolTip != null) {
 			string = toolTip.message;
@@ -912,9 +912,9 @@ String toolTipText (NMTTDISPINFO hdr) {
 		}
 		return string;
 	}
-	Control control = display.getControl (hdr.idFrom);
-	OS.SendMessage (hdr.hwndFrom, OS.TTM_SETTITLE, 0, 0);
+	shell.setToolTipTitle (hdr.hwndFrom, null, 0);
 	OS.SendMessage (hdr.hwndFrom, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	Control control = display.getControl (hdr.idFrom);
 	return control != null ? control.toolTipText : null;
 }
 

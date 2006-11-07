@@ -257,8 +257,6 @@ void releaseWidget () {
 					if ((lpti.uFlags & OS.TTF_IDISHWND) == 0) {
 						if (lpti.uId == id) {
 							OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
-							OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
-							OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 							OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
 							OS.KillTimer (hwndToolTip, TIMER_ID);
 						}
@@ -439,15 +437,15 @@ public void setVisible (boolean visible) {
 		lpti.uId = id;
 		lpti.hwnd = hwnd;
 		int hwndToolTip = hwndToolTip ();
+		Shell shell = parent.getShell ();
 		if (text.length () != 0) {
 			int icon = OS.TTI_NONE;
 			if ((style & SWT.ICON_INFORMATION) != 0) icon = OS.TTI_INFO;
 			if ((style & SWT.ICON_WARNING) != 0) icon = OS.TTI_WARNING;
 			if ((style & SWT.ICON_ERROR) != 0) icon = OS.TTI_ERROR;
-			TCHAR pszTitle = new TCHAR (parent.getCodePage (), text, true);
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, icon, pszTitle);
+			shell.setToolTipTitle (hwndToolTip, text, icon);
 		} else {
-			OS.SendMessage (hwndToolTip, OS.TTM_SETTITLE, 0, 0);
+			shell.setToolTipTitle (hwndToolTip, null, 0);
 		}
 		int maxWidth = 0;
 		if (OS.IsWinCE || OS.WIN32_VERSION < OS.VERSION (4, 10)) {
