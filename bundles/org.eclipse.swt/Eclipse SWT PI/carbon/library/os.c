@@ -1234,6 +1234,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateFromFileSystemRepresentation)
 }
 #endif
 
+#ifndef NO_CFURLCreateStringByAddingPercentEscapes
+JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateStringByAddingPercentEscapes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateStringByAddingPercentEscapes_FUNC);
+	rc = (jint)CFURLCreateStringByAddingPercentEscapes((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFStringRef)arg2, (CFStringRef)arg3, arg4);
+	OS_NATIVE_EXIT(env, that, CFURLCreateStringByAddingPercentEscapes_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFURLCreateWithBytes
 JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateWithBytes)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jint arg4)

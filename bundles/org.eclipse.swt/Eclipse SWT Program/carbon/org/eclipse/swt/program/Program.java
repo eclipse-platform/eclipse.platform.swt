@@ -359,14 +359,18 @@ public static boolean launch (String fileName) {
 	if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
 	char[] chars = new char[fileName.length()];
 	fileName.getChars(0, chars.length, chars, 0);
-	int arg = OS.CFStringCreateWithCharacters(0, chars, chars.length);
-	if (arg != 0) {
-		int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, arg, 0);
-		if (url != 0) {
-			rc = OS.LSOpenCFURLRef(url, null);
-			OS.CFRelease(url);
+	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+	if (str != 0) {
+		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, 0, 0, OS.kCFStringEncodingUTF8);
+		if (escapedStr != 0) {
+			int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
+			if (url != 0) {
+				rc = OS.LSOpenCFURLRef(url, null);
+				OS.CFRelease(url);
+			}
+			OS.CFRelease(escapedStr);
 		}
-		OS.CFRelease(arg);
+		OS.CFRelease(str);
 	}
 	return rc == OS.noErr;
 }
@@ -401,18 +405,22 @@ public boolean execute (String fileName) {
 			if (fileName.indexOf(':') == -1) fileName = "file://" + fileName;
 			char[] chars = new char[fileName.length()];
 			fileName.getChars(0, chars.length, chars, 0);
-			int arg = OS.CFStringCreateWithCharacters(0, chars, chars.length);
-			if (arg != 0) {
-				int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
-				if (urls != 0) {
-					int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, arg, 0);
-					if (url != 0) {
-						OS.CFArrayAppendValue(urls, url);
-						rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
+			int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
+			if (str != 0) {
+				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, 0, 0, OS.kCFStringEncodingUTF8);
+				if (escapedStr != 0) {
+					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
+					if (urls != 0) {
+						int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
+						if (url != 0) {
+							OS.CFArrayAppendValue(urls, url);
+							rc = OS.LSOpenURLsWithRole(urls, OS.kLSRolesAll, 0, params, null, 0);
+						}
+						OS.CFRelease(urls);
 					}
-					OS.CFRelease(urls);
+					OS.CFRelease(escapedStr);
 				}
-				OS.CFRelease(arg);
+				OS.CFRelease(str);
 			}
 		}
 		OS.DisposePtr(fsRefPtr);
