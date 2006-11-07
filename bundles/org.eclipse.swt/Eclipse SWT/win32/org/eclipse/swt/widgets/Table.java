@@ -323,19 +323,6 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 
 static int checkStyle (int style) {
 	/*
-	* But in Windows.  For some reason, when a table
-	* has the LVS_OWNERDATA style and does not have
-	* the LVS_EX_FULLROWSELECT extended style, Windows
-	* clips the selected item and shows '...'.  The
-	* fix is to force LVS_EX_FULLROWSELECT.
-	* 
-	* NOTE:  This only happens on Vista.
-	*/
-	//TEMPORARY CODE
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		if ((style & SWT.VIRTUAL) != 0) style |= SWT.FULL_SELECTION;
-	}
-	/*
 	* Feature in Windows.  It is not possible to create
 	* a table that does not have scroll bars.  Therefore,
 	* no matter what style bits are specified, set the
