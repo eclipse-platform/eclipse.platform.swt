@@ -2302,6 +2302,22 @@ void destroyItem (TreeItem item, int hItem) {
 	if ((style & SWT.MULTI) != 0) {
 		ignoreDeselect = ignoreSelect = lockSelection = true;
 	}
+
+	/*
+	* Feature in Windows.  When an item is deleted and a tool tip
+	* is showing, Window requests the new text for the new item
+	* that is under the cursor right away.  This means that when
+	* multiple items are deleted, the tool tip flashes, showing
+	* each new item in the tool tip as it is scrolled into view.
+	* The fix is to hide tool tips when any item is deleted.
+	* 
+	* NOTE:  This only happens on Vista.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		int hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
+		if (hwndToolTip != 0) OS.SendMessage (hwndToolTip, OS.TTM_POP, 0 ,0);
+	}
+	
 	shrink = ignoreShrink = true;
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 	ignoreShrink = false;
