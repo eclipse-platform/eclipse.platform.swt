@@ -81,24 +81,26 @@ public Spinner (Composite parent, int style) {
 
 int actionProc (int theControl, int partCode) {
 	int result = super.actionProc (theControl, partCode);
-	int value = getSelectionText ();
-	int newValue = value;
-    switch (partCode) {
-	    case OS.kControlUpButtonPart:
-			newValue += increment;
-	        break;
-	    case OS.kControlDownButtonPart:
-			newValue -= increment;
-	        break;
+	if (theControl == buttonHandle) {
+		int value = getSelectionText ();
+		int newValue = value;
+	    switch (partCode) {
+		    case OS.kControlUpButtonPart:
+				newValue += increment;
+		        break;
+		    case OS.kControlDownButtonPart:
+				newValue -= increment;
+		        break;
+		}
+		int max = OS.GetControl32BitMaximum (buttonHandle);
+		int min = OS.GetControl32BitMinimum (buttonHandle);
+		if ((style & SWT.WRAP) != 0) {
+			if (newValue > max) newValue = min;
+			if (newValue < min) newValue = max;
+		}
+		newValue = Math.min (Math.max (min, newValue), max);
+		if (value != newValue) setSelection (newValue, true);
 	}
-	int max = OS.GetControl32BitMaximum (buttonHandle);
-	int min = OS.GetControl32BitMinimum (buttonHandle);
-	if ((style & SWT.WRAP) != 0) {
-		if (newValue > max) newValue = min;
-		if (newValue < min) newValue = max;
-	}
-	newValue = Math.min (Math.max (min, newValue), max);
-	if (value != newValue) setSelection (newValue, true);
 	return result;
 }
 
