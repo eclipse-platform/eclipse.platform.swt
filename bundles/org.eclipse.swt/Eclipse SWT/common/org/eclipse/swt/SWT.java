@@ -664,7 +664,7 @@ public class SWT {
 	 */
 	public static final int HIGH = 2;
 
-	/*
+	/**
 	 * Style constant for date display (value is 1&lt;&lt;1).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
@@ -672,10 +672,9 @@ public class SWT {
 	 * 
 	 * @since 3.3
 	 */
-	/* UNDER DEVELOPMENT - DO NOT USE */
 	public static final int DATE = 1 << 5;
 
-	/*
+	/**
 	 * Style constant for time display (value is 1&lt;&lt;2).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
@@ -683,10 +682,9 @@ public class SWT {
 	 * 
 	 * @since 3.3
 	 */
-	/* UNDER DEVELOPMENT - DO NOT USE */
 	public static final int TIME = 1 << 7;
 	
-	/*
+	/**
 	 * Style constant for calendar display (value is 1&lt;&lt;3).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>DateTime</code></li>
@@ -694,7 +692,6 @@ public class SWT {
 	 * 
 	 * @since 3.3
 	 */
-	/* UNDER DEVELOPMENT - DO NOT USE */
 	public static final int CALENDAR = 1 << 10;
 
 	/**
