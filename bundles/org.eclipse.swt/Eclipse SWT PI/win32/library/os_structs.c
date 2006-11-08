@@ -905,8 +905,8 @@ void cacheDROPFILESFields(JNIEnv *env, jobject lpObject)
 	DROPFILESFc.pFiles = (*env)->GetFieldID(env, DROPFILESFc.clazz, "pFiles", "I");
 	DROPFILESFc.pt_x = (*env)->GetFieldID(env, DROPFILESFc.clazz, "pt_x", "I");
 	DROPFILESFc.pt_y = (*env)->GetFieldID(env, DROPFILESFc.clazz, "pt_y", "I");
-	DROPFILESFc.fNC = (*env)->GetFieldID(env, DROPFILESFc.clazz, "fNC", "I");
-	DROPFILESFc.fWide = (*env)->GetFieldID(env, DROPFILESFc.clazz, "fWide", "I");
+	DROPFILESFc.fNC = (*env)->GetFieldID(env, DROPFILESFc.clazz, "fNC", "Z");
+	DROPFILESFc.fWide = (*env)->GetFieldID(env, DROPFILESFc.clazz, "fWide", "Z");
 	DROPFILESFc.cached = 1;
 }
 
@@ -916,8 +916,8 @@ DROPFILES *getDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct
 	lpStruct->pFiles = (*env)->GetIntField(env, lpObject, DROPFILESFc.pFiles);
 	lpStruct->pt.x = (*env)->GetIntField(env, lpObject, DROPFILESFc.pt_x);
 	lpStruct->pt.y = (*env)->GetIntField(env, lpObject, DROPFILESFc.pt_y);
-	lpStruct->fNC = (*env)->GetIntField(env, lpObject, DROPFILESFc.fNC);
-	lpStruct->fWide = (*env)->GetIntField(env, lpObject, DROPFILESFc.fWide);
+	lpStruct->fNC = (*env)->GetBooleanField(env, lpObject, DROPFILESFc.fNC);
+	lpStruct->fWide = (*env)->GetBooleanField(env, lpObject, DROPFILESFc.fWide);
 	return lpStruct;
 }
 
@@ -927,8 +927,8 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct)
 	(*env)->SetIntField(env, lpObject, DROPFILESFc.pFiles, (jint)lpStruct->pFiles);
 	(*env)->SetIntField(env, lpObject, DROPFILESFc.pt_x, (jint)lpStruct->pt.x);
 	(*env)->SetIntField(env, lpObject, DROPFILESFc.pt_y, (jint)lpStruct->pt.y);
-	(*env)->SetIntField(env, lpObject, DROPFILESFc.fNC, (jint)lpStruct->fNC);
-	(*env)->SetIntField(env, lpObject, DROPFILESFc.fWide, (jint)lpStruct->fWide);
+	(*env)->SetBooleanField(env, lpObject, DROPFILESFc.fNC, (jboolean)lpStruct->fNC);
+	(*env)->SetBooleanField(env, lpObject, DROPFILESFc.fWide, (jboolean)lpStruct->fWide);
 }
 #endif
 
@@ -2782,7 +2782,7 @@ void setNMLISTVIEWFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpStruct)
 typedef struct NMLVCUSTOMDRAW_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID clrText, clrTextBk, iSubItem, dwItemType, clrFace, iIconEffect, iIconPhase, iPartId, iStateId, left, top, right, bottom, uAlign;
+	jfieldID clrText, clrTextBk, iSubItem, dwItemType, clrFace, iIconEffect, iIconPhase, iPartId, iStateId, rcText_left, rcText_top, rcText_right, rcText_bottom, uAlign;
 } NMLVCUSTOMDRAW_FID_CACHE;
 
 NMLVCUSTOMDRAW_FID_CACHE NMLVCUSTOMDRAWFc;
@@ -2801,10 +2801,10 @@ void cacheNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject)
 	NMLVCUSTOMDRAWFc.iIconPhase = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "iIconPhase", "I");
 	NMLVCUSTOMDRAWFc.iPartId = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "iPartId", "I");
 	NMLVCUSTOMDRAWFc.iStateId = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "iStateId", "I");
-	NMLVCUSTOMDRAWFc.left = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "left", "I");
-	NMLVCUSTOMDRAWFc.top = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "top", "I");
-	NMLVCUSTOMDRAWFc.right = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "right", "I");
-	NMLVCUSTOMDRAWFc.bottom = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "bottom", "I");
+	NMLVCUSTOMDRAWFc.rcText_left = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "rcText_left", "I");
+	NMLVCUSTOMDRAWFc.rcText_top = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "rcText_top", "I");
+	NMLVCUSTOMDRAWFc.rcText_right = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "rcText_right", "I");
+	NMLVCUSTOMDRAWFc.rcText_bottom = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "rcText_bottom", "I");
 	NMLVCUSTOMDRAWFc.uAlign = (*env)->GetFieldID(env, NMLVCUSTOMDRAWFc.clazz, "uAlign", "I");
 	NMLVCUSTOMDRAWFc.cached = 1;
 }
@@ -2835,16 +2835,16 @@ NMLVCUSTOMDRAW *getNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTO
 	lpStruct->iStateId = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iStateId);
 #endif
 #ifndef _WIN32_WCE
-	lpStruct->rcText.left = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.left);
+	lpStruct->rcText.left = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_left);
 #endif
 #ifndef _WIN32_WCE
-	lpStruct->rcText.top = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.top);
+	lpStruct->rcText.top = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_top);
 #endif
 #ifndef _WIN32_WCE
-	lpStruct->rcText.right = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.right);
+	lpStruct->rcText.right = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_right);
 #endif
 #ifndef _WIN32_WCE
-	lpStruct->rcText.bottom = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.bottom);
+	lpStruct->rcText.bottom = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_bottom);
 #endif
 #ifndef _WIN32_WCE
 	lpStruct->uAlign = (*env)->GetIntField(env, lpObject, NMLVCUSTOMDRAWFc.uAlign);
@@ -2878,16 +2878,16 @@ void setNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpSt
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.iStateId, (jint)lpStruct->iStateId);
 #endif
 #ifndef _WIN32_WCE
-	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.left, (jint)lpStruct->rcText.left);
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_left, (jint)lpStruct->rcText.left);
 #endif
 #ifndef _WIN32_WCE
-	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.top, (jint)lpStruct->rcText.top);
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_top, (jint)lpStruct->rcText.top);
 #endif
 #ifndef _WIN32_WCE
-	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.right, (jint)lpStruct->rcText.right);
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_right, (jint)lpStruct->rcText.right);
 #endif
 #ifndef _WIN32_WCE
-	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.bottom, (jint)lpStruct->rcText.bottom);
+	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.rcText_bottom, (jint)lpStruct->rcText.bottom);
 #endif
 #ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMLVCUSTOMDRAWFc.uAlign, (jint)lpStruct->uAlign);
