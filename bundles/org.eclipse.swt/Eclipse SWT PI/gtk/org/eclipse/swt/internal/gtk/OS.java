@@ -4473,6 +4473,15 @@ public static final int /*long*/ gtk_entry_get_text(int /*long*/ entry) {
 		lock.unlock();
 	}
 }
+public static final native boolean _FcConfigAppFontAddFile(int /*long*/ config, byte[] file);
+public static final boolean FcConfigAppFontAddFile(int /*long*/ config, byte[] file) {
+	lock.lock();
+	try {
+		return _FcConfigAppFontAddFile(config, file);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _gtk_entry_get_visibility(int /*long*/ entry);
 public static final boolean gtk_entry_get_visibility(int /*long*/ entry) {
 	lock.lock();

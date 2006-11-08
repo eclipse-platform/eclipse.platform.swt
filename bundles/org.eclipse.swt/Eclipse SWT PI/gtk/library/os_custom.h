@@ -165,6 +165,7 @@
 #define gtk_printer_get_backend_LIB "libgtk-x11-2.0.so.0"
 #define gtk_printer_get_name_LIB "libgtk-x11-2.0.so.0"
 #define gtk_printer_is_default_LIB "libgtk-x11-2.0.so.0"
+#define FcConfigAppFontAddFile_LIB "libfontconfig.so.1"
 
 /* Field accessors */
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1

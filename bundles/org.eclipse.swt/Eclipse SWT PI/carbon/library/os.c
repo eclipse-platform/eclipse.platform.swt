@@ -87,6 +87,37 @@ fail:
 }
 #endif
 
+#ifndef NO_ATSFontActivateFromFileSpecification
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontActivateFromFileSpecification)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontActivateFromFileSpecification_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)ATSFontActivateFromFileSpecification((const FSSpec *)lparg0, (ATSFontContext)arg1, (ATSFontFormat)arg2, (void *)arg3, (ATSOptionFlags)arg4, (ATSFontContainerRef *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, ATSFontActivateFromFileSpecification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSFontDeactivate
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontDeactivate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontDeactivate_FUNC);
+	rc = (jint)ATSFontDeactivate((ATSFontContainerRef)arg0, (void *)arg1, (ATSOptionFlags)arg2);
+	OS_NATIVE_EXIT(env, that, ATSFontDeactivate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSFontGetPostScriptName
 JNIEXPORT jint JNICALL OS_NATIVE(ATSFontGetPostScriptName)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)

@@ -25,6 +25,8 @@ typedef enum {
 	AEGetNthPtr_FUNC,
 	AEInstallEventHandler_FUNC,
 	AEProcessAppleEvent_FUNC,
+	ATSFontActivateFromFileSpecification_FUNC,
+	ATSFontDeactivate_FUNC,
 	ATSFontGetPostScriptName_FUNC,
 	ATSUBatchBreakLines_FUNC,
 	ATSUCreateStyle_FUNC,

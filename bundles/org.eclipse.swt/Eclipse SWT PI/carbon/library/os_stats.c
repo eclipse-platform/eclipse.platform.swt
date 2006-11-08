@@ -14,13 +14,15 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 943;
-int OS_nativeFunctionCallCount[943];
+int OS_nativeFunctionCount = 945;
+int OS_nativeFunctionCallCount[945];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
 	"AEInstallEventHandler",
 	"AEProcessAppleEvent",
+	"ATSFontActivateFromFileSpecification",
+	"ATSFontDeactivate",
 	"ATSFontGetPostScriptName",
 	"ATSUBatchBreakLines",
 	"ATSUCreateStyle",

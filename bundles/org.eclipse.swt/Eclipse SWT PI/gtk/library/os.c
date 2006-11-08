@@ -1039,6 +1039,39 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1Call)
 }
 #endif
 
+#ifndef NO__1FcConfigAppFontAddFile
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1FcConfigAppFontAddFile)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1FcConfigAppFontAddFile_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)FcConfigAppFontAddFile(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(jint, jbyte *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(FcConfigAppFontAddFile_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "FcConfigAppFontAddFile");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1FcConfigAppFontAddFile_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GDK_1DISPLAY
 JNIEXPORT jint JNICALL OS_NATIVE(_1GDK_1DISPLAY)
 	(JNIEnv *env, jclass that)

@@ -74,6 +74,9 @@ public class OS extends Platform {
 	public static final int kAlertStdAlertCancelButton    = 2;
 	public static final int kAlertStdAlertOtherButton     = 3;
 	public static final int kAtSpecifiedOrigin = 0;
+	public static final int kATSFontContextLocal = 2;
+	public static final int kATSOptionFlagsDefault = 0;
+	public static final int kATSFontFormatUnspecified = 0;
 	public static final int kATSDeletedGlyphcode = 0xFFFF;
 	public static final int kATSLineLastNoJustification = 0x00000020;
 	public static final int kATSUAscentTag = 284;
@@ -930,6 +933,8 @@ public static final native int AECountItems(AEDesc theAEDescList, int[] theCount
 public static final native int AEGetNthPtr(AEDesc theAEDescList, int index, int desiredType, int[] theAEKeyword, int[] typeCode, int dataPtr, int maximumSize, int[] actualSize);
 public static final native int AEInstallEventHandler(int theAEEventClass, int theAEEventID, int handler, int handlerRefcon, boolean isSysHandler);  
 public static final native int AEProcessAppleEvent(EventRecord theEventRecord);
+public static final native int ATSFontActivateFromFileSpecification(byte[] iFile, int iContext, int iFormat, int iReserved, int iOptions, int[] oContainer);
+public static final native int ATSFontDeactivate(int iContainer, int iRefCon, int iOptions);
 public static final native int ATSFontGetPostScriptName(int iFont, int iOptions, int[] oName); 
 public static final native int ATSUBatchBreakLines(int iTextLayout, int iRangeStart, int iRangeLength, int iLineWidth, int[] oBreakCount);
 public static final native int ATSUCreateStyle(int[] oStyle);

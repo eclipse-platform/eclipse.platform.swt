@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1209;
-int OS_nativeFunctionCallCount[1209];
+int OS_nativeFunctionCount = 1210;
+int OS_nativeFunctionCallCount[1210];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -108,6 +108,7 @@ char * OS_nativeFunctionNames[] = {
 	"X_1EVENT_1TYPE",
 	"X_1EVENT_1WINDOW",
 	"_1Call",
+	"_1FcConfigAppFontAddFile",
 	"_1GDK_1DISPLAY",
 	"_1GDK_1PIXMAP_1XID",
 	"_1GDK_1ROOT_1PARENT",
