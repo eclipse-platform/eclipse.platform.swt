@@ -1831,6 +1831,33 @@ public static final void XSetFillStyle(int display, int gc, int fill_style) {
 		lock.unlock();
 	}
 }
+public static final native int _XSetFontPath(int display, int directories, int ndirs);
+public static final int XSetFontPath(int display, int directories, int ndirs) {
+	lock.lock();
+	try {
+		return _XSetFontPath(display, directories, ndirs);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XGetFontPath(int display, int[] ndirs);
+public static final int XGetFontPath(int display, int[] ndirs) {
+	lock.lock();
+	try {
+		return _XGetFontPath(display,  ndirs);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XFreeFontPath(int list);
+public static final int XFreeFontPath(int list) {
+	lock.lock();
+	try {
+		return _XFreeFontPath(list);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _XSetForeground(int display, int gc, int foreground);
 public static final void XSetForeground(int display, int gc, int foreground) {
 	lock.lock();

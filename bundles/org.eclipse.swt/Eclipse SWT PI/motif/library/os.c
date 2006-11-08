@@ -837,6 +837,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XFreeFontNames)
 }
 #endif
 
+#ifndef NO__1XFreeFontPath
+JNIEXPORT jint JNICALL OS_NATIVE(_1XFreeFontPath)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XFreeFontPath_FUNC);
+	rc = (jint)XFreeFontPath((char **)arg0);
+	OS_NATIVE_EXIT(env, that, _1XFreeFontPath_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XFreeGC
 JNIEXPORT void JNICALL OS_NATIVE(_1XFreeGC)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -874,6 +886,22 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XFreeStringList)
 	OS_NATIVE_ENTER(env, that, _1XFreeStringList_FUNC);
 	XFreeStringList((char **)arg0);
 	OS_NATIVE_EXIT(env, that, _1XFreeStringList_FUNC);
+}
+#endif
+
+#ifndef NO__1XGetFontPath
+JNIEXPORT jint JNICALL OS_NATIVE(_1XGetFontPath)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XGetFontPath_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)XGetFontPath((Display *)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1XGetFontPath_FUNC);
+	return rc;
 }
 #endif
 
@@ -1861,6 +1889,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XSetFillStyle)
 	OS_NATIVE_ENTER(env, that, _1XSetFillStyle_FUNC);
 	XSetFillStyle((Display *)arg0, (GC)arg1, arg2);
 	OS_NATIVE_EXIT(env, that, _1XSetFillStyle_FUNC);
+}
+#endif
+
+#ifndef NO__1XSetFontPath
+JNIEXPORT jint JNICALL OS_NATIVE(_1XSetFontPath)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XSetFontPath_FUNC);
+	rc = (jint)XSetFontPath((Display *)arg0, (char **)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, _1XSetFontPath_FUNC);
+	return rc;
 }
 #endif
 
