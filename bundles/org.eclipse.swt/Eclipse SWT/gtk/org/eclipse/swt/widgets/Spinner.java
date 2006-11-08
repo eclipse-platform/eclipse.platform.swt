@@ -369,7 +369,7 @@ public int getIncrement () {
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) adjustment.step_increment *= 10;
-	return (int) adjustment.step_increment;
+	return (int) (adjustment.step_increment + 0.5);
 }
 
 /**
@@ -389,7 +389,7 @@ public int getMaximum () {
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) adjustment.upper *= 10;
-	return (int) adjustment.upper;
+	return (int) (adjustment.upper + 0.5);
 }
 
 /**
@@ -409,7 +409,7 @@ public int getMinimum () {
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) adjustment.lower *= 10;
-	return (int) adjustment.lower;
+	return (int) (adjustment.lower + 0.5);
 }
 
 /**
@@ -430,7 +430,7 @@ public int getPageIncrement () {
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) adjustment.page_increment *= 10;
-	return (int) adjustment.page_increment;
+	return (int) (adjustment.page_increment + 0.5);
 }
 
 /**
@@ -450,7 +450,7 @@ public int getSelection () {
 	OS.memmove (adjustment, hAdjustment);
 	int digits = OS.gtk_spin_button_get_digits (handle);
 	for (int i = 0; i < digits; i++) adjustment.value *= 10;
-	return (int) adjustment.value;
+	return (int) (adjustment.value + 0.5);
 }
 
 /**
