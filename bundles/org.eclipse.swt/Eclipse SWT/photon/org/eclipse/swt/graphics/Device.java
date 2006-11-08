@@ -526,6 +526,12 @@ public boolean isDisposed () {
 	return disposed;
 }
 
+public boolean loadFont (String path) {
+	checkDevice();
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	return false;
+}
+
 void new_Object (Object object) {
 	for (int i=0; i<objects.length; i++) {
 		if (objects [i] == null) {

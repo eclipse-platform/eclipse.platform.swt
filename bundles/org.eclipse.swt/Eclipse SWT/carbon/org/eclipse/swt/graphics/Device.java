@@ -604,6 +604,31 @@ public boolean isDisposed () {
 	return disposed;
 }
 
+public boolean loadFont (String path) {
+	checkDevice();
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	boolean result = false;
+	char [] chars = new char [path.length ()];
+	path.getChars (0, chars.length, chars, 0);
+	int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+	if (str != 0) {
+		int url = OS.CFURLCreateWithFileSystemPath (OS.kCFAllocatorDefault, str, OS.kCFURLPOSIXPathStyle, false);
+		if (url != 0) {
+			byte [] fsRef = new byte [80];
+			if (OS.CFURLGetFSRef (url, fsRef)) {
+				byte [] fsSpec = new byte [70];
+				if (OS.FSGetCatalogInfo (fsRef, 0, null, null, fsSpec, null) == OS.noErr) {
+					int [] container = new int [1];
+					result = OS.ATSFontActivateFromFileSpecification (fsSpec, OS.kATSFontContextLocal, OS.kATSFontFormatUnspecified, 0, OS.kATSOptionFlagsDefault, container) == OS.noErr;
+				}
+			}
+			OS.CFRelease (url);
+		}
+		OS.CFRelease (str);
+	}
+	return result;
+}
+
 void new_Object (Object object) {
 	for (int i=0; i<objects.length; i++) {
 		if (objects [i] == null) {

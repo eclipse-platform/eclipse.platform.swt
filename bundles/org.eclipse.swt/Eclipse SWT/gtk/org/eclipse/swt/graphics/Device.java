@@ -668,6 +668,13 @@ public boolean isDisposed () {
 	return disposed;
 }
 
+public boolean loadFont (String path) {
+	checkDevice();
+	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	byte [] buffer = Converter.wcsToMbcs (null, path, true);
+	return OS.FcConfigAppFontAddFile (0, buffer);
+}
+
 int /*long*/ logProc (int /*long*/ log_domain, int /*long*/ log_level, int /*long*/ message, int /*long*/ user_data) {
 	if (warningLevel == 0) {
 		if (DEBUG || debug) {
