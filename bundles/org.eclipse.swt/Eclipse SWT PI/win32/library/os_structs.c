@@ -905,8 +905,8 @@ void cacheDROPFILESFields(JNIEnv *env, jobject lpObject)
 	DROPFILESFc.pFiles = (*env)->GetFieldID(env, DROPFILESFc.clazz, "pFiles", "I");
 	DROPFILESFc.pt_x = (*env)->GetFieldID(env, DROPFILESFc.clazz, "pt_x", "I");
 	DROPFILESFc.pt_y = (*env)->GetFieldID(env, DROPFILESFc.clazz, "pt_y", "I");
-	DROPFILESFc.fNC = (*env)->GetFieldID(env, DROPFILESFc.clazz, "fNC", "Z");
-	DROPFILESFc.fWide = (*env)->GetFieldID(env, DROPFILESFc.clazz, "fWide", "Z");
+	DROPFILESFc.fNC = (*env)->GetFieldID(env, DROPFILESFc.clazz, "fNC", "I");
+	DROPFILESFc.fWide = (*env)->GetFieldID(env, DROPFILESFc.clazz, "fWide", "I");
 	DROPFILESFc.cached = 1;
 }
 
@@ -916,8 +916,8 @@ DROPFILES *getDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct
 	lpStruct->pFiles = (*env)->GetIntField(env, lpObject, DROPFILESFc.pFiles);
 	lpStruct->pt.x = (*env)->GetIntField(env, lpObject, DROPFILESFc.pt_x);
 	lpStruct->pt.y = (*env)->GetIntField(env, lpObject, DROPFILESFc.pt_y);
-	lpStruct->fNC = (*env)->GetBooleanField(env, lpObject, DROPFILESFc.fNC);
-	lpStruct->fWide = (*env)->GetBooleanField(env, lpObject, DROPFILESFc.fWide);
+	lpStruct->fNC = (*env)->GetIntField(env, lpObject, DROPFILESFc.fNC);
+	lpStruct->fWide = (*env)->GetIntField(env, lpObject, DROPFILESFc.fWide);
 	return lpStruct;
 }
 
@@ -927,8 +927,8 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct)
 	(*env)->SetIntField(env, lpObject, DROPFILESFc.pFiles, (jint)lpStruct->pFiles);
 	(*env)->SetIntField(env, lpObject, DROPFILESFc.pt_x, (jint)lpStruct->pt.x);
 	(*env)->SetIntField(env, lpObject, DROPFILESFc.pt_y, (jint)lpStruct->pt.y);
-	(*env)->SetBooleanField(env, lpObject, DROPFILESFc.fNC, (jboolean)lpStruct->fNC);
-	(*env)->SetBooleanField(env, lpObject, DROPFILESFc.fWide, (jboolean)lpStruct->fWide);
+	(*env)->SetIntField(env, lpObject, DROPFILESFc.fNC, (jint)lpStruct->fNC);
+	(*env)->SetIntField(env, lpObject, DROPFILESFc.fWide, (jint)lpStruct->fWide);
 }
 #endif
 
