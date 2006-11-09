@@ -130,6 +130,7 @@
 #define NO_AbortDoc
 #define NO_ActivateActCtx
 #define NO_ActivateKeyboardLayout
+#define NO_AddFontResourceExW
 #define NO_Arc
 #define NO_AttachThreadInput
 #define NO_AlphaBlend
@@ -350,6 +351,7 @@
 #define NO_RegisterClassA
 #define NO_RegisterClipboardFormatA
 #define NO_RegisterWindowMessageA
+#define NO_RemoveFontResourceExW
 #define NO_RemovePropA
 #define NO_RemovePropW
 #define NO_SetLayout
