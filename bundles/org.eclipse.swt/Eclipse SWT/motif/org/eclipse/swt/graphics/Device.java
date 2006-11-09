@@ -752,7 +752,7 @@ public boolean loadFont (String path) {
 		OS.memmove (buffer, ptr [0], length);
 		if (Converter.mbcsToWcs (null, buffer).equals (path)) {
 			OS.XFreeFontPath (dirs);
-			return true;;
+			return true;
 		}
 	}
 	int newDirs = OS.XtMalloc ((ndirs [0] + 1) * 4);
