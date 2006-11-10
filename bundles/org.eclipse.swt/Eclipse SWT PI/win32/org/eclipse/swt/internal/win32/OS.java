@@ -822,9 +822,18 @@ public class OS extends Platform {
 	public static final int LM_GETITEM = 0x703;
 	public static final int LCID_SUPPORTED = 0x2;
 	public static final int LOCALE_IDEFAULTANSICODEPAGE = 0x1004;
+	public static final int LOCALE_IDATE  = 0x00000021;
+	public static final int LOCALE_ITIME = 0x00000023;
+	public static final int LOCALE_RETURN_NUMBER = 0x20000000; // #if(WINVER >= 0x0400)
+	public static final int LOCALE_S1159 = 0x00000028;	
+	public static final int LOCALE_S2359 = 0x00000029;	
 	public static final int LOCALE_SDECIMAL = 14;	
 	public static final int LOCALE_SISO3166CTRYNAME = 0x5a;
 	public static final int LOCALE_SISO639LANGNAME = 0x59;
+	public static final int LOCALE_SLONGDATE = 0x00000020;
+	public static final int LOCALE_SSHORTDATE = 0x0000001F;
+	public static final int LOCALE_STIMEFORMAT = 0x00001003;
+	public static final int LOCALE_SYEARMONTH = 0x00001006;  // #if(WINVER >= 0x0500)
 	public static final int LOCALE_USER_DEFAULT = 1024;
 	public static final int LOGPIXELSX = 0x58;
 	public static final int LOGPIXELSY = 0x5a;
