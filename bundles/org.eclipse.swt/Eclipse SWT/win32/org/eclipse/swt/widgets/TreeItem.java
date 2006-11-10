@@ -1169,9 +1169,9 @@ public void setExpanded (boolean expanded) {
 	*/
 	RECT oldRect = null;
 	RECT [] rects = null;
-	boolean redraw = false, noScroll = true;
 	SCROLLINFO oldInfo = null;
 	int count = 0, hBottomItem = 0;
+	boolean redraw = false, noScroll = true;
 	int hTopItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	if (noScroll && hTopItem != 0) {
 		oldInfo = new SCROLLINFO ();
@@ -1297,6 +1297,13 @@ public void setExpanded (boolean expanded) {
 				info.fMask = OS.SIF_ALL;
 				if (OS.GetScrollInfo (hwnd, OS.SB_VERT, info)) {
 					OS.SetScrollInfo (hwnd, OS.SB_VERT, info, true);
+				}
+				if (handle == hBottomItem) {
+					RECT rect = new RECT ();
+					rect.left = hBottomItem;
+					if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+						OS.InvalidateRect (hwnd, rect, true);
+					}
 				}
 			} else {
 				if (OS.IsWinCE) {
