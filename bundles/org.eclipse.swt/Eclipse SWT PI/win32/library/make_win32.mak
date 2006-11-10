@@ -52,7 +52,7 @@ WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 
 # note: thoroughly test all examples after changing any optimization flags
 SWT_WINDOWS_SDK = -DWINVER=0x0500 -D_WIN32_WINDOWS=0x0400 -D_WIN32_WINNT=0x501 -D_WIN32_IE=0x0500
-CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_WINDOWS_SDK) -DVC_EXTRALEAN -nologo -MT -D_X86_=1 -DWIN32 -D_WIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I.
+CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DUSE_ASSEMBLER $(SWT_WINDOWS_SDK) -DVC_EXTRALEAN -nologo -MT -D_X86_=1 -DWIN32 -D_WIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I.
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
