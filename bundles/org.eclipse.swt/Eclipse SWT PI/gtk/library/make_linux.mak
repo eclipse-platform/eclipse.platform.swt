@@ -117,7 +117,7 @@ $(SWT_LIB): $(SWT_OBJECTS)
 	$(CC) $(LIBS) -o $(SWT_LIB) $(SWT_OBJECTS)
 
 callback.o: callback.c callback.h
-	$(CC) $(CFLAGS) -c callback.c
+	$(CC) $(CFLAGS) -DUSE_ASSEMBLER -c callback.c
 
 $(SWTPI_LIB): $(SWTPI_OBJECTS)
 	$(CC) $(LIBS) $(GTKLIBS) -o $(SWTPI_LIB) $(SWTPI_OBJECTS)
