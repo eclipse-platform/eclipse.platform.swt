@@ -1058,6 +1058,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CFRelease)
 }
 #endif
 
+#ifndef NO_CFRetain
+JNIEXPORT void JNICALL OS_NATIVE(CFRetain)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRetain_FUNC);
+	CFRetain((CFTypeRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRetain_FUNC);
+}
+#endif
+
 #ifndef NO_CFStringCreateWithBytes
 JNIEXPORT jint JNICALL OS_NATIVE(CFStringCreateWithBytes)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jboolean arg4)

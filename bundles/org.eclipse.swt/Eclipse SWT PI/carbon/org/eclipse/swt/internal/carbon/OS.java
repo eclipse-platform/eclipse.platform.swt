@@ -982,6 +982,7 @@ public static final native int AutoSizeDataBrowserListViewColumns(int cHandle);
 public static final native void BeginUpdate(int wHandle);
 public static final native void BringToFront(int wHandle);
 public static final native void CFRelease(int sHandle);
+public static final native void CFRetain(int sHandle);
 public static final native void CFArrayAppendValue(int theArray, int value);
 public static final native int CFArrayCreateMutable(int allocator, int capacity, int callBacks);
 public static final native int CFArrayGetCount(int theArray);

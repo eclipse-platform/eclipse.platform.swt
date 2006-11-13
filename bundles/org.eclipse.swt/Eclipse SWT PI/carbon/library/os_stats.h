@@ -89,6 +89,7 @@ typedef enum {
 	CFNumberFormatterCopyProperty_FUNC,
 	CFNumberFormatterCreate_FUNC,
 	CFRelease_FUNC,
+	CFRetain_FUNC,
 	CFStringCreateWithBytes_FUNC,
 	CFStringCreateWithCharacters__III_FUNC,
 	CFStringCreateWithCharacters__I_3CI_FUNC,

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 945;
-int OS_nativeFunctionCallCount[945];
+int OS_nativeFunctionCount = 946;
+int OS_nativeFunctionCallCount[946];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -85,6 +85,7 @@ char * OS_nativeFunctionNames[] = {
 	"CFNumberFormatterCopyProperty",
 	"CFNumberFormatterCreate",
 	"CFRelease",
+	"CFRetain",
 	"CFStringCreateWithBytes",
 	"CFStringCreateWithCharacters__III",
 	"CFStringCreateWithCharacters__I_3CI",
