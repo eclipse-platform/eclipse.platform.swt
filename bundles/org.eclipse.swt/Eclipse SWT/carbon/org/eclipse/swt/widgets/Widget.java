@@ -1069,7 +1069,11 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 		OS.InstallEventLoopTimer (eventLoop, Display.POLLING_TIMEOUT / 1000.0, Display.POLLING_TIMEOUT / 1000.0, display.pollingProc, 0, id);
 		display.pollingTimer = timer = id [0];
 	}
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	OS.CFRetain (theControl[0]);
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	OS.CFRelease (theControl[0]);
 	if (timer != 0) {
 		OS.RemoveEventLoopTimer (timer);
 		display.pollingTimer = 0;
