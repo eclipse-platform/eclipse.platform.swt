@@ -4014,6 +4014,11 @@ public void setHeaderVisible (boolean show) {
 public void setRedraw (boolean redraw) {
 	checkWidget ();
 	/*
+	* Feature in Windows.  When WM_SETREDRAW is used to
+	* turn off redraw, the scroll bars are updated when
+	* items are added and removed.  The fix is to call
+	* the default window proc to stop all drawing.
+	* 
 	* Bug in Windows.  For some reason, when WM_SETREDRAW
 	* is used to turn redraw on for a tree and the tree
 	* contains no items, the last item in the tree does
@@ -4026,26 +4031,21 @@ public void setRedraw (boolean redraw) {
 	* the tree.
 	*/
 	int hItem = 0;
-	if (redraw && drawCount == 1) {
-		int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
-		if (count == 0) {
-			TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
-			tvInsert.hInsertAfter = OS.TVI_FIRST;
-			hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
+	if (redraw) {
+		if (drawCount == 1) {
+			int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
+			if (count == 0) {
+				TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
+				tvInsert.hInsertAfter = OS.TVI_FIRST;
+				hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
+			}
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		}
 	}
 	super.setRedraw (redraw);
-	/*
-	* Feature in Windows.  When WM_SETREDRAW is used to
-	* turn off redraw, the scroll bars are updated when
-	* items are added and removed.  The fix is to call
-	* the default window proc to stop all drawing.
-	*/
-//	if (redraw) {
-//		if (drawCount == 0) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-//	} else {
-//		if (drawCount == 1) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-//	}
+	if (!redraw) {
+		if (drawCount == 1) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+	}
 	if (hItem != 0) {
 		ignoreShrink = true;
 		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
