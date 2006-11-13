@@ -144,6 +144,7 @@ static int checkStyle (int style) {
 
 int actionProc (int theControl, int partCode) {
 	int result = super.actionProc (theControl, partCode);
+	if (result == OS.noErr) return result;
 	Event event = new Event ();
 	int inc = 0;
 	switch (partCode) {

@@ -129,7 +129,7 @@ public Widget (Widget parent, int style) {
 }
 
 int actionProc (int theControl, int partCode) {
-	return OS.noErr;
+	return OS.eventNotHandledErr;
 }
 
 /**

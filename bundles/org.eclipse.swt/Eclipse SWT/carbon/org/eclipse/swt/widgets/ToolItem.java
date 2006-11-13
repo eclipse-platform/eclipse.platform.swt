@@ -142,7 +142,9 @@ public ToolItem (ToolBar parent, int style, int index) {
 
 int actionProc (int theControl, int partCode) {
 	int result = parent.actionProc (theControl, partCode);
+	if (result == OS.noErr) return result;
 	if (OS.HIVIEW) {
+		if (isDisposed ()) return OS.noErr;
 		this.partCode = partCode;
 		if (text.length () > 0 && theControl == labelHandle) {
 			if (image != null && iconHandle != 0) {
@@ -768,6 +770,7 @@ int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	int result = parent.kEventControlTrack (nextHandler, theEvent, userData);
 	if (OS.HIVIEW) {
+		if (isDisposed ()) return OS.noErr;
 		partCode = 0;
 		if (text.length () > 0 && labelHandle != 0) {
 			redrawWidget (labelHandle, false);

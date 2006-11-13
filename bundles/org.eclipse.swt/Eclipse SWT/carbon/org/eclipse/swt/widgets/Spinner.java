@@ -81,6 +81,7 @@ public Spinner (Composite parent, int style) {
 
 int actionProc (int theControl, int partCode) {
 	int result = super.actionProc (theControl, partCode);
+	if (result == OS.noErr) return result;
 	if (theControl == buttonHandle) {
 		int value = getSelectionText ();
 		int newValue = value;

@@ -108,14 +108,17 @@ public Control (Composite parent, int style) {
 }
 
 int actionProc (int theControl, int partCode) {
+	int result = super.actionProc (theControl, partCode);
+	if (result == OS.noErr) return result;
 	if (display.pollingTimer != 0) {
 		OS.SetEventLoopTimerNextFireTime (display.pollingTimer, Display.POLLING_TIMEOUT / 1000.0);
 	}
 	if (!OS.HIVIEW) {
 		if ((state & GRAB) != 0) getShell ().update (true);
 	}
+	if (isDisposed ()) return OS.noErr;
 	sendTrackEvents ();
-	return OS.noErr;
+	return result;
 }
 
 /**
@@ -1760,12 +1763,14 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	* action proc of the widget by diffing the mouse and modifier keys
 	* state.
 	*/
+	Display display = this.display;
 	display.runDeferredEvents ();
 	display.lastState = OS.GetCurrentEventButtonState ();
 	display.lastModifiers = OS.GetCurrentEventKeyModifiers ();
 	display.grabControl = this;
 	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
 	display.grabControl = null;
+	if (isDisposed ()) return OS.noErr;
 	sendTrackEvents ();
 	return result;
 }
