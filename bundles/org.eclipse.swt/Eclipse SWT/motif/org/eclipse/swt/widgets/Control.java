@@ -3065,7 +3065,15 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	Display display = this.display;
 	display.hideToolTip ();
 	Shell shell = getShell ();
-	if ((shell.style & SWT.ON_TOP) != 0) shell.forceActive ();
+	/*
+	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
+	* do not activate the shell when the user clicks on the
+	* the client area or on the border or a control within the
+	* shell that does not take focus.
+	*/
+	if (((shell.style & SWT.ON_TOP) != 0) && (((shell.style & SWT.NO_FOCUS) == 0) || ((style & SWT.NO_FOCUS) == 0))) {
+		shell.forceActive();
+	}
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	int clickTime = display.getDoubleClickTime ();
