@@ -134,7 +134,7 @@ void setInsertMark(TreeItem item, boolean before) {
 	insertBefore = before;
 	tree.setInsertMark(item, before);
 }
-void showDropTargetEffect(int effect, int x, int y) {
+void showDropTargetEffect(int effect, int eventType, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = (TreeItem)getItem(x, y);
 	

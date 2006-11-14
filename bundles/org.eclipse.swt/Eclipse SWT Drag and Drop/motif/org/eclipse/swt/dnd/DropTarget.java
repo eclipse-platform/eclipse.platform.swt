@@ -253,7 +253,7 @@ public DropTarget(Control control, int style) {
 				event.item = effect.getItem(dragOverEvent.x, dragOverEvent.y);
 				notifyListeners(DND.DragOver, event);
 				
-				effect.showDropTargetEffect(event.feedback, event.x, event.y);
+				effect.showDropTargetEffect(event.feedback, DND.DragOver, event.x, event.y);
 				
 				selectedDataType = null;
 				if (event.dataType != null) {
@@ -371,7 +371,7 @@ void dragProcCallback(int widget, int client_data, int call_data) {
 
 	if (callbackData.reason == OS.XmCR_DROP_SITE_LEAVE_MESSAGE) {
 		updateDragOverHover(0, null);
-		effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
+		effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
 		
 		if (callbackData.dropSiteStatus == OS.XmDROP_SITE_INVALID) {
 			return;
@@ -439,7 +439,7 @@ void dragProcCallback(int widget, int client_data, int call_data) {
 		selectedOperation = event.detail;
 	}
 	
-	effect.showDropTargetEffect(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, event.type, event.x, event.y);
 
 	callbackData.dropSiteStatus = (byte)OS.XmDROP_SITE_VALID;
 	callbackData.operation = opToOsOp(selectedOperation);
@@ -466,6 +466,7 @@ void dropProcCallback(int widget, int client_data, int call_data) {
 		return;
 	}
 	
+	effect.showDropTargetEffect(event.feedback, DND.DropAccept, event.x, event.y);
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
