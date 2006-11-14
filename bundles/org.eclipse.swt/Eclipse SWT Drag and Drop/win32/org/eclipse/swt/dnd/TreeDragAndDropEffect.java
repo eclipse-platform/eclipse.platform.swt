@@ -98,7 +98,7 @@ ImageData getDragSourceImage(int x, int y) {
 	return null;
 }
 
-void showDropTargetEffect(int effect, int x, int y) {
+void showDropTargetEffect(int effect, int eventType, int x, int y) {
 	effect = checkEffect(effect);
 	int handle = tree.handle;
 	Point coordinates = new Point(x, y);

@@ -284,7 +284,7 @@ int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffec
 		selectedOperation = event.detail;
 	}
 
-	effect.showDropTargetEffect(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, DND.DragEnter, event.x, event.y);
 	refresh();
 	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
@@ -292,7 +292,7 @@ int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffec
 }
 
 int DragLeave() {
-	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
 	refresh();
 	keyOperation = -1;
 
@@ -352,7 +352,7 @@ int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 		selectedOperation = event.detail;
 	}
 	
-	effect.showDropTargetEffect(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, event.type, event.x, event.y);
 	refresh();
 	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
@@ -360,7 +360,7 @@ int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 }
 
 int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
-	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
 	refresh();
 	
 	DNDEvent event = new DNDEvent();
@@ -377,6 +377,7 @@ int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_FALSE;
 	}
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DropAccept, 0, 0);
 	keyOperation = -1;
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];

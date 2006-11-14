@@ -16,5 +16,5 @@ import org.eclipse.swt.widgets.*;
 class NoDragAndDropEffect extends DragAndDropEffect {
 
 NoDragAndDropEffect(Control control) {}
-void showDropTargetEffect(int effect, int x, int y){}
+void showDropTargetEffect(int effect, int eventType, int x, int y){}
 }

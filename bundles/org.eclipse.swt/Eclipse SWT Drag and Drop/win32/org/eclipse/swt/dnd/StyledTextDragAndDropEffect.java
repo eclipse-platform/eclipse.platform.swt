@@ -11,14 +11,16 @@
 package org.eclipse.swt.dnd;
 
 
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 class StyledTextDragAndDropEffect extends DragAndDropEffect {
 	StyledText text;
 	long scrollBeginTime;
 	int scrollX = -1, scrollY = -1;
+	int currentOffset = -1;
 	
 	static final int SCROLL_HYSTERESIS = 100; // milli seconds
 	static final int SCROLL_TOLERANCE = 20; // pixels
@@ -26,7 +28,22 @@ class StyledTextDragAndDropEffect extends DragAndDropEffect {
 StyledTextDragAndDropEffect(StyledText control) {
 	text = control;
 }
-void showDropTargetEffect(int effect, int x, int y) {
+
+void showDropTargetEffect(int effect, int eventType, int x, int y) {
+	switch (eventType) {
+		case DND.DropAccept:
+			if (currentOffset != -1) {
+				text.setCaretOffset(currentOffset);
+				currentOffset = -1;
+			}
+			break;
+		case DND.DragLeave:
+			Caret caret = text.getCaret();
+			if (caret != null) {
+				caret.setLocation(text.getLocationAtOffset(text.getCaretOffset()));
+			}
+			break;
+	}
 	Point pt = text.getDisplay().map(null, text, x, y);
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
@@ -135,7 +152,12 @@ void showDropTargetEffect(int effect, int x, int y) {
 			}
 			text.setFocus();
 			OS.ImageList_DragShowNolock(false);
-			text.setCaretOffset(newOffset);
+			// move caret without modifying text
+			Caret caret = text.getCaret();
+			if (caret != null) {
+				currentOffset = newOffset;
+				caret.setLocation(text.getLocationAtOffset(newOffset));
+			}
 			OS.ImageList_DragShowNolock(true);
 		}
 	}
