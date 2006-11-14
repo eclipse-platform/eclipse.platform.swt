@@ -215,7 +215,7 @@ public DropTarget(Control control, int style) {
 				selectedDataType = null;
 				selectedOperation = DND.DROP_NONE;
 				notifyListeners(DND.DragOver, event);
-				effect.showDropTargetEffect(event.feedback, event.x, event.y);
+				effect.showDropTargetEffect(event.feedback, DND.DragOver, event.x, event.y);
 				if (event.dataType != null) {
 					for (int i = 0; i < allowedTypes.length; i++) {
 						if (allowedTypes[i].type == event.dataType.type) {
@@ -380,6 +380,7 @@ boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int y, int t
 	}
 	keyOperation = -1;
 	
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DropAccept, 0, 0);
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
@@ -411,7 +412,7 @@ boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int y, int t
 
 void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
 	updateDragOverHover(0, null);
-	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
 	
 	if (keyOperation == -1) return;
 	keyOperation = -1;
@@ -472,7 +473,7 @@ boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, int y, i
 	if (selectedDataType != null && (allowedOperations & event.detail) != 0) {
 		selectedOperation = event.detail;
 	}
-	effect.showDropTargetEffect(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, event.type, event.x, event.y);
 
 	switch (selectedOperation) {
 		case DND.DROP_NONE:
