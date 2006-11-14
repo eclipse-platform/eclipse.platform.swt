@@ -787,6 +787,15 @@ void dispose (boolean notifyParent) {
 void expandAncestors () {
 	if (parentItem != null) parentItem.expandAncestors ();
 	setExpanded (true);
+	Event newEvent = new Event ();
+	newEvent.item = this;
+	parent.inExpand = true;
+	parent.sendEvent (SWT.Expand, newEvent);
+	parent.inExpand = false;
+	if (isDisposed ()) return;
+	if (items.length == 0) {
+		expanded = false;
+	}
 }
 /**
  * Returns the receiver's background color.
