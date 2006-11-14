@@ -206,7 +206,7 @@ public DropTarget(Control control, int style) {
 				selectedDataType = null;
 				selectedOperation = DND.DROP_NONE;				
 				notifyListeners(DND.DragOver, event);
-				effect.showDropTargetEffect(event.feedback, event.x, event.y);
+				effect.showDropTargetEffect(event.feedback, DND.DragOver, event.x, event.y);
 				if (event.dataType != null) {
 					for (int i = 0; i < allowedTypes.length; i++) {
 						if (allowedTypes[i].type == event.dataType.type) {
@@ -329,7 +329,7 @@ protected void checkSubclass () {
 
 int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	updateDragOverHover(0, null);
-	effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
 
 	if (keyOperation == -1) return OS.dragNotAcceptedErr;
 
@@ -343,6 +343,8 @@ int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	if (!setEventData(theDrag, event)) {
 		return OS.dragNotAcceptedErr;
 	}
+	
+	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DropAccept, 0, 0);
 	keyOperation = -1;
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
@@ -420,7 +422,7 @@ int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDr
 	
 	if (message == OS.kDragTrackingLeaveWindow) {
 		updateDragOverHover(0, null);
-		effect.showDropTargetEffect(DND.FEEDBACK_NONE, 0, 0);
+		effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
 		OS.SetThemeCursor(OS.kThemeArrowCursor);
 		if (keyOperation == -1) return OS.dragNotAcceptedErr;
 		keyOperation = -1;
@@ -491,7 +493,7 @@ int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDr
 	
 	OS.SetDragDropAction(theDrag, opToOsOp(selectedOperation));
 	
-	effect.showDropTargetEffect(event.feedback, event.x, event.y);
+	effect.showDropTargetEffect(event.feedback, event.type, event.x, event.y);
 
 	switch (selectedOperation) {
 		case DND.DROP_COPY:
