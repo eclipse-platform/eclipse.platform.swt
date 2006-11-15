@@ -978,8 +978,10 @@ void updateClasses() {
 	classesLt.removeAll();
 	MetaData metaData = app.getMetaData();
 	Class[] classes = app.getClasses();
+	int indexOS = 0;
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
+		if (app.getMainClass().equals(clazz)) indexOS = i;
 		ClassData classData = metaData.getMetaData(clazz);
 		TableItem item = new TableItem(classesLt, SWT.NONE);
 		item.setData(classData);
@@ -992,6 +994,7 @@ void updateClasses() {
 		TableColumn column = columns[i];
 		column.pack();
 	}
+	classesLt.setSelection(indexOS);
 }
 
 void updateMembers() {
