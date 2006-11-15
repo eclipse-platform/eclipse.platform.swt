@@ -345,8 +345,12 @@ void createMainClassPanel(Composite panel, Listener updateListener) {
 	if (mainClasses != null) {
 		String[] list = ItemData.split(mainClasses, ",");
 		for (int i = 0; i < list.length; i += 2) {
-			mainClassCb.add(list[i].trim());
-			outputDirCb.add(list[i + 1].trim());
+			String className = list[i].trim();
+			try {
+				Class.forName(className, false, getClass().getClassLoader());
+				mainClassCb.add(className);
+				outputDirCb.add(list[i + 1].trim());
+			} catch (Exception e) {}
 		}
 	}
 }
@@ -978,10 +982,10 @@ void updateClasses() {
 	classesLt.removeAll();
 	MetaData metaData = app.getMetaData();
 	Class[] classes = app.getClasses();
-	int indexOS = 0;
+	int mainIndex = 0;
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
-		if (app.getMainClass().equals(clazz)) indexOS = i;
+		if (clazz.equals(app.getMainClass())) mainIndex = i;
 		ClassData classData = metaData.getMetaData(clazz);
 		TableItem item = new TableItem(classesLt, SWT.NONE);
 		item.setData(classData);
@@ -994,7 +998,7 @@ void updateClasses() {
 		TableColumn column = columns[i];
 		column.pack();
 	}
-	classesLt.setSelection(indexOS);
+	classesLt.setSelection(mainIndex);
 }
 
 void updateMembers() {
