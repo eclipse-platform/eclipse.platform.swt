@@ -237,11 +237,6 @@ class CoolBarTab extends Tab {
 		itemGroup.setText(ControlExample.getResourceString("Item_Styles"));
 		dropDownButton = new Button (itemGroup, SWT.CHECK);
 		dropDownButton.setText ("SWT.DROP_DOWN");
-		dropDownButton.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				recreateExampleWidgets ();
-			}
-		});
 	}
 	
 	/**

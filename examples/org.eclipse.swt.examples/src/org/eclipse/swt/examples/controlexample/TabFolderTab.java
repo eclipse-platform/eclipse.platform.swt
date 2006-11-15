@@ -85,16 +85,6 @@ class TabFolderTab extends Tab {
 		bottomButton.setText ("SWT.BOTTOM");
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
-	
-		/* Add the listeners */
-		SelectionListener selectionListener = new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent event) {
-				if (!((Button) event.widget).getSelection ()) return;
-				recreateExampleWidgets ();
-			}
-		};
-		topButton.addSelectionListener (selectionListener);
-		bottomButton.addSelectionListener (selectionListener);
 	}
 	
 	/**

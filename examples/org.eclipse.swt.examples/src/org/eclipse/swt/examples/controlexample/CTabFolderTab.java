@@ -248,21 +248,6 @@ class CTabFolderTab extends Tab {
 		flatButton.setText ("SWT.FLAT");
 		closeButton = new Button (styleGroup, SWT.CHECK);
 		closeButton.setText ("SWT.CLOSE");
-	
-		/* Add the listeners */
-		SelectionListener selectionListener = new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent event) {
-				if ((event.widget.getStyle() & SWT.RADIO) != 0) {
-					if (!((Button) event.widget).getSelection ()) return;
-				}
-				recreateExampleWidgets ();
-			}
-		};
-		topButton.addSelectionListener (selectionListener);
-		bottomButton.addSelectionListener (selectionListener);
-		borderButton.addSelectionListener (selectionListener);
-		flatButton.addSelectionListener (selectionListener);
-		closeButton.addSelectionListener (selectionListener);
 	}
 	
 	/**

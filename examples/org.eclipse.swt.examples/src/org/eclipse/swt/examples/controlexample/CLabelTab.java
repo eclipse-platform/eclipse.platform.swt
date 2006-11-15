@@ -84,19 +84,6 @@ class CLabelTab extends AlignableTab {
 		shadowInButton.setText ("SWT.SHADOW_IN");
 		shadowOutButton = new Button (styleGroup, SWT.RADIO);
 		shadowOutButton.setText ("SWT.SHADOW_OUT");
-	
-		/* Add the listeners */
-		SelectionListener selectionListener = new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent event) {
-				if ((event.widget.getStyle() & SWT.RADIO) != 0) {
-					if (!((Button) event.widget).getSelection ()) return;
-				}
-				recreateExampleWidgets ();
-			}
-		};
-		shadowInButton.addSelectionListener (selectionListener);
-		shadowOutButton.addSelectionListener (selectionListener);
-		shadowNoneButton.addSelectionListener (selectionListener);
 	}
 	
 	/**

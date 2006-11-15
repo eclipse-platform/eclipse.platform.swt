@@ -117,19 +117,6 @@ class LabelTab extends AlignableTab {
 		shadowNoneButton.setText ("SWT.SHADOW_NONE");
 		borderButton = new Button(styleGroup, SWT.CHECK);
 		borderButton.setText("SWT.BORDER");
-	
-		/* Add the listeners */
-		SelectionListener selectionListener = new SelectionAdapter () {
-			public void widgetSelected(SelectionEvent event) {
-				if ((event.widget.getStyle() & SWT.RADIO) != 0) {
-					if (!((Button) event.widget).getSelection ()) return;
-				}
-				recreateExampleWidgets ();
-			}
-		};
-		shadowInButton.addSelectionListener (selectionListener);
-		shadowOutButton.addSelectionListener (selectionListener);
-		shadowNoneButton.addSelectionListener (selectionListener);
 	}
 	
 	/**

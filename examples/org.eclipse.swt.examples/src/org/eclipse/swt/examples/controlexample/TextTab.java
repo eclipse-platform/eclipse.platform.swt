@@ -91,16 +91,6 @@ class TextTab extends ScrollableTab {
 		centerButton.setText ("SWT.CENTER");
 		rightButton = new Button (alignmentGroup, SWT.RADIO);
 		rightButton.setText ("SWT.RIGHT");
-		
-		SelectionListener selectionListener = new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				if (!((Button) event.widget).getSelection ()) return;
-				recreateExampleWidgets ();
-			}
-		};
-		leftButton.addSelectionListener (selectionListener);
-		centerButton.addSelectionListener (selectionListener);
-		rightButton.addSelectionListener (selectionListener);
 	}
 
 	/**

@@ -168,6 +168,18 @@ abstract class Tab {
 			if (children [i] instanceof Button) {
 				Button button = (Button) children [i];
 				button.addSelectionListener (selectionListener);
+			} else {
+				if (children [i] instanceof Composite) {
+					/* Look down one more level of children in the style group. */
+					Composite composite = (Composite) children [i];
+					Control [] grandchildren = composite.getChildren ();
+					for (int j=0; j<grandchildren.length; j++) {
+						if (grandchildren [j] instanceof Button) {
+							Button button = (Button) grandchildren [j];
+							button.addSelectionListener (selectionListener);
+						}
+					}
+				}
 			}
 		}
 		if (RTL_SUPPORT_ENABLE) {
