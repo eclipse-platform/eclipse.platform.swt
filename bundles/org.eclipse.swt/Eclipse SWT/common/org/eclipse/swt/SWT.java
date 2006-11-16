@@ -1422,11 +1422,11 @@ public class SWT {
 	public static final int MEDIUM = 1 << 16;
 
 	/**
-	 * Style constant for long date/time format (value is 1&lt;&lt;22).
+	 * Style constant for long date/time format (value is 1&lt;&lt;28).
 	 * <p>
 	 * A long date displays the day, month and year.
 	 * A long time displays hours, minutes, and seconds.
-	 * The day and month fields may be displayed in text.
+	 * The day and month names may be displayed.
 	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
 	 * <p><b>Used By:</b><ul>
@@ -1435,7 +1435,7 @@ public class SWT {
 	 * 
 	 * @since 3.3
 	 */
-	public static final int LONG = 1 << 22;
+	public static final int LONG = 1 << 28;
 
 	/**
 	 * Event detail field that indicates a user-interface component
