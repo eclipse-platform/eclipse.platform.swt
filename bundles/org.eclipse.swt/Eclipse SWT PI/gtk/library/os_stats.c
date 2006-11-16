@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1210;
-int OS_nativeFunctionCallCount[1210];
+int OS_nativeFunctionCount = 1212;
+int OS_nativeFunctionCallCount[1212];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -192,6 +192,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1filename_1to_1uri",
 	"_1g_1filename_1to_1utf8",
 	"_1g_1free",
+	"_1g_1idle_1add",
 	"_1g_1list_1append",
 	"_1g_1list_1data",
 	"_1g_1list_1free",
@@ -252,6 +253,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1slist_1free",
 	"_1g_1slist_1length",
 	"_1g_1slist_1next",
+	"_1g_1source_1remove",
 	"_1g_1strfreev",
 	"_1g_1thread_1init",
 	"_1g_1thread_1supported",

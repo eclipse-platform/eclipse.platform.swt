@@ -2296,6 +2296,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1free)
 }
 #endif
 
+#ifndef NO__1g_1idle_1add
+JNIEXPORT jint JNICALL OS_NATIVE(_1g_1idle_1add)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1idle_1add_FUNC);
+	rc = (jint)g_idle_add((GSourceFunc)arg0, (gpointer)arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1idle_1add_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1list_1append
 JNIEXPORT jint JNICALL OS_NATIVE(_1g_1list_1append)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -3079,6 +3091,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1g_1slist_1next)
 	OS_NATIVE_ENTER(env, that, _1g_1slist_1next_FUNC);
 	rc = (jint)g_slist_next((GSList *)arg0);
 	OS_NATIVE_EXIT(env, that, _1g_1slist_1next_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1source_1remove
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1g_1source_1remove)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1source_1remove_FUNC);
+	rc = (jboolean)g_source_remove((guint)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1source_1remove_FUNC);
 	return rc;
 }
 #endif

@@ -1565,6 +1565,15 @@ public static final void g_free(int /*long*/ mem) {
 		lock.unlock();
 	}
 }
+public static final native int _g_idle_add(int /*long*/ function, int /*long*/ data);
+public static final int g_idle_add(int /*long*/ function, int /*long*/ data) {
+	lock.lock();
+	try {
+		return _g_idle_add(function, data);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _g_list_append(int /*long*/ list, int /*long*/ data);
 public static final int /*long*/ g_list_append(int /*long*/ list, int /*long*/ data) {
 	lock.lock();
@@ -1984,6 +1993,15 @@ public static final void g_signal_stop_emission_by_name(int /*long*/ instance, b
 	lock.lock();
 	try {
 		_g_signal_stop_emission_by_name(instance, detailed_signal);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean /*long*/ _g_source_remove (int /*long*/ tag);
+public static final boolean /*long*/ g_source_remove (int /*long*/ tag) {
+	lock.lock();
+	try {
+		return _g_source_remove(tag);
 	} finally {
 		lock.unlock();
 	}
