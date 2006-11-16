@@ -68,7 +68,7 @@ void createCOMInterfaces() {
 		public int method19(int[] args) {return GetMIMEInfo(args[0]);}
 	};
 
-	progressDialog = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3, 10, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}){
+	progressDialog = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3, 10, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
@@ -92,8 +92,10 @@ void createCOMInterfaces() {
 		public int method20(int[] args) {return Open(args[0]);}
 		public int method21(int[] args) {return GetCancelDownloadOnClose(args[0]);}
 		public int method22(int[] args) {return SetCancelDownloadOnClose(args[0]);}
-		public int method23(int[] args) {return GetDialog(args[0]);}
-		public int method24(int[] args) {return SetDialog(args[0]);}
+		public int method23(int[] args) {return GetObserver(args[0]);}
+		public int method24(int[] args) {return SetObserver(args[0]);}
+		public int method25(int[] args) {return GetDialog(args[0]);}
+		public int method26(int[] args) {return SetDialog(args[0]);}
 	};
 
 	webProgressListener = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3}){
@@ -141,12 +143,12 @@ int QueryInterface(int riid, int ppvObject) {
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals(nsIDownload.NS_IDOWNLOAD_IID)) {
+	if (guid.Equals(nsIDownload_1_8.NS_IDOWNLOAD_IID)) {
 		XPCOM.memmove(ppvObject, new int[] {download.getAddress()}, 4);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals(nsIProgressDialog.NS_IPROGRESSDIALOG_IID)) {
+	if (guid.Equals(nsIProgressDialog_1_8.NS_IPROGRESSDIALOG_IID)) {
 		XPCOM.memmove(ppvObject, new int[] {progressDialog.getAddress()}, 4);
 		AddRef();
 		return XPCOM.NS_OK;
@@ -287,6 +289,10 @@ public int GetDialog(int aDialog) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
+public int GetObserver(int aObserver) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+
 public int Open(int aParent) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -296,6 +302,10 @@ public int SetCancelDownloadOnClose(int aCancelDownloadOnClose) {
 }
 
 public int SetDialog(int aDialog) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+
+public int SetObserver(int aObserver) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
