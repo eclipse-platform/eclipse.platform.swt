@@ -147,8 +147,11 @@ public int open () {
 	createButtons();
 	buffer = Converter.wcsToMbcs(null, title, true);
 	OS.gtk_window_set_title(handle,buffer);
-	int result = OS.gtk_dialog_run(handle);
-	OS.gtk_widget_destroy(handle);
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	int idleHandle = OS.g_idle_add (display.idleProc, 0);
+	int result = OS.gtk_dialog_run (handle);
+	OS.g_source_remove (idleHandle);
+	OS.gtk_widget_destroy (handle);
 	return result;
 }
 

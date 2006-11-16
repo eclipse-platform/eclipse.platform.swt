@@ -156,6 +156,8 @@ String openChooserDialog () {
 		OS.gtk_file_chooser_set_extra_widget (handle, box);
 	}
 	String answer = null;
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	int idleHandle = OS.g_idle_add (display.idleProc, 0);
 	int response = OS.gtk_dialog_run (handle);	
 	if (response == OS.GTK_RESPONSE_OK) {
 		int /*long*/ path = OS.gtk_file_chooser_get_filename (handle);
@@ -177,6 +179,7 @@ String openChooserDialog () {
 			}
 		}
 	}
+	OS.g_source_remove (idleHandle);
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }
@@ -223,6 +226,8 @@ String openClassicDialog () {
 			selection.main_vbox, labelHandle, false, false, 0, OS.GTK_PACK_START);
 		OS.gtk_widget_show (labelHandle);
 	}
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	int idleHandle = OS.g_idle_add (display.idleProc, 0);
 	int response = OS.gtk_dialog_run (handle);
 	if (response == OS.GTK_RESPONSE_OK) {
 		int /*long*/ fileNamePtr = OS.gtk_file_selection_get_filename (handle);
@@ -247,6 +252,7 @@ String openClassicDialog () {
 			OS.g_free (utf8Ptr);
 		}
 	}
+	OS.g_source_remove (idleHandle);
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }

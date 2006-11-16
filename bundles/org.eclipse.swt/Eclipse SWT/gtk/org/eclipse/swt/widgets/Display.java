@@ -185,6 +185,11 @@ public class Display extends Device {
 	int /*long*/ shellMapProc;
 	Callback shellMapCallback;
 	
+	/* Idle proc callback */
+	int /*long*/ idleProc;
+	Callback idleCallback;
+	static final String IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.idleProc";
+
 	/* GtkTreeView callbacks */
 	int[] treeSelection;
 	int treeSelectionLength;
@@ -1478,6 +1483,9 @@ public Object getData (String key) {
 	if (key.equals (DISPATCH_EVENT_KEY)) {
 		return dispatchEvents;
 	}
+	if (key.equals (IDLE_PROC_KEY)) {
+		return new LONG (idleProc);
+	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -2180,6 +2188,11 @@ Widget getWidget (int /*long*/ handle) {
 	return null;	
 }
 
+int /*long*/ idleProc (int /*long*/ data) {
+	runAsyncMessages (false);
+	return 1;
+}
+
 /**
  * Initializes any internal resources needed by the
  * device.
@@ -2367,6 +2380,10 @@ void initializeCallbacks () {
 	checkIfEventCallback = new Callback (this, "checkIfEventProc", 3);
 	checkIfEventProc = checkIfEventCallback.getAddress ();
 	if (checkIfEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+	idleCallback = new Callback (this, "idleProc", 1);
+	idleProc = idleCallback.getAddress ();
+	if (idleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 void initializeSystemSettings () {
@@ -2974,6 +2991,10 @@ void releaseDisplay () {
 	shellMapCallback.dispose (); shellMapCallback = null;
 	shellMapProc = 0;
 	
+	/* Dispose the run async messages callback */
+	idleCallback.dispose (); idleCallback = null;
+	idleProc = 0;
+
 	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;

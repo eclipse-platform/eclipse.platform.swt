@@ -248,6 +248,10 @@ public PrinterData open() {
 
 		PrinterData data = null;
 		//TODO: Handle 'Print Preview' (GTK_RESPONSE_APPLY).
+		Display display = getParent() != null ? getParent().getDisplay (): Display.getCurrent ();
+		String key = "org.eclipse.swt.internal.gtk2.idleProc";
+		LONG idleProc = (LONG) display.getData (key);
+		int idleHandle = OS.g_idle_add (idleProc.value, 0);
 		if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
 			int /*long*/ printer = OS.gtk_print_unix_dialog_get_selected_printer(handle);
 			if (printer != 0) {
@@ -328,6 +332,7 @@ public PrinterData open() {
 				OS.g_object_unref(settings);
 			}
 		}
+		OS.g_source_remove (idleHandle);
 		OS.gtk_widget_destroy (handle);
 		return data;
 	}

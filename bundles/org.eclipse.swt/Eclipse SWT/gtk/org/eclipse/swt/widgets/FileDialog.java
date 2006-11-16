@@ -321,10 +321,13 @@ String openChooserDialog () {
 		OS.g_list_free (pixbufs);
 	}
 	presetChooserDialog ();
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	int idleHandle = OS.g_idle_add (display.idleProc, 0);
 	String answer = null;
 	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
 		answer = computeResultChooserDialog ();
 	}
+	OS.g_source_remove (idleHandle);
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }
@@ -341,10 +344,13 @@ String openClassicDialog () {
 		}
 	}
 	presetClassicDialog ();
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	int idleHandle = OS.g_idle_add (display.idleProc, 0);
 	String answer = null;
 	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
 		answer = computeResultClassicDialog ();
 	}
+	OS.g_source_remove (idleHandle);
 	OS.gtk_widget_destroy (handle);
 	return answer;
 }
