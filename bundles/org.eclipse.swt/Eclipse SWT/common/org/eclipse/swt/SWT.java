@@ -665,36 +665,6 @@ public class SWT {
 	public static final int HIGH = 2;
 
 	/**
-	 * Style constant for date display (value is 1&lt;&lt;1).
-	 * <p><b>Used By:</b><ul>
-	 * <li><code>DateTime</code></li>
-	 * </ul></p>
-	 * 
-	 * @since 3.3
-	 */
-	public static final int DATE = 1 << 5;
-
-	/**
-	 * Style constant for time display (value is 1&lt;&lt;2).
-	 * <p><b>Used By:</b><ul>
-	 * <li><code>DateTime</code></li>
-	 * </ul></p>
-	 * 
-	 * @since 3.3
-	 */
-	public static final int TIME = 1 << 7;
-	
-	/**
-	 * Style constant for calendar display (value is 1&lt;&lt;3).
-	 * <p><b>Used By:</b><ul>
-	 * <li><code>DateTime</code></li>
-	 * </ul></p>
-	 * 
-	 * @since 3.3
-	 */
-	public static final int CALENDAR = 1 << 10;
-
-	/**
 	 * Style constant for menu bar behavior (value is 1&lt;&lt;1).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Menu</code></li>
@@ -1390,6 +1360,82 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int VERTICAL = 1 << 9;
+
+	/**
+	 * Style constant for date display (value is 1&lt;&lt;5).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int DATE = 1 << 5;
+
+	/**
+	 * Style constant for time display (value is 1&lt;&lt;7).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int TIME = 1 << 7;
+	
+	/**
+	 * Style constant for calendar display (value is 1&lt;&lt;10).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int CALENDAR = 1 << 10;
+
+	/**
+	 * Style constant for short date/time format (value is 1&lt;&lt;15).
+	 * <p>
+	 * A short date displays the month and year.
+	 * A short time displays hours and minutes.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int SHORT = 1 << 15;
+
+	/**
+	 * Style constant for medium date/time format (value is 1&lt;&lt;16).
+	 * <p>
+	 * A medium date displays the day, month and year.
+	 * A medium time displays hours, minutes, and seconds.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int MEDIUM = 1 << 16;
+
+	/**
+	 * Style constant for long date/time format (value is 1&lt;&lt;22).
+	 * <p>
+	 * A long date displays the day, month and year.
+	 * A long time displays hours, minutes, and seconds.
+	 * The day and month fields may be displayed in text.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>DateTime</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int LONG = 1 << 22;
 
 	/**
 	 * Event detail field that indicates a user-interface component
