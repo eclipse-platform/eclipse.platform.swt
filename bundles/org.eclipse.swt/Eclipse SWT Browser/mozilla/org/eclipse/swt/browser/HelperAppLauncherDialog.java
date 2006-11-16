@@ -96,7 +96,7 @@ int Release() {
 
 /* nsIHelperAppLauncherDialog */
 
-public int /*long*/ Show(int /*long*/ aLauncher, int /*long*/ aContext, int /*long*/ aForced) {
+public int /*long*/ Show(int /*long*/ aLauncher, int /*long*/ aContext, int /*long*/ aReason) {
 	/*
 	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8.  Query the received
 	 * nsIHelperAppLauncher for the new interface, and if it is not found then fall back to

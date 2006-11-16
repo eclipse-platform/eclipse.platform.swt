@@ -83,7 +83,7 @@ void createCOMInterfaces() {
 		public int /*long*/ method19(int /*long*/[] args) {return GetMIMEInfo(args[0]);}
 	};
 
-	progressDialog = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3, is32 ? 10 : 6, is32 ? 8 : 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}){
+	progressDialog = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3, is32 ? 10 : 6, is32 ? 8 : 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}){
 		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 		public int /*long*/ method2(int /*long*/[] args) {return Release();}
@@ -119,8 +119,10 @@ void createCOMInterfaces() {
 		public int /*long*/ method20(int /*long*/[] args) {return Open(args[0]);}
 		public int /*long*/ method21(int /*long*/[] args) {return GetCancelDownloadOnClose(args[0]);}
 		public int /*long*/ method22(int /*long*/[] args) {return SetCancelDownloadOnClose(args[0]);}
-		public int /*long*/ method23(int /*long*/[] args) {return GetDialog(args[0]);}
-		public int /*long*/ method24(int /*long*/[] args) {return SetDialog(args[0]);}
+		public int /*long*/ method23(int /*long*/[] args) {return GetObserver(args[0]);}
+		public int /*long*/ method24(int /*long*/[] args) {return SetObserver(args[0]);}
+		public int /*long*/ method25(int /*long*/[] args) {return GetDialog(args[0]);}
+		public int /*long*/ method26(int /*long*/[] args) {return SetDialog(args[0]);}
 	};
 
 	webProgressListener = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3}){
@@ -168,12 +170,12 @@ int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals(nsIDownload.NS_IDOWNLOAD_IID)) {
+	if (guid.Equals(nsIDownload_1_8.NS_IDOWNLOAD_IID)) {
 		XPCOM.memmove(ppvObject, new int /*long*/[] {download.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals(nsIProgressDialog.NS_IPROGRESSDIALOG_IID)) {
+	if (guid.Equals(nsIProgressDialog_1_8.NS_IPROGRESSDIALOG_IID)) {
 		XPCOM.memmove(ppvObject, new int /*long*/[] {progressDialog.getAddress()}, OS.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
@@ -319,6 +321,10 @@ public int /*long*/ GetDialog(int /*long*/ aDialog) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
+public int /*long*/ GetObserver(int /*long*/ aObserver) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+
 public int /*long*/ Open(int /*long*/ aParent) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -328,6 +334,10 @@ public int /*long*/ SetCancelDownloadOnClose(int /*long*/ aCancelDownloadOnClose
 }
 
 public int /*long*/ SetDialog(int /*long*/ aDialog) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+
+public int /*long*/ SetObserver(int /*long*/ aObserver) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 

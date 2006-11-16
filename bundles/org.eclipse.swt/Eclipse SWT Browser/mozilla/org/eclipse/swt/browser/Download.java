@@ -24,7 +24,7 @@ class Download {
 	XPCOMObject webProgressListener;
 	nsIHelperAppLauncher helperAppLauncher;
 	int refCount = 0;
-	
+
 	Shell shell;
 	Label status;
 	Button cancel;
