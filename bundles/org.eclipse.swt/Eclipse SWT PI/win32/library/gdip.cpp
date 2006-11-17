@@ -1638,6 +1638,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetBrush)
 }
 #endif
 
+#ifndef NO_Pen_1SetDashOffset
+JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashOffset)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Pen_1SetDashOffset_FUNC);
+	rc = (jint)((Pen *)arg0)->SetDashOffset(arg1);
+	Gdip_NATIVE_EXIT(env, that, Pen_1SetDashOffset_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Pen_1SetDashPattern
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashPattern)
 	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2)
@@ -1686,6 +1698,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetLineJoin)
 	Gdip_NATIVE_ENTER(env, that, Pen_1SetLineJoin_FUNC);
 	rc = (jint)((Pen *)arg0)->SetLineJoin((LineJoin)arg1);
 	Gdip_NATIVE_EXIT(env, that, Pen_1SetLineJoin_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Pen_1SetMiterLimit
+JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetMiterLimit)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Pen_1SetMiterLimit_FUNC);
+	rc = (jint)((Pen *)arg0)->SetMiterLimit(arg1);
+	Gdip_NATIVE_EXIT(env, that, Pen_1SetMiterLimit_FUNC);
 	return rc;
 }
 #endif

@@ -273,10 +273,12 @@ public static final native int /*long*/ Pen_new(int /*long*/ brush, float width)
 public static final native void Pen_delete(int /*long*/ pen);
 public static final native int /*long*/ Pen_GetBrush(int /*long*/ pen);
 public static final native int Pen_SetBrush(int /*long*/ pen, int /*long*/ brush);
+public static final native int Pen_SetDashOffset(int /*long*/ pen, float dashOffset);
 public static final native int Pen_SetDashPattern(int /*long*/ pen, float[] dashArray, int count);
 public static final native int Pen_SetDashStyle(int /*long*/ pen, int dashStyle);
 public static final native int Pen_SetLineCap(int /*long*/ pen, int startCap, int endCap, int dashCap);
 public static final native int Pen_SetLineJoin(int /*long*/ pen, int lineJoin);
+public static final native int Pen_SetMiterLimit(int /*long*/ pen, float miterLimit);
 public static final native int Pen_SetWidth(int /*long*/ pen, float width);
 public static final native int /*long*/ Point_new(int x, int y);
 public static final native void Point_delete(int /*long*/ point);

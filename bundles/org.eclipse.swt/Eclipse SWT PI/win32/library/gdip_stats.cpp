@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 162;
-int Gdip_nativeFunctionCallCount[162];
+int Gdip_nativeFunctionCount = 164;
+int Gdip_nativeFunctionCallCount[164];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -152,10 +152,12 @@ char * Gdip_nativeFunctionNames[] = {
 	"PathGradientBrush_1new",
 	"Pen_1GetBrush",
 	"Pen_1SetBrush",
+	"Pen_1SetDashOffset",
 	"Pen_1SetDashPattern",
 	"Pen_1SetDashStyle",
 	"Pen_1SetLineCap",
 	"Pen_1SetLineJoin",
+	"Pen_1SetMiterLimit",
 	"Pen_1SetWidth",
 	"Pen_1delete",
 	"Pen_1new",
