@@ -2514,12 +2514,22 @@ int /*long*/ SetTitle(int /*long*/ aTitle) {
 	TitleEvent event = new TitleEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
+	/*
+	* To be consistent with other platforms the title event should
+	* contain the page's url if the page does not contain a <title>
+	* tag. 
+	*/
 	int length = XPCOM.strlen_PRUnichar(aTitle);
-	char[] dest = new char[length];
-	XPCOM.memmove(dest, aTitle, length * 2);
-	event.title = new String(dest);
-	for (int i = 0; i < titleListeners.length; i++)
+	if (length > 0) {
+		char[] dest = new char[length];
+		XPCOM.memmove(dest, aTitle, length * 2);
+		event.title = new String(dest);
+	} else {
+		event.title = getUrl();
+	}
+	for (int i = 0; i < titleListeners.length; i++) {
 		titleListeners[i].changed(event);
+	}
 	return XPCOM.NS_OK;     	
 }
 
