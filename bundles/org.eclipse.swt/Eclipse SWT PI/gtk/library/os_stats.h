@@ -1088,6 +1088,8 @@ typedef enum {
 	_1pango_1attr_1strikethrough_1new_FUNC,
 	_1pango_1attr_1underline_1new_FUNC,
 	_1pango_1attr_1weight_1new_FUNC,
+	_1pango_1cairo_1context_1get_1font_1options_FUNC,
+	_1pango_1cairo_1context_1set_1font_1options_FUNC,
 	_1pango_1cairo_1create_1layout_FUNC,
 	_1pango_1cairo_1font_1map_1create_1context_FUNC,
 	_1pango_1cairo_1font_1map_1get_1default_FUNC,

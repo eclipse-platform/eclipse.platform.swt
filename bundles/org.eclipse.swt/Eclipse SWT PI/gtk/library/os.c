@@ -15292,6 +15292,61 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1weight_1new)
 }
 #endif
 
+#ifndef NO__1pango_1cairo_1context_1get_1font_1options
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1context_1get_1font_1options)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1context_1get_1font_1options_FUNC);
+/*
+	rc = (jint)pango_cairo_context_get_font_options((PangoContext *)arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(PangoContext *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_cairo_context_get_font_options_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_cairo_context_get_font_options");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((PangoContext *)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1context_1get_1font_1options_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1cairo_1context_1set_1font_1options
+JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1context_1set_1font_1options)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1context_1set_1font_1options_FUNC);
+/*
+	pango_cairo_context_set_font_options((PangoContext *)arg0, (const cairo_font_options_t *)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(PangoContext *, const cairo_font_options_t *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_cairo_context_set_font_options_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_cairo_context_set_font_options");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((PangoContext *)arg0, (const cairo_font_options_t *)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1context_1set_1font_1options_FUNC);
+}
+#endif
+
 #ifndef NO__1pango_1cairo_1create_1layout
 JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -15299,12 +15354,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1create_1layout_FUNC);
 /*
-	rc = (jint)pango_cairo_create_layout(arg0);
+	rc = (jint)pango_cairo_create_layout((cairo_t *)arg0);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef jint (*FPTR)(jint);
+		typedef jint (*FPTR)(cairo_t *);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -15313,7 +15368,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (jint)(*fptr)(arg0);
+			rc = (jint)(*fptr)((cairo_t *)arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1create_1layout_FUNC);

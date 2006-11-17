@@ -9516,6 +9516,24 @@ public static final int /*long*/ pango_cairo_create_layout(int /*long*/ cairo) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _pango_cairo_context_get_font_options(int /*long*/ context);
+public static final int /*long*/ pango_cairo_context_get_font_options(int /*long*/ context) {
+	lock.lock();
+	try {
+		return _pango_cairo_context_get_font_options(context);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_cairo_context_set_font_options(int /*long*/ context, int /*long*/ options);
+public static final void pango_cairo_context_set_font_options(int /*long*/ context, int /*long*/ options) {
+	lock.lock();
+	try {
+		_pango_cairo_context_set_font_options(context, options);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _pango_cairo_font_map_set_resolution(int /*long*/ fontmap, double dpi);
 public static final void pango_cairo_font_map_set_resolution(int /*long*/ fontmap, double dpi) {
 	lock.lock();

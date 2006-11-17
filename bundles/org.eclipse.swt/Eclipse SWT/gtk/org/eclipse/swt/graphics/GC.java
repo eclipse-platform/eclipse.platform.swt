@@ -2500,10 +2500,18 @@ public int getStyle () {
 public int getTextAntialias() {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     if (data.cairo == 0) return SWT.DEFAULT;
-    int /*long*/ options = Cairo.cairo_font_options_create();
-    Cairo.cairo_get_font_options(data.cairo, options);
-    int antialias = Cairo.cairo_font_options_get_antialias(options);
-    Cairo.cairo_font_options_destroy(options);
+    int antialias = Cairo.CAIRO_ANTIALIAS_DEFAULT;
+    if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+    	int /*long*/ options = Cairo.cairo_font_options_create();
+    	Cairo.cairo_get_font_options(data.cairo, options);
+    	antialias = Cairo.cairo_font_options_get_antialias(options);
+    	Cairo.cairo_font_options_destroy(options);
+    } else {
+    	if (data.context != 0) {
+    		int /*long*/ options = OS.pango_cairo_context_get_font_options(data.context);
+    		if (options != 0) antialias = Cairo.cairo_font_options_get_antialias(options);
+    	}
+    }
 	switch (antialias) {
 		case Cairo.CAIRO_ANTIALIAS_DEFAULT: return SWT.DEFAULT;
 		case Cairo.CAIRO_ANTIALIAS_NONE: return SWT.OFF;
@@ -3421,7 +3429,12 @@ public void setTextAntialias(int antialias) {
     initCairo();
     int /*long*/ options = Cairo.cairo_font_options_create();
     Cairo.cairo_font_options_set_antialias(options, mode);
-    Cairo.cairo_set_font_options(data.cairo, options);
+    if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
+    	Cairo.cairo_set_font_options(data.cairo, options);
+    } else {
+    	if (data.context == 0) createLayout();
+    	OS.pango_cairo_context_set_font_options(data.context, options);
+    }
     Cairo.cairo_font_options_destroy(options);
 }
 

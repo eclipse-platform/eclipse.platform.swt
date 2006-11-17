@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1212;
-int OS_nativeFunctionCallCount[1212];
+int OS_nativeFunctionCount = 1214;
+int OS_nativeFunctionCallCount[1214];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -1084,6 +1084,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1attr_1strikethrough_1new",
 	"_1pango_1attr_1underline_1new",
 	"_1pango_1attr_1weight_1new",
+	"_1pango_1cairo_1context_1get_1font_1options",
+	"_1pango_1cairo_1context_1set_1font_1options",
 	"_1pango_1cairo_1create_1layout",
 	"_1pango_1cairo_1font_1map_1create_1context",
 	"_1pango_1cairo_1font_1map_1get_1default",
