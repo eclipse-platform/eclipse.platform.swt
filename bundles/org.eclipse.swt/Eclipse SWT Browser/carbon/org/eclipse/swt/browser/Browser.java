@@ -1320,9 +1320,44 @@ void didFailProvisionalLoadWithError(int error, int frame) {
 void didFinishLoadForFrame(int frame) {
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
-		final Display display= getDisplay();
+		final Display display = getDisplay();
+		/*
+		* To be consistent with other platforms a title event should be fired when a
+		* page has completed loading.  A page with a <title> tag will do this
+		* automatically when the didReceiveTitle callback is received.  However a page
+		* without a <title> tag will not do this by default, so fire the event
+		* here with the page's url as the title.
+		*/
+		int dataSource = Cocoa.objc_msgSend(frame, Cocoa.S_dataSource);
+		if (dataSource != 0) {
+			int title = Cocoa.objc_msgSend(dataSource, Cocoa.S_pageTitle);
+			if (title == 0) {	/* page has no title */
+				final TitleEvent newEvent = new TitleEvent(this);
+				newEvent.display = display;
+				newEvent.widget = this;
+				newEvent.title = url;
+				for (int i = 0; i < titleListeners.length; i++) {
+					final TitleListener listener = titleListeners[i];
+					/*
+					* Note on WebKit.  Running the event loop from a Browser
+					* delegate callback breaks the WebKit (stop loading or
+					* crash).  The workaround is to invoke Display.asyncExec()
+					* so that the Browser does not crash if this is attempted.
+					*/
+					display.asyncExec(
+						new Runnable() {
+							public void run() {
+								if (!display.isDisposed() && !isDisposed()) {
+									listener.changed(newEvent);
+								}
+							}
+						}
+					);
+				}
+			}
+		}
 		final ProgressEvent progress = new ProgressEvent(this);
-		progress.display = getDisplay();
+		progress.display = display;
 		progress.widget = this;
 		progress.current = MAX_PROGRESS;
 		progress.total = MAX_PROGRESS;
@@ -1331,17 +1366,18 @@ void didFinishLoadForFrame(int frame) {
 			/*
 			* Note on WebKit.  Running the event loop from a Browser
 			* delegate callback breaks the WebKit (stop loading or
-			* crash).  The widget ProgressBar currently touches the
+			* crash).  The ProgressBar widget currently touches the
 			* event loop every time the method setSelection is called.  
-			* The workaround is to invoke Display.asyncexec so that
+			* The workaround is to invoke Display.asyncExec() so that
 			* the Browser does not crash when the user updates the 
 			* selection of the ProgressBar.
 			*/
 			display.asyncExec(
 				new Runnable() {
 					public void run() {
-						if (!display.isDisposed() && !isDisposed())
+						if (!display.isDisposed() && !isDisposed()) {
 							listener.completed(progress);
+						}
 					}
 				}
 			);
@@ -1376,8 +1412,9 @@ void didReceiveTitle(int title, int frame) {
 		newEvent.display = getDisplay();
 		newEvent.widget = this;
 		newEvent.title = newTitle;
-		for (int i = 0; i < titleListeners.length; i++)
+		for (int i = 0; i < titleListeners.length; i++) {
 			titleListeners[i].changed(newEvent);
+		}
 	}
 }
 

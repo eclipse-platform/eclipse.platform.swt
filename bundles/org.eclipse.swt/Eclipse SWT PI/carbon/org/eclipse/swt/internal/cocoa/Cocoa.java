@@ -67,6 +67,7 @@ public static final int S_mainFrame = Cocoa.sel_registerName("mainFrame"); //$NO
 public static final int S_name = Cocoa.sel_registerName("name"); //$NON-NLS-1$
 public static final int S_numberWithInt = Cocoa.sel_registerName("numberWithInt:"); //$NON-NLS-1$
 public static final int S_objectAtIndex = Cocoa.sel_registerName("objectAtIndex:"); //$NON-NLS-1$
+public static final int S_pageTitle = Cocoa.sel_registerName("pageTitle"); //$NON-NLS-1$
 public static final int S_provisionalDataSource = Cocoa.sel_registerName("provisionalDataSource"); //$NON-NLS-1$
 public static final int S_release = Cocoa.sel_registerName("release"); //$NON-NLS-1$
 public static final int S_reload = Cocoa.sel_registerName("reload:"); //$NON-NLS-1$
