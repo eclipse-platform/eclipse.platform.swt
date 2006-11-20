@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.carbon.*;
 public class Pattern extends Resource {
 	int jniRef;
 	Image image;
-	Color color1, color2;
+	float[] color1, color2;
 	int alpha1, alpha2;
 	float x1, y1, x2, y2;
 	int shading;
@@ -130,8 +130,8 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	this.y1 = y1;
 	this.x2 = x2;
 	this.y2 = y2;
-	this.color1 = color1;
-	this.color2 = color2;
+	this.color1 = color1.handle;
+	this.color2 = color2.handle;
 	this.alpha1 = alpha1;
 	this.alpha2 = alpha2;
 	device.createPatternCallbacks();
@@ -157,8 +157,8 @@ int axialShadingProc (int ref, int in, int out) {
 	float[] buffer = new float[4];
 	OS.memcpy(buffer, in, 4);
 	float factor2 = buffer[0], factor1 = 1 - factor2;
-	float[] c1 = color1.handle;
-	float[] c2 = color2.handle;
+	float[] c1 = color1;
+	float[] c2 = color2;
 	float a1 = ((alpha1 & 0xFF) / (float)0xFF);
 	float a2 = ((alpha2 & 0xFF) / (float)0xFF);
 	buffer[0] = (c2[0] * factor2) + (c1[0] * factor1);
