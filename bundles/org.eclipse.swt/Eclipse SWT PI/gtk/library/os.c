@@ -15354,12 +15354,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1create_1layout_FUNC);
 /*
-	rc = (jint)pango_cairo_create_layout((cairo_t *)arg0);
+	rc = (jint)pango_cairo_create_layout(arg0);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef jint (*FPTR)(cairo_t *);
+		typedef jint (*FPTR)(jint);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -15368,7 +15368,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1cairo_1create_1layout)
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (jint)(*fptr)((cairo_t *)arg0);
+			rc = (jint)(*fptr)(arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1create_1layout_FUNC);
