@@ -15327,12 +15327,12 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1context_1set_1font_1options)
 {
 	OS_NATIVE_ENTER(env, that, _1pango_1cairo_1context_1set_1font_1options_FUNC);
 /*
-	pango_cairo_context_set_font_options((PangoContext *)arg0, (const cairo_font_options_t *)arg1);
+	pango_cairo_context_set_font_options((PangoContext *)arg0, arg1);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef void (*FPTR)(PangoContext *, const cairo_font_options_t *);
+		typedef void (*FPTR)(PangoContext *, jint);
 		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(pango_cairo_context_set_font_options_LIB, RTLD_LAZY);
@@ -15340,7 +15340,7 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1cairo_1context_1set_1font_1options)
 			initialized = 1;
 		}
 		if (fptr) {
-			(*fptr)((PangoContext *)arg0, (const cairo_font_options_t *)arg1);
+			(*fptr)((PangoContext *)arg0, arg1);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, _1pango_1cairo_1context_1set_1font_1options_FUNC);
