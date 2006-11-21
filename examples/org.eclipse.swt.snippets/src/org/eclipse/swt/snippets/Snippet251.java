@@ -44,6 +44,7 @@ public static void main (String [] args) {
 			dialog.close ();
 		}
 	});
+	dialog.setDefaultButton (ok);
 
 	shell.pack ();
 	shell.open ();
