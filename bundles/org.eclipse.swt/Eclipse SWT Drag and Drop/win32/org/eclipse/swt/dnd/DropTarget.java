@@ -448,6 +448,11 @@ public Control getControl () {
 int getOperationFromKeyState(int grfKeyState) {
 	boolean ctrl = (grfKeyState & OS.MK_CONTROL) != 0;
 	boolean shift = (grfKeyState & OS.MK_SHIFT) != 0;
+	boolean alt = (grfKeyState & OS.MK_ALT) != 0;
+	if (alt) {
+		if (ctrl || shift) return DND.DROP_DEFAULT;
+		return DND.DROP_LINK;
+	}
 	if (ctrl && shift) return DND.DROP_LINK;
 	if (ctrl)return DND.DROP_COPY;
 	if (shift)return DND.DROP_MOVE;

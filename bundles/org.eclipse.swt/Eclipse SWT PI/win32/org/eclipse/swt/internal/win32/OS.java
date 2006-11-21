@@ -1005,6 +1005,7 @@ public class OS extends Platform {
 	public static final int MIIM_TYPE = 0x10;
 	public static final int MIM_BACKGROUND = 0x2;
 	public static final int MIM_STYLE = 0x10;
+	public static final int MK_ALT = 0x20;
 	public static final int MK_CONTROL = 0x8;
 	public static final int MK_LBUTTON = 0x1;
 	public static final int MK_MBUTTON = 0x10;
