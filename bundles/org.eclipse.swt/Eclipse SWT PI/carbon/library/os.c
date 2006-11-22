@@ -1832,6 +1832,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineWidth)
 }
 #endif
 
+#ifndef NO_CGContextSetMiterLimit
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetMiterLimit)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetMiterLimit_FUNC);
+	CGContextSetMiterLimit((CGContextRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetMiterLimit_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextSetRGBFillColor
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSetRGBFillColor)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4)

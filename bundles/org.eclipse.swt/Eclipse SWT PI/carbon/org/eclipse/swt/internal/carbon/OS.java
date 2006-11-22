@@ -1066,6 +1066,7 @@ public static final native void CGContextSetLineCap (int context, int cap);
 public static final native void CGContextSetLineDash (int ctx, float phase, float[] lengths, int count);
 public static final native void CGContextSetLineJoin (int context, int join); 
 public static final native void CGContextSetLineWidth (int ctx, float width);
+public static final native void CGContextSetMiterLimit (int context, float limit);
 public static final native void CGContextSetShouldAntialias (int ctx, boolean shouldAntialias);
 public static final native void CGContextSetShouldSmoothFonts (int ctx, boolean shouldSmooth);
 public static final native void CGContextSetStrokeColorSpace (int ctx, int colorspace);

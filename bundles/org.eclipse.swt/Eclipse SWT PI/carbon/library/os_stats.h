@@ -161,6 +161,7 @@ typedef enum {
 	CGContextSetLineDash_FUNC,
 	CGContextSetLineJoin_FUNC,
 	CGContextSetLineWidth_FUNC,
+	CGContextSetMiterLimit_FUNC,
 	CGContextSetRGBFillColor_FUNC,
 	CGContextSetRGBStrokeColor_FUNC,
 	CGContextSetRenderingIntent_FUNC,
