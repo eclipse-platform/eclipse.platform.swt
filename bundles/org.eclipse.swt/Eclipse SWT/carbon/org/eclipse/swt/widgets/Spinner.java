@@ -579,8 +579,8 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
+int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	int [] keyboardEvent = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
