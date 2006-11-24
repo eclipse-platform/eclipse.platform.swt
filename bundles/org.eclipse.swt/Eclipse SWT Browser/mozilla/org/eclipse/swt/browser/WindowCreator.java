@@ -152,8 +152,9 @@ int /*long*/ CreateChromeWindow(int /*long*/ parent, int /*long*/ chromeFlags, i
 		event.display = display;
 		event.widget = src;
 		event.required = true;
-		for (int i = 0; i < src.openWindowListeners.length; i++)
+		for (int i = 0; i < src.openWindowListeners.length; i++) {
 			src.openWindowListeners[i].open(event);
+		}
 		browser = event.browser;
 		doit = browser != null && !browser.isDisposed();
 		if (doit) {
