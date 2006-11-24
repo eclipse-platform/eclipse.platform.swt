@@ -185,8 +185,10 @@ public class OS extends Platform {
 	public static final int kControlBevelButtonGraphicAlignTag = ('g'<<24) + ('a'<<16) + ('l'<<8) + 'i';
 	public static final int kControlBoundsChangeSizeChanged = 1 << 2;
 	public static final int kControlBoundsChangePositionChanged = 1 << 3;
+	public static final int kControlClockTypeHourMinute = 0;
 	public static final int kControlClockTypeHourMinuteSecond = 1;
 	public static final int kControlClockTypeMonthDayYear = 2;
+	public static final int kControlClockTypeMonthYear = 3;
 	public static final int kControlClockFlagStandard = 0;
 	public static final int kControlClockFlagDisplayOnly = 1;
 	public static final int kControlClockFlagLive = 2;
