@@ -16,7 +16,9 @@ import java.util.Calendar;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.LongDateRec;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
 
 public class DateTime extends Composite {
 	LongDateRec dateRec;
