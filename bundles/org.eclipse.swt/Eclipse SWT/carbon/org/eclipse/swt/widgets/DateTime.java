@@ -16,9 +16,7 @@ import java.util.Calendar;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.FontInfo;
-import org.eclipse.swt.internal.carbon.LongDateRec;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.*;
 
 public class DateTime extends Composite {
 	LongDateRec dateRec;
@@ -111,52 +109,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = cellSize.x * 7;
 			height = cellSize.y * 7 + Math.max(cellSize.y, buttonSize.y);
 		} else {
-			// Determine the height of the current font.
-			int [] currentPort = new int [1];
-			short themeFont = (short) defaultThemeFont ();
-			if (font != null) {
-				themeFont = OS.kThemeCurrentPortFont;
-				OS.GetPort (currentPort);
-				OS.SetPortWindowPort (OS.GetControlOwner (handle));
-				OS.TextFont (font.id);
-				OS.TextFace (font.style);
-				OS.TextSize (font.size);
-			}
-			FontInfo info = new FontInfo ();
-			OS.GetFontInfo (info);
-			height = info.ascent + info.descent;
-			
-			// Max with the height of the up/down buttons.
-			int [] metric = new int [1];
-			OS.GetThemeMetric (OS.kThemeMetricLittleArrowsHeight, metric);
-			height = Math.max (height, metric [0]);
-			
-			// Determine the width of the date or time string in the current font.
-			// TODO: All of these strings need to be locale-specific
-			String string = (style & SWT.SHORT) != 0 ? "00/0000" : "00/00/0000";
-			if ((style & SWT.TIME) != 0) string = (style & SWT.SHORT) != 0 ? "00:00 AM" : "00:00:00 AM";
-			
-			char [] buffer = new char [string.length ()];
-			string.getChars (0, buffer.length, buffer, 0);
-			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-			if (ptr != 0) {
-				OS.GetThemeTextDimensions (ptr, themeFont, OS.kThemeStateActive, false, ioBounds, null);
-				width = Math.max (width, ioBounds.h);
-				height = Math.max (height, ioBounds.v);
-				OS.CFRelease (ptr);
-			}
-			if (font != null) {
-				OS.SetPort (currentPort [0]);
-			}
-			
-			// Add the width of the up/down buttons.
-			OS.GetThemeMetric (OS.kThemeMetricLittleArrowsWidth, metric);
-			width += metric [0];
-			
-			// Add the margin between the text and the buttons.
-			OS.GetThemeMetric (OS.kThemeMetricEditTextWhitespace, metric);
-			width += metric [0] * 4;
+			Rect rect = new Rect ();
+			OS.GetBestControlRect (handle, rect, null);
+			width = rect.right - rect.left;
+			height = rect.bottom - rect.top;
 		}
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
