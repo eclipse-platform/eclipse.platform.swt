@@ -455,6 +455,9 @@ public class OS extends Platform {
 	public static final int CS_VREDRAW = 0x1;
 	public static final int CW_USEDEFAULT = 0x80000000;
 	public static final String DATETIMEPICK_CLASS = "SysDateTimePick32"; //$NON-NLS-1$
+	public static final int DATE_LONGDATE = 0x00000002;
+	public static final int DATE_SHORTDATE = 0x00000001;
+	public static final int DATE_YEARMONTH = 0x00000008; //#if(WINVER >= 0x0500)
 	public static final int DCX_CACHE = 0x2;
 	public static final int DCX_CLIPCHILDREN = 0x8;
 	public static final int DCX_CLIPSIBLINGS = 0x10;
@@ -822,7 +825,7 @@ public class OS extends Platform {
 	public static final int LM_GETITEM = 0x703;
 	public static final int LCID_SUPPORTED = 0x2;
 	public static final int LOCALE_IDEFAULTANSICODEPAGE = 0x1004;
-	public static final int LOCALE_IDATE  = 0x00000021;
+	public static final int LOCALE_IDATE = 0x00000021;
 	public static final int LOCALE_ITIME = 0x00000023;
 	public static final int LOCALE_RETURN_NUMBER = 0x20000000; // #if(WINVER >= 0x0400)
 	public static final int LOCALE_S1159 = 0x00000028;	
@@ -834,6 +837,25 @@ public class OS extends Platform {
 	public static final int LOCALE_SSHORTDATE = 0x0000001F;
 	public static final int LOCALE_STIMEFORMAT = 0x00001003;
 	public static final int LOCALE_SYEARMONTH = 0x00001006;  // #if(WINVER >= 0x0500)
+	public static final int LOCALE_SDAYNAME1    = 0x0000002A;   // long name for Monday
+	public static final int LOCALE_SDAYNAME2    = 0x0000002B;   // long name for Tuesday
+	public static final int LOCALE_SDAYNAME3    = 0x0000002C;   // long name for Wednesday
+	public static final int LOCALE_SDAYNAME4    = 0x0000002D;   // long name for Thursday
+	public static final int LOCALE_SDAYNAME5    = 0x0000002E;   // long name for Friday
+	public static final int LOCALE_SDAYNAME6    = 0x0000002F;   // long name for Saturday
+	public static final int LOCALE_SDAYNAME7    = 0x00000030;   // long name for Sunday
+	public static final int LOCALE_SMONTHNAME1  = 0x00000038;   // long name for January
+	public static final int LOCALE_SMONTHNAME2  = 0x00000039;   // long name for February
+	public static final int LOCALE_SMONTHNAME3  = 0x0000003A;   // long name for March
+	public static final int LOCALE_SMONTHNAME4  = 0x0000003B;   // long name for April
+	public static final int LOCALE_SMONTHNAME5  = 0x0000003C;   // long name for May
+	public static final int LOCALE_SMONTHNAME6  = 0x0000003D;   // long name for June
+	public static final int LOCALE_SMONTHNAME7  = 0x0000003E;   // long name for July
+	public static final int LOCALE_SMONTHNAME8  = 0x0000003F;   // long name for August
+	public static final int LOCALE_SMONTHNAME9  = 0x00000040;   // long name for September
+	public static final int LOCALE_SMONTHNAME10 = 0x00000041;   // long name for October
+	public static final int LOCALE_SMONTHNAME11 = 0x00000042;   // long name for November
+	public static final int LOCALE_SMONTHNAME12 = 0x00000043;   // long name for December
 	public static final int LOCALE_USER_DEFAULT = 1024;
 	public static final int LOGPIXELSX = 0x58;
 	public static final int LOGPIXELSY = 0x5a;
@@ -1496,6 +1518,7 @@ public class OS extends Platform {
 	public static final int TCS_TABS = 0x0;
 	public static final int TCS_TOOLTIPS = 0x4000;
 	public static final int TECHNOLOGY = 0x2;
+	public static final int TIME_NOSECONDS = 0x2;
 	public static final int TIS_NORMAL = 1;
 	public static final int TIS_HOT = 2;
 	public static final int TIS_SELECTED = 3;
@@ -2278,6 +2301,17 @@ public static final int GetClipboardFormatName (int format, TCHAR lpszFormatName
 	return GetClipboardFormatNameA (format, lpszFormatName1, cchMaxCount);
 }
 
+public static final int GetDateFormat (int Locale, int dwFlags, SYSTEMTIME lpDate, TCHAR lpFormat, TCHAR lpDateStr, int cchDate) {
+	if (IsUnicode) {
+		char [] lpString1 = lpFormat == null ? null : lpFormat.chars;
+		char [] lpString2 = lpDateStr == null ? null : lpDateStr.chars;
+		return GetDateFormatW (Locale, dwFlags, lpDate, lpString1, lpString2, cchDate);
+	}
+	byte [] lpString1 = lpFormat == null ? null : lpFormat.bytes;
+	byte [] lpString2 = lpDateStr == null ? null : lpDateStr.bytes;
+	return GetDateFormatA (Locale, dwFlags, lpDate, lpString1, lpString2, cchDate);
+}
+
 public static final int GetKeyNameText (int lParam, TCHAR lpString, int nSize) {
 	if (IsUnicode) {
 		char [] lpString1 = lpString == null ? null : lpString.chars;
@@ -2414,6 +2448,17 @@ public static final boolean GetTextExtentPoint32 (int /*long*/ hdc, TCHAR lpStri
 public static final boolean GetTextMetrics (int /*long*/ hdc, TEXTMETRIC lptm) {
 	if (IsUnicode) return GetTextMetricsW (hdc, (TEXTMETRICW)lptm);
 	return GetTextMetricsA (hdc, (TEXTMETRICA)lptm);
+}
+
+public static final int GetTimeFormat (int Locale, int dwFlags, SYSTEMTIME lpTime, TCHAR lpFormat, TCHAR lpTimeStr, int cchTime) {
+	if (IsUnicode) {
+		char [] lpString1 = lpFormat == null ? null : lpFormat.chars;
+		char [] lpString2 = lpTimeStr == null ? null : lpTimeStr.chars;
+		return GetTimeFormatW (Locale, dwFlags, lpTime, lpString1, lpString2, cchTime);
+	}
+	byte [] lpString1 = lpFormat == null ? null : lpFormat.bytes;
+	byte [] lpString2 = lpTimeStr == null ? null : lpTimeStr.bytes;
+	return GetTimeFormatA (Locale, dwFlags, lpTime, lpString1, lpString2, cchTime);
 }
 
 public static final boolean GetVersionEx (OSVERSIONINFO lpVersionInfo) {
@@ -3131,6 +3176,8 @@ public static final native int GetCurrentProcessId ();
 public static final native int GetCurrentThreadId ();
 public static final native int /*long*/ GetCursor ();
 public static final native boolean GetCursorPos (POINT lpPoint);
+public static final native int GetDateFormatW(int Locale, int dwFlags, SYSTEMTIME lpDate, char [] lpFormat, char [] lpDateStr, int cchDate);
+public static final native int GetDateFormatA(int Locale, int dwFlags, SYSTEMTIME lpDate, byte [] lpFormat, byte [] lpDateStr, int cchDate);
 public static final native int /*long*/ GetDC (int /*long*/ hwnd);
 public static final native int /*long*/ GetDCEx (int /*long*/ hWnd, int /*long*/ hrgnClip, int flags);
 public static final native int /*long*/ GetDesktopWindow ();
@@ -3239,6 +3286,8 @@ public static final native int GetThemePartSize (int /*long*/ hTheme, int /*long
 public static final native int GetThemeMetric (int /*long*/ hTheme, int /*long*/ hdc, int iPartId, int iStateId, int iPropId, int[] piVal);
 public static final native int GetThemeRect (int /*long*/ hTheme, int iPartId, int iStateId, int iPropId, RECT pRect);
 public static final native int GetThemeSysSize (int /*long*/ hTheme, int iSizeID);
+public static final native int GetTimeFormatW(int Locale, int dwFlags, SYSTEMTIME lpTime, char [] lpFormat, char [] lpTimeStr, int cchTime);
+public static final native int GetTimeFormatA(int Locale, int dwFlags, SYSTEMTIME lpTime, byte [] lpFormat, byte [] lpTimeStr, int cchTime);
 public static final native boolean GetUpdateRect (int /*long*/ hWnd, RECT lpRect, boolean bErase);
 public static final native int GetUpdateRgn (int /*long*/ hWnd, int /*long*/ hRgn, boolean bErase);
 public static final native boolean GetVersionExW (OSVERSIONINFOW lpVersionInfo);
