@@ -71,7 +71,7 @@ public class Browser extends Composite {
 	static nsIAppShell AppShell;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
-	static boolean mozilla, ignoreDispose, usingProfile;
+	static boolean initialized, ignoreDispose, usingProfile;
 	static Callback eventCallback;
 	static int /*long*/ eventProc;
 
@@ -123,7 +123,7 @@ public Browser(Composite parent, int style) {
 	display.setData(NO_INPUT_METHOD, null);
 	
 	int /*long*/[] result = new int /*long*/[1];
-	if (!mozilla) {
+	if (!initialized) {
 		String mozillaPath = null;
 		int /*long*/ ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
 		if (ptr != 0) {
@@ -635,24 +635,9 @@ public Browser(Composite parent, int style) {
 		}
 		pickerFactory.Release();
 
-		FilePickerFactory_1_8 pickerFactory_1_8 = new FilePickerFactory_1_8();
-		pickerFactory_1_8.AddRef();
-		buffer = XPCOM.NS_FILEPICKER_CONTRACTID.getBytes();
-		aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-		buffer = "FilePicker_1_8".getBytes(); //$NON-NLS-1$
-		aClassName = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
-		rc = componentRegistrar.RegisterFactory(XPCOM.NS_FILEPICKER_1_8_CID, aClassName, aContractID, pickerFactory_1_8.getAddress());
-		if (rc != XPCOM.NS_OK) {
-			dispose();
-			error(rc);
-		}
-		pickerFactory_1_8.Release();
-
 		componentRegistrar.Release();
 		componentManager.Release();
-		mozilla = true;
+		initialized = true;
 	}
 	BrowserCount++;
 	int rc = XPCOM.NS_GetComponentManager(result);
@@ -679,7 +664,7 @@ public Browser(Composite parent, int style) {
 	}
 	componentManager.Release();
 	
-	webBrowser = new nsIWebBrowser(result[0]); 
+	webBrowser = new nsIWebBrowser(result[0]);
 
 	createCOMInterfaces();
 	AddRef();
@@ -844,7 +829,7 @@ public Browser(Composite parent, int style) {
 }
 
 public static void clearSessions () {
-	if (!mozilla) return;
+	if (!initialized) return;
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = XPCOM.NS_GetServiceManager (result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -908,7 +893,7 @@ static int /*long*/ eventProc (int /*long*/ handle, int /*long*/ gdkEvent, int /
 static Composite fixIM(Composite parent) {
 	/*
 	* Note.  Mozilla provides all IM suport needed for text input in webpages.
-	* If SWTcreates another input method context for the widget it will cause
+	* If SWT creates another input method context for the widget it will cause
 	* undetermine results to happen (hungs and crashes). The fix is to prevent 
 	* SWT from creating an input method context for the  Browser widget.
 	*/
@@ -1324,7 +1309,7 @@ void disposeCOMInterfaces() {
 public boolean execute(String script) {
 	checkWidget();
 	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	String url = "javascript:"+script+";void(0);";//$NON-NLS-1$ //$NON-NLS-2$
+	String url = "javascript:" + script + ";void(0);";	//$NON-NLS-1$ //$NON-NLS-2$
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1397,18 +1382,13 @@ public String getUrl() {
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	
+
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
 	int /*long*/[] aCurrentURI = new int /*long*/[1];
 	rc = webNavigation.GetCurrentURI(aCurrentURI);
 	if (rc != XPCOM.NS_OK) error(rc);
-	/*
-	 * This code is intentionally commented.  aCurrentURI is 0
-	 * when no location has previously been set.
-	 */
-	//if (aCurrentURI[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 	webNavigation.Release();
-	
+
 	byte[] dest = null;
 	if (aCurrentURI[0] != 0) {
 		nsIURI uri = new nsIURI(aCurrentURI[0]);
@@ -1490,7 +1470,7 @@ public boolean isForwardEnabled() {
 }
 
 static String error(int code) {
-	throw new SWTError("XPCOM error "+code); //$NON-NLS-1$
+	throw new SWTError("XPCOM error " + code); //$NON-NLS-1$
 }
 
 void onDispose(Display display) {
@@ -1918,7 +1898,7 @@ public boolean setText(String html) {
 	*  widget loses focus every time new content is loaded.
 	*  The current workaround is to call deactivate everytime if 
 	*  the browser currently does not have focus. A better workaround
-	*  would be to have a mean to call deactivate when the Browser
+	*  would be to have a way to call deactivate when the Browser
 	*  or one of its children loses focus.
 	*/
 	if (this != getDisplay().getFocusControl()) Deactivate();
@@ -2306,8 +2286,9 @@ int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 		event.location = ABOUT_BLANK;
 	}
 	event.top = aTop[0] == aDOMWindow[0];
-	for (int i = 0; i < locationListeners.length; i++)
+	for (int i = 0; i < locationListeners.length; i++) {
 		locationListeners[i].changed(event);
+	}
 	return XPCOM.NS_OK;
 }
 
@@ -2368,10 +2349,11 @@ int /*long*/ SetStatus(int /*long*/ statusType, int /*long*/ status) {
 	String string = new String(dest);
 	if (string == null) string = ""; //$NON-NLS-1$
 	event.text = string;
-	for (int i = 0; i < statusTextListeners.length; i++)
-		statusTextListeners[i].changed(event);	
+	for (int i = 0; i < statusTextListeners.length; i++) {
+		statusTextListeners[i].changed(event);
+	}
 	return XPCOM.NS_OK;
-}		
+}
 
 int /*long*/ GetWebBrowser(int /*long*/ aWebBrowser) {
 	int /*long*/[] ret = new int /*long*/[1];	
@@ -2406,8 +2388,9 @@ int /*long*/ DestroyBrowserWindow() {
 	WindowEvent newEvent = new WindowEvent(this);
 	newEvent.display = getDisplay();
 	newEvent.widget = this;
-	for (int i = 0; i < closeWindowListeners.length; i++)
+	for (int i = 0; i < closeWindowListeners.length; i++) {
 		closeWindowListeners[i].close(newEvent);
+	}
 	/*
 	* Note on Mozilla.  The DestroyBrowserWindow notification cannot be cancelled.
 	* The browser widget cannot be used after this notification has been received.
@@ -2499,8 +2482,9 @@ int /*long*/ SetVisibility(int /*long*/ aVisibility) {
 		}
 	} else {
 		visible = false;
-		for (int i = 0; i < visibilityWindowListeners.length; i++)
+		for (int i = 0; i < visibilityWindowListeners.length; i++) {
 			visibilityWindowListeners[i].hide(event);
+		}
 	}
 	return XPCOM.NS_OK;     	
 }
@@ -2647,8 +2631,9 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 			event.location = ABOUT_BLANK;
 		}
 		event.doit = doit;
-		for (int i = 0; i < locationListeners.length; i++)
+		for (int i = 0; i < locationListeners.length; i++) {
 			locationListeners[i].changing(event);
+		}
 		if (!isHttps || usingProfile) doit = event.doit;
 	}
 	/* Note. boolean remains of size 4 on 64 bit machine */
