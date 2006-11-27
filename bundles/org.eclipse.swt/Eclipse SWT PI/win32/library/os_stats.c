@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 845;
-int OS_nativeFunctionCallCount[845];
+int OS_nativeFunctionCount = 849;
+int OS_nativeFunctionCallCount[849];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -215,6 +215,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetDCEx",
 	"GetDIBColorTable",
 	"GetDIBits",
+	"GetDateFormatA",
+	"GetDateFormatW",
 	"GetDesktopWindow",
 	"GetDeviceCaps",
 	"GetDialogBaseUnits",
@@ -318,6 +320,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetThemeSysSize",
 	"GetThemeTextExtent",
 	"GetTickCount",
+	"GetTimeFormatA",
+	"GetTimeFormatW",
 	"GetUpdateRect",
 	"GetUpdateRgn",
 	"GetVersionExA",

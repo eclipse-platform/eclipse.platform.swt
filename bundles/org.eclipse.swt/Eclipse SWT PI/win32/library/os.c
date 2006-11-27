@@ -3313,6 +3313,50 @@ fail:
 }
 #endif
 
+#ifndef NO_GetDateFormatA
+JNIEXPORT jint JNICALL OS_NATIVE(GetDateFormatA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jbyteArray arg3, jbyteArray arg4, jint arg5)
+{
+	SYSTEMTIME _arg2, *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetDateFormatA_FUNC);
+	if (arg2) if ((lparg2 = getSYSTEMTIMEFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)GetDateFormatA((LCID)arg0, (DWORD)arg1, lparg2, (LPSTR)lparg3, (LPSTR)lparg4, arg5);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) setSYSTEMTIMEFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetDateFormatA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetDateFormatW
+JNIEXPORT jint JNICALL OS_NATIVE(GetDateFormatW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jcharArray arg3, jcharArray arg4, jint arg5)
+{
+	SYSTEMTIME _arg2, *lparg2=NULL;
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetDateFormatW_FUNC);
+	if (arg2) if ((lparg2 = getSYSTEMTIMEFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)GetDateFormatW((LCID)arg0, (DWORD)arg1, lparg2, (LPWSTR)lparg3, (LPWSTR)lparg4, arg5);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) setSYSTEMTIMEFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetDateFormatW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetDesktopWindow
 JNIEXPORT jint JNICALL OS_NATIVE(GetDesktopWindow)
 	(JNIEnv *env, jclass that)
@@ -5147,6 +5191,50 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetTickCount)
 	OS_NATIVE_ENTER(env, that, GetTickCount_FUNC);
 	rc = (jint)GetTickCount();
 	OS_NATIVE_EXIT(env, that, GetTickCount_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetTimeFormatA
+JNIEXPORT jint JNICALL OS_NATIVE(GetTimeFormatA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jbyteArray arg3, jbyteArray arg4, jint arg5)
+{
+	SYSTEMTIME _arg2, *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetTimeFormatA_FUNC);
+	if (arg2) if ((lparg2 = getSYSTEMTIMEFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)GetTimeFormatA((LCID)arg0, (DWORD)arg1, lparg2, (LPSTR)lparg3, (LPSTR)lparg4, arg5);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) setSYSTEMTIMEFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetTimeFormatA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetTimeFormatW
+JNIEXPORT jint JNICALL OS_NATIVE(GetTimeFormatW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jcharArray arg3, jcharArray arg4, jint arg5)
+{
+	SYSTEMTIME _arg2, *lparg2=NULL;
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetTimeFormatW_FUNC);
+	if (arg2) if ((lparg2 = getSYSTEMTIMEFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)GetTimeFormatW((LCID)arg0, (DWORD)arg1, lparg2, (LPWSTR)lparg3, (LPWSTR)lparg4, arg5);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) setSYSTEMTIMEFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, GetTimeFormatW_FUNC);
 	return rc;
 }
 #endif
