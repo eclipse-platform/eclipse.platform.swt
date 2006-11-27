@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 // Win, Mac, and Java all provide this (but GTK does not).
 
 public class DateTime extends Composite {
-	Color foreground, background;
+	Color fg, bg;
 	Calendar calendar;
 	DateFormatSymbols formatSymbols;
 	Button down, up, monthDown, monthUp, yearDown, yearUp;
@@ -334,10 +334,10 @@ int getDate(int cell) {
 
 public Color getBackground() {
 	checkWidget();
-	if (background == null) {
+	if (bg == null) {
 		return getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 	}
-	return background;
+	return bg;
 }
 
 public int getDay() {
@@ -347,10 +347,10 @@ public int getDay() {
 
 public Color getForeground() {
 	checkWidget();
-	if (foreground == null) {
+	if (fg == null) {
 		return getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
 	}
-	return foreground;
+	return fg;
 }
 
 public int getHours () {
@@ -690,7 +690,7 @@ void redraw(int cell, Point cellSize) {
 public void setBackground(Color color) {
 	checkWidget();
 	super.setBackground(color);
-	background = color;
+	bg = color;
 	if (text != null) text.setBackground(color);
 }
 
@@ -726,7 +726,7 @@ public void setFont(Font font) {
 public void setForeground(Color color) {
 	checkWidget();
 	super.setForeground(color);
-	foreground = color;
+	fg = color;
 	if (text != null) text.setForeground(color);
 }
 
