@@ -207,6 +207,7 @@
 #define NO_GetClassNameA
 #define NO_GetClipboardFormatNameA
 #define NO_GetComboBoxInfo
+#define NO_GetDateFormatA
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
 #define NO_GetFontLanguageInfo
@@ -269,6 +270,7 @@
 #define NO_GetThemeMetric
 #define NO_GetThemeRect
 #define NO_GetThemeSysSize
+#define NO_GetTimeFormatA
 #define NO_GetVersionExA
 #define NO_GetWindowLongA
 #define NO_GetWindowLongPtrA
