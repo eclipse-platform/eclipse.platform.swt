@@ -10,9 +10,6 @@ import org.eclipse.swt.events.*;
 
 // TODO: locale is currently hard-coded to EN_US. This needs to be fixed. Use java.text.DateFormat?
 
-// TODO: implement setFormat API - maybe just support long/short format. What formats does Mac support?
-// Figure out the semantics of setFormat for Calendar (Win, GTK, Mac cocoa).
-
 // TODO: add accessibility to calendar - note: win32 calendar is not accessible... test gtk
 
 // TODO: Consider allowing an optional drop-down calendar for SWT.DATE | SWT.DROP_DOWN
@@ -26,15 +23,18 @@ public class DateTime extends Composite {
 	DateFormatSymbols formatSymbols;
 	Button down, up, monthDown, monthUp, yearDown, yearUp;
 	Text text;
-	String format;
 	Point[] fieldIndices;
 	int[] fieldNames;
 	int fieldCount, currentField = 0, characterCount = 0;
 	boolean ignoreVerify = false;
 	
 	// TODO: default format strings need more work for locale and setFormat
-	static String defaultDateFormat = "MM/DD/YYYY";
-	static String defaultTimeFormat = "HH:MM:SS AM";
+	static String defaultShortDateFormat = "MM/YYYY";
+	static String defaultMediumDateFormat = "MM/DD/YYYY";
+	static String defaultLongDateFormat = "MM/DD/YYYY";
+	static String defaultShortTimeFormat = "HH:MM AM";
+	static String defaultMediumTimeFormat = "HH:MM:SS AM";
+	static String defaultLongTimeFormat = "HH:MM:SS AM";
 	static final int MARGIN_WIDTH = 2;
 	static final int MARGIN_HEIGHT = 1;
 	static final int MIN_YEAR = 1752; // Gregorian switchover in North America: September 19, 1752
@@ -80,7 +80,11 @@ public DateTime(Composite parent, int style) {
 		yearUp.addListener(SWT.Selection, listener);
 	} else {
 		text = new Text(this, SWT.SINGLE);
-		setFormat((this.style == SWT.DATE ? defaultDateFormat : defaultTimeFormat));
+		if ((this.style & SWT.DATE) != 0) {
+			setFormat((this.style & SWT.SHORT) != 0 ? defaultShortDateFormat : (this.style & SWT.LONG) != 0 ? defaultLongDateFormat : defaultMediumDateFormat);
+		} else { // SWT.TIME
+			setFormat((this.style & SWT.SHORT) != 0 ? defaultShortTimeFormat : (this.style & SWT.LONG) != 0 ? defaultLongTimeFormat : defaultMediumTimeFormat);
+		}
 		text.setText(getFormattedString(this.style));
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
@@ -145,24 +149,29 @@ String formattedStringValue(int fieldName, int value, boolean adjust) {
 }
 
 String getFormattedString(int style) {
-	// TODO: needs more work for setFormat and locale
 	if ((style & SWT.TIME) != 0) {
 		String[] ampm = formatSymbols.getAmPmStrings();
 		int h = calendar.get(Calendar.HOUR); if (h == 0) h = 12;
 		int m = calendar.get(Calendar.MINUTE);
 		int s = calendar.get(Calendar.SECOND);
 		int a = calendar.get(Calendar.AM_PM);
+		if ((style & SWT.SHORT) != 0) return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + " " + ampm[a];
 		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + ":" + (s < 10 ? " " : "") + s + " " + ampm[a];
 	}
 	/* SWT.DATE */
 	int y = calendar.get(Calendar.YEAR);
 	int m = calendar.get(Calendar.MONTH) + 1;
 	int d = calendar.get(Calendar.DAY_OF_MONTH);
+	if ((style & SWT.SHORT) != 0) return "" + (m < 10 ? " " : "") + m + "/" + y;
 	return "" + (m < 10 ? " " : "") + m + "/" + (d < 10 ? " " : "") + d + "/" + y;
 }
 
 String getComputeSizeString(int style) {
-	return (style & SWT.TIME) != 0 ? defaultTimeFormat : defaultDateFormat;
+	if ((style & SWT.DATE) != 0) {
+		return (style & SWT.SHORT) != 0 ? defaultShortDateFormat : (style & SWT.LONG) != 0 ? defaultLongDateFormat : defaultMediumDateFormat;
+	}
+	// SWT.TIME
+	return (style & SWT.SHORT) != 0 ? defaultShortTimeFormat : (style & SWT.LONG) != 0 ? defaultLongTimeFormat : defaultMediumTimeFormat;
 }
 
 int getFieldIndex(int fieldName) {
@@ -721,32 +730,39 @@ public void setForeground(Color color) {
 	if (text != null) text.setForeground(color);
 }
 
-/*public*/ void setFormat(String string) {
+void setFormat(String string) {
 	checkWidget();
-	// TODO: to go public, this function needs more work. (also, may need to think about locale)
-	// i.e. parse string (e.g. look for hh:mm:ss, or mm/dd/yyyy, etc), and set fieldNames and fieldIndices accordingly
-	fieldCount = (style & SWT.DATE) != 0 ? 3 : 4;
+	// TODO: this needs to be locale sensitive
+	fieldCount = (style & SWT.DATE) != 0 ? ((style & SWT.SHORT) != 0 ? 2 : 3) : ((style & SWT.SHORT) != 0 ? 3 : 4);
 	fieldIndices = new Point[fieldCount];
 	fieldNames = new int[fieldCount];
 	if ((style & SWT.DATE) != 0) {
 		fieldNames[0] = Calendar.MONTH;
 		fieldIndices[0] = new Point(0, 2);
-		fieldNames[1] = Calendar.DAY_OF_MONTH;
-		fieldIndices[1] = new Point(3, 5);
-		fieldNames[2] = Calendar.YEAR;
-		fieldIndices[2] = new Point(6, 10);
+		if ((style & SWT.SHORT) != 0) {
+			fieldNames[1] = Calendar.YEAR;
+			fieldIndices[1] = new Point(3, 7);
+		} else {
+			fieldNames[1] = Calendar.DAY_OF_MONTH;
+			fieldIndices[1] = new Point(3, 5);
+			fieldNames[2] = Calendar.YEAR;
+			fieldIndices[2] = new Point(6, 10);
+		}
 	} else { /* SWT.TIME */
 		fieldNames[0] = Calendar.HOUR;
 		fieldIndices[0] = new Point(0, 2);
 		fieldNames[1] = Calendar.MINUTE;
 		fieldIndices[1] = new Point(3, 5);
-		fieldNames[2] = Calendar.SECOND;
-		fieldIndices[2] = new Point(6, 8);
-		fieldNames[3] = Calendar.AM_PM;
-		fieldIndices[3] = new Point(9, 11);
+		if ((style & SWT.SHORT) != 0) {
+			fieldNames[2] = Calendar.AM_PM;
+			fieldIndices[2] = new Point(6, 8);
+		} else {
+			fieldNames[2] = Calendar.SECOND;
+			fieldIndices[2] = new Point(6, 8);
+			fieldNames[3] = Calendar.AM_PM;
+			fieldIndices[3] = new Point(9, 11);
+		}
 	}
-	// TODO: if the format string is bogus, use previous? or throw illegal parameter?
-	format = string;
 }
 
 public void setHours (int hours) {
