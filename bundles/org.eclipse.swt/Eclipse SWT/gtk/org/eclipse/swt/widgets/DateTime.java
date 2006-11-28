@@ -34,8 +34,12 @@ public class DateTime extends Composite {
 	int[] fieldNames;
 	int fieldCount, currentField = 0, characterCount = 0;
 	boolean ignoreVerify = false;
-	static String defaultDateFormat = "MM/DD/YYYY";
-	static String defaultTimeFormat = "HH:MM:SS AM";
+	static String defaultShortDateFormat = "MM/YYYY";
+	static String defaultMediumDateFormat = "MM/DD/YYYY";
+	static String defaultLongDateFormat = "MM/DD/YYYY";
+	static String defaultShortTimeFormat = "HH:MM AM";
+	static String defaultMediumTimeFormat = "HH:MM:SS AM";
+	static String defaultLongTimeFormat = "HH:MM:SS AM";
 
 public DateTime (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -44,7 +48,11 @@ public DateTime (Composite parent, int style) {
 		calendar = Calendar.getInstance();
 		formatSymbols = new DateFormatSymbols();
 		text = new Text(this, SWT.SINGLE);
-		setFormat((this.style == SWT.DATE ? defaultDateFormat : defaultTimeFormat));
+		if ((this.style & SWT.DATE) != 0) {
+			setFormat((this.style & SWT.SHORT) != 0 ? defaultShortDateFormat : (this.style & SWT.LONG) != 0 ? defaultLongDateFormat : defaultMediumDateFormat);
+		} else { // SWT.TIME
+			setFormat((this.style & SWT.SHORT) != 0 ? defaultShortTimeFormat : (this.style & SWT.LONG) != 0 ? defaultLongTimeFormat : defaultMediumTimeFormat);
+		}
 		text.setText(getFormattedString(this.style));
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
@@ -197,7 +205,11 @@ String formattedStringValue(int fieldName, int value, boolean adjust) {
 }
 
 String getComputeSizeString(int style) {
-	return (style & SWT.TIME) != 0 ? defaultTimeFormat : defaultDateFormat;
+	if ((style & SWT.DATE) != 0) {
+		return (style & SWT.SHORT) != 0 ? defaultShortDateFormat : (style & SWT.LONG) != 0 ? defaultLongDateFormat : defaultMediumDateFormat;
+	}
+	// SWT.TIME
+	return (style & SWT.SHORT) != 0 ? defaultShortTimeFormat : (style & SWT.LONG) != 0 ? defaultLongTimeFormat : defaultMediumTimeFormat;
 }
 
 int getFieldIndex(int fieldName) {
@@ -216,12 +228,14 @@ String getFormattedString(int style) {
 		int m = calendar.get(Calendar.MINUTE);
 		int s = calendar.get(Calendar.SECOND);
 		int a = calendar.get(Calendar.AM_PM);
+		if ((style & SWT.SHORT) != 0) return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + " " + ampm[a];
 		return "" + (h < 10 ? " " : "") + h + ":" + (m < 10 ? " " : "") + m + ":" + (s < 10 ? " " : "") + s + " " + ampm[a];
 	}
 	/* SWT.DATE */
 	int y = calendar.get(Calendar.YEAR);
 	int m = calendar.get(Calendar.MONTH) + 1;
 	int d = calendar.get(Calendar.DAY_OF_MONTH);
+	if ((style & SWT.SHORT) != 0) return "" + (m < 10 ? " " : "") + m + "/" + y;
 	return "" + (m < 10 ? " " : "") + m + "/" + (d < 10 ? " " : "") + d + "/" + y;
 }
 
@@ -547,27 +561,37 @@ public void setForeground(Color color) {
 
 /*public*/ void setFormat(String string) {
 	checkWidget();
-	fieldCount = (style & SWT.DATE) != 0 ? 3 : 4;
+	// TODO: this needs to be locale sensitive
+	fieldCount = (style & SWT.DATE) != 0 ? ((style & SWT.SHORT) != 0 ? 2 : 3) : ((style & SWT.SHORT) != 0 ? 3 : 4);
 	fieldIndices = new Point[fieldCount];
 	fieldNames = new int[fieldCount];
 	if ((style & SWT.DATE) != 0) {
 		fieldNames[0] = Calendar.MONTH;
 		fieldIndices[0] = new Point(0, 2);
-		fieldNames[1] = Calendar.DAY_OF_MONTH;
-		fieldIndices[1] = new Point(3, 5);
-		fieldNames[2] = Calendar.YEAR;
-		fieldIndices[2] = new Point(6, 10);
+		if ((style & SWT.SHORT) != 0) {
+			fieldNames[1] = Calendar.YEAR;
+			fieldIndices[1] = new Point(3, 7);
+		} else {
+			fieldNames[1] = Calendar.DAY_OF_MONTH;
+			fieldIndices[1] = new Point(3, 5);
+			fieldNames[2] = Calendar.YEAR;
+			fieldIndices[2] = new Point(6, 10);
+		}
 	} else { /* SWT.TIME */
 		fieldNames[0] = Calendar.HOUR;
 		fieldIndices[0] = new Point(0, 2);
 		fieldNames[1] = Calendar.MINUTE;
 		fieldIndices[1] = new Point(3, 5);
-		fieldNames[2] = Calendar.SECOND;
-		fieldIndices[2] = new Point(6, 8);
-		fieldNames[3] = Calendar.AM_PM;
-		fieldIndices[3] = new Point(9, 11);
+		if ((style & SWT.SHORT) != 0) {
+			fieldNames[2] = Calendar.AM_PM;
+			fieldIndices[2] = new Point(6, 8);
+		} else {
+			fieldNames[2] = Calendar.SECOND;
+			fieldIndices[2] = new Point(6, 8);
+			fieldNames[3] = Calendar.AM_PM;
+			fieldIndices[3] = new Point(9, 11);
+		}
 	}
-	format = string;
 }
 
 void setField(int fieldName, int value) {
