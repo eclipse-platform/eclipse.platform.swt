@@ -105,7 +105,8 @@ static int checkStyle (int style) {
 	* the SWT style.
 	*/
 	style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
-	return checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
+	style = checkBits (style, SWT.DATE, SWT.TIME, SWT.CALENDAR, 0, 0, 0);
+	return checkBits (style, SWT.MEDIUM, SWT.SHORT, SWT.LONG, 0, 0, 0);
 }
 
 public void addSelectionListener (SelectionListener listener) {
