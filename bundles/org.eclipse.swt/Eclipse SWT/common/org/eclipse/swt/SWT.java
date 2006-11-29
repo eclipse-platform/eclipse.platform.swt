@@ -614,16 +614,139 @@ public class SWT {
 	/* Event Details */
 
 	/**
-	 * A constant known to be zero (0), used in operations which
-	 * take bit flags to indicate that "no bits are set".
-	 */
-	public static final int NONE = 0;
-	
-	/**
 	 * Indicates that a user-interface component is being dragged,
 	 * for example dragging the thumb of a scroll bar (value is 1).
 	 */
 	public static final int DRAG = 1;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * state is selected (value is 1&lt;&lt;1).
+	 *
+	 * @since 3.2
+	 */
+	public static final int SELECTED = 1 << 1;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * state is focused (value is 1&lt;&lt;2).
+	 *
+	 * @since 3.2
+	 */	
+	public static final int FOCUSED = 1 << 2;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * draws the background (value is 1&lt;&lt;3).
+	 *
+	 * @since 3.2
+	 */
+	public static final int BACKGROUND = 1 << 3;
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * draws the foreground (value is 1&lt;&lt;4).
+	 *
+	 * @since 3.2
+	 */
+	public static final int FOREGROUND = 1 << 4;
+
+	/* This code is intentionally commented */
+	//public static final int PRESSED = 1 << 3;
+	//public static final int ACTIVE = 1 << 4;
+	//public static final int DISABLED = 1 << 5;
+	//public static final int HOT = 1 << 6;
+	//public static final int DEFAULTED = 1 << 7;
+
+	/**
+	 * Traversal event detail field value indicating that no 
+	 * traversal action should be taken
+	 * (value is 0).
+	 */
+	public static final int TRAVERSE_NONE = 0;
+	
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that a dialog should be cancelled was
+	 * pressed; typically, this is the ESC key
+	 * (value is 1&lt;&lt;1).
+	 */
+	public static final int TRAVERSE_ESCAPE = 1 << 1;
+
+	/**
+	 * Traversal event detail field value indicating that the
+	 * key which activates the default button in a dialog was
+	 * pressed; typically, this is the ENTER key
+	 * (value is 1&lt;&lt;2).
+	 */
+	public static final int TRAVERSE_RETURN = 1 << 2;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab group was pressed; typically, this is the
+	 * SHIFT-TAB key sequence
+	 * (value is 1&lt;&lt;3).
+	 */
+	public static final int TRAVERSE_TAB_PREVIOUS = 1 << 3;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * next tab group was pressed; typically, this is the
+	 * TAB key
+	 * (value is 1&lt;&lt;4).
+	 */
+	public static final int TRAVERSE_TAB_NEXT = 1 << 4;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab item was pressed; typically, this is either
+	 * the LEFT-ARROW or UP-ARROW keys
+	 * (value is 1&lt;&lt;5).
+	 */
+	public static final int TRAVERSE_ARROW_PREVIOUS = 1 << 5;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that focus should be given to the
+	 * previous tab item was pressed; typically, this is either
+	 * the RIGHT-ARROW or DOWN-ARROW keys
+	 * (value is 1&lt;&lt;6).
+	 */
+	public static final int TRAVERSE_ARROW_NEXT = 1 << 6;
+
+	/**
+	 * Traversal event detail field value indicating that a 
+	 * mnemonic key sequence was pressed
+	 * (value is 1&lt;&lt;7).
+	 */
+	public static final int TRAVERSE_MNEMONIC = 1 << 7;
+
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that the previous page of a multi-page
+	 * window should be shown was pressed; typically, this
+	 * is the CTRL-PAGEUP key sequence
+	 * (value is 1&lt;&lt;8).
+	 */
+	public static final int TRAVERSE_PAGE_PREVIOUS = 1 << 8;
+	
+	/**
+	 * Traversal event detail field value indicating that the 
+	 * key which designates that the next page of a multi-page
+	 * window should be shown was pressed; typically, this
+	 * is the CTRL-PAGEDOWN key sequence
+	 * (value is 1&lt;&lt;9).
+	 */
+	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
+
+	/**
+	 * A constant known to be zero (0), used in operations which
+	 * take bit flags to indicate that "no bits are set".
+	 */
+	public static final int NONE = 0;
 	
 	/**
 	 * A constant known to be zero (0), used in operations which
@@ -1436,45 +1559,6 @@ public class SWT {
 	 * @since 3.3
 	 */
 	public static final int LONG = 1 << 28;
-
-	/**
-	 * Event detail field that indicates a user-interface component
-	 * state is selected (value is 1&lt;&lt;1).
-	 *
-	 * @since 3.2
-	 */
-	public static final int SELECTED = 1 << 1;
-	
-	/**
-	 * Event detail field that indicates a user-interface component
-	 * state is focused (value is 1&lt;&lt;2).
-	 *
-	 * @since 3.2
-	 */	
-	public static final int FOCUSED = 1 << 2;
-	
-	/**
-	 * Event detail field that indicates a user-interface component
-	 * draws the background (value is 1&lt;&lt;3).
-	 *
-	 * @since 3.2
-	 */
-	public static final int BACKGROUND = 1 << 3;
-	
-	/**
-	 * Event detail field that indicates a user-interface component
-	 * draws the foreground (value is 1&lt;&lt;4).
-	 *
-	 * @since 3.2
-	 */
-	public static final int FOREGROUND = 1 << 4;
-
-	/* This code is intentionally commented */
-	//public static final int PRESSED = 1 << 3;
-	//public static final int ACTIVE = 1 << 4;
-	//public static final int DISABLED = 1 << 5;
-	//public static final int HOT = 1 << 6;
-	//public static final int DEFAULTED = 1 << 7;
 
 	/**
 	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
@@ -2732,90 +2816,6 @@ public class SWT {
 	 * @since 3.1
 	 */
 	public static final int ERROR_INVALID_FONT = 48;
-
-	/**
-	 * Traversal event detail field value indicating that no 
-	 * traversal action should be taken
-	 * (value is 0).
-	 */
-	public static final int TRAVERSE_NONE = 0;
-	
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that a dialog should be cancelled was
-	 * pressed; typically, this is the ESC key
-	 * (value is 1&lt;&lt;1).
-	 */
-	public static final int TRAVERSE_ESCAPE = 1 << 1;
-
-	/**
-	 * Traversal event detail field value indicating that the
-	 * key which activates the default button in a dialog was
-	 * pressed; typically, this is the ENTER key
-	 * (value is 1&lt;&lt;2).
-	 */
-	public static final int TRAVERSE_RETURN = 1 << 2;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that focus should be given to the
-	 * previous tab group was pressed; typically, this is the
-	 * SHIFT-TAB key sequence
-	 * (value is 1&lt;&lt;3).
-	 */
-	public static final int TRAVERSE_TAB_PREVIOUS = 1 << 3;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that focus should be given to the
-	 * next tab group was pressed; typically, this is the
-	 * TAB key
-	 * (value is 1&lt;&lt;4).
-	 */
-	public static final int TRAVERSE_TAB_NEXT = 1 << 4;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that focus should be given to the
-	 * previous tab item was pressed; typically, this is either
-	 * the LEFT-ARROW or UP-ARROW keys
-	 * (value is 1&lt;&lt;5).
-	 */
-	public static final int TRAVERSE_ARROW_PREVIOUS = 1 << 5;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that focus should be given to the
-	 * previous tab item was pressed; typically, this is either
-	 * the RIGHT-ARROW or DOWN-ARROW keys
-	 * (value is 1&lt;&lt;6).
-	 */
-	public static final int TRAVERSE_ARROW_NEXT = 1 << 6;
-
-	/**
-	 * Traversal event detail field value indicating that a 
-	 * mnemonic key sequence was pressed
-	 * (value is 1&lt;&lt;7).
-	 */
-	public static final int TRAVERSE_MNEMONIC = 1 << 7;
-
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that the previous page of a multi-page
-	 * window should be shown was pressed; typically, this
-	 * is the CTRL-PAGEUP key sequence
-	 * (value is 1&lt;&lt;8).
-	 */
-	public static final int TRAVERSE_PAGE_PREVIOUS = 1 << 8;
-	
-	/**
-	 * Traversal event detail field value indicating that the 
-	 * key which designates that the next page of a multi-page
-	 * window should be shown was pressed; typically, this
-	 * is the CTRL-PAGEDOWN key sequence
-	 * (value is 1&lt;&lt;9).
-	 */
-	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
 
 	/**
 	 * Constant indicating that an image or operation is of type bitmap  (value is 0).
