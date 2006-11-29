@@ -50,6 +50,7 @@ public class Browser extends Composite {
 	XPCOMObject contextMenuListener;	
 	XPCOMObject uriContentListener;
 	XPCOMObject tooltipListener;
+	XPCOMObject directoryServiceProviderListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
 	int /*long*/ request;
@@ -71,9 +72,10 @@ public class Browser extends Composite {
 	static nsIAppShell AppShell;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
-	static boolean initialized, ignoreDispose, usingProfile;
+	static boolean initialized, ignoreDispose;
 	static Callback eventCallback;
 	static int /*long*/ eventProc;
+	static String profileRootDirectory;
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
@@ -85,7 +87,19 @@ public class Browser extends Composite {
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
 	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
-	static final String PROFILE_DIR = "/eclipse"; //$NON-NLS-1$
+	static final String PROFILE_DIR = "/eclipse/"; //$NON-NLS-1$
+	static final String HISTORY_FILE = "history.dat"; //$NON-NLS-1$
+	static final String MIMETYPES_FILE = "mimeTypes.rdf"; //$NON-NLS-1$
+	static final String PREFERENCES_FILE = "prefs.js"; //$NON-NLS-1$
+	static final String CHROME_DIR = "chrome"; //$NON-NLS-1$
+	static final String LOCALSTORE_FILE = "localstore.rdf"; //$NON-NLS-1$
+	static final String PROFILE_AFTER_CHANGE = "profile-after-change"; //$NON-NLS-1$
+	static final String PROFILE_BEFORE_CHANGE = "profile-before-change"; //$NON-NLS-1$
+	static final String PROFILE_DO_CHANGE = "profile-do-change"; //$NON-NLS-1$
+	static final String PROFILE_CHANGE_NET_TEARDOWN = "profile-change-net-teardown"; //$NON-NLS-1$
+	static final String PROFILE_CHANGE_TEARDOWN = "profile-change-teardown"; //$NON-NLS-1$
+	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
+	static final String STARTUP = "startup"; //$NON-NLS-1$
 	static final int STOP_PROPOGATE = 1;
 /**
  * Constructs a new instance of this class given its parent
@@ -165,47 +179,6 @@ public Browser(Composite parent, int style) {
 				 * known that the failure was not due to the libstdc++.so.6 dependency.
 				 */
 				SWT.error (SWT.ERROR_NO_HANDLES, e);
-			}
-		}
-
-		/*
-		 * Try to load the various profile libraries until one is found that loads successfully:
-		 * - mozilla14profile/mozilla14profile-gcc should succeed for mozilla 1.4 - 1.6
-		 * - mozilla17profile/mozilla17profile-gcc should succeed for mozilla 1.7.x and firefox
-		 * - mozilla18profile/mozilla18profile-gcc should succeed for mozilla 1.8.x (seamonkey)
-		 */
-		try {
-			Library.loadLibrary ("swt-mozilla14-profile"); //$NON-NLS-1$
-			usingProfile = true;
-		} catch (UnsatisfiedLinkError e1) {
-			try {
-				Library.loadLibrary ("swt-mozilla17-profile"); //$NON-NLS-1$
-				usingProfile = true;
-			} catch (UnsatisfiedLinkError e2) {
-				try {
-					Library.loadLibrary ("swt-mozilla14-profile-gcc3"); //$NON-NLS-1$
-					usingProfile = true;
-				} catch (UnsatisfiedLinkError e3) {
-					try {
-						Library.loadLibrary ("swt-mozilla17-profile-gcc3"); //$NON-NLS-1$
-						usingProfile = true;
-					} catch (UnsatisfiedLinkError e4) {
-						try {
-							Library.loadLibrary ("swt-mozilla18-profile"); //$NON-NLS-1$
-							usingProfile = true;
-						} catch (UnsatisfiedLinkError e5) {
-							try {
-								Library.loadLibrary ("swt-mozilla18-profile-gcc3"); //$NON-NLS-1$
-								usingProfile = true;
-							} catch (UnsatisfiedLinkError e6) {
-								/* 
-								* fail silently, the Browser will still work without profile support
-								* but will abort any attempts to navigate to HTTPS pages
-								*/
-							}
-						}
-					}
-				}
 			}
 		}
 
@@ -301,71 +274,99 @@ public Browser(Composite parent, int style) {
 		}
 		windowWatcher.Release();
 
-		/* specify the user profile directory */
-		if (usingProfile) {
-			buffer = Converter.wcsToMbcs(null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
-			rc = serviceManager.GetServiceByContractID(buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-
-			nsIDirectoryService directoryService = new nsIDirectoryService(result[0]);
-			result[0] = 0;
-			rc = directoryService.QueryInterface(nsIProperties.NS_IPROPERTIES_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-			directoryService.Release();
-
-			nsIProperties properties = new nsIProperties(result[0]);
-			result[0] = 0;
-			buffer = Converter.wcsToMbcs(null, XPCOM.NS_APP_APPLICATION_REGISTRY_DIR, true);
-			rc = properties.Get(buffer, nsIFile.NS_IFILE_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-			properties.Release();
-
-			nsIFile profileDir = new nsIFile(result[0]);
-			result[0] = 0;
-			int /*long*/ path = XPCOM.nsEmbedCString_new();
-			rc = profileDir.GetNativePath(path);
-			if (rc != XPCOM.NS_OK) error(rc);
-			profileDir.Release(); //
-
-			int length = XPCOM.nsEmbedCString_Length(path);
-			ptr = XPCOM.nsEmbedCString_get(path);
-			buffer = new byte [length];
-			XPCOM.memmove(buffer, ptr, length);
-			XPCOM.nsEmbedCString_delete(path);
-			String string = new String(Converter.mbcsToWcs(null, buffer)) + PROFILE_DIR; 
-			pathString = new nsEmbedString(string);
-			rc = XPCOM.NS_NewLocalFile(pathString.getAddress(), true, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
-			pathString.dispose(); //
-
-			profileDir = new nsIFile(result[0]);
-			result[0] = 0;
-
-			rc = XPCOM_PROFILE.NS_NewProfileDirServiceProvider(true, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-
-			final int /*long*/ dirServiceProvider = result[0];
-			result[0] = 0;
-			rc = XPCOM_PROFILE.ProfileDirServiceProvider_Register(dirServiceProvider);
-			if (rc != XPCOM.NS_OK) error(rc);
-			rc = XPCOM_PROFILE.ProfileDirServiceProvider_SetProfileDir(dirServiceProvider, profileDir.getAddress());
-			if (rc != XPCOM.NS_OK) error(rc);
-
-			getDisplay().addListener(SWT.Dispose, new Listener() {
-				public void handleEvent(Event e) {
-					XPCOM_PROFILE.ProfileDirServiceProvider_Shutdown(dirServiceProvider);
-				}
-			});
+		/* compute the root profile directory */
+		buffer = Converter.wcsToMbcs(null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
+		rc = serviceManager.GetServiceByContractID(buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			dispose();
+			error(rc);
+		}
+		if (result[0] == 0) {
+			dispose();
+			error(XPCOM.NS_NOINTERFACE);
 		}
 
+		nsIDirectoryService directoryService = new nsIDirectoryService(result[0]);
+		result[0] = 0;
+		rc = directoryService.QueryInterface(nsIProperties.NS_IPROPERTIES_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			dispose();
+			error(rc);
+		}
+		if (result[0] == 0) {
+			dispose();
+			error(XPCOM.NS_NOINTERFACE);
+		}
+		directoryService.Release();
+
+		nsIProperties properties = new nsIProperties(result[0]);
+		result[0] = 0;
+		buffer = Converter.wcsToMbcs(null, XPCOM.NS_APP_APPLICATION_REGISTRY_DIR, true);
+		rc = properties.Get(buffer, nsIFile.NS_IFILE_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			dispose();
+			error(rc);
+		}
+		if (result[0] == 0) {
+			dispose();
+			error(XPCOM.NS_NOINTERFACE);
+		}
+		properties.Release();
+
+		nsIFile profileDir = new nsIFile(result[0]);
+		result[0] = 0;
+		int /*long*/ path = XPCOM.nsEmbedCString_new();
+		rc = profileDir.GetNativePath(path);
+		if (rc != XPCOM.NS_OK) {
+			dispose();
+			error(rc);
+		}
+		int length = XPCOM.nsEmbedCString_Length(path);
+		ptr = XPCOM.nsEmbedCString_get(path);
+		buffer = new byte [length];
+		XPCOM.memmove(buffer, ptr, length);
+		profileRootDirectory = new String(Converter.mbcsToWcs(null, buffer)) + PROFILE_DIR;
+		XPCOM.nsEmbedCString_delete(path);
+		profileDir.Release();
+
+		display.addListener(SWT.Dispose, new Listener() {
+			public void handleEvent(Event event) {
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager(result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+
+				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+				result[0] = 0;		
+				byte[] buffer = Converter.wcsToMbcs(null, XPCOM.NS_OBSERVER_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID(buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				serviceManager.Release();
+
+				nsIObserverService observerService = new nsIObserverService(result[0]);
+				result[0] = 0;
+				buffer = Converter.wcsToMbcs(null, PROFILE_CHANGE_NET_TEARDOWN, true);
+				int length = SHUTDOWN_PERSIST.length();
+				char[] chars = new char [length + 1];
+				SHUTDOWN_PERSIST.getChars(0, length, chars, 0);
+				rc = observerService.NotifyObservers(0, buffer, chars);
+				if (rc != XPCOM.NS_OK) error(rc);
+
+				buffer = Converter.wcsToMbcs(null, PROFILE_CHANGE_TEARDOWN, true);
+				rc = observerService.NotifyObservers(0, buffer, chars);
+				if (rc != XPCOM.NS_OK) error(rc);
+
+				buffer = Converter.wcsToMbcs(null, PROFILE_BEFORE_CHANGE, true);
+				rc = observerService.NotifyObservers(0, buffer, chars);
+				if (rc != XPCOM.NS_OK) error(rc);
+				observerService.Release();
+			}
+		});
+
 		/*
-		 * As a result of using a common profile (or none at all), the user cannot specify
-		 * their locale and charset.  The fix for this is to set mozilla's locale and charset
+		 * As a result of using a common profile the user cannot change their locale
+		 * and charset.  The fix for this is to set mozilla's locale and charset
 		 * preference values according to the user's current locale and charset.
 		 */
 		buffer = XPCOM.NS_PREFSERVICE_CONTRACTID.getBytes();
@@ -428,7 +429,7 @@ public Browser(Composite parent, int style) {
 				dispose();
 				error(XPCOM.NS_NOINTERFACE);
 			}
-			int length = XPCOM.strlen_PRUnichar(result[0]);
+			length = XPCOM.strlen_PRUnichar(result[0]);
 			char[] dest = new char[length];
 			XPCOM.memmove(dest, result[0], length * 2);
 			prefLocales = new String(dest) + TOKENIZER_LOCALE;
@@ -461,7 +462,7 @@ public Browser(Composite parent, int style) {
 		if (!newLocales.equals(prefLocales)) {
 			/* write the new locale value */
 			newLocales = newLocales.substring(0, newLocales.length() - TOKENIZER_LOCALE.length ()); /* remove trailing tokenizer */
-			int length = newLocales.length();
+			length = newLocales.length();
 			char[] charBuffer = new char[length + 1];
 			newLocales.getChars(0, length, charBuffer, 0);
 			if (localizedString == null) {
@@ -514,7 +515,7 @@ public Browser(Composite parent, int style) {
 				dispose();
 				error(XPCOM.NS_NOINTERFACE);
 			}
-			int length = XPCOM.strlen_PRUnichar(result[0]);
+			length = XPCOM.strlen_PRUnichar(result[0]);
 			char[] dest = new char[length];
 			XPCOM.memmove(dest, result[0], length * 2);
 			prefCharset = new String(dest);
@@ -524,7 +525,7 @@ public Browser(Composite parent, int style) {
 		String newCharset = System.getProperty("file.encoding");	// $NON-NLS-1$
 		if (!newCharset.equals(prefCharset)) {
 			/* write the new charset value */
-			int length = newCharset.length();
+			length = newCharset.length();
 			char[] charBuffer = new char[length + 1];
 			newCharset.getChars(0, length, charBuffer, 0);
 			if (localizedString == null) {
@@ -685,7 +686,8 @@ public Browser(Composite parent, int style) {
 		error(XPCOM.NS_ERROR_NO_INTERFACE);
 	}
 	
-	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);	
+	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
+	result[0] = 0;
 	Rectangle rect = getClientArea();
 	if (rect.isEmpty()) {
 		rect.width = 1;
@@ -743,6 +745,69 @@ public Browser(Composite parent, int style) {
 			error(SWT.ERROR_NO_MORE_CALLBACKS);
 		}
 	}
+
+	rc = XPCOM.NS_GetServiceManager(result);
+	if (rc != XPCOM.NS_OK) {
+		dispose();
+		error(rc);
+	}
+	if (result[0] == 0) {
+		dispose();
+		error(XPCOM.NS_NOINTERFACE);
+	}
+
+	nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+	result[0] = 0;		
+	byte[] buffer = Converter.wcsToMbcs(null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID(buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		dispose();
+		error(rc);
+	}
+	if (result[0] == 0) {
+		dispose();
+		error(XPCOM.NS_NOINTERFACE);
+	}
+
+	nsIDirectoryService directoryService = new nsIDirectoryService(result[0]);
+	result[0] = 0;
+	rc = directoryService.RegisterProvider(directoryServiceProviderListener.getAddress());
+	if (rc != XPCOM.NS_OK) {
+		dispose();
+		error(rc);
+	}
+	directoryService.Release();
+
+	buffer = Converter.wcsToMbcs(null, XPCOM.NS_OBSERVER_CONTRACTID, true);
+	rc = serviceManager.GetServiceByContractID(buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
+	if (rc != XPCOM.NS_OK) {
+		dispose();
+		error(rc);
+	}
+	if (result[0] == 0) {
+		dispose();
+		error(XPCOM.NS_NOINTERFACE);
+	}
+	serviceManager.Release();
+
+	nsIObserverService observerService = new nsIObserverService(result[0]);
+	result[0] = 0;
+	buffer = Converter.wcsToMbcs(null, PROFILE_DO_CHANGE, true);
+	int length = STARTUP.length();
+	char[] chars = new char [length + 1];
+	STARTUP.getChars(0, length, chars, 0);
+	rc = observerService.NotifyObservers(0, buffer, chars);
+	if (rc != XPCOM.NS_OK) {
+		dispose();
+		error(rc);
+	}
+	buffer = Converter.wcsToMbcs(null, PROFILE_AFTER_CHANGE, true);
+	rc = observerService.NotifyObservers(0, buffer, chars);
+	if (rc != XPCOM.NS_OK) {
+		dispose();
+		error(rc);
+	}
+	observerService.Release();
 
 	/*
 	* Feature in Mozilla.  GtkEvents such as key down, key pressed may be consumed
@@ -1256,6 +1321,13 @@ void createCOMInterfaces() {
 		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 		public int /*long*/ method3(int /*long*/[] args) {return OnShowTooltip(args[0], args[1], args[2]);}
 		public int /*long*/ method4(int /*long*/[] args) {return OnHideTooltip();}		
+	};
+
+	directoryServiceProviderListener = new XPCOMObject(new int[]{2, 0, 0, 3}){
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return GetFile(args[0], args[1], args[2]);}
 	};
 }
 
@@ -2140,6 +2212,11 @@ int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef();
 		return XPCOM.NS_OK;
 	}
+	if (guid.Equals(nsIDirectoryServiceProvider.NS_IDIRECTORYSERVICEPROVIDER_IID)) {
+		XPCOM.memmove(ppvObject, new int /*long*/[] {directoryServiceProviderListener.getAddress()}, OS.PTR_SIZEOF);
+		AddRef();
+		return XPCOM.NS_OK;
+	}
 	XPCOM.memmove(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -2293,43 +2370,17 @@ int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 }
 
 int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStatus, int /*long*/ aMessage) {
-	/*
-	* Feature in Mozilla.  Navigating to an HTTPS link without a user profile
-	* set causes a crash.  The workaround is to abort attempts to navigate to
-	* HTTPS pages if a profile is not being used.
-	* 
-	* Most navigation requests for HTTPS pages are handled in OnStartURIOpen.
-	* However, https page requests that do not initially specify https as their
-	* protocol will get past this check since they are resolved afterwards.
-	* The workaround is to check the url whenever there is a status change, and
-	* to abort any detected https requests if a profile is not being used.
-	*/
-	nsIRequest request = new nsIRequest(aRequest);
-	int /*long*/ aName = XPCOM.nsEmbedCString_new();
-	request.GetName(aName);
-	int length = XPCOM.nsEmbedCString_Length(aName);
-	int /*long*/ buffer = XPCOM.nsEmbedCString_get(aName);
-	byte[] bytes = new byte[length];
-	XPCOM.memmove(bytes, buffer, length);
-	XPCOM.nsEmbedCString_delete(aName);
-	String value = new String(bytes);
-	if (!usingProfile && value.startsWith(XPCOM.HTTPS_PROTOCOL)) {
-		request.Cancel(XPCOM.NS_BINDING_ABORTED);
-		return XPCOM.NS_OK;
-	}
-
 	if (statusTextListeners.length == 0) return XPCOM.NS_OK;
-
 	StatusTextEvent event = new StatusTextEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	length = XPCOM.strlen_PRUnichar(aMessage);
+	int length = XPCOM.strlen_PRUnichar(aMessage);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aMessage, length * 2);
 	event.text = new String(dest);
-	for (int i = 0; i < statusTextListeners.length; i++)
+	for (int i = 0; i < statusTextListeners.length; i++) {
 		statusTextListeners[i].changed(event);
-
+	}
 	return XPCOM.NS_OK;
 }		
 
@@ -2606,17 +2657,11 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsEmbedCString_delete(aSpec);
 	String value = new String(dest);
-	/*
-	* Feature in Mozilla.  Navigating to an HTTPS link without a user profile
-	* set causes a crash.  The workaround is to abort attempts to navigate to
-	* HTTPS pages if a profile is not being used.
-	*/
-	boolean isHttps = value.startsWith(XPCOM.HTTPS_PROTOCOL);
 	if (locationListeners.length == 0) {
-		XPCOM.memmove(retval, new int[] {isHttps && !usingProfile ? 1 : 0}, 4);
+		XPCOM.memmove(retval, new int[] {0}, 4);
 		return XPCOM.NS_OK;
 	}
-	boolean doit = !isHttps || usingProfile;
+	boolean doit = true;
 	if (request == 0) {
 		LocationEvent event = new LocationEvent(this);
 		event.display = getDisplay();
@@ -2634,7 +2679,7 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 		for (int i = 0; i < locationListeners.length; i++) {
 			locationListeners[i].changing(event);
 		}
-		if (!isHttps || usingProfile) doit = event.doit;
+		doit = event.doit;
 	}
 	/* Note. boolean remains of size 4 on 64 bit machine */
 	XPCOM.memmove(retval, new int[] {doit ? 0 : 1}, 4);
@@ -2737,6 +2782,52 @@ int /*long*/ OnShowTooltip(int /*long*/ aXCoords, int /*long*/ aYCoords, int /*l
 int /*long*/ OnHideTooltip() {
 	if (tip != null && !tip.isDisposed()) tip.dispose();
 	tip = null;
+	return XPCOM.NS_OK;
+}
+
+/* nsIDirectoryServiceProvider */
+
+int /*long*/ GetFile(int /*long*/ prop, int /*long*/ persistent, int /*long*/ retVal) {
+	int size = XPCOM.strlen(prop);
+	byte[] bytes = new byte[size];
+	XPCOM.memmove(bytes, prop, size);
+	String propertyName = new String(Converter.mbcsToWcs(null, bytes));
+	String propertyValue = null;
+
+	if (propertyName.equals(XPCOM.NS_APP_HISTORY_50_FILE)) {
+		propertyValue = profileRootDirectory + HISTORY_FILE;
+	} else if (propertyName.equals(XPCOM.NS_APP_USER_MIMETYPES_50_FILE)) {
+		propertyValue = profileRootDirectory + MIMETYPES_FILE;
+	} else if (propertyName.equals(XPCOM.NS_APP_PREFS_50_FILE)) {
+		propertyValue = profileRootDirectory + PREFERENCES_FILE;
+	} else if (propertyName.equals(XPCOM.NS_APP_PREFS_50_DIR)) {
+		propertyValue = profileRootDirectory;
+	} else if (propertyName.equals(XPCOM.NS_APP_USER_CHROME_DIR)) {
+		propertyValue = profileRootDirectory + CHROME_DIR;
+	} else if (propertyName.equals(XPCOM.NS_APP_USER_PROFILE_50_DIR)) {
+		propertyValue = profileRootDirectory;
+	} else if (propertyName.equals(XPCOM.NS_APP_LOCALSTORE_50_FILE)) {
+		propertyValue = profileRootDirectory + LOCALSTORE_FILE;
+	} else if (propertyName.equals(XPCOM.NS_APP_CACHE_PARENT_DIR)) {
+		propertyValue = profileRootDirectory;
+	} else if (propertyName.equals(XPCOM.NS_OS_HOME_DIR)) {
+		propertyValue = System.getProperty("user.home");	//$NON-NLS-1$
+	} else if (propertyName.equals(XPCOM.NS_OS_TEMP_DIR)) {
+		propertyValue = System.getProperty("java.io.tmpdir");	//$NON-NLS-1$
+	}
+
+	if (propertyValue != null && propertyValue.length() > 0) {
+		int /*long*/[] result = new int /*long*/[1];
+		nsEmbedString pathString = new nsEmbedString(propertyValue);
+		int rc = XPCOM.NS_NewLocalFile(pathString.getAddress(), true, result);
+		if (rc != XPCOM.NS_OK) error(rc);
+		if (result[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
+		pathString.dispose();
+		XPCOM.memmove(retVal, new int /*long*/[] {result[0]}, OS.PTR_SIZEOF);
+		/* note that boolean remains of size 4 on 64 bit machines */
+		XPCOM.memmove(persistent, new int[] {1}, 4);
+	}
+
 	return XPCOM.NS_OK;
 }
 }

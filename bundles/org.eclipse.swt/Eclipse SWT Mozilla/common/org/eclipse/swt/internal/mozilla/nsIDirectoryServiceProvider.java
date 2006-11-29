@@ -27,29 +27,21 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIDirectoryService extends nsISupports {
+public class nsIDirectoryServiceProvider extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 3;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
-	public static final String NS_IDIRECTORYSERVICE_IID_STR =
-		"57a66a60-d43a-11d3-8cc2-00609792278c";
+	public static final String NS_IDIRECTORYSERVICEPROVIDER_IID_STR =
+		"bbf8cab0-d43a-11d3-8cc2-00609792278c";
 
-	public static final nsID NS_IDIRECTORYSERVICE_IID =
-		new nsID(NS_IDIRECTORYSERVICE_IID_STR);
+	public static final nsID NS_IDIRECTORYSERVICEPROVIDER_IID =
+		new nsID(NS_IDIRECTORYSERVICEPROVIDER_IID_STR);
 
-	public nsIDirectoryService(int /*long*/ address) {
+	public nsIDirectoryServiceProvider(int /*long*/ address) {
 		super(address);
 	}
 
-	public int Init() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
-	}
-
-	public int RegisterProvider(int /*long*/ prov) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), prov);
-	}
-
-	public int UnregisterProvider(int /*long*/ prov) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), prov);
+	public int GetFile(byte[] prop, boolean[] persistent, int /*long*/[] _retval) {
+		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), prop, persistent, _retval);
 	}
 }

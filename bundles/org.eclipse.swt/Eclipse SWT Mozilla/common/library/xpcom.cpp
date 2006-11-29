@@ -527,6 +527,22 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__III_3B
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
+{
+	jbyte *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3B_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jbyte *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3B_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__III_3BI_3I
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3BI_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jint arg4, jintArray arg5)
@@ -542,6 +558,22 @@ fail:
 	if (arg5 && lparg5) env->ReleaseIntArrayElements(arg5, lparg5, 0);
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3BI_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__III_3BZ
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3BZ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jboolean arg4)
+{
+	jbyte *lparg3=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3BZ_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jbyte *, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, arg4);
+fail:
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3BZ_FUNC);
 	return rc;
 }
 #endif
@@ -567,6 +599,25 @@ fail:
 	if (arg4 && lparg4) env->ReleaseByteArrayElements(arg4, lparg4, 0);
 	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3B_3B_3BI_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__III_3B_3C
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3B_3C)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jcharArray arg4)
+{
+	jbyte *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__III_3B_3C_FUNC);
+	if (arg3) if ((lparg3 = env->GetByteArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetCharArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jbyte *, jchar *))(*(jint **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseCharArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseByteArrayElements(arg3, lparg3, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__III_3B_3C_FUNC);
 	return rc;
 }
 #endif
@@ -1573,6 +1624,28 @@ fail:
 	if (arg3 && lparg3) env->ReleaseBooleanArrayElements(arg3, lparg3, 0);
 	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
 	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3Z_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3B_3Z_3I
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3Z_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbooleanArray arg3, jintArray arg4)
+{
+	jbyte *lparg2=NULL;
+	jboolean *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__II_3B_3Z_3I_FUNC);
+	if (arg2) if ((lparg2 = env->GetByteArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetBooleanArrayElements(arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = env->GetIntArrayElements(arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jbyte *, jboolean *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) env->ReleaseIntArrayElements(arg4, lparg4, 0);
+	if (arg3 && lparg3) env->ReleaseBooleanArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__II_3B_3Z_3I_FUNC);
 	return rc;
 }
 #endif

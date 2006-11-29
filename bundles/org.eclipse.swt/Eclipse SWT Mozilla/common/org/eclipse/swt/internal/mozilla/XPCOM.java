@@ -33,7 +33,6 @@ public class XPCOM extends Platform {
 	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
 	public static final String CONTENT_MAYBETEXT = "application/x-vnd.mozilla.maybe-text"; //$NON-NLS-1$
 	public static final String CONTENT_MULTIPART = "multipart/x-mixed-replace"; //$NON-NLS-1$
-	public static final String HTTPS_PROTOCOL = "https:";  //$NON-NLS-1$
 	
 	/* CID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
@@ -52,11 +51,24 @@ public class XPCOM extends Platform {
 	public static final String NS_FILEPICKER_CONTRACTID = "@mozilla.org/filepicker;1"; //$NON-NLS-1$
 	public static final String NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID = "@mozilla.org/helperapplauncherdialog;1"; //$NON-NLS-1$
 	public static final String NS_MEMORY_CONTRACTID = "@mozilla.org/xpcom/memory-service;1"; //$NON-NLS-1$
+	public static final String NS_OBSERVER_CONTRACTID = "@mozilla.org/observer-service;1"; //$NON-NLS-1$
 	public static final String NS_PREFLOCALIZEDSTRING_CONTRACTID = "@mozilla.org/pref-localizedstring;1"; //$NON-NLS-1$
 	public static final String NS_PREFSERVICE_CONTRACTID = "@mozilla.org/preferences-service;1"; //$NON-NLS-1$
 	public static final String NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1"; //$NON-NLS-1$
 	public static final String NS_TRANSFER_CONTRACTID = "@mozilla.org/transfer;1"; //$NON-NLS-1$
 	public static final String NS_WINDOWWATCHER_CONTRACTID = "@mozilla.org/embedcomp/window-watcher;1"; //$NON-NLS-1$
+
+	/* directory service constants */
+	public static final String NS_APP_HISTORY_50_FILE = "UHist"; //$NON-NLS-1$
+	public static final String NS_APP_USER_MIMETYPES_50_FILE = "UMimTyp"; //$NON-NLS-1$
+	public static final String NS_APP_PREFS_50_FILE = "PrefF"; //$NON-NLS-1$
+	public static final String NS_APP_USER_CHROME_DIR = "UChrm"; //$NON-NLS-1$
+	public static final String NS_APP_LOCALSTORE_50_FILE = "LclSt"; //$NON-NLS-1$
+	public static final String NS_APP_USER_PROFILE_50_DIR = "ProfD"; //$NON-NLS-1$
+	public static final String NS_APP_PREFS_50_DIR = "PrefD"; //$NON-NLS-1$
+	public static final String NS_APP_CACHE_PARENT_DIR = "cachePDir"; //$NON-NLS-1$
+	public static final String NS_OS_HOME_DIR = "Home"; //$NON-NLS-1$
+	public static final String NS_OS_TEMP_DIR = "TmpD"; //$NON-NLS-1$
 
 	/* XPCOM constants */
 	public static final int NS_OK =  0;
@@ -222,4 +234,9 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0,
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, nsID arg1, int /*long*/ arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, long arg2, long arg3, long arg4, long arg5);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, long arg4, int /*long*/ arg5, int /*long*/ arg6);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, byte[] arg1);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, byte[] arg1, boolean arg2);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, byte[] arg1, char[] arg2);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, boolean[] arg1, int /*long*/[] arg2);
+
 }
