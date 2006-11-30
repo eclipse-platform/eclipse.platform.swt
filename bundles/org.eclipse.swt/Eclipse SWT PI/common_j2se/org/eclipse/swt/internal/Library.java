@@ -179,7 +179,7 @@ public static void loadLibrary (String name) {
 	/* Try loading library from swt library path */
 	String path = System.getProperty ("swt.library.path"); //$NON-NLS-1$
 	if (path != null) {
-		path = new File(path).getAbsolutePath ();
+		path = new File (path).getAbsolutePath ();
 		if (load (path + SEPARATOR + mappedName1)) return;
 		if (load (path + SEPARATOR + mappedName2)) return;
 	}
@@ -191,7 +191,7 @@ public static void loadLibrary (String name) {
 	/* Try loading library from the tmp directory if swt library path is not specified */
 	if (path == null) {
 		path = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
-		path = new File(path).getAbsolutePath ();
+		path = new File (path).getAbsolutePath ();
 		if (load (path + SEPARATOR + mappedName1)) return;
 		if (load (path + SEPARATOR + mappedName2)) return;
 	}
@@ -203,7 +203,7 @@ public static void loadLibrary (String name) {
 	}
 	
 	/* Failed to find the library */
-	throw new UnsatisfiedLinkError ("no " + libName1 + " or " + libName2 + " in swt.library.path, java.libary.path or the jar file");
+	throw new UnsatisfiedLinkError ("no " + libName1 + " or " + libName2 + " in swt.library.path, java.libary.path or the jar file"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 }
 
 }
