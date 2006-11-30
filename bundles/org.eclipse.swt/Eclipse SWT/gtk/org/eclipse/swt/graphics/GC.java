@@ -2387,7 +2387,7 @@ public LineAttributes getLineAttributes() {
 		dashes = new float[data.lineDashes.length];
 		System.arraycopy(data.lineDashes, 0, dashes, 0, dashes.length);
 	}
-	return new LineAttributes(data.lineWidth, data.lineStyle, data.lineCap, data.lineJoin, dashes, data.lineDashesOffset, data.lineMiterLimit);
+	return new LineAttributes(data.lineWidth, data.lineCap, data.lineJoin, data.lineStyle, dashes, data.lineDashesOffset, data.lineMiterLimit);
 }
 
 /** 
