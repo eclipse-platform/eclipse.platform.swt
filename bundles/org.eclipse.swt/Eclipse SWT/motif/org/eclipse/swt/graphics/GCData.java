@@ -34,10 +34,12 @@ public final class GCData {
 	public Font font;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
-	public int lineWidth;
+	public float lineWidth;
 	public int lineCap = SWT.CAP_FLAT;
 	public int lineJoin = SWT.JOIN_MITER;
-	public int[] lineDashes;
+	public float[] lineDashes;
+	public float lineDashesOffset;
+	public float lineMiterLimit = 10;
 	public int alpha = 0xFF;
 	public int interpolation = SWT.DEFAULT;
 
