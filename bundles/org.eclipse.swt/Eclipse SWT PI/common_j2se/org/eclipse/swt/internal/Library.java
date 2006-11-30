@@ -107,18 +107,18 @@ static boolean extract (String fileName, String mappedName) {
 				if (!Platform.PLATFORM.equals ("win32")) { //$NON-NLS-1$
 					try {
 						Runtime.getRuntime ().exec (new String []{"chmod", "755", fileName}).waitFor(); //$NON-NLS-1$ //$NON-NLS-2$
-					} catch (Throwable e4) {}
+					} catch (Throwable e) {}
 				}
 				if (load (fileName)) return true;
 			}
 		}
-	} catch (Throwable e4) {
+	} catch (Throwable e) {
 		try {
 			if (os != null) os.close ();
-		} catch (IOException e) {}
+		} catch (IOException e1) {}
 		try {
 			if (is != null) is.close ();
-		} catch (IOException e) {}
+		} catch (IOException e1) {}
 	}
 	if (file.exists ()) file.delete ();
 	return false;
@@ -132,7 +132,7 @@ static boolean load (String libName) {
 			System.loadLibrary (libName);
 		}		
 		return true;
-	} catch (UnsatisfiedLinkError e3) {}
+	} catch (UnsatisfiedLinkError e) {}
 	return false;
 }
 
