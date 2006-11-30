@@ -34,12 +34,12 @@ public class DateTime extends Composite {
 	int[] fieldNames;
 	int fieldCount, currentField = 0, characterCount = 0;
 	boolean ignoreVerify = false;
-	static String defaultShortDateFormat = "MM/YYYY";
-	static String defaultMediumDateFormat = "MM/DD/YYYY";
-	static String defaultLongDateFormat = "MM/DD/YYYY";
-	static String defaultShortTimeFormat = "HH:MM AM";
-	static String defaultMediumTimeFormat = "HH:MM:SS AM";
-	static String defaultLongTimeFormat = "HH:MM:SS AM";
+	static final String DEFAULT_SHORT_DATE_FORMAT = "MM/YYYY";
+	static final String DEFAULT_MEDIUM_DATE_FORMAT = "MM/DD/YYYY";
+	static final String DEFAULT_LONG_DATE_FORMAT = "MM/DD/YYYY";
+	static final String DEFAULT_SHORT_TIME_FORMAT = "HH:MM AM";
+	static final String DEFAULT_MEDIUM_TIME_FORMAT = "HH:MM:SS AM";
+	static final String DEFAULT_LONG_TIME_FORMAT = "HH:MM:SS AM";
 
 public DateTime (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -49,9 +49,9 @@ public DateTime (Composite parent, int style) {
 		formatSymbols = new DateFormatSymbols();
 		text = new Text(this, SWT.SINGLE);
 		if ((this.style & SWT.DATE) != 0) {
-			setFormat((this.style & SWT.SHORT) != 0 ? defaultShortDateFormat : (this.style & SWT.LONG) != 0 ? defaultLongDateFormat : defaultMediumDateFormat);
+			setFormat((this.style & SWT.SHORT) != 0 ? DEFAULT_SHORT_DATE_FORMAT : (this.style & SWT.LONG) != 0 ? DEFAULT_LONG_DATE_FORMAT : DEFAULT_MEDIUM_DATE_FORMAT);
 		} else { // SWT.TIME
-			setFormat((this.style & SWT.SHORT) != 0 ? defaultShortTimeFormat : (this.style & SWT.LONG) != 0 ? defaultLongTimeFormat : defaultMediumTimeFormat);
+			setFormat((this.style & SWT.SHORT) != 0 ? DEFAULT_SHORT_TIME_FORMAT : (this.style & SWT.LONG) != 0 ? DEFAULT_LONG_TIME_FORMAT : DEFAULT_MEDIUM_TIME_FORMAT);
 		}
 		text.setText(getFormattedString(this.style));
 		Listener listener = new Listener() {
@@ -207,10 +207,10 @@ String formattedStringValue(int fieldName, int value, boolean adjust) {
 
 String getComputeSizeString(int style) {
 	if ((style & SWT.DATE) != 0) {
-		return (style & SWT.SHORT) != 0 ? defaultShortDateFormat : (style & SWT.LONG) != 0 ? defaultLongDateFormat : defaultMediumDateFormat;
+		return (style & SWT.SHORT) != 0 ? DEFAULT_SHORT_DATE_FORMAT : (style & SWT.LONG) != 0 ? DEFAULT_LONG_DATE_FORMAT : DEFAULT_MEDIUM_DATE_FORMAT;
 	}
 	// SWT.TIME
-	return (style & SWT.SHORT) != 0 ? defaultShortTimeFormat : (style & SWT.LONG) != 0 ? defaultLongTimeFormat : defaultMediumTimeFormat;
+	return (style & SWT.SHORT) != 0 ? DEFAULT_SHORT_TIME_FORMAT : (style & SWT.LONG) != 0 ? DEFAULT_LONG_TIME_FORMAT : DEFAULT_MEDIUM_TIME_FORMAT;
 }
 
 int getFieldIndex(int fieldName) {
