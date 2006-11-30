@@ -743,7 +743,27 @@ public void setImage (Image image) {
 			Rectangle oldBounds = oldImage.getBounds();
 			Rectangle bounds = image.getBounds();
 			if (bounds.width == oldBounds.width && bounds.height == oldBounds.height) {
-				if (showing) parent.redraw(x, y, width, height, false);
+				if (showing) {
+					boolean selected = parent.indexOf(this) == parent.selectedIndex;
+					if (selected || parent.showUnselectedImage) {
+						int imageX = x + LEFT_MARGIN, maxImageWidth;
+						if (selected) {
+							if (parent.single && (parent.showClose || showClose)) imageX += CTabFolder.BUTTON_SIZE; 
+							int rightEdge = Math.min (x + width, parent.getRightItemEdge());
+							maxImageWidth = rightEdge - imageX - RIGHT_MARGIN;
+							if (!parent.single && closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
+						} else {
+							maxImageWidth = x + width - imageX - RIGHT_MARGIN;
+							if (parent.showUnselectedClose && (parent.showClose || showClose)) {
+								maxImageWidth -= closeRect.width + INTERNAL_SPACING;
+							}
+						}
+						if (bounds.width < maxImageWidth) {
+							int imageY = y + (height - bounds.height) / 2 + (parent.onBottom ? -1 : 1);
+							parent.redraw(imageX, imageY, bounds.width, bounds.height, false);
+						}
+					}
+				}
 				return;
 			}
 		} 
