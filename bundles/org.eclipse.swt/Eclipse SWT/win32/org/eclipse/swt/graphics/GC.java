@@ -70,14 +70,15 @@ public final class GC extends Resource {
 	static final int LINE_WIDTH = 1 << 4;
 	static final int LINE_CAP = 1 << 5;
 	static final int LINE_JOIN = 1 << 6;
-	static final int FOREGROUND_TEXT = 1 << 7;
-	static final int BACKGROUND_TEXT = 1 << 8;
-	static final int BRUSH = 1 << 9;
-	static final int PEN = 1 << 10;
-	static final int NULL_BRUSH = 1 << 11;
-	static final int NULL_PEN = 1 << 12;
+	static final int LINE_MITERLIMIT = 1 << 7;
+	static final int FOREGROUND_TEXT = 1 << 8;
+	static final int BACKGROUND_TEXT = 1 << 9;
+	static final int BRUSH = 1 << 10;
+	static final int PEN = 1 << 11;
+	static final int NULL_BRUSH = 1 << 12;
+	static final int NULL_PEN = 1 << 13;
 
-	static final int DRAW = FOREGROUND | LINE_STYLE | LINE_WIDTH | LINE_CAP | LINE_JOIN | PEN | NULL_BRUSH;
+	static final int DRAW = FOREGROUND | LINE_STYLE | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_MITERLIMIT | PEN | NULL_BRUSH;
 	static final int FILL = BACKGROUND | BRUSH | NULL_PEN;
 
 	static final float[] LINE_DOT_ZERO = new float[]{3, 3};
@@ -168,7 +169,7 @@ void checkGC(int mask) {
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
 		int pen = data.gdipPen;
-		int width = data.lineWidth;
+		float width = data.lineWidth;
 		if ((state & FOREGROUND) != 0) {
 			if (data.gdipFgBrush != 0) Gdip.SolidBrush_delete(data.gdipFgBrush);
 			data.gdipFgBrush = 0;
@@ -190,14 +191,19 @@ void checkGC(int mask) {
 			if (pen != 0) {
 				Gdip.Pen_SetBrush(pen, brush);
 			} else {
-				pen = data.gdipPen = Gdip.Pen_new(brush, Math.max (1, width));
+				pen = data.gdipPen = Gdip.Pen_new(brush, width);
 			}
 		}
 		if ((state & LINE_WIDTH) != 0) {
-			Gdip.Pen_SetWidth(pen, Math.max (1, width));			
+			Gdip.Pen_SetWidth(pen, width);
+			switch (data.lineStyle) {
+				case SWT.LINE_CUSTOM:
+					state |= LINE_STYLE;
+			}
 		}
 		if ((state & LINE_STYLE) != 0) {
 			float[] dashes = null;
+			float dashOffset = 0;
 			int dashStyle = Gdip.DashStyleSolid; 
 			switch (data.lineStyle) {
 				case SWT.LINE_SOLID: break;
@@ -207,9 +213,10 @@ void checkGC(int mask) {
 				case SWT.LINE_DASHDOTDOT: dashStyle = Gdip.DashStyleDashDotDot; if (width == 0) dashes = LINE_DASHDOTDOT_ZERO; break;
 				case SWT.LINE_CUSTOM: {
 					if (data.lineDashes != null) {
+						dashOffset = data.lineDashesOffset / Math.max (1, width);
 						dashes = new float[data.lineDashes.length * 2];
 						for (int i = 0; i < data.lineDashes.length; i++) {
-							float dash = (float)data.lineDashes[i] / Math.max (1, width);
+							float dash = data.lineDashes[i] / Math.max (1, width);
 							dashes[i] = dash;
 							dashes[i + data.lineDashes.length] = dash;
 						}
@@ -219,9 +226,13 @@ void checkGC(int mask) {
 			if (dashes != null) {
 				Gdip.Pen_SetDashPattern(pen, dashes, dashes.length);
 				Gdip.Pen_SetDashStyle(pen, Gdip.DashStyleCustom);
+				Gdip.Pen_SetDashOffset(pen, dashOffset);
 			} else {
 				Gdip.Pen_SetDashStyle(pen, dashStyle);
 			}
+		}
+		if ((state & LINE_MITERLIMIT) != 0) {
+			Gdip.Pen_SetMiterLimit(pen, data.lineMiterLimit);
 		}
 		if ((state & LINE_JOIN) != 0) {
 			int joinStyle = 0;
@@ -268,7 +279,7 @@ void checkGC(int mask) {
 	}
 	if ((state & (FOREGROUND | LINE_CAP | LINE_JOIN | LINE_STYLE | LINE_WIDTH)) != 0) {
 		int color = data.foreground;
-		int width = data.lineWidth;
+		int width = (int)data.lineWidth;
 		int[] dashes = null;
 		int lineStyle = OS.PS_SOLID;
 		switch (data.lineStyle) {
@@ -280,7 +291,10 @@ void checkGC(int mask) {
 			case SWT.LINE_CUSTOM: {
 				if (data.lineDashes != null) {
 					lineStyle = OS.PS_USERSTYLE;
-					dashes = data.lineDashes;
+					dashes = new int[data.lineDashes.length];
+					for (int i = 0; i < dashes.length; i++) {
+						dashes[i] = (int)data.lineDashes[i];
+					}
 				}
 				break;
 			}
@@ -3072,6 +3086,27 @@ public int getInterpolation() {
 }
 
 /** 
+ * Returns the receiver's line attributes.
+ *
+ * @return the line attributes used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.3 
+ */
+public LineAttributes getLineAttributes() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	float[] dashes = null;
+	if (data.lineDashes != null) {
+		dashes = new float[data.lineDashes.length];
+		System.arraycopy(data.lineDashes, 0, dashes, 0, dashes.length);
+	}
+	return new LineAttributes(data.lineWidth, data.lineStyle, data.lineCap, data.lineJoin, dashes, data.lineDashesOffset, data.lineMiterLimit);
+}
+
+/** 
  * Returns the receiver's line cap style, which will be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
  * or <code>SWT.CAP_SQUARE</code>.
@@ -3105,7 +3140,9 @@ public int[] getLineDash() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineDashes == null) return null;
 	int[] lineDashes = new int[data.lineDashes.length];
-	System.arraycopy(data.lineDashes, 0, lineDashes, 0, lineDashes.length);
+	for (int i = 0; i < lineDashes.length; i++) {
+		lineDashes[i] = (int)data.lineDashes[i];
+	}
 	return lineDashes;	
 }
 
@@ -3158,7 +3195,7 @@ public int getLineStyle() {
  */
 public int getLineWidth() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return data.lineWidth;
+	return (int)data.lineWidth;
 }
 
 /**
@@ -3451,6 +3488,7 @@ float measureSpace(int font, int format) {
  * @see #setBackgroundPattern
  * @see #setClipping(Path)
  * @see #setForegroundPattern
+ * @see #setLineAttributes
  * @see #setInterpolation
  * @see #setTextAntialias
  * @see #setTransform
@@ -3842,6 +3880,114 @@ public void setInterpolation(int interpolation) {
 	Gdip.Graphics_SetInterpolationMode(data.gdipGraphics, mode);
 }
 
+/**
+ * Sets the receiver's line attributes.
+ *
+ * @param attributes the line attributes
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the attributes is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the line attributes is not valid</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * since 3.3
+ */
+public void setLineAttributes(LineAttributes attributes) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (attributes == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	int mask = 0;
+	float lineWidth = attributes.width;
+	if (lineWidth != data.lineWidth) {
+		mask |= LINE_WIDTH;
+	}
+	int lineStyle = attributes.style;
+	if (lineStyle != data.lineStyle) {
+		mask |= LINE_STYLE;
+		switch (lineStyle) {
+			case SWT.LINE_SOLID:
+			case SWT.LINE_DASH:
+			case SWT.LINE_DOT:
+			case SWT.LINE_DASHDOT:
+			case SWT.LINE_DASHDOTDOT:
+				break;
+			case SWT.LINE_CUSTOM:
+				if (attributes.dash == null) lineStyle = SWT.LINE_SOLID;
+				break;
+			default:
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	int join = attributes.join;
+	if (join != data.lineJoin) {
+		mask |= LINE_JOIN;
+		switch (join) {
+			case SWT.CAP_ROUND:
+			case SWT.CAP_FLAT:
+			case SWT.CAP_SQUARE:
+				break;
+			default:
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	int cap = attributes.join;
+	if (cap != data.lineCap) {
+		mask |= LINE_CAP;
+		switch (cap) {
+			case SWT.JOIN_MITER:
+			case SWT.JOIN_ROUND:
+			case SWT.JOIN_BEVEL:
+				break;
+			default:
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+	float[] dashes = attributes.dash;
+	float[] lineDashes = data.lineDashes;
+	if (dashes != null && dashes.length > 0) {
+		boolean changed = lineDashes == null || lineDashes.length != dashes.length;
+		for (int i = 0; i < dashes.length; i++) {
+			float dash = dashes[i];
+			if (dash <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			if (!changed && lineDashes[i] != dash) changed = true;
+		}
+		if (changed) {
+			float[] newDashes = new float[dashes.length];
+			System.arraycopy(dashes, 0, newDashes, 0, dashes.length);
+			dashes = newDashes;
+			mask |= LINE_STYLE;
+		} else {
+			dashes = lineDashes;
+		}
+	} else {
+		if (lineDashes != null && lineDashes.length > 0) {
+			mask |= LINE_STYLE;
+		} else {
+			dashes = lineDashes;
+		}
+	}
+	float dashOffset = attributes.dashOffset;
+	if (dashOffset != data.lineDashesOffset) {
+		mask |= LINE_STYLE;
+	}
+	float miterLimit = attributes.miterLimit;
+	if (miterLimit != data.lineMiterLimit) {
+		mask |= LINE_MITERLIMIT;
+	}
+	initGdip();
+	if (mask == 0) return;
+	data.lineWidth = lineWidth;
+	data.lineStyle = lineStyle;
+	data.lineCap = cap;
+	data.lineJoin = join;
+	data.lineDashes = dashes;
+	data.lineDashesOffset = dashOffset;
+	data.lineMiterLimit = miterLimit;
+	data.state &= ~mask;
+}
+
 /** 
  * Sets the receiver's line cap style to the argument, which must be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
@@ -3892,7 +4038,7 @@ public void setLineCap(int cap) {
  */
 public void setLineDash(int[] dashes) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int[] lineDashes = data.lineDashes;
+	float[] lineDashes = data.lineDashes;
 	if (dashes != null && dashes.length > 0) {
 		boolean changed = data.lineStyle != SWT.LINE_CUSTOM || lineDashes == null || lineDashes.length != dashes.length;
 		for (int i = 0; i < dashes.length; i++) {
@@ -3901,8 +4047,10 @@ public void setLineDash(int[] dashes) {
 			if (!changed && lineDashes[i] != dash) changed = true;
 		}
 		if (!changed) return;
-		data.lineDashes = new int[dashes.length];
-		System.arraycopy(dashes, 0, data.lineDashes, 0, dashes.length);
+		data.lineDashes = new float[dashes.length];
+		for (int i = 0; i < dashes.length; i++) {
+			data.lineDashes[i] = dashes[i];
+		}
 		data.lineStyle = SWT.LINE_CUSTOM;
 	} else {
 		if (data.lineStyle == SWT.LINE_SOLID && (lineDashes == null || lineDashes.length == 0)) return;
@@ -4001,13 +4149,6 @@ public void setLineWidth(int lineWidth) {
 	if (data.lineWidth == lineWidth) return;
 	data.lineWidth = lineWidth;
 	data.state &= ~LINE_WIDTH;
-	switch (data.lineStyle) {
-		case SWT.LINE_DOT:
-		case SWT.LINE_DASH:
-		case SWT.LINE_DASHDOT:
-		case SWT.LINE_DASHDOTDOT:
-			data.state &= ~LINE_STYLE;
-	}
 }
 
 /** 
