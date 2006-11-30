@@ -2239,6 +2239,18 @@ public int getInterpolation() {
 	return SWT.DEFAULT;
 }
 
+public LineAttributes getLineAttributes() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	float[] dashes = null;
+	if (data.dashes != null) {
+		dashes = new float[data.dashes.length];
+		for (int i = 0; i < dashes.length; i++) {
+			dashes[i] = data.dashes[i];
+		}
+	}
+	return new LineAttributes(data.lineWidth, data.lineCap, data.lineJoin, data.lineStyle, dashes, 0, 10);
+}
+
 /** 
  * Returns the receiver's line cap style, which will be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
@@ -2902,6 +2914,12 @@ public void setForegroundPattern (Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+}
+
+public void setLineAttributes(LineAttributes attributes) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (attributes == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	//TODO - implement setLineAttributes
 }
 
 /** 
