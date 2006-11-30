@@ -321,7 +321,7 @@ void checkGC (int mask) {
 				for (int i = 0; i < dash_list.length; i++) {
 					dash_list[i] = (byte)(width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[i] : dashes[i] * width);
 				}
-				OS.gdk_gc_set_dashes(handle, -1, dash_list, dash_list.length);
+				OS.gdk_gc_set_dashes(handle, 0, dash_list, dash_list.length);
 			}
 			line_style = OS.GDK_LINE_ON_OFF_DASH;
 		} else {
