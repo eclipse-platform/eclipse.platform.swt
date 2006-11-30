@@ -4088,11 +4088,9 @@ public void setSelection (TreeItem [] items) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
-		hSelect = hNewItem;
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 		ignoreSelect = false;
-		hSelect = 0;
 		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hNewItem);
 		}
@@ -5053,7 +5051,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 							rect1.left = hItem;  rect2.left = hNewItem;
 							int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
 							if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = 0;
-							if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = 0;
 							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
 							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
 							/*
@@ -5400,7 +5397,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				rect1.left = hOldItem;  rect2.left = hNewItem;
 				int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
 				if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = 0;
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = 0;
 				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
 				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
 				/*
@@ -5990,6 +5986,28 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_SETREDRAW (int wParam, int lParam) {
+	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  Under certain circumstances, when
+	* WM_SETREDRAW is used to turn off drawing and then
+	* WM_GETITEMRECT is sent to get the bounds of an item
+	* that is not inside the client area, Windows segment
+	* faults.  The fix is to call the default window proc
+	* rather than the default tree proc.
+	* 
+	* NOTE:  This problem is intermittent and happens on
+	* Windows Vista running under the theme manager.
+	* 
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		int code = OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+		return code == 0 ? LRESULT.ZERO : new LRESULT (code);
+	}
+	return result;
+}
+
 LRESULT WM_SIZE (int wParam, int lParam) {
 	/*
 	 * Bug in Windows.  When TVS_NOHSCROLL is set when the
@@ -6235,14 +6253,24 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 				if ((style & SWT.MULTI) != 0) {
 					if (hSelect != 0) {
-						NMTVITEMCHANGE pItemChange = new NMTVITEMCHANGE ();
-						OS.MoveMemory (pItemChange, lParam, NMTVITEMCHANGE.sizeof);
-						if (hSelect == pItemChange.hItem) break;
-						return LRESULT.ONE;
+						NMTVITEMCHANGE pnm = new NMTVITEMCHANGE ();
+						OS.MoveMemory (pnm, lParam, NMTVITEMCHANGE.sizeof);
+						if (hSelect == pnm.hItem) break;
+						if ((pnm.uStateOld & OS.TVIS_SELECTED) != 0) {
+							if ((pnm.uStateNew & OS.TVIS_SELECTED) == 0) {
+								TVITEM tvItem = new TVITEM ();
+								tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+								tvItem.state = OS.TVIS_SELECTED;
+								tvItem.stateMask = OS.TVIS_SELECTED;
+								tvItem.hItem = pnm.hItem;
+								OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+								return LRESULT.ONE;
+							}
+						}
 					}
-					if (lockSelection) return LRESULT.ONE;
+//					if (lockSelection) return LRESULT.ONE;
 				}
-			}
+			}			
 			break;
 		}
 		case OS.TVN_SELCHANGINGA:
