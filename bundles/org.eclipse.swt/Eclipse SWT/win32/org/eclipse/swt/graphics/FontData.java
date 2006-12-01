@@ -64,7 +64,7 @@ public final class FontData {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 */
-	public int height;
+	public float height;
 	
 	/**
 	 * The locales of the font
@@ -89,7 +89,7 @@ public FontData() {
  * 
  * @param data the <code>LOGFONT</code> for the result
  */
-FontData(LOGFONT data, int height) {
+FontData(LOGFONT data, float height) {
 	this.data = data;
 	this.height = height;
 }
@@ -133,9 +133,9 @@ public FontData(String string) {
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int height = 0;
+	float height = 0;
 	try {
-		height = Integer.parseInt(string.substring(start, end));
+		height = Float.parseFloat(string.substring(start, end));
 	} catch (NumberFormatException e) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -266,6 +266,18 @@ public FontData(String name, int height, int style) {
 	data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 }
 
+/*public*/ FontData(String name, float height, int style) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+	setName(name);
+	setHeight(height);
+	setStyle(style);
+	// We set the charset field so that
+	// wildcard searching will work properly
+	// out of the box
+	data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
+}
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -342,6 +354,10 @@ int EnumLocalesProc(int lpLocaleString) {
  * @see #setHeight
  */
 public int getHeight() {
+	return (int)(0.5f + height);
+}
+
+/*public*/ float getHeightF() {
 	return height;
 }
 
@@ -440,7 +456,7 @@ public int getStyle() {
  * @see #equals
  */
 public int hashCode () {
-	return data.lfCharSet ^ height ^ data.lfWidth ^ data.lfEscapement ^
+	return data.lfCharSet ^ getHeight() ^ data.lfWidth ^ data.lfEscapement ^
 		data.lfOrientation ^ data.lfWeight ^ data.lfItalic ^data.lfUnderline ^
 		data.lfStrikeOut ^ data.lfCharSet ^ data.lfOutPrecision ^
 		data.lfClipPrecision ^ data.lfQuality ^ data.lfPitchAndFamily ^
@@ -461,6 +477,11 @@ public int hashCode () {
  * @see #getHeight
  */
 public void setHeight(int height) {
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.height = height;
+}
+
+/*public*/ void setHeight(float height) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.height = height;
 }
@@ -590,7 +611,7 @@ public String toString() {
 	buffer.append("1|"); //$NON-NLS-1$
 	buffer.append(getName());
 	buffer.append("|"); //$NON-NLS-1$
-	buffer.append(getHeight());
+	buffer.append(getHeightF());
 	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getStyle());
 	buffer.append("|"); //$NON-NLS-1$
@@ -639,7 +660,7 @@ public String toString() {
  * @param height the height of the font data
  * @return a new font data object containing the specified <code>LOGFONT</code> and height
  */
-public static FontData win32_new(LOGFONT data, int height) {
+public static FontData win32_new(LOGFONT data, float height) {
 	return new FontData(data, height);
 }
 

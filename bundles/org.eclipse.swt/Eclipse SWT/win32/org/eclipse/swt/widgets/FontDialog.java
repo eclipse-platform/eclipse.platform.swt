@@ -14,7 +14,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.Compatibility;
 
 /**
  * Instances of this class allow the user to select a font
@@ -149,7 +148,7 @@ public FontData open () {
 		LOGFONT logFont = fontData.data;
 		int lfHeight = logFont.lfHeight;
 		int hDC = OS.GetDC (0);
-		int pixels = -Compatibility.round (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY), 72);
+		int pixels = -(int)(0.5f + (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72));
 		OS.ReleaseDC (0, hDC);
 		logFont.lfHeight = pixels;
 		lpcf.Flags |= OS.CF_INITTOLOGFONTSTRUCT;
@@ -214,7 +213,7 @@ public FontData open () {
 		}
 		OS.ReleaseDC(0, hDC);
 
-		int points = Compatibility.round(pixels * 72, logPixelsY);
+		float points = pixels * 72f /logPixelsY;
 		fontData = FontData.win32_new (logFont, points);
 		int red = lpcf.rgbColors & 0xFF;
 		int green = (lpcf.rgbColors >> 8) & 0xFF;

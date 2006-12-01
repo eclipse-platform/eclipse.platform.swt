@@ -197,14 +197,14 @@ void checkGDIP() {
 protected void create (DeviceData data) {
 }
 
-int computePixels(int height) {
+int computePixels(float height) {
 	int hDC = internal_new_GC (null);
-	int pixels = -Compatibility.round(height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY), 72);
+	int pixels = -(int)(0.5f + (height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72f));
 	internal_dispose_GC (hDC, null);
 	return pixels;
 }
 
-int computePoints(LOGFONT logFont, int hFont) {
+float computePoints(LOGFONT logFont, int hFont) {
 	int hDC = internal_new_GC (null);
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	int pixels = 0; 
@@ -224,9 +224,8 @@ int computePoints(LOGFONT logFont, int hFont) {
 	} else {
 		pixels = -logFont.lfHeight;
 	}
-	internal_dispose_GC (hDC, null);
 
-	return Compatibility.round(pixels * 72, logPixelsY);
+	return pixels * 72f / logPixelsY;
 }
 
 /**
@@ -495,11 +494,20 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	internal_dispose_GC (hDC, null);
 
 	/* Create the fontData from the logfonts */
-	int count = nFonts - offset;
-	FontData [] result = new FontData [count];
-	for (int i=0; i<count; i++) {
-		int index = i + offset;
-		result [i] = FontData.win32_new (logFonts [index], Compatibility.round(pixels [index] * 72, logPixelsY));
+	int count = 0;
+	FontData [] result = new FontData [nFonts - offset];
+	for (int i=offset; i<nFonts; i++) {
+		FontData fd = FontData.win32_new (logFonts [i], pixels [i] * 72f / logPixelsY);
+		int j;
+		for (j = 0; j < count; j++) {
+			if (fd.equals (result [j])) break;
+		}
+		if (j == count) result [count++] = fd;
+	}
+	if (count != result.length) {
+		FontData [] newResult = new FontData [count];
+		System.arraycopy (result, 0, newResult, 0, count);
+		result = newResult;
 	}
 	
 	/* Clean up */
