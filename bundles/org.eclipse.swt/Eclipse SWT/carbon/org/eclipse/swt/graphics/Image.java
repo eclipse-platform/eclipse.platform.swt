@@ -499,78 +499,6 @@ public Image(Device device, InputStream stream) {
 public Image(Device device, String filename) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
-//	String name = filename.toLowerCase();
-//	boolean png = false, jpeg = false;
-//	if ((jpeg = name.endsWith(".jpg")) || (png = name.endsWith(".png"))) {
-//		char [] chars = new char [filename.length ()];
-//		filename.getChars (0, chars.length, chars, 0);
-//		int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-//		if (str != 0) {
-//			int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, str, OS.kCFURLPOSIXPathStyle, false);
-//			if (url != 0) {
-//				int provider = OS.CGDataProviderCreateWithURL(url);
-//				if (provider != 0) {
-//					int image = 0;
-//					if (jpeg) {
-//						image = OS.CGImageCreateWithJPEGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault);
-//					} else if (png) {
-//						image = OS.CGImageCreateWithPNGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault);
-//					}
-//					OS.CGDataProviderRelease(provider);
-//					if (image != 0) {
-////						handle = image;
-//						int width = OS.CGImageGetWidth(image);
-//						int height = OS.CGImageGetHeight(image);
-//						int bpr = width * 4;
-//						int dataSize = height * bpr;
-//						int data = OS.NewPtr(dataSize);
-//						if (data != 0) {
-//							provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
-//							if (provider != 0) {
-//								int alphaInfo = OS.kCGImageAlphaNoneSkipFirst;
-////								switch (OS.CGImageGetAlphaInfo(image)) {
-////									case OS.kCGImageAlphaPremultipliedLast:
-////									case OS.kCGImageAlphaPremultipliedFirst:
-////									case OS.kCGImageAlphaLast:
-////									case OS.kCGImageAlphaFirst:
-////										alphaInfo = OS.kCGImageAlphaFirst;
-////										break;
-////								}
-//								int colorspace = device.colorspace;
-//								int handle = OS.CGImageCreate(width, height, 8, 32, bpr, colorspace, alphaInfo, provider, null, true, OS.kCGRenderingIntentDefault);
-//								OS.CGDataProviderRelease(provider);
-//								if (handle != 0) {
-//									int bpc = OS.CGImageGetBitsPerComponent(handle);
-//									int context = OS.CGBitmapContextCreate(data, width, height, bpc, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
-//									if (context != 0) {
-//										CGRect rect = new CGRect();
-//										rect.width = width;
-//										rect.height = height;
-//										OS.CGContextDrawImage(context, rect, image);
-//										OS.CGContextRelease(context);
-//										handle = OS.CGImageCreate(width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaFirst, provider, null, true, OS.kCGRenderingIntentDefault);
-//										this.data = data;
-//										this.handle = handle;
-//										System.out.println("here");
-//									} else {
-//										System.out.println("context failed");
-//										OS.CGImageRelease(handle);										
-//									}
-//								}
-//							}
-//							if (handle == 0) OS.DisposePtr(data);
-//						}
-//						OS.CGImageRelease(image);
-//					}					
-//				}
-//				OS.CFRelease(url);
-//			}
-//			OS.CFRelease(str);
-//		}
-//		if (handle != 0) return;
-//	}
 	init(device, new ImageData(filename));
 }
 
@@ -615,7 +543,7 @@ public void dispose () {
 	if (device.isDisposed()) return;
 	if (memGC != null) memGC.dispose();
 	OS.CGImageRelease(handle);
-	if (data != 0) OS.DisposePtr(data);
+	OS.DisposePtr(data);
 	device = null;
 	data = handle = 0;
 	memGC = null;

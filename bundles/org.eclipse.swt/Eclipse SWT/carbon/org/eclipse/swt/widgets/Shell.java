@@ -263,7 +263,7 @@ Shell (Display display, Shell parent, int style, int handle) {
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
-	this.shellHandle = handle;
+	this.handle = handle;
 	createWidget ();
 }
 
@@ -342,10 +342,6 @@ public Shell (Shell parent) {
  */
 public Shell (Shell parent, int style) {
 	this (parent != null ? parent.display : null, parent, style, 0);
-}
-
-public static Shell internal_new (Display display, int handle) {
-	return new Shell (display, null, SWT.NO_TRIM, handle);
 }
 
 static int checkStyle (int style) {
@@ -466,49 +462,40 @@ void createHandle () {
 			windowClass = (style & SWT.TITLE) != 0 ? OS.kMovableModalWindowClass : OS.kModalWindowClass;
 		}
 	}
-	if (shellHandle == 0) {
-		Monitor monitor = getMonitor ();
-		Rectangle rect = monitor.getClientArea ();
-		int width = rect.width * 5 / 8;
-		int height = rect.height * 5 / 8;
-		Rect bounds = new Rect ();
-		OS.SetRect (bounds, (short) 0, (short) 0, (short) width, (short) height);
-		int [] outWindow = new int [1];
-		attributes &= OS.GetAvailableWindowAttributes (windowClass);
-		OS.CreateNewWindow (windowClass, attributes, bounds, outWindow);
-		if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		shellHandle = outWindow [0];
-		OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
-	//	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
-		int [] theRoot = new int [1];
-		if (OS.HIVIEW) {
-			OS.HIViewFindByID (shellHandle, OS.kHIViewWindowContentID (), theRoot);
-			/*
-			* Bug in the Macintosh.  When the window class is kMovableModalWindowClass or
-			* kModalWindowClass, HIViewFindByID() fails to find the control identified by
-			* kHIViewWindowContentID.  The fix is to call GetRootControl() if the call
-			* failed.
-			*/
-			if (theRoot [0] == 0) OS.GetRootControl (shellHandle, theRoot);		
-		} else {
-			OS.CreateRootControl (shellHandle, theRoot);
-			OS.GetRootControl (shellHandle, theRoot);
-		}
-		if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-			createScrolledHandle (theRoot [0]);
-		} else {
-			createHandle (theRoot [0]);
-		}
-		OS.SetControlVisibility (topHandle (), false, false);
-	} else {
-		int [] theRoot = new int [1];
+	Monitor monitor = getMonitor ();
+	Rectangle rect = monitor.getClientArea ();
+	int width = rect.width * 5 / 8;
+	int height = rect.height * 5 / 8;
+	Rect bounds = new Rect ();
+	OS.SetRect (bounds, (short) 0, (short) 0, (short) width, (short) height);
+	int [] outWindow = new int [1];
+	attributes &= OS.GetAvailableWindowAttributes (windowClass);
+	OS.CreateNewWindow (windowClass, attributes, bounds, outWindow);
+	if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	shellHandle = outWindow [0];
+	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
+//	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
+	int [] theRoot = new int [1];
+	if (OS.HIVIEW) {
 		OS.HIViewFindByID (shellHandle, OS.kHIViewWindowContentID (), theRoot);
-		if (theRoot [0] == 0) OS.GetRootControl (shellHandle, theRoot);
-		handle = OS.HIViewGetFirstSubview (theRoot[0]);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		if (OS.IsWindowVisible (shellHandle)) state &= ~HIDDEN;
+		/*
+		* Bug in the Macintosh.  When the window class is kMovableModalWindowClass or
+		* kModalWindowClass, HIViewFindByID() fails to find the control identified by
+		* kHIViewWindowContentID.  The fix is to call GetRootControl() if the call
+		* failed.
+		*/
+		if (theRoot [0] == 0) OS.GetRootControl (shellHandle, theRoot);		
+	} else {
+		OS.CreateRootControl (shellHandle, theRoot);
+		OS.GetRootControl (shellHandle, theRoot);
 	}
+	if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		createScrolledHandle (theRoot [0]);
+	} else {
+		createHandle (theRoot [0]);
+	}
+	OS.SetControlVisibility (topHandle (), false, false);
 	int [] outGroup = new int [1];
 	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse, outGroup);
 	if (outGroup [0] == 0) error (SWT.ERROR_NO_HANDLES);
