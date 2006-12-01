@@ -3306,6 +3306,7 @@ public static final native int GetWindowTextW (int /*long*/ hWnd, char [] lpStri
 public static final native int GetWindowTextA (int /*long*/ hWnd, byte [] lpString, int nMaxCount);
 public static final native int GetWindowTextLengthW (int /*long*/ hWnd);
 public static final native int GetWindowTextLengthA (int /*long*/ hWnd);
+public static final native int GetWindowTheme (int /*long*/ hWnd);
 public static final native int GetWindowThreadProcessId (int /*long*/ hWnd, int [] lpdwProcessId);
 public static final native boolean GetWorldTransform (int /*long*/ hdc, float[] lpXform);
 public static final native int GlobalAddAtomW (char [] lpString);

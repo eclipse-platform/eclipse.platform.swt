@@ -279,6 +279,7 @@
 #define NO_GetWindowPlacement
 #define NO_GetWindowTextA
 #define NO_GetWindowTextLengthA
+#define NO_GetWindowTheme
 #define NO_GetWorldTransform
 #define NO_GlobalAddAtomA
 #define NO_GlobalAddAtomW

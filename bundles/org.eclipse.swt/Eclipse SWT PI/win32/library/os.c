@@ -5487,6 +5487,34 @@ fail:
 }
 #endif
 
+#ifndef NO_GetWindowTheme
+JNIEXPORT jint JNICALL OS_NATIVE(GetWindowTheme)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetWindowTheme_FUNC);
+/*
+	rc = (jint)GetWindowTheme((HWND)arg0);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(GetWindowTheme_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetWindowTheme");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HWND)arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, GetWindowTheme_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetWindowThreadProcessId
 JNIEXPORT jint JNICALL OS_NATIVE(GetWindowThreadProcessId)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)

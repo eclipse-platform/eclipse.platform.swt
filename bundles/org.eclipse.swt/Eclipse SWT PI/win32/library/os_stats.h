@@ -344,6 +344,7 @@ typedef enum {
 	GetWindowTextLengthA_FUNC,
 	GetWindowTextLengthW_FUNC,
 	GetWindowTextW_FUNC,
+	GetWindowTheme_FUNC,
 	GetWindowThreadProcessId_FUNC,
 	GetWorldTransform_FUNC,
 	GlobalAddAtomA_FUNC,

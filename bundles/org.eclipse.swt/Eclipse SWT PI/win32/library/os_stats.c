@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 849;
-int OS_nativeFunctionCallCount[849];
+int OS_nativeFunctionCount = 850;
+int OS_nativeFunctionCallCount[850];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -340,6 +340,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetWindowTextLengthA",
 	"GetWindowTextLengthW",
 	"GetWindowTextW",
+	"GetWindowTheme",
 	"GetWindowThreadProcessId",
 	"GetWorldTransform",
 	"GlobalAddAtomA",
