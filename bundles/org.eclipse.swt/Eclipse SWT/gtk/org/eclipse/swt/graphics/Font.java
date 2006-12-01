@@ -66,7 +66,7 @@ public Font(Device device, FontData fd) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, fd.getName(), fd.getHeight(), fd.getStyle(), fd.string);
+	init(device, fd.getName(), fd.getHeightF(), fd.getStyle(), fd.string);
 	if (device.tracking) device.new_Object(this);
 }
 
@@ -102,7 +102,7 @@ public Font(Device device, FontData[] fds) {
 		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	FontData fd = fds[0];
-	init(device,fd.getName(), fd.getHeight(), fd.getStyle(), fd.string);
+	init(device,fd.getName(), fd.getHeightF(), fd.getStyle(), fd.string);
 	if (device.tracking) device.new_Object(this);
 }
 
@@ -129,6 +129,13 @@ public Font(Device device, FontData[] fds) {
  * </ul>
  */
 public Font(Device device, String name, int height, int style) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, name, height, style, null);
+	if (device.tracking) device.new_Object(this);
+}
+
+/*public*/ Font(Device device, String name, float height, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, name, height, style, null);
@@ -185,7 +192,7 @@ public FontData[] getFontData() {
 	byte[] buffer = new byte[length];
 	OS.memmove(buffer, family, length);
 	String name = new String(Converter.mbcsToWcs(null, buffer));
-	int height = OS.PANGO_PIXELS(OS.pango_font_description_get_size(handle));
+	float height = (float)OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE;
 	int pangoStyle = OS.pango_font_description_get_style(handle);
 	int pangoWeight = OS.pango_font_description_get_weight(handle);
 	int style = SWT.NORMAL;
@@ -239,7 +246,7 @@ public int hashCode() {
 	return (int)/*64*/handle;
 }
 
-void init(Device device, String name, int height, int style, byte[] fontString) {
+void init(Device device, String name, float height, int style, byte[] fontString) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
@@ -251,7 +258,7 @@ void init(Device device, String name, int height, int style, byte[] fontString) 
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		byte[] buffer = Converter.wcsToMbcs(null, name, true);
 		OS.pango_font_description_set_family(handle, buffer);
-		OS.pango_font_description_set_size(handle, height * OS.PANGO_SCALE);
+		OS.pango_font_description_set_size(handle, (int)(0.5f + height * OS.PANGO_SCALE));
 		OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL);
 		int pangoStyle = OS.PANGO_STYLE_NORMAL;
 		int pangoWeight = OS.PANGO_WEIGHT_NORMAL;

@@ -241,9 +241,9 @@ public FontData(String string) {
 	start = end + 1;
 	end = string.indexOf('|', start);
 	if (end == -1) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int height = 0;
+	float height = 0;
 	try {
-		height = Integer.parseInt(string.substring(start, end));
+		height = Float.parseFloat(string.substring(start, end));
 	} catch (NumberFormatException e) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -323,6 +323,20 @@ public FontData (String name, int height, int style) {
 	weight = (style & SWT.BOLD) != 0 ? "bold" : "medium"; 
 	slant = (style & SWT.ITALIC) != 0 ? "i" : "r"; 
 }
+/*public*/ FontData (String name, float height, int style) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int dash = name.indexOf('-');
+	if (dash != -1) {
+		foundry = name.substring(0, dash);
+		fontFamily = name.substring(dash + 1);
+	} else {
+		fontFamily = name;
+	}
+	points = (int)(height * 10);
+	weight = (style & SWT.BOLD) != 0 ? "bold" : "medium"; 
+	slant = (style & SWT.ITALIC) != 0 ? "i" : "r"; 
+}
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -346,6 +360,9 @@ public boolean equals (Object object) {
  */
 public int getHeight() {
 	return points / 10;
+}
+/*public*/ float getHeightF() {
+	return points / 10f;
 }
 /**
  * Returns the locale of the receiver.
@@ -477,6 +494,10 @@ public static FontData motif_new(String xlfd) {
 public void setHeight(int height) {
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	points = height * 10;
+}
+/*public*/ void setHeight(float height) {
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	points = (int)(height * 10);
 }
 /**
  * Sets the name of the receiver.
@@ -641,7 +662,7 @@ void setXlfd(String xlfd) {
  * @see FontData
  */
 public String toString() {
-	return "1|" + fontFamily + "|" + getHeight() + "|" + getStyle() + "|" +
+	return "1|" + fontFamily + "|" + getHeightF() + "|" + getStyle() + "|" +
 		"MOTIF|1|" + getXlfd();
 }
 }
