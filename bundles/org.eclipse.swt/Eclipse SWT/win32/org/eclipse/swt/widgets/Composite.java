@@ -1069,7 +1069,7 @@ LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 }
 
 LRESULT WM_PAINT (int wParam, int lParam) {
-	if ((state & CANVAS) == 0) {
+	if ((state & CANVAS) == 0 || (state & FOREIGN_HANDLE) != 0) {
 		return super.WM_PAINT (wParam, lParam);
 	}
 

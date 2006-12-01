@@ -121,6 +121,7 @@ public class Shell extends Decorations {
 	boolean showWithParent;
 	String toolTitle, balloonTitle;
 	int toolIcon, balloonIcon;
+	int windowProc;
 	Control lastActive;
 	SHACTIVATEINFO psai;
 	Region region;
@@ -261,10 +262,10 @@ public Shell (Display display) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Display display, int style) {
-	this (display, null, style, 0);
+	this (display, null, style, 0, false);
 }
 
-Shell (Display display, Shell parent, int style, int handle) {
+Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -279,6 +280,9 @@ Shell (Display display, Shell parent, int style, int handle) {
 	this.parent = parent;
 	this.display = display;
 	this.handle = handle;
+	if (handle != 0 && !embedded) {
+		state |= FOREIGN_HANDLE;
+	}
 	createWidget ();
 }
 
@@ -356,7 +360,7 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.display : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
 /**	 
@@ -374,7 +378,11 @@ public Shell (Shell parent, int style) {
  * @return a new shell object containing the specified display and handle
  */
 public static Shell win32_new (Display display, int handle) {
-	return new Shell (display, null, SWT.NO_TRIM, handle);
+	return new Shell (display, null, SWT.NO_TRIM, handle, true);
+}
+
+public static Shell internal_new (Display display, int handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
 static int checkStyle (int style) {
@@ -429,6 +437,9 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	}
 	if (hwndMDIClient != 0) {
 		return OS.DefFrameProc (hwnd, hwndMDIClient, msg, wParam, lParam);
+	}
+	if (windowProc != 0) {
+		return OS.CallWindowProc (windowProc, hwnd, msg, wParam, lParam);
 	}
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
@@ -493,7 +504,7 @@ void createBalloonTipHandle () {
 }
 
 void createHandle () {
-	boolean embedded = handle != 0;
+	boolean embedded = handle != 0 && (state & FOREIGN_HANDLE) == 0;
 	
 	/*
 	* On Windows 98 and NT, setting a window to be the
@@ -506,8 +517,16 @@ void createHandle () {
 	/*
 	* The following code is intentionally commented.
 	*/
-//	if ((style & SWT.ON_TOP) != 0) display.lockActiveWindow = true;
-	super.createHandle ();
+//	if ((style & SWT.ON_TOP) != 0) display.lockActiveWindow = true;'
+	if (handle == 0 || embedded) {
+		super.createHandle ();
+	} else {
+		state |= CANVAS | DRAG_DETECT;
+		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			state |= THEME_BACKGROUND;
+		}
+		windowProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
+	}
 	
 	/*
 	* The following code is intentionally commented.
@@ -1674,6 +1693,7 @@ TCHAR windowClass () {
 }
 
 int windowProc () {
+	if (windowProc != 0) return windowProc;
 	if (OS.IsSP) return DialogProc;
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;

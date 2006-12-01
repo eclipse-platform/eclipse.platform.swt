@@ -3865,6 +3865,15 @@ public static final int XtCreatePopupShell(byte[] name, int widgetClass, int par
 		lock.unlock();
 	}
 }
+public static final native int __XtDefaultAppContext();
+public static final int _XtDefaultAppContext() {
+	lock.lock();
+	try {
+		return __XtDefaultAppContext();
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _XtDestroyApplicationContext(int appContext);
 public static final void XtDestroyApplicationContext(int appContext) {
 	lock.lock();
@@ -3924,6 +3933,15 @@ public static final void XtFree(int ptr) {
 	lock.lock();
 	try {
 		_XtFree(ptr);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtGetDisplays(int app_context, int[] dpy_return, int[] num_dpy_return);
+public static final void XtGetDisplays(int app_context, int[] dpy_return, int[] num_dpy_return) {
+	lock.lock();
+	try {
+		_XtGetDisplays(app_context, dpy_return, num_dpy_return);
 	} finally {
 		lock.unlock();
 	}

@@ -482,7 +482,7 @@ void createWidget (int index) {
 	* be created behind their siblings.
 	*/
 	int topHandle = topHandle ();
-	if (OS.XtIsRealized (topHandle)) {
+	if (OS.XtIsRealized (topHandle) && !OS.XtIsSubclass (topHandle, OS.shellWidgetClass ())) {
 		int window = OS.XtWindow (topHandle);
 		if (window != 0) {
 			int display = OS.XtDisplay (topHandle);

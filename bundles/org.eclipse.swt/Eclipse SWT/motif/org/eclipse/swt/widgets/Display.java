@@ -725,54 +725,70 @@ protected void create (DeviceData data) {
 }
 void createDisplay (DeviceData data) {
 	/* Create the AppContext */
-	int [] argc = new int [] {0};
-	int xtContext = OS.XtCreateApplicationContext ();
-	OS.XtSetLanguageProc (xtContext, 0, 0);
-	
 	xEvent = OS.XtMalloc (XEvent.sizeof);
 
-	/* 
-	* Feature in Linux.  On some DBCS Linux platforms, the default
-	* font is not be properly initialized to contain a font set.
-	* This causes the IME to fail.  The fix is to set a fallback
-	* resource with an appropriated font to ensure a font set is
-	* found.
-	*/
-	int ptr1 = 0, ptr2 = 0; 
-	if (OS.IsLinux && OS.IsDBLocale) {
-		String resource = "*fontList: -*-*-medium-r-*-*-*-120-*-*-*-*-*-*:";
-		byte [] buffer = Converter.wcsToMbcs (null, resource, true);
-		ptr1 = OS.XtMalloc (buffer.length);
-		if (ptr1 != 0) OS.memmove (ptr1, buffer, buffer.length);
-		int [] spec = new int[]{ptr1, 0};
-		ptr2 = OS.XtMalloc (spec.length * 4);
-		if (ptr2 != 0)OS.memmove (ptr2, spec, spec.length * 4);
-		OS.XtAppSetFallbackResources(xtContext, ptr2); 
+	int dpy = 0;
+	if (Default == null) {
+		int xtContext = OS.__XtDefaultAppContext ();
+		int [] dpy_return = new int [1];
+		int [] num_dpy_return = new int [1];
+		OS.XtGetDisplays (xtContext, dpy_return, num_dpy_return);
+		if (num_dpy_return [0] > 0) {
+			OS.memmove (dpy_return, dpy_return [0], 4);
+			dpy = dpy_return [0];
+		}
 	}
 	
-	/* Compute the display name, application name and class */
-	String display_name = null;
-	String application_name = APP_NAME;
-	String application_class = APP_NAME;
-	if (data != null) {
-		if (data.display_name != null) display_name = data.display_name;
-		if (data.application_name != null) application_name = data.application_name;
-		if (data.application_class != null) application_class = data.application_class;
-	}
-	/* Use the character encoding for the default locale */
-	if (display_name != null) displayName = Converter.wcsToMbcs (null, display_name, true);
-	if (application_name != null) appName = Converter.wcsToMbcs (null, application_name, true);
-	if (application_class != null) appClass = Converter.wcsToMbcs (null, application_class, true);
+	if (dpy != 0) {
+		xDisplay = dpy;
+	} else {
+		int [] argc = new int [] {0};
+		int xtContext = OS.XtCreateApplicationContext ();
+		OS.XtSetLanguageProc (xtContext, 0, 0);
 	
-	/* Create the XDisplay */
-	xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
-	DisplayDisposed = false;
-	
-	if (ptr2 != 0) {
-		OS.XtAppSetFallbackResources (xtContext, 0);
-		OS.XtFree (ptr2);
+		/* 
+		* Feature in Linux.  On some DBCS Linux platforms, the default
+		* font is not be properly initialized to contain a font set.
+		* This causes the IME to fail.  The fix is to set a fallback
+		* resource with an appropriated font to ensure a font set is
+		* found.
+		*/
+		int ptr1 = 0, ptr2 = 0; 
+		if (OS.IsLinux && OS.IsDBLocale) {
+			String resource = "*fontList: -*-*-medium-r-*-*-*-120-*-*-*-*-*-*:";
+			byte [] buffer = Converter.wcsToMbcs (null, resource, true);
+			ptr1 = OS.XtMalloc (buffer.length);
+			if (ptr1 != 0) OS.memmove (ptr1, buffer, buffer.length);
+			int [] spec = new int[]{ptr1, 0};
+			ptr2 = OS.XtMalloc (spec.length * 4);
+			if (ptr2 != 0)OS.memmove (ptr2, spec, spec.length * 4);
+			OS.XtAppSetFallbackResources(xtContext, ptr2); 
+		}
+		
+		/* Compute the display name, application name and class */
+		String display_name = null;
+		String application_name = APP_NAME;
+		String application_class = APP_NAME;
+		if (data != null) {
+			if (data.display_name != null) display_name = data.display_name;
+			if (data.application_name != null) application_name = data.application_name;
+			if (data.application_class != null) application_class = data.application_class;
+		}
+		/* Use the character encoding for the default locale */
+		if (display_name != null) displayName = Converter.wcsToMbcs (null, display_name, true);
+		if (application_name != null) appName = Converter.wcsToMbcs (null, application_name, true);
+		if (application_class != null) appClass = Converter.wcsToMbcs (null, application_class, true);
+		
+		/* Create the XDisplay */
+		xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
+		DisplayDisposed = false;
+		
+		if (ptr2 != 0) {
+			OS.XtAppSetFallbackResources (xtContext, 0);
+			OS.XtFree (ptr2);
+		}
+		if (ptr1 != 0) OS.XtFree (ptr1);
 	}
-	if (ptr1 != 0) OS.XtFree (ptr1);
 }
 int createMask (int pixmap) {
 	if (pixmap == 0) return 0;

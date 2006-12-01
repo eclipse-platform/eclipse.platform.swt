@@ -241,9 +241,9 @@ public Shell (Display display) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Display display, int style) {
-	this (display, null, style, 0);
+	this (display, null, style, 0, false);
 }
-Shell (Display display, Shell parent, int style, int handle) {
+Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -257,7 +257,14 @@ Shell (Display display, Shell parent, int style, int handle) {
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
-	this.handle = handle;
+	if (handle != 0) {
+		if (embedded) {
+			this.handle = handle;
+		} else {
+			this.shellHandle = handle;
+			state |= FOREIGN_HANDLE;
+		}
+	}
 	createWidget (0);
 }
 /**
@@ -333,7 +340,7 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.display : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
 static int checkStyle (int style) {
@@ -348,7 +355,11 @@ static int checkStyle (int style) {
 }
 
 public static Shell motif_new (Display display, int handle) {
-	return new Shell (display, null, SWT.NO_TRIM, handle);
+	return new Shell (display, null, SWT.NO_TRIM, handle, true);
+}
+
+public static Shell internal_new (Display display, int handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
 /**
@@ -582,102 +593,118 @@ void createFocusProxy () {
 }
 void createHandle (int index) {
 	state |= CANVAS;
-	int decorations = 0;
-	if ((style & SWT.NO_TRIM) == 0) {
-		if ((style & SWT.MIN) != 0) decorations |= OS.MWM_DECOR_MINIMIZE;
-		if ((style & SWT.MAX) != 0) decorations |= OS.MWM_DECOR_MAXIMIZE;
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.MWM_DECOR_RESIZEH;
-		if ((style & SWT.BORDER) != 0) decorations |= OS.MWM_DECOR_BORDER;
-		if ((style & SWT.MENU) != 0) decorations |= OS.MWM_DECOR_MENU;
-		if ((style & SWT.TITLE) != 0) decorations |= OS.MWM_DECOR_TITLE;
+	if (shellHandle == 0) {
+		int decorations = 0;
+		if ((style & SWT.NO_TRIM) == 0) {
+			if ((style & SWT.MIN) != 0) decorations |= OS.MWM_DECOR_MINIMIZE;
+			if ((style & SWT.MAX) != 0) decorations |= OS.MWM_DECOR_MAXIMIZE;
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.MWM_DECOR_RESIZEH;
+			if ((style & SWT.BORDER) != 0) decorations |= OS.MWM_DECOR_BORDER;
+			if ((style & SWT.MENU) != 0) decorations |= OS.MWM_DECOR_MENU;
+			if ((style & SWT.TITLE) != 0) decorations |= OS.MWM_DECOR_TITLE;
+			/*
+			* Feature in Motif.  Under some Window Managers (Sawmill), in order
+			* to get any border at all from the window manager it is necessary
+			* to set MWM_DECOR_BORDER.  The fix is to force these bits when any
+			* kind of border is requested.
+			*/
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.MWM_DECOR_BORDER;
+		}
+		
 		/*
-		* Feature in Motif.  Under some Window Managers (Sawmill), in order
-		* to get any border at all from the window manager it is necessary
-		* to set MWM_DECOR_BORDER.  The fix is to force these bits when any
-		* kind of border is requested.
+		* Note: Motif treats the modal values as hints to the Window Manager.
+		* For example, Enlightenment treats all modes except for SWT.MODELESS
+		* as SWT.APPLICATION_MODAL.  The Motif Window Manager honours all modes.
 		*/
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.MWM_DECOR_BORDER;
-	}
-	
-	/*
-	* Note: Motif treats the modal values as hints to the Window Manager.
-	* For example, Enlightenment treats all modes except for SWT.MODELESS
-	* as SWT.APPLICATION_MODAL.  The Motif Window Manager honours all modes.
-	*/
-	int inputMode = OS.MWM_INPUT_MODELESS;
-	if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.MWM_INPUT_PRIMARY_APPLICATION_MODAL;
-	if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.MWM_INPUT_FULL_APPLICATION_MODAL;
-	if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.MWM_INPUT_SYSTEM_MODAL;
-	
-	/* 
-	* Bug in Motif.  For some reason, if the title string
-	* length is not a multiple of 4, Motif occasionally
-	* draws garbage after the last character in the title.
-	* The fix is to pad the title.
-	*/
-	byte [] buffer = {(byte)' ', 0, 0, 0};
-	int ptr = OS.XtMalloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
-	int [] argList1 = {
-		OS.XmNmwmInputMode, inputMode,
-		OS.XmNmwmDecorations, decorations,
-		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
-		OS.XmNtitle, ptr,
-	};
-	
-	/* 
-	* Feature in Motif.  On some Window Managers, when a top level
-	* shell is created with no decorations, the Window Manager does
-	* not reparent the window regardless of the XmNoverrideRedirect
-	* resource.  The fix is to treat the window as if it has been
-	* reparented by the Window Manager despite the fact that this
-	* has not really happened.
-	*/	
-	if (isUndecorated ()) {
-		reparented = true;
-	} 
-	
-	/*
-	* Feature in Motif.  When a top level shell has no parent and is
-	* application modal, Motif does not honour the modality.  The fix
-	* is to create the shell as a child of a hidden shell handle, the
-	* same way that XmNoverrideRedirect shells without parents are
-	* created.
-	*/
-	byte [] appClass = display.appClass;
-	if (parent == null && (style & SWT.ON_TOP) == 0 && inputMode != OS.MWM_INPUT_FULL_APPLICATION_MODAL) {
-		int xDisplay = display.xDisplay;
-		int widgetClass = OS.applicationShellWidgetClass ();
-		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
+		int inputMode = OS.MWM_INPUT_MODELESS;
+		if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.MWM_INPUT_PRIMARY_APPLICATION_MODAL;
+		if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.MWM_INPUT_FULL_APPLICATION_MODAL;
+		if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.MWM_INPUT_SYSTEM_MODAL;
+		
+		/* 
+		* Bug in Motif.  For some reason, if the title string
+		* length is not a multiple of 4, Motif occasionally
+		* draws garbage after the last character in the title.
+		* The fix is to pad the title.
+		*/
+		byte [] buffer = {(byte)' ', 0, 0, 0};
+		int ptr = OS.XtMalloc (buffer.length);
+		OS.memmove (ptr, buffer, buffer.length);
+		int [] argList1 = {
+			OS.XmNmwmInputMode, inputMode,
+			OS.XmNmwmDecorations, decorations,
+			OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
+			OS.XmNtitle, ptr,
+		};
+		
+		/* 
+		* Feature in Motif.  On some Window Managers, when a top level
+		* shell is created with no decorations, the Window Manager does
+		* not reparent the window regardless of the XmNoverrideRedirect
+		* resource.  The fix is to treat the window as if it has been
+		* reparented by the Window Manager despite the fact that this
+		* has not really happened.
+		*/	
+		if (isUndecorated ()) {
+			reparented = true;
+		} 
+		
+		/*
+		* Feature in Motif.  When a top level shell has no parent and is
+		* application modal, Motif does not honour the modality.  The fix
+		* is to create the shell as a child of a hidden shell handle, the
+		* same way that XmNoverrideRedirect shells without parents are
+		* created.
+		*/
+		byte [] appClass = display.appClass;
+		if (parent == null && (style & SWT.ON_TOP) == 0 && inputMode != OS.MWM_INPUT_FULL_APPLICATION_MODAL) {
+			int xDisplay = display.xDisplay;
+			int widgetClass = OS.applicationShellWidgetClass ();
+			shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
+		} else {
+			int widgetClass = OS.transientShellWidgetClass ();
+//			if ((style & SWT.ON_TOP) != 0) {
+//				widgetClass = OS.OverrideShellWidgetClass ();
+//			}
+			int parentHandle = display.shellHandle;
+			if (parent != null) parentHandle = parent.handle;
+			shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList1, argList1.length / 2);
+		}
+		OS.XtFree (ptr);
+		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (handle != 0) {
+			OS.XtSetMappedWhenManaged (shellHandle, false);
+			OS.XtRealizeWidget (shellHandle);
+			OS.XtSetMappedWhenManaged (shellHandle, true);
+			int xDisplay = display.xDisplay;
+			int xWindow = OS.XtWindow (shellHandle);
+			if (xWindow == 0) error (SWT.ERROR_NO_HANDLES);
+			/*
+			* NOTE:  The embedded parent handle must be realized
+			* before embedding and cannot be realized here because
+			* the handle belongs to another thread.
+			*/
+			OS.XReparentWindow (xDisplay, xWindow, handle, 0, 0);
+			handle = 0;
+		}
+		
+		/* Create scrolled handle */
+		createHandle (index, shellHandle, true);
 	} else {
-		int widgetClass = OS.transientShellWidgetClass ();
-//		if ((style & SWT.ON_TOP) != 0) {
-//			widgetClass = OS.OverrideShellWidgetClass ();
-//		}
-		int parentHandle = display.shellHandle;
-		if (parent != null) parentHandle = parent.handle;
-		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList1, argList1.length / 2);
+		int [] buffer = new int [1];
+		int [] argList = {OS.XmNchildren, 0, OS.XmNnumChildren, 0};
+		OS.XtGetValues (shellHandle, argList, argList.length / 2);
+		if (argList [3] < 1) error (SWT.ERROR_NO_HANDLES);
+		OS.memmove (buffer, argList [1], 4);
+		scrolledHandle = buffer [0];
+		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		argList [1] = argList [3] = 0;
+		OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+		if (argList [3] < 4) error (SWT.ERROR_NO_HANDLES);
+		OS.memmove (buffer, argList [1] + (argList [3] - 1) * 4, 4);
+		handle = buffer [0];
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	OS.XtFree (ptr);
-	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (handle != 0) {
-		OS.XtSetMappedWhenManaged (shellHandle, false);
-		OS.XtRealizeWidget (shellHandle);
-		OS.XtSetMappedWhenManaged (shellHandle, true);
-		int xDisplay = display.xDisplay;
-		int xWindow = OS.XtWindow (shellHandle);
-		if (xWindow == 0) error (SWT.ERROR_NO_HANDLES);
-		/*
-		* NOTE:  The embedded parent handle must be realized
-		* before embedding and cannot be realized here because
-		* the handle belongs to another thread.
-		*/
-		OS.XReparentWindow (xDisplay, xWindow, handle, 0, 0);
-		handle = 0;
-	}
-	
-	/* Create scrolled handle */
-	createHandle (index, shellHandle, true);
 
 	/*
 	* Feature in Motif.  There is no way to get the single pixel
@@ -1069,6 +1096,7 @@ public boolean isVisible () {
 	return getVisible ();
 }
 void manageChildren () {
+	if ((state & FOREIGN_HANDLE) != 0) return;
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	super.manageChildren ();
 	int width = 0, height = 0;

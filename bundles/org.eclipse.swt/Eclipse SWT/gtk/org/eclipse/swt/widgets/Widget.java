@@ -91,6 +91,8 @@ public abstract class Widget {
 	static final int RELEASED = 1<<20;
 	static final int DISPOSE_SENT = 1<<21;
 	
+	static final int FOREIGN_HANDLE = 1<<22;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

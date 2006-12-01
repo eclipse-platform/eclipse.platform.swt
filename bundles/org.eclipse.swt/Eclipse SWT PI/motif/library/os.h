@@ -48,6 +48,10 @@
 void _XmSetMenuTraversal(Widget wid, int traversalOn);
 #endif
 
+#ifndef _XtDefaultAppContext
+XtAppContext _XtDefaultAppContext();
+#endif
+
 #include <dlfcn.h>
 #include <stdio.h>
 #include <assert.h>

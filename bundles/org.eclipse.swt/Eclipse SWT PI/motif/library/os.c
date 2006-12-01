@@ -5045,6 +5045,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XtFree)
 }
 #endif
 
+#ifndef NO__1XtGetDisplays
+JNIEXPORT void JNICALL OS_NATIVE(_1XtGetDisplays)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1XtGetDisplays_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	XtGetDisplays((XtAppContext)arg0, (Display ***)lparg1, (Cardinal *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1XtGetDisplays_FUNC);
+}
+#endif
+
 #ifndef NO__1XtGetMultiClickTime
 JNIEXPORT jint JNICALL OS_NATIVE(_1XtGetMultiClickTime)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5515,6 +5532,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1_1XmSetMenuTraversal)
 	OS_NATIVE_ENTER(env, that, _1_1XmSetMenuTraversal_FUNC);
 	_XmSetMenuTraversal((Widget)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1_1XmSetMenuTraversal_FUNC);
+}
+#endif
+
+#ifndef NO__1_1XtDefaultAppContext
+JNIEXPORT jint JNICALL OS_NATIVE(_1_1XtDefaultAppContext)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1_1XtDefaultAppContext_FUNC);
+	rc = (jint)_XtDefaultAppContext();
+	OS_NATIVE_EXIT(env, that, _1_1XtDefaultAppContext_FUNC);
+	return rc;
 }
 #endif
 

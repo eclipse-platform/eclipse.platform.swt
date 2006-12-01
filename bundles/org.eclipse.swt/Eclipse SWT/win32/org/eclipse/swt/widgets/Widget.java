@@ -79,6 +79,8 @@ public abstract class Widget {
 	static final int TRACK_MOUSE	= 1<<13;
 	static final int DRAG_DETECT	= 1<<14;
 	
+	static final int FOREIGN_HANDLE	= 1<<15;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

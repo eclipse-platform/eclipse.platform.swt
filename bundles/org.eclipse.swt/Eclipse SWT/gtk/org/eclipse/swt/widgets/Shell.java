@@ -240,10 +240,10 @@ public Shell (Display display) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Display display, int style) {
-	this (display, null, style, 0);
+	this (display, null, style, 0, false);
 }
 
-Shell (Display display, Shell parent, int style, int /*long*/ handle) {
+Shell (Display display, Shell parent, int style, int /*long*/ handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -257,7 +257,14 @@ Shell (Display display, Shell parent, int style, int /*long*/ handle) {
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
-	this.handle = handle;
+	if (handle != 0) {
+		if (embedded) {
+			this.handle = handle;
+		} else {
+			shellHandle = handle;
+			state |= FOREIGN_HANDLE;
+		}
+	}
 	createWidget (0);
 }
 
@@ -335,11 +342,15 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.display : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
 public static Shell gtk_new (Display display, int /*long*/ handle) {
-	return new Shell (display, null, SWT.NO_TRIM, handle);
+	return new Shell (display, null, SWT.NO_TRIM, handle, true);
+}
+
+public static Shell internal_new (Display display, int /*long*/ handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
 static int checkStyle (int style) {
@@ -555,37 +566,50 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	if (handle == 0) {
-		int type = OS.GTK_WINDOW_TOPLEVEL;
-		if ((style & SWT.ON_TOP) != 0) type = OS.GTK_WINDOW_POPUP;
-		shellHandle = OS.gtk_window_new (type);
-	} else {
-		shellHandle = OS.gtk_plug_new (handle);
-	}
-	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (parent != null) {
-		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
-		OS.gtk_window_set_destroy_with_parent (shellHandle, true);
-		if (!isUndecorated ()) {
-			OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
+	if (shellHandle == 0) {
+		if (handle == 0) {
+			int type = OS.GTK_WINDOW_TOPLEVEL;
+			if ((style & SWT.ON_TOP) != 0) type = OS.GTK_WINDOW_POPUP;
+			shellHandle = OS.gtk_window_new (type);
+		} else {
+			shellHandle = OS.gtk_plug_new (handle);
 		}
-	}
-	/*
-	* Feature in GTK.  The window size must be set when the window
-	* is created or it will not be allowed to be resized smaller that the
-	* initial size by the user.  The fix is to set the size to zero.
-	*/
-	if ((style & SWT.RESIZE) != 0) {
-		OS.gtk_widget_set_size_request (shellHandle, 0, 0);
-		OS.gtk_window_set_resizable (shellHandle, true);
+		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (parent != null) {
+			OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
+			OS.gtk_window_set_destroy_with_parent (shellHandle, true);
+			if (!isUndecorated ()) {
+				OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
+			}
+		}
+		/*
+		* Feature in GTK.  The window size must be set when the window
+		* is created or it will not be allowed to be resized smaller that the
+		* initial size by the user.  The fix is to set the size to zero.
+		*/
+		if ((style & SWT.RESIZE) != 0) {
+			OS.gtk_widget_set_size_request (shellHandle, 0, 0);
+			OS.gtk_window_set_resizable (shellHandle, true);
+		} else {
+			OS.gtk_window_set_resizable (shellHandle, false);
+		}
+		vboxHandle = OS.gtk_vbox_new (false, 0);
+		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		createHandle (index, false, true);
+		OS.gtk_container_add (vboxHandle, scrolledHandle);
+		OS.gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, OS.GTK_PACK_END);
 	} else {
-		OS.gtk_window_set_resizable (shellHandle, false);
+		vboxHandle = OS.gtk_bin_get_child (shellHandle);
+		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		int children = OS.gtk_container_get_children (vboxHandle);
+		if (OS.g_list_length (children) > 0) {
+			scrolledHandle = OS.g_list_data (children);
+		}
+		OS.g_list_free (children);
+		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = OS.gtk_bin_get_child (scrolledHandle);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	vboxHandle = OS.gtk_vbox_new (false, 0);
-	if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	createHandle (index, false, true);
-	OS.gtk_container_add (vboxHandle, scrolledHandle);
-	OS.gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, OS.GTK_PACK_END);
 	OS.gtk_window_set_title (shellHandle, new byte [1]);
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
 		OS.gtk_container_set_border_width (shellHandle, 1);
@@ -1245,6 +1269,7 @@ public void setImeInputMode (int mode) {
 }
 
 void setInitialBounds () {
+	if ((state & FOREIGN_HANDLE) != 0) return;
 	Monitor monitor = getMonitor ();
 	Rectangle rect = monitor.getClientArea ();
 	int width = rect.width * 5 / 8;
@@ -1502,6 +1527,7 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
 }
 
 void showWidget () {
+	if ((state & FOREIGN_HANDLE) != 0) return;
 	OS.gtk_container_add (shellHandle, vboxHandle);
 	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
 	if (handle != 0) OS.gtk_widget_show (handle);
