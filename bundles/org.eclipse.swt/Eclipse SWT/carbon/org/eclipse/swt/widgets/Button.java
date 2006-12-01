@@ -177,21 +177,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int [] ptr = new int [1];
 	OS.CopyControlTitleAsCFString (handle, ptr);
 	if (ptr [0] != 0) {
-		org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-		if (font == null) {
-			OS.GetThemeTextDimensions (ptr [0], (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
-		} else {
-			int [] currentPort = new int [1];
-			OS.GetPort (currentPort);
-			OS.SetPortWindowPort (OS.GetControlOwner (handle));
-			OS.TextFont (font.id);
-			OS.TextFace (font.style);
-			OS.TextSize (font.size);
-			OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
-			OS.SetPort (currentPort [0]);
-		}
-		width += ioBounds.h;
-		height = Math.max (height, ioBounds.v);
+		Point size = textExtent (ptr [0], 0);
+		width += size.x;
+		height = Math.max (height, size.y);
 		OS.CFRelease (ptr [0]);
 		if (image != null && isImage) width += 3;
 	} else {

@@ -379,50 +379,65 @@ public Point getDPI () {
  */
 public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
-	if (!scalable) return new FontData[0];
-	short[] style = new short[1];
-	short[] family = new short[1];
-	int[] fontCount = new int[1];
-	int[] actualLength = new int[1];
-	CFRange range = new CFRange();
-	OS.ATSUGetFontIDs(null, 0, fontCount);
-	int[] fontIDs = new int[fontCount[0]];
-	OS.ATSUGetFontIDs(fontIDs, fontIDs.length, fontCount);
+	if (!scalable) return new FontData[0];	
 	int count = 0;
-	FontData[] fds = new FontData[fontCount[0]];
-	for (int i=0; i<fds.length; i++) {
-		int fontID = fontIDs[i];
-		int platformCode = OS.kFontUnicodePlatform, encoding = OS.kCFStringEncodingUnicode;
-		if (OS.ATSUFindFontName(fontID, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null) != OS.noErr) {
-			platformCode = OS.kFontNoPlatformCode;
-			encoding = OS.kCFStringEncodingMacRoman;
-			if (OS.ATSUFindFontName(fontID, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null) != OS.noErr) {
-				continue;
-			}
-		}
-		byte[] buffer = new byte[actualLength[0]];
-		OS.ATSUFindFontName(fontID, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
-		int ptr = OS.CFStringCreateWithBytes(0, buffer, buffer.length, encoding, false);
-		if (ptr != 0) {
-			int length = OS.CFStringGetLength(ptr);
-			if (length != 0) {
-				char[] chars = new char[length];
-				range.length = length;
-				OS.CFStringGetCharacters(ptr, range, chars);
-				String name = new String(chars);
-				if (!name.startsWith(".")) {
-					if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
-						OS.FMGetFontFamilyInstanceFromFont(fontID, family, style);
-						int s = SWT.NORMAL;
-						if ((style[0] & OS.italic) != 0) s |= SWT.ITALIC;
-						if ((style[0] & OS.bold) != 0) s |= SWT.BOLD;
-						FontData data = new FontData(name, 0, s);
-						fds[count++] = data;
+	int[] buffer = new int[1];
+	CFRange range = new CFRange ();
+	OS.ATSUGetFontIDs(null, 0, buffer);
+	FontData[] fds = new FontData[buffer[0]];
+	int status = OS.ATSFontIteratorCreate (OS.kATSFontContextLocal, 0, 0, OS.kATSOptionFlagsDefaultScope, buffer);
+	int iter = buffer[0];
+	while (status == OS.noErr) {
+		status = OS.ATSFontIteratorNext(iter, buffer);
+		if (status == OS.noErr) {
+			int font = buffer[0];
+			if (OS.ATSFontGetName(font, 0, buffer) == OS.noErr) {
+				range.length = OS.CFStringGetLength(buffer[0]);
+				char [] chars = new char[range.length];
+				OS.CFStringGetCharacters(buffer[0], range, chars);
+				OS.CFRelease(buffer[0]);
+				String atsName = new String(chars);
+				int platformCode = OS.kFontUnicodePlatform, encoding = OS.kCFStringEncodingUnicode;
+				if (OS.ATSUFindFontName(font, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, buffer, null) != OS.noErr) {
+					platformCode = OS.kFontNoPlatformCode;
+					encoding = OS.kCFStringEncodingMacRoman;
+					if (OS.ATSUFindFontName(font, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, buffer, null) != OS.noErr) {
+						continue;
 					}
 				}
+				byte[] bytes = new byte[buffer[0]];
+				OS.ATSUFindFontName(font, OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, bytes.length, bytes, buffer, null);
+				int ptr = OS.CFStringCreateWithBytes(0, bytes, bytes.length, encoding, false);
+				if (ptr != 0) {
+					range.length = OS.CFStringGetLength(ptr);
+					if (range.length != 0) {
+						chars = new char[range.length];
+						OS.CFStringGetCharacters(ptr, range, chars);
+						String name = new String(chars);
+						if (!name.startsWith(".")) {
+							if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+								int s = SWT.NORMAL;
+								if (atsName.indexOf("Italic") != -1) s |= SWT.ITALIC;
+								if (atsName.indexOf("Bold") != -1) s |= SWT.BOLD;
+								FontData data = new FontData(name, 0, s);
+								data.atsName = atsName;
+								if (count == fds.length) {
+									FontData[] newFDs = new FontData[count + 4];
+									System.arraycopy(fds, 0, newFDs, 0, count);
+									fds = newFDs;
+								}
+								fds[count++] = data;
+							}
+						}
+					}
+					OS.CFRelease(ptr);
+				}
 			}
-			OS.CFRelease(ptr);
 		}
+	}
+	if (iter != 0) {
+		buffer [0] = iter;
+		OS.ATSFontIteratorRelease (buffer);
 	}
 	if (count == fds.length) return fds;
 	FontData[] result = new FontData[count];
@@ -557,7 +572,7 @@ protected void init () {
 	short id = OS.FMGetFontFamilyFromName (family);
 	int [] font = new int [1]; 
 	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
-	systemFont = Font.carbon_new (this, font [0], id, style [0], size [0]);
+	systemFont = Font.carbon_new (this, OS.FMGetATSFontRefFromFont (font [0]), style [0], size [0]);
 }
 
 /**	 

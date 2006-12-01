@@ -23,6 +23,18 @@ void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
 #define AEDesc_sizeof() 0
 #endif
 
+#ifndef NO_ATSFontMetrics
+void cacheATSFontMetricsFields(JNIEnv *env, jobject lpObject);
+ATSFontMetrics *getATSFontMetricsFields(JNIEnv *env, jobject lpObject, ATSFontMetrics *lpStruct);
+void setATSFontMetricsFields(JNIEnv *env, jobject lpObject, ATSFontMetrics *lpStruct);
+#define ATSFontMetrics_sizeof() sizeof(ATSFontMetrics)
+#else
+#define cacheATSFontMetricsFields(a,b)
+#define getATSFontMetricsFields(a,b,c) NULL
+#define setATSFontMetricsFields(a,b,c)
+#define ATSFontMetrics_sizeof() 0
+#endif
+
 #ifndef NO_ATSLayoutRecord
 void cacheATSLayoutRecordFields(JNIEnv *env, jobject lpObject);
 ATSLayoutRecord *getATSLayoutRecordFields(JNIEnv *env, jobject lpObject, ATSLayoutRecord *lpStruct);
@@ -333,30 +345,6 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct);
 #define getEventRecordFields(a,b,c) NULL
 #define setEventRecordFields(a,b,c)
 #define EventRecord_sizeof() 0
-#endif
-
-#ifndef NO_FontInfo
-void cacheFontInfoFields(JNIEnv *env, jobject lpObject);
-FontInfo *getFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct);
-void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct);
-#define FontInfo_sizeof() sizeof(FontInfo)
-#else
-#define cacheFontInfoFields(a,b)
-#define getFontInfoFields(a,b,c) NULL
-#define setFontInfoFields(a,b,c)
-#define FontInfo_sizeof() 0
-#endif
-
-#ifndef NO_FontSelectionQDStyle
-void cacheFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject);
-FontSelectionQDStyle *getFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct);
-void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct);
-#define FontSelectionQDStyle_sizeof() sizeof(FontSelectionQDStyle)
-#else
-#define cacheFontSelectionQDStyleFields(a,b)
-#define getFontSelectionQDStyleFields(a,b,c) NULL
-#define setFontSelectionQDStyleFields(a,b,c)
-#define FontSelectionQDStyle_sizeof() 0
 #endif
 
 #ifndef NO_GDevice

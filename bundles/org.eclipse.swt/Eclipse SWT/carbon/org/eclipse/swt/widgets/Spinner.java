@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.CFRange;
-import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 
@@ -207,19 +206,6 @@ protected void checkSubclass () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
-	int [] currentPort = new int [1];
-	short themeFont = (short) defaultThemeFont ();
-	if (font != null) {
-		themeFont = OS.kThemeCurrentPortFont;
-		OS.GetPort (currentPort);
-		OS.SetPortWindowPort (OS.GetControlOwner (textHandle));
-		OS.TextFont (font.id);
-		OS.TextFace (font.style);
-		OS.TextSize (font.size);
-	}
-	FontInfo info = new FontInfo ();
-	OS.GetFontInfo (info);
-	height = info.ascent + info.descent;	
 	int max = OS.GetControl32BitMaximum (buttonHandle);
 	String string = String.valueOf (max);
 	if (digits > 0) {
@@ -236,16 +222,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-	org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-	if (ptr != 0) {
-		OS.GetThemeTextDimensions (ptr, themeFont, OS.kThemeStateActive, false, ioBounds, null);
-		width = Math.max (width, ioBounds.h);
-		height = Math.max (height, ioBounds.v);
-		OS.CFRelease (ptr);
-	}
-	if (font != null) {
-		OS.SetPort (currentPort [0]);
-	}
+	Point size = textExtent (ptr, 0);
+	if (ptr != 0) OS.CFRelease (ptr);
+	width = Math.max (width, size.x);
+	height = Math.max (height, size.y);
 	int [] metric = new int [1];
 	OS.GetThemeMetric (OS.kThemeMetricEditTextWhitespace, metric);
 	width += metric [0] * 2;

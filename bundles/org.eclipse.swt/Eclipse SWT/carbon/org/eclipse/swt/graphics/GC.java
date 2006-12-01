@@ -2128,12 +2128,11 @@ public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	checkGC(FONT);
 	Font font = data.font;
-	FontInfo info = new FontInfo();
-	OS.FetchFontInfo(font.id, font.size, font.style, info);
-	int ascent = info.ascent;
-	int descent = info.descent + info.leading;
-	/* This code is intentionaly comment. Not right for fixed width fonts. */
-	//fm.averageCharWidth = info.widMax / 3;
+	ATSFontMetrics metrics = new ATSFontMetrics();
+	OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+	OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+	int ascent = (int)(0.5f + metrics.ascent * font.size);
+	int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);	
 	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
 	int averageCharWidth = stringExtent(s).x / s.length();
 	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, 0, ascent + descent);
@@ -2832,10 +2831,11 @@ void setCGFont() {
 	if (tabs != 0) OS.DisposePtr(tabs);
 	data.tabs = 0;	
 	Font font = data.font;
-	FontInfo info = new FontInfo();
-	OS.FetchFontInfo(font.id, font.size, font.style, info);
-	data.fontAscent = info.ascent;
-	data.fontDescent = info.descent + info.leading;
+	ATSFontMetrics metrics = new ATSFontMetrics();
+	OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+	OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+	data.fontAscent = (int)(0.5f + metrics.ascent * font.size);
+	data.fontDescent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
 	if (font.atsuiStyle == 0) {
 		if (data.atsuiStyle != 0) OS.ATSUDisposeStyle(data.atsuiStyle);
 		data.atsuiStyle = font.createStyle();

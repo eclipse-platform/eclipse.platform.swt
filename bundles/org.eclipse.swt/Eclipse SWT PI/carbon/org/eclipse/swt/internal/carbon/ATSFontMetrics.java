@@ -13,17 +13,21 @@
 package org.eclipse.swt.internal.carbon;
 
 
-public class FontSelectionQDStyle {
+public class ATSFontMetrics {
 	public int version;
-	//FMFontFamilyInstance instance;
-	public short instance_fontFamily;
-	public short instance_fontStyle;
-	public short size;
-	public boolean hasColor;
-	public byte reserved;
-	//RGBColor color
-	public short color_red;
-	public short color_green;
-	public short color_blue;
-	public static final int sizeof = 18;
+	public float ascent;
+	public float descent;
+	public float leading;
+	public float avgAdvanceWidth;
+	public float maxAdvanceWidth;
+	public float minLeftSideBearing;
+	public float minRightSideBearing;
+	public float stemWidth;
+	public float stemHeight;
+	public float capHeight;
+	public float xHeight;
+	public float italicAngle;
+	public float underlinePosition;
+	public float underlineThickness;
+	public static final int sizeof = 60;
 }

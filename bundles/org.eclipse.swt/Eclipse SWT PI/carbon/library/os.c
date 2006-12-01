@@ -118,6 +118,50 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSFontDeactivate)
 }
 #endif
 
+#ifndef NO_ATSFontFindFromName
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontFindFromName)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontFindFromName_FUNC);
+	rc = (jint)ATSFontFindFromName((CFStringRef)arg0, (ATSOptionFlags)arg1);
+	OS_NATIVE_EXIT(env, that, ATSFontFindFromName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSFontGetHorizontalMetrics
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontGetHorizontalMetrics)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	ATSFontMetrics _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontGetHorizontalMetrics_FUNC);
+	if (arg2) if ((lparg2 = getATSFontMetricsFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)ATSFontGetHorizontalMetrics((ATSFontRef)arg0, arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setATSFontMetricsFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, ATSFontGetHorizontalMetrics_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSFontGetName
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontGetName)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontGetName_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)ATSFontGetName((ATSFontRef)arg0, (ATSOptionFlags)arg1, (CFStringRef*)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, ATSFontGetName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSFontGetPostScriptName
 JNIEXPORT jint JNICALL OS_NATIVE(ATSFontGetPostScriptName)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
@@ -130,6 +174,70 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSFontGetPostScriptName)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, ATSFontGetPostScriptName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSFontGetVerticalMetrics
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontGetVerticalMetrics)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	ATSFontMetrics _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontGetVerticalMetrics_FUNC);
+	if (arg2) if ((lparg2 = getATSFontMetricsFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)ATSFontGetVerticalMetrics((ATSFontRef)arg0, (ATSOptionFlags)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setATSFontMetricsFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, ATSFontGetVerticalMetrics_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSFontIteratorCreate
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontIteratorCreate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontIteratorCreate_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)ATSFontIteratorCreate((ATSFontContext)arg0, (const ATSFontFilter *)arg1, (void *)arg2, (ATSOptionFlags)arg3, (ATSFontIterator *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, ATSFontIteratorCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSFontIteratorNext
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontIteratorNext)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontIteratorNext_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)ATSFontIteratorNext((ATSFontIterator)arg0, (ATSFontRef *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, ATSFontIteratorNext_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSFontIteratorRelease
+JNIEXPORT jint JNICALL OS_NATIVE(ATSFontIteratorRelease)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ATSFontIteratorRelease_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)ATSFontIteratorRelease((ATSFontIterator *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, ATSFontIteratorRelease_FUNC);
 	return rc;
 }
 #endif
@@ -971,6 +1079,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFArrayGetValueAtIndex)
 }
 #endif
 
+#ifndef NO_CFDataGetBytePtr
+JNIEXPORT jint JNICALL OS_NATIVE(CFDataGetBytePtr)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFDataGetBytePtr_FUNC);
+	rc = (jint)CFDataGetBytePtr((CFDataRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFDataGetBytePtr_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFDataGetBytes
 JNIEXPORT void JNICALL OS_NATIVE(CFDataGetBytes)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyteArray arg2)
@@ -996,6 +1116,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFDataGetLength)
 	OS_NATIVE_ENTER(env, that, CFDataGetLength_FUNC);
 	rc = (jint)CFDataGetLength((CFDataRef)arg0);
 	OS_NATIVE_EXIT(env, that, CFDataGetLength_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFDictionaryGetValueIfPresent
+JNIEXPORT jboolean JNICALL OS_NATIVE(CFDictionaryGetValueIfPresent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CFDictionaryGetValueIfPresent_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jboolean)CFDictionaryGetValueIfPresent((CFDictionaryRef)arg0, (const void *)arg1, (const void **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, CFDictionaryGetValueIfPresent_FUNC);
 	return rc;
 }
 #endif
@@ -2786,18 +2922,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(ChangeWindowAttributes)
 }
 #endif
 
-#ifndef NO_CharWidth
-JNIEXPORT jshort JNICALL OS_NATIVE(CharWidth)
-	(JNIEnv *env, jclass that, jshort arg0)
-{
-	jshort rc = 0;
-	OS_NATIVE_ENTER(env, that, CharWidth_FUNC);
-	rc = (jshort)CharWidth((CharParameter)arg0);
-	OS_NATIVE_EXIT(env, that, CharWidth_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_ClearCurrentScrap
 JNIEXPORT jint JNICALL OS_NATIVE(ClearCurrentScrap)
 	(JNIEnv *env, jclass that)
@@ -3989,20 +4113,6 @@ JNIEXPORT void JNICALL OS_NATIVE(DrawMenuBar)
 }
 #endif
 
-#ifndef NO_DrawText
-JNIEXPORT void JNICALL OS_NATIVE(DrawText)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jshort arg1, jshort arg2)
-{
-	jbyte *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, DrawText_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	DrawText((const void *)lparg0, (short)arg1, (short)arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, DrawText_FUNC);
-}
-#endif
-
 #ifndef NO_DrawThemeButton
 JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeButton)
 	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jobject arg2, jobject arg3, jint arg4, jint arg5, jint arg6)
@@ -4230,54 +4340,6 @@ JNIEXPORT void JNICALL OS_NATIVE(EraseRgn)
 }
 #endif
 
-#ifndef NO_FMCreateFontFamilyInstanceIterator
-JNIEXPORT jint JNICALL OS_NATIVE(FMCreateFontFamilyInstanceIterator)
-	(JNIEnv *env, jclass that, jshort arg0, jint arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FMCreateFontFamilyInstanceIterator_FUNC);
-	rc = (jint)FMCreateFontFamilyInstanceIterator((FMFontFamily)arg0, (FMFontFamilyInstanceIterator *)arg1);
-	OS_NATIVE_EXIT(env, that, FMCreateFontFamilyInstanceIterator_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_FMCreateFontFamilyIterator
-JNIEXPORT jint JNICALL OS_NATIVE(FMCreateFontFamilyIterator)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FMCreateFontFamilyIterator_FUNC);
-	rc = (jint)FMCreateFontFamilyIterator((const FMFilter *)arg0, (void *)arg1, (OptionBits)arg2, (FMFontFamilyIterator *)arg3);
-	OS_NATIVE_EXIT(env, that, FMCreateFontFamilyIterator_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_FMDisposeFontFamilyInstanceIterator
-JNIEXPORT jint JNICALL OS_NATIVE(FMDisposeFontFamilyInstanceIterator)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FMDisposeFontFamilyInstanceIterator_FUNC);
-	rc = (jint)FMDisposeFontFamilyInstanceIterator((FMFontFamilyInstanceIterator *)arg0);
-	OS_NATIVE_EXIT(env, that, FMDisposeFontFamilyInstanceIterator_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_FMDisposeFontFamilyIterator
-JNIEXPORT jint JNICALL OS_NATIVE(FMDisposeFontFamilyIterator)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FMDisposeFontFamilyIterator_FUNC);
-	rc = (jint)FMDisposeFontFamilyIterator((FMFontFamilyIterator *)arg0);
-	OS_NATIVE_EXIT(env, that, FMDisposeFontFamilyIterator_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_FMGetATSFontRefFromFont
 JNIEXPORT jint JNICALL OS_NATIVE(FMGetATSFontRefFromFont)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4325,18 +4387,14 @@ fail:
 }
 #endif
 
-#ifndef NO_FMGetFontFamilyName
-JNIEXPORT jint JNICALL OS_NATIVE(FMGetFontFamilyName)
-	(JNIEnv *env, jclass that, jshort arg0, jbyteArray arg1)
+#ifndef NO_FMGetFontFromATSFontRef
+JNIEXPORT jint JNICALL OS_NATIVE(FMGetFontFromATSFontRef)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-	jbyte *lparg1=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FMGetFontFamilyName_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)FMGetFontFamilyName((FMFontFamily)arg0, (unsigned char *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, FMGetFontFamilyName_FUNC);
+	OS_NATIVE_ENTER(env, that, FMGetFontFromATSFontRef_FUNC);
+	rc = (jint)FMGetFontFromATSFontRef(arg0);
+	OS_NATIVE_EXIT(env, that, FMGetFontFromATSFontRef_FUNC);
 	return rc;
 }
 #endif
@@ -4356,44 +4414,6 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, FMGetFontFromFontFamilyInstance_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_FMGetNextFontFamily
-JNIEXPORT jint JNICALL OS_NATIVE(FMGetNextFontFamily)
-	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
-{
-	jshort *lparg1=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FMGetNextFontFamily_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)FMGetNextFontFamily((FMFontFamilyIterator *)arg0, (FMFontFamily *)lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, FMGetNextFontFamily_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_FMGetNextFontFamilyInstance
-JNIEXPORT jint JNICALL OS_NATIVE(FMGetNextFontFamilyInstance)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jshortArray arg2, jshortArray arg3)
-{
-	jint *lparg1=NULL;
-	jshort *lparg2=NULL;
-	jshort *lparg3=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FMGetNextFontFamilyInstance_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)FMGetNextFontFamilyInstance((FMFontFamilyInstanceIterator *)arg0, (FMFont *)lparg1, (FMFontStyle *)lparg2, (FMFontSize *)lparg3);
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, FMGetNextFontFamilyInstance_FUNC);
 	return rc;
 }
 #endif
@@ -4488,22 +4508,6 @@ fail:
 }
 #endif
 
-#ifndef NO_FetchFontInfo
-JNIEXPORT jint JNICALL OS_NATIVE(FetchFontInfo)
-	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jshort arg2, jobject arg3)
-{
-	FontInfo _arg3, *lparg3=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FetchFontInfo_FUNC);
-	if (arg3) if ((lparg3 = getFontInfoFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)FetchFontInfo(arg0, arg1, arg2, lparg3);
-fail:
-	if (arg3 && lparg3) setFontInfoFields(env, arg3, lparg3);
-	OS_NATIVE_EXIT(env, that, FetchFontInfo_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_FindSpecificEventInQueue
 JNIEXPORT jint JNICALL OS_NATIVE(FindSpecificEventInQueue)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -4559,58 +4563,6 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(Fix2X)
 }
 #endif
 
-#ifndef NO_FrameOval
-JNIEXPORT void JNICALL OS_NATIVE(FrameOval)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	Rect _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, FrameOval_FUNC);
-	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	FrameOval((const Rect *)lparg0);
-fail:
-	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, FrameOval_FUNC);
-}
-#endif
-
-#ifndef NO_FramePoly
-JNIEXPORT void JNICALL OS_NATIVE(FramePoly)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, FramePoly_FUNC);
-	FramePoly((PolyHandle)arg0);
-	OS_NATIVE_EXIT(env, that, FramePoly_FUNC);
-}
-#endif
-
-#ifndef NO_FrameRect
-JNIEXPORT void JNICALL OS_NATIVE(FrameRect)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	Rect _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, FrameRect_FUNC);
-	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	FrameRect((const Rect *)lparg0);
-fail:
-	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, FrameRect_FUNC);
-}
-#endif
-
-#ifndef NO_FrameRoundRect
-JNIEXPORT void JNICALL OS_NATIVE(FrameRoundRect)
-	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2)
-{
-	Rect _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, FrameRoundRect_FUNC);
-	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	FrameRoundRect((const Rect *)lparg0, (short)arg1, (short)arg2);
-fail:
-	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, FrameRoundRect_FUNC);
-}
-#endif
-
 #ifndef NO_FrontWindow
 JNIEXPORT jint JNICALL OS_NATIVE(FrontWindow)
 	(JNIEnv *env, jclass that)
@@ -4635,18 +4587,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(Gestalt)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, Gestalt_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GetAppFont
-JNIEXPORT jshort JNICALL OS_NATIVE(GetAppFont)
-	(JNIEnv *env, jclass that)
-{
-	jshort rc = 0;
-	OS_NATIVE_ENTER(env, that, GetAppFont_FUNC);
-	rc = (jshort)GetAppFont();
-	OS_NATIVE_EXIT(env, that, GetAppFont_FUNC);
 	return rc;
 }
 #endif
@@ -5467,18 +5407,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDblTime)
 }
 #endif
 
-#ifndef NO_GetDefFontSize
-JNIEXPORT jshort JNICALL OS_NATIVE(GetDefFontSize)
-	(JNIEnv *env, jclass that)
-{
-	jshort rc = 0;
-	OS_NATIVE_ENTER(env, that, GetDefFontSize_FUNC);
-	rc = (jshort)GetDefFontSize();
-	OS_NATIVE_EXIT(env, that, GetDefFontSize_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GetDeviceList
 JNIEXPORT jint JNICALL OS_NATIVE(GetDeviceList)
 	(JNIEnv *env, jclass that)
@@ -5918,20 +5846,6 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, GetFlavorType_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_GetFontInfo
-JNIEXPORT void JNICALL OS_NATIVE(GetFontInfo)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	FontInfo _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, GetFontInfo_FUNC);
-	if (arg0) if ((lparg0 = getFontInfoFields(env, arg0, &_arg0)) == NULL) goto fail;
-	GetFontInfo((FontInfo *)lparg0);
-fail:
-	if (arg0 && lparg0) setFontInfoFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, GetFontInfo_FUNC);
 }
 #endif
 
@@ -8635,16 +8549,6 @@ fail:
 }
 #endif
 
-#ifndef NO_InvertRgn
-JNIEXPORT void JNICALL OS_NATIVE(InvertRgn)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, InvertRgn_FUNC);
-	InvertRgn((RgnHandle)arg0);
-	OS_NATIVE_EXIT(env, that, InvertRgn_FUNC);
-}
-#endif
-
 #ifndef NO_IsControlActive
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsControlActive)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -10008,30 +9912,6 @@ fail:
 }
 #endif
 
-#ifndef NO_PaintOval
-JNIEXPORT void JNICALL OS_NATIVE(PaintOval)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	Rect _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, PaintOval_FUNC);
-	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	PaintOval((const Rect *)lparg0);
-fail:
-	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, PaintOval_FUNC);
-}
-#endif
-
-#ifndef NO_PaintPoly
-JNIEXPORT void JNICALL OS_NATIVE(PaintPoly)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, PaintPoly_FUNC);
-	PaintPoly((PolyHandle)arg0);
-	OS_NATIVE_EXIT(env, that, PaintPoly_FUNC);
-}
-#endif
-
 #ifndef NO_PaintRect
 JNIEXPORT void JNICALL OS_NATIVE(PaintRect)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -10043,30 +9923,6 @@ JNIEXPORT void JNICALL OS_NATIVE(PaintRect)
 fail:
 	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, PaintRect_FUNC);
-}
-#endif
-
-#ifndef NO_PaintRoundRect
-JNIEXPORT void JNICALL OS_NATIVE(PaintRoundRect)
-	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2)
-{
-	Rect _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, PaintRoundRect_FUNC);
-	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	PaintRoundRect((const Rect *)lparg0, (short)arg1, (short)arg2);
-fail:
-	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, PaintRoundRect_FUNC);
-}
-#endif
-
-#ifndef NO_PenSize
-JNIEXPORT void JNICALL OS_NATIVE(PenSize)
-	(JNIEnv *env, jclass that, jshort arg0, jshort arg1)
-{
-	OS_NATIVE_ENTER(env, that, PenSize_FUNC);
-	PenSize((short)arg0, (short)arg1);
-	OS_NATIVE_EXIT(env, that, PenSize_FUNC);
 }
 #endif
 
@@ -10228,34 +10084,6 @@ JNIEXPORT void JNICALL OS_NATIVE(QDFlushPortBuffer)
 	OS_NATIVE_ENTER(env, that, QDFlushPortBuffer_FUNC);
 	QDFlushPortBuffer((CGrafPtr)arg0, (RgnHandle)arg1);
 	OS_NATIVE_EXIT(env, that, QDFlushPortBuffer_FUNC);
-}
-#endif
-
-#ifndef NO_QDGlobalToLocalPoint
-JNIEXPORT void JNICALL OS_NATIVE(QDGlobalToLocalPoint)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
-{
-	Point _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, QDGlobalToLocalPoint_FUNC);
-	if (arg1) if ((lparg1 = getPointFields(env, arg1, &_arg1)) == NULL) goto fail;
-	QDGlobalToLocalPoint((CGrafPtr)arg0, (Point *)lparg1);
-fail:
-	if (arg1 && lparg1) setPointFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, QDGlobalToLocalPoint_FUNC);
-}
-#endif
-
-#ifndef NO_QDLocalToGlobalPoint
-JNIEXPORT void JNICALL OS_NATIVE(QDLocalToGlobalPoint)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
-{
-	Point _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, QDLocalToGlobalPoint_FUNC);
-	if (arg1) if ((lparg1 = getPointFields(env, arg1, &_arg1)) == NULL) goto fail;
-	QDLocalToGlobalPoint((CGrafPtr)arg0, (Point *)lparg1);
-fail:
-	if (arg1 && lparg1) setPointFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, QDLocalToGlobalPoint_FUNC);
 }
 #endif
 
@@ -12668,22 +12496,6 @@ JNIEXPORT void JNICALL OS_NATIVE(TextSize)
 }
 #endif
 
-#ifndef NO_TextWidth
-JNIEXPORT jshort JNICALL OS_NATIVE(TextWidth)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jshort arg1, jshort arg2)
-{
-	jbyte *lparg0=NULL;
-	jshort rc = 0;
-	OS_NATIVE_ENTER(env, that, TextWidth_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jshort)TextWidth((const void *)lparg0, (short)arg1, (short)arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, TextWidth_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_TrackDrag
 JNIEXPORT jint JNICALL OS_NATIVE(TrackDrag)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -12915,6 +12727,54 @@ JNIEXPORT jint JNICALL OS_NATIVE(kCFNumberFormatterDecimalSeparator)
 }
 #endif
 
+#ifndef NO_kFontPanelAttributeSizesKey
+JNIEXPORT jint JNICALL OS_NATIVE(kFontPanelAttributeSizesKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kFontPanelAttributeSizesKey_FUNC);
+	rc = (jint)kFontPanelAttributeSizesKey;
+	OS_NATIVE_EXIT(env, that, kFontPanelAttributeSizesKey_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kFontPanelAttributeTagsKey
+JNIEXPORT jint JNICALL OS_NATIVE(kFontPanelAttributeTagsKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kFontPanelAttributeTagsKey_FUNC);
+	rc = (jint)kFontPanelAttributeTagsKey;
+	OS_NATIVE_EXIT(env, that, kFontPanelAttributeTagsKey_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kFontPanelAttributeValuesKey
+JNIEXPORT jint JNICALL OS_NATIVE(kFontPanelAttributeValuesKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kFontPanelAttributeValuesKey_FUNC);
+	rc = (jint)kFontPanelAttributeValuesKey;
+	OS_NATIVE_EXIT(env, that, kFontPanelAttributeValuesKey_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kFontPanelAttributesKey
+JNIEXPORT jint JNICALL OS_NATIVE(kFontPanelAttributesKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kFontPanelAttributesKey_FUNC);
+	rc = (jint)kFontPanelAttributesKey;
+	OS_NATIVE_EXIT(env, that, kFontPanelAttributesKey_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_kHIViewWindowContentID
 JNIEXPORT jint JNICALL OS_NATIVE(kHIViewWindowContentID)
 	(JNIEnv *env, jclass that)
@@ -13022,19 +12882,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_Event
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I_FUNC);
-}
-#endif
-
-#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I
-JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
-{
-	FontSelectionQDStyle _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I_FUNC);
-	if (arg1) if ((lparg1 = getFontSelectionQDStyleFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	OS_NATIVE_EXIT(env, that, memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I_FUNC);
 }
 #endif
 
@@ -13272,20 +13119,6 @@ fail:
 }
 #endif
 
-#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II
-JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
-{
-	FontSelectionQDStyle _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setFontSelectionQDStyleFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II_FUNC);
-}
-#endif
-
 #ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II
 JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -13356,6 +13189,20 @@ fail:
 	}
 	if (arg0 && lparg0) setPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_Point_2_3II_FUNC);
+}
+#endif
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_RGBColor_2II
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_RGBColor_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	RGBColor _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_RGBColor_2II_FUNC);
+	if (arg0) if ((lparg0 = getRGBColorFields(env, arg0, &_arg0)) == NULL) goto fail;
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setRGBColorFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_RGBColor_2II_FUNC);
 }
 #endif
 

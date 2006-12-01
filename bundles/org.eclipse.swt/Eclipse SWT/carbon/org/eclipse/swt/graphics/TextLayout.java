@@ -70,9 +70,7 @@ public final class TextLayout extends Resource {
 			if (font != null) {
 				length += 2;
 				ptrLength += 8;
-				short[] realStyle = new short[1];
-				OS.FMGetFontFromFontFamilyInstance(font.id, font.style, buffer, realStyle);
-				synthesize = font.style != realStyle[0];
+				synthesize = font.style != 0;
 				if (synthesize) {
 					length += 2;
 					ptrLength += 2;
@@ -591,10 +589,11 @@ public Rectangle getBounds() {
 	int length = text.length();
 	if (length == 0) {
 		Font font = this.font != null ? this.font : device.getSystemFont();
-		FontInfo info = new FontInfo();
-		OS.FetchFontInfo(font.id, font.size, font.style, info);
-		int ascent = Math.max(info.ascent, this.ascent);
-		int descent = Math.max(info.descent + info.leading, this.descent);
+		ATSFontMetrics metrics = new ATSFontMetrics();
+		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		int ascent = (int)(0.5f + metrics.ascent * font.size);
+		int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
 		height = ascent + descent;
 	} else {
 		for (int i=0; i<breaks.length; i++) {
@@ -870,10 +869,11 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int length = text.length();
 	if (length == 0) {
 		Font font = this.font != null ? this.font : device.getSystemFont();
-		FontInfo info = new FontInfo();
-		OS.FetchFontInfo(font.id, font.size, font.style, info);
-		int ascent = Math.max(info.ascent, this.ascent);
-		int descent = Math.max(info.descent + info.leading, this.descent);
+		ATSFontMetrics metrics = new ATSFontMetrics();
+		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		int ascent = (int)(0.5f + metrics.ascent * font.size);
+		int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
 		return FontMetrics.carbon_new(ascent, descent, 0, 0, ascent + descent);
 	}
 	int start = lineIndex == 0 ? 0 : breaks[lineIndex - 1];

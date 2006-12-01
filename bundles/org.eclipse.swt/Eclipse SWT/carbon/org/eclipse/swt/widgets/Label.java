@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 
 import org.eclipse.swt.*;
@@ -111,37 +110,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			Rectangle r = image.getBounds ();
 			width = r.width;
 			height = r.height;
-		} else {
-			int length = text.length (); 
-			if (length != 0) {
-				int [] ptr = new int [1];
-				OS.GetControlData (handle, (short) 0 , OS.kControlStaticTextCFStringTag, 4, ptr, null);
-				if (ptr [0] != 0) {
-					org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-					if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) ioBounds.h = (short) wHint;					
-					if (font == null) {
-						OS.GetThemeTextDimensions (ptr [0], (short) defaultThemeFont (), OS.kThemeStateActive, ioBounds.h != 0, ioBounds, null);
-					} else {
-						int [] currentPort = new int [1];
-						OS.GetPort (currentPort);
-						OS.SetPortWindowPort (OS.GetControlOwner (handle));
-						OS.TextFont (font.id);
-						OS.TextFace (font.style);
-						OS.TextSize (font.size);
-						OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, ioBounds.h != 0, ioBounds, null);
-						OS.SetPort (currentPort [0]);
-					}
-					width = ioBounds.h;
-					height = ioBounds.v;
-				}
-				OS.CFRelease (ptr [0]);
-			} else {
-				Font font = getFont ();
-				FontInfo info = new FontInfo ();
-				OS.FetchFontInfo(font.id, font.size, font.style, info);
-				int fontHeight = info.ascent + info.descent + info.leading;
-				height = fontHeight;
-			}
+		} else {			
+			int [] ptr = new int [1];
+			OS.GetControlData (handle, (short) 0 , OS.kControlStaticTextCFStringTag, 4, ptr, null);
+			Point size = textExtent (ptr [0], (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT ? wHint : 0);
+			if (ptr [0] != 0) OS.CFRelease (ptr [0]);
+			width = size.x;
+			height = size.y;			
 		}
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;

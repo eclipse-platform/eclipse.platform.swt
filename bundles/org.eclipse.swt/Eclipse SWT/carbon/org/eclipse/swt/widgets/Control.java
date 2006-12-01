@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.ATSFontMetrics;
+import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.CGPoint;
@@ -545,7 +547,7 @@ Font defaultFont () {
 	short id = OS.FMGetFontFamilyFromName (family);
 	int [] font = new int [1]; 
 	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
-	return Font.carbon_new (display, font [0], id, style [0], size [0]);
+	return Font.carbon_new (display, OS.FMGetATSFontRefFromFont (font [0]), style [0], size [0]);
 }
 
 Color defaultForeground () {
@@ -2849,10 +2851,12 @@ void setFontStyle (int control, Font font) {
 	OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
 	fontStyle.flags &= ~(OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask | OS.kControlUseThemeFontIDMask);
 	if (font != null) {
+		short [] family = new short [1], style = new short [1];
+		OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
 		fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
-		fontStyle.font = font.id;
-		fontStyle.style = font.style;
-		fontStyle.size = font.size;
+		fontStyle.font = family [0];
+		fontStyle.style = (short) (style [0] | font.style);
+		fontStyle.size = (short) font.size;
 	}
 	OS.SetControlFontStyle (control, fontStyle);
 }
@@ -3250,6 +3254,39 @@ void sort (int [] items) {
 	    	}
 	    }
 	}
+}
+
+Point textExtent (int ptr, int wHint) {
+	if (ptr != 0 && OS.CFStringGetLength (ptr) > 0) {		
+		float [] w = new float [1], h = new float [1];
+		HIThemeTextInfo info = new HIThemeTextInfo ();
+		info.state = OS.kThemeStateActive;
+		if (font != null) {
+			short [] family = new short [1], style = new short [1];
+			OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
+			OS.TextFont (family [0]);
+			OS.TextFace ((short) (style [0] | font.style));
+			OS.TextSize ((short) font.size);
+			info.fontID = (short) OS.kThemeCurrentPortFont; 
+		} else {
+			info.fontID = (short) defaultThemeFont ();
+		}
+		OS.HIThemeGetTextDimensions (ptr, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
+		return new Point((int) w [0], (int) h [0]);
+	} else {
+		Font font = getFont ();
+		ATSFontMetrics metrics = new ATSFontMetrics();
+		OS.ATSFontGetVerticalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
+		return new Point(0, (int)(0.5f + (metrics.ascent -metrics.descent + metrics.leading) * font.size));
+	}
+}
+
+Point textExtent(char[] chars, int wHint) {
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+	Point result = textExtent (ptr, wHint);
+	if (ptr != 0) OS.CFRelease (ptr);
+	return result;
 }
 
 /**

@@ -12,7 +12,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
@@ -22,7 +21,6 @@ import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.HIThemeTextInfo;
 import org.eclipse.swt.internal.carbon.TXNTab;
 import org.eclipse.swt.internal.carbon.CGPoint;
 
@@ -306,38 +304,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int [] oDataHandle = new int [1];
 			OS.TXNGetData (txnObject, OS.kTXNStartOffset, OS.kTXNEndOffset, oDataHandle);
 			if (oDataHandle [0] != 0) {
-				int length = OS.GetHandleSize (oDataHandle [0]);
+				int length = OS.GetHandleSize (oDataHandle [0]), str = 0;
 				if (length != 0) {
 					int [] ptr = new int [1];
 					OS.HLock (oDataHandle [0]);
 					OS.memcpy (ptr, oDataHandle [0], 4);
-					int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);
-					if (str != 0) {
-						float [] w = new float [1], h = new float [1];
-						HIThemeTextInfo info = new HIThemeTextInfo ();
-						info.state = OS.kThemeStateActive;
-						if (font != null) {
-							OS.TextFont (font.id);
-							OS.TextFace (font.style);
-							OS.TextSize (font.size);
-							info.fontID = (short) OS.kThemeCurrentPortFont; 
-						} else {
-							info.fontID = (short) defaultThemeFont ();
-						}
-						OS.HIThemeGetTextDimensions (str, wHint == SWT.DEFAULT ? 0 : wHint, info, w, h, null);
-						OS.CFRelease (str);
-						width = (int) w [0];
-						height = (int) h [0];
-					}
+					str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);					
 					OS.HUnlock (oDataHandle[0]);
-				} else {
-					Font font = getFont ();
-					FontInfo info = new FontInfo ();
-					OS.FetchFontInfo (font.id, font.size, font.style, info);
-					int fontHeight = info.ascent + info.descent + info.leading;
-					height = fontHeight;
 				}
 				OS.DisposeHandle (oDataHandle[0]);
+				Point size = textExtent (str, wHint == SWT.DEFAULT ? 0 : wHint);
+				if (str != 0) OS.CFRelease(str);
+				width = size.x;
+				height = size.y;
 			}
 		} else {
 			TXNLongRect oTextRect = new TXNLongRect ();
@@ -855,7 +834,7 @@ public String getLineDelimiter () {
 public int getLineHeight () {
 	checkWidget();
 	if (txnObject == 0) {
-		return measureSpace ().v;
+		return textExtent (new char[]{' '}, 0).y;
 	} 
 	int [] oLineWidth = new int [1], oLineHeight = new int [1];
 	OS.TXNGetLineMetrics (txnObject, 0, oLineWidth, oLineHeight);
@@ -1376,25 +1355,6 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-org.eclipse.swt.internal.carbon.Point measureSpace () {
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, new char[]{' '}, 1);
-	org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-	if (font == null) {
-		OS.GetThemeTextDimensions (ptr, (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
-	} else {
-		int [] currentPort = new int [1];
-		OS.GetPort (currentPort);
-		OS.SetPortWindowPort (OS.GetControlOwner (handle));
-		OS.TextFont (font.id);
-		OS.TextFace (font.style);
-		OS.TextSize (font.size);
-		OS.GetThemeTextDimensions (ptr, (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
-		OS.SetPort (currentPort [0]);
-	}
-	OS.CFRelease (ptr);
-	return ioBounds;
-}
-
 /**
  * Pastes text from clipboard.
  * <p>
@@ -1809,16 +1769,24 @@ void setFontStyle (Font font) {
 	if (txnObject == 0) {
 		super.setFontStyle (font);
 	} else {
+		int family = OS.kTXNDefaultFontName, style = OS.kTXNDefaultFontStyle, size = OS.kTXNDefaultFontSize;
+		if (font != null) {
+			short [] id = new short [1], s = new short [1];
+			OS.FMGetFontFamilyInstanceFromFont (font.handle, id, s);
+			family = id [0];
+			style = s [0] | font.style;
+			size = OS.X2Fix (font.size);
+		}
 		int [] attribs = new int [] {
 			OS.kTXNQDFontSizeAttribute,
 			OS.kTXNQDFontSizeAttributeSize,
-			font == null ? OS.kTXNDefaultFontSize : OS.X2Fix (font.size),
+			size,
 			OS.kTXNQDFontStyleAttribute,
 			OS.kTXNQDFontStyleAttributeSize,
-			font == null ? OS.kTXNDefaultFontStyle : font.style,
+			style,
 			OS.kTXNQDFontFamilyIDAttribute,
 			OS.kTXNQDFontFamilyIDAttributeSize,
-			font == null ? OS.kTXNDefaultFontName : font.id,
+			family,
 		};
 		int ptr = OS.NewPtr (attribs.length * 4);
 		OS.memcpy (ptr, attribs, attribs.length * 4);
@@ -1983,7 +1951,7 @@ public void setTabs (int tabs) {
 	if (txnObject == 0) return;
 	this.tabs = tabs;
 	TXNTab tab = new TXNTab ();
-	tab.value = (short) (measureSpace ().h * tabs);
+	tab.value = (short) (textExtent (new char[]{' '}, 0).x * tabs);
 	int [] tags = new int [] {OS.kTXNTabSettingsTag};
 	int [] datas = new int [1];
 	OS.memcpy (datas, tab, TXNTab.sizeof);

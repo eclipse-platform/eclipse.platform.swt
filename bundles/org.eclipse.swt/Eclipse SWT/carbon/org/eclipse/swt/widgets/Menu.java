@@ -11,7 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.FontInfo;
+import org.eclipse.swt.internal.carbon.ATSFontMetrics;
 import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.MenuTrackingData;
@@ -685,21 +685,26 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 				int modifierIndex = modifierIndex (accelText);
 				char [] buffer = new char [length - modifierIndex - 1];
 				accelText.getChars (modifierIndex + 1, length, buffer, 0);
-				int font = OS.kThemeMenuItemFont;
-				if (buffer.length > 1) font = OS.kThemeMenuItemCmdKeyFont;
+				int themeFont = OS.kThemeMenuItemFont;
+				if (buffer.length > 1) themeFont = OS.kThemeMenuItemCmdKeyFont;
 				byte [] family = new byte [256];
 				short [] size = new short [1];
 				byte [] style = new byte [1];
-				OS.GetThemeFont ((short) font, (short) OS.smSystemScript, family, size, style);
-				FontInfo info = new FontInfo ();
-				OS.FetchFontInfo (family[0], size[0], style[0], info);
+				OS.GetThemeFont ((short) themeFont, (short) OS.smSystemScript, family, size, style);
+				short id = OS.FMGetFontFamilyFromName (family);
+				int [] font = new int [1]; 
+				OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
+				int atsFont = OS.FMGetATSFontRefFromFont (font [0]);
+				ATSFontMetrics fontMetrics = new ATSFontMetrics ();
+				OS.ATSFontGetVerticalMetrics (atsFont, OS.kATSOptionFlagsDefault, fontMetrics);
+				OS.ATSFontGetHorizontalMetrics (atsFont, OS.kATSOptionFlagsDefault, fontMetrics);
 				int [] metric = new int [1];
 				OS.GetThemeMetric (OS.kThemeMetricMenuIconTrailingEdgeMargin, metric);
 				int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 				org.eclipse.swt.internal.carbon.Point size1 = new org.eclipse.swt.internal.carbon.Point ();
-				OS.GetThemeTextDimensions (str, (short) font, 0, false, size1, null);
-				rect.left = (short) (rect.right - Math.max (info.widMax, size1.h) - metric [0]);
-				OS.DrawThemeTextBox (str, (short) font, OS.kThemeStateActive, false, rect, (short) OS.teFlushLeft, context [0]);
+				OS.GetThemeTextDimensions (str, (short) themeFont, 0, false, size1, null);
+				rect.left = (short) (rect.right - Math.max ((int)(fontMetrics.maxAdvanceWidth * size[0]), size1.h) - metric [0]);
+				OS.DrawThemeTextBox (str, (short) themeFont, OS.kThemeStateActive, false, rect, (short) OS.teFlushLeft, context [0]);
 				OS.CFRelease (str);
 				
 				/* Draw the modifiers */

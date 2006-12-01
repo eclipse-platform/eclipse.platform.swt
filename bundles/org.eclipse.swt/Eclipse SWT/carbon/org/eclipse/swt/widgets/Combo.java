@@ -15,7 +15,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
-import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -371,19 +370,6 @@ public void clearSelection () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
-	int [] currentPort = new int [1];
-	short themeFont = (short) defaultThemeFont ();
-	if (font != null) {
-		themeFont = OS.kThemeCurrentPortFont;
-		OS.GetPort (currentPort);
-		OS.SetPortWindowPort (OS.GetControlOwner (handle));
-		OS.TextFont (font.id);
-		OS.TextFace (font.style);
-		OS.TextSize (font.size);
-	}
-	FontInfo info = new FontInfo ();
-	OS.GetFontInfo (info);
-	height = info.ascent + info.descent;
 	int [] ptr = new int [1];
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = OS.GetControlValue (handle) - 1;
@@ -391,13 +377,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, null);
 	}
-	org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-	if (ptr [0] != 0) {
-		OS.GetThemeTextDimensions (ptr [0], themeFont, OS.kThemeStateActive, false, ioBounds, null);
-		width = Math.max (width, ioBounds.h);
-		height = Math.max (height, ioBounds.v);
-		OS.CFRelease (ptr [0]);
-	}
+	Point size = textExtent (ptr [0], 0);
+	if (ptr [0] != 0) OS.CFRelease (ptr [0]);
+	width = Math.max (width, size.x);
+	height = Math.max (height, size.y);
 	int count;
 	if ((style & SWT.READ_ONLY) != 0) {
 		count = OS.CountMenuItems (menuHandle);
@@ -412,13 +395,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			result = OS.HIComboBoxCopyTextItemAtIndex (handle, i, ptr);
 		}
 		if (result == OS.noErr) {
-			OS.GetThemeTextDimensions (ptr [0], themeFont, OS.kThemeStateActive, false, ioBounds, null);
-			width = Math.max (width, ioBounds.h);
+			size = textExtent (ptr [0], 0);
+			width = Math.max (width, size.x);
 			OS.CFRelease (ptr [0]);
 		}
-	}
-	if (font != null) {
-		OS.SetPort (currentPort [0]);
 	}
 	int [] metric = new int [1];
 	if ((style & SWT.READ_ONLY) != 0) {

@@ -28,7 +28,7 @@ AGL_LIB=lib$(SWTAGL_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 #NATIVE_STATS = -DNATIVE_STATS
 
 #SWT_DEBUG = -g
-ARCHS = -arch i386 -arch ppc
+ARCHS =# -arch i386 -arch ppc
 CFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Headers
 LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Carbon 
 COCOACFLAGS = $(CFLAGS) -xobjective-c -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers

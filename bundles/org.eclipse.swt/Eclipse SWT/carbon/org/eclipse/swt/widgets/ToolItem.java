@@ -200,9 +200,11 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		info.state = OS.kThemeStatePressed;
 		Font font = parent.font;
 		if (font != null) {
-			OS.TextFont (font.id);
-			OS.TextFace (font.style);
-			OS.TextSize (font.size);
+			short [] family = new short [1], style = new short [1];
+			OS.FMGetFontFamilyInstanceFromFont (font.handle, family, style);
+			OS.TextFont (family [0]);
+			OS.TextFace ((short) (style [0] | font.style));
+			OS.TextSize ((short) font.size);
 			info.fontID = (short) OS.kThemeCurrentPortFont; 
 		} else {
 			info.fontID = (short) parent.defaultThemeFont ();
@@ -1307,23 +1309,11 @@ void updateText (boolean layout) {
 
 Point textExtent () {
 	if (OS.HIVIEW) {
-		float [] w = new float [1], h = new float [1];
-		HIThemeTextInfo info = new HIThemeTextInfo ();
-		info.state = OS.kThemeStateActive;
-		Font font = parent.font;
-		if (font != null) {
-			OS.TextFont (font.id);
-			OS.TextFace (font.style);
-			OS.TextSize (font.size);
-			info.fontID = (short) OS.kThemeCurrentPortFont; 
-		} else {
-			info.fontID = (short) parent.defaultThemeFont ();
-		}
 		int [] ptr = new int [1];
 		OS.GetControlData (labelHandle, (short) 0, OS.kControlStaticTextCFStringTag, 4, ptr, null);
-		OS.HIThemeGetTextDimensions (ptr [0], 0, info, w, h, null);
-		OS.CFRelease (ptr [0]);
-		return new Point ((int) w [0], (int) h [0]);
+		Point result = parent.textExtent (ptr [0], 0);
+		if (ptr [0] != 0) OS.CFRelease (ptr [0]);
+		return result;
 	} else {
 		GC gc = new GC (parent);
 		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;

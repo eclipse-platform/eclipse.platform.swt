@@ -35,6 +35,7 @@ public class FontDialog extends Dialog {
 	FontData fontData;
 	RGB rgb;
 	boolean open;
+	int fontID, fontSize;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -128,52 +129,56 @@ int fontProc (int nextHandler, int theEvent, int userData) {
 			open = false;
 			break;
 		case OS.kEventFontSelection:
-			if (fontData == null) fontData = new FontData();
 			int [] fontID = new int [1];
 			if (OS.GetEventParameter (theEvent, OS.kEventParamATSUFontID, OS.typeUInt32, null, 4, null, fontID) == OS.noErr) {
-				int [] actualLength = new int [1];
-				int platformCode = OS.kFontUnicodePlatform, encoding = OS.kCFStringEncodingUnicode;
-				if (OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null) != OS.noErr) {
-					platformCode = OS.kFontNoPlatformCode;
-					encoding = OS.kCFStringEncodingMacRoman;
-					OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, 0, null, actualLength, null);
-				}	
-				byte[] buffer = new byte[actualLength[0]];
-				OS.ATSUFindFontName (fontID [0], OS.kFontFamilyName, platformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, buffer.length, buffer, actualLength, null);
-				String name = "";
-				int ptr = OS.CFStringCreateWithBytes (0, buffer, buffer.length, encoding, false);
-				if (ptr != 0) {
-					int length = OS.CFStringGetLength (ptr);
-					if (length != 0) {
-						char[] chars = new char [length];
-						CFRange range = new CFRange ();
-						range.length = length;
-						OS.CFStringGetCharacters (ptr, range, chars);
-						name = new String (chars);
-					}
-					OS.CFRelease (ptr);
-				}
-				fontData.setName (name);
+				this.fontID = fontID [0];
 			}
-			short [] fontStyle = new short [1];
-			if (OS.GetEventParameter (theEvent, OS.kEventParamFMFontStyle, OS.typeSInt16, null, 2, null, fontStyle) == OS.noErr) {
-				int style = SWT.NORMAL;
-				if ((fontStyle [0] & OS.bold) != 0) style |= SWT.BOLD;
-				if ((fontStyle [0] & OS.italic) != 0) style |= SWT.ITALIC;
-				fontData.setStyle (style);
+			int [] fontSize = new int [1];
+			if (OS.GetEventParameter (theEvent, OS.kEventParamATSUFontSize, OS.typeFixed, null, 4, null, fontSize) == OS.noErr) {
+				this.fontSize = fontSize [0];
 			}
-			short [] fontSize = new short [1];
-			if (OS.GetEventParameter (theEvent, OS.kEventParamFMFontSize, OS.typeSInt16, null, 2, null, fontSize) == OS.noErr) {
-				fontData.setHeight (fontSize [0]);
-			}
-			// NEEDS WORK - color not supported in native dialog for Carbon
 			RGBColor color = new RGBColor ();
 			int [] actualSize = new int [1];
 			if (OS.GetEventParameter (theEvent, OS.kEventParamFontColor, OS.typeRGBColor, null, RGBColor.sizeof, actualSize, color) == OS.noErr) {
 				int red = (color.red >> 8) & 0xFF;
 				int green = (color.green >> 8) & 0xFF;
 				int blue =	(color.blue >> 8) & 0xFF;
-				rgb = new RGB(red, green, blue);
+				rgb = new RGB (red, green, blue);
+			} else {
+				int [] dict = new int [1];
+				if (OS.GetEventParameter (theEvent, OS.kEventParamDictionary, OS.typeCFDictionaryRef, null, 4, actualSize, dict) == OS.noErr) {
+					int [] attrib = new int [1];
+					if (OS.CFDictionaryGetValueIfPresent (dict [0], OS.kFontPanelAttributesKey (), attrib)) {
+						int [] tags = new int [1];
+						int [] sizes = new int [1];
+						int [] values = new int [1];
+						if (OS.CFDictionaryGetValueIfPresent (attrib [0], OS.kFontPanelAttributeTagsKey (), tags) &&
+							OS.CFDictionaryGetValueIfPresent (attrib [0], OS.kFontPanelAttributeSizesKey (), sizes) &&
+							OS.CFDictionaryGetValueIfPresent (attrib [0], OS.kFontPanelAttributeValuesKey (), values)
+						) {
+							int count = OS.CFDataGetLength (tags [0]) / 4;
+							int tagPtr = OS.CFDataGetBytePtr (tags[0]);
+                            int sizePtr = OS.CFDataGetBytePtr (sizes [0]);
+                            int [] tag = new int [1];
+                            int [] size = new int [1];
+                            int valueOffset = 0;
+                            for (int i = 0 ; i < count ; i++) {
+                            	OS.memcpy (tag, tagPtr + (i * 4), 4);
+                            	OS.memcpy (size, sizePtr + (i * 4), 4);
+                                if (tag [0] == OS.kATSUColorTag && size[0] == RGBColor.sizeof) {
+                                    int valuePtr = OS.CFDataGetBytePtr (values [0]);
+                                	OS.memcpy (color, valuePtr + valueOffset, RGBColor.sizeof);
+                                	int red = (color.red >> 8) & 0xFF;
+                    				int green = (color.green >> 8) & 0xFF;
+                    				int blue =	(color.blue >> 8) & 0xFF;
+                    				rgb = new RGB (red, green, blue);
+                                    break ;
+                                }
+                                valueOffset = size[0];
+                            }
+						}
+					}
+				}
 			}
 			break;
 	}
@@ -193,35 +198,29 @@ int fontProc (int nextHandler, int theEvent, int userData) {
  * </ul>
  */
 public FontData open () {
-	FontSelectionQDStyle qdStyle = new FontSelectionQDStyle();
-	qdStyle.version = OS.kFontSelectionQDStyleVersionZero;
-	// NEEDS WORK - color not supported in native dialog for Carbon
-	if (rgb != null) {
-		qdStyle.hasColor = true;
-		qdStyle.color_red = (short)(rgb.red * 257);
-		qdStyle.color_green = (short)(rgb.green * 257);
-		qdStyle.color_blue = (short)(rgb.blue * 257);
-	}
+	Display display = parent != null ? parent.display : Display.getCurrent ();
 	if (fontData != null) {
-		String familyName = fontData.name;
-		int[] font = new int[1];
-		byte[] buffer = familyName.getBytes();
-		if (OS.ATSUFindFontFromName(buffer, buffer.length, OS.kFontFamilyName, OS.kFontNoPlatformCode, OS.kFontNoScriptCode, OS.kFontNoLanguageCode, font) == OS.noErr) {
-			short[] family = new short[1];
-			OS.FMGetFontFamilyInstanceFromFont(font[0], family, new short[1]);		
-			qdStyle.instance_fontFamily = family[0];
-		}
-		int style = fontData.style;
-		int fontStyle = OS.normal;
-		if ((style & SWT.BOLD) != 0) fontStyle |= OS.bold;
-		if ((style & SWT.ITALIC) != 0) fontStyle |= OS.italic;
-		qdStyle.instance_fontStyle = (short)fontStyle;
-		qdStyle.size = (short)fontData.height;
+		Font font = new Font (display, fontData);
+		int ptr = OS.NewPtr (4);
+		OS.memcpy (ptr, new int []{font.atsuiStyle}, 4);
+		//TODO - not sure how to set initial color in font panel
+//		if (rgb != null) {
+//			RGBColor color = new RGBColor ();
+//			rgb.red = (short) (rgb.red * 0xffff);
+//			rgb.green = (short) (rgb.green * 0xffff);
+//			rgb.blue = (short) (rgb.blue * 0xffff);
+//			int ptr1 = OS.NewPtr (RGBColor.sizeof);
+//			OS.memcpy(ptr, color, RGBColor.sizeof); 
+//			int [] tags = new int []{OS.kATSUColorTag};
+//			int [] sizes = new int []{RGBColor.sizeof};
+//			int [] values = new int []{ptr1};
+//			OS.ATSUSetAttributes (font.atsuiStyle, tags.length, tags, sizes, values);
+//			OS.DisposePtr(ptr1);
+//		}		
+		OS.SetFontInfoForSelection (OS.kFontSelectionATSUIType, 1, ptr, 0);
+		OS.DisposePtr (ptr);
+		font.dispose ();
 	}
-	int ptr = OS.NewPtr(FontSelectionQDStyle.sizeof);
-	OS.memcpy (ptr, qdStyle, FontSelectionQDStyle.sizeof);
-	OS.SetFontInfoForSelection(OS.kFontSelectionQDType, 1, ptr, 0);
-	OS.DisposePtr (ptr);
 	int[] mask = new int[] {
 		OS.kEventClassFont, OS.kEventFontSelection,
 		OS.kEventClassFont, OS.kEventFontPanelClosed,
@@ -232,6 +231,7 @@ public FontData open () {
 	int appTarget = OS.GetApplicationEventTarget ();
 	int [] outRef = new int [1];
 	OS.InstallEventHandler (appTarget, fontPanelCallbackAddress, mask.length / 2, mask, 0, outRef);
+	fontSize = fontID = 0;
 	fontData = null;
 	rgb = null;
 	open = true;
@@ -291,12 +291,17 @@ public FontData open () {
 			OS.SelectWindow (fontsWindow);
 		}
 	}
-	Display display = parent.display;
 	while (!parent.isDisposed() && open) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	OS.RemoveEventHandler (outRef [0]);
 	fontPanelCallback.dispose ();
+	if (fontID != 0 && fontSize != 0) {
+		int atsFont = OS.FMGetATSFontRefFromFont (fontID);
+		Font font = Font.carbon_new (display, atsFont, (short) 0, (float) OS.Fix2X (fontSize));
+		fontData = font.getFontData ()[0];
+		font.dispose();
+	}
 	return fontData;
 }
 

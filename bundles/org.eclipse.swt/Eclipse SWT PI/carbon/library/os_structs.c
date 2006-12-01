@@ -46,6 +46,79 @@ void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
 }
 #endif
 
+#ifndef NO_ATSFontMetrics
+typedef struct ATSFontMetrics_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, ascent, descent, leading, avgAdvanceWidth, maxAdvanceWidth, minLeftSideBearing, minRightSideBearing, stemWidth, stemHeight, capHeight, xHeight, italicAngle, underlinePosition, underlineThickness;
+} ATSFontMetrics_FID_CACHE;
+
+ATSFontMetrics_FID_CACHE ATSFontMetricsFc;
+
+void cacheATSFontMetricsFields(JNIEnv *env, jobject lpObject)
+{
+	if (ATSFontMetricsFc.cached) return;
+	ATSFontMetricsFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ATSFontMetricsFc.version = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "version", "I");
+	ATSFontMetricsFc.ascent = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "ascent", "F");
+	ATSFontMetricsFc.descent = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "descent", "F");
+	ATSFontMetricsFc.leading = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "leading", "F");
+	ATSFontMetricsFc.avgAdvanceWidth = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "avgAdvanceWidth", "F");
+	ATSFontMetricsFc.maxAdvanceWidth = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "maxAdvanceWidth", "F");
+	ATSFontMetricsFc.minLeftSideBearing = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "minLeftSideBearing", "F");
+	ATSFontMetricsFc.minRightSideBearing = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "minRightSideBearing", "F");
+	ATSFontMetricsFc.stemWidth = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "stemWidth", "F");
+	ATSFontMetricsFc.stemHeight = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "stemHeight", "F");
+	ATSFontMetricsFc.capHeight = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "capHeight", "F");
+	ATSFontMetricsFc.xHeight = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "xHeight", "F");
+	ATSFontMetricsFc.italicAngle = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "italicAngle", "F");
+	ATSFontMetricsFc.underlinePosition = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "underlinePosition", "F");
+	ATSFontMetricsFc.underlineThickness = (*env)->GetFieldID(env, ATSFontMetricsFc.clazz, "underlineThickness", "F");
+	ATSFontMetricsFc.cached = 1;
+}
+
+ATSFontMetrics *getATSFontMetricsFields(JNIEnv *env, jobject lpObject, ATSFontMetrics *lpStruct)
+{
+	if (!ATSFontMetricsFc.cached) cacheATSFontMetricsFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, ATSFontMetricsFc.version);
+	lpStruct->ascent = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.ascent);
+	lpStruct->descent = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.descent);
+	lpStruct->leading = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.leading);
+	lpStruct->avgAdvanceWidth = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.avgAdvanceWidth);
+	lpStruct->maxAdvanceWidth = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.maxAdvanceWidth);
+	lpStruct->minLeftSideBearing = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.minLeftSideBearing);
+	lpStruct->minRightSideBearing = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.minRightSideBearing);
+	lpStruct->stemWidth = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.stemWidth);
+	lpStruct->stemHeight = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.stemHeight);
+	lpStruct->capHeight = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.capHeight);
+	lpStruct->xHeight = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.xHeight);
+	lpStruct->italicAngle = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.italicAngle);
+	lpStruct->underlinePosition = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.underlinePosition);
+	lpStruct->underlineThickness = (*env)->GetFloatField(env, lpObject, ATSFontMetricsFc.underlineThickness);
+	return lpStruct;
+}
+
+void setATSFontMetricsFields(JNIEnv *env, jobject lpObject, ATSFontMetrics *lpStruct)
+{
+	if (!ATSFontMetricsFc.cached) cacheATSFontMetricsFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ATSFontMetricsFc.version, (jint)lpStruct->version);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.ascent, (jfloat)lpStruct->ascent);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.descent, (jfloat)lpStruct->descent);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.leading, (jfloat)lpStruct->leading);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.avgAdvanceWidth, (jfloat)lpStruct->avgAdvanceWidth);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.maxAdvanceWidth, (jfloat)lpStruct->maxAdvanceWidth);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.minLeftSideBearing, (jfloat)lpStruct->minLeftSideBearing);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.minRightSideBearing, (jfloat)lpStruct->minRightSideBearing);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.stemWidth, (jfloat)lpStruct->stemWidth);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.stemHeight, (jfloat)lpStruct->stemHeight);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.capHeight, (jfloat)lpStruct->capHeight);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.xHeight, (jfloat)lpStruct->xHeight);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.italicAngle, (jfloat)lpStruct->italicAngle);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.underlinePosition, (jfloat)lpStruct->underlinePosition);
+	(*env)->SetFloatField(env, lpObject, ATSFontMetricsFc.underlineThickness, (jfloat)lpStruct->underlineThickness);
+}
+#endif
+
 #ifndef NO_ATSLayoutRecord
 typedef struct ATSLayoutRecord_FID_CACHE {
 	int cached;
@@ -1305,101 +1378,6 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
 	(*env)->SetShortField(env, lpObject, EventRecordFc.where_v, (jshort)lpStruct->where.v);
 	(*env)->SetShortField(env, lpObject, EventRecordFc.where_h, (jshort)lpStruct->where.h);
 	(*env)->SetShortField(env, lpObject, EventRecordFc.modifiers, (jshort)lpStruct->modifiers);
-}
-#endif
-
-#ifndef NO_FontInfo
-typedef struct FontInfo_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID ascent, descent, widMax, leading;
-} FontInfo_FID_CACHE;
-
-FontInfo_FID_CACHE FontInfoFc;
-
-void cacheFontInfoFields(JNIEnv *env, jobject lpObject)
-{
-	if (FontInfoFc.cached) return;
-	FontInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	FontInfoFc.ascent = (*env)->GetFieldID(env, FontInfoFc.clazz, "ascent", "S");
-	FontInfoFc.descent = (*env)->GetFieldID(env, FontInfoFc.clazz, "descent", "S");
-	FontInfoFc.widMax = (*env)->GetFieldID(env, FontInfoFc.clazz, "widMax", "S");
-	FontInfoFc.leading = (*env)->GetFieldID(env, FontInfoFc.clazz, "leading", "S");
-	FontInfoFc.cached = 1;
-}
-
-FontInfo *getFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
-{
-	if (!FontInfoFc.cached) cacheFontInfoFields(env, lpObject);
-	lpStruct->ascent = (*env)->GetShortField(env, lpObject, FontInfoFc.ascent);
-	lpStruct->descent = (*env)->GetShortField(env, lpObject, FontInfoFc.descent);
-	lpStruct->widMax = (*env)->GetShortField(env, lpObject, FontInfoFc.widMax);
-	lpStruct->leading = (*env)->GetShortField(env, lpObject, FontInfoFc.leading);
-	return lpStruct;
-}
-
-void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
-{
-	if (!FontInfoFc.cached) cacheFontInfoFields(env, lpObject);
-	(*env)->SetShortField(env, lpObject, FontInfoFc.ascent, (jshort)lpStruct->ascent);
-	(*env)->SetShortField(env, lpObject, FontInfoFc.descent, (jshort)lpStruct->descent);
-	(*env)->SetShortField(env, lpObject, FontInfoFc.widMax, (jshort)lpStruct->widMax);
-	(*env)->SetShortField(env, lpObject, FontInfoFc.leading, (jshort)lpStruct->leading);
-}
-#endif
-
-#ifndef NO_FontSelectionQDStyle
-typedef struct FontSelectionQDStyle_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID version, instance_fontFamily, instance_fontStyle, size, hasColor, reserved, color_red, color_green, color_blue;
-} FontSelectionQDStyle_FID_CACHE;
-
-FontSelectionQDStyle_FID_CACHE FontSelectionQDStyleFc;
-
-void cacheFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject)
-{
-	if (FontSelectionQDStyleFc.cached) return;
-	FontSelectionQDStyleFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	FontSelectionQDStyleFc.version = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "version", "I");
-	FontSelectionQDStyleFc.instance_fontFamily = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "instance_fontFamily", "S");
-	FontSelectionQDStyleFc.instance_fontStyle = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "instance_fontStyle", "S");
-	FontSelectionQDStyleFc.size = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "size", "S");
-	FontSelectionQDStyleFc.hasColor = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "hasColor", "Z");
-	FontSelectionQDStyleFc.reserved = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "reserved", "B");
-	FontSelectionQDStyleFc.color_red = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_red", "S");
-	FontSelectionQDStyleFc.color_green = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_green", "S");
-	FontSelectionQDStyleFc.color_blue = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_blue", "S");
-	FontSelectionQDStyleFc.cached = 1;
-}
-
-FontSelectionQDStyle *getFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct)
-{
-	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFields(env, lpObject);
-	lpStruct->version = (*env)->GetIntField(env, lpObject, FontSelectionQDStyleFc.version);
-	lpStruct->instance.fontFamily = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily);
-	lpStruct->instance.fontStyle = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle);
-	lpStruct->size = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.size);
-	lpStruct->hasColor = (*env)->GetBooleanField(env, lpObject, FontSelectionQDStyleFc.hasColor);
-	lpStruct->reserved = (*env)->GetByteField(env, lpObject, FontSelectionQDStyleFc.reserved);
-	lpStruct->color.red = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_red);
-	lpStruct->color.green = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_green);
-	lpStruct->color.blue = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_blue);
-	return lpStruct;
-}
-
-void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct)
-{
-	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, FontSelectionQDStyleFc.version, (jint)lpStruct->version);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily, (jshort)lpStruct->instance.fontFamily);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle, (jshort)lpStruct->instance.fontStyle);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.size, (jshort)lpStruct->size);
-	(*env)->SetBooleanField(env, lpObject, FontSelectionQDStyleFc.hasColor, (jboolean)lpStruct->hasColor);
-	(*env)->SetByteField(env, lpObject, FontSelectionQDStyleFc.reserved, (jbyte)lpStruct->reserved);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_red, (jshort)lpStruct->color.red);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_green, (jshort)lpStruct->color.green);
-	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_blue, (jshort)lpStruct->color.blue);
 }
 #endif
 
