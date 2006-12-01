@@ -345,6 +345,7 @@ public Browser(Composite parent, int style) {
 	int[] mask = new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
 	};
 	int controlTarget = OS.GetControlEventTarget(webViewHandle);
@@ -719,6 +720,9 @@ public String getUrl() {
 int handleCallback(int nextHandler, int theEvent) {
 	int eventKind = OS.GetEventKind(theEvent);
 	switch (eventKind) {
+		case OS.kEventControlSetCursor: {
+			return OS.noErr;
+		}
 		case OS.kEventControlDraw: {
 			/*
 			* Bug on Safari. The web view cannot be obscured by other views above it.
