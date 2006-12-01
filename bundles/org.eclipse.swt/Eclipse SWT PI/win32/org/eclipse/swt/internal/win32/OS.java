@@ -1553,6 +1553,11 @@ public class OS extends Platform {
 	public static final int TPM_RIGHTALIGN = 0x8;
 	public static final String TRACKBAR_CLASS = "msctls_trackbar32"; //$NON-NLS-1$
 	public static final int TRANSPARENT = 0x1;
+	public static final int TREIS_DISABLED = 4;
+	public static final int TREIS_HOT = 2;
+	public static final int TREIS_NORMAL = 1;
+	public static final int TREIS_SELECTED = 3;
+	public static final int TREIS_SELECTEDNOTFOCUS = 5;
 	public static final int TS_MIN = 0;
 	public static final int TS_TRUE = 1;
 	public static final int TS_DRAW = 2;
@@ -1683,6 +1688,7 @@ public class OS extends Platform {
 	public static final int TVN_SELCHANGINGW = 0xfffffe3e;
 	public static final int TVN_SELCHANGINGA = 0xfffffe6f;
 	public static final int TVP_GLYPH = 2;
+	public static final int TVP_TREEITEM = 1;
 	public static final int TVSIL_NORMAL = 0x0;
 	public static final int TVSIL_STATE = 0x2;
 	public static final int TVS_DISABLEDRAGDROP = 0x10;

@@ -980,10 +980,7 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (EXPLORER_THEME) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			String name = "Explorer";
-			char [] pszSubAppName = new char [name.length () + 1];
-			name.getChars(0, name.length (), pszSubAppName, 0);
-			OS.SetWindowTheme (handle, pszSubAppName, null);
+			OS.SetWindowTheme (handle, Display.EXPLORER, null);
 		}
 	}
 	

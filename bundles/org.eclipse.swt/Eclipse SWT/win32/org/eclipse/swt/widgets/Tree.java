@@ -366,7 +366,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 	*/
 	if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) return null;
 	if (!OS.IsWindowVisible (handle)) return null;
-	if (findImageControl () != null || ignoreDrawSelection) {
+	if ((style & SWT.FULL_SELECTION) != 0 || findImageControl () != null || ignoreDrawSelection) {
 		OS.SetBkMode (hDC, OS.TRANSPARENT);
 	}
 	boolean selected = false;
@@ -426,6 +426,14 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 				}
 			}
 		}
+		if (EXPLORER_THEME) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				if ((bits & OS.TVS_TRACKSELECT) != 0) {
+					OS.SetTextColor (hDC, getForegroundPixel ());
+				}
+			}
+		}
 	}
 	int count = 0;
 	int [] order = null;
@@ -459,11 +467,43 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 			width = hdItem.cxy;
 		}
 		if (i == 0) {
-			RECT rect = new RECT ();
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				OS.SetRect (rect, width, nmcd.top, nmcd.right, nmcd.bottom);
 				if ((selected || findImageControl () == null) && !ignoreDrawSelection && !ignoreDrawBackground) {
-					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+					boolean drawBackground = true;
+					RECT pClipRect = new RECT ();
+					OS.SetRect (pClipRect, width, nmcd.top, nmcd.right, nmcd.bottom);
+					if (EXPLORER_THEME) {
+						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+							boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
+							if (selected || hot) {
+								RECT pRect = new RECT ();
+								OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+								if (count > 0 && hwndHeader != 0) {
+									int totalWidth = 0;
+									HDITEM hdItem = new HDITEM ();
+									hdItem.mask = OS.HDI_WIDTH;
+									for (int j=0; j<count; j++) {
+										OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
+										totalWidth += hdItem.cxy;
+									}
+									if (totalWidth > clientRect.right - clientRect.left) {
+										pRect.left = 0;
+										pRect.right = totalWidth;
+									} else {
+										pRect.left = clientRect.left;
+										pRect.right = clientRect.right;
+									}
+								}
+								drawBackground = false;
+								int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+								int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+								if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+								OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+								OS.CloseThemeData (hTheme);
+							}
+						}
+					}
+					if (drawBackground) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
 				}
 			}
 		}
@@ -1620,12 +1660,10 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (EXPLORER_THEME) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			String name = "Explorer";
-			char [] pszSubAppName = new char [name.length () + 1];
-			name.getChars(0, name.length (), pszSubAppName, 0);
-			OS.SetWindowTheme (handle, pszSubAppName, null);
-			int exStyle = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_AUTOHSCROLL;
-			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, exStyle);
+			OS.SetWindowTheme (handle, Display.EXPLORER, null);
+			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
+			if ((style & SWT.FULL_SELECTION) == 0) bits |= OS.TVS_EX_AUTOHSCROLL;
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
 		}
 	}
 
@@ -2382,6 +2420,15 @@ void enableWidget (boolean enabled) {
 	* is disabled and restore it when enabled.
 	*/
 	Control control = findBackgroundControl ();
+	/*
+	* Bug in Windows.  On Vista only, Windows does not draw using
+	* the background color when the tree is disabled.  The fix is
+	* to set the default color, even when the color has not been
+	* changed, causing Windows to draw correctly.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		if (control == null) control = this;
+	}
 	if (control != null) {
 		if (control.backgroundImage == null) {
 			_setBackgroundPixel (enabled ? control.getBackgroundPixel () : -1);
@@ -3690,13 +3737,13 @@ void setBackgroundImage (int hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	if (EXPLORER_THEME) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			int exStyle = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+			int bits = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
 			if (hBitmap != 0) {
-				exStyle &= ~(OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS);
+				bits &= ~(OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS);
 			} else {
-				exStyle |= OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
+				bits |= OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
 			}
-			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, exStyle);
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
 		}
 	}
 	if (hBitmap != 0) {
@@ -4794,11 +4841,12 @@ void unsubclass () {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS | OS.TVS_NONEVENHEIGHT;
-	if ((style & SWT.FULL_SELECTION) != 0) {
-		bits |= OS.TVS_FULLROWSELECT;
+	if (EXPLORER_THEME && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		bits |= OS.TVS_TRACKSELECT;
+		if ((style & SWT.FULL_SELECTION) != 0) bits |= OS.TVS_FULLROWSELECT;
 	} else {
-		if (EXPLORER_THEME && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			bits |= OS.TVS_TRACKSELECT;
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			bits |= OS.TVS_FULLROWSELECT;
 		} else {
 			bits |= OS.TVS_HASLINES;
 		}
@@ -5982,6 +6030,20 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.TVS_NOHSCROLL) != 0) {
 		if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
+	}
+	/*
+	* Bug in Windows.  On Vista, when the Explorer theme
+	* is used with a full selection tree, when the tree
+	* is resized to be smaller, the rounded right edge
+	* of the selected items is not drawn.  The fix is the
+	* redraw the entire tree.
+	*/
+	if (EXPLORER_THEME) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				OS.InvalidateRect (handle, null, false);
+			}
+		}
 	}
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
