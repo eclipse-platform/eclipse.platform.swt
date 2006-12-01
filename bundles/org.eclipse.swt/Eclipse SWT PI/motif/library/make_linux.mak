@@ -31,8 +31,8 @@ SWT_LIBS = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
-CFLAGS = -O -s -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DUSE_ASSEMBLER -DLINUX -DMOTIF  -fpic \
-	-I$(JAVA_HOME)/include -I$(MOTIF_HOME)/include -I/usr/X11R6/include 
+CFLAGS = -O -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DUSE_ASSEMBLER -DLINUX -DMOTIF  -fpic \
+	-I$(JAVA_HOME)/include -I$(MOTIF_HOME)/include -I/usr/X11R6/include
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GNOME_PREFIX = swt-gnome
@@ -56,7 +56,7 @@ CAIRO_PREFIX = swt-cairo
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 CAIROCFLAGS = `pkg-config --cflags cairo`
-CAIROLIBS = -shared -fpic -fPIC -s `pkg-config --libs-only-L cairo` -lcairo
+CAIROLIBS = -shared -fpic -fPIC `pkg-config --libs-only-L cairo` -lcairo
 
 MOZILLA_PREFIX = swt-mozilla
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)$(GCC_VERSION)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -74,7 +74,7 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
-MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic
+MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
 
 GLX_PREFIX = swt-glx
 GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -82,13 +82,19 @@ GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 GLXCFLAGS = 
 GLXLIBS = -shared -fpic -fPIC -L/usr/X11R6/lib -lGL -lGLU -lm
 
+ifndef NO_STRIP
+	CFLAGS := $(CFLAGS) -s
+	CAIROLIBS := $(CAIROLIBS) -s
+	MOZILLALIBS := $(MOZILLALIBS) -s
+endif
+
 all: make_swt make_awt make_gnome make_gtk make_glx
 
 make_swt: $(SWT_LIB)
 
 $(SWT_LIB): $(SWT_OBJS)
 	$(LD) -o $@ $(SWT_OBJS) $(SWT_LIBS)
-	
+
 swt.o: swt.c swt.h
 	$(CC) $(CFLAGS) -c swt.c
 os.o: os.c os.h swt.h os_custom.h
