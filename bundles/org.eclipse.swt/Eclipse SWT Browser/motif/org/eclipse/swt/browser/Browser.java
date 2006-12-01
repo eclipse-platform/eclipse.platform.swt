@@ -93,7 +93,6 @@ public class Browser extends Composite {
 	static final String PROFILE_AFTER_CHANGE = "profile-after-change"; //$NON-NLS-1$
 	static final String PROFILE_BEFORE_CHANGE = "profile-before-change"; //$NON-NLS-1$
 	static final String PROFILE_DO_CHANGE = "profile-do-change"; //$NON-NLS-1$
-	static final String PROFILE_CHANGE_NET_TEARDOWN = "profile-change-net-teardown"; //$NON-NLS-1$
 	static final String PROFILE_CHANGE_TEARDOWN = "profile-change-teardown"; //$NON-NLS-1$
 	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
 	static final String STARTUP = "startup"; //$NON-NLS-1$
@@ -352,14 +351,10 @@ public Browser(Composite parent, int style) {
 
 				nsIObserverService observerService = new nsIObserverService(result[0]);
 				result[0] = 0;
-				buffer = Converter.wcsToMbcs(null, PROFILE_CHANGE_NET_TEARDOWN, true);
+				buffer = Converter.wcsToMbcs(null, PROFILE_CHANGE_TEARDOWN, true);
 				int length = SHUTDOWN_PERSIST.length();
 				char[] chars = new char [length + 1];
 				SHUTDOWN_PERSIST.getChars(0, length, chars, 0);
-				rc = observerService.NotifyObservers(0, buffer, chars);
-				if (rc != XPCOM.NS_OK) error(rc);
-
-				buffer = Converter.wcsToMbcs(null, PROFILE_CHANGE_TEARDOWN, true);
 				rc = observerService.NotifyObservers(0, buffer, chars);
 				if (rc != XPCOM.NS_OK) error(rc);
 
