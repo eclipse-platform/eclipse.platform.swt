@@ -95,7 +95,7 @@ CFLAGS = -O -Wall \
 		-fPIC \
 		${SWT_PTR_CFLAGS}
 LIBS = -shared -fPIC
-NO_STRIP = hi
+
 ifndef NO_STRIP
 	AWT_LIBS := $(AWT_LIBS) -s
 	MOZILLALIBS := $(MOZILLALIBS) -s
