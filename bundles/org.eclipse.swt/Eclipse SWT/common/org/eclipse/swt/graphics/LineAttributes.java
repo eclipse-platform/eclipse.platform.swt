@@ -91,7 +91,7 @@ public LineAttributes(float width, int cap, int join) {
  * @param join the line join style
  * @param style the line style
  * @param dash the line dash style
- * @param join the line dash style offset
+ * @param dashOffset the line dash style offset
  * @param miterLimit the line miter limit
  */
 public LineAttributes(float width, int cap, int join, int style, float[] dash, float dashOffset, float miterLimit) {
