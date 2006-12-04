@@ -69,7 +69,7 @@ public class Table extends Composite {
 	TableItem currentItem;
 	TableColumn sortColumn;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawSelection;
-	boolean customDraw, dragStarted, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
+	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
 	static /*final*/ int HeaderProc;
@@ -130,17 +130,18 @@ void _addListener (int eventType, Listener listener) {
 	switch (eventType) {
 		case SWT.MeasureItem:
 		case SWT.EraseItem:
-		case SWT.PaintItem:
+		case SWT.PaintItem:	
+			if (EXPLORER_THEME) {
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					explorerTheme = false;
+					OS.SetWindowTheme (handle, null, null);
+				}
+			}
 			setCustomDraw (true);
 			style |= SWT.DOUBLE_BUFFERED;
 			setBackgroundTransparent (true);
 			//TODO - LVS_EX_LABELTIP causes white rectangles (turn it off)
 			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
-			if (EXPLORER_THEME) {
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					OS.SetWindowTheme (handle, null, null);
-				}
-			}
 			break;
 	}
 }
@@ -355,7 +356,7 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 	* custom draw.
 	*/
 	if (--customCount == 0 && OS.IsWindowVisible (handle)) {
-		if ((style & SWT.FULL_SELECTION) != 0) {
+		if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
 			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 				int dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) == 0) {
@@ -394,7 +395,7 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 	* custom draw.
 	*/
 	if (customCount++ == 0 && OS.IsWindowVisible (handle)) {
-		if ((style & SWT.FULL_SELECTION) != 0) {
+		if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
 			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 				int dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) != 0) {
@@ -980,6 +981,7 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (EXPLORER_THEME) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			explorerTheme = true;
 			OS.SetWindowTheme (handle, Display.EXPLORER, null);
 		}
 	}
@@ -3197,35 +3199,6 @@ void setBackgroundPixel (int newPixel) {
 }
 
 void setBackgroundTransparent (boolean transparent) {
-	if (EXPLORER_THEME) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			int bits = transparent ? OS.LVS_EX_TRANSPARENTBKGND : 0;
-			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_TRANSPARENTBKGND, bits);
-			/*
-			* Feature in Windows.  When LVM_SETEXTENDEDLISTVIEWSTYLE is
-			* used with LVS_EX_TRANSPARENTBKGND and LVM_SETSELECTEDCOLUMN
-			* is used to select a column, Windows fills the column with
-			* the selection color, drawing on top of the background image
-			* and any other custom drawing.  The fix is to clear (or set)
-			* the selected column.
-			*/
-			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
-				if (sortColumn != null && !sortColumn.isDisposed ()) {
-					int column = transparent ? -1 : indexOf (sortColumn);
-					OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, column, 0);
-					if (column != OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, column, 0)) {
-						/* 
-						* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is set, Windows
-						* does not redraw either the new or the previous selected column.
-						* The fix is to force a redraw.
-						*/
-						OS.InvalidateRect (handle, null, true);
-					}
-				}
-			}
-			return;
-		}
-	}
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -3253,10 +3226,11 @@ void setBackgroundTransparent (boolean transparent) {
 			OS.InvalidateRect (handle, null, true);
 			
 			/* Clear LVS_EX_FULLROWSELECT */
-			if ((style & SWT.FULL_SELECTION) != 0) {
+			if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
 				int bits = OS.LVS_EX_FULLROWSELECT;
 				OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, 0);
 			}
+			
 			/* Clear LVM_SETSELECTEDCOLUMN */
 			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
 				if (sortColumn != null && !sortColumn.isDisposed ()) {
@@ -3277,13 +3251,15 @@ void setBackgroundTransparent (boolean transparent) {
 			if (control.backgroundImage == null) {
 				setBackgroundPixel (control.getBackgroundPixel ());
 			}
+			
 			/* Set LVS_EX_FULLROWSELECT */
-			if ((style & SWT.FULL_SELECTION) != 0) {
+			if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
 				if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
 					int bits = OS.LVS_EX_FULLROWSELECT;
 					OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits, bits);
 				}
 			}
+			
 			/* Set LVM_SETSELECTEDCOLUMN */
 			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
 				if (sortColumn != null && !sortColumn.isDisposed ()) {
