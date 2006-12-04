@@ -2940,12 +2940,15 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	}
 	if (ignoreDrawForeground) {
 		RECT clipRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, false, hDC);
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+		boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
 		if (!ignoreDrawBackground && drawBackground) {
-			RECT backgroundRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, true, false, hDC);
+			RECT backgroundRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 			fillBackground (hDC, clrTextBk, backgroundRect);
 		}
 		if (!ignoreDrawSelection && clrSelectionBk != -1) {
-			RECT textRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, true, false, hDC);
+			RECT textRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 			fillBackground (hDC, clrSelectionBk, textRect);
 		}
 		OS.SaveDC (hDC);
