@@ -3997,9 +3997,9 @@ void setCheckboxImageList () {
 
 void setExplorerTheme (boolean explorerTheme) {
 	if (EXPLORER_THEME) {
-		if (this.explorerTheme == explorerTheme) return;
-		this.explorerTheme = explorerTheme;
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			if (this.explorerTheme == explorerTheme) return;
+			this.explorerTheme = explorerTheme;
 			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			int bits2 = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
 			if (explorerTheme) {
