@@ -963,6 +963,7 @@ public class OS extends Platform {
 	public static final int LVS_EX_ONECLICKACTIVATE = 0x40;
 	public static final int LVS_EX_SUBITEMIMAGES = 0x2;
 	public static final int LVS_EX_TRACKSELECT = 0x8;
+	public static final int LVS_EX_TRANSPARENTBKGND = 0x800000;
 	public static final int LVS_EX_TWOCLICKACTIVATE = 0x80;
 	public static final int LVS_LIST = 0x3;
 	public static final int LVS_NOCOLUMNHEADER = 0x4000;

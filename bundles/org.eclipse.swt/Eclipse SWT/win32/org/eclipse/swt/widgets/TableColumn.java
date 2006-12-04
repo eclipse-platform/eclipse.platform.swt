@@ -711,32 +711,35 @@ void setSortDirection (int direction) {
 		* selected column.
 		*/
 		if (OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
-			int oldColumn = OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
-			int newColumn = direction == SWT.NONE ? -1 : index;
-			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
-			/* 
-			* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
-			* specify a selected column, Windows does not redraw either
-			* the new or the previous selected column.  The fix is to
-			* force a redraw of both.
-			*/
-			parent.forceResize ();
-			RECT rect = new RECT (), headerRect = new RECT ();
-			OS.GetClientRect (hwnd, rect);
-			if (oldColumn != -1) {
-				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, headerRect) != 0) {
-					OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
-					rect.left = headerRect.left;
-					rect.right = headerRect.right;
-					OS.InvalidateRect (hwnd, rect, true);
+			int bits = OS.SendMessage (hwnd, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+			if ((bits & OS.LVS_EX_TRANSPARENTBKGND) == 0) {
+				int oldColumn = OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+				int newColumn = direction == SWT.NONE ? -1 : index;
+				OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
+				/* 
+				* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
+				* specify a selected column, Windows does not redraw either
+				* the new or the previous selected column.  The fix is to
+				* force a redraw of both.
+				*/
+				parent.forceResize ();
+				RECT rect = new RECT (), headerRect = new RECT ();
+				OS.GetClientRect (hwnd, rect);
+				if (oldColumn != -1) {
+					if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, headerRect) != 0) {
+						OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+						rect.left = headerRect.left;
+						rect.right = headerRect.right;
+						OS.InvalidateRect (hwnd, rect, true);
+					}
 				}
-			}
-			if (newColumn != -1) {
-				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, newColumn, headerRect) != 0) {
-					OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
-					rect.left = headerRect.left;
-					rect.right = headerRect.right;
-					OS.InvalidateRect (hwnd, rect, true);
+				if (newColumn != -1) {
+					if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, newColumn, headerRect) != 0) {
+						OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+						rect.left = headerRect.left;
+						rect.right = headerRect.right;
+						OS.InvalidateRect (hwnd, rect, true);
+					}
 				}
 			}
 		}

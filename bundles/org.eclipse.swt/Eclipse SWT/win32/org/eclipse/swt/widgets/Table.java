@@ -3197,6 +3197,35 @@ void setBackgroundPixel (int newPixel) {
 }
 
 void setBackgroundTransparent (boolean transparent) {
+	if (EXPLORER_THEME) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			int bits = transparent ? OS.LVS_EX_TRANSPARENTBKGND : 0;
+			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_TRANSPARENTBKGND, bits);
+			/*
+			* Feature in Windows.  When LVM_SETEXTENDEDLISTVIEWSTYLE is
+			* used with LVS_EX_TRANSPARENTBKGND and LVM_SETSELECTEDCOLUMN
+			* is used to select a column, Windows fills the column with
+			* the selection color, drawing on top of the background image
+			* and any other custom drawing.  The fix is to clear (or set)
+			* the selected column.
+			*/
+			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
+				if (sortColumn != null && !sortColumn.isDisposed ()) {
+					int column = transparent ? -1 : indexOf (sortColumn);
+					OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, column, 0);
+					if (column != OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, column, 0)) {
+						/* 
+						* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is set, Windows
+						* does not redraw either the new or the previous selected column.
+						* The fix is to force a redraw.
+						*/
+						OS.InvalidateRect (handle, null, true);
+					}
+				}
+			}
+			return;
+		}
+	}
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
