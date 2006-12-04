@@ -601,7 +601,7 @@ void createHandle (int index) {
 	} else {
 		vboxHandle = OS.gtk_bin_get_child (shellHandle);
 		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		int children = OS.gtk_container_get_children (vboxHandle);
+		int /*long*/ children = OS.gtk_container_get_children (vboxHandle);
 		if (OS.g_list_length (children) > 0) {
 			scrolledHandle = OS.g_list_data (children);
 		}
