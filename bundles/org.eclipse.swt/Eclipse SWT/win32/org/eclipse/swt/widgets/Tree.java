@@ -80,7 +80,7 @@ public class Tree extends Composite {
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
 	boolean linesVisible, customDraw, printClient, painted, ignoreItemHeight;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawSelection;
-	boolean ignoreFullSelection;
+	boolean ignoreFullSelection, explorerTheme;
 	int scrollWidth, itemToolTipHandle, headerToolTipHandle, selectionForeground;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
@@ -166,13 +166,8 @@ void _addListener (int eventType, Listener listener) {
 			customDraw = true;
 			style |= SWT.DOUBLE_BUFFERED;
 			OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
-			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
-			newBits |= OS.TVS_NOHSCROLL | OS.TVS_NOTOOLTIPS;
-			if (EXPLORER_THEME) {
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					newBits &= ~OS.TVS_TRACKSELECT;
-				}
-			}
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			bits |= OS.TVS_NOHSCROLL | OS.TVS_NOTOOLTIPS;
 			/*
 			* Feature in Windows.  When the tree has the style
 			* TVS_FULLROWSELECT, the background color for the
@@ -181,16 +176,10 @@ void _addListener (int eventType, Listener listener) {
 			* is to clear TVS_FULLROWSELECT.
 			*/
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				if (eventType != SWT.MeasureItem) newBits &= ~OS.TVS_FULLROWSELECT;
-			} else {
-				if (EXPLORER_THEME) {
-					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-						newBits |= OS.TVS_HASLINES;
-					}
-				}
+				if (eventType != SWT.MeasureItem) bits &= ~OS.TVS_FULLROWSELECT;
 			}
-			if (newBits != oldBits) {
-				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+			if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 				OS.InvalidateRect (handle, null, true);
 				/*
 				* Bug in Windows.  When TVS_NOHSCROLL is set after items
@@ -205,7 +194,7 @@ void _addListener (int eventType, Listener listener) {
 			}
 			if (EXPLORER_THEME) {
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					OS.SetWindowTheme (handle, null, null);
+					setExplorerTheme (false);
 				}
 			}
 			break;
@@ -428,9 +417,11 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 		}
 		if (EXPLORER_THEME) {
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-				if ((bits & OS.TVS_TRACKSELECT) != 0) {
-					OS.SetTextColor (hDC, getForegroundPixel ());
+				if (explorerTheme) {
+					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+					if ((bits & OS.TVS_TRACKSELECT) != 0) {
+						OS.SetTextColor (hDC, getForegroundPixel ());
+					}
 				}
 			}
 		}
@@ -474,32 +465,34 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 					OS.SetRect (pClipRect, width, nmcd.top, nmcd.right, nmcd.bottom);
 					if (EXPLORER_THEME) {
 						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-							boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
-							if (selected || hot) {
-								RECT pRect = new RECT ();
-								OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-								if (count > 0 && hwndHeader != 0) {
-									int totalWidth = 0;
-									HDITEM hdItem = new HDITEM ();
-									hdItem.mask = OS.HDI_WIDTH;
-									for (int j=0; j<count; j++) {
-										OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
-										totalWidth += hdItem.cxy;
+							if (explorerTheme) {
+								boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
+								if (selected || hot) {
+									RECT pRect = new RECT ();
+									OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+									if (count > 0 && hwndHeader != 0) {
+										int totalWidth = 0;
+										HDITEM hdItem = new HDITEM ();
+										hdItem.mask = OS.HDI_WIDTH;
+										for (int j=0; j<count; j++) {
+											OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
+											totalWidth += hdItem.cxy;
+										}
+										if (totalWidth > clientRect.right - clientRect.left) {
+											pRect.left = 0;
+											pRect.right = totalWidth;
+										} else {
+											pRect.left = clientRect.left;
+											pRect.right = clientRect.right;
+										}
 									}
-									if (totalWidth > clientRect.right - clientRect.left) {
-										pRect.left = 0;
-										pRect.right = totalWidth;
-									} else {
-										pRect.left = clientRect.left;
-										pRect.right = clientRect.right;
-									}
+									drawBackground = false;
+									int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+									int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+									if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+									OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+									OS.CloseThemeData (hTheme);
 								}
-								drawBackground = false;
-								int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
-								int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-								if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-								OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
-								OS.CloseThemeData (hTheme);
 							}
 						}
 					}
@@ -1660,6 +1653,7 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (EXPLORER_THEME) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			explorerTheme = true;
 			OS.SetWindowTheme (handle, Display.EXPLORER, null);
 			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
 			if ((style & SWT.FULL_SELECTION) == 0) bits |= OS.TVS_EX_AUTOHSCROLL;
@@ -3737,13 +3731,7 @@ void setBackgroundImage (int hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	if (EXPLORER_THEME) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			int bits = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
-			if (hBitmap != 0) {
-				bits &= ~(OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS);
-			} else {
-				bits |= OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
-			}
-			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
+			setExplorerTheme (false);
 		}
 	}
 	if (hBitmap != 0) {
@@ -4005,6 +3993,47 @@ void setCheckboxImageList () {
 	int hOldStateList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hStateList);
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
+}
+
+void setExplorerTheme (boolean explorerTheme) {
+	if (EXPLORER_THEME) {
+		if (this.explorerTheme == explorerTheme) return;
+		this.explorerTheme = explorerTheme;
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			int bits2 = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+			if (explorerTheme) {
+				OS.SetWindowTheme (handle, Display.EXPLORER, null);
+				bits1 |= OS.TVS_TRACKSELECT;
+				bits1 &= ~OS.TVS_HASLINES;
+				bits2 |= OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
+				if ((style & SWT.FULL_SELECTION) == 0) {
+					bits2 |= OS.TVS_EX_AUTOHSCROLL;
+				}
+			} else {
+				OS.SetWindowTheme (handle, null, null);
+				bits1 &= ~OS.TVS_TRACKSELECT;
+				bits2 &= ~(OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_AUTOHSCROLL);
+				if ((style & SWT.FULL_SELECTION) == 0) {
+					bits1 |= OS.TVS_HASLINES;
+				}
+			}
+			if (bits1 != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
+				OS.SetWindowLong (handle, OS.GWL_STYLE, bits1);
+				OS.InvalidateRect (handle, null, true);
+			}
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits2);
+			/*
+			* Feature in Windows.  When the tree has the style
+			* TVS_FULLROWSELECT, the background color for the
+			* entire row is filled when an item is painted,
+			* drawing on top of the background image.  The fix
+			* is to clear TVS_FULLROWSELECT when a background
+			* image is set.
+			*/
+			updateFullSelection ();
+		}
+	}
 }
 
 public void setFont (Font font) {
