@@ -2057,13 +2057,6 @@ void createParent () {
 		OS.ImmAssociateContext (hwndHeader, hIMC);		
 		OS.ImmReleaseContext (handle, hIMC);
 	}
-	if (!OS.IsPPC) {
-		if ((style & SWT.BORDER) != 0) {
-			int oldExStyle = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-			oldExStyle &= ~OS.WS_EX_CLIENTEDGE;
-			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, oldExStyle);
-		}
-	}
 	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont != 0) OS.SendMessage (hwndHeader, OS.WM_SETFONT, hFont, 0);
 	int hwndInsertAfter = OS.GetWindow (handle, OS.GW_HWNDPREV);
@@ -4184,11 +4177,13 @@ void setScrollWidth (int width) {
 	if (playout.prc != 0) OS.HeapFree (hHeap, 0, playout.prc);
 	if (playout.pwpos != 0) OS.HeapFree (hHeap, 0, playout.pwpos);
 	SetWindowPos (hwndHeader, OS.HWND_TOP, pos.x - left, pos.y, pos.cx + left, pos.cy, OS.SWP_NOACTIVATE);
+	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	int b = (bits & OS.WS_EX_CLIENTEDGE) != 0 ? OS.GetSystemMetrics (OS.SM_CXEDGE) : 0;
 	int w = pos.cx + (width == 0 ? 0 : OS.GetSystemMetrics (OS.SM_CXVSCROLL));
 	int h = rect.bottom - rect.top - pos.cy;
 	boolean oldIgnore = ignoreResize;
 	ignoreResize = true;
-	SetWindowPos (handle, 0, pos.x - left, pos.y + pos.cy, w + left, h, OS.SWP_NOACTIVATE | OS.SWP_NOZORDER);
+	SetWindowPos (handle, 0, pos.x - left - b, pos.y + pos.cy - b, w + left + b * 2, h + b * 2, OS.SWP_NOACTIVATE | OS.SWP_NOZORDER);
 	ignoreResize = oldIgnore;
 }
 
