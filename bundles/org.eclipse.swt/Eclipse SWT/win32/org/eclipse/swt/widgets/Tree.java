@@ -1057,7 +1057,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 			} else {
 				ignoreDrawForeground = ignoreDrawSelection = ignoreDrawBackground = true;
 			}
-			if (!ignoreDrawBackground && clrTextBk != -1) {
+			if (!ignoreDrawBackground && !ignoreDrawSelection && clrTextBk != -1) {
 				if (count == 0) {
 					if ((style & SWT.FULL_SELECTION) != 0) {
 						fillBackground (hDC, clrTextBk, rect);
