@@ -543,9 +543,9 @@ void setImage (Image image, boolean sort, boolean right) {
 		}
 		if (right) hdItem.fmt |= OS.HDF_BITMAP_ON_RIGHT;
 	} else {
-			hdItem.mask &= ~(OS.HDI_IMAGE | OS.HDI_BITMAP);
-			hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP);
-		}
+		hdItem.mask &= ~(OS.HDI_IMAGE | OS.HDI_BITMAP);
+		hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP);
+	}
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 }
 
