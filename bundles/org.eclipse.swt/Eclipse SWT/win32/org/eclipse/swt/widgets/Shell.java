@@ -551,7 +551,7 @@ void createHandle () {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		int flags = OS.SWP_DRAWFRAME | OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
 		SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
-		if (OS.IsWinCE) setMaximized (true);
+		if (OS.IsWinCE) _setMaximized (true);
 		if (OS.IsPPC) {
 			psai = new SHACTIVATEINFO ();
 			psai.cbSize = SHACTIVATEINFO.sizeof;

@@ -153,6 +153,50 @@ public Decorations (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+void _setMaximized (boolean maximized) {
+	swFlags = maximized ? OS.SW_SHOWMAXIMIZED : OS.SW_RESTORE;
+	if (OS.IsWinCE) {
+		/*
+		* Note: WinCE does not support SW_SHOWMAXIMIZED and SW_RESTORE. The
+		* workaround is to resize the window to fit the parent client area.
+		*/
+		if (maximized) {
+			RECT rect = new RECT ();
+			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
+			int width = rect.right - rect.left, height = rect.bottom - rect.top;
+			if (OS.IsPPC) {
+				/* Leave space for the menu bar */
+				if (menuBar != null) {
+					int hwndCB = menuBar.hwndCB;
+					RECT rectCB = new RECT ();
+					OS.GetWindowRect (hwndCB, rectCB);
+					height -= rectCB.bottom - rectCB.top;
+				}
+			}
+			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+			SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
+		}
+	} else {
+		if (!OS.IsWindowVisible (handle)) return;
+		if (maximized == OS.IsZoomed (handle)) return;
+		OS.ShowWindow (handle, swFlags);
+		OS.UpdateWindow (handle);
+	}
+}
+
+void _setMinimized (boolean minimized) {
+	if (OS.IsWinCE) return;
+	swFlags = minimized ? OS.SW_SHOWMINNOACTIVE : OS.SW_RESTORE;
+	if (!OS.IsWindowVisible (handle)) return;
+	if (minimized == OS.IsIconic (handle)) return;
+	int flags = swFlags;
+	if (flags == OS.SW_SHOWMINNOACTIVE && handle == OS.GetActiveWindow ()) {
+		flags = OS.SW_MINIMIZE;
+	}
+	OS.ShowWindow (handle, flags);
+	OS.UpdateWindow (handle);
+}
+
 void addMenu (Menu menu) {
 	if (menus == null) menus = new Menu [4];
 	for (int i=0; i<menus.length; i++) {
@@ -801,7 +845,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 		if (OS.IsZoomed (handle)) {
 			if (sameOrigin && sameExtent) return;
 			setPlacement (x, y, width, height, flags);
-			setMaximized (false);
+			_setMaximized (false);
 			return;
 		}
 	}
@@ -1025,34 +1069,8 @@ public void setImages (Image [] images) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
-	swFlags = maximized ? OS.SW_SHOWMAXIMIZED : OS.SW_RESTORE;
-	if (OS.IsWinCE) {
-		/*
-		* Note: WinCE does not support SW_SHOWMAXIMIZED and SW_RESTORE. The
-		* workaround is to resize the window to fit the parent client area.
-		*/
-		if (maximized) {
-			RECT rect = new RECT ();
-			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
-			int width = rect.right - rect.left, height = rect.bottom - rect.top;
-			if (OS.IsPPC) {
-				/* Leave space for the menu bar */
-				if (menuBar != null) {
-					int hwndCB = menuBar.hwndCB;
-					RECT rectCB = new RECT ();
-					OS.GetWindowRect (hwndCB, rectCB);
-					height -= rectCB.bottom - rectCB.top;
-				}
-			}
-			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-			SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
-		}
-	} else {
-		if (!OS.IsWindowVisible (handle)) return;
-		if (maximized == OS.IsZoomed (handle)) return;
-		OS.ShowWindow (handle, swFlags);
-		OS.UpdateWindow (handle);
-	}
+	Display.lpStartupInfo = null;
+	_setMaximized (maximized);
 }
 
 /**
@@ -1103,7 +1121,7 @@ public void setMenuBar (Menu menu) {
 				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
 				menuBar = menu;
 				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
-				if (resize) setMaximized (true);
+				if (resize) _setMaximized (true);
 			}
 			if (OS.IsSP) {
 				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
@@ -1145,16 +1163,8 @@ public void setMenuBar (Menu menu) {
  */
 public void setMinimized (boolean minimized) {
 	checkWidget ();
-	if (OS.IsWinCE) return;
-	swFlags = minimized ? OS.SW_SHOWMINNOACTIVE : OS.SW_RESTORE;
-	if (!OS.IsWindowVisible (handle)) return;
-	if (minimized == OS.IsIconic (handle)) return;
-	int flags = swFlags;
-	if (flags == OS.SW_SHOWMINNOACTIVE && handle == OS.GetActiveWindow ()) {
-		flags = OS.SW_MINIMIZE;
-	}
-	OS.ShowWindow (handle, flags);
-	OS.UpdateWindow (handle);
+	Display.lpStartupInfo = null;
+	_setMinimized (minimized);
 }
 
 void setParent () {
