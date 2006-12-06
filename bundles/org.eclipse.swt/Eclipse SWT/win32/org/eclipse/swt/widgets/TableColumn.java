@@ -614,6 +614,7 @@ void setImage (Image image, boolean sort, boolean right) {
 			lvColumn.iImage = parent.imageIndexHeader (image);
 			if (right) lvColumn.fmt |= OS.LVCFMT_BITMAP_ON_RIGHT;
 		} else {
+			lvColumn.mask &= ~OS.LVCF_IMAGE;
 			lvColumn.fmt &= ~(OS.LVCFMT_IMAGE | OS.LVCFMT_BITMAP_ON_RIGHT);
 		}
 		OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
