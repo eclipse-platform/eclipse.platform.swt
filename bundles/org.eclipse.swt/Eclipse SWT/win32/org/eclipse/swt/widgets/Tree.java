@@ -1655,7 +1655,7 @@ void createHandle () {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 			explorerTheme = true;
 			OS.SetWindowTheme (handle, Display.EXPLORER, null);
-			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
+			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP;
 			if ((style & SWT.FULL_SELECTION) == 0) bits |= OS.TVS_EX_AUTOHSCROLL;
 			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
 		}
@@ -3999,15 +3999,16 @@ void setExplorerTheme (boolean explorerTheme) {
 				OS.SetWindowTheme (handle, Display.EXPLORER, null);
 				bits1 |= OS.TVS_TRACKSELECT;
 				bits1 &= ~OS.TVS_HASLINES;
-				bits2 |= OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS;
+				bits2 |= OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP;
 				if ((style & SWT.FULL_SELECTION) == 0) {
 					bits2 |= OS.TVS_EX_AUTOHSCROLL;
 				}
 			} else {
 				OS.SetWindowTheme (handle, null, null);
 				bits1 &= ~OS.TVS_TRACKSELECT;
-				bits2 &= ~(OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_AUTOHSCROLL);
+				bits2 &= ~(OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP);
 				if ((style & SWT.FULL_SELECTION) == 0) {
+					bits2 &= ~OS.TVS_EX_AUTOHSCROLL;
 					bits1 |= OS.TVS_HASLINES;
 				}
 			}
