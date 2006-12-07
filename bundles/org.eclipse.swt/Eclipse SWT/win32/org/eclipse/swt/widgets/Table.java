@@ -71,7 +71,7 @@ public class Table extends Composite {
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawSelection;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
-	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, scrollWidth, selectionForeground, sortDirection, resizeCount;
+	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -941,15 +941,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	RECT rect = new RECT ();					
 	OS.GetWindowRect (hwndHeader, rect);
-	int width = 0, height = rect.bottom - rect.top;
-	if (columnCount == 0) {
-		width = getScrollWidth ();
+	int height = rect.bottom - rect.top;
+	int bits = 0;
+	if (wHint != SWT.DEFAULT) {
+		bits |= wHint & 0xFFFF;
 	} else {
+		int width = 0;
 		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			width += OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, i, 0);
 		}
+		bits |= width & 0xFFFF;
 	}
+	int result = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, -1, bits | 0xFFFF0000);
+	int width = result & 0xFFFF;
 	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
 	int itemHeight = (oneItem >> 16) - (empty >> 16);
@@ -1015,8 +1020,8 @@ void createHandle () {
 	if ((style & SWT.CHECK) != 0) {
 		int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-		int itemHeight = (oneItem >> 16) - (empty >> 16);
-		setCheckboxImageList (itemHeight, itemHeight, false);
+		int width = (oneItem >> 16) - (empty >> 16), height = width;
+		setCheckboxImageList (width, height, false);
 		OS.SendMessage (handle, OS. LVM_SETCALLBACKMASK, OS.LVIS_STATEIMAGEMASK, 0);
 	}
 
@@ -1209,7 +1214,7 @@ void createItem (TableColumn column, int index) {
 			OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, lvColumn);
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		} else {
-			setScrollWidth (0);
+			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
 		}
 		if ((parent.style & SWT.VIRTUAL) == 0) {
 			LVITEM lvItem = new LVITEM ();
@@ -2078,10 +2083,6 @@ public boolean getLinesVisible () {
 	checkWidget ();
 	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	return (bits & OS.LVS_EX_GRIDLINES) != 0;
-}
-
-int getScrollWidth () {
-	return scrollWidth;
 }
 
 /**
@@ -2981,8 +2982,9 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, int hDC) {
 	OS.RestoreDC (hDC, nSavedDC);
 	if (!isDisposed () && !item.isDisposed ()) {
 		if (columnCount == 0) {
-			if (event.x + event.width > getScrollWidth ()) {
-				setScrollWidth (event.x + event.width);
+			int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+			if (event.x + event.width > width) {
+				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, event.x + event.width);
 			}
 		}
 		if (event.height > getItemHeight ()) setItemHeight (event.height);
@@ -3296,7 +3298,6 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	setDeferResize (true);
 	super.setBounds (x, y, width, height, flags, false);
 	setDeferResize (false);
-	if (columnCount == 0) setScrollWidth (scrollWidth);
 }
 
 /**
@@ -3902,15 +3903,6 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
-void setScrollWidth (int scrollWidth) {
-	forceResize ();
-	RECT rect = new RECT ();
-	OS.GetClientRect (handle, rect);
-	this.scrollWidth = Math.max (0, scrollWidth);
-	int newWidth = Math.max (this.scrollWidth, rect.right - rect.left);
-	OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, newWidth);
-}
-
 boolean setScrollWidth (TableItem item, boolean force) {
 	if (currentItem != null) {
 		if (currentItem != item) fixScrollWidth = true;
@@ -4004,12 +3996,13 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			newWidth++;
 		}
 		newWidth += INSET * 2;
+		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		if (EXPLORER_THEME) {
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 				newWidth += EXPLORER_EXTRA;
 			}
 		}
-		if (newWidth > getScrollWidth ()) {
+		if (newWidth > oldWidth) {
 			/*
 			* Feature in Windows.  When LVM_SETCOLUMNWIDTH is sent,
 			* Windows draws right away instead of queuing a WM_PAINT.
@@ -4021,7 +4014,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			*/
 			boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
 			if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-			setScrollWidth (newWidth);
+			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, newWidth);
 			if (redraw) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				if (OS.IsWinCE) {
@@ -4284,7 +4277,7 @@ void setTableEmpty () {
 	}
 	items = new TableItem [4];
 	if (columnCount == 0) {
-		setScrollWidth (0);
+		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, 0);
 		setScrollWidth (null, false);
 	}
 }
@@ -4411,8 +4404,6 @@ public void showColumn (TableColumn column) {
 	* not redraw the newly exposed vertical grid lines.  The fix
 	* is to save the old scroll position, call the window proc,
 	* get the new scroll position and redraw the new area.
-	* 
-	* First, save the horizontal scroll position.
 	*/
 	int oldPos = 0;
 	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
@@ -4423,8 +4414,6 @@ public void showColumn (TableColumn column) {
 		OS.GetScrollInfo (handle, OS.SB_HORZ, info);
 		oldPos = info.nPos;
 	}
-	
-	/* Scroll the table */
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
 	if (itemRect.left < rect.left) {
@@ -4437,15 +4426,12 @@ public void showColumn (TableColumn column) {
 			OS.SendMessage (handle, OS.LVM_SCROLL, dx, 0);
 		}
 	}
-	
 	/*
 	* Bug in Windows.  When a table that is drawing grid lines
 	* is slowly scrolled horizontally to the left, the table does
 	* not redraw the newly exposed vertical grid lines.  The fix
 	* is to save the old scroll position, call the window proc,
 	* get the new scroll position and redraw the new area.
-	* 
-	* Now, redraw the area.
 	*/
 	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
 		SCROLLINFO info = new SCROLLINFO ();
