@@ -103,15 +103,15 @@ public static Test suite() {
 
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("Browser1");
-	methodNames.addElement("Browser2");
-	methodNames.addElement("Browser3");
-	methodNames.addElement("Browser4");
-	methodNames.addElement("Browser5");
-	methodNames.addElement("Browser6");
-	methodNames.addElement("Browser7");
-	methodNames.addElement("Browser8");
-	methodNames.addElement("Browser9");
+//	methodNames.addElement("Browser1");
+//	methodNames.addElement("Browser2");
+//	methodNames.addElement("Browser3");
+//	methodNames.addElement("Browser4");
+//	methodNames.addElement("Browser5");
+//	methodNames.addElement("Browser6");
+//	methodNames.addElement("Browser7");
+//	methodNames.addElement("Browser8");
+//	methodNames.addElement("Browser9");
 	return methodNames;
 }
 
