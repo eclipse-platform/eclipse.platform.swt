@@ -20,7 +20,7 @@ char * XPCOM_nativeFunctionNames[] = {
 	"Call",
 	"NS_1GetComponentManager",
 	"NS_1GetServiceManager",
-	"NS_1InitEmbedding",
+	"NS_1InitXPCOM2",
 	"NS_1NewLocalFile",
 	"NS_1TermEmbedding",
 	"PR_1Free",

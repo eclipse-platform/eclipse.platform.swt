@@ -196,7 +196,7 @@ public Browser(Composite parent, int style) {
 		}
 		
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
-		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), 0);
+		rc = XPCOM.NS_InitXPCOM2(0, localFile.getAddress(), 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
 			dispose();

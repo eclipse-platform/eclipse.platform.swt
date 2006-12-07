@@ -68,14 +68,14 @@ fail:
 }
 #endif
 
-#ifndef NO_NS_1InitEmbedding
-JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1InitEmbedding)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+#ifndef NO_NS_1InitXPCOM2
+JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1InitXPCOM2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, NS_1InitEmbedding_FUNC);
-	rc = (jint)NS_InitEmbedding((nsILocalFile *)arg0, (nsIDirectoryServiceProvider *)arg1);
-	XPCOM_NATIVE_EXIT(env, that, NS_1InitEmbedding_FUNC);
+	XPCOM_NATIVE_ENTER(env, that, NS_1InitXPCOM2_FUNC);
+	rc = (jint)NS_InitXPCOM2((nsIServiceManager **)arg0, (nsILocalFile *)arg1, (nsIDirectoryServiceProvider *)arg2);
+	XPCOM_NATIVE_EXIT(env, that, NS_1InitXPCOM2_FUNC);
 	return rc;
 }
 #endif

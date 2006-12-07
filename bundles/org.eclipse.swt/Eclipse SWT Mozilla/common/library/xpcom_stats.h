@@ -24,7 +24,7 @@ typedef enum {
 	Call_FUNC,
 	NS_1GetComponentManager_FUNC,
 	NS_1GetServiceManager_FUNC,
-	NS_1InitEmbedding_FUNC,
+	NS_1InitXPCOM2_FUNC,
 	NS_1NewLocalFile_FUNC,
 	NS_1TermEmbedding_FUNC,
 	PR_1Free_FUNC,

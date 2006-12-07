@@ -112,7 +112,7 @@ public static final native void memmove(int /*long*/ dest, char[] src, int nbyte
 public static final native void memmove(byte[] dest, char[] src, int nbytes);
 public static final native int NS_GetComponentManager(int /*long*/[] result);
 public static final native int NS_GetServiceManager(int /*long*/[] result);
-public static final native int NS_InitEmbedding(int /*long*/ aMozBinDirectory, int /*long*/ aAppFileLocProvider);
+public static final native int NS_InitXPCOM2(int /*long*/ result, int /*long*/ binDirectory, int /*long*/ appFileLocationProvider);
 public static final native int NS_NewLocalFile(int /*long*/ path, boolean followLinks, int /*long*/[] result);
 public static final native int NS_TermEmbedding();
 public static final native int strlen_PRUnichar(int /*long*/ s);
