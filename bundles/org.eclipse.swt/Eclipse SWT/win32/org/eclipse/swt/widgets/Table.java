@@ -419,22 +419,48 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 		}
 	}
 	if (OS.IsWindowVisible (handle)) {
-		Control control = findBackgroundControl ();
-		if (control != null && control.backgroundImage != null) {
-			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
-			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
-			RECT rect = new RECT ();
-			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-			fillImageBackground (nmcd.hdc, control, rect);
-		} else {
-			if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
-				if (OS.IsWindowEnabled (handle)) {
+		boolean draw = true;
+		/*
+		* Feature in Windows.  On Vista using the explorer theme,
+		* Windows draws a vertical line to separate columns.  When
+		* there is only a single column, the line looks strange.
+		* The fix is to draw the background using custom draw.
+		*/
+		if (EXPLORER_THEME) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if (explorerTheme && columnCount == 0) {
 					NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 					OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+					int hDC = nmcd.hdc;
 					RECT rect = new RECT ();
 					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-					if (control == null) control = this;
-					fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+					if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
+						drawBackground (hDC, rect);
+					} else {
+						fillBackground (hDC, OS.GetSysColor (OS.COLOR_3DFACE), rect);
+					}
+					draw = false;
+				}
+			}
+		}
+		if (draw) {
+			Control control = findBackgroundControl ();
+			if (control != null && control.backgroundImage != null) {
+				NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+				OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+				RECT rect = new RECT ();
+				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+				fillImageBackground (nmcd.hdc, control, rect);
+			} else {
+				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+					if (OS.IsWindowEnabled (handle)) {
+						NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+						OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+						RECT rect = new RECT ();
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						if (control == null) control = this;
+						fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+					}
 				}
 			}
 		}
@@ -5645,7 +5671,23 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 				* with a gray background but does not gray the text.  The fix
 				* is to explicitly gray the text using Custom Draw.
 				*/
-				if (OS.IsWindowEnabled (handle)) break;
+				if (OS.IsWindowEnabled (handle)) {
+					/*
+					* Feature in Windows.  On Vista using the explorer theme,
+					* Windows draws a vertical line to separate columns.  When
+					* there is only a single column, the line looks strange.
+					* The fix is to draw the background using custom draw.
+					*/
+					if (EXPLORER_THEME) {
+						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+							if (explorerTheme && columnCount != 0) break;
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+				}
 			}
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
