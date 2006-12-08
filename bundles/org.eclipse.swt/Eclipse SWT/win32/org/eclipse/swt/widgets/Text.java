@@ -1693,7 +1693,8 @@ public void setText (String string) {
 	* notify the application that the text has changed.
 	* The fix is to send the event.
 	*/
-	if ((style & SWT.MULTI) != 0) {
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.ES_MULTILINE) != 0) {
 		sendEvent (SWT.Modify);
 		// widget could be disposed at this point
 	}
@@ -1863,7 +1864,8 @@ int windowProc () {
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (msg == OS.EM_UNDO) {
-		if ((style & SWT.SINGLE) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.ES_MULTILINE) == 0) {
 			LRESULT result = wmClipboard (OS.EM_UNDO, wParam, lParam);
 			if (result != null) return result.value;
 			return callWindowProc (hwnd, OS.EM_UNDO, wParam, lParam);
