@@ -29,12 +29,13 @@ import org.eclipse.swt.graphics.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>DATE, TIME, CALENDAR</dd>
+ * <dd>DATE, TIME, CALENDAR, SHORT, MEDIUM, LONG</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles DATE, TIME, or CALENDAR may be specified.
+ * Note: Only one of the styles DATE, TIME, or CALENDAR may be specified,
+ * and only one of the styles SHORT, MEDIUM, or LONG may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
