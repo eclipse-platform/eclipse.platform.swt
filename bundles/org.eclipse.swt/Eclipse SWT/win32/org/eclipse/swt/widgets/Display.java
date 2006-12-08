@@ -3488,7 +3488,7 @@ boolean runPopups () {
 		System.arraycopy (popups, 1, popups, 0, --length);
 		popups [length] = null;
 		runDeferredEvents ();
-		menu._setVisible (true);
+		if (!menu.isDisposed ()) menu._setVisible (true);
 		result = true;
 	}
 	popups = null;

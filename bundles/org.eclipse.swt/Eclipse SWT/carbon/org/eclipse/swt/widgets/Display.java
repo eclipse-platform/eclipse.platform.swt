@@ -3418,7 +3418,7 @@ boolean runPopups () {
 		popups [length] = null;
 		clearMenuFlags ();
 		runDeferredEvents ();
-		menu._setVisible (true);
+		if (!menu.isDisposed ()) menu._setVisible (true);
 		clearMenuFlags ();
 		result = true;
 	}
