@@ -134,6 +134,11 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 void createHandle () {
 	super.createHandle ();
 	OS.SendMessage (handle, OS.EM_LIMITTEXT, 0, 0);
+	if ((style & SWT.READ_ONLY) != 0) {
+		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			state |= THEME_BACKGROUND;
+		}
+	}
 }
 
 /**
@@ -317,7 +322,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 		OS.GetTextMetrics (hDC, tm);
-		int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
+		int count = (style & SWT.SINGLE) != 0 ? 1 : OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
 		height = count * tm.tmHeight;
 		RECT rect = new RECT ();
 		int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
@@ -1848,7 +1853,25 @@ int widgetStyle () {
 	if ((style & SWT.CENTER) != 0) bits |= OS.ES_CENTER;
 	if ((style & SWT.RIGHT) != 0) bits |= OS.ES_RIGHT;
 	if ((style & SWT.READ_ONLY) != 0) bits |= OS.ES_READONLY;
-	if ((style & SWT.SINGLE) != 0) return bits;
+	if ((style & SWT.SINGLE) != 0) {
+		/*
+		* Feature in Windows.  When a text control is read-only,
+		* uses COLOR_3DFACE for the background .  If the text
+		* controls single-line and is within a tab folder or
+		* some other themed control, using WM_ERASEBKGND and
+		* WM_CTRCOLOR to draw the theme background results in
+		* pixel corruption.  The fix is to use an ES_MULTILINE
+		* text control instead.
+		*/
+		if ((style & SWT.READ_ONLY) != 0) {
+			if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+				if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+					bits |= OS.ES_MULTILINE;
+				}
+			}
+		}
+		return bits;
+	}
 	bits |= OS.ES_MULTILINE | OS.ES_NOHIDESEL | OS.ES_AUTOVSCROLL;	
 	if ((style & SWT.WRAP) != 0) bits &= ~(OS.WS_HSCROLL | OS.ES_AUTOHSCROLL);
 	return bits;
@@ -1922,6 +1945,32 @@ LRESULT WM_CUT (int wParam, int lParam) {
 	LRESULT result = super.WM_CUT (wParam, lParam);
 	if (result != null) return result;
 	return wmClipboard (OS.WM_CUT, wParam, lParam);
+}
+
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if ((style & SWT.READ_ONLY) != 0) {
+		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.ES_MULTILINE) != 0) {
+				Control control = findBackgroundControl ();
+				if (control == null && background == -1) {
+					if ((state & THEME_BACKGROUND) != 0) {
+						if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+							control = findThemeControl ();
+							if (control != null) {
+								RECT rect = new RECT ();
+								OS.GetClientRect (handle, rect);
+								fillThemeBackground (wParam, control, rect);
+								return LRESULT.ONE;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return result;
 }
 
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
@@ -2159,6 +2208,31 @@ LRESULT wmClipboard (int msg, int wParam, int lParam) {
 		return LRESULT.ONE;
 	}
 	return null;
+}
+
+LRESULT wmColorChild (int wParam, int lParam) {
+	if ((style & SWT.READ_ONLY) != 0) {
+		if ((style & (SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.ES_MULTILINE) != 0) {
+				Control control = findBackgroundControl ();
+				if (control == null && background == -1) {
+					if ((state & THEME_BACKGROUND) != 0) {
+						if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+							control = findThemeControl ();
+							if (control != null) {
+								OS.SetTextColor (wParam, getForegroundPixel ());
+								OS.SetBkColor (wParam, getBackgroundPixel ());
+								OS.SetBkMode (wParam, OS.TRANSPARENT);
+								return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return super.wmColorChild (wParam, lParam);;
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
