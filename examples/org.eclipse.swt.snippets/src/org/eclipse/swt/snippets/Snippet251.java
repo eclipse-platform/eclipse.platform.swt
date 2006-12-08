@@ -31,7 +31,7 @@ public static void main (String [] args) {
 	dialog.setLayout (new GridLayout (2, false));
 
 	final DateTime calendar = new DateTime (dialog, SWT.CALENDAR | SWT.BORDER);
-	final DateTime time = new DateTime (dialog, SWT.TIME);
+	final DateTime time = new DateTime (dialog, SWT.TIME | SWT.SHORT);
 
 	new Label (dialog, SWT.NONE);
 	Button ok = new Button (dialog, SWT.PUSH);
@@ -40,7 +40,7 @@ public static void main (String [] args) {
 	ok.addSelectionListener (new SelectionAdapter () {
 		public void widgetSelected (SelectionEvent e) {
 			System.out.println ("Date selected (MM/DD/YYYY) = " + (calendar.getMonth () + 1) + "/" + calendar.getDay () + "/" + calendar.getYear ());
-			System.out.println ("Time selected (HH:MM:SS) = " + time.getHours () + ":" + time.getMinutes () + ":" + time.getSeconds ());
+			System.out.println ("Time selected (HH:MM) = " + time.getHours () + ":" + time.getMinutes ());
 			dialog.close ();
 		}
 	});
