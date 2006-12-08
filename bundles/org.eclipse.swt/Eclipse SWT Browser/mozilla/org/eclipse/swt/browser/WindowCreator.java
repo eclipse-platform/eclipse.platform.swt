@@ -138,7 +138,15 @@ int /*long*/ CreateChromeWindow(int /*long*/ parent, int /*long*/ chromeFlags, i
 					Point size = event.size;
 					shell.setSize(shell.computeSize(size.x, size.y));
 				}
+				/*
+				 * Dialogs opened with style CHROME_MODAL should not return from
+				 * here until closed by the user. 
+				 */
 				shell.open();
+				Display display = shell.getDisplay();
+				while (!shell.isDisposed()) {
+					if (!display.readAndDispatch()) display.sleep();
+				}
 			}
 		});
 		browser.addCloseWindowListener(new CloseWindowListener() {
