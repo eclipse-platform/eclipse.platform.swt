@@ -2232,7 +2232,7 @@ LRESULT wmColorChild (int wParam, int lParam) {
 			}
 		}
 	}
-	return super.wmColorChild (wParam, lParam);;
+	return super.wmColorChild (wParam, lParam);
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
