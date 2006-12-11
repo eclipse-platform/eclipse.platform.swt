@@ -14,15 +14,8 @@ import org.eclipse.swt.internal.*;
 
  
 public class OS extends Platform {
-	static {
-		Library.loadLibrary ("swt");
-	}
-
-	/* OS and locale Constants*/
 	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX;
-	public static final boolean IsDBLocale;
 	static {
-		
 		/* Initialize the OS flags and locale constants */
 		String osName = System.getProperty ("os.name");
 		boolean isAIX = false, isSunOS = false, isLinux = false, isHPUX = false;
@@ -32,8 +25,17 @@ public class OS extends Platform {
 		if (osName.equals ("SunOS")) isSunOS = true;
 		if (osName.equals ("HP-UX")) isHPUX = true;
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
-		IsDBLocale = OS.MB_CUR_MAX () != 1;
 	}
+	static {
+		if (OS.IsLinux) {
+			try {
+				Library.loadLibrary ("libXm.so.2", false);
+			} catch (UnsatisfiedLinkError ex) {}
+		}
+		Library.loadLibrary ("swt");
+	}
+
+	public static final boolean IsDBLocale = OS.MB_CUR_MAX () != 1;
 	public static final int CODESET = CODESET ();
 	public static final int LC_CTYPE = LC_CTYPE ();
 

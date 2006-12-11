@@ -33,7 +33,8 @@ public class Callback {
 
 	/* Load the SWT library */
 	static {
-		Library.loadLibrary ("swt"); //$NON-NLS-1$
+		// OS must be initialized before Callback.
+//		Library.loadLibrary ("swt"); //$NON-NLS-1$
 	}
 
 	static final int PTR_SIZEOF = PTR_sizeof();

@@ -148,58 +148,71 @@ static boolean load (String libName) {
  * @param name the name of the library to load
  */
 public static void loadLibrary (String name) {
-	/*
-     * Include platform name to support different windowing systems
-     * on same operating system.
-	 */
-	String platform = Platform.PLATFORM;
-	
-	/*
-	 * Get version qualifier.
-	 */
-	String version = System.getProperty ("swt.version"); //$NON-NLS-1$
-	if (version == null) {
-		version = "" + MAJOR_VERSION; //$NON-NLS-1$
-		/* Force 3 digits in minor version number */
-		if (MINOR_VERSION < 10) {
-			version += "00"; //$NON-NLS-1$
-		} else {
-			if (MINOR_VERSION < 100) version += "0"; //$NON-NLS-1$
-		}
-		version += MINOR_VERSION;		
-		/* No "r" until first revision */
-		if (REVISION > 0) version += "r" + REVISION; //$NON-NLS-1$
-	}
+	loadLibrary (name, true);
+}
 
-	String libName1 = name + "-" + platform + "-" + version;  //$NON-NLS-1$ //$NON-NLS-2$
-	String libName2 = name + "-" + platform;  //$NON-NLS-1$
-	String mappedName1 = System.mapLibraryName (libName1);
-	String mappedName2 = System.mapLibraryName (libName2);
+/**
+ * Loads the shared library that matches the version of the
+ * Java code which is currently running.  SWT shared libraries
+ * follow an encoding scheme where the major, minor and revision
+ * numbers are embedded in the library name and this along with
+ * <code>name</code> is used to load the library.  If this fails,
+ * <code>name</code> is used in another attempt to load the library,
+ * this time ignoring the SWT version encoding scheme.
+ *
+ * @param name the name of the library to load
+ * @param mapName true if the name should be mapped, false otherwise
+ */
+public static void loadLibrary (String name, boolean mapName) {
+	
+	/* Compute the library name and mapped name */
+	String libName1, libName2, mappedName1, mappedName2;
+	if (mapName) {
+		String version = System.getProperty ("swt.version"); //$NON-NLS-1$
+		if (version == null) {
+			version = "" + MAJOR_VERSION; //$NON-NLS-1$
+			/* Force 3 digits in minor version number */
+			if (MINOR_VERSION < 10) {
+				version += "00"; //$NON-NLS-1$
+			} else {
+				if (MINOR_VERSION < 100) version += "0"; //$NON-NLS-1$
+			}
+			version += MINOR_VERSION;		
+			/* No "r" until first revision */
+			if (REVISION > 0) version += "r" + REVISION; //$NON-NLS-1$
+		}
+		libName1 = name + "-" + Platform.PLATFORM + "-" + version;  //$NON-NLS-1$ //$NON-NLS-2$
+		libName2 = name + "-" + Platform.PLATFORM;  //$NON-NLS-1$
+		mappedName1 = System.mapLibraryName (libName1);
+		mappedName2 = System.mapLibraryName (libName2);
+	} else {
+		libName1 = libName2 = mappedName1 = mappedName2 = name;
+	}
 
 	/* Try loading library from swt library path */
 	String path = System.getProperty ("swt.library.path"); //$NON-NLS-1$
 	if (path != null) {
 		path = new File (path).getAbsolutePath ();
 		if (load (path + SEPARATOR + mappedName1)) return;
-		if (load (path + SEPARATOR + mappedName2)) return;
+		if (mapName && load (path + SEPARATOR + mappedName2)) return;
 	}
 
 	/* Try loading library from java library path */
 	if (load (libName1)) return;
-	if (load (libName2)) return;
+	if (mapName && load (libName2)) return;
 	
 	/* Try loading library from the tmp directory if swt library path is not specified */
 	if (path == null) {
 		path = System.getProperty ("java.io.tmpdir"); //$NON-NLS-1$
 		path = new File (path).getAbsolutePath ();
 		if (load (path + SEPARATOR + mappedName1)) return;
-		if (load (path + SEPARATOR + mappedName2)) return;
+		if (mapName && load (path + SEPARATOR + mappedName2)) return;
 	}
 		
 	/* Try extracting and loading library from jar */
 	if (path != null) {
 		if (extract (path + SEPARATOR + mappedName1, mappedName1)) return;
-		if (extract (path + SEPARATOR + mappedName2, mappedName2)) return;
+		if (mapName && extract (path + SEPARATOR + mappedName2, mappedName2)) return;
 	}
 	
 	/* Failed to find the library */
