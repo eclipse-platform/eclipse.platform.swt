@@ -1086,9 +1086,7 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	* the new selection is lost.  The fix is to detect a selection
 	* change and set it after the insert-text signal has completed.
 	*/
-	if ((style & SWT.SINGLE) != 0) { 
-		fixStart = fixEnd = -1;
-	}
+	fixStart = fixEnd = -1;
 	OS.g_signal_handlers_block_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 	int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
@@ -1106,8 +1104,8 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 			OS.gtk_editable_set_position (handle, fixStart);
 			OS.gtk_editable_select_region (handle, fixStart, fixEnd);
 		}
-		fixStart = fixEnd = -1;
 	}
+	fixStart = fixEnd = -1;
 	return 0;
 }
 
@@ -1121,6 +1119,14 @@ int /*long*/ gtk_delete_range (int /*long*/ widget, int /*long*/ iter1, int /*lo
 	int end = OS.gtk_text_iter_get_offset (endIter);
 	String newText = verifyText ("", start, end);
 	if (newText == null) {
+		/* Remember the selection when the text was deleted */
+		OS.gtk_text_buffer_get_selection_bounds (bufferHandle, startIter, endIter);
+		start = OS.gtk_text_iter_get_offset (startIter);
+		end = OS.gtk_text_iter_get_offset (endIter);
+		if (start != end) {
+			fixStart = start;
+			fixEnd = end;
+		}
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
 	} else {
 		if (newText.length () > 0) {
@@ -1143,6 +1149,13 @@ int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
 	if (newText == null) {
+		/* Remember the selection when the text was deleted */
+		int [] newStart = new int [1], newEnd = new int [1];
+		OS.gtk_editable_get_selection_bounds (handle, newStart, newEnd);
+		if (newStart [0] != newEnd [0]) {
+			fixStart = newStart [0];
+			fixEnd = newEnd [0];
+		}
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
 	} else {
 		if (newText.length () > 0) {
@@ -1218,7 +1231,14 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
 		pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	}
-	String newText = verifyText (oldText, pos [0], pos [0]);
+	/* Use the selection when the text was deleted */
+	int start = pos [0], end = pos [0];
+	if (fixStart != -1 && fixEnd != -1) {
+		start = pos [0] = fixStart;
+		end = fixEnd;
+		fixStart = fixEnd = -1;
+	}
+	String newText = verifyText (oldText, start, end);
 	if (newText != oldText) {
 		int [] newStart = new int [1], newEnd = new int [1];
 		OS.gtk_editable_get_selection_bounds (handle, newStart, newEnd);
@@ -1259,11 +1279,17 @@ int /*long*/ gtk_text_buffer_insert_text (int /*long*/ widget, int /*long*/ iter
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	byte [] position = new byte [ITER_SIZEOF];
 	OS.memmove (position, iter, position.length);
-	int start = OS.gtk_text_iter_get_offset (position);
+	/* Use the selection when the text was deleted */
+	int start = OS.gtk_text_iter_get_offset (position), end = start;
+	if (fixStart != -1 && fixEnd != -1) {
+		start = fixStart;
+		end = fixEnd;
+		fixStart = fixEnd = -1;
+	}
 	byte [] buffer = new byte [(int)/*64*/length];
 	OS.memmove (buffer, text, buffer.length);
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
-	String newText = verifyText (oldText, start, start);
+	String newText = verifyText (oldText, start, end);
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.insert_text);
 	} else {
