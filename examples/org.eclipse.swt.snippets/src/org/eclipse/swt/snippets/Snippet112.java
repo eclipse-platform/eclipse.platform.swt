@@ -32,7 +32,6 @@ public static void main (String [] args) {
 	gc.setBackground (color);
 	gc.fillRectangle (image.getBounds ());
 	gc.dispose ();
-	color.dispose ();
 
 	Shell shell = new Shell (display);
 	shell.setLayout (new FillLayout ());

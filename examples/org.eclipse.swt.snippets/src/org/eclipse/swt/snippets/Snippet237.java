@@ -56,7 +56,6 @@ public static void main(String[] args) {
 	while(!shell.isDisposed()) {
 		if(!display.readAndDispatch()) display.sleep();
 	}
-	color.dispose();
 	display.dispose();
 }
 static void createChildren(Composite parent) {
