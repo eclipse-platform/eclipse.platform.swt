@@ -14,7 +14,7 @@ import org.eclipse.swt.*;
 
 /**
  * <code>LineAttributes</code> defines a set of line attributes that
- * ca be modifed in a GC.
+ * can be modifed in a GC.
  * <p>
  * Application code does <em>not</em> need to explicitly release the
  * resources managed by each instance when those instances are no longer
@@ -34,17 +34,32 @@ public class LineAttributes {
 	public float width;
 
 	/**
-	 * The line style (i.e SWT.LINE_SOLID, SWT.LINE_CUSTOM, etc)
+	 * The line style.
+	 * 
+	 * @see org.eclipse.swt.SWT.LINE_CUSTOM
+	 * @see org.eclipse.swt.SWT.LINE_DASH
+	 * @see org.eclipse.swt.SWT.LINE_DASHDOT
+	 * @see org.eclipse.swt.SWT.LINE_DASHDOTDOT
+	 * @see org.eclipse.swt.SWT.LINE_DOT
+	 * @see org.eclipse.swt.SWT.LINE_SOLID
 	 */
 	public int style;
 
 	/**
 	 * The line cap style.
+	 * 
+	 * @see org.eclipse.swt.SWT.CAP_FLAT
+	 * @see org.eclipse.swt.SWT.CAP_ROUND
+	 * @see org.eclipse.swt.SWT.CAP_SQUARE
 	 */
 	public int cap;
 
 	/**
 	 * The line join style.
+	 * 
+	 * @see org.eclipse.swt.SWT.JOIN_BEVEL
+	 * @see org.eclipse.swt.SWT.JOIN_MITER
+	 * @see org.eclipse.swt.SWT.JOIN_ROUND
 	 */
 	public int join;
 
