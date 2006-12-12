@@ -341,11 +341,11 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
-LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
+LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
 
-LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
+LRESULT CDDS_POSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (ignoreCustomDraw) return null;
 	/*
 	* Bug in Windows.  When the table has the extended style
@@ -382,7 +382,7 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT CDDS_PREPAINT (int wParam, int lParam) {
+LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (ignoreCustomDraw) {
 		return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 	}
@@ -429,8 +429,6 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 		if (EXPLORER_THEME) {
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 				if (explorerTheme && columnCount == 0) {
-					NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
-					OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 					int hDC = nmcd.hdc;
 					RECT rect = new RECT ();
 					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
@@ -446,16 +444,12 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 		if (draw) {
 			Control control = findBackgroundControl ();
 			if (control != null && control.backgroundImage != null) {
-				NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
-				OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 				RECT rect = new RECT ();
 				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 				fillImageBackground (nmcd.hdc, control, rect);
 			} else {
 				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
 					if (OS.IsWindowEnabled (handle)) {
-						NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
-						OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 						RECT rect = new RECT ();
 						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						if (control == null) control = this;
@@ -468,10 +462,8 @@ LRESULT CDDS_PREPAINT (int wParam, int lParam) {
 	return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
 
-LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
+LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (ignoreCustomDraw) return null;
-	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
-	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 	if (nmcd.left == nmcd.right) {
 		return new LRESULT (OS.CDRF_DODEFAULT);
 	}
@@ -487,9 +479,7 @@ LRESULT CDDS_SUBITEMPOSTPAINT (int wParam, int lParam) {
 	return null;
 }
 
-LRESULT CDDS_SUBITEMPREPAINT (int wParam, int lParam) {
-	NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
-	OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When a new table item is inserted
 	* using LVM_INSERTITEM in a table that is transparent
@@ -5692,11 +5682,11 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (wParam, lParam);
-				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (wParam, lParam);
-				case OS.CDDS_SUBITEMPREPAINT: return CDDS_SUBITEMPREPAINT (wParam, lParam);
-				case OS.CDDS_SUBITEMPOSTPAINT: return CDDS_SUBITEMPOSTPAINT (wParam, lParam);
-				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (wParam, lParam);
+				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_SUBITEMPREPAINT: return CDDS_SUBITEMPREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_SUBITEMPOSTPAINT: return CDDS_SUBITEMPOSTPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (nmcd, wParam, lParam);
 			}
 			break;
 		}

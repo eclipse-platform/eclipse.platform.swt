@@ -300,10 +300,8 @@ int borderHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
 }
 
-LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
+LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (ignoreCustomDraw) return null;
-	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
-	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
 	if (nmcd.left == nmcd.right) {
 		return new LRESULT (OS.CDRF_DODEFAULT);
 	}
@@ -848,9 +846,7 @@ LRESULT CDDS_ITEMPOSTPAINT (int wParam, int lParam) {
 	return new LRESULT (OS.CDRF_DODEFAULT);
 }
 
-LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
-	NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
-	OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
+LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	/*
 	* Bug in Windows.  If the lParam field of TVITEM
 	* is changed during custom draw using TVM_SETITEM,
@@ -1205,7 +1201,7 @@ LRESULT CDDS_ITEMPREPAINT (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
+LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (ignoreCustomDraw) return null;
 	if (OS.IsWindowVisible (handle)) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
@@ -1213,8 +1209,6 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 				if (findImageControl () == null) {
 					int index = indexOf (sortColumn);
 					if (index != -1) {
-						NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
-						OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);
 						int top = nmcd.top;
 						int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
 						if (hItem != 0) {
@@ -1236,8 +1230,6 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 			}
 		}
 		if (linesVisible) {
-			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
-			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);	
 			int hDC = nmcd.hdc;
 			if (hwndHeader != 0) {
 				int x = 0;
@@ -1278,7 +1270,7 @@ LRESULT CDDS_POSTPAINT (int wParam, int lParam) {
 	return new LRESULT (OS.CDRF_DODEFAULT);
 }
 
-LRESULT CDDS_PREPAINT (int wParam, int lParam) {
+LRESULT CDDS_PREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
 
@@ -6495,10 +6487,10 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (wParam, lParam);
-				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (wParam, lParam);
-				case OS.CDDS_ITEMPOSTPAINT: return CDDS_ITEMPOSTPAINT (wParam, lParam);
-				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (wParam, lParam);
+				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_ITEMPOSTPAINT: return CDDS_ITEMPOSTPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (nmcd, wParam, lParam);
 			}
 			break;
 		}
