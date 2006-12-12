@@ -75,10 +75,9 @@ public abstract class Widget {
 	static final int RELEASED		= 1<<11;
 	static final int DISPOSE_SENT	= 1<<12;
 	
-	/* Mouse track and drag detect flags */
+	/* More global widget state flags */
 	static final int TRACK_MOUSE	= 1<<13;
 	static final int DRAG_DETECT	= 1<<14;
-	
 	static final int FOREIGN_HANDLE	= 1<<15;
 
 	/* Default size for widgets */
