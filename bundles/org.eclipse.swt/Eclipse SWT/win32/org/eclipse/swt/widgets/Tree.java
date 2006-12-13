@@ -2049,6 +2049,14 @@ void createParent () {
 		OS.ImmAssociateContext (hwndHeader, hIMC);		
 		OS.ImmReleaseContext (handle, hIMC);
 	}
+	//This code is intentionally commented
+//	if (!OS.IsPPC) {
+//		if ((style & SWT.BORDER) != 0) {
+//			int oldExStyle = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+//			oldExStyle &= ~OS.WS_EX_CLIENTEDGE;
+//			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, oldExStyle);
+//		}
+//	}
 	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont != 0) OS.SendMessage (hwndHeader, OS.WM_SETFONT, hFont, 0);
 	int hwndInsertAfter = OS.GetWindow (handle, OS.GW_HWNDPREV);
@@ -2374,6 +2382,7 @@ void destroyItem (TreeItem item, int hItem) {
 		}
 		items = new TreeItem [4];
 		scrollWidth = 0;
+		setScrollWidth ();
 	}
 	updateScrollBar ();
 }
@@ -3470,8 +3479,9 @@ public void removeAll () {
 	hAnchor = hInsert = hFirstIndexOf = hLastIndexOf = 0;
 	itemCount = -1;
 	items = new TreeItem [4];
-	updateScrollBar ();
 	scrollWidth = 0;
+	setScrollWidth ();
+	updateScrollBar ();
 }
 
 /**
@@ -4137,13 +4147,14 @@ void setScrollWidth (int width) {
 	SCROLLINFO info = new SCROLLINFO ();
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
-	if (width == 0) {
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (count == 0 && width == 0) {
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
 		info.nPage = info.nMax + 1;
 		OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
-//		OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
-//		info.nPage = info.nMax + 1;
-//		OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+		OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
+		info.nPage = info.nMax + 1;
+		OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 	} else {
 		OS.GetClientRect (hwndParent, rect);
 		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
@@ -4172,7 +4183,7 @@ void setScrollWidth (int width) {
 	SetWindowPos (hwndHeader, OS.HWND_TOP, pos.x - left, pos.y, pos.cx + left, pos.cy, OS.SWP_NOACTIVATE);
 	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	int b = (bits & OS.WS_EX_CLIENTEDGE) != 0 ? OS.GetSystemMetrics (OS.SM_CXEDGE) : 0;
-	int w = pos.cx + (width == 0 ? 0 : OS.GetSystemMetrics (OS.SM_CXVSCROLL));
+	int w = pos.cx + (count == 0 && width == 0 ? 0 : OS.GetSystemMetrics (OS.SM_CXVSCROLL));
 	int h = rect.bottom - rect.top - pos.cy;
 	boolean oldIgnore = ignoreResize;
 	ignoreResize = true;
