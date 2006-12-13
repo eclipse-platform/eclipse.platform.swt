@@ -3893,7 +3893,7 @@ public void setInterpolation(int interpolation) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * since 3.3
+ * @since 3.3
  */
 public void setLineAttributes(LineAttributes attributes) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
