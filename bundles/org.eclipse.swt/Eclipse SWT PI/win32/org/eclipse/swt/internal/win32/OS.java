@@ -127,12 +127,19 @@ public class OS extends Platform {
 		* to move the composition window outside of the client
 		* area, Windows crashes.  The fix is to disable legacy
 		* support.
+		* 
+		* Note: The bug is fixed in Service Pack 2.
 		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (5, 1)) {
 			short langID = OS.GetSystemDefaultUILanguage ();
 			short primaryLang = OS.PRIMARYLANGID (langID);
 			if (primaryLang == OS.LANG_KOREAN) {
-				OS.ImmDisableTextFrameService (0);
+				OSVERSIONINFOEX infoex = IsUnicode ? (OSVERSIONINFOEX)new OSVERSIONINFOEXW () : (OSVERSIONINFOEX)new OSVERSIONINFOEXA ();
+				infoex.dwOSVersionInfoSize = OSVERSIONINFOEX.sizeof;
+				GetVersionEx (infoex);
+				if (infoex.wServicePackMajor < 2) {
+					OS.ImmDisableTextFrameService (0);
+				}
 			}
 		}
 	}
@@ -2033,6 +2040,8 @@ public static final native int OFNOTIFY_sizeof ();
 public static final native int OPENFILENAME_sizeof ();
 public static final native int OSVERSIONINFOA_sizeof ();
 public static final native int OSVERSIONINFOW_sizeof ();
+public static final native int OSVERSIONINFOEXA_sizeof ();
+public static final native int OSVERSIONINFOEXW_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
 public static final native int POINT_sizeof ();
 public static final native int PRINTDLG_sizeof ();
@@ -2471,6 +2480,11 @@ public static final int GetTimeFormat (int Locale, int dwFlags, SYSTEMTIME lpTim
 public static final boolean GetVersionEx (OSVERSIONINFO lpVersionInfo) {
 	if (IsUnicode) return GetVersionExW ((OSVERSIONINFOW)lpVersionInfo);
 	return GetVersionExA ((OSVERSIONINFOA)lpVersionInfo);
+}
+
+public static final boolean GetVersionEx (OSVERSIONINFOEX lpVersionInfo) {
+	if (IsUnicode) return GetVersionExW ((OSVERSIONINFOEXW)lpVersionInfo);
+	return GetVersionExA ((OSVERSIONINFOEXA)lpVersionInfo);
 }
 
 public static final int GetWindowLong (int /*long*/ hWnd, int nIndex) {
@@ -3297,6 +3311,8 @@ public static final native int GetTimeFormatW(int Locale, int dwFlags, SYSTEMTIM
 public static final native int GetTimeFormatA(int Locale, int dwFlags, SYSTEMTIME lpTime, byte [] lpFormat, byte [] lpTimeStr, int cchTime);
 public static final native boolean GetUpdateRect (int /*long*/ hWnd, RECT lpRect, boolean bErase);
 public static final native int GetUpdateRgn (int /*long*/ hWnd, int /*long*/ hRgn, boolean bErase);
+public static final native boolean GetVersionExW (OSVERSIONINFOEXW lpVersionInfo);
+public static final native boolean GetVersionExA (OSVERSIONINFOEXA lpVersionInfo);
 public static final native boolean GetVersionExW (OSVERSIONINFOW lpVersionInfo);
 public static final native boolean GetVersionExA (OSVERSIONINFOA lpVersionInfo);
 public static final native int /*long*/ GetWindow (int /*long*/ hWnd, int uCmd);

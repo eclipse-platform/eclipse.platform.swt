@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 850;
-int OS_nativeFunctionCallCount[850];
+int OS_nativeFunctionCount = 854;
+int OS_nativeFunctionCallCount[854];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -324,8 +324,10 @@ char * OS_nativeFunctionNames[] = {
 	"GetTimeFormatW",
 	"GetUpdateRect",
 	"GetUpdateRgn",
-	"GetVersionExA",
-	"GetVersionExW",
+	"GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2",
+	"GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2",
+	"GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2",
+	"GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOW_2",
 	"GetWindow",
 	"GetWindowDC",
 	"GetWindowLongA",
@@ -577,6 +579,8 @@ char * OS_nativeFunctionNames[] = {
 	"OFNOTIFY_1sizeof",
 	"OPENFILENAME_1sizeof",
 	"OSVERSIONINFOA_1sizeof",
+	"OSVERSIONINFOEXA_1sizeof",
+	"OSVERSIONINFOEXW_1sizeof",
 	"OSVERSIONINFOW_1sizeof",
 	"OffsetRect",
 	"OffsetRgn",

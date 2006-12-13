@@ -5267,34 +5267,66 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetUpdateRgn)
 }
 #endif
 
-#ifndef NO_GetVersionExA
-JNIEXPORT jboolean JNICALL OS_NATIVE(GetVersionExA)
+#ifndef NO_GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2)
 	(JNIEnv *env, jclass that, jobject arg0)
 {
 	OSVERSIONINFOA _arg0, *lparg0=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, GetVersionExA_FUNC);
+	OS_NATIVE_ENTER(env, that, GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2_FUNC);
 	if (arg0) if ((lparg0 = getOSVERSIONINFOAFields(env, arg0, &_arg0)) == NULL) goto fail;
 	rc = (jboolean)GetVersionExA(lparg0);
 fail:
 	if (arg0 && lparg0) setOSVERSIONINFOAFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, GetVersionExA_FUNC);
+	OS_NATIVE_EXIT(env, that, GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_GetVersionExW
-JNIEXPORT jboolean JNICALL OS_NATIVE(GetVersionExW)
+#ifndef NO_GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	OSVERSIONINFOEXA _arg0, *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2_FUNC);
+	if (arg0) if ((lparg0 = getOSVERSIONINFOEXAFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jboolean)GetVersionExA((LPOSVERSIONINFOA)lparg0);
+fail:
+	if (arg0 && lparg0) setOSVERSIONINFOEXAFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	OSVERSIONINFOEXW _arg0, *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2_FUNC);
+	if (arg0) if ((lparg0 = getOSVERSIONINFOEXWFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jboolean)GetVersionExW((LPOSVERSIONINFOW)lparg0);
+fail:
+	if (arg0 && lparg0) setOSVERSIONINFOEXWFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOW_2
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOW_2)
 	(JNIEnv *env, jclass that, jobject arg0)
 {
 	OSVERSIONINFOW _arg0, *lparg0=NULL;
 	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, GetVersionExW_FUNC);
+	OS_NATIVE_ENTER(env, that, GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOW_2_FUNC);
 	if (arg0) if ((lparg0 = getOSVERSIONINFOWFields(env, arg0, &_arg0)) == NULL) goto fail;
 	rc = (jboolean)GetVersionExW(lparg0);
 fail:
 	if (arg0 && lparg0) setOSVERSIONINFOWFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, GetVersionExW_FUNC);
+	OS_NATIVE_EXIT(env, that, GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOW_2_FUNC);
 	return rc;
 }
 #endif
@@ -9024,6 +9056,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(OSVERSIONINFOA_1sizeof)
 	OS_NATIVE_ENTER(env, that, OSVERSIONINFOA_1sizeof_FUNC);
 	rc = (jint)OSVERSIONINFOA_sizeof();
 	OS_NATIVE_EXIT(env, that, OSVERSIONINFOA_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OSVERSIONINFOEXA_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(OSVERSIONINFOEXA_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, OSVERSIONINFOEXA_1sizeof_FUNC);
+	rc = (jint)OSVERSIONINFOEXA_sizeof();
+	OS_NATIVE_EXIT(env, that, OSVERSIONINFOEXA_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_OSVERSIONINFOEXW_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(OSVERSIONINFOEXW_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, OSVERSIONINFOEXW_1sizeof_FUNC);
+	rc = (jint)OSVERSIONINFOEXW_sizeof();
+	OS_NATIVE_EXIT(env, that, OSVERSIONINFOEXW_1sizeof_FUNC);
 	return rc;
 }
 #endif
