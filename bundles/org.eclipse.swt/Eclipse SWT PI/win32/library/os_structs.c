@@ -4164,6 +4164,152 @@ void setOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpSt
 }
 #endif
 
+#ifndef NO_OSVERSIONINFOEX
+typedef struct OSVERSIONINFOEX_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID wServicePackMajor, wServicePackMinor, wSuiteMask, wProductType, wReserved;
+} OSVERSIONINFOEX_FID_CACHE;
+
+OSVERSIONINFOEX_FID_CACHE OSVERSIONINFOEXFc;
+
+void cacheOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject)
+{
+	if (OSVERSIONINFOEXFc.cached) return;
+	cacheOSVERSIONINFOFields(env, lpObject);
+	OSVERSIONINFOEXFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	OSVERSIONINFOEXFc.wServicePackMajor = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wServicePackMajor", "S");
+	OSVERSIONINFOEXFc.wServicePackMinor = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wServicePackMinor", "S");
+	OSVERSIONINFOEXFc.wSuiteMask = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wSuiteMask", "S");
+	OSVERSIONINFOEXFc.wProductType = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wProductType", "B");
+	OSVERSIONINFOEXFc.wReserved = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wReserved", "B");
+	OSVERSIONINFOEXFc.cached = 1;
+}
+
+OSVERSIONINFOEX *getOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct)
+{
+	if (!OSVERSIONINFOEXFc.cached) cacheOSVERSIONINFOEXFields(env, lpObject);
+	getOSVERSIONINFOFields(env, lpObject, (OSVERSIONINFO *)lpStruct);
+	lpStruct->wServicePackMajor = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor);
+	lpStruct->wServicePackMinor = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor);
+	lpStruct->wSuiteMask = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask);
+	lpStruct->wProductType = (*env)->GetByteField(env, lpObject, OSVERSIONINFOEXFc.wProductType);
+	lpStruct->wReserved = (*env)->GetByteField(env, lpObject, OSVERSIONINFOEXFc.wReserved);
+	return lpStruct;
+}
+
+void setOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct)
+{
+	if (!OSVERSIONINFOEXFc.cached) cacheOSVERSIONINFOEXFields(env, lpObject);
+	setOSVERSIONINFOFields(env, lpObject, (OSVERSIONINFO *)lpStruct);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor, (jshort)lpStruct->wServicePackMajor);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor, (jshort)lpStruct->wServicePackMinor);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask, (jshort)lpStruct->wSuiteMask);
+	(*env)->SetByteField(env, lpObject, OSVERSIONINFOEXFc.wProductType, (jbyte)lpStruct->wProductType);
+	(*env)->SetByteField(env, lpObject, OSVERSIONINFOEXFc.wReserved, (jbyte)lpStruct->wReserved);
+}
+#endif
+
+#ifndef NO_OSVERSIONINFOEXA
+typedef struct OSVERSIONINFOEXA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID szCSDVersion;
+} OSVERSIONINFOEXA_FID_CACHE;
+
+OSVERSIONINFOEXA_FID_CACHE OSVERSIONINFOEXAFc;
+
+void cacheOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject)
+{
+	if (OSVERSIONINFOEXAFc.cached) return;
+	cacheOSVERSIONINFOEXFields(env, lpObject);
+	OSVERSIONINFOEXAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	OSVERSIONINFOEXAFc.szCSDVersion = (*env)->GetFieldID(env, OSVERSIONINFOEXAFc.clazz, "szCSDVersion", "[B");
+	OSVERSIONINFOEXAFc.cached = 1;
+}
+
+OSVERSIONINFOEXA *getOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXA *lpStruct)
+{
+	if (!OSVERSIONINFOEXAFc.cached) cacheOSVERSIONINFOEXAFields(env, lpObject);
+	getOSVERSIONINFOFields(env, lpObject, (OSVERSIONINFO *)lpStruct);
+	lpStruct->wServicePackMajor = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor);
+	lpStruct->wServicePackMinor = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor);
+	lpStruct->wSuiteMask = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask);
+	lpStruct->wProductType = (*env)->GetByteField(env, lpObject, OSVERSIONINFOEXFc.wProductType);
+	lpStruct->wReserved = (*env)->GetByteField(env, lpObject, OSVERSIONINFOEXFc.wReserved);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOEXAFc.szCSDVersion);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (jbyte *)lpStruct->szCSDVersion);
+	}
+	return lpStruct;
+}
+
+void setOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXA *lpStruct)
+{
+	if (!OSVERSIONINFOEXAFc.cached) cacheOSVERSIONINFOEXAFields(env, lpObject);
+	setOSVERSIONINFOFields(env, lpObject, (OSVERSIONINFO *)lpStruct);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor, (jshort)lpStruct->wServicePackMajor);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor, (jshort)lpStruct->wServicePackMinor);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask, (jshort)lpStruct->wSuiteMask);
+	(*env)->SetByteField(env, lpObject, OSVERSIONINFOEXFc.wProductType, (jbyte)lpStruct->wProductType);
+	(*env)->SetByteField(env, lpObject, OSVERSIONINFOEXFc.wReserved, (jbyte)lpStruct->wReserved);
+	{
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOEXAFc.szCSDVersion);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (jbyte *)lpStruct->szCSDVersion);
+	}
+}
+#endif
+
+#ifndef NO_OSVERSIONINFOEXW
+typedef struct OSVERSIONINFOEXW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID szCSDVersion;
+} OSVERSIONINFOEXW_FID_CACHE;
+
+OSVERSIONINFOEXW_FID_CACHE OSVERSIONINFOEXWFc;
+
+void cacheOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject)
+{
+	if (OSVERSIONINFOEXWFc.cached) return;
+	cacheOSVERSIONINFOEXFields(env, lpObject);
+	OSVERSIONINFOEXWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	OSVERSIONINFOEXWFc.szCSDVersion = (*env)->GetFieldID(env, OSVERSIONINFOEXWFc.clazz, "szCSDVersion", "[C");
+	OSVERSIONINFOEXWFc.cached = 1;
+}
+
+OSVERSIONINFOEXW *getOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXW *lpStruct)
+{
+	if (!OSVERSIONINFOEXWFc.cached) cacheOSVERSIONINFOEXWFields(env, lpObject);
+	getOSVERSIONINFOFields(env, lpObject, (OSVERSIONINFO *)lpStruct);
+	lpStruct->wServicePackMajor = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor);
+	lpStruct->wServicePackMinor = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor);
+	lpStruct->wSuiteMask = (*env)->GetShortField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask);
+	lpStruct->wProductType = (*env)->GetByteField(env, lpObject, OSVERSIONINFOEXFc.wProductType);
+	lpStruct->wReserved = (*env)->GetByteField(env, lpObject, OSVERSIONINFOEXFc.wReserved);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOEXWFc.szCSDVersion);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (jchar *)lpStruct->szCSDVersion);
+	}
+	return lpStruct;
+}
+
+void setOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXW *lpStruct)
+{
+	if (!OSVERSIONINFOEXWFc.cached) cacheOSVERSIONINFOEXWFields(env, lpObject);
+	setOSVERSIONINFOFields(env, lpObject, (OSVERSIONINFO *)lpStruct);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor, (jshort)lpStruct->wServicePackMajor);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor, (jshort)lpStruct->wServicePackMinor);
+	(*env)->SetShortField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask, (jshort)lpStruct->wSuiteMask);
+	(*env)->SetByteField(env, lpObject, OSVERSIONINFOEXFc.wProductType, (jbyte)lpStruct->wProductType);
+	(*env)->SetByteField(env, lpObject, OSVERSIONINFOEXFc.wReserved, (jbyte)lpStruct->wReserved);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOEXWFc.szCSDVersion);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (jchar *)lpStruct->szCSDVersion);
+	}
+}
+#endif
+
 #ifndef NO_OSVERSIONINFOW
 typedef struct OSVERSIONINFOW_FID_CACHE {
 	int cached;

@@ -935,6 +935,42 @@ void setOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpSt
 #define OSVERSIONINFOA_sizeof() 0
 #endif
 
+#ifndef NO_OSVERSIONINFOEX
+void cacheOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject);
+OSVERSIONINFOEX *getOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
+void setOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
+#define OSVERSIONINFOEX_sizeof() sizeof(OSVERSIONINFOEX)
+#else
+#define cacheOSVERSIONINFOEXFields(a,b)
+#define getOSVERSIONINFOEXFields(a,b,c) NULL
+#define setOSVERSIONINFOEXFields(a,b,c)
+#define OSVERSIONINFOEX_sizeof() 0
+#endif
+
+#ifndef NO_OSVERSIONINFOEXA
+void cacheOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject);
+OSVERSIONINFOEXA *getOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXA *lpStruct);
+void setOSVERSIONINFOEXAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXA *lpStruct);
+#define OSVERSIONINFOEXA_sizeof() sizeof(OSVERSIONINFOEXA)
+#else
+#define cacheOSVERSIONINFOEXAFields(a,b)
+#define getOSVERSIONINFOEXAFields(a,b,c) NULL
+#define setOSVERSIONINFOEXAFields(a,b,c)
+#define OSVERSIONINFOEXA_sizeof() 0
+#endif
+
+#ifndef NO_OSVERSIONINFOEXW
+void cacheOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject);
+OSVERSIONINFOEXW *getOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXW *lpStruct);
+void setOSVERSIONINFOEXWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEXW *lpStruct);
+#define OSVERSIONINFOEXW_sizeof() sizeof(OSVERSIONINFOEXW)
+#else
+#define cacheOSVERSIONINFOEXWFields(a,b)
+#define getOSVERSIONINFOEXWFields(a,b,c) NULL
+#define setOSVERSIONINFOEXWFields(a,b,c)
+#define OSVERSIONINFOEXW_sizeof() 0
+#endif
+
 #ifndef NO_OSVERSIONINFOW
 void cacheOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject);
 OSVERSIONINFOW *getOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpStruct);

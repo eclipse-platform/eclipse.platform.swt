@@ -127,7 +127,7 @@ public class OS extends Platform {
 			if (primaryLang == OS.LANG_KOREAN) {
 				OSVERSIONINFOEX infoex = IsUnicode ? (OSVERSIONINFOEX)new OSVERSIONINFOEXW () : (OSVERSIONINFOEX)new OSVERSIONINFOEXA ();
 				infoex.dwOSVersionInfoSize = OSVERSIONINFOEX.sizeof;
-				GetVersionEx (infoex);
+				OS.GetVersionEx (infoex);
 				if (infoex.wServicePackMajor < 2) {
 					OS.ImmDisableTextFrameService (0);
 				}

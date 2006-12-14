@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 694;
-int OS_nativeFunctionCallCount[694];
+int OS_nativeFunctionCount = 696;
+int OS_nativeFunctionCallCount[696];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateActCtx",
@@ -288,8 +288,10 @@ char * OS_nativeFunctionNames[] = {
 	"GetTickCount",
 	"GetUpdateRect",
 	"GetUpdateRgn",
-	"GetVersionExA",
-	"GetVersionExW",
+	"GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2",
+	"GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2",
+	"GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2",
+	"GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOW_2",
 	"GetWindow",
 	"GetWindowDC",
 	"GetWindowLongA",
