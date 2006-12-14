@@ -404,8 +404,10 @@ void computeRuns (GC gc) {
 			}
 			this.lineWidth[line] = lineWidth;
 			
-			runs[line] = reorder(runs[line]);
 			StyleItem lastRun = runs[line][lineRunCount - 1];
+			int lastOffset = lastRun.start + lastRun.length;
+			runs[line] = reorder(runs[line], i == allRuns.length - 1);
+			lastRun = runs[line][lineRunCount - 1];
 			if (run.softBreak && run != lastRun) {
 				run.softBreak = run.lineBreak = false;
 				lastRun.softBreak = lastRun.lineBreak = true;
@@ -418,7 +420,7 @@ void computeRuns (GC gc) {
 			}
 			line++;
 			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacing;
-			lineOffset[line] = lastRun.start + lastRun.length;
+			lineOffset[line] = lastOffset;
 			lineRunCount = lineWidth = 0;
 			ascent = Math.max(0, this.ascent);
 			descent = Math.max(0, this.descent);
@@ -760,12 +762,10 @@ public Rectangle getBounds (int start, int end) {
 	end = translateOffset(end);
 	int left = 0x7fffffff, right = 0;
 	int top = 0x7fffffff, bottom = 0;
-	int lineIndex = 0;
 	boolean isRTL = (orientation & SWT.RIGHT_TO_LEFT) != 0;
 	for (int i = 0; i < allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		int runEnd = run.start + run.length;
-		if (run.lineBreak) lineIndex++;
 		if (runEnd <= start) continue;
 		if (run.start > end) break;
 		int runLead = run.x;
@@ -804,10 +804,14 @@ public Rectangle getBounds (int start, int end) {
 				runTrail = run.x + cx;
 			}
 		}
+		int lineIndex = 0;
+		while (lineIndex < runs.length && lineOffset[lineIndex + 1] <= run.start) {
+			lineIndex++;
+		}
 		left = Math.min(left, runLead);
 		right = Math.max(right, runTrail);
-		top = Math.min(top, lineY[run.lineBreak ? lineIndex - 1 : lineIndex]);
-		bottom = Math.max(bottom, lineY[run.lineBreak ? lineIndex : lineIndex + 1] - lineSpacing);
+		top = Math.min(top, lineY[lineIndex]);
+		bottom = Math.max(bottom, lineY[lineIndex + 1] - lineSpacing);
 	}
 	return new Rectangle(left, top, right - left, bottom - top);
 }
@@ -1663,7 +1667,7 @@ StyleItem[] merge (int items, int itemCount) {
 /* 
  *  Reorder the run 
  */
-StyleItem[] reorder (StyleItem[] runs) {
+StyleItem[] reorder (StyleItem[] runs, boolean terminate) {
 	int length = runs.length;
 	if (length <= 1) return runs;
 	byte[] bidiLevels = new byte[length];
@@ -1687,10 +1691,11 @@ StyleItem[] reorder (StyleItem[] runs) {
 		result[log2vis[i]] = runs[i];
 	}	
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-		for (int i = 0; i < (length - 1) / 2 ; i++) {
+		if (terminate) length--;
+		for (int i = 0; i < length / 2 ; i++) {
 			StyleItem tmp = result[i];
-			result[i] = result[length - i - 2];
-			result[length - i - 2] = tmp;
+			result[i] = result[length - i - 1];
+			result[length - i - 1] = tmp;
 		}
 	}
 	return result;
