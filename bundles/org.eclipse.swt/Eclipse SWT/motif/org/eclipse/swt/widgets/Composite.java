@@ -1309,8 +1309,8 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	Image image = null;
 	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
 		Rectangle client = getClientArea ();
-		int width = Math.min (client.width, rect.x + rect.width);
-		int height = Math.min (client.height, rect.y + rect.height);
+		int width = Math.max (1, Math.min (client.width, rect.x + rect.width));
+		int height = Math.max (1, Math.min (client.height, rect.y + rect.height));
 		image = new Image (display, width, height);
 		paintGC = gc;
 		GCData imageGCData = new GCData ();
