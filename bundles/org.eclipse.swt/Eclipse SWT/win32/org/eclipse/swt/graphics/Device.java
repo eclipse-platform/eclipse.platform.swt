@@ -224,7 +224,7 @@ float computePoints(LOGFONT logFont, int hFont) {
 	} else {
 		pixels = -logFont.lfHeight;
 	}
-
+	internal_dispose_GC (hDC, null);
 	return pixels * 72f / logPixelsY;
 }
 
