@@ -118,12 +118,19 @@ public class OS extends Platform {
 		* to move the composition window outside of the client
 		* area, Windows crashes.  The fix is to disable legacy
 		* support.
+		* 
+		* Note: The bug is fixed in Service Pack 2.
 		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (5, 1)) {
 			short langID = OS.GetSystemDefaultUILanguage ();
 			short primaryLang = OS.PRIMARYLANGID (langID);
 			if (primaryLang == OS.LANG_KOREAN) {
-				OS.ImmDisableTextFrameService (0);
+				OSVERSIONINFOEX infoex = IsUnicode ? (OSVERSIONINFOEX)new OSVERSIONINFOEXW () : (OSVERSIONINFOEX)new OSVERSIONINFOEXA ();
+				infoex.dwOSVersionInfoSize = OSVERSIONINFOEX.sizeof;
+				GetVersionEx (infoex);
+				if (infoex.wServicePackMajor < 2) {
+					OS.ImmDisableTextFrameService (0);
+				}
 			}
 		}
 	}
@@ -2201,6 +2208,11 @@ public static final boolean GetVersionEx (OSVERSIONINFO lpVersionInfo) {
 	return GetVersionExA ((OSVERSIONINFOA)lpVersionInfo);
 }
 
+public static final boolean GetVersionEx (OSVERSIONINFOEX lpVersionInfo) {
+	if (IsUnicode) return GetVersionExW ((OSVERSIONINFOEXW)lpVersionInfo);
+	return GetVersionExA ((OSVERSIONINFOEXA)lpVersionInfo);
+}
+
 public static final int GetWindowLong (int hWnd, int nIndex) {
 	if (IsUnicode) return GetWindowLongW (hWnd, nIndex);
 	return GetWindowLongA (hWnd, nIndex);
@@ -2982,6 +2994,8 @@ public static final native int GetThemeRect(int hTheme, int iPartId, int iStateI
 public static final native int GetThemeSysSize(int hTheme, int iSizeID);
 public static final native boolean GetUpdateRect (int hWnd, RECT lpRect, boolean bErase);
 public static final native int GetUpdateRgn (int hWnd, int hRgn, boolean bErase);
+public static final native boolean GetVersionExW (OSVERSIONINFOEXW lpVersionInfo);
+public static final native boolean GetVersionExA (OSVERSIONINFOEXA lpVersionInfo);
 public static final native boolean GetVersionExW (OSVERSIONINFOW lpVersionInfo);
 public static final native boolean GetVersionExA (OSVERSIONINFOA lpVersionInfo);
 public static final native int GetWindow (int hWnd, int uCmd);
