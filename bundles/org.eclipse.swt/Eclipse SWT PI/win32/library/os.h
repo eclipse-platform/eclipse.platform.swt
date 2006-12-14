@@ -76,6 +76,9 @@
 #define NO_NONCLIENTMETRICS
 #define NO_NONCLIENTMETRICSA
 #define NO_NONCLIENTMETRICSW
+#define NO_OSVERSIONINFOEX
+#define NO_OSVERSIONINFOEXA
+#define NO_OSVERSIONINFOEXW
 #define NO_PRINTDLG
 #define NO_SCRIPT_ANALYSIS
 #define NO_SCRIPT_CONTROL
@@ -271,7 +274,9 @@
 #define NO_GetThemeRect
 #define NO_GetThemeSysSize
 #define NO_GetTimeFormatA
-#define NO_GetVersionExA
+#define NO_GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOA_2
+#define NO_GetVersionExA__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXA_2
+#define NO_GetVersionExW__Lorg_eclipse_swt_internal_win32_OSVERSIONINFOEXW_2
 #define NO_GetWindowLongA
 #define NO_GetWindowLongPtrA
 #define NO_GetWindowLongPtrW
