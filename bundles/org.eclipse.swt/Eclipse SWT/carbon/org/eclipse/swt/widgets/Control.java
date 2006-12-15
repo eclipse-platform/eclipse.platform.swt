@@ -1855,8 +1855,9 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		if (isDisposed ()) return OS.noErr;
 	}
 	if (dragging) {
-		sendDragEvent (x, y);
-		if (isDisposed ()) return OS.noErr;
+		display.dragging = true;
+		display.dragX = x;
+		display.dragY = y;
 	}
 	if (!shell.isDisposed ()) shell.setActiveControl (this);
 	return consume [0] ? OS.noErr : OS.eventNotHandledErr;
@@ -1864,6 +1865,11 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if (isEnabledModal ()) {
+		if (display.dragging) {
+			display.dragging = false;
+			sendDragEvent (display.dragX, display.dragY);
+			if (isDisposed ()) return OS.noErr;
+		}
 		int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
 		if (isDisposed ()) return OS.noErr;
 		return result;
@@ -2531,7 +2537,7 @@ void sendTrackEvents () {
 		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 	}
 	newX -= rect.left;
-	newY -=  rect.top;
+	newY -= rect.top;
 	int newModifiers = OS.GetCurrentEventKeyModifiers ();
 	int newState = OS.GetCurrentEventButtonState ();
 	Display display = this.display;
@@ -2588,6 +2594,11 @@ void sendTrackEvents () {
 		}
 	}
 	if (newX != oldX || newY != oldY && !isDisposed ()) {
+		if (display.dragging) {
+			display.dragging = false;
+			sendDragEvent (display.dragX, display.dragY);
+			if (isDisposed ()) return;
+		}
 		display.mouseMoved = true;
 		sendMouseEvent (SWT.MouseMove, (short)0, 0, true, newState, (short)newX, (short)newY, newModifiers);
 		events = true;
