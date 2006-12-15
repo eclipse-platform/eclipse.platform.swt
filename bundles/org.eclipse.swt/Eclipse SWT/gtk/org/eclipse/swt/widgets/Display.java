@@ -221,10 +221,6 @@ public class Display extends Device {
 	XVisibilityEvent visibilityEvent = new XVisibilityEvent ();
 	int /*long*/ [] flushData = new int /*long*/ [1];
 
-	/* Drag Detect */
-	int dragStartX, dragStartY;
-	boolean dragging, dragOverride;
-	
 	/* System Resources */
 	Font systemFont;
 	Image errorImage, infoImage, questionImage, warningImage;

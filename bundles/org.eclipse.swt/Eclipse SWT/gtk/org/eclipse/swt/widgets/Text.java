@@ -417,43 +417,49 @@ void deregister () {
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
-boolean dragDetect (int x, int y) {
-	if (!hooks (SWT.DragDetect)) return false;
-	int start = 0, end = 0;
-	if ((style & SWT.SINGLE) != 0) {
-		int [] s = new int [1], e = new int [1];
-		OS.gtk_editable_get_selection_bounds (handle, s, e);
-		start = s [0]; end = e [0];
-	} else {
-		byte [] s =  new byte [ITER_SIZEOF], e =  new byte [ITER_SIZEOF];
-		OS.gtk_text_buffer_get_selection_bounds (bufferHandle, s, e);
-		start = OS.gtk_text_iter_get_offset (s);
-		end = OS.gtk_text_iter_get_offset (e);
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	if (filter) {
+		int start = 0, end = 0;
+		if ((style & SWT.SINGLE) != 0) {
+			int [] s = new int [1], e = new int [1];
+			OS.gtk_editable_get_selection_bounds (handle, s, e);
+			start = s [0];
+			end = e [0];
+		} else {
+			byte [] s = new byte [ITER_SIZEOF], e =  new byte [ITER_SIZEOF];
+			OS.gtk_text_buffer_get_selection_bounds (bufferHandle, s, e);
+			start = OS.gtk_text_iter_get_offset (s);
+			end = OS.gtk_text_iter_get_offset (e);
+		}
+		if (start != end) {
+			if (end < start) {
+				int temp = end;
+				end = start;
+				start = temp;
+			}
+			int position = -1;
+			if ((style & SWT.SINGLE) != 0) {
+				int [] index = new int [1];
+				int [] trailing = new int [1];
+				int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+				OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
+				int /*long*/ ptr = OS.pango_layout_get_text (layout);
+				position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
+			} else {
+				byte [] p = new byte [ITER_SIZEOF];
+				OS.gtk_text_view_get_iter_at_location (handle, p, x, y);
+				position = OS.gtk_text_iter_get_offset (p);
+			}
+			if (start <= position && position < end) {
+				if (super.dragDetect (x, y, filter, consume)) {
+					if (consume != null) consume [0] = true;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
-	if (start == end) return false;
-	if (end < start) {
-		int temp = end;
-		end = start;
-		start = temp;
-	}
-	int offset = -1;
-	if ((style & SWT.SINGLE) != 0) {
-		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
-		int [] index = new int [1];
-		int [] trailing = new int [1];
-		OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
-		int /*long*/ ptr = OS.pango_layout_get_text (layout);
-		offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
-	} else {
-		byte [] position = new byte [ITER_SIZEOF];
-		OS.gtk_text_view_get_iter_at_location (handle, position, x, y);
-		offset =  OS.gtk_text_iter_get_offset (position);
-	}
-	return offset > start && offset < end;
-}
-
-boolean dragOverride () {
-	return true;
+	return super.dragDetect (x, y, filter, consume);
 }
 
 int /*long*/ eventWindow () {
@@ -748,6 +754,25 @@ public int getOrientation () {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+/*public*/ int getPosition (Point point) {
+	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int position = -1;
+	if ((style & SWT.SINGLE) != 0) {
+		int [] index = new int [1];
+		int [] trailing = new int [1];
+		int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+		OS.pango_layout_xy_to_index (layout, point.x * OS.PANGO_SCALE, point.y * OS.PANGO_SCALE, index, trailing);
+		int /*long*/ ptr = OS.pango_layout_get_text (layout);
+		position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
+	} else {
+		byte [] p = new byte [ITER_SIZEOF];
+		OS.gtk_text_view_get_iter_at_location (handle, p, point.x, point.y);
+		position = OS.gtk_text_iter_get_offset (p);
+	}
+	return position;
+}
+
 /**
  * Returns a <code>Point</code> whose x coordinate is the
  * character position representing the start of the selected
@@ -1001,7 +1026,7 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result =  super.gtk_button_press_event (widget, event);
+	int /*long*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
@@ -1015,29 +1040,6 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	return result;
 }
 
-int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
-	if (display.dragOverride && !display.dragging) {
-		GdkEventButton gdkEvent = new GdkEventButton ();
-		OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-		int x = (int)gdkEvent.x, y = (int)gdkEvent.y;
-		if ((style & SWT.SINGLE) != 0) {
-			int /*long*/ layout = OS.gtk_entry_get_layout (handle);
-			int [] index = new int [1];
-			int [] trailing = new int [1];
-			OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
-			int /*long*/ ptr = OS.pango_layout_get_text (layout);
-			int offset = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
-			OS.gtk_editable_set_position (handle, offset);
-		} else {
-			byte [] iter = new byte [ITER_SIZEOF];
-			OS.gtk_text_view_get_iter_at_location (handle, iter, x, y);
-			OS.gtk_text_buffer_place_cursor (bufferHandle, iter);
-			int /*long*/ mark = OS.gtk_text_buffer_get_insert (bufferHandle);
-			OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
-		}
-	}
-	return super.gtk_button_release_event (widget, event);
-}
 
 int /*long*/ gtk_changed (int /*long*/ widget) {
 	/*

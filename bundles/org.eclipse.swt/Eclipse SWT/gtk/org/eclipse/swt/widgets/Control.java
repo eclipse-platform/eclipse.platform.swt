@@ -360,6 +360,7 @@ int /*long*/ childStyle () {
 }
 
 void createWidget (int index) {
+	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	super.createWidget (index);
 	checkBackground ();
@@ -1514,12 +1515,69 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-boolean dragDetect (int x, int y) {
-	return hooks (SWT.DragDetect);
+/*public*/ Event dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!dragDetect (event.x, event.y, false, null)) return null;
+	Event dragEvent = new Event ();
+	dragEvent.button = event.button;
+	dragEvent.x = event.x;
+	dragEvent.y = event.y;
+	dragEvent.stateMask = event.stateMask;
+	return dragEvent;
 }
 
-boolean dragOverride () {
-	return false;
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	boolean quit = false, dragging = false;
+	while (!quit) {
+		int /*long*/ eventPtr = 0;
+		while (true) {
+			eventPtr = OS.gdk_event_get ();
+			if (eventPtr != 0) {
+				break;
+			} else {
+				try {Thread.sleep(50);} catch (Exception ex) {}
+			}
+		}
+		switch (OS.GDK_EVENT_TYPE (eventPtr)) {
+			case OS.GDK_MOTION_NOTIFY: {
+				GdkEventMotion gdkMotionEvent = new GdkEventMotion ();
+				OS.memmove (gdkMotionEvent, eventPtr, GdkEventMotion.sizeof);
+				if ((gdkMotionEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
+					if (OS.gtk_drag_check_threshold (handle, x, y, (int) gdkMotionEvent.x, (int) gdkMotionEvent.y)) {
+						dragging = true;
+						quit = true;
+					}
+				} else {
+					quit = true;
+				}
+				int [] newX = new int [1], newY = new int [1];
+				OS.gdk_window_get_pointer (gdkMotionEvent.window, newX, newY, null);
+				break;
+			}
+			case OS.GDK_BUTTON_RELEASE: {
+				OS.gdk_event_put (eventPtr);
+				quit = true;
+				break;
+			}
+			case OS.GDK_KEY_PRESS:
+			case OS.GDK_KEY_RELEASE: {
+				GdkEventKey gdkEvent = new GdkEventKey ();
+				OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+				if (gdkEvent.keyval == OS.GDK_Escape) quit = true;
+				break;
+			}
+			case OS.GDK_BUTTON_PRESS:
+			case OS.GDK_2BUTTON_PRESS:
+			case OS.GDK_3BUTTON_PRESS:
+				quit = true;
+				break;
+			default:
+				OS.gtk_main_do_event (eventPtr);
+		}
+		OS.gdk_event_free (eventPtr);
+	}
+	return dragging;
 }
 
 boolean filterKey (int keyval, int /*long*/ event) {
@@ -1680,6 +1738,11 @@ public int getBorderWidth () {
 public Cursor getCursor () {
 	checkWidget ();
 	return cursor;
+}
+
+/*public*/ boolean getDragDetect () {
+	checkWidget ();
+	return (state & DRAG_DETECT) != 0;
 }
 
 /**
@@ -1947,10 +2010,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (((shell.style & SWT.ON_TOP) != 0) && (((shell.style & SWT.NO_FOCUS) == 0) || ((style & SWT.NO_FOCUS) == 0))) {
 		shell.forceActive();
 	}
-	display.dragStartX = (int) gdkEvent.x;
-	display.dragStartY = (int) gdkEvent.y;
-	display.dragging = display.dragOverride = false;
-	int /*long*/ result;
+	int /*long*/ result = 0;
 	if (gdkEvent.type == OS.GDK_BUTTON_PRESS) {
 		display.clickCount = 1;
 		int /*long*/ nextEvent = OS.gdk_event_peek ();
@@ -1960,11 +2020,24 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 			if (eventType == OS.GDK_3BUTTON_PRESS) display.clickCount = 3;
 			OS.gdk_event_free (nextEvent);
 		}
-		result = sendMouseEvent (SWT.MouseDown, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+		boolean dragging = false;
+		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+			if (gdkEvent.button == 1) {
+				boolean [] consume = new boolean [1];
+				if (dragDetect ((int) gdkEvent.x, (int) gdkEvent.y, true, consume)) {
+					dragging = true;
+					if (consume [0]) result = 1;
+				}
+				if (isDisposed ()) return 1;
+			}
+		}
+		if (!sendMouseEvent (SWT.MouseDown, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state)) {
+			result = 1;
+		}
 		if (isDisposed ()) return 1;
-		if (gdkEvent.button == 1) {
-			display.dragOverride = dragOverride () && dragDetect (display.dragStartX, display.dragStartY);
-			if (display.dragOverride) result = 1;
+		if (dragging) {
+			sendDragEvent ((int) gdkEvent.x, (int) gdkEvent.y);
+			if (isDisposed ()) return 1;
 		}
 		/*
 		* Pop up the context menu in the button press event for widgets
@@ -2176,17 +2249,6 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
-	if (!display.dragging) {
-		if ((gdkEvent.state & OS.GDK_BUTTON1_MASK) != 0) {
-			if (dragDetect (display.dragStartX, display.dragStartY)) {
-				if (OS.gtk_drag_check_threshold (handle, display.dragStartX, display.dragStartY, (int) gdkEvent.x, (int) gdkEvent.y)) {
-					display.dragging = true;
-					sendDragEvent (display.dragStartX, display.dragStartY);
-					if (isDisposed ()) return 1;
-				}
-			}
-		}
-	}
 	if (hooks (SWT.MouseHover) || filters (SWT.MouseHover)) {
 		display.addMouseHoverTimeout (handle);
 	}
@@ -2201,7 +2263,6 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 		state = mask [0];
 	}
 	int result = sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
-	if (display.dragOverride) result = 1;
 	return result;
 }
 
@@ -2877,6 +2938,15 @@ void setCursor (int /*long*/ cursor) {
 			int /*long*/ xDisplay = OS.GDK_DISPLAY ();
 			OS.XFlush (xDisplay);
 		}
+	}
+}
+
+/*public*/ void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	if (dragDetect) {
+		state |= DRAG_DETECT;
+	} else {
+		state &= ~DRAG_DETECT;
 	}
 }
 
