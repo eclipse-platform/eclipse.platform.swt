@@ -1819,6 +1819,7 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	display.dragging = false;
 	Shell shell = getShell ();
 	int x = -1, y = -1;
 	boolean dragging = false;
