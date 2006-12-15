@@ -77,8 +77,8 @@ public abstract class Widget {
 	
 	/* More global widget state flags */
 	static final int TRACK_MOUSE	= 1<<13;
-	static final int DRAG_DETECT	= 1<<14;
-	static final int FOREIGN_HANDLE	= 1<<15;
+	static final int FOREIGN_HANDLE	= 1<<14;
+	static final int DRAG_DETECT	= 1<<15;
 
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -411,7 +411,6 @@ public void dispose () {
 }
 
 boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
-	if (!hooks (SWT.DragDetect)) return false;
 	if (consume != null) consume [0] = false;
 	if (detect != null) detect [0] = true;
 	POINT pt = new POINT ();
@@ -1731,6 +1730,7 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 			detect = new boolean [1];
 			consume = new boolean [1];
 			dragging = dragDetect (hwnd, x, y, true, detect, consume);
+			if (isDisposed ()) return LRESULT.ZERO;
 			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 		}
 	}

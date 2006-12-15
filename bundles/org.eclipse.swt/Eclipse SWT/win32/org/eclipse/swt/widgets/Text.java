@@ -421,14 +421,13 @@ int defaultBackground () {
 }
 
 boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
-	if (!hooks (SWT.DragDetect)) return false;
 	if (filter) {
 		int [] start = new int [1], end = new int [1];
 		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 		if (start [0] != end [0]) {
 			int lParam = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
 			int position = OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
-			if (start [0] < position && position < end [0]) {
+			if (start [0] <= position && position < end [0]) {
 				if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
 					if (consume != null) consume [0] = true;
 					return true;

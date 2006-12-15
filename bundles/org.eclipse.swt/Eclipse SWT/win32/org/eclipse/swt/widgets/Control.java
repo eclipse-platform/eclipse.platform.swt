@@ -505,7 +505,6 @@ Control [] computeTabList () {
 }
 
 void createHandle () {
-	state |= DRAG_DETECT;
 	int hwndParent = widgetParent ();
 	handle = OS.CreateWindowEx (
 		widgetExtStyle (),
@@ -530,6 +529,7 @@ void createHandle () {
 }
 
 void createWidget () {
+	state |= DRAG_DETECT;
 	foreground = background = -1;
 	checkOrientation (parent);
 	createHandle ();
