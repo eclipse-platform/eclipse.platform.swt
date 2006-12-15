@@ -185,8 +185,7 @@ public class Display extends Device {
 	/* Mouse Enter/Exit/Hover */
 	Control currentControl;
 	int mouseHoverID;
-	org.eclipse.swt.internal.carbon.Point dragMouseStart = null;
-	boolean dragging, mouseMoved;
+	boolean mouseMoved;
 	
 	/* Insets */
 	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset, editTextInset;
@@ -1058,35 +1057,6 @@ public void disposeExec (Runnable runnable) {
 	System.arraycopy (disposeList, 0, newDisposeList, 0, disposeList.length);
 	newDisposeList [disposeList.length] = runnable;
 	disposeList = newDisposeList;
-}
-
-void dragDetect (Control control) {
-	if (!dragging && control.hooks (SWT.DragDetect) && dragMouseStart != null) {
-		if (OS.WaitMouseMoved (dragMouseStart)) {
-			dragging = true;
-			Rect rect = new Rect ();
-			int window = OS.GetControlOwner (control.handle);
-			int x, y;
-			if (OS.HIVIEW) {
-				CGPoint pt = new CGPoint ();
-				pt.x = dragMouseStart.h;
-				pt.y = dragMouseStart.v;
-				OS.HIViewConvertPoint (pt, 0, control.handle);
-				x = (int) pt.x;
-				y = (int) pt.y;
-				OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-			} else {
-				OS.GetControlBounds (control.handle, rect);
-				x = dragMouseStart.h - rect.left;
-				y = dragMouseStart.v - rect.top;
-				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			}
-			x -= rect.left;
-			y -= rect.top;
-			control.sendDragEvent (x, y);
-			dragMouseStart = null;
-		}
-	}
 }
 
 int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {

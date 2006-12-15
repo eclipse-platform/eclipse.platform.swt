@@ -451,6 +451,7 @@ Control [] computeTabList () {
 }
 
 void createWidget (int index) {
+	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	super.createWidget (index);
 	checkBackground ();
@@ -529,11 +530,19 @@ Font defaultFont () {
 int defaultForeground () {
 	return display.defaultForeground;
 }
-boolean dragDetect (int x, int y) {
-	return hooks (SWT.DragDetect);
+/*public*/ Event dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!dragDetect (event.x, event.y, false, null)) return null;
+	Event dragEvent = new Event ();
+	dragEvent.button = event.button;
+	dragEvent.x = event.x;
+	dragEvent.y = event.y;
+	dragEvent.stateMask = event.stateMask;
+	return dragEvent;
 }
-boolean dragOverride () {
-	return false;
+boolean dragDetect (int x, int y, boolean force, boolean [] consume) {
+	return true;
 }
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
@@ -739,6 +748,11 @@ public Cursor getCursor () {
 	checkWidget ();
 	return cursor;
 }
+/*public*/ boolean getDragDetect () {
+	checkWidget ();
+	return (state & DRAG_DETECT) != 0;
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -2165,6 +2179,14 @@ public void setCursor (Cursor cursor) {
 	}
 	OS.XFlush (xDisplay);
 }
+/*public*/ void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	if (dragDetect) {
+		state |= DRAG_DETECT;
+	} else {
+		state &= ~DRAG_DETECT;
+	}
+}
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
@@ -3074,6 +3096,7 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	if (((shell.style & SWT.ON_TOP) != 0) && (((shell.style & SWT.NO_FOCUS) == 0) || ((style & SWT.NO_FOCUS) == 0))) {
 		shell.forceActive();
 	}
+	boolean dispatch = true, dragging = false;
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	int clickTime = display.getDoubleClickTime ();
@@ -3086,15 +3109,26 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	}
 	display.lastTime = eventTime == 0 ? 1 : eventTime;
 	display.lastButton = eventButton;
-	boolean dispatch = sendMouseEvent (SWT.MouseDown, xEvent);
-	if (isDisposed ()) return 1;
 	if (xEvent.button == 2) {
-		boolean dragDetect = dragDetect (xEvent.x, xEvent.y);
-		if (dragDetect) {
-			sendDragEvent (xEvent.x, xEvent.y);
+		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+			boolean [] consume = new boolean [1];
+			if (dragDetect (xEvent.x, xEvent.y, true, consume)) {
+				dragging = true;
+				dispatch = !consume [0];
+			}
 			if (isDisposed ()) return 1;
 		}
-		if (dragOverride () && dragDetect) return 1;
+	}
+	if (!sendMouseEvent (SWT.MouseDown, xEvent)) dispatch = false;
+	if (isDisposed ()) return 1;
+	if (display.clickCount == 2) {
+		if (!sendMouseEvent (SWT.MouseDoubleClick, xEvent)) dispatch = false;
+		if (isDisposed ()) return 1;
+		// widget could be disposed at this point
+	}
+	if (dragging) {
+		sendDragEvent (xEvent.x, xEvent.y);
+		if (isDisposed ()) return 1;
 	}
 	if (xEvent.button == 3) {
 		if (menu != null || hooks (SWT.MenuDetect)) {
@@ -3102,10 +3136,6 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 		}
 		showMenu (xEvent.x_root, xEvent.y_root);
 		if (isDisposed ()) return 1;
-	}
-	if (display.clickCount == 2) {
-		dispatch = sendMouseEvent (SWT.MouseDoubleClick, xEvent);
-		// widget could be disposed at this point
 	}
 	if (!shell.isDisposed ()) shell.setActiveControl (this);
 	if (!dispatch) {

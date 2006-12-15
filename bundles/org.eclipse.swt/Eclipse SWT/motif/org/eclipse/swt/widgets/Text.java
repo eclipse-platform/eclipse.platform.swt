@@ -436,18 +436,22 @@ Font defaultFont () {
 int defaultForeground () {
 	return display.textForeground;
 }
-boolean dragDetect (int x, int y) {
-	if (hooks (SWT.DragDetect)) {
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	if (filter) {
 		int [] start = new int [1], end = new int [1];
 		OS.XmTextGetSelectionPosition (handle, start, end);
-		if (start [0] == end [0]) return false;
-		int pos = OS.XmTextXYToPos(handle, (short) x, (short) y);
-		return pos > start [0] && pos < end [0];
+		if (start [0] != end [0]) {
+			int pos = OS.XmTextXYToPos(handle, (short) x, (short) y);
+			if (start [0] <= pos && pos < end [0]) {
+				if (super.dragDetect (x, y, filter, consume)) {
+					if (consume != null) consume [0] = true;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
-	return false;
-}
-boolean dragOverride () {
-	return true;
+	return super.dragDetect (x, y, filter, consume);
 }
 /**
  * Returns the line number of the caret.
@@ -700,6 +704,11 @@ int getNavigationType () {
 public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+/*public*/ int getPosition (Point point) {
+	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return OS.XmTextXYToPos(handle, (short) point.x, (short) point.y);
 }
 /**
  * Returns a <code>Point</code> whose x coordinate is the

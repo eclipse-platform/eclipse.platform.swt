@@ -607,6 +607,23 @@ Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	if (filter) {
+		Point selection = getSelection ();
+		if (selection.x != selection.y) {
+			int position = getPosition (x, y);
+			if (selection.x <= position && position < selection.y) {
+				if (super.dragDetect (x, y, filter, consume)) {
+					if (consume != null) consume [0] = true;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	return super.dragDetect (x, y, filter, consume);
+}
+
 void drawBackground (int control, int context) {
 	if (!OS.HIVIEW) {
 		parent.drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), inset ());
@@ -857,6 +874,24 @@ public int getLineHeight () {
 public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+int getPosition (int x, int y) {
+//	checkWidget ();
+	if (txnObject == 0) return -1;
+	int [] oOffset = new int [1];
+	Rect oViewRect = new Rect ();
+	OS.TXNGetViewRect (txnObject, oViewRect);
+	org.eclipse.swt.internal.carbon.Point iPoint = new org.eclipse.swt.internal.carbon.Point ();
+	iPoint.h = (short) (x + oViewRect.left);
+	iPoint.v = (short) (y + oViewRect.top);
+	return OS.TXNPointToOffset (txnObject, iPoint, oOffset) == OS.noErr ? oOffset [0] : -1;
+}
+
+public int getPosition (Point point) {
+	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return getPosition (point.x, point.y);
 }
 
 /**

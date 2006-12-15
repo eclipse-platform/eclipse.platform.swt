@@ -527,6 +527,7 @@ Control computeTabRoot () {
 }
 
 void createWidget () {
+	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	super.createWidget ();
 	checkBackground ();
@@ -570,6 +571,41 @@ void destroyWidget () {
 	if (theControl != 0) {
 		OS.DisposeControl (theControl);
 	}
+}
+
+/*public*/ Event dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!dragDetect (event.x, event.y, false, null)) return null;
+	Event dragEvent = new Event ();
+	dragEvent.button = event.button;
+	dragEvent.x = event.x;
+	dragEvent.y = event.y;
+	dragEvent.stateMask = event.stateMask;
+	return dragEvent;
+}
+
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	if (OS.HIVIEW) {
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, handle, 0);
+		x += (int) pt.x;
+		y += (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	} else {
+		OS.GetControlBounds (handle, rect);
+		x += rect.left;
+		y += rect.top;
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	}
+	x += rect.left;
+	y += rect.top;
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	pt.h = (short) x;
+	pt.v = (short) y;
+	return OS.WaitMouseMoved (pt);
 }
 
 void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, Rect inset) {
@@ -926,6 +962,11 @@ public int getBorderWidth () {
 public Rectangle getBounds () {
 	checkWidget();
 	return getControlBounds (topHandle ());
+}
+
+/*public*/ boolean getDragDetect () {
+	checkWidget ();
+	return (state & DRAG_DETECT) != 0;
 }
 
 int getDrawCount (int control) {
@@ -1779,30 +1820,51 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	int result = sendMouseEvent (SWT.MouseDown, button [0], display.clickCount, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
-	if (isDisposed ()) return OS.noErr;
-	if (display.clickCount == 2) {
-		result = sendMouseEvent (SWT.MouseDoubleClick, button [0], display.clickCount, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
+	int x = -1, y = -1;
+	boolean dragging = false;
+	boolean [] consume = new boolean [1];
+	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+		if (OS.HIVIEW) {
+			CGPoint pt = new CGPoint ();
+			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+			OS.HIViewConvertPoint (pt, 0, handle);
+			x = (int) pt.x;
+			y = (int) pt.y;
+		} else {
+			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+			Rect rect = new Rect ();
+			int window = OS.GetControlOwner (handle);
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			x = pt.h - rect.left;
+			y = pt.v - rect.top;
+			OS.GetControlBounds (handle, rect);
+			x -= rect.left;
+			y -= rect.top;
+		}
+		if (dragDetect (x, y, true, consume)) dragging = true;
 		if (isDisposed ()) return OS.noErr;
 	}
-	if (hooks (SWT.DragDetect)) {
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		display.dragMouseStart = pt;
-		display.dragging = false;
+	short [] button = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+	if (!sendMouseEvent (SWT.MouseDown, button [0], display.clickCount, 0, false, theEvent)) consume [0] = true;
+	if (isDisposed ()) return OS.noErr;
+	if (display.clickCount == 2) {
+		if (!sendMouseEvent (SWT.MouseDoubleClick, button [0], display.clickCount, 0, false, theEvent)) consume [0] = true;
+		if (isDisposed ()) return OS.noErr;
+	}
+	if (dragging) {
+		sendDragEvent (x, y);
+		if (isDisposed ()) return OS.noErr;
 	}
 	if (!shell.isDisposed ()) shell.setActiveControl (this);
-	return result;
+	return consume [0] ? OS.noErr : OS.eventNotHandledErr;
 }
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if (isEnabledModal ()) {
 		int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
-		if (isDisposed ()) return OS.noErr;
-		display.dragDetect (this);
 		if (isDisposed ()) return OS.noErr;
 		return result;
 	}
@@ -2344,9 +2406,7 @@ boolean sendDragEvent (int x, int y) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
-	//postEvent (SWT.DragDetect, event); 
-	sendEvent (SWT.DragDetect, event);
-	if (isDisposed ()) return false;
+	postEvent (SWT.DragDetect, event);
 	return event.doit;
 }
 
@@ -2528,7 +2588,6 @@ void sendTrackEvents () {
 		}
 	}
 	if (newX != oldX || newY != oldY && !isDisposed ()) {
-		display.dragDetect (this);
 		display.mouseMoved = true;
 		sendMouseEvent (SWT.MouseMove, (short)0, 0, true, newState, (short)newX, (short)newY, newModifiers);
 		events = true;
@@ -2762,6 +2821,15 @@ public void setCursor (Cursor cursor) {
 
 void setDefaultFont () {
 	if (display.smallFonts) setFontStyle (defaultFont ());
+}
+
+/*public*/ void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	if (dragDetect) {
+		state |= DRAG_DETECT;	
+	} else {
+		state &= ~DRAG_DETECT;
+	}
 }
 
 /**
