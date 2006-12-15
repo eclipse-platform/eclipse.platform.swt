@@ -81,8 +81,8 @@ public abstract class Widget {
 	/* More global state flags */
 	static final int RELEASED = 1<<15;
 	static final int DISPOSE_SENT = 1<<16;	
-
 	static final int FOREIGN_HANDLE = 1<<17;
+	static final int DRAG_DETECT = 1<<18;
 
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
