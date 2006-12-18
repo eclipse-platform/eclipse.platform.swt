@@ -33,7 +33,7 @@ public class Snippet252 {
 				gc.setLineAttributes(new LineAttributes(10, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_SOLID, null, 0, 10));
 				gc.drawPolyline(new int[]{50, 100, 50, 20, 60, 30, 50, 45});
 				
-				gc.setLineAttributes(new LineAttributes(1/2, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_DOT, null, 0, 10));
+				gc.setLineAttributes(new LineAttributes(1/2f, SWT.CAP_FLAT, SWT.JOIN_MITER, SWT.LINE_DOT, null, 0, 10));
 				gc.drawPolyline(new int[]{100, 100, 100, 20, 110, 30, 100, 45});
 			}
 		});
