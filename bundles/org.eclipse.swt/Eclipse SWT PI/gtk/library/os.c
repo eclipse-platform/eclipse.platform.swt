@@ -3117,6 +3117,22 @@ JNIEXPORT void JNICALL OS_NATIVE(_1g_1strfreev)
 }
 #endif
 
+#ifndef NO__1g_1strtod
+JNIEXPORT jdouble JNICALL OS_NATIVE(_1g_1strtod)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, _1g_1strtod_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jdouble)g_strtod((const gchar *)arg0, (gchar **)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1g_1strtod_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1g_1thread_1init
 JNIEXPORT void JNICALL OS_NATIVE(_1g_1thread_1init)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -11844,6 +11860,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1set_1wrap)
 	OS_NATIVE_ENTER(env, that, _1gtk_1spin_1button_1set_1wrap_FUNC);
 	gtk_spin_button_set_wrap((GtkSpinButton*)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1set_1wrap_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1spin_1button_1update
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1update)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1spin_1button_1update_FUNC);
+	gtk_spin_button_update((GtkSpinButton*)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1update_FUNC);
 }
 #endif
 

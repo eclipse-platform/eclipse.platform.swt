@@ -2051,6 +2051,15 @@ public static final void g_strfreev(int /*long*/ string_array) {
 		lock.unlock();
 	}
 }
+public static final native double _g_strtod(int /*long*/ str, int /*long*/[] endptr);
+public static final double g_strtod(int /*long*/ str, int /*long*/[] endptr) {
+	lock.lock();
+	try {
+		return _g_strtod(str, endptr);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _g_type_add_interface_static (int /*long*/ instance_type, int /*long*/ interface_type, int /*long*/ info);
 public static final void g_type_add_interface_static (int /*long*/ instance_type, int /*long*/ interface_type, int /*long*/ info) {
 	lock.lock();
@@ -6919,6 +6928,15 @@ public static final void gtk_spin_button_set_wrap(int /*long*/ spin_button, bool
 	lock.lock();
 	try {
 		_gtk_spin_button_set_wrap(spin_button, wrap);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_spin_button_update(int /*long*/ spin_button);
+public static final void gtk_spin_button_update(int /*long*/ spin_button) {
+	lock.lock();
+	try {
+		_gtk_spin_button_update(spin_button);
 	} finally {
 		lock.unlock();
 	}
