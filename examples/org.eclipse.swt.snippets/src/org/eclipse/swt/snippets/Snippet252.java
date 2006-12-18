@@ -38,7 +38,7 @@ public class Snippet252 {
 			}
 		});
 		
-		shell.setSize(170, 170);
+		shell.setSize(150, 150);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
