@@ -521,7 +521,7 @@ void createHandle () {
 	if (handle == 0 || embedded) {
 		super.createHandle ();
 	} else {
-		state |= CANVAS | DRAG_DETECT;
+		state |= CANVAS;
 		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
 			state |= THEME_BACKGROUND;
 		}
