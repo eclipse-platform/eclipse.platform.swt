@@ -298,7 +298,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 			event.y = controlY;
 			event.width = width;
 			event.height = height;
-			postEvent (SWT.Selection, event);
+			sendEvent (SWT.Selection, event);
 			if (isDisposed ()) return result;
 			if (event.doit) {
 				lastX = event.x;
@@ -315,7 +315,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 			event.y = lastY;
 			event.width = width;
 			event.height = height;
-			postEvent (SWT.Selection, event);
+			sendEvent (SWT.Selection, event);
 			if (isDisposed ()) return result;
 			if (event.doit) {
 				setBounds (event.x, event.y, width, height);
@@ -335,7 +335,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 			event.y = newY;
 			event.width = width;
 			event.height = height;
-			postEvent (SWT.Selection, event);
+			sendEvent (SWT.Selection, event);
 			if (isDisposed ()) return result;
 			if (event.doit) {
 				lastX = event.x;
