@@ -1918,8 +1918,16 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
+	/*
+	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
+	* do not activate the shell when the user clicks on the
+	* the client area or on the border or a control within the
+	* shell that does not take focus.
+	*/
 	Shell shell = _getShell ();
-	if ((shell.style & SWT.ON_TOP) != 0) shell.forceActive ();
+	if (((shell.style & SWT.ON_TOP) != 0) && (((shell.style & SWT.NO_FOCUS) == 0) || ((style & SWT.NO_FOCUS) == 0))) {
+		shell.forceActive();
+	}
 	display.dragStartX = (int) gdkEvent.x;
 	display.dragStartY = (int) gdkEvent.y;
 	display.dragging = display.dragOverride = false;
