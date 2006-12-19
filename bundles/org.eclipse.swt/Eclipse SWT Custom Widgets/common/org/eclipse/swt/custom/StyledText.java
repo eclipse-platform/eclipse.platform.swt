@@ -7339,13 +7339,9 @@ void setScrollBars(boolean vertical) {
 			// (ie. because the thumb size is less than the scroll maximum)
 			// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
 			if (clientAreaHeight < maximum) {
-				verticalBar.setValues(
-					verticalBar.getSelection(),
-					verticalBar.getMinimum(),
-					maximum,
-					clientAreaHeight,				// thumb size
-					verticalBar.getIncrement(),
-					clientAreaHeight);				// page size
+				verticalBar.setMaximum(maximum);
+				verticalBar.setThumb(clientAreaHeight);
+				verticalBar.setPageIncrement(clientAreaHeight);
 			} else if (verticalBar.getThumb() != inactive || verticalBar.getMaximum() != inactive) {
 				verticalBar.setValues(
 					verticalBar.getSelection(),
@@ -7364,13 +7360,9 @@ void setScrollBars(boolean vertical) {
 		// (ie. because the thumb size is less than the scroll maximum)
 		// avoids flashing on Motif, fixes 1G7RE1J and 1G5SE92
 		if (clientAreaWidth < maximum) {
-			horizontalBar.setValues(
-				horizontalBar.getSelection(),
-				horizontalBar.getMinimum(),
-				maximum,
-				clientAreaWidth - leftMargin - rightMargin,	// thumb size
-				horizontalBar.getIncrement(),
-				clientAreaWidth - leftMargin - rightMargin);	// page size
+			horizontalBar.setMaximum(maximum);
+			horizontalBar.setThumb(clientAreaWidth - leftMargin - rightMargin);
+			horizontalBar.setPageIncrement(clientAreaWidth - leftMargin - rightMargin);
 		} else if (horizontalBar.getThumb() != inactive || horizontalBar.getMaximum() != inactive) {
 			horizontalBar.setValues(
 				horizontalBar.getSelection(),
