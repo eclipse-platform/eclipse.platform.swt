@@ -133,6 +133,7 @@ class CanvasTab extends Tab {
 		});
 		ScrollBar bar = canvas.getHorizontalBar();
 		if (bar != null) {
+			hookListeners (bar);
 			bar.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					scrollHorizontal ((ScrollBar)event.widget);
@@ -141,6 +142,7 @@ class CanvasTab extends Tab {
 		}
 		bar = canvas.getVerticalBar();
 		if (bar != null) {
+			hookListeners (bar);
 			bar.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent event) {
 					scrollVertical ((ScrollBar)event.widget);
