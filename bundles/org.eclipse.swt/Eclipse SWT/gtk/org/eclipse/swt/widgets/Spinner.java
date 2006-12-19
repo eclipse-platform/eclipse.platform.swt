@@ -482,6 +482,21 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_changed (int /*long*/ widget) {
+	int /*long*/ str = OS.gtk_entry_get_text (handle);
+	int length = OS.strlen (str);
+	if (length > 0) {
+		int /*long*/ [] endptr = new int /*long*/ [1];
+		double value = OS.g_strtod (str, endptr);
+		if (endptr [0] == str + length) {
+			int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+			GtkAdjustment adjustment = new GtkAdjustment ();
+			OS.memmove (adjustment, hAdjustment);
+			if (value != adjustment.value && adjustment.lower <= value && value <= adjustment.upper) {
+				OS.gtk_spin_button_update (handle);
+			}
+		}
+	}
+	
 	/*
 	* Feature in GTK.  When the user types, GTK positions
 	* the caret after sending the changed signal.  This
