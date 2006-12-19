@@ -1819,12 +1819,11 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	display.dragging = false;
 	Shell shell = getShell ();
-	int x = -1, y = -1;
-	boolean dragging = false;
+	display.dragging = false;
 	boolean [] consume = new boolean [1];
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+		int x, y;
 		if (OS.HIVIEW) {
 			CGPoint pt = new CGPoint ();
 			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
@@ -1844,7 +1843,11 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			x -= rect.left;
 			y -= rect.top;
 		}
-		if (dragDetect (x, y, true, consume)) dragging = true;
+		if (dragDetect (x, y, true, consume)) {
+			display.dragging = true;
+			display.dragX = x;
+			display.dragY = y;
+		}
 		if (isDisposed ()) return OS.noErr;
 	}
 	short [] button = new short [1];
@@ -1854,11 +1857,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (display.clickCount == 2) {
 		if (!sendMouseEvent (SWT.MouseDoubleClick, button [0], display.clickCount, 0, false, theEvent)) consume [0] = true;
 		if (isDisposed ()) return OS.noErr;
-	}
-	if (dragging) {
-		display.dragging = true;
-		display.dragX = x;
-		display.dragY = y;
 	}
 	if (!shell.isDisposed ()) shell.setActiveControl (this);
 	return consume [0] ? OS.noErr : OS.eventNotHandledErr;
