@@ -1546,10 +1546,10 @@ int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*lon
 		OS.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
 		int width = OS.GTK_WIDGET_WIDTH (handle);
 		int height = OS.GTK_WIDGET_HEIGHT (handle);
-		if ((x[0] + width) > (dest.x + dest.width)) {
+		if (x[0] + width > dest.x + dest.width) {
 			x [0] = (dest.x + dest.width) - width;
 		}
-		if ((y[0] + height - offset) > (dest.y + dest.height)) {
+		if (y[0] + height > dest.y + dest.height) {
 			y[0] = (dest.y + dest.height) - height;
 		}
 	} 
