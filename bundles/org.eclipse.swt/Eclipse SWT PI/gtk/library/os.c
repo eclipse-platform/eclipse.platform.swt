@@ -4794,6 +4794,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1default)
 }
 #endif
 
+#ifndef NO__1gdk_1screen_1get_1monitor_1at_1point
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1monitor_1at_1point)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1screen_1get_1monitor_1at_1point_FUNC);
+/*
+	rc = (jint)gdk_screen_get_monitor_at_point((GdkScreen *)arg0, (gint)arg1, (gint)arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(GdkScreen *, gint, gint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_screen_get_monitor_at_point_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_screen_get_monitor_at_point");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((GdkScreen *)arg0, (gint)arg1, (gint)arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1screen_1get_1monitor_1at_1point_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1screen_1get_1monitor_1at_1window
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1screen_1get_1monitor_1at_1window)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
