@@ -1,6 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2003-2004 IBM Corp.
- * Portions Copyright (c) 1983-2002, Apple Computer, Inc.
+ * Copyright (c) 2003-2006 IBM Corp.
  *
  * All rights reserved.  This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
