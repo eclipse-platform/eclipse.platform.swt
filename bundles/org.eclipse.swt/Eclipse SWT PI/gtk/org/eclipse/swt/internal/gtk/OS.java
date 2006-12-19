@@ -3177,6 +3177,15 @@ public static final int /*long*/ gdk_screen_get_default() {
 		lock.unlock();
 	}
 }
+public static final native int _gdk_screen_get_monitor_at_point (int /*long*/ screen, int x, int y);
+public static final int gdk_screen_get_monitor_at_point (int /*long*/ screen, int x, int y) {
+	lock.lock();
+	try {
+		return _gdk_screen_get_monitor_at_point (screen, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _gdk_screen_get_monitor_at_window(int /*long*/ screen, int /*long*/ window);
 public static final int gdk_screen_get_monitor_at_window(int /*long*/ screen, int /*long*/ window) {
 	lock.lock();

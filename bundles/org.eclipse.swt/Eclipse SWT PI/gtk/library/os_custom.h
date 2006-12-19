@@ -80,6 +80,7 @@
 #define gtk_entry_set_alignment_LIB "libgtk-x11-2.0.so.0"
 #define gdk_draw_pixbuf_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_default_LIB "libgdk-x11-2.0.so.0"
+#define gdk_screen_get_monitor_at_point_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_monitor_at_window_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_monitor_geometry_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_n_monitors_LIB "libgdk-x11-2.0.so.0"
