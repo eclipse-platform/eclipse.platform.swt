@@ -90,30 +90,35 @@ int Release() {
 /* nsIWindowCreator */
 
 int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
-	if (parent == 0) return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
-	nsIWebBrowserChrome browserChromeParent = new nsIWebBrowserChrome(parent);
-	int[] aWebBrowser = new int[1];
-	int rc = browserChromeParent.GetWebBrowser(aWebBrowser);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (aWebBrowser[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
-	
-	nsIWebBrowser webBrowser = new nsIWebBrowser(aWebBrowser[0]);
-	int[] result = new int[1];
-	rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
-	webBrowser.Release();
-	
-	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
-	result[0] = 0;
-	int[] aParentNativeWindow = new int[1];
-	rc = baseWindow.GetParentNativeWindow(aParentNativeWindow);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (aParentNativeWindow[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
-	baseWindow.Release();
+	if (parent == 0 && (chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) == 0) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	}
 
-	Display display = Display.getCurrent();
-	Browser src = Browser.findBrowser(aParentNativeWindow[0]);
+	Browser src = null;
+	if (parent != 0) {
+		nsIWebBrowserChrome browserChromeParent = new nsIWebBrowserChrome(parent);
+		int[] aWebBrowser = new int[1];
+		int rc = browserChromeParent.GetWebBrowser(aWebBrowser);
+		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		if (aWebBrowser[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
+
+		nsIWebBrowser webBrowser = new nsIWebBrowser(aWebBrowser[0]);
+		int[] result = new int[1];
+		rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
+		webBrowser.Release();
+
+		nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
+		result[0] = 0;
+		int[] aParentNativeWindow = new int[1];
+		rc = baseWindow.GetParentNativeWindow(aParentNativeWindow);
+		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		if (aParentNativeWindow[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
+		baseWindow.Release();
+
+		src = Browser.findBrowser(aParentNativeWindow[0]);
+	}
 	final Browser browser;
 	boolean doit = false;
 	if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) {
@@ -125,7 +130,9 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 		* and a Browser to display an emulated HTML based print dialog. For this reason,
 		* modal requests are handled here and not exposed to the user.
 		*/
-		final Shell shell = new Shell(src.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		final Shell shell = src == null ?
+			new Shell(SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL) :
+			new Shell(src.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setLayout(new FillLayout());
 		browser = new Browser(shell, SWT.NONE);
 		browser.addVisibilityWindowListener(new VisibilityWindowListener() {
@@ -148,11 +155,12 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 		doit = true;
 	} else {
 		WindowEvent event = new WindowEvent(src);
-		event.display = display;
+		event.display = src.getDisplay();
 		event.widget = src;
 		event.required = true;
-		for (int i = 0; i < src.openWindowListeners.length; i++)
+		for (int i = 0; i < src.openWindowListeners.length; i++) {
 			src.openWindowListeners[i].open(event);
+		}
 		browser = event.browser;
 		doit = browser != null && !browser.isDisposed();
 		if (doit) {
