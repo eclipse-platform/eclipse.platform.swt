@@ -81,6 +81,7 @@ import org.eclipse.swt.events.*;
  */
 public class ScrollBar extends Widget {
 	Scrollable parent;
+	boolean dragSent = false;
 ScrollBar () {
 	/* Do Nothing */
 }
@@ -331,6 +332,7 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNdecrementCallback, windowProc, DECREMENT_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNpageIncrementCallback, windowProc, PAGE_INCREMENT_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNpageDecrementCallback, windowProc, PAGE_DECREMENT_CALLBACK);
+	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
 }
 /**
  * Returns <code>true</code> if the receiver is enabled and all
@@ -666,11 +668,18 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	parent.setScrollBarVisible (this, visible);
 }
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
+	dragSent = false;
+	return result;
+}
 int XmNdecrementCallback (int w, int client_data, int call_data) {
 	sendScrollEvent (SWT.ARROW_UP);
 	return 0;
 }
 int XmNdragCallback (int w, int client_data, int call_data) {
+	dragSent = true;
 	sendScrollEvent (SWT.DRAG);
 	return 0;
 }
@@ -695,6 +704,10 @@ int XmNtoTopCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	if (!dragSent){
+		sendScrollEvent (SWT.DRAG);
+		dragSent = false;
+	}
 	sendScrollEvent (SWT.NONE);
 	return 0;
 }
