@@ -8028,7 +8028,11 @@ boolean showLocation(Rectangle rect) {
 	if (rect.y <= topMargin) {
 		scrolled = scrollVertical(rect.y - topMargin, true);
 	} else if (rect.y + rect.height > clientAreaHeight) {
-		scrolled = scrollVertical(rect.y + rect.height - clientAreaHeight, true);
+		if (clientAreaHeight == 0) {
+			scrolled = scrollVertical(rect.y, true);
+		} else {
+			scrolled = scrollVertical(rect.y + rect.height - clientAreaHeight, true);
+		}
 	}
 	if (clientAreaWidth > 0) {
 		// always make 1/4 of a page visible
