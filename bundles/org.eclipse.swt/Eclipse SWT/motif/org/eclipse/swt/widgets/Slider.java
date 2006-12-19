@@ -65,6 +65,7 @@ import org.eclipse.swt.graphics.*;
  * @see ScrollBar
  */
 public class Slider extends Control {
+	boolean dragSent = false;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -502,11 +503,18 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	display.setWarnings (warnings);
 }
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
+	dragSent = false;
+	return result;
+}
 int XmNdecrementCallback (int w, int client_data, int call_data) {
 	sendScrollEvent (SWT.ARROW_UP);
 	return 0;
 }
 int XmNdragCallback (int w, int client_data, int call_data) {
+	dragSent = true;
 	sendScrollEvent (SWT.DRAG);
 	return 0;
 }
@@ -531,6 +539,10 @@ int XmNtoTopCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	if (!dragSent){
+		sendScrollEvent (SWT.DRAG);
+		dragSent = false;
+	}
 	sendScrollEvent (SWT.NONE);
 	return 0;
 }
