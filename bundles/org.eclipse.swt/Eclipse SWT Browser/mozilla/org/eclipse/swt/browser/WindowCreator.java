@@ -145,6 +145,7 @@ int /*long*/ CreateChromeWindow(int /*long*/ parent, int /*long*/ chromeFlags, i
 					shell.setSize(shell.computeSize(size.x, size.y));
 				}
 				shell.open();
+				browser.isModal = true;
 			}
 		});
 		browser.addCloseWindowListener(new CloseWindowListener() {

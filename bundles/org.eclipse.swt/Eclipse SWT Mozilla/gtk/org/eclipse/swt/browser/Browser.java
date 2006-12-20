@@ -57,7 +57,7 @@ public class Browser extends Composite {
 	Point location;
 	Point size;
 	boolean addressBar, menuBar, statusBar, toolBar;
-	boolean visible;
+	boolean visible, isModal;
 	Shell tip = null;
 
 	/* External Listener management */
@@ -2504,17 +2504,50 @@ int /*long*/ DestroyBrowserWindow() {
    	
 int /*long*/ SizeBrowserTo(int /*long*/ aCX, int /*long*/ aCY) {
 	size = new Point((int)/*64*/aCX, (int)/*64*/aCY);
+	if (isModal) {
+		Shell shell = getShell();
+		shell.setSize(shell.computeSize(aCX, aCY));
+	}
 	return XPCOM.NS_OK;
 }
 
 int /*long*/ ShowAsModal() {
-	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = XPCOM.NS_GetServiceManager(result);
+	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);
+
+	nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+	result[0] = 0;
+	byte[] buffer = "@mozilla.org/js/xpc/ContextStack;1".getBytes();
+	byte[] aContractID = new byte[buffer.length + 1];
+	System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+	rc = serviceManager.GetServiceByContractID(aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
+	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);
+	serviceManager.Release();
+
+	nsIJSContextStack stack = new nsIJSContextStack(result[0]);
+	result[0] = 0;
+	rc = stack.Push(0);
+	if (rc != XPCOM.NS_OK) Browser.error(rc);
+
+	Shell shell = getShell();
+	shell.open();
+	Display display = getDisplay();
+	while (!shell.isDisposed()) {
+		if (!display.readAndDispatch()) display.sleep();
+	}
+
+	rc = stack.Pop(result);
+	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	stack.Release();
+	return XPCOM.NS_OK;
 }
    
 int /*long*/ IsWindowModal(int /*long*/ retval) {
-	// no modal loop
 	/* Note. boolean remains of size 4 on 64 bit machine */
-	XPCOM.memmove(retval, new int[] {0}, 4);
+	XPCOM.memmove(retval, new int[] {isModal ? 1 : 0}, 4);
 	return XPCOM.NS_OK;
 }
    
