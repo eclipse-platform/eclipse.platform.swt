@@ -192,9 +192,17 @@ public TableCursor(Table parent, int style) {
 				case SWT.Paint :
 					paint(event);
 					break;
-				case SWT.Traverse :
-					traverse(event);
+				case SWT.Traverse : {
+					event.doit = true;
+					switch (event.detail) {
+						case SWT.TRAVERSE_ARROW_NEXT :
+						case SWT.TRAVERSE_ARROW_PREVIOUS :
+						case SWT.TRAVERSE_RETURN :
+							event.doit = false;
+							break;
+					}
 					break;
+				}
 			}
 		}
 	};
@@ -502,17 +510,6 @@ void tableMouseDown(Event event) {
 	setRowColumn(item, newColumn, true);
 	setFocus();
 	return;
-}
-
-void traverse(Event event) {
-	switch (event.detail) {
-		case SWT.TRAVERSE_ARROW_NEXT :
-		case SWT.TRAVERSE_ARROW_PREVIOUS :
-		case SWT.TRAVERSE_RETURN :
-			event.doit = false;
-			return;
-	}
-	event.doit = true;
 }
 void setRowColumn(int row, int column, boolean notify) {
 	TableItem item = row == -1 ? null : table.getItem(row);
