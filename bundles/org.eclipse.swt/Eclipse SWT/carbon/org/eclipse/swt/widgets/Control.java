@@ -1808,6 +1808,7 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	*/
 	Display display = this.display;
 	display.runDeferredEvents ();
+	if (isDisposed ()) return OS.noErr;
 	display.lastState = OS.GetCurrentEventButtonState ();
 	display.lastModifiers = OS.GetCurrentEventKeyModifiers ();
 	display.grabControl = this;
