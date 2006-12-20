@@ -44,6 +44,16 @@ public class OS extends Platform {
 	public static final int VER_PLATFORM_WIN32_NT = 2;
 	public static final int VER_PLATFORM_WIN32_CE = 3;
 	
+	/* Forward references */
+	public static final int HEAP_ZERO_MEMORY = 0x8;
+	public static final int ACTCTX_FLAG_RESOURCE_NAME_VALID = 0x00000008;
+	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
+	public static final int MANIFEST_RESOURCE_ID = 2;
+	public static final int SM_DBCSENABLED = 0x2A;
+	public static final int SM_IMMENABLED = 0x52;
+	public static final int LANG_KOREAN = 0x12;
+	public static final int MAX_PATH = 260;
+	
 	/* Get the Windows version and the flags */
 	static {
 		/*
@@ -83,20 +93,20 @@ public class OS extends Platform {
 		/* Load the manifest to force the XP Theme */
 		if (System.getProperty (NO_MANIFEST) == null) {
 			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-				TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
+				TCHAR buffer = new TCHAR (0, MAX_PATH);
 				int /*long*/ hModule = OS.GetLibraryHandle ();
 				while (OS.GetModuleFileName (hModule, buffer, buffer.length ()) == buffer.length ()) {
-					buffer = new TCHAR (0, buffer.length () + OS.MAX_PATH);
+					buffer = new TCHAR (0, buffer.length () + MAX_PATH);
 				}
 				int /*long*/ hHeap = OS.GetProcessHeap ();
 				int byteCount = buffer.length () * TCHAR.sizeof;
-				int /*long*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+				int /*long*/ pszText = OS.HeapAlloc (hHeap, HEAP_ZERO_MEMORY, byteCount);
 				OS.MoveMemory (pszText, buffer, byteCount);	
 				ACTCTX pActCtx = new ACTCTX ();
 				pActCtx.cbSize = ACTCTX.sizeof;
-				pActCtx.dwFlags = OS.ACTCTX_FLAG_RESOURCE_NAME_VALID | OS.ACTCTX_FLAG_SET_PROCESS_DEFAULT;
+				pActCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_SET_PROCESS_DEFAULT;
 				pActCtx.lpSource = pszText;
-				pActCtx.lpResourceName = OS.MANIFEST_RESOURCE_ID;
+				pActCtx.lpResourceName = MANIFEST_RESOURCE_ID;
 				int /*long*/ hActCtx = OS.CreateActCtx (pActCtx);
 				if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 				int /*long*/ [] lpCookie = new int /*long*/ [1];
@@ -115,8 +125,8 @@ public class OS extends Platform {
 		}
 
 		/* Get the DBCS flag */
-		boolean dbcsEnabled = OS.GetSystemMetrics (OS.SM_DBCSENABLED) != 0;
-		boolean immEnabled = OS.GetSystemMetrics (OS.SM_IMMENABLED) != 0;
+		boolean dbcsEnabled = OS.GetSystemMetrics (SM_DBCSENABLED) != 0;
+		boolean immEnabled = OS.GetSystemMetrics (SM_IMMENABLED) != 0;
 		IsDBLocale = dbcsEnabled || immEnabled;
 		
 		/*
@@ -133,7 +143,7 @@ public class OS extends Platform {
 		if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (5, 1)) {
 			short langID = OS.GetSystemDefaultUILanguage ();
 			short primaryLang = OS.PRIMARYLANGID (langID);
-			if (primaryLang == OS.LANG_KOREAN) {
+			if (primaryLang == LANG_KOREAN) {
 				OSVERSIONINFOEX infoex = IsUnicode ? (OSVERSIONINFOEX)new OSVERSIONINFOEXW () : (OSVERSIONINFOEX)new OSVERSIONINFOEXA ();
 				infoex.dwOSVersionInfoSize = OSVERSIONINFOEX.sizeof;
 				GetVersionEx (infoex);
@@ -223,8 +233,8 @@ public class OS extends Platform {
 	public static final int ABS_UPPRESSED = 3;
 	public static final int AC_SRC_OVER = 0;
 	public static final int AC_SRC_ALPHA = 1;
-	public static final int ACTCTX_FLAG_RESOURCE_NAME_VALID = 0x00000008;
-	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
+//	public static final int ACTCTX_FLAG_RESOURCE_NAME_VALID = 0x00000008;
+//	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
 	public static final int ALTERNATE = 1;
 	public static final int AW_SLIDE = 0x00040000;
 	public static final int AW_ACTIVATE = 0x00020000;
@@ -703,7 +713,7 @@ public class OS extends Platform {
 	public static final int HDS_DRAGDROP = 0x0040;
 	public static final int HDS_FULLDRAG = 0x80;
 	public static final int HDS_HIDDEN = 0x8;
-	public static final int HEAP_ZERO_MEMORY = 0x8;
+//	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int HELPINFO_MENUITEM = 0x2;
 	public static final int HHT_ONDIVIDER = 0x4;
 	public static final int HHT_ONDIVOPEN = 0x8;
@@ -782,7 +792,7 @@ public class OS extends Platform {
 	public static final int KEY_READ = 0x20019;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
 	public static final int L_MAX_URL_LENGTH = 2084;
-	public static final int LANG_KOREAN = 0x12;
+//	public static final int LANG_KOREAN = 0x12;
 	public static final int LANG_NEUTRAL = 0x0;
 	public static final int LANG_USER_DEFAULT = 1 << 10;
 	public static final int LAYOUT_RTL = 0x1;
@@ -982,9 +992,9 @@ public class OS extends Platform {
 	public static final int LVS_SHOWSELALWAYS = 0x8;
 	public static final int LVS_SINGLESEL = 0x4;
 	public static final int MAX_LINKID_TEXT = 48;
-	public static final int MAX_PATH = 260;
+//	public static final int MAX_PATH = 260;
 	public static final int MA_NOACTIVATE = 0x3;
-	public static final int MANIFEST_RESOURCE_ID = 2;
+//	public static final int MANIFEST_RESOURCE_ID = 2;
 	public static final int MB_ABORTRETRYIGNORE = 0x2;
 	public static final int MB_APPLMODAL = 0x0;
 	public static final int MB_ICONERROR = 0x10;
@@ -1357,8 +1367,8 @@ public class OS extends Platform {
 	public static final int SM_CMOUSEBUTTONS = 43;
 	public static final int SM_CYSCREEN = 0x1;
 	public static final int SM_CYVSCROLL = 0x14;
-	public static final int SM_DBCSENABLED = 0x2A;
-	public static final int SM_IMMENABLED = 0x52;
+//	public static final int SM_DBCSENABLED = 0x2A;
+//	public static final int SM_IMMENABLED = 0x52;
 	public static final int SPI_GETFONTSMOOTHINGTYPE = 0x200A;
 	public static final int SPI_GETHIGHCONTRAST = 66;
 	public static final int SPI_GETWORKAREA = 0x30;
