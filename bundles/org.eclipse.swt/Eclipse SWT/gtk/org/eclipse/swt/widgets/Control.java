@@ -1555,11 +1555,6 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 				OS.gdk_window_get_pointer (gdkMotionEvent.window, newX, newY, null);
 				break;
 			}
-			case OS.GDK_BUTTON_RELEASE: {
-				OS.gdk_event_put (eventPtr);
-				quit = true;
-				break;
-			}
 			case OS.GDK_KEY_PRESS:
 			case OS.GDK_KEY_RELEASE: {
 				GdkEventKey gdkEvent = new GdkEventKey ();
@@ -1567,11 +1562,14 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 				if (gdkEvent.keyval == OS.GDK_Escape) quit = true;
 				break;
 			}
+			case OS.GDK_BUTTON_RELEASE:
 			case OS.GDK_BUTTON_PRESS:
 			case OS.GDK_2BUTTON_PRESS:
-			case OS.GDK_3BUTTON_PRESS:
+			case OS.GDK_3BUTTON_PRESS: {
+				OS.gdk_event_put (eventPtr);
 				quit = true;
 				break;
+			}
 			default:
 				OS.gtk_main_do_event (eventPtr);
 		}
