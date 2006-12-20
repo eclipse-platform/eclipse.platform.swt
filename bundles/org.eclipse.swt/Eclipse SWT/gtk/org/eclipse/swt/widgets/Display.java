@@ -115,8 +115,9 @@ public class Display extends Device {
 	int /*long*/ shellMapProcClosure;
 
 	/* Widget Table */
-	int freeSlot;
 	int [] indexTable;
+	int freeSlot, lastHandle;
+	Widget lastWidget;
 	Widget [] widgetTable;
 	final static int GROW_SIZE = 1024;
 	static final int SWT_OBJECT_INDEX;
@@ -2179,8 +2180,12 @@ public Thread getThread () {
 
 Widget getWidget (int /*long*/ handle) {
 	if (handle == 0) return null;
+	if (lastWidget != null && lastHandle == handle) return lastWidget;
 	int /*long*/ index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
-	if (0 <= index && index < widgetTable.length) return widgetTable [(int)/*64*/index];
+	if (0 <= index && index < widgetTable.length) {
+		lastHandle = handle;
+		return lastWidget = widgetTable [(int)/*64*/index];
+	}
 	return null;	
 }
 
@@ -3084,9 +3089,13 @@ void releaseDisplay () {
 	if (fds != 0) OS.g_free (fds);
 	fds = 0;
 
+	/* Release references */
 	popups = null;
 	thread = null;
 	activeShell = null;
+	lastWidget = null;
+	indexTable = null;
+	widgetTable = null;
 }
 
 /**
@@ -3183,6 +3192,7 @@ void removePopup (Menu menu) {
 
 Widget removeWidget (int /*long*/ handle) {
 	if (handle == 0) return null;
+	lastWidget = null;
 	Widget widget = null;
 	int index = (int)/*64*/ OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
 	if (0 <= index && index < widgetTable.length) {
