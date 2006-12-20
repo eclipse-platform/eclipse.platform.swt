@@ -2519,7 +2519,7 @@ int /*long*/ ShowAsModal() {
 
 	nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 	result[0] = 0;
-	byte[] buffer = "@mozilla.org/js/xpc/ContextStack;1".getBytes();
+	byte[] buffer = XPCOM.NS_CONTEXTSTACK_CONTRACTID.getBytes();
 	byte[] aContractID = new byte[buffer.length + 1];
 	System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
 	rc = serviceManager.GetServiceByContractID(aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
@@ -2533,7 +2533,6 @@ int /*long*/ ShowAsModal() {
 	if (rc != XPCOM.NS_OK) Browser.error(rc);
 
 	Shell shell = getShell();
-	shell.open();
 	Display display = getDisplay();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
