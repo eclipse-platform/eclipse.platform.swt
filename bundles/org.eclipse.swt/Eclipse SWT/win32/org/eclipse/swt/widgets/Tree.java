@@ -561,6 +561,17 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					clrTextBk = clrSortBk;
 				}
 			}
+			if (EXPLORER_THEME) {
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					if (explorerTheme) {
+						if ((style & SWT.FULL_SELECTION) != 0) {
+							if (selected || (nmcd.uItemState & OS.CDIS_HOT) != 0) {
+								drawBackground = false;
+							}
+						}
+					}
+				}
+			}
 			if (drawItem) {
 				if (i != 0) {
 					if (hooks (SWT.MeasureItem)) {
