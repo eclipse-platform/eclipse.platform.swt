@@ -31,6 +31,10 @@ case $OS in
 		SWT_OS=solaris
 		MAKEFILE=make_solaris.mak
 		;;
+	"FreeBSD")
+		SWT_OS=freebsd
+		MAKEFILE=make_freebsd.mak
+		;;
 	*)
 		SWT_OS=`uname -s | tr -s '[:upper:]' '[:lower:]'`
 		MAKEFILE=make_linux.mak
