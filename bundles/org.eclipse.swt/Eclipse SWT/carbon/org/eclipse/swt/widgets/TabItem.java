@@ -191,9 +191,6 @@ void releaseParent () {
 }
 
 void releaseWidget () {
-	//TEMPORARY CODE
-	if (control != null) control.setVisible (false);
-	
 	super.releaseWidget ();
 	control = null;
 }
