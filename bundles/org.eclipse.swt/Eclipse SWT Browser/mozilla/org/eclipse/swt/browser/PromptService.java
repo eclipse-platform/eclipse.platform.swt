@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.widgets.*;
@@ -102,9 +103,7 @@ Browser getBrowser(int /*long*/ aDOMWindow) {
 	
 	nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 	result[0] = 0;
-	byte[] buffer = XPCOM.NS_WINDOWWATCHER_CONTRACTID.getBytes();
-	byte[] aContractID = new byte[buffer.length + 1];
-	System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+	byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_WINDOWWATCHER_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID(aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
 	if (rc != XPCOM.NS_OK) Browser.error(rc);
 	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);		
@@ -304,9 +303,7 @@ public int /*long*/ Prompt(int /*long*/ parent, int /*long*/ dialogTitle, int /*
 			
 				nsIServiceManager serviceManager = new nsIServiceManager(result2[0]);
 				result2[0] = 0;
-				byte[] tmp = XPCOM.NS_MEMORY_CONTRACTID.getBytes();
-				byte[] aContractID = new byte[tmp.length + 1];
-				System.arraycopy(tmp, 0, aContractID, 0, tmp.length);
+				byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_MEMORY_CONTRACTID, true);
 				rc = serviceManager.GetServiceByContractID(aContractID, nsIMemory.NS_IMEMORY_IID, result2);
 				if (rc != XPCOM.NS_OK) SWT.error(rc);
 				if (result2[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);		
@@ -399,9 +396,7 @@ public int /*long*/ PromptUsernameAndPassword(int /*long*/ parent, int /*long*/ 
 			
 				nsIServiceManager serviceManager = new nsIServiceManager(result2[0]);
 				result2[0] = 0;
-				byte[] tmp = XPCOM.NS_MEMORY_CONTRACTID.getBytes();
-				byte[] aContractID = new byte[tmp.length + 1];
-				System.arraycopy(tmp, 0, aContractID, 0, tmp.length);
+				byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_MEMORY_CONTRACTID, true);
 				rc = serviceManager.GetServiceByContractID(aContractID, nsIMemory.NS_IMEMORY_IID, result2);
 				if (rc != XPCOM.NS_OK) SWT.error(rc);
 				if (result[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);		
@@ -429,9 +424,7 @@ public int /*long*/ PromptUsernameAndPassword(int /*long*/ parent, int /*long*/ 
 			
 				nsIServiceManager serviceManager = new nsIServiceManager(result2[0]);
 				result2[0] = 0;
-				byte[] tmp = XPCOM.NS_MEMORY_CONTRACTID.getBytes();
-				byte[] aContractID = new byte[tmp.length + 1];
-				System.arraycopy(tmp, 0, aContractID, 0, tmp.length);
+				byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_MEMORY_CONTRACTID, true);
 				rc = serviceManager.GetServiceByContractID(aContractID, nsIMemory.NS_IMEMORY_IID, result2);
 				if (rc != XPCOM.NS_OK) SWT.error(rc);
 				if (result2[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);		

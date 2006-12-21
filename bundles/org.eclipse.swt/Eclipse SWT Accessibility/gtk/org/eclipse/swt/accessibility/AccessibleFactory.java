@@ -286,8 +286,7 @@ class AccessibleFactory {
 			typeInfo.instance_size = (short) query.instance_size;
 			ObjectIfaceDefinition = OS.g_malloc (GTypeInfo.sizeof); 
 			OS.memmove (ObjectIfaceDefinition, typeInfo, GTypeInfo.sizeof);
-			byte[] nameBytes = new byte [swtTypeName.length () + 1];
-			System.arraycopy(swtTypeName.getBytes (), 0, nameBytes, 0, swtTypeName.length ()); 
+			byte[] nameBytes = Converter.wcsToMbcs(null, swtTypeName, true);
 			type = OS.g_type_register_static (parentType, nameBytes, ObjectIfaceDefinition, 0);
 			OS.g_type_add_interface_static (type, AccessibleObject.ATK_COMPONENT_TYPE, ComponentIfaceDefinition);
 			if (action) OS.g_type_add_interface_static (type, AccessibleObject.ATK_ACTION_TYPE, ActionIfaceDefinition);
