@@ -250,9 +250,7 @@ public Browser(Composite parent, int style) {
 		
 		nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 		result[0] = 0;		
-		byte[] buffer = XPCOM.NS_WINDOWWATCHER_CONTRACTID.getBytes();
-		byte[] aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_WINDOWWATCHER_CONTRACTID, true);
 		rc = serviceManager.GetServiceByContractID(aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
 		if (rc != XPCOM.NS_OK) {
 			dispose();
@@ -273,7 +271,7 @@ public Browser(Composite parent, int style) {
 		windowWatcher.Release();
 
 		/* compute the root profile directory */
-		buffer = Converter.wcsToMbcs(null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
+		byte[] buffer = Converter.wcsToMbcs(null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
 		rc = serviceManager.GetServiceByContractID(buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
 		if (rc != XPCOM.NS_OK) {
 			dispose();
@@ -359,9 +357,7 @@ public Browser(Composite parent, int style) {
 		 * and charset.  The fix for this is to set mozilla's locale and charset
 		 * preference values according to the user's current locale and charset.
 		 */
-		buffer = XPCOM.NS_PREFSERVICE_CONTRACTID.getBytes();
-		aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		aContractID = Converter.wcsToMbcs(null, XPCOM.NS_PREFSERVICE_CONTRACTID, true);
 		rc = serviceManager.GetServiceByContractID(aContractID, nsIPrefService.NS_IPREFSERVICE_IID, result);
 		serviceManager.Release();
 		if (rc != XPCOM.NS_OK) {
@@ -553,12 +549,8 @@ public Browser(Composite parent, int style) {
 		
 		nsIComponentRegistrar componentRegistrar = new nsIComponentRegistrar(result[0]);
 		result[0] = 0;
-		buffer = XPCOM.NS_PROMPTSERVICE_CONTRACTID.getBytes();
-		aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-		buffer = "Prompt Service".getBytes(); //$NON-NLS-1$
-		byte[] aClassName = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		aContractID = Converter.wcsToMbcs(null, XPCOM.NS_PROMPTSERVICE_CONTRACTID, true); 
+		byte[] aClassName = Converter.wcsToMbcs(null, "Prompt Service", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress());
 		if (rc != XPCOM.NS_OK) {
 			dispose();
@@ -568,12 +560,8 @@ public Browser(Composite parent, int style) {
 		
 		HelperAppLauncherDialogFactory dialogFactory = new HelperAppLauncherDialogFactory();
 		dialogFactory.AddRef();
-		buffer = XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID.getBytes();
-		aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-		buffer = "Helper App Launcher Dialog".getBytes(); //$NON-NLS-1$
-		aClassName = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		aContractID = Converter.wcsToMbcs(null, XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID, true);
+		aClassName = Converter.wcsToMbcs(null, "Helper App Launcher Dialog", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress());
 		if (rc != XPCOM.NS_OK) {
 			dispose();
@@ -583,12 +571,8 @@ public Browser(Composite parent, int style) {
 
 		DownloadFactory downloadFactory = new DownloadFactory();
 		downloadFactory.AddRef();
-		buffer = XPCOM.NS_DOWNLOAD_CONTRACTID.getBytes();
-		aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-		buffer = "Download".getBytes(); //$NON-NLS-1$
-		aClassName = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		aContractID = Converter.wcsToMbcs(null, XPCOM.NS_DOWNLOAD_CONTRACTID, true);
+		aClassName = Converter.wcsToMbcs(null, "Download", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory.getAddress());
 		if (rc != XPCOM.NS_OK) {
 			dispose();
@@ -598,12 +582,8 @@ public Browser(Composite parent, int style) {
 
 		DownloadFactory_1_8 downloadFactory_1_8 = new DownloadFactory_1_8();
 		downloadFactory_1_8.AddRef();
-		buffer = XPCOM.NS_TRANSFER_CONTRACTID.getBytes();
-		aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-		buffer = "Transfer".getBytes(); //$NON-NLS-1$
-		aClassName = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		aContractID = Converter.wcsToMbcs(null, XPCOM.NS_TRANSFER_CONTRACTID, true);
+		aClassName = Converter.wcsToMbcs(null, "Transfer", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress());
 		if (rc != XPCOM.NS_OK) {
 			dispose();
@@ -613,12 +593,8 @@ public Browser(Composite parent, int style) {
 
 		FilePickerFactory pickerFactory = new FilePickerFactory();
 		pickerFactory.AddRef();
-		buffer = XPCOM.NS_FILEPICKER_CONTRACTID.getBytes();
-		aContractID = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-		buffer = "FilePicker".getBytes(); //$NON-NLS-1$
-		aClassName = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		aContractID = Converter.wcsToMbcs(null, XPCOM.NS_FILEPICKER_CONTRACTID, true);
+		aClassName = Converter.wcsToMbcs(null, "FilePicker", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_FILEPICKER_CID, aClassName, aContractID, pickerFactory.getAddress());
 		if (rc != XPCOM.NS_OK) {
 			dispose();
@@ -896,9 +872,7 @@ public static void clearSessions () {
 	if (result [0] == 0) error (XPCOM.NS_NOINTERFACE);
 	nsIServiceManager serviceManager = new nsIServiceManager (result [0]);
 	result [0] = 0;
-	byte[] buffer = XPCOM.NS_COOKIEMANAGER_CONTRACTID.getBytes ();
-	byte[] aContractID = new byte [buffer.length + 1];
-	System.arraycopy (buffer, 0, aContractID, 0, buffer.length);
+	byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_COOKIEMANAGER_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID (aContractID, nsICookieManager.NS_ICOOKIEMANAGER_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result [0] == 0) error (XPCOM.NS_NOINTERFACE);
@@ -2056,7 +2030,7 @@ public boolean setText(String html) {
 	* when the URI protocol for the nsInputStreamChannel
 	* is about:blank.  The fix is to specify the file protocol.
 	*/
-	byte[] aString = URI_FROMMEMORY.getBytes();
+	byte[] aString = Converter.wcsToMbcs(null, URI_FROMMEMORY, false);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new(aString, aString.length);
 	rc = ioService.NewURI(aSpec, null, 0, result);
 	XPCOM.nsEmbedCString_delete(aSpec);
@@ -2068,9 +2042,7 @@ public boolean setText(String html) {
 	result[0] = 0;
 
 	/* aContentType */
-	byte[] buffer = "text/html".getBytes(); //$NON-NLS-1$
-	byte[] contentTypeBuffer = new byte[buffer.length + 1];
-	System.arraycopy(buffer, 0, contentTypeBuffer, 0, buffer.length);
+	byte[] contentTypeBuffer = Converter.wcsToMbcs(null, "text/html", true); // $NON-NLS-1$
 	int /*long*/ aContentType = XPCOM.nsEmbedCString_new(contentTypeBuffer, contentTypeBuffer.length);
 
 	/*
@@ -2115,9 +2087,7 @@ public boolean setText(String html) {
 
 		nsIDocShell docShell = new nsIDocShell(result[0]);
 		result[0] = 0;
-		buffer = "UTF-8".getBytes(); //$NON-NLS-1$
-		byte[] contentCharsetBuffer = new byte[buffer.length + 1];
-		System.arraycopy(buffer, 0, contentCharsetBuffer, 0, buffer.length);
+		byte[] contentCharsetBuffer = Converter.wcsToMbcs(null, "UTF-8", true);	//$NON-NLS-1$
 		int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
 
 		/*
@@ -2519,9 +2489,7 @@ int /*long*/ ShowAsModal() {
 
 	nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 	result[0] = 0;
-	byte[] buffer = XPCOM.NS_CONTEXTSTACK_CONTRACTID.getBytes();
-	byte[] aContractID = new byte[buffer.length + 1];
-	System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+	byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID(aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
 	if (rc != XPCOM.NS_OK) Browser.error(rc);
 	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);
