@@ -1056,14 +1056,6 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-boolean isFocusAncestor () {
-	Control control = display.getFocusControl ();
-	while (control != null && control != this && !(control instanceof Shell)) {
-		control = control.parent;
-	}
-	return control == this;
-}
-
 /**
  * Returns <code>true</code> if the receiver has the user-interface
  * focus, and <code>false</code> otherwise.
