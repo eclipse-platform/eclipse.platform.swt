@@ -1429,7 +1429,7 @@ public boolean isFocusControl () {
 }
 
 boolean isFocusAncestor (Control control) {
-	while (control != null && control != this) {
+	while (control != null && control != this && !(control instanceof Shell)) {
 		control = control.parent;
 	}
 	return control == this;
