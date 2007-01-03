@@ -2484,21 +2484,21 @@ int /*long*/ SizeBrowserTo(int /*long*/ aCX, int /*long*/ aCY) {
 int /*long*/ ShowAsModal() {
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = XPCOM.NS_GetServiceManager(result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 
 	nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 	result[0] = 0;
 	byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_CONTEXTSTACK_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID(aContractID, nsIJSContextStack.NS_IJSCONTEXTSTACK_IID, result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 	serviceManager.Release();
 
 	nsIJSContextStack stack = new nsIJSContextStack(result[0]);
 	result[0] = 0;
 	rc = stack.Push(0);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	if (rc != XPCOM.NS_OK) error(rc);
 
 	Shell shell = getShell();
 	Display display = getDisplay();
@@ -2507,7 +2507,7 @@ int /*long*/ ShowAsModal() {
 	}
 
 	rc = stack.Pop(result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	if (rc != XPCOM.NS_OK) error(rc);
 	stack.Release();
 	return XPCOM.NS_OK;
 }
