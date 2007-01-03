@@ -1807,8 +1807,6 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	* state.
 	*/
 	Display display = this.display;
-	display.runDeferredEvents ();
-	if (isDisposed ()) return OS.noErr;
 	display.lastState = OS.GetCurrentEventButtonState ();
 	display.lastModifiers = OS.GetCurrentEventKeyModifiers ();
 	display.grabControl = this;
@@ -2517,6 +2515,9 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 }
 
 void sendTrackEvents () {
+	Display display = this.display;
+	display.runDeferredEvents ();
+	if (isDisposed ()) return;
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (outPt);
 	Rect rect = new Rect ();
@@ -2540,7 +2541,6 @@ void sendTrackEvents () {
 	newY -= rect.top;
 	int newModifiers = OS.GetCurrentEventKeyModifiers ();
 	int newState = OS.GetCurrentEventButtonState ();
-	Display display = this.display;
 	int oldX = display.lastX;
 	int oldY = display.lastY;
 	int oldState = display.lastState;
@@ -2566,7 +2566,7 @@ void sendTrackEvents () {
 			if ((oldState & 0x10) != 0 && (newState & 0x10) == 0) button = 5;
 		}
 		if (button != 0) {
-			sendMouseEvent (type, (short)button, 1, true, newState, (short)newX, (short)newY, newModifiers);
+			sendMouseEvent (type, (short)button, 1, false, newState, (short)newX, (short)newY, newModifiers);
 			events = true;
 		}
 	}
@@ -2598,9 +2598,10 @@ void sendTrackEvents () {
 			display.dragging = false;
 			sendDragEvent (display.dragX, display.dragY);
 			if (isDisposed ()) return;
+			events = true;
 		}
 		display.mouseMoved = true;
-		sendMouseEvent (SWT.MouseMove, (short)0, 0, true, newState, (short)newX, (short)newY, newModifiers);
+		sendMouseEvent (SWT.MouseMove, (short)0, 0, false, newState, (short)newX, (short)newY, newModifiers);
 		events = true;
 	}
 	if (events) display.runDeferredEvents ();
