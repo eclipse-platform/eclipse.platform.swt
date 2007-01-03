@@ -116,7 +116,8 @@ public class Display extends Device {
 
 	/* Widget Table */
 	int [] indexTable;
-	int freeSlot, lastHandle;
+	int freeSlot;
+	int /*long*/ lastHandle;
 	Widget lastWidget;
 	Widget [] widgetTable;
 	final static int GROW_SIZE = 1024;

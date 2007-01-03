@@ -2476,7 +2476,7 @@ int /*long*/ SizeBrowserTo(int /*long*/ aCX, int /*long*/ aCY) {
 	size = new Point((int)/*64*/aCX, (int)/*64*/aCY);
 	if (isModal) {
 		Shell shell = getShell();
-		shell.setSize(shell.computeSize(aCX, aCY));
+		shell.setSize(shell.computeSize(size.x, size.y));
 	}
 	return XPCOM.NS_OK;
 }
