@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
