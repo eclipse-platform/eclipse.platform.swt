@@ -2362,10 +2362,6 @@ void destroyItem (TreeItem item, int hItem) {
 	}
 	if (fixRedraw) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-		/*
-		* This code is intentionally commented.
-		*/
-//		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.ValidateRect (handle, null);
 		/*
 		* If the item that was deleted was the last child of a tree item that
@@ -3457,22 +3453,12 @@ public void removeAll () {
 	}
 	ignoreDeselect = ignoreSelect = true;
 	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-	if (redraw) {
-		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-		/*
-		* This code is intentionally commented.
-		*/
-//		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-	}
+	if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	shrink = ignoreShrink = true;
 	int result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
 	ignoreShrink = false;
 	if (redraw) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);	
-		/*
-		* This code is intentionally commented.
-		*/
-//		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.InvalidateRect (handle, null, true);
 	}
 	ignoreDeselect = ignoreSelect = false;
@@ -3596,7 +3582,7 @@ void setItemCount (int count, int hParent, int hItem) {
 	boolean redraw = false;
 	if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
 		redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	int itemCount = 0;
 	while (hItem != 0 && itemCount < count) {
@@ -3632,7 +3618,7 @@ void setItemCount (int count, int hParent, int hItem) {
 		}
 	}
 	if (redraw) {
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.InvalidateRect (handle, null, true);
 	}
 }
@@ -4453,15 +4439,27 @@ public void setTopItem (TreeItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	int hItem = item.handle;
-	boolean fixScroll = checkScroll (hItem);
+	int hTopItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+	if (hItem == hTopItem) return;
+	boolean fixScroll = checkScroll (hItem), redraw = false;
+	int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
 	if (fixScroll) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+	} else {
+		redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+	if (hParent == 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
 	if (fixScroll) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+	} else {
+		if (redraw) {
+			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.InvalidateRect (handle, null, true);
+		}
 	}
 	updateScrollBar ();
 }
@@ -5306,10 +5304,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 						if (redraw) {
 							OS.UpdateWindow (handle);
 							OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-							/*
-							* This code is intentionally commented.
-							*/
-//							OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 						}
 						hSelect = hNewItem;
 						ignoreSelect = true;
@@ -5334,10 +5328,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 							if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = 0;
 							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
 							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
-							/*
-							* This code is intentionally commented.
-							*/
-//							OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 							OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 							OS.InvalidateRect (handle, rect1, true);
 							OS.InvalidateRect (handle, rect2, true);
@@ -5583,10 +5573,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			if (redraw) {
 				OS.UpdateWindow (handle);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-				/*
-				* This code is intentionally commented.
-				*/
-//				OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 			}
 		} else {
 			deselectAll ();
@@ -5681,10 +5667,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = 0;
 				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
 				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
-				/*
-				* This code is intentionally commented.
-				*/
-//				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, rect1, true);
 				OS.InvalidateRect (handle, rect2, true);
@@ -6050,7 +6032,6 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	* 
 	* NOTE:  This problem is intermittent and happens on
 	* Windows Vista running under the theme manager.
-	* 
 	*/
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 		int code = OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
