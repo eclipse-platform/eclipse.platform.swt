@@ -312,6 +312,11 @@ class TreeTab extends ScrollableTab {
 		setItemText(item, 1, ControlExample.getResourceString("Node_2_2_1"));					
 		textNode1 = treeRoots[0];
 		packColumns(tree1);
+		try {
+			TreeColumn column = tree1.getColumn(0);
+			moveableColumns.setSelection (column.getMoveable());
+			resizableColumns.setSelection (column.getResizable());
+		} catch (IllegalArgumentException ex) {}
 
 		/* Create the image tree */	
 		tree2 = new Tree (imageTreeGroup, style);
