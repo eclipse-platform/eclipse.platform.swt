@@ -500,6 +500,7 @@ public void setImages (Image [] images) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
+	if (parent != null) return;
 	if (display.dockImage == 0) {
 		if (images != null && images.length > 1) {
 			Image [] bestImages = new Image [images.length];
