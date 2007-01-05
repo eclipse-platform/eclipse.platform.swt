@@ -4560,9 +4560,11 @@ int getVerticalScrollOffset() {
 int getVisualLineIndex(TextLayout layout, int offsetInLine) {
 	int lineIndex = layout.getLineIndex(offsetInLine);
 	int[] offsets = layout.getLineOffsets();
-	if (lineIndex != 0 && offsetInLine == offsets[lineIndex] && caretAlignment == PREVIOUS_OFFSET_TRAILING) {
-		lineIndex--;
-	}
+	if (lineIndex != 0 && offsetInLine == offsets[lineIndex]) {
+		int lineY = layout.getLineBounds(lineIndex).y;
+		int caretY = getCaret().getLocation().y - topMargin - getLinePixel(getCaretLine());
+		if (lineY > caretY) lineIndex--;
+ 	}
 	return lineIndex;
 }
 int getCaretDirection() {
