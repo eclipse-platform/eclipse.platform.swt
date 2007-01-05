@@ -36,7 +36,7 @@ Menu createFileMenu() {
 	MenuItem item;
 
 	// Open 
-	item = new MenuItem (menu, SWT.CASCADE);
+	item = new MenuItem (menu, SWT.PUSH);
 	item.setText (resources.getString("Open_menuitem"));
 	item.setAccelerator(SWT.MOD1 + 'O');
 	item.addSelectionListener(new SelectionAdapter() {
