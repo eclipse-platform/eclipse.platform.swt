@@ -124,7 +124,7 @@ public class Accessible {
 			public int /*long*/ method3(int /*long*/[] args) {return Next((int)args[0], args[1], args[2]);}
 			public int /*long*/ method4(int /*long*/[] args) {return Skip((int)args[0]);}
 			public int /*long*/ method5(int /*long*/[] args) {return Reset();}
-			// method6 Clone - not implemented
+			public int /*long*/ method6(int /*long*/[] args) {return Clone(args[0]);}
 		};
 		AddRef();
 	}
@@ -985,7 +985,7 @@ public class Accessible {
 				osChild = osToChildID(pChild[0]);
 			} else if (pvt[0] == COM.VT_UNKNOWN) {
 				osChild = ACC.CHILDID_MULTIPLE;
-				/* Should get IEnumVARIANT from punkVal field... need better API here... */
+				/* Should get IEnumVARIANT from punkVal field, and enumerate children... */
 			}
 		}
 
@@ -1010,7 +1010,6 @@ public class Accessible {
 		if (childID == ACC.CHILDID_MULTIPLE) {
 			AddRef();
 			COM.MoveMemory(pvarChildren, new short[] { COM.VT_UNKNOWN }, 2);
-			/* Should return an IEnumVARIANT for this... so the next line is wrong... need better API here... */
 			COM.MoveMemory(pvarChildren + 8, new int /*long*/[] { objIAccessible.getAddress() }, OS.PTR_SIZEOF);
 			return COM.S_OK;
 		}
@@ -1139,7 +1138,7 @@ public class Accessible {
 		return code;
 	}
 
-	/* IEnumVARIANT methods: Next, Skip, Reset */
+	/* IEnumVARIANT methods: Next, Skip, Reset, Clone */
 	/* Retrieve the next celt items in the enumeration sequence. 
 	 * If there are fewer than the requested number of elements left
 	 * in the sequence, retrieve the remaining elements.
@@ -1259,6 +1258,32 @@ public class Accessible {
 		}
 		
 		enumIndex = 0;
+		return COM.S_OK;
+	}
+
+	 /* Clone([out] ppEnum)
+	 * Ownership of ppEnum transfers from callee to caller so reference count on ppEnum 
+	 * must be incremented before returning.  The caller is responsible for releasing ppEnum.
+	 */
+	int Clone(int /*long*/ ppEnum) {
+		/* If there are no listeners, query the proxy for
+		 * its IEnumVariant, and get the Clone from it.
+		 */
+		if (accessibleControlListeners.size() == 0) {
+			int /*long*/[] ppvObject = new int /*long*/[1];
+			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
+			if (code != COM.S_OK) return code;
+			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
+			int[] pEnum = new int[1];
+			code = ienumvariant.Clone(pEnum);
+			ienumvariant.Release();
+			COM.MoveMemory(ppEnum, pEnum, 4);
+			return code;
+		}
+
+		if (ppEnum == 0) return COM.E_INVALIDARG;
+		COM.MoveMemory(ppEnum, new int /*long*/[] { objIEnumVARIANT.getAddress()}, OS.PTR_SIZEOF);
+		AddRef();
 		return COM.S_OK;
 	}
 	
