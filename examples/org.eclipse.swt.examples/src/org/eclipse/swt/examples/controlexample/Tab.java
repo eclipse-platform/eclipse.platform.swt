@@ -86,27 +86,48 @@ abstract class Tab {
 	Button getButton, setButton;
 	Text setText, getText;
 
-	static final String [] EVENT_NAMES = {
-		"None",
-		"KeyDown", "KeyUp",
-		"MouseDown", "MouseUp", "MouseMove", "MouseEnter", "MouseExit", "MouseDoubleClick",
-		"Paint", "Move", "Resize", "Dispose",
-		"Selection", "DefaultSelection",
-		"FocusIn", "FocusOut",
-		"Expand", "Collapse",
-		"Iconify", "Deiconify", "Close",
-		"Show", "Hide",
-		"Modify", "Verify",
-		"Activate", "Deactivate",
-		"Help", "DragDetect", "Arm", "Traverse", "MouseHover",
-		"HardKeyDown", "HardKeyUp",
-		"MenuDetect",
-		"SetData",
-		"MouseWheel",
-		"Settings",  // note: this event only goes to Display
-		"EraseItem",
-		"MeasureItem",
-		"PaintItem",
+	static final Object [][] EVENT_NAMES = {
+		{"Activate", new Integer(SWT.Activate)}, 
+		{"Arm", new Integer(SWT.Arm)}, 
+		{"Close", new Integer(SWT.Close)},
+		{"Collapse", new Integer(SWT.Collapse)},
+		{"Deactivate", new Integer(SWT.Deactivate)},
+		{"DefaultSelection", new Integer(SWT.DefaultSelection)},
+		{"Deiconify", new Integer(SWT.Deiconify)}, 
+		{"Dispose", new Integer(SWT.Dispose)},
+		{"DragDetect", new Integer(SWT.DragDetect)}, 
+		{"EraseItem", new Integer(SWT.EraseItem)},
+		{"Expand", new Integer(SWT.Expand)}, 
+		{"FocusIn", new Integer(SWT.FocusIn)}, 
+		{"FocusOut", new Integer(SWT.FocusOut)},
+		{"HardKeyDown", new Integer(SWT.HardKeyDown)}, 
+		{"HardKeyUp", new Integer(SWT.HardKeyUp)},
+		{"Help", new Integer(SWT.Help)}, 
+		{"Hide", new Integer(SWT.Hide)},
+		{"Iconify", new Integer(SWT.Iconify)}, 
+		{"KeyDown", new Integer(SWT.KeyDown)},
+		{"KeyUp", new Integer(SWT.KeyUp)},
+		{"MeasureItem", new Integer(SWT.MeasureItem)},
+		{"MenuDetect", new Integer(SWT.MenuDetect)},
+		{"Modify", new Integer(SWT.Modify)}, 
+		{"MouseDoubleClick", new Integer(SWT.MouseDoubleClick)},
+		{"MouseDown", new Integer(SWT.MouseDown)}, 
+		{"MouseEnter", new Integer(SWT.MouseEnter)}, 
+		{"MouseExit", new Integer(SWT.MouseExit)}, 
+		{"MouseHover", new Integer(SWT.MouseHover)},
+		{"MouseMove", new Integer(SWT.MouseMove)}, 
+		{"MouseUp", new Integer(SWT.MouseUp)}, 
+		{"MouseWheel", new Integer(SWT.MouseWheel)},
+		{"Move", new Integer(SWT.Move)}, 
+		{"Paint", new Integer(SWT.Paint)}, 
+		{"PaintItem", new Integer(SWT.PaintItem)},
+		{"Resize", new Integer(SWT.Resize)}, 
+		{"Selection", new Integer(SWT.Selection)}, 
+		{"SetData", new Integer(SWT.SetData)},
+//		{"Settings", new Integer(SWT.Settings)},  // note: this event only goes to Display
+		{"Show", new Integer(SWT.Show)}, 
+		{"Traverse", new Integer(SWT.Traverse)}, 
+		{"Verify", new Integer(SWT.Verify)},
 	};
 	
 	boolean samplePopup = false;
@@ -493,7 +514,7 @@ abstract class Tab {
 		table.setLayoutData(data);
 		for (int i = 0; i < EVENT_NAMES.length; i++) {
 			TableItem item = new TableItem (table, SWT.NONE);
-			item.setText (EVENT_NAMES[i]);
+			item.setText ((String)EVENT_NAMES[i][0]);
 			item.setChecked (eventsFilter[i]);
 		}
 		final String [] customNames = getCustomEventNames ();
@@ -1105,7 +1126,7 @@ abstract class Tab {
 				}
 			};
 			for (int i = 0; i < EVENT_NAMES.length; i++) {
-				if (eventsFilter [i]) widget.addListener (i, listener);
+				if (eventsFilter [i]) widget.addListener (((Integer)EVENT_NAMES[i][1]).intValue(), listener);
 			}
 		}
 	}
@@ -1114,7 +1135,12 @@ abstract class Tab {
 	 * Logs an untyped event to the event console.
 	 */
 	void log(Event event) {
-		String toString = EVENT_NAMES[event.type] + " ["+event.type+"]: ";
+		int i = 0;
+		while (i < EVENT_NAMES.length) {
+			if (((Integer)EVENT_NAMES[i][1]).intValue() == event.type) break;
+			i++;
+		}
+		String toString = (String)EVENT_NAMES[i][0] + " ["+event.type+"]: ";
 		switch (event.type) {
 			case SWT.KeyDown:
 			case SWT.KeyUp: toString += new KeyEvent (event).toString (); break;
