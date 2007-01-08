@@ -5,24 +5,21 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * Contributors:
- *    IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * ***** END LICENSE BLOCK ***** */
 
 #include "swt.h"
 #include "xpcom_stats.h"
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 137;
-int XPCOM_nativeFunctionCallCount[137];
+int XPCOM_nativeFunctionCount = 136;
+int XPCOM_nativeFunctionCallCount[136];
 char * XPCOM_nativeFunctionNames[] = {
 	"Call",
 	"NS_1GetComponentManager",
 	"NS_1GetServiceManager",
 	"NS_1InitXPCOM2",
 	"NS_1NewLocalFile",
-	"NS_1TermEmbedding",
 	"PR_1Free",
 	"PR_1Malloc",
 	"VtblCall__II",

@@ -115,7 +115,6 @@ public static final native int NS_GetComponentManager(int /*long*/[] result);
 public static final native int NS_GetServiceManager(int /*long*/[] result);
 public static final native int NS_InitXPCOM2(int /*long*/ result, int /*long*/ binDirectory, int /*long*/ appFileLocationProvider);
 public static final native int NS_NewLocalFile(int /*long*/ path, boolean followLinks, int /*long*/[] result);
-public static final native int NS_TermEmbedding();
 public static final native int strlen_PRUnichar(int /*long*/ s);
 public static final native int /*long*/ nsEmbedCString_new();
 public static final native int /*long*/ nsEmbedCString_new(byte[] aString, int length);

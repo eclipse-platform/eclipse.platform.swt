@@ -15,7 +15,6 @@
 #define NDEBUG
 
 #include "nsXPCOM.h"
-#include "nsEmbedAPI.h"	
 #include "nsEmbedString.h"
 #include "nsIInputStream.h"
 #include "nsISupportsUtils.h"

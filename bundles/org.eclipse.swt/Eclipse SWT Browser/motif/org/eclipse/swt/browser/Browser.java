@@ -199,7 +199,7 @@ public Browser(Composite parent, int style) {
 			error(XPCOM.NS_ERROR_NULL_POINTER);
 		}
 		
-		nsILocalFile localFile = new nsILocalFile(retVal[0]);
+		nsIFile localFile = new nsILocalFile(retVal[0]);
 		rc = XPCOM.NS_InitXPCOM2(0, localFile.getAddress(), 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
@@ -1503,27 +1503,6 @@ void onDispose() {
 	gtkHandle = 0;
 	
 	BrowserCount--;
-	/*
-	* This code is intentionally commented.  It is not possible to reinitialize
-	* Mozilla once it has been terminated.  NS_InitEmbedding always fails after
-	* NS_TermEmbedding has been called.  The workaround is to call NS_InitEmbedding
-	* once and never call NS_TermEmbedding.
-	*/
-//	if (BrowserCount == 0) {
-//		if (AppShell != null) {
-//			// Shutdown the appshell service.
-//			rc = AppShell.Spindown();
-//			if (rc != XPCOM.NS_OK) error(rc);
-//			AppShell.Release();
-//			AppShell = null;
-//		}
-//		WindowCreator.Release();
-//		WindowCreator = null;
-//		PromptService.Release();
-//		PromptService = null;
-//		XPCOM.NS_TermEmbedding();
-//		mozilla = false;
-//	}
 }
 
 void Activate() {

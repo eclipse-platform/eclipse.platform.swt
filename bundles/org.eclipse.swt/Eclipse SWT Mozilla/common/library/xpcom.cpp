@@ -74,7 +74,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1InitXPCOM2)
 {
 	jint rc = 0;
 	XPCOM_NATIVE_ENTER(env, that, NS_1InitXPCOM2_FUNC);
-	rc = (jint)NS_InitXPCOM2((nsIServiceManager **)arg0, (nsILocalFile *)arg1, (nsIDirectoryServiceProvider *)arg2);
+	rc = (jint)NS_InitXPCOM2((nsIServiceManager **)arg0, (nsIFile *)arg1, (nsIDirectoryServiceProvider *)arg2);
 	XPCOM_NATIVE_EXIT(env, that, NS_1InitXPCOM2_FUNC);
 	return rc;
 }
@@ -92,18 +92,6 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1NewLocalFile)
 fail:
 	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
 	XPCOM_NATIVE_EXIT(env, that, NS_1NewLocalFile_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NS_1TermEmbedding
-JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1TermEmbedding)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, NS_1TermEmbedding_FUNC);
-	rc = (jint)NS_TermEmbedding();
-	XPCOM_NATIVE_EXIT(env, that, NS_1TermEmbedding_FUNC);
 	return rc;
 }
 #endif
