@@ -342,6 +342,7 @@ public Browser(Composite parent, int style) {
 						for (int i = 0; i < locationListeners.length; i++) {
 							locationListeners[i].changed(locationEvent);
 						}
+						if (isDisposed()) return;
 						/*
 						 * This code is intentionally commented.  A Variant constructed from an
 						 * OleAutomation object does not increase its reference count.  The IDispatch
