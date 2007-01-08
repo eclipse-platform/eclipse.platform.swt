@@ -53,7 +53,7 @@ case $OS in
 			if [ "${GECKO_SDK}" = "" ]; then
 				GECKO_SDK=/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
 				GECKO_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/../include/xpcom -I${GECKO_SDK}/../include/nspr -I${GECKO_SDK}/../include/embed_base -I${GECKO_SDK}/../include/embedstring -I${GECKO_SDK}/../include/string"
-				GECKO_LIBS="${GECKO_SDK}/../lib/libembed_base_s.a ${GECKO_SDK}/../lib/libembedstring.a ${GECKO_SDK}/../lib/libxpcomglue_s.a -L${GECKO_SDK}/../bin -L${GECKO_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
+				GECKO_LIBS="${GECKO_SDK}/../lib/libembedstring.a -L${GECKO_SDK}/../bin -L${GECKO_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
 			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
