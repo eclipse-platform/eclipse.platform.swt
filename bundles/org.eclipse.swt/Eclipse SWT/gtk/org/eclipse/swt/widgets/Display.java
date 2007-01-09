@@ -1098,43 +1098,57 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		return 0;
 	}
 
-	Control control = null;
-	int /*long*/ window = 0;
-	switch (eventType) {
-		case OS.GDK_KEY_PRESS:
-		case OS.GDK_KEY_RELEASE:
-		case OS.GDK_ENTER_NOTIFY:
-		case OS.GDK_LEAVE_NOTIFY:
-		case OS.GDK_BUTTON_PRESS:
-		case OS.GDK_2BUTTON_PRESS: 
-		case OS.GDK_3BUTTON_PRESS:
-		case OS.GDK_BUTTON_RELEASE: 
-		case OS.GDK_MOTION_NOTIFY:  {
-			window = OS.GDK_EVENT_WINDOW (event);
-			int /*long*/ [] user_data = new int /*long*/ [1];
-			do {
-				OS.gdk_window_get_user_data (window, user_data);
-				int /*long*/ handle = user_data [0];
-				if (handle != 0) {
-					Widget widget = getWidget (handle);
-					if (widget != null && widget instanceof Control) {
-						control = (Control) widget;
-						break;
-					}
-				}
-			} while ((window = OS.gdk_window_get_parent (window)) != 0);
-		}
-	}
+	/*
+	* Feature in GTK.  GTK implements modality by adding a grab
+	* to the GTK top level window.  Normally, all mouse and 
+	* keyboard events are delivered to child widgets and the
+	* shell when the grab is active.  When an override redirect
+	* shell is created as a child of a dialog, then events are
+	* grabbed by the dialog instead of the override redirect
+	* shell.  The fix is to add a temporary grab to the override
+	* redirect window when there is not already a grab in a
+	* child widget of the override redirect shell (for example,
+	* in a scroll bar).  
+	*/
 	Shell shell = null;
-	if (control != null ) {
-		shell = control.getShell ();
-		if ((shell.style & SWT.ON_TOP) != 0) {
-			OS.gtk_grab_add (shell.shellHandle);
+	Control control = null;
+	int /*long*/ grabHandle = OS.gtk_grab_get_current ();
+	if (grabHandle != 0 && OS.GTK_IS_WINDOW (grabHandle) && OS.gtk_window_get_modal (grabHandle)) {
+		switch (eventType) {
+			case OS.GDK_KEY_PRESS:
+			case OS.GDK_KEY_RELEASE:
+			case OS.GDK_ENTER_NOTIFY:
+			case OS.GDK_LEAVE_NOTIFY:
+			case OS.GDK_BUTTON_PRESS:
+			case OS.GDK_2BUTTON_PRESS: 
+			case OS.GDK_3BUTTON_PRESS:
+			case OS.GDK_BUTTON_RELEASE: 
+			case OS.GDK_MOTION_NOTIFY:  {
+				int /*long*/ window = OS.GDK_EVENT_WINDOW (event);
+				int /*long*/ [] user_data = new int /*long*/ [1];
+				do {
+					OS.gdk_window_get_user_data (window, user_data);
+					int /*long*/ handle = user_data [0];
+					if (handle != 0) {
+						Widget widget = getWidget (handle);
+						if (widget != null && widget instanceof Control) {
+							control = (Control) widget;
+							break;
+						}
+					}
+				} while ((window = OS.gdk_window_get_parent (window)) != 0);
+			}
+		}
+		if (control != null) {		
+			shell = control.getShell ();
+			if ((shell.style & SWT.ON_TOP) != 0) {
+				OS.gtk_grab_add (shell.shellHandle);
+			}
 		}
 	}
 	OS.gtk_main_do_event (event);
 	if (dispatchEvents == null) putGdkEvents ();
-	if (control != null ) {
+	if (control != null) {
 		if (shell != null && !shell.isDisposed () && (shell.style & SWT.ON_TOP) != 0) {
 			OS.gtk_grab_remove (shell.shellHandle);
 		}

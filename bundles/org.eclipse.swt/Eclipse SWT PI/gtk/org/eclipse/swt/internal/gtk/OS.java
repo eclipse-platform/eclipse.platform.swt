@@ -1115,6 +1115,15 @@ public static final boolean GTK_IS_PLUG(int /*long*/ obj) {
 		lock.unlock();
 	}
 }
+public static final native boolean _GTK_IS_WINDOW(int /*long*/ obj);
+public static final boolean GTK_IS_WINDOW(int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _GTK_IS_WINDOW(obj);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _GTK_STOCK_CANCEL();
 public static final int /*long*/ GTK_STOCK_CANCEL() {
 	lock.lock();
@@ -8252,6 +8261,15 @@ public static final int /*long*/ gtk_window_get_icon_list(int /*long*/ window) {
 	lock.lock();
 	try {
 		return _gtk_window_get_icon_list(window);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _gtk_window_get_modal(int /*long*/ window);
+public static final boolean gtk_window_get_modal(int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gtk_window_get_modal(window);
 	} finally {
 		lock.unlock();
 	}

@@ -1183,6 +1183,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1PLUG)
 }
 #endif
 
+#ifndef NO__1GTK_1IS_1WINDOW
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1GTK_1IS_1WINDOW)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1IS_1WINDOW_FUNC);
+	rc = (jboolean)GTK_IS_WINDOW(arg0);
+	OS_NATIVE_EXIT(env, that, _1GTK_1IS_1WINDOW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1STOCK_1CANCEL
 JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1STOCK_1CANCEL)
 	(JNIEnv *env, jclass that)
@@ -12412,6 +12424,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1get_1mnemonic_1modifier)
 	OS_NATIVE_ENTER(env, that, _1gtk_1window_1get_1mnemonic_1modifier_FUNC);
 	rc = (jint)gtk_window_get_mnemonic_modifier((GtkWindow *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1window_1get_1mnemonic_1modifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1window_1get_1modal
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1window_1get_1modal)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1get_1modal_FUNC);
+	rc = (jboolean)gtk_window_get_modal((GtkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1get_1modal_FUNC);
 	return rc;
 }
 #endif
