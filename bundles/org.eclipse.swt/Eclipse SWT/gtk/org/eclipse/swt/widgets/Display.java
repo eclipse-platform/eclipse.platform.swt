@@ -1107,11 +1107,14 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	/*
 	* Feature in GTK.  GTK implements modality by adding a grab
 	* to the GTK top level window.  Normally, all mouse and 
-	* keyboard events are delivered to child widgets and shells
-	* when the grab is active.  When a dialog child is an 
-	* override redirect window, GTK does not forward the events.  
-	* The fix is to add a temporary grab to the override redirect
-	* window.  
+	* keyboard events are delivered to child widgets and the
+	* shell when the grab is active.  When an override redirect
+	* shell is created as a child of a dialog, then events are
+	* grabbed by the dialog instead of the override redirect
+	* shell.  The fix is to add a temporary grab to the override
+	* redirect window when there is not already a grab in a
+	* child widget of the override redirect shell (for example,
+	* in a scroll bar).  
 	*/
 	Shell shell = null;
 	Control control = null;
