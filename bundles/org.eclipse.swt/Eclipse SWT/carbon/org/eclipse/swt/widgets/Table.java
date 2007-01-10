@@ -254,7 +254,7 @@ void checkItems (boolean setScrollWidth) {
 			}
 		}
 		callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-		callbacks.v1_itemCompareCallback = display.itemCompareProc;
+		callbacks.v1_itemCompareCallback = itemCompareProc ();
 		OS.SetDataBrowserCallbacks (handle, callbacks);
 	}
 	if (setScrollWidth) setScrollWidth (items, true);
@@ -1912,7 +1912,7 @@ void hookEvents () {
 	OS.InitDataBrowserCallbacks (callbacks);
 	callbacks.v1_itemDataCallback = display.itemDataProc;
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+	callbacks.v1_itemCompareCallback = itemCompareProc ();
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	DataBrowserCustomCallbacks custom = new DataBrowserCustomCallbacks ();
 	custom.version = OS.kDataBrowserLatestCustomCallbacks;
@@ -2002,6 +2002,10 @@ public int indexOf (TableItem item) {
 public boolean isSelected (int index) {
 	checkWidget();
 	return OS.IsDataBrowserItemSelected (handle, index + 1);
+}
+
+int itemCompareProc () {
+	return sortDirection == SWT.DOWN && sortColumn != null ? display.itemCompareProc : 0;
 }
 
 int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
@@ -2385,7 +2389,7 @@ public void removeAll () {
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+	callbacks.v1_itemCompareCallback = itemCompareProc ();
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	setTableEmpty ();
 }
@@ -2754,7 +2758,7 @@ public void setItemCount (int count) {
 	itemCount = count;
 	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
-	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+	callbacks.v1_itemCompareCallback = itemCompareProc ();
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	fixScrollBar ();
 	setRedraw (true);
@@ -3075,6 +3079,10 @@ public void setSortColumn (TableColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (column == sortColumn) return;
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (handle, callbacks);
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
 	if (column == null) {
 		if (sortColumn != null  && !sortColumn.isDisposed ()  && sortDirection != SWT.NONE) {
 			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
@@ -3088,6 +3096,8 @@ public void setSortColumn (TableColumn column) {
 		int order = sortDirection == SWT.DOWN ? OS.kDataBrowserOrderDecreasing : OS.kDataBrowserOrderIncreasing;
 		OS.SetDataBrowserSortOrder (handle, (short) order);
 	}
+	callbacks.v1_itemCompareCallback = itemCompareProc ();
+	OS.SetDataBrowserCallbacks (handle, callbacks);
 }
 
 /**
@@ -3108,6 +3118,10 @@ public void setSortDirection  (int direction) {
 	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
 	if (direction == sortDirection) return;
 	sortDirection = direction;
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (handle, callbacks);
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
 	if (sortColumn != null && !sortColumn.isDisposed ()) {
 		if (sortDirection == SWT.NONE) {
 			OS.SetDataBrowserSortOrder (handle, (short) OS.kDataBrowserOrderIncreasing);
@@ -3122,6 +3136,8 @@ public void setSortDirection  (int direction) {
 			OS.SetDataBrowserSortOrder (handle, (short) order);
 		}
 	}
+	callbacks.v1_itemCompareCallback = itemCompareProc ();
+	OS.SetDataBrowserCallbacks (handle, callbacks);
 }
 
 void setTableEmpty () {
