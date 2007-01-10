@@ -312,47 +312,6 @@ int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventMouseUp (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseUp (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (focusIndex == -1) return result;
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	if (button [0] == 1) {
-		int x, y;
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-			OS.HIViewConvertPoint (pt, 0, handle);
-			x = (int) pt.x;
-			y = (int) pt.y;
-		} else {
-			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-			Rect rect = new Rect ();
-			int window = OS.GetControlOwner (handle);
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			x = pt.h - rect.left;
-			y = pt.v - rect.top;
-			OS.GetControlBounds (handle, rect);
-			x -= rect.left;
-			y -= rect.top;
-		}
-		Rectangle [] rects = getRectangles (focusIndex);
-		for (int i = 0; i < rects.length; i++) {
-			Rectangle rectangle = rects [i];
-			if (rectangle.contains (x, y)) {
-				Event event = new Event ();
-				event.text = ids [focusIndex];
-				notifyListeners (SWT.Selection, event);
-				return result;
-			}
-		}
-	}
-	return result;
-}
-
 int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventUnicodeKeyPressed (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -623,6 +582,21 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 					}
 					Rectangle rectangle = layout.getBounds (oldSelection, newSelection);
 					redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
+				}
+			}
+			break;
+		case SWT.MouseUp:
+			if (focusIndex == -1) break;
+			if (button == 1) {
+				Rectangle [] rects = getRectangles (focusIndex);
+				for (int i = 0; i < rects.length; i++) {
+					Rectangle rectangle = rects [i];
+					if (rectangle.contains (x, y)) {
+						Event event = new Event ();
+						event.text = ids [focusIndex];
+						notifyListeners (SWT.Selection, event);
+						return result;
+					}
 				}
 			}
 			break;
