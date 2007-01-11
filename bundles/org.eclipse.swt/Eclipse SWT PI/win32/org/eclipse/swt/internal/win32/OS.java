@@ -640,11 +640,13 @@ public class OS extends Platform {
 	public static final int GUI_SYSTEMMENUMODE = 0x8;
 	public static final int GWL_EXSTYLE = 0xffffffec;
 	public static final int GWL_ID = -12;
-	public static final int GWLP_ID = -12;
+	public static final int GWL_HWNDPARENT = -8;
 	public static final int GWL_STYLE = 0xfffffff0;
 	public static final int GWL_USERDATA = 0xffffffeb;
-	public static final int GWLP_USERDATA = 0xffffffeb;
 	public static final int GWL_WNDPROC = 0xfffffffc;
+	public static final int GWLP_ID = -12;
+	public static final int GWLP_HWNDPARENT = -8;
+	public static final int GWLP_USERDATA = 0xffffffeb;
 	public static final int GWLP_WNDPROC = 0xfffffffc;
 	public static final int GW_CHILD = 0x5;
 	public static final int GW_HWNDFIRST = 0x0;
