@@ -96,7 +96,9 @@ public class DragSource extends Widget {
 	private Control control;
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
+	private DragSourceEffect dragEffect;
 
+	private static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 
 /**
@@ -157,6 +159,11 @@ public DragSource(Control control, int style) {
 			onDispose();
 		}
 	});
+	
+	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
+	if (effect instanceof DragSourceEffect) {
+		dragEffect = (DragSourceEffect) effect;
+	}
 }
 
 /**
@@ -191,6 +198,7 @@ public DragSource(Control control, int style) {
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragStart, typedListener);
 	addListener (DND.DragSetData, typedListener);
 	addListener (DND.DragEnd, typedListener);
@@ -218,10 +226,19 @@ protected void checkSubclass () {
 public Control getControl () {
 	return control;
 }
-public Display getDisplay () {
-	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	return control.getDisplay ();
+
+/**
+ * Returns the drag effect that is registered for this DragSource.  This drag
+ * effect will be used during a drag and drop event to display the drag source image.
+ *
+ * @return the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public DragSourceEffect getDragSourceEffect() {
+	return dragEffect;
 }
+
 /**
  * Returns the list of data types that can be transferred by this DragSource.
  *
@@ -267,6 +284,19 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
 }
+
+/**
+ * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * used during a drag and drop to display the drag source image.
+ *
+ * @param effect the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public void setDragSourceEffect(DragSourceEffect effect) {
+	dragEffect = effect;
+}
+
 /**
  * Specifies the list of data types that can be transferred by this DragSource.
  * The application must be able to provide data to match each of these types when

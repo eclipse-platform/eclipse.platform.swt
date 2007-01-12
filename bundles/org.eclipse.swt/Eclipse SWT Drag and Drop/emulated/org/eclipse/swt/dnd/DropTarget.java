@@ -68,12 +68,13 @@ import org.eclipse.swt.widgets.*;
 public class DropTarget extends Widget {
 
 	// info for registering as a droptarget	
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
-	private DragAndDropEffect effect;
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
+	DropTargetEffect dropEffect;
 
-	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
+	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -128,12 +129,9 @@ public DropTarget(Control control, int style) {
 		}
 	});
 
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
-	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
+	if (effect instanceof DropTargetEffect) {
+		dropEffect = (DropTargetEffect) effect;
 	}
 }
 
@@ -172,6 +170,7 @@ public DropTarget(Control control, int style) {
 public void addDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragEnter, typedListener);
 	addListener (DND.DragLeave, typedListener);
 	addListener (DND.DragOver, typedListener);
@@ -203,9 +202,17 @@ public Control getControl () {
 	return control;
 }
 
-public Display getDisplay () {
-	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	return control.getDisplay ();
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public DropTargetEffect getDropTargetEffect() {
+	return dropEffect;
 }
 
 /**
@@ -217,7 +224,7 @@ public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
-private void onDispose () {	
+void onDispose () {	
 	if (control == null)
 		return;
 	if (controlListener != null)
@@ -253,6 +260,19 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DragOperationChanged, listener);
 	removeListener (DND.Drop, listener);
 	removeListener (DND.DropAccept, listener);
+}
+
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public void setDropTargetEffect(DropTargetEffect effect) {
+	dropEffect = effect;
 }
 
 /**
