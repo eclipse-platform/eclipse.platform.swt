@@ -12,7 +12,6 @@ package org.eclipse.swt.dnd;
 
  
 import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.Callback;
@@ -103,8 +102,9 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DragSourceEffect dragEffect;
 
+	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 	static Callback DragSendDataProc;
 	
@@ -174,15 +174,9 @@ public DragSource(Control control, int style) {
 		}
 	});
 	
-	//	 Drag and drop effect
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
-	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else if (control instanceof StyledText) {
-		effect = new StyledTextDragAndDropEffect((StyledText)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
+	if (effect instanceof DragSourceEffect) {
+		dragEffect = (DragSourceEffect) effect;
 	}
 }
 
@@ -238,6 +232,7 @@ static DragSource FindDragSource(int dragSendRefCon, int theDrag) {
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragStart, typedListener);
 	addListener (DND.DragSetData, typedListener);
 	addListener (DND.DragEnd, typedListener);
@@ -258,7 +253,6 @@ void drag(Event dragEvent) {
 	event.y = dragEvent.y;
 	event.time = dragEvent.time;
 	event.doit = true;
-	event.feedback = DND.FEEDBACK_DEFAULT;
 	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
 	
@@ -316,38 +310,32 @@ void drag(Event dragEvent) {
 		OS.SetDragAllowableActions(theDrag[0], operations, true);
 		OS.SetDragAllowableActions(theDrag[0], operations, false);
 		
-		ImageData imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
-		Image image = null;
-		try {
-			if (imageData != null) {
-				image = new Image(getDisplay(), imageData);
-				CGPoint imageOffsetPt = new CGPoint();
-				imageOffsetPt.x = 0;
-				imageOffsetPt.y = 0;
-				OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, OS.kDragStandardTranslucency);
-			}
-			EventRecord theEvent = new EventRecord();
-			theEvent.message = OS.kEventMouseMoved;
-			theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
-			theEvent.what = (short)OS.osEvt;
-			theEvent.where_h = pt.h;
-			theEvent.where_v = pt.v;	
-			int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
-			int operation = DND.DROP_NONE;
-			if (result == OS.noErr) { 
-				int[] outAction = new int[1];
-				OS.GetDragDropAction(theDrag[0], outAction);
-				operation = osOpToOp(outAction[0]);
-			}	
-			event = new DNDEvent();
-			event.widget = this;
-			event.time = (int)System.currentTimeMillis();
-			event.doit = result == OS.noErr;
-			event.detail = operation; 
-			notifyListeners(DND.DragEnd, event);
-		} finally {
-			if (image != null) image.dispose();
+		Image image = event.image;
+		if (image != null) {
+			CGPoint imageOffsetPt = new CGPoint();
+			imageOffsetPt.x = 0;
+			imageOffsetPt.y = 0;
+			OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, OS.kDragStandardTranslucency);
 		}
+		EventRecord theEvent = new EventRecord();
+		theEvent.message = OS.kEventMouseMoved;
+		theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
+		theEvent.what = (short)OS.osEvt;
+		theEvent.where_h = pt.h;
+		theEvent.where_v = pt.v;	
+		int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
+		int operation = DND.DROP_NONE;
+		if (result == OS.noErr) { 
+			int[] outAction = new int[1];
+			OS.GetDragDropAction(theDrag[0], outAction);
+			operation = osOpToOp(outAction[0]);
+		}	
+		event = new DNDEvent();
+		event.widget = this;
+		event.time = (int)System.currentTimeMillis();
+		event.doit = result == OS.noErr;
+		event.detail = operation; 
+		notifyListeners(DND.DragEnd, event);
 	} finally {	
 		if (theRegion != 0) OS.DisposeRgn(theRegion);
 	}
@@ -388,6 +376,18 @@ int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDra
  */
 public Control getControl () {
 	return control;
+}
+
+/**
+ * Returns the drag effect that is registered for this DragSource.  This drag
+ * effect will be used during a drag and drop event to display the drag source image.
+ *
+ * @return the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public DragSourceEffect getDragSourceEffect() {
+	return dragEffect;
 }
 
 /**
@@ -471,6 +471,18 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener (DND.DragStart, listener);
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
+}
+
+/**
+ * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * used during a drag and drop to display the drag source image.
+ *
+ * @param effect the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public void setDragSourceEffect(DragSourceEffect effect) {
+	dragEffect = effect;
 }
 /**
  * Specifies the list of data types that can be transferred by this DragSource.
