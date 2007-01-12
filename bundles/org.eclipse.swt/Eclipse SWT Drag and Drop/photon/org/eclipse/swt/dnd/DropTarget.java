@@ -71,8 +71,9 @@ public class DropTarget extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DropTargetEffect dropEffect;
 
+	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
 	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 
 /**
@@ -128,12 +129,9 @@ public DropTarget(Control control, int style) {
 		}
 	});
 
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
-	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
+	if (effect instanceof DropTargetEffect) {
+		dropEffect = (DropTargetEffect) effect;
 	}
 }
 
@@ -172,6 +170,7 @@ public DropTarget(Control control, int style) {
 public void addDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragEnter, typedListener);
 	addListener (DND.DragLeave, typedListener);
 	addListener (DND.DragOver, typedListener);
@@ -201,6 +200,19 @@ protected void checkSubclass () {
  */
 public Control getControl () {
 	return control;
+}
+
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public DropTargetEffect getDropTargetEffect() {
+	return dropEffect;
 }
 
 /**
@@ -248,6 +260,19 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DragOperationChanged, listener);
 	removeListener (DND.Drop, listener);
 	removeListener (DND.DropAccept, listener);
+}
+
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public void setDropTargetEffect(DropTargetEffect effect) {
+	dropEffect = effect;
 }
 
 /**
