@@ -99,13 +99,14 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
+	DragSourceEffect dragEffect;
 
 	int /*long*/ targetList;
 	
 	//workaround - remember action performed for DragEnd
 	boolean moveData = false;
 	
-	DragAndDropEffect effect;
+	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 		
 	static Callback DragGetData;
@@ -180,14 +181,14 @@ public DragSource(Control control, int style) {
 	};
 	control.addListener (SWT.Dispose, controlListener);
 	control.addListener (SWT.DragDetect, controlListener);
-	
-	// DND effect
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
+
+	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
+	if (effect instanceof DragSourceEffect) {
+		dragEffect = (DragSourceEffect) effect;
+	} else if (control instanceof Tree) {
+		dragEffect = new TreeDragSourceEffect();
 	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+		dragEffect = new TableDragSourceEffect();
 	}
 	
 	this.addListener(SWT.Dispose, new Listener() {
@@ -263,6 +264,7 @@ static DragSource FindDragSource(int /*long*/ handle) {
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragStart, typedListener);
 	addListener (DND.DragSetData, typedListener);
 	addListener (DND.DragEnd, typedListener);
@@ -284,23 +286,17 @@ void drag(Event dragEvent) {
 	event.y = dragEvent.y;
 	event.time = dragEvent.time;
 	event.doit = true;
-	event.feedback = DND.FEEDBACK_DEFAULT;
 	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
 	if (targetList == 0) return;
 	
 	int actions = opToOsOp(getStyle());
-	ImageData imageData = null; 
-	if (event.feedback == DND.FEEDBACK_DEFAULT) {
-		imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
-	}
+	Image image = event.image; 
 	int /*long*/ context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
-	if (context != 0 && imageData != null) {
-		Image image = new Image(getDisplay(), imageData);
+	if (context != 0 && image != null) {
 		int /*long*/ pixbuf = createPixbuf(image);
 		OS.gtk_drag_set_icon_pixbuf(context, pixbuf, 0, 0);
 		OS.g_object_unref(pixbuf);
-		image.dispose();
 	}
 }
 
@@ -388,6 +384,18 @@ public Control getControl () {
 }
 
 /**
+ * Returns the drag effect that is registered for this DragSource.  This drag
+ * effect will be used during a drag and drop event to display the drag source image.
+ *
+ * @return the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public DragSourceEffect getDragSourceEffect() {
+	return dragEffect;
+}
+
+/**
  * Returns the list of data types that can be transferred by this DragSource.
  *
  * @return the list of data types that can be transferred by this DragSource
@@ -460,6 +468,18 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener (DND.DragStart, listener);
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
+}
+
+/**
+ * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * used during a drag and drop to display the drag source image.
+ *
+ * @param effect the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public void setDragSourceEffect(DragSourceEffect effect) {
+	dragEffect = effect;
 }
 
 /**
