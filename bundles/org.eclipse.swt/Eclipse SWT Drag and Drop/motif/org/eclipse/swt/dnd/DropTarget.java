@@ -12,7 +12,7 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
@@ -73,7 +73,7 @@ public class DropTarget extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DropTargetEffect dropEffect;
 	
 	// Track application selections
 	TransferData selectedDataType;
@@ -100,6 +100,7 @@ public class DropTarget extends Widget {
 	// not visible.
 	boolean registered = false;
 	
+	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
 	static int DELETE_TYPE = Transfer.registerType("DELETE\0"); //$NON-NLS-1$
 	static int NULL_TYPE = Transfer.registerType("NULL\0"); //$NON-NLS-1$
 	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
@@ -212,15 +213,13 @@ public DropTarget(Control control, int style) {
 		}
 	});
 
-	// Drag under effect
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
+	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
+	if (effect instanceof DropTargetEffect) {
+		dropEffect = (DropTargetEffect) effect;
 	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else if (control instanceof StyledText) {
-		effect = new StyledTextDragAndDropEffect((StyledText)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+		dropEffect = new TableDropTargetEffect();
+	} else if (control instanceof Tree) {
+		dropEffect = new TreeDropTargetEffect();
 	}
 
 	if (control.isVisible()) registerDropTarget();
@@ -250,10 +249,8 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				event.item = effect.getItem(dragOverEvent.x, dragOverEvent.y);
+				event.item = getItem(getControl(), dragOverEvent.x, dragOverEvent.y);
 				notifyListeners(DND.DragOver, event);
-				
-				effect.showDropTargetEffect(event.feedback, DND.DragOver, event.x, event.y);
 				
 				selectedDataType = null;
 				if (event.dataType != null) {
@@ -348,6 +345,7 @@ static int TransferProcCallback(int widget, int client_data, int pSelection, int
 public void addDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragEnter, typedListener);
 	addListener (DND.DragLeave, typedListener);
 	addListener (DND.DragOver, typedListener);
@@ -371,7 +369,6 @@ void dragProcCallback(int widget, int client_data, int call_data) {
 
 	if (callbackData.reason == OS.XmCR_DROP_SITE_LEAVE_MESSAGE) {
 		updateDragOverHover(0, null);
-		effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
 		
 		if (callbackData.dropSiteStatus == OS.XmDROP_SITE_INVALID) {
 			return;
@@ -438,8 +435,6 @@ void dragProcCallback(int widget, int client_data, int call_data) {
 	if (selectedDataType != null && (allowedOperations & event.detail) != 0) {
 		selectedOperation = event.detail;
 	}
-	
-	effect.showDropTargetEffect(event.feedback, event.type, event.x, event.y);
 
 	callbackData.dropSiteStatus = (byte)OS.XmDROP_SITE_VALID;
 	callbackData.operation = opToOsOp(selectedOperation);
@@ -466,7 +461,6 @@ void dropProcCallback(int widget, int client_data, int call_data) {
 		return;
 	}
 	
-	effect.showDropTargetEffect(event.feedback, DND.DropAccept, event.x, event.y);
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
@@ -523,6 +517,60 @@ void dropProcCallback(int widget, int client_data, int call_data) {
  */
 public Control getControl () {
 	return control;
+}
+
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public DropTargetEffect getDropTargetEffect() {
+	return dropEffect;
+}
+
+Widget getItem(Control control, int x, int y) {
+	Point coordinates = new Point(x, y);
+	coordinates = control.toControl(coordinates);
+	Item item = null;
+	
+	if (control instanceof Table) {
+		Table table = (Table) control;
+		item = table.getItem(coordinates);
+		if (item == null) {
+			Rectangle area = table.getClientArea();
+			if (area.contains(coordinates)) {
+				// Scan across the width of the table.
+				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+					Point pt = new Point(x1, coordinates.y);
+					item = table.getItem(pt);
+					if (item != null) {
+						break;
+					}
+				}
+			}
+		}
+	} else if (control instanceof Tree) {
+		Tree tree = (Tree) control;
+		item = tree.getItem(coordinates);
+		if (item == null) {
+			Rectangle area = tree.getClientArea();
+			if (area.contains(coordinates)) {
+				// Scan across the width of the tree.
+				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+					Point pt = new Point(x1, coordinates.y);
+					item = tree.getItem(pt);
+					if (item != null) {
+						break;
+					}
+				}
+			}
+		}
+	}
+	return item;
 }
 
 /**
@@ -652,6 +700,19 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DropAccept, listener);
 }
 
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public void setDropTargetEffect(DropTargetEffect effect) {
+	dropEffect = effect;
+}
+
 boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int timestamp, DNDEvent event) {
 	//get allowed operations
 	int style = getStyle();
@@ -724,7 +785,7 @@ boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int t
 	event.dataType = dataTypes[0];
 	event.operations = operations;
 	event.detail = operation;
-	event.item = effect.getItem(event.x, event.y);
+	event.item = getItem(getControl(), event.x, event.y);
 	return true;
 }
 
