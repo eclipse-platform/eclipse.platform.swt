@@ -99,7 +99,7 @@ public class DragSource extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DragSourceEffect dragEffect;
 	Composite topControl;
 	
 	// ole interfaces
@@ -110,6 +110,7 @@ public class DragSource extends Widget {
 	//workaround - track the operation performed by the drop target for DragEnd event
 	int dataEffect = DND.DROP_NONE;	
 	
+	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
 
@@ -174,12 +175,14 @@ public DragSource(Control control, int style) {
 			DragSource.this.onDispose();
 		}
 	});
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
+
+	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
+	if (effect instanceof DragSourceEffect) {
+		dragEffect = (DragSourceEffect) effect;
+	} else if (control instanceof Tree) {
+		dragEffect = new TreeDragSourceEffect();
 	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+		dragEffect = new TableDragSourceEffect();
 	}
 }
 
@@ -220,6 +223,7 @@ static int checkStyle(int style) {
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener(listener);
+	typedListener.dndWidget = this;
 	addListener(DND.DragStart, typedListener);
 	addListener(DND.DragSetData, typedListener);
 	addListener(DND.DragEnd, typedListener);
@@ -281,7 +285,6 @@ private void drag(Event dragEvent) {
 	event.y = dragEvent.y;
 	event.time = OS.GetMessageTime();
 	event.doit = true;
-	event.feedback = DND.FEEDBACK_DEFAULT;
 	notifyListeners(DND.DragStart,event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
 	
@@ -291,14 +294,9 @@ private void drag(Event dragEvent) {
 	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	Object oldValue = display.getData(key);
 	display.setData(key, new Boolean(true));
-	ImageData imageData = null;
-	if (event.feedback == DND.FEEDBACK_DEFAULT) {
-		imageData = effect.getDragSourceImage(dragEvent.x, dragEvent.y);
-	}
-	Image image = null;
 	int imagelist = 0;
-	if (imageData != null) {
-		image = new Image(display, imageData);
+	Image image = event.image;
+	if (image != null) {
 		imagelist = createImageList(image);
 		if (imagelist != 0) {
 			topControl = control.getShell();
@@ -314,9 +312,6 @@ private void drag(Event dragEvent) {
 		OS.ImageList_Destroy(imagelist);
 		imagelist = 0;
 		topControl = null;
-	}
-	if (image != null) {
-		image.dispose();
 	}
 	display.setData(key, oldValue);
 	int operation = osToOp(pdwEffect[0]);
@@ -467,6 +462,18 @@ private int GetData(int pFormatetc, int pmedium) {
 	if (transferData.result != COM.S_OK) return transferData.result;
 	COM.MoveMemory(pmedium, transferData.stgmedium, STGMEDIUM.sizeof);
 	return transferData.result;
+}
+
+/**
+ * Returns the drag effect that is registered for this DragSource.  This drag
+ * effect will be used during a drag and drop operation.
+ *
+ * @return the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public DragSourceEffect getDragSourceEffect() {
+	return dragEffect;
 }
 
 /**
@@ -642,6 +649,18 @@ private int SetData(int pFormatetc, int pmedium, int fRelease) {
 		COM.ReleaseStgMedium(pmedium);
 	}
 	return COM.S_OK;
+}
+
+/**
+ * Specifies the drag effect for this DragSource.  This drag effect will be 
+ * used during a drag and drop operation.
+ *
+ * @param effect the drag effect that is registered for this DragSource
+ * 
+ * @since 3.3
+ */
+public void setDragSourceEffect(DragSourceEffect effect) {
+	dragEffect = effect;
 }
 
 /**

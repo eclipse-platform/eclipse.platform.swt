@@ -1229,6 +1229,7 @@ public StyledText(Composite parent, int style) {
 	setCursor(display.getSystemCursor(SWT.CURSOR_IBEAM));
 	installListeners();
 	initializeAccessible();
+	setData("DEFAULT_DROP_TARGET_EFFECT", new StyledTextDropTargetEffect());
 }
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 

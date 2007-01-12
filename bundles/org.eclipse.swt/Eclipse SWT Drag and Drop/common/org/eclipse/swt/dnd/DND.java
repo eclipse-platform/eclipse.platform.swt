@@ -171,14 +171,7 @@ public class DND {
 	 * select a drop target from a sub item; applies to trees (value is 16).
 	 */	
 	public static final int FEEDBACK_EXPAND = 16;
-	
-	/**
-	 * DropTarget drag under effect: The default feedback for a control; (value is 25).
-	 * 
-	 * @since 3.3
-	 */	
-	public static final int FEEDBACK_DEFAULT = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL | DND.FEEDBACK_EXPAND;
-	
+
 	/**
 	 * Error code: drag source can not be initialized (value is 2000).
 	 */

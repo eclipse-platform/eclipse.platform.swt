@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.graphics.*;
 
 /**
  * The DragSourceEvent contains the event information passed in the methods of the DragSourceListener.
@@ -64,15 +65,13 @@ public class DragSourceEvent extends TypedEvent {
 	public TransferData dataType;
 	
 	/**
-	 * The drag effect feedback to be displayed to the user.
-	 * <p>A value of DND.FEEDBACK_NONE indicates that no drag under effect will be displayed.</p>
-	 * <p>Feedback effects will only be applied if they are applicable.</p>
-	 * <p>The default value is DND.FEEDBACK_DEFAULT.</p>
+	 * The drag source image to be displayed during the drag.
+	 * <p>A value of null indicates that no drag image will be displayed.</p>
+	 * <p>The default value is null.</p>
 	 * 
-	 * @see DND#FEEDBACK_NONE
-	 * @see DND#FEEDBACK_DEFAULT
+	 * @since 3.3
 	 */
-	public int feedback;
+	public Image image;
 
 	static final long serialVersionUID = 3257002142513770808L;
 	
@@ -90,7 +89,7 @@ public DragSourceEvent(DNDEvent e) {
 	this.dataType = e.dataType;
 	this.x = e.x;
 	this.y = e.y;
-	this.feedback = e.feedback;
+	this.image = e.image;
 }
 void updateEvent(DNDEvent e) {
 	e.widget = this.widget;
@@ -101,6 +100,6 @@ void updateEvent(DNDEvent e) {
 	e.dataType = this.dataType;
 	e.x = this.x;
 	e.y = this.y;
-	e.feedback = this.feedback;
+	e.image = this.image;
 }
 }

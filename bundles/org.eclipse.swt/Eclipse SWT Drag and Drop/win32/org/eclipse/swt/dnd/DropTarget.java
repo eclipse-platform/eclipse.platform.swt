@@ -11,7 +11,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
@@ -72,7 +72,7 @@ public class DropTarget extends Widget {
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	DragAndDropEffect effect;
+	DropTargetEffect dropEffect;
 	
 	// Track application selections
 	TransferData selectedDataType;
@@ -90,6 +90,7 @@ public class DropTarget extends Widget {
 	COMObject iDropTarget;
 	int refCount;
 	
+	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
 	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 
 /**
@@ -152,16 +153,14 @@ public DropTarget(Control control, int style) {
 			onDispose();
 		}
 	});
-
-	// Drag under effect
-	if (control instanceof Tree) {
-		effect = new TreeDragAndDropEffect((Tree)control);
+	
+	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
+	if (effect instanceof DropTargetEffect) {
+		dropEffect = (DropTargetEffect) effect;
 	} else if (control instanceof Table) {
-		effect = new TableDragAndDropEffect((Table)control);
-	} else if (control instanceof StyledText) {
-		effect = new StyledTextDragAndDropEffect((StyledText)control);
-	} else {
-		effect = new NoDragAndDropEffect(control);
+		dropEffect = new TableDropTargetEffect();
+	} else if (control instanceof Tree) {
+		dropEffect = new TreeDropTargetEffect();
 	}
 }
 
@@ -205,6 +204,7 @@ static int checkStyle (int style) {
 public void addDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
+	typedListener.dndWidget = this;
 	addListener (DND.DragEnter, typedListener);
 	addListener (DND.DragLeave, typedListener);
 	addListener (DND.DragOver, typedListener);
@@ -283,17 +283,12 @@ int DragEnter(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffec
 	if (selectedDataType != null && ((allowedOperations & event.detail) != 0)) {
 		selectedOperation = event.detail;
 	}
-
-	effect.showDropTargetEffect(event.feedback, DND.DragEnter, event.x, event.y);
-	refresh();
 	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
 
 int DragLeave() {
-	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
-	refresh();
 	keyOperation = -1;
 
 	if (iDataObject == null) return COM.S_FALSE;
@@ -352,21 +347,15 @@ int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 		selectedOperation = event.detail;
 	}
 	
-	effect.showDropTargetEffect(event.feedback, event.type, event.x, event.y);
-	refresh();
-	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
 
 int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
-	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DragLeave, 0, 0);
-	refresh();
-	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
-	event.item = effect.getItem(pt_x, pt_y);
+	event.item = getItem(getControl(), pt_x, pt_y);
 	event.detail = DND.DROP_NONE;
 	notifyListeners(DND.DragLeave, event);
 	refresh();
@@ -377,7 +366,6 @@ int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_FALSE;
 	}
-	effect.showDropTargetEffect(DND.FEEDBACK_NONE, DND.DropAccept, 0, 0);
 	keyOperation = -1;
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
@@ -443,6 +431,60 @@ int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
  */
 public Control getControl () {
 	return control;
+}
+
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public DropTargetEffect getDropTargetEffect() {
+	return dropEffect;
+}
+
+Widget getItem(Control control, int x, int y) {
+	Point coordinates = new Point(x, y);
+	coordinates = control.toControl(coordinates);
+	Item item = null;
+	
+	if (control instanceof Table) {
+		Table table = (Table) control;
+		item = table.getItem(coordinates);
+		if (item == null) {
+			Rectangle area = table.getClientArea();
+			if (area.contains(coordinates)) {
+				// Scan across the width of the table.
+				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+					Point pt = new Point(x1, coordinates.y);
+					item = table.getItem(pt);
+					if (item != null) {
+						break;
+					}
+				}
+			}
+		}
+	} else if (control instanceof Tree) {
+		Tree tree = (Tree) control;
+		item = tree.getItem(coordinates);
+		if (item == null) {
+			Rectangle area = tree.getClientArea();
+			if (area.contains(coordinates)) {
+				// Scan across the width of the tree.
+				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+					Point pt = new Point(x1, coordinates.y);
+					item = tree.getItem(pt);
+					if (item != null) {
+						break;
+					}
+				}
+			}
+		}
+	}
+	return item;
 }
 
 int getOperationFromKeyState(int grfKeyState) {
@@ -584,6 +626,19 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DropAccept, listener);
 }
 
+/**
+ * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * used during a drag and drop to display the drag under effect on the 
+ * target widget.
+ *
+ * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @since 3.3
+ */
+public void setDropTargetEffect(DropTargetEffect effect) {
+	dropEffect = effect;
+}
+
 boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {	
 	if (pDataObject == 0 || pdwEffect == 0) return false;
 	
@@ -655,7 +710,7 @@ boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, int pt_x,
 	event.feedback = DND.FEEDBACK_SELECT;
 	event.dataTypes = dataTypes;
 	event.dataType = dataTypes[0];
-	event.item = effect.getItem(pt_x, pt_y);
+	event.item = getItem(getControl(), pt_x, pt_y);
 	event.operations = operations[0];
 	event.detail = operation;
 	return true;
