@@ -1658,6 +1658,26 @@ public void setImage (Image image) {
 }
 
 /**
+ * Sets the number of child items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
+public void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	int hwnd = parent.handle;
+	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	parent.setItemCount (count, handle, hItem);
+}
+
+/**
  * Sets the text for multiple columns in the tree. 
  * 
  * @param strings the array of new strings
@@ -1679,26 +1699,6 @@ public void setText (String [] strings) {
 		String string = strings [i];
 		if (string != null) setText (i, string);
 	}
-}
-
-/**
- * Sets the number of child items contained in the receiver.
- *
- * @param count the number of items
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.2
- */
-public void setItemCount (int count) {
-	checkWidget ();
-	count = Math.max (0, count);
-	int hwnd = parent.handle;
-	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	parent.setItemCount (count, handle, hItem);
 }
 
 /**
