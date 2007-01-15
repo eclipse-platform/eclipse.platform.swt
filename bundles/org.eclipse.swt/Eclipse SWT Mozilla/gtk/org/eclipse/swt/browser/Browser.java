@@ -198,7 +198,8 @@ public Browser(Composite parent, int style) {
 				bytes = new byte[length];
 				OS.memmove(bytes, greBuffer, length);
 				mozillaPath = new String(Converter.mbcsToWcs(null, bytes));
-				isXULRunner = mozillaPath.length() > 0;
+				// the following line is intentionally commented
+				// isXULRunner = mozillaPath.length() > 0;
 			}
 			OS.g_free(greBuffer);
 		}
