@@ -77,6 +77,14 @@ public class Browser extends Composite {
 	static int /*long*/ eventProc;
 	static String profileRootDirectory;
 
+	/* XULRunner detect constants */
+	static final String GRERANGE_LOWER = "1.8"; //$NON-NLS-1$
+	static final boolean LowerRangeInclusive = true;
+	static final String GRERANGE_UPPER = "1.9"; //$NON-NLS-1$
+	static final boolean UpperRangeInclusive = false;
+	static final String SEPARATOR_OS = System.getProperty("file.separator"); //$NON-NLS-1$
+	static final String XPCOM_LIB = "/libxpcom.so"; //$NON-NLS-1$
+
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
@@ -99,6 +107,7 @@ public class Browser extends Composite {
 	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
 	static final String STARTUP = "startup"; //$NON-NLS-1$
 	static final int STOP_PROPOGATE = 1;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -137,46 +146,138 @@ public Browser(Composite parent, int style) {
 	int /*long*/[] result = new int /*long*/[1];
 	if (!initialized) {
 		String mozillaPath = null;
-		int /*long*/ ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
-		if (ptr != 0) {
-			int length = OS.strlen(ptr);
-			byte[] buffer = new byte[length];
-			OS.memmove(buffer, ptr, length);
-			mozillaPath = new String (Converter.mbcsToWcs (null, buffer));
-		}
-		if (mozillaPath == null) {
-			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]"); //$NON-NLS-1$
-		}
-		/*
-		* Note.  Embedding a Mozilla GTK1.2 causes a crash.  The workaround
-		* is to check the version of GTK used by Mozilla by looking for
-		* the libwidget_gtk.so library used by Mozilla GTK1.2. Mozilla GTK2
-		* uses the libwidget_gtk2.so library.   
-		*/
-		File file = new File(mozillaPath, "components/libwidget_gtk.so"); //$NON-NLS-1$
-		if (file.exists()) {
-			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
-		}
 
+		boolean initLoaded = false;
 		try {
-			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
+			Library.loadLibrary ("swt-xpcominit"); //$NON-NLS-1$
+			initLoaded = true;
 		} catch (UnsatisfiedLinkError e) {
 			try {
 				/* 
 				 * The initial loadLibrary attempt may have failed as a result of the user's
 				 * system not having libstdc++.so.6 installed, so try to load the alternate
-				 * swt mozilla library that depends on libswtc++.so.5 instead.
+				 * swt xpcominit library that depends on libswtc++.so.5 instead.
 				 */
-				Library.loadLibrary ("swt-mozilla-gcc3"); //$NON-NLS-1$
+				Library.loadLibrary ("swt-xpcominit-gcc3"); //$NON-NLS-1$
+				initLoaded = true;
 			} catch (UnsatisfiedLinkError ex) {
-				dispose ();
 				/*
-				 * Print the error from the first failed attempt since at this point it's
-				 * known that the failure was not due to the libstdc++.so.6 dependency.
+				 * If this library still failed to load then do not attempt to detect a
+				 * xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
+				 * points at a GRE. 
 				 */
-				SWT.error (SWT.ERROR_NO_HANDLES, e);
+			}
+		}
+		
+		boolean isXULRunner = false;
+		if (initLoaded) {
+			/* attempt to discover a XULRunner to use as the GRE */
+			GREVersionRange range = new GREVersionRange();
+			byte[] bytes = Converter.wcsToMbcs(null, GRERANGE_LOWER, true);
+			int /*long*/ lower = OS.g_malloc (bytes.length);
+			OS.memmove (lower, bytes, bytes.length);
+			range.lower = lower;
+			range.lowerInclusive = LowerRangeInclusive;
+
+			bytes = Converter.wcsToMbcs(null, GRERANGE_UPPER, true);
+			int /*long*/ upper = OS.g_malloc (bytes.length);
+			OS.memmove (upper, bytes, bytes.length);
+			range.upper = upper;
+			range.upperInclusive = UpperRangeInclusive;
+
+			int length = XPCOMInit.PATH_MAX;
+			int /*long*/ greBuffer = OS.g_malloc(length);
+			int /*long*/ propertiesPtr = OS.g_malloc(2 * OS.PTR_SIZEOF);
+			int rc = XPCOMInit.GRE_GetGREPathWithProperties(range, 1, propertiesPtr, 0, greBuffer, length);
+			OS.g_free(lower);
+			OS.g_free(upper);
+			OS.g_free(propertiesPtr);
+			if (rc == XPCOM.NS_OK) {
+				/* indicates that a XULRunner was found */
+				length = OS.strlen(greBuffer);
+				bytes = new byte[length];
+				OS.memmove(bytes, greBuffer, length);
+				mozillaPath = new String(Converter.mbcsToWcs(null, bytes));
+				isXULRunner = mozillaPath.length() > 0;
+			}
+			OS.g_free(greBuffer);
+		}
+
+		if (isXULRunner) {
+			try {
+				Library.loadLibrary ("swt-xulrunner"); //$NON-NLS-1$
+			} catch (UnsatisfiedLinkError e) {
+				try {
+					/* 
+					 * The initial loadLibrary attempt may have failed as a result of the user's
+					 * system not having libstdc++.so.6 installed, so try to load the alternate
+					 * swt xulrunner library that depends on libswtc++.so.5 instead.
+					 */
+					Library.loadLibrary ("swt-xulrunner-gcc3"); //$NON-NLS-1$
+				} catch (UnsatisfiedLinkError ex) {
+					dispose ();
+					/*
+					 * Print the error from the first failed attempt since at this point it's
+					 * known that the failure was not due to the libstdc++.so.6 dependency.
+					 */
+					SWT.error (SWT.ERROR_NO_HANDLES, e);
+				}
+			}
+			byte[] path = Converter.wcsToMbcs(null, mozillaPath, true);
+			int rc = XPCOMGlue.XPCOMGlueStartup(path);
+			if (rc != XPCOM.NS_OK) {
+				dispose();
+				error(rc);
+			}
+
+			/*
+			 * remove the trailing "libxpcom.so" from mozillaPath because the NS_InitXPCOM2
+			 * invocation requires a directory name only
+			 */ 
+			mozillaPath = mozillaPath.substring(0, mozillaPath.lastIndexOf(SEPARATOR_OS));
+		} else {
+			/* attempt to use the GRE pointed at by MOZILLA_FIVE_HOME */
+			int /*long*/ ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
+			if (ptr != 0) {
+				int length = OS.strlen(ptr);
+				byte[] buffer = new byte[length];
+				OS.memmove(buffer, ptr, length);
+				mozillaPath = new String (Converter.mbcsToWcs (null, buffer));
+			}
+			if (mozillaPath == null) {
+				dispose();
+				SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]"); //$NON-NLS-1$
+			}
+			/*
+			* Note.  Embedding a Mozilla GTK1.2 causes a crash.  The workaround
+			* is to check the version of GTK used by Mozilla by looking for
+			* the libwidget_gtk.so library used by Mozilla GTK1.2. Mozilla GTK2
+			* uses the libwidget_gtk2.so library.   
+			*/
+			File file = new File(mozillaPath, "components/libwidget_gtk.so"); //$NON-NLS-1$
+			if (file.exists()) {
+				dispose();
+				SWT.error(SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
+			}
+	
+			try {
+				Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
+			} catch (UnsatisfiedLinkError e) {
+				try {
+					/* 
+					 * The initial loadLibrary attempt may have failed as a result of the user's
+					 * system not having libstdc++.so.6 installed, so try to load the alternate
+					 * swt mozilla library that depends on libswtc++.so.5 instead.
+					 */
+					Library.loadLibrary ("swt-mozilla-gcc3"); //$NON-NLS-1$
+				} catch (UnsatisfiedLinkError ex) {
+					dispose ();
+					/*
+					 * Print the error from the first failed attempt since at this point it's
+					 * known that the failure was not due to the libstdc++.so.6 dependency.
+					 */
+					SWT.error (SWT.ERROR_NO_HANDLES, e);
+				}
 			}
 		}
 
@@ -318,7 +419,7 @@ public Browser(Composite parent, int style) {
 			error(rc);
 		}
 		int length = XPCOM.nsEmbedCString_Length(path);
-		ptr = XPCOM.nsEmbedCString_get(path);
+		int /*long*/ ptr = XPCOM.nsEmbedCString_get(path);
 		buffer = new byte [length];
 		XPCOM.memmove(buffer, ptr, length);
 		profileRootDirectory = new String(Converter.mbcsToWcs(null, buffer)) + PROFILE_DIR;
@@ -606,6 +707,7 @@ public Browser(Composite parent, int style) {
 		componentManager.Release();
 		initialized = true;
 	}
+
 	BrowserCount++;
 	int rc = XPCOM.NS_GetComponentManager(result);
 	if (rc != XPCOM.NS_OK) {
