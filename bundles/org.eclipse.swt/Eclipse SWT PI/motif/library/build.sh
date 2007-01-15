@@ -51,9 +51,12 @@ case $OS in
 				MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
 			fi
 			if [ "${GECKO_SDK}" = "" ]; then
-				GECKO_SDK=/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
-				GECKO_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/../include/xpcom -I${GECKO_SDK}/../include/nspr -I${GECKO_SDK}/../include/embed_base -I${GECKO_SDK}/../include/embedstring -I${GECKO_SDK}/../include/string"
-				GECKO_LIBS="${GECKO_SDK}/../lib/libembedstring.a -L${GECKO_SDK}/../bin -L${GECKO_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
+				MOZILLA_SDK=/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
+				MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"
+				MOZILLA_LIBS="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
+				XULRUNNER_SDK=/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/linux_gtk2/mozilla/dist/sdk
+				XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
+				XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue -lnspr4"
 			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
@@ -117,6 +120,6 @@ case $OS in
 		;;
 esac
 
-export JAVA_HOME MOTIF_HOME CDE_HOME GECKO_SDK GECKO_INCLUDES GECKO_LIBS OUTPUT_DIR
+export JAVA_HOME MOTIF_HOME CDE_HOME MOZILLA_SDK MOZILLA_INCLUDES MOZILLA_LIBS XULRUNNER_SDK XULRUNNER_INCLUDES XULRUNNER_LIBS OUTPUT_DIR
 
 make -f $makefile $1 $2 $3 $4
