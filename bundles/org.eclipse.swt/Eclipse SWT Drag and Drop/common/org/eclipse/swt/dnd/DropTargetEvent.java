@@ -54,7 +54,6 @@ public class DropTargetEvent extends TypedEvent {
 	 * <p>Feedback effects will only be applied if they are applicable.</p>
 	 * <p>The default value is DND.FEEDBACK_SELECT.</p>
 	 * @see DND#FEEDBACK_NONE
-	 * @see DND#FEEDBACK_DEFAULT
 	 * @see DND#FEEDBACK_SELECT
 	 * @see DND#FEEDBACK_INSERT_BEFORE
 	 * @see DND#FEEDBACK_INSERT_AFTER

@@ -434,11 +434,11 @@ public Control getControl () {
 }
 
 /**
- * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * Returns the drop effect for this DropTarget.  This drop effect will be 
  * used during a drag and drop to display the drag under effect on the 
  * target widget.
  *
- * @param effect the drop effect that is registered for this DropTarget
+ * @return the drop effect that is registered for this DropTarget
  * 
  * @since 3.3
  */
