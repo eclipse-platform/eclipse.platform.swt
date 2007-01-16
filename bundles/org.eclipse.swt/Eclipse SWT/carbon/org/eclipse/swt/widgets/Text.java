@@ -1804,12 +1804,12 @@ void setFontStyle (Font font) {
 	if (txnObject == 0) {
 		super.setFontStyle (font);
 	} else {
-		int family = OS.kTXNDefaultFontName, style = OS.kTXNDefaultFontStyle, size = OS.kTXNDefaultFontSize;
+		int family = OS.kTXNDefaultFontName, fontStyle = OS.kTXNDefaultFontStyle, size = OS.kTXNDefaultFontSize;
 		if (font != null) {
 			short [] id = new short [1], s = new short [1];
 			OS.FMGetFontFamilyInstanceFromFont (font.handle, id, s);
 			family = id [0];
-			style = s [0] | font.style;
+			fontStyle = s [0] | font.style;
 			size = OS.X2Fix (font.size);
 		}
 		int [] attribs = new int [] {
@@ -1818,7 +1818,7 @@ void setFontStyle (Font font) {
 			size,
 			OS.kTXNQDFontStyleAttribute,
 			OS.kTXNQDFontStyleAttributeSize,
-			style,
+			fontStyle,
 			OS.kTXNQDFontFamilyIDAttribute,
 			OS.kTXNQDFontFamilyIDAttributeSize,
 			family,
