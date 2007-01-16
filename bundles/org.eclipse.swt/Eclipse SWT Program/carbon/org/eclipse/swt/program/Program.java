@@ -361,7 +361,8 @@ public static boolean launch (String fileName) {
 	fileName.getChars(0, chars.length, chars, 0);
 	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
 	if (str != 0) {
-		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, 0, 0, OS.kCFStringEncodingUTF8);
+		int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
+		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
 		if (escapedStr != 0) {
 			int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
 			if (url != 0) {
@@ -370,6 +371,7 @@ public static boolean launch (String fileName) {
 			}
 			OS.CFRelease(escapedStr);
 		}
+		if (unscapedStr != 0) OS.CFRelease(unscapedStr);
 		OS.CFRelease(str);
 	}
 	return rc == OS.noErr;
@@ -407,7 +409,8 @@ public boolean execute (String fileName) {
 			fileName.getChars(0, chars.length, chars, 0);
 			int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
 			if (str != 0) {
-				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, 0, 0, OS.kCFStringEncodingUTF8);
+				int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
+				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
 				if (escapedStr != 0) {
 					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
 					if (urls != 0) {
@@ -420,6 +423,7 @@ public boolean execute (String fileName) {
 					}
 					OS.CFRelease(escapedStr);
 				}
+				if (unscapedStr != 0) OS.CFRelease(unscapedStr);
 				OS.CFRelease(str);
 			}
 		}
