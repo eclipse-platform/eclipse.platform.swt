@@ -177,6 +177,10 @@ public DragSource(Control control, int style) {
 	Object effect = control.getData(DEFAULT_DRAG_SOURCE_EFFECT);
 	if (effect instanceof DragSourceEffect) {
 		dragEffect = (DragSourceEffect) effect;
+	} else if (control instanceof Tree) {
+		dragEffect = new TreeDragSourceEffect((Tree) control);
+	} else if (control instanceof Table) {
+		dragEffect = new TableDragSourceEffect((Table) control);
 	}
 }
 

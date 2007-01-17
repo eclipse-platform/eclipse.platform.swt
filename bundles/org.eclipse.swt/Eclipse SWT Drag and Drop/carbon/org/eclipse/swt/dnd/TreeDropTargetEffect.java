@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.widgets.*;
 
-/*public*/ class TreeDropTargetEffect extends DropTargetEffect {
+public class TreeDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 	static final int EXPAND_HYSTERESIS = 300; // milli seconds
 
@@ -61,15 +61,21 @@ import org.eclipse.swt.widgets.*;
 		return (DropTarget)widget.getData(DropTarget.DROPTARGETID); 
 	}
 
+	/**
+	 * Creates a new <code>TreeDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * <code>Tree</code>.
+	 * 
+	 * @param tree the <code>Tree</code> over which the user positions the cursor to drop the data
+	 */
+	public TreeDropTargetEffect(Tree tree) {
+		super(tree);
+	}
+
 	int checkEffect(int effect) {
 		// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 		if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
 		return effect;
-	}
-
-	boolean checkWidget(DropTargetEvent event) {
-		return ((DropTarget) event.widget).getControl() instanceof Tree;
 	}
 
 	/**
@@ -87,9 +93,8 @@ import org.eclipse.swt.widgets.*;
 	 * @see DropTargetEvent
 	 */
 	public void dragEnter(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
 		if (callbacks == null) {
-			Tree table = (Tree)((DropTarget)event.widget).getControl();
+			Tree table = (Tree) control;
 			DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 			OS.GetDataBrowserCallbacks (table.handle, callbacks);
 			callbacks.v1_acceptDragCallback = AcceptDragProc.getAddress();
@@ -117,8 +122,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Tree tree = (Tree)((DropTarget)event.widget).getControl();
+		Tree tree = (Tree) control;
 		if (insertItem != null) {
 			setInsertMark(tree, null, false);
 			insertItem = null;
@@ -148,8 +152,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DND#FEEDBACK_SCROLL
 	 */
 	public void dragOver(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Tree tree = (Tree)((DropTarget)event.widget).getControl();
+		Tree tree = (Tree) control;
 		TreeItem item = (TreeItem)getItem(tree, event.x, event.y);
 		int effect = checkEffect(event.feedback);		
 		if ((effect & DND.FEEDBACK_EXPAND) == 0) {
@@ -219,58 +222,6 @@ import org.eclipse.swt.widgets.*;
 		}
 		// save current effect for selection feedback
 		((DropTarget)event.widget).feedback = effect;
-	}
-
-	Widget getItem(Tree tree, int x, int y) {
-		Point coordinates = new Point(x, y);
-		coordinates = tree.toControl(coordinates);
-		TreeItem item = tree.getItem(coordinates);
-		if (item == null) {
-			Rectangle area = tree.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = tree.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-		return item;
-	}
-
-	TreeItem nextItem(Tree tree, TreeItem item) {
-		if (item == null) return null;
-		if (item.getExpanded()) return item.getItem(0);
-		TreeItem childItem = item;
-		TreeItem parentItem = childItem.getParentItem();
-		int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-		int count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
-		while (true) {
-			if (index + 1 < count) return parentItem == null ? tree.getItem(index + 1) : parentItem.getItem(index + 1);
-			if (parentItem == null) return null;
-			childItem = parentItem;
-			parentItem = childItem.getParentItem();
-			index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-			count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
-		}
-	}
-
-	TreeItem previousItem(Tree tree, TreeItem item) {
-		if (item == null) return null;
-		TreeItem childItem = item;
-		TreeItem parentItem = childItem.getParentItem();
-		int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
-		if (index == 0) return parentItem;
-		TreeItem nextItem = parentItem == null ? tree.getItem(index-1) : parentItem.getItem(index-1);
-		int count = nextItem.getItemCount();
-		while (count > 0 && nextItem.getExpanded()) {
-			nextItem = nextItem.getItem(count - 1);
-			count = nextItem.getItemCount();
-		}
-		return nextItem;
 	}
 
 	void setInsertMark(Tree tree, TreeItem item, boolean before) {

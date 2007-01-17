@@ -171,9 +171,9 @@ public DropTarget(Control control, int style) {
 	if (effect instanceof DropTargetEffect) {
 		dropEffect = (DropTargetEffect) effect;
 	} else if (control instanceof Table) {
-		dropEffect = new TableDropTargetEffect();
+		dropEffect = new TableDropTargetEffect((Table) control);
 	} else if (control instanceof Tree) {
-		dropEffect = new TreeDropTargetEffect();
+		dropEffect = new TreeDropTargetEffect((Tree) control);
 	}
 
 	dragOverHeartbeat = new Runnable() {
@@ -201,7 +201,9 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				event.item = getItem(getControl(), event.x, event.y);
+				if (dropEffect != null) {
+					event.item = dropEffect.getItem(event.x, event.y);
+				}
 				selectedDataType = null;
 				selectedOperation = DND.DROP_NONE;				
 				notifyListeners(DND.DragOver, event);
@@ -519,57 +521,16 @@ public Control getControl () {
 }
 
 /**
- * Specifies the drop effect for this DropTarget.  This drop effect will be 
+ * Returns the drop effect for this DropTarget.  This drop effect will be 
  * used during a drag and drop to display the drag under effect on the 
  * target widget.
- *
- * @param effect the drop effect that is registered for this DropTarget
+ * 
+ * @return the drop effect that is registered for this DropTarget
  * 
  * @since 3.3
  */
 public DropTargetEffect getDropTargetEffect() {
 	return dropEffect;
-}
-
-Widget getItem(Control control, int x, int y) {
-	org.eclipse.swt.graphics.Point coordinates = new org.eclipse.swt.graphics.Point(x, y);
-	coordinates = control.toControl(coordinates);
-	Item item = null;
-	
-	if (control instanceof Table) {
-		Table table = (Table) control;
-		item = table.getItem(coordinates);
-		if (item == null) {
-			org.eclipse.swt.graphics.Rectangle area = table.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the table.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					org.eclipse.swt.graphics.Point pt = new org.eclipse.swt.graphics.Point(x1, coordinates.y);
-					item = table.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-	} else if (control instanceof Tree) {
-		Tree tree = (Tree) control;
-		item = tree.getItem(coordinates);
-		if (item == null) {
-			org.eclipse.swt.graphics.Rectangle area = tree.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					org.eclipse.swt.graphics.Point pt = new org.eclipse.swt.graphics.Point(x1, coordinates.y);
-					item = tree.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-	}
-	return item;
 }
 
 int getOperationFromKeyState(int theDrag) {
@@ -764,7 +725,9 @@ boolean setEventData(int theDrag, DNDEvent event) {
 	event.dataType = dataTypes[0];
 	event.operations = operations;
 	event.detail = operation;
-	event.item = getItem(getControl(), event.x, event.y);
+	if (dropEffect != null) {
+		event.item = dropEffect.getItem(event.x, event.y);
+	}
 	
 	return true;
 }
