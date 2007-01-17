@@ -11,7 +11,6 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
@@ -158,9 +157,9 @@ public DropTarget(Control control, int style) {
 	if (effect instanceof DropTargetEffect) {
 		dropEffect = (DropTargetEffect) effect;
 	} else if (control instanceof Table) {
-		dropEffect = new TableDropTargetEffect();
+		dropEffect = new TableDropTargetEffect((Table) control);
 	} else if (control instanceof Tree) {
-		dropEffect = new TreeDropTargetEffect();
+		dropEffect = new TreeDropTargetEffect((Tree) control);
 	}
 }
 
@@ -355,7 +354,9 @@ int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
-	event.item = getItem(getControl(), pt_x, pt_y);
+	if (dropEffect != null) {
+		event.item = dropEffect.getItem(pt_x, pt_y);
+	}
 	event.detail = DND.DROP_NONE;
 	notifyListeners(DND.DragLeave, event);
 	refresh();
@@ -444,47 +445,6 @@ public Control getControl () {
  */
 public DropTargetEffect getDropTargetEffect() {
 	return dropEffect;
-}
-
-Widget getItem(Control control, int x, int y) {
-	Point coordinates = new Point(x, y);
-	coordinates = control.toControl(coordinates);
-	Item item = null;
-	
-	if (control instanceof Table) {
-		Table table = (Table) control;
-		item = table.getItem(coordinates);
-		if (item == null) {
-			Rectangle area = table.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the table.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = table.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-	} else if (control instanceof Tree) {
-		Tree tree = (Tree) control;
-		item = tree.getItem(coordinates);
-		if (item == null) {
-			Rectangle area = tree.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = tree.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-	}
-	return item;
 }
 
 int getOperationFromKeyState(int grfKeyState) {
@@ -710,7 +670,9 @@ boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, int pt_x,
 	event.feedback = DND.FEEDBACK_SELECT;
 	event.dataTypes = dataTypes;
 	event.dataType = dataTypes[0];
-	event.item = getItem(getControl(), pt_x, pt_y);
+	if (dropEffect != null) {
+		event.item = dropEffect.getItem(pt_x, pt_y);
+	}
 	event.operations = operations[0];
 	event.detail = operation;
 	return true;

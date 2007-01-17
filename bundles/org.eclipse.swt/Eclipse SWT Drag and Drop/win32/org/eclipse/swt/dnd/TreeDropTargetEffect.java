@@ -46,7 +46,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @since 3.3
  */
-/*public*/ class TreeDropTargetEffect extends DropTargetEffect {
+public class TreeDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 200; // milli seconds
 	static final int EXPAND_HYSTERESIS = 300; // milli seconds
 
@@ -58,15 +58,21 @@ import org.eclipse.swt.widgets.*;
 	TreeItem insertItem;
 	boolean insertBefore;
 	
+	/**
+	 * Creates a new <code>TreeDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * <code>Tree</code>.
+	 * 
+	 * @param tree the <code>Tree</code> over which the user positions the cursor to drop the data
+	 */
+	public TreeDropTargetEffect(Tree tree) {
+		super(tree);
+	}
+
 	int checkEffect(int effect) {
 		// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 		if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
 		return effect;
-	}
-
-	boolean checkWidget(DropTargetEvent event) {
-		return ((DropTarget) event.widget).getControl() instanceof Tree;
 	}
 
 	/**
@@ -107,8 +113,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Tree tree = (Tree)((DropTarget)event.widget).getControl();
+		Tree tree = (Tree) control;
 		int handle = tree.handle;
 		if (dropIndex != -1) {
 			TVITEM tvItem = new TVITEM ();
@@ -148,8 +153,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DND#FEEDBACK_SCROLL
 	 */
 	public void dragOver(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Tree tree = (Tree)((DropTarget)event.widget).getControl();
+		Tree tree = (Tree) getControl();
 		int effect = checkEffect(event.feedback);
 		int handle = tree.handle;
 		Point coordinates = new Point(event.x, event.y);

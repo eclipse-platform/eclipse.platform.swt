@@ -12,7 +12,6 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
@@ -217,9 +216,9 @@ public DropTarget(Control control, int style) {
 	if (effect instanceof DropTargetEffect) {
 		dropEffect = (DropTargetEffect) effect;
 	} else if (control instanceof Table) {
-		dropEffect = new TableDropTargetEffect();
+		dropEffect = new TableDropTargetEffect((Table) control);
 	} else if (control instanceof Tree) {
-		dropEffect = new TreeDropTargetEffect();
+		dropEffect = new TreeDropTargetEffect((Tree) control);
 	}
 
 	if (control.isVisible()) registerDropTarget();
@@ -249,7 +248,9 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				event.item = getItem(getControl(), dragOverEvent.x, dragOverEvent.y);
+				if (dropEffect != null) {
+					event.item = dropEffect.getItem(dragOverEvent.x, dragOverEvent.y);
+				}
 				notifyListeners(DND.DragOver, event);
 				
 				selectedDataType = null;
@@ -532,47 +533,6 @@ public DropTargetEffect getDropTargetEffect() {
 	return dropEffect;
 }
 
-Widget getItem(Control control, int x, int y) {
-	Point coordinates = new Point(x, y);
-	coordinates = control.toControl(coordinates);
-	Item item = null;
-	
-	if (control instanceof Table) {
-		Table table = (Table) control;
-		item = table.getItem(coordinates);
-		if (item == null) {
-			Rectangle area = table.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the table.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = table.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-	} else if (control instanceof Tree) {
-		Tree tree = (Tree) control;
-		item = tree.getItem(coordinates);
-		if (item == null) {
-			Rectangle area = tree.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = tree.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-	}
-	return item;
-}
-
 /**
  * Returns a list of the data types that can be transferred to this DropTarget.
  *
@@ -785,7 +745,9 @@ boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int t
 	event.dataType = dataTypes[0];
 	event.operations = operations;
 	event.detail = operation;
-	event.item = getItem(getControl(), event.x, event.y);
+	if (dropEffect != null) {
+		event.item = dropEffect.getItem(event.x, event.y);
+	}
 	return true;
 }
 

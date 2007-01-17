@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
 
 /**
  * This class provides a default drag under effect during a drag and drop. 
@@ -43,4 +47,122 @@ package org.eclipse.swt.dnd;
  * 
  * @since 3.3
  */
-public class DropTargetEffect extends DropTargetAdapter {}
+public class DropTargetEffect extends DropTargetAdapter {
+	Control control;
+
+	/**
+	 * Creates a new <code>DropTargetEffect</code> to handle the drag under effect on the specified 
+	 * <code>Control</code>.
+	 * 
+	 * @param control the <code>Control</code> over which the user positions the cursor to drop the data
+	 * 
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the control is null</li>
+	 * </ul>
+	 */
+	public DropTargetEffect(Control control) {
+		if (control == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		this.control = control;
+	}
+
+	/**
+	 * Returns the Control which is registered for this DropTargetEffect.  This is the control over which the 
+	 * user positions the cursor to drop the data.
+	 *
+	 * @return the Control which is registered for this DropTargetEffect
+	 */
+	public Control getControl() {
+		return control;
+	}
+	
+	/**
+	 * Returns the item at the given x-y coordinate in the receiver
+	 * or null if no such item exists. The x-y coordinate is in the
+	 * display relative coordinates.
+	 *
+	 * @param x the x coordinate used to locate the item
+	 * @param y the y coordinate used to locate the item
+	 * @return the item at the given x-y coordinate, or null if the coordinate is not in a selectable item
+	 */
+	/*public*/ Item getItem(int x, int y) {
+		if (control instanceof Table) {
+			return getItem((Table) control, x, y);
+		}
+		if (control instanceof Tree) {
+			return getItem((Tree) control, x, y);
+		}			
+		return null;
+	}
+	
+	Item getItem(Table table, int x, int y) {
+		Point coordinates = new Point(x, y);
+		coordinates = table.toControl(coordinates);
+		Item item = table.getItem(coordinates);
+		if (item == null) {
+			Rectangle area = table.getClientArea();
+			if (area.contains(coordinates)) {
+				// Scan across the width of the table.
+				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+					Point pt = new Point(x1, coordinates.y);
+					item = table.getItem(pt);
+					if (item != null) {
+						break;
+					}
+				}
+			}
+		}
+		return item;
+	}
+	
+	Item getItem(Tree tree, int x, int y) {
+		Point coordinates = new Point(x, y);
+		coordinates = tree.toControl(coordinates);
+		Item item = tree.getItem(coordinates);
+		if (item == null) {
+			Rectangle area = tree.getClientArea();
+			if (area.contains(coordinates)) {
+				// Scan across the width of the tree.
+				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
+					Point pt = new Point(x1, coordinates.y);
+					item = tree.getItem(pt);
+					if (item != null) {
+						break;
+					}
+				}
+			}
+		}
+		return item;
+	}
+	
+	TreeItem nextItem(Tree tree, TreeItem item) {
+		if (item == null) return null;
+		if (item.getExpanded()) return item.getItem(0);
+		TreeItem childItem = item;
+		TreeItem parentItem = childItem.getParentItem();
+		int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
+		int count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
+		while (true) {
+			if (index + 1 < count) return parentItem == null ? tree.getItem(index + 1) : parentItem.getItem(index + 1);
+			if (parentItem == null) return null;
+			childItem = parentItem;
+			parentItem = childItem.getParentItem();
+			index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
+			count = parentItem == null ? tree.getItemCount() : parentItem.getItemCount();
+		}
+	}
+	
+	TreeItem previousItem(Tree tree, TreeItem item) {
+		if (item == null) return null;
+		TreeItem childItem = item;
+		TreeItem parentItem = childItem.getParentItem();
+		int index = parentItem == null ? tree.indexOf(childItem) : parentItem.indexOf(childItem);
+		if (index == 0) return parentItem;
+		TreeItem nextItem = parentItem == null ? tree.getItem(index-1) : parentItem.getItem(index-1);
+		int count = nextItem.getItemCount();
+		while (count > 0 && nextItem.getExpanded()) {
+			nextItem = nextItem.getItem(count - 1);
+			count = nextItem.getItemCount();
+		}
+		return nextItem;
+	}
+}

@@ -180,9 +180,9 @@ public DragSource(Control control, int style) {
 	if (effect instanceof DragSourceEffect) {
 		dragEffect = (DragSourceEffect) effect;
 	} else if (control instanceof Tree) {
-		dragEffect = new TreeDragSourceEffect();
+		dragEffect = new TreeDragSourceEffect((Tree) control);
 	} else if (control instanceof Table) {
-		dragEffect = new TableDragSourceEffect();
+		dragEffect = new TableDragSourceEffect((Table) control);
 	}
 }
 

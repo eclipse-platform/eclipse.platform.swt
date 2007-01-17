@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+
 /**
  * This class provides default implementations to display a drag source
  * effect during a drag and drop operation. The current implementation
@@ -32,4 +35,30 @@ package org.eclipse.swt.dnd;
  * 
  * @since 3.3
  */
-public class DragSourceEffect extends DragSourceAdapter {}
+public class DragSourceEffect extends DragSourceAdapter {
+	Control control = null;
+
+	/**
+	 * Creates a new <code>DragSourceEffect</code> to handle drag effect from the specified <code>Control</code>.
+	 *
+	 * @param control the <code>Control</code> that the user clicks on to initiate the drag
+	 * 
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the control is null</li>
+	 * </ul>
+	 */
+	public DragSourceEffect(Control control) {
+		if (control == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		this.control = control;
+	}
+
+	/**
+	 * Returns the Control which is registered for this DragSourceEffect.  This is the control that the 
+	 * user clicks in to initiate dragging.
+	 *
+	 * @return the Control which is registered for this DragSourceEffect
+	 */
+	public Control getControl() {
+		return control;
+	}
+}

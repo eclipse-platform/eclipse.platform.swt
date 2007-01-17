@@ -31,11 +31,17 @@ import org.eclipse.swt.widgets.*;
  * 
  * @since 3.3
  */
-/*public*/ class TreeDragSourceEffect extends DragSourceEffect {
+public class TreeDragSourceEffect extends DragSourceEffect {
 	Image dragSourceImage = null;
 
-	boolean checkWidget(DragSourceEvent event) {
-		return ((DragSource) event.widget).getControl() instanceof Tree;
+	/**
+	 * Creates a new <code>TreeDragSourceEffect</code> to handle drag effect 
+	 * from the specified <code>Tree</code>.
+	 *
+	 * @param table the <code>Tree</code> that the user clicks on to initiate the drag
+	 **/
+	public TreeDragSourceEffect(Tree tree) {
+		super(tree);
 	}
 
 	/**
@@ -64,14 +70,13 @@ import org.eclipse.swt.widgets.*;
 	 * @param event the information associated with the drag start event
 	 */
 	public void dragStart(DragSourceEvent event) {
-		if (!checkWidget(event)) return;
 		event.image = getDragSourceImage(event);
 	}
 
 	Image getDragSourceImage(DragSourceEvent event) {
 		if (dragSourceImage != null) dragSourceImage.dispose();
 		dragSourceImage = null;		
-		Tree tree = (Tree) ((DragSource) event.widget).getControl();
+		Tree tree = (Tree) control;
 		TreeItem[] selection = tree.getSelection();
 		if (selection.length == 0) return null;
 		int treeImageList = OS.SendMessage (tree.handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);

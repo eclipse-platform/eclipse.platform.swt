@@ -132,6 +132,10 @@ public DropTarget(Control control, int style) {
 	Object effect = control.getData(DEFAULT_DROP_TARGET_EFFECT);
 	if (effect instanceof DropTargetEffect) {
 		dropEffect = (DropTargetEffect) effect;
+	} else if (control instanceof Table) {
+		dropEffect = new TableDropTargetEffect((Table) control);
+	} else if (control instanceof Tree) {
+		dropEffect = new TreeDropTargetEffect((Tree) control);
 	}
 }
 

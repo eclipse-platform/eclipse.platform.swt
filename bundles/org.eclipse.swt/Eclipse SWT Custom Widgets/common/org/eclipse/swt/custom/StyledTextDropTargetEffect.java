@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * @since 3.3
  */
-/*public*/ class StyledTextDropTargetEffect extends DropTargetEffect {
+public class StyledTextDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 100; // milli seconds
 	static final int SCROLL_TOLERANCE = 20; // pixels
 	
@@ -53,8 +53,14 @@ import org.eclipse.swt.widgets.*;
 	long scrollBeginTime;
 	int scrollX = -1, scrollY = -1;
 	
-	boolean checkWidget(DropTargetEvent event) {
-		return ((DropTarget) event.widget).getControl() instanceof StyledText;
+	/**
+	 * Creates a new <code>StyledTextDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * <code>StyledText</code>.
+	 * 
+	 * @param styledText the <code>StyledText</code> over which the user positions the cursor to drop the data
+	 */
+	public StyledTextDropTargetEffect(StyledText styledText) {
+		super(styledText);
 	}
 	
 	/**
@@ -93,10 +99,8 @@ import org.eclipse.swt.widgets.*;
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
 		if (currentOffset != -1) {
-			DropTarget dt = (DropTarget)event.widget;
-			StyledText text = (StyledText)dt.getControl();
+			StyledText text = (StyledText) getControl();
 			drawCaret(text, currentOffset, -1);
 		}
 		scrollBeginTime = 0;
@@ -121,10 +125,8 @@ import org.eclipse.swt.widgets.*;
 	 * @see DND#FEEDBACK_SCROLL
 	 */
 	public void dragOver(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
 		int effect = event.feedback;
-		DropTarget dt = (DropTarget)event.widget;
-		StyledText text = (StyledText)dt.getControl();
+		StyledText text = (StyledText) getControl();
 		
 		Point pt = text.getDisplay().map(null, text, event.x, event.y);
 		if ((effect & DND.FEEDBACK_SCROLL) == 0) {
@@ -280,8 +282,7 @@ import org.eclipse.swt.widgets.*;
 	 */
 	public void dropAccept(DropTargetEvent event) {
 		if (currentOffset != -1) {
-			DropTarget dt = (DropTarget)event.widget;
-			StyledText text = (StyledText)dt.getControl();
+			StyledText text = (StyledText) getControl();
 			text.setCaretOffset(currentOffset);
 			currentOffset = -1;
 		}

@@ -43,22 +43,28 @@ import org.eclipse.swt.widgets.*;
  * 
  * @since 3.3
  */
-/*public*/ class TableDropTargetEffect extends DropTargetEffect {
+public class TableDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 200; // milli seconds
 	
 	int scrollIndex = -1;
 	long scrollBeginTime;
 	TableItem dropHighlight;
 
+	/**
+	 * Creates a new <code>TableDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * <code>Table</code>.
+	 * 
+	 * @param table the <code>Table</code> over which the user positions the cursor to drop the data
+	 */
+	public TableDropTargetEffect(Table table) {
+		super(table);
+	}
+
 	int checkEffect(int effect) {
 		// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 		if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
 		return effect;
-	}
-
-	boolean checkWidget(DropTargetEvent event) {
-		return ((DropTarget) event.widget).getControl() instanceof Table;
 	}
 
 	/**
@@ -96,8 +102,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Table table = (Table)((DropTarget)event.widget).getControl();
+		Table table = (Table) control;
 		int handle = table.handle;
 		if (dropHighlight != null) {
 			LVITEM lvItem = new LVITEM ();
@@ -127,8 +132,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DND#FEEDBACK_SCROLL
 	 */
 	public void dragOver(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Table table = (Table)((DropTarget)event.widget).getControl();
+		Table table = (Table) getControl();
 		int effect = checkEffect(event.feedback);
 		int handle = table.handle;
 		Point coordinates = new Point(event.x, event.y);

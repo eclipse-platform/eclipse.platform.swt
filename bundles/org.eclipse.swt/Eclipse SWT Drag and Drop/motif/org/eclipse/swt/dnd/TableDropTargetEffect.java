@@ -14,7 +14,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-/*public*/ class TableDropTargetEffect extends DropTargetEffect {
+public class TableDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 	
 	int currentEffect = DND.FEEDBACK_NONE;
@@ -26,15 +26,21 @@ import org.eclipse.swt.widgets.*;
 	TableItem scrollItem;
 	long scrollBeginTime;
 
+	/**
+	 * Creates a new <code>TableDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * <code>Table</code>.
+	 * 
+	 * @param table the <code>Table</code> over which the user positions the cursor to drop the data
+	 */
+	public TableDropTargetEffect(Table table) {
+		super(table);
+	}
+
 	int checkEffect(int effect) {
 		// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 		if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
 		return effect;
-	}
-
-	boolean checkWidget(DropTargetEvent event) {
-		return ((DropTarget) event.widget).getControl() instanceof Table;
 	}
 
 	/**
@@ -73,8 +79,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Table table = (Table)((DropTarget)event.widget).getControl();
+		Table table = (Table) control;
 		if (currentItem != null) {
 			setDropSelection(table, null);
 			currentItem = null;
@@ -101,8 +106,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DND#FEEDBACK_SCROLL
 	 */
 	public void dragOver(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Table table = (Table)((DropTarget)event.widget).getControl();
+		Table table = (Table) control;
 		int effect = checkEffect(event.feedback);
 		TableItem item = (TableItem)getItem(table, event.x, event.y);
 
@@ -147,26 +151,6 @@ import org.eclipse.swt.widgets.*;
 		}
 	}
 
-	Widget getItem(Table table, int x, int y) {
-		Point coordinates = new Point(x, y);
-		coordinates = table.toControl(coordinates);
-		TableItem item = table.getItem(coordinates);
-		if (item == null) {
-			Rectangle area = table.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the table.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = table.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-		return item;
-	}
-	
 	void setDropSelection (Table table, TableItem item) {	
 		if (item == dropSelection) return;
 		if (dropSelection != null && !dropSelection.isDisposed()) {

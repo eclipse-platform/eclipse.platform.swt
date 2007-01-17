@@ -14,21 +14,27 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
-/*public*/ class TableDropTargetEffect extends DropTargetEffect {
+public class TableDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 	
 	int scrollIndex;
 	long scrollBeginTime;
+
+	/**
+	 * Creates a new <code>TableDropTargetEffect</code> to handle the drag under effect on the specified 
+	 * <code>Table</code>.
+	 * 
+	 * @param table the <code>Table</code> over which the user positions the cursor to drop the data
+	 */
+	public TableDropTargetEffect(Table table) {
+		super(table);
+	}
 
 	int checkEffect(int effect) {
 		// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
 		if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
 		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
 		return effect;
-	}
-
-	boolean checkWidget(DropTargetEvent event) {
-		return ((DropTarget) event.widget).getControl() instanceof Table;
 	}
 
 	/**
@@ -65,8 +71,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Table table = (Table)((DropTarget)event.widget).getControl();
+		Table table = (Table) control;
 		int /*long*/ handle = table.handle;
 		OS.gtk_tree_view_unset_rows_drag_dest(handle);
 
@@ -92,8 +97,7 @@ import org.eclipse.swt.widgets.*;
 	 * @see DND#FEEDBACK_SCROLL
 	 */
 	public void dragOver(DropTargetEvent event) {
-		if (!checkWidget(event)) return;
-		Table table = (Table)((DropTarget)event.widget).getControl();
+		Table table = (Table) control;
 		int /*long*/ handle = table.handle;
 		int effect = checkEffect(event.feedback);
 		Point coordinates = new Point(event.x, event.y);

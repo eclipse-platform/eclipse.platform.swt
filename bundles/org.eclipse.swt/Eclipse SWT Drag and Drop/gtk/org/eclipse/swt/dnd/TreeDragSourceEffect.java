@@ -15,11 +15,17 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
-/*public*/ class TreeDragSourceEffect extends DragSourceEffect {
+public class TreeDragSourceEffect extends DragSourceEffect {
 	Image dragSourceImage = null;
 
-	boolean checkWidget(DragSourceEvent event) {
-		return ((DragSource) event.widget).getControl() instanceof Tree;
+	/**
+	 * Creates a new <code>TreeDragSourceEffect</code> to handle drag effect 
+	 * from the specified <code>Tree</code>.
+	 *
+	 * @param table the <code>Tree</code> that the user clicks on to initiate the drag
+	 **/
+	public TreeDragSourceEffect(Tree tree) {
+		super(tree);
 	}
 
 	/**
@@ -48,7 +54,6 @@ import org.eclipse.swt.widgets.*;
 	 * @param event the information associated with the drag start event
 	 */
 	public void dragStart(DragSourceEvent event) {
-		if (!checkWidget(event)) return;
 		event.image = getDragSourceImage(event);
 	}
 
@@ -56,7 +61,7 @@ import org.eclipse.swt.widgets.*;
 		if (dragSourceImage != null) dragSourceImage.dispose();
 		dragSourceImage = null;		
 		
-		Tree tree = (Tree) ((DragSource) event.widget).getControl();
+		Tree tree = (Tree) control;
 		if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) return null;
 		/*
 		* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults

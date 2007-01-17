@@ -179,9 +179,9 @@ public DropTarget(Control control, int style) {
 	if (effect instanceof DropTargetEffect) {
 		dropEffect = (DropTargetEffect) effect;
 	} else if (control instanceof Table) {
-		dropEffect = new TableDropTargetEffect();
+		dropEffect = new TableDropTargetEffect((Table) control);
 	} else if (control instanceof Tree) {
-		dropEffect = new TreeDropTargetEffect();
+		dropEffect = new TreeDropTargetEffect((Tree) control);
 	}
 
 	dragOverHeartbeat = new Runnable() {
@@ -209,7 +209,9 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				event.item = getItem(getControl(), dragOverEvent.x, dragOverEvent.y);
+				if (dropEffect != null) {
+					event.item = dropEffect.getItem(dragOverEvent.x, dragOverEvent.y);
+				}
 				selectedDataType = null;
 				selectedOperation = DND.DROP_NONE;
 				notifyListeners(DND.DragOver, event);
@@ -514,47 +516,6 @@ public DropTargetEffect getDropTargetEffect() {
 	return dropEffect;
 }
 
-Widget getItem(Control control, int x, int y) {
-	Point coordinates = new Point(x, y);
-	coordinates = control.toControl(coordinates);
-	Item item = null;
-	
-	if (control instanceof Table) {
-		Table table = (Table) control;
-		item = table.getItem(coordinates);
-		if (item == null) {
-			Rectangle area = table.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the table.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = table.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-	} else if (control instanceof Tree) {
-		Tree tree = (Tree) control;
-		item = tree.getItem(coordinates);
-		if (item == null) {
-			Rectangle area = tree.getClientArea();
-			if (area.contains(coordinates)) {
-				// Scan across the width of the tree.
-				for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-					Point pt = new Point(x1, coordinates.y);
-					item = tree.getItem(pt);
-					if (item != null) {
-						break;
-					}
-				}
-			}
-		}
-	}
-	return item;
-}
-
 int getOperationFromKeyState() {
 	int[] state = new int[1];
 	OS.gdk_window_get_pointer(0, null, null, state);
@@ -762,7 +723,9 @@ boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent even
 	event.dataType = dataTypes[0];
 	event.operations = operations;
 	event.detail = operation;
-	event.item = getItem(getControl(), coordinates.x, coordinates.y);
+	if (dropEffect != null) {
+		event.item = dropEffect.getItem(coordinates.x, coordinates.y);
+	}
 	return true;
 }
 
