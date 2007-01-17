@@ -699,6 +699,7 @@ void setSortDirection (int direction) {
 					hdItem.iImage = parent.imageIndexHeader (image);
 				} else {
 					hdItem.fmt &= ~OS.HDF_IMAGE;
+					hdItem.mask &= ~OS.HDI_IMAGE;
 				}
 				break;
 		}

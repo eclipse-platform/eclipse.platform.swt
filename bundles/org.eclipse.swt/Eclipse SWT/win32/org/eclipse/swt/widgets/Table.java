@@ -1504,8 +1504,8 @@ void destroyItem (TableColumn column) {
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 			if (OS.COMCTL32_MAJOR >= 6) {
 				HDITEM hdItem = new HDITEM ();
-				hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
-				hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN | OS.HDF_IMAGE);
+				hdItem.mask = OS.HDI_FORMAT;
+				hdItem.fmt = OS.HDF_LEFT;
 				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 				OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 			}
