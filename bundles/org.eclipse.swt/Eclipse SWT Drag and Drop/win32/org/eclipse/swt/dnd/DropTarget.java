@@ -327,7 +327,12 @@ int DragOver(int grfKeyState, int pt_x,	int pt_y, int pdwEffect) {
 		event.type = DND.DragOperationChanged;
 		event.dataType = selectedDataType;
 	}
-	notifyListeners(event.type, event);
+	OS.ImageList_DragShowNolock(false);
+	try {
+		notifyListeners(event.type, event);
+	} finally {
+		OS.ImageList_DragShowNolock(true);
+	}
 	refresh();
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
