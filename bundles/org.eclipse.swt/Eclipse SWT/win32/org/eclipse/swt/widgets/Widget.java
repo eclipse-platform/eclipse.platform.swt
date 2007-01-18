@@ -927,6 +927,7 @@ boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	event.x = x;
 	event.y = y;
 	event.stateMask = stateMask;
+	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
 	return event.doit;
 }
