@@ -132,6 +132,7 @@ typedef enum {
 	DragFinish_FUNC,
 	DragQueryFileA_FUNC,
 	DragQueryFileW_FUNC,
+	DrawAnimatedRects_FUNC,
 	DrawEdge_FUNC,
 	DrawFocusRect_FUNC,
 	DrawFrameControl_FUNC,

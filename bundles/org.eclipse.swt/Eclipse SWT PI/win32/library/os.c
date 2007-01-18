@@ -1690,6 +1690,25 @@ fail:
 }
 #endif
 
+#ifndef NO_DrawAnimatedRects
+JNIEXPORT jboolean JNICALL OS_NATIVE(DrawAnimatedRects)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3)
+{
+	RECT _arg2, *lparg2=NULL;
+	RECT _arg3, *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, DrawAnimatedRects_FUNC);
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getRECTFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)DrawAnimatedRects((HWND)arg0, arg1, lparg2, lparg3);
+fail:
+	if (arg3 && lparg3) setRECTFields(env, arg3, lparg3);
+	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, DrawAnimatedRects_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DrawEdge
 JNIEXPORT jboolean JNICALL OS_NATIVE(DrawEdge)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)

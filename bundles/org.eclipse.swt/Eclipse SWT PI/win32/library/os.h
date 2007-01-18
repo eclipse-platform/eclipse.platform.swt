@@ -171,6 +171,7 @@
 #define NO_DragFinish
 #define NO_DragQueryFileA
 #define NO_DragQueryFileW
+#define NO_DrawAnimatedRects
 #define NO_DrawStateA
 #define NO_DrawStateW
 #define NO_DrawTextA

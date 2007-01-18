@@ -747,6 +747,7 @@ public class OS extends Platform {
 	public static final int I_IMAGECALLBACK = -1;
 	public static final int I_IMAGENONE = -2;
 	public static final int IDABORT = 0x3;
+	public static final int IDANI_CAPTION = 3;
 	public static final int IDB_STD_SMALL_COLOR = 0x0;
 	public static final int IDC_APPSTARTING = 0x7f8a;
 	public static final int IDC_ARROW = 0x7f00;
@@ -3131,6 +3132,7 @@ public static final native boolean DragDetect (int /*long*/ hwnd, POINT pt);
 public static final native void DragFinish (int /*long*/ hDrop);
 public static final native int DragQueryFileA (int /*long*/ hDrop, int iFile, byte[] lpszFile, int cch);
 public static final native int DragQueryFileW (int /*long*/ hDrop, int iFile, char[] lpszFile, int cch);
+public static final native boolean DrawAnimatedRects (int /*long*/ hwnd, int idAni, RECT lprcFrom, RECT lprcTo);
 public static final native boolean DrawEdge (int /*long*/ hdc, RECT qrc, int edge, int grfFlags);
 public static final native boolean DrawFocusRect (int /*long*/ hDC, RECT lpRect);
 public static final native boolean DrawFrameControl (int /*long*/ hdc, RECT lprc, int uType, int uState);
