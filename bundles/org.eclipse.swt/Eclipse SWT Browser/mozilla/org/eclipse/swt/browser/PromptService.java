@@ -292,7 +292,7 @@ public int /*long*/ Prompt(int /*long*/ parent, int /*long*/ dialogTitle, int /*
 			buffer = new char[cnt + 1];
 			valueLabel[0].getChars(0, cnt, buffer, 0);
 			size = buffer.length * 2;
-			ptr = XPCOM.PR_Malloc(size);
+			ptr = OS.g_malloc(size);
 			XPCOM.memmove(ptr, buffer, size);
 			XPCOM.memmove(value, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
 
@@ -385,7 +385,7 @@ public int /*long*/ PromptUsernameAndPassword(int /*long*/ parent, int /*long*/ 
 			buffer = new char[cnt + 1];
 			userLabel[0].getChars(0, cnt, buffer, 0);
 			size = buffer.length * 2;
-			ptr = XPCOM.PR_Malloc(size);
+			ptr = OS.g_malloc(size);
 			XPCOM.memmove(ptr, buffer, size);
 			XPCOM.memmove(username, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
 
@@ -413,7 +413,7 @@ public int /*long*/ PromptUsernameAndPassword(int /*long*/ parent, int /*long*/ 
 			buffer = new char[cnt + 1];
 			passLabel[0].getChars(0, cnt, buffer, 0);
 			size = buffer.length * 2;
-			ptr = XPCOM.PR_Malloc(size);
+			ptr = OS.g_malloc(size);
 			XPCOM.memmove(ptr, buffer, size);
 			XPCOM.memmove(password, new int /*long*/[] {ptr}, OS.PTR_SIZEOF);
 			

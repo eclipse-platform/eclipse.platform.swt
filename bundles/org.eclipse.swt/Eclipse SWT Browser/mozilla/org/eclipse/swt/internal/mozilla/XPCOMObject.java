@@ -34,9 +34,9 @@ public XPCOMObject(int[] argCounts) {
 		if (callbackAddresses[i] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}	
 
-	int /*long*/ pVtable = XPCOM.PR_Malloc(OS.PTR_SIZEOF * argCounts.length);
+	int /*long*/ pVtable = OS.g_malloc(OS.PTR_SIZEOF * argCounts.length);
 	XPCOM.memmove(pVtable, callbackAddresses, OS.PTR_SIZEOF * argCounts.length);
-	ppVtable = XPCOM.PR_Malloc(OS.PTR_SIZEOF);
+	ppVtable = OS.g_malloc(OS.PTR_SIZEOF);
 	XPCOM.memmove(ppVtable, new int /*long*/[] {pVtable}, OS.PTR_SIZEOF);
 	ObjectMap.put(new LONG(ppVtable), this);
 }
@@ -766,8 +766,8 @@ public void dispose() {
 	// free the memory for this reference
 	int /*long*/[] pVtable = new int /*long*/[1];
 	XPCOM.memmove(pVtable, ppVtable, OS.PTR_SIZEOF);
-	XPCOM.PR_Free(pVtable[0]);
-	XPCOM.PR_Free(ppVtable);	
+	OS.g_free(pVtable[0]);
+	OS.g_free(ppVtable);	
 
 	// remove this ppVtable from the list
 	ObjectMap.remove(new LONG(ppVtable));	

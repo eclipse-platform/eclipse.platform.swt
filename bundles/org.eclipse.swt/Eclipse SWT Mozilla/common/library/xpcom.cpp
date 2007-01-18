@@ -96,28 +96,6 @@ fail:
 }
 #endif
 
-#ifndef NO_PR_1Free
-JNIEXPORT void JNICALL XPCOM_NATIVE(PR_1Free)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	XPCOM_NATIVE_ENTER(env, that, PR_1Free_FUNC);
-	PR_Free((void *)arg0);
-	XPCOM_NATIVE_EXIT(env, that, PR_1Free_FUNC);
-}
-#endif
-
-#ifndef NO_PR_1Malloc
-JNIEXPORT jint JNICALL XPCOM_NATIVE(PR_1Malloc)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, PR_1Malloc_FUNC);
-	rc = (jint)PR_Malloc(arg0);
-	XPCOM_NATIVE_EXIT(env, that, PR_1Malloc_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_VtblCall__II
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

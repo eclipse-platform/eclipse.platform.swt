@@ -18,8 +18,6 @@
 #include "nsEmbedString.h"
 #include "nsIInputStream.h"
 #include "nsISupportsUtils.h"
-#include "prmem.h"
-#include "prenv.h"
 
 #ifdef _WIN32
 #define STDMETHODCALLTYPE __stdcall

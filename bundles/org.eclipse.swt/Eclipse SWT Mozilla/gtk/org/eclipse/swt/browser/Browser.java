@@ -2140,7 +2140,7 @@ public boolean setText(String html) {
 		nsIWebBrowserStream stream = new nsIWebBrowserStream(result[0]);
 		rc = stream.OpenStream(uri.getAddress(), aContentType);
 		if (rc != XPCOM.NS_OK) error(rc);
-		int /*long*/ ptr = XPCOM.PR_Malloc(data.length);
+		int /*long*/ ptr = OS.g_malloc(data.length);
 		XPCOM.memmove(ptr, data, data.length);
 		int pageSize = 8192;
 		int pageCount = data.length / pageSize + 1;
@@ -2155,7 +2155,7 @@ public boolean setText(String html) {
 		}
 		rc = stream.CloseStream();
 		if (rc != XPCOM.NS_OK) error(rc);
-		XPCOM.PR_Free(ptr);
+		OS.g_free(ptr);
 		stream.Release();
 	} else {
 		rc = webBrowser.QueryInterface(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);

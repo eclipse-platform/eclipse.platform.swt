@@ -26,8 +26,6 @@ typedef enum {
 	NS_1GetServiceManager_FUNC,
 	NS_1InitXPCOM2_FUNC,
 	NS_1NewLocalFile_FUNC,
-	PR_1Free_FUNC,
-	PR_1Malloc_FUNC,
 	VtblCall__II_FUNC,
 	VtblCall__IIF_FUNC,
 	VtblCall__III_FUNC,

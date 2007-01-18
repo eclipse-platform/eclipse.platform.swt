@@ -130,8 +130,6 @@ public static final native int /*long*/ nsEmbedString_new(char[] aString);
 public static final native void nsEmbedString_delete(int /*long*/ ptr);
 public static final native int nsEmbedString_Length(int /*long*/ ptr);
 public static final native int /*long*/ nsEmbedString_get(int /*long*/ ptr);
-public static final native void PR_Free(int /*long*/ ptr);
-public static final native int /*long*/ PR_Malloc(int Length);
 public static final native int strlen(int /*long*/ s);
 
 public static final native int /*long*/ Call(int /*long*/ ptr, int /*long*/ aInStream, int /*long*/ aClosure, byte[] aFromSegment, int aToOffset, int aCount, int[] aWriteCount);
