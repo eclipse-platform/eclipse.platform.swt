@@ -38,7 +38,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 	 * Creates a new <code>TreeDragSourceEffect</code> to handle drag effect 
 	 * from the specified <code>Tree</code>.
 	 *
-	 * @param table the <code>Tree</code> that the user clicks on to initiate the drag
+	 * @param tree the <code>Tree</code> that the user clicks on to initiate the drag
 	 **/
 	public TreeDragSourceEffect(Tree tree) {
 		super(tree);

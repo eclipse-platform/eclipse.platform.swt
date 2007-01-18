@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Event;
  * Instances of this class are sent as a result of
  * a drag gesture.
  *
- * @see DragListener
+ * @see DragDetectListener
  * 
  * @since 3.3
  */
