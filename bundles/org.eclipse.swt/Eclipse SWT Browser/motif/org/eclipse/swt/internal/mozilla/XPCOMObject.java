@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.mozilla;
 
 import java.util.Hashtable;
 import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.internal.motif.OS;
 import org.eclipse.swt.SWT;
 
 public class XPCOMObject {
@@ -33,9 +34,9 @@ public XPCOMObject(int[] argCounts) {
 		if (callbackAddresses[i] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}	
 
-	int pVtable = XPCOM.PR_Malloc(4 * argCounts.length);
+	int pVtable = OS.XtMalloc(4 * argCounts.length);
 	XPCOM.memmove(pVtable, callbackAddresses, 4 * argCounts.length);
-	ppVtable = XPCOM.PR_Malloc(4);
+	ppVtable = OS.XtMalloc(4);
 	XPCOM.memmove(ppVtable, new int[] {pVtable}, 4);
 	ObjectMap.put(new Integer(ppVtable), this);
 }
@@ -765,8 +766,8 @@ public void dispose() {
 	// free the memory for this reference
 	int[] pVtable = new int[1];
 	XPCOM.memmove(pVtable, ppVtable, 4);
-	XPCOM.PR_Free(pVtable[0]);
-	XPCOM.PR_Free(ppVtable);	
+	OS.XtFree(pVtable[0]);
+	OS.XtFree(ppVtable);	
 
 	// remove this ppVtable from the list
 	ObjectMap.remove(new Integer(ppVtable));	

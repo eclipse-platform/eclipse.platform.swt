@@ -12,6 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.motif.OS;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
@@ -291,7 +292,7 @@ public int Prompt(int parent, int dialogTitle, int text, int value, int checkMsg
 			buffer = new char[cnt + 1];
 			valueLabel[0].getChars(0, cnt, buffer, 0);
 			size = buffer.length * 2;
-			ptr = XPCOM.PR_Malloc(size);
+			ptr = OS.XtMalloc(size);
 			XPCOM.memmove(ptr, buffer, size);
 			XPCOM.memmove(value, new int [] {ptr}, 4);
 
@@ -382,7 +383,7 @@ public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int 
 			buffer = new char[cnt + 1];
 			userLabel[0].getChars(0, cnt, buffer, 0);
 			size = buffer.length * 2;
-			ptr = XPCOM.PR_Malloc(size);
+			ptr = OS.XtMalloc(size);
 			XPCOM.memmove(ptr, buffer, size);
 			XPCOM.memmove(username, new int[] {ptr}, 4);
 
@@ -411,7 +412,7 @@ public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int 
 			buffer = new char[cnt + 1];
 			passLabel[0].getChars(0, cnt, buffer, 0);
 			size = buffer.length * 2;
-			ptr = XPCOM.PR_Malloc(size);
+			ptr = OS.XtMalloc(size);
 			XPCOM.memmove(ptr, buffer, size);
 			XPCOM.memmove(password, new int[] {ptr}, 4);
 			
