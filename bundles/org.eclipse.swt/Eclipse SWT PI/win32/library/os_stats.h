@@ -598,7 +598,6 @@ typedef enum {
 	PRIMARYLANGID_FUNC,
 	PRINTDLG_1sizeof_FUNC,
 	PROCESS_1INFORMATION_1sizeof_FUNC,
-	PTR_1sizeof_FUNC,
 	PatBlt_FUNC,
 	PeekMessageA_FUNC,
 	PeekMessageW_FUNC,
@@ -874,6 +873,5 @@ typedef enum {
 	WideCharToMultiByte__II_3CI_3BI_3B_3Z_FUNC,
 	WindowFromDC_FUNC,
 	WindowFromPoint_FUNC,
-	strlen_FUNC,
 	wcslen_FUNC,
 } OS_FUNCS;

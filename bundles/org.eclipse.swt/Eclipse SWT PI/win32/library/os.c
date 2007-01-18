@@ -9269,18 +9269,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(PROCESS_1INFORMATION_1sizeof)
 }
 #endif
 
-#ifndef NO_PTR_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(PTR_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, PTR_1sizeof_FUNC);
-	rc = (jint)PTR_sizeof();
-	OS_NATIVE_EXIT(env, that, PTR_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_PatBlt
 JNIEXPORT jboolean JNICALL OS_NATIVE(PatBlt)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
@@ -13571,18 +13559,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(WindowFromPoint)
 fail:
 	if (arg0 && lparg0) setPOINTFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, WindowFromPoint_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_strlen
-JNIEXPORT jint JNICALL OS_NATIVE(strlen)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, strlen_FUNC);
-	rc = (jint)strlen((const char *)arg0);
-	OS_NATIVE_EXIT(env, that, strlen_FUNC);
 	return rc;
 }
 #endif

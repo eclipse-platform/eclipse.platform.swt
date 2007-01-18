@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 855;
-int OS_nativeFunctionCallCount[855];
+int OS_nativeFunctionCount = 853;
+int OS_nativeFunctionCallCount[853];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -594,7 +594,6 @@ char * OS_nativeFunctionNames[] = {
 	"PRIMARYLANGID",
 	"PRINTDLG_1sizeof",
 	"PROCESS_1INFORMATION_1sizeof",
-	"PTR_1sizeof",
 	"PatBlt",
 	"PeekMessageA",
 	"PeekMessageW",
@@ -870,7 +869,6 @@ char * OS_nativeFunctionNames[] = {
 	"WideCharToMultiByte__II_3CI_3BI_3B_3Z",
 	"WindowFromDC",
 	"WindowFromPoint",
-	"strlen",
 	"wcslen",
 };
 

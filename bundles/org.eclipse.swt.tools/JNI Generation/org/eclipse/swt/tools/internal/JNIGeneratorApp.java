@@ -301,8 +301,6 @@ String[] getClassNames(String mainClassName) {
 							String className = entry.substring(0, entry.length() - 6);
 							classes.add(className);
 						}
-					} else {
-						throw new Error("SUBDIR NOT DONE=" + f);
 					}					
 				}
 			}

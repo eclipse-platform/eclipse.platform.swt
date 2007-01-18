@@ -58,5 +58,3 @@
 #define TransparentBlt_LIB "msimg32.dll"
 #define AddFontResourceExW_LIB "gdi32.dll"
 #define RemoveFontResourceExW_LIB "gdi32.dll"
-#define PTR_sizeof() sizeof(void *)
-

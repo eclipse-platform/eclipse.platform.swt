@@ -13,11 +13,7 @@ package org.eclipse.swt.internal.win32;
 
 import org.eclipse.swt.internal.*;
 
-public class OS extends Platform {
-	static {
-		Library.loadLibrary ("swt"); //$NON-NLS-1$
-	}
-	
+public class OS extends C {
 	/*
 	* SWT Windows flags
 	*/
@@ -1976,8 +1972,6 @@ public static int VERSION (int major, int minor) {
 }
 
 /** 64 bit */
-public static final int PTR_SIZEOF = PTR_sizeof ();
-public static final native int PTR_sizeof ();
 public static final native int ACCEL_sizeof ();
 public static final native int ACTCTX_sizeof ();
 public static final native int BITMAP_sizeof ();
@@ -3778,6 +3772,5 @@ public static final native int WideCharToMultiByte (int CodePage, int dwFlags, c
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, int /*long*/ lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
 public static final native int /*long*/ WindowFromDC (int /*long*/ hDC);
 public static final native int /*long*/ WindowFromPoint (POINT lpPoint);
-public static final native int strlen (int /*long*/ s);
 public static final native int wcslen (int /*long*/ string);
 }
