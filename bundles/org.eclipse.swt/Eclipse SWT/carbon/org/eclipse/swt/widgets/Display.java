@@ -185,8 +185,11 @@ public class Display extends Device {
 	/* Mouse Enter/Exit/Hover */
 	Control currentControl;
 	int mouseHoverID;
-	int dragX, dragY;
-	boolean dragging, mouseMoved;
+	boolean mouseMoved;
+	
+	/* Drag Detect */
+	int dragButton, dragX, dragY, dragState, dragModifiers;
+	boolean dragging;
 	
 	/* Insets */
 	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset, editTextInset;

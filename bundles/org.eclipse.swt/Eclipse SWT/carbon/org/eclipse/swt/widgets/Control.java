@@ -150,6 +150,13 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Move,typedListener);
 }
 
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control gains or loses focus, by sending
@@ -573,16 +580,11 @@ void destroyWidget () {
 	}
 }
 
-/*public*/ Event dragDetect (Event event) {
+public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!dragDetect (event.x, event.y, false, null)) return null;
-	Event dragEvent = new Event ();
-	dragEvent.button = event.button;
-	dragEvent.x = event.x;
-	dragEvent.y = event.y;
-	dragEvent.stateMask = event.stateMask;
-	return dragEvent;
+	if (button != 1) return false;
+	if (!dragDetect (x, y, false, null)) return false;
+	return sendDragEvent (button, stateMask, x, y);
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
@@ -964,7 +966,7 @@ public Rectangle getBounds () {
 	return getControlBounds (topHandle ());
 }
 
-/*public*/ boolean getDragDetect () {
+public boolean getDragDetect () {
 	checkWidget ();
 	return (state & DRAG_DETECT) != 0;
 }
@@ -1821,6 +1823,8 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();
 	display.dragging = false;
 	boolean [] consume = new boolean [1];
+	short [] button = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 		int x, y;
 		if (OS.HIVIEW) {
@@ -1844,13 +1848,18 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		}
 		if (dragDetect (x, y, true, consume)) {
 			display.dragging = true;
+			display.dragButton = button [0];
 			display.dragX = x;
 			display.dragY = y;
+			int [] chord = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+			display.dragState = chord [0];
+			int [] modifiers = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+			display.dragModifiers = modifiers [0];
 		}
 		if (isDisposed ()) return OS.noErr;
 	}
-	short [] button = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	if (!sendMouseEvent (SWT.MouseDown, button [0], display.clickCount, 0, false, theEvent)) consume [0] = true;
 	if (isDisposed ()) return OS.noErr;
 	if (display.clickCount == 2) {
@@ -1865,7 +1874,7 @@ int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if (isEnabledModal ()) {
 		if (display.dragging) {
 			display.dragging = false;
-			sendDragEvent (display.dragX, display.dragY);
+			sendDragEvent (display.dragButton, display.dragX, display.dragY, display.dragState, display.dragModifiers);
 			if (isDisposed ()) return OS.noErr;
 		}
 		int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
@@ -2186,6 +2195,13 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Resize, listener);
 }
 
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control gains or loses focus.
@@ -2406,10 +2422,28 @@ void resetVisibleRegion (int control) {
 	}
 }
 
-boolean sendDragEvent (int x, int y) {
+boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
+	event.button = button;
 	event.x = x;
 	event.y = y;
+	event.stateMask = stateMask;
+	postEvent (SWT.DragDetect, event);
+	return event.doit;
+}
+
+boolean sendDragEvent (int button, int chord, int modifiers, int x, int y) {
+	Event event = new Event ();
+	switch (button) {
+		case 1: event.button = 1; break;
+		case 2: event.button = 3; break;
+		case 3: event.button = 2; break;
+		case 4: event.button = 4; break;
+		case 5: event.button = 5; break;
+	}
+	event.x = x;
+	event.y = y;
+	setInputState (event, SWT.DragDetect, chord, modifiers);
 	postEvent (SWT.DragDetect, event);
 	return event.doit;
 }
@@ -2518,6 +2552,13 @@ void sendTrackEvents () {
 	Display display = this.display;
 	display.runDeferredEvents ();
 	if (isDisposed ()) return;
+	boolean events = false;
+	if (display.dragging) {
+		display.dragging = false;
+		sendDragEvent (display.dragButton, display.dragX, display.dragY, display.dragState, display.dragModifiers);
+		if (isDisposed ()) return;
+		events = true;
+	}
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (outPt);
 	Rect rect = new Rect ();
@@ -2549,7 +2590,6 @@ void sendTrackEvents () {
 	display.lastY = newY;
 	display.lastModifiers = newModifiers;
 	display.lastState = newState;
-	boolean events = false;
 	if (newState != oldState) {
 		int button = 0, type = SWT.MouseDown;
 		if ((oldState & 0x1) == 0 && (newState & 0x1) != 0) button = 1;
@@ -2594,12 +2634,6 @@ void sendTrackEvents () {
 		}
 	}
 	if (newX != oldX || newY != oldY && !isDisposed ()) {
-		if (display.dragging) {
-			display.dragging = false;
-			sendDragEvent (display.dragX, display.dragY);
-			if (isDisposed ()) return;
-			events = true;
-		}
 		display.mouseMoved = true;
 		sendMouseEvent (SWT.MouseMove, (short)0, 0, false, newState, (short)newX, (short)newY, newModifiers);
 		events = true;
@@ -2835,7 +2869,7 @@ void setDefaultFont () {
 	if (display.smallFonts) setFontStyle (defaultFont ());
 }
 
-/*public*/ void setDragDetect (boolean dragDetect) {
+public void setDragDetect (boolean dragDetect) {
 	checkWidget ();
 	if (dragDetect) {
 		state |= DRAG_DETECT;	

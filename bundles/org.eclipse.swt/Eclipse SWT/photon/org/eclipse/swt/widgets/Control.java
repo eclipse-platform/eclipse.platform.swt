@@ -111,6 +111,13 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Move,typedListener);
 }
 
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control gains or loses focus, by sending
@@ -489,6 +496,11 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
+public boolean dragDetect (int button, int stateMask, int x, int y) {	checkWidget ();
+	//TODO - not implemented
+	return false;
+}
+
 int drawProc (int widget, int damage) {
 	drawWidget (widget, damage);
 	if (!hooks(SWT.Paint) && !filters (SWT.Paint)) return OS.Pt_CONTINUE;
@@ -729,6 +741,12 @@ public Rectangle getBounds () {
 public Cursor getCursor () {
 	checkWidget ();
 	return cursor;
+}
+
+public boolean getDragDetect () {
+	checkWidget ();
+	//TODO - not implemented
+	return true;
 }
 
 /**
@@ -1727,6 +1745,13 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Resize, listener);
 }
 
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control gains or loses focus.
@@ -2089,6 +2114,11 @@ public void setCursor (Cursor cursor) {
 		type &= ~OS.Ph_CURSOR_NO_INHERIT;
 		OS.PtSetResource (handle, OS.Pt_ARG_CURSOR_TYPE, type, 0);
 	}
+}
+
+public void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	//TODO - not implemented
 }
 
 /**

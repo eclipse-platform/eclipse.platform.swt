@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Event;
  * @see MouseTrackListener
  */
 
-public final class MouseEvent extends TypedEvent {
+public class MouseEvent extends TypedEvent {
 	
 	/**
 	 * the button that was pressed or released; 1 for the

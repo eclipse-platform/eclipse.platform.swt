@@ -921,6 +921,16 @@ boolean sendDragEvent (int button, int x, int y) {
 	return event.doit;
 }
 
+boolean sendDragEvent (int button, int stateMask, int x, int y) {
+	Event event = new Event ();
+	event.button = button;
+	event.x = x;
+	event.y = y;
+	event.stateMask = stateMask;
+	if (isDisposed ()) return false;
+	return event.doit;
+}
+
 void sendEvent (Event event) {
 	Display display = event.display;
 	if (!display.filterEvent (event)) {

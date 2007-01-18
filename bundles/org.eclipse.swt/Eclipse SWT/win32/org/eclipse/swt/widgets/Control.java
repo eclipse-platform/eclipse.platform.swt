@@ -25,9 +25,8 @@ import org.eclipse.swt.accessibility.*;
  * <dd>BORDER</dd>
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
- * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse,
- *     DragDetect, MenuDetect</dd>
+ * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
  * </dl>
  * </p><p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
@@ -123,6 +122,34 @@ public void addControlListener(ControlListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Resize,typedListener);
 	addListener (SWT.Move,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when a drag gesture occurs, by sending it
+ * one of the messages defined in the <code>DragDetectListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #removeDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
 }
 
 /**
@@ -571,37 +598,81 @@ void destroyWidget () {
 }
 
 /**
- * Detects a drag and drop gesture.  If the gesture occurs
- * then an event is returned that can be used to notify listeners
- * that a drag detect has happened.  If no gesture is detected,
- * then <code>null</code> is returned.
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
  *
- * @param event the mouse down event
- * @return the drag detect event
+ * @param button the button that was pressed
+ * @param stateMask keyboard modifier keys
+ * @param x the widget-relative, x coordinate of the pointer
+ * @param y the widget-relative, y coordinate of the pointer
+ * 
+ * @return <code>true</code> if the gesture occured, and <code>false</code> otherwise.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @see notifyListeners
+ * 
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
  * 
  * @since 3.3
  */
-//TODO - Javadoc
-/*public*/ Event dragDetect (Event event) {
+public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!dragDetect (handle, event.x, event.y, false, null, null)) return null;
-	Event dragEvent = new Event ();
-	dragEvent.button = event.button;
-	dragEvent.x = event.x;
-	dragEvent.y = event.y;
-	dragEvent.stateMask = event.stateMask;
-	return dragEvent;
+	if (button != 1) return false;
+	if (!dragDetect (handle, x, y, false, null, null)) {
+		/*
+		* Feature in Windows.  DragDetect() captures the mouse
+		* and tracks its movement until the user releases the
+		* left mouse button, presses the ESC key, or moves the
+		* mouse outside the drag rectangle.  If the user moves
+		* the mouse outside of the drag rectangle, DragDetect()
+		* returns true and a drag and drop operation can be
+		* started.  When the left mouse button is released or
+		* the ESC key is pressed, these events are consumed by
+		* DragDetect() so that application code that matches
+		* mouse down/up pairs or looks for the ESC key will not
+		* function properly.  The fix is to send the missing
+		* events when the drag has not started.
+		* 
+		* NOTE: For now, don't send a fake WM_KEYDOWN/WM_KEYUP
+		* events for the ESC key.  This would require computing
+		* wParam (the key) and lParam (the repeat count, scan code,
+		* extended-key flag, context code, previous key-state flag,
+		* and transition-state flag) which is non-trivial.
+		*/
+		if (button == 1 && OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
+			int wParam = 0;
+			if ((stateMask & SWT.CTRL) != 0) wParam |= OS.MK_CONTROL;
+			if ((stateMask & SWT.SHIFT) != 0) wParam |= OS.MK_SHIFT;
+			if ((stateMask & SWT.ALT) != 0) wParam |= OS.MK_ALT;
+			if ((stateMask & SWT.BUTTON1) != 0) wParam |= OS.MK_LBUTTON;
+			if ((stateMask & SWT.BUTTON2) != 0) wParam |= OS.MK_MBUTTON;
+			if ((stateMask & SWT.BUTTON3) != 0) wParam |= OS.MK_RBUTTON;
+			if ((stateMask & SWT.BUTTON4) != 0) wParam |= OS.MK_XBUTTON1;
+			if ((stateMask & SWT.BUTTON5) != 0) wParam |= OS.MK_XBUTTON2;
+			int lParam = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
+			OS.SendMessage (handle, OS.WM_LBUTTONUP, wParam, lParam);
+		}
+		return false;
+	}
+	return sendDragEvent (button, stateMask, x, y);
 }
 
 void drawBackground (int hDC) {
@@ -987,7 +1058,7 @@ public Cursor getCursor () {
  * 
  * @since 3.3
  */
-/*public*/ boolean getDragDetect () {
+public boolean getDragDetect () {
 	checkWidget ();
 	return (state & DRAG_DETECT) != 0;
 }
@@ -1844,6 +1915,32 @@ public void removeControlListener (ControlListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when a drag gesture occurs.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when the control gains or loses focus.
  *
  * @param listener the listener which should no longer be notified
@@ -2365,7 +2462,7 @@ void setDefaultFont () {
  * 
  * @since 3.3
  */
-/*public*/ void setDragDetect (boolean dragDetect) {
+public void setDragDetect (boolean dragDetect) {
 	checkWidget ();
 	if (dragDetect) {
 		state |= DRAG_DETECT;

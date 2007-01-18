@@ -1064,6 +1064,13 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Move,typedListener);
 }
 
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control gains or loses focus, by sending
@@ -1305,6 +1312,14 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
 }
+
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control gains or loses focus.
@@ -1515,16 +1530,11 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-/*public*/ Event dragDetect (Event event) {
+public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!dragDetect (event.x, event.y, false, null)) return null;
-	Event dragEvent = new Event ();
-	dragEvent.button = event.button;
-	dragEvent.x = event.x;
-	dragEvent.y = event.y;
-	dragEvent.stateMask = event.stateMask;
-	return dragEvent;
+	if (button != 1) return false;
+	if (!dragDetect (x, y, false, null)) return false;
+	return sendDragEvent (button, stateMask, x, y, true);
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
@@ -1738,7 +1748,7 @@ public Cursor getCursor () {
 	return cursor;
 }
 
-/*public*/ boolean getDragDetect () {
+public boolean getDragDetect () {
 	checkWidget ();
 	return (state & DRAG_DETECT) != 0;
 }
@@ -2034,7 +2044,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 		}
 		if (isDisposed ()) return 1;
 		if (dragging) {
-			sendDragEvent ((int) gdkEvent.x, (int) gdkEvent.y);
+			sendDragEvent (gdkEvent.button, gdkEvent.state, (int) gdkEvent.x, (int) gdkEvent.y, false);
 			if (isDisposed ()) return 1;
 		}
 		/*
@@ -2687,10 +2697,16 @@ void releaseWidget () {
 	accessible = null;
 }
 
-boolean sendDragEvent (int x, int y) {
+boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
 	Event event = new Event ();
+	event.button = button;
 	event.x = x;
 	event.y = y;
+	if (isStateMask) {
+		event.stateMask = stateMask;
+	} else {
+		setInputState (event, stateMask);
+	}
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
 	return event.doit;
@@ -2939,7 +2955,7 @@ void setCursor (int /*long*/ cursor) {
 	}
 }
 
-/*public*/ void setDragDetect (boolean dragDetect) {
+public void setDragDetect (boolean dragDetect) {
 	checkWidget ();
 	if (dragDetect) {
 		state |= DRAG_DETECT;
