@@ -636,7 +636,11 @@ void destroyWidget () {
 public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
 	if (button != 1) return false;
-	if (!dragDetect (handle, x, y, false, null, null)) {
+	boolean dragging = dragDetect (handle, x, y, false, null, null);
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
+		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	}
+	if (!dragging) {
 		/*
 		* Feature in Windows.  DragDetect() captures the mouse
 		* and tracks its movement until the user releases the
