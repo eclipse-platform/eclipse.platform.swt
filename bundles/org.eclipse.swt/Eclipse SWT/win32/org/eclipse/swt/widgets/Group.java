@@ -382,9 +382,6 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	* it will overwrite the contents of the control.  The
 	* fix is draw the group without drawing the background
 	* and avoid the group window proc.
-	* 
-	* NOTE:  The DefWindowProc() must be called in order to
-	* broadcast WM_UPDATEUISTATE message to the children.
 	*/
 	boolean redraw = findImageControl () != null;
 	if (!redraw) {
