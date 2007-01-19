@@ -41,6 +41,7 @@ public final class GCData {
 	public float[] lineDashes;
 	public float lineMiterLimit = 10;
 	public int alpha = 0xFF;
+	public int uiState = 0;
 
 	public Image image;
 	public int hPen, hOldPen;

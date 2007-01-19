@@ -735,6 +735,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
  */	 
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if ((data.uiState & OS.UISF_HIDEFOCUS) != 0) return;
 	int hdc = handle, state = 0;
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
@@ -2085,7 +2086,9 @@ public void drawText (String string, int x, int y, int flags) {
 		Gdip.StringFormat_SetFormatFlags(format, Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces);
 		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(data.gdipFont, format) * 8} : new float[1];
 		Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs); 
-		Gdip.StringFormat_SetHotkeyPrefix(format, (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone);
+		int hotkeyPrefix = (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone;
+		if ((flags & SWT.DRAW_MNEMONIC) != 0 && (data.uiState & OS.UISF_HIDEACCEL) != 0) hotkeyPrefix = Gdip.HotkeyPrefixHide;
+		Gdip.StringFormat_SetHotkeyPrefix(format, hotkeyPrefix);
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 			RectF bounds = new RectF();
 			Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, data.gdipFont, pt, format, bounds);
@@ -2115,6 +2118,9 @@ public void drawText (String string, int x, int y, int flags) {
 	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
 	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
 	if ((flags & SWT.DRAW_MNEMONIC) == 0) uFormat |= OS.DT_NOPREFIX;
+	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (data.uiState & OS.UISF_HIDEACCEL) != 0) {
+		uFormat |= OS.DT_HIDEPREFIX;
+	}
 	int rop2 = 0;
 	if (OS.IsWinCE) {
 		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);

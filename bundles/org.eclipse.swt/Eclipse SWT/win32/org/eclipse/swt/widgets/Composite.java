@@ -1124,6 +1124,8 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				image = new Image (display, width, height);
 				paintGC = gc;
 				gc = new GC (image, paintGC.getStyle() & SWT.RIGHT_TO_LEFT);
+				GCData gcData = gc.getGCData ();
+				gcData.uiState = data.uiState;
 				gc.setForeground (getForeground ());
 				gc.setBackground (getBackground ());
 				gc.setFont (getFont ());
@@ -1347,6 +1349,13 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 		}
 	}
 	/* Return the result */
+	return result;
+}
+
+LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
+	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	if (result != null) return result;
+	if ((state & CANVAS) != 0) OS.InvalidateRect (handle, null, false);
 	return result;
 }
 

@@ -1399,6 +1399,7 @@ public int internal_new_GC (GCData data) {
 		if (control == null) control = this;
 		data.background = control.getBackgroundPixel ();
 		data.hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+		data.uiState = OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}
 	return hDC;
 }
