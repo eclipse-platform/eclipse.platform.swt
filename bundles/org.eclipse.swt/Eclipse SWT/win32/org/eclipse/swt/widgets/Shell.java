@@ -1776,6 +1776,24 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When a shell is resized by dragging
+	* the resize handles, Windows temporarily fills in black
+	* rectangles where the new contents of the shell should
+	* draw.  The fix is to always draw the background of shells.
+	* 
+	* NOTE: This only happens on Vista.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		drawBackground (wParam);
+		return LRESULT.ONE;
+	}
+	return result;
+}
+
 LRESULT WM_ENTERIDLE (int wParam, int lParam) {
 	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
 	if (result != null) return result;
