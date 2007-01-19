@@ -513,6 +513,7 @@ public class OS extends C {
 	public static final int DT_EDITCONTROL = 0x2000;
 	public static final int DT_EXPANDTABS = 0x40;
 	public static final int DT_ENDELLIPSIS = 32768;
+	public static final int DT_HIDEPREFIX = 0x100000;
 	public static final int DT_LEFT = 0x0;
 	public static final int DT_NOPREFIX = 0x800;
 	public static final int DT_RASPRINTER = 0x2;
