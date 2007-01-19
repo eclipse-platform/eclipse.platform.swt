@@ -27,7 +27,7 @@ SWT_LIB=lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CFLAGS = -c -shared -O2 -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -w8 $(SWT_DEBUG) -DPHOTON -I$(IVE_HOME)/include
 LFLAGS = -shared -lph -lphrender -lPtWeb
 
-SWT_OBJS = swt.o os.o os_structs.o os_custom.o os_stats.o callback.o
+SWT_OBJS = swt.o c.o c_stats.o os.o os_structs.o os_custom.o os_stats.o callback.o
 
 all: $(SWT_LIB)
 

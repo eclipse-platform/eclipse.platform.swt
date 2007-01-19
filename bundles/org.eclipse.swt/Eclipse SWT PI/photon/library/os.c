@@ -3391,16 +3391,6 @@ JNIEXPORT void JNICALL OS_NATIVE(PtWindowToFront)
 }
 #endif
 
-#ifndef NO_free
-JNIEXPORT void JNICALL OS_NATIVE(free)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, free_FUNC);
-	free((void *)arg0);
-	OS_NATIVE_EXIT(env, that, free_FUNC);
-}
-#endif
-
 #ifndef NO_getenv
 JNIEXPORT jint JNICALL OS_NATIVE(getenv)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -3414,28 +3404,6 @@ fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, getenv_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_malloc
-JNIEXPORT jint JNICALL OS_NATIVE(malloc)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, malloc_FUNC);
-	rc = (jint)malloc((size_t)arg0);
-	OS_NATIVE_EXIT(env, that, malloc_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_memmove__III
-JNIEXPORT void JNICALL OS_NATIVE(memmove__III)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	OS_NATIVE_ENTER(env, that, memmove__III_FUNC);
-	memmove((void *)arg0, (const void *)arg1, arg2);
-	OS_NATIVE_EXIT(env, that, memmove__III_FUNC);
 }
 #endif
 
@@ -3579,34 +3547,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PtWe
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3BI
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
-{
-	jbyte *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__I_3BI_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, memmove__I_3BI_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
-{
-	jint *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__I_3II_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, memmove__I_3II_FUNC);
 }
 #endif
 
@@ -3862,20 +3802,6 @@ fail:
 }
 #endif
 
-#ifndef NO_memmove___3BII
-JNIEXPORT void JNICALL OS_NATIVE(memmove___3BII)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
-{
-	jbyte *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove___3BII_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, memmove___3BII_FUNC);
-}
-#endif
-
 #ifndef NO_memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jobject arg1, jint arg2)
@@ -3893,44 +3819,6 @@ fail:
 }
 #endif
 
-#ifndef NO_memmove___3III
-JNIEXPORT void JNICALL OS_NATIVE(memmove___3III)
-	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
-{
-	jint *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove___3III_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, memmove___3III_FUNC);
-}
-#endif
-
-#ifndef NO_memmove___3SII
-JNIEXPORT void JNICALL OS_NATIVE(memmove___3SII)
-	(JNIEnv *env, jclass that, jshortArray arg0, jint arg1, jint arg2)
-{
-	jshort *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove___3SII_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, memmove___3SII_FUNC);
-}
-#endif
-
-#ifndef NO_memset
-JNIEXPORT void JNICALL OS_NATIVE(memset)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	OS_NATIVE_ENTER(env, that, memset_FUNC);
-	memset((void *)arg0, arg1, (size_t)arg2);
-	OS_NATIVE_EXIT(env, that, memset_FUNC);
-}
-#endif
-
 #ifndef NO_strdup
 JNIEXPORT jint JNICALL OS_NATIVE(strdup)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3939,18 +3827,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(strdup)
 	OS_NATIVE_ENTER(env, that, strdup_FUNC);
 	rc = (jint)strdup((const char *)arg0);
 	OS_NATIVE_EXIT(env, that, strdup_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_strlen
-JNIEXPORT jint JNICALL OS_NATIVE(strlen)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, strlen_FUNC);
-	rc = (jint)strlen((const char*)arg0);
-	OS_NATIVE_EXIT(env, that, strlen_FUNC);
 	return rc;
 }
 #endif

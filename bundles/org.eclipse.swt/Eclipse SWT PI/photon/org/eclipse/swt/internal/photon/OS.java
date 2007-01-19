@@ -13,10 +13,7 @@ package org.eclipse.swt.internal.photon;
  
 import org.eclipse.swt.internal.*;
 
-public class OS extends Platform {
-	static {
-		Library.loadLibrary ("swt");
-	}
+public class OS extends C {
 
 	public static final int QNX_MAJOR;
 	public static final int QNX_MINOR;
@@ -799,22 +796,14 @@ public static final native int PtWindowFocus(int widget);
 public static final native int PtWindowGetState(int widget);
 public static final native void PtWindowToBack(int widget);
 public static final native void PtWindowToFront(int widget);
-public static final native void free(int ptr);
 public static final native int getenv(byte[] name);
-public static final native int malloc(int size);
 public static final native void memmove(int dest, PhPoint_t src, int size);
-public static final native void memmove(int[] dest, int src, int size);
-public static final native void memmove(int dest, int[] src, int size);
 public static final native void memmove(int dest, PhTile_t src, int size);
 public static final native void memmove(PhTile_t dest, int src, int size);
 public static final native void memmove(PtCallbackInfo_t dest, int src, int size);
 public static final native void memmove(PhWindowEvent_t dest, int src, int size);
-public static final native void memmove(byte[] dest, int src, int size);
-public static final native void memmove(int dest, byte[] src, int size);
 public static final native void memmove(int dest, PhRect_t src, int size);
 public static final native void memmove(PhRect_t dest, int src, int size);
-public static final native void memmove(short[] dest, int src, int size);
-public static final native void memmove(int dest, int src, int size);
 public static final native void memmove(int dest, PhImage_t src, int size);
 public static final native void memmove(PhImage_t dest, int src, int size);
 public static final native void memmove(FontDetails dest, int src, int size);
@@ -838,9 +827,7 @@ public static final native void memmove(PtWebDataReqCallback_t dest, int src, in
 public static final native void memmove(PtWebWindowCallback_t dest, int src, int size);
 public static final native void memmove(PtWebMetaDataCallback_t dest, int src, int size);
 public static final native void memmove(int dest, PtWebClientData_t src, int size);
-public static final native void memset(int dest, int c, int length);
 public static final native int strdup(int string);
-public static final native int strlen(int string);
 public static final native int uname(utsname udata);
 
 }
