@@ -24,7 +24,6 @@
 #define GtkCellRendererToggleClass_sizeof() sizeof(GtkCellRendererToggleClass)
 #define GtkTextIter_sizeof() sizeof(GtkTextIter)
 #define GtkTreeIter_sizeof() sizeof(GtkTreeIter)
-#define PTR_sizeof() sizeof(void *)
 
 /* Libraries for dynamic loaded functions */
 #define XRenderQueryExtension_LIB "libXrender.so"

@@ -28,7 +28,7 @@ CC=cc_r
 SWT_PREFIX = swt
 WS_PREFIX = motif
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
-SWT_OBJS = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
+SWT_OBJS = swt.o c.o c_stats.o callback.o os.o os_structs.o os_custom.o os_stats.o
 SWT_LIBS = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext -liconv -lXtst
 
 CDE_PREFIX = swt-cde

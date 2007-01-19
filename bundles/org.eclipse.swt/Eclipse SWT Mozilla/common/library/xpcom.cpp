@@ -1944,62 +1944,6 @@ fail:
 }
 #endif
 
-#ifndef NO_memmove__I_3BI
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__I_3BI)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
-{
-	jbyte *lparg1=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove__I_3BI_FUNC);
-	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove__I_3BI_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3CI
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__I_3CI)
-	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
-{
-	jchar *lparg1=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove__I_3CI_FUNC);
-	if (arg1) if ((lparg1 = env->GetCharArrayElements(arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove__I_3CI_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3II
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__I_3II)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
-{
-	jint *lparg1=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove__I_3II_FUNC);
-	if (arg1) if ((lparg1 = env->GetIntArrayElements(arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) env->ReleaseIntArrayElements(arg1, lparg1, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove__I_3II_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__I_3JI
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__I_3JI)
-	(JNIEnv *env, jclass that, jint arg0, jlongArray arg1, jint arg2)
-{
-	jlong *lparg1=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove__I_3JI_FUNC);
-	if (arg1) if ((lparg1 = env->GetLongArrayElements(arg1, NULL)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) env->ReleaseLongArrayElements(arg1, lparg1, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove__I_3JI_FUNC);
-}
-#endif
-
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2II
 JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -2011,79 +1955,6 @@ JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__Lorg_eclipse_swt_internal_mozilla_n
 fail:
 	if (arg0 && lparg0) setnsIDFields(env, arg0, lparg0);
 	XPCOM_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2II_FUNC);
-}
-#endif
-
-#ifndef NO_memmove___3BII
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove___3BII)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
-{
-	jbyte *lparg0=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove___3BII_FUNC);
-	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove___3BII_FUNC);
-}
-#endif
-
-#ifndef NO_memmove___3B_3CI
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove___3B_3CI)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jcharArray arg1, jint arg2)
-{
-	jbyte *lparg0=NULL;
-	jchar *lparg1=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove___3B_3CI_FUNC);
-	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
-	if (arg1) if ((lparg1 = env->GetCharArrayElements(arg1, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
-	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove___3B_3CI_FUNC);
-}
-#endif
-
-#ifndef NO_memmove___3CII
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove___3CII)
-	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
-{
-	jchar *lparg0=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove___3CII_FUNC);
-	if (arg0) if ((lparg0 = env->GetCharArrayElements(arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove___3CII_FUNC);
-}
-#endif
-
-#ifndef NO_memmove___3III
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove___3III)
-	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
-{
-	jint *lparg0=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove___3III_FUNC);
-	if (arg0) if ((lparg0 = env->GetIntArrayElements(arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) env->ReleaseIntArrayElements(arg0, lparg0, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove___3III_FUNC);
-}
-#endif
-
-#ifndef NO_memmove___3JII
-JNIEXPORT void JNICALL XPCOM_NATIVE(memmove___3JII)
-	(JNIEnv *env, jclass that, jlongArray arg0, jint arg1, jint arg2)
-{
-	jlong *lparg0=NULL;
-	XPCOM_NATIVE_ENTER(env, that, memmove___3JII_FUNC);
-	if (arg0) if ((lparg0 = env->GetLongArrayElements(arg0, NULL)) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) env->ReleaseLongArrayElements(arg0, lparg0, 0);
-	XPCOM_NATIVE_EXIT(env, that, memmove___3JII_FUNC);
 }
 #endif
 
@@ -2257,18 +2128,6 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsID_1new)
 	XPCOM_NATIVE_ENTER(env, that, nsID_1new_FUNC);
 	rc = (jint)new nsID();
 	XPCOM_NATIVE_EXIT(env, that, nsID_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_strlen
-JNIEXPORT jint JNICALL XPCOM_NATIVE(strlen)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, strlen_FUNC);
-	rc = (jint)strlen((char *)arg0);
-	XPCOM_NATIVE_EXIT(env, that, strlen_FUNC);
 	return rc;
 }
 #endif

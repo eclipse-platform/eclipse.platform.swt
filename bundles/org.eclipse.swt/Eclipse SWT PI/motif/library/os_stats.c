@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 474;
-int OS_nativeFunctionCallCount[474];
+int OS_nativeFunctionCount = 466;
+int OS_nativeFunctionCallCount[466];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -448,10 +448,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_motif_XmSpinBoxCallbackStruct_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XmTextBlockRec_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2I",
-	"memmove__I_3BI",
-	"memmove__I_3CI",
-	"memmove__I_3II",
-	"memmove__I_3SI",
 	"memmove__Lorg_eclipse_swt_internal_motif_Visual_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II",
@@ -480,16 +476,12 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_motif_XmSpinBoxCallbackStruct_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XmTextBlockRec_2II",
 	"memmove__Lorg_eclipse_swt_internal_motif_XmTextVerifyCallbackStruct_2II",
-	"memmove___3BII",
-	"memmove___3CII",
-	"memmove___3III",
 	"nl_1langinfo",
 	"pipe",
 	"read",
 	"select",
 	"setResourceMem",
 	"setlocale",
-	"strlen",
 	"write",
 };
 

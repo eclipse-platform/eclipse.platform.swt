@@ -12,6 +12,7 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/tooltip"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT/common_j2me"/>
+    <classpathentry kind="src" path="Eclipse SWT PI/common"/>
     <classpathentry kind="src" path="Eclipse SWT PI/motif">
 	    <attributes>
 			<attribute value="org.eclipse.swt.motif.linux.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>

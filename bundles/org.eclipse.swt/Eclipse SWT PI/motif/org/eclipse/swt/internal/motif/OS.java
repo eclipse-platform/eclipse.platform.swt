@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.motif;
 import org.eclipse.swt.internal.*;
 
  
-public class OS extends Platform {
+public class OS extends C {
 	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX;
 	static {
 		/* Initialize the OS flags and locale constants */
@@ -39,11 +39,6 @@ public class OS extends Platform {
 	public static final int CODESET = CODESET ();
 	public static final int LC_CTYPE = LC_CTYPE ();
 
-	public static final int PTR_SIZEOF;
-	static {
-		PTR_SIZEOF = 4;
-	}
-	
 	static final int RESOURCE_LENGTH = 1024 * 3;
 	static final int RESOURCE_START = OS.XtMalloc (RESOURCE_LENGTH);
 	static int NextResourceStart = RESOURCE_START;
@@ -4329,9 +4324,6 @@ public static final native void memmove(int dest, XmDragProcCallbackStruct src, 
 public static final native void memmove(int dest, XmSpinBoxCallbackStruct src, int count);
 public static final native void memmove(int dest, XmTextBlockRec src, int count);
 public static final native void memmove(int dest, XmTextVerifyCallbackStruct src, int count);
-public static final native void memmove(int dest, byte[] src, int count);
-public static final native void memmove(int dest, char[] src, int count);
-public static final native void memmove(int dest, int[] src, int count);
 public static final native void memmove(Visual dest, int src, int count);
 public static final native void memmove(XAnyEvent dest, int src, int count);
 public static final native void memmove(XButtonEvent dest, int src, int count);
@@ -4360,10 +4352,6 @@ public static final native void memmove(XmDropProcCallbackStruct dest, int src, 
 public static final native void memmove(XmSpinBoxCallbackStruct dest, int src, int count);
 public static final native void memmove(XmTextBlockRec dest, int src, int count);
 public static final native void memmove(XmTextVerifyCallbackStruct dest, int src, int count);
-public static final native void memmove(byte[] dest, int src, int count);
-public static final native void memmove(char[] dest, int src, int count);
-public static final native void memmove(int[] dest, int src, int count);
-public static final native void memmove(int dest, short[] src, int count);
 public static final native void memmove(int dest, XExposeEvent src, int count);
 public static final native void memmove(int dest, XClientMessageEvent src, int count);
 public static final native void memmove(int dest, XConfigureEvent src, int count);
@@ -4374,7 +4362,6 @@ public static final native int pipe(int[] filedes);
 public static final native int read(int filedes, byte[] buf, int nbyte);
 public static final native int select(int n, byte[] readfds, byte[] writefds, byte[] exceptfds, int[] timeout);
 public static final native int setlocale(int category, byte[] locale);
-public static final native int strlen(int string);
 public static final native int write(int filedes, byte[] buf, int nbyte);
 
 }

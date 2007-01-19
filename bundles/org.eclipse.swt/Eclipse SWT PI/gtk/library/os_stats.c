@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1217;
-int OS_nativeFunctionCallCount[1217];
+int OS_nativeFunctionCount = 1203;
+int OS_nativeFunctionCallCount[1203];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -88,7 +88,6 @@ char * OS_nativeFunctionNames[] = {
 	"GtkTargetPair_1sizeof",
 	"GtkTextIter_1sizeof",
 	"GtkTreeIter_1sizeof",
-	"PTR_1sizeof",
 	"PangoAttribute_1sizeof",
 	"PangoItem_1sizeof",
 	"PangoLayoutLine_1sizeof",
@@ -1171,7 +1170,6 @@ char * OS_nativeFunctionNames[] = {
 	"g_1main_1context_1wakeup",
 	"getenv",
 	"localeconv_1decimal_1point",
-	"memmove__III",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I",
@@ -1187,11 +1185,6 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I",
-	"memmove__I_3BI",
-	"memmove__I_3CI",
-	"memmove__I_3DI",
-	"memmove__I_3II",
-	"memmove__I_3JI",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GObjectClass_2I",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II",
@@ -1230,14 +1223,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II",
-	"memmove___3BII",
-	"memmove___3CII",
-	"memmove___3III",
-	"memmove___3I_3BI",
-	"memmove___3JII",
-	"memset",
 	"realpath",
-	"strlen",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

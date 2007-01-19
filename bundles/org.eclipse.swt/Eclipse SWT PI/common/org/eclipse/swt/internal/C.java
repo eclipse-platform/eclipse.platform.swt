@@ -11,13 +11,33 @@
 package org.eclipse.swt.internal;
 
 public class C extends Platform {
+
 	static {
-		Library.loadLibrary ("swt"); //$NON-NLS-1$
+	// The following line is intentionally commented.
+	// Library.loadLibrary ("swt"); //$NON-NLS-1$
 	}
 
-public static final int PTR_SIZEOF = PTR_sizeof ();
+	public static final int PTR_SIZEOF = PTR_sizeof ();
 public static final native void free (int /*long*/ ptr);
-public static final native int /*long*/ malloc (int size);
+public static final native int /*long*/ malloc (int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, byte[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, char[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, double[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, float[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, int[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, long[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, short[] src, int /*long*/ size);
+public static final native void memmove(byte[] dest, char[] src, int /*long*/ size);
+public static final native void memmove(byte[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(char[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(double[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(float[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(int[] dest, byte[] src, int /*long*/ size);
+public static final native void memmove(short[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(int[] dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(long[] dest, int /*long*/ src, int /*long*/ size);
+public static final native int /*long*/ memset(int /*long*/ buffer, char c, int /*long*/ num);
 public static final native int PTR_sizeof ();
 public static final native int strlen (int /*long*/ s);
 }

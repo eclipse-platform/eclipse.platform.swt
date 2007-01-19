@@ -83,7 +83,7 @@ MOZILLALIBS = -G -s -Wl,--version-script=mozilla_exports -Bsymbolic \
 	-L$(GECKO_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
 	-L$(GECKO_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
 
-SWT_OBJECTS = swt.o callback.o
+SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o

@@ -14,12 +14,30 @@
 
 #ifdef NATIVE_STATS
 
-int C_nativeFunctionCount = 4;
-int C_nativeFunctionCallCount[4];
+int C_nativeFunctionCount = 22;
+int C_nativeFunctionCallCount[22];
 char * C_nativeFunctionNames[] = {
 	"PTR_1sizeof",
 	"free",
 	"malloc",
+	"memmove__III",
+	"memmove__I_3BI",
+	"memmove__I_3CI",
+	"memmove__I_3DI",
+	"memmove__I_3FI",
+	"memmove__I_3II",
+	"memmove__I_3JI",
+	"memmove__I_3SI",
+	"memmove___3BII",
+	"memmove___3B_3CI",
+	"memmove___3CII",
+	"memmove___3DII",
+	"memmove___3FII",
+	"memmove___3III",
+	"memmove___3I_3BI",
+	"memmove___3JII",
+	"memmove___3SII",
+	"memset",
 	"strlen",
 };
 

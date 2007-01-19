@@ -29,7 +29,7 @@ package org.eclipse.swt.internal.mozilla;
 
 import org.eclipse.swt.internal.*;
 
-public class XPCOM extends Platform {
+public class XPCOM extends C {
 	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
 	public static final String CONTENT_MAYBETEXT = "application/x-vnd.mozilla.maybe-text"; //$NON-NLS-1$
 	public static final String CONTENT_MULTIPART = "multipart/x-mixed-replace"; //$NON-NLS-1$
@@ -102,15 +102,6 @@ public class XPCOM extends Platform {
 
 public static final native void memmove(nsID dest, int /*long*/ src, int nbytes);
 public static final native void memmove(int /*long*/ dest, nsID src, int nbytes);
-public static final native void memmove(int /*long*/ dest, int[] src, int nbytes);
-public static final native void memmove(int /*long*/ dest, long[] src, int nbytes);
-public static final native void memmove(long[] dest, int /*long*/ src, int nbytes);
-public static final native void memmove(int[] dest, int /*long*/ src, int nbytes);
-public static final native void memmove(byte[] dest, int /*long*/ src, int nbytes);
-public static final native void memmove(char[] dest, int /*long*/ src, int nbytes);
-public static final native void memmove(int /*long*/ dest, byte[] src, int nbytes);
-public static final native void memmove(int /*long*/ dest, char[] src, int nbytes);
-public static final native void memmove(byte[] dest, char[] src, int nbytes);
 public static final native int NS_GetComponentManager(int /*long*/[] result);
 public static final native int NS_GetServiceManager(int /*long*/[] result);
 public static final native int NS_InitXPCOM2(int /*long*/ result, int /*long*/ binDirectory, int /*long*/ appFileLocationProvider);
@@ -130,7 +121,6 @@ public static final native int /*long*/ nsEmbedString_new(char[] aString);
 public static final native void nsEmbedString_delete(int /*long*/ ptr);
 public static final native int nsEmbedString_Length(int /*long*/ ptr);
 public static final native int /*long*/ nsEmbedString_get(int /*long*/ ptr);
-public static final native int strlen(int /*long*/ s);
 
 public static final native int /*long*/ Call(int /*long*/ ptr, int /*long*/ aInStream, int /*long*/ aClosure, byte[] aFromSegment, int aToOffset, int aCount, int[] aWriteCount);
 

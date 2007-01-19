@@ -14,6 +14,10 @@ package org.eclipse.swt.internal.win32;
 import org.eclipse.swt.internal.*;
 
 public class OS extends C {
+	static {
+		Library.loadLibrary ("swt"); //$NON-NLS-1$
+	}
+
 	/*
 	* SWT Windows flags
 	*/

@@ -5,15 +5,17 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * ***** END LICENSE BLOCK ***** */
+ * Contributors:
+ *    IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 #include "swt.h"
 #include "xpcom_stats.h"
 
 #ifdef NATIVE_STATS
 
-int XPCOM_nativeFunctionCount = 134;
-int XPCOM_nativeFunctionCallCount[134];
+int XPCOM_nativeFunctionCount = 124;
+int XPCOM_nativeFunctionCallCount[124];
 char * XPCOM_nativeFunctionNames[] = {
 	"Call",
 	"NS_1GetComponentManager",
@@ -123,16 +125,7 @@ char * XPCOM_nativeFunctionNames[] = {
 	"VtblCall__II_3S",
 	"VtblCall__II_3Z",
 	"memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I",
-	"memmove__I_3BI",
-	"memmove__I_3CI",
-	"memmove__I_3II",
-	"memmove__I_3JI",
 	"memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2II",
-	"memmove___3BII",
-	"memmove___3B_3CI",
-	"memmove___3CII",
-	"memmove___3III",
-	"memmove___3JII",
 	"nsEmbedCString_1Length",
 	"nsEmbedCString_1delete",
 	"nsEmbedCString_1get",
@@ -147,7 +140,6 @@ char * XPCOM_nativeFunctionNames[] = {
 	"nsID_1Parse",
 	"nsID_1delete",
 	"nsID_1new",
-	"strlen",
 	"strlen_1PRUnichar",
 };
 

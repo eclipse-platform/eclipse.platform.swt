@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.gtk;
  
 import org.eclipse.swt.internal.*;
 
-public class OS extends Platform {
+public class OS extends C {
 	static {
 		Library.loadLibrary("swt-pi");
 	}
@@ -497,8 +497,6 @@ public static int VERSION(int major, int minor, int micro) {
 }
 
 /** 64 bit */
-public static final int PTR_SIZEOF = PTR_sizeof();
-public static final native int PTR_sizeof();
 public static final native int GInterfaceInfo_sizeof ();
 public static final native int GPollFD_sizeof ();
 public static final native int GTypeInfo_sizeof ();
@@ -559,7 +557,6 @@ public static final native int XVisibilityEvent_sizeof();
 public static final native int XWindowChanges_sizeof();
 public static final native int /*long*/ getenv(byte[] name);
 public static final native int /*long*/ localeconv_decimal_point();
-public static final native int strlen(int /*long*/ str);
 public static final native int /*long*/ realpath(byte[] path, byte[] realPath);
 
 /** Object private fields accessors */
@@ -9387,18 +9384,6 @@ public static final native void memmove(PangoItem dest, int /*long*/ src, int /*
 public static final native void memmove(PangoLayoutLine dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoLayoutRun dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoLogAttr dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove(int /*long*/ dest, int[] src, int /*long*/ size);
-public static final native void memmove(int /*long*/ dest, long[] src, int /*long*/ size);
-public static final native void memmove(int /*long*/ dest, byte[] src, int /*long*/ size);
-public static final native void memmove(int /*long*/ dest, char[] src, int /*long*/ size);
-public static final native void memmove(int /*long*/ dest, double[] src, int /*long*/ size);
-public static final native void memmove(int[] dest, byte[] src, int /*long*/ size);
-public static final native void memmove(byte[] dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove(char[] dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove(int[] dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove(int /*long*/ dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove(long[] dest, int /*long*/ src, int /*long*/ size);
-public static final native void memset(int /*long*/ buffer, char c, int /*long*/ num);
 public static final native int /*long*/ _pango_attr_background_new (short red, short green, short blue);
 public static final int /*long*/ pango_attr_background_new (short red, short green, short blue) {
 	lock.lock();
