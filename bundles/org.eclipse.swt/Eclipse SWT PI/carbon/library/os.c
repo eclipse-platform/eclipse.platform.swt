@@ -13428,25 +13428,3 @@ fail:
 }
 #endif
 
-#ifndef NO_memset
-JNIEXPORT void JNICALL OS_NATIVE(memset)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	OS_NATIVE_ENTER(env, that, memset_FUNC);
-	memset((void *)arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, memset_FUNC);
-}
-#endif
-
-#ifndef NO_strlen
-JNIEXPORT jint JNICALL OS_NATIVE(strlen)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, strlen_FUNC);
-	rc = (jint)strlen((char *)arg0);
-	OS_NATIVE_EXIT(env, that, strlen_FUNC);
-	return rc;
-}
-#endif
-

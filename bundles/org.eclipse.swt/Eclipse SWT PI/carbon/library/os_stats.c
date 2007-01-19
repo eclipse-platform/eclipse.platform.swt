@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 935;
-int OS_nativeFunctionCallCount[935];
+int OS_nativeFunctionCount = 933;
+int OS_nativeFunctionCallCount[933];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -950,8 +950,6 @@ char * OS_nativeFunctionNames[] = {
 	"memcpy___3FII",
 	"memcpy___3III",
 	"memcpy___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I",
-	"memset",
-	"strlen",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

@@ -15,7 +15,7 @@ package org.eclipse.swt.internal.carbon;
  
 import org.eclipse.swt.internal.*;
 
-public class OS extends Platform {
+public class OS extends C {
 	static {
 		Library.loadLibrary ("swt-pi");
 	}
@@ -1858,9 +1858,6 @@ public static final native void memcpy(int dest, EventRecord src, int size);
 public static final native void memcpy(int dest, ATSUTab src, int size);
 public static final native void memcpy(int[] dest, TXNTab src, int size);
 public static final native void memcpy(float[] dest, int src, int size);
-public static final native void memset(int dest, int value, int size);
-public static final native int strlen(int ptr);
-
 
 public static final native int AXUIElementCreateWithHIObjectAndIdentifier(int inHIObject, long inIdentifier);
 public static final native void AXNotificationHIObjectNotify(int inNotification, int inHIObject, long inIdentifier);

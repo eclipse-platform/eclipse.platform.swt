@@ -517,7 +517,7 @@ fail:
 
 #ifndef NO_memset
 JNIEXPORT jint JNICALL C_NATIVE(memset)
-	(JNIEnv *env, jclass that, jint arg0, jchar arg1, jint arg2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jint rc = 0;
 	C_NATIVE_ENTER(env, that, memset_FUNC);
