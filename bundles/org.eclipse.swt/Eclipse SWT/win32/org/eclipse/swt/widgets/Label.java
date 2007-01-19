@@ -499,7 +499,8 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	}
 	if (redraw) {
 		OS.InvalidateRect (handle, null, false);
-		return LRESULT.ZERO;
+		int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+		return new LRESULT (code);
 	}
 	return result;
 }
@@ -569,7 +570,6 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 					gc.drawImage (image, x, Math.max (0, (clientRect.bottom - imageBounds.height) / 2));
 					result = LRESULT.ONE;
 				}
-				
 				int width = ps.right - ps.left;
 				int height = ps.bottom - ps.top;
 				if (width != 0 && height != 0) {
