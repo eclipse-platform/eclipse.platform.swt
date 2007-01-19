@@ -26,14 +26,6 @@ public class OS extends C {
 		if (osName.equals ("HP-UX")) isHPUX = true;
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
 	}
-	static {
-		if (OS.IsLinux) {
-			try {
-				Library.loadLibrary ("libXm.so.2", false);
-			} catch (UnsatisfiedLinkError ex) {}
-		}
-		Library.loadLibrary ("swt");
-	}
 
 	public static final boolean IsDBLocale = OS.MB_CUR_MAX () != 1;
 	public static final int CODESET = CODESET ();

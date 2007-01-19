@@ -13,8 +13,12 @@ package org.eclipse.swt.internal;
 public class C extends Platform {
 
 	static {
-	// The following line is intentionally commented.
-	// Library.loadLibrary ("swt"); //$NON-NLS-1$
+		if ("Linux".equals(System.getProperty ("os.name")) && "motif".equals(Platform.PLATFORM)) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			try {
+				Library.loadLibrary ("libXm.so.2", false); //$NON-NLS-1$
+			} catch (UnsatisfiedLinkError ex) {}
+		}
+		Library.loadLibrary ("swt"); //$NON-NLS-1$
 	}
 
 	public static final int PTR_SIZEOF = PTR_sizeof ();
