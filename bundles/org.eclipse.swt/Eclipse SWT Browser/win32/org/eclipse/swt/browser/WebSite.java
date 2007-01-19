@@ -170,7 +170,7 @@ int GetExternal(int ppDispatch) {
 }
 
 int GetHostInfo(int pInfo) {
-	Browser browser = (Browser)getParent().getParent();
+	IE browser = (IE)((Browser)getParent().getParent()).webBrowser;
 	OS.MoveMemory(pInfo + 4, new int[] {browser.info}, 4);
 	return COM.S_OK;
 }
@@ -257,7 +257,7 @@ int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
 	if (pVarResult != null) {
 		if (pVarResult.getType() == OLE.VT_BSTR) {
 			String url = pVarResult.getString();
-			if (url.equals(Browser.ABOUT_BLANK)) {
+			if (url.equals(IE.ABOUT_BLANK)) {
 				MSG msg = new MSG();
 				OS.MoveMemory(msg, lpMsg, MSG.sizeof);
 				if (msg.message == OS.WM_KEYDOWN && msg.wParam == OS.VK_F5) result = COM.S_OK;
@@ -362,11 +362,11 @@ int QueryService(int guidService, int riid, int ppvObject) {
 /* IInternetSecurityManager */
 
 int SetSecuritySite(int pSite) {
-	return Browser.INET_E_DEFAULT_ACTION;
+	return IE.INET_E_DEFAULT_ACTION;
 }
 
 int GetSecuritySite(int ppSite) {
-	return Browser.INET_E_DEFAULT_ACTION;
+	return IE.INET_E_DEFAULT_ACTION;
 }
 
 int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {	
@@ -378,12 +378,12 @@ int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {
 	* to return URLZONE_INTRANET instead of the default
 	* value URLZONE_LOCAL_MACHINE.
 	*/	
-	COM.MoveMemory(pdwZone, new int[] {Browser.URLZONE_INTRANET}, 4);
+	COM.MoveMemory(pdwZone, new int[] {IE.URLZONE_INTRANET}, 4);
 	return COM.S_OK;
 }
 
 int GetSecurityId(int pwszUrl, int pbSecurityId, int pcbSecurityId, int dwReserved) {
-	return Browser.INET_E_DEFAULT_ACTION;
+	return IE.INET_E_DEFAULT_ACTION;
 }
 
 int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int pContext, int cbContext, int dwFlags, int dwReserved) {
@@ -400,7 +400,7 @@ int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int p
 	* approach is to consider the content trusted and allow
 	* all URLs by default.
 	*/
-	int policy = Browser.URLPOLICY_ALLOW;
+	int policy = IE.URLPOLICY_ALLOW;
 	/*
 	* Note. The URLACTION_JAVA flags refer to the applet tag that normally resolve to
 	* the Microsoft VM, not to the java OBJECT tag that resolves to the
@@ -408,8 +408,8 @@ int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int p
 	* URLPOLICY_ALLOW that is interpreted as URLPOLICY_JAVA_PROHIBIT in this
 	* context. 
 	*/
-	if (dwAction >= Browser.URLACTION_JAVA_MIN && dwAction <= Browser.URLACTION_JAVA_MAX) {
-		policy = Browser.URLPOLICY_JAVA_LOW;
+	if (dwAction >= IE.URLACTION_JAVA_MIN && dwAction <= IE.URLACTION_JAVA_MAX) {
+		policy = IE.URLPOLICY_JAVA_LOW;
 	}
 	/*
 	* Note.  Some ActiveX plugins crash when executing
@@ -418,11 +418,11 @@ int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int p
 	* such ActiveX is about to be started and refuse
 	* to execute it.
 	*/
-	if (dwAction == Browser.URLACTION_ACTIVEX_RUN) {
+	if (dwAction == IE.URLACTION_ACTIVEX_RUN) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, pContext, GUID.sizeof);
 		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge) || COM.IsEqualGUID(guid, COM.IIDShockwaveActiveXControl)) {
-			policy = Browser.URLPOLICY_DISALLOW;
+			policy = IE.URLPOLICY_DISALLOW;
 		}
 	}
 	if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {policy}, 4);
@@ -430,11 +430,11 @@ int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int p
 }
 
 int QueryCustomPolicy(int pwszUrl, int guidKey, int ppPolicy, int pcbPolicy, int pContext, int cbContext, int dwReserved) {
-	return Browser.INET_E_DEFAULT_ACTION;
+	return IE.INET_E_DEFAULT_ACTION;
 }
 
 int SetZoneMapping(int dwZone, int lpszPattern, int dwFlags) {
-	return Browser.INET_E_DEFAULT_ACTION;
+	return IE.INET_E_DEFAULT_ACTION;
 }
 
 int GetZoneMappings(int dwZone, int ppenumString, int dwFlags) {
@@ -466,7 +466,7 @@ int Exec(int pguidCmdGroup, int nCmdID, int nCmdExecOpt, int pvaIn, int pvaOut) 
 		* to test the argument of an undocumented command.
 		*/
 		if (nCmdID == 1 && COM.IsEqualGUID(guid, COM.CGID_Explorer) && ((nCmdExecOpt & 0xFFFF) == 0xA)) {
-			Browser browser = (Browser)getParent().getParent();
+			IE browser = (IE)((Browser)getParent().getParent()).webBrowser;
 			browser.toolBar = (nCmdExecOpt & 0xFFFF0000) != 0;
 		}
 	}
