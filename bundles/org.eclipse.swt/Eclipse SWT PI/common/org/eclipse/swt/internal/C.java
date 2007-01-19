@@ -22,6 +22,7 @@ public class C extends Platform {
 	}
 
 	public static final int PTR_SIZEOF = PTR_sizeof ();
+
 public static final native void free (int /*long*/ ptr);
 public static final native int /*long*/ malloc (int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, byte[] src, int /*long*/ size);

@@ -165,12 +165,6 @@ SWT_PTR * fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = {
 
 /* --------------- callback class calls --------------- */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_PTR_1sizeof
-	(JNIEnv *env, jclass that)
-{
-	return sizeof(SWT_PTR);
-}
-
 JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
   (JNIEnv *env, jclass that, jobject callbackObject, jobject object, jstring method, jstring signature, jint argCount, jboolean isStatic, jboolean isArrayBased, SWT_PTR errorResult)
 {
