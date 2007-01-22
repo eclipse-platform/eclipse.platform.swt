@@ -18,35 +18,12 @@ import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
 
-/**
- * Instances of this class implement the browser user interface
- * metaphor.  It allows the user to visualize and navigate through
- * HTML documents.
- * <p>
- * Note that although this class is a subclass of <code>Composite</code>,
- * it does not make sense to set a layout on it.
- * </p><p>
- * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- * </p>
- * 
- * @since 3.0
- */
-public class Browser extends Composite {
+class Safari extends WebBrowser {
 	
 	/* Package Name */
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
 	static final int MAX_PROGRESS = 100;
-	
-	/* External Listener management */
-	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
-	LocationListener[] locationListeners = new LocationListener[0];
-	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
-	ProgressListener[] progressListeners = new ProgressListener[0];
-	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
-	TitleListener[] titleListeners = new TitleListener[0];
-	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 	
 	static Callback Callback3, Callback7;
 
@@ -69,62 +46,47 @@ public class Browser extends Composite {
 
 	static final int MIN_SIZE = 16;
 
-/**
- * Constructs a new instance of this class given its parent
- * and a style value describing its behavior and appearance.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * lists the style constants that are applicable to the class.
- * Style bits are also inherited from superclasses.
- * </p>
- *
- * @param parent a widget which will be the parent of the new instance (cannot be null)
- * @param style the style of widget to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
- * </ul>
- * 
- * @see Widget#getStyle
- * 
- * @since 3.0
- */
-public Browser(Composite parent, int style) {
-	super(parent, style);
+	static {
+		NativeClearSessions = new Runnable() {
+			public void run() {
+				int storage = Cocoa.objc_msgSend (Cocoa.C_NSHTTPCookieStorage, Cocoa.S_sharedHTTPCookieStorage);
+				int cookies = Cocoa.objc_msgSend (storage, Cocoa.S_cookies);
+				int count = Cocoa.objc_msgSend (cookies, Cocoa.S_count);
+				for (int i = 0; i < count; i++) {
+					int cookie = Cocoa.objc_msgSend (cookies, Cocoa.S_objectAtIndex, i);
+					boolean isSession = Cocoa.objc_msgSend (cookie, Cocoa.S_isSessionOnly) != 0;
+					if (isSession) {
+						Cocoa.objc_msgSend (storage, Cocoa.S_deleteCookie, cookie);
+					}
+				}
+			}
+		};
+	}
 
+public void create (Composite parent, int style) {
 	/*
 	* Note.  Loading the webkit bundle on Jaguar causes a crash.
 	* The workaround is to detect any OS prior to 10.30 and fail
 	* without crashing.
 	*/
 	if (OS.VERSION < 0x1030) {
-		dispose();
+		browser.dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	int outControl[] = new int[1];
 	try {
 		Cocoa.HIWebViewCreate(outControl);
 	} catch (UnsatisfiedLinkError e) {
-		dispose();
+		browser.dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	webViewHandle = outControl[0];
 	if (webViewHandle == 0) {
-		dispose();
+		browser.dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);		
 	}
-	Display display = getDisplay();
-	display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), this});
+	Display display = browser.getDisplay();
+	display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), browser});
 	
 	/*
 	* Bug in Safari.  For some reason, every application must contain
@@ -159,20 +121,20 @@ public Browser(Composite parent, int style) {
 	 * to the HIView (after the top window is visible) to give Safari a chance to hook
 	 * events.
 	 */
-	int window = OS.GetControlOwner(handle);
+	int window = OS.GetControlOwner(browser.handle);
 	if (OS.HIVIEW) {
 		int[] contentView = new int[1];
 		OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
 		OS.HIViewAddSubview(contentView[0], webViewHandle);
 		OS.HIViewChangeFeatures(webViewHandle, OS.kHIViewFeatureIsOpaque, 0);
 	} else {
-		OS.HIViewAddSubview(handle, webViewHandle);
+		OS.HIViewAddSubview(browser.handle, webViewHandle);
 	}
 	OS.HIViewSetVisible(webViewHandle, true);	
-	if (getShell().isVisible()) {
+	if (browser.getShell().isVisible()) {
 		int[] showEvent = new int[1];
 		OS.CreateEvent(0, OS.kEventClassWindow, OS.kEventWindowShown, 0.0, OS.kEventAttributeUserEvent, showEvent);
-		OS.SetEventParameter(showEvent[0], OS.kEventParamDirectObject, OS.typeWindowRef, 4, new int[] {OS.GetControlOwner(handle)});
+		OS.SetEventParameter(showEvent[0], OS.kEventParamDirectObject, OS.typeWindowRef, 4, new int[] {OS.GetControlOwner(browser.handle)});
 		OS.SendEventToEventTarget(showEvent[0], OS.GetWindowEventTarget(window));
 		if (showEvent[0] != 0) OS.ReleaseEvent(showEvent[0]);
 	}
@@ -205,14 +167,14 @@ public Browser(Composite parent, int style) {
 						break;
 					}
 					ignoreDispose = true;
-					notifyListeners (e.type, e);
+					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
 
-					Shell shell = getShell();
+					Shell shell = browser.getShell();
 					shell.removeListener(SWT.Resize, this);
 					shell.removeListener(SWT.Show, this);
 					shell.removeListener(SWT.Hide, this);
-					Control c = Browser.this;
+					Control c = browser;
 					do {
 						c.removeListener(SWT.Show, this);
 						c.removeListener(SWT.Hide, this);
@@ -251,8 +213,8 @@ public Browser(Composite parent, int style) {
 					* cannot be used because SWT.Show is sent before the widget is
 					* actually visible. 
 					*/
-					Shell shell = getShell();
-					Composite parent = Browser.this;
+					Shell shell = browser.getShell();
+					Composite parent = browser;
 					while (parent != shell && (parent.getVisible() || parent == e.widget)) {
 						parent = parent.getParent();
 					}
@@ -266,12 +228,12 @@ public Browser(Composite parent, int style) {
 					*/
 					CGRect bounds = new CGRect();
 					if (OS.HIVIEW) {
-						OS.HIViewGetBounds(handle, bounds);
+						OS.HIViewGetBounds(browser.handle, bounds);
 						int[] contentView = new int[1];
-						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(handle)), OS.kHIViewWindowContentID(), contentView);
-						OS.HIViewConvertRect(bounds, handle, contentView[0]);
+						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
+						OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
 					} else {
-						OS.HIViewGetFrame(handle, bounds);
+						OS.HIViewGetFrame(browser.handle, bounds);
 					}
 					/* 
 					* Bug in Safari.  For some reason, the web view will display incorrectly or
@@ -286,7 +248,7 @@ public Browser(Composite parent, int style) {
 				}
 				case SWT.Resize: {
 					/* Do not update size when it is not visible */
-					if (!isVisible()) return;
+					if (!browser.isVisible()) return;
 					/*
 					* Bug on Safari. Resizing the height of a Shell containing a Browser at
 					* a fixed location causes the Browser to redraw at a wrong location.
@@ -298,12 +260,12 @@ public Browser(Composite parent, int style) {
 					*/
 					CGRect bounds = new CGRect();
 					if (OS.HIVIEW) {
-						OS.HIViewGetBounds(handle, bounds);
+						OS.HIViewGetBounds(browser.handle, bounds);
 						int[] contentView = new int[1];
-						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(handle)), OS.kHIViewWindowContentID(), contentView);
-						OS.HIViewConvertRect(bounds, handle, contentView[0]);
+						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
+						OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
 					} else {
-						OS.HIViewGetFrame(handle, bounds);
+						OS.HIViewGetFrame(browser.handle, bounds);
 					}
 					/* 
 					* Bug in Safari.  For some reason, the web view will display incorrectly or
@@ -313,7 +275,7 @@ public Browser(Composite parent, int style) {
 					*/
 					if (bounds.width <= MIN_SIZE) bounds.width = MIN_SIZE;
 					if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
-					if (e.widget == getShell()) {
+					if (e.widget == browser.getShell()) {
 						bounds.x++;
 						/* Note that the bounds needs to change */
 						OS.HIViewSetFrame(webViewHandle, bounds);
@@ -325,13 +287,13 @@ public Browser(Composite parent, int style) {
 			}
 		}
 	};
-	addListener(SWT.Dispose, listener);
-	addListener(SWT.Resize, listener);
-	Shell shell = getShell();
+	browser.addListener(SWT.Dispose, listener);
+	browser.addListener(SWT.Resize, listener);
+	Shell shell = browser.getShell();
 	shell.addListener(SWT.Resize, listener);
 	shell.addListener(SWT.Show, listener);
 	shell.addListener(SWT.Hide, listener);
-	Control c = this;
+	Control c = browser;
 	do {
 		c.addListener(SWT.Show, listener);
 		c.addListener(SWT.Hide, listener);
@@ -378,294 +340,29 @@ public Browser(Composite parent, int style) {
 	Cocoa.objc_msgSend(webView, Cocoa.S_setDownloadDelegate, delegate);
 }
 
-/**
- * Clears all session cookies from all current Browser instances.
- * 
- * @since 3.2
- */
-public static void clearSessions () {
-	int storage = Cocoa.objc_msgSend (Cocoa.C_NSHTTPCookieStorage, Cocoa.S_sharedHTTPCookieStorage);
-	int cookies = Cocoa.objc_msgSend (storage, Cocoa.S_cookies);
-	int count = Cocoa.objc_msgSend (cookies, Cocoa.S_count);
-	for (int i = 0; i < count; i++) {
-		int cookie = Cocoa.objc_msgSend (cookies, Cocoa.S_objectAtIndex, i);
-		boolean isSession = Cocoa.objc_msgSend (cookie, Cocoa.S_isSessionOnly) != 0;
-		if (isSession) {
-			Cocoa.objc_msgSend (storage, Cocoa.S_deleteCookie, cookie);
-		}
-	}
-}
-
 static int eventProc3(int nextHandler, int theEvent, int userData) {
 	Widget widget = Display.getCurrent().findWidget(userData);
-	if (widget instanceof Browser)
-		return ((Browser)widget).handleCallback(nextHandler, theEvent);
+	if (widget instanceof Browser) {
+		return ((Safari)((Browser)widget).webBrowser).handleCallback(nextHandler, theEvent);
+	}
 	return OS.eventNotHandledErr;
 }
 
 static int eventProc7(int webview, int userData, int selector, int arg0, int arg1, int arg2, int arg3) {
 	Widget widget = Display.getCurrent().findWidget(userData);
-	if (widget instanceof Browser)
-		return ((Browser)widget).handleCallback(selector, arg0, arg1, arg2, arg3);
+	if (widget instanceof Browser) {
+		return ((Safari)((Browser)widget).webBrowser).handleCallback(selector, arg0, arg1, arg2, arg3);
+	}
 	return 0;
 }
 
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when the window hosting the receiver should be closed.
- * <p>
- * This notification occurs when a javascript command such as
- * <code>window.close</code> gets executed by a <code>Browser</code>.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
-	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length + 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, closeWindowListeners.length);
-	closeWindowListeners = newCloseWindowListeners;
-	closeWindowListeners[closeWindowListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when the current location has changed or is about to change.
- * <p>
- * This notification typically occurs when the application navigates
- * to a new location with {@link #setUrl(String)} or when the user
- * activates a hyperlink.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addLocationListener(LocationListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	LocationListener[] newLocationListeners = new LocationListener[locationListeners.length + 1];
-	System.arraycopy(locationListeners, 0, newLocationListeners, 0, locationListeners.length);
-	locationListeners = newLocationListeners;
-	locationListeners[locationListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when a new window needs to be created.
- * <p>
- * This notification occurs when a javascript command such as
- * <code>window.open</code> gets executed by a <code>Browser</code>.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addOpenWindowListener(OpenWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	OpenWindowListener[] newOpenWindowListeners = new OpenWindowListener[openWindowListeners.length + 1];
-	System.arraycopy(openWindowListeners, 0, newOpenWindowListeners, 0, openWindowListeners.length);
-	openWindowListeners = newOpenWindowListeners;
-	openWindowListeners[openWindowListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when a progress is made during the loading of the current 
- * URL or when the loading of the current URL has been completed.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addProgressListener(ProgressListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	ProgressListener[] newProgressListeners = new ProgressListener[progressListeners.length + 1];
-	System.arraycopy(progressListeners, 0, newProgressListeners, 0, progressListeners.length);
-	progressListeners = newProgressListeners;
-	progressListeners[progressListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when the status text is changed.
- * <p>
- * The status text is typically displayed in the status bar of
- * a browser application.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addStatusTextListener(StatusTextListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	StatusTextListener[] newStatusTextListeners = new StatusTextListener[statusTextListeners.length + 1];
-	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, statusTextListeners.length);
-	statusTextListeners = newStatusTextListeners;
-	statusTextListeners[statusTextListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when the title of the current document is available
- * or has changed.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addTitleListener(TitleListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length + 1];
-	System.arraycopy(titleListeners, 0, newTitleListeners, 0, titleListeners.length);
-	titleListeners = newTitleListeners;
-	titleListeners[titleListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when a window hosting the receiver needs to be displayed
- * or hidden.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addVisibilityWindowListener(VisibilityWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	VisibilityWindowListener[] newVisibilityWindowListeners = new VisibilityWindowListener[visibilityWindowListeners.length + 1];
-	System.arraycopy(visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, visibilityWindowListeners.length);
-	visibilityWindowListeners = newVisibilityWindowListeners;
-	visibilityWindowListeners[visibilityWindowListeners.length - 1] = listener;
-}
-
-/**
- * Navigate to the previous session history item.
- *
- * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @see #forward
- * 
- * @since 3.0
- */
 public boolean back() {
-	checkWidget();
 	html = null;
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	return Cocoa.objc_msgSend(webView, Cocoa.S_goBack) != 0;
 }
 
-protected void checkSubclass () {
-	String name = getClass().getName();
-	int index = name.lastIndexOf('.');
-	if (!name.substring(0, index + 1).equals(PACKAGE_PREFIX)) {
-		SWT.error(SWT.ERROR_INVALID_SUBCLASS);
-	}
-}
-
-/**
- * Execute the specified script.
- *
- * <p>
- * Execute a script containing javascript commands in the context of the current document. 
- * 
- * @param script the script with javascript commands
- *  
- * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the script is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.1
- */
 public boolean execute(String script) {
-	checkWidget();
-	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-
 	int length = script.length();
 	char[] buffer = new char[length];
 	script.getChars(0, length, buffer, 0);
@@ -677,43 +374,13 @@ public boolean execute(String script) {
 	return value != 0;
 }
 
-/**
- * Navigate to the next session history item.
- *
- * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @see #back
- * 
- * @since 3.0
- */
 public boolean forward() {
-	checkWidget();
 	html = null;
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	return Cocoa.objc_msgSend(webView, Cocoa.S_goForward) != 0;
 }
 
-/**
- * Returns the current URL.
- *
- * @return the current URL or an empty <code>String</code> if there is no current URL
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @see #setUrl
- * 
- * @since 3.0
- */
 public String getUrl() {
-	checkWidget();
 	return url;
 }
 
@@ -729,7 +396,7 @@ int handleCallback(int nextHandler, int theEvent) {
 			* This problem is specified in the apple documentation for HiWebViewCreate.
 			* The workaround is to don't draw the web view when it is not visible.
 			*/
-			if (!isVisible ()) return OS.noErr;
+			if (!browser.isVisible ()) return OS.noErr;
 			break;
 		}
 		case OS.kEventRawKeyDown: {
@@ -819,364 +486,22 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 	return ret;
 }
 
-/**
- * Returns <code>true</code> if the receiver can navigate to the 
- * previous session history item, and <code>false</code> otherwise.
- *
- * @return the receiver's back command enabled state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see #back
- */
 public boolean isBackEnabled() {
-	checkWidget();
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	return Cocoa.objc_msgSend(webView, Cocoa.S_canGoBack) != 0;
 }
 
-/**
- * Returns <code>true</code> if the receiver can navigate to the 
- * next session history item, and <code>false</code> otherwise.
- *
- * @return the receiver's forward command enabled state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see #forward
- */
 public boolean isForwardEnabled() {
-	checkWidget();
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	return Cocoa.objc_msgSend(webView, Cocoa.S_canGoForward) != 0;
 }
 
-/**
- * Refresh the current page.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
 public void refresh() {
-	checkWidget();
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	Cocoa.objc_msgSend(webView, Cocoa.S_reload, 0);
 }
 
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when the window hosting the receiver should be closed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (closeWindowListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < closeWindowListeners.length; i++) {
-		if (listener == closeWindowListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (closeWindowListeners.length == 1) {
-		closeWindowListeners = new CloseWindowListener[0];
-		return;
-	}
-	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length - 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, index);
-	System.arraycopy(closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
-	closeWindowListeners = newCloseWindowListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when the current location is changed or about to be changed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeLocationListener(LocationListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (locationListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < locationListeners.length; i++) {
-		if (listener == locationListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (locationListeners.length == 1) {
-		locationListeners = new LocationListener[0];
-		return;
-	}
-	LocationListener[] newLocationListeners = new LocationListener[locationListeners.length - 1];
-	System.arraycopy(locationListeners, 0, newLocationListeners, 0, index);
-	System.arraycopy(locationListeners, index + 1, newLocationListeners, index, locationListeners.length - index - 1);
-	locationListeners = newLocationListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when a new window needs to be created.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeOpenWindowListener(OpenWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (openWindowListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < openWindowListeners.length; i++) {
-		if (listener == openWindowListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (openWindowListeners.length == 1) {
-		openWindowListeners = new OpenWindowListener[0];
-		return;
-	}
-	OpenWindowListener[] newOpenWindowListeners = new OpenWindowListener[openWindowListeners.length - 1];
-	System.arraycopy(openWindowListeners, 0, newOpenWindowListeners, 0, index);
-	System.arraycopy(openWindowListeners, index + 1, newOpenWindowListeners, index, openWindowListeners.length - index - 1);
-	openWindowListeners = newOpenWindowListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when a progress is made during the loading of the current 
- * URL or when the loading of the current URL has been completed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeProgressListener(ProgressListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (progressListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < progressListeners.length; i++) {
-		if (listener == progressListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (progressListeners.length == 1) {
-		progressListeners = new ProgressListener[0];
-		return;
-	}
-	ProgressListener[] newProgressListeners = new ProgressListener[progressListeners.length - 1];
-	System.arraycopy(progressListeners, 0, newProgressListeners, 0, index);
-	System.arraycopy(progressListeners, index + 1, newProgressListeners, index, progressListeners.length - index - 1);
-	progressListeners = newProgressListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when the status text is changed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeStatusTextListener(StatusTextListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (statusTextListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < statusTextListeners.length; i++) {
-		if (listener == statusTextListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (statusTextListeners.length == 1) {
-		statusTextListeners = new StatusTextListener[0];
-		return;
-	}
-	StatusTextListener[] newStatusTextListeners = new StatusTextListener[statusTextListeners.length - 1];
-	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, index);
-	System.arraycopy(statusTextListeners, index + 1, newStatusTextListeners, index, statusTextListeners.length - index - 1);
-	statusTextListeners = newStatusTextListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when the title of the current document is available
- * or has changed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeTitleListener(TitleListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (titleListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < titleListeners.length; i++) {
-		if (listener == titleListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (titleListeners.length == 1) {
-		titleListeners = new TitleListener[0];
-		return;
-	}
-	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length - 1];
-	System.arraycopy(titleListeners, 0, newTitleListeners, 0, index);
-	System.arraycopy(titleListeners, index + 1, newTitleListeners, index, titleListeners.length - index - 1);
-	titleListeners = newTitleListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when a window hosting the receiver needs to be displayed
- * or hidden.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (visibilityWindowListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < visibilityWindowListeners.length; i++) {
-		if (listener == visibilityWindowListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (visibilityWindowListeners.length == 1) {
-		visibilityWindowListeners = new VisibilityWindowListener[0];
-		return;
-	}
-	VisibilityWindowListener[] newVisibilityWindowListeners = new VisibilityWindowListener[visibilityWindowListeners.length - 1];
-	System.arraycopy(visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, index);
-	System.arraycopy(visibilityWindowListeners, index + 1, newVisibilityWindowListeners, index, visibilityWindowListeners.length - index - 1);
-	visibilityWindowListeners = newVisibilityWindowListeners;
-}
-
-/**
- * Renders HTML.
- * 
- * <p>
- * The html parameter is Unicode encoded since it is a java <code>String</code>.
- * As a result, the HTML meta tag charset should not be set. The charset is implied
- * by the <code>String</code> itself.
- * 
- * @param html the HTML content to be rendered
- *
- * @return true if the operation was successful and false otherwise.
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *  
- * @see #setUrl
- * 
- * @since 3.0
- */
 public boolean setText(String html) {
-	checkWidget();
-	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	/*
 	* Bug in Safari.  The web view segment faults in some circunstances
 	* when the text changes during the location changing callback.  The
@@ -1220,30 +545,7 @@ void _setText(String html) {
 	OS.CFRelease(string);
 }
 
-/**
- * Loads a URL.
- * 
- * @param url the URL to be loaded
- *
- * @return true if the operation was successful and false otherwise.
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *  
- * @see #getUrl
- * 
- * @since 3.0
- */
 public boolean setUrl(String url) {
-	checkWidget();
-	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-
 	html = null;
 
 	StringBuffer buffer = new StringBuffer();
@@ -1282,18 +584,7 @@ public boolean setUrl(String url) {
 	return true;
 }
 
-/**
- * Stop any loading and rendering activity.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
 public void stop() {
-	checkWidget();
 	html = null;
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	Cocoa.objc_msgSend(webView, Cocoa.S_stopLoading, 0);
@@ -1324,7 +615,7 @@ void didFailProvisionalLoadWithError(int error, int frame) {
 void didFinishLoadForFrame(int frame) {
 	int webView = Cocoa.HIWebViewGetWebView(webViewHandle);
 	if (frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame)) {
-		final Display display = getDisplay();
+		final Display display = browser.getDisplay();
 		/*
 		* To be consistent with other platforms a title event should be fired when a
 		* page has completed loading.  A page with a <title> tag will do this
@@ -1336,9 +627,9 @@ void didFinishLoadForFrame(int frame) {
 		if (dataSource != 0) {
 			int title = Cocoa.objc_msgSend(dataSource, Cocoa.S_pageTitle);
 			if (title == 0) {	/* page has no title */
-				final TitleEvent newEvent = new TitleEvent(this);
+				final TitleEvent newEvent = new TitleEvent(browser);
 				newEvent.display = display;
-				newEvent.widget = this;
+				newEvent.widget = browser;
 				newEvent.title = url;
 				for (int i = 0; i < titleListeners.length; i++) {
 					final TitleListener listener = titleListeners[i];
@@ -1351,7 +642,7 @@ void didFinishLoadForFrame(int frame) {
 					display.asyncExec(
 						new Runnable() {
 							public void run() {
-								if (!display.isDisposed() && !isDisposed()) {
+								if (!display.isDisposed() && !browser.isDisposed()) {
 									listener.changed(newEvent);
 								}
 							}
@@ -1360,9 +651,9 @@ void didFinishLoadForFrame(int frame) {
 				}
 			}
 		}
-		final ProgressEvent progress = new ProgressEvent(this);
+		final ProgressEvent progress = new ProgressEvent(browser);
 		progress.display = display;
-		progress.widget = this;
+		progress.widget = browser;
 		progress.current = MAX_PROGRESS;
 		progress.total = MAX_PROGRESS;
 		for (int i = 0; i < progressListeners.length; i++) {
@@ -1379,7 +670,7 @@ void didFinishLoadForFrame(int frame) {
 			display.asyncExec(
 				new Runnable() {
 					public void run() {
-						if (!display.isDisposed() && !isDisposed()) {
+						if (!display.isDisposed() && !browser.isDisposed()) {
 							listener.completed(progress);
 						}
 					}
@@ -1412,9 +703,9 @@ void didReceiveTitle(int title, int frame) {
 		range.length = length;
 		OS.CFStringGetCharacters(title, range, buffer);
 		String newTitle = new String(buffer);
-		TitleEvent newEvent = new TitleEvent(Browser.this);
-		newEvent.display = getDisplay();
-		newEvent.widget = this;
+		TitleEvent newEvent = new TitleEvent(browser);
+		newEvent.display = browser.getDisplay();
+		newEvent.widget = browser;
 		newEvent.title = newTitle;
 		for (int i = 0; i < titleListeners.length; i++) {
 			titleListeners[i].changed(newEvent);
@@ -1450,7 +741,7 @@ void didCommitLoadForFrame(int frame) {
 	range.length = length;
 	OS.CFStringGetCharacters(s, range, buffer);
 	String url2 = new String(buffer);
-	final Display display = getDisplay();
+	final Display display = browser.getDisplay();
 
 	boolean top = frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
 	if (top) {
@@ -1458,9 +749,9 @@ void didCommitLoadForFrame(int frame) {
 		resourceCount = 0;		
 		this.url = url2;
 		
-		final ProgressEvent progress = new ProgressEvent(this);
+		final ProgressEvent progress = new ProgressEvent(browser);
 		progress.display = display;
-		progress.widget = this;
+		progress.widget = browser;
 		progress.current = 1;
 		progress.total = MAX_PROGRESS;
 		for (int i = 0; i < progressListeners.length; i++) {
@@ -1477,23 +768,23 @@ void didCommitLoadForFrame(int frame) {
 			display.asyncExec(
 				new Runnable() {
 					public void run() {
-						if (!display.isDisposed() && !isDisposed())
+						if (!display.isDisposed() && !browser.isDisposed())
 							listener.changed(progress);
 					}
 				}
 			);
 		}
 		
-		StatusTextEvent statusText = new StatusTextEvent(this);
+		StatusTextEvent statusText = new StatusTextEvent(browser);
 		statusText.display = display;
-		statusText.widget = this;
+		statusText.widget = browser;
 		statusText.text = url2;
 		for (int i = 0; i < statusTextListeners.length; i++)
 			statusTextListeners[i].changed(statusText);
 	}
-	LocationEvent location = new LocationEvent(Browser.this);
+	LocationEvent location = new LocationEvent(browser);
 	location.display = display;
-	location.widget = this;
+	location.widget = browser;
 	location.location = url2;
 	location.top = top;
 	for (int i = 0; i < locationListeners.length; i++)
@@ -1539,10 +830,10 @@ void didFailLoadingWithError(int identifier, int error, int dataSource) {
 }
 
 int identifierForInitialRequest(int request, int dataSource) {
-	final Display display = getDisplay();
-	final ProgressEvent progress = new ProgressEvent(this);
+	final Display display = browser.getDisplay();
+	final ProgressEvent progress = new ProgressEvent(browser);
 	progress.display = display;
-	progress.widget = this;
+	progress.widget = browser;
 	progress.current = resourceCount;
 	progress.total = Math.max(resourceCount, MAX_PROGRESS);
 	for (int i = 0; i < progressListeners.length; i++) {
@@ -1559,7 +850,7 @@ int identifierForInitialRequest(int request, int dataSource) {
 		display.asyncExec(
 			new Runnable() {
 				public void run() {
-					if (!display.isDisposed() && !isDisposed())
+					if (!display.isDisposed() && !browser.isDisposed())
 						listener.changed(progress);
 				}
 			}
@@ -1593,9 +884,9 @@ void handleNotification(int notification) {
 
 /* UIDelegate */
 int createWebViewWithRequest(int request) {
-	WindowEvent newEvent = new WindowEvent(Browser.this);
-	newEvent.display = getDisplay();
-	newEvent.widget = this;
+	WindowEvent newEvent = new WindowEvent(browser);
+	newEvent.display = browser.getDisplay();
+	newEvent.widget = browser;
 	newEvent.required = true;
 	if (openWindowListeners != null) {
 		for (int i = 0; i < openWindowListeners.length; i++)
@@ -1604,7 +895,7 @@ int createWebViewWithRequest(int request) {
 	int webView = 0;
 	Browser browser = newEvent.browser;
 	if (browser != null && !browser.isDisposed()) {
-		webView = Cocoa.HIWebViewGetWebView(browser.webViewHandle);
+		webView = Cocoa.HIWebViewGetWebView(((Safari)browser.webBrowser).webViewHandle);
 		
 		if (request != 0) {
 			//mainFrame = [webView mainFrame];
@@ -1628,13 +919,13 @@ void webViewShow(int sender) {
 	* does not redraw until it has been resized.  The fix is to increase the
 	* size of the Shell and restore it to its initial size.
 	*/
-	Shell parent = getShell();
+	Shell parent = browser.getShell();
 	Point pt = parent.getSize();
 	parent.setSize(pt.x+1, pt.y);
 	parent.setSize(pt.x, pt.y);
-	WindowEvent newEvent = new WindowEvent(this);
-	newEvent.display = getDisplay();
-	newEvent.widget = this;
+	WindowEvent newEvent = new WindowEvent(browser);
+	newEvent.display = browser.getDisplay();
+	newEvent.widget = browser;
 	if (location != null) newEvent.location = location;
 	if (size != null) newEvent.size = size;
 	/*
@@ -1660,7 +951,7 @@ void setFrame(int frame) {
 	float[] dest = new float[4];
 	OS.memcpy(dest, frame, 16);
 	/* convert to SWT system coordinates */
-	Rectangle bounds = getDisplay().getBounds();
+	Rectangle bounds = browser.getDisplay().getBounds();
 	location = new Point((int)dest[0], bounds.height - (int)dest[1] - (int)dest[3]);
 	size = new Point((int)dest[2], (int)dest[3]);
 }
@@ -1679,7 +970,7 @@ void runJavaScriptAlertPanelWithMessage(int message) {
 	OS.CFStringGetCharacters(message, range, buffer);
 	String text = new String(buffer);
 
-	MessageBox messageBox = new MessageBox(getShell(), SWT.OK | SWT.ICON_WARNING);
+	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.ICON_WARNING);
 	messageBox.setText("Javascript");	//$NON-NLS-1$
 	messageBox.setMessage(text);
 	messageBox.open();
@@ -1693,14 +984,14 @@ int runJavaScriptConfirmPanelWithMessage(int message) {
 	OS.CFStringGetCharacters(message, range, buffer);
 	String text = new String(buffer);
 
-	MessageBox messageBox = new MessageBox(getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
 	messageBox.setText("Javascript");	//$NON-NLS-1$
 	messageBox.setMessage(text);
 	return messageBox.open() == SWT.OK ? 1 : 0;
 }
 
 void runOpenPanelForFileButtonWithResultListener(int resultListener) {
-	FileDialog dialog = new FileDialog(getShell(), SWT.NONE);
+	FileDialog dialog = new FileDialog(browser.getShell(), SWT.NONE);
 	String result = dialog.open();
 	if (result == null) {
 		Cocoa.objc_msgSend(resultListener, Cocoa.S_cancel);
@@ -1714,13 +1005,13 @@ void runOpenPanelForFileButtonWithResultListener(int resultListener) {
 	OS.CFRelease(filename);
 }
 void webViewClose() {
-	Shell parent = getShell();
-	WindowEvent newEvent = new WindowEvent(this);
-	newEvent.display = getDisplay();
-	newEvent.widget = this;
+	Shell parent = browser.getShell();
+	WindowEvent newEvent = new WindowEvent(browser);
+	newEvent.display = browser.getDisplay();
+	newEvent.widget = browser;
 	for (int i = 0; i < closeWindowListeners.length; i++)
 		closeWindowListeners[i].close(newEvent);	
-	dispose();
+	browser.dispose();
 	if (parent.isDisposed()) return;
 	/*
 	* Feature on WebKit.  The Safari WebKit expects the application
@@ -1743,8 +1034,8 @@ int contextMenuItemsForElement(int element, int defaultMenuItems) {
 	Event event = new Event();
 	event.x = pt.h;
 	event.y = pt.v;
-	notifyListeners(SWT.MenuDetect, event);
-	Menu menu = getMenu();
+	browser.notifyListeners(SWT.MenuDetect, event);
+	Menu menu = browser.getMenu();
 	if (!event.doit) return 0;
 	if (menu != null && !menu.isDisposed()) {
 		if (event.x != pt.h || event.y != pt.v) {
@@ -1769,9 +1060,9 @@ void setStatusText(int text) {
 	range.length = length;
 	OS.CFStringGetCharacters(text, range, buffer);
 
-	StatusTextEvent statusText = new StatusTextEvent(this);
-	statusText.display = getDisplay();
-	statusText.widget = this;
+	StatusTextEvent statusText = new StatusTextEvent(browser);
+	statusText.display = browser.getDisplay();
+	statusText.widget = browser;
 	statusText.text = new String(buffer);
 	for (int i = 0; i < statusTextListeners.length; i++)
 		statusTextListeners[i].changed(statusText);
@@ -1807,9 +1098,9 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	OS.CFStringGetCharacters(s, range, buffer);
 	String url2 = new String(buffer);
 
-	LocationEvent newEvent = new LocationEvent(this);
-	newEvent.display = getDisplay();
-	newEvent.widget = this;
+	LocationEvent newEvent = new LocationEvent(browser);
+	newEvent.display = browser.getDisplay();
+	newEvent.widget = browser;
 	newEvent.location = url2;
 	newEvent.doit = true;
 	if (locationListeners != null) {
@@ -1821,7 +1112,7 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 
 	Cocoa.objc_msgSend(listener, newEvent.doit ? Cocoa.S_use : Cocoa.S_ignore);
 
-	if (html != null && !isDisposed()) {
+	if (html != null && !browser.isDisposed()) {
 		String html = this.html;
 		this.html = null;
 		_setText(html);
@@ -1844,7 +1135,7 @@ void decideDestinationWithSuggestedFilename (int download, int filename) {
 	range.length = length;
 	OS.CFStringGetCharacters(filename, range, buffer);
 	String name = new String(buffer);
-	FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+	FileDialog dialog = new FileDialog(browser.getShell(), SWT.SAVE);
 	dialog.setText(SWT.getMessage ("SWT_FileDownload")); //$NON-NLS-1$
 	dialog.setFileName(name);
 	String path = dialog.open();

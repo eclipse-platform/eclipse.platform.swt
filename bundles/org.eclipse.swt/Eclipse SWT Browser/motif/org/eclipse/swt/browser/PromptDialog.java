@@ -99,14 +99,14 @@ class PromptDialog extends Dialog {
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		label.setLayoutData (data);
-
+				
 		final Text valueText = new Text(shell, SWT.BORDER);
 		if (value[0] != null) valueText.setText(value[0]);
 		data = new GridData();
 		data.horizontalAlignment = GridData.FILL;
 		data.grabExcessHorizontalSpace = true;
 		valueText.setLayoutData(data);
-
+				
 		final Button[] buttons = new Button[3];
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
@@ -145,7 +145,6 @@ class PromptDialog extends Dialog {
 			if (!display.readAndDispatch()) display.sleep();
 		}	
 	}
-
 	public void promptUsernameAndPassword(String title, String text, String check, final String[] user, final String[] pass, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -203,11 +202,11 @@ class PromptDialog extends Dialog {
 		composite.setLayout(new GridLayout(2, true));
 		buttons[1] = new Button(composite, SWT.PUSH);
 		buttons[1].setText(SWT.getMessage("SWT_OK")); //$NON-NLS-1$
-		buttons[1].setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
+		buttons[1].setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		buttons[1].addListener(SWT.Selection, listener);
 		buttons[2] = new Button(composite, SWT.PUSH);
 		buttons[2].setText(SWT.getMessage("SWT_Cancel")); //$NON-NLS-1$
-		buttons[2].setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
+		buttons[2].setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		buttons[2].addListener(SWT.Selection, listener);
 
 		shell.setDefaultButton(buttons[1]);

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.internal.motif.OS;
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
 
 class FilePickerFactory {
@@ -30,17 +30,17 @@ int AddRef() {
 void createCOMInterfaces() {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int method0(int [] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int [] args) {return AddRef();}
-		public int method2(int [] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 	};
 	
 	factory = new XPCOMObject(new int[]{2, 0, 0, 3, 1}){
-		public int method0(int [] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int [] args) {return AddRef();}
-		public int method2(int [] args) {return Release();}
-		public int method3(int [] args) {return CreateInstance(args[0], args[1], args[2]);}
-		public int method4(int [] args) {return LockFactory(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return CreateInstance(args[0], args[1], args[2]);}
+		public int /*long*/ method4(int /*long*/[] args) {return LockFactory(args[0]);}
 	};
 }
 
@@ -55,27 +55,27 @@ void disposeCOMInterfaces() {
 	}
 }
 
-int getAddress() {
+int /*long*/ getAddress() {
 	return factory.getAddress();
 }
 
-int queryInterface(int riid, int ppvObject) {
+int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID();
 	XPCOM.memmove(guid, riid, nsID.sizeof);
 	
 	if (guid.Equals(nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove(ppvObject, new int [] {supports.getAddress()}, OS.PTR_SIZEOF);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {supports.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIFactory.NS_IFACTORY_IID)) {
-		XPCOM.memmove(ppvObject, new int [] {factory.getAddress()}, OS.PTR_SIZEOF);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {factory.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	
-	XPCOM.memmove(ppvObject, new int [] {0}, OS.PTR_SIZEOF);
+	XPCOM.memmove(ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
 
@@ -87,14 +87,14 @@ int Release() {
 	
 /* nsIFactory */
 
-public int CreateInstance(int aOuter, int iid, int result) {
+public int /*long*/ CreateInstance(int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
 	FilePicker picker = new FilePicker ();
 	picker.AddRef();
-	XPCOM.memmove(result, new int [] {picker.getAddress()}, OS.PTR_SIZEOF);
+	XPCOM.memmove(result, new int /*long*/[] {picker.getAddress()}, C.PTR_SIZEOF);
 	return XPCOM.NS_OK;
 }
 
-public int LockFactory(int lock) {
+public int /*long*/ LockFactory(int /*long*/ lock) {
 	return XPCOM.NS_OK;
 }
 }

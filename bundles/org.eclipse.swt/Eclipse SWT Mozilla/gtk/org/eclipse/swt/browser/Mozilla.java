@@ -20,20 +20,7 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 
-/**
- * Instances of this class implement the browser user interface
- * metaphor.  It allows the user to visualize and navigate through
- * HTML documents.
- * <p>
- * Note that although this class is a subclass of <code>Composite</code>,
- * it does not make sense to set a layout on it.
- * </p><p>
- * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- * </p>
- * 
- * @since 3.0
- */
-public class Browser extends Composite {
+class Mozilla extends WebBrowser {
 	int /*long*/ embedHandle;
 	int /*long*/ mozillaHandle;
 	nsIWebBrowser webBrowser;
@@ -60,15 +47,6 @@ public class Browser extends Composite {
 	boolean visible, isModal;
 	Shell tip = null;
 
-	/* External Listener management */
-	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
-	LocationListener[] locationListeners = new LocationListener[0];
-	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
-	ProgressListener[] progressListeners = new ProgressListener[0];
-	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
-	TitleListener[] titleListeners = new TitleListener[0];
-	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
-
 	static nsIAppShell AppShell;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
@@ -86,9 +64,7 @@ public class Browser extends Composite {
 	static final String XPCOM_LIB = "/libxpcom.so"; //$NON-NLS-1$
 
 	/* Package Name */
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
-	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
@@ -107,6 +83,62 @@ public class Browser extends Composite {
 	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
 	static final String STARTUP = "startup"; //$NON-NLS-1$
 	static final int STOP_PROPOGATE = 1;
+
+	static {
+		MozillaClearSessions = new Runnable() {
+			public void run() {
+				if (!initialized) return;
+				int /*long*/[] result = new int /*long*/[1];
+				int rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result [0] == 0) error (XPCOM.NS_NOINTERFACE);
+				nsIServiceManager serviceManager = new nsIServiceManager (result [0]);
+				result [0] = 0;
+				byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_COOKIEMANAGER_CONTRACTID, true);
+				rc = serviceManager.GetServiceByContractID (aContractID, nsICookieManager.NS_ICOOKIEMANAGER_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result [0] == 0) error (XPCOM.NS_NOINTERFACE);
+				serviceManager.Release ();
+
+				nsICookieManager manager = new nsICookieManager (result [0]);
+				result [0] = 0;
+				rc = manager.GetEnumerator (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				manager.Release ();
+
+				nsISimpleEnumerator enumerator = new nsISimpleEnumerator (result [0]);
+				boolean[] moreElements = new boolean [1];
+				rc = enumerator.HasMoreElements (moreElements);
+				if (rc != XPCOM.NS_OK) error (rc);
+				while (moreElements [0]) {
+					result [0] = 0;
+					rc = enumerator.GetNext (result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					nsICookie cookie = new nsICookie (result [0]);
+					long[] expires = new long [1];
+					rc = cookie.GetExpires (expires);
+					if (expires [0] == 0) {
+						/* indicates a session cookie */
+						int /*long*/ domain = XPCOM.nsEmbedCString_new ();
+						int /*long*/ name = XPCOM.nsEmbedCString_new ();
+						int /*long*/ path = XPCOM.nsEmbedCString_new ();
+						cookie.GetHost (domain);
+						cookie.GetName (name);
+						cookie.GetPath (path);
+						rc = manager.Remove (domain, name, path, false);
+						XPCOM.nsEmbedCString_delete (domain);
+						XPCOM.nsEmbedCString_delete (name);
+						XPCOM.nsEmbedCString_delete (path);
+						if (rc != XPCOM.NS_OK) error (rc);
+					}
+					cookie.Release ();
+					rc = enumerator.HasMoreElements (moreElements);
+					if (rc != XPCOM.NS_OK) error (rc);
+				}
+				enumerator.Release ();
+			}
+		};
+	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -138,10 +170,9 @@ public class Browser extends Composite {
  * 
  * @since 3.0
  */
-public Browser(Composite parent, int style) {
-	super(fixIM(parent), style);
+public void create(Composite parent, int style) {
 	Display display = parent.getDisplay();	
-	display.setData(NO_INPUT_METHOD, null);
+	display.setData(Browser.NO_INPUT_METHOD, null);
 	
 	int /*long*/[] result = new int /*long*/[1];
 	if (!initialized) {
@@ -199,7 +230,7 @@ public Browser(Composite parent, int style) {
 				OS.memmove(bytes, greBuffer, length);
 				mozillaPath = new String(Converter.mbcsToWcs(null, bytes));
 				// the following line is intentionally commented
-				// isXULRunner = mozillaPath.length() > 0;
+				isXULRunner = mozillaPath.length() > 0;
 			}
 			OS.g_free(greBuffer);
 		}
@@ -216,7 +247,7 @@ public Browser(Composite parent, int style) {
 					 */
 					Library.loadLibrary ("swt-xulrunner-gcc3"); //$NON-NLS-1$
 				} catch (UnsatisfiedLinkError ex) {
-					dispose ();
+					browser.dispose ();
 					/*
 					 * Print the error from the first failed attempt since at this point it's
 					 * known that the failure was not due to the libstdc++.so.6 dependency.
@@ -227,7 +258,7 @@ public Browser(Composite parent, int style) {
 			byte[] path = Converter.wcsToMbcs(null, mozillaPath, true);
 			int rc = XPCOMGlue.XPCOMGlueStartup(path);
 			if (rc != XPCOM.NS_OK) {
-				dispose();
+				browser.dispose();
 				error(rc);
 			}
 
@@ -246,7 +277,7 @@ public Browser(Composite parent, int style) {
 				mozillaPath = new String (Converter.mbcsToWcs (null, buffer));
 			}
 			if (mozillaPath == null) {
-				dispose();
+				browser.dispose();
 				SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]"); //$NON-NLS-1$
 			}
 			/*
@@ -257,7 +288,7 @@ public Browser(Composite parent, int style) {
 			*/
 			File file = new File(mozillaPath, "components/libwidget_gtk.so"); //$NON-NLS-1$
 			if (file.exists()) {
-				dispose();
+				browser.dispose();
 				SWT.error(SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
 			}
 	
@@ -272,7 +303,7 @@ public Browser(Composite parent, int style) {
 					 */
 					Library.loadLibrary ("swt-mozilla-gcc3"); //$NON-NLS-1$
 				} catch (UnsatisfiedLinkError ex) {
-					dispose ();
+					browser.dispose ();
 					/*
 					 * Print the error from the first failed attempt since at this point it's
 					 * known that the failure was not due to the libstdc++.so.6 dependency.
@@ -287,11 +318,11 @@ public Browser(Composite parent, int style) {
 		int rc = XPCOM.NS_NewLocalFile(pathString.getAddress(), true, retVal);
 		pathString.dispose();
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (retVal[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_ERROR_NULL_POINTER);
 		}
 		
@@ -299,17 +330,17 @@ public Browser(Composite parent, int style) {
 		rc = XPCOM.NS_InitXPCOM2(0, localFile.getAddress(), 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [MOZILLA_FIVE_HOME may not point at an embeddable GRE] [NS_InitEmbedding " + mozillaPath + " error " + rc + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 		rc = XPCOM.NS_GetComponentManager(result);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 		
@@ -317,23 +348,23 @@ public Browser(Composite parent, int style) {
 		result[0] = 0;
 		rc = componentManager.CreateInstance(XPCOM.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 		
 		AppShell = new nsIAppShell(result[0]);
 		rc = AppShell.Create(0, null);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		rc = AppShell.Spinup();
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		
@@ -342,11 +373,11 @@ public Browser(Composite parent, int style) {
 		
 		rc = XPCOM.NS_GetServiceManager(result);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 		
@@ -355,11 +386,11 @@ public Browser(Composite parent, int style) {
 		byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_WINDOWWATCHER_CONTRACTID, true);
 		rc = serviceManager.GetServiceByContractID(aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);		
 		}
 
@@ -367,7 +398,7 @@ public Browser(Composite parent, int style) {
 		result[0] = 0;
 		rc = windowWatcher.SetWindowCreator(WindowCreator.getAddress());
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		windowWatcher.Release();
@@ -376,11 +407,11 @@ public Browser(Composite parent, int style) {
 		byte[] buffer = Converter.wcsToMbcs(null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
 		rc = serviceManager.GetServiceByContractID(buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 
@@ -388,11 +419,11 @@ public Browser(Composite parent, int style) {
 		result[0] = 0;
 		rc = directoryService.QueryInterface(nsIProperties.NS_IPROPERTIES_IID, result);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 		directoryService.Release();
@@ -402,11 +433,11 @@ public Browser(Composite parent, int style) {
 		buffer = Converter.wcsToMbcs(null, XPCOM.NS_APP_APPLICATION_REGISTRY_DIR, true);
 		rc = properties.Get(buffer, nsIFile.NS_IFILE_IID, result);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 		properties.Release();
@@ -416,7 +447,7 @@ public Browser(Composite parent, int style) {
 		int /*long*/ path = XPCOM.nsEmbedCString_new();
 		rc = profileDir.GetNativePath(path);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		int length = XPCOM.nsEmbedCString_Length(path);
@@ -463,11 +494,11 @@ public Browser(Composite parent, int style) {
 		rc = serviceManager.GetServiceByContractID(aContractID, nsIPrefService.NS_IPREFSERVICE_IID, result);
 		serviceManager.Release();
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 
@@ -477,11 +508,11 @@ public Browser(Composite parent, int style) {
 		rc = prefService.GetBranch(buffer, result);	/* empty buffer denotes root preference level */
 		prefService.Release();
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 
@@ -503,18 +534,18 @@ public Browser(Composite parent, int style) {
 			prefLocales = "en-us,en" + TOKENIZER_LOCALE;	//$NON-NLS-1$
 		} else {
 			if (result[0] == 0) {
-				dispose();
+				browser.dispose();
 				error(XPCOM.NS_NOINTERFACE);
 			}
 			localizedString = new nsIPrefLocalizedString(result[0]);
 			result[0] = 0;
 			rc = localizedString.ToString(result);
 			if (rc != XPCOM.NS_OK) {
-				dispose();
+				browser.dispose();
 				error(rc);
 			}
 			if (result[0] == 0) {
-				dispose();
+				browser.dispose();
 				error(XPCOM.NS_NOINTERFACE);
 			}
 			length = XPCOM.strlen_PRUnichar(result[0]);
@@ -557,11 +588,11 @@ public Browser(Composite parent, int style) {
 				byte[] contractID = Converter.wcsToMbcs(null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
 				rc = componentManager.CreateInstanceByContractID(contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
 				if (rc != XPCOM.NS_OK) {
-					dispose();
+					browser.dispose();
 					error(rc);
 				}
 				if (result[0] == 0) {
-					dispose();
+					browser.dispose();
 					error(XPCOM.NS_NOINTERFACE);
 				}
 				localizedString = new nsIPrefLocalizedString(result[0]);
@@ -589,18 +620,18 @@ public Browser(Composite parent, int style) {
 			prefCharset = "ISO-8859-1";	//$NON_NLS-1$
 		} else {
 			if (result[0] == 0) {
-				dispose();
+				browser.dispose();
 				error(XPCOM.NS_NOINTERFACE);
 			}
 			localizedString = new nsIPrefLocalizedString(result[0]);
 			result[0] = 0;
 			rc = localizedString.ToString(result);
 			if (rc != XPCOM.NS_OK) {
-				dispose();
+				browser.dispose();
 				error(rc);
 			}
 			if (result[0] == 0) {
-				dispose();
+				browser.dispose();
 				error(XPCOM.NS_NOINTERFACE);
 			}
 			length = XPCOM.strlen_PRUnichar(result[0]);
@@ -620,11 +651,11 @@ public Browser(Composite parent, int style) {
 				byte[] contractID = Converter.wcsToMbcs(null, XPCOM.NS_PREFLOCALIZEDSTRING_CONTRACTID, true);
 				rc = componentManager.CreateInstanceByContractID(contractID, 0, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, result);
 				if (rc != XPCOM.NS_OK) {
-					dispose();
+					browser.dispose();
 					error(rc);
 				}
 				if (result[0] == 0) {
-					dispose();
+					browser.dispose();
 					error(XPCOM.NS_NOINTERFACE);
 				}
 				localizedString = new nsIPrefLocalizedString(result[0]);
@@ -641,11 +672,11 @@ public Browser(Composite parent, int style) {
 
 		rc = componentManager.QueryInterface(nsIComponentRegistrar.NS_ICOMPONENTREGISTRAR_IID, result);
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		if (result[0] == 0) {
-			dispose();
+			browser.dispose();
 			error(XPCOM.NS_NOINTERFACE);
 		}
 		
@@ -655,7 +686,7 @@ public Browser(Composite parent, int style) {
 		byte[] aClassName = Converter.wcsToMbcs(null, "Prompt Service", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_PROMPTSERVICE_CID, aClassName, aContractID, factory.getAddress());
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		factory.Release();
@@ -666,7 +697,7 @@ public Browser(Composite parent, int style) {
 		aClassName = Converter.wcsToMbcs(null, "Helper App Launcher Dialog", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_HELPERAPPLAUNCHERDIALOG_CID, aClassName, aContractID, dialogFactory.getAddress());
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		dialogFactory.Release();
@@ -677,7 +708,7 @@ public Browser(Composite parent, int style) {
 		aClassName = Converter.wcsToMbcs(null, "Download", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory.getAddress());
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		downloadFactory.Release();
@@ -688,7 +719,7 @@ public Browser(Composite parent, int style) {
 		aClassName = Converter.wcsToMbcs(null, "Transfer", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_DOWNLOAD_CID, aClassName, aContractID, downloadFactory_1_8.getAddress());
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		downloadFactory_1_8.Release();
@@ -699,7 +730,7 @@ public Browser(Composite parent, int style) {
 		aClassName = Converter.wcsToMbcs(null, "FilePicker", true); //$NON-NLS-1$
 		rc = componentRegistrar.RegisterFactory(XPCOM.NS_FILEPICKER_CID, aClassName, aContractID, pickerFactory.getAddress());
 		if (rc != XPCOM.NS_OK) {
-			dispose();
+			browser.dispose();
 			error(rc);
 		}
 		pickerFactory.Release();
@@ -712,11 +743,11 @@ public Browser(Composite parent, int style) {
 	BrowserCount++;
 	int rc = XPCOM.NS_GetComponentManager(result);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	if (result[0] == 0) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_NOINTERFACE);
 	}
 	
@@ -725,11 +756,11 @@ public Browser(Composite parent, int style) {
 	nsID NS_IWEBBROWSER_CID = new nsID("F1EAC761-87E9-11d3-AF80-00A024FFC08C"); //$NON-NLS-1$
 	rc = componentManager.CreateInstance(NS_IWEBBROWSER_CID, 0, nsIWebBrowser.NS_IWEBBROWSER_IID, result);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	if (result[0] == 0) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_NOINTERFACE);	
 	}
 	componentManager.Release();
@@ -741,23 +772,23 @@ public Browser(Composite parent, int style) {
 
 	rc = webBrowser.SetContainerWindow(webBrowserChrome.getAddress());
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 			
 	rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	if (result[0] == 0) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_ERROR_NO_INTERFACE);
 	}
 	
 	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
 	result[0] = 0;
-	Rectangle rect = getClientArea();
+	Rectangle rect = browser.getClientArea();
 	if (rect.isEmpty()) {
 		rect.width = 1;
 		rect.height = 1;
@@ -774,54 +805,54 @@ public Browser(Composite parent, int style) {
 	* The workaround is to embed Mozilla into a GtkHBox handle.
 	*/
 	embedHandle = OS.gtk_hbox_new (false, 0);
-	OS.gtk_container_add (handle, embedHandle);
+	OS.gtk_container_add (browser.handle, embedHandle);
 	OS.gtk_widget_show (embedHandle);
 	
 	rc = baseWindow.InitWindow(embedHandle, 0, 0, 0, rect.width, rect.height);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_ERROR_FAILURE);
 	}
 	rc = baseWindow.Create();
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_ERROR_FAILURE);
 	}
 	rc = baseWindow.SetVisibility(true);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_ERROR_FAILURE);
 	}
 	baseWindow.Release();
 
 	rc = webBrowser.AddWebBrowserListener(weakReference.getAddress(), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 
 	rc = webBrowser.SetParentURIContentListener(uriContentListener.getAddress());
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 
 	if (eventCallback == null) {
-		eventCallback = new Callback(Browser.class, "eventProc", 3);
+		eventCallback = new Callback(Mozilla.class, "eventProc", 3);
 		eventProc = eventCallback.getAddress();
 		if (eventProc == 0) {
-			dispose();
+			browser.dispose();
 			error(SWT.ERROR_NO_MORE_CALLBACKS);
 		}
 	}
 
 	rc = XPCOM.NS_GetServiceManager(result);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	if (result[0] == 0) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_NOINTERFACE);
 	}
 
@@ -830,11 +861,11 @@ public Browser(Composite parent, int style) {
 	byte[] buffer = Converter.wcsToMbcs(null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID(buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	if (result[0] == 0) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_NOINTERFACE);
 	}
 
@@ -842,7 +873,7 @@ public Browser(Composite parent, int style) {
 	result[0] = 0;
 	rc = directoryService.RegisterProvider(directoryServiceProviderListener.getAddress());
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	directoryService.Release();
@@ -850,11 +881,11 @@ public Browser(Composite parent, int style) {
 	buffer = Converter.wcsToMbcs(null, XPCOM.NS_OBSERVER_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID(buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	if (result[0] == 0) {
-		dispose();
+		browser.dispose();
 		error(XPCOM.NS_NOINTERFACE);
 	}
 	serviceManager.Release();
@@ -867,13 +898,13 @@ public Browser(Composite parent, int style) {
 	STARTUP.getChars(0, length, chars, 0);
 	rc = observerService.NotifyObservers(0, buffer, chars);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	buffer = Converter.wcsToMbcs(null, PROFILE_AFTER_CHANGE, true);
 	rc = observerService.NotifyObservers(0, buffer, chars);
 	if (rc != XPCOM.NS_OK) {
-		dispose();
+		browser.dispose();
 		error(rc);
 	}
 	observerService.Release();
@@ -892,7 +923,7 @@ public Browser(Composite parent, int style) {
 		OS.g_list_free(list);
 		
 		if (mozillaHandle != 0) {			
-			getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new LONG(mozillaHandle), this});
+			browser.getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new LONG(mozillaHandle), browser});
 
 			/* Note. Callback to get events before Mozilla receives and consumes them. */
 			OS.g_signal_connect (mozillaHandle, OS.event, eventProc, 0);
@@ -918,7 +949,7 @@ public Browser(Composite parent, int style) {
 						break;
 					}
 					ignoreDispose = true;
-					notifyListeners (event.type, event);
+					browser.notifyListeners (event.type, event);
 					event.type = SWT.NONE;
 					onDispose(event.display);
 					break;
@@ -927,7 +958,7 @@ public Browser(Composite parent, int style) {
 				case SWT.FocusIn: Activate(); break;
 				case SWT.Deactivate: {
 					Display display = event.display;
-					if (Browser.this == display.getFocusControl()) Deactivate();
+					if (Mozilla.this.browser == display.getFocusControl()) Deactivate();
 					break;
 				}
 				case SWT.Show: {
@@ -940,7 +971,7 @@ public Browser(Composite parent, int style) {
 					Display display = event.display;
 					display.asyncExec(new Runnable() {
 						public void run() {
-							if (Browser.this.isDisposed()) return;
+							if (Mozilla.this.browser.isDisposed()) return;
 							onResize();
 						}
 					});
@@ -958,91 +989,16 @@ public Browser(Composite parent, int style) {
 		SWT.KeyDown		// needed to make browser traversable
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
-		addListener(folderEvents[i], listener);
+		browser.addListener(folderEvents[i], listener);
 	}
-}
-
-/**
- * Clears all session cookies from all current Browser instances.
- * 
- * @since 3.2
- */
-public static void clearSessions () {
-	if (!initialized) return;
-	int /*long*/[] result = new int /*long*/[1];
-	int rc = XPCOM.NS_GetServiceManager (result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result [0] == 0) error (XPCOM.NS_NOINTERFACE);
-	nsIServiceManager serviceManager = new nsIServiceManager (result [0]);
-	result [0] = 0;
-	byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_COOKIEMANAGER_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (aContractID, nsICookieManager.NS_ICOOKIEMANAGER_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result [0] == 0) error (XPCOM.NS_NOINTERFACE);
-	serviceManager.Release ();
-
-	nsICookieManager manager = new nsICookieManager (result [0]);
-	result [0] = 0;
-	rc = manager.GetEnumerator (result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	manager.Release ();
-
-	nsISimpleEnumerator enumerator = new nsISimpleEnumerator (result [0]);
-	boolean[] moreElements = new boolean [1];
-	rc = enumerator.HasMoreElements (moreElements);
-	if (rc != XPCOM.NS_OK) error (rc);
-	while (moreElements [0]) {
-		result [0] = 0;
-		rc = enumerator.GetNext (result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		nsICookie cookie = new nsICookie (result [0]);
-		long[] expires = new long [1];
-		rc = cookie.GetExpires (expires);
-		if (expires [0] == 0) {
-			/* indicates a session cookie */
-			int /*long*/ domain = XPCOM.nsEmbedCString_new ();
-			int /*long*/ name = XPCOM.nsEmbedCString_new ();
-			int /*long*/ path = XPCOM.nsEmbedCString_new ();
-			cookie.GetHost (domain);
-			cookie.GetName (name);
-			cookie.GetPath (path);
-			rc = manager.Remove (domain, name, path, false);
-			XPCOM.nsEmbedCString_delete (domain);
-			XPCOM.nsEmbedCString_delete (name);
-			XPCOM.nsEmbedCString_delete (path);
-			if (rc != XPCOM.NS_OK) error (rc);
-		}
-		cookie.Release ();
-		rc = enumerator.HasMoreElements (moreElements);
-		if (rc != XPCOM.NS_OK) error (rc);
-	}
-	enumerator.Release ();
 }
 
 static int /*long*/ eventProc (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
 	Widget widget = Display.getCurrent().findWidget(handle);
 	if (widget != null && widget instanceof Browser) {
-		return ((Browser)widget).gtk_event(handle, gdkEvent, pointer);
+		return ((Mozilla)((Browser)widget).webBrowser).gtk_event(handle, gdkEvent, pointer);
 	}
 	return 0;
-}
-
-static Composite fixIM(Composite parent) {
-	/*
-	* Note.  Mozilla provides all IM suport needed for text input in webpages.
-	* If SWT creates another input method context for the widget it will cause
-	* undetermine results to happen (hungs and crashes). The fix is to prevent 
-	* SWT from creating an input method context for the  Browser widget.
-	*/
-	if (parent != null && !parent.isDisposed()) {
-		Display display = parent.getDisplay();
-		if (display != null) {
-			if (display.getThread() == Thread.currentThread ()) {
-				display.setData (NO_INPUT_METHOD, "true");
-			}
-		}
-	}
-	return parent;
 }
 
 int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
@@ -1063,231 +1019,14 @@ int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/
 			* Forward the event to the parent embedder before Mozilla receives it, 
 			* as Mozilla may or may not consume it.
 			*/
-			OS.gtk_widget_event (this.handle, gdkEvent);
+			OS.gtk_widget_event (browser.handle, gdkEvent);
 			break;
 		}
 	}
 	return 0;
 }
 
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when the window hosting the receiver should be closed.
- * <p>
- * This notification occurs when a javascript command such as
- * <code>window.close</code> gets executed by a <code>Browser</code>.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
-	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length + 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, closeWindowListeners.length);
-	closeWindowListeners = newCloseWindowListeners;
-	closeWindowListeners[closeWindowListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when the current location has changed or is about to change.
- * <p>
- * This notification typically occurs when the application navigates
- * to a new location with {@link #setUrl(String)} or when the user
- * activates a hyperlink.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addLocationListener(LocationListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	LocationListener[] newLocationListeners = new LocationListener[locationListeners.length + 1];
-	System.arraycopy(locationListeners, 0, newLocationListeners, 0, locationListeners.length);
-	locationListeners = newLocationListeners;
-	locationListeners[locationListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when a new window needs to be created.
- * <p>
- * This notification occurs when a javascript command such as
- * <code>window.open</code> gets executed by a <code>Browser</code>.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addOpenWindowListener(OpenWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	OpenWindowListener[] newOpenWindowListeners = new OpenWindowListener[openWindowListeners.length + 1];
-	System.arraycopy(openWindowListeners, 0, newOpenWindowListeners, 0, openWindowListeners.length);
-	openWindowListeners = newOpenWindowListeners;
-	openWindowListeners[openWindowListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when a progress is made during the loading of the current 
- * URL or when the loading of the current URL has been completed.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addProgressListener(ProgressListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	ProgressListener[] newProgressListeners = new ProgressListener[progressListeners.length + 1];
-	System.arraycopy(progressListeners, 0, newProgressListeners, 0, progressListeners.length);
-	progressListeners = newProgressListeners;
-	progressListeners[progressListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when the status text is changed.
- * <p>
- * The status text is typically displayed in the status bar of
- * a browser application.
- * </p>
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addStatusTextListener(StatusTextListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	StatusTextListener[] newStatusTextListeners = new StatusTextListener[statusTextListeners.length + 1];
-	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, statusTextListeners.length);
-	statusTextListeners = newStatusTextListeners;
-	statusTextListeners[statusTextListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when the title of the current document is available
- * or has changed.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addTitleListener(TitleListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length + 1];
-	System.arraycopy(titleListeners, 0, newTitleListeners, 0, titleListeners.length);
-	titleListeners = newTitleListeners;
-	titleListeners[titleListeners.length - 1] = listener;
-}
-
-/**	 
- * Adds the listener to the collection of listeners who will be
- * notified when a window hosting the receiver needs to be displayed
- * or hidden.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addVisibilityWindowListener(VisibilityWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	VisibilityWindowListener[] newVisibilityWindowListeners = new VisibilityWindowListener[visibilityWindowListeners.length + 1];
-	System.arraycopy(visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, visibilityWindowListeners.length);
-	visibilityWindowListeners = newVisibilityWindowListeners;
-	visibilityWindowListeners[visibilityWindowListeners.length - 1] = listener;
-}
-
-/**
- * Navigate to the previous session history item.
- *
- * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @see #forward
- * 
- * @since 3.0
- */
 public boolean back() {
-	checkWidget();
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1298,14 +1037,6 @@ public boolean back() {
 	webNavigation.Release();
 	
 	return rc == XPCOM.NS_OK;
-}
-
-protected void checkSubclass() {
-	String name = getClass().getName();
-	int index = name.lastIndexOf('.');
-	if (!name.substring(0, index + 1).equals(PACKAGE_PREFIX)) {
-		SWT.error(SWT.ERROR_INVALID_SUBCLASS);
-	}
 }
 
 void createCOMInterfaces() {
@@ -1470,30 +1201,7 @@ void disposeCOMInterfaces() {
 	}
 }
 
-/**
- * Execute the specified script.
- *
- * <p>
- * Execute a script containing javascript commands in the context of the current document. 
- * 
- * @param script the script with javascript commands
- *  
- * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the script is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.1
- */
 public boolean execute(String script) {
-	checkWidget();
-	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	String url = "javascript:" + script + ";void(0);";	//$NON-NLS-1$ //$NON-NLS-2$
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
@@ -1519,22 +1227,7 @@ static Browser findBrowser(int /*long*/ handle) {
 	return (Browser)display.findWidget(parent); 
 }
 
-/**
- * Navigate to the next session history item.
- *
- * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @see #back
- * 
- * @since 3.0
- */
 public boolean forward() {
-	checkWidget();
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1547,22 +1240,7 @@ public boolean forward() {
 	return rc == XPCOM.NS_OK;
 }
 
-/**
- * Returns the current URL.
- *
- * @return the current URL or an empty <code>String</code> if there is no current URL
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @see #setUrl
- * 
- * @since 3.0
- */
 public String getUrl() {
-	checkWidget();
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1598,21 +1276,7 @@ public String getUrl() {
 	return location;
 }
 
-/**
- * Returns <code>true</code> if the receiver can navigate to the 
- * previous session history item, and <code>false</code> otherwise.
- *
- * @return the receiver's back command enabled state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see #back
- */
 public boolean isBackEnabled() {
-	checkWidget();
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1626,21 +1290,7 @@ public boolean isBackEnabled() {
 	return aCanGoBack[0];
 }
 
-/**
- * Returns <code>true</code> if the receiver can navigate to the 
- * next session history item, and <code>false</code> otherwise.
- *
- * @return the receiver's forward command enabled state
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see #forward
- */
 public boolean isForwardEnabled() {
-	checkWidget();
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1711,7 +1361,7 @@ void Deactivate() {
 }
 
 void onResize() {
-	Rectangle rect = getClientArea();
+	Rectangle rect = browser.getClientArea();
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1724,18 +1374,7 @@ void onResize() {
 	baseWindow.Release();
 }
 
-/**
- * Refresh the current page.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
 public void refresh() {
-	checkWidget();
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1758,311 +1397,7 @@ public void refresh() {
 	if (rc != XPCOM.NS_ERROR_INVALID_POINTER && rc != XPCOM.NS_ERROR_FILE_NOT_FOUND) error(rc);
 }
 
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when the window hosting the receiver should be closed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (closeWindowListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < closeWindowListeners.length; i++) {
-		if (listener == closeWindowListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (closeWindowListeners.length == 1) {
-		closeWindowListeners = new CloseWindowListener[0];
-		return;
-	}
-	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length - 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, index);
-	System.arraycopy(closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
-	closeWindowListeners = newCloseWindowListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when the current location is changed or about to be changed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeLocationListener(LocationListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (locationListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < locationListeners.length; i++) {
-		if (listener == locationListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (locationListeners.length == 1) {
-		locationListeners = new LocationListener[0];
-		return;
-	}
-	LocationListener[] newLocationListeners = new LocationListener[locationListeners.length - 1];
-	System.arraycopy(locationListeners, 0, newLocationListeners, 0, index);
-	System.arraycopy(locationListeners, index + 1, newLocationListeners, index, locationListeners.length - index - 1);
-	locationListeners = newLocationListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when a new window needs to be created.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeOpenWindowListener(OpenWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (openWindowListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < openWindowListeners.length; i++) {
-		if (listener == openWindowListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (openWindowListeners.length == 1) {
-		openWindowListeners = new OpenWindowListener[0];
-		return;
-	}
-	OpenWindowListener[] newOpenWindowListeners = new OpenWindowListener[openWindowListeners.length - 1];
-	System.arraycopy(openWindowListeners, 0, newOpenWindowListeners, 0, index);
-	System.arraycopy(openWindowListeners, index + 1, newOpenWindowListeners, index, openWindowListeners.length - index - 1);
-	openWindowListeners = newOpenWindowListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when a progress is made during the loading of the current 
- * URL or when the loading of the current URL has been completed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeProgressListener(ProgressListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (progressListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < progressListeners.length; i++) {
-		if (listener == progressListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (progressListeners.length == 1) {
-		progressListeners = new ProgressListener[0];
-		return;
-	}
-	ProgressListener[] newProgressListeners = new ProgressListener[progressListeners.length - 1];
-	System.arraycopy(progressListeners, 0, newProgressListeners, 0, index);
-	System.arraycopy(progressListeners, index + 1, newProgressListeners, index, progressListeners.length - index - 1);
-	progressListeners = newProgressListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when the status text is changed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeStatusTextListener(StatusTextListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (statusTextListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < statusTextListeners.length; i++) {
-		if (listener == statusTextListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (statusTextListeners.length == 1) {
-		statusTextListeners = new StatusTextListener[0];
-		return;
-	}
-	StatusTextListener[] newStatusTextListeners = new StatusTextListener[statusTextListeners.length - 1];
-	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, index);
-	System.arraycopy(statusTextListeners, index + 1, newStatusTextListeners, index, statusTextListeners.length - index - 1);
-	statusTextListeners = newStatusTextListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when the title of the current document is available
- * or has changed.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeTitleListener(TitleListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (titleListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < titleListeners.length; i++) {
-		if (listener == titleListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (titleListeners.length == 1) {
-		titleListeners = new TitleListener[0];
-		return;
-	}
-	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length - 1];
-	System.arraycopy(titleListeners, 0, newTitleListeners, 0, index);
-	System.arraycopy(titleListeners, index + 1, newTitleListeners, index, titleListeners.length - index - 1);
-	titleListeners = newTitleListeners;
-}
-
-/**	 
- * Removes the listener from the collection of listeners who will
- * be notified when a window hosting the receiver needs to be displayed
- * or hidden.
- *
- * @param listener the listener which should no longer be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (visibilityWindowListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < visibilityWindowListeners.length; i++) {
-		if (listener == visibilityWindowListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (visibilityWindowListeners.length == 1) {
-		visibilityWindowListeners = new VisibilityWindowListener[0];
-		return;
-	}
-	VisibilityWindowListener[] newVisibilityWindowListeners = new VisibilityWindowListener[visibilityWindowListeners.length - 1];
-	System.arraycopy(visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, index);
-	System.arraycopy(visibilityWindowListeners, index + 1, newVisibilityWindowListeners, index, visibilityWindowListeners.length - index - 1);
-	visibilityWindowListeners = newVisibilityWindowListeners;
-}
-
-/**
- * Renders HTML.
- * 
- * <p>
- * The html parameter is Unicode encoded since it is a java <code>String</code>.
- * As a result, the HTML meta tag charset should not be set. The charset is implied
- * by the <code>String</code> itself.
- * 
- * @param html the HTML content to be rendered
- *
- * @return true if the operation was successful and false otherwise.
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the html is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *  
- * @see #setUrl
- * 
- * @since 3.0
- */
 public boolean setText(String html) {
-	checkWidget();
-	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
 	/*
 	*  Feature in Mozilla.  The focus memory of Mozilla must be 
 	*  properly managed through the nsIWebBrowserFocus interface.
@@ -2080,7 +1415,7 @@ public boolean setText(String html) {
 	*  would be to have a way to call deactivate when the Browser
 	*  or one of its children loses focus.
 	*/
-	if (this != getDisplay().getFocusControl()) Deactivate();
+	if (browser != browser.getDisplay().getFocusControl()) Deactivate();
 	
 	/*
 	 * Convert the String containing HTML to an array of
@@ -2192,29 +1527,7 @@ public boolean setText(String html) {
 	return true;
 }
 
-/**
- * Loads a URL.
- * 
- * @param url the URL to be loaded
- *
- * @return true if the operation was successful and false otherwise.
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
- * </ul>
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *  
- * @see #getUrl
- * 
- * @since 3.0
- */
 public boolean setUrl(String url) {
-	checkWidget();
-	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -2229,18 +1542,7 @@ public boolean setUrl(String url) {
 	return rc == XPCOM.NS_OK;
 }
 
-/**
- * Stop any loading and rendering activity.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
 public void stop() {
-	checkWidget();
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -2384,16 +1686,16 @@ int /*long*/ OnStateChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int
 		*/
 		if (request == aRequest || request == 0) {
 			request = 0;
-			StatusTextEvent event = new StatusTextEvent(this);
-			event.display = getDisplay();
-			event.widget = this;
+			StatusTextEvent event = new StatusTextEvent(browser);
+			event.display = browser.getDisplay();
+			event.widget = browser;
 			event.text = ""; //$NON-NLS-1$
 			for (int i = 0; i < statusTextListeners.length; i++)
 				statusTextListeners[i].changed(event);
 			
-			ProgressEvent event2 = new ProgressEvent(this);
-			event2.display = getDisplay();
-			event2.widget = this;
+			ProgressEvent event2 = new ProgressEvent(browser);
+			event2.display = browser.getDisplay();
+			event2.widget = browser;
 			for (int i = 0; i < progressListeners.length; i++)
 				progressListeners[i].completed(event2);
 		}
@@ -2403,9 +1705,9 @@ int /*long*/ OnStateChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int
 
 int /*long*/ OnProgressChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aCurSelfProgress, int /*long*/ aMaxSelfProgress, int /*long*/ aCurTotalProgress, int /*long*/ aMaxTotalProgress) {
 	if (progressListeners.length == 0) return XPCOM.NS_OK;
-	ProgressEvent event = new ProgressEvent(this);
-	event.display = getDisplay();
-	event.widget = this;
+	ProgressEvent event = new ProgressEvent(browser);
+	event.display = browser.getDisplay();
+	event.widget = browser;
 	event.current = (int)/*64*/aCurTotalProgress;
 	event.total = (int)/*64*/aMaxTotalProgress;
 	for (int i = 0; i < progressListeners.length; i++) {
@@ -2453,9 +1755,9 @@ int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsEmbedCString_delete(aSpec);
 
-	LocationEvent event = new LocationEvent(this);
-	event.display = getDisplay();
-	event.widget = this;
+	LocationEvent event = new LocationEvent(browser);
+	event.display = browser.getDisplay();
+	event.widget = browser;
 	event.location = new String(dest);
 	if (event.location.equals (URI_FROMMEMORY)) {
 		/*
@@ -2474,9 +1776,9 @@ int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 
 int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStatus, int /*long*/ aMessage) {
 	if (statusTextListeners.length == 0) return XPCOM.NS_OK;
-	StatusTextEvent event = new StatusTextEvent(this);
-	event.display = getDisplay();
-	event.widget = this;
+	StatusTextEvent event = new StatusTextEvent(browser);
+	event.display = browser.getDisplay();
+	event.widget = browser;
 	int length = XPCOM.strlen_PRUnichar(aMessage);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aMessage, length * 2);
@@ -2494,9 +1796,9 @@ int /*long*/ OnSecurityChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 /* nsIWebBrowserChrome */
 
 int /*long*/ SetStatus(int /*long*/ statusType, int /*long*/ status) {
-	StatusTextEvent event = new StatusTextEvent(this);
-	event.display = getDisplay();
-	event.widget = this;
+	StatusTextEvent event = new StatusTextEvent(browser);
+	event.display = browser.getDisplay();
+	event.widget = browser;
 	int length = XPCOM.strlen_PRUnichar(status);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, status, length * 2);
@@ -2538,9 +1840,9 @@ int /*long*/ SetChromeFlags(int /*long*/ aChromeFlags) {
 }
    
 int /*long*/ DestroyBrowserWindow() {
-	WindowEvent newEvent = new WindowEvent(this);
-	newEvent.display = getDisplay();
-	newEvent.widget = this;
+	WindowEvent newEvent = new WindowEvent(browser);
+	newEvent.display = browser.getDisplay();
+	newEvent.widget = browser;
 	for (int i = 0; i < closeWindowListeners.length; i++) {
 		closeWindowListeners[i].close(newEvent);
 	}
@@ -2550,14 +1852,14 @@ int /*long*/ DestroyBrowserWindow() {
 	* The application is advised to close the window hosting the browser widget.
 	* The browser widget must be disposed in all cases.
 	*/
-	dispose();
+	browser.dispose();
 	return XPCOM.NS_OK;
 }
    	
 int /*long*/ SizeBrowserTo(int /*long*/ aCX, int /*long*/ aCY) {
 	size = new Point((int)/*64*/aCX, (int)/*64*/aCY);
 	if (isModal) {
-		Shell shell = getShell();
+		Shell shell = browser.getShell();
 		shell.setSize(shell.computeSize(size.x, size.y));
 	}
 	return XPCOM.NS_OK;
@@ -2582,8 +1884,8 @@ int /*long*/ ShowAsModal() {
 	rc = stack.Push(0);
 	if (rc != XPCOM.NS_OK) error(rc);
 
-	Shell shell = getShell();
-	Display display = getDisplay();
+	Shell shell = browser.getShell();
+	Display display = browser.getDisplay();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
@@ -2636,14 +1938,14 @@ int /*long*/ SetFocus() {
 
 int /*long*/ GetVisibility(int /*long*/ aVisibility) {
 	/* Note. boolean remains of size 4 on 64 bit machine */
-	XPCOM.memmove(aVisibility, new int[] {isVisible() ? 1 : 0}, 4);
+	XPCOM.memmove(aVisibility, new int[] {browser.isVisible() ? 1 : 0}, 4);
 	return XPCOM.NS_OK;
 }
    
 int /*long*/ SetVisibility(int /*long*/ aVisibility) {
-	WindowEvent event = new WindowEvent(this);
-	event.display = getDisplay();
-	event.widget = this;
+	WindowEvent event = new WindowEvent(browser);
+	event.display = browser.getDisplay();
+	event.widget = browser;
 	if (aVisibility == 1) {
 		/*
 		* Bug in Mozilla.  When the JavaScript window.open is executed, Mozilla
@@ -2678,9 +1980,9 @@ int /*long*/ GetTitle(int /*long*/ aTitle) {
  
 int /*long*/ SetTitle(int /*long*/ aTitle) {
 	if (titleListeners.length == 0) return XPCOM.NS_OK;
-	TitleEvent event = new TitleEvent(this);
-	event.display = getDisplay();
-	event.widget = this;
+	TitleEvent event = new TitleEvent(browser);
+	event.display = browser.getDisplay();
+	event.widget = browser;
 	/*
 	* To be consistent with other platforms the title event should
 	* contain the page's url if the page does not contain a <title>
@@ -2721,9 +2023,9 @@ int /*long*/ FocusNextElement() {
 	* with the Mozilla application TestGtkEmbed.  The workaround is to
 	* send the traversal notification after this callback returns.
 	*/
-	getDisplay().asyncExec(new Runnable() {
+	browser.getDisplay().asyncExec(new Runnable() {
 		public void run() {
-			traverse(SWT.TRAVERSE_TAB_NEXT);
+			browser.traverse(SWT.TRAVERSE_TAB_NEXT);
 		}
 	});
 	return XPCOM.NS_OK;  
@@ -2736,9 +2038,9 @@ int /*long*/ FocusPrevElement() {
 	* with the Mozilla application TestGtkEmbed.  The workaround is to
 	* send the traversal notification after this callback returns.
 	*/
-	getDisplay().asyncExec(new Runnable() {
+	browser.getDisplay().asyncExec(new Runnable() {
 		public void run() {
-			traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+			browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS);
 		}
 	});
 	return XPCOM.NS_OK;     	
@@ -2764,9 +2066,9 @@ int /*long*/ OnShowContextMenu(int /*long*/ aContextFlags, int /*long*/ aEvent, 
 	Event event = new Event();
 	event.x = aScreenX[0];
 	event.y = aScreenY[0];
-	notifyListeners(SWT.MenuDetect, event);
+	browser.notifyListeners(SWT.MenuDetect, event);
 	if (!event.doit) return XPCOM.NS_OK;
-	Menu menu = getMenu();
+	Menu menu = browser.getMenu();
 	if (menu != null && !menu.isDisposed ()) {
 		if (aScreenX[0] != event.x || aScreenY[0] != event.y) {
 			menu.setLocation (event.x, event.y);
@@ -2795,9 +2097,9 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 	}
 	boolean doit = true;
 	if (request == 0) {
-		LocationEvent event = new LocationEvent(this);
-		event.display = getDisplay();
-		event.widget = this;
+		LocationEvent event = new LocationEvent(browser);
+		event.display = browser.getDisplay();
+		event.widget = browser;
 		event.location = value;
 		if (event.location.equals (URI_FROMMEMORY)) {
 			/*
@@ -2887,8 +2189,8 @@ int /*long*/ OnShowTooltip(int /*long*/ aXCoords, int /*long*/ aYCoords, int /*l
 	XPCOM.memmove(dest, aTipText, length * 2);
 	String text = new String(dest);
 	if (tip != null && !tip.isDisposed()) tip.dispose();
-	Display display = getDisplay();
-	Shell parent = getShell();
+	Display display = browser.getDisplay();
+	Shell parent = browser.getShell();
 	tip = new Shell(parent, SWT.ON_TOP);
 	tip.setLayout(new FillLayout());
 	Label label = new Label(tip, SWT.CENTER);

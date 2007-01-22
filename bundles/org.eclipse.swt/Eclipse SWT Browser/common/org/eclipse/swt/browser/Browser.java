@@ -32,6 +32,7 @@ public class Browser extends Composite {
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
+	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given its parent
@@ -64,9 +65,9 @@ public class Browser extends Composite {
  * @since 3.0
  */
 public Browser(Composite parent, int style) {
-	super (parent, checkStyle (style));
+	super (checkParent(parent), checkStyle (style));
 	String className = null;
-	if ((style & SWT.NONE /*MOZILLA*/) != 0) {
+	if ((style & SWT.NONE /*MOZILLA*/) != 0) { // TODO
 		className = "org.eclipse.swt.browser.Mozilla";
 	} else {
 		String platform = SWT.getPlatform();
@@ -98,6 +99,27 @@ public Browser(Composite parent, int style) {
 	webBrowser.create(parent, style);
 }
 
+static Composite checkParent(Composite parent) {
+	String platform = SWT.getPlatform();
+	if (!"gtk".equals(platform)) return parent;
+
+	/*
+	* Note.  Mozilla provides all IM suport needed for text input in webpages.
+	* If SWT creates another input method context for the widget it will cause
+	* undetermine results to happen (hungs and crashes). The fix is to prevent 
+	* SWT from creating an input method context for the  Browser widget.
+	*/
+	if (parent != null && !parent.isDisposed()) {
+		Display display = parent.getDisplay();
+		if (display != null) {
+			if (display.getThread() == Thread.currentThread ()) {
+				display.setData (NO_INPUT_METHOD, "true");
+			}
+		}
+	}
+	return parent;
+}
+
 static int checkStyle(int style) {
 	if ((style & SWT.NONE /*MOZILLA*/) != 0) {
 		return style;
@@ -107,6 +129,7 @@ static int checkStyle(int style) {
 	if ("win32".equals(platform)) {
 		return style & ~SWT.BORDER;
 	} else if ("motif".equals(platform)) {
+		return style | SWT.EMBEDDED;
 	} else if ("gtk".equals(platform)) {
 	} else if ("carbon".equals(platform)) {
 	} else if ("photon".equals(platform)) {

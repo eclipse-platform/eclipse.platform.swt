@@ -166,7 +166,7 @@ public int /*long*/ Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*
 	nsIURI source = new nsIURI(aSource);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new();
 	int rc = source.GetHost(aSpec);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 	int length = XPCOM.nsEmbedCString_Length(aSpec);
 	int /*long*/ buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
@@ -188,7 +188,7 @@ public int /*long*/ Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*
 		result[0] = 0;
 		int /*long*/ aPath = XPCOM.nsEmbedCString_new();
 		rc = target.GetPath(aPath);
-		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 		length = XPCOM.nsEmbedCString_Length(aPath);
 		buffer = XPCOM.nsEmbedCString_get(aPath);
 		dest = new byte[length];
@@ -202,7 +202,7 @@ public int /*long*/ Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*
 		nsILocalFile target = new nsILocalFile(aTarget);
 		int /*long*/ aNativeTarget = XPCOM.nsEmbedCString_new();
 		rc = target.GetNativeLeafName(aNativeTarget);
-		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 		length = XPCOM.nsEmbedCString_Length(aNativeTarget);
 		buffer = XPCOM.nsEmbedCString_get(aNativeTarget);
 		dest = new byte[length];
@@ -303,8 +303,8 @@ public int /*long*/ SetObserver(int /*long*/ aObserver) {
 		nsISupports supports = new nsISupports(aObserver);
 		int /*long*/[] result = new int /*long*/[1];
 		int rc = supports.QueryInterface(nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
-		if (rc != XPCOM.NS_OK) Browser.error(rc);
-		if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
+		if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+		if (result[0] == 0) Mozilla.error(XPCOM.NS_ERROR_NO_INTERFACE);
 		helperAppLauncher = new nsIHelperAppLauncher(result[0]);
 	}
 	return XPCOM.NS_OK;

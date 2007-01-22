@@ -208,7 +208,7 @@ public int Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDispla
 	nsIURI source = new nsIURI(aSource);
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new();
 	int rc = source.GetHost(aSpec);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 	int length = XPCOM.nsEmbedCString_Length(aSpec);
 	int /*long*/ buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
@@ -219,7 +219,7 @@ public int Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDispla
 	nsIURI target = new nsIURI(aTarget);
 	int /*long*/ aPath = XPCOM.nsEmbedCString_new();
 	rc = target.GetPath(aPath);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 	length = XPCOM.nsEmbedCString_Length(aPath);
 	buffer = XPCOM.nsEmbedCString_get(aPath);
 	dest = new byte[length];
@@ -236,7 +236,7 @@ public int Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDispla
 			}
 			if (cancelable != null) {
 				int rc = cancelable.Cancel(XPCOM.NS_BINDING_ABORTED);
-				if (rc != XPCOM.NS_OK) Browser.error(rc);
+				if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 			}
 			shell = null;
 			cancelable = null;

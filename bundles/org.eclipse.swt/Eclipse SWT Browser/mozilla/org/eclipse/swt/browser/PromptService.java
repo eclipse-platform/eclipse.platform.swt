@@ -98,39 +98,39 @@ int Release() {
 Browser getBrowser(int /*long*/ aDOMWindow) {
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = XPCOM.NS_GetServiceManager(result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+	if (result[0] == 0) Mozilla.error(XPCOM.NS_NOINTERFACE);
 	
 	nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
 	result[0] = 0;
 	byte[] aContractID = Converter.wcsToMbcs(null, XPCOM.NS_WINDOWWATCHER_CONTRACTID, true);
 	rc = serviceManager.GetServiceByContractID(aContractID, nsIWindowWatcher.NS_IWINDOWWATCHER_IID, result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);		
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+	if (result[0] == 0) Mozilla.error(XPCOM.NS_NOINTERFACE);		
 	serviceManager.Release();
 	
 	nsIWindowWatcher windowWatcher = new nsIWindowWatcher(result[0]);
 	result[0] = 0;
 	rc = windowWatcher.GetChromeForWindow(aDOMWindow, result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);		
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+	if (result[0] == 0) Mozilla.error(XPCOM.NS_NOINTERFACE);		
 	windowWatcher.Release();	
 	
 	nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome(result[0]);
 	result[0] = 0;
 	rc = webBrowserChrome.QueryInterface(nsIEmbeddingSiteWindow.NS_IEMBEDDINGSITEWINDOW_IID, result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);		
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+	if (result[0] == 0) Mozilla.error(XPCOM.NS_NOINTERFACE);		
 	webBrowserChrome.Release();
 	
 	nsIEmbeddingSiteWindow embeddingSiteWindow = new nsIEmbeddingSiteWindow(result[0]);
 	result[0] = 0;
 	rc = embeddingSiteWindow.GetSiteWindow(result);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_NOINTERFACE);		
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+	if (result[0] == 0) Mozilla.error(XPCOM.NS_NOINTERFACE);		
 	embeddingSiteWindow.Release();
 	
-	return Browser.findBrowser(result[0]); 
+	return Mozilla.findBrowser(result[0]); 
 }
 
 String getLabel(int buttonFlag, int index, int /*long*/ buttonTitle) {

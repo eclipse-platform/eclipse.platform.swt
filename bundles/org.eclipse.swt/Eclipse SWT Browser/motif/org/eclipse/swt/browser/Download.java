@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,63 +40,63 @@ int AddRef() {
 void createCOMInterfaces() {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 	};
 	
 	download = new XPCOMObject(new int[]{2, 0, 0, 7, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return Init(args[0], args[1], args[2],args[3], args[4], args[5], args[6]);}
-		public int method4(int[] args) {return GetSource(args[0]);}
-		public int method5(int[] args) {return GetTarget(args[0]);}
-		public int method6(int[] args) {return GetPersist(args[0]);}
-		public int method7(int[] args) {return GetPercentComplete(args[0]);}
-		public int method8(int[] args) {return GetDisplayName(args[0]);}
-		public int method9(int[] args) {return SetDisplayName(args[0]);}
-		public int method10(int[] args) {return GetStartTime(args[0]);}
-		public int method11(int[] args) {return GetMIMEInfo(args[0]);}
-		public int method12(int[] args) {return GetListener(args[0]);}
-		public int method13(int[] args) {return SetListener(args[0]);}
-		public int method14(int[] args) {return GetObserver(args[0]);}
-		public int method15(int[] args) {return SetObserver(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return Init(args[0], args[1], args[2],args[3], args[4], args[5], args[6]);}
+		public int /*long*/ method4(int /*long*/[] args) {return GetSource(args[0]);}
+		public int /*long*/ method5(int /*long*/[] args) {return GetTarget(args[0]);}
+		public int /*long*/ method6(int /*long*/[] args) {return GetPersist(args[0]);}
+		public int /*long*/ method7(int /*long*/[] args) {return GetPercentComplete(args[0]);}
+		public int /*long*/ method8(int /*long*/[] args) {return GetDisplayName(args[0]);}
+		public int /*long*/ method9(int /*long*/[] args) {return SetDisplayName(args[0]);}
+		public int /*long*/ method10(int /*long*/[] args) {return GetStartTime(args[0]);}
+		public int /*long*/ method11(int /*long*/[] args) {return GetMIMEInfo(args[0]);}
+		public int /*long*/ method12(int /*long*/[] args) {return GetListener(args[0]);}
+		public int /*long*/ method13(int /*long*/[] args) {return SetListener(args[0]);}
+		public int /*long*/ method14(int /*long*/[] args) {return GetObserver(args[0]);}
+		public int /*long*/ method15(int /*long*/[] args) {return SetObserver(args[0]);}
 	};
 	
 	progressDialog = new XPCOMObject(new int[]{2, 0, 0, 7, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return Init(args[0], args[1], args[2],args[3], args[4], args[5], args[6]);}
-		public int method4(int[] args) {return GetSource(args[0]);}
-		public int method5(int[] args) {return GetTarget(args[0]);}
-		public int method6(int[] args) {return GetPersist(args[0]);}
-		public int method7(int[] args) {return GetPercentComplete(args[0]);}
-		public int method8(int[] args) {return GetDisplayName(args[0]);}
-		public int method9(int[] args) {return SetDisplayName(args[0]);}
-		public int method10(int[] args) {return GetStartTime(args[0]);}
-		public int method11(int[] args) {return GetMIMEInfo(args[0]);}
-		public int method12(int[] args) {return GetListener(args[0]);}
-		public int method13(int[] args) {return SetListener(args[0]);}
-		public int method14(int[] args) {return GetObserver(args[0]);}
-		public int method15(int[] args) {return SetObserver(args[0]);}
-		public int method16(int[] args) {return Open(args[0]);}
-		public int method17(int[] args) {return GetCancelDownloadOnClose(args[0]);}
-		public int method18(int[] args) {return SetCancelDownloadOnClose(args[0]);}
-		public int method19(int[] args) {return GetDialog(args[0]);}
-		public int method20(int[] args) {return SetDialog(args[0]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return Init(args[0], args[1], args[2],args[3], args[4], args[5], args[6]);}
+		public int /*long*/ method4(int /*long*/[] args) {return GetSource(args[0]);}
+		public int /*long*/ method5(int /*long*/[] args) {return GetTarget(args[0]);}
+		public int /*long*/ method6(int /*long*/[] args) {return GetPersist(args[0]);}
+		public int /*long*/ method7(int /*long*/[] args) {return GetPercentComplete(args[0]);}
+		public int /*long*/ method8(int /*long*/[] args) {return GetDisplayName(args[0]);}
+		public int /*long*/ method9(int /*long*/[] args) {return SetDisplayName(args[0]);}
+		public int /*long*/ method10(int /*long*/[] args) {return GetStartTime(args[0]);}
+		public int /*long*/ method11(int /*long*/[] args) {return GetMIMEInfo(args[0]);}
+		public int /*long*/ method12(int /*long*/[] args) {return GetListener(args[0]);}
+		public int /*long*/ method13(int /*long*/[] args) {return SetListener(args[0]);}
+		public int /*long*/ method14(int /*long*/[] args) {return GetObserver(args[0]);}
+		public int /*long*/ method15(int /*long*/[] args) {return SetObserver(args[0]);}
+		public int /*long*/ method16(int /*long*/[] args) {return Open(args[0]);}
+		public int /*long*/ method17(int /*long*/[] args) {return GetCancelDownloadOnClose(args[0]);}
+		public int /*long*/ method18(int /*long*/[] args) {return SetCancelDownloadOnClose(args[0]);}
+		public int /*long*/ method19(int /*long*/[] args) {return GetDialog(args[0]);}
+		public int /*long*/ method20(int /*long*/[] args) {return SetDialog(args[0]);}
 	};
 	
 	webProgressListener = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return OnStateChange(args[0], args[1], args[2],args[3]);}
-		public int method4(int[] args) {return OnProgressChange(args[0], args[1], args[2],args[3],args[4],args[5]);}
-		public int method5(int[] args) {return OnLocationChange(args[0], args[1], args[2]);}
-		public int method6(int[] args) {return OnStatusChange(args[0], args[1], args[2],args[3]);}
-		public int method7(int[] args) {return OnSecurityChange(args[0], args[1], args[2]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return OnStateChange(args[0], args[1], args[2],args[3]);}
+		public int /*long*/ method4(int /*long*/[] args) {return OnProgressChange(args[0], args[1], args[2],args[3],args[4],args[5]);}
+		public int /*long*/ method5(int /*long*/[] args) {return OnLocationChange(args[0], args[1], args[2]);}
+		public int /*long*/ method6(int /*long*/[] args) {return OnStatusChange(args[0], args[1], args[2],args[3]);}
+		public int /*long*/ method7(int /*long*/[] args) {return OnSecurityChange(args[0], args[1], args[2]);}
 	};
 }
 
@@ -119,36 +119,36 @@ void disposeCOMInterfaces() {
 	}
 }
 
-int getAddress() {
+int /*long*/ getAddress() {
 	return progressDialog.getAddress();
 }
 
-int queryInterface(int riid, int ppvObject) {
+int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID();
 	XPCOM.memmove(guid, riid, nsID.sizeof);
 	
 	if (guid.Equals(nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {supports.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {supports.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIDownload.NS_IDOWNLOAD_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {download.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {download.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIProgressDialog.NS_IPROGRESSDIALOG_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {progressDialog.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {progressDialog.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {webProgressListener.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {webProgressListener.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-	XPCOM.memmove(ppvObject, new int[] {0}, 4);
+	XPCOM.memmove(ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
         	
@@ -161,13 +161,13 @@ int Release() {
 /* nsIDownload */
 
 /* Note. The argument startTime is defined as a PRInt64. This translates into two java ints. */
-public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int startTime1, int startTime2, int aPersist) {
+public int /*long*/ Init(int /*long*/ aSource, int /*long*/ aTarget, int /*long*/ aDisplayName, int /*long*/ aMIMEInfo, int /*long*/ startTime1, int /*long*/ startTime2, int /*long*/ aPersist) {
 	nsIURI source = new nsIURI(aSource);
-	int aSpec = XPCOM.nsEmbedCString_new();
+	int /*long*/ aSpec = XPCOM.nsEmbedCString_new();
 	int rc = source.GetHost(aSpec);
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 	int length = XPCOM.nsEmbedCString_Length(aSpec);
-	int buffer = XPCOM.nsEmbedCString_get(aSpec);
+	int /*long*/ buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsEmbedCString_delete(aSpec);
@@ -180,14 +180,14 @@ public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int s
 	*/
 	String filename = null;
 	nsISupports supports = new nsISupports(aTarget);
-	int [] result = new int [1];
+	int /*long*/[] result = new int /*long*/[1];
 	rc = supports.QueryInterface(nsIURI.NS_IURI_IID, result);
 	if (rc == 0) {	/* >= 1.7 */
 		nsIURI target = new nsIURI(result[0]);
 		result[0] = 0;
-		int aPath = XPCOM.nsEmbedCString_new();
+		int /*long*/ aPath = XPCOM.nsEmbedCString_new();
 		rc = target.GetPath(aPath);
-		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 		length = XPCOM.nsEmbedCString_Length(aPath);
 		buffer = XPCOM.nsEmbedCString_get(aPath);
 		dest = new byte[length];
@@ -199,9 +199,9 @@ public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int s
 		target.Release();
 	} else {	/* < 1.7 */
 		nsILocalFile target = new nsILocalFile(aTarget);
-		int aNativeTarget = XPCOM.nsEmbedCString_new();
+		int /*long*/ aNativeTarget = XPCOM.nsEmbedCString_new();
 		rc = target.GetNativeLeafName(aNativeTarget);
-		if (rc != XPCOM.NS_OK) Browser.error(rc);
+		if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 		length = XPCOM.nsEmbedCString_Length(aNativeTarget);
 		buffer = XPCOM.nsEmbedCString_get(aNativeTarget);
 		dest = new byte[length];
@@ -253,86 +253,86 @@ public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int s
 	return XPCOM.NS_OK;
 }
 
-public int GetSource(int aSource) {
+public int /*long*/ GetSource(int /*long*/ aSource) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetTarget(int aTarget) {
+public int /*long*/ GetTarget(int /*long*/ aTarget) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetPersist(int aPersist) {
+public int /*long*/ GetPersist(int /*long*/ aPersist) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetPercentComplete(int aPercentComplete) {
+public int /*long*/ GetPercentComplete(int /*long*/ aPercentComplete) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetDisplayName(int aDisplayName) {
+public int /*long*/ GetDisplayName(int /*long*/ aDisplayName) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int SetDisplayName(int aDisplayName) {
+public int /*long*/ SetDisplayName(int /*long*/ aDisplayName) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetStartTime(int aStartTime) {
+public int /*long*/ GetStartTime(int /*long*/ aStartTime) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetMIMEInfo(int aMIMEInfo) {
+public int /*long*/ GetMIMEInfo(int /*long*/ aMIMEInfo) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetListener(int aListener) {
+public int /*long*/ GetListener(int /*long*/ aListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int SetListener(int aListener) {
+public int /*long*/ SetListener(int /*long*/ aListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetObserver(int aObserver) {
+public int /*long*/ GetObserver(int /*long*/ aObserver) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int SetObserver(int aObserver) {
+public int /*long*/ SetObserver(int /*long*/ aObserver) {
 	if (aObserver != 0) {
 		nsISupports supports = new nsISupports(aObserver);
-		int[] result = new int[1];
+		int /*long*/[] result = new int /*long*/[1];
 		int rc = supports.QueryInterface(nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
-		if (rc != XPCOM.NS_OK) Browser.error(rc);
-		if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NO_INTERFACE);
+		if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+		if (result[0] == 0) Mozilla.error(XPCOM.NS_ERROR_NO_INTERFACE);
 		helperAppLauncher = new nsIHelperAppLauncher(result[0]);
 	}
 	return XPCOM.NS_OK;
 }
 
 /* nsIProgressDialog */
-public int Open(int aParent) {
+public int /*long*/ Open(int /*long*/ aParent) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetCancelDownloadOnClose(int aCancelDownloadOnClose) {
+public int /*long*/ GetCancelDownloadOnClose(int /*long*/ aCancelDownloadOnClose) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int SetCancelDownloadOnClose(int aCancelDownloadOnClose) {
+public int /*long*/ SetCancelDownloadOnClose(int /*long*/ aCancelDownloadOnClose) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int GetDialog(int aDialog) {
+public int /*long*/ GetDialog(int /*long*/ aDialog) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int SetDialog(int aDialog) {
+public int /*long*/ SetDialog(int /*long*/ aDialog) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 /* nsIWebProgressListener */
 
-int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) {
+int /*long*/ OnStateChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStateFlags, int /*long*/ aStatus) {
 	if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		if (helperAppLauncher != null) helperAppLauncher.Release();
 		helperAppLauncher = null;
@@ -342,9 +342,9 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 	return XPCOM.NS_OK;
 }
 
-int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
-	int currentKBytes = aCurTotalProgress / 1024;
-	int totalKBytes = aMaxTotalProgress / 1024;
+int /*long*/ OnProgressChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aCurSelfProgress, int /*long*/ aMaxSelfProgress, int /*long*/ aCurTotalProgress, int /*long*/ aMaxTotalProgress) {
+	int currentKBytes = (int)/*64*/aCurTotalProgress / 1024;
+	int totalKBytes = (int)/*64*/aMaxTotalProgress / 1024;
 	if (shell != null & !shell.isDisposed()) {
 		Object[] arguments = {new Integer(currentKBytes), new Integer(totalKBytes)};
 		String statusMsg = Compatibility.getMessage("SWT_Download_Status", arguments); //$NON-NLS-1$
@@ -355,15 +355,15 @@ int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int a
 	return XPCOM.NS_OK;
 }
 
-int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
+int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aLocation) {
 	return XPCOM.NS_OK;
 }
   
-int OnStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
+int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStatus, int /*long*/ aMessage) {
 	return XPCOM.NS_OK;
 }		
 
-int OnSecurityChange(int aWebProgress, int aRequest, int state) {
+int /*long*/ OnSecurityChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ state) {
 	return XPCOM.NS_OK;
 }
 }

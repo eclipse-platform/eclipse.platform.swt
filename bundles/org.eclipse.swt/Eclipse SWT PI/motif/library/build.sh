@@ -54,7 +54,7 @@ case $OS in
 				MOZILLA_SDK=/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
 				MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"
 				MOZILLA_LIBS="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
-				XULRUNNER_SDK=/bluebird/teamswt/swt-builddir/xulrunner/1.8.0.1/linux_gtk2/mozilla/dist/sdk
+				XULRUNNER_SDK=/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk
 				XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
 				XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue -lnspr4"
 			fi

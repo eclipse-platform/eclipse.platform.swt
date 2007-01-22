@@ -187,8 +187,8 @@ int /*long*/ GetFile (int /*long*/ aFile) {
 	int /*long*/[] file = new int /*long*/[1];
 	int rc = XPCOM.NS_NewLocalFile (path.getAddress (), true, file);
 	path.dispose ();
-	if (rc != XPCOM.NS_OK) Browser.error (rc);
-	if (file [0] == 0) Browser.error (XPCOM.NS_ERROR_NULL_POINTER);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (file [0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 	XPCOM.memmove (aFile, file, OS.PTR_SIZEOF);
 	return XPCOM.NS_OK;
 }
@@ -214,8 +214,8 @@ int /*long*/ GetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 	int /*long*/[] file = new int /*long*/[1];
 	int rc = XPCOM.NS_NewLocalFile (path.getAddress (), true, file);
 	path.dispose ();
-	if (rc != XPCOM.NS_OK) Browser.error (rc);
-	if (file [0] == 0) Browser.error (XPCOM.NS_ERROR_NULL_POINTER);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (file [0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 	XPCOM.memmove (aDisplayDirectory, file, OS.PTR_SIZEOF);
 	return XPCOM.NS_OK;
 }

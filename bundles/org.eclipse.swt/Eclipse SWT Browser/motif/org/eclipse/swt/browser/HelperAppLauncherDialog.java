@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.widgets.*;
 
@@ -31,17 +32,17 @@ int AddRef() {
 void createCOMInterfaces() {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 	};
 	
 	helperAppLauncherDialog = new XPCOMObject(new int[]{2, 0, 0, 3, 5}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
-		public int method1(int[] args) {return AddRef();}
-		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return Show(args[0], args[1], args[2]);}
-		public int method4(int[] args) {return PromptForSaveToFile(args[0], args[1], args[2], args[3], args[4]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
+		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
+		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+		public int /*long*/ method3(int /*long*/[] args) {return Show(args[0], args[1], args[2]);}
+		public int /*long*/ method4(int /*long*/[] args) {return PromptForSaveToFile(args[0], args[1], args[2], args[3], args[4]);}
 	};		
 }
 
@@ -56,27 +57,27 @@ void disposeCOMInterfaces() {
 	}
 }
 
-int getAddress() {
+int /*long*/ getAddress() {
 	return helperAppLauncherDialog.getAddress();
 }
 
-int queryInterface(int riid, int ppvObject) {
+int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID();
 	XPCOM.memmove(guid, riid, nsID.sizeof);
 	
 	if (guid.Equals(nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {supports.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {supports.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	if (guid.Equals(nsIHelperAppLauncherDialog.NS_IHELPERAPPLAUNCHERDIALOG_IID)) {
-		XPCOM.memmove(ppvObject, new int[] {helperAppLauncherDialog.getAddress()}, 4);
+		XPCOM.memmove(ppvObject, new int /*long*/[] {helperAppLauncherDialog.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return XPCOM.NS_OK;
 	}
 	
-	XPCOM.memmove(ppvObject, new int[] {0}, 4);
+	XPCOM.memmove(ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
         	
@@ -95,14 +96,14 @@ int Release() {
 
 /* nsIHelperAppLauncherDialog */
 
-public int Show(int aLauncher, int aContext, int aReason) {
+public int /*long*/ Show(int /*long*/ aLauncher, int /*long*/ aContext, int /*long*/ aReason) {
 	/*
 	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8.  Query the received
 	 * nsIHelperAppLauncher for the new interface, and if it is not found then fall back to
 	 * the old interface. 
 	 */
 	nsISupports supports = new nsISupports(aLauncher);
-	int [] result = new int [1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = supports.QueryInterface(nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
 	if (rc == 0) {	/* >= 1.8 */
 		nsIHelperAppLauncher_1_8 helperAppLauncher = new nsIHelperAppLauncher_1_8(aLauncher);
@@ -114,8 +115,8 @@ public int Show(int aLauncher, int aContext, int aReason) {
 	return helperAppLauncher.SaveToDisk(0, false);
 }
 
-public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4) {
-	int aDefaultFile, aSuggestedFileExtension, _retval;
+public int /*long*/ PromptForSaveToFile(int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
+	int /*long*/ aDefaultFile, aSuggestedFileExtension, _retval;
 	boolean hasLauncher = false;
 
 	/*
@@ -132,7 +133,7 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 	 * argument must be queried for both the old and new nsIHelperAppLauncher interfaces. 
 	 */
 	nsISupports support = new nsISupports(arg0);
-	int [] result = new int [1];
+	int /*long*/[] result = new int /*long*/[1];
 	int rc = support.QueryInterface(nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
 	boolean usingMozilla18 = rc == 0;
 	if (usingMozilla18) {
@@ -185,7 +186,7 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 				nsIHelperAppLauncher launcher = new nsIHelperAppLauncher(arg0);
 				rc = launcher.Cancel();
 			}
-			if (rc != XPCOM.NS_OK) Browser.error(rc);
+			if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 			return XPCOM.NS_OK;
 		}
 		return XPCOM.NS_ERROR_FAILURE;
@@ -193,10 +194,10 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 	nsEmbedString path = new nsEmbedString(name);
 	rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
 	path.dispose();
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NULL_POINTER);
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+	if (result[0] == 0) Mozilla.error(XPCOM.NS_ERROR_NULL_POINTER);
 	/* Our own nsIDownload has been registered during the Browser initialization. It will be invoked by Mozilla. */
-	XPCOM.memmove(_retval, result, 4);	
+	XPCOM.memmove(_retval, result, C.PTR_SIZEOF);	
 	return XPCOM.NS_OK;
 }
 }

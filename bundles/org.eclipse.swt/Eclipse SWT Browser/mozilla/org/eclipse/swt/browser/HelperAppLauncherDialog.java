@@ -186,7 +186,7 @@ public int /*long*/ PromptForSaveToFile(int /*long*/ arg0, int /*long*/ arg1, in
 				nsIHelperAppLauncher launcher = new nsIHelperAppLauncher(arg0);
 				rc = launcher.Cancel();
 			}
-			if (rc != XPCOM.NS_OK) Browser.error(rc);
+			if (rc != XPCOM.NS_OK) Mozilla.error(rc);
 			return XPCOM.NS_OK;
 		}
 		return XPCOM.NS_ERROR_FAILURE;
@@ -194,8 +194,8 @@ public int /*long*/ PromptForSaveToFile(int /*long*/ arg0, int /*long*/ arg1, in
 	nsEmbedString path = new nsEmbedString(name);
 	rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
 	path.dispose();
-	if (rc != XPCOM.NS_OK) Browser.error(rc);
-	if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NULL_POINTER);
+	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+	if (result[0] == 0) Mozilla.error(XPCOM.NS_ERROR_NULL_POINTER);
 	/* Our own nsIDownload has been registered during the Browser initialization. It will be invoked by Mozilla. */
 	XPCOM.memmove(_retval, result, OS.PTR_SIZEOF);	
 	return XPCOM.NS_OK;
