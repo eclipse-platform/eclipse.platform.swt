@@ -97,9 +97,6 @@ class IE extends WebBrowser {
 		};
 	}
 
-	/* Package Name */
-	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
-
 public void create(Composite parent, int style) {
 	info = IE.DOCHOSTUIFLAG_THEME;
 	if ((style & SWT.BORDER) == 0) info |= IE.DOCHOSTUIFLAG_NO3DOUTERBORDER;
