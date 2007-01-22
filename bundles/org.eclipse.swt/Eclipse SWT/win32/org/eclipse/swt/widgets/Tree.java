@@ -6499,7 +6499,30 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			break;
 		}
 		case OS.NM_DBLCLK: {
-			if (hooks (SWT.DefaultSelection)) return LRESULT.ONE;
+			/*
+			* When the user double clicks on a tree item
+			* or a line beside the item, the window proc
+			* for the tree collapses or expland the branch.
+			* When application code associates an action
+			* with double clicking, then the tree expand
+			* is unexpected and unwanted.  The fix is to
+			* avoid the operation by testing to see whether
+			* the mouse was inside a tree item.
+			*/
+			if (hooks (SWT.DefaultSelection)) {
+				POINT pt = new POINT ();
+				int pos = OS.GetMessagePos ();
+				pt.x = (short) (pos & 0xFFFF);
+				pt.y = (short) (pos >> 16);
+				OS.ScreenToClient (handle, pt);
+				TVHITTESTINFO lpht = new TVHITTESTINFO ();
+				lpht.x = pt.x;
+				lpht.y = pt.y;
+				OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+				if (lpht.hItem != 0 && (lpht.flags & OS.TVHT_ONITEM) != 0) {
+					return LRESULT.ONE;
+				}
+			}
 			break;
 		}
 		/*
