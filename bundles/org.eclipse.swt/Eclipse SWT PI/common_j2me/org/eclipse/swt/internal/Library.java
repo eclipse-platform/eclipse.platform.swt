@@ -95,6 +95,7 @@ public static int SWT_VERSION (int major, int minor) {
  * @param name the name of the library to load
  */
 public static void loadLibrary (String name) {
+	loadLibrary (name, true);
 }
 
 /**
