@@ -52,6 +52,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	int currentOffset = -1;
 	long scrollBeginTime;
 	int scrollX = -1, scrollY = -1;
+	Listener paintListener;
 	
 	/**
 	 * Creates a new <code>StyledTextDropTargetEffect</code> to handle the drag under effect on the specified 
@@ -61,6 +62,17 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	 */
 	public StyledTextDropTargetEffect(StyledText styledText) {
 		super(styledText);
+		paintListener = new Listener () {
+			public void handleEvent (Event event) {
+				if (currentOffset != -1) {
+					StyledText text = (StyledText) getControl();
+					Point position = text.getLocationAtOffset(currentOffset);
+					int height = text.getLineHeight(currentOffset);
+					event.gc.setBackground(event.display.getSystemColor (SWT.COLOR_BLACK));
+					event.gc.fillRectangle(position.x, position.y, 1, height);
+				}
+			}
+		};
 	}
 	
 	/**
@@ -82,6 +94,8 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 		scrollBeginTime = 0;
 		scrollX = -1;
 		scrollY = -1;
+		getControl().removeListener(SWT.Paint, paintListener);
+		getControl().addListener (SWT.Paint, paintListener);
 	}
 	
 	/**
@@ -99,10 +113,11 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	 * @see DropTargetEvent
 	 */
 	public void dragLeave(DropTargetEvent event) {
+		StyledText text = (StyledText) getControl();
 		if (currentOffset != -1) {
-			StyledText text = (StyledText) getControl();
-			drawCaret(text, currentOffset, -1);
+			refreshCaret(text, currentOffset, -1);
 		}
+		text.removeListener(SWT.Paint, paintListener);
 		scrollBeginTime = 0;
 		scrollX = -1;
 		scrollY = -1;
@@ -187,7 +202,6 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 			
 		if ((effect & DND.FEEDBACK_SELECT) != 0) {
 			StyledTextContent content = text.getContent();
-			int oldOffset = text.getCaretOffset();
 			int newOffset = -1;
 			try {
 				newOffset = text.getOffsetAtLocation(pt);
@@ -222,7 +236,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 					}
 				}
 			}
-			if (newOffset != -1 && newOffset != oldOffset) {
+			if (newOffset != -1 && newOffset != currentOffset) {
 				// check if offset is line delimiter
 				// see StyledText.isLineDelimiter()
 				int line = content.getLineAtOffset(newOffset);
@@ -234,34 +248,23 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 				if (offsetInLine > content.getLine(line).length()) {
 					newOffset = Math.max(0, newOffset - 1);
 				}
-				drawCaret(text, currentOffset, newOffset);
+				refreshCaret(text, currentOffset, newOffset);
 				currentOffset = newOffset;
 			}
 		}
 	}
 
-	void drawCaret(StyledText text, int oldOffset, int newOffset) {
+	void refreshCaret(StyledText text, int oldOffset, int newOffset) {
 		if (oldOffset != newOffset) {
-			final int width = 1;
 			if (oldOffset != -1) {
-				int oldHeight = text.getLineHeight(oldOffset);
 				Point oldPos = text.getLocationAtOffset(oldOffset);
-				text.redraw (oldPos.x, oldPos.y, width, oldHeight, false);
-				text.update ();
+				int oldHeight = text.getLineHeight(oldOffset);
+				text.redraw (oldPos.x, oldPos.y, 1, oldHeight, false);
 			}
 			if (newOffset != -1) {
-				final Point newPos = text.getLocationAtOffset(newOffset);
-				final int newHeight = text.getLineHeight(newOffset);
-				Listener paintListener = new Listener () {
-					public void handleEvent (Event event) {
-						event.gc.setBackground(event.display.getSystemColor (SWT.COLOR_BLACK));
-						event.gc.fillRectangle(newPos.x, newPos.y, width, newHeight);
-					}
-				};
-				text.addListener (SWT.Paint, paintListener);
-				text.redraw (newPos.x, newPos.y, width, newHeight, false);
-				text.update ();
-				text.removeListener (SWT.Paint, paintListener);
+				Point newPos = text.getLocationAtOffset(newOffset);
+				int newHeight = text.getLineHeight(newOffset);
+				text.redraw (newPos.x, newPos.y, 1, newHeight, false);
 			}
 		}
 	}
