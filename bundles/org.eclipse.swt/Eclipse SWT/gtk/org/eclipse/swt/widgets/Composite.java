@@ -712,9 +712,6 @@ void hookEvents () {
 		if (scrolledHandle != 0) {
 			OS.g_signal_connect_closure (scrolledHandle, OS.scroll_child, display.closures [SCROLL_CHILD], false);
 		}
-		if ((state & PARENT_BACKGROUND) == 0 && (style & SWT.NO_BACKGROUND) != 0) {
-			OS.g_signal_connect_closure_by_id (handle, display.signalIds [STYLE_SET], 0, display.closures [STYLE_SET], false);
-		}
 	}
 }
 

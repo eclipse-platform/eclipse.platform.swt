@@ -225,10 +225,8 @@ void hookEvents () {
 		OS.g_signal_connect_closure (imHandle, OS.preedit_changed, display.closures [PREEDIT_CHANGED], false);
 	}
 	
-	if ((state & PARENT_BACKGROUND) != 0) {
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [STYLE_SET], 0, display.closures [STYLE_SET], false);
-	}
-
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [STYLE_SET], 0, display.closures [STYLE_SET], false);
+   
 	int /*long*/ topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.closures [MAP], true);
 }
@@ -3851,5 +3849,33 @@ void updateBackgroundMode () {
 
 void updateLayout (boolean all) {
 	/* Do nothing */
+}
+
+int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+	switch ((int)/*64*/user_data) {
+		case EXPOSE_EVENT_INVERSE: {
+			if ((OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) && ((state & OBSCURED) == 0)) {
+				Control control = findBackgroundControl ();
+				if (control != null && control.backgroundImage != null) {
+					GdkEventExpose gdkEvent = new GdkEventExpose ();
+					OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+					int /*long*/ paintWindow = paintWindow();
+					int /*long*/ window = gdkEvent.window;
+					if (window != paintWindow) break;
+					int /*long*/ gdkGC = OS.gdk_gc_new (window);
+					OS.gdk_gc_set_clip_region (gdkGC, gdkEvent.region);
+					int[] dest_x = new int[1], dest_y = new int[1];
+					OS.gtk_widget_translate_coordinates (paintHandle (), control.paintHandle (), 0, 0, dest_x, dest_y);
+					OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
+					OS.gdk_gc_set_ts_origin (gdkGC, -dest_x [0], -dest_y [0]);
+					OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap); 
+					OS.gdk_draw_rectangle (window, gdkGC, 1, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+					OS.g_object_unref (gdkGC);
+				}
+			}
+			break;
+		}
+	}
+	return super.windowProc (handle, arg0, user_data);
 }
 }
