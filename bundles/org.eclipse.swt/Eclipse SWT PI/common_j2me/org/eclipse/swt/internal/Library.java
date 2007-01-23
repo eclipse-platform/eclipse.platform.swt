@@ -97,4 +97,19 @@ public static int SWT_VERSION (int major, int minor) {
 public static void loadLibrary (String name) {
 }
 
+/**
+ * Loads the shared library that matches the version of the
+ * Java code which is currently running.  SWT shared libraries
+ * follow an encoding scheme where the major, minor and revision
+ * numbers are embedded in the library name and this along with
+ * <code>name</code> is used to load the library.  If this fails,
+ * <code>name</code> is used in another attempt to load the library,
+ * this time ignoring the SWT version encoding scheme.
+ *
+ * @param name the name of the library to load
+ * @param mapName true if the name should be mapped, false otherwise
+ */
+public static void loadLibrary (String name, boolean mapName) {
+}
+
 }
