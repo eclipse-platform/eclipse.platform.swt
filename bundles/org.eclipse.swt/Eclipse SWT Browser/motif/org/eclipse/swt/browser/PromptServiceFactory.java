@@ -12,7 +12,6 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
-import org.eclipse.swt.internal.gtk.*;
 
 class PromptServiceFactory {
 	XPCOMObject supports;
