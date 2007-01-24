@@ -353,7 +353,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	private static Image getItemIcon(IConfigurationElement ce) {
 		String iconPath = getItemAttribute(ce, LAUNCH_ITEMS_XML_ITEM_ICON, "");
 		if (iconPath.length() != 0) {
-			String symbolicName = ce.getDeclaringExtension().getNamespace();
+			String symbolicName = ce.getDeclaringExtension().getContributor().getName();
 			Bundle bundle = Platform.getBundle(symbolicName);
 			Image icon = getImageFromPlugin(bundle, iconPath);
 			if (icon != null) {

@@ -38,10 +38,6 @@
 
 <!-- Extensions -->
    <extension
-         id="application"
-         point="org.eclipse.core.runtime.applications">
-   </extension>
-   <extension
          point="org.eclipse.ui.views">
       <category
             name="%category.SWTExamples.name"
