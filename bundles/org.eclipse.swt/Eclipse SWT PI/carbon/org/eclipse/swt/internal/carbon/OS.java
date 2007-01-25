@@ -210,6 +210,7 @@ public class OS extends C {
 	public static final int kControlEditTextTextTag = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kControlEditTextInsertCFStringRefTag = ('i'<<24) + ('n'<<16) + ('c'<<8) + 'f';
 	public static final int kControlEditTextPasswordCFStringTag = ('p'<<24) + ('w'<<16) + ('c'<<8) + 'f';
+	public static final int kControlEditTextPart = 5;
 	public static final int kControlEntireControl = 0;
 	public static final int kControlFocusNoPart = 0;
 	public static final int kControlFontStyleTag = ('f'<<24) + ('o'<<16) + ('n'<<8) + 't';
@@ -236,6 +237,8 @@ public class OS extends C {
 	public static final int kControlPushButtonProc = 368;
 	public static final int kControlRadioButtonAutoToggleProc = 372;
 	public static final int kControlScrollBarLiveProc = 386;
+	public static final int kControlSearchFieldCancelPart = 30;
+	public static final int kControlSearchFieldMenuPart = 31;
 	public static final int kControlSeparatorLineProc = 144;
 	public static final int kControlSliderLiveFeedback = (1 << 0);
 	public static final int kControlSliderNonDirectional = (1 << 3);
@@ -693,6 +696,9 @@ public class OS extends C {
 	public static final int kScrapFlavorTypeText = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final boolean kScrollBarsSyncAlwaysActive = true;
 	public static final boolean kScrollBarsSyncWithFocus = false;
+	public static final int kHISearchFieldNoAttributes = 0;
+	public static final int kHISearchFieldAttributesCancel = 1 << 0;
+	public static final int kHISearchFieldAttributesSearchIcon = 1 << 1;
 	public static final int kSelectorAlLAvailableData = 0xFFFFFFFF;
 	public static final int kSetFrontProcessFrontWindowOnly = 1 << 0;
 	public static final int kSheetWindowClass = 11;
@@ -1431,7 +1437,9 @@ public static final native int HIObjectCopyClassID(int inObject);
 public static final native int HIObjectCreate(int inClassID, int inConstructData, int[] outObject);
 public static final native int HIObjectRegisterSubclass(int inClassID, int inBaseClassID, int inOptions, int inConstructProc, int inNumEvents, int[] inEventList, int inConstructData, int[] outClassRef);
 public static final native int HIViewScrollRect(int inView, CGRect inRect, float inDX, float inDY);
-public static final native int HIScrollViewCreate (int inOptions, int[] outView);
+public static final native int HIScrollViewCreate(int inOptions, int[] outView);
+public static final native int HISearchFieldCreate(CGRect inBounds, int inAttributes, int inSearchMenu, int inDescriptiveText, int [] outRef);
+public static final native int HISearchFieldSetDescriptiveText(int inSearchField, int inDescription);
 public static final native int HITextViewCreate(CGRect inBoundsRect, int inOptions, int inTXNFrameOptions, int[] outTextView);
 public static final native int HITextViewGetTXNObject(int inTextView);
 public static final native int HIThemeDrawBackground(CGRect inBounds, HIThemeBackgroundDrawInfo inDrawInfo, int inContext, int inOrientation); 
