@@ -292,7 +292,7 @@ public Image(Device device, Image srcImage, int flag) {
 				if (mask != null) mask.getPixels(0, y, rect.width, maskScanline, 0);
 				for (int x=0; x<rect.width; x++) {
 					int pixel = scanline[x];
-					if (!(pixel == data.transparentPixel || (mask != null && maskScanline[x] == 0))) {
+					if (!((data.transparentPixel != -1 && pixel == data.transparentPixel) || (mask != null && maskScanline[x] == 0))) {
 						int red, green, blue;
 						if (palette.isDirect) {
 							red = pixel & redMask;
