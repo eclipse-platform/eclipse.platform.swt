@@ -13,11 +13,13 @@
 #define INC_xpcom_H
 
 #define NDEBUG
+#define XPCOM_GLUE 1
 
 #include "nsXPCOM.h"
 #include "nsEmbedString.h"
 #include "nsIInputStream.h"
 #include "nsISupportsUtils.h"
+#include "nsXPCOMGlue.h"
 
 #ifdef _WIN32
 #define STDMETHODCALLTYPE __stdcall

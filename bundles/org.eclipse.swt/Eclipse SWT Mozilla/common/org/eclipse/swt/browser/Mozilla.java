@@ -221,7 +221,7 @@ public void create (Composite parent, int style) {
 				}
 			}
 			byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
-			int rc = XPCOMGlue.XPCOMGlueStartup (path);
+			int rc = XPCOM.XPCOMGlueStartup (path);
 			if (rc != XPCOM.NS_OK) {
 				browser.dispose ();
 				error (rc);

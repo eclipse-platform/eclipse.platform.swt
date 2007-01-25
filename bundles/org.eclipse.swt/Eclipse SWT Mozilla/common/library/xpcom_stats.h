@@ -128,6 +128,8 @@ typedef enum {
 	VtblCall__II_3J_FUNC,
 	VtblCall__II_3S_FUNC,
 	VtblCall__II_3Z_FUNC,
+	XPCOMGlueShutdown_FUNC,
+	XPCOMGlueStartup_FUNC,
 	memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
 	memmove__Lorg_eclipse_swt_internal_mozilla_nsID_2II_FUNC,
 	nsEmbedCString_1Length_FUNC,

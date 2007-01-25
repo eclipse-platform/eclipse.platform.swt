@@ -1930,6 +1930,34 @@ fail:
 }
 #endif
 
+#ifndef NO_XPCOMGlueShutdown
+JNIEXPORT jint JNICALL XPCOM_NATIVE(XPCOMGlueShutdown)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, XPCOMGlueShutdown_FUNC);
+	rc = (jint)XPCOMGlueShutdown();
+	XPCOM_NATIVE_EXIT(env, that, XPCOMGlueShutdown_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XPCOMGlueStartup
+JNIEXPORT jint JNICALL XPCOM_NATIVE(XPCOMGlueStartup)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, XPCOMGlueStartup_FUNC);
+	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
+	rc = (jint)XPCOMGlueStartup((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+	XPCOM_NATIVE_EXIT(env, that, XPCOMGlueStartup_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I
 JNIEXPORT void JNICALL XPCOM_NATIVE(memmove__ILorg_eclipse_swt_internal_mozilla_nsID_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)

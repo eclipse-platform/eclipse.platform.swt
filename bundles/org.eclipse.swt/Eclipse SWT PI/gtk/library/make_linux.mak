@@ -78,6 +78,7 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include/linux \
 	${SWT_PTR_CFLAGS}
 MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
+MOZILLAEXCLUDES = -DNO_XPCOMGlueShutdown -DNO_XPCOMGlueStartup
 	
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
@@ -87,7 +88,7 @@ CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
-XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o xpcomxulglue.o xpcomxulglue_stats.o
+XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
 XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
@@ -209,7 +210,7 @@ $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
 	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS) ${MOZILLA_LIBS}
 
 xpcom.o: xpcom.cpp
-	$(CXX) $(MOZILLACFLAGS) ${MOZILLA_INCLUDES} -c xpcom.cpp
+	$(CXX) $(MOZILLACFLAGS) $(MOZILLAEXCLUDES) ${MOZILLA_INCLUDES} -c xpcom.cpp
 
 xpcom_structs.o: xpcom_structs.cpp
 	$(CXX) $(MOZILLACFLAGS) ${MOZILLA_INCLUDES} -c xpcom_structs.cpp
@@ -239,12 +240,6 @@ xpcomxul_custom.o: xpcom_custom.cpp
 
 xpcomxul_stats.o: xpcom_stats.cpp
 	$(CXX) -o xpcomxul_stats.o $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcom_stats.cpp
-
-xpcomxulglue.o: xpcomglue.cpp
-	$(CXX) -o xpcomxulglue.o $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcomglue.cpp
-
-xpcomxulglue_stats.o: xpcomglue_stats.cpp
-	$(CXX) -o xpcomxulglue_stats.o $(MOZILLACFLAGS) ${XULRUNNER_INCLUDES} -c xpcomglue_stats.cpp
 
 #
 # XPCOMInit lib
