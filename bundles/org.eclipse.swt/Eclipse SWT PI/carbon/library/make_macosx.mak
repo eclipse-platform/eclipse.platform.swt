@@ -42,7 +42,7 @@ SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_custom.o os_structs.o os_stats.o
 COCOA_OBJECTS = swt.o cocoa.o cocoa_custom.o cocoa_structs.o cocoa_stats.o 
 AGL_OBJECTS = swt.o agl.o agl_stats.o
-XULRUNNER_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o xpcomglue.o xpcomglue_stats.o
+XULRUNNER_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcom_stats.o
 
 XULRUNNER_SDK = /Users/Shared/xulrunner/1.8.0.1/mozilla/dist/i386/dist/sdk
@@ -91,10 +91,6 @@ xpcom_structs.o: xpcom_structs.cpp
 	g++ $(XULRUNNERCFLAGS) xpcom_structs.cpp
 xpcom_stats.o: xpcom_stats.cpp
 	g++ $(XULRUNNERCFLAGS) xpcom_stats.cpp
-xpcomglue.o: xpcomglue.cpp
-	g++ $(XULRUNNERCFLAGS) xpcomglue.cpp
-xpcomglue_stats.o: xpcomglue_stats.cpp
-	g++ $(XULRUNNERCFLAGS) xpcomglue_stats.cpp
 xpcominit.o: xpcominit.cpp
 	g++ $(XULRUNNERCFLAGS) xpcominit.cpp
 xpcominit_structs.o: xpcominit_structs.cpp
