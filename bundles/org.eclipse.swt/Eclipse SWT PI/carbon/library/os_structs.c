@@ -1472,6 +1472,144 @@ void setGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct)
 }
 #endif
 
+#ifndef NO_HIAxisPosition
+typedef struct HIAxisPosition_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID toView, kind, offset;
+} HIAxisPosition_FID_CACHE;
+
+HIAxisPosition_FID_CACHE HIAxisPositionFc;
+
+void cacheHIAxisPositionFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIAxisPositionFc.cached) return;
+	HIAxisPositionFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIAxisPositionFc.toView = (*env)->GetFieldID(env, HIAxisPositionFc.clazz, "toView", "I");
+	HIAxisPositionFc.kind = (*env)->GetFieldID(env, HIAxisPositionFc.clazz, "kind", "S");
+	HIAxisPositionFc.offset = (*env)->GetFieldID(env, HIAxisPositionFc.clazz, "offset", "F");
+	HIAxisPositionFc.cached = 1;
+}
+
+HIAxisPosition *getHIAxisPositionFields(JNIEnv *env, jobject lpObject, HIAxisPosition *lpStruct)
+{
+	if (!HIAxisPositionFc.cached) cacheHIAxisPositionFields(env, lpObject);
+	lpStruct->toView = (HIViewRef)(*env)->GetIntField(env, lpObject, HIAxisPositionFc.toView);
+	lpStruct->kind = (*env)->GetShortField(env, lpObject, HIAxisPositionFc.kind);
+	lpStruct->offset = (*env)->GetFloatField(env, lpObject, HIAxisPositionFc.offset);
+	return lpStruct;
+}
+
+void setHIAxisPositionFields(JNIEnv *env, jobject lpObject, HIAxisPosition *lpStruct)
+{
+	if (!HIAxisPositionFc.cached) cacheHIAxisPositionFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIAxisPositionFc.toView, (jint)lpStruct->toView);
+	(*env)->SetShortField(env, lpObject, HIAxisPositionFc.kind, (jshort)lpStruct->kind);
+	(*env)->SetFloatField(env, lpObject, HIAxisPositionFc.offset, (jfloat)lpStruct->offset);
+}
+#endif
+
+#ifndef NO_HIAxisScale
+typedef struct HIAxisScale_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID toView, kind, ratio;
+} HIAxisScale_FID_CACHE;
+
+HIAxisScale_FID_CACHE HIAxisScaleFc;
+
+void cacheHIAxisScaleFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIAxisScaleFc.cached) return;
+	HIAxisScaleFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIAxisScaleFc.toView = (*env)->GetFieldID(env, HIAxisScaleFc.clazz, "toView", "I");
+	HIAxisScaleFc.kind = (*env)->GetFieldID(env, HIAxisScaleFc.clazz, "kind", "S");
+	HIAxisScaleFc.ratio = (*env)->GetFieldID(env, HIAxisScaleFc.clazz, "ratio", "F");
+	HIAxisScaleFc.cached = 1;
+}
+
+HIAxisScale *getHIAxisScaleFields(JNIEnv *env, jobject lpObject, HIAxisScale *lpStruct)
+{
+	if (!HIAxisScaleFc.cached) cacheHIAxisScaleFields(env, lpObject);
+	lpStruct->toView = (HIViewRef)(*env)->GetIntField(env, lpObject, HIAxisScaleFc.toView);
+	lpStruct->kind = (*env)->GetShortField(env, lpObject, HIAxisScaleFc.kind);
+	lpStruct->ratio = (*env)->GetFloatField(env, lpObject, HIAxisScaleFc.ratio);
+	return lpStruct;
+}
+
+void setHIAxisScaleFields(JNIEnv *env, jobject lpObject, HIAxisScale *lpStruct)
+{
+	if (!HIAxisScaleFc.cached) cacheHIAxisScaleFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HIAxisScaleFc.toView, (jint)lpStruct->toView);
+	(*env)->SetShortField(env, lpObject, HIAxisScaleFc.kind, (jshort)lpStruct->kind);
+	(*env)->SetFloatField(env, lpObject, HIAxisScaleFc.ratio, (jfloat)lpStruct->ratio);
+}
+#endif
+
+#ifndef NO_HIBinding
+typedef struct HIBinding_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID top, left, bottom, right;
+} HIBinding_FID_CACHE;
+
+HIBinding_FID_CACHE HIBindingFc;
+
+void cacheHIBindingFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIBindingFc.cached) return;
+	HIBindingFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIBindingFc.top = (*env)->GetFieldID(env, HIBindingFc.clazz, "top", "Lorg/eclipse/swt/internal/carbon/HISideBinding;");
+	HIBindingFc.left = (*env)->GetFieldID(env, HIBindingFc.clazz, "left", "Lorg/eclipse/swt/internal/carbon/HISideBinding;");
+	HIBindingFc.bottom = (*env)->GetFieldID(env, HIBindingFc.clazz, "bottom", "Lorg/eclipse/swt/internal/carbon/HISideBinding;");
+	HIBindingFc.right = (*env)->GetFieldID(env, HIBindingFc.clazz, "right", "Lorg/eclipse/swt/internal/carbon/HISideBinding;");
+	HIBindingFc.cached = 1;
+}
+
+HIBinding *getHIBindingFields(JNIEnv *env, jobject lpObject, HIBinding *lpStruct)
+{
+	if (!HIBindingFc.cached) cacheHIBindingFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.top);
+	if (lpObject1 != NULL) getHISideBindingFields(env, lpObject1, &lpStruct->top);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.left);
+	if (lpObject1 != NULL) getHISideBindingFields(env, lpObject1, &lpStruct->left);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.bottom);
+	if (lpObject1 != NULL) getHISideBindingFields(env, lpObject1, &lpStruct->bottom);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.right);
+	if (lpObject1 != NULL) getHISideBindingFields(env, lpObject1, &lpStruct->right);
+	}
+	return lpStruct;
+}
+
+void setHIBindingFields(JNIEnv *env, jobject lpObject, HIBinding *lpStruct)
+{
+	if (!HIBindingFc.cached) cacheHIBindingFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.top);
+	if (lpObject1 != NULL) setHISideBindingFields(env, lpObject1, &lpStruct->top);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.left);
+	if (lpObject1 != NULL) setHISideBindingFields(env, lpObject1, &lpStruct->left);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.bottom);
+	if (lpObject1 != NULL) setHISideBindingFields(env, lpObject1, &lpStruct->bottom);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIBindingFc.right);
+	if (lpObject1 != NULL) setHISideBindingFields(env, lpObject1, &lpStruct->right);
+	}
+}
+#endif
+
 #ifndef NO_HICommand
 typedef struct HICommand_FID_CACHE {
 	int cached;
@@ -1512,6 +1650,156 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
 }
 #endif
 
+#ifndef NO_HILayoutInfo
+typedef struct HILayoutInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, binding, scale, position;
+} HILayoutInfo_FID_CACHE;
+
+HILayoutInfo_FID_CACHE HILayoutInfoFc;
+
+void cacheHILayoutInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (HILayoutInfoFc.cached) return;
+	HILayoutInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HILayoutInfoFc.version = (*env)->GetFieldID(env, HILayoutInfoFc.clazz, "version", "I");
+	HILayoutInfoFc.binding = (*env)->GetFieldID(env, HILayoutInfoFc.clazz, "binding", "Lorg/eclipse/swt/internal/carbon/HIBinding;");
+	HILayoutInfoFc.scale = (*env)->GetFieldID(env, HILayoutInfoFc.clazz, "scale", "Lorg/eclipse/swt/internal/carbon/HIScaling;");
+	HILayoutInfoFc.position = (*env)->GetFieldID(env, HILayoutInfoFc.clazz, "position", "Lorg/eclipse/swt/internal/carbon/HIPositioning;");
+	HILayoutInfoFc.cached = 1;
+}
+
+HILayoutInfo *getHILayoutInfoFields(JNIEnv *env, jobject lpObject, HILayoutInfo *lpStruct)
+{
+	if (!HILayoutInfoFc.cached) cacheHILayoutInfoFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HILayoutInfoFc.version);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.binding);
+	if (lpObject1 != NULL) getHIBindingFields(env, lpObject1, &lpStruct->binding);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.scale);
+	if (lpObject1 != NULL) getHIScalingFields(env, lpObject1, &lpStruct->scale);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.position);
+	if (lpObject1 != NULL) getHIPositioningFields(env, lpObject1, &lpStruct->position);
+	}
+	return lpStruct;
+}
+
+void setHILayoutInfoFields(JNIEnv *env, jobject lpObject, HILayoutInfo *lpStruct)
+{
+	if (!HILayoutInfoFc.cached) cacheHILayoutInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HILayoutInfoFc.version, (jint)lpStruct->version);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.binding);
+	if (lpObject1 != NULL) setHIBindingFields(env, lpObject1, &lpStruct->binding);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.scale);
+	if (lpObject1 != NULL) setHIScalingFields(env, lpObject1, &lpStruct->scale);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HILayoutInfoFc.position);
+	if (lpObject1 != NULL) setHIPositioningFields(env, lpObject1, &lpStruct->position);
+	}
+}
+#endif
+
+#ifndef NO_HIPositioning
+typedef struct HIPositioning_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y;
+} HIPositioning_FID_CACHE;
+
+HIPositioning_FID_CACHE HIPositioningFc;
+
+void cacheHIPositioningFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIPositioningFc.cached) return;
+	HIPositioningFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIPositioningFc.x = (*env)->GetFieldID(env, HIPositioningFc.clazz, "x", "Lorg/eclipse/swt/internal/carbon/HIAxisPosition;");
+	HIPositioningFc.y = (*env)->GetFieldID(env, HIPositioningFc.clazz, "y", "Lorg/eclipse/swt/internal/carbon/HIAxisPosition;");
+	HIPositioningFc.cached = 1;
+}
+
+HIPositioning *getHIPositioningFields(JNIEnv *env, jobject lpObject, HIPositioning *lpStruct)
+{
+	if (!HIPositioningFc.cached) cacheHIPositioningFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIPositioningFc.x);
+	if (lpObject1 != NULL) getHIAxisPositionFields(env, lpObject1, &lpStruct->x);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIPositioningFc.y);
+	if (lpObject1 != NULL) getHIAxisPositionFields(env, lpObject1, &lpStruct->y);
+	}
+	return lpStruct;
+}
+
+void setHIPositioningFields(JNIEnv *env, jobject lpObject, HIPositioning *lpStruct)
+{
+	if (!HIPositioningFc.cached) cacheHIPositioningFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIPositioningFc.x);
+	if (lpObject1 != NULL) setHIAxisPositionFields(env, lpObject1, &lpStruct->x);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIPositioningFc.y);
+	if (lpObject1 != NULL) setHIAxisPositionFields(env, lpObject1, &lpStruct->y);
+	}
+}
+#endif
+
+#ifndef NO_HIScaling
+typedef struct HIScaling_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y;
+} HIScaling_FID_CACHE;
+
+HIScaling_FID_CACHE HIScalingFc;
+
+void cacheHIScalingFields(JNIEnv *env, jobject lpObject)
+{
+	if (HIScalingFc.cached) return;
+	HIScalingFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HIScalingFc.x = (*env)->GetFieldID(env, HIScalingFc.clazz, "x", "Lorg/eclipse/swt/internal/carbon/HIAxisScale;");
+	HIScalingFc.y = (*env)->GetFieldID(env, HIScalingFc.clazz, "y", "Lorg/eclipse/swt/internal/carbon/HIAxisScale;");
+	HIScalingFc.cached = 1;
+}
+
+HIScaling *getHIScalingFields(JNIEnv *env, jobject lpObject, HIScaling *lpStruct)
+{
+	if (!HIScalingFc.cached) cacheHIScalingFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIScalingFc.x);
+	if (lpObject1 != NULL) getHIAxisScaleFields(env, lpObject1, &lpStruct->x);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIScalingFc.y);
+	if (lpObject1 != NULL) getHIAxisScaleFields(env, lpObject1, &lpStruct->y);
+	}
+	return lpStruct;
+}
+
+void setHIScalingFields(JNIEnv *env, jobject lpObject, HIScaling *lpStruct)
+{
+	if (!HIScalingFc.cached) cacheHIScalingFields(env, lpObject);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIScalingFc.x);
+	if (lpObject1 != NULL) setHIAxisScaleFields(env, lpObject1, &lpStruct->x);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, HIScalingFc.y);
+	if (lpObject1 != NULL) setHIAxisScaleFields(env, lpObject1, &lpStruct->y);
+	}
+}
+#endif
+
 #ifndef NO_HIScrollBarTrackInfo
 typedef struct HIScrollBarTrackInfo_FID_CACHE {
 	int cached;
@@ -1549,6 +1837,43 @@ void setHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTra
 	(*env)->SetByteField(env, lpObject, HIScrollBarTrackInfoFc.enableState, (jbyte)lpStruct->enableState);
 	(*env)->SetByteField(env, lpObject, HIScrollBarTrackInfoFc.pressState, (jbyte)lpStruct->pressState);
 	(*env)->SetFloatField(env, lpObject, HIScrollBarTrackInfoFc.viewsize, (jfloat)lpStruct->viewsize);
+}
+#endif
+
+#ifndef NO_HISideBinding
+typedef struct HISideBinding_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID toView, kind, offset;
+} HISideBinding_FID_CACHE;
+
+HISideBinding_FID_CACHE HISideBindingFc;
+
+void cacheHISideBindingFields(JNIEnv *env, jobject lpObject)
+{
+	if (HISideBindingFc.cached) return;
+	HISideBindingFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HISideBindingFc.toView = (*env)->GetFieldID(env, HISideBindingFc.clazz, "toView", "I");
+	HISideBindingFc.kind = (*env)->GetFieldID(env, HISideBindingFc.clazz, "kind", "S");
+	HISideBindingFc.offset = (*env)->GetFieldID(env, HISideBindingFc.clazz, "offset", "F");
+	HISideBindingFc.cached = 1;
+}
+
+HISideBinding *getHISideBindingFields(JNIEnv *env, jobject lpObject, HISideBinding *lpStruct)
+{
+	if (!HISideBindingFc.cached) cacheHISideBindingFields(env, lpObject);
+	lpStruct->toView = (HIViewRef)(*env)->GetIntField(env, lpObject, HISideBindingFc.toView);
+	lpStruct->kind = (*env)->GetShortField(env, lpObject, HISideBindingFc.kind);
+	lpStruct->offset = (*env)->GetFloatField(env, lpObject, HISideBindingFc.offset);
+	return lpStruct;
+}
+
+void setHISideBindingFields(JNIEnv *env, jobject lpObject, HISideBinding *lpStruct)
+{
+	if (!HISideBindingFc.cached) cacheHISideBindingFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HISideBindingFc.toView, (jint)lpStruct->toView);
+	(*env)->SetShortField(env, lpObject, HISideBindingFc.kind, (jshort)lpStruct->kind);
+	(*env)->SetFloatField(env, lpObject, HISideBindingFc.offset, (jfloat)lpStruct->offset);
 }
 #endif
 

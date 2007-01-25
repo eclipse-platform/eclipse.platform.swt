@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 934;
-int OS_nativeFunctionCallCount[934];
+int OS_nativeFunctionCount = 936;
+int OS_nativeFunctionCallCount[936];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -555,6 +555,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIViewGetFirstSubview",
 	"HIViewGetFrame",
 	"HIViewGetLastSubview",
+	"HIViewGetLayoutInfo",
 	"HIViewGetNeedsDisplay",
 	"HIViewGetNextView",
 	"HIViewGetRoot",
@@ -570,6 +571,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIViewSetBoundsOrigin",
 	"HIViewSetDrawingEnabled",
 	"HIViewSetFrame",
+	"HIViewSetLayoutInfo",
 	"HIViewSetNeedsDisplay",
 	"HIViewSetNeedsDisplayInRegion",
 	"HIViewSetVisible",

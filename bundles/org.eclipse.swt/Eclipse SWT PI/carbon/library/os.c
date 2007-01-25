@@ -7944,6 +7944,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetLastSubview)
 }
 #endif
 
+#ifndef NO_HIViewGetLayoutInfo
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewGetLayoutInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	HILayoutInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewGetLayoutInfo_FUNC);
+	if (arg1) if ((lparg1 = getHILayoutInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIViewGetLayoutInfo((HIViewRef)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) setHILayoutInfoFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, HIViewGetLayoutInfo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIViewGetNeedsDisplay
 JNIEXPORT jboolean JNICALL OS_NATIVE(HIViewGetNeedsDisplay)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -8146,6 +8162,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewSetFrame)
 fail:
 	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, HIViewSetFrame_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewSetLayoutInfo
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewSetLayoutInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	HILayoutInfo _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIViewSetLayoutInfo_FUNC);
+	if (arg1) if ((lparg1 = getHILayoutInfoFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)HIViewSetLayoutInfo((HIViewRef)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) setHILayoutInfoFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, HIViewSetLayoutInfo_FUNC);
 	return rc;
 }
 #endif

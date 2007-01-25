@@ -359,6 +359,42 @@ void setGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct);
 #define GDevice_sizeof() 0
 #endif
 
+#ifndef NO_HIAxisPosition
+void cacheHIAxisPositionFields(JNIEnv *env, jobject lpObject);
+HIAxisPosition *getHIAxisPositionFields(JNIEnv *env, jobject lpObject, HIAxisPosition *lpStruct);
+void setHIAxisPositionFields(JNIEnv *env, jobject lpObject, HIAxisPosition *lpStruct);
+#define HIAxisPosition_sizeof() sizeof(HIAxisPosition)
+#else
+#define cacheHIAxisPositionFields(a,b)
+#define getHIAxisPositionFields(a,b,c) NULL
+#define setHIAxisPositionFields(a,b,c)
+#define HIAxisPosition_sizeof() 0
+#endif
+
+#ifndef NO_HIAxisScale
+void cacheHIAxisScaleFields(JNIEnv *env, jobject lpObject);
+HIAxisScale *getHIAxisScaleFields(JNIEnv *env, jobject lpObject, HIAxisScale *lpStruct);
+void setHIAxisScaleFields(JNIEnv *env, jobject lpObject, HIAxisScale *lpStruct);
+#define HIAxisScale_sizeof() sizeof(HIAxisScale)
+#else
+#define cacheHIAxisScaleFields(a,b)
+#define getHIAxisScaleFields(a,b,c) NULL
+#define setHIAxisScaleFields(a,b,c)
+#define HIAxisScale_sizeof() 0
+#endif
+
+#ifndef NO_HIBinding
+void cacheHIBindingFields(JNIEnv *env, jobject lpObject);
+HIBinding *getHIBindingFields(JNIEnv *env, jobject lpObject, HIBinding *lpStruct);
+void setHIBindingFields(JNIEnv *env, jobject lpObject, HIBinding *lpStruct);
+#define HIBinding_sizeof() sizeof(HIBinding)
+#else
+#define cacheHIBindingFields(a,b)
+#define getHIBindingFields(a,b,c) NULL
+#define setHIBindingFields(a,b,c)
+#define HIBinding_sizeof() 0
+#endif
+
 #ifndef NO_HICommand
 void cacheHICommandFields(JNIEnv *env, jobject lpObject);
 HICommand *getHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
@@ -371,6 +407,42 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
 #define HICommand_sizeof() 0
 #endif
 
+#ifndef NO_HILayoutInfo
+void cacheHILayoutInfoFields(JNIEnv *env, jobject lpObject);
+HILayoutInfo *getHILayoutInfoFields(JNIEnv *env, jobject lpObject, HILayoutInfo *lpStruct);
+void setHILayoutInfoFields(JNIEnv *env, jobject lpObject, HILayoutInfo *lpStruct);
+#define HILayoutInfo_sizeof() sizeof(HILayoutInfo)
+#else
+#define cacheHILayoutInfoFields(a,b)
+#define getHILayoutInfoFields(a,b,c) NULL
+#define setHILayoutInfoFields(a,b,c)
+#define HILayoutInfo_sizeof() 0
+#endif
+
+#ifndef NO_HIPositioning
+void cacheHIPositioningFields(JNIEnv *env, jobject lpObject);
+HIPositioning *getHIPositioningFields(JNIEnv *env, jobject lpObject, HIPositioning *lpStruct);
+void setHIPositioningFields(JNIEnv *env, jobject lpObject, HIPositioning *lpStruct);
+#define HIPositioning_sizeof() sizeof(HIPositioning)
+#else
+#define cacheHIPositioningFields(a,b)
+#define getHIPositioningFields(a,b,c) NULL
+#define setHIPositioningFields(a,b,c)
+#define HIPositioning_sizeof() 0
+#endif
+
+#ifndef NO_HIScaling
+void cacheHIScalingFields(JNIEnv *env, jobject lpObject);
+HIScaling *getHIScalingFields(JNIEnv *env, jobject lpObject, HIScaling *lpStruct);
+void setHIScalingFields(JNIEnv *env, jobject lpObject, HIScaling *lpStruct);
+#define HIScaling_sizeof() sizeof(HIScaling)
+#else
+#define cacheHIScalingFields(a,b)
+#define getHIScalingFields(a,b,c) NULL
+#define setHIScalingFields(a,b,c)
+#define HIScaling_sizeof() 0
+#endif
+
 #ifndef NO_HIScrollBarTrackInfo
 void cacheHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject);
 HIScrollBarTrackInfo *getHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTrackInfo *lpStruct);
@@ -381,6 +453,18 @@ void setHIScrollBarTrackInfoFields(JNIEnv *env, jobject lpObject, HIScrollBarTra
 #define getHIScrollBarTrackInfoFields(a,b,c) NULL
 #define setHIScrollBarTrackInfoFields(a,b,c)
 #define HIScrollBarTrackInfo_sizeof() 0
+#endif
+
+#ifndef NO_HISideBinding
+void cacheHISideBindingFields(JNIEnv *env, jobject lpObject);
+HISideBinding *getHISideBindingFields(JNIEnv *env, jobject lpObject, HISideBinding *lpStruct);
+void setHISideBindingFields(JNIEnv *env, jobject lpObject, HISideBinding *lpStruct);
+#define HISideBinding_sizeof() sizeof(HISideBinding)
+#else
+#define cacheHISideBindingFields(a,b)
+#define getHISideBindingFields(a,b,c) NULL
+#define setHISideBindingFields(a,b,c)
+#define HISideBinding_sizeof() 0
 #endif
 
 #ifndef NO_HIThemeAnimationFrameInfo
