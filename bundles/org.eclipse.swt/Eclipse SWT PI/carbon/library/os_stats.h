@@ -915,7 +915,6 @@ typedef enum {
 	X2Fix_FUNC,
 	ZoomWindowIdeal_FUNC,
 	_1_1BIG_1ENDIAN_1_1_FUNC,
-	getenv_FUNC,
 	getpid_FUNC,
 	kCFNumberFormatterDecimalSeparator_FUNC,
 	kFontPanelAttributeSizesKey_FUNC,

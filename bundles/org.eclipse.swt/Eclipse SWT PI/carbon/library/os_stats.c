@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 935;
-int OS_nativeFunctionCallCount[935];
+int OS_nativeFunctionCount = 934;
+int OS_nativeFunctionCallCount[934];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -911,7 +911,6 @@ char * OS_nativeFunctionNames[] = {
 	"X2Fix",
 	"ZoomWindowIdeal",
 	"_1_1BIG_1ENDIAN_1_1",
-	"getenv",
 	"getpid",
 	"kCFNumberFormatterDecimalSeparator",
 	"kFontPanelAttributeSizesKey",

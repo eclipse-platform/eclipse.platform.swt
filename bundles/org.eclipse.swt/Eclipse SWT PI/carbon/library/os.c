@@ -12718,22 +12718,6 @@ fail:
 }
 #endif
 
-#ifndef NO_getenv
-JNIEXPORT jint JNICALL OS_NATIVE(getenv)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, getenv_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)getenv((const char *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, getenv_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_getpid
 JNIEXPORT jint JNICALL OS_NATIVE(getpid)
 	(JNIEnv *env, jclass that)
