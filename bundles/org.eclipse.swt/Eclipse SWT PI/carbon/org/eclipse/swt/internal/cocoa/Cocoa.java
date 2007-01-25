@@ -170,5 +170,5 @@ static int objc_getClass(String className) {
 	return Cocoa.objc_getClass(ascii(className));
 }
 
-public static final native long getNativeHandleFromAWT(Object frame);
+public static final native int getNativeHandleFromAWT(Object frame);
 }

@@ -18,10 +18,10 @@
 extern id objc_msgSend(id, SEL, ...);
 
 #include <JavaVM/jawt_md.h>
-JNIEXPORT jlong JNICALL Cocoa_NATIVE(getNativeHandleFromAWT)
+JNIEXPORT jint JNICALL Cocoa_NATIVE(getNativeHandleFromAWT)
 	(JNIEnv* env, jobject that, jobject widget)
 {
-	jlong handle = 0;
+	jint handle = 0;
 	JAWT awt;
 	awt.version = JAWT_VERSION_1_4;
 	if (!JAWT_GetAWT(env, &awt)) return 0;
@@ -32,7 +32,7 @@ JNIEXPORT jlong JNICALL Cocoa_NATIVE(getNativeHandleFromAWT)
 			JAWT_DrawingSurfaceInfo* dsi = ds->GetDrawingSurfaceInfo(ds);
 			if (dsi) {
 				JAWT_MacOSXDrawingSurfaceInfo* dsi_mac = (JAWT_MacOSXDrawingSurfaceInfo*) (dsi->platformInfo);
-				handle = (jlong) (dsi_mac->cocoaViewRef);
+				handle = (jint) (dsi_mac->cocoaViewRef);
 				ds->FreeDrawingSurfaceInfo(dsi);
 			}
 			ds->Unlock(ds);

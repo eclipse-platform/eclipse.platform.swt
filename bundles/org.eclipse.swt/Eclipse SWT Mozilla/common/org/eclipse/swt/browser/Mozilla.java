@@ -311,28 +311,32 @@ public void create (Composite parent, int style) {
 		
 		nsIComponentManager componentManager = new nsIComponentManager (result[0]);
 		result[0] = 0;
+		/* nsIAppShell is discontinued as of xulrunner 1.9, so do not fail if it is not found */
 		rc = componentManager.CreateInstance (XPCOM.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (rc);
+		if (rc != XPCOM.NS_ERROR_NO_INTERFACE) {
+			if (rc != XPCOM.NS_OK) {
+				browser.dispose ();
+				error (rc);
+			}
+			if (result[0] == 0) {
+				browser.dispose ();
+				error (XPCOM.NS_NOINTERFACE);
+			}
+			
+			AppShell = new nsIAppShell (result[0]);
+			rc = AppShell.Create (0, null);
+			if (rc != XPCOM.NS_OK) {
+				browser.dispose ();
+				error (rc);
+			}
+			rc = AppShell.Spinup ();
+			if (rc != XPCOM.NS_OK) {
+				browser.dispose ();
+				error (rc);
+			}
 		}
-		if (result[0] == 0) {
-			browser.dispose ();
-			error (XPCOM.NS_NOINTERFACE);
-		}
-		
-		AppShell = new nsIAppShell (result[0]);
-		rc = AppShell.Create (0, null);
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (rc);
-		}
-		rc = AppShell.Spinup ();
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (rc);
-		}
-		
+		result[0] = 0;
+
 		WindowCreator = new WindowCreator ();
 		WindowCreator.AddRef ();
 		
