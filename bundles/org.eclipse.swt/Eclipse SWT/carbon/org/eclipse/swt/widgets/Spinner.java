@@ -287,7 +287,7 @@ void copy (char [] buffer) {
 void createHandle () {
 	int window = OS.GetControlOwner (parent.handle);
 	int actionProc = display.actionProc;
-	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus;
 	int [] outControl = new int [1];
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);

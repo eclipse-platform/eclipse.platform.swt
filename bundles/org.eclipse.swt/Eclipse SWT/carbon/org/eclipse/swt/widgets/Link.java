@@ -144,7 +144,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	state |= GRAB | THEME_BACKGROUND;
-	int features = OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+	int features = OS.kControlSupportsFocus;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateUserPaneControl (window, null, features, outControl);
@@ -563,6 +563,7 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 						if (rectangle.contains (x, y)) {
 							focusIndex = j;
 							redraw ();
+							setFocus ();
 							return result;
 						}
 					}
