@@ -515,6 +515,8 @@ typedef enum {
 	HIObjectCreate_FUNC,
 	HIObjectRegisterSubclass_FUNC,
 	HIScrollViewCreate_FUNC,
+	HISearchFieldCreate_FUNC,
+	HISearchFieldSetDescriptiveText_FUNC,
 	HITextViewCreate_FUNC,
 	HITextViewGetTXNObject_FUNC,
 	HIThemeDrawBackground_FUNC,

@@ -7148,6 +7148,37 @@ fail:
 }
 #endif
 
+#ifndef NO_HISearchFieldCreate
+JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldCreate)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	CGRect _arg0, *lparg0=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HISearchFieldCreate_FUNC);
+	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)HISearchFieldCreate(lparg0, arg1, (MenuRef)arg2, (CFStringRef)arg3, (HIViewRef*)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, HISearchFieldCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HISearchFieldSetDescriptiveText
+JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldSetDescriptiveText)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HISearchFieldSetDescriptiveText_FUNC);
+	rc = (jint)HISearchFieldSetDescriptiveText((HIViewRef)arg0, (CFStringRef)arg1);
+	OS_NATIVE_EXIT(env, that, HISearchFieldSetDescriptiveText_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HITextViewCreate
 JNIEXPORT jint JNICALL OS_NATIVE(HITextViewCreate)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jintArray arg3)
