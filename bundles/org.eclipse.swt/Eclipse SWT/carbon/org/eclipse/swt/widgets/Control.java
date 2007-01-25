@@ -821,6 +821,10 @@ int focusHandle () {
 	return handle;
 }
 
+int focusPart () {
+	return OS.kControlFocusNextPart;
+}
+
 /**
  * Forces the receiver to have the <em>keyboard focus</em>, causing
  * all keyboard events to be delivered to it.
@@ -858,7 +862,7 @@ public boolean forceFocus () {
 	int window = OS.GetControlOwner (focusHandle);
 	Control oldFocus = display.getFocusControl (window, true);
 	display.ignoreFocus = true;
-	OS.SetKeyboardFocus (window, focusHandle, (short) OS.kControlFocusNextPart);
+	OS.SetKeyboardFocus (window, focusHandle, (short) focusPart ());
 	display.ignoreFocus = false;
 	Control newFocus = display.getFocusControl ();
 	if (oldFocus != newFocus) {

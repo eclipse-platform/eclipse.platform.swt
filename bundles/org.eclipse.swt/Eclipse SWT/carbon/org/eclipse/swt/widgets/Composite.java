@@ -507,7 +507,7 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 				short [] count = new short [1];
 				OS.CountSubControls (handle, count);
 				if (count [0] == 0) {
-					if (OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart) == OS.noErr) {
+					if (OS.SetKeyboardFocus (window, handle, (short) focusPart ()) == OS.noErr) {
 						return OS.noErr;
 					}
 				}

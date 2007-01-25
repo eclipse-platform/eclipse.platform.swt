@@ -249,7 +249,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	OS.ClearKeyboardFocus (window);
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
 	if (!isDisposed ()) {
-		OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart);
+		OS.SetKeyboardFocus (window, handle, (short) focusPart ());
 	}
 	display.ignoreFocus = false;
 	return result;
