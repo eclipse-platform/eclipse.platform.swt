@@ -16533,22 +16533,6 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1main_1context_1wakeup)
 }
 #endif
 
-#ifndef NO_getenv
-JNIEXPORT jint JNICALL OS_NATIVE(getenv)
-	(JNIEnv *env, jclass that, jbyteArray arg0)
-{
-	jbyte *lparg0=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, getenv_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)getenv((const char *)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, getenv_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_localeconv_1decimal_1point
 JNIEXPORT jint JNICALL OS_NATIVE(localeconv_1decimal_1point)
 	(JNIEnv *env, jclass that)

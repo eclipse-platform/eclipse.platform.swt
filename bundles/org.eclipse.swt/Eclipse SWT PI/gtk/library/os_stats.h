@@ -1172,7 +1172,6 @@ typedef enum {
 	_1pango_1tab_1array_1new_FUNC,
 	_1pango_1tab_1array_1set_1tab_FUNC,
 	g_1main_1context_1wakeup_FUNC,
-	getenv_FUNC,
 	localeconv_1decimal_1point_FUNC,
 	memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2_FUNC,
