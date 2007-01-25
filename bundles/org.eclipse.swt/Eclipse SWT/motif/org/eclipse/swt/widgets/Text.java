@@ -364,7 +364,7 @@ void createHandle (int index) {
 		OS.XmNscrollVertical, (style & SWT.V_SCROLL) != 0 ? 1 : 0,
 		OS.XmNwordWrap, !IsGB18030 && (style & SWT.WRAP) != 0 ? 1: 0,
 		OS.XmNeditable, (style & SWT.READ_ONLY) != 0 ? 0 : 1,
-		OS.XmNcursorPositionVisible, (style & SWT.READ_ONLY) != 0 && (style & SWT.SINGLE) != 0 ? 0 : 1,
+		OS.XmNcursorPositionVisible, (style & SWT.READ_ONLY) != 0 ? 0 : 1,
 //		OS.XmNmarginWidth, 3,
 //		OS.XmNmarginHeight, 1,
 		OS.XmNancestorSensitive, 1,
@@ -1514,20 +1514,21 @@ int xFocusIn (XFocusChangeEvent xEvent) {
 	super.xFocusIn (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
-	if ((style & SWT.READ_ONLY) != 0) return 0;
-	if ((style & SWT.MULTI) != 0) return 0;
-	int [] argList = {OS.XmNcursorPositionVisible, 1};
-	OS.XtSetValues (handle, argList, argList.length / 2);
+	if ((style & (SWT.READ_ONLY | SWT.SINGLE)) != 0) {
+		int [] argList = {OS.XmNcursorPositionVisible, 1};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
 	return 0;
 }
 int xFocusOut (XFocusChangeEvent xEvent) {
 	super.xFocusOut (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
-	if ((style & SWT.READ_ONLY) != 0) return 0;
-	if ((style & SWT.MULTI) != 0) return 0;
-	int [] argList = {OS.XmNcursorPositionVisible, 0};
-	OS.XtSetValues (handle, argList, argList.length / 2);
+	if ((style & (SWT.READ_ONLY | SWT.SINGLE)) != 0) {
+		int [] argList = {OS.XmNcursorPositionVisible, 0};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+		return 0;
+	}
 	return 0;
 }
 int XmNactivateCallback (int w, int client_data, int call_data) {
