@@ -56,7 +56,7 @@ case $OS in
 				MOZILLA_LIBS="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"
 				XULRUNNER_SDK=/bluebird/teamswt/swt-builddir/geckoSDK/1.8.0.4/gecko-sdk
 				XULRUNNER_INCLUDES="-include ${XULRUNNER_SDK}/include/mozilla-config.h -I${XULRUNNER_SDK}/include"
-				XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue -lnspr4"
+				XULRUNNER_LIBS="-L${XULRUNNER_SDK}/lib -lxpcomglue"
 			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
