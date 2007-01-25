@@ -53,7 +53,7 @@ WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 XULRUNNER_PREFIX = swt-xulrunner
 XULRUNNER_LIB = $(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 XULRUNNER_LIBS = Advapi32.lib $(XULRUNNER_SDK)\lib\xpcomglue.lib
-XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj xpcomglue.obj xpcomglue_stats.obj
+XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj
 
 XPCOMINIT_PREFIX = swt-xpcominit
 XPCOMINIT_LIB = $(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
@@ -88,10 +88,6 @@ xpcom_structs.obj: xpcom_structs.cpp
 	cl $(MOZILLACFLAGS) xpcom_structs.cpp
 xpcom.obj: xpcom.cpp
 	cl $(MOZILLACFLAGS) xpcom.cpp
-xpcomglue.obj: xpcomglue.cpp
-	cl $(MOZILLACFLAGS) xpcomglue.cpp
-xpcomglue_stats.obj: xpcomglue_stats.cpp
-	cl $(MOZILLACFLAGS) xpcomglue_stats.cpp
 xpcominit_stats.obj: xpcominit_stats.cpp
 	cl $(MOZILLACFLAGS) xpcominit_stats.cpp
 xpcominit_structs.obj: xpcominit_structs.cpp
