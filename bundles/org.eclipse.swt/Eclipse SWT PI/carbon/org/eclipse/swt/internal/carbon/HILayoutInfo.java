@@ -15,8 +15,8 @@ package org.eclipse.swt.internal.carbon;
  
 public class HILayoutInfo {
 	public int version;
-	public HIBinding binding;
-	public HIScaling scale;
-	public HIPositioning position;	
+	public HIBinding binding = new HIBinding();
+	public HIScaling scale = new HIScaling();
+	public HIPositioning position = new HIPositioning();	
 	public static final int sizeof = 84;
 }

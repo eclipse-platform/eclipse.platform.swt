@@ -14,7 +14,7 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class HIScaling {
-	public HIAxisScale x;
-	public HIAxisScale y;
+	public HIAxisScale x = new HIAxisScale();
+	public HIAxisScale y = new HIAxisScale();
 	public static final int sizeof = 20;
 }

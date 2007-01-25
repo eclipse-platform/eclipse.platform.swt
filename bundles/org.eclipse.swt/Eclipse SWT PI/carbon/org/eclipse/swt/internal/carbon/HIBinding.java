@@ -14,9 +14,9 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class HIBinding {
-	public HISideBinding top;
-	public HISideBinding left;
-	public HISideBinding bottom;
-	public HISideBinding right;
+	public HISideBinding top = new HISideBinding();
+	public HISideBinding left = new HISideBinding();
+	public HISideBinding bottom = new HISideBinding();
+	public HISideBinding right = new HISideBinding();
 	public static final int sizeof = 40;
 }

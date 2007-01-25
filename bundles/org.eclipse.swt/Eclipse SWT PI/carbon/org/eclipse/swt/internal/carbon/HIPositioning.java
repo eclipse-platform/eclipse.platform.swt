@@ -14,7 +14,7 @@ package org.eclipse.swt.internal.carbon;
 
  
 public class HIPositioning {
-	public HIAxisPosition x;
-	public HIAxisPosition y;
+	public HIAxisPosition x = new HIAxisPosition();
+	public HIAxisPosition y = new HIAxisPosition();
 	public static final int sizeof = 20;
 }
