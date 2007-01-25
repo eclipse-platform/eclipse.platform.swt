@@ -796,7 +796,6 @@ public static final native int PtWindowFocus(int widget);
 public static final native int PtWindowGetState(int widget);
 public static final native void PtWindowToBack(int widget);
 public static final native void PtWindowToFront(int widget);
-public static final native int getenv(byte[] name);
 public static final native void memmove(int dest, PhPoint_t src, int size);
 public static final native void memmove(int dest, PhTile_t src, int size);
 public static final native void memmove(PhTile_t dest, int src, int size);

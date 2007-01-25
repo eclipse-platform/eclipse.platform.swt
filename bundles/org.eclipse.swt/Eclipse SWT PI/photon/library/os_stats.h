@@ -265,7 +265,6 @@ typedef enum {
 	PtWindowGetState_FUNC,
 	PtWindowToBack_FUNC,
 	PtWindowToFront_FUNC,
-	getenv_FUNC,
 	memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I_FUNC,

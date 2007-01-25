@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 277;
-int OS_nativeFunctionCallCount[277];
+int OS_nativeFunctionCount = 276;
+int OS_nativeFunctionCallCount[276];
 char * OS_nativeFunctionNames[] = {
 	"PfDecomposeStemToID",
 	"PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III",
@@ -261,7 +261,6 @@ char * OS_nativeFunctionNames[] = {
 	"PtWindowGetState",
 	"PtWindowToBack",
 	"PtWindowToFront",
-	"getenv",
 	"memmove__ILorg_eclipse_swt_internal_photon_PgAlpha_1t_2I",
 	"memmove__ILorg_eclipse_swt_internal_photon_PhArea_1t_2I",
 	"memmove__ILorg_eclipse_swt_internal_photon_PhCursorDef_1t_2I",
