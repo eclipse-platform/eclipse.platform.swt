@@ -808,6 +808,13 @@ public class OS extends C {
 	public static final int kThemeMetricTabFrameOverlap = 12;
 	public static final int kThemeMetricPrimaryGroupBoxContentInset = 61;
 	public static final int kThemeMetricPushButtonHeight = 19;
+	public static final int kThemeMetricRoundTextFieldContentHeight = 80;
+	public static final int kThemeMetricRoundTextFieldContentInsetLeft = 76;
+	public static final int kThemeMetricRoundTextFieldContentInsetRight = 77;
+	public static final int kThemeMetricRoundTextFieldContentInsetBottom = 78;
+	public static final int kThemeMetricRoundTextFieldContentInsetTop = 79;
+	public static final int kThemeMetricRoundTextFieldContentInsetWithIconLeft = 109;
+	public static final int kThemeMetricRoundTextFieldContentInsetWithIconRight = 110;
 	public static final int kThemeMetricScrollBarWidth = 0;
 	public static final int kThemeMetricVSliderWidth = 45;
 	public static final int kThemeNotAllowedCursor = 18;
@@ -1441,6 +1448,8 @@ public static final native int HIObjectRegisterSubclass(int inClassID, int inBas
 public static final native int HIViewScrollRect(int inView, CGRect inRect, float inDX, float inDY);
 public static final native int HIScrollViewCreate(int inOptions, int[] outView);
 public static final native int HISearchFieldCreate(CGRect inBounds, int inAttributes, int inSearchMenu, int inDescriptiveText, int [] outRef);
+public static final native int HISearchFieldChangeAttributes(int inSearchField, int inAttributesToSet, int inAttributesToClear);
+public static final native int HISearchFieldGetAttributes(int inSearchField, int [] outAttributes);
 public static final native int HISearchFieldSetDescriptiveText(int inSearchField, int inDescription);
 public static final native int HITextViewCreate(CGRect inBoundsRect, int inOptions, int inTXNFrameOptions, int[] outTextView);
 public static final native int HITextViewGetTXNObject(int inTextView);
