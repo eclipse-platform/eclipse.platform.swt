@@ -23,6 +23,7 @@ extern char* C_nativeFunctionNames[];
 typedef enum {
 	PTR_1sizeof_FUNC,
 	free_FUNC,
+	getenv_FUNC,
 	malloc_FUNC,
 	memmove__III_FUNC,
 	memmove__I_3BI_FUNC,

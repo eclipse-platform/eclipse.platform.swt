@@ -10,91 +10,91 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
-import org.eclipse.swt.internal.gtk.OS;
 
 class DownloadFactory {
 	XPCOMObject supports;
 	XPCOMObject factory;
 	int refCount = 0;
 
-public DownloadFactory() {
-	createCOMInterfaces();
+public DownloadFactory () {
+	createCOMInterfaces ();
 }
 
-int AddRef() {
+int AddRef () {
 	refCount++;
 	return refCount;
 }
 
-void createCOMInterfaces() {
+void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
-	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 	};
 	
-	factory = new XPCOMObject(new int[]{2, 0, 0, 3, 1}){
-		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2(int /*long*/[] args) {return Release();}
-		public int /*long*/ method3(int /*long*/[] args) {return CreateInstance(args[0], args[1], args[2]);}
-		public int /*long*/ method4(int /*long*/[] args) {return LockFactory(args[0]);}
+	factory = new XPCOMObject (new int[] {2, 0, 0, 3, 1}) {
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public int /*long*/ method3 (int /*long*/[] args) {return CreateInstance (args[0], args[1], args[2]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return LockFactory (args[0]);}
 	};
 }
 
-void disposeCOMInterfaces() {
+void disposeCOMInterfaces () {
 	if (supports != null) {
-		supports.dispose();
+		supports.dispose ();
 		supports = null;
 	}	
 	if (factory != null) {
-		factory.dispose();
+		factory.dispose ();
 		factory = null;	
 	}
 }
 
-int /*long*/ getAddress() {
-	return factory.getAddress();
+int /*long*/ getAddress () {
+	return factory.getAddress ();
 }
 
-int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
+int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
-	nsID guid = new nsID();
-	XPCOM.memmove(guid, riid, nsID.sizeof);
+	nsID guid = new nsID ();
+	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals(nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove(ppvObject, new int /*long*/[] {supports.getAddress()}, OS.PTR_SIZEOF);
-		AddRef();
+	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+		XPCOM.memmove (ppvObject, new int /*long*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals(nsIFactory.NS_IFACTORY_IID)) {
-		XPCOM.memmove(ppvObject, new int /*long*/[] {factory.getAddress()}, OS.PTR_SIZEOF);
-		AddRef();
+	if (guid.Equals (nsIFactory.NS_IFACTORY_IID)) {
+		XPCOM.memmove (ppvObject, new int /*long*/[] {factory.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	
-	XPCOM.memmove(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
         	
-int Release() {
+int Release () {
 	refCount--;
-	if (refCount == 0) disposeCOMInterfaces();
+	if (refCount == 0) disposeCOMInterfaces ();
 	return refCount;
 }
 	
 /* nsIFactory */
 
-public int /*long*/ CreateInstance(int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
-	Download download = new Download();
-	download.AddRef();
-	XPCOM.memmove(result, new int /*long*/[] {download.getAddress()}, OS.PTR_SIZEOF);
+public int /*long*/ CreateInstance (int /*long*/ aOuter, int /*long*/ iid, int /*long*/ result) {
+	Download download = new Download ();
+	download.AddRef ();
+	XPCOM.memmove (result, new int /*long*/[] {download.getAddress ()}, C.PTR_SIZEOF);
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ LockFactory(int /*long*/ lock) {
+public int /*long*/ LockFactory (int /*long*/ lock) {
 	return XPCOM.NS_OK;
 }
 }

@@ -67,7 +67,6 @@ GLXLIBS = -shared -fPIC -L/usr/X11R6/lib -lGL -lGLU -lm
 MOZILLACFLAGS = -O \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	$(NATIVE_STATS) \
-	-DXPCOM_GLUE=1 \
 	-DMOZILLA_STRICT_API=1 \
 	-fno-rtti \
 	-fno-exceptions \

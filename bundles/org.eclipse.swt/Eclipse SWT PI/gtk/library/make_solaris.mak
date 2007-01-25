@@ -61,7 +61,6 @@ GLXLIBS = -G -K PIC -L/usr/X11R6/lib -lGL -lGLU -lm
 #NATIVE_STATS = -DNATIVE_STATS
 
 MOZILLACFLAGS = -O \
-	-DXPCOM_GLUE=1 \
 	-DMOZILLA_STRICT_API=1 \
 	-fno-rtti \
 	-fno-exceptions \

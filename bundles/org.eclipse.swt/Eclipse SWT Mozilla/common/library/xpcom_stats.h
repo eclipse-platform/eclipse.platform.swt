@@ -141,7 +141,6 @@ typedef enum {
 	nsEmbedString_1new___FUNC,
 	nsEmbedString_1new___3C_FUNC,
 	nsID_1Equals_FUNC,
-	nsID_1Parse_FUNC,
 	nsID_1delete_FUNC,
 	nsID_1new_FUNC,
 	strlen_1PRUnichar_FUNC,

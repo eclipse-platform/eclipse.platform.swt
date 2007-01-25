@@ -1827,7 +1827,6 @@ public static final native int X2Fix(double x);
 public static final native int ZoomWindowIdeal(int inWindow, short inPartCode, Point ioIdealSize);
 public static final native int kCFNumberFormatterDecimalSeparator();
 public static final native int getpid();
-public static final native int getenv(byte[] name);
 public static final native void memcpy(ATSTrapezoid dest, int src, int n);
 public static final native void memcpy(RGBColor dest, int src, int n);
 public static final native void memcpy(CGPathElement dest, int src, int n);

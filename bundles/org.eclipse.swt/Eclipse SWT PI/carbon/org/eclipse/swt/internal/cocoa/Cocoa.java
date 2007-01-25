@@ -169,4 +169,6 @@ static int sel_registerName(String selector) {
 static int objc_getClass(String className) {
 	return Cocoa.objc_getClass(ascii(className));
 }
+
+public static final native long getNativeHandleFromAWT(Object frame);
 }

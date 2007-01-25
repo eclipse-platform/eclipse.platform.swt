@@ -41,7 +41,7 @@ public nsID() {
 public nsID(String id) {
 	Parse(id);
 }
-	
+
 public boolean Equals(nsID other) {
 	int /*long*/ ptr = XPCOM.nsID_new();
 	XPCOM.memmove(ptr, this, nsID.sizeof);
@@ -53,11 +53,24 @@ public boolean Equals(nsID other) {
 	return result;
 }
 
-public boolean Parse(String aIDStr) {
-	int /*long*/ ptr = XPCOM.nsID_new();
-	boolean result = XPCOM.nsID_Parse(ptr, aIDStr);
-	XPCOM.memmove(this, ptr, nsID.sizeof);
-	XPCOM.nsID_delete(ptr);
-	return result;
-}	
+public void Parse (String aIDStr) {
+	if(aIDStr == null) throw new Error ();
+	int i = 0;
+	for (; i < 8; i++) m0 = (m0 << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16);
+	if (aIDStr.charAt (i++) != '-') throw new Error ();
+	for (; i < 13; i++) m1 = (short)((m1 << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	if (aIDStr.charAt (i++) != '-') throw new Error ();
+	for (; i < 18; i++) m2 = (short)((m2 << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	if (aIDStr.charAt (i++) != '-') throw new Error ();
+	for (; i < 21; i++) m3[0] = (byte)((m3[0] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	for (; i < 23; i++) m3[1] = (byte)((m3[1] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	if (aIDStr.charAt (i++) != '-') throw new Error ();
+	for (; i < 26; i++) m3[2] = (byte)((m3[2] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	for (; i < 28; i++) m3[3] = (byte)((m3[3] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	for (; i < 30; i++) m3[4] = (byte)((m3[4] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	for (; i < 32; i++) m3[5] = (byte)((m3[5] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	for (; i < 34; i++) m3[6] = (byte)((m3[6] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+	for (; i < 36; i++) m3[7] = (byte)((m3[7] << 4) + Integer.parseInt (aIDStr.substring (i, i + 1), 16));
+}
+
 }

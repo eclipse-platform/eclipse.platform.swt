@@ -437,7 +437,6 @@ typedef enum {
 	_1xmMenuShellWidgetClass_FUNC,
 	close_FUNC,
 	fd_1set_1sizeof_FUNC,
-	getenv_FUNC,
 	iconv_FUNC,
 	iconv_1close_FUNC,
 	iconv_1open_FUNC,

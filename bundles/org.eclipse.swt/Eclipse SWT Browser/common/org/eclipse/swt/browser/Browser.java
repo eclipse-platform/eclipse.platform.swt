@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.*;
 public class Browser extends Composite {
 	WebBrowser webBrowser;
 
-	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 
@@ -64,44 +63,50 @@ public class Browser extends Composite {
  * 
  * @since 3.0
  */
-public Browser(Composite parent, int style) {
-	super (checkParent(parent), checkStyle (style));
+public Browser (Composite parent, int style) {
+	super (checkParent (parent), checkStyle (style));
+	String platform = SWT.getPlatform ();
+	Display display = parent.getDisplay ();
+	if ("gtk".equals (platform)) display.setData (NO_INPUT_METHOD, null); //$NON-NLS-1$
 	String className = null;
-	if ((style & SWT.NONE /*MOZILLA*/) != 0) { // TODO
-		className = "org.eclipse.swt.browser.Mozilla";
+	if ((style & SWT.MOZILLA) != 0) {
+		className = "org.eclipse.swt.browser.Mozilla"; //$NON-NLS-1$
 	} else {
-		String platform = SWT.getPlatform();
-		if ("win32".equals(platform)) {
-			className = "org.eclipse.swt.browser.IE";
-		} else if ("motif".equals(platform)) {
-			className = "org.eclipse.swt.browser.Mozilla";
-		} else if ("gtk".equals(platform)) {
-			className = "org.eclipse.swt.browser.Mozilla";
-		} else if ("carbon".equals(platform)) {
-			className = "org.eclipse.swt.browser.Safari";
-		} else if ("photon".equals(platform)) {
-			className = "org.eclipse.swt.browser.Voyager";
+		if ("win32".equals (platform)) { //$NON-NLS-1$
+			className = "org.eclipse.swt.browser.IE"; //$NON-NLS-1$
+		} else if ("motif".equals (platform)) { //$NON-NLS-1$
+			className = "org.eclipse.swt.browser.Mozilla"; //$NON-NLS-1$
+		} else if ("gtk".equals (platform)) { //$NON-NLS-1$
+			className = "org.eclipse.swt.browser.Mozilla"; //$NON-NLS-1$
+		} else if ("carbon".equals (platform)) { //$NON-NLS-1$
+			className = "org.eclipse.swt.browser.Safari"; //$NON-NLS-1$
+		} else if ("photon".equals (platform)) { //$NON-NLS-1$
+			className = "org.eclipse.swt.browser.Voyager"; //$NON-NLS-1$
 		} else {
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			dispose ();
+			SWT.error (SWT.ERROR_NO_HANDLES);
 		}
 	}
 
 	try {
-		Class clazz = Class.forName(className);
-		webBrowser = (WebBrowser)clazz.newInstance();
+		Class clazz = Class.forName (className);
+		webBrowser = (WebBrowser)clazz.newInstance ();
 	} catch (ClassNotFoundException e) {
 	} catch (IllegalAccessException e) {
 	} catch (InstantiationException e) {
 	}
-	if (webBrowser == null) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (webBrowser == null) {
+		dispose ();
+		SWT.error (SWT.ERROR_NO_HANDLES);
+	}
 
-	webBrowser.setBrowser(this);
-	webBrowser.create(parent, style);
+	webBrowser.setBrowser (this);
+	webBrowser.create (parent, style);
 }
 
-static Composite checkParent(Composite parent) {
-	String platform = SWT.getPlatform();
-	if (!"gtk".equals(platform)) return parent;
+static Composite checkParent (Composite parent) {
+	String platform = SWT.getPlatform ();
+	if (!"gtk".equals (platform)) return parent; //$NON-NLS-1$
 
 	/*
 	* Note.  Mozilla provides all IM suport needed for text input in webpages.
@@ -109,11 +114,11 @@ static Composite checkParent(Composite parent) {
 	* undetermine results to happen (hungs and crashes). The fix is to prevent 
 	* SWT from creating an input method context for the  Browser widget.
 	*/
-	if (parent != null && !parent.isDisposed()) {
-		Display display = parent.getDisplay();
+	if (parent != null && !parent.isDisposed ()) {
+		Display display = parent.getDisplay ();
 		if (display != null) {
-			if (display.getThread() == Thread.currentThread ()) {
-				display.setData (NO_INPUT_METHOD, "true");
+			if (display.getThread () == Thread.currentThread ()) {
+				display.setData (NO_INPUT_METHOD, "true"); //$NON-NLS-1$
 			}
 		}
 	}
@@ -121,18 +126,16 @@ static Composite checkParent(Composite parent) {
 }
 
 static int checkStyle(int style) {
-	if ((style & SWT.NONE /*MOZILLA*/) != 0) {
+	String platform = SWT.getPlatform ();
+	if ((style & SWT.MOZILLA) != 0) {
+		if ("carbon".equals (platform)) return style | SWT.EMBEDDED; //$NON-NLS-1$
 		return style;
 	}
 
-	String platform = SWT.getPlatform();
-	if ("win32".equals(platform)) {
+	if ("win32".equals (platform)) { //$NON-NLS-1$
 		return style & ~SWT.BORDER;
-	} else if ("motif".equals(platform)) {
+	} else if ("motif".equals (platform)) { //$NON-NLS-1$
 		return style | SWT.EMBEDDED;
-	} else if ("gtk".equals(platform)) {
-	} else if ("carbon".equals(platform)) {
-	} else if ("photon".equals(platform)) {
 	}
 	return style;
 }
@@ -143,7 +146,7 @@ static int checkStyle(int style) {
  * @since 3.2
  */
 public static void clearSessions () {
-	WebBrowser.clearSessions();
+	WebBrowser.clearSessions ();
 }
 
 /**	 
@@ -167,10 +170,10 @@ public static void clearSessions () {
  *
  * @since 3.0
  */
-public void addCloseWindowListener(CloseWindowListener listener) {
+public void addCloseWindowListener (CloseWindowListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.addCloseWindowListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.addCloseWindowListener (listener);
 }
 
 /**	 
@@ -195,10 +198,10 @@ public void addCloseWindowListener(CloseWindowListener listener) {
  *
  * @since 3.0
  */
-public void addLocationListener(LocationListener listener) {
+public void addLocationListener (LocationListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.addLocationListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.addLocationListener (listener);
 }
 
 /**	 
@@ -222,10 +225,10 @@ public void addLocationListener(LocationListener listener) {
  *
  * @since 3.0
  */
-public void addOpenWindowListener(OpenWindowListener listener) {
+public void addOpenWindowListener (OpenWindowListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.addOpenWindowListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.addOpenWindowListener (listener);
 }
 
 /**	 
@@ -246,10 +249,10 @@ public void addOpenWindowListener(OpenWindowListener listener) {
  *
  * @since 3.0
  */
-public void addProgressListener(ProgressListener listener) {
+public void addProgressListener (ProgressListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.addProgressListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.addProgressListener (listener);
 }
 
 /**	 
@@ -273,10 +276,10 @@ public void addProgressListener(ProgressListener listener) {
  *
  * @since 3.0
  */
-public void addStatusTextListener(StatusTextListener listener) {
+public void addStatusTextListener (StatusTextListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.addStatusTextListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.addStatusTextListener (listener);
 }
 
 /**	 
@@ -297,10 +300,10 @@ public void addStatusTextListener(StatusTextListener listener) {
  *
  * @since 3.0
  */
-public void addTitleListener(TitleListener listener) {
+public void addTitleListener (TitleListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.addTitleListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.addTitleListener (listener);
 }
 
 /**	 
@@ -321,10 +324,10 @@ public void addTitleListener(TitleListener listener) {
  *
  * @since 3.0
  */
-public void addVisibilityWindowListener(VisibilityWindowListener listener) {
+public void addVisibilityWindowListener (VisibilityWindowListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.addVisibilityWindowListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.addVisibilityWindowListener (listener);
 }
 
 /**
@@ -341,16 +344,16 @@ public void addVisibilityWindowListener(VisibilityWindowListener listener) {
  * 
  * @since 3.0
  */
-public boolean back() {
+public boolean back () {
 	checkWidget();
-	return webBrowser.back();
+	return webBrowser.back ();
 }
 
-protected void checkSubclass() {
-	String name = getClass().getName();
-	int index = name.lastIndexOf('.');
-	if (!name.substring(0, index + 1).equals(PACKAGE_PREFIX)) {
-		SWT.error(SWT.ERROR_INVALID_SUBCLASS);
+protected void checkSubclass () {
+	String name = getClass ().getName ();
+	int index = name.lastIndexOf ('.');
+	if (!name.substring (0, index + 1).equals (PACKAGE_PREFIX)) {
+		SWT.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
 }
 
@@ -375,10 +378,10 @@ protected void checkSubclass() {
  *
  * @since 3.1
  */
-public boolean execute(String script) {
+public boolean execute (String script) {
 	checkWidget();
-	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return webBrowser.execute(script);
+	if (script == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return webBrowser.execute (script);
 }
 
 /**
@@ -395,9 +398,9 @@ public boolean execute(String script) {
  * 
  * @since 3.0
  */
-public boolean forward() {
+public boolean forward () {
 	checkWidget();
-	return webBrowser.forward();
+	return webBrowser.forward ();
 }
 
 /**
@@ -413,9 +416,9 @@ public boolean forward() {
  * 
  * @see #back
  */
-public boolean isBackEnabled() {
+public boolean isBackEnabled () {
 	checkWidget();
-	return webBrowser.isBackEnabled();
+	return webBrowser.isBackEnabled ();
 }
 
 /**
@@ -431,9 +434,9 @@ public boolean isBackEnabled() {
  * 
  * @see #forward
  */
-public boolean isForwardEnabled() {
+public boolean isForwardEnabled () {
 	checkWidget();
-	return webBrowser.isForwardEnabled();
+	return webBrowser.isForwardEnabled ();
 }
 
 /**
@@ -450,15 +453,15 @@ public boolean isForwardEnabled() {
  * 
  * @since 3.0
  */
-public String getUrl() {
+public String getUrl () {
 	checkWidget();
-	return webBrowser.getUrl();
+	return webBrowser.getUrl ();
 }
 
 public boolean isFocusControl () {
 	checkWidget();
-	if (webBrowser.isFocusControl()) return true;
-	return super.isFocusControl();
+	if (webBrowser.isFocusControl ()) return true;
+	return super.isFocusControl ();
 }
 
 /**
@@ -471,9 +474,9 @@ public boolean isFocusControl () {
  *
  * @since 3.0
  */
-public void refresh() {
+public void refresh () {
 	checkWidget();
-	webBrowser.refresh();
+	webBrowser.refresh ();
 }
 
 /**	 
@@ -493,10 +496,10 @@ public void refresh() {
  * 
  * @since 3.0
  */
-public void removeCloseWindowListener(CloseWindowListener listener) {
+public void removeCloseWindowListener (CloseWindowListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.removeCloseWindowListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.removeCloseWindowListener (listener);
 }
 
 /**	 
@@ -516,10 +519,10 @@ public void removeCloseWindowListener(CloseWindowListener listener) {
  * 
  * @since 3.0
  */
-public void removeLocationListener(LocationListener listener) {
+public void removeLocationListener (LocationListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.removeLocationListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.removeLocationListener (listener);
 }
 
 /**	 
@@ -539,10 +542,10 @@ public void removeLocationListener(LocationListener listener) {
  * 
  * @since 3.0
  */
-public void removeOpenWindowListener(OpenWindowListener listener) {
+public void removeOpenWindowListener (OpenWindowListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.removeOpenWindowListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.removeOpenWindowListener (listener);
 }
 
 /**	 
@@ -563,10 +566,10 @@ public void removeOpenWindowListener(OpenWindowListener listener) {
  * 
  * @since 3.0
  */
-public void removeProgressListener(ProgressListener listener) {
+public void removeProgressListener (ProgressListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.removeProgressListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.removeProgressListener (listener);
 }
 
 /**	 
@@ -586,10 +589,10 @@ public void removeProgressListener(ProgressListener listener) {
  * 
  * @since 3.0
  */
-public void removeStatusTextListener(StatusTextListener listener) {
+public void removeStatusTextListener (StatusTextListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.removeStatusTextListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.removeStatusTextListener (listener);
 }
 
 /**	 
@@ -610,10 +613,10 @@ public void removeStatusTextListener(StatusTextListener listener) {
  * 
  * @since 3.0
  */
-public void removeTitleListener(TitleListener listener) {
+public void removeTitleListener (TitleListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.removeTitleListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.removeTitleListener (listener);
 }
 
 /**	 
@@ -634,10 +637,10 @@ public void removeTitleListener(TitleListener listener) {
  * 
  * @since 3.0
  */
-public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
+public void removeVisibilityWindowListener (VisibilityWindowListener listener) {
 	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	webBrowser.removeVisibilityWindowListener(listener);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	webBrowser.removeVisibilityWindowListener (listener);
 }
 
 /**
@@ -665,10 +668,10 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
  * 
  * @since 3.0
  */
-public boolean setText(String html) {
+public boolean setText (String html) {
 	checkWidget();
-	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return webBrowser.setText(html);
+	if (html == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return webBrowser.setText (html);
 }
 
 /**
@@ -691,10 +694,10 @@ public boolean setText(String html) {
  * 
  * @since 3.0
  */
-public boolean setUrl(String url) {
+public boolean setUrl (String url) {
 	checkWidget();
-	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return webBrowser.setUrl(url);
+	if (url == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return webBrowser.setUrl (url);
 }
 
 /**
@@ -707,8 +710,8 @@ public boolean setUrl(String url) {
  *
  * @since 3.0
  */
-public void stop() {
+public void stop () {
 	checkWidget();
-	webBrowser.stop();
+	webBrowser.stop ();
 }
 }

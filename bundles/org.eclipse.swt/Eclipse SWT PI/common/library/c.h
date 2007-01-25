@@ -17,4 +17,9 @@
 
 #define PTR_sizeof() sizeof(void *)
 
+/* Functions excludes */
+#ifdef _WIN32_WCE
+#define NO_getenv
+#endif /* _WIN32_WCE */
+
 #endif /* INC_c_H */

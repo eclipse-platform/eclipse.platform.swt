@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 466;
-int OS_nativeFunctionCallCount[466];
+int OS_nativeFunctionCount = 465;
+int OS_nativeFunctionCallCount[465];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -433,7 +433,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1xmMenuShellWidgetClass",
 	"close",
 	"fd_1set_1sizeof",
-	"getenv",
 	"iconv",
 	"iconv_1close",
 	"iconv_1open",

@@ -114,7 +114,6 @@ public static final native int nsEmbedCString_Length(int /*long*/ ptr);
 public static final native int /*long*/ nsEmbedCString_get(int /*long*/ ptr);
 public static final native void nsID_delete(int /*long*/ ptr);
 public static final native int /*long*/ nsID_new();
-public static final native boolean nsID_Parse(int /*long*/ ptr, String aIDStr);
 public static final native boolean nsID_Equals(int /*long*/ ptr, int /*long*/ other);
 public static final native int /*long*/ nsEmbedString_new();
 public static final native int /*long*/ nsEmbedString_new(char[] aString);

@@ -62,7 +62,6 @@ MOZILLA_PREFIX = swt-mozilla
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)$(GCC_VERSION)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 MOZILLACFLAGS = -O \
-	-DXPCOM_GLUE=1 \
 	-DMOZILLA_STRICT_API=1 \
 	-fno-rtti \
 	-fno-exceptions \

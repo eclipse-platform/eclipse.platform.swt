@@ -2094,22 +2094,6 @@ JNIEXPORT jboolean JNICALL XPCOM_NATIVE(nsID_1Equals)
 }
 #endif
 
-#ifndef NO_nsID_1Parse
-JNIEXPORT jboolean JNICALL XPCOM_NATIVE(nsID_1Parse)
-	(JNIEnv *env, jclass that, jint arg0, jstring arg1)
-{
-	const char *lparg1= NULL;
-	jboolean rc = 0;
-	XPCOM_NATIVE_ENTER(env, that, nsID_1Parse_FUNC);
-	if (arg1) if ((lparg1 = env->GetStringUTFChars(arg1, NULL)) == NULL) goto fail;
-	rc = (jboolean)((nsID *)arg0)->Parse((const char *)lparg1);
-fail:
-	if (arg1 && lparg1) env->ReleaseStringUTFChars(arg1, lparg1);
-	XPCOM_NATIVE_EXIT(env, that, nsID_1Parse_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_nsID_1delete
 JNIEXPORT void JNICALL XPCOM_NATIVE(nsID_1delete)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -1561,6 +1561,18 @@ public class SWT {
 	public static final int LONG = 1 << 28;
 
 	/**
+	 * Style constant specifying that a Browser should use a Mozilla GRE
+	 * for rendering its content (value is 1&lt;&lt;15).
+	 * <p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Browser</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int MOZILLA = 1 << 15;
+
+	/**
 	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ToolTip</code></li>

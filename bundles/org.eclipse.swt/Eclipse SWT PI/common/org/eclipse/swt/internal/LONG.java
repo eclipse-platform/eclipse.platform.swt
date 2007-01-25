@@ -8,12 +8,12 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal;
 
 public class LONG {
 	public int /*long*/ value;
 	
-	public LONG(int /*long*/ value) {
+	public LONG (int /*long*/ value) {
 		this.value = value;
 	}
 

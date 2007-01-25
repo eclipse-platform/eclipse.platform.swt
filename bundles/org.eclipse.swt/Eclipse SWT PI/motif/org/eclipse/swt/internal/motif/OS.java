@@ -4306,7 +4306,6 @@ public static final void _XmSetMenuTraversal(int menu, boolean traversal) {
 }
 public static final native int close(int filedes);
 public static final native int fd_set_sizeof();
-public static final native int getenv(byte[] name);
 public static final native int iconv(int cd, int[] inBuf, int[] inBytesLeft, int[] outBuf, int[] outBytesLeft);
 public static final native int iconv_close(int cd);
 public static final native int iconv_open(byte[] tocode, byte[] fromcode);

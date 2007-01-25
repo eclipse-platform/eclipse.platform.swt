@@ -31,6 +31,11 @@ rem ******
 set Mssdk=K:\dev\PRODUCTS\PLATSDK\feb2003
 call %mssdk%\setenv.bat
 
+rem ********* 
+rem XULRunner
+rem *********
+set XULRUNNER_SDK=j:\teamswt\swt-builddir\gecko-sdk
+
 set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
 
 :MAKE

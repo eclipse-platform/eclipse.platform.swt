@@ -11,8 +11,8 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
-import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.widgets.*;
 
 class HelperAppLauncherDialog {
@@ -20,68 +20,68 @@ class HelperAppLauncherDialog {
 	XPCOMObject helperAppLauncherDialog;
 	int refCount = 0;
 
-public HelperAppLauncherDialog() {
-	createCOMInterfaces();
+public HelperAppLauncherDialog () {
+	createCOMInterfaces ();
 }
 
-int AddRef() {
+int AddRef () {
 	refCount++;
 	return refCount;
 }
 
-void createCOMInterfaces() {
+void createCOMInterfaces () {
 	/* Create each of the interfaces that this object implements */
-	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2(int /*long*/[] args) {return Release();}
+	supports = new XPCOMObject (new int[] {2, 0, 0}) {
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 	};
 	
-	helperAppLauncherDialog = new XPCOMObject(new int[]{2, 0, 0, 3, 5}){
-		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
-		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
-		public int /*long*/ method2(int /*long*/[] args) {return Release();}
-		public int /*long*/ method3(int /*long*/[] args) {return Show(args[0], args[1], args[2]);}
-		public int /*long*/ method4(int /*long*/[] args) {return PromptForSaveToFile(args[0], args[1], args[2], args[3], args[4]);}
+	helperAppLauncherDialog = new XPCOMObject (new int[] {2, 0, 0, 3, 5}) {
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public int /*long*/ method3 (int /*long*/[] args) {return Show (args[0], args[1], args[2]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return PromptForSaveToFile (args[0], args[1], args[2], args[3], args[4]);}
 	};		
 }
 
-void disposeCOMInterfaces() {
+void disposeCOMInterfaces () {
 	if (supports != null) {
-		supports.dispose();
+		supports.dispose ();
 		supports = null;
 	}	
 	if (helperAppLauncherDialog != null) {
-		helperAppLauncherDialog.dispose();
+		helperAppLauncherDialog.dispose ();
 		helperAppLauncherDialog = null;	
 	}
 }
 
-int /*long*/ getAddress() {
-	return helperAppLauncherDialog.getAddress();
+int /*long*/ getAddress () {
+	return helperAppLauncherDialog.getAddress ();
 }
 
-int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
+int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
-	nsID guid = new nsID();
-	XPCOM.memmove(guid, riid, nsID.sizeof);
+	nsID guid = new nsID ();
+	XPCOM.memmove (guid, riid, nsID.sizeof);
 	
-	if (guid.Equals(nsISupports.NS_ISUPPORTS_IID)) {
-		XPCOM.memmove(ppvObject, new int /*long*/[] {supports.getAddress()}, OS.PTR_SIZEOF);
-		AddRef();
+	if (guid.Equals (nsISupports.NS_ISUPPORTS_IID)) {
+		XPCOM.memmove (ppvObject, new int /*long*/[] {supports.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals(nsIHelperAppLauncherDialog.NS_IHELPERAPPLAUNCHERDIALOG_IID)) {
-		XPCOM.memmove(ppvObject, new int /*long*/[] {helperAppLauncherDialog.getAddress()}, OS.PTR_SIZEOF);
-		AddRef();
+	if (guid.Equals (nsIHelperAppLauncherDialog.NS_IHELPERAPPLAUNCHERDIALOG_IID)) {
+		XPCOM.memmove (ppvObject, new int /*long*/[] {helperAppLauncherDialog.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
 		return XPCOM.NS_OK;
 	}
 	
-	XPCOM.memmove(ppvObject, new int /*long*/[] {0}, OS.PTR_SIZEOF);
+	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
         	
-int Release() {
+int Release () {
 	refCount--;
 	/*
 	* Note.  This instance lives as long as the download it is binded to.
@@ -90,32 +90,32 @@ int Release() {
 	* cancels the File Dialog, cancels or closes the Download Dialog
 	* and when the Download Dialog goes away after the download is completed.
 	*/
-	if (refCount == 0) disposeCOMInterfaces();
+	if (refCount == 0) disposeCOMInterfaces ();
 	return refCount;
 }
 
 /* nsIHelperAppLauncherDialog */
 
-public int /*long*/ Show(int /*long*/ aLauncher, int /*long*/ aContext, int /*long*/ aReason) {
+public int /*long*/ Show (int /*long*/ aLauncher, int /*long*/ aContext, int /*long*/ aReason) {
 	/*
 	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8.  Query the received
 	 * nsIHelperAppLauncher for the new interface, and if it is not found then fall back to
 	 * the old interface. 
 	 */
-	nsISupports supports = new nsISupports(aLauncher);
+	nsISupports supports = new nsISupports (aLauncher);
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = supports.QueryInterface(nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
+	int rc = supports.QueryInterface (nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
 	if (rc == 0) {	/* >= 1.8 */
-		nsIHelperAppLauncher_1_8 helperAppLauncher = new nsIHelperAppLauncher_1_8(aLauncher);
-		rc = helperAppLauncher.SaveToDisk(0, false);
-		helperAppLauncher.Release();
+		nsIHelperAppLauncher_1_8 helperAppLauncher = new nsIHelperAppLauncher_1_8 (aLauncher);
+		rc = helperAppLauncher.SaveToDisk (0, false);
+		helperAppLauncher.Release ();
 		return rc;
 	}
-	nsIHelperAppLauncher helperAppLauncher = new nsIHelperAppLauncher(aLauncher);	/* < 1.8 */
-	return helperAppLauncher.SaveToDisk(0, false);
+	nsIHelperAppLauncher helperAppLauncher = new nsIHelperAppLauncher (aLauncher);	/* < 1.8 */
+	return helperAppLauncher.SaveToDisk (0, false);
 }
 
-public int /*long*/ PromptForSaveToFile(int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
+public int /*long*/ PromptForSaveToFile (int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4) {
 	int /*long*/ aDefaultFile, aSuggestedFileExtension, _retval;
 	boolean hasLauncher = false;
 
@@ -132,21 +132,21 @@ public int /*long*/ PromptForSaveToFile(int /*long*/ arg0, int /*long*/ arg1, in
 	 * The interface for nsIHelperAppLauncher changed as of mozilla 1.8, so the first
 	 * argument must be queried for both the old and new nsIHelperAppLauncher interfaces. 
 	 */
-	nsISupports support = new nsISupports(arg0);
+	nsISupports support = new nsISupports (arg0);
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = support.QueryInterface(nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
+	int rc = support.QueryInterface (nsIHelperAppLauncher_1_8.NS_IHELPERAPPLAUNCHER_IID, result);
 	boolean usingMozilla18 = rc == 0;
 	if (usingMozilla18) {
 		hasLauncher = true;
-		nsISupports supports = new nsISupports(result[0]);
-		supports.Release();
+		nsISupports supports = new nsISupports (result[0]);
+		supports.Release ();
 	} else {
 		result[0] = 0;
-		rc = support.QueryInterface(nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
+		rc = support.QueryInterface (nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
 		if (rc == 0) {
 			hasLauncher = true;
-			nsISupports supports = new nsISupports(result[0]);
-			supports.Release();
+			nsISupports supports = new nsISupports (result[0]);
+			supports.Release ();
 		}
 	}
 	result[0] = 0;
@@ -161,43 +161,43 @@ public int /*long*/ PromptForSaveToFile(int /*long*/ arg0, int /*long*/ arg1, in
 		_retval = arg3;
 	}
 
-	int length = XPCOM.strlen_PRUnichar(aDefaultFile);
+	int length = XPCOM.strlen_PRUnichar (aDefaultFile);
 	char[] dest = new char[length];
-	XPCOM.memmove(dest, aDefaultFile, length * 2);
-	String defaultFile = new String(dest);
+	XPCOM.memmove (dest, aDefaultFile, length * 2);
+	String defaultFile = new String (dest);
 
-	length = XPCOM.strlen_PRUnichar(aSuggestedFileExtension);
+	length = XPCOM.strlen_PRUnichar (aSuggestedFileExtension);
 	dest = new char[length];
-	XPCOM.memmove(dest, aSuggestedFileExtension, length * 2);
-	String suggestedFileExtension = new String(dest);
+	XPCOM.memmove (dest, aSuggestedFileExtension, length * 2);
+	String suggestedFileExtension = new String (dest);
 
-	Shell shell = new Shell();
-	FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
-	fileDialog.setFileName(defaultFile);
-	fileDialog.setFilterExtensions(new String[] {suggestedFileExtension});
-	String name = fileDialog.open();
-	shell.close();
+	Shell shell = new Shell ();
+	FileDialog fileDialog = new FileDialog (shell, SWT.SAVE);
+	fileDialog.setFileName (defaultFile);
+	fileDialog.setFilterExtensions (new String[] {suggestedFileExtension});
+	String name = fileDialog.open ();
+	shell.close ();
 	if (name == null) {
 		if (hasLauncher) {
 			if (usingMozilla18) {
-				nsIHelperAppLauncher_1_8 launcher = new nsIHelperAppLauncher_1_8(arg0);
-				rc = launcher.Cancel(XPCOM.NS_BINDING_ABORTED);
+				nsIHelperAppLauncher_1_8 launcher = new nsIHelperAppLauncher_1_8 (arg0);
+				rc = launcher.Cancel (XPCOM.NS_BINDING_ABORTED);
 			} else {
-				nsIHelperAppLauncher launcher = new nsIHelperAppLauncher(arg0);
-				rc = launcher.Cancel();
+				nsIHelperAppLauncher launcher = new nsIHelperAppLauncher (arg0);
+				rc = launcher.Cancel ();
 			}
-			if (rc != XPCOM.NS_OK) Mozilla.error(rc);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 			return XPCOM.NS_OK;
 		}
 		return XPCOM.NS_ERROR_FAILURE;
 	}
-	nsEmbedString path = new nsEmbedString(name);
-	rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
-	path.dispose();
-	if (rc != XPCOM.NS_OK) Mozilla.error(rc);
-	if (result[0] == 0) Mozilla.error(XPCOM.NS_ERROR_NULL_POINTER);
+	nsEmbedString path = new nsEmbedString (name);
+	rc = XPCOM.NS_NewLocalFile (path.getAddress (), true, result);
+	path.dispose ();
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
 	/* Our own nsIDownload has been registered during the Browser initialization. It will be invoked by Mozilla. */
-	XPCOM.memmove(_retval, result, OS.PTR_SIZEOF);	
+	XPCOM.memmove (_retval, result, C.PTR_SIZEOF);	
 	return XPCOM.NS_OK;
 }
 }

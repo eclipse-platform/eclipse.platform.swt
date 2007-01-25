@@ -50,13 +50,54 @@ WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 #SWT_CDEBUG = -Zi -Odi
 #SWT_LDEBUG = /DEBUG /DEBUGTYPE:both
 
+XULRUNNER_PREFIX = swt-xulrunner
+XULRUNNER_LIB = $(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
+XULRUNNER_LIBS = Advapi32.lib $(XULRUNNER_SDK)\lib\xpcomglue.lib
+XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj xpcomglue.obj xpcomglue_stats.obj
+
+XPCOMINIT_PREFIX = swt-xpcominit
+XPCOMINIT_LIB = $(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
+XPCOMINIT_OBJS = xpcominit.obj xpcominit_structs.obj xpcominit_stats.obj
+
+MOZILLACFLAGS = -c \
+	-O1 \
+	$(SWT_CDEBUG) \
+	-DSWT_VERSION=$(SWT_VERSION) \
+	$(NATIVE_STATS) \
+	-MD \
+	-DMOZILLA_STRICT_API=1 \
+	-W3 \
+	-I. \
+	-I$(JAVA_HOME)/include \
+	-I$(JAVA_HOME)/include/win32 \
+	/I$(XULRUNNER_SDK)\include\mozilla-config.h /I$(XULRUNNER_SDK)\include
+
 # note: thoroughly test all examples after changing any optimization flags
 SWT_WINDOWS_SDK = -DWINVER=0x0500 -D_WIN32_WINDOWS=0x0400 -D_WIN32_WINNT=0x501 -D_WIN32_IE=0x0500
 CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DUSE_ASSEMBLER $(SWT_WINDOWS_SDK) -DVC_EXTRALEAN -nologo -MT -D_X86_=1 -DWIN32 -D_WIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I.
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
-all: $(SWT_LIB) $(AWT_LIB) $(GDIP_LIB) $(WGL_LIB)
+all: $(SWT_LIB) $(AWT_LIB) $(GDIP_LIB) $(WGL_LIB) $(XULRUNNER_LIB) $(XPCOMINIT_LIB)
+
+xpcom_custom.obj: xpcom_custom.cpp
+	cl $(MOZILLACFLAGS) xpcom_custom.cpp
+xpcom_stats.obj: xpcom_stats.cpp
+	cl $(MOZILLACFLAGS) xpcom_stats.cpp
+xpcom_structs.obj: xpcom_structs.cpp
+	cl $(MOZILLACFLAGS) xpcom_structs.cpp
+xpcom.obj: xpcom.cpp
+	cl $(MOZILLACFLAGS) xpcom.cpp
+xpcomglue.obj: xpcomglue.cpp
+	cl $(MOZILLACFLAGS) xpcomglue.cpp
+xpcomglue_stats.obj: xpcomglue_stats.cpp
+	cl $(MOZILLACFLAGS) xpcomglue_stats.cpp
+xpcominit_stats.obj: xpcominit_stats.cpp
+	cl $(MOZILLACFLAGS) xpcominit_stats.cpp
+xpcominit_structs.obj: xpcominit_structs.cpp
+	cl $(MOZILLACFLAGS) xpcominit_structs.cpp
+xpcominit.obj: xpcominit.cpp
+	cl $(MOZILLACFLAGS) xpcominit.cpp
 
 .c.obj:
 	cl $(CFLAGS) $*.c
@@ -108,6 +149,24 @@ $(WGL_LIB): $(WGL_OBJS) swt_wgl.res
 	link @templrf
 	del templrf
 	
+$(XULRUNNER_LIB): $(XULRUNNER_OBJS) swt_xpcom.res
+	echo $(LFLAGS) >templrf
+	echo $(XULRUNNER_LIBS) >>templrf
+	echo -machine:IX86 >>templrf
+	echo -subsystem:windows >>templrf
+	echo -out:$(XULRUNNER_LIB) >>templrf
+	echo $(XULRUNNER_OBJS) >>templrf
+	link @templrf
+	
+$(XPCOMINIT_LIB): $(XPCOMINIT_OBJS) swt_xpcominit.res
+	echo $(LFLAGS) >templrf
+	echo $(XULRUNNER_LIBS) >>templrf
+	echo -machine:IX86 >>templrf
+	echo -subsystem:windows >>templrf
+	echo -out:$(XPCOMINIT_LIB) >>templrf
+	echo $(XPCOMINIT_OBJS) >>templrf
+	link @templrf
+
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
 
@@ -119,6 +178,12 @@ swt_awt.res:
 
 swt_wgl.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(WGL_LIB)\" -r -fo swt_wgl.res swt_wgl.rc
+
+swt_xpcom.res:
+	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(XULRUNNER_LIB)\" -r -fo swt_xpcom.res swt_xpcom.rc
+
+swt_xpcominit.res:
+	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(XPCOMINIT_LIB)\" -r -fo swt_xpcom.res swt_xpcom.rc
 
 install: all
 	copy *.dll $(OUTPUT_DIR)
