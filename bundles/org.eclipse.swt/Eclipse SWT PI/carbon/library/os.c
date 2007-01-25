@@ -7148,6 +7148,18 @@ fail:
 }
 #endif
 
+#ifndef NO_HISearchFieldChangeAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldChangeAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HISearchFieldChangeAttributes_FUNC);
+	rc = (jint)HISearchFieldChangeAttributes((HIViewRef)arg0, (OptionBits)arg1, (OptionBits)arg2);
+	OS_NATIVE_EXIT(env, that, HISearchFieldChangeAttributes_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HISearchFieldCreate
 JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldCreate)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
@@ -7163,6 +7175,22 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, HISearchFieldCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HISearchFieldGetAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldGetAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HISearchFieldGetAttributes_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)HISearchFieldGetAttributes((HIViewRef)arg0, (OptionBits*)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, HISearchFieldGetAttributes_FUNC);
 	return rc;
 }
 #endif

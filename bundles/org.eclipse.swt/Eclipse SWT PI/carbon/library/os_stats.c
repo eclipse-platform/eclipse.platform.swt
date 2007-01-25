@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 936;
-int OS_nativeFunctionCallCount[936];
+int OS_nativeFunctionCount = 938;
+int OS_nativeFunctionCallCount[938];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -511,7 +511,9 @@ char * OS_nativeFunctionNames[] = {
 	"HIObjectCreate",
 	"HIObjectRegisterSubclass",
 	"HIScrollViewCreate",
+	"HISearchFieldChangeAttributes",
 	"HISearchFieldCreate",
+	"HISearchFieldGetAttributes",
 	"HISearchFieldSetDescriptiveText",
 	"HITextViewCreate",
 	"HITextViewGetTXNObject",
