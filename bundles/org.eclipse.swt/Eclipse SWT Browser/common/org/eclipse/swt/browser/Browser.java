@@ -20,7 +20,12 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to set a layout on it.
- * </p><p>
+ * </p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>MOZILLA</dd>
+ * </dl>
+ * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * 
