@@ -345,13 +345,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = rect.right - rect.left;
 		}
 		if (OS.COMCTL32_MAJOR >= 6) {
-			length = message.length ();
-			if ((style & SWT.SEARCH) != 0 && length != 0) {
-				char [] buffer = new char [length + 1];
-				message.getChars (0, length, buffer, 0);
-				SIZE size = new SIZE ();
-				OS.GetTextExtentPoint32W (hDC, buffer, length, size);
-				width = Math.max (width, size.cx);
+			if ((style & SWT.SINGLE) != 0 && (style & SWT.SEARCH) != 0) {
+				length = message.length ();
+				if (length != 0) {
+					char [] buffer = new char [length + 1];
+					message.getChars (0, length, buffer, 0);
+					SIZE size = new SIZE ();
+					OS.GetTextExtentPoint32W (hDC, buffer, length, size);
+					width = Math.max (width, size.cx);
+				}
 			}
 		}
 		if (wrap && hHint == SWT.DEFAULT) {
@@ -1533,7 +1535,7 @@ void setMargins () {
 	* fix is to set the margins to zero.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6) {
-		if ((style & SWT.SEARCH) != 0) {
+		if ((style & SWT.SINGLE) != 0 && (style & SWT.SEARCH) != 0) {
 			OS.SendMessage (handle, OS.EM_SETMARGINS, OS.EC_LEFTMARGIN | OS.EC_RIGHTMARGIN, 0);
 		}
 	}
@@ -1566,7 +1568,7 @@ public void setMessage (String message) {
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.message = message;
 	if (OS.COMCTL32_MAJOR >= 6) {
-		if ((style & SWT.SEARCH) != 0) {
+		if ((style & SWT.SINGLE) != 0 && (style & SWT.SEARCH) != 0) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.ES_MULTILINE) == 0) {
 				int length = message.length ();
