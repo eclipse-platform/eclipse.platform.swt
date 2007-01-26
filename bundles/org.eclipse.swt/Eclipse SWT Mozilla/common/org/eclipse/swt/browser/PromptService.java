@@ -110,6 +110,13 @@ Browser getBrowser (int /*long*/ aDOMWindow) {
 	
 	nsIWindowWatcher windowWatcher = new nsIWindowWatcher (result[0]);
 	result[0] = 0;
+	/* the chrome will only be answered for the top-level nsIDOMWindow */
+	nsIDOMWindow window = new nsIDOMWindow (aDOMWindow);
+	rc = window.GetTop (result);
+	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);
+	aDOMWindow = result[0];
+	result[0] = 0;
 	rc = windowWatcher.GetChromeForWindow (aDOMWindow, result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 	if (result[0] == 0) Mozilla.error (XPCOM.NS_NOINTERFACE);		
