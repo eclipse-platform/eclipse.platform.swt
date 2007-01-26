@@ -61,16 +61,9 @@ public void generate(Class clazz) {
 	}
 	if (i == methods.length) return;
 	sort(methods);
-	if (isCPP) {
-		outputln("extern \"C\" {");
-		outputln();
-	}
 	generateNativeMacro(clazz);
 	generateExcludes(methods);
 	generate(methods);
-	if (isCPP) {
-		outputln("}");
-	}
 }
 
 public void generate(Method[] methods) {
@@ -97,7 +90,12 @@ public void generate(Method method) {
 	}
 	
 	generateSourceStart(function);
-	generateFunctionPrototype(method, function, paramTypes, returnType);
+	if (isCPP) {
+		output("extern \"C\" ");
+		generateFunctionPrototype(method, function, paramTypes, returnType, true);
+		outputln(";");
+	}
+	generateFunctionPrototype(method, function, paramTypes, returnType, false);
 	generateFunctionBody(method, methodData, function, paramTypes, returnType);
 	generateSourceEnd(function);
 	outputln();
@@ -159,6 +157,9 @@ boolean generateGetParameter(Method method, int i, Class paramType, ParameterDat
 		if (componentType.isPrimitive()) {
 			if (critical) {
 				if (isCPP) {
+					output("(");
+					output(getTypeSignature2(componentType));
+					output("*)");
 					output("env->GetPrimitiveArrayCritical(arg");
 				} else {
 					output("(*env)->GetPrimitiveArrayCritical(env, arg");
@@ -476,6 +477,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 		output("fp");
 		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
+		output(";");
 		outputln();
 		outputln("\t\t}");
 	} else if (getPlatform().equals("carbon")) {
@@ -516,6 +518,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 		output("(*fptr)");
 		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
+		output(";");
 		outputln();
 		outputln("\t\t}");
 	} else {
@@ -556,6 +559,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 		output("(*fptr)");
 		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
+		output(";");
 		outputln();
 		outputln("\t\t}");
 	}
@@ -595,16 +599,17 @@ void generateFunctionCallRightSide(Method method, MethodData methodData, Class[]
 			if (i != paramStart) output(", ");
 			if (paramData.getFlag(FLAG_STRUCT)) output("*");
 			output(paramData.getCast());
+			if (paramData.getFlag(FLAG_GCOBJECT)) output("TO_OBJECT(");
 			if (i == paramTypes.length - 1 && paramData.getFlag(FLAG_SENTINEL)) {
 				output("NULL");
 			} else {
 				if (!paramType.isPrimitive() && !isSystemClass(paramType)) output("lp");
 				output("arg" + i);
 			}
+			if (paramData.getFlag(FLAG_GCOBJECT)) output(")");
 		}
 		output(")");
 	}
-	output(";");
 }
 
 void generateFunctionCall(Method method, MethodData methodData, Class[] paramTypes, Class returnType, boolean needsReturn) {
@@ -646,7 +651,14 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		output(getTypeSignature4(paramTypes[1]));
 		output(" **)arg1)[arg0])");
 		paramStart = 1;
-	} else if (methodData.getFlag(FLAG_CPP)) {
+	} else if (methodData.getFlag(FLAG_CPP) || methodData.getFlag(FLAG_SETTER) || methodData.getFlag(FLAG_GETTER) || methodData.getFlag(FLAG_ADDER)) {
+		if (methodData.getFlag(FLAG_GCOBJECT)) {
+			if (methodData.getFlag(FLAG_STRUCT)) {
+				output("TO_HANDLE_STRUCT(");
+			} else {
+				output("TO_HANDLE(");
+			}
+		}
 		output("(");
 		ParameterData paramData = getMetaData().getMetaData(method, 0);
 		if (paramData.getFlag(FLAG_STRUCT)) output("*");
@@ -654,7 +666,14 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		if (cast.length() != 0 && !cast.equals("()")) {
 			output(cast);
 		}
-		output("arg0)->");
+		if (paramData.getFlag(FLAG_GCOBJECT)) {
+			output("TO_OBJECT(");
+		}
+		output("arg0");
+		if (paramData.getFlag(FLAG_GCOBJECT)) {
+			output(")");
+		}
+		output(")->");
 		String accessor = methodData.getAccessor();
 		if (accessor.length() != 0) {
 			output(accessor);
@@ -667,6 +686,19 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 			}
 		}
 		paramStart = 1;
+	} else if (methodData.getFlag(FLAG_GCNEW)) {
+		output("TO_HANDLE(gcnew ");
+		String accessor = methodData.getAccessor();
+		if (accessor.length() != 0) {
+			output(accessor);
+		} else {
+			int index = -1;
+			if ((index = name.indexOf('_')) != -1) {
+				output(name.substring(index + 1));
+			} else {
+				output(name);
+			}
+		}
 	} else if (methodData.getFlag(FLAG_NEW)) {
 		output("new ");
 		String accessor = methodData.getAccessor();
@@ -694,6 +726,13 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		outputln("arg0;");
 		return;
 	} else {
+		if (methodData.getFlag(FLAG_GCOBJECT)) {
+			if (methodData.getFlag(FLAG_STRUCT)) {
+				output("TO_HANDLE_STRUCT(");
+			} else {
+				output("TO_HANDLE(");				
+			}
+		}
 		String accessor = methodData.getAccessor();
 		if (accessor.length() != 0) {
 			output(accessor);
@@ -701,7 +740,19 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 			output(name);
 		}
 	}
-	generateFunctionCallRightSide(method, methodData, paramTypes, paramStart);
+	if ((methodData.getFlag(FLAG_SETTER) && paramTypes.length == 3) || (methodData.getFlag(FLAG_GETTER) && paramTypes.length == 2)) {
+		output("[arg1]");
+		paramStart++;
+	}
+	if (methodData.getFlag(FLAG_SETTER)) output(" = ");
+	if (methodData.getFlag(FLAG_ADDER)) output(" += ");
+	if (!methodData.getFlag(FLAG_GETTER)) {
+		generateFunctionCallRightSide(method, methodData, paramTypes, paramStart);
+	}
+	if (methodData.getFlag(FLAG_GCNEW) || methodData.getFlag(FLAG_GCOBJECT)) {
+		output(")");
+	}
+	output(";");
 	outputln();
 	if (makeCopy) {
 		outputln("\t{");
@@ -767,15 +818,20 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 	outputln("}");
 }
 
-void generateFunctionPrototype(Method method, String function, Class[] paramTypes, Class returnType) {
+void generateFunctionPrototype(Method method, String function, Class[] paramTypes, Class returnType, boolean singleLine) {
 	output("JNIEXPORT ");
 	output(getTypeSignature2(returnType));
 	output(" JNICALL ");
 	output(getClassName(method.getDeclaringClass()));
 	output("_NATIVE(");
 	output(function);
-	outputln(")");
-	output("\t(JNIEnv *env, ");
+	if (singleLine) {
+		output(")");
+		output("(JNIEnv *env, ");
+	} else {
+		outputln(")");
+		output("\t(JNIEnv *env, ");
+	}
 	if ((method.getModifiers() & Modifier.STATIC) != 0) {
 		output("jclass");
 	} else {
@@ -788,7 +844,8 @@ void generateFunctionPrototype(Method method, String function, Class[] paramType
 		output(getTypeSignature2(paramType));
 		output(" arg" + i);
 	}
-	outputln(")");
+	output(")");
+	if (!singleLine) outputln();
 }
 
 void generateSourceStart(String function) {

@@ -16,8 +16,12 @@ extern char* C_nativeFunctionNames[];
 #define C_NATIVE_ENTER(env, that, func) C_nativeFunctionCallCount[func]++;
 #define C_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef C_NATIVE_ENTER
 #define C_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef C_NATIVE_EXIT
 #define C_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

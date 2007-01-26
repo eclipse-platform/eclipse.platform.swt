@@ -16,8 +16,12 @@ extern char* Cocoa_nativeFunctionNames[];
 #define Cocoa_NATIVE_ENTER(env, that, func) Cocoa_nativeFunctionCallCount[func]++;
 #define Cocoa_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef Cocoa_NATIVE_ENTER
 #define Cocoa_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef Cocoa_NATIVE_EXIT
 #define Cocoa_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

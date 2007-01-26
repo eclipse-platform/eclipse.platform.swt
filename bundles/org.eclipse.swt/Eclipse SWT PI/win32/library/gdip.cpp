@@ -13,11 +13,10 @@
 #include "gdip_structs.h"
 #include "gdip_stats.h"
 
-extern "C" {
-
 #define Gdip_NATIVE(func) Java_org_eclipse_swt_internal_gdip_Gdip_##func
 
 #ifndef NO_BitmapData_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(BitmapData_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(BitmapData_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -28,6 +27,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(BitmapData_1delete)
 #endif
 
 #ifndef NO_BitmapData_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(BitmapData_1new)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL Gdip_NATIVE(BitmapData_1new)
 	(JNIEnv *env, jclass that)
 {
@@ -40,6 +40,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(BitmapData_1new)
 #endif
 
 #ifndef NO_Bitmap_1GetHBITMAP
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1GetHBITMAP)(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1GetHBITMAP)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
 {
@@ -56,6 +57,7 @@ fail:
 #endif
 
 #ifndef NO_Bitmap_1GetHICON
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1GetHICON)(JNIEnv *env, jclass that, jint arg0, jintArray arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1GetHICON)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
 {
@@ -72,6 +74,7 @@ fail:
 #endif
 
 #ifndef NO_Bitmap_1LockBits
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1LockBits)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1LockBits)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
@@ -84,6 +87,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1LockBits)
 #endif
 
 #ifndef NO_Bitmap_1UnlockBits
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1UnlockBits)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1UnlockBits)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -96,6 +100,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1UnlockBits)
 #endif
 
 #ifndef NO_Bitmap_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Bitmap_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Bitmap_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -106,6 +111,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Bitmap_1delete)
 #endif
 
 #ifndef NO_Bitmap_1new__I
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__I)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -118,6 +124,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__I)
 #endif
 
 #ifndef NO_Bitmap_1new__II
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -130,6 +137,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__II)
 #endif
 
 #ifndef NO_Bitmap_1new__IIIII
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__IIIII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__IIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
@@ -142,6 +150,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__IIIII)
 #endif
 
 #ifndef NO_Bitmap_1new___3CZ
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new___3CZ)(JNIEnv *env, jclass that, jcharArray arg0, jboolean arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new___3CZ)
 	(JNIEnv *env, jclass that, jcharArray arg0, jboolean arg1)
 {
@@ -158,6 +167,7 @@ fail:
 #endif
 
 #ifndef NO_Brush_1Clone
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Brush_1Clone)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Brush_1Clone)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -170,6 +180,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Brush_1Clone)
 #endif
 
 #ifndef NO_Brush_1GetType
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Brush_1GetType)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Brush_1GetType)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -182,6 +193,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Brush_1GetType)
 #endif
 
 #ifndef NO_ColorPalette_1sizeof
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(ColorPalette_1sizeof)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL Gdip_NATIVE(ColorPalette_1sizeof)
 	(JNIEnv *env, jclass that)
 {
@@ -194,6 +206,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(ColorPalette_1sizeof)
 #endif
 
 #ifndef NO_Color_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Color_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Color_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -204,6 +217,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Color_1delete)
 #endif
 
 #ifndef NO_Color_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Color_1new)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Color_1new)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -216,6 +230,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Color_1new)
 #endif
 
 #ifndef NO_FontFamily_1GetFamilyName
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(FontFamily_1GetFamilyName)(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jchar arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(FontFamily_1GetFamilyName)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jchar arg2)
 {
@@ -232,6 +247,7 @@ fail:
 #endif
 
 #ifndef NO_FontFamily_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(FontFamily_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(FontFamily_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -242,6 +258,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(FontFamily_1delete)
 #endif
 
 #ifndef NO_FontFamily_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(FontFamily_1new)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL Gdip_NATIVE(FontFamily_1new)
 	(JNIEnv *env, jclass that)
 {
@@ -254,6 +271,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(FontFamily_1new)
 #endif
 
 #ifndef NO_Font_1GetFamily
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetFamily)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetFamily)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -266,6 +284,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetFamily)
 #endif
 
 #ifndef NO_Font_1GetSize
+extern "C" JNIEXPORT jfloat JNICALL Gdip_NATIVE(Font_1GetSize)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jfloat JNICALL Gdip_NATIVE(Font_1GetSize)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -278,6 +297,7 @@ JNIEXPORT jfloat JNICALL Gdip_NATIVE(Font_1GetSize)
 #endif
 
 #ifndef NO_Font_1GetStyle
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetStyle)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetStyle)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -290,6 +310,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetStyle)
 #endif
 
 #ifndef NO_Font_1IsAvailable
+extern "C" JNIEXPORT jboolean JNICALL Gdip_NATIVE(Font_1IsAvailable)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL Gdip_NATIVE(Font_1IsAvailable)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -302,6 +323,7 @@ JNIEXPORT jboolean JNICALL Gdip_NATIVE(Font_1IsAvailable)
 #endif
 
 #ifndef NO_Font_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Font_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Font_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -312,6 +334,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Font_1delete)
 #endif
 
 #ifndef NO_Font_1new__II
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1new__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1new__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -324,6 +347,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1new__II)
 #endif
 
 #ifndef NO_Font_1new___3CFIII
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1new___3CFIII)(JNIEnv *env, jclass that, jcharArray arg0, jfloat arg1, jint arg2, jint arg3, jint arg4);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1new___3CFIII)
 	(JNIEnv *env, jclass that, jcharArray arg0, jfloat arg1, jint arg2, jint arg3, jint arg4)
 {
@@ -340,6 +364,7 @@ fail:
 #endif
 
 #ifndef NO_GdiplusShutdown
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(GdiplusShutdown)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(GdiplusShutdown)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -350,6 +375,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(GdiplusShutdown)
 #endif
 
 #ifndef NO_GdiplusStartup
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GdiplusStartup)(JNIEnv *env, jclass that, jintArray arg0, jobject arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GdiplusStartup)
 	(JNIEnv *env, jclass that, jintArray arg0, jobject arg1, jint arg2)
 {
@@ -369,6 +395,7 @@ fail:
 #endif
 
 #ifndef NO_GdiplusStartupInput_1sizeof
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GdiplusStartupInput_1sizeof)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GdiplusStartupInput_1sizeof)
 	(JNIEnv *env, jclass that)
 {
@@ -381,6 +408,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GdiplusStartupInput_1sizeof)
 #endif
 
 #ifndef NO_GraphicsPath_1AddArc
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddArc)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddArc)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6)
 {
@@ -393,6 +421,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddArc)
 #endif
 
 #ifndef NO_GraphicsPath_1AddBezier
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddBezier)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6, jfloat arg7, jfloat arg8);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddBezier)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6, jfloat arg7, jfloat arg8)
 {
@@ -405,6 +434,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddBezier)
 #endif
 
 #ifndef NO_GraphicsPath_1AddLine
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddLine)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddLine)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4)
 {
@@ -417,6 +447,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddLine)
 #endif
 
 #ifndef NO_GraphicsPath_1AddPath
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddPath)(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddPath)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
 {
@@ -429,6 +460,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddPath)
 #endif
 
 #ifndef NO_GraphicsPath_1AddRectangle
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddRectangle)(JNIEnv *env, jclass that, jint arg0, jobject arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddRectangle)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
@@ -445,6 +477,7 @@ fail:
 #endif
 
 #ifndef NO_GraphicsPath_1AddString
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddString)(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jint arg4, jfloat arg5, jobject arg6, jint arg7);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1AddString)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jint arg4, jfloat arg5, jobject arg6, jint arg7)
 {
@@ -464,6 +497,7 @@ fail:
 #endif
 
 #ifndef NO_GraphicsPath_1CloseFigure
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1CloseFigure)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1CloseFigure)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -476,6 +510,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1CloseFigure)
 #endif
 
 #ifndef NO_GraphicsPath_1Flatten
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Flatten)(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Flatten)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2)
 {
@@ -488,6 +523,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Flatten)
 #endif
 
 #ifndef NO_GraphicsPath_1GetBounds
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetBounds)(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetBounds)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
 {
@@ -504,6 +540,7 @@ fail:
 #endif
 
 #ifndef NO_GraphicsPath_1GetLastPoint
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetLastPoint)(JNIEnv *env, jclass that, jint arg0, jobject arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetLastPoint)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
@@ -520,6 +557,7 @@ fail:
 #endif
 
 #ifndef NO_GraphicsPath_1GetPathTypes
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPathTypes)(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPathTypes)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
 {
@@ -536,6 +574,7 @@ fail:
 #endif
 
 #ifndef NO_GraphicsPath_1GetPointCount
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPointCount)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPointCount)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -548,6 +587,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetPointCount)
 #endif
 
 #ifndef NO_GraphicsPath_1IsOutlineVisible
+extern "C" JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsOutlineVisible)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3, jint arg4);
 JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsOutlineVisible)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3, jint arg4)
 {
@@ -560,6 +600,7 @@ JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsOutlineVisible)
 #endif
 
 #ifndef NO_GraphicsPath_1IsVisible
+extern "C" JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsVisible)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
 JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsVisible)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
 {
@@ -572,6 +613,7 @@ JNIEXPORT jboolean JNICALL Gdip_NATIVE(GraphicsPath_1IsVisible)
 #endif
 
 #ifndef NO_GraphicsPath_1SetFillMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1SetFillMode)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1SetFillMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -584,6 +626,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1SetFillMode)
 #endif
 
 #ifndef NO_GraphicsPath_1StartFigure
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1StartFigure)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1StartFigure)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -596,6 +639,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1StartFigure)
 #endif
 
 #ifndef NO_GraphicsPath_1Transform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Transform)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Transform)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -608,6 +652,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1Transform)
 #endif
 
 #ifndef NO_GraphicsPath_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(GraphicsPath_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(GraphicsPath_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -618,6 +663,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(GraphicsPath_1delete)
 #endif
 
 #ifndef NO_GraphicsPath_1new__I
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1new__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1new__I)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -630,6 +676,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1new__I)
 #endif
 
 #ifndef NO_Graphics_1DrawArc
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawArc)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jfloat arg6, jfloat arg7);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawArc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jfloat arg6, jfloat arg7)
 {
@@ -642,6 +689,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawArc)
 #endif
 
 #ifndef NO_Graphics_1DrawEllipse
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawEllipse)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawEllipse)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
@@ -654,6 +702,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawEllipse)
 #endif
 
 #ifndef NO_Graphics_1DrawImage__IIII
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawImage__IIII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawImage__IIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
@@ -666,6 +715,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawImage__IIII)
 #endif
 
 #ifndef NO_Graphics_1DrawImage__IILorg_eclipse_swt_internal_gdip_Rect_2IIIIIIII
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawImage__IILorg_eclipse_swt_internal_gdip_Rect_2IIIIIIII)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawImage__IILorg_eclipse_swt_internal_gdip_Rect_2IIIIIIII)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10)
 {
@@ -682,6 +732,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1DrawLine
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawLine)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawLine)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
@@ -694,6 +745,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawLine)
 #endif
 
 #ifndef NO_Graphics_1DrawPath
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawPath)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawPath)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -706,6 +758,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawPath)
 #endif
 
 #ifndef NO_Graphics_1DrawRectangle
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawRectangle)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawRectangle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
@@ -718,6 +771,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawRectangle)
 #endif
 
 #ifndef NO_Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2I
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2I)(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2I)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5)
 {
@@ -737,6 +791,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2II
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2II)(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jint arg6);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2II)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jint arg6)
 {
@@ -756,6 +811,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1FillEllipse
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillEllipse)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillEllipse)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
@@ -768,6 +824,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillEllipse)
 #endif
 
 #ifndef NO_Graphics_1FillPath
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillPath)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillPath)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -780,6 +837,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillPath)
 #endif
 
 #ifndef NO_Graphics_1FillPie
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillPie)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jfloat arg6, jfloat arg7);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillPie)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jfloat arg6, jfloat arg7)
 {
@@ -792,6 +850,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillPie)
 #endif
 
 #ifndef NO_Graphics_1FillRectangle
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillRectangle)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillRectangle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
@@ -804,6 +863,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillRectangle)
 #endif
 
 #ifndef NO_Graphics_1Flush
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1Flush)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1Flush)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -814,6 +874,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1Flush)
 #endif
 
 #ifndef NO_Graphics_1GetClip
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClip)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClip)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -826,6 +887,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClip)
 #endif
 
 #ifndef NO_Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2)(JNIEnv *env, jclass that, jint arg0, jobject arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
@@ -842,6 +904,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2)(JNIEnv *env, jclass that, jint arg0, jobject arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
@@ -858,6 +921,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1GetHDC
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetHDC)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetHDC)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -870,6 +934,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetHDC)
 #endif
 
 #ifndef NO_Graphics_1GetInterpolationMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetInterpolationMode)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetInterpolationMode)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -882,6 +947,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetInterpolationMode)
 #endif
 
 #ifndef NO_Graphics_1GetSmoothingMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetSmoothingMode)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetSmoothingMode)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -894,6 +960,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetSmoothingMode)
 #endif
 
 #ifndef NO_Graphics_1GetTextRenderingHint
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTextRenderingHint)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTextRenderingHint)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -906,6 +973,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTextRenderingHint)
 #endif
 
 #ifndef NO_Graphics_1GetTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTransform)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTransform)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -918,6 +986,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTransform)
 #endif
 
 #ifndef NO_Graphics_1GetVisibleClipBounds
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetVisibleClipBounds)(JNIEnv *env, jclass that, jint arg0, jobject arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetVisibleClipBounds)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
@@ -934,6 +1003,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2)(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jobject arg6);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jobject arg6)
 {
@@ -956,6 +1026,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2)(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jobject arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jobject arg5)
 {
@@ -978,6 +1049,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1ReleaseHDC
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1ReleaseHDC)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1ReleaseHDC)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -988,6 +1060,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1ReleaseHDC)
 #endif
 
 #ifndef NO_Graphics_1ResetClip
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ResetClip)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ResetClip)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1000,6 +1073,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ResetClip)
 #endif
 
 #ifndef NO_Graphics_1Restore
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1Restore)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1Restore)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1012,6 +1086,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1Restore)
 #endif
 
 #ifndef NO_Graphics_1Save
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1Save)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1Save)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1024,6 +1099,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1Save)
 #endif
 
 #ifndef NO_Graphics_1ScaleTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ScaleTransform)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ScaleTransform)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
 {
@@ -1036,6 +1112,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ScaleTransform)
 #endif
 
 #ifndef NO_Graphics_1SetClip__II
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1048,6 +1125,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__II)
 #endif
 
 #ifndef NO_Graphics_1SetClip__III
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__III)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__III)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -1060,6 +1138,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__III)
 #endif
 
 #ifndef NO_Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I)(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_Rect_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
@@ -1076,6 +1155,7 @@ fail:
 #endif
 
 #ifndef NO_Graphics_1SetCompositingQuality
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetCompositingQuality)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetCompositingQuality)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1088,6 +1168,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetCompositingQuality)
 #endif
 
 #ifndef NO_Graphics_1SetInterpolationMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetInterpolationMode)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetInterpolationMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1100,6 +1181,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetInterpolationMode)
 #endif
 
 #ifndef NO_Graphics_1SetPageUnit
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPageUnit)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPageUnit)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1112,6 +1194,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPageUnit)
 #endif
 
 #ifndef NO_Graphics_1SetPixelOffsetMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPixelOffsetMode)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPixelOffsetMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1124,6 +1207,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPixelOffsetMode)
 #endif
 
 #ifndef NO_Graphics_1SetSmoothingMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetSmoothingMode)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetSmoothingMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1136,6 +1220,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetSmoothingMode)
 #endif
 
 #ifndef NO_Graphics_1SetTextRenderingHint
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetTextRenderingHint)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetTextRenderingHint)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1148,6 +1233,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetTextRenderingHint)
 #endif
 
 #ifndef NO_Graphics_1SetTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetTransform)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetTransform)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1160,6 +1246,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetTransform)
 #endif
 
 #ifndef NO_Graphics_1TranslateTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1TranslateTransform)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1TranslateTransform)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
 {
@@ -1172,6 +1259,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1TranslateTransform)
 #endif
 
 #ifndef NO_Graphics_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1182,6 +1270,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1delete)
 #endif
 
 #ifndef NO_Graphics_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1new)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1new)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1194,6 +1283,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1new)
 #endif
 
 #ifndef NO_HatchBrush_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(HatchBrush_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(HatchBrush_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1204,6 +1294,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(HatchBrush_1delete)
 #endif
 
 #ifndef NO_HatchBrush_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(HatchBrush_1new)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(HatchBrush_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -1216,6 +1307,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(HatchBrush_1new)
 #endif
 
 #ifndef NO_ImageAttributes_1SetColorMatrix
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1SetColorMatrix)(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1SetColorMatrix)
 	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2, jint arg3)
 {
@@ -1232,6 +1324,7 @@ fail:
 #endif
 
 #ifndef NO_ImageAttributes_1SetWrapMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1SetWrapMode)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1SetWrapMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1244,6 +1337,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1SetWrapMode)
 #endif
 
 #ifndef NO_ImageAttributes_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(ImageAttributes_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(ImageAttributes_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1254,6 +1348,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(ImageAttributes_1delete)
 #endif
 
 #ifndef NO_ImageAttributes_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1new)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1new)
 	(JNIEnv *env, jclass that)
 {
@@ -1266,6 +1361,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1new)
 #endif
 
 #ifndef NO_Image_1GetHeight
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1278,6 +1374,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)
 #endif
 
 #ifndef NO_Image_1GetLastStatus
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetLastStatus)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetLastStatus)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1290,6 +1387,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetLastStatus)
 #endif
 
 #ifndef NO_Image_1GetPalette
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPalette)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPalette)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -1302,6 +1400,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPalette)
 #endif
 
 #ifndef NO_Image_1GetPaletteSize
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPaletteSize)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPaletteSize)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1314,6 +1413,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPaletteSize)
 #endif
 
 #ifndef NO_Image_1GetPixelFormat
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPixelFormat)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPixelFormat)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1326,6 +1426,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetPixelFormat)
 #endif
 
 #ifndef NO_Image_1GetWidth
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetWidth)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetWidth)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1338,6 +1439,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetWidth)
 #endif
 
 #ifndef NO_LinearGradientBrush_1SetWrapMode
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetWrapMode)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetWrapMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1350,6 +1452,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetWrapMode)
 #endif
 
 #ifndef NO_LinearGradientBrush_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(LinearGradientBrush_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(LinearGradientBrush_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1360,6 +1463,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(LinearGradientBrush_1delete)
 #endif
 
 #ifndef NO_LinearGradientBrush_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1new)(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1new)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3)
 {
@@ -1379,6 +1483,7 @@ fail:
 #endif
 
 #ifndef NO_Matrix_1GetElements
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1GetElements)(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1GetElements)
 	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
 {
@@ -1395,6 +1500,7 @@ fail:
 #endif
 
 #ifndef NO_Matrix_1Invert
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Invert)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Invert)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1407,6 +1513,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Invert)
 #endif
 
 #ifndef NO_Matrix_1IsIdentity
+extern "C" JNIEXPORT jboolean JNICALL Gdip_NATIVE(Matrix_1IsIdentity)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL Gdip_NATIVE(Matrix_1IsIdentity)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1419,6 +1526,7 @@ JNIEXPORT jboolean JNICALL Gdip_NATIVE(Matrix_1IsIdentity)
 #endif
 
 #ifndef NO_Matrix_1Multiply
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Multiply)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Multiply)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -1431,6 +1539,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Multiply)
 #endif
 
 #ifndef NO_Matrix_1Rotate
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Rotate)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Rotate)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jint arg2)
 {
@@ -1443,6 +1552,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Rotate)
 #endif
 
 #ifndef NO_Matrix_1Scale
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Scale)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Scale)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
 {
@@ -1455,6 +1565,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Scale)
 #endif
 
 #ifndef NO_Matrix_1SetElements
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1SetElements)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1SetElements)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6)
 {
@@ -1467,6 +1578,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1SetElements)
 #endif
 
 #ifndef NO_Matrix_1Shear
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Shear)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Shear)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
 {
@@ -1479,6 +1591,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Shear)
 #endif
 
 #ifndef NO_Matrix_1TransformPoints__ILorg_eclipse_swt_internal_gdip_PointF_2I
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__ILorg_eclipse_swt_internal_gdip_PointF_2I)(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__ILorg_eclipse_swt_internal_gdip_PointF_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
@@ -1495,6 +1608,7 @@ fail:
 #endif
 
 #ifndef NO_Matrix_1Translate
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Translate)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Translate)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
 {
@@ -1507,6 +1621,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Translate)
 #endif
 
 #ifndef NO_Matrix_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Matrix_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Matrix_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1517,6 +1632,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Matrix_1delete)
 #endif
 
 #ifndef NO_Matrix_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1new)(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1new)
 	(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5)
 {
@@ -1529,6 +1645,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1new)
 #endif
 
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I)(JNIEnv *env, jclass that, jobject arg0, jint arg1);
 JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
 {
@@ -1539,6 +1656,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_Bi
 #endif
 
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II)(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2);
 JNIEXPORT void JNICALL Gdip_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -1553,6 +1671,7 @@ fail:
 #endif
 
 #ifndef NO_PathGradientBrush_1SetCenterColor
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetCenterColor)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetCenterColor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1565,6 +1684,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetCenterColor)
 #endif
 
 #ifndef NO_PathGradientBrush_1SetCenterPoint
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetCenterPoint)(JNIEnv *env, jclass that, jint arg0, jobject arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetCenterPoint)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
@@ -1581,6 +1701,7 @@ fail:
 #endif
 
 #ifndef NO_PathGradientBrush_1SetGraphicsPath
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetGraphicsPath)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetGraphicsPath)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1593,6 +1714,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1SetGraphicsPath)
 #endif
 
 #ifndef NO_PathGradientBrush_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(PathGradientBrush_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(PathGradientBrush_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1603,6 +1725,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(PathGradientBrush_1delete)
 #endif
 
 #ifndef NO_PathGradientBrush_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1new)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1new)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1615,6 +1738,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1new)
 #endif
 
 #ifndef NO_Pen_1GetBrush
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1GetBrush)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1GetBrush)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1627,6 +1751,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1GetBrush)
 #endif
 
 #ifndef NO_Pen_1SetBrush
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetBrush)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetBrush)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1639,6 +1764,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetBrush)
 #endif
 
 #ifndef NO_Pen_1SetDashOffset
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashOffset)(JNIEnv *env, jclass that, jint arg0, jfloat arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashOffset)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
 {
@@ -1651,6 +1777,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashOffset)
 #endif
 
 #ifndef NO_Pen_1SetDashPattern
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashPattern)(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashPattern)
 	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2)
 {
@@ -1667,6 +1794,7 @@ fail:
 #endif
 
 #ifndef NO_Pen_1SetDashStyle
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashStyle)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashStyle)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1679,6 +1807,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetDashStyle)
 #endif
 
 #ifndef NO_Pen_1SetLineCap
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetLineCap)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetLineCap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
@@ -1691,6 +1820,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetLineCap)
 #endif
 
 #ifndef NO_Pen_1SetLineJoin
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetLineJoin)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetLineJoin)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1703,6 +1833,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetLineJoin)
 #endif
 
 #ifndef NO_Pen_1SetMiterLimit
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetMiterLimit)(JNIEnv *env, jclass that, jint arg0, jfloat arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetMiterLimit)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
 {
@@ -1715,6 +1846,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetMiterLimit)
 #endif
 
 #ifndef NO_Pen_1SetWidth
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetWidth)(JNIEnv *env, jclass that, jint arg0, jfloat arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetWidth)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
 {
@@ -1727,6 +1859,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetWidth)
 #endif
 
 #ifndef NO_Pen_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Pen_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Pen_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1737,6 +1870,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Pen_1delete)
 #endif
 
 #ifndef NO_Pen_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1new)(JNIEnv *env, jclass that, jint arg0, jfloat arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1new)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
 {
@@ -1749,6 +1883,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1new)
 #endif
 
 #ifndef NO_Point_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Point_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Point_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1759,6 +1894,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Point_1delete)
 #endif
 
 #ifndef NO_Point_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Point_1new)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Point_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1771,6 +1907,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Point_1new)
 #endif
 
 #ifndef NO_Region_1GetHRGN
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1GetHRGN)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1GetHRGN)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1783,6 +1920,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1GetHRGN)
 #endif
 
 #ifndef NO_Region_1IsInfinite
+extern "C" JNIEXPORT jboolean JNICALL Gdip_NATIVE(Region_1IsInfinite)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jboolean JNICALL Gdip_NATIVE(Region_1IsInfinite)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1795,6 +1933,7 @@ JNIEXPORT jboolean JNICALL Gdip_NATIVE(Region_1IsInfinite)
 #endif
 
 #ifndef NO_Region_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Region_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Region_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1805,6 +1944,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Region_1delete)
 #endif
 
 #ifndef NO_Region_1new__
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__)
 	(JNIEnv *env, jclass that)
 {
@@ -1817,6 +1957,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__)
 #endif
 
 #ifndef NO_Region_1new__I
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__I)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1829,6 +1970,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__I)
 #endif
 
 #ifndef NO_SolidBrush_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(SolidBrush_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(SolidBrush_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1839,6 +1981,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(SolidBrush_1delete)
 #endif
 
 #ifndef NO_SolidBrush_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(SolidBrush_1new)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(SolidBrush_1new)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1851,6 +1994,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(SolidBrush_1new)
 #endif
 
 #ifndef NO_StringFormat_1Clone
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1Clone)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1Clone)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1863,6 +2007,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1Clone)
 #endif
 
 #ifndef NO_StringFormat_1GenericDefault
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericDefault)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericDefault)
 	(JNIEnv *env, jclass that)
 {
@@ -1875,6 +2020,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericDefault)
 #endif
 
 #ifndef NO_StringFormat_1GenericTypographic
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericTypographic)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericTypographic)
 	(JNIEnv *env, jclass that)
 {
@@ -1887,6 +2033,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericTypographic)
 #endif
 
 #ifndef NO_StringFormat_1GetFormatFlags
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GetFormatFlags)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GetFormatFlags)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1899,6 +2046,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GetFormatFlags)
 #endif
 
 #ifndef NO_StringFormat_1SetFormatFlags
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetFormatFlags)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetFormatFlags)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1911,6 +2059,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetFormatFlags)
 #endif
 
 #ifndef NO_StringFormat_1SetHotkeyPrefix
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetHotkeyPrefix)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetHotkeyPrefix)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1923,6 +2072,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetHotkeyPrefix)
 #endif
 
 #ifndef NO_StringFormat_1SetTabStops
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetTabStops)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jint arg2, jfloatArray arg3);
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetTabStops)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jint arg2, jfloatArray arg3)
 {
@@ -1939,6 +2089,7 @@ fail:
 #endif
 
 #ifndef NO_StringFormat_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(StringFormat_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(StringFormat_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1949,6 +2100,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(StringFormat_1delete)
 #endif
 
 #ifndef NO_TextureBrush_1SetTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1961,6 +2113,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)
 #endif
 
 #ifndef NO_TextureBrush_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(TextureBrush_1delete)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(TextureBrush_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1971,6 +2124,7 @@ JNIEXPORT void JNICALL Gdip_NATIVE(TextureBrush_1delete)
 #endif
 
 #ifndef NO_TextureBrush_1new
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1new)(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5);
 JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5)
 {
@@ -1982,4 +2136,3 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1new)
 }
 #endif
 
-}

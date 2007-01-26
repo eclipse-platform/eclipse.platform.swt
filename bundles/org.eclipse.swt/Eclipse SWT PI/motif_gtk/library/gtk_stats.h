@@ -20,8 +20,12 @@ extern char* GTK_nativeFunctionNames[];
 #define GTK_NATIVE_ENTER(env, that, func) GTK_nativeFunctionCallCount[func]++;
 #define GTK_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef GTK_NATIVE_ENTER
 #define GTK_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef GTK_NATIVE_EXIT
 #define GTK_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

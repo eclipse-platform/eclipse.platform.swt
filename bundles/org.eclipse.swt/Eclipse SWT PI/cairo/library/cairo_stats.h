@@ -26,8 +26,12 @@ extern char* Cairo_nativeFunctionNames[];
 #define Cairo_NATIVE_ENTER(env, that, func) Cairo_nativeFunctionCallCount[func]++;
 #define Cairo_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef Cairo_NATIVE_ENTER
 #define Cairo_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef Cairo_NATIVE_EXIT
 #define Cairo_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

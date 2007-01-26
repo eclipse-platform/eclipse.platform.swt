@@ -16,8 +16,12 @@ extern char* AGL_nativeFunctionNames[];
 #define AGL_NATIVE_ENTER(env, that, func) AGL_nativeFunctionCallCount[func]++;
 #define AGL_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef AGL_NATIVE_ENTER
 #define AGL_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef AGL_NATIVE_EXIT
 #define AGL_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

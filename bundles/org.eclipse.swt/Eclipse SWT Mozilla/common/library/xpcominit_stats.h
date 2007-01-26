@@ -16,8 +16,12 @@ extern char* XPCOMInit_nativeFunctionNames[];
 #define XPCOMInit_NATIVE_ENTER(env, that, func) XPCOMInit_nativeFunctionCallCount[func]++;
 #define XPCOMInit_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef XPCOMInit_NATIVE_ENTER
 #define XPCOMInit_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef XPCOMInit_NATIVE_EXIT
 #define XPCOMInit_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

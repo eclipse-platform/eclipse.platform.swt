@@ -13,11 +13,10 @@
 #include "xpcominit_structs.h"
 #include "xpcominit_stats.h"
 
-extern "C" {
-
 #define XPCOMInit_NATIVE(func) Java_org_eclipse_swt_internal_mozilla_XPCOMInit_##func
 
 #ifndef NO_GREVersionRange_1sizeof
+extern "C" JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GREVersionRange_1sizeof)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GREVersionRange_1sizeof)
 	(JNIEnv *env, jclass that)
 {
@@ -30,6 +29,7 @@ JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GREVersionRange_1sizeof)
 #endif
 
 #ifndef NO_GRE_1GetGREPathWithProperties
+extern "C" JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GRE_1GetGREPathWithProperties)(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5);
 JNIEXPORT jint JNICALL XPCOMInit_NATIVE(GRE_1GetGREPathWithProperties)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
 {
@@ -45,4 +45,3 @@ fail:
 }
 #endif
 
-}

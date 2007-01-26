@@ -18,4 +18,9 @@ public interface Flags {
 	public static final String FLAG_DYNAMIC = "dynamic";
 	public static final String FLAG_JNI = "jni";
 	public static final String FLAG_ADDRESS = "address";
+	public static final String FLAG_GCNEW = "gcnew";
+	public static final String FLAG_GCOBJECT = "gcobject";
+	public static final String FLAG_SETTER = "setter";
+	public static final String FLAG_GETTER = "getter";
+	public static final String FLAG_ADDER = "adder";
 }

@@ -16,8 +16,12 @@ extern char* WGL_nativeFunctionNames[];
 #define WGL_NATIVE_ENTER(env, that, func) WGL_nativeFunctionCallCount[func]++;
 #define WGL_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef WGL_NATIVE_ENTER
 #define WGL_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef WGL_NATIVE_EXIT
 #define WGL_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

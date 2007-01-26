@@ -16,8 +16,12 @@ extern char* GLX_nativeFunctionNames[];
 #define GLX_NATIVE_ENTER(env, that, func) GLX_nativeFunctionCallCount[func]++;
 #define GLX_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef GLX_NATIVE_ENTER
 #define GLX_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef GLX_NATIVE_EXIT
 #define GLX_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

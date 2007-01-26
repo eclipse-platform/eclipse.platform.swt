@@ -20,8 +20,12 @@ extern char* ATK_nativeFunctionNames[];
 #define ATK_NATIVE_ENTER(env, that, func) ATK_nativeFunctionCallCount[func]++;
 #define ATK_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef ATK_NATIVE_ENTER
 #define ATK_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef ATK_NATIVE_EXIT
 #define ATK_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {

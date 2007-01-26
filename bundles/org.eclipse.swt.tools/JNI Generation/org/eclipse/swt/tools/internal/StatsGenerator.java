@@ -78,12 +78,20 @@ void generateNATIVEMacros(Class clazz) {
 	output(className);
 	outputln("_NATIVE_EXIT(env, that, func) ");
 	outputln("#else");
+	output("#ifndef ");
+	output(className);
+	outputln("_NATIVE_ENTER");
 	output("#define ");
 	output(className);
 	outputln("_NATIVE_ENTER(env, that, func) ");
+	outputln("#endif");
+	output("#ifndef ");
+	output(className);
+	outputln("_NATIVE_EXIT");
 	output("#define ");
 	output(className);
 	outputln("_NATIVE_EXIT(env, that, func) ");
+	outputln("#endif");
 	outputln("#endif");
 	outputln();	
 }

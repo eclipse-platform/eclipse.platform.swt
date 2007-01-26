@@ -24,7 +24,7 @@ public ParameterData(Method method, int parameter, String str) {
 }
 
 public static String[] getAllFlags() {
-	return new String[]{FLAG_NO_IN, FLAG_NO_OUT, FLAG_CRITICAL, FLAG_INIT, FLAG_STRUCT, FLAG_UNICODE, FLAG_SENTINEL};
+	return new String[]{FLAG_NO_IN, FLAG_NO_OUT, FLAG_CRITICAL, FLAG_INIT, FLAG_STRUCT, FLAG_UNICODE, FLAG_SENTINEL, FLAG_GCOBJECT};
 }
 
 public String getCast() {

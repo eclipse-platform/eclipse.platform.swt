@@ -16,8 +16,12 @@ extern char* Gdip_nativeFunctionNames[];
 #define Gdip_NATIVE_ENTER(env, that, func) Gdip_nativeFunctionCallCount[func]++;
 #define Gdip_NATIVE_EXIT(env, that, func) 
 #else
+#ifndef Gdip_NATIVE_ENTER
 #define Gdip_NATIVE_ENTER(env, that, func) 
+#endif
+#ifndef Gdip_NATIVE_EXIT
 #define Gdip_NATIVE_EXIT(env, that, func) 
+#endif
 #endif
 
 typedef enum {
