@@ -7,7 +7,7 @@
     <classpathentry kind="src" path="Eclipse SWT PI/common"/>
     <classpathentry kind="src" path="Eclipse SWT PI/wpf">
 	    <attributes>
-			<attribute value="org.eclipse.swt.wpf.vista.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
+			<attribute value="org.eclipse.swt.win32.wpf.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
 		</attributes>
     </classpathentry>
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
