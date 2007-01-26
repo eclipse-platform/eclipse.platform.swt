@@ -58,7 +58,7 @@ class Mozilla extends WebBrowser {
 	static final String GRERANGE_UPPER = "1.9"; //$NON-NLS-1$
 	static final boolean UpperRangeInclusive = false;
 
-	static final String SEPARATOR_OS = System.getProperty("file.separator"); //$NON-NLS-1$
+	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
@@ -231,6 +231,11 @@ public void create (Composite parent, int style) {
 			 */ 
 			mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 		} else {
+			if ((style & SWT.MOZILLA) != 0) {
+				browser.dispose ();
+				SWT.error (SWT.ERROR_NO_HANDLES, null, " [Could not detect registered XULRunner to use]"); //$NON-NLS-1$
+			}
+
 			/* attempt to use the GRE pointed at by MOZILLA_FIVE_HOME */
 			int /*long*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_FIVE_HOME, true));
 			if (ptr != 0) {
