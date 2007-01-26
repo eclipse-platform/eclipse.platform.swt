@@ -344,8 +344,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.DrawText (hDC, buffer, length, rect, flags);
 			width = rect.right - rect.left;
 		}
+		//This code is intentionally commented
 //		if (OS.COMCTL32_MAJOR >= 6) {
-//			if ((style & SWT.SINGLE) != 0 && (style & SWT.SEARCH) != 0) {
+//			if ((style & SWT.SEARCH) != 0) {
 //				length = message.length ();
 //				if (length != 0) {
 //					char [] buffer = new char [length + 1];

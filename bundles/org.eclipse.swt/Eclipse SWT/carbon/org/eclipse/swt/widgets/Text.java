@@ -315,11 +315,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			Point size1 = textExtent (ptr1 [0], 0);
 			if (ptr1 [0] != 0) OS.CFRelease (ptr1 [0]);
 			width = size1.x;
-			int [] ptr2 = new int [1];
-			OS.HISearchFieldCopyDescriptiveText (handle, ptr2);
-			Point size2 = textExtent (ptr2 [0], 0);
-			width = Math.max (width, size2.x);
-			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
+			//This code is intentionally commented
+//			int [] ptr2 = new int [1];
+//			OS.HISearchFieldCopyDescriptiveText (handle, ptr2);
+//			Point size2 = textExtent (ptr2 [0], 0);
+//			width = Math.max (width, size2.x);
+//			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
 		}
 	} else {
 		if (OS.VERSION >= 0x1030) {
