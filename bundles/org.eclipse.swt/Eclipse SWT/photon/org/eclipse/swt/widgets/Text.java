@@ -221,7 +221,7 @@ void createWidget (int index) {
 	super.createWidget (index);
 //	doubleClick = true;
 	setTabStops (tabs = 8);
-	hiddenText = "";
+	hiddenText = message = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar (PASSWORD);
 }
 
@@ -1077,7 +1077,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (lastModifiedText != 0) OS.free (lastModifiedText);
 	lastModifiedText = 0;
-	hiddenText = null;
+	hiddenText = message = null;
 	textVerify = null;
 }
 
