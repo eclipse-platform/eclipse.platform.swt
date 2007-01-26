@@ -572,6 +572,7 @@ public class OS extends C {
 	public static final int EM_SETOPTIONS = 0x44d;
 	public static final int EM_SETPARAFORMAT = 0x447;
 	public static final int EM_SETPASSWORDCHAR = 0xcc;
+	public static final int EM_SETCUEBANNER = 0x1500 + 1;
 	public static final int EM_SETREADONLY = 0xcf;
 	public static final int EM_SETSEL = 0xb1;
 	public static final int EM_SETTABSTOPS = 0xcb;
@@ -2810,6 +2811,11 @@ public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, char [] lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, short [] lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -3633,6 +3639,7 @@ public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, byte [] lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, int [] lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, short [] lParam);
+public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, char [] lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LVCOLUMN lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, LVHITTESTINFO lParam);
