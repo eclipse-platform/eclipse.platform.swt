@@ -541,6 +541,8 @@ public class OS extends C {
 	public static final int EBNGC_HOT = 2;
 	public static final int EBNGC_PRESSED = 3;
 	public static final int EBP_HEADERBACKGROUND = 1;
+	public static final int EC_LEFTMARGIN = 0x1;
+	public static final int EC_RIGHTMARGIN = 0x2;
 	public static final int ECOOP_AND = 0x3;
 	public static final int ECOOP_OR = 0x2;
 	public static final int ECO_AUTOHSCROLL = 0x80;
@@ -569,6 +571,7 @@ public class OS extends C {
 	public static final int EM_SCROLLCARET = 0xb7;
 	public static final int EM_SETBKGNDCOLOR = 0x443;
 	public static final int EM_SETLIMITTEXT = 0xc5;
+	public static final int EM_SETMARGINS = 211;
 	public static final int EM_SETOPTIONS = 0x44d;
 	public static final int EM_SETPARAFORMAT = 0x447;
 	public static final int EM_SETPASSWORDCHAR = 0xcc;
