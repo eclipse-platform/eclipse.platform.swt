@@ -134,7 +134,7 @@ int /*long*/ CreateChromeWindow (int /*long*/ parent, int /*long*/ chromeFlags, 
 			new Shell (SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL) :
 			new Shell (src.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setLayout (new FillLayout ());
-		browser = new Browser (shell, src.getStyle () & SWT.MOZILLA);
+		browser = new Browser (shell, src == null ? SWT.MOZILLA : src.getStyle () & SWT.MOZILLA);
 		browser.addVisibilityWindowListener (new VisibilityWindowListener () {
 			public void hide (WindowEvent event) {
 			}

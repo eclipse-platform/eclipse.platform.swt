@@ -52,15 +52,7 @@ class Mozilla extends WebBrowser {
 	static boolean initialized, ignoreDispose;
 	static String profileRootDirectory;
 
-	/* XULRunner detect constants */
-	static final String GRERANGE_LOWER = "1.8"; //$NON-NLS-1$
-	static final boolean LowerRangeInclusive = true;
-	static final String GRERANGE_UPPER = "1.9"; //$NON-NLS-1$
-	static final boolean UpperRangeInclusive = false;
 	static final String SEPARATOR_OS = System.getProperty("file.separator"); //$NON-NLS-1$
-	static final String XPCOM_LIB = SEPARATOR_OS + "libxpcom.so"; //$NON-NLS-1$
-
-	/* Package Name */
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
@@ -168,30 +160,18 @@ public void create (Composite parent, int style) {
 		boolean isXULRunner = false;
 		if (initLoaded) {
 			/* attempt to discover a XULRunner to use as the GRE */
-			GREVersionRange range = new GREVersionRange ();
-			byte[] bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_LOWER, true);
-			int /*long*/ lower = C.malloc (bytes.length);
-			C.memmove (lower, bytes, bytes.length);
-			range.lower = lower;
-			range.lowerInclusive = LowerRangeInclusive;
-
-			bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_UPPER, true);
-			int /*long*/ upper = C.malloc (bytes.length);
-			C.memmove (upper, bytes, bytes.length);
-			range.upper = upper;
-			range.upperInclusive = UpperRangeInclusive;
-
+			GREVersionRange range = delegate.getGREVersionRange();
 			int length = XPCOMInit.PATH_MAX;
 			int /*long*/ greBuffer = C.malloc (length);
 			int /*long*/ propertiesPtr = C.malloc (2 * C.PTR_SIZEOF);
 			int rc = XPCOMInit.GRE_GetGREPathWithProperties (range, 1, propertiesPtr, 0, greBuffer, length);
-			C.free (lower);
-			C.free (upper);
+			C.free (range.lower);
+			C.free (range.upper);
 			C.free (propertiesPtr);
 			if (rc == XPCOM.NS_OK) {
 				/* indicates that a XULRunner was found */
 				length = C.strlen (greBuffer);
-				bytes = new byte[length];
+				byte[] bytes = new byte[length];
 				C.memmove (bytes, greBuffer, length);
 				mozillaPath = new String (MozillaDelegate.mbcsToWcs (null, bytes));
 				// the following line is intentionally commented
