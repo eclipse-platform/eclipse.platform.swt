@@ -111,6 +111,5 @@ void onDispose (int embedHandle) {
 }
 
 void setSize(int embedHandle, int width, int height) {
-	// TODO?
 }
 }
