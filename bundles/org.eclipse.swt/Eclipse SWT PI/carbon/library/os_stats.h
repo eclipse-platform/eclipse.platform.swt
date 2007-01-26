@@ -516,6 +516,7 @@ typedef enum {
 	HIObjectRegisterSubclass_FUNC,
 	HIScrollViewCreate_FUNC,
 	HISearchFieldChangeAttributes_FUNC,
+	HISearchFieldCopyDescriptiveText_FUNC,
 	HISearchFieldCreate_FUNC,
 	HISearchFieldGetAttributes_FUNC,
 	HISearchFieldSetDescriptiveText_FUNC,

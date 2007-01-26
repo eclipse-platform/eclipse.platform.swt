@@ -1532,7 +1532,7 @@ void releaseWidget () {
 		OS.TXNDeleteObject (txnObject);
 	}
 	txnObject = txnFrameID = 0;
-	hiddenText = null;
+	hiddenText = message = null;
 }
 
 /**

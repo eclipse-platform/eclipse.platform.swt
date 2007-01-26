@@ -1197,6 +1197,11 @@ public void paste () {
 	OS.SendMessage (handle, OS.WM_PASTE, 0, 0);
 }
 
+void releaseWidget () {
+	super.releaseWidget ();
+	message = null;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's text is modified.
