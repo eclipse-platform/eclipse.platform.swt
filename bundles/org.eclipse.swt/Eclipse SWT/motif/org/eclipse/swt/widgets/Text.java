@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
 public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
-	String hiddenText;
+	String hiddenText, message;
 	int drawCount;
 	
 	static final boolean IsGB18030;
@@ -214,6 +214,11 @@ public void append (String string) {
 	display.setWarnings(warnings);
 }
 static int checkStyle (int style) {
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~SWT.PASSWORD;
+	}
+	style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -301,6 +306,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 		OS.XtFree (ptr);
 	}
+	//This code is intentionally commented
+//	if ((style & SWT.SEARCH) != 0 && message.length () != 0) {
+//		GC gc = new GC (this);
+//		Point size = gc.stringExtent (message);
+//		width = Math.max (width, size.x);
+//		gc.dispose ();
+//	}
 	Rectangle trim = computeTrim (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
@@ -406,7 +418,7 @@ ScrollBar createScrollBar (int type) {
 }
 void createWidget (int index) {
 	super.createWidget (index);	
-	hiddenText = "";
+	hiddenText = message = "";
 	if ((style & SWT.PASSWORD) != 0) setEchoChar ('*');
 }
 /**
@@ -668,6 +680,10 @@ int getLineNumber (int position) {
 		start += page;
 	}
 	return count;
+}
+public String getMessage () {
+	checkWidget ();
+	return message;
 }
 int getNavigationType () {
 	/*
@@ -1012,7 +1028,7 @@ public void paste () {
 }
 void releaseWidget () {
 	super.releaseWidget ();
-	hiddenText = null;
+	hiddenText = message = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1216,6 +1232,11 @@ public void setEditable (boolean editable) {
 	if ((style & SWT.MULTI) != 0) return;
 	int [] argList = {OS.XmNcursorPositionVisible, editable && hasFocus () ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
+}
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
 }
 /**
  * Sets the orientation of the receiver, which must be one

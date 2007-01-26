@@ -39,6 +39,7 @@ public class Text extends Scrollable {
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
 	boolean doubleClick;
+	String message = "";
 	
 	static final int INNER_BORDER = 2;
 	static final int ITER_SIZEOF = OS.GtkTextIter_sizeof();
@@ -104,6 +105,11 @@ public Text (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~SWT.PASSWORD;
+	}
+	style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -328,6 +334,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	int width = OS.PANGO_PIXELS (w [0]);
 	int height = OS.PANGO_PIXELS (h [0]);
+	//This code is intentionally commented
+//	if ((style & SWT.SEARCH) != 0 && message.length () != 0) {
+//		GC gc = new GC (this);
+//		Point size = gc.stringExtent (message);
+//		width = Math.max (width, size.x);
+//		gc.dispose ();
+//	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
@@ -734,6 +747,11 @@ public String getLineDelimiter () {
 public int getLineHeight () {
 	checkWidget ();
 	return fontHeight (getFontDescription (), handle);
+}
+
+public String getMessage () {
+	checkWidget ();
+	return message;
 }
 
 /**
@@ -1427,6 +1445,7 @@ void releaseWidget () {
 			OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
 		}
 	}
+	message = null;
 }
 
 /**
@@ -1614,6 +1633,12 @@ public void setEditable (boolean editable) {
 void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	setTabStops (tabs);
+}
+
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
 }
 
 /**
