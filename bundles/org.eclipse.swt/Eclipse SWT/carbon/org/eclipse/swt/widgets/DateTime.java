@@ -403,7 +403,7 @@ void hookEvents () {
 	if (OS.VERSION >= 0x1040) {
 		int clockProc = display.clockProc;
 		int [] mask = new int [] {
-				OS.kEventClassClockView, OS.kEventClockDateOrTimeChanged,
+			OS.kEventClassClockView, OS.kEventClockDateOrTimeChanged,
 		};
 		int controlTarget = OS.GetControlEventTarget (handle);
 		OS.InstallEventHandler (controlTarget, clockProc, mask.length / 2, mask, handle, null);
