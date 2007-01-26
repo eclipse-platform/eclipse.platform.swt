@@ -36,7 +36,7 @@ ARCHS = -arch i386 -arch ppc
 CFLAGS = -c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Headers
 LFLAGS = -bundle $(ARCHS) -framework JavaVM -framework Carbon 
 COCOACFLAGS = $(CFLAGS) -xobjective-c -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
-COCOALFLAGS = $(LFLAGS) -framework WebKit -framework Cocoa
+COCOALFLAGS = $(LFLAGS) -framework WebKit -framework Cocoa /System/Library/Frameworks/JavaVM.framework/Libraries/libframeembedding.jnilib
 AGLLFLAGS = $(LFLAGS) -framework OpenGL -framework AGL
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_custom.o os_structs.o os_stats.o

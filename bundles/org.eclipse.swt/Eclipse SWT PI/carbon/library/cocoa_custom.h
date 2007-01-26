@@ -9,14 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-#ifndef INC_cocoa_H
-#define INC_cocoa_H
+/* Libraries for dynamic loaded functions */
+#define HICocoaViewCreate_LIB "com.apple.Carbon"
 
-#include <Carbon/Carbon.h>
-#include <WebKit/WebKit.h>
-#include <WebKit/HIWebView.h>
-#include <WebKit/CarbonUtils.h>
-
-#include "cocoa_custom.h"
-
-#endif /* INC_cocoa_H */

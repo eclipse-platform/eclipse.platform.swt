@@ -10,19 +10,18 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.awt.Frame;
 import java.util.Hashtable;
 
-import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.internal.LONG;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.Cocoa;
+import org.eclipse.swt.internal.cocoa.NSRect;
 import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
-	Frame frame;
 	static Hashtable handles = new Hashtable ();
 	
 MozillaDelegate (Browser browser) {
@@ -77,15 +76,56 @@ public static byte[] wcsToMbcs (String codePage, String string, boolean terminat
 }
 
 int getHandle () {
-	frame = SWT_AWT.new_Frame (browser);
-	int embedHandle = (int)Cocoa.getNativeHandleFromAWT (frame);
+    int embedHandle = Cocoa.objc_msgSend (Cocoa.C_NSImageView, Cocoa.S_alloc);
+	if (embedHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	NSRect r = new NSRect();
+	embedHandle = Cocoa.objc_msgSend (embedHandle, Cocoa.S_initWithFrame, r);
+	int rc;
+	int[] outControl = new int[1];
+	if (OS.VERSION >= 0x1050) {
+		rc = Cocoa.HICocoaViewCreate(embedHandle, 0, outControl);
+	} else {
+		try {
+			System.loadLibrary("frameembedding");
+		} catch (UnsatisfiedLinkError e) {}
+		rc = Cocoa.HIJavaViewCreateWithCocoaView(outControl, embedHandle);
+	}
+	if (rc != OS.noErr || outControl[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int subHIView = outControl[0];
+	HILayoutInfo newLayoutInfo = new HILayoutInfo();
+	newLayoutInfo.version = 0;
+	OS.HIViewGetLayoutInfo(subHIView, newLayoutInfo);
+	HISideBinding biding = newLayoutInfo.binding.top;
+	biding.toView = 0;
+	biding.kind = OS.kHILayoutBindMin;
+	biding.offset = 0;
+	biding = newLayoutInfo.binding.left;
+	biding.toView = 0;
+	biding.kind = OS.kHILayoutBindMin;
+	biding.offset = 0;
+	biding = newLayoutInfo.binding.bottom;
+	biding.toView = 0;
+	biding.kind = OS.kHILayoutBindMax;
+	biding.offset = 0;
+	biding = newLayoutInfo.binding.right;
+	biding.toView = 0;
+	biding.kind = OS.kHILayoutBindMax;
+	biding.offset = 0;
+	OS.HIViewSetLayoutInfo(subHIView, newLayoutInfo);
+	OS.HIViewChangeFeatures(subHIView, OS.kHIViewFeatureIsOpaque, 0);
+	OS.HIViewSetVisible(subHIView, true);
+	int parentHandle = browser.handle;
+	OS.HIViewAddSubview(browser.handle, subHIView);
+	CGRect rect = new CGRect();
+	OS.HIViewGetFrame(parentHandle, rect);
+	rect.x = rect.y = 0;
+	OS.HIViewSetFrame(subHIView, rect);
 	handles.put (new LONG (embedHandle), new LONG (browser.handle));
 	return embedHandle;
 }
 
 void onDispose (int embedHandle) {
 	handles.remove (new LONG (embedHandle));
-	frame.dispose ();
 }
 
 void setSize (int embedHandle, int width, int height) {

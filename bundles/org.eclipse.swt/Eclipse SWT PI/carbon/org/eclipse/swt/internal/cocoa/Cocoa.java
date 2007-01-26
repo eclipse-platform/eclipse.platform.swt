@@ -36,6 +36,7 @@ public static final int C_NSStatusItemImageView = Cocoa.objc_getClass("NSStatusI
 public static final int C_NSCursor = Cocoa.objc_getClass("NSCursor"); //$NON-NLS-1$
 public static final int C_NSWindow = Cocoa.objc_getClass("NSWindow"); //$NON-NLS-1$
 public static final int C_NSBitmapImageRep = Cocoa.objc_getClass("NSBitmapImageRep"); //$NON-NLS-1$
+public static final int C_NSImageView = Cocoa.objc_getClass("NSImageView"); //$NON-NLS-1$
 
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
@@ -129,6 +130,10 @@ public static final native int HIWebViewCreate(int[] outView);
 public static final native int HIWebViewGetWebView(int inView);
 public static final native void WebInitForCarbon();
 
+/* Embed NSView in HIView */
+public static final native int HIJavaViewCreateWithCocoaView(int[] hiview, int nsview);
+public static final native int HICocoaViewCreate(int nsview, int options, int[] hiview);
+
 /* OBJ-C runtime primitives */
 public static final native int objc_getClass(byte[] className);
 public static final native int objc_msgSend(int object, int selector);
@@ -170,5 +175,4 @@ static int objc_getClass(String className) {
 	return Cocoa.objc_getClass(ascii(className));
 }
 
-public static final native int getNativeHandleFromAWT(Object frame);
 }

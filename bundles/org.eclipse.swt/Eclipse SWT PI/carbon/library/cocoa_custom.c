@@ -17,30 +17,22 @@
 
 extern id objc_msgSend(id, SEL, ...);
 
-#include <JavaVM/jawt_md.h>
-JNIEXPORT jint JNICALL Cocoa_NATIVE(getNativeHandleFromAWT)
-	(JNIEnv* env, jobject that, jobject widget)
+#ifndef NO_HIJavaViewCreateWithCocoaView
+extern jint HIJavaViewCreateWithCocoaView(jint *, jint) __attribute__((weak_import));
+JNIEXPORT jint JNICALL Cocoa_NATIVE(HIJavaViewCreateWithCocoaView)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
 {
-	jint handle = 0;
-	JAWT awt;
-	awt.version = JAWT_VERSION_1_4;
-	if (!JAWT_GetAWT(env, &awt)) return 0;
-	JAWT_DrawingSurface* ds = awt.GetDrawingSurface(env, widget);
-	if (ds != NULL) {
-		jint lock = ds->Lock(ds);
-		if (!(lock & JAWT_LOCK_ERROR)) {
-			JAWT_DrawingSurfaceInfo* dsi = ds->GetDrawingSurfaceInfo(ds);
-			if (dsi) {
-				JAWT_MacOSXDrawingSurfaceInfo* dsi_mac = (JAWT_MacOSXDrawingSurfaceInfo*) (dsi->platformInfo);
-				handle = (jint) (dsi_mac->cocoaViewRef);
-				ds->FreeDrawingSurfaceInfo(dsi);
-			}
-			ds->Unlock(ds);
-		}
-		awt.FreeDrawingSurface(ds);
-	}
-	return handle;
+	jint *lparg0=NULL;
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, HIJavaViewCreateWithCocoaView_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (HIJavaViewCreateWithCocoaView) rc = (jint)HIJavaViewCreateWithCocoaView(lparg0, arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	Cocoa_NATIVE_EXIT(env, that, HIJavaViewCreateWithCocoaView_FUNC);
+	return rc;
 }
+#endif
 
 #ifndef NO_objc_1msgSend__IIF
 JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIF)

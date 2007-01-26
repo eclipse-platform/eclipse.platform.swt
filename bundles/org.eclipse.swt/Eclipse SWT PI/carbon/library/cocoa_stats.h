@@ -21,6 +21,8 @@ extern char* Cocoa_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	HICocoaViewCreate_FUNC,
+	HIJavaViewCreateWithCocoaView_FUNC,
 	HIWebViewCreate_FUNC,
 	HIWebViewGetWebView_FUNC,
 	NSDeviceRGBColorSpace_FUNC,

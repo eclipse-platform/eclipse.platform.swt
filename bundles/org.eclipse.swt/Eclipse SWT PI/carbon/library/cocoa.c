@@ -15,6 +15,39 @@
 
 #define Cocoa_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_Cocoa_##func
 
+#ifndef NO_HICocoaViewCreate
+JNIEXPORT jint JNICALL Cocoa_NATIVE(HICocoaViewCreate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	Cocoa_NATIVE_ENTER(env, that, HICocoaViewCreate_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)HICocoaViewCreate(arg0, arg1, lparg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HICocoaViewCreate_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HICocoaViewCreate"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	Cocoa_NATIVE_EXIT(env, that, HICocoaViewCreate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIWebViewCreate
 JNIEXPORT jint JNICALL Cocoa_NATIVE(HIWebViewCreate)
 	(JNIEnv *env, jclass that, jintArray arg0)
