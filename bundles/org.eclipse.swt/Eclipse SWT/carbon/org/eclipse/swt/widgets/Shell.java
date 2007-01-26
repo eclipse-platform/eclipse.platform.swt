@@ -464,6 +464,7 @@ void createHandle () {
 			* with other windows, but the user will get feedback when resizing.
 			*/
 			if ((style & SWT.TITLE) == 0) attributes |= OS.kWindowLiveResizeAttribute;
+			if (!OS.__BIG_ENDIAN__()) attributes |= OS.kWindowLiveResizeAttribute;
 		}
 	}
 	int windowClass = OS.kDocumentWindowClass;

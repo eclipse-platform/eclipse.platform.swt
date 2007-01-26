@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
 public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
-	String hiddenText;
+	String hiddenText, message;
 	int tabs, lastModifiedText;
 	PtTextCallback_t textVerify;
 	
@@ -102,6 +102,11 @@ public Text (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~SWT.PASSWORD;
+	}
+	style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -610,6 +615,11 @@ public int getLineHeight () {
 	OS.memmove (extent, line [0] + 10, 8);
 	OS.free(ptr);
 	return extent.lr_y - extent.ul_y + 1 + args [4];
+}
+
+public String getMessage () {
+	checkWidget ();
+	return message;
 }
 
 String getNameText () {
@@ -1242,6 +1252,12 @@ public void setEditable (boolean editable) {
 public void setFont (Font font) {
 	super.setFont (font);
 	setTabStops (tabs);
+}
+
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
 }
 
 /**

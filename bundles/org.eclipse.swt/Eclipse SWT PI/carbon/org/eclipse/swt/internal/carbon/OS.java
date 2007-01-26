@@ -358,6 +358,7 @@ public class OS extends C {
 	public static final int kEventClassMenu = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
 	public static final int kEventClassMouse = ('m'<<24) + ('o'<<16) + ('u'<<8) + 's';
 	public static final int kEventClassScrollable = ('s'<<24) + ('c'<<16) + ('r'<<8) + 'l';
+	public static final int kEventClassSearchField = ('s'<<24) + ('r'<<16) + ('f'<<8) + 'd';
 	public static final int kEventClassTextInput = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kEventClassWindow = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int kEventClockDateOrTimeChanged = 1;
@@ -458,6 +459,8 @@ public class OS extends C {
 	public static final int kEventRawKeyRepeat = 2;
 	public static final int kEventRawKeyUp = 3;
 	public static final int kEventRawKeyModifiersChanged = 4;
+	public static final int kEventSearchFieldCancelClicked = 1;
+	public static final int kEventSearchFieldSearchClicked = 2;
 	public static final int kEventScrollableScrollTo = 10;
 	public static final int kEventTextInputUnicodeForKeyEvent = 2;
 	public static final int kEventWindowActivated = 5;
@@ -1449,6 +1452,7 @@ public static final native int HIViewScrollRect(int inView, CGRect inRect, float
 public static final native int HIScrollViewCreate(int inOptions, int[] outView);
 public static final native int HISearchFieldCreate(CGRect inBounds, int inAttributes, int inSearchMenu, int inDescriptiveText, int [] outRef);
 public static final native int HISearchFieldChangeAttributes(int inSearchField, int inAttributesToSet, int inAttributesToClear);
+public static final native int HISearchFieldCopyDescriptiveText(int inSearchField, int [] outDescription);
 public static final native int HISearchFieldGetAttributes(int inSearchField, int [] outAttributes);
 public static final native int HISearchFieldSetDescriptiveText(int inSearchField, int inDescription);
 public static final native int HITextViewCreate(CGRect inBoundsRect, int inOptions, int inTXNFrameOptions, int[] outTextView);

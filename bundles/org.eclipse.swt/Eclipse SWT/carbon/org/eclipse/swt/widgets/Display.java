@@ -107,11 +107,11 @@ public class Display extends Device {
 	static final int WAKE_KIND = 1;
 	Event [] eventQueue;
 	Callback actionCallback, appleEventCallback, clockCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
-	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, trayItemCallback;
+	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, searchCallback, trayItemCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, pollingCallback;
 	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback;
 	int actionProc, appleEventProc, clockProc, commandProc, controlProc, appearanceProc, accessibilityProc;
-	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, trayItemProc;
+	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, searchProc, trayItemProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, pollingProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
 	EventTable eventTable, filterTable;
@@ -192,7 +192,7 @@ public class Display extends Device {
 	boolean dragging;
 	
 	/* Insets */
-	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset, editTextInset;
+	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset, editTextInset, searchTextInset;
 	
 	/* Fonts */
 	boolean smallFonts;
@@ -2058,6 +2058,9 @@ void initializeCallbacks () {
 	pollingCallback = new Callback (this, "pollingProc", 2);
 	pollingProc = pollingCallback.getAddress ();
 	if (pollingProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	searchCallback = new Callback (this, "searchProc", 3);
+	searchProc = searchCallback.getAddress ();
+	if (searchProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -2121,18 +2124,17 @@ void initializeInsets () {
 	tabFolderSouthInset = computeInset (outControl [0]);
 	OS.DisposeControl (outControl [0]);
 
-	/* For some reason, this code calculates insets too big. */
-//	OS.CreateEditUnicodeTextControl (0, rect, 0, false, null, outControl);
-//	editTextInset = computeInset (outControl [0]);
-//	OS.DisposeControl (outControl [0]);	
-	editTextInset = new Rect ();
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-	int inset = outMetric [0]; 
-	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
-	inset += outMetric [0];
-	editTextInset.left = editTextInset.top = editTextInset.right = editTextInset.bottom = (short) inset;
-
+	OS.CreateEditUnicodeTextControl (0, rect, 0, false, null, outControl);
+	editTextInset = computeInset (outControl [0]);
+	OS.DisposeControl (outControl [0]);
+	
+	int attributes = OS.kHISearchFieldAttributesSearchIcon | OS.kHISearchFieldAttributesCancel;
+	OS.HISearchFieldCreate (null, attributes, 0, 0, outControl);
+	searchTextInset = computeInset (outControl [0]);
+	//FIXME - 
+	editTextInset.bottom = editTextInset.top;
+	OS.DisposeControl (outControl [0]);
+	
 	CGRect cgRect = new CGRect ();
 	cgRect.width = cgRect.height = 200;
 	int inAttributes = OS.kHIComboBoxAutoCompletionAttribute | OS.kHIComboBoxAutoSizeListAttribute;
@@ -3073,12 +3075,13 @@ void releaseDisplay () {
 	appearanceCallback.dispose ();
 	trayItemCallback.dispose ();
 	pollingCallback.dispose ();
+	searchCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = appearanceCallback = null;
 	accessibilityCallback = clockCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
-	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = trayItemCallback = null;
+	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = searchCallback = trayItemCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = pollingCallback = null;
 	textInputCallback = null;
-	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = trayItemProc = 0;
+	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = searchProc = trayItemProc = 0;
 	accessibilityProc = clockProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = pollingProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
@@ -3431,6 +3434,12 @@ boolean runTimers () {
 		}
 	}
 	return result;
+}
+
+int searchProc (int nextHandler, int theEvent, int userData) {
+	Widget widget = getWidget (userData);
+	if (widget != null) return widget.searchProc (nextHandler, theEvent, userData);
+	return OS.eventNotHandledErr;
 }
 
 void sendEvent (int eventType, Event event) {

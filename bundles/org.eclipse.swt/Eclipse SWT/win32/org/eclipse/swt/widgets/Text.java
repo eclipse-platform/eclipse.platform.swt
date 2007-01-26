@@ -22,7 +22,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>CENTER, LEFT, MULTI, PASSWORD, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
+ * <dd>CANCEL, CENTER, LEFT, MULTI, PASSWORD, SEARCH, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
@@ -35,6 +35,7 @@ import org.eclipse.swt.events.*;
 public class Text extends Scrollable {
 	int tabs, oldStart, oldEnd;
 	boolean doubleClick, ignoreModify, ignoreVerify, ignoreCharacter;
+	String message;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -271,6 +272,11 @@ public void append (String string) {
 }
 
 static int checkStyle (int style) {
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~SWT.PASSWORD;
+	}
+	if (OS.COMCTL32_MAJOR < 6) style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -338,6 +344,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.DrawText (hDC, buffer, length, rect, flags);
 			width = rect.right - rect.left;
 		}
+		if (OS.COMCTL32_MAJOR >= 6) {
+			length = message.length ();
+			if ((style & SWT.SEARCH) != 0 && length != 0) {
+				char [] buffer = new char [length + 1];
+				message.getChars (0, length, buffer, 0);
+				SIZE size = new SIZE ();
+				OS.GetTextExtentPoint32W (hDC, buffer, length, size);
+				width = Math.max (width, size.cx);
+			}
+		}
 		if (wrap && hHint == SWT.DEFAULT) {
 			int newHeight = rect.bottom - rect.top;
 			if (newHeight != 0) height = newHeight;
@@ -393,6 +409,7 @@ public void copy () {
 
 void createWidget () {
 	super.createWidget ();
+	message = "";
 	doubleClick = true;
 	setTabStops (tabs = 8);
 	fixAlignment ();
@@ -795,6 +812,30 @@ public int getLineHeight () {
 public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+/**
+ * Returns the widget message. When the widget is created
+ * with the style <code>SWT.SEARCH</code>, the message text
+ * is displayed as a hint for the user, indicating the
+ * purpose of the field.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not
+ * supported on platforms that do not have this concept.
+ * </p>
+ * 
+ * @return the widget message
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public String getMessage () {
+	checkWidget ();
+	return message;
 }
 
 /**
@@ -1391,6 +1432,11 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	super.setBounds (x, y, width, height, flags);
 }
 
+void setDefaultFont () {
+	super.setDefaultFont ();
+	setMargins ();
+}
+
 /**
  * Sets the double click enabled flag.
  * <p>
@@ -1471,6 +1517,60 @@ public void setFont (Font font) {
 	checkWidget ();
 	super.setFont (font);
 	setTabStops (tabs);
+	setMargins ();
+}
+
+void setMargins () {
+	/*
+	* Bug in Windows.  When EM_SETCUEBANNER is used to set the
+	* banner text, the control does not take into account the
+	* margins, causing the first character to be clipped.  The
+	* fix is to set the margins to zero.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if ((style & SWT.SEARCH) != 0) {
+			OS.SendMessage (handle, OS.EM_SETMARGINS, OS.EC_LEFTMARGIN | OS.EC_RIGHTMARGIN, 0);
+		}
+	}
+}
+
+/**
+ * Sets the widget message. When the widget is created
+ * with the style <code>SWT.SEARCH</code>, the message text
+ * is displayed as a hint for the user, indicating the
+ * purpose of the field.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not
+ * supported on platforms that do not have this concept.
+ * </p>
+ * 
+ * @param string the new message
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if ((style & SWT.SEARCH) != 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.ES_MULTILINE) == 0) {
+				int length = message.length ();
+				char [] chars = new char [length + 1];
+				message.getChars(0, length, chars, 0);
+				OS.SendMessage (handle, OS.EM_SETCUEBANNER, 0, chars);
+			}
+		}
+	}
 }
 
 /**

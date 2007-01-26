@@ -7160,6 +7160,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldChangeAttributes)
 }
 #endif
 
+#ifndef NO_HISearchFieldCopyDescriptiveText
+JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldCopyDescriptiveText)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HISearchFieldCopyDescriptiveText_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)HISearchFieldCopyDescriptiveText((HIViewRef)arg0, (CFStringRef *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, HISearchFieldCopyDescriptiveText_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HISearchFieldCreate
 JNIEXPORT jint JNICALL OS_NATIVE(HISearchFieldCreate)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)

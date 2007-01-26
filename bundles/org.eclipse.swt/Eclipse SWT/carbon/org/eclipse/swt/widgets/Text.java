@@ -47,10 +47,11 @@ import org.eclipse.swt.graphics.*;
 public class Text extends Scrollable {
 	int txnObject, txnFrameID;
 	int textLimit = LIMIT, tabs = 8;
+	ControlEditTextSelectionRec selection;
 	char echoCharacter;
 	boolean doubleClick;
-	String hiddenText;
-	ControlEditTextSelectionRec selection;
+	String hiddenText, message;
+	
 	/**
 	* The maximum number of characters that can be entered
 	* into a text widget.
@@ -60,6 +61,7 @@ public class Text extends Scrollable {
 	* </p>
 	*/
 	public static final int LIMIT;
+	
 	/**
 	* The delimiter used by multi-line text widgets.  When text
 	* is queried and from the widget, it will be delimited using
@@ -111,6 +113,10 @@ public class Text extends Scrollable {
  */
 public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	if ((style & SWT.SEARCH) != 0) {
+		int inAttributesToSet = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
+		OS.HISearchFieldChangeAttributes (handle, inAttributesToSet, 0);
+	}
 }
 
 /**
@@ -234,6 +240,10 @@ public void append (String string) {
 }
 
 static int checkStyle (int style) {
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~SWT.PASSWORD;
+	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
@@ -299,6 +309,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.GetBestControlRect (handle, rect, null);
 		width = rect.right - rect.left;
 		height = rect.bottom - rect.top;
+		if ((style & SWT.SEARCH) != 0) {
+			int [] ptr1 = new int [1];
+			OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlEditTextCFStringTag, 4, ptr1, null);
+			Point size1 = textExtent (ptr1 [0], 0);
+			if (ptr1 [0] != 0) OS.CFRelease (ptr1 [0]);
+			width = size1.x;
+			int [] ptr2 = new int [1];
+			OS.HISearchFieldCopyDescriptiveText (handle, ptr2);
+			Point size2 = textExtent (ptr2 [0], 0);
+			width = Math.max (width, size2.x);
+			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
+		}
 	} else {
 		if (OS.VERSION >= 0x1030) {
 			int [] oDataHandle = new int [1];
@@ -362,6 +384,22 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		width += inset.left + inset.right;
 		height += inset.top + inset.bottom;
 	}
+	if ((style & SWT.SEARCH) != 0) {
+		int [] left = new int [1], right = new int [1];
+		int [] outAttributes = new int [1];
+		OS.HISearchFieldGetAttributes (handle, outAttributes);
+		if ((outAttributes [0] & OS.kHISearchFieldAttributesSearchIcon) != 0) {
+			OS.GetThemeMetric (OS.kThemeMetricRoundTextFieldContentInsetWithIconLeft, left);
+		} else {
+			OS.GetThemeMetric (OS.kThemeMetricRoundTextFieldContentInsetLeft, left);			
+		}
+		if ((outAttributes [0] & OS.kHISearchFieldAttributesCancel) != 0) {
+			OS.GetThemeMetric (OS.kThemeMetricRoundTextFieldContentInsetWithIconRight, right);
+		} else {
+			OS.GetThemeMetric (OS.kThemeMetricRoundTextFieldContentInsetRight, right);			
+		}
+		width += left [0] + right [0];
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -398,7 +436,7 @@ void copy (char [] buffer) {
 void createHandle () {
 	if (OS.HIVIEW) {
 		int [] outControl = new int [1];
-		if ((style & SWT.MULTI) != 0 || ((style & SWT.BORDER) == 0)) {
+		if ((style & SWT.MULTI) != 0 || (style & (SWT.BORDER | SWT.SEARCH)) == 0) {
 			if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 				int options = 0;
 				if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == (SWT.H_SCROLL | SWT.V_SCROLL)) options |= OS.kHIScrollViewOptionsAllowGrow;
@@ -440,8 +478,13 @@ void createHandle () {
 			OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 			OS.DisposePtr (ptr);
 		} else {
-			int window = OS.GetControlOwner (parent.handle);
-			OS.CreateEditUnicodeTextControl (window, null, 0, (style & SWT.PASSWORD) != 0, null, outControl);
+			if ((style & SWT.SEARCH) != 0) {
+				int attributes = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
+				OS.HISearchFieldCreate (null, attributes, 0, 0, outControl);
+			} else {
+				int window = OS.GetControlOwner (parent.handle);
+				OS.CreateEditUnicodeTextControl (window, null, 0, (style & SWT.PASSWORD) != 0, null, outControl);
+			}
 			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 			handle = outControl [0];
 			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
@@ -454,6 +497,13 @@ void createHandle () {
 				if ((style & SWT.CENTER) != 0) fontStyle.just = OS.teJustCenter;
 				if ((style & SWT.RIGHT) != 0) fontStyle.just = OS.teJustRight;
 				OS.SetControlFontStyle (handle, fontStyle);
+			}
+			if ((style & SWT.SEARCH) != 0) {
+				if (OS.HIVIEW) {
+					OS.HIViewSetVisible (handle, true);
+				} else {
+					OS.SetControlVisibility (handle, true, false);
+				}
 			}
 		}		
 	} else {
@@ -544,6 +594,7 @@ void createWidget () {
 	super.createWidget ();
 	doubleClick = true;
 	if ((style & SWT.PASSWORD) != 0) setEchoChar (PASSWORD);
+	message = "";
 }
 
 /**
@@ -635,6 +686,11 @@ void drawWidget (int control, int context, int damageRgn, int visibleRgn, int th
 		OS.TXNDraw (txnObject, 0);
 	}
 	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
+}
+
+int focusPart () {
+	if ((style & SWT.SEARCH) != 0) return OS.kControlEditTextPart;
+	return super.focusPart ();
 }
 
 /**
@@ -799,6 +855,7 @@ public boolean getEditable () {
 }
 
 Rect getInset () {
+	if ((style & SWT.SEARCH) != 0) return display.searchTextInset;
 	if (txnObject != 0) return super.getInset ();
 	return display.editTextInset;
 }
@@ -874,6 +931,11 @@ public int getLineHeight () {
 public int getOrientation () {
 	checkWidget();
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
+public String getMessage () {
+	checkWidget ();
+	return message;
 }
 
 int getPosition (int x, int y) {
@@ -1167,7 +1229,20 @@ String getTXNText (int iStartOffset, int iEndOffset) {
 	return new String (buffer);
 }
 
+void hookEvents () {
+	super.hookEvents ();
+	if ((style & SWT.SEARCH) != 0) {
+		int searchProc = display.searchProc;
+		int [] mask = new int [] {
+			OS.kEventClassSearchField, OS.kEventSearchFieldCancelClicked,
+		};
+		int controlTarget = OS.GetControlEventTarget (handle);
+		OS.InstallEventHandler (controlTarget, searchProc, mask.length / 2, mask, handle, null);
+	}
+}
+
 Rect inset () {
+	if ((style & SWT.SEARCH) != 0) return super.inset ();
 	if (OS.HIVIEW) {
 		if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) == 0) {
 			Rect rect = new Rect ();
@@ -1319,6 +1394,16 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
 		if (clickCount [0] > 1) return OS.noErr;
 	}
+	return result;
+}
+
+int kEventSearchFieldCancelClicked (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventSearchFieldCancelClicked (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	setText ("");
+	Event event = new Event ();
+	event.detail = SWT.CANCEL;
+	postEvent (SWT.DefaultSelection, event);
 	return result;
 }
 
@@ -1853,6 +1938,20 @@ void setFontStyle (Font font) {
  */
 public void setOrientation (int orientation) {
 	checkWidget();
+}
+
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
+	if ((style & SWT.SEARCH) != 0) {
+		char [] buffer = new char [message.length ()];
+		message.getChars (0, buffer.length, buffer, 0);
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		OS.HISearchFieldSetDescriptiveText (handle, ptr);
+		OS.CFRelease (ptr);
+	}
 }
 
 /**

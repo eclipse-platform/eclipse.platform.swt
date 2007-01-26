@@ -1139,6 +1139,10 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventSearchFieldCancelClicked (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	return kEventRawKeyPressed (nextHandler, theEvent, userData);
 }
@@ -1519,6 +1523,14 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
+}
+
+int searchProc (int nextHandler, int theEvent, int userData) {
+	int kind = OS.GetEventKind (theEvent);
+	switch (kind) {
+		case OS.kEventSearchFieldCancelClicked: return kEventSearchFieldCancelClicked (nextHandler, theEvent, userData);
+	}
+	return OS.eventNotHandledErr;
 }
 
 void sendEvent (Event event) {

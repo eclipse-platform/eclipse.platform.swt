@@ -924,6 +924,16 @@ public class SWT {
 	public static final int WRAP = 1 << 6;
 
 	/**
+	 * Style constant for search behavior (value is 1&lt;&lt;7).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Text</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.3
+	 */
+	public static final int SEARCH = 1 << 7;
+
+	/**
 	 * Style constant for simple (not drop down) behavior (value is 1&lt;&lt;6).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Combo</code></li>
@@ -2263,7 +2273,13 @@ public class SWT {
 	/**
 	 * The <code>MessageBox</code> style constant for a CANCEL button;
 	 * valid combinations are OK|CANCEL, YES|NO|CANCEL, RETRY|CANCEL
-	 * (value is 1&lt;&lt;8).
+	 * (value is 1&lt;&lt;8).  This style constant is also used with 
+	 * <code>Text</code> in combination with SEARCH.
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>MessageBox</code></li>
+	 * <li><code>Text</code></li>
+	 * </ul></p>
 	 */
 	public static final int CANCEL = 1 << 8;
 
