@@ -11276,6 +11276,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SendMessageA__III_3C
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__III_3C)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3)
+{
+	jchar *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageA__III_3C_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, SendMessageA__III_3C_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SendMessageA__III_3I
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__III_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)

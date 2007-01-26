@@ -394,6 +394,7 @@
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDHITTESTINFO_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_SYSTEMTIME_2
 #define NO_SendMessageA__IIII
+#define NO_SendMessageA__III_3C
 #define NO_SendMessageA__III_3S
 #define NO_SendMessageA__III_3I
 #define NO_SendMessageA__III_3B

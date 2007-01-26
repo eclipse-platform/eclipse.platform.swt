@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 853;
-int OS_nativeFunctionCallCount[853];
+int OS_nativeFunctionCount = 854;
+int OS_nativeFunctionCallCount[854];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -718,6 +718,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_UDACCEL_2",
 	"SendMessageA__III_3B",
+	"SendMessageA__III_3C",
 	"SendMessageA__III_3I",
 	"SendMessageA__III_3S",
 	"SendMessageA__II_3II",

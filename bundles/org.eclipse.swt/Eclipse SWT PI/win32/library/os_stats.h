@@ -722,6 +722,7 @@ typedef enum {
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2_FUNC,
 	SendMessageA__IIILorg_eclipse_swt_internal_win32_UDACCEL_2_FUNC,
 	SendMessageA__III_3B_FUNC,
+	SendMessageA__III_3C_FUNC,
 	SendMessageA__III_3I_FUNC,
 	SendMessageA__III_3S_FUNC,
 	SendMessageA__II_3II_FUNC,
