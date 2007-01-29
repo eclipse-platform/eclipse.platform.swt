@@ -625,24 +625,6 @@ void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, R
 	}
 }
 
-void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
-	int visibleRgn = getVisibleRegion (control, true);
-	if (!OS.EmptyRgn (visibleRgn)) {
-		int [] currentPort = new int [1];
-		OS.GetPort (currentPort);
-		int window = OS.GetControlOwner (control);
-		int port = OS.GetWindowPort (window);
-		OS.SetPort (port);
-		int oldClip = OS.NewRgn ();
-		OS.GetClip (oldClip);
-		OS.SetClip (visibleRgn);
-		drawFocus (control, 0, hasFocus, hasBorder, inset);
-		OS.SetClip (oldClip);
-		OS.SetPort (currentPort [0]);
-	}
-	OS.DisposeRgn (visibleRgn);
-}
-
 boolean drawFocusRing () {
 	return !display.noFocusRing || getShell ().parent != null;
 }
