@@ -15,7 +15,6 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.TXNBackground;
-import org.eclipse.swt.internal.carbon.TXNLongRect;
 import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.CFRange;
@@ -319,29 +318,22 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 //			if (ptr2 [0] != 0) OS.CFRelease (ptr2 [0]);
 		}
 	} else {
-		if (OS.VERSION >= 0x1030) {
-			int [] oDataHandle = new int [1];
-			OS.TXNGetData (txnObject, OS.kTXNStartOffset, OS.kTXNEndOffset, oDataHandle);
-			if (oDataHandle [0] != 0) {
-				int length = OS.GetHandleSize (oDataHandle [0]), str = 0;
-				if (length != 0) {
-					int [] ptr = new int [1];
-					OS.HLock (oDataHandle [0]);
-					OS.memcpy (ptr, oDataHandle [0], 4);
-					str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);					
-					OS.HUnlock (oDataHandle[0]);
-				}
-				OS.DisposeHandle (oDataHandle[0]);
-				Point size = textExtent (str, wHint == SWT.DEFAULT ? 0 : wHint);
-				if (str != 0) OS.CFRelease(str);
-				width = size.x;
-				height = size.y;
+		int [] oDataHandle = new int [1];
+		OS.TXNGetData (txnObject, OS.kTXNStartOffset, OS.kTXNEndOffset, oDataHandle);
+		if (oDataHandle [0] != 0) {
+			int length = OS.GetHandleSize (oDataHandle [0]), str = 0;
+			if (length != 0) {
+				int [] ptr = new int [1];
+				OS.HLock (oDataHandle [0]);
+				OS.memcpy (ptr, oDataHandle [0], 4);
+				str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);					
+				OS.HUnlock (oDataHandle[0]);
 			}
-		} else {
-			TXNLongRect oTextRect = new TXNLongRect ();
-			OS.TXNGetRectBounds (txnObject, null, null, oTextRect);
-			width = oTextRect.right - oTextRect.left;
-			height = oTextRect.bottom - oTextRect.top;
+			OS.DisposeHandle (oDataHandle[0]);
+			Point size = textExtent (str, wHint == SWT.DEFAULT ? 0 : wHint);
+			if (str != 0) OS.CFRelease(str);
+			width = size.x;
+			height = size.y;
 		}
 	}
 	if (width <= 0) width = DEFAULT_WIDTH;
@@ -624,13 +616,13 @@ public Point getCaretLocation () {
 		//TODO - caret location for unicode text
 		return new Point (0, 0);
 	}
-	org.eclipse.swt.internal.carbon.Point oPoint = new org.eclipse.swt.internal.carbon.Point ();
+	CGPoint oPoint = new CGPoint ();
 	int [] oStartOffset = new int [1], oEndOffset = new int [1];
 	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-	OS.TXNOffsetToPoint (txnObject, oStartOffset [0], oPoint);
+	OS.TXNOffsetToHIPoint (txnObject, oStartOffset [0], oPoint);
 	Rect oViewRect = new Rect ();
 	OS.TXNGetViewRect (txnObject, oViewRect);
-	return new Point (oPoint.h - oViewRect.left, oPoint.v - oViewRect.top);
+	return new Point ((int) oPoint.x - oViewRect.left, (int) oPoint.y - oViewRect.top);
 }
 
 /**
@@ -836,10 +828,10 @@ int getPosition (int x, int y) {
 	int [] oOffset = new int [1];
 	Rect oViewRect = new Rect ();
 	OS.TXNGetViewRect (txnObject, oViewRect);
-	org.eclipse.swt.internal.carbon.Point iPoint = new org.eclipse.swt.internal.carbon.Point ();
-	iPoint.h = (short) (x + oViewRect.left);
-	iPoint.v = (short) (y + oViewRect.top);
-	return OS.TXNPointToOffset (txnObject, iPoint, oOffset) == OS.noErr ? oOffset [0] : -1;
+	CGPoint iPoint = new CGPoint ();
+	iPoint.x = x + oViewRect.left;
+	iPoint.y = y + oViewRect.top;
+	return OS.TXNHIPointToOffset (txnObject, iPoint, oOffset) == OS.noErr ? oOffset [0] : -1;
 }
 
 public int getPosition (Point point) {
@@ -1090,19 +1082,11 @@ public int getTopIndex () {
 public int getTopPixel () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 0;
-	if (OS.VERSION >= 0x1030) {
-		CGRect rect = new CGRect ();
-		OS.TXNGetHIRect (txnObject, OS.kTXNDestinationRectKey, rect);
-		int destY = (int) rect.y;
-		OS.TXNGetHIRect (txnObject, OS.kTXNTextRectKey, rect);
-		return destY - (int) rect.y;
-	} else {
-		Rect oViewRect = new Rect ();
-		TXNLongRect oDestinationRect = new TXNLongRect ();
-		TXNLongRect oTextRect = new TXNLongRect ();
-		OS.TXNGetRectBounds (txnObject, oViewRect, oDestinationRect, oTextRect);
-		return oDestinationRect.top - oTextRect.top;
-	}
+	CGRect rect = new CGRect ();
+	OS.TXNGetHIRect (txnObject, OS.kTXNDestinationRectKey, rect);
+	int destY = (int) rect.y;
+	OS.TXNGetHIRect (txnObject, OS.kTXNTextRectKey, rect);
+	return destY - (int) rect.y;
 }
 
 String getTXNText (int iStartOffset, int iEndOffset) {

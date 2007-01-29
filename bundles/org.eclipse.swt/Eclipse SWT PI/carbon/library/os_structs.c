@@ -3263,46 +3263,6 @@ void setTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStru
 }
 #endif
 
-#ifndef NO_TXNLongRect
-typedef struct TXNLongRect_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID top, left, bottom, right;
-} TXNLongRect_FID_CACHE;
-
-TXNLongRect_FID_CACHE TXNLongRectFc;
-
-void cacheTXNLongRectFields(JNIEnv *env, jobject lpObject)
-{
-	if (TXNLongRectFc.cached) return;
-	TXNLongRectFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	TXNLongRectFc.top = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "top", "I");
-	TXNLongRectFc.left = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "left", "I");
-	TXNLongRectFc.bottom = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "bottom", "I");
-	TXNLongRectFc.right = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "right", "I");
-	TXNLongRectFc.cached = 1;
-}
-
-TXNLongRect *getTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
-{
-	if (!TXNLongRectFc.cached) cacheTXNLongRectFields(env, lpObject);
-	lpStruct->top = (*env)->GetIntField(env, lpObject, TXNLongRectFc.top);
-	lpStruct->left = (*env)->GetIntField(env, lpObject, TXNLongRectFc.left);
-	lpStruct->bottom = (*env)->GetIntField(env, lpObject, TXNLongRectFc.bottom);
-	lpStruct->right = (*env)->GetIntField(env, lpObject, TXNLongRectFc.right);
-	return lpStruct;
-}
-
-void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
-{
-	if (!TXNLongRectFc.cached) cacheTXNLongRectFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.top, (jint)lpStruct->top);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.left, (jint)lpStruct->left);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.bottom, (jint)lpStruct->bottom);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.right, (jint)lpStruct->right);
-}
-#endif
-
 #ifndef NO_TXNTab
 typedef struct TXNTab_FID_CACHE {
 	int cached;

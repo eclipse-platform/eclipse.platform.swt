@@ -24,7 +24,7 @@ public class OS extends C {
 	static {
 		int [] response = new int [1];
 		OS.Gestalt (OS.gestaltSystemVersion, response);
-		VERSION = response [0] & 0xffff;
+		VERSION = response [0] & 0xffff;		
 	}
 
 	/** Constants */
@@ -1790,14 +1790,12 @@ public static final native int TXNGetLineCount(int txHandle, int[] lineTotal);
 public static final native int TXNGetLineMetrics(int iTXNObject, int iLineNumber, int [] oLineWidth, int [] oLineHeight);
 public static final native int TXNGetTXNObjectControls(int iTXNObject, int iControlCount, int [] iControlTags, int [] oControlData);
 public static final native int TXNGetHIRect(int iTXNObject, int iTXNRectKey, CGRect oRectangle);
-public static final native int TXNGetRectBounds(int iTXNObject, Rect oViewRect, TXNLongRect oDestinationRect, TXNLongRect oTextRect);
 public static final native void TXNGetSelection(int txHandle, int[] startOffset, int[] endOffset);
 public static final native void TXNGetViewRect (int iTXNObject, Rect oViewRect);
 public static final native int TXNInitTextension(int iDefaultFonts, int iCountDefaultFonts, int iUsageFlags);
-public static final native int TXNNewObject(int iFileSpec, int iWindw, Rect iFrame, int iFrameOptions, int iFrameType, int iFileType, int iPermanentEncoding, int [] oTXNObject, int[] oTXNFrameID, int iRefCpm);
-public static final native int TXNOffsetToPoint(int txHandle, int offset, Point point);
+public static final native int TXNOffsetToHIPoint(int txHandle, int offset, CGPoint point);
 public static final native int TXNPaste(int txHandle);
-public static final native int TXNPointToOffset (int iTXNObject, Point iPoint, int [] oOffset);
+public static final native int TXNHIPointToOffset (int iTXNObject, CGPoint iPoint, int [] oOffset);
 public static final native void TXNSelectAll(int txHandle);
 public static final native int TXNSetBackground(int iTXNObject, TXNBackground iBackgroundInfo);
 public static final native int TXNSetData(int iTXNObject, int iDataType, char[] iDataPtr, int iDataSize, int iStartOffset, int iEndOffset);

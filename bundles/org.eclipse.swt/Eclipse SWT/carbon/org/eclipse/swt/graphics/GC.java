@@ -772,16 +772,14 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.updateClip) setCGClipping();
-	if (OS.VERSION >= 0x1030) {
-		int[] metric = new int[1];
-		OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
-		CGRect rect = new CGRect ();
-		rect.x = x + metric[0];
-		rect.y = y + metric[0];
-		rect.width = width - metric[0] * 2;
-		rect.height = height - metric[0] * 2;
-		OS.HIThemeDrawFocusRect(rect, true, handle, OS.kHIThemeOrientationNormal);
-	}
+	int[] metric = new int[1];
+	OS.GetThemeMetric(OS.kThemeMetricFocusRectOutset, metric);
+	CGRect rect = new CGRect ();
+	rect.x = x + metric[0];
+	rect.y = y + metric[0];
+	rect.width = width - metric[0] * 2;
+	rect.height = height - metric[0] * 2;
+	OS.HIThemeDrawFocusRect(rect, true, handle, OS.kHIThemeOrientationNormal);
 	flush();
 }
 

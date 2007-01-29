@@ -443,12 +443,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	boolean restoreColor = false;
 	if (hasSelection && selectionBackground != null) {
-		if (OS.VERSION >= 0x1030) {
-			restoreColor = true;
-			int color = OS.CGColorCreate(device.colorspace, selectionBackground.handle);
-			setLayoutControl(OS.kATSULineHighlightCGColorTag, color, 4);
-			OS.CGColorRelease(color);
-		}
+		restoreColor = true;
+		int color = OS.CGColorCreate(device.colorspace, selectionBackground.handle);
+		setLayoutControl(OS.kATSULineHighlightCGColorTag, color, 4);
+		OS.CGColorRelease(color);
 	}
 	/* 
 	* Feature in ATSU. There is no API to set a background attribute

@@ -815,18 +815,6 @@ void setTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStru
 #define TXNBackground_sizeof() 0
 #endif
 
-#ifndef NO_TXNLongRect
-void cacheTXNLongRectFields(JNIEnv *env, jobject lpObject);
-TXNLongRect *getTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct);
-void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct);
-#define TXNLongRect_sizeof() sizeof(TXNLongRect)
-#else
-#define cacheTXNLongRectFields(a,b)
-#define getTXNLongRectFields(a,b,c) NULL
-#define setTXNLongRectFields(a,b,c)
-#define TXNLongRect_sizeof() 0
-#endif
-
 #ifndef NO_TXNTab
 void cacheTXNTabFields(JNIEnv *env, jobject lpObject);
 TXNTab *getTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct);

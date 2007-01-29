@@ -12003,28 +12003,6 @@ fail:
 }
 #endif
 
-#ifndef NO_TXNGetRectBounds
-JNIEXPORT jint JNICALL OS_NATIVE(TXNGetRectBounds)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jobject arg3)
-{
-	Rect _arg1, *lparg1=NULL;
-	TXNLongRect _arg2, *lparg2=NULL;
-	TXNLongRect _arg3, *lparg3=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, TXNGetRectBounds_FUNC);
-	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getTXNLongRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = getTXNLongRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)TXNGetRectBounds((TXNObject)arg0, (Rect *)lparg1, (TXNLongRect *)lparg2, (TXNLongRect *)lparg3);
-fail:
-	if (arg3 && lparg3) setTXNLongRectFields(env, arg3, lparg3);
-	if (arg2 && lparg2) setTXNLongRectFields(env, arg2, lparg2);
-	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, TXNGetRectBounds_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_TXNGetSelection
 JNIEXPORT void JNICALL OS_NATIVE(TXNGetSelection)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -12075,6 +12053,25 @@ fail:
 }
 #endif
 
+#ifndef NO_TXNHIPointToOffset
+JNIEXPORT jint JNICALL OS_NATIVE(TXNHIPointToOffset)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jintArray arg2)
+{
+	CGPoint _arg1, *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, TXNHIPointToOffset_FUNC);
+	if (arg1) if ((lparg1 = getCGPointFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)TXNHIPointToOffset((TXNObject)arg0, (HIPoint *)lparg1, (TXNOffset *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) setCGPointFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, TXNHIPointToOffset_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TXNInitTextension
 JNIEXPORT jint JNICALL OS_NATIVE(TXNInitTextension)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -12087,40 +12084,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(TXNInitTextension)
 }
 #endif
 
-#ifndef NO_TXNNewObject
-JNIEXPORT jint JNICALL OS_NATIVE(TXNNewObject)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3, jint arg4, jint arg5, jint arg6, jintArray arg7, jintArray arg8, jint arg9)
-{
-	Rect _arg2, *lparg2=NULL;
-	jint *lparg7=NULL;
-	jint *lparg8=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, TXNNewObject_FUNC);
-	if (arg2) if ((lparg2 = getRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
-	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
-	rc = (jint)TXNNewObject((const FSSpec *)arg0, (WindowRef)arg1, (const Rect *)lparg2, (TXNFrameOptions)arg3, (TXNFrameType)arg4, (TXNFileType)arg5, (TXNPermanentTextEncodingType)arg6, (TXNObject *)lparg7, (TXNFrameID *)lparg8, (TXNObjectRefcon)arg9);
-fail:
-	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
-	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
-	if (arg2 && lparg2) setRectFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, TXNNewObject_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_TXNOffsetToPoint
-JNIEXPORT jint JNICALL OS_NATIVE(TXNOffsetToPoint)
+#ifndef NO_TXNOffsetToHIPoint
+JNIEXPORT jint JNICALL OS_NATIVE(TXNOffsetToHIPoint)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
-	Point _arg2, *lparg2=NULL;
+	CGPoint _arg2, *lparg2=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, TXNOffsetToPoint_FUNC);
-	if (arg2) if ((lparg2 = getPointFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)TXNOffsetToPoint((TXNObject)arg0, (TXNOffset)arg1, (Point *)lparg2);
+	OS_NATIVE_ENTER(env, that, TXNOffsetToHIPoint_FUNC);
+	if (arg2) if ((lparg2 = getCGPointFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)TXNOffsetToHIPoint((TXNObject)arg0, (TXNOffset)arg1, (HIPoint *)lparg2);
 fail:
-	if (arg2 && lparg2) setPointFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, TXNOffsetToPoint_FUNC);
+	if (arg2 && lparg2) setCGPointFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, TXNOffsetToHIPoint_FUNC);
 	return rc;
 }
 #endif
@@ -12133,25 +12108,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(TXNPaste)
 	OS_NATIVE_ENTER(env, that, TXNPaste_FUNC);
 	rc = (jint)TXNPaste((TXNObject)arg0);
 	OS_NATIVE_EXIT(env, that, TXNPaste_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_TXNPointToOffset
-JNIEXPORT jint JNICALL OS_NATIVE(TXNPointToOffset)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jintArray arg2)
-{
-	Point _arg1, *lparg1=NULL;
-	jint *lparg2=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, TXNPointToOffset_FUNC);
-	if (arg1) if ((lparg1 = getPointFields(env, arg1, &_arg1)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)TXNPointToOffset((TXNObject)arg0, *lparg1, (TXNOffset *)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) setPointFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, TXNPointToOffset_FUNC);
 	return rc;
 }
 #endif

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 912;
-int OS_nativeFunctionCallCount[912];
+int OS_nativeFunctionCount = 910;
+int OS_nativeFunctionCallCount[910];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -856,15 +856,13 @@ char * OS_nativeFunctionNames[] = {
 	"TXNGetHIRect",
 	"TXNGetLineCount",
 	"TXNGetLineMetrics",
-	"TXNGetRectBounds",
 	"TXNGetSelection",
 	"TXNGetTXNObjectControls",
 	"TXNGetViewRect",
+	"TXNHIPointToOffset",
 	"TXNInitTextension",
-	"TXNNewObject",
-	"TXNOffsetToPoint",
+	"TXNOffsetToHIPoint",
 	"TXNPaste",
-	"TXNPointToOffset",
 	"TXNSelectAll",
 	"TXNSetBackground",
 	"TXNSetData",

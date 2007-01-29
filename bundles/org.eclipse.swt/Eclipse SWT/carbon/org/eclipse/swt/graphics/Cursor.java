@@ -56,46 +56,6 @@ public final class Cursor extends Resource {
 
 	static boolean initialized;
 
-	/**
-	 * data and mask used to create a Resize NS Cursor
-	 */
-	static final byte [] SIZENS_SOURCE = new byte[] {
-		(byte)0x00, (byte)0x00,
-		(byte)0x01, (byte)0x80,
-		(byte)0x03, (byte)0xC0,
-		(byte)0x07, (byte)0xE0,
-		(byte)0x01, (byte)0x80,
-		(byte)0x01, (byte)0x80,
-		(byte)0x01, (byte)0x80,
-	 	(byte)0x7F, (byte)0xFE,
-	 	(byte)0x7F, (byte)0xFE,
-		(byte)0x01, (byte)0x80,
-		(byte)0x01, (byte)0x80,
-		(byte)0x01, (byte)0x80,
-		(byte)0x07, (byte)0xE0,
-		(byte)0x03, (byte)0xC0,
-		(byte)0x01, (byte)0x80,
-		(byte)0x00, (byte)0x00,
-	};
-	static final byte [] SIZENS_MASK = new byte[] {
-		(byte)0x01, (byte)0x80,
-		(byte)0x03, (byte)0xC0,
-		(byte)0x07, (byte)0xE0,
-		(byte)0x0F, (byte)0xF0,
-		(byte)0x0F, (byte)0xF0,
-		(byte)0x03, (byte)0xC0,
-		(byte)0xFF, (byte)0xFF,
-	 	(byte)0xFF, (byte)0xFF,
-	 	(byte)0xFF, (byte)0xFF,
-		(byte)0xFF, (byte)0xFF,
-		(byte)0x03, (byte)0xC0,
-		(byte)0x0F, (byte)0xF0,
-		(byte)0x0F, (byte)0xF0,
-		(byte)0x07, (byte)0xE0,
-		(byte)0x03, (byte)0xC0,
-		(byte)0x01, (byte)0x80,
-	};
-	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -156,25 +116,11 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_HELP: 			handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEALL: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZENESW: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZENS: {
-			if (OS.VERSION >= 0x1030) {
-				handle = OS.kThemeResizeUpDownCursor;
-			} else {
-				org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-				cursor.data = SIZENS_SOURCE;
-				cursor.mask = SIZENS_MASK;
-				cursor.hotSpot_h = 7;
-				cursor.hotSpot_v = 7;
-				handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
-				if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
-			}
-	 		break;
-		}
+		case SWT.CURSOR_SIZENS:			handle = OS.kThemeResizeUpDownCursor; break;
 		case SWT.CURSOR_SIZENWSE: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEWE: 		handle = OS.kThemeResizeLeftRightCursor; break;
-		case SWT.CURSOR_SIZEN: 		handle = OS.VERSION >= 0x1030 ? OS.kThemeResizeUpCursor : OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZES: 		handle = OS.VERSION >= 0x1030 ? OS.kThemeResizeDownCursor : OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZEN: 		handle = OS.kThemeResizeUpCursor; break;
+		case SWT.CURSOR_SIZES: 		handle = OS.kThemeResizeDownCursor; break;
 		case SWT.CURSOR_SIZEE: 		handle = OS.kThemeResizeRightCursor; break;
 		case SWT.CURSOR_SIZEW: 		handle = OS.kThemeResizeLeftCursor; break;
 		case SWT.CURSOR_SIZENE: 		handle = OS.kThemeCrossCursor; break;
