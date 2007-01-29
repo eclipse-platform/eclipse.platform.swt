@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 910;
-int OS_nativeFunctionCallCount[910];
+int OS_nativeFunctionCount = 902;
+int OS_nativeFunctionCallCount[902];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -245,7 +245,6 @@ char * OS_nativeFunctionNames[] = {
 	"ClearMenuBar",
 	"ClipCGContextToRegion",
 	"CloseDataBrowserContainer",
-	"ClosePoly",
 	"CloseRgn",
 	"CollapseWindow",
 	"ConvertEventRefToEventRecord",
@@ -253,7 +252,6 @@ char * OS_nativeFunctionNames[] = {
 	"ConvertFromUnicodeToPString",
 	"CopyBits",
 	"CopyControlTitleAsCFString",
-	"CopyDeepMask",
 	"CopyMenuItemTextAsCFString",
 	"CopyRgn",
 	"CountDragItemFlavors",
@@ -448,7 +446,6 @@ char * OS_nativeFunctionNames[] = {
 	"GetMouse",
 	"GetNextDevice",
 	"GetNextWindow",
-	"GetPixBounds",
 	"GetPixDepth",
 	"GetPort",
 	"GetPortBitMapForCopyBits",
@@ -611,7 +608,6 @@ char * OS_nativeFunctionNames[] = {
 	"IsWindowVisible",
 	"JNIGetObject",
 	"KeyTranslate",
-	"KillPoly",
 	"LSCopyAllRoleHandlersForContentType",
 	"LSCopyDisplayNameForRef",
 	"LSFindApplicationForInfo",
@@ -649,7 +645,6 @@ char * OS_nativeFunctionNames[] = {
 	"OffsetRect",
 	"OffsetRgn",
 	"OpenDataBrowserContainer",
-	"OpenPoly",
 	"OpenRgn",
 	"PMCreatePageFormat",
 	"PMCreatePrintSettings",
@@ -693,7 +688,6 @@ char * OS_nativeFunctionNames[] = {
 	"PMSetPageRange",
 	"PMUnflattenPageFormat",
 	"PMUnflattenPrintSettings",
-	"PaintRect",
 	"PickColor",
 	"PopUpMenuSelect",
 	"PostEvent",
@@ -845,7 +839,6 @@ char * OS_nativeFunctionNames[] = {
 	"SizeControl",
 	"SizeWindow",
 	"StillDown",
-	"SyncCGContextOriginWithPort",
 	"SysBeep",
 	"TXNCopy",
 	"TXNCut",
@@ -873,7 +866,6 @@ char * OS_nativeFunctionNames[] = {
 	"TXNShowSelection",
 	"TextFace",
 	"TextFont",
-	"TextMode",
 	"TextSize",
 	"TrackDrag",
 	"TrackMouseLocationWithOptions",

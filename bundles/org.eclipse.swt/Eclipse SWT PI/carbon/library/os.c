@@ -2974,16 +2974,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(CloseDataBrowserContainer)
 }
 #endif
 
-#ifndef NO_ClosePoly
-JNIEXPORT void JNICALL OS_NATIVE(ClosePoly)
-	(JNIEnv *env, jclass that)
-{
-	OS_NATIVE_ENTER(env, that, ClosePoly_FUNC);
-	ClosePoly();
-	OS_NATIVE_EXIT(env, that, ClosePoly_FUNC);
-}
-#endif
-
 #ifndef NO_CloseRgn
 JNIEXPORT void JNICALL OS_NATIVE(CloseRgn)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3093,26 +3083,6 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, CopyControlTitleAsCFString_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_CopyDeepMask
-JNIEXPORT void JNICALL OS_NATIVE(CopyDeepMask)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jobject arg4, jobject arg5, jshort arg6, jint arg7)
-{
-	Rect _arg3, *lparg3=NULL;
-	Rect _arg4, *lparg4=NULL;
-	Rect _arg5, *lparg5=NULL;
-	OS_NATIVE_ENTER(env, that, CopyDeepMask_FUNC);
-	if (arg3) if ((lparg3 = getRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = getRectFields(env, arg4, &_arg4)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = getRectFields(env, arg5, &_arg5)) == NULL) goto fail;
-	CopyDeepMask((const BitMap *)arg0, (const BitMap *)arg1, (const BitMap *)arg2, (const Rect *)lparg3, (const Rect *)lparg4, (const Rect *)lparg5, (short)arg6, (RgnHandle)arg7);
-fail:
-	if (arg5 && lparg5) setRectFields(env, arg5, lparg5);
-	if (arg4 && lparg4) setRectFields(env, arg4, lparg4);
-	if (arg3 && lparg3) setRectFields(env, arg3, lparg3);
-	OS_NATIVE_EXIT(env, that, CopyDeepMask_FUNC);
 }
 #endif
 
@@ -6203,20 +6173,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetNextWindow)
 }
 #endif
 
-#ifndef NO_GetPixBounds
-JNIEXPORT void JNICALL OS_NATIVE(GetPixBounds)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
-{
-	Rect _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, GetPixBounds_FUNC);
-	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
-	GetPixBounds((PixMapHandle)arg0, (Rect *)lparg1);
-fail:
-	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, GetPixBounds_FUNC);
-}
-#endif
-
 #ifndef NO_GetPixDepth
 JNIEXPORT jshort JNICALL OS_NATIVE(GetPixDepth)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -8697,16 +8653,6 @@ fail:
 }
 #endif
 
-#ifndef NO_KillPoly
-JNIEXPORT void JNICALL OS_NATIVE(KillPoly)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, KillPoly_FUNC);
-	KillPoly((PolyHandle)arg0);
-	OS_NATIVE_EXIT(env, that, KillPoly_FUNC);
-}
-#endif
-
 #ifndef NO_LSCopyAllRoleHandlersForContentType
 JNIEXPORT jint JNICALL OS_NATIVE(LSCopyAllRoleHandlersForContentType)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -9249,18 +9195,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(OpenDataBrowserContainer)
 	OS_NATIVE_ENTER(env, that, OpenDataBrowserContainer_FUNC);
 	rc = (jint)OpenDataBrowserContainer((ControlRef)arg0, (DataBrowserItemID)arg1);
 	OS_NATIVE_EXIT(env, that, OpenDataBrowserContainer_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_OpenPoly
-JNIEXPORT jint JNICALL OS_NATIVE(OpenPoly)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, OpenPoly_FUNC);
-	rc = (jint)OpenPoly();
-	OS_NATIVE_EXIT(env, that, OpenPoly_FUNC);
 	return rc;
 }
 #endif
@@ -9885,20 +9819,6 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, PMUnflattenPrintSettings_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_PaintRect
-JNIEXPORT void JNICALL OS_NATIVE(PaintRect)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	Rect _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, PaintRect_FUNC);
-	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	PaintRect((const Rect *)lparg0);
-fail:
-	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, PaintRect_FUNC);
 }
 #endif
 
@@ -11856,18 +11776,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(StillDown)
 }
 #endif
 
-#ifndef NO_SyncCGContextOriginWithPort
-JNIEXPORT jint JNICALL OS_NATIVE(SyncCGContextOriginWithPort)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SyncCGContextOriginWithPort_FUNC);
-	rc = (jint)SyncCGContextOriginWithPort((CGContextRef)arg0, (CGrafPtr)arg1);
-	OS_NATIVE_EXIT(env, that, SyncCGContextOriginWithPort_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_SysBeep
 JNIEXPORT void JNICALL OS_NATIVE(SysBeep)
 	(JNIEnv *env, jclass that, jshort arg0)
@@ -12234,16 +12142,6 @@ JNIEXPORT void JNICALL OS_NATIVE(TextFont)
 	OS_NATIVE_ENTER(env, that, TextFont_FUNC);
 	TextFont((short)arg0);
 	OS_NATIVE_EXIT(env, that, TextFont_FUNC);
-}
-#endif
-
-#ifndef NO_TextMode
-JNIEXPORT void JNICALL OS_NATIVE(TextMode)
-	(JNIEnv *env, jclass that, jshort arg0)
-{
-	OS_NATIVE_ENTER(env, that, TextMode_FUNC);
-	TextMode((short)arg0);
-	OS_NATIVE_EXIT(env, that, TextMode_FUNC);
 }
 #endif
 
