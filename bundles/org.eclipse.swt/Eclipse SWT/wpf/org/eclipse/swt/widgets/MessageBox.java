@@ -35,7 +35,7 @@ import org.eclipse.swt.*;
  * </p>
  */
 public  class MessageBox extends Dialog {
-	String message = "";
+	String message;
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -80,6 +80,7 @@ public MessageBox (Shell parent) {
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (style));
 	checkSubclass ();
+	message = "";
 }
 
 static int checkStyle (int style) {
@@ -141,18 +142,9 @@ public int open () {
 	if ((style & SWT.ICON_WARNING) != 0) iconBits = OS.MessageBoxImage_Warning;
 	if ((style & SWT.ICON_WORKING) != 0) iconBits = OS.MessageBoxImage_Information;
 
-	int length = message.length ();
-	char [] buffer = new char [length + 1];
-	message.getChars (0, length, buffer, 0);
-	int messagePtr = OS.gcnew_String(buffer);
-
-	length = title.length ();
-	buffer = new char [length + 1];
-	title.getChars (0, length, buffer, 0);
-	int titlePtr = OS.gcnew_String(buffer);
-	
-	int code = OS.MessageBox_Show(messagePtr, titlePtr, buttonBits, iconBits, 0);
-
+	int messagePtr = parent.createDotNetString (message, false);
+	int titlePtr = parent.createDotNetString (title, false);
+	int code = OS.MessageBox_Show (messagePtr, titlePtr, buttonBits, iconBits, 0);
 	OS.GCHandle_Free (titlePtr);
 	OS.GCHandle_Free (messagePtr);
 	
