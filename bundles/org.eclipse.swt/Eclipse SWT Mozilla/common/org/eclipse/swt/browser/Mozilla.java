@@ -192,7 +192,6 @@ public void create (Composite parent, int style) {
 				bytes = new byte[length];
 				C.memmove (bytes, greBuffer, length);
 				mozillaPath = new String (MozillaDelegate.mbcsToWcs (null, bytes));
-				// the following line is intentionally commented
 				isXULRunner = mozillaPath.length () > 0;
 			}
 			C.free (greBuffer);
