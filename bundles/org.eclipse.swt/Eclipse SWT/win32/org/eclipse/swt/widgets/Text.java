@@ -1552,7 +1552,7 @@ void setMargins () {
  * supported on platforms that do not have this concept.
  * </p>
  * 
- * @param string the new message
+ * @param message the new message
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
