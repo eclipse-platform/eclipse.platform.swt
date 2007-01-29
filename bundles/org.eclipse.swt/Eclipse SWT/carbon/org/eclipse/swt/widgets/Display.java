@@ -938,6 +938,11 @@ protected void create (DeviceData data) {
 }
 
 void createDisplay (DeviceData data) {
+	if (OS.VERSION < 0x1030) {
+		System.out.println ("***WARNING: SWT requires MacOS X version " + 10 + "." + 3 + " or greater"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		System.out.println ("***WARNING: Detected: " + Integer.toHexString((OS.VERSION & 0xFF00) >> 8) + "." + Integer.toHexString((OS.VERSION & 0xF0) >> 4) + "." + Integer.toHexString(OS.VERSION & 0xF)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
+
 	/*
 	* Feature in the Macintosh.  On OS 10.2, it is necessary
 	* to explicitly check in with the Process Manager and set
