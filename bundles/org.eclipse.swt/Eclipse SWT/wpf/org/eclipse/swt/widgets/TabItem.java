@@ -249,7 +249,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	control = null;
 	toolTipText = null;
-	deregister ();
 }
 
 /**

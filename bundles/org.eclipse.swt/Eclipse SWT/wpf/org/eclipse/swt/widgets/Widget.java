@@ -387,6 +387,9 @@ void createWidget () {
 	hookEvents ();
 }
 
+void deregister () {
+}
+
 /**
  * Destroys the widget in the operating system and releases
  * the widget's handle.  If the widget does not have a handle,
@@ -896,6 +899,7 @@ void releaseParent () {
  * @see #releaseParent
  */
 void releaseWidget () {
+	deregister ();
 	eventTable = null;
 	data = null;
 }

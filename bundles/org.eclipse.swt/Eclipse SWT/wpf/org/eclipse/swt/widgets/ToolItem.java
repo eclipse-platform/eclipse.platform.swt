@@ -542,7 +542,6 @@ void releaseWidget () {
 	control = null;
 	toolTipText = null;
 	image = disabledImage = hotImage = null;
-	deregister ();
 }
 
 void releaseHandle () {
