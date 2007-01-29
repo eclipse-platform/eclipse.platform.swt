@@ -125,7 +125,7 @@ int /*long*/ Show (int /*long*/ _retval) {
 	if (mode == nsIFilePicker.modeGetFolder) {
 		/* picking a directory */
 		int result = showDirectoryPicker ();
-		XPCOM.memmove (_retval, new int[] {result}, 2); /* PRInt16 */
+		XPCOM.memmove (_retval, new short[] {(short)result}, 2);
 		return XPCOM.NS_OK;
 	}
 
@@ -148,7 +148,7 @@ int /*long*/ Show (int /*long*/ _retval) {
 	title = defaultFilename = null;
 	masks = null;
 	int result = filename == null ? nsIFilePicker.returnCancel : nsIFilePicker.returnOK; 
-	XPCOM.memmove (_retval, new int[] {result}, 2); /* PRInt16 */
+	XPCOM.memmove (_retval, new short[] {(short)result}, 2);
 	return XPCOM.NS_OK;
 }
 
