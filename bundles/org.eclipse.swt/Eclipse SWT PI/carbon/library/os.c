@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1010,16 +1010,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(AutoSizeDataBrowserListViewColumns)
 	rc = (jint)AutoSizeDataBrowserListViewColumns((ControlRef)arg0);
 	OS_NATIVE_EXIT(env, that, AutoSizeDataBrowserListViewColumns_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_BeginUpdate
-JNIEXPORT void JNICALL OS_NATIVE(BeginUpdate)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, BeginUpdate_FUNC);
-	BeginUpdate((WindowRef)arg0);
-	OS_NATIVE_EXIT(env, that, BeginUpdate_FUNC);
 }
 #endif
 
@@ -3754,30 +3744,6 @@ fail:
 }
 #endif
 
-#ifndef NO_DMGetFirstScreenDevice
-JNIEXPORT jint JNICALL OS_NATIVE(DMGetFirstScreenDevice)
-	(JNIEnv *env, jclass that, jboolean arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, DMGetFirstScreenDevice_FUNC);
-	rc = (jint)DMGetFirstScreenDevice((Boolean)arg0);
-	OS_NATIVE_EXIT(env, that, DMGetFirstScreenDevice_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_DMGetNextScreenDevice
-JNIEXPORT jint JNICALL OS_NATIVE(DMGetNextScreenDevice)
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, DMGetNextScreenDevice_FUNC);
-	rc = (jint)DMGetNextScreenDevice((GDHandle)arg0, (Boolean)arg1);
-	OS_NATIVE_EXIT(env, that, DMGetNextScreenDevice_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_DataBrowserChangeAttributes
 JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserChangeAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -4287,35 +4253,6 @@ JNIEXPORT void JNICALL OS_NATIVE(EnableMenuItem)
 }
 #endif
 
-#ifndef NO_EndUpdate
-JNIEXPORT void JNICALL OS_NATIVE(EndUpdate)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, EndUpdate_FUNC);
-	EndUpdate((WindowRef)arg0);
-	OS_NATIVE_EXIT(env, that, EndUpdate_FUNC);
-}
-#endif
-
-#ifndef NO_EqualRect
-JNIEXPORT jboolean JNICALL OS_NATIVE(EqualRect)
-	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
-{
-	Rect _arg0, *lparg0=NULL;
-	Rect _arg1, *lparg1=NULL;
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, EqualRect_FUNC);
-	if (arg0) if ((lparg0 = getRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jboolean)EqualRect(lparg0, lparg1);
-fail:
-	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
-	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, EqualRect_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_EraseRect
 JNIEXPORT void JNICALL OS_NATIVE(EraseRect)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -4327,16 +4264,6 @@ JNIEXPORT void JNICALL OS_NATIVE(EraseRect)
 fail:
 	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, EraseRect_FUNC);
-}
-#endif
-
-#ifndef NO_EraseRgn
-JNIEXPORT void JNICALL OS_NATIVE(EraseRgn)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, EraseRgn_FUNC);
-	EraseRgn((RgnHandle)arg0);
-	OS_NATIVE_EXIT(env, that, EraseRgn_FUNC);
 }
 #endif
 
@@ -5849,18 +5776,6 @@ fail:
 }
 #endif
 
-#ifndef NO_GetGDevice
-JNIEXPORT jint JNICALL OS_NATIVE(GetGDevice)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetGDevice_FUNC);
-	rc = (jint)GetGDevice();
-	OS_NATIVE_EXIT(env, that, GetGDevice_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GetGWorld
 JNIEXPORT void JNICALL OS_NATIVE(GetGWorld)
 	(JNIEnv *env, jclass that, jintArray arg0, jintArray arg1)
@@ -6354,28 +6269,6 @@ fail:
 }
 #endif
 
-#ifndef NO_GetPortClipRegion
-JNIEXPORT void JNICALL OS_NATIVE(GetPortClipRegion)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, GetPortClipRegion_FUNC);
-	GetPortClipRegion((CGrafPtr)arg0, (RgnHandle)arg1);
-	OS_NATIVE_EXIT(env, that, GetPortClipRegion_FUNC);
-}
-#endif
-
-#ifndef NO_GetPortVisibleRegion
-JNIEXPORT jint JNICALL OS_NATIVE(GetPortVisibleRegion)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetPortVisibleRegion_FUNC);
-	rc = (jint)GetPortVisibleRegion((CGrafPtr)arg0, (RgnHandle)arg1);
-	OS_NATIVE_EXIT(env, that, GetPortVisibleRegion_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GetPreviousWindow
 JNIEXPORT jint JNICALL OS_NATIVE(GetPreviousWindow)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6748,18 +6641,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetUserFocusWindow)
 	OS_NATIVE_ENTER(env, that, GetUserFocusWindow_FUNC);
 	rc = (jint)GetUserFocusWindow();
 	OS_NATIVE_EXIT(env, that, GetUserFocusWindow_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GetWRefCon
-JNIEXPORT jint JNICALL OS_NATIVE(GetWRefCon)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetWRefCon_FUNC);
-	rc = (jint)GetWRefCon((WindowRef)arg0);
-	OS_NATIVE_EXIT(env, that, GetWRefCon_FUNC);
 	return rc;
 }
 #endif
@@ -8988,18 +8869,6 @@ JNIEXPORT jshort JNICALL OS_NATIVE(LoWord)
 }
 #endif
 
-#ifndef NO_LockPortBits
-JNIEXPORT jint JNICALL OS_NATIVE(LockPortBits)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, LockPortBits_FUNC);
-	rc = (jint)LockPortBits((GrafPtr)arg0);
-	OS_NATIVE_EXIT(env, that, LockPortBits_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_Long2Fix
 JNIEXPORT jint JNICALL OS_NATIVE(Long2Fix)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -10202,44 +10071,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(QDRegionToRects)
 	OS_NATIVE_ENTER(env, that, QDRegionToRects_FUNC);
 	rc = (jint)QDRegionToRects((RgnHandle)arg0, (QDRegionParseDirection)arg1, (RegionToRectsUPP)arg2, (void *)arg3);
 	OS_NATIVE_EXIT(env, that, QDRegionToRects_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_QDSetDirtyRegion
-JNIEXPORT jint JNICALL OS_NATIVE(QDSetDirtyRegion)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, QDSetDirtyRegion_FUNC);
-	rc = (jint)QDSetDirtyRegion((CGrafPtr)arg0, (RgnHandle)arg1);
-	OS_NATIVE_EXIT(env, that, QDSetDirtyRegion_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_QDSetPatternOrigin
-JNIEXPORT void JNICALL OS_NATIVE(QDSetPatternOrigin)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	Point _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, QDSetPatternOrigin_FUNC);
-	if (arg0) if ((lparg0 = getPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	QDSetPatternOrigin(*(Point *)lparg0);
-fail:
-	if (arg0 && lparg0) setPointFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, QDSetPatternOrigin_FUNC);
-}
-#endif
-
-#ifndef NO_QDSwapTextFlags
-JNIEXPORT jint JNICALL OS_NATIVE(QDSwapTextFlags)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, QDSwapTextFlags_FUNC);
-	rc = (jint)QDSwapTextFlags((UInt32)arg0);
-	OS_NATIVE_EXIT(env, that, QDSwapTextFlags_FUNC);
 	return rc;
 }
 #endif
@@ -11734,16 +11565,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetMenuTitleWithCFString)
 }
 #endif
 
-#ifndef NO_SetOrigin
-JNIEXPORT void JNICALL OS_NATIVE(SetOrigin)
-	(JNIEnv *env, jclass that, jshort arg0, jshort arg1)
-{
-	OS_NATIVE_ENTER(env, that, SetOrigin_FUNC);
-	SetOrigin((short)arg0, (short)arg1);
-	OS_NATIVE_EXIT(env, that, SetOrigin_FUNC);
-}
-#endif
-
 #ifndef NO_SetPort
 JNIEXPORT void JNICALL OS_NATIVE(SetPort)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -11751,30 +11572,6 @@ JNIEXPORT void JNICALL OS_NATIVE(SetPort)
 	OS_NATIVE_ENTER(env, that, SetPort_FUNC);
 	SetPort((GrafPtr)arg0);
 	OS_NATIVE_EXIT(env, that, SetPort_FUNC);
-}
-#endif
-
-#ifndef NO_SetPortBounds
-JNIEXPORT void JNICALL OS_NATIVE(SetPortBounds)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
-{
-	Rect _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, SetPortBounds_FUNC);
-	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
-	SetPortBounds((CGrafPtr)arg0, (const Rect *)lparg1);
-fail:
-	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, SetPortBounds_FUNC);
-}
-#endif
-
-#ifndef NO_SetPortWindowPort
-JNIEXPORT void JNICALL OS_NATIVE(SetPortWindowPort)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, SetPortWindowPort_FUNC);
-	SetPortWindowPort((WindowRef)arg0);
-	OS_NATIVE_EXIT(env, that, SetPortWindowPort_FUNC);
 }
 #endif
 
@@ -11897,16 +11694,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetUpControlBackground)
 	rc = (jint)SetUpControlBackground((ControlRef)arg0, (SInt16)arg1, (Boolean)arg2);
 	OS_NATIVE_EXIT(env, that, SetUpControlBackground_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_SetWRefCon
-JNIEXPORT void JNICALL OS_NATIVE(SetWRefCon)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, SetWRefCon_FUNC);
-	SetWRefCon((WindowRef)arg0, (long)arg1);
-	OS_NATIVE_EXIT(env, that, SetWRefCon_FUNC);
 }
 #endif
 
@@ -12091,42 +11878,6 @@ JNIEXPORT void JNICALL OS_NATIVE(SysBeep)
 }
 #endif
 
-#ifndef NO_TXNActivate
-JNIEXPORT jint JNICALL OS_NATIVE(TXNActivate)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, TXNActivate_FUNC);
-	rc = (jint)TXNActivate((TXNObject)arg0, (TXNFrameID)arg1, (TXNScrollBarState)arg2);
-	OS_NATIVE_EXIT(env, that, TXNActivate_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_TXNAdjustCursor
-JNIEXPORT void JNICALL OS_NATIVE(TXNAdjustCursor)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, TXNAdjustCursor_FUNC);
-	TXNAdjustCursor((TXNObject)arg0, (RgnHandle)arg1);
-	OS_NATIVE_EXIT(env, that, TXNAdjustCursor_FUNC);
-}
-#endif
-
-#ifndef NO_TXNClick
-JNIEXPORT void JNICALL OS_NATIVE(TXNClick)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
-{
-	EventRecord _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, TXNClick_FUNC);
-	if (arg1) if ((lparg1 = getEventRecordFields(env, arg1, &_arg1)) == NULL) goto fail;
-	TXNClick((TXNObject)arg0, (const EventRecord *)lparg1);
-fail:
-	if (arg1 && lparg1) setEventRecordFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, TXNClick_FUNC);
-}
-#endif
-
 #ifndef NO_TXNCopy
 JNIEXPORT jint JNICALL OS_NATIVE(TXNCopy)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -12173,16 +11924,6 @@ JNIEXPORT void JNICALL OS_NATIVE(TXNDeleteObject)
 }
 #endif
 
-#ifndef NO_TXNDraw
-JNIEXPORT void JNICALL OS_NATIVE(TXNDraw)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, TXNDraw_FUNC);
-	TXNDraw((TXNObject)arg0, (GWorldPtr)arg1);
-	OS_NATIVE_EXIT(env, that, TXNDraw_FUNC);
-}
-#endif
-
 #ifndef NO_TXNEchoMode
 JNIEXPORT jint JNICALL OS_NATIVE(TXNEchoMode)
 	(JNIEnv *env, jclass that, jint arg0, jchar arg1, jint arg2, jboolean arg3)
@@ -12192,16 +11933,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(TXNEchoMode)
 	rc = (jint)TXNEchoMode((TXNObject)arg0, (UniChar)arg1, (TextEncoding)arg2, (Boolean)arg3);
 	OS_NATIVE_EXIT(env, that, TXNEchoMode_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_TXNFocus
-JNIEXPORT void JNICALL OS_NATIVE(TXNFocus)
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
-{
-	OS_NATIVE_ENTER(env, that, TXNFocus_FUNC);
-	TXNFocus((TXNObject)arg0, (Boolean)arg1);
-	OS_NATIVE_EXIT(env, that, TXNFocus_FUNC);
 }
 #endif
 
@@ -12477,23 +12208,6 @@ JNIEXPORT void JNICALL OS_NATIVE(TXNSetFrameBounds)
 }
 #endif
 
-#ifndef NO_TXNSetRectBounds
-JNIEXPORT void JNICALL OS_NATIVE(TXNSetRectBounds)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jboolean arg3)
-{
-	Rect _arg1, *lparg1=NULL;
-	TXNLongRect _arg2, *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, TXNSetRectBounds_FUNC);
-	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = getTXNLongRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	TXNSetRectBounds((TXNObject)arg0, (Rect *)lparg1, (TXNLongRect *)lparg2, (Boolean)arg3);
-fail:
-	if (arg2 && lparg2) setTXNLongRectFields(env, arg2, lparg2);
-	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, TXNSetRectBounds_FUNC);
-}
-#endif
-
 #ifndef NO_TXNSetSelection
 JNIEXPORT jint JNICALL OS_NATIVE(TXNSetSelection)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -12544,22 +12258,6 @@ JNIEXPORT void JNICALL OS_NATIVE(TXNShowSelection)
 	OS_NATIVE_ENTER(env, that, TXNShowSelection_FUNC);
 	TXNShowSelection((TXNObject)arg0, (Boolean)arg1);
 	OS_NATIVE_EXIT(env, that, TXNShowSelection_FUNC);
-}
-#endif
-
-#ifndef NO_TestControl
-JNIEXPORT jshort JNICALL OS_NATIVE(TestControl)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
-{
-	Point _arg1, *lparg1=NULL;
-	jshort rc = 0;
-	OS_NATIVE_ENTER(env, that, TestControl_FUNC);
-	if (arg1) if ((lparg1 = getPointFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jshort)TestControl((ControlRef)arg0, *(Point *)lparg1);
-fail:
-	if (arg1 && lparg1) setPointFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, TestControl_FUNC);
-	return rc;
 }
 #endif
 
@@ -12690,28 +12388,6 @@ JNIEXPORT void JNICALL OS_NATIVE(UnionRgn)
 	OS_NATIVE_ENTER(env, that, UnionRgn_FUNC);
 	UnionRgn((RgnHandle)arg0, (RgnHandle)arg1, (RgnHandle)arg2);
 	OS_NATIVE_EXIT(env, that, UnionRgn_FUNC);
-}
-#endif
-
-#ifndef NO_UnlockPortBits
-JNIEXPORT jint JNICALL OS_NATIVE(UnlockPortBits)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, UnlockPortBits_FUNC);
-	rc = (jint)UnlockPortBits((GrafPtr)arg0);
-	OS_NATIVE_EXIT(env, that, UnlockPortBits_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_UpdateControls
-JNIEXPORT void JNICALL OS_NATIVE(UpdateControls)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, UpdateControls_FUNC);
-	UpdateControls((WindowRef)arg0, (RgnHandle)arg1);
-	OS_NATIVE_EXIT(env, that, UpdateControls_FUNC);
 }
 #endif
 

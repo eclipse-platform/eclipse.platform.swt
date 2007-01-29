@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 939;
-int OS_nativeFunctionCallCount[939];
+int OS_nativeFunctionCount = 912;
+int OS_nativeFunctionCallCount[912];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -79,7 +79,6 @@ char * OS_nativeFunctionNames[] = {
 	"AddDragItemFlavor",
 	"AppendMenuItemTextWithCFString",
 	"AutoSizeDataBrowserListViewColumns",
-	"BeginUpdate",
 	"BringToFront",
 	"CFArrayAppendValue",
 	"CFArrayCreateMutable",
@@ -290,8 +289,6 @@ char * OS_nativeFunctionNames[] = {
 	"CreateUnicodeToTextInfoByEncoding",
 	"CreateUserPaneControl",
 	"CreateWindowGroup",
-	"DMGetFirstScreenDevice",
-	"DMGetNextScreenDevice",
 	"DataBrowserChangeAttributes",
 	"DataBrowserGetAttributes",
 	"DataBrowserGetMetric",
@@ -328,10 +325,7 @@ char * OS_nativeFunctionNames[] = {
 	"EnableControl",
 	"EnableMenuCommand",
 	"EnableMenuItem",
-	"EndUpdate",
-	"EqualRect",
 	"EraseRect",
-	"EraseRgn",
 	"FMGetATSFontRefFromFont",
 	"FMGetFontFamilyFromName",
 	"FMGetFontFamilyInstanceFromFont",
@@ -426,7 +420,6 @@ char * OS_nativeFunctionNames[] = {
 	"GetFlavorData",
 	"GetFlavorDataSize",
 	"GetFlavorType",
-	"GetGDevice",
 	"GetGWorld",
 	"GetGlobalMouse",
 	"GetHandleSize",
@@ -460,8 +453,6 @@ char * OS_nativeFunctionNames[] = {
 	"GetPort",
 	"GetPortBitMapForCopyBits",
 	"GetPortBounds",
-	"GetPortClipRegion",
-	"GetPortVisibleRegion",
 	"GetPreviousWindow",
 	"GetPtrSize",
 	"GetRegionBounds",
@@ -485,7 +476,6 @@ char * OS_nativeFunctionNames[] = {
 	"GetThemeTextDimensions",
 	"GetUserFocusEventTarget",
 	"GetUserFocusWindow",
-	"GetWRefCon",
 	"GetWindowActivationScope",
 	"GetWindowBounds",
 	"GetWindowClass",
@@ -631,7 +621,6 @@ char * OS_nativeFunctionNames[] = {
 	"LSOpenURLsWithRole",
 	"LineTo",
 	"LoWord",
-	"LockPortBits",
 	"Long2Fix",
 	"MenuSelect",
 	"MoveControl",
@@ -717,9 +706,6 @@ char * OS_nativeFunctionNames[] = {
 	"QDEndCGContext",
 	"QDFlushPortBuffer",
 	"QDRegionToRects",
-	"QDSetDirtyRegion",
-	"QDSetPatternOrigin",
-	"QDSwapTextFlags",
 	"RGBBackColor",
 	"RGBForeColor",
 	"ReadIconFile",
@@ -835,10 +821,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetMenuItemRefCon",
 	"SetMenuItemTextWithCFString",
 	"SetMenuTitleWithCFString",
-	"SetOrigin",
 	"SetPort",
-	"SetPortBounds",
-	"SetPortWindowPort",
 	"SetPt",
 	"SetRect",
 	"SetRectRgn",
@@ -849,7 +832,6 @@ char * OS_nativeFunctionNames[] = {
 	"SetThemeTextColor",
 	"SetThemeWindowBackground",
 	"SetUpControlBackground",
-	"SetWRefCon",
 	"SetWindowActivationScope",
 	"SetWindowBounds",
 	"SetWindowDefaultButton",
@@ -865,16 +847,11 @@ char * OS_nativeFunctionNames[] = {
 	"StillDown",
 	"SyncCGContextOriginWithPort",
 	"SysBeep",
-	"TXNActivate",
-	"TXNAdjustCursor",
-	"TXNClick",
 	"TXNCopy",
 	"TXNCut",
 	"TXNDataSize",
 	"TXNDeleteObject",
-	"TXNDraw",
 	"TXNEchoMode",
-	"TXNFocus",
 	"TXNGetData",
 	"TXNGetHIRect",
 	"TXNGetLineCount",
@@ -892,12 +869,10 @@ char * OS_nativeFunctionNames[] = {
 	"TXNSetBackground",
 	"TXNSetData",
 	"TXNSetFrameBounds",
-	"TXNSetRectBounds",
 	"TXNSetSelection",
 	"TXNSetTXNObjectControls",
 	"TXNSetTypeAttributes",
 	"TXNShowSelection",
-	"TestControl",
 	"TextFace",
 	"TextFont",
 	"TextMode",
@@ -908,8 +883,6 @@ char * OS_nativeFunctionNames[] = {
 	"UTTypeCreatePreferredIdentifierForTag",
 	"UnionRect",
 	"UnionRgn",
-	"UnlockPortBits",
-	"UpdateControls",
 	"UpdateDataBrowserItems",
 	"UpgradeScriptInfoToTextEncoding",
 	"WaitMouseMoved",
