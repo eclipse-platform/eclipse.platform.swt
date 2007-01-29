@@ -626,11 +626,6 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 //		item.x = item.y = item.width = item.height = 0;
 //	}
 	sendEvent (SWT.Hide);
-	if (!OS.HIVIEW) {
-		if (hooks (SWT.Hide)) {
-			getShell().update (true);
-		}
-	}
 	return OS.eventNotHandledErr;
 }
 
@@ -782,11 +777,6 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	closed = false;
 	sendEvent (SWT.Show);
 	modified = false;
-	if (!OS.HIVIEW) {
-		if (hooks (SWT.Show)) {
-			getShell().update (true);
-		}
-	}
 	return OS.eventNotHandledErr;
 }
 
@@ -799,11 +789,6 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 		if (index [0] > 0) lastTarget = items [index [0] - 1];
 		if (lastTarget != null) {
 			lastTarget.sendEvent (SWT.Arm);
-			if (!OS.HIVIEW) {
-				if (lastTarget.hooks (SWT.Arm)) {
-					getShell().update (true);
-				}
-			}
 		}
 	}
 	return OS.eventNotHandledErr;

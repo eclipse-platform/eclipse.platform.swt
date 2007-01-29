@@ -282,10 +282,6 @@ boolean sendMouseEvent (int type, short button, int count, int detail, boolean s
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	OS.GetControlBounds (parent.handle, rect);
-	if (!OS.HIVIEW) {
-		controlX -= rect.left;
-		controlY -= rect.top;
-	}
 	int parentWidth = rect.right - rect.left;
 	int parentHeight = rect.bottom - rect.top;
 	switch (type) {

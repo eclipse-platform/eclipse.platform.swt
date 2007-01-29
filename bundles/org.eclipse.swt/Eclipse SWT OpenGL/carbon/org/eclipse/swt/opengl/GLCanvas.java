@@ -139,16 +139,14 @@ void fixBounds () {
 	Rect bounds = new Rect ();
 	OS.GetControlBounds (handle, bounds);
 	int window = OS.GetControlOwner (handle);
-	if (OS.HIVIEW) {
-		int [] contentView = new int [1];
-		OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
-		CGPoint pt = new CGPoint ();
-		OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
-		bounds.left += (int) pt.x;
-		bounds.top += (int) pt.y;
-		bounds.right += (int) pt.x;
-		bounds.bottom += (int) pt.y;
-	}
+	int [] contentView = new int [1];
+	OS.HIViewFindByID (OS.HIViewGetRoot (window), OS.kHIViewWindowContentID (), contentView);
+	CGPoint pt = new CGPoint ();
+	OS.HIViewConvertPoint (pt, OS.HIViewGetSuperview (handle), contentView [0]);
+	bounds.left += (int) pt.x;
+	bounds.top += (int) pt.y;
+	bounds.right += (int) pt.x;
+	bounds.bottom += (int) pt.y;
 	int x = bounds.left;
 	int y = bounds.top;
 	int width = bounds.right - bounds.left;

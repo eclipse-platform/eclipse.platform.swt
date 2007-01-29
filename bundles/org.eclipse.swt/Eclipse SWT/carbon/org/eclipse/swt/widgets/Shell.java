@@ -449,7 +449,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle () {
 	state |= CANVAS | GRAB | HIDDEN;
 	int attributes = OS.kWindowStandardHandlerAttribute;
-	if (OS.HIVIEW) attributes |= OS.kWindowCompositingAttribute;
+	attributes |= OS.kWindowCompositingAttribute;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.CLOSE) != 0) attributes |= OS.kWindowCloseBoxAttribute;
 		if ((style & SWT.MIN) != 0) attributes |= OS.kWindowCollapseBoxAttribute;
@@ -489,19 +489,14 @@ void createHandle () {
 		OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 //		OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 		int [] theRoot = new int [1];
-		if (OS.HIVIEW) {
-			OS.HIViewFindByID (shellHandle, OS.kHIViewWindowContentID (), theRoot);
-			/*
-			* Bug in the Macintosh.  When the window class is kMovableModalWindowClass or
-			* kModalWindowClass, HIViewFindByID() fails to find the control identified by
-			* kHIViewWindowContentID.  The fix is to call GetRootControl() if the call
-			* failed.
-			*/
-			if (theRoot [0] == 0) OS.GetRootControl (shellHandle, theRoot);		
-		} else {
-			OS.CreateRootControl (shellHandle, theRoot);
-			OS.GetRootControl (shellHandle, theRoot);
-		}
+		OS.HIViewFindByID (shellHandle, OS.kHIViewWindowContentID (), theRoot);
+		/*
+		* Bug in the Macintosh.  When the window class is kMovableModalWindowClass or
+		* kModalWindowClass, HIViewFindByID() fails to find the control identified by
+		* kHIViewWindowContentID.  The fix is to call GetRootControl() if the call
+		* failed.
+		*/
+		if (theRoot [0] == 0) OS.GetRootControl (shellHandle, theRoot);		
 		if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 			createScrolledHandle (theRoot [0]);
@@ -609,18 +604,6 @@ void drawWidget (int control, int context, int damageRgn, int visibleRgn, int th
 	boolean limit = region.contains(rgnRect.right - 1, rgnRect.bottom - 1);
 	if (origin && limit) return;
 	
-	int port = 0; 
-	int [] buffer = null;
-	if (!OS.HIVIEW) {
-		buffer = new int [1];
-		Rect portRect = new Rect ();
-		port = OS.GetWindowPort (shellHandle);
-		OS.GetPortBounds (port, portRect);
-		OS.QDBeginCGContext (port, buffer);
-		context = buffer [0];
-		OS.CGContextScaleCTM (context, 1, -1);
-		OS.CGContextTranslateCTM (context, 0, portRect.top - portRect.bottom);
-	}
 	CGRect cgRect = new CGRect ();
 	cgRect.width = 1;
 	cgRect.height = 1;
@@ -633,7 +616,6 @@ void drawWidget (int control, int context, int damageRgn, int visibleRgn, int th
 		OS.CGContextClearRect (context, cgRect);
 	}
 	OS.CGContextSynchronize (context);
-	if (!OS.HIVIEW) OS.QDEndCGContext (port, buffer);
 }
 
 Control findBackgroundControl () {
@@ -873,26 +855,9 @@ void invalidateVisibleRegion (int control) {
 }
 
 void invalWindowRgn (int window, int rgn) {
-	if (OS.HIVIEW) {
-		display.needsPaint = true;
-		if (invalRgn == 0) invalRgn = OS.NewRgn();
-		OS.UnionRgn (rgn, invalRgn, invalRgn);
-		return;
-	}
-	/*
-	* Bug in the Macintosh.  InvalidWindowRgn() will not invalidate
-	* the window when it is called from the default kEventWindowUpdate
-	* handler.  The fix is to detect that case, acumulate the region
-	* to invalidate and call InvalWindowRgn() after the default handler
-	* is done.  
-	*/
-	if (update) {
-		if (invalRgn == 0) invalRgn = OS.NewRgn();
-		OS.UnionRgn (rgn, invalRgn, invalRgn);
-	} else {
-		OS.InvalWindowRgn (window, rgn);
-	}
-	
+	display.needsPaint = true;
+	if (invalRgn == 0) invalRgn = OS.NewRgn();
+	OS.UnionRgn (rgn, invalRgn, invalRgn);
 }
 
 public boolean isEnabled () {
@@ -1503,7 +1468,7 @@ public void setRegion (Region region) {
 		reshape = true;
 	} else {
 		OS.ReshapeCustomWindow (shellHandle);
-		if (OS.HIVIEW) redrawWidget (handle, true);
+		redrawWidget (handle, true);
 	}
 }
 

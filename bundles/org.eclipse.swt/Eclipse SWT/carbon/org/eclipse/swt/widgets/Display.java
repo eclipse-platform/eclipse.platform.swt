@@ -2543,18 +2543,11 @@ public Point map (Control from, Control to, int x, int y) {
 	Rect rect = new Rect ();
 	if (from != null) {
 		int window = OS.GetControlOwner (from.handle);
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.HIViewConvertPoint (pt, from.handle, 0);
-			point.x += (int) pt.x;
-			point.y += (int) pt.y;
-			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		} else {
-			OS.GetControlBounds (from.handle, rect);
-			point.x += rect.left;
-			point.y += rect.top;
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		}
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, from.handle, 0);
+		point.x += (int) pt.x;
+		point.y += (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
 		point.x += rect.left;
 		point.y += rect.top;
 		Rect inset = from.getInset ();
@@ -2563,18 +2556,11 @@ public Point map (Control from, Control to, int x, int y) {
 	}
 	if (to != null) {
 		int window = OS.GetControlOwner (to.handle);
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.HIViewConvertPoint (pt, to.handle, 0);
-			point.x -= (int) pt.x;
-			point.y -= (int) pt.y;
-			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		} else {
-			OS.GetControlBounds (to.handle, rect);
-			point.x -= rect.left;
-			point.y -= rect.top;
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		}
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, to.handle, 0);
+		point.x -= (int) pt.x;
+		point.y -= (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
 		point.x -= rect.left;
 		point.y -= rect.top;
 		Rect inset = to.getInset ();
@@ -2672,18 +2658,11 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	Rect rect = new Rect ();
 	if (from != null) {
 		int window = OS.GetControlOwner (from.handle);
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.HIViewConvertPoint (pt, from.handle, 0);
-			rectangle.x += (int) pt.x;
-			rectangle.y += (int) pt.y;
-			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		} else {
-			OS.GetControlBounds (from.handle, rect);
-			rectangle.x += rect.left;
-			rectangle.y += rect.top;
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		}
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, from.handle, 0);
+		rectangle.x += (int) pt.x;
+		rectangle.y += (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
 		rectangle.x += rect.left;
 		rectangle.y += rect.top;
 		Rect inset = from.getInset ();
@@ -2692,18 +2671,11 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	}
 	if (to != null) {
 		int window = OS.GetControlOwner (to.handle);
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.HIViewConvertPoint (pt, to.handle, 0);
-			rectangle.x -= (int) pt.x;
-			rectangle.y -= (int) pt.y;
-			OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		} else {
-			OS.GetControlBounds (to.handle, rect);
-			rectangle.x -= rect.left;
-			rectangle.y -= rect.top;
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		}
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, to.handle, 0);
+		rectangle.x -= (int) pt.x;
+		rectangle.y -= (int) pt.y;
+		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
 		rectangle.x -= rect.left;
 		rectangle.y -= rect.top;
 		Rect inset = to.getInset ();
@@ -2776,57 +2748,29 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			CGPoint inPoint = new CGPoint ();
 			inPoint.x = where.h - windowRect.left;
 			inPoint.y = where.v - windowRect.top;
-			if (OS.HIVIEW) {
-				int root = OS.HIViewGetRoot (theWindow [0]);
-				int [] buffer = new int [1];
-				OS.HIViewGetViewForMouseEvent (root, theEvent, buffer);
-				int view = buffer [0];
-				OS.HIViewFindByID (root, OS.kHIViewWindowContentID (), buffer);
-				int contentView = buffer [0]; 
-				while (view != 0 && view != contentView && !OS.IsControlEnabled (view)) {	
-					view = OS.HIViewGetSuperview (view);
-				}
-				Widget widget = null;
-				boolean consume = false;
-				do {
-					widget = getWidget (view);
-					if (widget != null) {
-						if (widget.isEnabled ()) break;
-						consume = true;
-					}
-					view = OS.HIViewGetSuperview (view);
-				} while (view != 0 && view != contentView);
+			int root = OS.HIViewGetRoot (theWindow [0]);
+			int [] buffer = new int [1];
+			OS.HIViewGetViewForMouseEvent (root, theEvent, buffer);
+			int view = buffer [0];
+			OS.HIViewFindByID (root, OS.kHIViewWindowContentID (), buffer);
+			int contentView = buffer [0]; 
+			while (view != 0 && view != contentView && !OS.IsControlEnabled (view)) {	
+				view = OS.HIViewGetSuperview (view);
+			}
+			Widget widget = null;
+			boolean consume = false;
+			do {
+				widget = getWidget (view);
 				if (widget != null) {
-					if (widget.contains ((int) inPoint.x, (int) inPoint.y)) {
-						int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
-						return consume ? OS.noErr : result;
-					}
+					if (widget.isEnabled ()) break;
+					consume = true;
 				}
-			} else {
-				int [] theRoot = new int [1];
-				OS.GetRootControl (theWindow [0], theRoot);
-				int [] theControl = new int [1];
-				OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-				while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
-					OS.GetSuperControl (theControl [0], theControl);
-				}
-				Widget widget = null;
-				boolean consume = false;
-				if (theControl [0] == 0) theControl [0] = theRoot [0];
-				do {
-					widget = getWidget (theControl [0]);
-					if (widget != null) {
-						if (widget.isEnabled ()) break;
-						consume = true;
-					}
-					OS.GetSuperControl (theControl [0], theControl);
-				} while (theControl [0] != 0);
-				if (theControl [0] == 0) widget = getWidget (theRoot [0]);
-				if (widget != null) {
-					if (widget.contains ((int) inPoint.x, (int) inPoint.y)) {
-						int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
-						return consume ? OS.noErr : result;
-					}
+				view = OS.HIViewGetSuperview (view);
+			} while (view != 0 && view != contentView);
+			if (widget != null) {
+				if (widget.contains ((int) inPoint.x, (int) inPoint.y)) {
+					int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
+					return consume ? OS.noErr : result;
 				}
 			}
 			break;

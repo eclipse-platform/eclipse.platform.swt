@@ -293,12 +293,10 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 }
 
 void redrawBackgroundImage () {
-	if (OS.HIVIEW) {
-		if (scrolledHandle == 0) {
-			Control control = findBackgroundControl();
-			if (control != null && control.backgroundImage != null) {
-				redrawWidget (handle, false);
-			}
+	if (scrolledHandle == 0) {
+		Control control = findBackgroundControl();
+		if (control != null && control.backgroundImage != null) {
+			redrawWidget (handle, false);
 		}
 	}
 }
@@ -342,17 +340,10 @@ void resizeClientArea () {
 	if (isVisibleHBar) hHeight = outMetric [0];
 	if (isVisibleVBar) vWidth = outMetric [0];
 	int width, height;
-	if (OS.HIVIEW) {
-		CGRect rect = new CGRect (); 
-		OS.HIViewGetBounds (scrolledHandle, rect);
-		width = (int) rect.width;
-		height = (int) rect.height;
-	} else {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (scrolledHandle, rect);
-		width = rect.right - rect.left;
-		height = rect.bottom - rect.top;
-	}
+	CGRect rect = new CGRect (); 
+	OS.HIViewGetBounds (scrolledHandle, rect);
+	width = (int) rect.width;
+	height = (int) rect.height;
 	Rect inset = inset ();
 	width = Math.max (0, width - vWidth - inset.left - inset.right);
 	height = Math.max (0, height - hHeight - inset.top - inset.bottom);
@@ -373,11 +364,6 @@ boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
 			Event event = new Event ();
 		    event.detail = wheelDelta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
 			bar.sendEvent (SWT.Selection, event);
-			if (!OS.HIVIEW) {
-//				Display display = getDisplay ();
-//				display.update ();
-				update ();
-			}
 			return true;
 		}
 	}

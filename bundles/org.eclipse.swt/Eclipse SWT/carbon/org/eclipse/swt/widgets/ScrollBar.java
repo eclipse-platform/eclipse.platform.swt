@@ -179,7 +179,6 @@ int actionProc (int theControl, int partCode) {
 		OS.SetControl32BitValue (handle, value);
 	}
 	sendEvent (SWT.Selection, event);
-	if (!OS.HIVIEW) parent.update (true);
 	return result;
 }
 
@@ -408,14 +407,6 @@ int getVisibleRegion (int control, boolean clipChildren) {
 
 void hookEvents () {
 	super.hookEvents ();
-	if (!OS.HIVIEW) {
-		int controlProc = display.controlProc;
-		int [] mask = new int [] {
-			OS.kEventClassControl, OS.kEventControlDraw,
-		};
-		int controlTarget = OS.GetControlEventTarget (handle);
-		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
-	}
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlTrack,

@@ -143,7 +143,7 @@ void click () {
 
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
 	int [] context = null;
-	if (OS.HIVIEW & (style & SWT.ARROW) != 0 && (style & SWT.UP) != 0) {
+	if ((style & SWT.ARROW) != 0 && (style & SWT.UP) != 0) {
 		context = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
 		OS.CGContextSaveGState (context[0]);

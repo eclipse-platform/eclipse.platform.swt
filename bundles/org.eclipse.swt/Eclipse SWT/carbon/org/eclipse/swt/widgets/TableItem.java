@@ -249,11 +249,6 @@ public Rectangle getBounds () {
 		width = Math.min (width, rect.right - x);
 	}
 	int height = rect.bottom - rect.top;
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -300,11 +295,6 @@ public Rectangle getBounds (int index) {
 		y = rect2.top;
 		width = rect.right - rect2.left + 1;
 		height = rect2.bottom - rect2.top + 1;
-	}
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		x -= rect.left;
-		y -= rect.top;
 	}
 	return new Rectangle (x, y, width, height);
 }
@@ -494,11 +484,6 @@ public Rectangle getImageBounds (int index) {
 		width += bounds.width;
 	}
 	int height = rect.bottom - rect.top + 1;
-	if (!OS.HIVIEW) {
-		OS.GetControlBounds (parent.handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -587,10 +572,8 @@ void redraw (int propertyID) {
 	if (propertyID == Table.CHECK_COLUMN_ID) {
 		Rect rect = new Rect();
 		if (OS.GetDataBrowserItemPartBounds (parent.handle, itemIndex + 1, propertyID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-			Rect controlRect = new Rect ();
-			if (!OS.HIVIEW) OS.GetControlBounds (parent.handle, controlRect);
-			int x = rect.left - controlRect.left;
-			int y = rect.top - controlRect.top - 1;
+			int x = rect.left;
+			int y = rect.top - 1;
 			int width = rect.right - rect.left;
 			int height = 1;
 			redrawWidget (parent.handle, x, y, width, height, false);

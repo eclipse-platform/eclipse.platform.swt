@@ -122,14 +122,11 @@ public void create (Composite parent, int style) {
 	 * events.
 	 */
 	int window = OS.GetControlOwner(browser.handle);
-	if (OS.HIVIEW) {
-		int[] contentView = new int[1];
-		OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
-		OS.HIViewAddSubview(contentView[0], webViewHandle);
-		OS.HIViewChangeFeatures(webViewHandle, OS.kHIViewFeatureIsOpaque, 0);
-	} else {
-		OS.HIViewAddSubview(browser.handle, webViewHandle);
-	}
+	int[] contentView = new int[1];
+	OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
+	OS.HIViewAddSubview(contentView[0], webViewHandle);
+	OS.HIViewChangeFeatures(webViewHandle, OS.kHIViewFeatureIsOpaque, 0);
+
 	OS.HIViewSetVisible(webViewHandle, true);	
 	if (browser.getShell().isVisible()) {
 		int[] showEvent = new int[1];
@@ -190,7 +187,7 @@ public void create (Composite parent, int style) {
 					Cocoa.objc_msgSend(notificationCenter, Cocoa.S_removeObserver, delegate);
 					
 					Cocoa.objc_msgSend(delegate, Cocoa.S_release);
-					if (OS.HIVIEW) OS.DisposeControl(webViewHandle);
+					OS.DisposeControl(webViewHandle);
 					html = null;
 					break;
 				}
@@ -227,14 +224,10 @@ public void create (Composite parent, int style) {
 					* and set its size to 0 in Hide and to restore its size in Show.
 					*/
 					CGRect bounds = new CGRect();
-					if (OS.HIVIEW) {
-						OS.HIViewGetBounds(browser.handle, bounds);
-						int[] contentView = new int[1];
-						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
-						OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
-					} else {
-						OS.HIViewGetFrame(browser.handle, bounds);
-					}
+					OS.HIViewGetBounds(browser.handle, bounds);
+					int[] contentView = new int[1];
+					OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
+					OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
 					/* 
 					* Bug in Safari.  For some reason, the web view will display incorrectly or
 					* blank depending on its contents, if its size is set to a value smaller than
@@ -259,14 +252,10 @@ public void create (Composite parent, int style) {
 					* reposition the web view every time the Shell of the Browser is resized.
 					*/
 					CGRect bounds = new CGRect();
-					if (OS.HIVIEW) {
-						OS.HIViewGetBounds(browser.handle, bounds);
-						int[] contentView = new int[1];
-						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
-						OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
-					} else {
-						OS.HIViewGetFrame(browser.handle, bounds);
-					}
+					OS.HIViewGetBounds(browser.handle, bounds);
+					int[] contentView = new int[1];
+					OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
+					OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
 					/* 
 					* Bug in Safari.  For some reason, the web view will display incorrectly or
 					* blank depending on its contents, if its size is set to a value smaller than

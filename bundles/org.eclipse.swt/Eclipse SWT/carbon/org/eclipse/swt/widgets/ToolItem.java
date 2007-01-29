@@ -15,7 +15,6 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
-import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.HIThemeSeparatorDrawInfo;
@@ -143,20 +142,18 @@ public ToolItem (ToolBar parent, int style, int index) {
 int actionProc (int theControl, int partCode) {
 	int result = parent.actionProc (theControl, partCode);
 	if (result == OS.noErr) return result;
-	if (OS.HIVIEW) {
-		if (isDisposed ()) return OS.noErr;
-		this.partCode = partCode;
-		if (text.length () > 0 && theControl == labelHandle) {
-			if (image != null && iconHandle != 0) {
-				int transform = partCode != 0 ? OS.kTransformSelected : 0;
-				OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
-				redrawWidget (iconHandle, false);
-			}
-			redrawWidget (labelHandle, false);		
+	if (isDisposed ()) return OS.noErr;
+	this.partCode = partCode;
+	if (text.length () > 0 && theControl == labelHandle) {
+		if (image != null && iconHandle != 0) {
+			int transform = partCode != 0 ? OS.kTransformSelected : 0;
+			OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
+			redrawWidget (iconHandle, false);
 		}
-		if (image != null && theControl == iconHandle) {
-			redrawWidget (labelHandle, false);
-		}
+		redrawWidget (labelHandle, false);		
+	}
+	if (image != null && theControl == iconHandle) {
+		redrawWidget (labelHandle, false);
 	}
 	return result;
 }
@@ -195,7 +192,7 @@ public void addSelectionListener(SelectionListener listener) {
 }
 
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
-	if (OS.HIVIEW && control == labelHandle && partCode != 0) {
+	if (control == labelHandle && partCode != 0) {
 		HIThemeTextInfo info = new HIThemeTextInfo ();
 		info.state = OS.kThemeStatePressed;
 		Font font = parent.font;
@@ -223,7 +220,7 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		OS.CFRelease (ptr [0]);
 		return OS.noErr;
 	}
-	if (OS.HIVIEW && control == iconHandle && OS.VERSION >= 0x1040) {
+	if (control == iconHandle && OS.VERSION >= 0x1040) {
 		Image image = null;
 		if (hotImage != null) {
 			image = hotImage;
@@ -350,14 +347,10 @@ void createHandle () {
 		OS.CreateIconControl(window, null, inContent, false, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		iconHandle = outControl [0];
-		if (OS.HIVIEW) {
-			ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-			fontStyle.flags = (short) OS.kControlUseThemeFontIDMask;
-			fontStyle.font = (short) parent.defaultThemeFont ();
-			OS.CreateStaticTextControl (window, null, 0, fontStyle, outControl);
-		} else {
-			OS.CreateIconControl (window, null, inContent, false, outControl);		
-		}
+		ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+		fontStyle.flags = (short) OS.kControlUseThemeFontIDMask;
+		fontStyle.font = (short) parent.defaultThemeFont ();
+		OS.CreateStaticTextControl (window, null, 0, fontStyle, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = outControl [0];
 	}
@@ -386,24 +379,20 @@ void destroyWidget () {
 }
 
 void drawBackground (int control, int context) {
-	if (OS.HIVIEW) {
-		if (control == handle && getSelection ()) {
-			CGRect rect = new CGRect();
-			OS.HIViewGetBounds (handle, rect);
-			OS.CGContextSaveGState (context);
-			OS.CGContextSetFillColor (context, new float[]{0.1f, 0.1f, 0.1f, 0.1f});
-			OS.CGContextFillRect (context, rect);
-			OS.CGContextSetStrokeColor (context, new float[]{0.2f, 0.2f, 0.2f, 0.2f});
-			rect.x += 0.5f;
-			rect.y += 0.5f;
-			rect.width -= 1;
-			rect.height -= 1;
-			OS.CGContextStrokeRect (context, rect);
-			OS.CGContextRestoreGState (context);
-		}
-		return;
+	if (control == handle && getSelection ()) {
+		CGRect rect = new CGRect();
+		OS.HIViewGetBounds (handle, rect);
+		OS.CGContextSaveGState (context);
+		OS.CGContextSetFillColor (context, new float[]{0.1f, 0.1f, 0.1f, 0.1f});
+		OS.CGContextFillRect (context, rect);
+		OS.CGContextSetStrokeColor (context, new float[]{0.2f, 0.2f, 0.2f, 0.2f});
+		rect.x += 0.5f;
+		rect.y += 0.5f;
+		rect.width -= 1;
+		rect.height -= 1;
+		OS.CGContextStrokeRect (context, rect);
+		OS.CGContextRestoreGState (context);
 	}
-	parent.fillBackground (control, context, null);
 }
 
 void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
@@ -414,39 +403,23 @@ void drawWidget (int control, int context, int damageRgn, int visibleRgn, int th
 		} else {
 			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
 		}
-		if (OS.HIVIEW) {
-			CGRect rect = new CGRect ();
-			OS.HIViewGetBounds (handle, rect);
-			if ((style & SWT.SEPARATOR) != 0 && this.control == null) {
-				rect.y += 2;
-				rect.height -= 4;
-				HIThemeSeparatorDrawInfo info = new HIThemeSeparatorDrawInfo ();
-				info.state = state;
-				OS.HIThemeDrawSeparator (rect, info, context, OS.kHIThemeOrientationNormal);
-			}
-			if ((style & SWT.DROP_DOWN) != 0) {
-				rect.y = rect.height / 2 - 1;
-				rect.x = rect.width - ARROW_WIDTH;
-				HIThemePopupArrowDrawInfo info = new HIThemePopupArrowDrawInfo ();
-				info.state = state;
-				info.orientation = (short) OS.kThemeArrowDown;
-				info.size = (short) OS.kThemeArrow5pt;
-				OS.HIThemeDrawPopupArrow (rect, info, context, OS.kHIThemeOrientationNormal);
-			}			
-		} else {
-			Rect rect = new Rect ();
-			OS.GetControlBounds (handle, rect);
-			if ((style & SWT.SEPARATOR) != 0 && this.control == null) {
-				rect.top += 2;
-				rect.bottom -= 2;
-				OS.DrawThemeSeparator (rect, state);
-			}
-			if ((style & SWT.DROP_DOWN) != 0) {
-				int height = rect.bottom - rect.top;
-				rect.top = (short) (rect.bottom - (height / 2) - 1);
-				rect.left = (short) (rect.right - ARROW_WIDTH);
-				OS.DrawThemePopupArrow (rect, (short) OS.kThemeArrowDown, (short) OS.kThemeArrow5pt, state, 0, 0);
-			}
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (handle, rect);
+		if ((style & SWT.SEPARATOR) != 0 && this.control == null) {
+			rect.y += 2;
+			rect.height -= 4;
+			HIThemeSeparatorDrawInfo info = new HIThemeSeparatorDrawInfo ();
+			info.state = state;
+			OS.HIThemeDrawSeparator (rect, info, context, OS.kHIThemeOrientationNormal);
+		}
+		if ((style & SWT.DROP_DOWN) != 0) {
+			rect.y = rect.height / 2 - 1;
+			rect.x = rect.width - ARROW_WIDTH;
+			HIThemePopupArrowDrawInfo info = new HIThemePopupArrowDrawInfo ();
+			info.state = state;
+			info.orientation = (short) OS.kThemeArrowDown;
+			info.size = (short) OS.kThemeArrow5pt;
+			OS.HIThemeDrawPopupArrow (rect, info, context, OS.kHIThemeOrientationNormal);
 		}
 	}
 }
@@ -580,12 +553,7 @@ public ToolBar getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	if (OS.HIVIEW) {
-		return selection;
-	}
-	short [] transform = new short [1];
- 	OS.GetControlData (iconHandle, (short) OS.kControlEntireControl, OS.kControlIconTransformTag, 2, transform, null);
-  	return (transform [0] & OS.kTransformSelected) != 0;
+	return selection;
 }
 
 /**
@@ -687,13 +655,13 @@ void hookEvents () {
 		controlTarget = OS.GetControlEventTarget (iconHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, iconHandle, null);
 		OS.SetControlColorProc (iconHandle, colorProc);
-		if (OS.HIVIEW) OS.SetControlAction (iconHandle, display.actionProc);
+		OS.SetControlAction (iconHandle, display.actionProc);
 	}
 	if (labelHandle != 0) {
 		controlTarget = OS.GetControlEventTarget (labelHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, labelHandle, null);
 		OS.SetControlColorProc (labelHandle, colorProc);
-		if (OS.HIVIEW) OS.SetControlAction (labelHandle, display.actionProc);
+		OS.SetControlAction (labelHandle, display.actionProc);
 	}
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
@@ -743,27 +711,25 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
-	if (OS.HIVIEW) {
-		/*
-		* Feature in the Macintosh.  When kWindowCompositingAttribute is
-		* set in the window, controls within the window are selected when
-		* any button is pressed, not just the left one.  When the control
-		* has a menu, this causes both selection and a menu to be displayed.
-		* The fix is to check for button two and avoid setting the part
-		* code, which stops the selection from happening.
-		*/		
-		if (display.clickCountButton == 2) return OS.noErr;
-		int [] theControl = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-		if (theControl [0] == labelHandle) {
-			CGRect rect = new CGRect ();
-			OS.HIViewGetBounds (labelHandle, rect);
-			CGPoint pt = new CGPoint ();
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-			if (OS.CGRectContainsPoint (rect, pt) != 0) {
-				OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{(short)1});
-				return OS.noErr;
-			}
+	/*
+	* Feature in the Macintosh.  When kWindowCompositingAttribute is
+	* set in the window, controls within the window are selected when
+	* any button is pressed, not just the left one.  When the control
+	* has a menu, this causes both selection and a menu to be displayed.
+	* The fix is to check for button two and avoid setting the part
+	* code, which stops the selection from happening.
+	*/		
+	if (display.clickCountButton == 2) return OS.noErr;
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	if (theControl [0] == labelHandle) {
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (labelHandle, rect);
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		if (OS.CGRectContainsPoint (rect, pt) != 0) {
+			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{(short)1});
+			return OS.noErr;
 		}
 	}
 	return OS.eventNotHandledErr;
@@ -771,16 +737,14 @@ int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
 
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	int result = parent.kEventControlTrack (nextHandler, theEvent, userData);
-	if (OS.HIVIEW) {
-		if (isDisposed ()) return OS.noErr;
-		partCode = 0;
-		if (text.length () > 0 && labelHandle != 0) {
-			redrawWidget (labelHandle, false);
-		}
-		if (image != null && iconHandle != 0) {
-			OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short) 0});
-			redrawWidget (iconHandle, false);
-		}
+	if (isDisposed ()) return OS.noErr;
+	partCode = 0;
+	if (text.length () > 0 && labelHandle != 0) {
+		redrawWidget (labelHandle, false);
+	}
+	if (image != null && iconHandle != 0) {
+		OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short) 0});
+		redrawWidget (iconHandle, false);
 	}
 	return result;
 }
@@ -790,47 +754,20 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	
 	if ((style & SWT.DROP_DOWN) != 0) {
-		if (OS.HIVIEW) {
-			CGPoint pt = new CGPoint ();
-			OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-			OS.HIViewConvertPoint (pt, 0, handle);
-			CGRect rect = new CGRect ();
-			OS.HIViewGetBounds (handle, rect);
-			int x = (int) pt.x;
-			int width = (int) rect.width;
-			if (width - x < 12) {
-				OS.HIViewConvertPoint (pt, handle, parent.handle);
-				Event event = new Event ();
-				event.detail = SWT.ARROW;
-				event.x = (int) pt.x;
-				event.y = (int) pt.y;
-				postEvent (SWT.Selection, event);				
-			}
-		} else {
-			int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-			org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-			Rect rect = new Rect ();
-			int window = OS.GetControlOwner (handle);
-			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-			int x = pt.h - rect.left;
-			int y = pt.v - rect.top;
-			OS.GetControlBounds (handle, rect);
-			x -= rect.left;
-			y -= rect.top;
-			int width = rect.right - rect.left;
-			if (width - x < 12) {
-				x = rect.left;
-				y = rect.bottom;
-				OS.GetControlBounds (parent.handle, rect);
-				x -= rect.left;
-				y -= rect.top;
-				Event event = new Event ();
-				event.detail = SWT.ARROW;
-				event.x = x;
-				event.y = y;
-				postEvent (SWT.Selection, event);
-			}
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+		OS.HIViewConvertPoint (pt, 0, handle);
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (handle, rect);
+		int x = (int) pt.x;
+		int width = (int) rect.width;
+		if (width - x < 12) {
+			OS.HIViewConvertPoint (pt, handle, parent.handle);
+			Event event = new Event ();
+			event.detail = SWT.ARROW;
+			event.x = (int) pt.x;
+			event.y = (int) pt.y;
+			postEvent (SWT.Selection, event);				
 		}
 	}	
 	return result;
@@ -926,7 +863,6 @@ void setBackground (float [] color) {
 	parent.setBackground (handle, color);
 	if (labelHandle != 0) {
 		parent.setBackground (labelHandle, color);
-		if (!OS.HIVIEW) updateText (false);
 	}
 	if (iconHandle != 0) parent.setBackground (iconHandle, color);
 }
@@ -1030,18 +966,13 @@ public void setEnabled (boolean enabled) {
 }
 
 void setFontStyle (Font font) {
-	if (OS.HIVIEW) {
-		parent.setFontStyle (labelHandle, font);
-	} else {
-		updateText (false);
-	}
+	parent.setFontStyle (labelHandle, font);
 }
 
 void setForeground (float [] color) {
 	parent.setForeground (handle, color);
 	if (labelHandle != 0) {
 		parent.setForeground (labelHandle, color);
-		if (!OS.HIVIEW) updateText (false);
 	}
 	if (iconHandle != 0) parent.setForeground (iconHandle, color);
 }
@@ -1131,15 +1062,7 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	if (OS.HIVIEW) {
-		this.selection = selected;
-	} else {
-		int transform = selected ? OS.kTransformSelected : 0;
-		OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
-		if (image == null) {
-			OS.SetControlData (labelHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
-		}
-	}
+	this.selection = selected;
 	redrawWidget (handle, true);
 }
 
@@ -1173,19 +1096,15 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	if (OS.HIVIEW) {
-		char [] buffer = new char [text.length ()];
-		text.getChars (0, buffer.length, buffer, 0);
-		int length = fixMnemonic (buffer);
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-		OS.SetControlData (labelHandle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
-		OS.CFRelease (ptr);
-		redrawWidget (labelHandle, false);
-		parent.relayout ();
-	} else {
-		updateText (true);
-	}
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int length = fixMnemonic (buffer);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetControlData (labelHandle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
+	OS.CFRelease (ptr);
+	redrawWidget (labelHandle, false);
+	parent.relayout ();
 }
 
 /**
@@ -1308,19 +1227,11 @@ void updateText (boolean layout) {
 }
 
 Point textExtent () {
-	if (OS.HIVIEW) {
-		int [] ptr = new int [1];
-		OS.GetControlData (labelHandle, (short) 0, OS.kControlStaticTextCFStringTag, 4, ptr, null);
-		Point result = parent.textExtent (ptr [0], 0);
-		if (ptr [0] != 0) OS.CFRelease (ptr [0]);
-		return result;
-	} else {
-		GC gc = new GC (parent);
-		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
-		Point size = gc.textExtent (text, flags);
-		gc.dispose ();
-		return size;		
-	}
+	int [] ptr = new int [1];
+	OS.GetControlData (labelHandle, (short) 0, OS.kControlStaticTextCFStringTag, 4, ptr, null);
+	Point result = parent.textExtent (ptr [0], 0);
+	if (ptr [0] != 0) OS.CFRelease (ptr [0]);
+	return result;
 }
 
 }

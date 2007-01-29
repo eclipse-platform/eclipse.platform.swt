@@ -180,7 +180,7 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		paintGC = GC.carbon_new (this, data);
 	} 
 	fixScrollWidth = false;
-	drawBackground = OS.HIVIEW && findBackgroundControl () != null;
+	drawBackground = findBackgroundControl () != null;
 	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
 	if (itemCount == 0 && drawBackground) {
 		drawBackground = false;
@@ -468,20 +468,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 boolean contains(int shellX, int shellY) {
-	int x, y;
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		int [] contentView = new int [1];
-		OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
-		OS.HIViewConvertPoint (pt, handle, contentView [0]);
-		x = shellX - (int) pt.x;
-		y = shellY - (int) pt.y;
-	} else {
-		Rect controlBounds = new Rect ();
-		OS.GetControlBounds (handle, controlBounds);
-		x = shellX - controlBounds.left;
-		y = shellY - controlBounds.top;
-	}
+	CGPoint pt = new CGPoint ();
+	int [] contentView = new int [1];
+	OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
+	OS.HIViewConvertPoint (pt, handle, contentView [0]);
+	int x = shellX - (int) pt.x;
+	int y = shellY - (int) pt.y;
 	if (y < getHeaderHeight ()) return false;
 	return getClientArea ().contains (x, y);
 }
@@ -537,7 +529,7 @@ void createHandle () {
 	* it on a offscreen buffer to avoid flashes and then restoring it to
 	* size zero.
 	*/
-	if (OS.HIVIEW) OS.HIViewSetDrawingEnabled (handle, false);
+	OS.HIViewSetDrawingEnabled (handle, false);
 	int size = 50;
 	Rect rect = new Rect ();
 	rect.right = rect.bottom = (short) size;
@@ -556,7 +548,7 @@ void createHandle () {
 	OS.DisposePtr (data);
 	rect.right = rect.bottom = (short) 0;
 	OS.SetControlBounds (handle, rect);
-	if (OS.HIVIEW) OS.HIViewSetDrawingEnabled (handle, true);
+	OS.HIViewSetDrawingEnabled (handle, true);
 }
 
 void createItem (TableColumn column, int index) {
@@ -914,13 +906,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		}
 		if (columnIndex == columnCount) return OS.noErr;
 	}
-	int offsetX = 0, offsetY = 0;
 	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	if (!OS.HIVIEW) {
-		offsetX = rect.left;
-		offsetY = rect.top;
-	}
 	lastIndexOf = index;
 	TableItem item = _getItem (index);
 	if ((style & SWT.VIRTUAL) != 0) {
@@ -928,8 +914,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			if (!checkData (item, false)) return OS.noErr;
 			if (setScrollWidth (item)) {
 				if (OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					int x = rect.left - offsetX;
-					int y = rect.top - offsetY;
+					int x = rect.left;
+					int y = rect.top;
 					int width = rect.right - rect.left;
 					int height = rect.bottom - rect.top;
 					redrawWidget (handle, x, y, width, height, false);
@@ -939,8 +925,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		}
 	}
 	OS.memcpy (rect, theRect, Rect.sizeof);
-	int x = rect.left - offsetX;
-	int y = rect.top - offsetY;
+	int x = rect.left;
+	int y = rect.top;
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	GC gc = paintGC;
@@ -952,7 +938,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc = GC.carbon_new (this, data);
 	}
 	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect);	
-	if (!OS.HIVIEW) OS.OffsetRect (rect, (short)-offsetX, (short)-offsetX);
 	int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
 	int itemX = rect.left + gridWidth;
 	int itemY = rect.top;
@@ -1003,7 +988,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.SetRectRgn (itemRgn, (short) itemX, (short) itemY, (short) (itemX + itemWidth), (short) (itemY + itemHeight));
 	int clip = OS.NewRgn ();
 	OS.GetClip (clip);
-	if (!OS.HIVIEW) OS.OffsetRgn (clip, (short)-offsetX, (short)-offsetY);
 	OS.SectRgn (clip, itemRgn, itemRgn);
 	OS.DisposeRgn (clip);
 	Region region = Region.carbon_new (display, itemRgn);
@@ -1453,9 +1437,8 @@ public TableItem getItem (Point point) {
 	checkItems (true);
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Rect rect = new Rect ();
-	if (!OS.HIVIEW) OS.GetControlBounds (handle, rect);
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
+	OS.SetPt (pt, (short) point.x, (short) point.y);
 	int columnId = (columnCount == 0) ? column_id : columns [0].id;
 	if (0 < lastHittest && lastHittest <= itemCount) {
 		if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
@@ -1786,23 +1769,16 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				if (!contains (pt.h, pt.v)) break;
 				String toolTipText = null;
 				int tagSide = OS.kHMAbsoluteCenterAligned;
-				int x, y;
-				if (OS.HIVIEW) {
-					CGPoint inPt = new CGPoint ();
-					int [] contentView = new int [1];
-					OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
-					OS.HIViewConvertPoint (inPt, handle, contentView [0]);
-					pt.h -= (int) inPt.x;
-					pt.v -= (int) inPt.y;
-					windowLeft += (int) inPt.x;
-					windowTop += (int) inPt.y;
-					x = pt.h;
-					y = pt.v;
-				} else {
-					OS.GetControlBounds (handle, rect);
-					x = pt.h - rect.left;
-					y = pt.v - rect.top;
-				}
+				CGPoint inPt = new CGPoint ();
+				int [] contentView = new int [1];
+				OS.HIViewFindByID (OS.HIViewGetRoot (OS.GetControlOwner (handle)), OS.kHIViewWindowContentID (), contentView);
+				OS.HIViewConvertPoint (inPt, handle, contentView [0]);
+				pt.h -= (int) inPt.x;
+				pt.v -= (int) inPt.y;
+				windowLeft += (int) inPt.x;
+				windowTop += (int) inPt.y;
+				int x = pt.h;
+				int y = pt.v;
 				int headerHeight = getHeaderHeight ();
 				if (headerHeight != 0 && (0 <= y && y < headerHeight) ) {
 					int startX = 0;

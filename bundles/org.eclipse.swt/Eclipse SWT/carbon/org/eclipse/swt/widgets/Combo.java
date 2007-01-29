@@ -483,11 +483,7 @@ void createHandle () {
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 		OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kTXNDrawCaretWhenInactiveTag, 4, new byte [ ]{0});
-		if (OS.HIVIEW) {
-			OS.HIViewSetVisible (handle, true);
-		} else {
-			OS.SetControlVisibility (handle, true, false);
-		}
+		OS.HIViewSetVisible (handle, true);
 	}
 }
 

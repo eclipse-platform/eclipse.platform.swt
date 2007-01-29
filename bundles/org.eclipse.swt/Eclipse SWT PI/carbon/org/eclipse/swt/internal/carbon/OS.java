@@ -19,14 +19,12 @@ public class OS extends C {
 	static {
 		Library.loadLibrary ("swt-pi");
 	}
-	
-	public static final boolean HIVIEW;
+
 	public static final int VERSION;
 	static {
 		int [] response = new int [1];
 		OS.Gestalt (OS.gestaltSystemVersion, response);
 		VERSION = response [0] & 0xffff;
-		HIVIEW = VERSION >= 0x1030;
 	}
 
 	/** Constants */

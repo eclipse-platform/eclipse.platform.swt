@@ -178,10 +178,6 @@ int actionProc (int theControl, int partCode) {
 	}
 	OS.SetControl32BitValue (handle, value);
 	sendEvent (SWT.Selection, event);
-	if (!OS.HIVIEW) {
-		Shell shell = getShell ();
-		shell.update (true);
-	}
 	return result;
 }
 

@@ -173,13 +173,12 @@ void drawBackground (int control, int context) {
 	int [] outMetric = new int [1];
 	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
 	outMetric[0]--;
-	Rect r = new Rect (), bounds = new Rect();
-	if (!OS.HIVIEW) OS.GetControlBounds (control, bounds);
+	Rect r = new Rect ();
 	Rectangle [] rects = getRectangles (focusIndex);
 	for (int i = 0; i < rects.length; i++) {
 		Rectangle rect = rects [i];
-		r.left = (short) (bounds.left + rect.x + outMetric[0]);
-		r.top = (short) (bounds.top + rect.y + outMetric[0]);
+		r.left = (short) (rect.x + outMetric[0]);
+		r.top = (short) (rect.y + outMetric[0]);
 		r.right = (short) (r.left + rect.width - (outMetric[0] * 2));
 		r.bottom = (short) (r.top + rect.height - (outMetric[0] * 2));
 		OS.DrawThemeFocusRect (r, true);
@@ -278,26 +277,11 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseMoved (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	int x, y;
-	if (OS.HIVIEW) {
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		OS.HIViewConvertPoint (pt, 0, handle);
-		x = (int) pt.x;
-		y = (int) pt.y;
-	} else {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		x = pt.h - rect.left;
-		y = pt.v - rect.top;
-		OS.GetControlBounds (handle, rect);
-		x -= rect.left;
-		y -= rect.top;
-	}
+	CGPoint pt = new CGPoint ();
+	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
+	OS.HIViewConvertPoint (pt, 0, handle);
+	int x = (int) pt.x;
+	int y = (int) pt.y;
 	for (int j = 0; j < offsets.length; j++) {
 		Rectangle [] rects = getRectangles (j);
 		for (int i = 0; i < rects.length; i++) {

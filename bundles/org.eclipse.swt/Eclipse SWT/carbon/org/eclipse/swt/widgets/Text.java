@@ -14,7 +14,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.EventRecord;
 import org.eclipse.swt.internal.carbon.TXNBackground;
 import org.eclipse.swt.internal.carbon.TXNLongRect;
 import org.eclipse.swt.internal.carbon.ControlEditTextSelectionRec;
@@ -260,25 +259,22 @@ static int checkStyle (int style) {
 }
 
 int callFocusEventHandler (int nextHandler, int theEvent) {
-	if (OS.HIVIEW) {
-		short [] part = new short [1];
-		if (txnObject == 0) {
-			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-			if (part [0] == OS.kControlFocusNoPart) {
-				selection = new ControlEditTextSelectionRec ();
-				OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
-			}
+	short [] part = new short [1];
+	if (txnObject == 0) {
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+		if (part [0] == OS.kControlFocusNoPart) {
+			selection = new ControlEditTextSelectionRec ();
+			OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null);
 		}
-		int result = super.callFocusEventHandler (nextHandler, theEvent);
-		if (txnObject == 0) {
-			if (part [0] != OS.kControlFocusNoPart && selection != null) {
-				OS.SetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
-				selection = null;
-			}
-		}
-		return result;
 	}
-	return OS.noErr;
+	int result = super.callFocusEventHandler (nextHandler, theEvent);
+	if (txnObject == 0) {
+		if (part [0] != OS.kControlFocusNoPart && selection != null) {
+			OS.SetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
+			selection = null;
+		}
+	}
+	return result;
 }
 
 /**
@@ -360,15 +356,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	if (!OS.HIVIEW) {
-		int ptr = OS.NewPtr (Rect.sizeof);
-		OS.TXNGetTXNObjectControls (txnObject, 1, new int [] {OS.kTXNMarginsTag}, new int [] {ptr});
-		Rect rect = new Rect ();
-		OS.memcpy (rect, ptr, Rect.sizeof);
-		OS.DisposePtr (ptr);
-		width += rect.left + rect.right;
-		height += rect.top + rect.bottom;
-	}
 	int [] size = new int [1];
 	OS.GetThemeMetric(OS.kThemeMetricScrollBarWidth, size);
 	if (horizontalBar != null) height += size [0];
@@ -435,155 +422,72 @@ void copy (char [] buffer) {
 }
 
 void createHandle () {
-	if (OS.HIVIEW) {
-		int [] outControl = new int [1];
-		if ((style & SWT.MULTI) != 0 || (style & (SWT.BORDER | SWT.SEARCH)) == 0) {
-			if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-				int options = 0;
-				if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == (SWT.H_SCROLL | SWT.V_SCROLL)) options |= OS.kHIScrollViewOptionsAllowGrow;
-				if ((style & SWT.H_SCROLL) != 0) options |= OS.kHIScrollViewOptionsHorizScroll;
-				if ((style & SWT.V_SCROLL) != 0) options |= OS.kHIScrollViewOptionsVertScroll;
-				OS.HIScrollViewCreate (options, outControl);
-				if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-				scrolledHandle = outControl [0];
-				OS.HIViewSetVisible (scrolledHandle, true);
-			}
-			int iFrameOptions = OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
-			if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
-			if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
-			OS.HITextViewCreate (null, 0, iFrameOptions, outControl);
+	int [] outControl = new int [1];
+	if ((style & SWT.MULTI) != 0 || (style & (SWT.BORDER | SWT.SEARCH)) == 0) {
+		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+			int options = 0;
+			if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == (SWT.H_SCROLL | SWT.V_SCROLL)) options |= OS.kHIScrollViewOptionsAllowGrow;
+			if ((style & SWT.H_SCROLL) != 0) options |= OS.kHIScrollViewOptionsHorizScroll;
+			if ((style & SWT.V_SCROLL) != 0) options |= OS.kHIScrollViewOptionsVertScroll;
+			OS.HIScrollViewCreate (options, outControl);
 			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-			handle = outControl [0];
-			OS.HIViewSetVisible (handle, true);
-			txnObject = OS.HITextViewGetTXNObject (handle);			
-			int ptr = OS.NewPtr (Rect.sizeof);
-			Rect rect = inset ();
-			OS.memcpy (ptr, rect, Rect.sizeof);
-			int [] tags = new int [] {
-				OS.kTXNDisableDragAndDropTag,
-				OS.kTXNDoFontSubstitution,
-				OS.kTXNIOPrivilegesTag,
-				OS.kTXNMarginsTag,
-				OS.kTXNJustificationTag,
-			};
-			int just = OS.kTXNFlushLeft;
-			if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
-			if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
-			int [] datas = new int [] {
-				1,
-				1,
-				(style & SWT.READ_ONLY) != 0 ? 1 : 0,
-				ptr,
-				just,
-			};
-			OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
-			OS.DisposePtr (ptr);
-		} else {
-			if ((style & SWT.SEARCH) != 0) {
-				int attributes = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
-				OS.HISearchFieldCreate (null, attributes, 0, 0, outControl);
-			} else {
-				int window = OS.GetControlOwner (parent.handle);
-				OS.CreateEditUnicodeTextControl (window, null, 0, (style & SWT.PASSWORD) != 0, null, outControl);
-			}
-			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-			handle = outControl [0];
-			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
-			if ((style & SWT.READ_ONLY) != 0) {
-				OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {1});
-			}
-			if ((style & (SWT.RIGHT | SWT.CENTER)) != 0) {
-				ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
-				fontStyle.flags |= OS.kControlUseJustMask;
-				if ((style & SWT.CENTER) != 0) fontStyle.just = OS.teJustCenter;
-				if ((style & SWT.RIGHT) != 0) fontStyle.just = OS.teJustRight;
-				OS.SetControlFontStyle (handle, fontStyle);
-			}
-			if ((style & SWT.SEARCH) != 0) {
-				if (OS.HIVIEW) {
-					OS.HIViewSetVisible (handle, true);
-				} else {
-					OS.SetControlVisibility (handle, true, false);
-				}
-			}
-		}		
-	} else {
-		int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
-		int [] outControl = new int [1];
-		int window = OS.GetControlOwner (parent.handle);
-		OS.CreateUserPaneControl (window, null, features, outControl);
-		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		handle = outControl [0];
-		
-		/*
-		* Feature in the Macintosh.  The TXNObject is not a control but creates scroll
-		* bar controls to scroll the text.  These are created in the root and are not
-		* children of the user pane that is used to represent the TNXObject.  The fix
-		* is to embed the scroll bars in the user pane.
-		*/
-		int [] theRoot = new int [1];
-		OS.GetRootControl (window, theRoot);
-		short [] oldCount = new short [1];
-		OS.CountSubControls (theRoot [0], oldCount);	
-		
-		/* Create the TXNObject */
+			scrolledHandle = outControl [0];
+			OS.HIViewSetVisible (scrolledHandle, true);
+		}
 		int iFrameOptions = OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
-		if ((style & SWT.H_SCROLL) != 0) iFrameOptions |= OS.kTXNWantHScrollBarMask;
-		if ((style & SWT.V_SCROLL) != 0) iFrameOptions |= OS.kTXNWantVScrollBarMask;
 		if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
 		if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
-		int [] oTXNObject = new int [1], oTXNFrameID = new int[1];
-		OS.TXNNewObject (0, window, null, iFrameOptions, OS.kTXNTextEditStyleFrameType, OS.kTXNUnicodeTextFile, OS.kTXNSystemDefaultEncoding, oTXNObject, oTXNFrameID, 0);
-		if (oTXNObject [0] == 0) error (SWT.ERROR_NO_HANDLES);
-		txnObject = oTXNObject [0];
-		txnFrameID = oTXNFrameID [0];
-		
-		/* Embed the scroll bars in the user pane */
-		short [] newCount = new short [1];
-		OS.CountSubControls (theRoot [0], newCount);
-		int [] scrollBar = new int [1];
-		for (int i=newCount [0]; i>oldCount [0]; --i) {
-			OS.GetIndexedSubControl (theRoot [0], (short) i, scrollBar);
-			OS.HIViewRemoveFromSuperview (scrollBar [0]);
-			OS.HIViewAddSubview (handle, scrollBar [0]);
-		}
-		
-		/* Configure the TXNObject */
+		OS.HITextViewCreate (null, 0, iFrameOptions, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.HIViewSetVisible (handle, true);
+		txnObject = OS.HITextViewGetTXNObject (handle);			
 		int ptr = OS.NewPtr (Rect.sizeof);
-		Rect rect = new Rect ();
-		if (hasBorder ()) {
-			OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
-		}
+		Rect rect = inset ();
 		OS.memcpy (ptr, rect, Rect.sizeof);
 		int [] tags = new int [] {
 			OS.kTXNDisableDragAndDropTag,
+			OS.kTXNDoFontSubstitution,
 			OS.kTXNIOPrivilegesTag,
 			OS.kTXNMarginsTag,
 			OS.kTXNJustificationTag,
-			OS.kTXNDoFontSubstitution,
 		};
 		int just = OS.kTXNFlushLeft;
 		if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
 		if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
 		int [] datas = new int [] {
 			1,
+			1,
 			(style & SWT.READ_ONLY) != 0 ? 1 : 0,
 			ptr,
 			just,
-			1,
 		};
 		OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
-		OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
 		OS.DisposePtr (ptr);
-	
-		/*
-		* Bug in the Macintosh.  The caret height is too small until some text is set in the
-		* TXNObject.  The fix is to temporary change the text.
-		*/
-		char [] buffer = new char [] {' '};
-		OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 2, OS.kTXNStartOffset, OS.kTXNEndOffset);
-		OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
-
+	} else {
+		if ((style & SWT.SEARCH) != 0) {
+			int attributes = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
+			OS.HISearchFieldCreate (null, attributes, 0, 0, outControl);
+		} else {
+			int window = OS.GetControlOwner (parent.handle);
+			OS.CreateEditUnicodeTextControl (window, null, 0, (style & SWT.PASSWORD) != 0, null, outControl);
+		}
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
+		if ((style & SWT.READ_ONLY) != 0) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {1});
+		}
+		if ((style & (SWT.RIGHT | SWT.CENTER)) != 0) {
+			ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+			fontStyle.flags |= OS.kControlUseJustMask;
+			if ((style & SWT.CENTER) != 0) fontStyle.just = OS.teJustCenter;
+			if ((style & SWT.RIGHT) != 0) fontStyle.just = OS.teJustRight;
+			OS.SetControlFontStyle (handle, fontStyle);
+		}
+		if ((style & SWT.SEARCH) != 0) {
+			OS.HIViewSetVisible (handle, true);
+		}
 	}
 }
 
@@ -674,19 +578,6 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 		return false;
 	}
 	return super.dragDetect (x, y, filter, consume);
-}
-
-void drawBackground (int control, int context) {
-	if (!OS.HIVIEW) {
-		parent.drawFocus (control, context, hasFocus () && drawFocusRing (), hasBorder (), inset ());
-	}
-}
-
-void drawWidget (int control, int context, int damageRgn, int visibleRgn, int theEvent) {
-	if (!OS.HIVIEW) {
-		OS.TXNDraw (txnObject, 0);
-	}
-	super.drawWidget (control, context, damageRgn, visibleRgn, theEvent);
 }
 
 int focusPart () {
@@ -1244,31 +1135,12 @@ void hookEvents () {
 
 Rect inset () {
 	if ((style & SWT.SEARCH) != 0) return super.inset ();
-	if (OS.HIVIEW) {
-		if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) == 0) {
-			Rect rect = new Rect ();
-			rect.left = rect.top = rect.right = rect.bottom = 1;
-			return rect; 
-		}
-		return new Rect ();
+	if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) == 0) {
+		Rect rect = new Rect ();
+		rect.left = rect.top = rect.right = rect.bottom = 1;
+		return rect; 
 	}
-	Rect rect = new Rect ();
-	int [] outMetric = new int [1];
-	if (drawFocusRing ()) {
-		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-		rect.left += outMetric [0];
-		rect.top += outMetric [0];
-		rect.right += outMetric [0];
-		rect.bottom += outMetric [0];
-	}
-	if (hasBorder ()) {
-		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
-		rect.left += outMetric [0];
-		rect.top += outMetric [0];
-		rect.right += outMetric [0];
-		rect.bottom += outMetric [0];
-	}
-	return rect;	
+	return new Rect ();
 } 
 
 /**
@@ -1334,59 +1206,6 @@ void insertEditText (String string) {
 	}
 }
 
-int kEventControlActivate (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (!OS.HIVIEW) {
-		OS.TXNFocus (txnObject, hasFocus ());
-		OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncAlwaysActive);
-	}
-	return result;
-}
-
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (!OS.HIVIEW) {
-		int [] attributes = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-		if ((attributes [0] & (OS.kControlBoundsChangePositionChanged | OS.kControlBoundsChangeSizeChanged)) != 0) setTXNBounds ();
-	}
-	return result;
-}
-
-int kEventControlClick (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlClick (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (!OS.HIVIEW) {
-		if (!isEnabled ()) return OS.noErr;
-		int window = OS.GetControlOwner (handle);
-		OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
-		EventRecord iEvent = new EventRecord ();
-		OS.ConvertEventRefToEventRecord (theEvent, iEvent);
-		OS.TXNClick (txnObject, iEvent);
-		return OS.noErr;
-	}
-	return result;
-}
-
-int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlDeactivate (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (!OS.HIVIEW) {
-		OS.TXNFocus (txnObject, hasFocus());
-		OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncWithFocus);
-	}
-	return result;
-}
-
-int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
-	if (!OS.HIVIEW) {
-		return OS.noErr;
-	}
-	return OS.eventNotHandledErr;
-}
-
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -1405,30 +1224,6 @@ int kEventSearchFieldCancelClicked (int nextHandler, int theEvent, int userData)
 	Event event = new Event ();
 	event.detail = SWT.CANCEL;
 	postEvent (SWT.DefaultSelection, event);
-	return result;
-}
-
-int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if (!OS.HIVIEW) {
-		OS.TXNAdjustCursor (txnObject, 0);
-		return OS.noErr;
-	}
-	return result;
-}
-
-int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (!OS.HIVIEW) {
-		if (result == OS.noErr) {
-			short [] part = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-			drawFocusClipped (handle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
-			OS.TXNDraw (txnObject, 0);
-			OS.TXNFocus (txnObject, part [0] != OS.kControlFocusNoPart);
-		}
-	}
 	return result;
 }
 
@@ -1529,9 +1324,6 @@ public void paste () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (!OS.HIVIEW) {
-		OS.TXNDeleteObject (txnObject);
-	}
 	txnObject = txnFrameID = 0;
 	hiddenText = message = null;
 }
@@ -1607,30 +1399,6 @@ public void removeVerifyListener (VerifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);
-}
-
-void resetVisibleRegion (int control) {
-	super.resetVisibleRegion (control);
-	
-	/*
-	* Bug in the Macintosh.  For some reason, the TXN object draws when
-	* kTXNVisibilityTag is not set causing pixel corruption.  The fix is
-	* to make the TXN frame small so that nothing is drawn.
-	*/
-	if (!OS.HIVIEW) {
-		Rect rect = new Rect ();
-		OS.GetControlBounds (handle, rect);
-		Rect inset = inset ();
-		rect.left += inset.left;
-		rect.top += inset.top;
-		rect.right -= inset.right;
-		if (OS.IsControlVisible (handle)) {
-			rect.bottom -= inset.bottom;
-		} else {
-			rect.bottom = rect.top;
-		}
-		OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
-	}
 }
 
 /**
@@ -1733,7 +1501,7 @@ void setBackground (float [] color) {
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	Rectangle bounds = null;
-	if (OS.HIVIEW && txnObject == 0 && resize) bounds = getBounds ();
+	if (txnObject == 0 && resize) bounds = getBounds ();
 	int result = super.setBounds(x, y, width, height, move, resize, events);
 	if (bounds != null && (result & RESIZED) != 0) {
 		/*
@@ -1765,9 +1533,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				if (ptr [0] != 0) OS.CFRelease (ptr [0]);				
 			}
 		}
-	}
-	if (!OS.HIVIEW) {
-		if ((result & (RESIZED | MOVED)) != 0) setTXNBounds ();
 	}
 	return result;
 }
@@ -2259,17 +2024,15 @@ public void setTextLimit (int limit) {
 public void setTopIndex (int index) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	if (OS.HIVIEW) {
-		int[] event = new int[1];
-		OS.CreateEvent (0, OS.kEventClassScrollable, OS.kEventScrollableScrollTo, 0.0, 0, event);
-		if (event [0] != 0) {
-			int lineHeight = getLineHeight ();
-			CGPoint pt = new CGPoint ();
-			pt.y = lineHeight * Math.min(getLineCount (), index);
-			OS.SetEventParameter (event[0], OS.kEventParamOrigin, OS.typeHIPoint, CGPoint.sizeof, pt);
-			OS.SendEventToEventTarget (event[0], OS.GetControlEventTarget (handle));
-			OS.ReleaseEvent (event[0]);
-		}
+	int[] event = new int[1];
+	OS.CreateEvent (0, OS.kEventClassScrollable, OS.kEventScrollableScrollTo, 0.0, 0, event);
+	if (event [0] != 0) {
+		int lineHeight = getLineHeight ();
+		CGPoint pt = new CGPoint ();
+		pt.y = lineHeight * Math.min(getLineCount (), index);
+		OS.SetEventParameter (event[0], OS.kEventParamOrigin, OS.typeHIPoint, CGPoint.sizeof, pt);
+		OS.SendEventToEventTarget (event[0], OS.GetControlEventTarget (handle));
+		OS.ReleaseEvent (event[0]);
 	}
 }
 
