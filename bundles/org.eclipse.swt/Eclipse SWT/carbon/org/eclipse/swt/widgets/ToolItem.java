@@ -607,7 +607,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				if (display.helpString != 0) OS.CFRelease (display.helpString);
 				display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 				HMHelpContentRec helpContent = new HMHelpContentRec ();
-				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
+				OS.memmove (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
 				helpContent.version = OS.kMacHelpVersion;
 				helpContent.tagSide = (short) OS.kHMDefaultSide;
 				display.helpWidget = null;
@@ -619,10 +619,10 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				helpContent.content0_tagCFString = display.helpString;
 				helpContent.content1_contentType = OS.kHMCFStringContent;
 				helpContent.content1_tagCFString = display.helpString;
-				OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
+				OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
 				contentProvided [0] = OS.kHMContentProvided;
 			}
-			OS.memcpy (outContentProvided, contentProvided, 2);
+			OS.memmove (outContentProvided, contentProvided, 2);
 			break;
 		}
 		case OS.kHMDisposeContent: {

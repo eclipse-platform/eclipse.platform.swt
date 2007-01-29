@@ -924,7 +924,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			}
 		}
 	}
-	OS.memcpy (rect, theRect, Rect.sizeof);
+	OS.memmove (rect, theRect, Rect.sizeof);
 	int x = rect.left;
 	int y = rect.top;
 	int width = rect.right - rect.left;
@@ -1606,10 +1606,10 @@ public TableItem [] getSelection () {
 	if (count > 0) {
 		OS.HLock (ptr);
 		int [] id = new int [1];
-		OS.memcpy (id, ptr, 4);
+		OS.memmove (id, ptr, 4);
 		int offset = id [0] + (count - 1) * 4;
 		for (int i=0; i<count; i++, offset -= 4) {
-			OS.memcpy (id, offset, 4);
+			OS.memmove (id, offset, 4);
 			result [i] = _getItem (id [0] - 1);
 		}
 		OS.HUnlock (ptr);
@@ -1680,8 +1680,8 @@ public int [] getSelectionIndices () {
 	int [] result = new int [count];
 	if (count > 0) {
 		OS.HLock (ptr);
-		OS.memcpy (result, ptr, 4);
-		OS.memcpy (result, result [0], count * 4);
+		OS.memmove (result, ptr, 4);
+		OS.memmove (result, result [0], count * 4);
 		OS.HUnlock (ptr);
 		for (int start=0, end=count - 1; start<=end; start++, end--) {
 			int temp = result [start];
@@ -1763,7 +1763,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 				short windowLeft = rect.left, windowTop = rect.top;
 				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-				OS.memcpy(pt, new int[] {inGlobalMouse}, 4);
+				OS.memmove(pt, new int[] {inGlobalMouse}, 4);
 				pt.h -= windowLeft;
 				pt.v -= windowTop;
 				if (!contains (pt.h, pt.v)) break;
@@ -1853,7 +1853,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 					if (display.helpString != 0) OS.CFRelease (display.helpString);
 					display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 					HMHelpContentRec helpContent = new HMHelpContentRec ();
-					OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
+					OS.memmove (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
 					display.helpWidget = this;
 					helpContent.version = OS.kMacHelpVersion;
 					helpContent.tagSide = (short) tagSide;
@@ -1865,8 +1865,8 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 					helpContent.content0_tagCFString = display.helpString;
 					helpContent.content1_contentType = OS.kHMCFStringContent;
 					helpContent.content1_tagCFString = display.helpString;
-					OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
-					OS.memcpy (outContentProvided, new short[]{OS.kHMContentProvided}, 2);
+					OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
+					OS.memmove (outContentProvided, new short[]{OS.kHMContentProvided}, 2);
 					return OS.noErr;
 				}
 			}

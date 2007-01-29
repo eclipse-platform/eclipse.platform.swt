@@ -155,7 +155,7 @@ public String open () {
 				int status = OS.AEGetNthPtr (selection, 1, OS.typeFSRef, theAEKeyword, typeCode, dataPtr, maximumSize, actualSize);
 				if (status == OS.noErr && typeCode [0] == OS.typeFSRef) {
 					byte [] fsRef = new byte [actualSize [0]];
-					OS.memcpy (fsRef, dataPtr, actualSize [0]);
+					OS.memmove (fsRef, dataPtr, actualSize [0]);
 					int dirUrl = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
 					int dirString = OS.CFURLCopyFileSystemPath(dirUrl, OS.kCFURLPOSIXPathStyle);
 					OS.CFRelease (dirUrl);						

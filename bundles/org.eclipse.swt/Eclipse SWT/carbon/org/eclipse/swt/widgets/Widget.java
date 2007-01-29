@@ -400,7 +400,7 @@ int createCIcon (Image image) {
 	if (iconHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.HLock(iconHandle);
 	int[] iconPtr = new int[1];
-	OS.memcpy(iconPtr, iconHandle, 4);
+	OS.memmove(iconPtr, iconHandle, 4);
 
 	/* Initialize the pixmap */
 	PixMap iconPMap = new PixMap();
@@ -415,30 +415,30 @@ int createCIcon (Image image) {
 	iconPMap.pixelType = (short)OS.RGBDirect;
 	iconPMap.pixelSize = (short)bpp;
 	iconPMap.pixelFormat = (short)bpp;
-	OS.memcpy(iconPtr[0], iconPMap, PixMap.sizeof);
+	OS.memmove(iconPtr[0], iconPMap, PixMap.sizeof);
 
 	/* Initialize the mask */
 	BitMap iconMask = new BitMap();
 	iconMask.rowBytes = (short)maskBpl;
 	iconMask.right = (short)width;
 	iconMask.bottom = (short)height;
-	OS.memcpy(iconPtr[0] + PixMap.sizeof, iconMask, BitMap.sizeof);
+	OS.memmove(iconPtr[0] + PixMap.sizeof, iconMask, BitMap.sizeof);
 
 	/* Initialize the icon data */
 	int iconData = OS.NewHandle(pixmapSize);
 	OS.HLock(iconData);
 	int[] iconDataPtr = new int[1];
-	OS.memcpy(iconDataPtr, iconData, 4);
-	OS.memcpy(iconDataPtr[0], image.data, pixmapSize);
+	OS.memmove(iconDataPtr, iconData, 4);
+	OS.memmove(iconDataPtr[0], image.data, pixmapSize);
 	OS.HUnlock(iconData);
-	OS.memcpy(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, new int[]{iconData}, 4);
+	OS.memmove(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, new int[]{iconData}, 4);
 
 	/* Initialize the mask data */
 	if (alphaInfo != OS.kCGImageAlphaFirst) {
 		OS.memset(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, -1, maskSize);
 	} else {
 		byte[] srcData = new byte[pixmapSize];
-		OS.memcpy(srcData, image.data, pixmapSize);
+		OS.memmove(srcData, image.data, pixmapSize);
 		byte[] maskData = new byte[maskSize];
 		int offset = 0, maskOffset = 0;
 		for (int y = 0; y<height; y++) {
@@ -452,7 +452,7 @@ int createCIcon (Image image) {
 			}
 			maskOffset += maskBpl;
 		}
-		OS.memcpy(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, maskData, maskData.length);
+		OS.memmove(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, maskData, maskData.length);
 	}
 	
 	OS.HUnlock(iconHandle);	
@@ -528,8 +528,8 @@ int createIconRef (Image image) {
 	if (dataHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] dataPtr = new int[1];
 	OS.HLock(dataHandle);
-	OS.memcpy(dataPtr, dataHandle, 4);
-	OS.memcpy(dataPtr[0], imageData, dataSize);
+	OS.memmove(dataPtr, dataHandle, 4);
+	OS.memmove(dataPtr[0], imageData, dataSize);
 	OS.HUnlock(dataHandle);
 	OS.SetIconFamilyData(iconFamily, type, dataHandle);
 	OS.DisposeHandle(dataHandle);
@@ -540,12 +540,12 @@ int createIconRef (Image image) {
 	if (maskHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.HLock(maskHandle);
 	int[] maskPtr = new int[1];
-	OS.memcpy(maskPtr, maskHandle, 4);
+	OS.memmove(maskPtr, maskHandle, 4);
 	if (alphaInfo != OS.kCGImageAlphaFirst) {
 		OS.memset(maskPtr[0], 0xFF, maskSize);
 	} else {
 		byte[] srcData = new byte[dataSize];
-		OS.memcpy(srcData, imageData, dataSize);
+		OS.memmove(srcData, imageData, dataSize);
 		byte[] maskData = new byte[maskSize];
 		int offset = 0, maskOffset = 0;
 		for (int y = 0; y<height; y++) {
@@ -554,7 +554,7 @@ int createIconRef (Image image) {
 				offset += 4;
 			}
 		}
-		OS.memcpy(maskPtr[0], maskData, maskData.length);
+		OS.memmove(maskPtr[0], maskData, maskData.length);
 	}
 	OS.HUnlock(maskHandle);
 	OS.SetIconFamilyData(iconFamily, maskType, maskHandle);
@@ -566,7 +566,7 @@ int createIconRef (Image image) {
 	int[] iconRef = new int[1];
 	OS.HLock(iconFamily);
 	int[] iconPtr = new int[1];
-	OS.memcpy(iconPtr, iconFamily, 4);
+	OS.memmove(iconPtr, iconFamily, 4);
 	OS.GetIconRefFromIconFamilyPtr(iconPtr[0], OS.GetHandleSize(iconFamily), iconRef);
 	OS.HUnlock(iconFamily);	
 	OS.DisposeHandle(iconFamily);
@@ -599,14 +599,14 @@ void destroyCIcon (int iconHandle) {
 	
 	/* Dispose the ColorTable */
 	int[] iconPtr = new int[1];
-	OS.memcpy(iconPtr, iconHandle, 4);	
+	OS.memmove(iconPtr, iconHandle, 4);	
 	PixMap iconPMap = new PixMap();
-	OS.memcpy(iconPMap, iconPtr[0], PixMap.sizeof);
+	OS.memmove(iconPMap, iconPtr[0], PixMap.sizeof);
 	if (iconPMap.pmTable != 0) OS.DisposeHandle(iconPMap.pmTable);
 
 	/* Dispose the icon data */
 	int[] iconData = new int[1];
-	OS.memcpy(iconData, iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, 4);
+	OS.memmove(iconData, iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, 4);
 	if (iconData[0] != 0) OS.DisposeHandle(iconData[0]);
 	
 	OS.HUnlock(iconHandle);

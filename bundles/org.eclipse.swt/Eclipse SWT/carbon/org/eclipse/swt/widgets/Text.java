@@ -325,7 +325,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (length != 0) {
 				int [] ptr = new int [1];
 				OS.HLock (oDataHandle [0]);
-				OS.memcpy (ptr, oDataHandle [0], 4);
+				OS.memmove (ptr, oDataHandle [0], 4);
 				str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, ptr [0], length / 2);					
 				OS.HUnlock (oDataHandle[0]);
 			}
@@ -436,7 +436,7 @@ void createHandle () {
 		txnObject = OS.HITextViewGetTXNObject (handle);			
 		int ptr = OS.NewPtr (Rect.sizeof);
 		Rect rect = inset ();
-		OS.memcpy (ptr, rect, Rect.sizeof);
+		OS.memmove (ptr, rect, Rect.sizeof);
 		int [] tags = new int [] {
 			OS.kTXNDisableDragAndDropTag,
 			OS.kTXNDoFontSubstitution,
@@ -1097,9 +1097,9 @@ String getTXNText (int iStartOffset, int iEndOffset) {
 	if (length == 0) return "";
 	int [] ptr = new int [1];
 	OS.HLock (oDataHandle [0]);
-	OS.memcpy (ptr, oDataHandle [0], 4);
+	OS.memmove (ptr, oDataHandle [0], 4);
 	char [] buffer = new char [length / 2];
-	OS.memcpy (buffer, ptr [0], length);
+	OS.memmove (buffer, ptr [0], length);
 	OS.HUnlock (oDataHandle[0]);
 	OS.DisposeHandle (oDataHandle[0]);
 	return new String (buffer);
@@ -1617,14 +1617,14 @@ void setForeground (float [] color) {
 		} else {
 			rgb = toRGBColor (color);
 		}
-		OS.memcpy (ptr2, rgb, RGBColor.sizeof);
+		OS.memmove (ptr2, rgb, RGBColor.sizeof);
 		int [] attribs = new int [] {
 			OS.kTXNQDFontColorAttribute,
 			OS.kTXNQDFontColorAttributeSize,
 			ptr2,
 		};
 		int ptr1 = OS.NewPtr (attribs.length * 4);
-		OS.memcpy (ptr1, attribs, attribs.length * 4);
+		OS.memmove (ptr1, attribs, attribs.length * 4);
 		boolean readOnly = (style & SWT.READ_ONLY) != 0;
 		int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
 		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
@@ -1659,7 +1659,7 @@ void setFontStyle (Font font) {
 			family,
 		};
 		int ptr = OS.NewPtr (attribs.length * 4);
-		OS.memcpy (ptr, attribs, attribs.length * 4);
+		OS.memmove (ptr, attribs, attribs.length * 4);
 		boolean readOnly = (style & SWT.READ_ONLY) != 0;
 		int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
 		if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
@@ -1838,7 +1838,7 @@ public void setTabs (int tabs) {
 	tab.value = (short) (textExtent (new char[]{' '}, 0).x * tabs);
 	int [] tags = new int [] {OS.kTXNTabSettingsTag};
 	int [] datas = new int [1];
-	OS.memcpy (datas, tab, TXNTab.sizeof);
+	OS.memmove (datas, tab, TXNTab.sizeof);
 	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 }
 

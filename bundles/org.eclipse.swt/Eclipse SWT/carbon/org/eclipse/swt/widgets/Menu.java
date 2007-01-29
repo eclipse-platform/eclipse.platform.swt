@@ -348,9 +348,9 @@ void destroyWidget () {
 		int height = OS.GetMBarHeight ();
 		int gdevice = OS.GetMainDevice ();
 		int [] ptr = new int [1];
-		OS.memcpy (ptr, gdevice, 4);
+		OS.memmove (ptr, gdevice, 4);
 		GDevice device = new GDevice ();
-		OS.memcpy (device, ptr [0], GDevice.sizeof);
+		OS.memmove (device, ptr [0], GDevice.sizeof);
 		return new Rectangle (0, 0, device.right - device.left, height);
 	}
 	OS.CalcMenuSize (handle);

@@ -60,7 +60,7 @@ public void javaToNative (Object object, TransferData transferData){
 	char[] chars = new char[count];
 	string.getChars(0, count, chars, 0);
 	byte[] buffer = new byte[chars.length * 2];
-	OS.memcpy(buffer, chars, buffer.length);
+	OS.memmove(buffer, chars, buffer.length);
 	transferData.data = new byte[1][];
 	transferData.data[0] = buffer;
 	transferData.result = OS.noErr;
@@ -81,7 +81,7 @@ public Object nativeToJava(TransferData transferData){
 	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
 	byte[] buffer = transferData.data[0];
 	char[] chars = new char[(buffer.length + 1) / 2];
-	OS.memcpy(chars, buffer, buffer.length);
+	OS.memmove(chars, buffer, buffer.length);
 	return new String(chars);
 }
 

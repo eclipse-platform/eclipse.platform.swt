@@ -588,10 +588,10 @@ public String [] getSelection () {
 	if (count > 0) {
 		OS.HLock (ptr);
 		int [] id = new int [1];
-		OS.memcpy (id, ptr, 4);
+		OS.memmove (id, ptr, 4);
 		int offset = id [0] + (count - 1) * 4;
 		for (int i=0; i<count; i++, offset -= 4) {
-			OS.memcpy (id, offset, 4);
+			OS.memmove (id, offset, 4);
 			result [i] = items [id [0] - 1];
 		}
 		OS.HUnlock (ptr);
@@ -663,8 +663,8 @@ public int [] getSelectionIndices () {
 	int [] result = new int [count];
 	if (count > 0) {
 		OS.HLock (ptr);
-		OS.memcpy (result, ptr, 4);
-		OS.memcpy (result, result [0], count * 4);
+		OS.memmove (result, ptr, 4);
+		OS.memmove (result, result [0], count * 4);
 		OS.HUnlock (ptr);
 		for (int start=0, end=count - 1; start<=end; start++, end--) {
 			int temp = result [start];

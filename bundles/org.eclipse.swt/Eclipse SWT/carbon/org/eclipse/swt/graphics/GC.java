@@ -319,7 +319,7 @@ int convertRgn(int rgn, float[] transform) {
 int convertRgn(int message, int rgn, int r, int newRgn) {
 	if (message == OS.kQDRegionToRectsMsgParse) {
 		Rect rect = new Rect();
-		OS.memcpy(rect, r, Rect.sizeof);
+		OS.memmove(rect, r, Rect.sizeof);
 		CGPoint point = new CGPoint(); 
 		int polyRgn = OS.NewRgn();
 		OS.OpenRgn();
@@ -626,14 +626,14 @@ void createLayout () {
 	data.layout = buffer[0];
 	int ptr1 = OS.NewPtr(4);
 	buffer[0] = handle;
-	OS.memcpy(ptr1, buffer, 4);	
+	OS.memmove(ptr1, buffer, 4);	
 	int ptr2 = OS.NewPtr(4);
 	buffer[0] = OS.kATSLineUseDeviceMetrics;
-	OS.memcpy(ptr2, buffer, 4);
+	OS.memmove(ptr2, buffer, 4);
 	int lineDir = OS.kATSULeftToRightBaseDirection;
 	if ((data.style & SWT.RIGHT_TO_LEFT) != 0) lineDir = OS.kATSURightToLeftBaseDirection;
 	int ptr3 = OS.NewPtr(1);
-	OS.memcpy(ptr3, new byte[] {(byte)lineDir}, 1);
+	OS.memmove(ptr3, new byte[] {(byte)lineDir}, 1);
 	int[] tags = new int[]{OS.kATSUCGContextTag, OS.kATSULineLayoutOptionsTag, OS.kATSULineDirectionTag};
 	int[] sizes = new int[]{4, 4, 1};
 	int[] values = new int[]{ptr1, ptr2, ptr3};
@@ -649,7 +649,7 @@ void createTabs () {
 	int ptr = OS.NewPtr(ATSUTab.sizeof * TAB_COUNT);
 	for (int i=0, offset=ptr; i<TAB_COUNT; i++, offset += ATSUTab.sizeof) {
 		tabs.tabPosition += OS.Long2Fix(tabWidth);
-		OS.memcpy(offset, tabs, ATSUTab.sizeof);
+		OS.memmove(offset, tabs, ATSUTab.sizeof);
 	}
 	data.tabs = ptr;
 }
@@ -3266,7 +3266,7 @@ int setString(String string, int flags) {
 		OS.ATSUSetTabArray(layout, 0, 0);
 	}
 	int ptr = OS.NewPtr(length * 2);
-	OS.memcpy(ptr, chars, length * 2);
+	OS.memmove(ptr, chars, length * 2);
 	OS.ATSUSetTextPointerLocation(layout, ptr, 0, length, length);
 	if ((flags & SWT.DRAW_DELIMITER) != 0 && breaks != null) {
 		for (int i=0; i<breakCount; i++) {

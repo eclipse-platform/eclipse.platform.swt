@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 902;
-int OS_nativeFunctionCallCount[902];
+int OS_nativeFunctionCount = 891;
+int OS_nativeFunctionCallCount[891];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -889,36 +889,25 @@ char * OS_nativeFunctionNames[] = {
 	"kPMDocumentFormatPDF",
 	"kPMGraphicsContextCoreGraphics",
 	"kUTTagClassFilenameExtension",
-	"memcpy__III",
-	"memcpy__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I",
-	"memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I",
-	"memcpy__ILorg_eclipse_swt_internal_carbon_Cursor_2I",
-	"memcpy__ILorg_eclipse_swt_internal_carbon_EventRecord_2I",
-	"memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I",
-	"memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I",
-	"memcpy__ILorg_eclipse_swt_internal_carbon_RGBColor_2I",
-	"memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I",
-	"memcpy__I_3BI",
-	"memcpy__I_3CI",
-	"memcpy__I_3FI",
-	"memcpy__I_3II",
-	"memcpy__I_3SI",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_Point_2_3II",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_RGBColor_2II",
-	"memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2II",
-	"memcpy___3BII",
-	"memcpy___3B_3CI",
-	"memcpy___3CII",
-	"memcpy___3C_3BI",
-	"memcpy___3FII",
-	"memcpy___3III",
-	"memcpy___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I",
+	"memmove__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I",
+	"memmove__ILorg_eclipse_swt_internal_carbon_BitMap_2I",
+	"memmove__ILorg_eclipse_swt_internal_carbon_Cursor_2I",
+	"memmove__ILorg_eclipse_swt_internal_carbon_EventRecord_2I",
+	"memmove__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I",
+	"memmove__ILorg_eclipse_swt_internal_carbon_PixMap_2I",
+	"memmove__ILorg_eclipse_swt_internal_carbon_RGBColor_2I",
+	"memmove__ILorg_eclipse_swt_internal_carbon_Rect_2I",
+	"memmove__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_GDevice_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_PixMap_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_Point_2_3II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_RGBColor_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_Rect_2II",
+	"memmove___3C_3BI",
+	"memmove___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

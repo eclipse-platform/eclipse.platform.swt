@@ -182,12 +182,12 @@ int createStyle () {
 
 	boolean synthesize = style != 0;
 	int ptr = OS.NewPtr(8 + (synthesize ? 8 : 0));
-	OS.memcpy(ptr, new int[]{OS.FMGetFontFromATSFontRef(handle)}, 4); 
-	OS.memcpy(ptr + 4, new int[]{OS.X2Fix(size)}, 4);
+	OS.memmove(ptr, new int[]{OS.FMGetFontFromATSFontRef(handle)}, 4); 
+	OS.memmove(ptr + 4, new int[]{OS.X2Fix(size)}, 4);
 	int[] tags, sizes, values;
 	if (synthesize) {
-		OS.memcpy(ptr + 8, new byte[]{(style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
-		OS.memcpy(ptr + 9, new byte[]{(style & OS.italic) != 0 ? (byte)1 : 0}, 1);
+		OS.memmove(ptr + 8, new byte[]{(style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
+		OS.memmove(ptr + 9, new byte[]{(style & OS.italic) != 0 ? (byte)1 : 0}, 1);
 		tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};
 		sizes = new int[]{4, 4, 1, 1};
 		values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};

@@ -126,9 +126,9 @@ static int packData(int handle, byte[] buffer, int offset) {
 	buffer[offset++] = (byte)((length & 0xFF000000) >> 24);
 	int [] ptr = new int [1];
 	OS.HLock(handle);
-	OS.memcpy(ptr, handle, 4);
+	OS.memmove(ptr, handle, 4);
 	byte[] buffer1 = new byte[length];
-	OS.memcpy(buffer1, ptr [0], length);
+	OS.memmove(buffer1, ptr [0], length);
 	OS.HUnlock(handle);
 	System.arraycopy(buffer1, 0, buffer, offset, length);
 	return offset + length;
@@ -143,10 +143,10 @@ static int unpackData(int[] handle, byte[] buffer, int offset) {
 	if (handle[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] ptr = new int[1];
 	OS.HLock(handle[0]);
-	OS.memcpy(ptr, handle[0], 4);
+	OS.memmove(ptr, handle[0], 4);
 	byte[] buffer1 = new byte[length];
 	System.arraycopy(buffer, offset, buffer1, 0, length);
-	OS.memcpy(ptr[0], buffer1, length);
+	OS.memmove(ptr[0], buffer1, length);
 	OS.HUnlock(handle[0]);
 	return offset + length;
 }

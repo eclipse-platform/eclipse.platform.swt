@@ -256,9 +256,9 @@ public Rectangle getBounds () {
 	checkDevice ();
 	int gdevice = OS.GetMainDevice();
 	int[] ptr = new int[1];
-	OS.memcpy(ptr, gdevice, 4);
+	OS.memmove(ptr, gdevice, 4);
 	GDevice device = new GDevice();
-	OS.memcpy(device, ptr[0], GDevice.sizeof);	
+	OS.memmove(device, ptr[0], GDevice.sizeof);	
 	return new Rectangle(device.left, device.top, device.right - device.left, device.bottom - device.top);
 }
 
@@ -334,9 +334,9 @@ public int getDepth () {
 	checkDevice ();	
 	int gdevice = OS.GetMainDevice();
 	int[] ptr = new int[1];
-	OS.memcpy(ptr, gdevice, 4);
+	OS.memmove(ptr, gdevice, 4);
 	GDevice device = new GDevice();
-	OS.memcpy(device, ptr[0], GDevice.sizeof);
+	OS.memmove(device, ptr[0], GDevice.sizeof);
 	return OS.GetPixDepth(device.gdPMap);
 }
 
@@ -355,12 +355,12 @@ public Point getDPI () {
 	checkDevice ();
 	int gdevice = OS.GetMainDevice();
 	int[] ptr = new int[1];
-	OS.memcpy(ptr, gdevice, 4);
+	OS.memmove(ptr, gdevice, 4);
 	GDevice device = new GDevice();
-	OS.memcpy(device, ptr[0], GDevice.sizeof);
-	OS.memcpy(ptr, device.gdPMap, 4);
+	OS.memmove(device, ptr[0], GDevice.sizeof);
+	OS.memmove(ptr, device.gdPMap, 4);
 	PixMap pixmap = new PixMap();
-	OS.memcpy(pixmap, ptr[0], PixMap.sizeof);
+	OS.memmove(pixmap, ptr[0], PixMap.sizeof);
 	return new Point (OS.Fix2Long (pixmap.hRes), OS.Fix2Long (pixmap.vRes));
 }
 

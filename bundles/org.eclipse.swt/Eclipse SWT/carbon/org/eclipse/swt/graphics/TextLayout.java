@@ -90,7 +90,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUFontTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 
@@ -98,7 +98,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUSizeTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 
@@ -107,7 +107,7 @@ public final class TextLayout extends Resource {
 					tags[index] = OS.kATSUQDItalicTag;
 					sizes[index] = 1;
 					values[index] = ptr1;
-					OS.memcpy(values[index], buffer1, sizes[index]);
+					OS.memmove(values[index], buffer1, sizes[index]);
 					ptr1 += sizes[index];
 					index++;	
 
@@ -115,7 +115,7 @@ public final class TextLayout extends Resource {
 					tags[index] = OS.kATSUQDBoldfaceTag;
 					sizes[index] = 1;
 					values[index] = ptr1;
-					OS.memcpy(values[index], buffer1, sizes[index]);
+					OS.memmove(values[index], buffer1, sizes[index]);
 					ptr1 += sizes[index];
 					index++;
 				}
@@ -125,7 +125,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUQDUnderlineTag;
 				sizes[index] = 1;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer1, sizes[index]);
+				OS.memmove(values[index], buffer1, sizes[index]);
 				ptr1 += sizes[index];
 				index++;				
 			}
@@ -134,7 +134,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUStyleStrikeThroughTag;
 				sizes[index] = 1;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer1, sizes[index]);
+				OS.memmove(values[index], buffer1, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 			}
@@ -144,7 +144,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUAscentTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 				
@@ -152,7 +152,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUDescentTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 				
@@ -160,7 +160,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUImposeWidthTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 			}
@@ -169,7 +169,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUCrossStreamShiftTag;
 				sizes[index] = 4;
 				values[index] = ptr1;
-				OS.memcpy(values[index], buffer, sizes[index]);
+				OS.memmove(values[index], buffer, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 			}
@@ -182,7 +182,7 @@ public final class TextLayout extends Resource {
 				tags[index] = OS.kATSUColorTag;
 				sizes[index] = RGBColor.sizeof;
 				values[index] = ptr1;
-				OS.memcpy(values[index], rgb, sizes[index]);
+				OS.memmove(values[index], rgb, sizes[index]);
 				ptr1 += sizes[index];
 				index++;
 			}
@@ -277,7 +277,7 @@ void computeRuns() {
 	}
 	hardBreaks[breakCount] = translateOffset(textLength);
 	int newTextPtr = OS.NewPtr(chars.length * 2);
-	OS.memcpy(newTextPtr, chars, chars.length * 2);
+	OS.memmove(newTextPtr, chars, chars.length * 2);
 	OS.ATSUSetTextPointerLocation(layout, newTextPtr, 0, chars.length, chars.length);
 	OS.ATSUSetTransientFontMatching(layout, true);
 	if (textPtr != 0) OS.DisposePtr(textPtr);
@@ -294,7 +294,7 @@ void computeRuns() {
 	}
 	int ptr = OS.NewPtr(12);
 	buffer = new int[]{OS.Long2Fix(indent), 0, 0};
-	OS.memcpy(ptr, buffer, 12);
+	OS.memmove(ptr, buffer, 12);
 	int[] tags = new int[]{OS.kATSUImposeWidthTag, OS.kATSUAscentTag, OS.kATSUDescentTag};
 	int[] sizes = new int[]{4, 4, 4};
 	int[] values = new int[]{ptr, ptr + 4, ptr + 8};
@@ -330,28 +330,28 @@ void computeRuns() {
 		if (ascent != -1) {
 			ptr = OS.NewPtr(4);
 			buffer[0] = OS.kATSUseLineHeight;
-			OS.memcpy(ptr, buffer, 4);
+			OS.memmove(ptr, buffer, 4);
 			tags = new int[]{OS.kATSULineAscentTag};
 			sizes = new int[]{4};
 			values = new int[]{ptr};
 			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
 			OS.ATSUGetLineControl(layout, start, OS.kATSULineAscentTag, 4, buffer, null);
 			buffer[0] = OS.Long2Fix(Math.max(ascent, OS.Fix2Long(buffer[0])));
-			OS.memcpy(ptr, buffer, 4);
+			OS.memmove(ptr, buffer, 4);
 			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
 			OS.DisposePtr(ptr);
 		}
 		if (descent != -1) {
 			ptr = OS.NewPtr(4);
 			buffer[0] = OS.kATSUseLineHeight;
-			OS.memcpy(ptr, buffer, 4);
+			OS.memmove(ptr, buffer, 4);
 			tags = new int[]{OS.kATSULineDescentTag};
 			sizes = new int[]{4};
 			values = new int[]{ptr};
 			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
 			OS.ATSUGetLineControl(layout, start, OS.kATSULineDescentTag, 4, buffer, null);
 			buffer[0] = OS.Long2Fix(Math.max(descent, OS.Fix2Long(buffer[0])));
-			OS.memcpy(ptr, buffer, 4);
+			OS.memmove(ptr, buffer, 4);
 			OS.ATSUSetLineControls(layout, start, tags.length, tags, sizes, values);
 			OS.DisposePtr(ptr);
 		}
@@ -1288,7 +1288,7 @@ public boolean isDisposed () {
 int regionToRects(int message, int rgn, int r, int context) {
 	if (message == OS.kQDRegionToRectsMsgParse) {
 		Rect rect = new Rect();
-		OS.memcpy(rect, r, Rect.sizeof);
+		OS.memmove(rect, r, Rect.sizeof);
 		OS.CGContextMoveToPoint(context, rect.left, rect.top);
 		OS.CGContextAddLineToPoint(context, rect.right, rect.top);
 		OS.CGContextAddLineToPoint(context, rect.right, rect.bottom);
@@ -1390,11 +1390,11 @@ void setLayoutControl(int tag, int value, int size) {
 	if (size == 1) {
 		byte[] buffer = new byte[1];
 		buffer[0] = (byte) value;
-		OS.memcpy(ptr1, buffer, size);
+		OS.memmove(ptr1, buffer, size);
 	} else {
 		int[] buffer = new int[1];
 		buffer[0] = value;
-		OS.memcpy(ptr1, buffer, size);
+		OS.memmove(ptr1, buffer, size);
 	}
 	int[] tags = new int[]{tag};
 	int[] sizes = new int[]{size};
@@ -1666,14 +1666,14 @@ public void setTabs(int[] tabs) {
 		for (i=0, offset=ptr; i<tabs.length; i++, offset += ATSUTab.sizeof) {
 			tab.tabType = (short)OS.kATSULeftTab;
 			tab.tabPosition = OS.Long2Fix(tabs[i]);
-			OS.memcpy(offset, tab, ATSUTab.sizeof);
+			OS.memmove(offset, tab, ATSUTab.sizeof);
 		}
 		int width = i - 2 >= 0 ? tabs[i - 1] - tabs[i - 2] : tabs[i - 1];
 		if (width > 0) {
 			for (; i<length; i++, offset += ATSUTab.sizeof) {
 				tab.tabType = (short)OS.kATSULeftTab;
 				tab.tabPosition += OS.Long2Fix(width);
-				OS.memcpy(offset, tab, ATSUTab.sizeof);
+				OS.memmove(offset, tab, ATSUTab.sizeof);
 			}
 		}
 		OS.ATSUSetTabArray(layout, ptr, i);

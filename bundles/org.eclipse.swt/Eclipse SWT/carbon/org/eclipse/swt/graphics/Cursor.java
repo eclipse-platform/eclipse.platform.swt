@@ -293,7 +293,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
 	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
+	OS.memmove(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
 }
 
 void createNSCursor(Device device, int hotspotX, int hotspotY, byte[] buffer, int width, int height) {
@@ -316,7 +316,7 @@ void createNSCursor(Device device, int hotspotX, int hotspotY, byte[] buffer, in
 			8, 4, 1, 0, Cocoa.NSDeviceRGBColorSpace(),
 			Cocoa.NSAlphaFirstBitmapFormat | Cocoa.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
 	int bitmapData = Cocoa.objc_msgSend(nsImageRep, Cocoa.S_bitmapData);
-	OS.memcpy(bitmapData, buffer, buffer.length);
+	OS.memmove(bitmapData, buffer, buffer.length);
 	Cocoa.objc_msgSend(nsImage, Cocoa.S_addRepresentation, nsImageRep);
 	NSPoint point = new NSPoint();
 	point.x = hotspotX;
@@ -535,7 +535,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
 	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
+	OS.memmove(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
 }
 
 /**

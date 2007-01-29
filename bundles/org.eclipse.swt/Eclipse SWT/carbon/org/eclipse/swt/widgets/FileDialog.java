@@ -269,7 +269,7 @@ public String open () {
 					if ((style & SWT.SAVE) != 0) {
 						if (OS.AEGetNthPtr (selection, 1, OS.typeFSRef, aeKeyword, typeCode, dataPtr, maximumSize, actualSize) == OS.noErr) {
 							byte[] fsRef = new byte[actualSize[0]];
-							OS.memcpy (fsRef, dataPtr, actualSize [0]);
+							OS.memmove (fsRef, dataPtr, actualSize [0]);
 							int pathUrl = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
 							int fullUrl = OS.CFURLCreateCopyAppendingPathComponent(OS.kCFAllocatorDefault, pathUrl, record.saveFileName, false);
 							pathString = OS.CFURLCopyFileSystemPath(pathUrl, OS.kCFURLPOSIXPathStyle);
@@ -282,7 +282,7 @@ public String open () {
 						for (int i = 0; i < count [0]; i++) {
 							if (OS.AEGetNthPtr (selection, i+1, OS.typeFSRef, aeKeyword, typeCode, dataPtr, maximumSize, actualSize) == OS.noErr) {
 								byte[] fsRef = new byte[actualSize[0]];
-								OS.memcpy (fsRef, dataPtr, actualSize [0]);
+								OS.memmove (fsRef, dataPtr, actualSize [0]);
 								int url = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
 								if (i == 0) {
 									int pathUrl = OS.CFURLCreateCopyDeletingLastPathComponent(OS.kCFAllocatorDefault, url);

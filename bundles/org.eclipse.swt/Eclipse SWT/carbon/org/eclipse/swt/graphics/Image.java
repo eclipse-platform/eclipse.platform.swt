@@ -255,7 +255,7 @@ public Image(Device device, Image srcImage, int flag) {
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	
-	OS.memcpy(data, srcImage.data, dataSize);
+	OS.memmove(data, srcImage.data, dataSize);
 	if (flag == SWT.IMAGE_COPY) return;
 	
 	/* Apply transformation */
@@ -273,7 +273,7 @@ public Image(Device device, Image srcImage, int flag) {
 			byte oneBlue = (byte)oneRGB.blue;
 			byte[] line = new byte[bpr];
 			for (int y=0; y<height; y++) {
-				OS.memcpy(line, data + (y * bpr), bpr);
+				OS.memmove(line, data + (y * bpr), bpr);
 				int offset = 0;
 				for (int x=0; x<width; x++) {
 					int red = line[offset+1] & 0xFF;
@@ -291,14 +291,14 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 					offset += 4;
 				}
-				OS.memcpy(data + (y * bpr), line, bpr);
+				OS.memmove(data + (y * bpr), line, bpr);
 			}
 			break;
 		}
 		case SWT.IMAGE_GRAY: {			
 			byte[] line = new byte[bpr];
 			for (int y=0; y<height; y++) {
-				OS.memcpy(line, data + (y * bpr), bpr);
+				OS.memmove(line, data + (y * bpr), bpr);
 				int offset = 0;
 				for (int x=0; x<width; x++) {
 					int red = line[offset+1] & 0xFF;
@@ -308,7 +308,7 @@ public Image(Device device, Image srcImage, int flag) {
 					line[offset+1] = line[offset+2] = line[offset+3] = intensity;
 					offset += 4;
 				}
-				OS.memcpy(data + (y * bpr), line, bpr);
+				OS.memmove(data + (y * bpr), line, bpr);
 			}
 			break;
 		}
@@ -508,7 +508,7 @@ void createAlpha () {
 	int bpr = OS.CGImageGetBytesPerRow(handle);
 	int dataSize = height * bpr;
 	byte[] srcData = new byte[dataSize];
-	OS.memcpy(srcData, data, dataSize);
+	OS.memmove(srcData, data, dataSize);
 	if (transparentPixel != -1) {
 		for (int i=0; i<dataSize; i+=4) {
 			int pixel = ((srcData[i+1] & 0xFF) << 16) | ((srcData[i+2] & 0xFF) << 8) | (srcData[i+3] & 0xFF);
@@ -530,7 +530,7 @@ void createAlpha () {
 			}
 		}
 	}
-	OS.memcpy(data, srcData, dataSize);
+	OS.memmove(data, srcData, dataSize);
 }
 
 /**
@@ -637,7 +637,7 @@ public ImageData getImageData() {
 	int bpp = OS.CGImageGetBitsPerPixel(handle);	
 	int dataSize = height * bpr;
 	byte[] srcData = new byte[dataSize];
-	OS.memcpy(srcData, data, dataSize);
+	OS.memmove(srcData, data, dataSize);
 	
 	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	ImageData data = new ImageData(width, height, bpp, palette);
@@ -870,7 +870,7 @@ void init(Device device, ImageData image) {
 		}
 	}
 	
-	OS.memcpy(data, buffer, dataSize);
+	OS.memmove(data, buffer, dataSize);
 }
 
 /**	 
@@ -994,7 +994,7 @@ public void setBackground(Color color) {
 	int bpl = OS.CGImageGetBytesPerRow(handle);
 	byte[] line = new byte[bpl];
 	for (int i = 0, offset = 0; i < height; i++, offset += bpl) {
-		OS.memcpy(line, data + offset, bpl);
+		OS.memmove(line, data + offset, bpl);
 		for (int j = 0; j  < line.length; j += 4) {
 			if (line[j+ 1] == red && line[j + 2] == green && line[j + 3] == blue) {
 				line[j + 1] = newRed;
@@ -1002,7 +1002,7 @@ public void setBackground(Color color) {
 				line[j + 3] = newBlue;
 			}
 		}
-		OS.memcpy(data + offset, line, bpl);
+		OS.memmove(data + offset, line, bpl);
 	}
 	transparentPixel = (newRed & 0xFF) << 16 | (newGreen & 0xFF) << 8 | (newBlue & 0xFF);
 }

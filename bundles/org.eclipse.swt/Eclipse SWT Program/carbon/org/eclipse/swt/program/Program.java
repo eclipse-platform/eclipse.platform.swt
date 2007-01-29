@@ -396,7 +396,7 @@ public boolean execute (String fileName) {
 	int rc = -1;
 	int fsRefPtr = OS.NewPtr(fsRef.length);
 	if (fsRefPtr != 0) {
-		OS.memcpy(fsRefPtr, fsRef, fsRef.length);
+		OS.memmove(fsRefPtr, fsRef, fsRef.length);
 		LSApplicationParameters params = new LSApplicationParameters();
 		params.version = 0;
 		params.flags = 0;
@@ -451,12 +451,12 @@ ImageData createImageFromFamily (int family, int type, int maskType, int width, 
 	OS.HLock (maskHandle);
 	int[] iconPtr = new int [1];
 	int[] maskPtr = new int [1];
-	OS.memcpy (iconPtr, dataHandle, 4);
-	OS.memcpy (maskPtr, maskHandle, 4);
+	OS.memmove (iconPtr, dataHandle, 4);
+	OS.memmove (maskPtr, maskHandle, 4);
 	byte[] data = new byte[dataSize];
-	OS.memcpy (data, iconPtr [0], dataSize);
+	OS.memmove (data, iconPtr [0], dataSize);
 	byte[] alphaData = new byte[width * height];
-	OS.memcpy(alphaData, maskPtr[0], alphaData.length);
+	OS.memmove(alphaData, maskPtr[0], alphaData.length);
 	OS.HUnlock (maskHandle);
 	OS.HUnlock (dataHandle);
 	OS.DisposeHandle (maskHandle);

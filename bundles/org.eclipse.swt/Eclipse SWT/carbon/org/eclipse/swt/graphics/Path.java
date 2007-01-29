@@ -172,10 +172,10 @@ int closePathProc(int data) {
 int lineProc(int pt1, int pt2, int data) {
 	if (first) {
 		first = false;
-		OS.memcpy(point, pt1, 8);
+		OS.memmove(point, pt1, 8);
 		OS.CGPathMoveToPoint(handle, null, originX + point[0], originY + point[1]);
 	}
-	OS.memcpy(point, pt2, 8);
+	OS.memmove(point, pt2, 8);
 	OS.CGPathAddLineToPoint(handle, null, originX + point[0], originY + point[1]);
 	return 0;
 }
@@ -183,12 +183,12 @@ int lineProc(int pt1, int pt2, int data) {
 int curveProc(int pt1, int controlPt, int pt2, int data) {
 	if (first) {
 		first = false;
-		OS.memcpy(point, pt1, 8);
+		OS.memmove(point, pt1, 8);
 		OS.CGPathMoveToPoint(handle, null, originX + point[0], originY + point[1]);
 	}
-	OS.memcpy(point, pt2, 8);
+	OS.memmove(point, pt2, 8);
 	float x2 = point[0], y2 = point[1];	
-	OS.memcpy(point, controlPt, 8);
+	OS.memmove(point, controlPt, 8);
 	OS.CGPathAddQuadCurveToPoint(handle, null, originX + point[0], originY + point[1], originX + x2, originY + y2);
 	return 0;
 }
@@ -246,7 +246,7 @@ public void addString(String string, float x, float y, Font font) {
 	string.getChars(0, length, chars, 0);
 	int textPtr = OS.NewPtr(length * 2);
 	if (textPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.memcpy(textPtr, chars, length * 2);
+	OS.memmove(textPtr, chars, length * 2);
 	OS.ATSUSetTextPointerLocation(layout, textPtr, 0, length, length);
 	OS.ATSUSetRunStyle(layout, style, 0, length);
 	OS.ATSUSetTransientFontMatching(layout, true);
@@ -260,12 +260,12 @@ public void addString(String string, float x, float y, Font font) {
 	int[] deltaY = new int[1], status = new int[1];
 	ATSLayoutRecord record = new ATSLayoutRecord();
 	for (int i = 0; i < numRecords[0]; i++) {
-		OS.memcpy(record, layoutRecords[0] + (i * ATSLayoutRecord.sizeof), ATSLayoutRecord.sizeof);
+		OS.memmove(record, layoutRecords[0] + (i * ATSLayoutRecord.sizeof), ATSLayoutRecord.sizeof);
 		originX = x + (float)OS.Fix2X(record.realPos);
 		if (deltaYs[0] == 0) {
 			originY = y;
 		} else {
-			OS.memcpy(deltaY, deltaYs[0] + (i * 4), 4);
+			OS.memmove(deltaY, deltaYs[0] + (i * 4), 4);
 			originY = y - (float)OS.Fix2X(deltaY[0]);
 		}
 		first = true; 
@@ -294,7 +294,7 @@ int count, typeCount;
 byte[] types;
 float[] points;
 int applierFunc(int info, int elementPtr) {
-	OS.memcpy(element, elementPtr, CGPathElement.sizeof);
+	OS.memmove(element, elementPtr, CGPathElement.sizeof);
 	int type = 0, length = 1;
 	switch (element.type) {
 		case OS.kCGPathElementMoveToPoint: type = SWT.PATH_MOVE_TO; break;
@@ -306,7 +306,7 @@ int applierFunc(int info, int elementPtr) {
 	if (types != null) {
 		types[typeCount] = (byte)type;
 		if (length > 0) {
-			OS.memcpy(point, element.points, length * 8);
+			OS.memmove(point, element.points, length * 8);
 			System.arraycopy(point, 0, points, count, length * 2);
 		}
 	}
@@ -363,7 +363,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	int pixel = OS.NewPtr(4);
 	if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] buffer = new int[]{0xFFFFFFFF};
-	OS.memcpy(pixel, buffer, 4);
+	OS.memmove(pixel, buffer, 4);
 	int context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, device.colorspace, OS.kCGImageAlphaNoneSkipFirst);
 	if (context == 0) {
 		OS.DisposePtr(pixel);
@@ -397,7 +397,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 		}
 	}
 	OS.CGContextRelease(context);
-	OS.memcpy(buffer, pixel, 4);
+	OS.memmove(buffer, pixel, 4);
 	OS.DisposePtr(pixel);	
 	return buffer[0] != 0xFFFFFFFF;
 }

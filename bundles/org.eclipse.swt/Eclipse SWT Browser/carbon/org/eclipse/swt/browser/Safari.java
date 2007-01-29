@@ -938,7 +938,7 @@ void webViewShow(int sender) {
 
 void setFrame(int frame) {
 	float[] dest = new float[4];
-	OS.memcpy(dest, frame, 16);
+	OS.memmove(dest, frame, 16);
 	/* convert to SWT system coordinates */
 	Rectangle bounds = browser.getDisplay().getBounds();
 	location = new Point((int)dest[0], bounds.height - (int)dest[1] - (int)dest[3]);

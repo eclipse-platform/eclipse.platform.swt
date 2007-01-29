@@ -949,7 +949,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			}
 		}
 	}
-	OS.memcpy (rect, theRect, Rect.sizeof);
+	OS.memmove (rect, theRect, Rect.sizeof);
 	int x = rect.left;
 	int y = rect.top;
 	int width = rect.right - rect.left;
@@ -1681,8 +1681,8 @@ public TreeItem [] getSelection () {
 			}
 			OS.HLock (ptr);
 			int [] id = new int [1];
-			OS.memcpy (id, ptr, 4);
-			OS.memcpy (id, id [0], 4);
+			OS.memmove (id, ptr, 4);
+			OS.memmove (id, id [0], 4);
 			result [0] = _getItem (id [0], true);
 			OS.HUnlock (ptr);
 		} else {
@@ -1702,8 +1702,8 @@ int getSelection(TreeItem[] result, int item, int ptr, int index) {
 	if (count > 0) {
 		OS.HLock (ptr);
 		int [] id = new int [count];
-		OS.memcpy (id, ptr, 4);
-		OS.memcpy (id, id [0], count * 4);
+		OS.memmove (id, ptr, 4);
+		OS.memmove (id, id [0], count * 4);
 		for (int i=0; i<count; i++) {
 			result [index++] = _getItem (id [count - i - 1], true);
 		}
@@ -1718,8 +1718,8 @@ int getSelection(TreeItem[] result, int item, int ptr, int index) {
 	if (count > 0) {
 		OS.HLock (ptr);
 		int [] id = new int [count];
-		OS.memcpy (id, ptr, 4);
-		OS.memcpy (id, id [0], count * 4);
+		OS.memmove (id, ptr, 4);
+		OS.memmove (id, id [0], count * 4);
 		for (int i=0; i<count; i++) {
 			index = getSelection(result, id [count - i - 1], ptr, index);
 			if (index == result.length) return index;
@@ -1830,7 +1830,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 				short windowLeft = rect.left, windowTop = rect.top;
 				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-				OS.memcpy(pt, new int[] {inGlobalMouse}, 4);
+				OS.memmove(pt, new int[] {inGlobalMouse}, 4);
 				pt.h -= windowLeft;
 				pt.v -= windowTop;
 				if (!contains (pt.h, pt.v)) break;
@@ -1923,7 +1923,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 					if (display.helpString != 0) OS.CFRelease (display.helpString);
 					display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 					HMHelpContentRec helpContent = new HMHelpContentRec ();
-					OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
+					OS.memmove (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
 					display.helpWidget = this;
 					helpContent.version = OS.kMacHelpVersion;
 					helpContent.tagSide = (short) tagSide;
@@ -1935,8 +1935,8 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 					helpContent.content0_tagCFString = display.helpString;
 					helpContent.content1_contentType = OS.kHMCFStringContent;
 					helpContent.content1_tagCFString = display.helpString;
-					OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
-					OS.memcpy (outContentProvided, new short[]{OS.kHMContentProvided}, 2);
+					OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
+					OS.memmove (outContentProvided, new short[]{OS.kHMContentProvided}, 2);
 					return OS.noErr;
 				}
 			}
@@ -2209,8 +2209,8 @@ int itemNotificationProc (int browser, int id, int message) {
 					int [] ids = new int [count];
 					OS.HLock (ptr);
 					int [] start = new int [1];
-					OS.memcpy (start, ptr, 4);
-					OS.memcpy (ids, start [0], count * 4);
+					OS.memmove (start, ptr, 4);
+					OS.memmove (ids, start [0], count * 4);
 					OS.HUnlock (ptr);
 					boolean oldIgnore = ignoreSelect;
 					ignoreSelect = true;

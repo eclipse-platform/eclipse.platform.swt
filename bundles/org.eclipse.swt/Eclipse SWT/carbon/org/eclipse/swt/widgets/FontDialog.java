@@ -163,11 +163,11 @@ int fontProc (int nextHandler, int theEvent, int userData) {
                             int [] size = new int [1];
                             int valueOffset = 0;
                             for (int i = 0 ; i < count ; i++) {
-                            	OS.memcpy (tag, tagPtr + (i * 4), 4);
-                            	OS.memcpy (size, sizePtr + (i * 4), 4);
+                            	OS.memmove (tag, tagPtr + (i * 4), 4);
+                            	OS.memmove (size, sizePtr + (i * 4), 4);
                                 if (tag [0] == OS.kATSUColorTag && size[0] == RGBColor.sizeof) {
                                     int valuePtr = OS.CFDataGetBytePtr (values [0]);
-                                	OS.memcpy (color, valuePtr + valueOffset, RGBColor.sizeof);
+                                	OS.memmove (color, valuePtr + valueOffset, RGBColor.sizeof);
                                 	int red = (color.red >> 8) & 0xFF;
                     				int green = (color.green >> 8) & 0xFF;
                     				int blue =	(color.blue >> 8) & 0xFF;
@@ -202,7 +202,7 @@ public FontData open () {
 	if (fontData != null) {
 		Font font = new Font (display, fontData);
 		int ptr = OS.NewPtr (4);
-		OS.memcpy (ptr, new int []{font.atsuiStyle}, 4);
+		OS.memmove (ptr, new int []{font.atsuiStyle}, 4);
 		//TODO - not sure how to set initial color in font panel
 //		if (rgb != null) {
 //			RGBColor color = new RGBColor ();

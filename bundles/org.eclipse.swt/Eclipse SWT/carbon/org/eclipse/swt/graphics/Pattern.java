@@ -155,7 +155,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 
 int axialShadingProc (int ref, int in, int out) {
 	float[] buffer = new float[4];
-	OS.memcpy(buffer, in, 4);
+	OS.memmove(buffer, in, 4);
 	float factor2 = buffer[0], factor1 = 1 - factor2;
 	float[] c1 = color1;
 	float[] c2 = color2;
@@ -165,7 +165,7 @@ int axialShadingProc (int ref, int in, int out) {
 	buffer[1] = (c2[1] * factor2) + (c1[1] * factor1);
 	buffer[2] = (c2[2] * factor2) + (c1[2] * factor1);
 	buffer[3] = (a2 * factor2) + (a1 * factor1);
-	OS.memcpy(out, buffer, buffer.length * 4);
+	OS.memmove(out, buffer, buffer.length * 4);
 	return 0;
 }
 

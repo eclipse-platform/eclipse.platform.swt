@@ -684,12 +684,12 @@ int[] createImageFromFamily (int family, int type, int maskType, int width, int 
 	OS.HLock (maskHandle);
 	int[] iconPtr = new int [1];
 	int[] maskPtr = new int [1];
-	OS.memcpy (iconPtr, dataHandle, 4);
-	OS.memcpy (maskPtr, maskHandle, 4);
-	OS.memcpy (data, iconPtr [0], dataSize);
+	OS.memmove (iconPtr, dataHandle, 4);
+	OS.memmove (maskPtr, maskHandle, 4);
+	OS.memmove (data, iconPtr [0], dataSize);
 	int pixelCount = dataSize / 4;
 	for (int i = 0; i < pixelCount; i++) {
-		OS.memcpy (data + (i * 4), maskPtr [0] + i, 1);
+		OS.memmove (data + (i * 4), maskPtr [0] + i, 1);
 	}
 	OS.HUnlock (maskHandle);
 	OS.HUnlock (dataHandle);
@@ -717,9 +717,9 @@ int[] createImageFromFamily (int family, int type, int maskType, int width, int 
 int createOverlayWindow () {
 	int gdevice = OS.GetMainDevice ();
 	int [] ptr = new int [1];
-	OS.memcpy (ptr, gdevice, 4);
+	OS.memmove (ptr, gdevice, 4);
 	GDevice device = new GDevice ();
-	OS.memcpy (device, ptr [0], GDevice.sizeof);
+	OS.memmove (device, ptr [0], GDevice.sizeof);
 	Rect rect = new Rect ();	
 	OS.SetRect (rect, device.left, device.top, device.right, device.bottom);
 	int [] outWindow = new int [1];
@@ -963,7 +963,7 @@ void createDisplay (DeviceData data) {
 		int ptr = OS.getenv (ascii ("APP_NAME_" + pid));
 		if (ptr != 0) {
 			buffer = new byte [OS.strlen (ptr) + 1];
-			OS.memcpy (buffer, ptr, buffer.length);
+			OS.memmove (buffer, ptr, buffer.length);
 		} else {
 			if (APP_NAME != null) {
 				char [] chars = new char [APP_NAME.length ()];
@@ -1651,8 +1651,8 @@ public Monitor [] getMonitors () {
 		Monitor monitor = new Monitor ();
 		monitor.handle = gdevice;
 		int [] ptr = new int [1];
-		OS.memcpy (ptr, gdevice, 4);
-		OS.memcpy (device, ptr [0], GDevice.sizeof);				
+		OS.memmove (ptr, gdevice, 4);
+		OS.memmove (device, ptr [0], GDevice.sizeof);				
 		monitor.x = device.left;
 		monitor.y = device.top;
 		monitor.width = device.right - device.left;
@@ -1686,9 +1686,9 @@ public Monitor getPrimaryMonitor () {
 	Monitor monitor = new Monitor ();
 	monitor.handle = gdevice;
 	int [] ptr = new int [1];
-	OS.memcpy (ptr, gdevice, 4);
+	OS.memmove (ptr, gdevice, 4);
 	GDevice device = new GDevice ();
-	OS.memcpy (device, ptr [0], GDevice.sizeof);		
+	OS.memmove (device, ptr [0], GDevice.sizeof);		
 	monitor.x = device.left;
 	monitor.y = device.top;
 	monitor.width = device.right - device.left;
@@ -2187,9 +2187,9 @@ public int internal_new_GC (GCData data) {
 	} else {
 		int gdevice = OS.GetMainDevice ();
 		int [] ptr = new int [1];
-		OS.memcpy (ptr, gdevice, 4);
+		OS.memmove (ptr, gdevice, 4);
 		GDevice device = new GDevice ();
-		OS.memcpy (device, ptr [0], GDevice.sizeof);
+		OS.memmove (device, ptr [0], GDevice.sizeof);
 		Rect rect = new Rect ();	
 		OS.SetRect (rect, device.left, device.top, device.right, device.bottom);
 		OS.SetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
