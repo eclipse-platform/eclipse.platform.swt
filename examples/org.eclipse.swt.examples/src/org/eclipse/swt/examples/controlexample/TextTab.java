@@ -165,8 +165,10 @@ class TextTab extends ScrollableTab {
 		 * so to avoid confusion, only set CANCEL if SEARCH is set. */
 		if ((text.getStyle () & SWT.SEARCH) != 0) {
 			cancelButton.setSelection ((text.getStyle () & SWT.CANCEL) != 0);
+			horizontalButton.setSelection (false);
 		} else {
 			cancelButton.setSelection (false);
+			horizontalButton.setSelection ((text.getStyle () & SWT.H_SCROLL) != 0);
 		}
 
 		passwordButton.setEnabled ((text.getStyle () & SWT.SINGLE) != 0);
