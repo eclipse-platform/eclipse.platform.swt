@@ -114,6 +114,14 @@ public Text (Composite parent, int style) {
 	if ((style & SWT.SEARCH) != 0) {
 		int inAttributesToSet = (style & SWT.CANCEL) != 0 ? OS.kHISearchFieldAttributesCancel : 0;
 		OS.HISearchFieldChangeAttributes (handle, inAttributesToSet, 0);
+		/*
+		* Ensure that SWT.CANCEL is set.
+		* NOTE: CANCEL has the same value as H_SCROLL so it is
+		* necessary to first clear these bits to avoid a scroll
+		* bar and then reset the bit using the original style
+		* supplied by the programmer.
+		*/
+		if ((style & SWT.CANCEL) != 0) this.style |= SWT.CANCEL;
 	}
 }
 
