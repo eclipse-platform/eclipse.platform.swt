@@ -5355,7 +5355,13 @@ void handleTextChanging(TextChangingEvent event) {
 	int srcY = getLinePixel(lineIndex + event.replaceLineCount + 1);
 	int destY = getLinePixel(lineIndex + 1) + event.newLineCount * renderer.getLineHeight();
 	lastLineBottom = destY;
-	scrollText(srcY, destY);
+	if (srcY < 0 && destY < 0) {
+		lastLineBottom += srcY - destY;
+		verticalScrollOffset += destY - srcY;
+		setScrollBars(true);
+	} else {
+		scrollText(srcY, destY);
+	}
 
 	renderer.textChanging(event);
 	
