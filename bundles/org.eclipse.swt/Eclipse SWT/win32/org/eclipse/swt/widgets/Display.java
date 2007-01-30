@@ -2997,9 +2997,11 @@ public boolean post (Event event) {
 		case SWT.MouseUp: {
 			MOUSEINPUT inputs = new MOUSEINPUT ();
 			if (type == SWT.MouseMove){
+				int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
+				int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
 				inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE;
-				inputs.dx = event.x * 65535 / (OS.GetSystemMetrics (OS.SM_CXSCREEN) - 1);
-				inputs.dy = event.y * 65535 / (OS.GetSystemMetrics (OS.SM_CYSCREEN) - 1);
+				inputs.dx = (event.x * 65535 + width - 2) / (width - 1);
+				inputs.dy = (event.y * 65535 + height - 2) / (height - 1);
 			} else {
 				switch (event.button) {
 					case 1: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
