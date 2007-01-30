@@ -69,12 +69,12 @@ public void generate(Field field) {
 		}
 	}
 	unusedCount++;
-	output("NOT USED=" + field.toString() + " \n");
+	//output("NOT USED=" + field.toString() + " \n");
 }
 
 public static void main(String[] args) {
 	if (args.length < 3) {
-		System.out.println("Usage: java CleanupConstants <OS className> <class source> <src path1> <src path2");
+		System.out.println("Usage: java CleanupConstants <OS className> <class source> <src path1> <src path2>");
 		return;
 	}
 	try {

@@ -419,7 +419,7 @@ public static String getDefaultPlatform() {
 
 public static void main(String[] args) {
 	JNIGeneratorApp gen = new JNIGeneratorApp ();
-	if (args.length == 1 && args[0].equals("*")) {
+	if (args.length == 1 && (args[0].equals("*") || args[0].equals("all"))) {
 		gen.generateAll();
 		return;
 	}
