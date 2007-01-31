@@ -860,14 +860,6 @@ public TableColumn [] getColumns () {
 	return result;
 }
 
-int getFocusIndex () {
-//	checkWidget ();
-	int itemCollection = OS.ItemsControl_Items (handle);
-	int index = OS.ItemCollection_CurrentPosition (itemCollection);
-	OS.GCHandle_Free (itemCollection);
-	return index;
-}
-
 /**
  * Returns the width in pixels of a grid line.
  *
@@ -1120,7 +1112,7 @@ public TableItem [] getSelection () {
 	int index = 0;
     while (OS.IEnumerator_MoveNext (enumerator)) {
     	int item = OS.IEnumerator_Current (enumerator);
-    	result [index++] = (TableItem)display.getWidget (item);
+    	result [index++] = getItem (item, true);
 		OS.GCHandle_Free (item);
 	}
     OS.GCHandle_Free (enumerator);
@@ -1352,7 +1344,7 @@ void HandleSelectionChanged (int sender, int e) {
 		OS.GCHandle_Free (list);
 	}
 	if (item != 0) {
-		TableItem result = (TableItem)display.getWidget (item);
+		TableItem result = getItem (item, true);
 		OS.GCHandle_Free (item);
 		if (result != null) {
 			Event event = new Event ();
