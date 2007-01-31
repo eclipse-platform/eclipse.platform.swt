@@ -207,11 +207,9 @@ void clear () {
 	images = null;
 	checked = grayed = false;
 	updateCheckState (false);
-	if (stringList != 0) OS.ArrayList_Clear (stringList);
-	OS.GCHandle_Free (stringList);
+	if (stringList != 0) OS.GCHandle_Free (stringList);
 	stringList = 0;
-	if (imageList != 0) OS.ArrayList_Clear (imageList);
-	OS.GCHandle_Free (imageList);
+	if (imageList != 0) OS.GCHandle_Free (imageList);
 	imageList = 0;
 //	background = foreground = font = -1;
 //	cellBackground = cellForeground = cellFont = null;

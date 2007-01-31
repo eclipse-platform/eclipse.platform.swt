@@ -157,9 +157,11 @@ void createHandle () {
 }
 
 void clear () {
-	if (imageList != 0) OS.ArrayList_Clear (imageList);
+	if (imageList != 0) OS.GCHandle_Free (imageList);
+	imageList = 0;
 	images = null;
-	if (stringList != 0) OS.ArrayList_Clear (stringList);
+	if (stringList != 0) OS.GCHandle_Free (stringList);
+	stringList = 0;
 	checked = grayed = false;
 	updateCheckState (false);
 //	background = foreground = font = -1;
