@@ -1005,8 +1005,10 @@ public TableItem getItem (Point point) {
 	Widget widget = display.getWidget (input);
 	OS.GCHandle_Free (input);
 	OS.GCHandle_Free (pt);
-	if (widget == this) return null;
-	return (TableItem) widget;
+	if (widget instanceof TableItem) {
+		return (TableItem) widget;
+	}
+	return null;
 }
 
 /**
@@ -1317,11 +1319,11 @@ void HandleKeyDown (int sender, int e) {
 		int source = OS.RoutedEventArgs_OriginalSource (e);
 		Widget widget = display.getWidget (source);
 		OS.GCHandle_Free (source);
-		if (widget == this || widget == null) return;
-		TableItem item = (TableItem)widget;
-		Event event = new Event ();
-		event.item = item;
-		postEvent (SWT.DefaultSelection, event);
+		if (widget instanceof TableItem) {
+			Event event = new Event ();
+			event.item = (TableItem)widget;
+			postEvent (SWT.DefaultSelection, event);
+		}
 	}
 }
 
@@ -1330,11 +1332,11 @@ void HandleMouseDoubleClick (int sender, int e) {
 	int source = OS.RoutedEventArgs_OriginalSource (e);
 	Widget widget = display.getWidget (source);
 	OS.GCHandle_Free (source);
-	if (widget == this || widget == null) return;
-	TableItem item = (TableItem)widget;
-	Event event = new Event ();
-	event.item = item;
-	postEvent (SWT.DefaultSelection, event);
+	if (widget instanceof TableItem) {
+		Event event = new Event ();
+		event.item = (TableItem)widget;
+		postEvent (SWT.DefaultSelection, event);
+	}
 }
 
 void HandleSelectionChanged (int sender, int e) {
