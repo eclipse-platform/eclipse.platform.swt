@@ -225,8 +225,8 @@ public void create (Composite parent, int style) {
 			}
 
 			/*
-			 * remove the trailing "libxpcom.so" from mozillaPath because the NS_InitXPCOM2
-			 * invocation requires a directory name only
+			 * Remove the trailing xpcom lib name from mozillaPath because the NS_InitXPCOM2
+			 * invocation requires a directory name only.
 			 */ 
 			mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 		} else {
