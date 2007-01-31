@@ -1075,6 +1075,9 @@ public class OS extends C {
 	public static final int MOUSEEVENTF_MOVE = 0x0001;
 	public static final int MOUSEEVENTF_RIGHTDOWN = 0x0008; 
 	public static final int MOUSEEVENTF_RIGHTUP = 0x0010;
+	public static final int MOUSEEVENTF_VIRTUALDESK = 0x4000;
+	public static final int MOUSEEVENTF_XDOWN = 0x0080;
+	public static final int MOUSEEVENTF_XUP = 0x0100;
 	public static final int MSGF_DIALOGBOX = 0;
 	public static final int MSGF_COMMCTRL_BEGINDRAG = 0x4200;
 	public static final int MSGF_COMMCTRL_SIZEHEADER = 0x4201;

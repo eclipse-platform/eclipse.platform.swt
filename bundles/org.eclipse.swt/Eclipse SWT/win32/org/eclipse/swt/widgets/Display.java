@@ -2993,20 +2993,35 @@ public boolean post (Event event) {
 			return result;
 		}
 		case SWT.MouseDown:
-		case SWT.MouseMove: 
+		case SWT.MouseMove:
 		case SWT.MouseUp: {
 			MOUSEINPUT inputs = new MOUSEINPUT ();
 			if (type == SWT.MouseMove){
-				int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
-				int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
 				inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE;
-				inputs.dx = (event.x * 65535 + width - 2) / (width - 1);
-				inputs.dy = (event.y * 65535 + height - 2) / (height - 1);
+				if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) inputs.dwFlags |= OS.MOUSEEVENTF_VIRTUALDESK;
+				int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
+				int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+				int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
+				int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+				inputs.dx = ((event.x - x) * 65535 + width - 2) / (width - 1);
+				inputs.dy = ((event.y - y) * 65535 + height - 2) / (height - 1);
 			} else {
 				switch (event.button) {
 					case 1: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
 					case 2: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_MIDDLEDOWN : OS.MOUSEEVENTF_MIDDLEUP; break;
 					case 3: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_RIGHTDOWN : OS.MOUSEEVENTF_RIGHTUP; break;
+					case 4: {
+						if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
+						inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
+						inputs.mouseData = OS.XBUTTON1;
+						break;
+					}
+					case 5: {
+						if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
+						inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
+						inputs.mouseData = OS.XBUTTON2;
+						break;
+					}
 					default: return false;
 				}
 			}
