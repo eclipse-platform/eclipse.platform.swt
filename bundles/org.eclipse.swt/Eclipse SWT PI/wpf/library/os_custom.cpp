@@ -1048,13 +1048,13 @@ JNIEXPORT void JNICALL OS_NATIVE(SWTRow_1NotifyPropertyChanged)
 }
 #endif
 
-#ifndef NO_memmove
-JNIEXPORT void JNICALL OS_NATIVE(memmove)
+#ifndef NO_memcpy
+JNIEXPORT void JNICALL OS_NATIVE(memcpy)
 	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
 {
 	jchar *lparg0=NULL;
 	pin_ptr<wchar_t> lparg1; 
-	OS_NATIVE_ENTER(env, that, memmove_FUNC);
+	OS_NATIVE_ENTER(env, that, memcpy_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
 		if (arg0) if ((lparg0 = (jchar *)env->GetPrimitiveArrayCritical(arg0, NULL)) == NULL) goto fail;
@@ -1076,7 +1076,7 @@ fail:
 	{
 		if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
 	}
-	OS_NATIVE_EXIT(env, that, memmove_FUNC);
+	OS_NATIVE_EXIT(env, that, memcpy_FUNC);
 }
 #endif
 

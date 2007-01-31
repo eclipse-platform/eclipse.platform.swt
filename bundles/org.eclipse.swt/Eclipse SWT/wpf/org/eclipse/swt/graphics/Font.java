@@ -202,7 +202,7 @@ public FontData[] getFontData() {
 	int str = OS.FontFamily_Source(fontFamily);
 	int charArray = OS.String_ToCharArray(str);
 	char[] chars = new char[OS.String_Length(str)];
-	OS.memmove(chars, charArray, chars.length * 2);
+	OS.memcpy(chars, charArray, chars.length * 2);
 	int fontStyle = OS.FontStyles_Normal;
 	if (OS.Object_Equals(style, OS.FontStyles_Italic)) fontStyle = OS.FontStyles_Italic;
 	if (OS.Object_Equals(style, OS.FontStyles_Oblique)) fontStyle = OS.FontStyles_Oblique;

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1014;
-int OS_nativeFunctionCallCount[1014];
+int OS_nativeFunctionCount = 1013;
+int OS_nativeFunctionCallCount[1013];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -1029,8 +1029,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1Window",
 	"gcnew_1WriteableBitmap__I",
 	"gcnew_1WriteableBitmap__IIDDII",
-	"gcnew_1byte",
-	"memmove",
+	"memcpy",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

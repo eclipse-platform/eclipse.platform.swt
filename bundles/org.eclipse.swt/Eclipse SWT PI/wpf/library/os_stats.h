@@ -1037,6 +1037,5 @@ typedef enum {
 	gcnew_1Window_FUNC,
 	gcnew_1WriteableBitmap__I_FUNC,
 	gcnew_1WriteableBitmap__IIDDII_FUNC,
-	gcnew_1byte_FUNC,
-	memmove_FUNC,
+	memcpy_FUNC,
 } OS_FUNCS;

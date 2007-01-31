@@ -85,7 +85,7 @@ public FileDialog (Shell parent, int style) {
 String createJavaString (int ptr) {
 	int charArray = OS.String_ToCharArray (ptr);
 	char [] chars = new char[OS.String_Length (ptr)];
-	OS.memmove (chars, charArray, chars.length * 2);
+	OS.memcpy (chars, charArray, chars.length * 2);
 	return new String (chars);
 }
 

@@ -12051,16 +12051,3 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1WriteableBitmap__IIDDII)
 }
 #endif
 
-#ifndef NO_gcnew_1byte
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1byte)(JNIEnv *env, jclass that, jint arg0);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1byte)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1byte_FUNC);
-	rc = (jint)TO_HANDLE(gcnew array<unsigned char>(arg0));
-	OS_NATIVE_EXIT(env, that, gcnew_1byte_FUNC);
-	return rc;
-}
-#endif
-

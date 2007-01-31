@@ -469,7 +469,7 @@ public String toString() {
 	int str = OS.TypeConverter_ConvertToString(converter, style != 0 ? style : OS.FontStyles_Normal);
 	int charArray = OS.String_ToCharArray(str);
 	char[] chars = new char[OS.String_Length(str)];
-	OS.memmove(chars, charArray, chars.length * 2);
+	OS.memcpy(chars, charArray, chars.length * 2);
 	OS.GCHandle_Free (charArray);
 	OS.GCHandle_Free (str);
 	OS.GCHandle_Free (converter);

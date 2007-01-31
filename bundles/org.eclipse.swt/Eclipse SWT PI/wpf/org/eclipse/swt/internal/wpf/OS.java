@@ -13,10 +13,7 @@ package org.eclipse.swt.internal.wpf;
 
 import org.eclipse.swt.internal.*;
 
-public class OS extends Platform {
-	static {
-		Library.loadLibrary ("swt"); //$NON-NLS-1$
-	}
+public class OS extends C {
 	
 	/** Constants */
 	public static final int Key_LeftAlt = 120;
@@ -1362,8 +1359,5 @@ public static final native int gcnew_Uri(int str, int type);
 public static final native int gcnew_Window();
 public static final native int gcnew_WriteableBitmap (int source);
 public static final native int gcnew_WriteableBitmap (int pixelWidth, int pixelHeight, double dpiX, double dpiY, int pixelFormat, int palette);
-public static final native int gcnew_byte(int length);
-
-public static final native void memmove(char[] dest, int src, int size);
-
+public static final native void memcpy(char[] dest, int src, int size);
 }

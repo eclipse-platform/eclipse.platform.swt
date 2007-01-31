@@ -373,7 +373,7 @@ int createDotNetString (String string, boolean fixMnemonic) {
 String createJavaString (int ptr) {
 	int charArray = OS.String_ToCharArray (ptr);
 	char[] chars = new char[OS.String_Length (ptr)];
-	OS.memmove (chars, charArray, chars.length * 2);
+	OS.memcpy (chars, charArray, chars.length * 2);
 	OS.GCHandle_Free (charArray);
 	return new String (chars);
 }
@@ -1045,7 +1045,7 @@ boolean sendKeyEvent (int type, int e, boolean textInput) {
 		}
 		int chars = OS.String_ToCharArray(text);
 		char[] buffer = new char[OS.String_Length(text)]; 
-		OS.memmove(buffer, chars, buffer.length * 2);
+		OS.memcpy(buffer, chars, buffer.length * 2);
 		OS.GCHandle_Free(chars);
 		OS.GCHandle_Free(text);
 		for (int i = 0; i < buffer.length; i++) {
