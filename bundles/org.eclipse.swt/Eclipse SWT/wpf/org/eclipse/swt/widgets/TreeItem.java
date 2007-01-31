@@ -677,7 +677,6 @@ public TreeItem [] getItems () {
 
 public Image getImage () {
 	checkWidget ();
-	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getImage (0);
 }
 
@@ -698,7 +697,6 @@ public Image getImage () {
 public Image getImage (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (index == 0) return getImage ();
 	if (images != null) {
 		if (0 <= index && index < images.length) return images [index];
 	}
@@ -767,7 +765,6 @@ public TreeItem getParentItem () {
 
 public String getText () {
 	checkWidget ();
-	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getText (0);
 }
 
