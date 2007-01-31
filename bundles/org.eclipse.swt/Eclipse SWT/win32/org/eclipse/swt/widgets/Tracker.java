@@ -43,7 +43,7 @@ public class Tracker extends Widget {
 	Rectangle bounds;
 	int resizeCursor, clientCursor, cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
-	int oldProc, oldX, oldY;
+	int hwndTransparent, oldProc, oldX, oldY;
 
 	/*
 	* The following values mirror step sizes on Windows
@@ -345,6 +345,19 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * Draw the rectangles displayed by the tracker.
  */
 void drawRectangles (Rectangle [] rects, boolean stippled) {
+	if (parent == null && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		RECT rect1 = new RECT();
+		int bandWidth = stippled ? 3 : 1;
+		for (int i = 0; i < rects.length; i++) {
+			Rectangle rect = rects[i];
+			rect1.left = rect.x - bandWidth;
+			rect1.top = rect.y - bandWidth;
+			rect1.right = rect.x + rect.width + bandWidth * 2;
+			rect1.bottom = rect.y + rect.height + bandWidth * 2;
+			OS.RedrawWindow (hwndTransparent, rect1, 0, OS.RDW_INVALIDATE);
+		}
+		return;
+	}
 	int bandWidth = 1;
 	int hwndTrack = OS.GetDesktopWindow ();
 	if (parent != null) hwndTrack = parent.handle;
@@ -459,17 +472,17 @@ public boolean open () {
 	* in order to get all mouse/keyboard events that occur
 	* outside of our visible windows (ie.- over the desktop).
 	*/
-	int hwndTransparent = 0;
 	Callback newProc = null;
 	boolean mouseDown = OS.GetKeyState(OS.VK_LBUTTON) < 0;
-	if (!mouseDown) {
+	boolean isVista = !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0);
+	if ((parent == null && isVista) || !mouseDown) {
 		int width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
 		int height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
 		hwndTransparent = OS.CreateWindowEx (
-			OS.WS_EX_TRANSPARENT,
+			isVista ? OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE : OS.WS_EX_TRANSPARENT,
 			display.windowClass,
 			null,
-			OS.WS_POPUP | OS.WS_VISIBLE,
+			OS.WS_POPUP,
 			0, 0,
 			width, height,
 			0,
@@ -481,6 +494,10 @@ public boolean open () {
 		int newProcAddress = newProc.getAddress ();
 		if (newProcAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.SetWindowLong (hwndTransparent, OS.GWL_WNDPROC, newProcAddress);
+		if (isVista) {
+			OS.SetLayeredWindowAttributes (hwndTransparent, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
+		}
+		OS.ShowWindow (hwndTransparent, OS.SW_SHOWNOACTIVATE);
 	}
 
 	update ();
@@ -502,59 +519,67 @@ public boolean open () {
 		oldY = cursorPos.y;
 	}
 
-	/* Tracker behaves like a Dialog with its own OS event loop. */
-	MSG msg = new MSG ();
-	while (tracking && !cancelled) {
-		if (parent != null && parent.isDisposed ()) break;
-		OS.GetMessage (msg, 0, 0, 0);
-		OS.TranslateMessage (msg);
-		switch (msg.message) {
-			case OS.WM_LBUTTONUP:
-			case OS.WM_MOUSEMOVE:
-				wmMouse (msg.message, msg.wParam, msg.lParam);
-				break;
-			case OS.WM_IME_CHAR: wmIMEChar (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_CHAR: wmChar (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_KEYDOWN: wmKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_KEYUP: wmKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_SYSCHAR: wmSysChar (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_SYSKEYDOWN: wmSysKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
-			case OS.WM_SYSKEYUP: wmSysKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
+	try {
+		/* Tracker behaves like a Dialog with its own OS event loop. */
+		MSG msg = new MSG ();
+		while (tracking && !cancelled) {
+			if (parent != null && parent.isDisposed ()) break;
+			OS.GetMessage (msg, 0, 0, 0);
+			OS.TranslateMessage (msg);
+			switch (msg.message) {
+				case OS.WM_LBUTTONUP:
+				case OS.WM_MOUSEMOVE:
+					wmMouse (msg.message, msg.wParam, msg.lParam);
+					break;
+				case OS.WM_IME_CHAR: wmIMEChar (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_CHAR: wmChar (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_KEYDOWN: wmKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_KEYUP: wmKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_SYSCHAR: wmSysChar (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_SYSKEYDOWN: wmSysKeyDown (msg.hwnd, msg.wParam, msg.lParam); break;
+				case OS.WM_SYSKEYUP: wmSysKeyUp (msg.hwnd, msg.wParam, msg.lParam); break;
+			}
+			if (OS.WM_KEYFIRST <= msg.message && msg.message <= OS.WM_KEYLAST) continue;
+			if (OS.WM_MOUSEFIRST <= msg.message && msg.message <= OS.WM_MOUSELAST) continue;
+			if (!(parent == null && isVista)) {
+				if (msg.message == OS.WM_PAINT) {
+					update ();
+					drawRectangles (rectangles, stippled);
+				}
+			}
+			OS.DispatchMessage (msg);
+			if (!(parent == null && isVista)) {
+				if (msg.message == OS.WM_PAINT) {
+					drawRectangles (rectangles, stippled);
+				}
+			}
 		}
-		if (OS.WM_KEYFIRST <= msg.message && msg.message <= OS.WM_KEYLAST) continue;
-		if (OS.WM_MOUSEFIRST <= msg.message && msg.message <= OS.WM_MOUSELAST) continue;
-		if (msg.message == OS.WM_PAINT) {
+		if (mouseDown) OS.ReleaseCapture ();
+		if (!isDisposed()) {
 			update ();
 			drawRectangles (rectangles, stippled);
 		}
-		OS.DispatchMessage (msg);
-		if (msg.message == OS.WM_PAINT) {
-			drawRectangles (rectangles, stippled);
+	} finally {
+		/*
+		* Cleanup: If a transparent window was created in order to capture events then
+		* destroy it and its callback object now.
+		*/
+		if (hwndTransparent != 0) {
+			OS.DestroyWindow (hwndTransparent);
+			hwndTransparent = 0;
 		}
-	}
-	if (mouseDown) OS.ReleaseCapture ();
-	if (!isDisposed()) {
-		update ();
-		drawRectangles (rectangles, stippled);
-	}
-	/*
-	* Cleanup: If a transparent window was created in order to capture events then
-	* destroy it and its callback object now.
-	*/
-	if (hwndTransparent != 0) {
-		OS.DestroyWindow (hwndTransparent);
-	}
-	if (newProc != null) {
-		newProc.dispose ();
-		oldProc = 0;
-	}
-	/*
-	* Cleanup: If this tracker was resizing then the last cursor that it created
-	* needs to be destroyed.
-	*/
-	if (resizeCursor != 0) {
-		OS.DestroyCursor (resizeCursor);
-		resizeCursor = 0;
+		if (newProc != null) {
+			newProc.dispose ();
+			oldProc = 0;
+		}
+		/*
+		* Cleanup: If this tracker was resizing then the last cursor that it created
+		* needs to be destroyed.
+		*/
+		if (resizeCursor != 0) {
+			OS.DestroyCursor (resizeCursor);
+			resizeCursor = 0;
+		}
 	}
 	tracking = false;
 	return !cancelled;
@@ -813,11 +838,50 @@ int transparentProc (int hwnd, int msg, int wParam, int lParam) {
 				OS.SetCursor (resizeCursor);
 				return 1;
 			}
+			break;
+		case OS.WM_PAINT:
+			if (parent == null && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				PAINTSTRUCT ps = new PAINTSTRUCT();
+				int hDC = OS.BeginPaint (hwnd, ps);
+				int hBitmap = 0, hBrush = 0, oldBrush = 0;			
+				int transparentBrush = OS.CreateSolidBrush(0xFFFFFF);
+				oldBrush = OS.SelectObject (hDC, transparentBrush);
+				OS.PatBlt (hDC, ps.left, ps.top, ps.right - ps.left, ps.bottom - ps.top, OS.PATCOPY);
+				OS.SelectObject (hDC, oldBrush);
+				OS.DeleteObject (transparentBrush);
+				int bandWidth = 1;
+				if (stippled) {
+					bandWidth = 3;
+					byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
+					hBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
+					hBrush = OS.CreatePatternBrush (hBitmap);
+					oldBrush = OS.SelectObject (hDC, hBrush);
+					OS.SetBkColor (hDC, 0xF0F0F0);
+				} else {
+					oldBrush = OS.SelectObject (hDC, OS.GetStockObject(OS.BLACK_BRUSH));
+				}
+				Rectangle[] rects = this.rectangles;
+				for (int i=0; i<rects.length; i++) {
+					Rectangle rect = rects [i];
+					OS.PatBlt (hDC, rect.x, rect.y, rect.width, bandWidth, OS.PATCOPY);
+					OS.PatBlt (hDC, rect.x, rect.y + bandWidth, bandWidth, rect.height - (bandWidth * 2), OS.PATCOPY);
+					OS.PatBlt (hDC, rect.x + rect.width - bandWidth, rect.y + bandWidth, bandWidth, rect.height - (bandWidth * 2), OS.PATCOPY);
+					OS.PatBlt (hDC, rect.x, rect.y + rect.height - bandWidth, rect.width, bandWidth, OS.PATCOPY);
+				}
+				OS.SelectObject (hDC, oldBrush);
+				if (stippled) {
+					OS.DeleteObject (hBrush);
+					OS.DeleteObject (hBitmap);
+				}
+				OS.EndPaint (hwnd, ps);
+				return 0;
+			}
 	}
 	return OS.CallWindowProc (oldProc, hwnd, msg, wParam, lParam);
 }
 
 void update () {
+	if (parent == null && !OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) return;
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		Shell shell = parent.getShell ();
