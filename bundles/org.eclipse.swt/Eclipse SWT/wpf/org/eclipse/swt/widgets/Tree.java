@@ -1559,16 +1559,16 @@ void setItemCount (TreeItem parentItem, int count) {
 	count = Math.max (0, count);
 	if (count == itemCount) return;
 	int parentHandle = parentItem != null ? parentItem.handle : handle;
-	int index = count;
+	int index = itemCount - 1;
 	int items = OS.ItemsControl_Items (parentHandle);
-	while (index < itemCount) {
+	while (index >= count) {
 		TreeItem item = getItem (items, index, false);
 		if (item != null) {
-			if (!item.isDisposed()) item.release (false);
+			if (!item.isDisposed()) item.release (true);
 		} else {
 			OS.ItemCollection_RemoveAt (items, index);
 		}
-		index++;
+		index--;
 	}
 	if (OS.ItemCollection_Count (items) > count) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	if ((style & SWT.VIRTUAL) != 0) {

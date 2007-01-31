@@ -163,11 +163,6 @@ int backgroundProperty () {
 	return OS.Control_BackgroundProperty ();
 }
 
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	return super.computeSize (wHint, hHint, changed);
-}
-
 boolean checkData (TableItem item) {
 	if ((style & SWT.VIRTUAL) == 0) return true;
 	if (!item.cached) {
@@ -1886,16 +1881,16 @@ public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (count == itemCount) return;
-	int index = count;
+	int index = itemCount - 1;
 	int items = OS.ItemsControl_Items (handle);
-	while (index < itemCount) {
+	while (index >= count) {
 		TableItem item = getItem (items, index, false);
 		if (item != null) {
-			if (!item.isDisposed()) item.release (false);
+			if (!item.isDisposed()) item.release (true);
 		} else {
 			OS.ItemCollection_RemoveAt (items, index);
 		}
-		index++;
+		index--;
 	}
 	if (OS.ItemCollection_Count (items) > count) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	if ((style & SWT.VIRTUAL) != 0) {
