@@ -92,17 +92,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	handle = OS.gcnew_ProgressBar();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((style & SWT.VERTICAL) != 0) OS.ProgressBar_Orientation(handle, OS.Orientation_Vertical);
+	if ((style & SWT.VERTICAL) != 0) OS.ProgressBar_Orientation (handle, OS.Orientation_Vertical);
 	if ((style & SWT.INDETERMINATE) != 0) {
 		OS.ProgressBar_IsIndeterminate (handle, true) ;
-//		int duration = OS.gcnew_Duration();
-//		int doubleAnimation = OS.gcnew_DoubleAnimation(100.0, duration);
-//		OS.GCHandle_Free(duration);
-//		OS.DoubleAnimation_RepeatBehavior(doubleAnimation, OS.RepeatBehavior_Forever);
-//		FIXME: How to get the Marquee style like Winforms????		
-//		OS.DoubleAnimation_AutoReverse(doubleAnimation, true);
-//		OS.UIElement_BeginAnimation(handle, doubleAnimation);
-//		OS.GCHandle_Free(doubleAnimation);
 	}
 }
 
@@ -148,7 +140,7 @@ public int getMinimum () {
  */
 public int getSelection () {
 	checkWidget ();
-	return (int) OS.RangeBase_Value(handle);
+	return (int) OS.RangeBase_Value (handle);
 }
 
 /**
@@ -214,6 +206,6 @@ public void setMinimum (int value) {
 public void setSelection (int value) {
 	checkWidget ();
 	if (value < 0) return;
-	OS.RangeBase_Value(handle, value);
+	OS.RangeBase_Value (handle, value);
 }
 }

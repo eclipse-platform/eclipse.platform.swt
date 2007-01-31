@@ -695,7 +695,8 @@ int getBackgroundColor () {
  */
 public int getBorderWidth () {
 	checkWidget ();
-	return 0;
+	//FIXME
+	return 2;
 }
 
 /**
