@@ -678,7 +678,7 @@ public TreeItem [] getItems () {
 public Image getImage () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return super.getImage ();
+	return getImage (0);
 }
 
 /**
