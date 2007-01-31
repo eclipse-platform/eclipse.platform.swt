@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 854;
-int OS_nativeFunctionCallCount[854];
+int OS_nativeFunctionCount = 855;
+int OS_nativeFunctionCallCount[855];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -765,6 +765,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetFocus",
 	"SetForegroundWindow",
 	"SetGraphicsMode",
+	"SetLayeredWindowAttributes",
 	"SetLayout",
 	"SetMenu",
 	"SetMenuDefaultItem",

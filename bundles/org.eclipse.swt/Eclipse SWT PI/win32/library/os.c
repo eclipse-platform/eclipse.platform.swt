@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11973,6 +11973,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetGraphicsMode)
 	OS_NATIVE_ENTER(env, that, SetGraphicsMode_FUNC);
 	rc = (jint)SetGraphicsMode((HDC)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, SetGraphicsMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetLayeredWindowAttributes
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetLayeredWindowAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyte arg2, jint arg3)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetLayeredWindowAttributes_FUNC);
+/*
+	rc = (jboolean)SetLayeredWindowAttributes(arg0, arg1, arg2, arg3);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(SetLayeredWindowAttributes_LIB);
+			if (hm) fp = GetProcAddress(hm, "SetLayeredWindowAttributes");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, SetLayeredWindowAttributes_FUNC);
 	return rc;
 }
 #endif

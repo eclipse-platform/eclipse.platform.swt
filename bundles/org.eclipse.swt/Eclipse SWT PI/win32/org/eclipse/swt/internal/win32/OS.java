@@ -272,6 +272,7 @@ public class OS extends C {
 	public static final int BI_BITFIELDS = 3;
 	public static final int BI_RGB = 0;
 	public static final int BLACKNESS = 0x42;
+	public static final int BLACK_BRUSH = 4;
 	public static final int BCM_FIRST = 0x1600;
 	public static final int BCM_GETIDEALSIZE = BCM_FIRST + 0x1;
 	public static final int BCM_GETIMAGELIST = BCM_FIRST + 0x3;
@@ -999,6 +1000,8 @@ public class OS extends C {
 	public static final int LVS_SHAREIMAGELISTS = 0x40;
 	public static final int LVS_SHOWSELALWAYS = 0x8;
 	public static final int LVS_SINGLESEL = 0x4;
+	public static final int LWA_COLORKEY = 0x00000001;
+	public static final int LWA_ALPHA = 0x00000002;
 	public static final int MAX_LINKID_TEXT = 48;
 //	public static final int MAX_PATH = 260;
 	public static final int MA_NOACTIVATE = 0x3;
@@ -1952,10 +1955,12 @@ public class OS extends C {
 	public static final int WS_EX_CAPTIONOKBTN = 0x80000000;
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_DLGMODALFRAME = 0x1;
+	public static final int WS_EX_LAYERED = 0x00080000;
 	public static final int WS_EX_LAYOUTRTL = 0x00400000;
 	public static final int WS_EX_LEFTSCROLLBAR = 0x00004000;
 	public static final int WS_EX_MDICHILD = 0x00000040;
 	public static final int WS_EX_NOINHERITLAYOUT = 0x00100000;
+	public static final int WS_EX_NOACTIVATE = 0x08000000;
 	public static final int WS_EX_RIGHT = 0x00001000;
 	public static final int WS_EX_RTLREADING = 0x00002000;
 	public static final int WS_EX_STATICEDGE = 0x20000;
@@ -3683,6 +3688,7 @@ public static final native int SetErrorMode (int uMode);
 public static final native int /*long*/ SetFocus (int /*long*/ hWnd);
 public static final native boolean SetForegroundWindow (int /*long*/ hWnd);
 public static final native int SetGraphicsMode (int /*long*/ hdc, int iMode);
+public static final native boolean SetLayeredWindowAttributes(int /*long*/ hwnd, int crKey, byte bAlpha, int dwFlags);
 public static final native int SetLayout (int /*long*/ hdc, int dwLayout);
 public static final native boolean SetMenu (int /*long*/ hWnd, int /*long*/ hMenu);
 public static final native boolean SetMenuDefaultItem (int /*long*/ hMenu, int uItem, int fByPos);
