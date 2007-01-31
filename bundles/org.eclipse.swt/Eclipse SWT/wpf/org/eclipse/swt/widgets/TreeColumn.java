@@ -34,7 +34,6 @@ import org.eclipse.swt.events.*;
  */
 public class TreeColumn extends Item {
 	Tree parent;
-	//TODO - get header handle when needed instead of keeping reference
 	int headerHandle; 
 	int stringPtr;
 	boolean moveable, resizable;
@@ -188,30 +187,19 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-int ConvertImage (int value, int targetType, int parameter, int culture) {
-	return image != null ? image.handle : 0;
-}
-
-int ConvertText (int value, int targetType, int parameter, int culture) {
-	int result = 0;
-	if (text != null) {
-		result = stringPtr;
-		if (result == 0) {
-			result = stringPtr = createDotNetString (text, false);
-		}
-	}
-	return result;
-}
-
 void createHandle () {
 	handle = OS.gcnew_GridViewColumn ();
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	headerHandle = OS.gcnew_GridViewColumnHeader ();
-	int content = OS.gcnew_IntPtr (jniRef);
 	OS.GridViewColumn_Header (handle, headerHandle);
-	OS.GridViewColumnHeader_Content (headerHandle, content);
-	OS.GridViewColumn_Width(handle, 0);
-	OS.GCHandle_Free (content);	
+	int row = OS.gcnew_SWTRow (jniRef, headerHandle);
+	OS.GridViewColumnHeader_Content (headerHandle, row);
+	OS.GridViewColumn_Width (handle, 0);
+	OS.GCHandle_Free (row);	
+}
+
+void deregister () {
+	display.removeWidget (headerHandle);
 }
 
 void destroyWidget () {
@@ -247,6 +235,37 @@ int findPart (String part) {
 		OS.GCHandle_Free (contentPresenter);
 	}
 	OS.GCHandle_Free (contentPresenterType);
+	return result;
+}
+
+int GetBackground (int itemHandle) {
+	return 0;
+}
+
+int GetCheck (int itemHandle) {
+	return 0;
+}
+
+int GetFont (int itemHandle) {
+	return 0;
+}
+
+int GetForeground (int itemHandle) {
+	return 0;
+}
+
+int GetImage (int itemHandle) {
+	return image != null ? image.handle : 0;
+}
+
+int GetText (int itemHandle) {
+	int result = 0;
+	if (text != null) {
+		result = stringPtr;
+		if (result == 0) {
+			result = stringPtr = createDotNetString (text, false);
+		}
+	}
 	return result;
 }
 
@@ -403,6 +422,10 @@ public void pack () {
 	OS.DependencyObject_ClearValue (handle, widthProperty);
 	OS.GCHandle_Free (widthProperty);
 	OS.UIElement_UpdateLayout (headerHandle);
+}
+
+void register() {
+	display.addWidget (headerHandle, this);
 }
 
 void releaseHandle () {

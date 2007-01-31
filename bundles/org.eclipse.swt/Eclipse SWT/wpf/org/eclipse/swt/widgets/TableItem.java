@@ -31,11 +31,9 @@ import org.eclipse.swt.graphics.*;
 
 public class TableItem extends Item {
 	Table parent;
-	String [] strings;
-	int [] stringHandle;
-	Image [] images;
-
-	boolean checked, grayed, cached;
+	Image[] images;
+	int stringList, imageList, foregroundList, backgroundList, fontList, checkState;
+	boolean checked, grayed, cached, ignoreNotify;
 //	int imageIndent, background = -1, foreground = -1, font = -1;
 //	int [] cellBackground, cellForeground, cellFont;
 
@@ -124,36 +122,54 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void columnAdded (int index) {
+	int newLength = parent.columnCount + 1;
+	if (images != null) {
+		Image [] temp = new Image [newLength];
+		System.arraycopy (images, 0, temp, 0, index);
+		System.arraycopy (images, index, temp, index + 1, parent.columnCount - index);
+		images = temp;
+	}
+	OS.ArrayList_Insert (stringList, index, 0);
+	OS.ArrayList_Insert (imageList, index, 0);
+}
+
+void columnRemoved (int index) {
+	if (images != null) {
+		Image [] temp = new Image [parent.columnCount];
+		System.arraycopy (images, 0, temp, 0, index);
+		System.arraycopy (images, index + 1, temp, index, parent.columnCount - index);
+		images = temp;
+	}
+	OS.ArrayList_RemoveAt (stringList, index);
+	OS.ArrayList_RemoveAt (imageList, index);
+}
+
 void createHandle () {
 	if (handle == 0) {
 		handle = OS.gcnew_ListViewItem ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		int row = OS.gcnew_SWTRow (parent.jniRef, handle);
+		OS.ContentControl_Content (handle, row);
+		OS.GCHandle_Free (row);
 	}
-	int content = OS.gcnew_IntPtr (jniRef);
-	OS.ContentControl_Content (handle, content);
-	OS.GCHandle_Free (content);
+	updateCheckState (false);
 }
 
 void clear () {
-	text = "";
-	image = null;
-	if (stringHandle != null) {
-		for (int i = 0; i < stringHandle.length; i++) {
-			if (stringHandle [i] != 0) OS.GCHandle_Free (stringHandle [i]);
-		}
-	}
-	stringHandle = null;
-	strings = null;
+	if (imageList != 0) OS.ArrayList_Clear (imageList);
 	images = null;
+	if (stringList != 0) OS.ArrayList_Clear (stringList);
 	checked = grayed = false;
+	updateCheckState (false);
 //	background = foreground = font = -1;
 //	cellBackground = cellForeground = cellFont = null;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
-	int count = Math.max (1, parent.columnCount);
-	for (int i = 0; i < count; i++) {
-		resetText (i);
-		resetImage (i);
-	}
+	if (ignoreNotify) return;
+	int row = OS.ContentControl_Content (handle);
+	OS.SWTRow_NotifyPropertyChanged (row, Table.TEXT_NOTIFY);
+	OS.SWTRow_NotifyPropertyChanged (row, Table.IMAGE_NOTIFY);
+	OS.GCHandle_Free (row);
 }
 
 void deregister () {
@@ -560,10 +576,12 @@ public String getText () {
 public String getText (int index) {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (strings != null) {
-		if (0 <= index && index < strings.length) {
-			String string = strings [index];
-			return string != null ? string : "";
+	if (stringList != 0) {
+		if (0 <= index && index < OS.ArrayList_Count (stringList)) {
+			int ptr = OS.ArrayList_default (stringList, index);
+			String result = createJavaString (ptr);
+			OS.GCHandle_Free (ptr);
+			return result;
 		}
 	}
 	return "";
@@ -586,47 +604,12 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (stringHandle != null) {
-		for (int i = 0; i < stringHandle.length; i++) {
-			if (stringHandle [i] != 0) OS.GCHandle_Free (stringHandle [i]);
-		}
-	}
-	stringHandle = null;
-	strings = null;
-	images = null;
-}
-
-public void resetCheck () {
-	int part = findPart (0, Table.CHECKBOX_PART_NAME);
-	if (part == 0) return;
-	parent.ignoreSelection = true;
-	OS.ToggleButton_IsChecked (part, checked);
-	parent.ignoreSelection = false;
-	OS.GCHandle_Free (part);
-}
-
-void resetImage (int index) {
-	if (OS.FrameworkElement_IsLoaded (handle)) {
-		int part = findPart (index, Table.IMAGE_PART_NAME);
-		int property = OS.Image_SourceProperty ();
-		int bindingExpression = OS.FrameworkElement_GetBindingExpression (part, property);
-		OS.BindingExpression_UpdateTarget (bindingExpression);
-		OS.GCHandle_Free (part);
-		OS.GCHandle_Free (property);
-		OS.GCHandle_Free (bindingExpression);
-	}
-}
-
-void resetText (int index) {
-	if (OS.FrameworkElement_IsLoaded (handle)) {
-		int part = findPart (index, Table.TEXT_PART_NAME);
-		int property = OS.TextBlock_TextProperty ();
-		int bindingExpression = OS.FrameworkElement_GetBindingExpression (part, property);
-		OS.BindingExpression_UpdateTarget (bindingExpression);
-		OS.GCHandle_Free (part);
-		OS.GCHandle_Free (property);
-		OS.GCHandle_Free (bindingExpression);
-	}
+	if (imageList != 0) OS.GCHandle_Free (imageList);
+	imageList = 0;
+	if (stringList != 0) OS.GCHandle_Free (stringList);
+	stringList = 0;
+	if (checkState != 0) OS.GCHandle_Free (checkState);
+	checkState = 0;
 }
 
 /**
@@ -723,7 +706,7 @@ public void setChecked (boolean checked) {
 	if (this.checked == checked) return;
 	this.checked = checked;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	resetCheck();
+	updateCheckState (true);
 }
 
 /**
@@ -947,6 +930,7 @@ public void setGrayed (boolean grayed) {
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	updateCheckState (true);
 }
 
 /**
@@ -997,7 +981,18 @@ public void setImage (int index, Image image) {
 	}
 	images [index] = image;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	resetImage (index);
+	if (imageList == 0) {
+		imageList = OS.gcnew_ArrayList (count);
+		for (int i = 0; i < count; i++) {
+			OS.ArrayList_Insert (imageList, i, 0);
+		}
+	}
+	int imageHandle = image != null ? image.handle : 0;
+	OS.ArrayList_default (imageList, index, imageHandle);
+	if (ignoreNotify) return;
+	int row = OS.ContentControl_Content (handle);
+	OS.SWTRow_NotifyPropertyChanged (row, Table.IMAGE_NOTIFY);
+	OS.GCHandle_Free (row);
 }
 
 public void setImage (Image image) {
@@ -1063,18 +1058,20 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = Math.max(1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	
-	if (strings == null) {
-		strings = new String [count];
-	}
-	if (string.equals (strings [index])) return;
-	strings [index] = string;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (stringHandle != null && stringHandle [index] != 0) {
-		OS.GCHandle_Free (stringHandle [index]);
-		stringHandle [index] = 0;
+	if (stringList == 0) {
+		stringList = OS.gcnew_ArrayList (count);
+		for (int i = 0; i < count; i++) {
+			OS.ArrayList_Insert (stringList, i, 0);
+		}
 	}
-	resetText (index);
+	int str = createDotNetString (string, false);
+	OS.ArrayList_default (stringList, index, str);
+	OS.GCHandle_Free (str);
+	if (ignoreNotify) return;
+	int row = OS.ContentControl_Content (handle);
+	OS.SWTRow_NotifyPropertyChanged (row, Table.TEXT_NOTIFY);
+	OS.GCHandle_Free (row);
 }
 
 public void setText (String string) {
@@ -1082,6 +1079,19 @@ public void setText (String string) {
 	setText (0, string);
 }
 
-
+void updateCheckState (boolean notify) {
+	if ((parent.style & SWT.CHECK) == 0) return;
+	if (checkState != 0) OS.GCHandle_Free (checkState);
+	if (checked) {
+		checkState = grayed ? OS.gcnew_IntPtr (2) : OS.gcnew_IntPtr (1);
+	} else {
+		checkState = OS.gcnew_IntPtr (0);
+	}
+	if (notify) {
+		int row = OS.ContentControl_Content (handle);
+		OS.SWTRow_NotifyPropertyChanged (row, Table.CHECK_NOTIFY);
+		OS.GCHandle_Free (row);
+	}
+}
 
 }

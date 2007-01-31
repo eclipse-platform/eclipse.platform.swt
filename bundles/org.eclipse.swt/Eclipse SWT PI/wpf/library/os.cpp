@@ -150,6 +150,76 @@ JNIEXPORT jint JNICALL OS_NATIVE(Application_1Windows)
 }
 #endif
 
+#ifndef NO_ArrayList_1Clear
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ArrayList_1Clear)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(ArrayList_1Clear)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, ArrayList_1Clear_FUNC);
+	((ArrayList^)TO_OBJECT(arg0))->Clear();
+	OS_NATIVE_EXIT(env, that, ArrayList_1Clear_FUNC);
+}
+#endif
+
+#ifndef NO_ArrayList_1Count
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ArrayList_1Count)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(ArrayList_1Count)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ArrayList_1Count_FUNC);
+	rc = (jint)((ArrayList^)TO_OBJECT(arg0))->Count;
+	OS_NATIVE_EXIT(env, that, ArrayList_1Count_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ArrayList_1Insert
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ArrayList_1Insert)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT void JNICALL OS_NATIVE(ArrayList_1Insert)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, ArrayList_1Insert_FUNC);
+	((ArrayList^)TO_OBJECT(arg0))->Insert(arg1, (Object^)TO_OBJECT(arg2));
+	OS_NATIVE_EXIT(env, that, ArrayList_1Insert_FUNC);
+}
+#endif
+
+#ifndef NO_ArrayList_1RemoveAt
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ArrayList_1RemoveAt)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ArrayList_1RemoveAt)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, ArrayList_1RemoveAt_FUNC);
+	((ArrayList^)TO_OBJECT(arg0))->RemoveAt(arg1);
+	OS_NATIVE_EXIT(env, that, ArrayList_1RemoveAt_FUNC);
+}
+#endif
+
+#ifndef NO_ArrayList_1default__II
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ArrayList_1default__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(ArrayList_1default__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ArrayList_1default__II_FUNC);
+	rc = (jint)TO_HANDLE(((ArrayList^)TO_OBJECT(arg0))->default[arg1]);
+	OS_NATIVE_EXIT(env, that, ArrayList_1default__II_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ArrayList_1default__III
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ArrayList_1default__III)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT void JNICALL OS_NATIVE(ArrayList_1default__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, ArrayList_1default__III_FUNC);
+	((ArrayList^)TO_OBJECT(arg0))->default[arg1] = ((Object^)TO_OBJECT(arg2));
+	OS_NATIVE_EXIT(env, that, ArrayList_1default__III_FUNC);
+}
+#endif
+
 #ifndef NO_BindingExpression_1UpdateTarget
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(BindingExpression_1UpdateTarget)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL OS_NATIVE(BindingExpression_1UpdateTarget)
@@ -9017,6 +9087,19 @@ JNIEXPORT void JNICALL OS_NATIVE(ToggleButton_1IsChecked__IZ)
 }
 #endif
 
+#ifndef NO_ToggleButton_1IsCheckedProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToggleButton_1IsCheckedProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ToggleButton_1IsCheckedProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToggleButton_1IsCheckedProperty_FUNC);
+	rc = (jint)TO_HANDLE(ToggleButton::IsCheckedProperty);
+	OS_NATIVE_EXIT(env, that, ToggleButton_1IsCheckedProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ToggleButton_1IsThreeStateProperty
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToggleButton_1IsThreeStateProperty)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(ToggleButton_1IsThreeStateProperty)
@@ -10396,6 +10479,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1ArcSegment)
 	OS_NATIVE_ENTER(env, that, gcnew_1ArcSegment_FUNC);
 	rc = (jint)TO_HANDLE(gcnew ArcSegment((Point)TO_OBJECT(arg0), (Size)TO_OBJECT(arg1), arg2, arg3, (SweepDirection)arg4, arg5));
 	OS_NATIVE_EXIT(env, that, gcnew_1ArcSegment_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1ArrayList
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1ArrayList)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1ArrayList)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1ArrayList_FUNC);
+	rc = (jint)TO_HANDLE(gcnew ArrayList(arg0));
+	OS_NATIVE_EXIT(env, that, gcnew_1ArrayList_FUNC);
 	return rc;
 }
 #endif

@@ -54,6 +54,10 @@ public:
 	}
 };
 
+/*												*/
+/* Table and Tree Classes						*/
+/*												*/
+
 public ref class SWTTreeViewRowPresenter : GridViewRowPresenter {
 private: 
 	TreeView^ tree;
@@ -101,14 +105,37 @@ protected:
 
 public ref class SWTCellConverter : IValueConverter {
 private: 
-	jmethodID mid;
+public:
+	virtual Object^ Convert (Object^ value, Type^ targetType, Object^ parameter, CultureInfo^ culture) {
+		if (value == nullptr) return value;
+		IList^ cellData = (IList^)value;
+		int index = (int)parameter;
+		if (index >= cellData->Count) return nullptr;
+		return cellData[index];
+	}
+	virtual Object^ ConvertBack (Object^ value, Type^ targetType, Object^ parameter, CultureInfo^ culture) {
+		throw gcnew System::InvalidOperationException("Not implemented");
+	}
+};
+
+public ref class SWTRow : INotifyPropertyChanged {
+private:
 	JniRefCookie^ cookie;
-	Object^ callin (Object^ value, Type^ targetType, Object^ parameter, CultureInfo^ culture) {
-		int result = 0;
+	FrameworkElement^ item;
+	jmethodID GetTextMID;
+	jmethodID GetImageMID;
+	jmethodID GetCheckMID;
+	jmethodID GetForegroundMID;
+	jmethodID GetBackgroundMID;
+	jmethodID GetFontMID;
+	
+	Object^ callin (jmethodID mid) {
 		jobject object = cookie->object;
 		if (object == NULL || mid == NULL) return nullptr;
 		JNIEnv* env;
+		int result = 0;
 		bool detach = false;
+
 #ifdef JNI_VERSION_1_2
 		if (IS_JNI_1_2) {
 			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
@@ -120,38 +147,93 @@ private:
 		}
 		if (env != NULL) {
 			if (!env->ExceptionOccurred()) {
-				GCHandle gch0 = GCHandle::Alloc(value);
-				GCHandle gch1 = GCHandle::Alloc(targetType);
-				GCHandle gch2 = GCHandle::Alloc(culture);
-				result = env->CallIntMethod(object, mid, (int)(IntPtr)gch0, (int)(IntPtr)gch1, (int)parameter, (int)(IntPtr)gch2);
+				GCHandle gch0 = GCHandle::Alloc(item);
+				result = env->CallIntMethod(object, mid, (int)(IntPtr)gch0);
 				gch0.Free();
-				gch1.Free();
-				gch2.Free();
 			}
 			if (detach) jvm->DetachCurrentThread();
 		}
 		return TO_OBJECT (result);
 	}
 public:
-	SWTCellConverter (JNIEnv* env, jint jniRef, jstring method) {
-		const char * methodString;
+	virtual event PropertyChangedEventHandler^ PropertyChanged;
+	
+	SWTRow (JNIEnv* env, jint jniRef, FrameworkElement^ item) {
 		if (jvm == NULL) env->GetJavaVM(&jvm);
 		cookie = gcnew JniRefCookie(env, jniRef);
 		jobject object = cookie->object;
-		if (method) methodString = (const char *) env->GetStringUTFChars(method, NULL);
-		if (object && methodString) {
+		if (object) {
 			jclass javaClass = env->GetObjectClass(object);
-			mid = env->GetMethodID(javaClass, methodString, "(IIII)I");
+			GetTextMID = env->GetMethodID(javaClass, "GetText", "(I)I");
+			GetImageMID = env->GetMethodID(javaClass, "GetImage", "(I)I");
+			GetCheckMID = env->GetMethodID(javaClass, "GetCheck", "(I)I");
+			GetForegroundMID = env->GetMethodID(javaClass, "GetForeground", "(I)I");
+			GetBackgroundMID = env->GetMethodID(javaClass, "GetBackground", "(I)I");
+			GetFontMID = env->GetMethodID(javaClass, "GetFont", "(I)I");
 		}
-		if (method && methodString) env->ReleaseStringUTFChars(method, methodString);		
+		this->item = item;
 	}
-	virtual Object^ Convert (Object^ value, Type^ targetType, Object^ parameter, CultureInfo^ culture) {
-		return callin(value, targetType, parameter, culture);
+	
+	property Object^ Text {
+		Object^ get () { return callin(GetTextMID); }
 	}
-	virtual Object^ ConvertBack (Object^ value, Type^ targetType, Object^ parameter, CultureInfo^ culture) {
-		throw gcnew System::InvalidOperationException("Not implemented");
+	
+	property Object^ Image {
+		Object^ get () { return callin(GetImageMID); }
+	}
+	
+	property Object^ Foreground {
+		Object^ get () { return callin(GetForegroundMID); }
+	}
+	
+	property Object^ Background {
+		Object^ get () { return callin(GetBackgroundMID); }
+	}
+	
+	property Object^ Font {
+		Object^ get () { return callin(GetFontMID); }
+	}
+	
+	property Object^ Check {
+		Object^ get () {
+			int value = ((IntPtr)callin(GetCheckMID)).ToInt32();
+			Nullable<bool> result;
+			switch (value) {
+				case 0: result = false; break;
+				case 1: result = true; break;
+			} 
+			return result;
+		}
+		void set (Object^ value) { };
+	}
+	
+	void NotifyPropertyChanged (int property) {
+		switch (property) {
+			case 0:
+				PropertyChanged (this, gcnew PropertyChangedEventArgs("Text"));
+				break;
+			case 1:
+				PropertyChanged (this, gcnew PropertyChangedEventArgs("Image"));
+				break;
+			case 2:
+				PropertyChanged (this, gcnew PropertyChangedEventArgs("Foreground"));
+				break;
+			case 3:
+				PropertyChanged (this, gcnew PropertyChangedEventArgs("Background"));
+				break;
+			case 4:
+				PropertyChanged (this, gcnew PropertyChangedEventArgs("Check"));
+				break;
+			case 5:
+				PropertyChanged (this, gcnew PropertyChangedEventArgs("Font"));
+				break;
+		}
 	}
 };
+
+/*												*/
+/* Canvas										*/
+/*												*/
 
 public ref class SWTCanvas : Canvas {
 private:
@@ -238,6 +320,10 @@ public:
 	}
 };
 
+/*												*/
+/* Cursor Support Class							*/
+/*												*/
+
 public ref class SWTSafeHandle : SafeHandle {
 private:
 	bool _isIcon;
@@ -260,6 +346,10 @@ public:
 		virtual bool get() override { return (int)handle == -1; }
 	}
 };
+
+/*												*/
+/* Text Layout Classes							*/
+/*												*/
 
 public ref class SWTTextEmbeddedObject : TextEmbeddedObject {
 private:
@@ -496,7 +586,6 @@ jint GCHandle_GetHandle(Object^ obj) {
 /*												*/
 /* Event Handler Class							*/
 /*												*/
-
 
 delegate void NoArgsDelegate ();
 
@@ -780,6 +869,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCanvas)
 }
 #endif
 
+#ifndef NO_gcnew_1SWTRow
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTRow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1SWTRow_FUNC);
+	rc = (jint)TO_HANDLE(gcnew SWTRow(env, arg0, (FrameworkElement^)TO_OBJECT(arg1)));
+	OS_NATIVE_EXIT(env, that, gcnew_1SWTRow_FUNC);
+	return rc;
+}
+#endif
+
+
 #ifndef NO_gcnew_1SWTSafeHandle
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTSafeHandle)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
@@ -854,11 +956,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeViewRowPresenter)
 
 #ifndef NO_gcnew_1SWTCellConverter
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCellConverter) 
-	(JNIEnv *env, jclass that, jint arg0, jstring arg1)
+	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1SWTCellConverter_FUNC);
-	rc = (jint)TO_HANDLE(gcnew SWTCellConverter(env, arg0, arg1));
+	rc = (jint)TO_HANDLE(gcnew SWTCellConverter());
 	OS_NATIVE_EXIT(env, that, gcnew_1SWTCellConverter_FUNC);
 	return rc;
 }
@@ -916,6 +1018,14 @@ JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Free) (JNIEnv *env, jclass that, jint
 	OS_NATIVE_EXIT(env, that, GCHandle_1Free_FUNC);
 }
 
+JNIEXPORT jint JNICALL OS_NATIVE(GCHandle_1Alloc) (JNIEnv *env, jclass that, jint arg0) {
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GCHandle_1Alloc_FUNC);
+	rc = TO_HANDLE (TO_OBJECT (arg0));	
+	OS_NATIVE_EXIT(env, that, GCHandle_1Alloc_FUNC);
+	return rc;
+}
+
 #ifndef NO_Bitmap_1GetHicon
 JNIEXPORT jint JNICALL OS_NATIVE(Bitmap_1GetHicon)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -925,6 +1035,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(Bitmap_1GetHicon)
 	rc = (jint)(int)((System::Drawing::Bitmap^)TO_OBJECT(arg0))->GetHicon();
 	OS_NATIVE_EXIT(env, that, Bitmap_1GetHicon_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_SWTRow_1NotifyPropertyChanged
+JNIEXPORT void JNICALL OS_NATIVE(SWTRow_1NotifyPropertyChanged)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, SWTRow_1NotifyPropertyChanged_FUNC);
+	((SWTRow^)TO_OBJECT(arg0))->NotifyPropertyChanged(arg1);
+	OS_NATIVE_EXIT(env, that, SWTRow_1NotifyPropertyChanged_FUNC);
 }
 #endif
 

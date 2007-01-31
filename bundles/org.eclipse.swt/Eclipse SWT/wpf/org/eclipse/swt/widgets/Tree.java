@@ -77,6 +77,13 @@ public class Tree extends Composite {
 	static final String IMAGE_PART_NAME = "SWT_PART_IMAGE";
 	static final String TEXT_PART_NAME = "SWT_PART_TEXT";
 	static final String SCROLLVIEWER_PART_NAME = "SWT_PART_SCROLLVIEWER";
+	
+	static final int BACKGROUND_NOTIFY = 3;
+	static final int CHECK_NOTIFY = 4;
+	static final int FONT_NOTIFY = 5;
+	static final int FOREGROUND_NOTIFY = 2;
+	static final int IMAGE_NOTIFY = 1;
+	static final int TEXT_NOTIFY = 0;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -237,6 +244,18 @@ protected void checkSubclass () {
  */
 public void clear (int index, boolean all) {
 	checkWidget ();
+	if (index < 0 || index >= itemCount) SWT.error (SWT.ERROR_INVALID_RANGE);
+	clear (handle, index, all);
+}
+
+void clear (int parentHandle, int index, boolean all) {
+	int items = OS.ItemsControl_Items (parentHandle);
+	TreeItem item = getItem (items, index, false);
+	if (item != null) {
+		item.clear ();
+		if (all) clearAll (item, true);
+	}
+	OS.GCHandle_Free (items);
 }
 
 /**
@@ -260,74 +279,24 @@ public void clear (int index, boolean all) {
  */
 public void clearAll (boolean all) {
 	checkWidget ();
-//	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-//	if (hItem == 0) return;
-//	TVITEM tvItem = new TVITEM ();
-//	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-//	clearAll (hItem, tvItem, all);
-	//FIXME
+	clearAll (null, all);
 }
 
-TreeItem converterItem (int value) {
-	int content = (int) OS.Point_X (value);
-	TreeItem item;
-	if (content > 0) {
-		item = (TreeItem) OS.JNIGetObject (content);
-	} else {
-		int parentJniRef = (int) OS.Point_Y (value);
-		int items;
-		if (parentJniRef == jniRef) {
-			items = OS.ItemsControl_Items (handle);
-		} else {
-			TreeItem parentItem = (TreeItem) OS.JNIGetObject (parentJniRef);
-			items = OS.ItemsControl_Items (parentItem.handle);
-		}
-		item = getItem (items, -content, true);
-		OS.GCHandle_Free (items);
-	}
-	checkData (item);
-	return item;
-}
-
-int converterColumnIndex (int parameter) {
- 	int columnIndex = 0;
-	if (parameter != 0) {
-		TreeColumn column = (TreeColumn) OS.JNIGetObject (parameter);
-		columnIndex = indexOf (column);
-	}
-	return columnIndex;
-}
-
-int ConvertImage (int value, int targetType, int parameter, int culture) {
-	TreeItem item = converterItem (value);
-	int columnIndex = converterColumnIndex (parameter);
-	int result = 0;
-	if (item.images != null && item.images [columnIndex] != null) {
-		result = item.images [columnIndex].handle;
-	}
-	return result;
-}
-
-int ConvertText (int value, int targetType, int parameter, int culture) {
-	TreeItem item = converterItem (value);
-	int columnIndex = converterColumnIndex (parameter);
-	int result = 0;
-	if (item.strings != null) {
-		if (item.stringHandle != null && item.stringHandle [columnIndex] != 0) {
-			result = item.stringHandle [columnIndex];
-		} else {
-			if (item.stringHandle == null) {
-				int count = Math.max (1, columnCount);
-				item.stringHandle = new int [count];
-			}
-			item.stringHandle [columnIndex] = result = createDotNetString (item.strings [columnIndex], false);
+void clearAll (TreeItem parentItem, boolean all) {
+	int count = parentItem != null ? parentItem.itemCount : itemCount;
+	int parentHandle = parentItem != null ? parentItem.handle : handle;
+	int items = OS.ItemsControl_Items (parentHandle);
+	for (int i=0; i<count; i++) {
+		TreeItem item = getItem (items, i, false);
+		if (item != null) {
+			item.clear ();
+			if (all) clearAll (item, true);
 		}
 	}
-	return result;
+	OS.GCHandle_Free (items);
 }
 
-
-int createCellTemplate (int columnJniRef, int index) {
+int createCellTemplate (int index) {
 	int template = OS.gcnew_DataTemplate ();
 	int stackPanelType = OS.StackPanel_typeid ();
 	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType);
@@ -343,6 +312,14 @@ int createCellTemplate (int columnJniRef, int index) {
 		int threeStateProperty = OS.ToggleButton_IsThreeStateProperty ();
 		OS.FrameworkElementFactory_SetValue (checkBoxNode, threeStateProperty, true);
 		OS.FrameworkElementFactory_AppendChild (stackPanelNode, checkBoxNode);
+		//binding
+		int checkPath = createDotNetString ("Check", false);
+		int checkBinding = OS.gcnew_Binding (checkPath);
+		int isCheckedProperty = OS.ToggleButton_IsCheckedProperty ();
+		OS.FrameworkElementFactory_SetBinding (checkBoxNode, isCheckedProperty, checkBinding);
+		OS.GCHandle_Free (checkPath);
+		OS.GCHandle_Free (checkBinding);
+		OS.GCHandle_Free (isCheckedProperty);
 		OS.GCHandle_Free (checkBoxName);
 		OS.GCHandle_Free (threeStateProperty);
 		OS.GCHandle_Free (thickness);
@@ -365,25 +342,28 @@ int createCellTemplate (int columnJniRef, int index) {
 	OS.FrameworkElementFactory_AppendChild (stackPanelNode, imageNode);
 	OS.FrameworkElementFactory_AppendChild (stackPanelNode, textNode);
 	OS.FrameworkTemplate_VisualTree (template, stackPanelNode);
+	
 	//bindings
-	int textBinding = OS.gcnew_Binding ();
-	int textConverter = OS.gcnew_SWTCellConverter (jniRef, "ConvertText");
-	OS.Binding_Converter (textBinding, textConverter);
-	OS.Binding_ConverterParameter (textBinding, columnJniRef);
+	int cellConverter = OS.gcnew_SWTCellConverter ();
+	int textPath = createDotNetString ("Text", false);
+	int textBinding = OS.gcnew_Binding (textPath);
+	OS.Binding_Converter (textBinding, cellConverter);
+	OS.Binding_ConverterParameter (textBinding, index);
 	int textProperty = OS.TextBlock_TextProperty ();
 	OS.FrameworkElementFactory_SetBinding (textNode, textProperty, textBinding);
-	int imageBinding = OS.gcnew_Binding ();
-	int imageConverter = OS.gcnew_SWTCellConverter (jniRef, "ConvertImage");
-	OS.Binding_Converter (imageBinding, imageConverter);
-	OS.Binding_ConverterParameter (imageBinding, columnJniRef);
+	int imagePath = createDotNetString ("Image", false);
+	int imageBinding = OS.gcnew_Binding (imagePath);
+	OS.Binding_Converter (imageBinding, cellConverter);
+	OS.Binding_ConverterParameter (imageBinding, index);
 	int imageProperty = OS.Image_SourceProperty ();
 	OS.FrameworkElementFactory_SetBinding (imageNode, imageProperty, imageBinding);
 	OS.GCHandle_Free (textBinding);
-	OS.GCHandle_Free (textConverter);
+	OS.GCHandle_Free (textPath);
 	OS.GCHandle_Free (textProperty);
 	OS.GCHandle_Free (imageBinding);
-	OS.GCHandle_Free (imageConverter);
+	OS.GCHandle_Free (imagePath);
 	OS.GCHandle_Free (imageProperty);
+	OS.GCHandle_Free (cellConverter);
 	
 	OS.GCHandle_Free (imageName);
 	OS.GCHandle_Free (textName);
@@ -402,7 +382,7 @@ int createCellTemplate (int columnJniRef, int index) {
 void createDefaultColumn () {
 	int column = OS.gcnew_GridViewColumn ();
 	OS.GridViewColumnCollection_Insert (columns, 0, column);
-	int cellTemplate = createCellTemplate (0, 0);
+	int cellTemplate = createCellTemplate (0);
 	OS.GridViewColumn_CellTemplate (column, cellTemplate);
 	OS.GCHandle_Free (column);
 	OS.GCHandle_Free (cellTemplate);
@@ -469,7 +449,7 @@ void createHandle () {
 	OS.GCHandle_Free (children);
 }
 
-int createHeaderTemplate (int columnJniRef) {
+int createHeaderTemplate () {
 	int template = OS.gcnew_DataTemplate ();
 	int stackPanelType = OS.StackPanel_typeid ();
 	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType);
@@ -490,23 +470,19 @@ int createHeaderTemplate (int columnJniRef) {
 	OS.FrameworkElementFactory_AppendChild (stackPanelNode, textNode);
 	OS.FrameworkTemplate_VisualTree (template, stackPanelNode);
 	//bindings
-	int textBinding = OS.gcnew_Binding ();
-	int textConverter = OS.gcnew_SWTCellConverter (columnJniRef, "ConvertText");
-	OS.Binding_Converter (textBinding, textConverter);
-	OS.Binding_ConverterParameter (textBinding, columnJniRef);
+	int textPath = createDotNetString ("Text", false);
+	int textBinding = OS.gcnew_Binding (textPath);
 	int textProperty = OS.TextBlock_TextProperty ();
 	OS.FrameworkElementFactory_SetBinding (textNode, textProperty, textBinding);
-	int imageBinding = OS.gcnew_Binding ();
-	int imageConverter = OS.gcnew_SWTCellConverter (columnJniRef, "ConvertImage");
-	OS.Binding_Converter (imageBinding, imageConverter);
-	OS.Binding_ConverterParameter (imageBinding, columnJniRef);
+	int imagePath = createDotNetString ("Image", false);
+	int imageBinding = OS.gcnew_Binding (imagePath);
 	int imageProperty = OS.Image_SourceProperty ();
-	OS.FrameworkElementFactory_SetBinding (imageNode, imageProperty, imageBinding);	
+	OS.FrameworkElementFactory_SetBinding (imageNode, imageProperty, imageBinding);
+	OS.GCHandle_Free (textPath);
 	OS.GCHandle_Free (textBinding);
-	OS.GCHandle_Free (textConverter);
 	OS.GCHandle_Free (textProperty);
+	OS.GCHandle_Free (imagePath);
 	OS.GCHandle_Free (imageBinding);
-	OS.GCHandle_Free (imageConverter);
 	OS.GCHandle_Free (imageProperty);
 	
 	OS.GCHandle_Free (imageType);
@@ -527,10 +503,10 @@ int createHeaderTemplate (int columnJniRef) {
 void createItem (TreeColumn column, int index) {
     if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	column.createWidget ();
-	int template = createHeaderTemplate (column.jniRef);
+	int template = createHeaderTemplate ();
 	OS.GridViewColumn_HeaderTemplate (column.handle, template);
 	OS.GCHandle_Free (template);
-	template = createCellTemplate (column.jniRef, index);
+	template = createCellTemplate (index);
 	OS.GridViewColumn_CellTemplate (column.handle, template);
 	OS.GCHandle_Free (template);
 	if (columnCount == 0) { 
@@ -541,7 +517,7 @@ void createItem (TreeColumn column, int index) {
     for (int i=0; i<itemCount; i++) {
     	TreeItem item = getItem (items, i, false);
     	if (item != null) {
-    		item.columnInserted (index);
+    		item.columnAdded (index);
     	}
     }
     OS.GCHandle_Free (items);
@@ -637,6 +613,42 @@ int findScrollViewer(int current, int scrollViewerType) {
 	OS.GCHandle_Free (scrollViewerName);
 	OS.GCHandle_Free (template);
 	return scrollViewer;
+}
+
+int GetBackground (int itemHandle) {
+	TreeItem item = getItem (itemHandle, true); 
+	checkData (item);
+	return item.backgroundList;
+}
+
+int GetCheck (int itemHandle) {
+	TreeItem item = getItem (itemHandle, true); 
+	checkData (item);
+	return item.checkState;
+}
+
+int GetFont (int itemHandle) {
+	TreeItem item = getItem (itemHandle, true); 
+	checkData (item);
+	return item.fontList;
+}
+
+int GetForeground (int itemHandle) {
+	TreeItem item = getItem (itemHandle, true); 
+	checkData (item);
+	return item.foregroundList;
+}
+
+int GetImage (int itemHandle) {
+	TreeItem item = getItem (itemHandle, true); 
+	checkData (item);
+	return item.imageList;
+}
+
+int GetText (int itemHandle) {
+	TreeItem item = getItem (itemHandle, true); 
+	checkData (item);
+	return item.stringList;
 }
 
 /**
@@ -739,11 +751,9 @@ TreeColumn _getColumn (int index) {
 	if (columnCount == 0) return null;
 	int gridColumn = OS.GridViewColumnCollection_default (columns, index);
 	int header = OS.GridViewColumn_Header (gridColumn);
-	int content = OS.ContentControl_Content (header);
-	TreeColumn column = (TreeColumn) OS.JNIGetObject (OS.IntPtr_ToInt32 (content));
+	TreeColumn column = (TreeColumn) display.getWidget (header);
 	OS.GCHandle_Free (gridColumn);
 	OS.GCHandle_Free (header);
-	OS.GCHandle_Free (content);
 	return column;
 }
 
@@ -870,23 +880,27 @@ public TreeItem getItem (int index) {
 
 TreeItem getItem (int items, int index, boolean create) {
 	int item = OS.ItemCollection_GetItemAt (items, index);
-	int header = OS.HeaderedItemsControl_Header (item);
-	int content = OS.GridViewRowPresenter_Content (header);
-	int contentValue = (int) OS.Point_X (content);
-	TreeItem result = null;
-	if (contentValue > 0) {
-		result = (TreeItem) OS.JNIGetObject (contentValue);
-		OS.GCHandle_Free (item);
-	} else {
-		if (create) {
-			result = new TreeItem (this, null, SWT.NONE, index, item);
-		} else {
-			OS.GCHandle_Free (item);
-		}
-	}
-	OS.GCHandle_Free (content);
-	OS.GCHandle_Free (header);
+	TreeItem result = getItem (item, create);
+	OS.GCHandle_Free (item);
 	return result;
+}
+
+TreeItem getItem (int item, boolean create) {
+	int tag = OS.FrameworkElement_Tag (item);
+	if (tag != 0) {
+		int contentValue = OS.IntPtr_ToInt32 (tag);
+		OS.GCHandle_Free (tag);
+		return (TreeItem) OS.JNIGetObject (contentValue);
+	}
+	if (create) {
+		int itemHandle = OS.GCHandle_Alloc (item);
+		int parentHandle = OS.FrameworkElement_Parent (item);
+		TreeItem parentItem = null;
+		if (!OS.Object_Equals (parentHandle, handle)) parentItem = (TreeItem) display.getWidget (parentHandle);
+		OS.GCHandle_Free (parentHandle);
+		return new TreeItem (this, parentItem, SWT.NONE, 0, itemHandle);
+	}
+	return null;
 }
 
 /**
@@ -1167,6 +1181,7 @@ void HandleChecked (int sender, int e) {
 		}
 	}
 	item.checked = true;
+	item.updateCheckState (false);
 	Event event = new Event ();
 	event.item = item;
 	event.detail = SWT.CHECK;
@@ -1182,53 +1197,6 @@ void HandleCollapsed (int sender, int e) {
 		sendEvent (SWT.Collapse, event);
 	}
 	OS.GCHandle_Free (source);
-}
-
-int HandleConvert (int value, int targetType, int parameter, int culture) {
-	int content = (int) OS.Point_X (value);
-	TreeItem item;
-	if (content > 0) {
-		item = (TreeItem) OS.JNIGetObject (content);
-	} else {
-		int parentJniRef = (int) OS.Point_Y (value);
-		int items;
-		if (parentJniRef == jniRef) {
-			items = OS.ItemsControl_Items (handle);
-		} else {
-			TreeItem parentItem = (TreeItem) OS.JNIGetObject (parentJniRef);
-			items = OS.ItemsControl_Items (parentItem.handle);
-		}
-		item = getItem (items, -content, true);
-		OS.GCHandle_Free (items);
-	}
-	checkData (item);
-	
- 	int columnIndex = 0;
-	if (parameter != 0) {
-		TreeColumn column = (TreeColumn) OS.JNIGetObject (parameter);
-		columnIndex = indexOf (column);
-	}
-	int imageSourceType = OS.ImageSource_typeid ();
-	int result = 0;
-	if (OS.Object_Equals (imageSourceType, targetType)) {
-		if (item.images != null && item.images [columnIndex] != null) {
-			result = item.images [columnIndex].handle;
-		}
-	} else {
-		if (item.strings != null) {
-			if (item.stringHandle != null && item.stringHandle [columnIndex] != 0) {
-				result = item.stringHandle [columnIndex];
-			} else {
-				if (item.stringHandle == null) {
-					int count = Math.max (1, columnCount);
-					item.stringHandle = new int [count];
-				}
-				item.stringHandle [columnIndex] = result = createDotNetString (item.strings [columnIndex], false);
-			}
-		}
-	}
-	OS.GCHandle_Free (imageSourceType);
-	return result;
 }
 
 void HandleExpanded (int sender, int e) {
@@ -1291,7 +1259,7 @@ void HandleMouseDoubleClick (int sender, int e) {
 	Widget widget = display.getWidget (source);
 	OS.GCHandle_Free (source);
 	if (widget == this || widget == null) return;
-	TreeItem item = (TreeItem)widget;
+	TreeItem item = (TreeItem) widget;
 	Event event = new Event ();
 	event.item = item;
 	postEvent (SWT.DefaultSelection, event);
@@ -1302,7 +1270,7 @@ void HandleSelectedItemChanged (int sender, int e) {
 	if (ignoreSelection) return;
 	int selectedItem = OS.TreeView_SelectedItem (handle);
 	if (selectedItem == 0) return;
-	TreeItem item = (TreeItem)display.getWidget (selectedItem);
+	TreeItem item = (TreeItem) display.getWidget (selectedItem);
 	Event event = new Event ();
 	event.item = item;
 	postEvent (SWT.Selection, event);
@@ -1314,6 +1282,7 @@ void HandleUnchecked (int sender, int e) {
 	TreeItem item = (TreeItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
 	item.checked = false;
+	item.updateCheckState (false);
 	Event event = new Event ();
 	event.item = item;
 	event.detail = SWT.CHECK;
@@ -1607,10 +1576,9 @@ void setItemCount (TreeItem parentItem, int count) {
 			if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.GridViewRowPresenterBase_Columns (headerHandle, columns);
 			OS.HeaderedItemsControl_Header (item, headerHandle);
-			int parentJniRef = parentItem != null ? parentItem.jniRef : jniRef;
-			int content = OS.gcnew_Point (-i, parentJniRef);
-			OS.GridViewRowPresenter_Content (headerHandle, content);
-			OS.GCHandle_Free (content);
+			int row = OS.gcnew_SWTRow (jniRef, item);
+			OS.GridViewRowPresenter_Content (headerHandle, row);
+			OS.GCHandle_Free (row);
 			OS.GCHandle_Free (headerHandle);
 			OS.ItemCollection_Add (items, item);
 			OS.GCHandle_Free (item);

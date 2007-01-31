@@ -179,21 +179,6 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
-int ConvertImage (int value, int targetType, int parameter, int culture) {
-	return image != null ? image.handle : 0;
-}
-
-int ConvertText (int value, int targetType, int parameter, int culture) {
-	int result = 0;
-	if (text != null) {
-		result = stringPtr;
-		if (result == 0) {
-			result = stringPtr = createDotNetString (text, false);
-		}
-	}
-	return result;
-}
-
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -202,15 +187,50 @@ void createHandle () {
 	handle = OS.gcnew_GridViewColumn ();
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	headerHandle = OS.gcnew_GridViewColumnHeader ();
-	int content = OS.gcnew_IntPtr (jniRef);
 	OS.GridViewColumn_Header (handle, headerHandle);
-	OS.GridViewColumnHeader_Content (headerHandle, content);
-	OS.GCHandle_Free (content);
+	int row = OS.gcnew_SWTRow (jniRef, headerHandle);
+	OS.GridViewColumnHeader_Content (headerHandle, row);
+	OS.GCHandle_Free (row);
+}
+
+void deregister () {
+	display.removeWidget (headerHandle);
 }
 
 void destroyWidget () {
 	parent.destroyItem (this);
 	super.destroyWidget ();
+}
+
+int GetBackground (int itemHandle) {
+	return 0;
+}
+
+int GetCheck (int itemHandle) {
+	return 0;
+}
+
+int GetFont (int itemHandle) {
+	return 0;
+}
+
+int GetForeground (int itemHandle) {
+	return 0;
+}
+
+int GetImage (int itemHandle) {
+	return image != null ? image.handle : 0;
+}
+
+int GetText (int itemHandle) {
+	int result = 0;
+	if (text != null) {
+		result = stringPtr;
+		if (result == 0) {
+			result = stringPtr = createDotNetString (text, false);
+		}
+	}
+	return result;
 }
 
 /**
@@ -382,6 +402,10 @@ void releaseHandle () {
 	handle = 0;
 	OS.GCHandle_Free (headerHandle);
 	parent = null;
+}
+
+void register() {
+	display.addWidget (headerHandle, this);
 }
 
 /**

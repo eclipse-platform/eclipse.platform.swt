@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1003;
-int OS_nativeFunctionCallCount[1003];
+int OS_nativeFunctionCount = 1014;
+int OS_nativeFunctionCallCount[1014];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -28,6 +28,12 @@ char * OS_nativeFunctionNames[] = {
 	"Application_1Shutdown",
 	"Application_1ShutdownMode",
 	"Application_1Windows",
+	"ArrayList_1Clear",
+	"ArrayList_1Count",
+	"ArrayList_1Insert",
+	"ArrayList_1RemoveAt",
+	"ArrayList_1default__II",
+	"ArrayList_1default__III",
 	"BindingExpression_1UpdateTarget",
 	"Binding_1Converter",
 	"Binding_1ConverterParameter",
@@ -307,6 +313,7 @@ char * OS_nativeFunctionNames[] = {
 	"Freezable_1CanFreeze",
 	"Freezable_1Clone",
 	"Freezable_1Freeze",
+	"GCHandle_1Alloc",
 	"GCHandle_1Free",
 	"GeometryCollection_1Add",
 	"GeometryCollection_1Clear",
@@ -580,6 +587,7 @@ char * OS_nativeFunctionNames[] = {
 	"Run_1Text",
 	"SWTCanvas_1Visual__I",
 	"SWTCanvas_1Visual__II",
+	"SWTRow_1NotifyPropertyChanged",
 	"SWTTextRunProperties_1ForegroundBrush",
 	"ScrollBar_1Orientation__I",
 	"ScrollBar_1Orientation__II",
@@ -756,6 +764,7 @@ char * OS_nativeFunctionNames[] = {
 	"ToggleButton_1IsChecked__I",
 	"ToggleButton_1IsChecked__IZ",
 	"ToggleButton_1IsCheckedNullSetter",
+	"ToggleButton_1IsCheckedProperty",
 	"ToggleButton_1IsThreeStateProperty",
 	"ToggleButton_1Unchecked",
 	"ToggleButton_1UncheckedEvent",
@@ -871,6 +880,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1AccessText",
 	"gcnew_1Application",
 	"gcnew_1ArcSegment",
+	"gcnew_1ArrayList",
 	"gcnew_1BezierSegment",
 	"gcnew_1Binding__",
 	"gcnew_1Binding__I",
@@ -969,6 +979,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1Run",
 	"gcnew_1SWTCanvas",
 	"gcnew_1SWTCellConverter",
+	"gcnew_1SWTRow",
 	"gcnew_1SWTSafeHandle",
 	"gcnew_1SWTTextEmbeddedObject",
 	"gcnew_1SWTTextParagraphProperties",
