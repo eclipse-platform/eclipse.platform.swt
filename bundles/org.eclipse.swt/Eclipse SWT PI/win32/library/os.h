@@ -363,6 +363,7 @@
 #define NO_RemoveFontResourceExW
 #define NO_RemovePropA
 #define NO_RemovePropW
+#define NO_SetLayeredWindowAttributes
 #define NO_SetLayout
 #define NO_SetProcessDPIAware
 #define NO_Shell_1NotifyIconA
