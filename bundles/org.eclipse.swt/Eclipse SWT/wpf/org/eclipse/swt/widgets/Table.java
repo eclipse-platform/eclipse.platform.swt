@@ -1002,9 +1002,10 @@ public TableItem getItem (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int pt = OS.gcnew_Point (point.x, point.y);
 	int input = OS.UIElement_InputHitTest (handle, pt);
+	OS.GCHandle_Free (pt);
+	if (input == 0) return null;
 	Widget widget = display.getWidget (input);
 	OS.GCHandle_Free (input);
-	OS.GCHandle_Free (pt);
 	if (widget instanceof TableItem) {
 		return (TableItem) widget;
 	}
