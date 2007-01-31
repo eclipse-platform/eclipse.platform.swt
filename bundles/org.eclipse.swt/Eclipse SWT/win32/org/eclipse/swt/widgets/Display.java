@@ -2998,11 +2998,17 @@ public boolean post (Event event) {
 			MOUSEINPUT inputs = new MOUSEINPUT ();
 			if (type == SWT.MouseMove){
 				inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE;
-				if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) inputs.dwFlags |= OS.MOUSEEVENTF_VIRTUALDESK;
-				int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
-				int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
-				int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
-				int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+				int x= 0, y = 0, width = 0, height = 0;
+				if (OS.WIN32_VERSION >= OS.VERSION (5, 0)) {
+					inputs.dwFlags |= OS.MOUSEEVENTF_VIRTUALDESK;
+					x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
+					y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);	
+					width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
+					height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+				} else {
+					width = OS.GetSystemMetrics (OS.SM_CXSCREEN);
+					height = OS.GetSystemMetrics (OS.SM_CYSCREEN);
+				}
 				inputs.dx = ((event.x - x) * 65535 + width - 2) / (width - 1);
 				inputs.dy = ((event.y - y) * 65535 + height - 2) / (height - 1);
 			} else {
