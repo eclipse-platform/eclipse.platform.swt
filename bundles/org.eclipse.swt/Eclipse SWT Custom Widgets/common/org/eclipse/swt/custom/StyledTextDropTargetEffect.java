@@ -286,7 +286,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 	public void dropAccept(DropTargetEvent event) {
 		if (currentOffset != -1) {
 			StyledText text = (StyledText) getControl();
-			text.setCaretOffset(currentOffset);
+			text.setSelection(currentOffset);
 			currentOffset = -1;
 		}
 	}
