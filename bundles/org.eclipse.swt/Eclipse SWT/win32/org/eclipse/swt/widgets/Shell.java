@@ -645,6 +645,7 @@ public void dispose () {
 //	if (!isValidWidget ()) return;
 //	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 //	Display oldDisplay = display;
+	fixActiveShell ();
 	super.dispose ();
 	// widget is disposed at this point
 //	if (oldDisplay != null) oldDisplay.update ();
@@ -721,6 +722,24 @@ ToolTip findToolTip (int id) {
 	if (toolTips == null) return null;
 	id = id - Display.ID_START;
 	return 0 <= id && id < toolTips.length ? toolTips [id] : null;
+}
+
+void fixActiveShell () {
+	/*
+	* Feature in Windows.  When the active shell is disposed
+	* or hidden, Windows normally makes the parent shell active
+	* and assigns focus.  This does not happen when the parent
+	* shell is disabled.  Instead, Windows assigns focus to the
+	* next shell on the desktop (possibly a shell in another
+	* application).  The fix is to activate the disabled parent
+	* shell before disposing or hidding the active shell.
+	*/
+	int hwndParent = OS.GetParent (handle);
+	if (hwndParent != 0 && handle == OS.GetActiveWindow ()) {
+		if (!OS.IsWindowEnabled (hwndParent) && OS.IsWindowVisible (hwndParent)) {
+			OS.SetActiveWindow (hwndParent);
+		}
+	}
 }
 
 void fixShell (Shell newShell, Control control) {
@@ -1209,7 +1228,7 @@ LRESULT selectPalette (int hPalette) {
  */
 public void setActive () {
 	checkWidget ();
-	if(!isVisible()) return;
+	if (!isVisible ()) return;
 	bringToTop ();
 	// widget could be disposed at this point
 }
@@ -1571,6 +1590,7 @@ public void setVisible (boolean visible) {
 	if (showWithParent && !visible) {
 		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
 	}
+	if (!visible) fixActiveShell ();
 	super.setVisible (visible);
 	if (isDisposed ()) return;
 	if (showWithParent == visible) return;
