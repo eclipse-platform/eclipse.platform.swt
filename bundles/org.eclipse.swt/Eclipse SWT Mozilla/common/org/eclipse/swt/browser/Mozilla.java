@@ -1726,7 +1726,8 @@ int /*long*/ GetWebBrowser (int /*long*/ aWebBrowser) {
 	return XPCOM.NS_OK;
 }
 
-long getWebBrowserHandle() {
+public long getWebBrowserHandle () {
+	if ((browser.getStyle () & SWT.MOZILLA) == 0) return 0;
 	if (webBrowser == null) return 0;
 	return webBrowser.getAddress ();
 }

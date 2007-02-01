@@ -89,6 +89,10 @@ public abstract boolean forward();
 
 public abstract String getUrl();
 
+public long getWebBrowserHandle() {
+	return 0;
+}
+
 public abstract boolean isBackEnabled();
 
 public boolean isFocusControl () {
