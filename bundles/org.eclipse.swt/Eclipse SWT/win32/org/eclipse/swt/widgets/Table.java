@@ -5019,44 +5019,43 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				} else {
 					paintDC = OS.BeginPaint (handle, ps);
 				}
-				
-				//TODO - only double buffer the damage
-//				int x = ps.left, y = ps.top;
-//				int width = ps.right - ps.left;
-//				int height = ps.bottom - ps.top;
-				forceResize ();
-				RECT rect = new RECT ();
-				OS.GetClientRect (handle, rect);
-				int x = rect.left, y = rect.top;
-				int width = rect.right - rect.left;
-				int height = rect.bottom - rect.top;
-				
-				int hDC = OS.CreateCompatibleDC (paintDC);
-				int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
-				int hOldBitmap = OS.SelectObject (hDC, hBitmap);
-				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
-					drawBackground (hDC, rect);
+				int width = ps.right - ps.left;
+				int height = ps.bottom - ps.top;
+				if (width != 0 && height != 0) {
+					int hDC = OS.CreateCompatibleDC (paintDC);
+					POINT lpPoint1 = new POINT (), lpPoint2 = new POINT ();
+					OS.SetWindowOrgEx (hDC, ps.left, ps.top, lpPoint1);
+					OS.SetBrushOrgEx (hDC, ps.left, ps.top, lpPoint2);
+					int hBitmap = OS.CreateCompatibleBitmap (paintDC, width, height);
+					int hOldBitmap = OS.SelectObject (hDC, hBitmap);
+					if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+						drawBackground (hDC, rect);
+					}
+					int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
+					OS.SetWindowOrgEx (hDC, lpPoint1.x, lpPoint1.y, null);
+					OS.SetBrushOrgEx (hDC, lpPoint2.x, lpPoint2.y, null);
+					OS.BitBlt (paintDC, ps.left, ps.top, width, height, hDC, 0, 0, OS.SRCCOPY);
+					OS.SelectObject (hDC, hOldBitmap);
+					OS.DeleteObject (hBitmap);
+					OS.DeleteObject (hDC);
+					if (hooks (SWT.Paint)) {
+						Event event = new Event ();
+						event.gc = gc;
+						event.x = ps.left;
+						event.y = ps.top;
+						event.width = ps.right - ps.left;
+						event.height = ps.bottom - ps.top;
+						sendEvent (SWT.Paint, event);
+						// widget could be disposed at this point
+						event.gc = null;
+						gc.dispose ();
+					} else {
+						OS.EndPaint (handle, ps);
+					}
+					return new LRESULT (code);
 				}
-				int code = callWindowProc (handle, OS.WM_PAINT, hDC, 0);
-				OS.BitBlt (paintDC, x, y, width, height, hDC, 0, 0, OS.SRCCOPY);
-				OS.SelectObject (hDC, hOldBitmap);
-				OS.DeleteObject (hBitmap);
-				OS.DeleteObject (hDC);
-				if (hooks (SWT.Paint)) {
-					Event event = new Event ();
-					event.gc = gc;
-					event.x = ps.left;
-					event.y = ps.top;
-					event.width = ps.right - ps.left;
-					event.height = ps.bottom - ps.top;
-					sendEvent (SWT.Paint, event);
-					// widget could be disposed at this point
-					event.gc = null;
-					gc.dispose ();
-				} else {
-					OS.EndPaint (handle, ps);
-				}
-				return new LRESULT (code);
 			}
 		}
 	}
