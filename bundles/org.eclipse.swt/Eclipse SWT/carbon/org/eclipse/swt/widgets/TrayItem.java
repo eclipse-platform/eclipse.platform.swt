@@ -362,13 +362,27 @@ public void setVisible (boolean visible) {
 	if (!visible) sendEvent (SWT.Hide);
 }
 
+void showMenu () {
+	_setToolTipText (null);
+	sendEvent (SWT.MenuDetect);
+	if (isDisposed ()) return;
+	display.runPopups ();
+	if (isDisposed ()) return;
+	_setToolTipText (toolTipText);
+}
+
 int trayItemProc (int target, int userData, int selector, int arg0) {
 	switch (selector) {
 		case 0: {
-			highlight = true;
-			Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
-			int clickCount = Cocoa.objc_msgSend (arg0, Cocoa.S_clickCount);
-			postEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+			int mask = Cocoa.objc_msgSend (arg0, Cocoa.S_modifierFlags) & Cocoa.NSDeviceIndependentModifierFlagsMask;
+			if ((mask & Cocoa.NSControlKeyMask) == mask) {
+				showMenu ();
+			} else {
+				highlight = true;
+				Cocoa.objc_msgSend (view, Cocoa.S_setNeedsDisplay, 1);
+				int clickCount = Cocoa.objc_msgSend (arg0, Cocoa.S_clickCount);
+				postEvent (clickCount == 2 ? SWT.DefaultSelection : SWT.Selection);
+			}
 			break;
 		}
 		case 1: {
@@ -377,12 +391,7 @@ int trayItemProc (int target, int userData, int selector, int arg0) {
 			break;
 		}
 		case 2: {
-			_setToolTipText (null);
-			sendEvent (SWT.MenuDetect);
-			if (isDisposed ()) break;
-			display.runPopups ();
-			if (isDisposed ()) break;
-			_setToolTipText (toolTipText);
+			showMenu ();
 			break;
 		}
 		case 3: {

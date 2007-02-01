@@ -121,9 +121,12 @@ public static final int S_init = Cocoa.sel_registerName("init"); //$NON-NLS-1$
 public static final int S_addRepresentation = Cocoa.sel_registerName("addRepresentation:"); //$NON-NLS-1$
 public static final int S_initWithBitmapDataPlanes = Cocoa.sel_registerName("initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bitmapFormat:bytesPerRow:bitsPerPixel:"); //$NON-NLS-1$
 public static final int S_bitmapData = Cocoa.sel_registerName("bitmapData"); //$NON-NLS-1$
+public static final int S_modifierFlags = Cocoa.sel_registerName("modifierFlags"); //$NON-NLS-1$
 
 public static final int NSAlphaFirstBitmapFormat = 1 << 0;
 public static final int NSAlphaNonpremultipliedBitmapFormat = 1 << 1;
+public static final int NSControlKeyMask = 1 << 18;
+public static final int NSDeviceIndependentModifierFlagsMask = 0xffff0000;
 
 /* WebKit */
 public static final native int HIWebViewCreate(int[] outView);
