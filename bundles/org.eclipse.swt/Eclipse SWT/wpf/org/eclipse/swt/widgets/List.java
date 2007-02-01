@@ -523,16 +523,33 @@ public int getTopIndex () {
 	return topIndex;
 }
 
+void HandleMouseDoubleClick (int sender, int e) {
+	if (!checkEvent (e)) return;
+	postEvent (SWT.DefaultSelection);
+}
+
 void HandleSelectionChanged (int sender, int e) {
-	//FIXME: double click should send DefaultSelection
 	if (!checkEvent (e)) return;
 	if (!ignoreSelection) postEvent(SWT.Selection);
+}
+
+void HandleKeyDown (int sender, int e) {
+	if (!checkEvent (e)) return;
+	super.HandleKeyDown (sender, e);
+	int key = OS.KeyEventArgs_Key (e);
+	if (key == OS.Key_Return) {
+		postEvent (SWT.DefaultSelection);
+	}
 }
 
 void hookEvents () {
 	super.hookEvents ();
 	int handler = OS.gcnew_SelectionChangedEventHandler (jniRef, "HandleSelectionChanged");
 	OS.Selector_SelectionChanged (handle, handler);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandleMouseDoubleClick");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.Control_MouseDoubleClick (handle, handler);
 	OS.GCHandle_Free (handler);
 }
 

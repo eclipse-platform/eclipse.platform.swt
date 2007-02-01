@@ -1163,6 +1163,7 @@ public static final native int UIElement_InputHitTest(int sender, int point);
 public static final native void UIElement_InvalidateVisual(int sender);
 public static final native boolean UIElement_IsFocused(int sender);
 public static final native boolean UIElement_IsKeyboardFocused(int sender); 
+public static final native boolean UIElement_IsKeyboardFocusWithin(int sender);
 public static final native void UIElement_IsEnabled(int sender, boolean enable);
 public static final native boolean UIElement_IsMouseOver(int sender);
 public static final native boolean UIElement_IsVisible(int sender);
@@ -1183,6 +1184,7 @@ public static final native void UIElement_PreviewMouseWheel(int sender, int hand
 public static final native void UIElement_PreviewMouseUp(int sender, int handler);
 public static final native void UIElement_PreviewGotKeyboardFocus(int sender, int handler);
 public static final native void UIElement_PreviewLostKeyboardFocus(int sender, int handler);
+public static final native void UIElement_LostKeyboardFocus(int sender, int handler);
 public static final native void UIElement_PreviewTextInput(int sender, int handler);
 public static final native void UIElement_ReleaseMouseCapture(int sender);
 public static final native void UIElement_TextInput(int sender, int handler);
