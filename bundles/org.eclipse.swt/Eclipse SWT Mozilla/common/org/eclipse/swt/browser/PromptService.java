@@ -273,9 +273,11 @@ public int /*long*/ Prompt (int /*long*/ parent, int /*long*/ dialogTitle, int /
 	
 	if (checkMsg != 0) {
 		length = XPCOM.strlen_PRUnichar (checkMsg);
-		dest = new char[length];
-		XPCOM.memmove (dest, checkMsg, length * 2);
-		checkLabel = new String (dest);
+		if (length > 0) {
+			dest = new char[length];
+			XPCOM.memmove (dest, checkMsg, length * 2);
+			checkLabel = new String (dest);
+		}
 	}
 	
 	PromptDialog dialog = new PromptDialog (browser.getShell());
