@@ -720,4 +720,10 @@ public void stop () {
 	checkWidget();
 	webBrowser.stop ();
 }
+
+public long getWebBrowserHandle() {
+	checkWidget();
+	if ((getStyle () & SWT.MOZILLA) == 0) return 0;
+	return ((Mozilla)webBrowser).getWebBrowserHandle ();
+}
 }

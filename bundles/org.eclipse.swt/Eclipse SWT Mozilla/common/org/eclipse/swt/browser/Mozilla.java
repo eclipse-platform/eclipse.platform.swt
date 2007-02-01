@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import java.io.*;
+import java.lang.reflect.*;
 import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -139,8 +140,6 @@ public void create (Composite parent, int style) {
 
 	int /*long*/[] result = new int /*long*/[1];
 	if (!initialized) {
-		String mozillaPath = null;
-
 		boolean initLoaded = false;
 		try {
 			Library.loadLibrary ("swt-xpcominit"); //$NON-NLS-1$
@@ -164,6 +163,7 @@ public void create (Composite parent, int style) {
 		}
 		
 		boolean isXULRunner = false;
+		String mozillaPath = null;
 		if (initLoaded) {
 			/* attempt to discover a XULRunner to use as the GRE */
 			GREVersionRange range = new GREVersionRange ();
@@ -225,8 +225,8 @@ public void create (Composite parent, int style) {
 			}
 
 			/*
-			 * Remove the trailing xpcom lib name from mozillaPath because the NS_InitXPCOM2
-			 * invocation requires a directory name only.
+			 * Remove the trailing xpcom lib name from mozillaPath because the
+			 * Mozilla.initialize and NS_InitXPCOM2 invocations require a directory name only.
 			 */ 
 			mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 		} else {
@@ -299,6 +299,30 @@ public void create (Composite parent, int style) {
 		if (rc != XPCOM.NS_OK) {
 			browser.dispose ();
 			SWT.error (SWT.ERROR_NO_HANDLES, null, " [MOZILLA_FIVE_HOME may not point at an embeddable GRE] [NS_InitEmbedding " + mozillaPath + " error " + rc + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+
+		/* If JavaXPCOM is detected then attempt to initialize it with the XULRunner being used */
+		if (isXULRunner) {
+			try {
+				Class clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
+				Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
+				Object mozilla = method.invoke (null, new Object[0]);
+				method = clazz.getMethod ("getComponentManager", new Class[0]); //$NON-NLS-1$
+				try {
+					method.invoke (mozilla, new Object[0]);
+				} catch (InvocationTargetException e) {
+					/* indicates that JavaXPCOM has not been initialized yet */
+					method = clazz.getMethod ("initialize", new Class[] {Class.forName ("java.io.File")}); //$NON-NLS-1$ //$NON-NLS-2$
+					method.invoke (mozilla, new Object[] {new File (mozillaPath)});
+				}
+			} catch (ClassNotFoundException e) {
+				/* JavaXPCOM is not on the classpath */
+			} catch (NoSuchMethodException e) {
+				/* the JavaXPCOM on the classpath does not implement initialize() */
+			} catch (IllegalArgumentException e) {
+			} catch (IllegalAccessException e) {
+			} catch (InvocationTargetException e) {
+			}
 		}
 
 		rc = XPCOM.NS_GetComponentManager (result);
@@ -1700,6 +1724,11 @@ int /*long*/ GetWebBrowser (int /*long*/ aWebBrowser) {
 	}
 	XPCOM.memmove (aWebBrowser, ret, C.PTR_SIZEOF);
 	return XPCOM.NS_OK;
+}
+
+long getWebBrowserHandle() {
+	if (webBrowser == null) return 0;
+	return webBrowser.getAddress ();
 }
 
 int /*long*/ SetWebBrowser (int /*long*/ aWebBrowser) {
