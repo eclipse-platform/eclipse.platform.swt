@@ -357,7 +357,7 @@ int /*long*/ topHandle () {
 }
 
 void updateScrollBarValue (ScrollBar bar) {
-	parent.redrawBackgroundImage ();
+	redrawBackgroundImage ();
 }
 
 int vScrollBarWidth() {
