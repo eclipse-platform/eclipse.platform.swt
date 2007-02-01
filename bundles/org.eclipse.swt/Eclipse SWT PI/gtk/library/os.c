@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2007 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -3664,6 +3664,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1cursor_1new)
 }
 #endif
 
+#ifndef NO__1gdk_1cursor_1new_1from_1pixbuf
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1cursor_1new_1from_1pixbuf)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1cursor_1new_1from_1pixbuf_FUNC);
+/*
+	rc = (jint)gdk_cursor_new_from_pixbuf(arg0, arg1, arg2, arg3);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_cursor_new_from_pixbuf_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_cursor_new_from_pixbuf");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixbuf_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1cursor_1new_1from_1pixmap
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1cursor_1new_1from_1pixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jint arg4, jint arg5)
@@ -3677,6 +3706,64 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1cursor_1new_1from_1pixmap)
 	rc = (jint)gdk_cursor_new_from_pixmap((GdkPixmap *)arg0, (GdkPixmap *)arg1, (GdkColor *)lparg2, (GdkColor *)lparg3, (gint)arg4, (gint)arg5);
 fail:
 	OS_NATIVE_EXIT(env, that, _1gdk_1cursor_1new_1from_1pixmap_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1display_1get_1default
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1display_1get_1default)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1display_1get_1default_FUNC);
+/*
+	rc = (jint)gdk_display_get_default();
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)();
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_display_get_default_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_display_get_default");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1display_1get_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1display_1supports_1cursor_1color
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1display_1supports_1cursor_1color)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1display_1supports_1cursor_1color_FUNC);
+/*
+	rc = (jboolean)gdk_display_supports_cursor_color(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_display_supports_cursor_color_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_display_supports_cursor_color");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1display_1supports_1cursor_1color_FUNC);
 	return rc;
 }
 #endif

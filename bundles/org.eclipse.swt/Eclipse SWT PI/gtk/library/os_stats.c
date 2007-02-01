@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2007 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1202;
-int OS_nativeFunctionCallCount[1202];
+int OS_nativeFunctionCount = 1205;
+int OS_nativeFunctionCallCount[1205];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -286,7 +286,10 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1colormap_1query_1color",
 	"_1gdk_1cursor_1destroy",
 	"_1gdk_1cursor_1new",
+	"_1gdk_1cursor_1new_1from_1pixbuf",
 	"_1gdk_1cursor_1new_1from_1pixmap",
+	"_1gdk_1display_1get_1default",
+	"_1gdk_1display_1supports_1cursor_1color",
 	"_1gdk_1drag_1status",
 	"_1gdk_1draw_1arc",
 	"_1gdk_1draw_1drawable",

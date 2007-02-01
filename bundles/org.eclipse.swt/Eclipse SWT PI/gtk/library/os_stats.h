@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2007 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -294,7 +294,10 @@ typedef enum {
 	_1gdk_1colormap_1query_1color_FUNC,
 	_1gdk_1cursor_1destroy_FUNC,
 	_1gdk_1cursor_1new_FUNC,
+	_1gdk_1cursor_1new_1from_1pixbuf_FUNC,
 	_1gdk_1cursor_1new_1from_1pixmap_FUNC,
+	_1gdk_1display_1get_1default_FUNC,
+	_1gdk_1display_1supports_1cursor_1color_FUNC,
 	_1gdk_1drag_1status_FUNC,
 	_1gdk_1draw_1arc_FUNC,
 	_1gdk_1draw_1drawable_FUNC,

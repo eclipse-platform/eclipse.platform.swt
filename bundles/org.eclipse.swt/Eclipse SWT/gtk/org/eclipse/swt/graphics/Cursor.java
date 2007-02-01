@@ -286,77 +286,144 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	ImageData mask = source.getTransparencyMask();
-
-	/* Ensure depth is equal to 1 */
-	if (source.depth > 1) {
-		/* Create a destination image with no data */
-		ImageData newSource = new ImageData(
-			source.width, source.height, 1, ImageData.bwPalette(),
-			1, null, 0, null, null, -1, -1, 0, 0, 0, 0, 0);
-
-		byte[] newReds = new byte[]{0, (byte)255}, newGreens = newReds, newBlues = newReds;
-
-		/* Convert the source to a black and white image of depth 1 */
-		PaletteData palette = source.palette;
-		if (palette.isDirect) {
-			ImageData.blit(ImageData.BLIT_SRC,
+	int /*long*/ display = 0;
+	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0) && OS.gdk_display_supports_cursor_color(display = OS.gdk_display_get_default ())) {
+		int width = source.width;
+		int height = source.height;
+		PaletteData palette = source.palette;	
+		int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
+		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+		int /*long*/ data = OS.gdk_pixbuf_get_pixels(pixbuf);
+		byte[] buffer = source.data;
+		if (!palette.isDirect || source.depth != 24 || stride != source.bytesPerLine || palette.redMask != 0xFF000000 || palette.greenMask != 0xFF0000 || palette.blueMask != 0xFF00) {
+			buffer = new byte[source.width * source.height * 4];
+			if (palette.isDirect) {
+				ImageData.blit(ImageData.BLIT_SRC,
 					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
-					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-					newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
+					buffer, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF000000, 0xFF0000, 0xFF00,
 					false, false);
-		} else {
-			RGB[] rgbs = palette.getRGBs();
-			int length = rgbs.length;
-			byte[] srcReds = new byte[length];
-			byte[] srcGreens = new byte[length];
-			byte[] srcBlues = new byte[length];
-			for (int i = 0; i < rgbs.length; i++) {
-				RGB rgb = rgbs[i];
-				if (rgb == null) continue;
-				srcReds[i] = (byte)rgb.red;
-				srcGreens[i] = (byte)rgb.green;
-				srcBlues[i] = (byte)rgb.blue;
-			}
-			ImageData.blit(ImageData.BLIT_SRC,
+			} else {
+				RGB[] rgbs = palette.getRGBs();
+				int length = rgbs.length;
+				byte[] srcReds = new byte[length];
+				byte[] srcGreens = new byte[length];
+				byte[] srcBlues = new byte[length];
+				for (int i = 0; i < rgbs.length; i++) {
+					RGB rgb = rgbs[i];
+					if (rgb == null) continue;
+					srcReds[i] = (byte)rgb.red;
+					srcGreens[i] = (byte)rgb.green;
+					srcBlues[i] = (byte)rgb.blue;
+				}
+				ImageData.blit(ImageData.BLIT_SRC,
 					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
 					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-					newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
+					buffer, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF000000, 0xFF0000, 0xFF00,
 					false, false);
+			}
+			if (source.maskData != null || source.transparentPixel != -1) {
+				ImageData mask = source.getTransparencyMask();
+				byte[] maskData = mask.data;
+				int maskBpl = mask.bytesPerLine;
+				int offset = 3, maskOffset = 0;
+				for (int y = 0; y<source.height; y++) {
+					for (int x = 0; x<source.width; x++) {
+						buffer[offset] = ((maskData[maskOffset + (x >> 3)]) & (1 << (7 - (x & 0x7)))) != 0 ? (byte)0xff : 0;
+						offset += 4;
+					}
+					maskOffset += maskBpl;
+				}
+			} else if (source.alpha != -1) {
+				byte alpha = (byte)source.alpha;
+				for (int i=3; i<buffer.length; i+=4) {
+					buffer[i] = alpha;				
+				}
+			} else if (source.alphaData != null) {
+				byte[] alphaData = source.alphaData;
+				for (int i=3; i<buffer.length; i+=4) {
+					buffer[i] = alphaData[i/4];
+				}
+			}
 		}
-		source = newSource;
+		OS.memmove(data, buffer, stride * height);
+		handle = OS.gdk_cursor_new_from_pixbuf(display, pixbuf, hotspotX, hotspotY);
+		OS.g_object_unref(pixbuf);
+	} else {
+	
+		ImageData mask = source.getTransparencyMask();
+	
+		/* Ensure depth is equal to 1 */
+		if (source.depth > 1) {
+			/* Create a destination image with no data */
+			ImageData newSource = new ImageData(
+				source.width, source.height, 1, ImageData.bwPalette(),
+				1, null, 0, null, null, -1, -1, 0, 0, 0, 0, 0);
+	
+			byte[] newReds = new byte[]{0, (byte)255}, newGreens = newReds, newBlues = newReds;
+	
+			/* Convert the source to a black and white image of depth 1 */
+			PaletteData palette = source.palette;
+			if (palette.isDirect) {
+				ImageData.blit(ImageData.BLIT_SRC,
+						source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
+						ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+						newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
+						false, false);
+			} else {
+				RGB[] rgbs = palette.getRGBs();
+				int length = rgbs.length;
+				byte[] srcReds = new byte[length];
+				byte[] srcGreens = new byte[length];
+				byte[] srcBlues = new byte[length];
+				for (int i = 0; i < rgbs.length; i++) {
+					RGB rgb = rgbs[i];
+					if (rgb == null) continue;
+					srcReds[i] = (byte)rgb.red;
+					srcGreens[i] = (byte)rgb.green;
+					srcBlues[i] = (byte)rgb.blue;
+				}
+				ImageData.blit(ImageData.BLIT_SRC,
+						source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
+						ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+						newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
+						false, false);
+			}
+			source = newSource;
+		}
+	
+		/* Swap the bits in each byte and convert to appropriate scanline pad */
+		byte[] sourceData = new byte[source.data.length];
+		byte[] maskData = new byte[mask.data.length];
+		byte[] data = source.data;
+		for (int i = 0; i < data.length; i++) {
+			byte s = data[i];
+			sourceData[i] = (byte)(((s & 0x80) >> 7) |
+				((s & 0x40) >> 5) |
+				((s & 0x20) >> 3) |
+				((s & 0x10) >> 1) |
+				((s & 0x08) << 1) |
+				((s & 0x04) << 3) |
+				((s & 0x02) << 5) |
+				((s & 0x01) << 7));
+		}
+		sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 1);
+		data = mask.data;
+		for (int i = 0; i < data.length; i++) {
+			byte s = data[i];
+			maskData[i] = (byte)(((s & 0x80) >> 7) |
+				((s & 0x40) >> 5) |
+				((s & 0x20) >> 3) |
+				((s & 0x10) >> 1) |
+				((s & 0x08) << 1) |
+				((s & 0x04) << 3) |
+				((s & 0x02) << 5) |
+				((s & 0x01) << 7));
+		}
+		maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
+		handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY, false);
 	}
-
-	/* Swap the bits in each byte and convert to appropriate scanline pad */
-	byte[] sourceData = new byte[source.data.length];
-	byte[] maskData = new byte[mask.data.length];
-	byte[] data = source.data;
-	for (int i = 0; i < data.length; i++) {
-		byte s = data[i];
-		sourceData[i] = (byte)(((s & 0x80) >> 7) |
-			((s & 0x40) >> 5) |
-			((s & 0x20) >> 3) |
-			((s & 0x10) >> 1) |
-			((s & 0x08) << 1) |
-			((s & 0x04) << 3) |
-			((s & 0x02) << 5) |
-			((s & 0x01) << 7));
-	}
-	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 1);
-	data = mask.data;
-	for (int i = 0; i < data.length; i++) {
-		byte s = data[i];
-		maskData[i] = (byte)(((s & 0x80) >> 7) |
-			((s & 0x40) >> 5) |
-			((s & 0x20) >> 3) |
-			((s & 0x10) >> 1) |
-			((s & 0x08) << 1) |
-			((s & 0x04) << 3) |
-			((s & 0x02) << 5) |
-			((s & 0x01) << 7));
-	}
-	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY, false);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }

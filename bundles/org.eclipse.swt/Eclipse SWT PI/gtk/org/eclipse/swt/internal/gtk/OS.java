@@ -2344,6 +2344,33 @@ public static final int /*long*/ gdk_cursor_new_from_pixmap(int /*long*/ source,
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gdk_cursor_new_from_pixbuf(int /*long*/ display, int /*long*/ pixbuf, int x, int y);
+public static final int /*long*/ gdk_cursor_new_from_pixbuf(int /*long*/ display, int /*long*/ pixbuf, int x, int y) {
+	lock.lock();
+	try {
+		return _gdk_cursor_new_from_pixbuf(display, pixbuf, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gdk_display_get_default();
+public static final int /*long*/ gdk_display_get_default() {
+	lock.lock();
+	try {
+		return _gdk_display_get_default();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _gdk_display_supports_cursor_color(int /*long*/ display);
+public static final boolean gdk_display_supports_cursor_color(int /*long*/ display) {
+	lock.lock();
+	try {
+		return _gdk_display_supports_cursor_color(display);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gdk_drag_status(int /*long*/ context, int action, int time);
 public static final void gdk_drag_status(int /*long*/ context, int action, int time) {
 	lock.lock();
