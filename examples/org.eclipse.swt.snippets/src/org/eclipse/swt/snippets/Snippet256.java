@@ -10,10 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-
 /*
  * Text with underline and strike through
  * 
@@ -22,6 +18,10 @@ import org.eclipse.swt.widgets.*;
  * 
  * @since 3.1
  */
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
 public class Snippet256
 {
 	
