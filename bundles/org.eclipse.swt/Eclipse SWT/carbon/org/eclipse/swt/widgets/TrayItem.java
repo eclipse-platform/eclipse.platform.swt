@@ -375,7 +375,7 @@ int trayItemProc (int target, int userData, int selector, int arg0) {
 	switch (selector) {
 		case 0: {
 			int mask = Cocoa.objc_msgSend (arg0, Cocoa.S_modifierFlags) & Cocoa.NSDeviceIndependentModifierFlagsMask;
-			if ((mask & Cocoa.NSControlKeyMask) == mask) {
+			if (mask == Cocoa.NSControlKeyMask) {
 				showMenu ();
 			} else {
 				highlight = true;
