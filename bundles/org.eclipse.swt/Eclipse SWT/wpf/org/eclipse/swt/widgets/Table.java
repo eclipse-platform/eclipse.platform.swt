@@ -1183,7 +1183,7 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
-	int itemCollection = OS.ItemsControl_Items (handle);
+	int items = OS.ItemsControl_Items (handle);
 	int list = OS.ListBox_SelectedItems (handle);
 	int enumerator = OS.IList_GetEnumerator (list);
 	int count = OS.ICollection_Count (list);
@@ -1191,12 +1191,13 @@ public int [] getSelectionIndices () {
 	int index = 0;
     while (OS.IEnumerator_MoveNext (enumerator)) {
     	int item = OS.IEnumerator_Current (enumerator);
-		indices [index++] = OS.ItemCollection_IndexOf (itemCollection, item);
+		indices [index++] = OS.ItemCollection_IndexOf (items, item);
 		OS.GCHandle_Free (item);
 	}
     OS.GCHandle_Free (enumerator);
 	OS.GCHandle_Free (list);
-	OS.GCHandle_Free (itemCollection);
+	OS.GCHandle_Free (items);
+	sortAscending (indices);
 	return indices;
 }
 

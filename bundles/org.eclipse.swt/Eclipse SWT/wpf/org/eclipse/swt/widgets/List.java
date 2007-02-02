@@ -324,10 +324,10 @@ public String getItem (int index) {
 	if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
 	int items = OS.ItemsControl_Items (handle);
 	int item = OS.ItemCollection_GetItemAt (items, index);
-	OS.GCHandle_Free (items);
 	int content = OS.ContentControl_Content (item);
-	OS.GCHandle_Free (item);
 	String string = createJavaString (content);
+	OS.GCHandle_Free (item);
+	OS.GCHandle_Free (items);
 	OS.GCHandle_Free (content);
 	return string;
 }
@@ -491,6 +491,7 @@ public int [] getSelectionIndices () {
     OS.GCHandle_Free (enumerator);
 	OS.GCHandle_Free (list);
 	OS.GCHandle_Free (items);
+	sortAscending (indices);
 	return indices;
 }
 

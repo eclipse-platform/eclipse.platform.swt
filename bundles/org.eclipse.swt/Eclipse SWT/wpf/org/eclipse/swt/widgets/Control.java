@@ -2572,6 +2572,22 @@ void sort (int [] items) {
 	}
 }
 
+void sortAscending (int [] items) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = items.length;
+	for (int gap=length/2; gap>0; gap/=2) {
+		for (int i=gap; i<length; i++) {
+			for (int j=i-gap; j>=0; j-=gap) {
+		   		if (items [j] >= items [j + gap]) {
+					int swap = items [j];
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
+		   		}
+	    	}
+	    }
+	}
+}
+
 /**
  * Returns a point which is the result of converting the
  * argument, which is specified in display relative coordinates,
