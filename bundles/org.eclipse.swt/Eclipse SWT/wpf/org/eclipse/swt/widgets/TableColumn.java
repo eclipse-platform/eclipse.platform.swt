@@ -393,7 +393,7 @@ public void pack () {
 	int widthProperty = OS.GridViewColumn_WidthProperty ();
 	OS.DependencyObject_ClearValue (handle, widthProperty);
 	OS.GCHandle_Free (widthProperty);
-	OS.UIElement_UpdateLayout (headerHandle);
+//	OS.UIElement_UpdateLayout (headerHandle);
 }
 
 void releaseHandle () {
