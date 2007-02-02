@@ -3081,7 +3081,19 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 			forceSelect = true;
 		}
 	}
-	boolean dragDetect = (state & DRAG_DETECT) != 0;
+	/*
+	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
+	* the widget starts a modal loop to determine if the user wants
+	* to begin a drag/drop operation or marque select.  This modal
+	* loop eats mouse events until a drag is detected.  The fix is
+	* to avoid this behavior by only running the drag and drop when
+	* the event is hooked and the mouse is over an item.
+	*/
+	boolean dragDetect = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
+	if (!dragDetect) {
+		int flags = OS.LVHT_ONITEMICON | OS.LVHT_ONITEMLABEL;
+		dragDetect = pinfo.iItem == -1 || (pinfo.flags & flags) == 0;
+	}
 	if (!dragDetect) display.runDragDrop = false;
 	int code = callWindowProc (handle, msg, wParam, lParam, forceSelect);
 	if (!dragDetect) display.runDragDrop = true;
