@@ -2507,6 +2507,7 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
+	if (from == to) return point;
 	if (from != null) {
 		short [] root_x = new short [1], root_y = new short [1];
 		OS.XtTranslateCoords (from.handle, (short) x, (short) y, root_x, root_y);
@@ -2605,6 +2606,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = new Rectangle (x, y, width, height);
+	if (from == to) return rect;
 	if (from != null) {
 		short [] root_x = new short [1], root_y = new short [1];
 		OS.XtTranslateCoords (from.handle, (short) x, (short) y, root_x, root_y);

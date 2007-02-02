@@ -2477,6 +2477,7 @@ public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (from == to) return new Point (x, y);
 	int hwndFrom = from != null ? from.handle : 0;
 	int hwndTo = to != null ? to.handle : 0;
 	POINT point = new POINT ();
@@ -2570,6 +2571,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (from == to) return new Rectangle (x, y, width, height); 
 	int hwndFrom = from != null ? from.handle : 0;
 	int hwndTo = to != null ? to.handle : 0;
 	RECT rect = new RECT ();

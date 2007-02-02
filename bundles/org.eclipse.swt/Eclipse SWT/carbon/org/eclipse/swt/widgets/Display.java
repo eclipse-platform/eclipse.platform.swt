@@ -2545,6 +2545,7 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Point point = new Point (x, y);
+	if (from == to) return point;
 	Rect rect = new Rect ();
 	if (from != null) {
 		int window = OS.GetControlOwner (from.handle);
@@ -2660,6 +2661,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rectangle = new Rectangle (x, y, width, height);
+	if (from == to) return rectangle;
 	Rect rect = new Rect ();
 	if (from != null) {
 		int window = OS.GetControlOwner (from.handle);
