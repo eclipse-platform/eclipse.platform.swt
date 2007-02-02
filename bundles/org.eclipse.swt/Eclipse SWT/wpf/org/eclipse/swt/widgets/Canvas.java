@@ -240,9 +240,9 @@ void HandlePreviewGotKeyboardFocus (int sender, int e) {
 	if (caret != null) caret.show ();
 }
 
-void HandlePreviewLostKeyboardFocus (int sender, int e) {
+void HandleLostKeyboardFocus (int sender, int e) {
 	if (!checkEvent (e)) return;
-	super.HandlePreviewLostKeyboardFocus (sender, e);
+	super.HandleLostKeyboardFocus (sender, e);
 	if (caret != null) caret.hide ();
 }
 
