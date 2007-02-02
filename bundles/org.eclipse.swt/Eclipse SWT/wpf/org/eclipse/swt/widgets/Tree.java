@@ -408,10 +408,10 @@ int createControlTemplate () {
 	OS.FrameworkElementFactory_SetValueDock (headerNode, dockProperty, OS.Dock_Top);
 	int itemsPresenterType = OS.ItemsPresenter_typeid ();
 	int itemsPresenterNode = OS.gcnew_FrameworkElementFactory (itemsPresenterType);
-	OS.FrameworkElementFactory_AppendChild (borderNode, dockPanelNode);
+	OS.FrameworkElementFactory_AppendChild (borderNode, scrollViewerNode);
+	OS.FrameworkElementFactory_AppendChild (scrollViewerNode, dockPanelNode);
 	OS.FrameworkElementFactory_AppendChild (dockPanelNode, headerNode);
-	OS.FrameworkElementFactory_AppendChild (dockPanelNode, scrollViewerNode);
-	OS.FrameworkElementFactory_AppendChild (scrollViewerNode, itemsPresenterNode);
+	OS.FrameworkElementFactory_AppendChild (dockPanelNode, itemsPresenterNode);
 	OS.FrameworkTemplate_VisualTree (template, borderNode);
 	OS.GCHandle_Free (scrollViewerType);
 	OS.GCHandle_Free (scrollViewerName);
