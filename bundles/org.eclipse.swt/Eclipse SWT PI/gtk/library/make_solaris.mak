@@ -69,18 +69,18 @@ MOZILLACFLAGS = -O \
 	-Wno-non-virtual-dtor \
 	-fPIC \
 	-I. \
-	-I$(GECKO_SDK)	\
-	-include $(GECKO_SDK)/mozilla-config.h \
-	-I$(GECKO_SDK)/nspr/include \
-	-I$(GECKO_SDK)/xpcom/include \
-	-I$(GECKO_SDK)/string/include \
-	-I$(GECKO_SDK)/embed_base/include \
-	-I$(GECKO_SDK)/embedstring/include
+	-I$(MOZILLA_SDK)	\
+	-include $(MOZILLA_SDK)/mozilla-config.h \
+	-I$(MOZILLA_SDK)/nspr/include \
+	-I$(MOZILLA_SDK)/xpcom/include \
+	-I$(MOZILLA_SDK)/string/include \
+	-I$(MOZILLA_SDK)/embed_base/include \
+	-I$(MOZILLA_SDK)/embedstring/include
 MOZILLALIBS = -G -s -Wl,--version-script=mozilla_exports -Bsymbolic \
-	-L$(GECKO_SDK)/embedstring/bin -lembedstring \
-	-L$(GECKO_SDK)/embed_base/bin -lembed_base_s \
-	-L$(GECKO_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
-	-L$(GECKO_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
+	-L$(MOZILLA_SDK)/embedstring/bin -lembedstring \
+	-L$(MOZILLA_SDK)/embed_base/bin -lembed_base_s \
+	-L$(MOZILLA_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
+	-L$(MOZILLA_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o

@@ -50,7 +50,7 @@ case $OS in
 			if [ "${MOTIF_HOME}" = "" ]; then
 				MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
 			fi
-			if [ "${GECKO_SDK}" = "" ]; then
+			if [ "${MOZILLA_SDK}" = "" ]; then
 				MOZILLA_SDK=/bluebird/teamswt/swt-builddir/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
 				MOZILLA_INCLUDES="-include ${MOZILLA_SDK}/mozilla-config.h -I${MOZILLA_SDK}/../include/xpcom -I${MOZILLA_SDK}/../include/nspr -I${MOZILLA_SDK}/../include/embed_base -I${MOZILLA_SDK}/../include/embedstring -I${MOZILLA_SDK}/../include/string"
 				MOZILLA_LIBS="${MOZILLA_SDK}/../lib/libembedstring.a -L${MOZILLA_SDK}/../bin -L${MOZILLA_SDK}/../lib/ -lxpcom -lnspr4 -lplds4 -lplc4"

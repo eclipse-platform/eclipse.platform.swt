@@ -90,15 +90,21 @@ else
 	echo "    *** Advanced graphics support using cairo will not be compiled."
 fi
 
-if [ -z "${GECKO_INCLUDES}" -a -z "${GECKO_LIBS}" ]; then
+if [ -z "${MOZILLA_INCLUDES}" -a -z "${MOZILLA_LIBS}" ]; then
 	if [ x`pkg-config --exists mozilla-xpcom && echo YES` = "xYES" ]; then
-		GECKO_INCLUDES=`pkg-config --cflags mozilla-xpcom`
-		GECKO_LIBS=`pkg-config --libs mozilla-xpcom`
-		export GECKO_INCLUDES
-		export GECKO_LIBS
+		MOZILLA_INCLUDES=`pkg-config --cflags mozilla-xpcom`
+		MOZILLA_LIBS=`pkg-config --libs mozilla-xpcom`
+		export MOZILLA_INCLUDES
+		export MOZILLA_LIBS
+		MAKE_MOZILLA=make_mozilla
+	elif [ x`pkg-config --exists firefox-xpcom && echo YES` = "xYES" ]; then
+		MOZILLA_INCLUDES=`pkg-config --cflags firefox-xpcom`
+		MOZILLA_LIBS=`pkg-config --libs firefox-xpcom`
+		export MOZILLA_INCLUDES
+		export MOZILLA_LIBS
 		MAKE_MOZILLA=make_mozilla
 	else
-		echo "Mozilla/XPCOM libraries not found:"
+		echo "Mozilla/XPCOM or Firefox/XPCOM libraries not found:"
 		echo "    *** Mozilla embedding support will not be compiled."
 	fi
 fi
