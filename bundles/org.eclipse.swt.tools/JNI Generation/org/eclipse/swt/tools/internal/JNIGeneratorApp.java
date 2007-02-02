@@ -277,7 +277,7 @@ String[] getClassNames(String mainClassName) {
 				while (entries.hasMoreElements()) {
 					ZipEntry entry = (ZipEntry)entries.nextElement();
 					String name = entry.getName();
-					if (name.startsWith(pkgZipPath) && name.endsWith(".class")) {
+					if (name.startsWith(pkgZipPath) && name.indexOf('/', pkgZipPath.length() + 1) == -1 && name.endsWith(".class")) {
 						String className = name.substring(pkgZipPath.length() + 1, name.length() - 6);
 						className.replace('/', '.');
 						classes.add(className);
