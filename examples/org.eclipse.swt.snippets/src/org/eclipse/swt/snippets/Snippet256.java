@@ -22,8 +22,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-public class Snippet256
-{
+public class Snippet256 {
 	
 public static void main(String[] args) {
 	Display display = new Display();
