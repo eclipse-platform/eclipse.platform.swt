@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
+import org.eclipse.swt.internal.carbon.HILayoutInfo;
+import org.eclipse.swt.internal.carbon.HISideBinding;
+import org.eclipse.swt.internal.carbon.HIThemeFrameDrawInfo;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
@@ -43,7 +45,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Text extends Scrollable {
-	int txnObject, txnFrameID;
+	int txnObject, txnFrameID, frameHandle;
 	int textLimit = LIMIT, tabs = 8;
 	ControlEditTextSelectionRec selection;
 	char echoCharacter;
@@ -265,6 +267,50 @@ static int checkStyle (int style) {
 	return style | SWT.SINGLE;
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	if (frameHandle == control) {
+		int [] context = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+		OS.CGContextSaveGState (context[0]);
+		int [] outMetric = new int [1];
+		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+		CGRect rect = new CGRect ();
+		OS.HIViewGetBounds (frameHandle, rect);
+		rect.x += outMetric [0];
+		rect.y += outMetric [0];
+		rect.width -= outMetric [0] * 2;
+		rect.height -= outMetric [0] * 2;
+		int state;
+		if (OS.IsControlEnabled (control)) {
+			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		} else {
+			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+		}
+		HIThemeFrameDrawInfo info = new HIThemeFrameDrawInfo ();
+		info.state = state;
+		info.isFocused = hasFocus ();
+		info.kind = OS.kHIThemeFrameTextFieldSquare;
+		OS.HIThemeDrawFrame (rect, info, context [0], OS.kHIThemeOrientationNormal);
+		if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == (SWT.V_SCROLL | SWT.H_SCROLL)) {
+			OS.HIViewGetBounds (frameHandle, rect);
+			rect.x = rect.width - outMetric [0];
+			rect.y = rect.height - outMetric [0];
+			OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+			rect.x -= outMetric [0];
+			rect.y -= outMetric [0];
+			OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
+			rect.x -= outMetric [0];
+			rect.y -= outMetric [0];
+			rect.width = rect.height = outMetric [0];
+			OS.CGContextSetFillColor (context [0], new float[]{1, 1, 1, 1});
+			OS.CGContextFillRect (context [0], rect);
+		}
+		OS.CGContextRestoreGState (context[0]);
+	}
+	return result;
+}
+
 int callFocusEventHandler (int nextHandler, int theEvent) {
 	short [] part = new short [1];
 	if (txnObject == 0) {
@@ -275,6 +321,10 @@ int callFocusEventHandler (int nextHandler, int theEvent) {
 		}
 	}
 	int result = super.callFocusEventHandler (nextHandler, theEvent);
+	if (isDisposed () ) return result;
+	if (frameHandle != 0) {
+		OS.HIViewSetNeedsDisplay (frameHandle, true);
+	}
 	if (txnObject == 0) {
 		if (part [0] != OS.kControlFocusNoPart && selection != null) {
 			OS.SetControlData (handle, (short) OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection);
@@ -441,9 +491,15 @@ void createHandle () {
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 		OS.HIViewSetVisible (handle, true);
+		if ((style & SWT.MULTI) != 0 && (style & SWT.BORDER) != 0) {
+			int features = OS.kControlSupportsEmbedding;
+			OS.CreateUserPaneControl (0, null, features, outControl);
+			if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+			frameHandle = outControl [0];			
+		}
 		txnObject = OS.HITextViewGetTXNObject (handle);			
 		int ptr = OS.NewPtr (Rect.sizeof);
-		Rect rect = inset ();
+		Rect rect = (style & SWT.SINGLE) != 0 ? inset () : new Rect ();
 		OS.memmove (ptr, rect, Rect.sizeof);
 		int [] tags = new int [] {
 			OS.kTXNDisableDragAndDropTag,
@@ -561,6 +617,11 @@ Color defaultBackground () {
 
 Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+}
+
+void deregister () {
+	super.deregister ();
+	if (frameHandle != 0) display.removeWidget (frameHandle);
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
@@ -1123,6 +1184,14 @@ void hookEvents () {
 		int controlTarget = OS.GetControlEventTarget (handle);
 		OS.InstallEventHandler (controlTarget, searchProc, mask.length / 2, mask, handle, null);
 	}
+	if (frameHandle != 0) {
+		int controlProc = display.controlProc;
+		int [] mask = new int [] {
+			OS.kEventClassControl, OS.kEventControlDraw,
+		};
+		int controlTarget = OS.GetControlEventTarget (frameHandle);
+		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, frameHandle, null);
+	}
 }
 
 Rect inset () {
@@ -1131,6 +1200,21 @@ Rect inset () {
 		Rect rect = new Rect ();
 		rect.left = rect.top = rect.right = rect.bottom = 1;
 		return rect; 
+	}
+	if ((style & SWT.MULTI) != 0 && (style & SWT.BORDER) != 0) {
+		int [] outMetric = new int [1];
+		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+		Rect rect = new Rect ();
+		rect.left += outMetric [0];
+		rect.top += outMetric [0];
+		rect.right += outMetric [0];
+		rect.bottom += outMetric [0];
+		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+		rect.left += outMetric [0];
+		rect.top += outMetric [0];
+		rect.right += outMetric [0];
+		rect.bottom += outMetric [0];		
+		return rect;
 	}
 	return new Rect ();
 } 
@@ -1312,6 +1396,11 @@ public void paste () {
 		}
 	}
 	sendEvent (SWT.Modify);
+}
+
+void register () {
+	super.register ();
+	if (frameHandle != 0) display.addWidget (frameHandle, this);
 }
 
 void releaseWidget () {
@@ -1900,46 +1989,6 @@ void setEditText (String string) {
 	if (selection != null) selection = null;
 }
 
-void setTXNBounds () {
-	Rect viewRect = new Rect ();
-	OS.TXNGetViewRect (txnObject, viewRect);
-
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	Rect inset = inset ();
-	rect.left += inset.left;
-	rect.top += inset.top;
-	rect.right -= inset.right;
-	rect.bottom -= inset.bottom;
-	OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
-
-	/*
-	* Bug in the Macintosh.  When the caret is moved,
-	* the text widget scrolls to show the new location.
-	* This means that the text widget may be scrolled
-	* to the left in order to show the caret when the
-	* widget is not large enough to show both the caret
-	* location and all the text.  Unfortunately, when
-	* the widget is resized such that all the text and
-	* the caret could be visible, the Macintosh does not
-	* scroll the widget back.  The fix is to save the 
-	* current selection, set the selection to the start
-	* of the text and then restore the selection.  This
-	* will cause the widget to recompute the left scroll
-	* position.
-	*/
-	int width = viewRect.left - viewRect.right;
-	int height = viewRect.bottom - viewRect.top;
-	if (width <= (inset.left + inset.right) && height <= (inset.top + inset.bottom)) {
-		int [] oStartOffset = new int [1], oEndOffset = new int [1];
-		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
-		OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
-		OS.TXNShowSelection (txnObject, false);
-		OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
-		OS.TXNShowSelection (txnObject, false);
-	}
-}
-
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
 	int length = string.length ();
 	if (textLimit != LIMIT) {
@@ -1969,6 +2018,43 @@ void setTXNText (int iStartOffset, int iEndOffset, String string) {
 	* the font attributes are cleared.  The fix is to reset them.
 	*/
 	if (OS.TXNDataSize (txnObject) / 2 == 0) setFontStyle (font);
+}
+
+void setZOrder () {
+	if (frameHandle != 0) {
+		int child = scrolledHandle != 0 ? scrolledHandle : handle;
+		OS.HIViewAddSubview (frameHandle, child);
+		HILayoutInfo layout = new HILayoutInfo ();
+		layout.version = 0;
+		OS.HIViewGetLayoutInfo (child, layout);
+		HISideBinding biding = layout.binding.top;
+		biding.toView = 0;
+		biding.kind = OS.kHILayoutBindMin;
+		biding.offset = 0;
+		biding = layout.binding.left;
+		biding.toView = 0;
+		biding.kind = OS.kHILayoutBindMin;
+		biding.offset = 0;
+		biding = layout.binding.bottom;
+		biding.toView = 0;
+		biding.kind = OS.kHILayoutBindMax;
+		biding.offset = 0;
+		biding = layout.binding.right;
+		biding.toView = 0;
+		biding.kind = OS.kHILayoutBindMax;
+		biding.offset = 0;
+		CGRect r = new CGRect();
+		r.width = r.height = 100;
+		OS.HIViewSetFrame (frameHandle, r);
+		Rect inset = inset ();
+		r.x += inset.left;
+		r.y += inset.top;
+		r.width -= inset.left + inset.right;
+		r.height -= inset.top + inset.bottom;
+		OS.HIViewSetFrame (child, r);
+		OS.HIViewSetLayoutInfo (child, layout);
+	}
+	super.setZOrder ();
 }
 
 /**
@@ -2048,6 +2134,11 @@ public void showSelection () {
 	} else {
 		OS.TXNShowSelection (txnObject, false);
 	}
+}
+
+int topHandle () {
+	if (frameHandle != 0) return frameHandle;
+	return super.topHandle ();
 }
 
 int traversalCode (int key, int theEvent) {
