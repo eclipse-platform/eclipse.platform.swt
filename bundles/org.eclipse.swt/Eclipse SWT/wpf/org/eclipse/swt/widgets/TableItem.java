@@ -153,6 +153,8 @@ void createHandle () {
 		OS.ContentControl_Content (handle, row);
 		OS.GCHandle_Free (row);
 	}
+	OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Stretch);
+	OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
 	updateCheckState (false);
 }
 
@@ -592,6 +594,25 @@ public String getText (int index) {
 Control getWidgetControl () {
 	return parent;
 }
+
+//void HandlePreviewGotKeyboardFocus (int sender, int e) {
+////	if (!checkEvent (e)) return;
+////	OS.RoutedEventArgs_Handled(e, true);
+//}
+//
+//void HandleLostKeyboardFocus (int sender, int e) {
+////	if (!checkEvent (e)) return;
+////	OS.RoutedEventArgs_Handled(e, true);
+//}
+//
+//void hookEvents () {
+//	int handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandlePreviewGotKeyboardFocus");
+//	OS.UIElement_PreviewGotKeyboardFocus (handle, handler);
+//	OS.GCHandle_Free (handler);
+//	handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandleLostKeyboardFocus");
+//	OS.UIElement_LostKeyboardFocus (handle, handler);
+//	OS.GCHandle_Free (handler);
+//}
 
 void register () {
 	display.addWidget (handle, this);

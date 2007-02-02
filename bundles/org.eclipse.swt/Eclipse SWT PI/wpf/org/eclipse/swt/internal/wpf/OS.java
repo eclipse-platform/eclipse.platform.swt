@@ -509,6 +509,7 @@ public static final native void Control_HorizontalContentAlignment(int sender, i
 public static final native void Control_MouseDoubleClick(int sender, int handler);
 public static final native int Control_Template(int sender);
 public static final native void Control_Template(int sender, int value);
+public static final native void Control_VerticalContentAlignment(int sender, int value);
 public static final native int CultureInfo_CurrentUICulture();
 public static final native int Cursors_AppStarting();
 public static final native int Cursors_Arrow();

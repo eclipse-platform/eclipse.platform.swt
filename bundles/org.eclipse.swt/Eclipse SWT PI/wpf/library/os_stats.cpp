@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1013;
-int OS_nativeFunctionCallCount[1013];
+int OS_nativeFunctionCount = 1016;
+int OS_nativeFunctionCallCount[1016];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -146,6 +146,7 @@ char * OS_nativeFunctionNames[] = {
 	"Control_1MouseDoubleClick",
 	"Control_1Template__I",
 	"Control_1Template__II",
+	"Control_1VerticalContentAlignment",
 	"CreateCursor",
 	"CreateIconIndirect",
 	"CultureInfo_1CurrentUICulture",
@@ -816,11 +817,13 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1IsEnabled__I",
 	"UIElement_1IsEnabled__IZ",
 	"UIElement_1IsFocused",
+	"UIElement_1IsKeyboardFocusWithin",
 	"UIElement_1IsKeyboardFocused",
 	"UIElement_1IsMouseOver",
 	"UIElement_1IsVisible",
 	"UIElement_1KeyDown",
 	"UIElement_1KeyUp",
+	"UIElement_1LostKeyboardFocus",
 	"UIElement_1Measure",
 	"UIElement_1MouseDown",
 	"UIElement_1MouseEnter",

@@ -1583,6 +1583,17 @@ JNIEXPORT void JNICALL OS_NATIVE(Control_1Template__II)
 }
 #endif
 
+#ifndef NO_Control_1VerticalContentAlignment
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1VerticalContentAlignment)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Control_1VerticalContentAlignment)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Control_1VerticalContentAlignment_FUNC);
+	((Control^)TO_OBJECT(arg0))->VerticalContentAlignment = ((VerticalAlignment)arg1);
+	OS_NATIVE_EXIT(env, that, Control_1VerticalContentAlignment_FUNC);
+}
+#endif
+
 #ifndef NO_CreateCursor
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(CreateCursor)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jbyteArray arg5, jbyteArray arg6);
 JNIEXPORT jint JNICALL OS_NATIVE(CreateCursor)
@@ -9727,6 +9738,19 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsFocused)
 }
 #endif
 
+#ifndef NO_UIElement_1IsKeyboardFocusWithin
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsKeyboardFocusWithin)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsKeyboardFocusWithin)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UIElement_1IsKeyboardFocusWithin_FUNC);
+	rc = (jboolean)((UIElement^)TO_OBJECT(arg0))->IsKeyboardFocusWithin;
+	OS_NATIVE_EXIT(env, that, UIElement_1IsKeyboardFocusWithin_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UIElement_1IsKeyboardFocused
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsKeyboardFocused)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsKeyboardFocused)
@@ -9785,6 +9809,17 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1KeyUp)
 	OS_NATIVE_ENTER(env, that, UIElement_1KeyUp_FUNC);
 	((UIElement^)TO_OBJECT(arg0))->KeyUp += ((KeyEventHandler^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, UIElement_1KeyUp_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1LostKeyboardFocus
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1LostKeyboardFocus)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1LostKeyboardFocus)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1LostKeyboardFocus_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->LostKeyboardFocus += ((KeyboardFocusChangedEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1LostKeyboardFocus_FUNC);
 }
 #endif
 

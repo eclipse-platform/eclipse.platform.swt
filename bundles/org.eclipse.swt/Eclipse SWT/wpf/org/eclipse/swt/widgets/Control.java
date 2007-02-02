@@ -1001,13 +1001,13 @@ void hookEvents () {
 	OS.GCHandle_Free (handler);
 
 	handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandlePreviewGotKeyboardFocus");
-	OS.UIElement_PreviewGotKeyboardFocus(handle, handler);
+	OS.UIElement_PreviewGotKeyboardFocus (handle, handler);
 	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandlePreviewLostKeyboardFocus");
-	OS.UIElement_PreviewLostKeyboardFocus(handle, handler);
+	handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandleLostKeyboardFocus");
+	OS.UIElement_LostKeyboardFocus (handle, handler);
 	OS.GCHandle_Free (handler);
 	handler = OS.gcnew_ContextMenuEventHandler (jniRef, "HandleContextMenuOpening");
-	OS.FrameworkElement_ContextMenuOpening(handle, handler);
+	OS.FrameworkElement_ContextMenuOpening (handle, handler);
 	OS.GCHandle_Free (handler);
 }
 
@@ -1025,11 +1025,13 @@ void HandleContextMenuOpening (int sender, int e) {
 
 void HandlePreviewGotKeyboardFocus (int sender, int e) {
 	if (!checkEvent (e)) return;
+	if (OS.UIElement_IsKeyboardFocusWithin (handle)) return;
 	sendFocusEvent (SWT.FocusIn);
 }
 
-void HandlePreviewLostKeyboardFocus (int sender, int e) {
+void HandleLostKeyboardFocus (int sender, int e) {
 	if (!checkEvent (e)) return;
+	if (OS.UIElement_IsKeyboardFocusWithin (handle)) return;
 	sendFocusEvent (SWT.FocusOut);
 }
 

@@ -331,6 +331,8 @@ void createHandle () {
 	} else {
 		headerHandle = OS.HeaderedItemsControl_Header (handle);
 	}
+	OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Stretch);
+	OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
 	updateCheckState (false);
 }
 
