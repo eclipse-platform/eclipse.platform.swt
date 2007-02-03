@@ -43,7 +43,7 @@ public class ExpandBar extends Composite {
 	ExpandItem[] items;
 	int itemCount;
 	ExpandItem focusItem;
-	int spacing;
+	int spacing = 4;
 	int yCurrentScroll;
 	int hFont;
 	
@@ -466,14 +466,22 @@ public void removeExpandListener (ExpandListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);	
 }
 
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	if (!OS.IsWinCE) {
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
+}
+
 public void setFont (Font font) {
 	super.setFont (font);
 	hFont = font != null ? font.handle : 0;
 	layoutItems (0, true);
 }
 
-void setBackgroundPixel (int pixel) {
-	super.setBackgroundPixel (pixel);
+void setForegroundPixel (int pixel) {
+	super.setForegroundPixel (pixel);
 	if (!OS.IsWinCE) {
 		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (handle, null, 0, flags);
