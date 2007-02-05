@@ -331,8 +331,8 @@ public String open () {
 		/*
 		* Bug in WinCE.  For some reason, nFileOffset and nFileExtension
 		* are always zero on WinCE HPC. nFileOffset is always zero on
-		* WinCE PPC when using GetSaveFileName.  nFileOffset is correctly
-		* set on WinCE PPC when using OpenFileName.  The fix is to parse
+		* WinCE PPC when using GetSaveFileName().  nFileOffset is correctly
+		* set on WinCE PPC when using OpenFileName().  The fix is to parse
 		* lpstrFile to calculate nFileOffset.
 		* 
 		* Note: WinCE does not support multi-select file dialogs.
