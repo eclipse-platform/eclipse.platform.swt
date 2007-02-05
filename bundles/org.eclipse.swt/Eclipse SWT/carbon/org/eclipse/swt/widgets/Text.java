@@ -1580,6 +1580,27 @@ void setBackground (float [] color) {
 	}
 }
 
+void setBackground (int control, float [] color) {
+	/*
+	* Bug in the Macintosh. For some reason, when the same background
+	* color is set in two instances of an EditUnicodeTextControl, the
+	* color is not set in the second instance.  It seems that the edit
+	* control is checking globally that the last color that was set is the
+	* same.  The fix is to ensure the that the color that is about to
+	* be set is not the same as the last globally remembered color by
+	* first setting it to black, then white and finally the color.
+	*/
+	if (handle == control) {
+		ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+		OS.GetControlData (control, (short) OS.kControlEntireControl, OS.kControlFontStyleTag, ControlFontStyleRec.sizeof, fontStyle, null);
+		fontStyle.flags |= OS.kControlUseBackColorMask;
+		OS.SetControlFontStyle (control, fontStyle);
+		fontStyle.backColor_red = fontStyle.backColor_green = fontStyle.backColor_blue = (short) 0xffff;
+		OS.SetControlFontStyle (control, fontStyle);
+	}
+	super.setBackground (control, color);
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	Rectangle bounds = null;
 	if (txnObject == 0 && resize) bounds = getBounds ();
