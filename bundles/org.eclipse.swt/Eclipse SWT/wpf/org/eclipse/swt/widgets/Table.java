@@ -1857,7 +1857,7 @@ public void setHeaderVisible (boolean show) {
 	int style = 0;
 	if (!show) {
 		style = OS.gcnew_Style ();
-		int dp = OS.FrameworkElement_VisibilityProperty ();
+		int dp = OS.UIElement_VisibilityProperty ();
 		int setter = OS.gcnew_Setter (dp, OS.Visibility_Collapsed);
 		int collection = OS.Style_Setters (style);
 		OS.SetterBaseCollection_Add (collection, setter);

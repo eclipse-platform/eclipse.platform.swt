@@ -439,13 +439,13 @@ void createHandle () {
 	OS.Window_ShowInTaskbar (shellHandle, false);
 	OS.Window_ResizeMode (shellHandle, OS.ResizeMode_NoResize);
 	OS.Window_WindowStyle (shellHandle, OS.WindowStyle_None);
-	OS.FrameworkElement_Width(shellHandle, 0);
-	OS.FrameworkElement_Height(shellHandle, 0);
-	OS.Window_Show(shellHandle);
-	OS.Window_Hide(shellHandle);
+	OS.FrameworkElement_Width (shellHandle, 0);
+	OS.FrameworkElement_Height (shellHandle, 0);
+	OS.Window_Show (shellHandle);
+	OS.Window_Hide (shellHandle);
 	Rectangle bounds = display.getBounds();
-	OS.FrameworkElement_Width(shellHandle, bounds.width * 5 / 8);
-	OS.FrameworkElement_Height(shellHandle, bounds.height * 5 / 8);
+	OS.FrameworkElement_Width (shellHandle, bounds.width * 5 / 8);
+	OS.FrameworkElement_Height (shellHandle, bounds.height * 5 / 8);
 
 	int windowStyle = OS.WindowStyle_None, resizeMode = OS.ResizeMode_NoResize;
 	if ((style & SWT.NO_TRIM) == 0) {
@@ -562,8 +562,8 @@ public Rectangle getBounds () {
 	checkWidget ();
 	int x = (int) OS.Window_Left (shellHandle);
 	int y = (int) OS.Window_Top (shellHandle);
-	int width = (int) OS.FrameworkElement_ActualWidth (shellHandle);
-	int height = (int) OS.FrameworkElement_ActualHeight (shellHandle);
+	int width = (int) OS.FrameworkElement_Width (shellHandle);
+	int height = (int) OS.FrameworkElement_Height (shellHandle);
 	return new Rectangle (x, y, width, height);
 }
 
@@ -764,7 +764,6 @@ void HandleLocationChanged (int sender, int e) {
 		oldX = x;
 		oldY = y;
 		sendEvent (SWT.Move);
-		// widget could be disposed at this point
 	}
 }
 
@@ -772,7 +771,7 @@ void HandleSizeChanged (int sender, int e) {
 	if (!checkEvent (e)) return;
 	int width = (int) OS.FrameworkElement_ActualWidth (shellHandle);
 	int height = (int) OS.FrameworkElement_ActualHeight (shellHandle);
-	if (oldWidth != width || oldHeight != height) {
+	if (!resized || oldWidth != width || oldHeight != height) {
 		resized = true;
 		oldWidth = width;
 		oldHeight = height; 
@@ -947,9 +946,10 @@ int setBounds (int x, int y, int width, int height, int flags) {
 		int currentY = (int) OS.Window_Top (shellHandle);
 		if (currentX != x || currentY != y) {
 			moved = true;
-			oldX = currentX;
+			oldX = x;
 			oldY = currentY;
 			OS.Window_Left (shellHandle, x);
+			oldY = y;
 			OS.Window_Top (shellHandle, y);
 			sendEvent (SWT.Move);
 			if (isDisposed ()) return 0;
@@ -961,13 +961,18 @@ int setBounds (int x, int y, int width, int height, int flags) {
 		int currentHeight = (int) OS.FrameworkElement_ActualHeight (shellHandle);
 		if (currentWidth != width || currentHeight != height) {
 			resized = true;
-			oldWidth = currentWidth;
+			oldWidth = width;
 			oldHeight = currentHeight;
 			OS.FrameworkElement_Width (shellHandle, width);
+			oldHeight = height;
 			OS.FrameworkElement_Height (shellHandle, height);
 			sendEvent (SWT.Resize);
 			if (isDisposed ()) return 0;
 			result |= RESIZED;
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false, false);
+			}
 		}
 	}
 	return result;
@@ -1129,61 +1134,6 @@ public void setVisible (boolean visible) {
 	} else {
 		if (!closing) OS.Window_Hide (shellHandle);
 	}
-//	if (drawCount != 0) {
-//		if (((state & HIDDEN) == 0) == visible) return;
-//	} else {
-//		if (visible == OS.IsWindowVisible (handle)) return;
-//	}
-//	
-//	/*
-//	* Feature in Windows.  When ShowWindow() is called used to hide
-//	* a window, Windows attempts to give focus to the parent. If the
-//	* parent is disabled by EnableWindow(), focus is assigned to
-//	* another windows on the desktop.  This means that if you hide
-//	* a modal window before the parent is enabled, the parent will
-//	* not come to the front.  The fix is to change the modal state
-//	* before hiding or showing a window so that this does not occur.
-//	*/
-//	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-//	if ((style & mask) != 0) {
-//		if (visible) {
-//			display.setModalShell (this);
-//			Control control = display._getFocusControl ();
-//			if (control != null && !control.isActive ()) {
-//				bringToTop ();
-//				if (isDisposed ()) return;
-//			}
-//			int hwndShell = OS.GetActiveWindow ();
-//			if (hwndShell == 0) {
-//				if (parent != null) hwndShell = parent.handle;
-//			}
-//			if (hwndShell != 0) {
-//				OS.SendMessage (hwndShell, OS.WM_CANCELMODE, 0, 0);
-//			}
-//			OS.ReleaseCapture ();
-//		} else {
-//			display.clearModal (this);
-//		}
-//	} else {
-//		updateModal ();
-//	}
-//	
-//	/*
-//	* Bug in Windows.  Calling ShowOwnedPopups() to hide the
-//	* child windows of a hidden window causes the application
-//	* to be deactivated.  The fix is to call ShowOwnedPopups()
-//	* to hide children before hiding the parent.
-//	*/
-//	if (showWithParent && !visible) {
-//		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
-//	}
-//	super.setVisible (visible);
-//	if (isDisposed ()) return;
-//	if (showWithParent == visible) return;
-//	showWithParent = visible;
-//	if (visible) {
-//		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);
-//	}
 }
 
 int topHandle () {
