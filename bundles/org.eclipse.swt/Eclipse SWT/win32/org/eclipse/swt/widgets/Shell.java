@@ -631,6 +631,11 @@ void destroyToolTip (ToolTip toolTip) {
 	toolTip.id = -1;
 }
 
+void destroyWidget () {
+	fixActiveShell ();
+	super.destroyWidget ();
+}
+
 public void dispose () {
 	/*
 	* This code is intentionally commented.  On some
@@ -645,7 +650,6 @@ public void dispose () {
 //	if (!isValidWidget ()) return;
 //	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 //	Display oldDisplay = display;
-	fixActiveShell ();
 	super.dispose ();
 	// widget is disposed at this point
 //	if (oldDisplay != null) oldDisplay.update ();
