@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.*;
  * @since 3.3
  */
 public class StyledTextDropTargetEffect extends DropTargetEffect {
+	static final int CARET_WIDTH = 2;
 	static final int SCROLL_HYSTERESIS = 100; // milli seconds
 	static final int SCROLL_TOLERANCE = 20; // pixels
 	
@@ -69,7 +70,7 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 					Point position = text.getLocationAtOffset(currentOffset);
 					int height = text.getLineHeight(currentOffset);
 					event.gc.setBackground(event.display.getSystemColor (SWT.COLOR_BLACK));
-					event.gc.fillRectangle(position.x, position.y, 1, height);
+					event.gc.fillRectangle(position.x, position.y, CARET_WIDTH, height);
 				}
 			}
 		};
@@ -259,12 +260,12 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 			if (oldOffset != -1) {
 				Point oldPos = text.getLocationAtOffset(oldOffset);
 				int oldHeight = text.getLineHeight(oldOffset);
-				text.redraw (oldPos.x, oldPos.y, 1, oldHeight, false);
+				text.redraw (oldPos.x, oldPos.y, CARET_WIDTH, oldHeight, false);
 			}
 			if (newOffset != -1) {
 				Point newPos = text.getLocationAtOffset(newOffset);
 				int newHeight = text.getLineHeight(newOffset);
-				text.redraw (newPos.x, newPos.y, 1, newHeight, false);
+				text.redraw (newPos.x, newPos.y, CARET_WIDTH, newHeight, false);
 			}
 		}
 	}
