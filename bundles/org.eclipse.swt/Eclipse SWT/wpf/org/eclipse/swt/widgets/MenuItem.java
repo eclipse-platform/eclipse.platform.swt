@@ -375,14 +375,14 @@ void HandleClick (int sender, int e) {
 void HandleSubmenuOpened (int sender, int e) {
 	if (!checkEvent (e)) return;
 	if (menu != null) {
-		menu.sendEvent(SWT.Show);
+		menu.sendEvent (SWT.Show);
 	}
 }
 
 void HandleSubmenuClosed (int sender, int e) {
 	if (!checkEvent (e)) return;
 	if (menu != null) {
-		menu.sendEvent(SWT.Hide);
+		menu.sendEvent (SWT.Hide);
 	}	
 }
 

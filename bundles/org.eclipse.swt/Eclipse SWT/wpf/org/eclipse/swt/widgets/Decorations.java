@@ -856,6 +856,8 @@ boolean traverseReturn () {
 	if (defaultButton == null || defaultButton.isDisposed ()) return false;
 	if (!defaultButton.isVisible () || !defaultButton.isEnabled ()) return false;
 //	defaultButton.click ();
+//	TODO
+	defaultButton.sendEvent (SWT.Selection);
 	return true;
 }
 
