@@ -392,13 +392,12 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		int index = 0;	
-		int count = itemCount;
-		while (index < count) {
+		while (index < itemCount) {
 			TabItem item = getItem (items, index); 
 			if (item.control == child) break;
 			index++;
 		}
-		if (index == count) {
+		if (index == itemCount) {
 			Rectangle rect = child.getBounds ();
 			width = Math.max (width, rect.x + rect.width);
 			height = Math.max (height, rect.y + rect.height);
