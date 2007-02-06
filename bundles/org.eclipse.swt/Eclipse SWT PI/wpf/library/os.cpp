@@ -3551,19 +3551,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1VerticalAlignmentProperty)
 }
 #endif
 
-#ifndef NO_FrameworkElement_1VisibilityProperty
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1VisibilityProperty)(JNIEnv *env, jclass that);
-JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1VisibilityProperty)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FrameworkElement_1VisibilityProperty_FUNC);
-	rc = (jint)TO_HANDLE(FrameworkElement::VisibilityProperty);
-	OS_NATIVE_EXIT(env, that, FrameworkElement_1VisibilityProperty_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_FrameworkElement_1Width__I
 extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(FrameworkElement_1Width__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jdouble JNICALL OS_NATIVE(FrameworkElement_1Width__I)
@@ -11596,6 +11583,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1PolyLineSegment)
 	OS_NATIVE_ENTER(env, that, gcnew_1PolyLineSegment_FUNC);
 	rc = (jint)TO_HANDLE(gcnew PolyLineSegment((PointCollection^)TO_OBJECT(arg0), arg1));
 	OS_NATIVE_EXIT(env, that, gcnew_1PolyLineSegment_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1Popup
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Popup)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Popup)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1Popup_FUNC);
+	rc = (jint)TO_HANDLE(gcnew Popup());
+	OS_NATIVE_EXIT(env, that, gcnew_1Popup_FUNC);
 	return rc;
 }
 #endif
