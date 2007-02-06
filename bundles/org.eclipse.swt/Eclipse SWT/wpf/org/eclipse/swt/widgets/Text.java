@@ -730,7 +730,6 @@ public int getTopPixel () {
 }
 
 void HandleKeyDown (int sender, int e) {
-	if (!checkEvent (e)) return;
 	super.HandleKeyDown (sender, e);
 	if (isDisposed ()) return;
 	if ((style & SWT.SINGLE) != 0) {
@@ -842,7 +841,7 @@ void hookEvents () {
 	handler = OS.gcnew_TextChangedEventHandler (jniRef, "HandleTextChanged");
 	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.TextBoxBase_TextChanged (handle, handler);
-	OS.GCHandle_Free(handler);
+	OS.GCHandle_Free (handler);
 }
 
 /**

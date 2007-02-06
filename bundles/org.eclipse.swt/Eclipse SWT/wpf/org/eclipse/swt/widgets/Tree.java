@@ -1918,7 +1918,16 @@ public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	//TODO
+	if (item.parent != this) return;
+	int parent = OS.FrameworkElement_Parent (item.handle);
+	while (!OS.Object_Equals (parent, handle)) {
+		OS.TreeViewItem_IsExpanded (parent, true);
+		int newParent = OS.FrameworkElement_Parent (parent);
+		OS.GCHandle_Free (parent);
+		parent = newParent;
+	}
+	OS.GCHandle_Free (parent);
+	OS.FrameworkElement_BringIntoView (item.handle);
 }
 
 /**
@@ -1935,7 +1944,11 @@ public void showItem (TreeItem item) {
  */
 public void showSelection () {
 	checkWidget ();
-	//TODO
+	int item = OS.TreeView_SelectedItem (handle);
+	if (item != 0) {
+		OS.FrameworkElement_BringIntoView (item);
+		OS.GCHandle_Free (item);
+	}
 }
 
 int topHandle () {
