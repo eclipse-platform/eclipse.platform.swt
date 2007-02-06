@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+ ************************************************************/
 package org.eclipse.swt.widgets;
 
 
@@ -752,12 +752,88 @@ void HandleSelectionChanged (int sender, int e) {
 	if (!ignoreSelection) postEvent (SWT.Selection);
 }
 
+void HandlePreviewExecutedRoutedEvent (int sender, int e) {
+	if (!checkEvent (e)) return;
+	int command = OS.ExecutedRoutedEventArgs_Command (e);
+	boolean doVerify = false;
+	String input = null;
+	if (OS.Object_Equals (command, OS.ApplicationCommands_Paste)) {
+		doVerify = true;
+		int clipboardText = OS.Clipboard_GetText ();
+		input = createJavaString(clipboardText);
+		OS.GCHandle_Free(clipboardText);
+	} else if (OS.Object_Equals (command, OS.ApplicationCommands_Cut)){
+		doVerify = true;
+		int content = OS.TextBox_SelectedText (textHandle);
+		input = createJavaString (content);
+		OS.GCHandle_Free (content);
+	} else if (OS.Object_Equals(command, OS.ApplicationCommands_Redo)) {
+		//FIXME
+		//doVerify = true;
+		OS.ExecutedRoutedEventArgs_Handled (e, true);
+	} else if (OS.Object_Equals(command, OS.ApplicationCommands_Undo)) {
+		//FIXME
+		//doVerify = true;
+		OS.ExecutedRoutedEventArgs_Handled (e, true);
+	} else if (OS.Object_Equals (command, OS.EditingCommands_Backspace)) {
+		doVerify = true;
+		input = "";
+	} else if (OS.Object_Equals (command, OS.EditingCommands_Delete)) {
+		doVerify = true;
+		input = "";
+	} else if (OS.Object_Equals(command, OS.EditingCommands_DeleteNextWord)) {
+		//FIXME
+		//doVerify = true;
+		OS.ExecutedRoutedEventArgs_Handled (e, true);
+	} else if (OS.Object_Equals(command, OS.EditingCommands_DeletePreviousWord)) {
+		//FIXME
+		//doVerify = true;
+		OS.ExecutedRoutedEventArgs_Handled (e, true);
+	}
+	OS.GCHandle_Free(command);
+	/*
+	* FIXME - should do this first, but for now we want to swallow
+	* all Redo, Undo, DeleteNextWord and DeletePreviousWord to 
+	* prevent those from changing the TextBox w/o Verify events
+	*/
+	if (!hooks (SWT.Verify)) return;
+	if (!doVerify) return;
+	String text = verifyText (input);
+	if (text != null && !text.equals (input)) {
+		int strPtr = createDotNetString (text, false);
+		OS.TextBox_SelectedText (textHandle, strPtr);
+		OS.GCHandle_Free (strPtr);
+		int start = OS.TextBox_SelectionStart (textHandle);
+		int length = OS.TextBox_SelectionLength (textHandle);
+		OS.TextBox_Select (textHandle, start+length, 0);
+		OS.TextBox_SelectionLength (textHandle, 0);
+		text = null;
+	}
+	if (text == null) OS.ExecutedRoutedEventArgs_Handled (e, true);
+}
+
+void HandlePreviewTextInput (int sender, int e) {
+	if (!checkEvent (e)) return;
+	int textPtr = OS.TextCompositionEventArgs_Text (e);
+	String input = createJavaString(textPtr);
+	OS.GCHandle_Free (textPtr);
+	String text = verifyText (input);
+	if (text != null && !text.equals (input)) {
+		textPtr = createDotNetString (text, false);
+		OS.TextBox_SelectedText (textHandle, textPtr);
+		OS.GCHandle_Free (textPtr);
+		int start = OS.TextBox_SelectionStart (textHandle);
+		int length = OS.TextBox_SelectionLength (textHandle);
+		OS.TextBox_Select (textHandle, start+length, 0);
+		OS.TextBox_SelectionLength (textHandle, 0);
+		text = null;
+	}
+	if (text == null) OS.TextCompositionEventArgs_Handled (e, true);
+}
+
 void HandleTextChanged (int sender, int e) {
 	if (!checkEvent (e)) return;
-	//TODO
-//	int text = OS.TextBox_Text (textHandle);
-//	String str = createJavaString (text);
-//	OS.GCHandle_Free (text);
+	sendEvent (SWT.Modify);
 }
 
 void hookEvents() {
@@ -765,13 +841,22 @@ void hookEvents() {
 	int handler = OS.gcnew_SelectionChangedEventHandler (jniRef, "HandleSelectionChanged");
 	OS.Selector_SelectionChanged (handle, handler);
 	OS.GCHandle_Free (handler);
-	//TODO
-//	if (textHandle != 0) {
-//		handler = OS.gcnew_TextChangedEventHandler (jniRef, "HandleTextChanged");
-//		OS.TextBoxBase_TextChanged (textHandle, handler);
-//		OS.GCHandle_Free (handler);
-//	}
+	if (textHandle != 0) {
+		handler = OS.gcnew_TextCompositionEventHandler (jniRef, "HandlePreviewTextInput");
+		if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.UIElement_PreviewTextInput (textHandle, handler);
+		OS.GCHandle_Free (handler);
+		handler = OS.gcnew_ExecutedRoutedEventHandler (jniRef, "HandlePreviewExecutedRoutedEvent");
+		if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.CommandManager_AddPreviewExecutedHandler (textHandle, handler);
+		OS.GCHandle_Free (handler);
+		handler = OS.gcnew_TextChangedEventHandler (jniRef, "HandleTextChanged");
+		if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.TextBoxBase_TextChanged (textHandle, handler);
+		OS.GCHandle_Free (handler);
+	}
 }
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -1276,4 +1361,23 @@ public void setVisibleItemCount (int count) {
 	if (count < 0) return;
 	//FIXME
 }
+
+String verifyText (String text) {
+	int start = OS.TextBox_SelectionStart (textHandle);
+	int length = OS.TextBox_SelectionLength (textHandle);
+	Event event = new Event ();
+	event.text = text;
+	event.start = start;
+	/*
+	* FIXME: end can be greater than start+length+1
+	* when Deleting special characters. 
+	* Note that backspace deletes one character at 
+	* a time. 
+	*/
+	event.end = start+length+1;
+	sendEvent (SWT.Verify, event);
+	if (!event.doit) return null;
+	return event.text;
+}
+
 }
