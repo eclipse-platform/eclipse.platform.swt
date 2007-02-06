@@ -28,7 +28,6 @@ public class Snippet258 {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
-		shell.setText("Text Search");
 		
 		final Text text = new Text(shell, SWT.SEARCH | SWT.CANCEL);
 		text.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
