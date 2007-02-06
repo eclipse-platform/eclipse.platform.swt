@@ -3207,11 +3207,8 @@ public Color getForeground() {
  *
  * @return horizontal scroll increment.
  */
-int getHorizontalIncrement() {
-	GC gc = new GC(this);
-	int increment = gc.getFontMetrics().getAverageCharWidth();
-	gc.dispose();
-	return increment;
+int getHorizontalIncrement() {	
+	return renderer.averageCharWidth;
 }
 /** 
  * Returns the horizontal scroll offset relative to the start of the line.
@@ -5285,6 +5282,17 @@ void handleResize(Event event) {
 		renderer.calculateClientArea();
 		setScrollBars(true);
 		claimRightFreeSpace();
+		// StyledText allows any value for horizontalScrollOffset when clientArea is zero
+		// in setHorizontalPixel() and setHorisontalOffset(). Fixes bug 168429.
+		if (clientAreaWidth != 0) {
+			ScrollBar horizontalBar = getHorizontalBar();
+			if (horizontalBar != null && horizontalBar.getVisible()) {
+				if (horizontalScrollOffset != horizontalBar.getSelection()) {
+					horizontalBar.setSelection(horizontalScrollOffset);
+					horizontalScrollOffset = horizontalBar.getSelection();
+				}
+			}
+		}
 	}
 	claimBottomFreeSpace();
 	//TODO FIX TOP INDEX DURING RESIZE

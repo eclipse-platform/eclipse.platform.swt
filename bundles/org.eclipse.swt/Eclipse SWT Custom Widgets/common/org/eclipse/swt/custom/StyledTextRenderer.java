@@ -990,6 +990,11 @@ void setFont(Font font, int tabs) {
 	layout.setText(tabBuffer.toString());
 	tabWidth = layout.getBounds().width;
 	layout.dispose();
+	if (styledText != null) {
+		GC gc = new GC(styledText);
+		averageCharWidth = gc.getFontMetrics().getAverageCharWidth();
+		gc.dispose();
+	}
 }
 void setLineAlignment(int startLine, int count, int alignment) {
 	if (lines == null) lines = new LineInfo[lineCount];
