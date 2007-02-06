@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Create a Text widget for searching
+ * Create a search text control
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
