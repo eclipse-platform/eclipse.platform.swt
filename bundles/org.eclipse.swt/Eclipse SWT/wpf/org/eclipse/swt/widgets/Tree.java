@@ -972,14 +972,14 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	//FIXME what is the default size?
+	//FIXME
 	if (itemCount == 0) return 16;
 	int items = OS.ItemsControl_Items (handle);
 	int item = OS.ItemCollection_GetItemAt (items, 0);
 	double height = OS.FrameworkElement_ActualHeight (item);
 	OS.GCHandle_Free (item);
 	OS.GCHandle_Free (items);
-	return (int) height;
+	return height != 0 ? (int) height : 16;
 }
 
 /**

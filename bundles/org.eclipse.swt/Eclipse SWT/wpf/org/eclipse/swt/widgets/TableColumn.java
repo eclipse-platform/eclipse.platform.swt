@@ -347,7 +347,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return (int) OS.GridViewColumn_ActualWidth(handle);
+	return (int) OS.GridViewColumn_ActualWidth (handle);
 }
 
 int findPart (int part) {
@@ -363,7 +363,7 @@ int findPart (int part) {
 int findStackPanel (int element, int contentPresenterType) {
 	int type = OS.Object_GetType (element);
 	boolean found = OS.Object_Equals (contentPresenterType, type);
-	OS.GCHandle_Free(type);
+	OS.GCHandle_Free (type);
 	if (found) return OS.VisualTreeHelper_GetChild (element, 0);
 	int count = OS.VisualTreeHelper_GetChildrenCount (element);
 	for (int i = 0; i < count; i++) {
@@ -545,7 +545,7 @@ public void setText (String string) {
 		OS.GCHandle_Free (stringPtr);
 		stringPtr = 0;
 	}
-	if (OS.FrameworkElement_IsLoaded(headerHandle)) {
+	if (OS.FrameworkElement_IsLoaded (headerHandle)) {
 		int part = findPart (TEXT_PART);
 		int property = OS.TextBlock_TextProperty ();
 		int bindingExpression = OS.FrameworkElement_GetBindingExpression (part, property);

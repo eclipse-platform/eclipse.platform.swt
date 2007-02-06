@@ -1179,6 +1179,17 @@ JNIEXPORT void JNICALL OS_NATIVE(CompositeCollection_1Remove)
 }
 #endif
 
+#ifndef NO_CompositeCollection_1RemoveAt
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(CompositeCollection_1RemoveAt)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(CompositeCollection_1RemoveAt)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CompositeCollection_1RemoveAt_FUNC);
+	((CompositeCollection^)TO_OBJECT(arg0))->RemoveAt(arg1);
+	OS_NATIVE_EXIT(env, that, CompositeCollection_1RemoveAt_FUNC);
+}
+#endif
+
 #ifndef NO_Console_1Beep
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(Console_1Beep)(JNIEnv *env, jclass that);
 JNIEXPORT void JNICALL OS_NATIVE(Console_1Beep)
@@ -6467,6 +6478,124 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(Point_1Y)
 	rc = (jdouble)((Point^)TO_OBJECT(arg0))->Y;
 	OS_NATIVE_EXIT(env, that, Point_1Y_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_Popup_1Child__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Popup_1Child__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Popup_1Child__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Popup_1Child__I_FUNC);
+	rc = (jint)TO_HANDLE(((Popup^)TO_OBJECT(arg0))->Child);
+	OS_NATIVE_EXIT(env, that, Popup_1Child__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Popup_1Child__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Popup_1Child__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Popup_1Child__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Popup_1Child__II_FUNC);
+	((Popup^)TO_OBJECT(arg0))->Child = ((UIElement^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Popup_1Child__II_FUNC);
+}
+#endif
+
+#ifndef NO_Popup_1Closed
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Popup_1Closed)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Popup_1Closed)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Popup_1Closed_FUNC);
+	((Popup^)TO_OBJECT(arg0))->Closed += ((EventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Popup_1Closed_FUNC);
+}
+#endif
+
+#ifndef NO_Popup_1HorizontalOffset__I
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(Popup_1HorizontalOffset__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(Popup_1HorizontalOffset__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, Popup_1HorizontalOffset__I_FUNC);
+	rc = (jdouble)((Popup^)TO_OBJECT(arg0))->HorizontalOffset;
+	OS_NATIVE_EXIT(env, that, Popup_1HorizontalOffset__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Popup_1HorizontalOffset__ID
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Popup_1HorizontalOffset__ID)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Popup_1HorizontalOffset__ID)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, Popup_1HorizontalOffset__ID_FUNC);
+	((Popup^)TO_OBJECT(arg0))->HorizontalOffset = (arg1);
+	OS_NATIVE_EXIT(env, that, Popup_1HorizontalOffset__ID_FUNC);
+}
+#endif
+
+#ifndef NO_Popup_1IsOpen__I
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Popup_1IsOpen__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Popup_1IsOpen__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Popup_1IsOpen__I_FUNC);
+	rc = (jboolean)((Popup^)TO_OBJECT(arg0))->IsOpen;
+	OS_NATIVE_EXIT(env, that, Popup_1IsOpen__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Popup_1IsOpen__IZ
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Popup_1IsOpen__IZ)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Popup_1IsOpen__IZ)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, Popup_1IsOpen__IZ_FUNC);
+	((Popup^)TO_OBJECT(arg0))->IsOpen = (arg1);
+	OS_NATIVE_EXIT(env, that, Popup_1IsOpen__IZ_FUNC);
+}
+#endif
+
+#ifndef NO_Popup_1Opened
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Popup_1Opened)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Popup_1Opened)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Popup_1Opened_FUNC);
+	((Popup^)TO_OBJECT(arg0))->Opened += ((EventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Popup_1Opened_FUNC);
+}
+#endif
+
+#ifndef NO_Popup_1VerticalOffset__I
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(Popup_1VerticalOffset__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(Popup_1VerticalOffset__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, Popup_1VerticalOffset__I_FUNC);
+	rc = (jdouble)((Popup^)TO_OBJECT(arg0))->VerticalOffset;
+	OS_NATIVE_EXIT(env, that, Popup_1VerticalOffset__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Popup_1VerticalOffset__ID
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Popup_1VerticalOffset__ID)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Popup_1VerticalOffset__ID)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, Popup_1VerticalOffset__ID_FUNC);
+	((Popup^)TO_OBJECT(arg0))->VerticalOffset = (arg1);
+	OS_NATIVE_EXIT(env, that, Popup_1VerticalOffset__ID_FUNC);
 }
 #endif
 

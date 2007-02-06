@@ -475,6 +475,7 @@ public static final native boolean CommonDialog_ShowDialog(int sender, int paren
 public static final native int CompositeCollection_IndexOf(int sender, int object);
 public static final native void CompositeCollection_Insert(int sender, int index, int value);
 public static final native void CompositeCollection_Remove(int sender, int value);
+public static final native void CompositeCollection_RemoveAt(int sender, int value);
 public static final native void Console_Beep();
 public static final native int ContainerVisual_Clip(int sender);
 public static final native void ContainerVisual_Clip(int sender, int clip);

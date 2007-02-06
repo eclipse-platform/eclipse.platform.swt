@@ -223,8 +223,8 @@ int findContentPresenter (int element, int contentPresenterType) {
 }
 
 int findPart (String part) {
-	int contentPresenterType = OS.ContentPresenter_typeid();
-	int contentPresenter = findContentPresenter(headerHandle, contentPresenterType);
+	int contentPresenterType = OS.ContentPresenter_typeid ();
+	int contentPresenter = findContentPresenter (headerHandle, contentPresenterType);
 	int result = 0;
 	if (contentPresenter != 0) {
 		int template = OS.GridViewColumn_HeaderTemplate (handle);
@@ -364,7 +364,7 @@ public boolean getResizable () {
  * @since 3.2
  */
 public String getToolTipText () {
-	checkWidget();
+	checkWidget ();
 	int strPtr = OS.FrameworkElement_ToolTip (headerHandle);
 	String string = createJavaString (strPtr);
 	OS.GCHandle_Free (strPtr);
@@ -421,7 +421,6 @@ public void pack () {
 	int widthProperty = OS.GridViewColumn_WidthProperty ();
 	OS.DependencyObject_ClearValue (handle, widthProperty);
 	OS.GCHandle_Free (widthProperty);
-	OS.UIElement_UpdateLayout (headerHandle);
 }
 
 void register() {
@@ -485,7 +484,7 @@ public void removeControlListener (ControlListener listener) {
  * @see SelectionListener
  * @see #addSelectionListener
  */
-public void removeSelectionListener(SelectionListener listener) {
+public void removeSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
