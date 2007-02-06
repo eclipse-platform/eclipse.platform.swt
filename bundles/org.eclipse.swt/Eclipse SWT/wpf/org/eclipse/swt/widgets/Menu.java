@@ -37,7 +37,6 @@ import org.eclipse.swt.events.*;
 public class Menu extends Widget {
 	int itemCount;
 	MenuItem cascade, selected;
-	MenuItem [] items;
 	Decorations parent;
 
 /**
@@ -245,6 +244,9 @@ void createHandle () {
 		case SWT.DROP_DOWN:	
 			handle = OS.gcnew_CompositeCollection ();
 			if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+			int defaultItem = OS.gcnew_MenuItem ();
+			OS.CompositeCollection_Insert (handle, 0, defaultItem);
+			OS.GCHandle_Free (defaultItem);
 			break;
 	}
 }
@@ -253,19 +255,13 @@ void createItem (MenuItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	item.createWidget ();
 	if ((style & SWT.DROP_DOWN) != 0) {
+		if (itemCount == 0) OS.CompositeCollection_RemoveAt (handle, 0);
 		OS.CompositeCollection_Insert (handle, index, item.handle);
 	} else {
 		int itemCollection = OS.ItemsControl_Items (handle);
 		OS.ItemCollection_Insert (itemCollection, index, item.handle);
 		OS.GCHandle_Free (itemCollection);
 	}
-	if (itemCount == items.length) {
-		MenuItem [] newItems = new MenuItem [items.length + 4];
-		System.arraycopy (items, 0, newItems, 0, items.length);
-		items = newItems;
-	}
-	System.arraycopy (items, index, items, index+1, items.length-index-1);
-	items [index] = item;
 	itemCount++;
 }
 	
@@ -277,7 +273,6 @@ void createWidget () {
 	parent.addMenu (this);
 	hookEvents ();
 	itemCount = 0;
-	items = new MenuItem [4];
 }
 
 void deregister () {
@@ -286,20 +281,18 @@ void deregister () {
 }
 
 void destroyItem (MenuItem item) {
-	int index = 0;
 	if ((style & SWT.DROP_DOWN) != 0) {
-		index = OS.CompositeCollection_IndexOf (handle, item.handle);
 		OS.CompositeCollection_Remove (handle, item.handle);
+		if (itemCount == 1) {
+			int defaultItem = OS.gcnew_MenuItem ();
+			OS.CompositeCollection_Insert (handle, 0, defaultItem);
+			OS.GCHandle_Free (defaultItem);
+		}
 	} else {
 		int itemCollection = OS.ItemsControl_Items (handle);
-		index = OS.ItemCollection_IndexOf (itemCollection, item.handle);
 		OS.ItemCollection_Remove (itemCollection, item.handle);
 	}
-	if (index < itemCount) { 
-		System.arraycopy (items, index+1, items, index, items.length-index-1);
-		items [items.length-1] = null;
-		itemCount--;
-	}
+	itemCount--;
 }
 
 void fixMenus (Decorations newParent) {
@@ -402,7 +395,23 @@ public boolean getEnabled () {
 public MenuItem getItem (int index) {
 	checkWidget ();
 	if (index < 0 || index >= itemCount) error(SWT.ERROR_INVALID_RANGE);
-	return items [index];
+	if ((style & SWT.DROP_DOWN) != 0) return getItem (handle, index);
+	int items = OS.ItemsControl_Items (handle);
+	MenuItem result = getItem(items, index);
+	OS.GCHandle_Free (items);
+	return result;
+}
+
+MenuItem getItem (int items, int index) {
+	int item;
+	if ((style & SWT.DROP_DOWN) != 0) {
+		item = OS.IList_default (handle, index);
+	} else {
+		item = OS.ItemCollection_GetItemAt (items, index);
+	}
+	MenuItem result = (MenuItem) display.getWidget (item);
+	OS.GCHandle_Free (item);
+	return result;
 }
 
 /**
@@ -439,7 +448,11 @@ public int getItemCount () {
 public MenuItem [] getItems () {
 	checkWidget ();
 	MenuItem [] result = new MenuItem [itemCount];
-	System.arraycopy(items, 0, result, 0, itemCount);
+	int items = (style & SWT.DROP_DOWN) == 0 ? OS.ItemsControl_Items (handle) : handle;
+	for (int i = 0; i < itemCount; i++) {
+		result [i] = getItem (items, i);
+	}
+	if (items != handle) OS.GCHandle_Free (items);
 	return result;
 }
 
@@ -605,10 +618,17 @@ void hookEvents() {
  */
 public int indexOf (MenuItem item) {
 	checkWidget ();
-	for (int i = 0; i < itemCount; i++) {
-		if (items[i] == item) return i;
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int index = -1;
+	if ((style & SWT.DROP_DOWN) != 0) {
+		index = OS.CompositeCollection_IndexOf (handle, item.handle);
+	} else {
+		int items = OS.ItemsControl_Items (handle);
+		index = OS.ItemCollection_IndexOf (items, item.handle);
+		OS.GCHandle_Free (items);
 	}
-	return -1;
+	return index;
 }
 
 /**

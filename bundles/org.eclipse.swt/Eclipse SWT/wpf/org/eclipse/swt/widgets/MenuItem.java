@@ -366,6 +366,10 @@ public boolean getSelection () {
 void HandleClick (int sender, int e) {
 	if (!checkEvent (e)) return;
 	if ((style & SWT.RADIO) != 0 && (parent.style & SWT.NO_RADIO_GROUP) == 0) {
+		if (parent.selected == this) {
+			OS.MenuItem_IsChecked (handle, true);
+			return;
+		}
 		if (parent.selected != null) OS.MenuItem_IsChecked (parent.selected.handle, false);
 		parent.selected = this;
 	}
