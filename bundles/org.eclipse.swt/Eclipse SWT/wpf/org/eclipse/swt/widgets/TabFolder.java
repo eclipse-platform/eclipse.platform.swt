@@ -162,8 +162,8 @@ int clientHandle () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	Point size = super.computeSize (wHint, hHint, changed); 
-	Point sizeTabFolder = super.computeSize (handle, wHint, hHint, changed);
-	return new Point (sizeTabFolder.x + 1, size.y + sizeTabFolder.y);
+	Point sizeTabFolder = computeSize (handle, wHint, hHint, changed);
+	return new Point (Math.max(sizeTabFolder.x + 1, size.x + 10), size.y + sizeTabFolder.y + 10);
 }
 
 void createItem (TabItem item, int index) {
@@ -383,6 +383,33 @@ public int indexOf (TabItem item) {
 	int index = OS.ItemCollection_IndexOf (items, item.topHandle ());
 	OS.GCHandle_Free (items);
 	return index;
+}
+
+Point minimumSize (int wHint, int hHint, boolean flushCache) {
+	Control [] children = _getChildren ();
+	int width = 0, height = 0;
+	int items = OS.ItemsControl_Items (handle);
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		int index = 0;	
+		int count = itemCount;
+		while (index < count) {
+			TabItem item = getItem (items, index); 
+			if (item.control == child) break;
+			index++;
+		}
+		if (index == count) {
+			Rectangle rect = child.getBounds ();
+			width = Math.max (width, rect.x + rect.width);
+			height = Math.max (height, rect.y + rect.height);
+		} else {
+			Point size = child.computeSize (wHint, hHint, flushCache);
+			width = Math.max (width, size.x);
+			height = Math.max (height, size.y);
+		}
+	}
+	OS.GCHandle_Free (items);
+	return new Point (width, height);
 }
 
 boolean mnemonicHit (char key) {
