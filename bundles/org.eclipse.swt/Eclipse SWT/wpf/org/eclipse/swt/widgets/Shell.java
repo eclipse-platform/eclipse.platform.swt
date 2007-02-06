@@ -395,12 +395,14 @@ public void addShellListener (ShellListener listener) {
 }
 
 void addWidget () {
+	if ((style & SWT.ON_TOP) != 0) return;
 	if (parent != null) {
 		OS.Window_Owner (shellHandle, ((Shell)parent).shellHandle);
 	}
 }
 
 void bringToTop () {
+	if ((style & SWT.ON_TOP) != 0) return;
 	OS.Window_Activate (shellHandle);
 }
 
@@ -430,6 +432,17 @@ public void close () {
 
 void createHandle () {
 	state |= CANVAS;
+	if ((style & SWT.ON_TOP) != 0) {
+		shellHandle = OS.gcnew_Popup ();
+		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.KeyboardNavigation_SetTabNavigation (shellHandle, OS.KeyboardNavigationMode_None);
+		boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
+		createHandle (scrolled, true);
+		OS.Popup_Child (shellHandle, super.topHandle());
+		OS.Popup_IsOpen (shellHandle, true);
+		OS.Popup_IsOpen (shellHandle, false);
+		return;
+	}
 	shellHandle = OS.gcnew_Window();
 	if (shellHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
@@ -471,6 +484,7 @@ void createHandle () {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
+	if ((style & SWT.ON_TOP) != 0) return new Rectangle (x, y, width, height);
 	OS.UIElement_UpdateLayout(shellHandle);
 	int clientX = (int) OS.Window_Left (shellHandle);
 	int clientY = (int) OS.Window_Top (shellHandle);
@@ -498,9 +512,14 @@ void deregister () {
 
 
 void destroyWidget () {
-	if (shellHandle != 0 && !closing) OS.Window_Close (shellHandle);
+	if (shellHandle != 0 && !closing) {
+		if ((style & SWT.ON_TOP) != 0) {
+			OS.Popup_IsOpen (shellHandle, false);
+		} else {
+			OS.Window_Close (shellHandle);
+		}
+	}
 	releaseHandle ();
-	//TODO check leak
 }
 
 public void dispose () {
@@ -554,14 +573,21 @@ Control findThemeControl () {
 public void forceActive () {
 	checkWidget ();
 	if(!isVisible()) return;
+	if ((style & SWT.ON_TOP) != 0) return;
 //	OS.SetForegroundWindow (handle);
 	OS.Window_Activate (shellHandle);
 }
 
 public Rectangle getBounds () {
 	checkWidget ();
-	int x = (int) OS.Window_Left (shellHandle);
-	int y = (int) OS.Window_Top (shellHandle);
+	int x, y;
+	if ((style & SWT.ON_TOP) != 0) {
+		x = (int) OS.Popup_HorizontalOffset (shellHandle);
+		y = (int) OS.Popup_VerticalOffset (shellHandle);
+	} else {
+		x = (int) OS.Window_Left (shellHandle);
+		y = (int) OS.Window_Top (shellHandle);
+	}
 	int width = (int) OS.FrameworkElement_Width (shellHandle);
 	int height = (int) OS.FrameworkElement_Height (shellHandle);
 	return new Rectangle (x, y, width, height);
@@ -592,8 +618,14 @@ public int getImeInputMode () {
 
 public Point getLocation () {
 	checkWidget ();
-	int x = (int) OS.Window_Left (shellHandle);
-	int y = (int) OS.Window_Top (shellHandle);
+	int x, y;
+	if ((style & SWT.ON_TOP) != 0) {
+		x = (int) OS.Popup_HorizontalOffset (shellHandle);
+		y = (int) OS.Popup_VerticalOffset (shellHandle);
+	} else {
+		x = (int) OS.Window_Left (shellHandle);
+		y = (int) OS.Window_Top (shellHandle);
+	}
 	return new Point (x, y);
 }
 
@@ -707,21 +739,27 @@ public boolean isEnabled () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int handler = OS.gcnew_CancelEventHandler (jniRef, "HandleClosing");
-	OS.Window_Closing (shellHandle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_EventHandler (jniRef, "HandleActivated");
-	OS.Window_Activated (shellHandle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_EventHandler (jniRef, "HandleDeactivated");
-	OS.Window_Deactivated (shellHandle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_EventHandler (jniRef, "HandleLocationChanged");
-	OS.Window_LocationChanged (shellHandle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_SizeChangedEventHandler (jniRef, "HandleSizeChanged");
+	int handler = OS.gcnew_SizeChangedEventHandler (jniRef, "HandleSizeChanged");
 	OS.FrameworkElement_SizeChanged (shellHandle, handler);
 	OS.GCHandle_Free (handler);
+	if ((style & SWT.ON_TOP) != 0) {
+		handler = OS.gcnew_EventHandler (jniRef, "HandleClosed");
+		OS.Popup_Closed (shellHandle, handler);
+		OS.GCHandle_Free (handler);
+	} else {
+		handler = OS.gcnew_CancelEventHandler (jniRef, "HandleClosing");
+		OS.Window_Closing (shellHandle, handler);
+		OS.GCHandle_Free (handler);
+		handler = OS.gcnew_EventHandler (jniRef, "HandleActivated");
+		OS.Window_Activated (shellHandle, handler);
+		OS.GCHandle_Free (handler);
+		handler = OS.gcnew_EventHandler (jniRef, "HandleDeactivated");
+		OS.Window_Deactivated (shellHandle, handler);
+		OS.GCHandle_Free (handler);
+		handler = OS.gcnew_EventHandler (jniRef, "HandleLocationChanged");
+		OS.Window_LocationChanged (shellHandle, handler);
+		OS.GCHandle_Free (handler);
+	}
 }
 
 void HandleActivated (int sender, int e) {
@@ -729,6 +767,13 @@ void HandleActivated (int sender, int e) {
 	sendEvent (SWT.Activate);
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+}
+
+void HandleClosed (int sender, int e) {
+	if (!checkEvent (e)) return;
+	closing = true;
+	sendEvent (SWT.Close);
+	closing = false;
 }
 
 void HandleClosing (int sender, int e) {
@@ -811,6 +856,14 @@ public void open () {
 	if (isDisposed ()) return;
 	setVisible (true);
 	if (isDisposed ()) return;
+	if ((style & SWT.ON_TOP) != 0) {
+		//FIXME
+		Control[] c = _getChildren();
+		for (int i = 0; i < c.length; i++) {
+			Control control = c[i];
+			if (control.forceFocus()) break;
+		}
+	}
 //	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
@@ -942,15 +995,27 @@ void setActiveControl (Control control) {
 int setBounds (int x, int y, int width, int height, int flags) {
 	int result = 0;
 	if ((flags & MOVED) != 0) {
-		int currentX = (int) OS.Window_Left (shellHandle);
-		int currentY = (int) OS.Window_Top (shellHandle);
+		int currentX, currentY;
+		if ((style & SWT.ON_TOP) != 0) {
+			currentX = (int) OS.Popup_HorizontalOffset (shellHandle);
+			currentY = (int) OS.Popup_VerticalOffset (shellHandle);
+		} else {
+			currentX = (int) OS.Window_Left (shellHandle);
+			currentY = (int) OS.Window_Top (shellHandle);
+		}
 		if (currentX != x || currentY != y) {
 			moved = true;
 			oldX = x;
 			oldY = currentY;
-			OS.Window_Left (shellHandle, x);
-			oldY = y;
-			OS.Window_Top (shellHandle, y);
+			if ((style & SWT.ON_TOP) != 0) {
+				OS.Popup_HorizontalOffset (shellHandle, x);
+				oldY = y;
+				OS.Popup_VerticalOffset (shellHandle, y);
+			} else {
+				OS.Window_Left (shellHandle, x);
+				oldY = y;
+				OS.Window_Top (shellHandle, y);
+			}
 			sendEvent (SWT.Move);
 			if (isDisposed ()) return 0;
 			result |= MOVED;
@@ -1107,7 +1172,11 @@ public void setRegion (Region region) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if (visible) {
-		OS.Window_Show (shellHandle);
+		if ((style & SWT.ON_TOP) != 0) {
+			OS.Popup_IsOpen (shellHandle, visible);
+		} else {
+			OS.Window_Show (shellHandle);
+		}
 		
 		opened = true;
 		if (!moved) {
@@ -1132,8 +1201,69 @@ public void setVisible (boolean visible) {
 		}
 		
 	} else {
-		if (!closing) OS.Window_Hide (shellHandle);
+		if (!closing) {
+			if ((style & SWT.ON_TOP) != 0) {
+				OS.Popup_IsOpen (shellHandle, visible);
+			} else {				
+				OS.Window_Hide (shellHandle);
+			}
+		}
 	}
+//	if (drawCount != 0) {
+//		if (((state & HIDDEN) == 0) == visible) return;
+//	} else {
+//		if (visible == OS.IsWindowVisible (handle)) return;
+//	}
+//	
+//	/*
+//	* Feature in Windows.  When ShowWindow() is called used to hide
+//	* a window, Windows attempts to give focus to the parent. If the
+//	* parent is disabled by EnableWindow(), focus is assigned to
+//	* another windows on the desktop.  This means that if you hide
+//	* a modal window before the parent is enabled, the parent will
+//	* not come to the front.  The fix is to change the modal state
+//	* before hiding or showing a window so that this does not occur.
+//	*/
+//	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+//	if ((style & mask) != 0) {
+//		if (visible) {
+//			display.setModalShell (this);
+//			Control control = display._getFocusControl ();
+//			if (control != null && !control.isActive ()) {
+//				bringToTop ();
+//				if (isDisposed ()) return;
+//			}
+//			int hwndShell = OS.GetActiveWindow ();
+//			if (hwndShell == 0) {
+//				if (parent != null) hwndShell = parent.handle;
+//			}
+//			if (hwndShell != 0) {
+//				OS.SendMessage (hwndShell, OS.WM_CANCELMODE, 0, 0);
+//			}
+//			OS.ReleaseCapture ();
+//		} else {
+//			display.clearModal (this);
+//		}
+//	} else {
+//		updateModal ();
+//	}
+//	
+//	/*
+//	* Bug in Windows.  Calling ShowOwnedPopups() to hide the
+//	* child windows of a hidden window causes the application
+//	* to be deactivated.  The fix is to call ShowOwnedPopups()
+//	* to hide children before hiding the parent.
+//	*/
+//	if (showWithParent && !visible) {
+//		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
+//	}
+//	super.setVisible (visible);
+//	if (isDisposed ()) return;
+//	if (showWithParent == visible) return;
+//	showWithParent = visible;
+//	if (visible) {
+//		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);
+//	}
 }
 
 int topHandle () {

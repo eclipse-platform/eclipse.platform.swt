@@ -410,6 +410,7 @@ public Image [] getImages () {
  */
 public boolean getMaximized () {
 	checkWidget ();
+	if ((style & SWT.ON_TOP) != 0) return false;
 	return OS.Window_WindowState (shellHandle) == OS.WindowState_Maximized;
 }
 
@@ -445,6 +446,7 @@ public Menu getMenuBar () {
  */
 public boolean getMinimized () {
 	checkWidget ();
+	if ((style & SWT.ON_TOP) != 0) return false;
 	return OS.Window_WindowState (shellHandle) == OS.WindowState_Minimized;
 }
 
@@ -703,6 +705,7 @@ public void setImages (Image [] images) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
+	if ((style & SWT.ON_TOP) != 0) return;
 	int state = maximized ? OS.WindowState_Maximized : OS.WindowState_Normal;
 	OS.Window_WindowState (shellHandle, state);
 }
@@ -772,6 +775,7 @@ public void setMenuBar (Menu menu) {
  */
 public void setMinimized (boolean minimized) {
 	checkWidget ();
+	if ((style & SWT.ON_TOP) != 0) return;
 	int state = minimized ? OS.WindowState_Minimized : OS.WindowState_Normal;
 	OS.Window_WindowState (shellHandle, state);
 }
@@ -798,6 +802,7 @@ void setSavedFocus (Control control) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if ((style & SWT.ON_TOP) != 0) return;
 	int strPtr = createDotNetString (string, false);
 	int shellHandle = topHandle ();
 	OS.Window_Title (shellHandle, strPtr);

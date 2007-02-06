@@ -210,7 +210,8 @@ public String open () {
 		OS.GCHandle_Free (filterPathPtr);
 	}
 	
-	boolean success = OS.CommonDialog_ShowDialog(dialog, parent.shellHandle);
+	int parentHandle = (parent.style & SWT.ON_TOP) == 0 ? parent.shellHandle : 0;
+	boolean success = OS.CommonDialog_ShowDialog(dialog, parentHandle);
 
 	/* Set the new path, file name and filter */
 	String fullPath = null;
