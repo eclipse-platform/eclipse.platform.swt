@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,7 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.program;
 
-import org.eclipse.swt.internal.win32.*;
+ 
+import java.io.IOException;
+
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -23,12 +27,27 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
-	static final String [] ARGUMENTS = new String [] {"%1", "%l", "%L"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
 Program () {
+}
+
+static int createDotNetString (String string) {
+	if (string == null) return 0;
+	int length = string.length ();
+	char [] buffer = new char [length + 1];
+	string.getChars (0, length, buffer, 0);
+	return OS.gcnew_String (buffer);
+}
+
+static String createJavaString (int ptr) {
+	int charArray = OS.String_ToCharArray (ptr);
+	char[] chars = new char[OS.String_Length (ptr)];
+	OS.memcpy (chars, charArray, chars.length * 2);
+	OS.GCHandle_Free (charArray);
+	return new String (chars);
 }
 
 /**
@@ -48,21 +67,20 @@ public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
 	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
-	/* Use the character encoding for the default locale */
-	TCHAR key = new TCHAR (0, extension, true);
-	int [] phkResult = new int [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
-		return null;
-	}
+	int key = createDotNetString (extension);
+	int classesRoot = OS.Registry_ClassesRoot ();
+	int registryKey = OS.RegistryKey_OpenSubKey (classesRoot, key);
+	OS.GCHandle_Free (key);
+	OS.GCHandle_Free (classesRoot);
+	if (registryKey == 0) return null;
 	Program program = null;
-	int [] lpcbData = new int [1];
-	int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
-	if (result == 0) {
-		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
-		result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
-		if (result == 0) program = getProgram (lpData.toString (0, lpData.strlen ()));
+	int value = OS.RegistryKey_GetValue (registryKey, 0);
+	if (value != 0) {
+		String string = createJavaString (value);
+		program = getProgram (string);
+		OS.GCHandle_Free (value);
 	}
-	OS.RegCloseKey (phkResult [0]);
+	OS.GCHandle_Free (registryKey);
 	return program;
 }
 
@@ -74,69 +92,33 @@ public static Program findProgram (String extension) {
  * @return an array of extensions
  */
 public static String [] getExtensions () {
-	String [] extensions = new String [1024];
-	/* Use the character encoding for the default locale */
-	TCHAR lpName = new TCHAR (0, 1024);
-	int [] lpcName = new int [] {lpName.length ()};
-	FILETIME ft = new FILETIME ();
-	int dwIndex = 0, count = 0;
-	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {
-		String extension = lpName.toString (0, lpcName [0]);
-		lpcName [0] = lpName.length ();
-		if (extension.length () > 0 && extension.charAt (0) == '.') {
-			if (count == extensions.length) {
-				String [] newExtensions = new String [extensions.length + 1024];
-				System.arraycopy (extensions, 0, newExtensions, 0, extensions.length);
-				extensions = newExtensions;
-			}
-			extensions [count++] = extension;
-		}
-		dwIndex++;
-	}
-	if (count != extensions.length) {
-		String [] newExtension = new String [count];
-		System.arraycopy (extensions, 0, newExtension, 0, count);
-		extensions = newExtension;
-	}
-	return extensions;
+	//TODO
+	return new String[0];
 }
 
 static String getKeyValue (String string, boolean expand) {
-	/* Use the character encoding for the default locale */
-	TCHAR key = new TCHAR (0, string, true);
-	int [] phkResult = new int [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
-		return null;
-	}
+	int classesRoot = OS.Registry_ClassesRoot ();
+	int key = createDotNetString (string);
+	int registryKey = OS.RegistryKey_OpenSubKey (classesRoot, key);
+	OS.GCHandle_Free (key);
+	OS.GCHandle_Free (classesRoot);
+	if (registryKey == 0) return null;
 	String result = null;
-	int [] lpcbData = new int [1];
-	if (OS.RegQueryValueEx (phkResult [0], (TCHAR) null, 0, null, (TCHAR) null, lpcbData) == 0) {
-		result = "";
-		int length = lpcbData [0] / TCHAR.sizeof;
-		if (length != 0) {
-			/* Use the character encoding for the default locale */
-			TCHAR lpData = new TCHAR (0, length);
-			if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
-				if (!OS.IsWinCE && expand) {
-					length = OS.ExpandEnvironmentStrings (lpData, null, 0);
-					if (length != 0) {
-						TCHAR lpDst = new TCHAR (0, length);
-						OS.ExpandEnvironmentStrings (lpData, lpDst, length);
-						result = lpDst.toString (0, Math.max (0, length - 1));
-					}
-				} else {
-					length = Math.max (0, lpData.length () - 1);
-					result = lpData.toString (0, length);
-				}
-			}
+	int value = OS.RegistryKey_GetValue (registryKey, 0);
+	if (value != 0) {
+		if (expand) {
+			int expandedValue = OS.Environment_ExpandEnvironmentVariables (value);
+			OS.GCHandle_Free (value);
+			value = expandedValue;
 		}
+		result = createJavaString (value);
+		OS.GCHandle_Free (value);		
 	}
-	if (phkResult [0] != 0) OS.RegCloseKey (phkResult [0]);
+	OS.GCHandle_Free (registryKey);
 	return result;
 }
 
 static Program getProgram (String key) {
-
 	/* Name */
 	String name = getKeyValue (key, false);
 	if (name == null || name.length () == 0) {
@@ -171,16 +153,18 @@ static Program getProgram (String key) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
+	//TODO compare results with win32.
 	Program [] programs = new Program [1024];
-	/* Use the character encoding for the default locale */
-	TCHAR lpName = new TCHAR (0, 1024);
-	int [] lpcName = new int [] {lpName.length ()};
-	FILETIME ft = new FILETIME ();
-	int dwIndex = 0, count = 0;
-	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
-		String path = lpName.toString (0, lpcName [0]);
-		lpcName [0] = lpName.length ();
-		Program program = getProgram (path);
+	int classesRoot = OS.Registry_ClassesRoot ();
+	int names = OS.RegistryKey_GetSubKeyNames (classesRoot);
+	OS.GCHandle_Free (classesRoot);
+	int length = OS.ICollection_Count (names);
+	int count = 0;
+	for (int i = 0; i < length; i++) {
+		int name = OS.IList_default (names, i);
+		String string = createJavaString (name);
+		OS.GCHandle_Free (name);
+		Program program = getProgram (string);
 		if (program != null) {
 			if (count == programs.length) {
 				Program [] newPrograms = new Program [programs.length + 1024];
@@ -189,8 +173,8 @@ public static Program [] getPrograms () {
 			}
 			programs [count++] = program;
 		}
-		dwIndex++;
 	}
+	OS.GCHandle_Free (names);
 	if (count != programs.length) {
 		Program [] newPrograms = new Program [count];
 		System.arraycopy (programs, 0, newPrograms, 0, count);
@@ -214,21 +198,8 @@ public static Program [] getPrograms () {
  * </ul>
  */
 public static boolean launch (String fileName) {
-	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	
-	/* Use the character encoding for the default locale */
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (0, fileName, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (lpFile, buffer, byteCount);
-	SHELLEXECUTEINFO info = new SHELLEXECUTEINFO ();
-	info.cbSize = SHELLEXECUTEINFO.sizeof;
-	info.lpFile = lpFile;
-	info.nShow = OS.SW_SHOW;
-	boolean result = OS.ShellExecuteEx (info);
-	if (lpFile != 0) OS.HeapFree (hHeap, 0, lpFile);
-	return result;
+	//TODO
+	return false;
 }
 
 /**
@@ -246,35 +217,27 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int index = 0;
-	boolean append = true;
+	boolean quote = true;
 	String prefix = command, suffix = ""; //$NON-NLS-1$
-	while (index < ARGUMENTS.length) {
-		int i = command.indexOf (ARGUMENTS [index]);
-		if (i != -1) {
-			append = false;
-			prefix = command.substring (0, i);
-			suffix = command.substring (i + ARGUMENTS [index].length (), command.length ());
-			break;
+	int index = command.indexOf ("%1"); //$NON-NLS-1$
+	if (index != -1) {
+		int count=0;
+		int i=index + 2, length = command.length ();
+		while (i < length) {
+			if (command.charAt (i) == '"') count++;
+			i++;
 		}
-		index++;
+		quote = count % 2 == 0;
+		prefix = command.substring (0, index);
+		suffix = command.substring (index + 2, length);
 	}
-	if (append) fileName = " \"" + fileName + "\"";
-	String commandLine = prefix + fileName + suffix;
-	int hHeap = OS.GetProcessHeap ();
-	/* Use the character encoding for the default locale */
-	TCHAR buffer = new TCHAR (0, commandLine, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int lpCommandLine = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (lpCommandLine, buffer, byteCount);
-	STARTUPINFO lpStartupInfo = new STARTUPINFO ();
-	lpStartupInfo.cb = STARTUPINFO.sizeof;
-	PROCESS_INFORMATION lpProcessInformation = new PROCESS_INFORMATION ();
-	boolean success = OS.CreateProcess (0, lpCommandLine, 0, 0, false, 0, 0, 0, lpStartupInfo, lpProcessInformation);
-	if (lpCommandLine != 0) OS.HeapFree (hHeap, 0, lpCommandLine);
-	if (lpProcessInformation.hProcess != 0) OS.CloseHandle (lpProcessInformation.hProcess);
-	if (lpProcessInformation.hThread != 0) OS.CloseHandle (lpProcessInformation.hThread);
-	return success;
+	if (quote) fileName = " \"" + fileName + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+	try {
+		Compatibility.exec(prefix + fileName + suffix);
+	} catch (IOException e) {
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -285,25 +248,8 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-	int nIconIndex = 0;
-	String fileName = iconName;
-	int index = iconName.indexOf (',');
-	if (index != -1) {
-		fileName = iconName.substring (0, index);
-		String iconIndex = iconName.substring (index + 1, iconName.length ()).trim ();
-		try {
-			nIconIndex = Integer.parseInt (iconIndex);
-		} catch (NumberFormatException e) {}
-	}
-	/* Use the character encoding for the default locale */
-	TCHAR lpszFile = new TCHAR (0, fileName, true);
-	int [] phiconSmall = new int[1], phiconLarge = null;
-	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
-	if (phiconSmall [0] == 0) return null;
-	Image image = Image.win32_new (null, SWT.ICON, phiconSmall[0]);
-	ImageData imageData = image.getImageData ();
-	image.dispose ();
-	return imageData;
+	//TODO
+	return null;
 }
 
 /**
