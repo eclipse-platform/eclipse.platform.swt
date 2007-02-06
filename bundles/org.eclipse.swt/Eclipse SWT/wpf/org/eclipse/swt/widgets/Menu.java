@@ -258,9 +258,9 @@ void createItem (MenuItem item, int index) {
 		if (itemCount == 0) OS.CompositeCollection_RemoveAt (handle, 0);
 		OS.CompositeCollection_Insert (handle, index, item.handle);
 	} else {
-		int itemCollection = OS.ItemsControl_Items (handle);
-		OS.ItemCollection_Insert (itemCollection, index, item.handle);
-		OS.GCHandle_Free (itemCollection);
+		int items = OS.ItemsControl_Items (handle);
+		OS.ItemCollection_Insert (items, index, item.handle);
+		OS.GCHandle_Free (items);
 	}
 	itemCount++;
 }
@@ -289,8 +289,9 @@ void destroyItem (MenuItem item) {
 			OS.GCHandle_Free (defaultItem);
 		}
 	} else {
-		int itemCollection = OS.ItemsControl_Items (handle);
-		OS.ItemCollection_Remove (itemCollection, item.handle);
+		int items = OS.ItemsControl_Items (handle);
+		OS.ItemCollection_Remove (items, item.handle);
+		OS.GCHandle_Free (items);
 	}
 	itemCount--;
 }
@@ -397,7 +398,7 @@ public MenuItem getItem (int index) {
 	if (index < 0 || index >= itemCount) error(SWT.ERROR_INVALID_RANGE);
 	if ((style & SWT.DROP_DOWN) != 0) return getItem (handle, index);
 	int items = OS.ItemsControl_Items (handle);
-	MenuItem result = getItem(items, index);
+	MenuItem result = getItem (items, index);
 	OS.GCHandle_Free (items);
 	return result;
 }
@@ -699,7 +700,6 @@ void releaseParent () {
 	super.releaseParent ();
 	if (cascade != null) cascade.releaseMenu ();
 	if ((style & SWT.BAR) != 0) {
-//		display.removeBar (this);
 		if (this == parent.menuBar) {
 			parent.setMenuBar (null);
 		}
