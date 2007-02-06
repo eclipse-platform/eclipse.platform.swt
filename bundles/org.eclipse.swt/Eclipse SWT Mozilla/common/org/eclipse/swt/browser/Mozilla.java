@@ -900,6 +900,7 @@ public void create (Composite parent, int style) {
 				}
 				case SWT.Resize: onResize (); break;
 				case SWT.FocusIn: Activate (); break;
+				case SWT.Activate: Activate (); break;
 				case SWT.Deactivate: {
 					Display display = event.display;
 					if (Mozilla.this.browser == display.getFocusControl ()) Deactivate ();
@@ -927,7 +928,8 @@ public void create (Composite parent, int style) {
 	int[] folderEvents = new int[] {
 		SWT.Dispose,
 		SWT.Resize,  
-		SWT.FocusIn, 
+		SWT.FocusIn,
+		SWT.Activate,
 		SWT.Deactivate,
 		SWT.Show,
 		SWT.KeyDown		// needed to make browser traversable
