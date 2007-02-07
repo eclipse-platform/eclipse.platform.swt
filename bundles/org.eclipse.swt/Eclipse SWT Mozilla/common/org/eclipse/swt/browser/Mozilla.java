@@ -170,7 +170,8 @@ public void create (Composite parent, int style) {
 			}
 		} else {
 			mozillaPath += SEPARATOR_OS + delegate.getLibraryName ();
-			if (System.getProperty (XULRUNNER_INITIALIZED) != null) {
+			String xulrunnerInitialized = System.getProperty (XULRUNNER_INITIALIZED); 
+			if ("true".equals (xulrunnerInitialized)) {
 				/* 
 				 * Another browser has already initialized xulrunner in this process,
 				 * so just bind to it instead of trying to initialize a new one.
