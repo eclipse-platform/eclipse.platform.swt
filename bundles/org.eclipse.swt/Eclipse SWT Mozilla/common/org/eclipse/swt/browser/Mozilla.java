@@ -177,8 +177,8 @@ public void create (Composite parent, int style) {
 				 * so just bind to it instead of trying to initialize a new one.
 				 */
 				initialized = true;
-				isXULRunner = true;
 			}
+			isXULRunner = true;
 		}
 
 		if (initLoaded) {
