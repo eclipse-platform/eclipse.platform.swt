@@ -1775,7 +1775,7 @@ int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if (isEnabledModal ()) {
 		if (display.dragging) {
 			display.dragging = false;
-			sendDragEvent (display.dragButton, display.dragX, display.dragY, display.dragState, display.dragModifiers);
+			sendDragEvent (display.dragButton, display.dragState, display.dragModifiers, display.dragX, display.dragY);
 			if (isDisposed ()) return OS.noErr;
 		}
 		int result = sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent) ? OS.eventNotHandledErr : OS.noErr;
@@ -2441,7 +2441,7 @@ void sendTrackEvents () {
 	boolean events = false;
 	if (display.dragging) {
 		display.dragging = false;
-		sendDragEvent (display.dragButton, display.dragX, display.dragY, display.dragState, display.dragModifiers);
+		sendDragEvent (display.dragButton, display.dragState, display.dragModifiers, display.dragX, display.dragY);
 		if (isDisposed ()) return;
 		events = true;
 	}
