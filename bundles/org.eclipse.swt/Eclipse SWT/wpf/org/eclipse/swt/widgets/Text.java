@@ -731,7 +731,7 @@ public int getTopPixel () {
 
 void HandleKeyDown (int sender, int e) {
 	super.HandleKeyDown (sender, e);
-	if (isDisposed ()) return;
+	if (!checkEvent (e)) return;
 	if ((style & SWT.SINGLE) != 0) {
 		int key = OS.KeyEventArgs_Key (e);
 		if (key == OS.Key_Return) postEvent (SWT.DefaultSelection);
