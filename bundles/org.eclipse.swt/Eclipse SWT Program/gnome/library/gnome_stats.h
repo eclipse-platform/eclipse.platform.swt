@@ -20,12 +20,8 @@ extern char* GNOME_nativeFunctionNames[];
 #define GNOME_NATIVE_ENTER(env, that, func) GNOME_nativeFunctionCallCount[func]++;
 #define GNOME_NATIVE_EXIT(env, that, func) 
 #else
-#ifndef GNOME_NATIVE_ENTER
 #define GNOME_NATIVE_ENTER(env, that, func) 
-#endif
-#ifndef GNOME_NATIVE_EXIT
 #define GNOME_NATIVE_EXIT(env, that, func) 
-#endif
 #endif
 
 typedef enum {

@@ -361,8 +361,7 @@ public static boolean launch (String fileName) {
 	fileName.getChars(0, chars.length, chars, 0);
 	int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
 	if (str != 0) {
-		int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
-		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
+		int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, 0, 0, OS.kCFStringEncodingUTF8);
 		if (escapedStr != 0) {
 			int url = OS.CFURLCreateWithString(OS.kCFAllocatorDefault, escapedStr, 0);
 			if (url != 0) {
@@ -371,7 +370,6 @@ public static boolean launch (String fileName) {
 			}
 			OS.CFRelease(escapedStr);
 		}
-		if (unscapedStr != 0) OS.CFRelease(unscapedStr);
 		OS.CFRelease(str);
 	}
 	return rc == OS.noErr;
@@ -396,7 +394,7 @@ public boolean execute (String fileName) {
 	int rc = -1;
 	int fsRefPtr = OS.NewPtr(fsRef.length);
 	if (fsRefPtr != 0) {
-		OS.memmove(fsRefPtr, fsRef, fsRef.length);
+		OS.memcpy(fsRefPtr, fsRef, fsRef.length);
 		LSApplicationParameters params = new LSApplicationParameters();
 		params.version = 0;
 		params.flags = 0;
@@ -409,8 +407,7 @@ public boolean execute (String fileName) {
 			fileName.getChars(0, chars.length, chars, 0);
 			int str = OS.CFStringCreateWithCharacters(0, chars, chars.length);
 			if (str != 0) {
-				int unscapedStr = OS.CFStringCreateWithCharacters(0, new char[]{'%'}, 1);
-				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, unscapedStr, 0, OS.kCFStringEncodingUTF8);
+				int escapedStr = OS.CFURLCreateStringByAddingPercentEscapes(OS.kCFAllocatorDefault, str, 0, 0, OS.kCFStringEncodingUTF8);
 				if (escapedStr != 0) {
 					int urls = OS.CFArrayCreateMutable(OS.kCFAllocatorDefault, 1, 0);
 					if (urls != 0) {
@@ -423,7 +420,6 @@ public boolean execute (String fileName) {
 					}
 					OS.CFRelease(escapedStr);
 				}
-				if (unscapedStr != 0) OS.CFRelease(unscapedStr);
 				OS.CFRelease(str);
 			}
 		}
@@ -451,12 +447,12 @@ ImageData createImageFromFamily (int family, int type, int maskType, int width, 
 	OS.HLock (maskHandle);
 	int[] iconPtr = new int [1];
 	int[] maskPtr = new int [1];
-	OS.memmove (iconPtr, dataHandle, 4);
-	OS.memmove (maskPtr, maskHandle, 4);
+	OS.memcpy (iconPtr, dataHandle, 4);
+	OS.memcpy (maskPtr, maskHandle, 4);
 	byte[] data = new byte[dataSize];
-	OS.memmove (data, iconPtr [0], dataSize);
+	OS.memcpy (data, iconPtr [0], dataSize);
 	byte[] alphaData = new byte[width * height];
-	OS.memmove(alphaData, maskPtr[0], alphaData.length);
+	OS.memcpy(alphaData, maskPtr[0], alphaData.length);
 	OS.HUnlock (maskHandle);
 	OS.HUnlock (dataHandle);
 	OS.DisposeHandle (maskHandle);

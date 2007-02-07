@@ -247,19 +247,16 @@ public static boolean launch (String fileName) {
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int index = 0;
-	boolean append = true;
 	String prefix = command, suffix = ""; //$NON-NLS-1$
 	while (index < ARGUMENTS.length) {
 		int i = command.indexOf (ARGUMENTS [index]);
 		if (i != -1) {
-			append = false;
 			prefix = command.substring (0, i);
 			suffix = command.substring (i + ARGUMENTS [index].length (), command.length ());
 			break;
 		}
 		index++;
 	}
-	if (append) fileName = " \"" + fileName + "\"";
 	String commandLine = prefix + fileName + suffix;
 	int hHeap = OS.GetProcessHeap ();
 	/* Use the character encoding for the default locale */
