@@ -121,6 +121,10 @@ int /*long*/ getHandle () {
 	return embedHandle;
 }
 
+String getLibraryName () {
+	return "libxpcom.so";
+}
+
 int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
 	/* 
 	* Stop the propagation of events that are not consumed by Mozilla, before

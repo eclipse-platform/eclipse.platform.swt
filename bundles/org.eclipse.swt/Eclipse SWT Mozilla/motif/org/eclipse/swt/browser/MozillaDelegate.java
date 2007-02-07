@@ -103,6 +103,10 @@ int getHandle() {
 	return result;
 }
 
+String getLibraryName () {
+	return "libxpcom.so";
+}
+
 void onDispose (int embedHandle) {
 	GTK.gtk_widget_destroy (embedHandle);
 	while (GTK.gtk_events_pending () != 0) {

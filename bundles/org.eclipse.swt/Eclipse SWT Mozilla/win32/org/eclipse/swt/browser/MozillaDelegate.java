@@ -48,6 +48,10 @@ int /*long*/ getHandle () {
 	return browser.handle;
 }
 
+String getLibraryName () {
+	return "xpcom.dll";
+}
+
 void onDispose (int /*long*/ embedHandle) {
 }
 

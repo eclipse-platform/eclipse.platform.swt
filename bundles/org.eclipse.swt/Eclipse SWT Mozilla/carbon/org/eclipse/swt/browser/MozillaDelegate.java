@@ -124,6 +124,10 @@ int getHandle () {
 	return embedHandle;
 }
 
+String getLibraryName () {
+	return "libxpcom.dylib";
+}
+
 void onDispose (int embedHandle) {
 	handles.remove (new LONG (embedHandle));
 }

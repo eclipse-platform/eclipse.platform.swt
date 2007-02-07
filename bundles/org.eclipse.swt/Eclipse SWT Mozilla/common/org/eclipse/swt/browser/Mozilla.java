@@ -78,6 +78,10 @@ class Mozilla extends WebBrowser {
 	static final String SHUTDOWN_PERSIST = "shutdown-persist"; //$NON-NLS-1$
 	static final String STARTUP = "startup"; //$NON-NLS-1$
 
+	// TEMPORARY CODE
+	static final String XULRUNNER_INITIALIZED = "org.eclipse.swt.browser.XULRunnerInitialized"; //$NON-NLS-1$
+	static final String XULRUNNER_PATH = "org.eclipse.swt.browser.XULRunnerPath"; //$NON-NLS-1$
+
 	static {
 		MozillaClearSessions = new Runnable () {
 			public void run () {
@@ -141,29 +145,41 @@ public void create (Composite parent, int style) {
 	int /*long*/[] result = new int /*long*/[1];
 	if (!initialized) {
 		boolean initLoaded = false;
-		try {
-			Library.loadLibrary ("swt-xpcominit"); //$NON-NLS-1$
-			initLoaded = true;
-		} catch (UnsatisfiedLinkError e) {
+		String mozillaPath = System.getProperty (XULRUNNER_PATH);
+		boolean isXULRunner = false;
+		if (mozillaPath == null) {
 			try {
-				/* 
-				 * The initial loadLibrary attempt may have failed as a result of the user's
-				 * system not having libstdc++.so.6 installed, so try to load the alternate
-				 * swt xpcominit library that depends on libswtc++.so.5 instead.
-				 */
-				Library.loadLibrary ("swt-xpcominit-gcc3"); //$NON-NLS-1$
+				Library.loadLibrary ("swt-xpcominit"); //$NON-NLS-1$
 				initLoaded = true;
-			} catch (UnsatisfiedLinkError ex) {
-				/*
-				 * If this library still failed to load then do not attempt to detect a
-				 * xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
-				 * points at a GRE. 
+			} catch (UnsatisfiedLinkError e) {
+				try {
+					/* 
+					 * The initial loadLibrary attempt may have failed as a result of the user's
+					 * system not having libstdc++.so.6 installed, so try to load the alternate
+					 * swt xpcominit library that depends on libswtc++.so.5 instead.
+					 */
+					Library.loadLibrary ("swt-xpcominit-gcc3"); //$NON-NLS-1$
+					initLoaded = true;
+				} catch (UnsatisfiedLinkError ex) {
+					/*
+					 * If this library still failed to load then do not attempt to detect a
+					 * xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
+					 * points at a GRE. 
+					 */
+				}
+			}
+		} else {
+			mozillaPath += SEPARATOR_OS + delegate.getLibraryName ();
+			if (System.getProperty (XULRUNNER_INITIALIZED) != null) {
+				/* 
+				 * Another browser has already initialized xulrunner in this process,
+				 * so just bind to it instead of trying to initialize a new one.
 				 */
+				initialized = true;
+				isXULRunner = true;
 			}
 		}
-		
-		boolean isXULRunner = false;
-		String mozillaPath = null;
+
 		if (initLoaded) {
 			/* attempt to discover a XULRunner to use as the GRE */
 			GREVersionRange range = new GREVersionRange ();
@@ -280,25 +296,29 @@ public void create (Composite parent, int style) {
 			}
 		}
 
-		int /*long*/[] retVal = new int /*long*/[1];
-		nsEmbedString pathString = new nsEmbedString (mozillaPath);
-		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, retVal);
-		pathString.dispose ();
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			error (rc);
-		}
-		if (retVal[0] == 0) {
-			browser.dispose ();
-			error (XPCOM.NS_ERROR_NULL_POINTER);
-		}
+		if (!initialized) {
+			int /*long*/[] retVal = new int /*long*/[1];
+			nsEmbedString pathString = new nsEmbedString (mozillaPath);
+			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, retVal);
+			pathString.dispose ();
+			if (rc != XPCOM.NS_OK) {
+				browser.dispose ();
+				error (rc);
+			}
+			if (retVal[0] == 0) {
+				browser.dispose ();
+				error (XPCOM.NS_ERROR_NULL_POINTER);
+			}
 
-		nsIFile localFile = new nsILocalFile (retVal[0]);
-		rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), 0);
-		localFile.Release ();
-		if (rc != XPCOM.NS_OK) {
-			browser.dispose ();
-			SWT.error (SWT.ERROR_NO_HANDLES, null, " [MOZILLA_FIVE_HOME may not point at an embeddable GRE] [NS_InitEmbedding " + mozillaPath + " error " + rc + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			nsIFile localFile = new nsILocalFile (retVal[0]);
+			rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), 0);
+			localFile.Release ();
+			if (rc != XPCOM.NS_OK) {
+				browser.dispose ();
+				SWT.error (SWT.ERROR_NO_HANDLES, null, " [MOZILLA_FIVE_HOME may not point at an embeddable GRE] [NS_InitEmbedding " + mozillaPath + " error " + rc + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			}
+			System.setProperty (XULRUNNER_PATH, mozillaPath); //$NON-NLS-1$
+			System.setProperty (XULRUNNER_INITIALIZED, "true"); //$NON-NLS-1$
 		}
 
 		/* If JavaXPCOM is detected then attempt to initialize it with the XULRunner being used */
@@ -325,7 +345,7 @@ public void create (Composite parent, int style) {
 			}
 		}
 
-		rc = XPCOM.NS_GetComponentManager (result);
+		int rc = XPCOM.NS_GetComponentManager (result);
 		if (rc != XPCOM.NS_OK) {
 			browser.dispose ();
 			error (rc);
