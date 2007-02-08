@@ -263,7 +263,7 @@ void HandlePreviewMouseWheel (int sender, int e) {
 			OS.RangeBase_Value (vHandle, newValue);
 			newValue = OS.RangeBase_Value (vHandle);
 			if (value != newValue) {
-				verticalBar.sendEvent (SWT.Selection);
+				verticalBar.postEvent (SWT.Selection, event);
 			}
 		}
 	}
