@@ -2502,6 +2502,7 @@ boolean setTabItemFocus () {
 public void setToolTipText (String string) {
 	checkWidget ();
 	toolTipText = string;
+	if (string != null && string.length() == 0) string = null;
 	int strPtr = createDotNetString (string, false);
 	OS.FrameworkElement_ToolTip (handle, strPtr);
 	if (strPtr != 0) OS.GCHandle_Free (strPtr);
