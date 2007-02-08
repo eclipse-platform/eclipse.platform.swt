@@ -240,6 +240,35 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
+void HandlePreviewMouseWheel (int sender, int e) {
+	super.HandlePreviewMouseWheel (sender, e);
+	if (!checkEvent (e)) return;
+	if ((state & CANVAS) != 0) {
+		if (verticalBar != null) {
+			int vHandle = verticalBar.handle;
+			int delta = OS.MouseWheelEventArgs_Delta (e);
+			int lines = OS.SystemParameters_WheelScrollLines ();
+			double value = OS.RangeBase_Value (vHandle);
+			double newValue = value;
+			Event event = new Event ();
+			if (lines != -1) {
+				double smallIncrement = OS.RangeBase_SmallChange (vHandle);
+				newValue += smallIncrement * (-delta/120) * lines;
+				event.detail = delta < 0 ? SWT.ARROW_DOWN : SWT.ARROW_UP;
+			} else {
+				double largeIncrement = OS.RangeBase_LargeChange (vHandle);
+				newValue += largeIncrement * (-delta/120);
+				event.detail = delta < 0 ? SWT.PAGE_DOWN : SWT.PAGE_UP;
+			}
+			OS.RangeBase_Value (vHandle, newValue);
+			newValue = OS.RangeBase_Value (vHandle);
+			if (value != newValue) {
+				verticalBar.sendEvent (SWT.Selection);
+			}
+		}
+	}
+}
+
 void register () {
 	super.register ();
 	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
