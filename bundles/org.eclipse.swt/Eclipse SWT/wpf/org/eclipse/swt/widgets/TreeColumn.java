@@ -610,6 +610,7 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
+	if (string != null && string.length() == 0) string = null;
 	int strPtr = createDotNetString (string, false);
 	OS.FrameworkElement_ToolTip (headerHandle, strPtr);
 	OS.GCHandle_Free (strPtr);

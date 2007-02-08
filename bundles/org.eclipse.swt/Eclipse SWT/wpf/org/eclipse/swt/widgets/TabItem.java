@@ -350,6 +350,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+	if (string != null && string.length() == 0) string = null;
 	int strPtr = createDotNetString (string, false);
 	int header = OS.HeaderedContentControl_Header (handle);
 	OS.FrameworkElement_ToolTip (header, strPtr);
