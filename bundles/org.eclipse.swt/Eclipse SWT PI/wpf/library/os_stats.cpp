@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1027;
-int OS_nativeFunctionCallCount[1027];
+int OS_nativeFunctionCount = 1031;
+int OS_nativeFunctionCallCount[1031];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -239,6 +239,9 @@ char * OS_nativeFunctionNames[] = {
 	"FileDialog_1Title",
 	"FileInfo_1DirectoryName",
 	"FileInfo_1Name",
+	"FolderBrowserDialog_1Description",
+	"FolderBrowserDialog_1SelectedPath__I",
+	"FolderBrowserDialog_1SelectedPath__II",
 	"FontFamily_1GetTypefaces",
 	"FontFamily_1Source",
 	"FontStretch_1FromOpenTypeStretch",
@@ -931,6 +934,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1ExecutedRoutedEventHandler",
 	"gcnew_1Expander",
 	"gcnew_1FileInfo",
+	"gcnew_1FolderBrowserDialog",
 	"gcnew_1FontFamily",
 	"gcnew_1FormatConvertedBitmap",
 	"gcnew_1FormattedText",

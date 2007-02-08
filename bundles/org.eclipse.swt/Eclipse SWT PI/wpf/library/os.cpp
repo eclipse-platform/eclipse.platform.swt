@@ -2745,6 +2745,41 @@ JNIEXPORT jint JNICALL OS_NATIVE(FileInfo_1Name)
 }
 #endif
 
+#ifndef NO_FolderBrowserDialog_1Description
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1Description)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1Description)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FolderBrowserDialog_1Description_FUNC);
+	((System::Windows::Forms::FolderBrowserDialog^)TO_OBJECT(arg0))->Description = ((String^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, FolderBrowserDialog_1Description_FUNC);
+}
+#endif
+
+#ifndef NO_FolderBrowserDialog_1SelectedPath__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FolderBrowserDialog_1SelectedPath__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FolderBrowserDialog_1SelectedPath__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FolderBrowserDialog_1SelectedPath__I_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::FolderBrowserDialog^)TO_OBJECT(arg0))->SelectedPath);
+	OS_NATIVE_EXIT(env, that, FolderBrowserDialog_1SelectedPath__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FolderBrowserDialog_1SelectedPath__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1SelectedPath__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1SelectedPath__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FolderBrowserDialog_1SelectedPath__II_FUNC);
+	((System::Windows::Forms::FolderBrowserDialog^)TO_OBJECT(arg0))->SelectedPath = ((String^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, FolderBrowserDialog_1SelectedPath__II_FUNC);
+}
+#endif
+
 #ifndef NO_FontFamily_1GetTypefaces
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FontFamily_1GetTypefaces)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(FontFamily_1GetTypefaces)
@@ -11063,6 +11098,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1FileInfo)
 	OS_NATIVE_ENTER(env, that, gcnew_1FileInfo_FUNC);
 	rc = (jint)TO_HANDLE(gcnew System::IO::FileInfo((String^)TO_OBJECT(arg0)));
 	OS_NATIVE_EXIT(env, that, gcnew_1FileInfo_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1FolderBrowserDialog
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1FolderBrowserDialog)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1FolderBrowserDialog)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1FolderBrowserDialog_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::Windows::Forms::FolderBrowserDialog());
+	OS_NATIVE_EXIT(env, that, gcnew_1FolderBrowserDialog_FUNC);
 	return rc;
 }
 #endif
