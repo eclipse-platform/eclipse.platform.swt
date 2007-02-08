@@ -721,6 +721,12 @@ public void stop () {
 	webBrowser.stop ();
 }
 
+/**
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Browser</code>. It is likely to change and should
+ * never be called from application code.
+ * </p>
+ */
 public long getWebBrowserHandle() {
 	checkWidget();
 	return webBrowser.getWebBrowserHandle ();
