@@ -597,6 +597,9 @@ public static final native void FileDialog_InitialDirectory(int sender, int valu
 public static final native void FileDialog_Title(int sender, int value);
 public static final native int FileInfo_DirectoryName(int sender);
 public static final native int FileInfo_Name(int sender);
+public static final native void FolderBrowserDialog_Description(int sender, int value);
+public static final native int FolderBrowserDialog_SelectedPath(int sender);
+public static final native void FolderBrowserDialog_SelectedPath(int sender, int value);
 public static final native int FontFamily_Source(int sender);
 public static final native int FontFamily_GetTypefaces(int sender);
 public static final native int FontStyles_Italic();
@@ -1275,6 +1278,7 @@ public static final native int gcnew_DoubleCollection(int capacity);
 public static final native int gcnew_Duration(int timespan);
 public static final native int gcnew_Expander();
 public static final native int gcnew_FileInfo(int path);
+public static final native int gcnew_FolderBrowserDialog();
 public static final native int gcnew_FontFamily(int str);
 public static final native int gcnew_FormatConvertedBitmap(int source, int destinationFormat, int destinationPalette, double alphaThreshold);
 public static final native int gcnew_FormattedText(int string, int culture, int flowDirection, int typeface, double emSize, int brush);

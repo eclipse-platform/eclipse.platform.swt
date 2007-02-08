@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.wpf.*;
 
 /**
  * Instances of this class allow the user to navigate
@@ -114,131 +115,29 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-//	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-//	
-//	int hHeap = OS.GetProcessHeap ();
-//	
-//	/* Get the owner HWND for the dialog */
-//	int hwndOwner = 0;
-//	if (parent != null) hwndOwner = parent.handle;
-//
-//	/* Copy the message to OS memory */
-//	int lpszTitle = 0;
-//	if (message.length () != 0) {
-//		String string = message;
-//		if (string.indexOf ('&') != -1) {
-//			int length = string.length ();
-//			char [] buffer = new char [length * 2];
-//			int index = 0;
-//			for (int i=0; i<length; i++) {
-//				char ch = string.charAt (i);
-//				if (ch == '&') buffer [index++] = '&';
-//				buffer [index++] = ch;
-//			}
-//			string = new String (buffer, 0, index);
-//		}
-//		/* Use the character encoding for the default locale */
-//		TCHAR buffer = new TCHAR (0, string, true);
-//		int byteCount = buffer.length () * TCHAR.sizeof;
-//		lpszTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-//		OS.MoveMemory (lpszTitle, buffer, byteCount);
-//	}
-//
-//	/* Create the BrowseCallbackProc */
-//	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
-//	int address = callback.getAddress ();
-//	if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-//	
-//	/* Make the parent shell be temporary modal */
-//	Shell oldModal = null;
-//	Display display = parent.getDisplay ();
-//	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-//		oldModal = display.getModalDialogShell ();
-//		display.setModalDialogShell (parent);
-//	}
-//	
-//	directoryPath = null;
-//	BROWSEINFO lpbi = new BROWSEINFO ();
-//	lpbi.hwndOwner = hwndOwner;
-//	lpbi.lpszTitle = lpszTitle;
-//	lpbi.ulFlags = OS.BIF_NEWDIALOGSTYLE | OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
-//	lpbi.lpfn = address;
-//	/*
-//	* Bug in Windows.  On some hardware configurations, SHBrowseForFolder()
-//	* causes warning dialogs with the message "There is no disk in the drive
-//	* Please insert a disk into \Device\Harddisk0\DR0".  This is possibly
-//	* caused by SHBrowseForFolder() calling internally GetVolumeInformation().
-//	* MSDN for GetVolumeInformation() says:
-//	* 
-//	* "If you are attempting to obtain information about a floppy drive
-//	* that does not have a floppy disk or a CD-ROM drive that does not 
-//	* have a compact disc, the system displays a message box asking the 
-//	* user to insert a floppy disk or a compact disc, respectively. 
-//	* To prevent the system from displaying this message box, call the 
-//	* SetErrorMode function with SEM_FAILCRITICALERRORS."
-//	* 
-//	* The fix is to save and restore the error mode using SetErrorMode()
-//	* with the SEM_FAILCRITICALERRORS flag around SHBrowseForFolder().
-//	*/
-//	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
-//	
-//	/*
-//	* Bug in Windows.  When a WH_MSGFILTER hook is used to run code
-//	* during the message loop for SHBrowseForFolder(), running code
-//	* in the hook can cause a GP.  Specifically, SetWindowText()
-//	* for static controls seemed to make the problem happen.
-//	* The fix is to disable async messages while the directory
-//	* dialog is open.
-//	* 
-//	* NOTE:  This only happens in versions of the comctl32.dll
-//	* earlier than 6.0.
-//	*/
-//	boolean oldRunMessages = display.runMessages;
-//	if (OS.COMCTL32_MAJOR < 6) display.runMessages = false;
-//	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
-//	if (OS.COMCTL32_MAJOR < 6) display.runMessages = oldRunMessages;
-//	OS.SetErrorMode (oldErrorMode);
-//	
-//	/* Clear the temporary dialog modal parent */
-//	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-//		display.setModalDialogShell (oldModal);
-//	}
-//	
-//	boolean success = lpItemIdList != 0;
-//	if (success) {
-//		/* Use the character encoding for the default locale */
-//		TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
-//		if (OS.SHGetPathFromIDList (lpItemIdList, buffer)) {
-//			directoryPath = buffer.toString (0, buffer.strlen ());
-//			filterPath = directoryPath;
-//		}
-//	}
-//
-//	/* Free the BrowseCallbackProc */
-//	callback.dispose ();
-//	
-//	/* Free the OS memory */
-//	if (lpszTitle != 0) OS.HeapFree (hHeap, 0, lpszTitle);
-//
-//	/* Free the pointer to the ITEMIDLIST */
-//	int [] ppMalloc = new int [1];
-//	if (OS.SHGetMalloc (ppMalloc) == OS.S_OK) {
-//		/* void Free (struct IMalloc *this, void *pv); */
-//		OS.VtblCall (5, ppMalloc [0], lpItemIdList);
-//	}
-//	
-//	/*
-//	* This code is intentionally commented.  On some
-//	* platforms, the owner window is repainted right
-//	* away when a dialog window exits.  This behavior
-//	* is currently unspecified.
-//	*/
-////	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-//	
-//	/* Return the directory path */
-//	if (!success) return null;
-//	return directoryPath;
-	return null;
+	int dialog = OS.gcnew_FolderBrowserDialog ();
+	if (dialog == 0) error (SWT.ERROR_NO_HANDLES);
+	int length = message.length ();
+	char [] buffer = new char [length + 1];
+	message.getChars (0, length, buffer, 0);
+	int messagePtr = OS.gcnew_String (buffer);
+	if (messagePtr == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.FolderBrowserDialog_Description (dialog, messagePtr);
+	OS.GCHandle_Free (messagePtr);
+	//TODO: filter path...
+	int result = OS.FormsCommonDialog_ShowDialog (dialog);
+	String directoryPath = null;
+	if (result == OS.DialogResult_OK) {
+		int ptr = OS.FolderBrowserDialog_SelectedPath (dialog);
+		int charArray = OS.String_ToCharArray (ptr);
+		char[] chars = new char[OS.String_Length (ptr)];
+		OS.memcpy (chars, charArray, chars.length * 2);
+		OS.GCHandle_Free (charArray);
+		OS.GCHandle_Free (ptr);
+		directoryPath = new String (chars);
+	}
+	OS.GCHandle_Free (dialog);
+	return directoryPath;
 }
 
 /**
