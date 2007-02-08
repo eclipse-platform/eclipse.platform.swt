@@ -508,7 +508,7 @@ Control [] computeTabList () {
 
 void createWidget () { 
 	checkOrientation (parent);
-	super.createWidget();
+	super.createWidget ();
 	setClipping ();
 	if (defaultBackground () != 0) {
 		setBackground ();
@@ -516,7 +516,7 @@ void createWidget () {
 }
 
 void setClipping () {
-	OS.UIElement_ClipToBounds (topHandle(), true);
+	OS.UIElement_ClipToBounds (topHandle (), true);
 }
 
 int defaultBackground () {
