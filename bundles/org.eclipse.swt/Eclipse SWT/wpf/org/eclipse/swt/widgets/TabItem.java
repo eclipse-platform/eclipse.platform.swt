@@ -281,6 +281,9 @@ public void setControl (Control control) {
 		int topHandle = newControl.topHandle ();
 		OS.UIElementCollection_Remove (parentChildren, topHandle);
 		OS.UIElementCollection_Add (children, topHandle);
+		if (OS.FrameworkElement_IsLoaded (handle)) {
+			newControl.setBounds (parent.getClientArea ());
+		}
 	}
 	if (oldControl != null) {
 		int topHandle = oldControl.topHandle ();
