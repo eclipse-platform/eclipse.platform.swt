@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 
@@ -323,23 +324,55 @@ void deregister () {
 void drawBackground (GC gc, int x, int y, int width, int height) {
 	Control control = findBackgroundControl ();
 	if (control != null) {
-		int /*long*/ gdkGC = gc.handle;
-		GdkGCValues values = new GdkGCValues ();
-		OS.gdk_gc_get_values (gdkGC, values);
-		if (control.backgroundImage != null) {
-			Point pt = display.map (this, control, 0, 0);
-			OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
-			OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
-			OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
-			gc.fillRectangle (x, y, width, height);
-			OS.gdk_gc_set_fill (gdkGC, values.fill);
-			OS.gdk_gc_set_ts_origin (gdkGC, values.ts_x_origin, values.ts_y_origin);
+		GCData data = gc.getGCData ();
+		int /*long*/ cairo = data.cairo;
+		if (cairo != 0) {
+			Cairo.cairo_save (cairo);
+			if (control.backgroundImage != null) {
+				Point pt = display.map (this, control, 0, 0);
+				Cairo.cairo_translate (cairo, -pt.x, -pt.y);
+				x += pt.x;
+				y += pt.y;
+				int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+				int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual (OS.gdk_visual_get_system());
+				int /*long*/ drawable = control.backgroundImage.pixmap;
+				int /*long*/ xDrawable = OS.GDK_PIXMAP_XID (drawable);				
+				int [] w = new int [1], h = new int [1];
+				OS.gdk_drawable_get_size (drawable, w, h);
+				int /*long*/ surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
+				if (surface == 0) error (SWT.ERROR_NO_HANDLES);
+				int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
+				if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
+				Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+				Cairo.cairo_set_source (cairo, pattern);
+				Cairo.cairo_surface_destroy (surface);
+				Cairo.cairo_pattern_destroy (pattern);
+			} else {
+				GdkColor color = control.getBackgroundColor ();
+				Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+			}			
+			Cairo.cairo_rectangle (cairo, x, y, width, height);
+			Cairo.cairo_fill (cairo);
+			Cairo.cairo_restore (cairo);
 		} else {
-			gc.setBackground (control.getBackground ());
-			gc.fillRectangle (x, y, width, height);
-			GdkColor color = new GdkColor ();
-			color.pixel = values.background_pixel;
-			OS.gdk_gc_set_background (gdkGC, color);
+			int /*long*/ gdkGC = gc.handle;
+			GdkGCValues values = new GdkGCValues ();
+			OS.gdk_gc_get_values (gdkGC, values);
+			if (control.backgroundImage != null) {
+				Point pt = display.map (this, control, 0, 0);
+				OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
+				OS.gdk_gc_set_ts_origin (gdkGC, -pt.x, -pt.y);
+				OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap);
+				OS.gdk_draw_rectangle (data.drawable, gdkGC, 1, x, y, width, height);
+				OS.gdk_gc_set_fill (gdkGC, values.fill);
+				OS.gdk_gc_set_ts_origin (gdkGC, values.ts_x_origin, values.ts_y_origin);
+			} else {
+				GdkColor color = control.getBackgroundColor ();
+				OS.gdk_gc_set_foreground (gdkGC, color);
+				OS.gdk_draw_rectangle (data.drawable, gdkGC, 1, x, y, width, height);
+				color.pixel = values.foreground_pixel;
+				OS.gdk_gc_set_foreground (gdkGC, color);
+			}
 		}
 	} else {
 		gc.fillRectangle (x, y, width, height);
