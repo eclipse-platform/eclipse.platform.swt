@@ -34,7 +34,7 @@ public class FileDialog extends Dialog {
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String [0];
-	String filterPath = "", fileName = "";
+	String filterPath = "", fileName = "";  //$NON-NLS-1$//$NON-NLS-2$
 
 /**
  * Constructs a new instance of this class given only its parent.

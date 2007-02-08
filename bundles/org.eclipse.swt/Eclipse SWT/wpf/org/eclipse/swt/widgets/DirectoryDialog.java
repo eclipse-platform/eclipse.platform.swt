@@ -31,7 +31,6 @@ import org.eclipse.swt.internal.wpf.*;
 
 public class DirectoryDialog extends Dialog {
 	String message = "", filterPath = "";  //$NON-NLS-1$//$NON-NLS-2$
-	String directoryPath;
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -117,27 +116,18 @@ public String getMessage () {
 public String open () {
 	int dialog = OS.gcnew_FolderBrowserDialog ();
 	if (dialog == 0) error (SWT.ERROR_NO_HANDLES);
-	int length = message.length ();
-	char [] buffer = new char [length + 1];
-	message.getChars (0, length, buffer, 0);
-	int messagePtr = OS.gcnew_String (buffer);
-	if (messagePtr == 0) error (SWT.ERROR_NO_HANDLES);
+	int messagePtr = parent.createDotNetString (message, false);
 	OS.FolderBrowserDialog_Description (dialog, messagePtr);
 	OS.GCHandle_Free (messagePtr);
 	//TODO: filter path...
-	int result = OS.FormsCommonDialog_ShowDialog (dialog);
-	String directoryPath = null;
-	if (result == OS.DialogResult_OK) {
+	String result = null;
+	if (OS.FormsCommonDialog_ShowDialog (dialog) == OS.DialogResult_OK) {
 		int ptr = OS.FolderBrowserDialog_SelectedPath (dialog);
-		int charArray = OS.String_ToCharArray (ptr);
-		char[] chars = new char[OS.String_Length (ptr)];
-		OS.memcpy (chars, charArray, chars.length * 2);
-		OS.GCHandle_Free (charArray);
+		result = parent.createJavaString (ptr);
 		OS.GCHandle_Free (ptr);
-		directoryPath = new String (chars);
 	}
 	OS.GCHandle_Free (dialog);
-	return directoryPath;
+	return result;
 }
 
 /**
