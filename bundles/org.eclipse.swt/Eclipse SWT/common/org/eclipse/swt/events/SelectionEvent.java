@@ -45,6 +45,8 @@ public class SelectionEvent extends TypedEvent {
 	 * <li>{@link org.eclipse.swt.SWT#PAGE_UP}</li>
 	 * </ul></p><p><b>Table and Tree</b><ul>
 	 * <li>{@link org.eclipse.swt.SWT#CHECK}</li>
+	 * </ul></p><p><b>Text</b><ul>
+	 * <li>{@link org.eclipse.swt.SWT#CANCEL}</li>
 	 * </ul></p><p><b>CoolItem and ToolItem</b><ul>
 	 * <li>{@link org.eclipse.swt.SWT#ARROW}</li>
 	 * </ul></p>
