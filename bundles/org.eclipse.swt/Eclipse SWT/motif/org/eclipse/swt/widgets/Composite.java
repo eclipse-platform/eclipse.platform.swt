@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -294,28 +295,63 @@ void deregister () {
 void drawBackground (GC gc, int x, int y, int width, int height) {
 	Control control = findBackgroundControl ();
 	if (control != null) {
-		int xDisplay = OS.XtDisplay (handle);
-		if (xDisplay == 0) return;
-		int xGC = gc.handle;
-		XGCValues values = new XGCValues();
-		if (control.backgroundImage != null) {
-			OS.XGetGCValues (xDisplay, xGC, OS.GCFillStyle | OS.GCTile | OS.GCTileStipXOrigin | OS.GCTileStipYOrigin, values);
-			short [] root_x = new short [1], root_y = new short [1];
-			OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
-			short [] control_x = new short [1], control_y = new short [1];
-			OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
-			int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
-			OS.XSetFillStyle (xDisplay, xGC, OS.FillTiled);
-			OS.XSetTSOrigin (xDisplay, xGC, -tileX, -tileY);
-			OS.XSetTile (xDisplay, xGC, control.backgroundImage.pixmap);
-			gc.fillRectangle (x, y, width, height);
-			OS.XSetFillStyle (xDisplay, xGC, values.fill_style);
-			OS.XSetTSOrigin (xDisplay, xGC, values.ts_x_origin, values.ts_y_origin);
+		GCData data = gc.getGCData ();
+		int /*long*/ cairo = data.cairo;
+		if (cairo != 0) {
+			Cairo.cairo_save (cairo);
+			if (control.backgroundImage != null) {
+				short [] root_x = new short [1], root_y = new short [1];
+				OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
+				short [] control_x = new short [1], control_y = new short [1];
+				OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
+				int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
+				Cairo.cairo_translate (cairo, -tileX, -tileY);
+				x += tileX;
+				y += tileY;
+				int xDisplay = OS.XtDisplay (handle);
+				int xVisual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
+				int xDrawable = control.backgroundImage.pixmap;				
+				int [] unused = new int [1];  int [] w = new int [1];  int [] h = new int [1];
+			 	OS.XGetGeometry (xDisplay, xDrawable, unused, unused, unused, w, h, unused, unused);
+				int /*long*/ surface = Cairo.cairo_xlib_surface_create (xDisplay, xDrawable, xVisual, w [0], h [0]);
+				if (surface == 0) error (SWT.ERROR_NO_HANDLES);
+				int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface (surface);
+				if (pattern == 0) error (SWT.ERROR_NO_HANDLES);
+				Cairo.cairo_pattern_set_extend (pattern, Cairo.CAIRO_EXTEND_REPEAT);
+				Cairo.cairo_set_source (cairo, pattern);
+				Cairo.cairo_surface_destroy (surface);
+				Cairo.cairo_pattern_destroy (pattern);
+			} else {
+				XColor color = getXColor (control.getBackgroundPixel ());
+				Cairo.cairo_set_source_rgba (cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+			}			
+			Cairo.cairo_rectangle (cairo, x, y, width, height);
+			Cairo.cairo_fill (cairo);
+			Cairo.cairo_restore (cairo);
 		} else {
-			OS.XGetGCValues (xDisplay, xGC, OS.GCBackground, values);
-			gc.setBackground (control.getBackground ());
-			gc.fillRectangle (x, y, width, height);
-			OS.XSetBackground (xDisplay, xGC, values.background);
+			int xDisplay = OS.XtDisplay (handle);
+			if (xDisplay == 0) return;
+			int xGC = gc.handle;
+			XGCValues values = new XGCValues();
+			if (control.backgroundImage != null) {
+				OS.XGetGCValues (xDisplay, xGC, OS.GCFillStyle | OS.GCTile | OS.GCTileStipXOrigin | OS.GCTileStipYOrigin, values);
+				short [] root_x = new short [1], root_y = new short [1];
+				OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
+				short [] control_x = new short [1], control_y = new short [1];
+				OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, control_x, control_y);
+				int tileX = root_x[0] - control_x[0], tileY = root_y[0] - control_y[0];
+				OS.XSetFillStyle (xDisplay, xGC, OS.FillTiled);
+				OS.XSetTSOrigin (xDisplay, xGC, -tileX, -tileY);
+				OS.XSetTile (xDisplay, xGC, control.backgroundImage.pixmap);
+				OS.XFillRectangle (data.display, data.drawable, xGC, x, y, width, height);
+				OS.XSetFillStyle (xDisplay, xGC, values.fill_style);
+				OS.XSetTSOrigin (xDisplay, xGC, values.ts_x_origin, values.ts_y_origin);
+			} else {
+				OS.XGetGCValues (xDisplay, xGC, OS.GCForeground, values);
+				OS.XSetForeground (xDisplay, xGC, control.getBackgroundPixel ());
+				OS.XFillRectangle (data.display, data.drawable, xGC, x, y, width, height);
+				OS.XSetForeground (xDisplay, xGC, values.foreground);
+			}
 		}
 	} else {
 		gc.fillRectangle (x, y, width, height);
