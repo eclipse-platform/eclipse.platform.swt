@@ -1176,6 +1176,8 @@ void HandleChecked (int sender, int e) {
 	int source = OS.RoutedEventArgs_Source (e);
 	TreeItem item = (TreeItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
+	// ignore events that result from the initial binding
+	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	if (item.grayed) {
 		int checkbox = item.findPart (0, CHECKBOX_PART_NAME);
 		if (checkbox != 0) {
@@ -1218,6 +1220,8 @@ void HandleIndeterminate (int sender, int e) {
 	int source = OS.RoutedEventArgs_Source (e);
 	TreeItem item = (TreeItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
+	// ignore events that result from the initial binding
+	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	if (!item.grayed) {
 		int checkbox = item.findPart (0, CHECKBOX_PART_NAME);
 		if (checkbox != 0) {
@@ -1284,6 +1288,8 @@ void HandleUnchecked (int sender, int e) {
 	int source = OS.RoutedEventArgs_Source (e);
 	TreeItem item = (TreeItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
+	// ignore events that result from the initial binding
+	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	item.checked = false;
 	item.updateCheckState (false);
 	Event event = new Event ();
