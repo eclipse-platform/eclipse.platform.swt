@@ -82,13 +82,6 @@ public FileDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-String createJavaString (int ptr) {
-	int charArray = OS.String_ToCharArray (ptr);
-	char [] chars = new char[OS.String_Length (ptr)];
-	OS.memcpy (chars, charArray, chars.length * 2);
-	return new String (chars);
-}
-
 /**
  * Returns the path of the first file that was
  * selected in the dialog relative to the filter path, or an
@@ -163,23 +156,12 @@ public String open () {
 	} else {
 		dialog = OS.gcnew_SaveFileDialog ();
 	}
-	if (title != null) {
-		int length = title.length ();
-		char [] buffer = new char [length + 1];
-		title.getChars (0, length, buffer, 0);
-		int titlePtr = OS.gcnew_String (buffer);
-		OS.FileDialog_Title (dialog, titlePtr);
-		OS.GCHandle_Free (titlePtr);
-	}
-
-	if (fileName != null) {
-		int length = fileName.length ();
-		char [] buffer = new char [length + 1];
-		fileName.getChars (0, length, buffer, 0);
-		int fileNamePtr = OS.gcnew_String (buffer);
-		OS.FileDialog_FileName (dialog, fileNamePtr);
-		OS.GCHandle_Free (fileNamePtr);
-	}
+	int titlePtr = parent.createDotNetString (title, false);
+	OS.FileDialog_Title (dialog, titlePtr);
+	OS.GCHandle_Free (titlePtr);
+	int fileNamePtr = parent.createDotNetString (fileName, false);
+	OS.FileDialog_FileName (dialog, fileNamePtr);
+	OS.GCHandle_Free (fileNamePtr);
 
 	if (filterExtensions != null && filterExtensions.length > 0) {
 		StringBuffer strFilter = new StringBuffer();
@@ -193,25 +175,17 @@ public String open () {
 			strFilter.append("|");
 			strFilter.append(filterExtensions [i]);
 		}
-		int length = strFilter.length ();
-		char [] buffer = new char [length + 1];
-		strFilter.getChars (0, length, buffer, 0);
-		int filterPtr = OS.gcnew_String (buffer);
+		int filterPtr = parent.createDotNetString(strFilter.toString (), false);
 		OS.FileDialog_Filter (dialog, filterPtr);
 		OS.GCHandle_Free (filterPtr);
 	}
 	
-	if (filterPath != null) {
-		int length = filterPath.length ();
-		char [] buffer = new char [length + 1];
-		filterPath.getChars (0, length, buffer, 0);
-		int filterPathPtr = OS.gcnew_String (buffer);
-		OS.FileDialog_InitialDirectory (dialog, filterPathPtr);
-		OS.GCHandle_Free (filterPathPtr);
-	}
+	int filterPathPtr = parent.createDotNetString (filterPath, false);
+	OS.FileDialog_InitialDirectory (dialog, filterPathPtr);
+	OS.GCHandle_Free (filterPathPtr);
 	
 	int parentHandle = (parent.style & SWT.ON_TOP) == 0 ? parent.shellHandle : 0;
-	boolean success = OS.CommonDialog_ShowDialog(dialog, parentHandle);
+	boolean success = OS.CommonDialog_ShowDialog (dialog, parentHandle);
 
 	/* Set the new path, file name and filter */
 	String fullPath = null;
@@ -223,10 +197,10 @@ public String open () {
 			int str = OS.IList_default (strings, i);
 			int fileInfo = OS.gcnew_FileInfo (str);
 			int name = OS.FileInfo_Name (fileInfo);
-			fileNames [i] = createJavaString (name);
+			fileNames [i] = parent.createJavaString (name);
 			if (i == 0) {
 				int dir = OS.FileInfo_DirectoryName (fileInfo);
-				filterPath = createJavaString (dir);
+				filterPath = parent.createJavaString (dir);
 				OS.GCHandle_Free (dir);
 			}
 			OS.GCHandle_Free (name);
