@@ -2611,13 +2611,7 @@ void sortAscending (int [] items) {
  */
 public Point toControl (int x, int y) {
 	checkWidget ();
-	int point = OS.gcnew_Point (x, y);
-	int result = OS.Visual_PointFromScreen (handle, point);
-	OS.GCHandle_Free (point);
-	x = (int) OS.Point_X (result);
-	y = (int) OS.Point_Y (result);
-	OS.GCHandle_Free (result);
-	return new Point (x, y);
+	return display.map (null, this, x, y);
 }
 
 /**
@@ -2660,13 +2654,7 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (int x, int y) {
 	checkWidget ();
-	int point = OS.gcnew_Point (x, y);
-	int result = OS.Visual_PointToScreen (handle, point);
-	OS.GCHandle_Free (point);
-	x = (int) OS.Point_X (result);
-	y = (int) OS.Point_Y (result);
-	OS.GCHandle_Free (result);
-	return new Point (x, y);
+	return display.map (this, null, x, y);
 }
 
 /**
@@ -2993,7 +2981,7 @@ public boolean setParent (Composite parent) {
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
-	return true;
+	return false;
 }
 
 }
