@@ -1732,23 +1732,39 @@ public Point map (Control from, Control to, Point point) {
  */
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
-	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (from != null && from.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (from == to) return new Point (x, y);
-	int point = OS.gcnew_Point (x, y);
-	if (from != null && OS.FrameworkElement_IsLoaded(from.handle)) {
-		int result = OS.Visual_PointToScreen (from.handle, point);
+	if (from != null && to != null) {
+		int point = OS.gcnew_Point (x, y);
+		int newPoint = OS.UIElement_TranslatePoint(from.topHandle (), point, to.topHandle ());
+		Point result = new Point ((int)OS.Point_X (newPoint), (int)OS.Point_Y (newPoint));
 		OS.GCHandle_Free (point);
-		point = result;
+		OS.GCHandle_Free (newPoint);
+		return result;
+	} else {
+		if (from == null) {
+			Shell shell = to.getShell ();
+			Point shellLocation = shell.getLocation ();
+			int point = OS.gcnew_Point (x - shellLocation.x, y - shellLocation.y);
+			OS.UIElement_UpdateLayout (to.topHandle ());
+			int newPoint = OS.UIElement_TranslatePoint (shell.shellHandle, point, to.topHandle ());
+			Point result = new Point ((int)OS.Point_X (newPoint), (int)OS.Point_Y (newPoint));
+			OS.GCHandle_Free (point);
+			OS.GCHandle_Free (newPoint);
+			return result;
+		} else {
+			Shell shell = from.getShell ();
+			Point shellLocation = shell.getLocation ();
+			int point = OS.gcnew_Point (x, y);
+			OS.UIElement_UpdateLayout (from.topHandle ());
+			int newPoint = OS.UIElement_TranslatePoint (from.topHandle (), point, shell.shellHandle);
+			Point result = new Point ((int)OS.Point_X (newPoint) + shellLocation.x, (int)OS.Point_Y (newPoint) + shellLocation.y);
+			OS.GCHandle_Free (point);
+			OS.GCHandle_Free (newPoint);
+			return result;
+		}
 	}
-	if (to != null && OS.FrameworkElement_IsLoaded(to.handle)) {
-		int result = OS.Visual_PointFromScreen (to.handle, point);
-		OS.GCHandle_Free (point);
-		point = result;
-	}
-	Point result = new Point ((int)OS.Point_X (point), (int)OS.Point_Y (point));
-	OS.GCHandle_Free (point);
-	return result;
 }
 
 /**
@@ -1836,8 +1852,8 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (from == to) return new Rectangle (x, y, width, height);
-	//FIXME - HACK
-	Point point = map(from, to, x, y);
+	//TODO
+	Point point = map (from, to, x, y);
 	return new Rectangle (point.x, point.y, width, height);
 }
 
