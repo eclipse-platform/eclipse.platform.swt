@@ -1421,8 +1421,10 @@ public void moveAbove (Control control) {
 		index = OS.UIElementCollection_Count (children) - 1;
 	}
 	int topHandle = topHandle ();
-	OS.UIElementCollection_Remove (children, topHandle);
-	OS.UIElementCollection_Insert (children, index, topHandle);
+	if (OS.UIElementCollection_IndexOf (children, topHandle) < index) {
+		OS.UIElementCollection_Remove (children, topHandle);
+		OS.UIElementCollection_Insert (children, index, topHandle);
+	}
 	OS.GCHandle_Free (children);
 }
 
@@ -1461,8 +1463,10 @@ public void moveBelow (Control control) {
 		index = 0;
 	}
 	int topHandle = topHandle ();
-	OS.UIElementCollection_Remove (children, topHandle);
-	OS.UIElementCollection_Insert (children, index, topHandle);
+	if (OS.UIElementCollection_IndexOf (children, topHandle) > index) {
+		OS.UIElementCollection_Remove (children, topHandle);
+		OS.UIElementCollection_Insert (children, index, topHandle);
+	}
 	OS.GCHandle_Free (children);
 }
 
