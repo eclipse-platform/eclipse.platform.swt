@@ -316,11 +316,10 @@ void columnRemoved(int index) {
 }
 
 void createHandle () {
-	int headerHandle;
 	if (handle == 0) {
 		handle = OS.gcnew_TreeViewItem ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		headerHandle = OS.gcnew_SWTTreeViewRowPresenter (parent.handle);
+		int headerHandle = OS.gcnew_SWTTreeViewRowPresenter (parent.handle);
 		if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.GridViewRowPresenterBase_Columns (headerHandle, parent.columns);
 		OS.HeaderedItemsControl_Header (handle, headerHandle);
@@ -328,8 +327,6 @@ void createHandle () {
 		OS.GridViewRowPresenter_Content (headerHandle, row);
 		OS.GCHandle_Free (headerHandle);
 		OS.GCHandle_Free (row);
-	} else {
-		headerHandle = OS.HeaderedItemsControl_Header (handle);
 	}
 	OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Stretch);
 	OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
