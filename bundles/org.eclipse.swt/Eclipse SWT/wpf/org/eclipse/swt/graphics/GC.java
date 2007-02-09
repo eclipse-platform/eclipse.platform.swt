@@ -73,6 +73,7 @@ public final class GC extends Resource {
 
 	static final int DRAW = FOREGROUND | LINE_STYLE | LINE_WIDTH | LINE_CAP | LINE_JOIN | ALPHA | CLIPPING | TRANSFORM;
 	static final int FILL = BACKGROUND | ALPHA | CLIPPING | TRANSFORM;
+	static final int IMAGE = ALPHA | CLIPPING | TRANSFORM;
 
 	static final double[] LINE_DOT_ZERO = new double[]{3, 3};
 	static final double[] LINE_DASH_ZERO = new double[]{18, 6};
@@ -583,6 +584,7 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+	checkGC(IMAGE);
 	int imageHandle = image.handle;
 	int imgWidth = OS.BitmapSource_PixelWidth(imageHandle);
 	int imgHeight = OS.BitmapSource_PixelHeight(imageHandle);
