@@ -617,9 +617,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						event.gc = gc;
 						event.detail |= SWT.FOREGROUND;
 						if (clrTextBk != -1) event.detail |= SWT.BACKGROUND;
-						if (selected && (style & SWT.FULL_SELECTION) != 0) event.detail |= SWT.SELECTED;
-						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-							if (/*nmcd.iSubItem == 0 ||*/ (style & SWT.FULL_SELECTION) != 0) {
+						if ((style & SWT.FULL_SELECTION) != 0) {
+							if (selected) event.detail |= SWT.SELECTED;
+							//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+							if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
 								if (handle == OS.GetFocus ()) {
 									int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 									if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
@@ -640,8 +641,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						if (event.doit) {
 							ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
 							ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
-							ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
-							ignoreDrawFocus = (event.detail & SWT.FOCUSED) == 0;
+							if ((style & SWT.FULL_SELECTION) != 0) {
+								ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+								ignoreDrawFocus = (event.detail & SWT.FOCUSED) == 0;
+							}
 						} else {
 							ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = true;
 						}
@@ -795,7 +798,8 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				if (selected && (i == 0 /*nmcd.iSubItem == 0*/ || (style & SWT.FULL_SELECTION) != 0)) {
 					event.detail |= SWT.SELECTED;
 				}
-				if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+				//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+				if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
 					if (i == 0 /*nmcd.iSubItem == 0*/ || (style & SWT.FULL_SELECTION) != 0) {
 						if (handle == OS.GetFocus ()) {
 							int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
@@ -860,6 +864,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 							OS.GetClientRect (handle, rect);
 							focusRect.right = Math.max (width, rect.right);
 						}
+						OS.DrawFocusRect (hDC, focusRect);
 					} else {
 						RECT focusRect = item.getBounds (0, true, false, false, false, false, hDC);
 						RECT clipRect = item.getBounds (0, true, false, false, false, true, hDC);
@@ -1055,12 +1060,11 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			event.detail |= SWT.FOREGROUND;
 			if (clrTextBk != -1) event.detail |= SWT.BACKGROUND;
 			if (selected) event.detail |= SWT.SELECTED;
-			if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-				if (/*nmcd.iSubItem == 0 ||*/ (style & SWT.FULL_SELECTION) != 0) {
-					if (handle == OS.GetFocus ()) {
-						int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-						if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
-					}
+			//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+			if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
+				if (handle == OS.GetFocus ()) {
+					int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+					if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
 				}
 			}
 			event.x = cellRect.left;
