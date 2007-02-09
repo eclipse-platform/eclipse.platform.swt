@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.*;
 
 public class TreeDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
-	static final int EXPAND_HYSTERESIS = 300; // milli seconds
+	static final int EXPAND_HYSTERESIS = 1000; // milli seconds
 
 	int currentEffect = DND.FEEDBACK_NONE;
 	TreeItem currentItem;
