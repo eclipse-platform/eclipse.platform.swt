@@ -68,7 +68,7 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawSelection;
+	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
@@ -341,7 +341,88 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+LRESULT CDDS_ITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
+	/*
+	* Bug in Windows.  When the table has the extended style
+	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+	* CLR_NONE to make the table transparent, Windows fills
+	* a black rectangle around any column that contains an
+	* image.  The fix is clear LVS_EX_FULLROWSELECT during
+	* custom draw.
+	* 
+	* NOTE: Since CDIS_FOCUS is cleared during custom draw,
+	* it is necessary to draw the focus rectangle after the
+	* item has been drawn.
+	*/
+	if (!ignoreCustomDraw && !ignoreDrawFocus && nmcd.left != nmcd.right) {
+		if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
+			if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
+				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+					int dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+					if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) == 0) {
+//						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+						if (OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED) == nmcd.dwItemSpec) {
+							if (handle == OS.GetFocus ()) {
+								int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+								if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+									RECT rect = new RECT ();
+									rect.left = OS.LVIR_BOUNDS;
+									boolean oldIgnore = ignoreCustomDraw;
+									ignoreCustomDraw = true;
+									OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, rect);
+									int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+									int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+									RECT itemRect = new RECT ();
+									if (index == 0) {
+										itemRect.left = OS.LVIR_LABEL;
+										OS.SendMessage (handle, OS. LVM_GETITEMRECT, index, itemRect);
+									} else {
+										itemRect.top = index;
+										itemRect.left = OS.LVIR_ICON;
+										OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, nmcd.dwItemSpec, itemRect);
+									}
+									ignoreCustomDraw = oldIgnore;
+									rect.left = itemRect.left;
+									OS.DrawFocusRect (nmcd.hdc, rect);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return null;
+}
+
 LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
+	/*
+	* Bug in Windows.  When the table has the extended style
+	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
+	* CLR_NONE to make the table transparent, Windows fills
+	* a black rectangle around any column that contains an
+	* image.  The fix is clear LVS_EX_FULLROWSELECT during
+	* custom draw.
+	* 
+	* NOTE: It is also necessary to clear CDIS_FOCUS to stop
+	* the table from drawing the focus rectangle around the
+	* first item instead of the full row.
+	*/
+	if (!ignoreCustomDraw) {
+		if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
+			if (!explorerTheme && (style & SWT.FULL_SELECTION) != 0) {
+				if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) == OS.CLR_NONE) {
+					int dwExStyle = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+					if ((dwExStyle & OS.LVS_EX_FULLROWSELECT) == 0) {
+						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+							nmcd.uItemState &= ~OS.CDIS_FOCUS;
+							OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+						}
+					}
+				}
+			}
+		}
+	}
 	return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
 
@@ -499,7 +580,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	}
 	int code = OS.CDRF_DODEFAULT;
 	selectionForeground = -1;
-	ignoreDrawForeground = ignoreDrawSelection = ignoreDrawBackground = false;
+	ignoreDrawForeground = ignoreDrawSelection = ignoreDrawFocus = ignoreDrawBackground = false;
 	if (OS.IsWindowVisible (handle)) {
 		if (hooks (SWT.MeasureItem)) {
 			sendMeasureItemEvent (item, nmcd.dwItemSpec, nmcd.iSubItem, nmcd.hdc);
@@ -2914,7 +2995,8 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	event.gc = gc;
 	event.index = nmcd.iSubItem;
 	event.detail |= SWT.FOREGROUND;
-	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+//	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+	if (OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED) == nmcd.dwItemSpec) {
 		if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
 			if (handle == OS.GetFocus ()) {
 				int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
@@ -2939,15 +3021,16 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
 		ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
 		ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+		ignoreDrawFocus = (event.detail & SWT.FOCUSED) == 0;
 	} else {
-		ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = true;
+		ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = true;
 	}
 	if (drawSelected) {
 		if (ignoreDrawSelection) {
 			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
 				selectionForeground = clrSelectionText;
 			}
-			nmcd.uItemState &= ~(OS.CDIS_SELECTED | OS.CDIS_FOCUS);
+			nmcd.uItemState &= ~OS.CDIS_SELECTED;
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
 	} else {
@@ -2955,6 +3038,10 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 			nmcd.uItemState |= OS.CDIS_SELECTED;
 			OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 		}
+	}
+	if (ignoreDrawFocus) {
+		nmcd.uItemState &= ~OS.CDIS_FOCUS;
+		OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 	}
 	if (ignoreDrawForeground) {
 		RECT clipRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, false, hDC);
@@ -3180,7 +3267,8 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	event.gc = gc;
 	event.index = nmcd.iSubItem;
 	event.detail |= SWT.FOREGROUND;
-	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+//	if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+	if (OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED) == nmcd.dwItemSpec) {
 		if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
 			if (handle == OS.GetFocus ()) {
 				int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
@@ -5698,6 +5786,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			switch (nmcd.dwDrawStage) {
 				case OS.CDDS_PREPAINT: return CDDS_PREPAINT (nmcd, wParam, lParam);
 				case OS.CDDS_ITEMPREPAINT: return CDDS_ITEMPREPAINT (nmcd, wParam, lParam);
+				case OS.CDDS_ITEMPOSTPAINT: return CDDS_ITEMPOSTPAINT (nmcd, wParam, lParam);
 				case OS.CDDS_SUBITEMPREPAINT: return CDDS_SUBITEMPREPAINT (nmcd, wParam, lParam);
 				case OS.CDDS_SUBITEMPOSTPAINT: return CDDS_SUBITEMPOSTPAINT (nmcd, wParam, lParam);
 				case OS.CDDS_POSTPAINT: return CDDS_POSTPAINT (nmcd, wParam, lParam);

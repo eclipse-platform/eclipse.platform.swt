@@ -79,8 +79,8 @@ public class Tree extends Composite {
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
 	boolean linesVisible, customDraw, printClient, painted, ignoreItemHeight;
-	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawSelection;
-	boolean ignoreFullSelection, explorerTheme;
+	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus;
+	boolean ignoreDrawSelection, ignoreFullSelection, explorerTheme;
 	int scrollWidth, itemToolTipHandle, headerToolTipHandle, selectionForeground;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
@@ -426,7 +426,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	}
 	int count = 0;
 	int [] order = null;
-	RECT clientRect = new RECT (), focusRect = null;
+	RECT clientRect = new RECT ();
 	OS.GetClientRect (scrolledHandle (), clientRect);
 	if (hwndHeader != 0) {
 		OS.MapWindowPoints (hwndParent, handle, clientRect, 2);
@@ -527,7 +527,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				}
 			} else {
 				selectionForeground = -1;
-				ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = false;
+				ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = false;
 				OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom - gridWidth);
 				backgroundRect = rect;
 			}
@@ -641,8 +641,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 							ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
 							ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
 							ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+							ignoreDrawFocus = (event.detail & SWT.FOCUSED) == 0;
 						} else {
-							ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = true;
+							ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = true;
 						}
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							if (ignoreDrawSelection) ignoreFullSelection = true;
@@ -687,22 +688,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 								int right = Math.min (rect.right, width);
 								OS.SetRect (rect, rect.left, rect.top, right, rect.bottom);
 								if (drawBackground) fillImageBackground (hDC, control, rect);
-								if (!ignoreDrawSelection) {
-									if (handle == OS.GetFocus ()) {
-										int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-										if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
-											int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-											if (hItem == item.handle) {
-												if ((style & SWT.FULL_SELECTION) != 0) {
-													focusRect = new RECT ();
-													OS.SetRect (focusRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-												} else {
-													focusRect = item.getBounds (index, true, false, false, false, true, hDC);
-												}
-											}
-										}
-									}
-								}
 							} else {
 								if (drawBackground) fillImageBackground (hDC, control, rect);
 							}
@@ -853,7 +838,39 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 		OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 	}
-	if (focusRect != null) OS.DrawFocusRect (hDC, focusRect);
+	if (handle == OS.GetFocus ()) {
+		int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+		if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+			if (hItem == item.handle) {
+				if ((!ignoreDrawFocus && hooks (SWT.PaintItem)) || findImageControl () != null) {
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						RECT focusRect = new RECT ();
+						OS.SetRect (focusRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						if (count > 0 && hwndHeader != 0) {
+							int width = 0;
+							HDITEM hdItem = new HDITEM ();
+							hdItem.mask = OS.HDI_WIDTH;
+							for (int j=0; j<count; j++) {
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
+								width += hdItem.cxy;
+							}
+							focusRect.left = 0;
+							RECT rect = new RECT ();
+							OS.GetClientRect (handle, rect);
+							focusRect.right = Math.max (width, rect.right);
+						}
+					} else {
+						RECT focusRect = item.getBounds (0, true, false, false, false, false, hDC);
+						RECT clipRect = item.getBounds (0, true, false, false, false, true, hDC);
+						OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+						OS.DrawFocusRect (hDC, focusRect);
+						OS.SelectClipRgn (hDC, 0);
+					}
+				}
+			}
+		}
+	}
 	return new LRESULT (OS.CDRF_DODEFAULT);
 }
 
@@ -1002,7 +1019,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			if (event.height > getItemHeight ()) setItemHeight (event.height);
 		}
 		selectionForeground = -1;
-		ignoreDrawForeground = ignoreDrawSelection = ignoreFullSelection = ignoreDrawBackground = false;
+		ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = ignoreFullSelection = false;
 		if (hooks (SWT.EraseItem)) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
@@ -1059,12 +1076,13 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			if (isDisposed () || item.isDisposed ()) return null;
 			if (event.doit) {
 				ignoreDrawForeground = (event.detail & SWT.FOREGROUND) == 0;
-				ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
 				ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
+				ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
+				ignoreDrawFocus = (event.detail & SWT.FOCUSED) == 0;
 			} else {
-				ignoreDrawForeground = ignoreDrawSelection = ignoreDrawBackground = true;
+				ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = true;
 			}
-			if (!ignoreDrawBackground && !ignoreDrawSelection && clrTextBk != -1) {
+			if (!ignoreDrawBackground && clrTextBk != -1) {
 				if (count == 0) {
 					if ((style & SWT.FULL_SELECTION) != 0) {
 						fillBackground (hDC, clrTextBk, rect);
