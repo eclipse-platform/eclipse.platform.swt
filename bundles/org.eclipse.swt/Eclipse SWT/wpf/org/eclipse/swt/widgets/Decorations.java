@@ -476,17 +476,6 @@ public String getText () {
 	return string;
 }
 
-public boolean isReparentable () {
-	checkWidget ();
-	/*
-	* Feature in Windows.  Calling SetParent() for a shell causes
-	* a kind of fake MDI to happen.  It doesn't work well on Windows
-	* and is not supported on the other platforms.  The fix is to
-	* disallow the SetParent().
-	*/
-	return false;
-}
-
 boolean isTabGroup () {
 	/*
 	* Can't test WS_TAB bits because they are the same as WS_MAXIMIZEBOX.
