@@ -1639,7 +1639,7 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 		OS.GetSuperControl (theControl [0], theControl);
 		widget = display.getWidget (theControl [0]);
 	}
-	if (widget == this) {
+	if (widget == this && isEnabled ()) {
 		int x, y;
 		Rect rect = new Rect ();
 		int window = OS.GetControlOwner (handle);
