@@ -14,7 +14,6 @@ import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.internal.LONG;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.Cocoa;
 import org.eclipse.swt.internal.cocoa.NSRect;
