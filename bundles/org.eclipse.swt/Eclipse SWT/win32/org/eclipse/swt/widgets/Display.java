@@ -3025,7 +3025,7 @@ public boolean post (Event event) {
 						case SWT.SCROLL_LINE:
 							int [] value = new int [1];
 							OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
-							inputs.mouseData = event.detail * OS.WHEEL_DELTA / value [0];
+							inputs.mouseData = event.count * OS.WHEEL_DELTA / value [0];
 							break;
 						default: return false;
 					}
