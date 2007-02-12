@@ -1556,7 +1556,9 @@ public void remove (int [] indices) {
 	}
 	int items = OS.ItemsControl_Items (handle);
 	for (int i = newIndices.length-1; i >= 0; i--) {
-		OS.ItemCollection_RemoveAt (items, indices [i]);
+		TableItem item = getItem (items, i, false);
+		if (item != null && !item.isDisposed ()) item.release (false);
+		OS.ItemCollection_RemoveAt (items, newIndices [i]);
 	}
 	itemCount = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
@@ -1578,8 +1580,10 @@ public void remove (int [] indices) {
  */
 public void remove (int index) {
 	checkWidget ();
-	if (!(0 <= index && index < itemCount)) return;
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	int items = OS.ItemsControl_Items (handle);
+	TableItem item = getItem (items, index, false);
+	if (item != null && !item.isDisposed ()) item.release (false);
 	OS.ItemCollection_RemoveAt (items, index);
 	itemCount = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
@@ -1611,6 +1615,8 @@ public void remove (int start, int end) {
 	} 
 	int items = OS.ItemsControl_Items (handle);
 	for (int i = end; i >= start; i--) {
+		TableItem item = getItem (items, i, false);
+		if (item != null && !item.isDisposed ()) item.release (false);
 		OS.ItemCollection_RemoveAt (items, i);
 	}
 	itemCount = OS.ItemCollection_Count (items);
