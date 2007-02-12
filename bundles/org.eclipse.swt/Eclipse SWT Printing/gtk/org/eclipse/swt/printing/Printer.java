@@ -99,7 +99,7 @@ static int /*long*/ GtkPrinterFunc_List (int /*long*/ printer, int /*long*/ user
 public static PrinterData getDefaultPrinterData() {
 	printerList = new PrinterData [1];
 	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0)) {
-		return printerList[0];
+		return null;
 	}
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_Default", 2); //$NON-NLS-1$
 	int /*long*/ GtkPrinterFunc_Default = printerCallback.getAddress();
