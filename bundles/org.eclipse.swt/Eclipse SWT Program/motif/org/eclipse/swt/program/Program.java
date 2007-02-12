@@ -17,7 +17,6 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gnome.*;
 import org.eclipse.swt.internal.cde.*;
 import org.eclipse.swt.internal.motif.*;
-import org.eclipse.swt.program.*;
 import org.eclipse.swt.widgets.*;
 
 import java.io.*;

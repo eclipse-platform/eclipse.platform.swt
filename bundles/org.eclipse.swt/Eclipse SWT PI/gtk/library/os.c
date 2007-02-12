@@ -9071,7 +9071,23 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1menu_1shell_1set_1take_1focus)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
 	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1shell_1set_1take_1focus_FUNC);
+/*
 	gtk_menu_shell_set_take_focus((GtkMenuShell *)arg0, (gboolean)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkMenuShell *, gboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_menu_shell_set_take_focus_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_menu_shell_set_take_focus");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkMenuShell *)arg0, (gboolean)arg1);
+		}
+	}
 	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1shell_1set_1take_1focus_FUNC);
 }
 #endif
