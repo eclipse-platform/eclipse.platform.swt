@@ -2996,7 +2996,8 @@ public boolean post (Event event) {
 		}
 		case SWT.MouseDown:
 		case SWT.MouseMove:
-		case SWT.MouseUp: {
+		case SWT.MouseUp:
+		case SWT.MouseWheel: {
 			MOUSEINPUT inputs = new MOUSEINPUT ();
 			if (type == SWT.MouseMove){
 				inputs.dwFlags = OS.MOUSEEVENTF_MOVE | OS.MOUSEEVENTF_ABSOLUTE;
@@ -3014,23 +3015,39 @@ public boolean post (Event event) {
 				inputs.dx = ((event.x - x) * 65535 + width - 2) / (width - 1);
 				inputs.dy = ((event.y - y) * 65535 + height - 2) / (height - 1);
 			} else {
-				switch (event.button) {
-					case 1: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
-					case 2: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_MIDDLEDOWN : OS.MOUSEEVENTF_MIDDLEUP; break;
-					case 3: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_RIGHTDOWN : OS.MOUSEEVENTF_RIGHTUP; break;
-					case 4: {
-						if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
-						inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
-						inputs.mouseData = OS.XBUTTON1;
-						break;
+				if (type == SWT.MouseWheel) {
+					if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
+					inputs.dwFlags = OS.MOUSEEVENTF_WHEEL;
+					switch (event.detail) {
+						case SWT.SCROLL_PAGE:
+							inputs.mouseData = event.count * OS.WHEEL_DELTA;
+							break;
+						case SWT.SCROLL_LINE:
+							int [] value = new int [1];
+							OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
+							inputs.mouseData = event.detail * OS.WHEEL_DELTA / value [0];
+							break;
+						default: return false;
 					}
-					case 5: {
-						if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
-						inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
-						inputs.mouseData = OS.XBUTTON2;
-						break;
+				} else {
+					switch (event.button) {
+						case 1: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_LEFTDOWN : OS.MOUSEEVENTF_LEFTUP; break;
+						case 2: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_MIDDLEDOWN : OS.MOUSEEVENTF_MIDDLEUP; break;
+						case 3: inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_RIGHTDOWN : OS.MOUSEEVENTF_RIGHTUP; break;
+						case 4: {
+							if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
+							inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
+							inputs.mouseData = OS.XBUTTON1;
+							break;
+						}
+						case 5: {
+							if (OS.WIN32_VERSION < OS.VERSION (5, 0)) return false;
+							inputs.dwFlags = type == SWT.MouseDown ? OS.MOUSEEVENTF_XDOWN : OS.MOUSEEVENTF_XUP;
+							inputs.mouseData = OS.XBUTTON2;
+							break;
+						}
+						default: return false;
 					}
-					default: return false;
 				}
 			}
 			int hHeap = OS.GetProcessHeap ();
