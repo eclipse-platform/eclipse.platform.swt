@@ -174,6 +174,9 @@ void _setVisible (boolean visible) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
+			if ((OS.GTK_VERSION >=  OS.VERSION (2, 8, 0))) {
+				OS.gtk_menu_shell_set_take_focus (handle, false);
+			}
 			int /*long*/ address = hasLocation ? display.menuPositionProc: 0;
 			/*
 			* Bug in GTK.  The timestamp passed into gtk_menu_popup is used

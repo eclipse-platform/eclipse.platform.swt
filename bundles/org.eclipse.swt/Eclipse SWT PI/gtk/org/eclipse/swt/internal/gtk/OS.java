@@ -5657,6 +5657,15 @@ public static final void gtk_menu_shell_select_item(int /*long*/ menu_shell, int
 		lock.unlock();
 	}
 }
+public static final native void _gtk_menu_shell_set_take_focus(int /*long*/ menu_shell, boolean take_focus);
+public static final void gtk_menu_shell_set_take_focus(int /*long*/ menu_shell, boolean take_focus) {
+	lock.lock();
+	try {
+		_gtk_menu_shell_set_take_focus(menu_shell, take_focus);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_message_dialog_new(int /*long*/ parent, int flags, int type, int buttons, byte[] message_format);
 public static final int /*long*/ gtk_message_dialog_new(int /*long*/ parent, int flags, int type, int buttons, byte[] message_format) {
 	lock.lock();

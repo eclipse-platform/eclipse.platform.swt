@@ -672,6 +672,7 @@ typedef enum {
 	_1gtk_1menu_1shell_1deactivate_FUNC,
 	_1gtk_1menu_1shell_1insert_FUNC,
 	_1gtk_1menu_1shell_1select_1item_FUNC,
+	_1gtk_1menu_1shell_1set_1take_1focus_FUNC,
 	_1gtk_1message_1dialog_1new_FUNC,
 	_1gtk_1micro_1version_FUNC,
 	_1gtk_1minor_1version_FUNC,

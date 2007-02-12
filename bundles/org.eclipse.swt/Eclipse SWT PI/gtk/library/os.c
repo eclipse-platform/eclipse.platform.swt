@@ -9066,6 +9066,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1menu_1shell_1select_1item)
 }
 #endif
 
+#ifndef NO__1gtk_1menu_1shell_1set_1take_1focus
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1menu_1shell_1set_1take_1focus)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1menu_1shell_1set_1take_1focus_FUNC);
+	gtk_menu_shell_set_take_focus((GtkMenuShell *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1menu_1shell_1set_1take_1focus_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1message_1dialog_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1message_1dialog_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
