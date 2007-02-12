@@ -1014,12 +1014,11 @@ void hookEvents () {
 void HandleContextMenuOpening (int sender, int e) {
 	if (!checkEvent (e)) return;
 	int mouse = OS.Mouse_GetPosition (handle);
-	int mouse2 = OS.Visual_PointToScreen (handle, mouse);
-	int x = (int) OS.Point_X (mouse2);
-	int y = (int) OS.Point_Y (mouse2);
+	int x = (int) OS.Point_X (mouse);
+	int y = (int) OS.Point_Y (mouse);
 	OS.GCHandle_Free (mouse);
-	OS.GCHandle_Free (mouse2);
-	showMenu (x, y);
+	Point point = display.map (this, null, x, y);
+	showMenu (point.x, point.y);
 	OS.RoutedEventArgs_Handled (e, true);
 }
 
