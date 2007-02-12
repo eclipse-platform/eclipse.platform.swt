@@ -1060,11 +1060,26 @@ public void drawText (String string, int x, int y, int flags) {
 	if (length == 0) return;
 	checkGC(FONT | FOREGROUND | ALPHA | CLIPPING | TRANSFORM | ((flags & SWT.DRAW_TRANSPARENT) != 0 ? 0 : BACKGROUND));
 	char [] buffer = new char [length + 1];
-	string.getChars (0, length, buffer, 0);
-	if ((flags & (SWT.DRAW_DELIMITER | SWT.DRAW_TAB)) != (SWT.DRAW_DELIMITER | SWT.DRAW_TAB)) {
+	string.getChars(0, length, buffer, 0);
+	int mask = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+	int mnemonic = -1;
+	if ((flags & mask) != mask) {
 		for (int i = 0, j = 0; i < buffer.length; i++) {
 			char c = buffer[i];
 			switch (c) {
+				case '&': {
+					if ((flags & SWT.DRAW_MNEMONIC) != 0) {
+						if (i + 1 < length) {
+							if (buffer[i + 1] == '&') {
+								i++;
+							} else {
+								if (mnemonic == -1) mnemonic = j;
+							}
+						}
+						continue;
+					}
+					break;
+				}
 				case '\r':
 				case '\n':
 					if ((flags & SWT.DRAW_DELIMITER) == 0) continue;
@@ -1083,6 +1098,14 @@ public void drawText (String string, int x, int y, int flags) {
 	int brush = OS.Pen_Brush(data.pen);
 	int text = OS.gcnew_FormattedText(str, culture, direction, font.handle, font.size, brush);
 	int point = OS.gcnew_Point(x, y);
+	if (mnemonic != -1) {
+		int underline = OS.TextDecorations_Underline();
+		int decorations = OS.gcnew_TextDecorationCollection(1);
+		OS.TextDecorationCollection_Add(decorations, underline);
+		OS.FormattedText_SetTextDecorations(text, decorations, mnemonic, 1);
+		OS.GCHandle_Free(decorations);
+		OS.GCHandle_Free(underline);
+	}
 	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 		double width = OS.FormattedText_WidthIncludingTrailingWhitespace(text);
 		double height = OS.FormattedText_Height(text);
