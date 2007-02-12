@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.win32;
+package org.eclipse.swt.internal;
 
 public class LONG {
 	public int /*long*/ value;
