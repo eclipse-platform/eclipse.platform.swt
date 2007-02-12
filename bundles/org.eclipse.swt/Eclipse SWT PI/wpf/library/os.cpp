@@ -3001,6 +3001,17 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(FormattedText_1Height)
 }
 #endif
 
+#ifndef NO_FormattedText_1SetTextDecorations
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FormattedText_1SetTextDecorations)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3);
+JNIEXPORT void JNICALL OS_NATIVE(FormattedText_1SetTextDecorations)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, FormattedText_1SetTextDecorations_FUNC);
+	((FormattedText^)TO_OBJECT(arg0))->SetTextDecorations((TextDecorationCollection^)TO_OBJECT(arg1), arg2, arg3);
+	OS_NATIVE_EXIT(env, that, FormattedText_1SetTextDecorations_FUNC);
+}
+#endif
+
 #ifndef NO_FormattedText_1WidthIncludingTrailingWhitespace
 extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(FormattedText_1WidthIncludingTrailingWhitespace)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jdouble JNICALL OS_NATIVE(FormattedText_1WidthIncludingTrailingWhitespace)
@@ -10272,6 +10283,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(VisualTreeHelper_1GetParent)
 	OS_NATIVE_ENTER(env, that, VisualTreeHelper_1GetParent_FUNC);
 	rc = (jint)TO_HANDLE(VisualTreeHelper::GetParent((DependencyObject^)TO_OBJECT(arg0)));
 	OS_NATIVE_EXIT(env, that, VisualTreeHelper_1GetParent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Visual_1IsAncestorOf
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Visual_1IsAncestorOf)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Visual_1IsAncestorOf)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Visual_1IsAncestorOf_FUNC);
+	rc = (jboolean)((Visual^)TO_OBJECT(arg0))->IsAncestorOf((DependencyObject^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Visual_1IsAncestorOf_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Visual_1IsDescendantOf
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Visual_1IsDescendantOf)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Visual_1IsDescendantOf)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Visual_1IsDescendantOf_FUNC);
+	rc = (jboolean)((Visual^)TO_OBJECT(arg0))->IsDescendantOf((DependencyObject^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Visual_1IsDescendantOf_FUNC);
 	return rc;
 }
 #endif

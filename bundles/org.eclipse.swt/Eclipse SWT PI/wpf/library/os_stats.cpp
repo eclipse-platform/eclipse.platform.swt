@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1031;
-int OS_nativeFunctionCallCount[1031];
+int OS_nativeFunctionCount = 1034;
+int OS_nativeFunctionCallCount[1034];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -259,6 +259,7 @@ char * OS_nativeFunctionNames[] = {
 	"FormattedText_1BuildGeometry",
 	"FormattedText_1BuildHighlightGeometry",
 	"FormattedText_1Height",
+	"FormattedText_1SetTextDecorations",
 	"FormattedText_1WidthIncludingTrailingWhitespace",
 	"FormsCommonDialog_1ShowDialog",
 	"FrameworkContentElement_1Parent",
@@ -863,6 +864,8 @@ char * OS_nativeFunctionNames[] = {
 	"VisualTreeHelper_1GetChild",
 	"VisualTreeHelper_1GetChildrenCount",
 	"VisualTreeHelper_1GetParent",
+	"Visual_1IsAncestorOf",
+	"Visual_1IsDescendantOf",
 	"Visual_1PointFromScreen",
 	"Visual_1PointToScreen",
 	"WindowCollection_1Count",
