@@ -3302,9 +3302,11 @@ void setBackgroundPixel (int newPixel) {
 	if (newPixel == -1) newPixel = defaultBackground ();
 	int oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
 	if (oldPixel != newPixel) {
-		OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, newPixel);
-		OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
-		if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
+		if (oldPixel != OS.CLR_NONE) {
+			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, newPixel);
+			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
+			if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
+		}
 		/*
 		* Feature in Windows.  When the background color is changed,
 		* the table does not redraw until the next WM_PAINT.  The fix
