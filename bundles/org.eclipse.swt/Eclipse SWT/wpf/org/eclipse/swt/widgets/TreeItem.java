@@ -339,7 +339,7 @@ void deregister () {
 
 void destroyWidget () {
 	parent.destroyItem (this);
-	super.destroyWidget ();
+	releaseHandle ();
 }
 
 int findContentPresenter (int element, int column) {

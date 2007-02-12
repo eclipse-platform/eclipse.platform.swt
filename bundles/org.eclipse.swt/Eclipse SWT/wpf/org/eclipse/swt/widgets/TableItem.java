@@ -182,7 +182,7 @@ void deregister () {
 
 void destroyWidget () {
 	parent.destroyItem (this);
-	super.destroyWidget ();
+	releaseHandle ();
 }
 
 int findRowPresenter (int current, int rowPresenterType) {

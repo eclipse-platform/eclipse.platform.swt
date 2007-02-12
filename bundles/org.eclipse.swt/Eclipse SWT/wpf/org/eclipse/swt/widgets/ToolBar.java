@@ -426,8 +426,12 @@ void removeControl (Control control) {
 	int items = OS.ItemsControl_Items (handle);
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = getItem (items, i);
-		if (item.control == control) item.setControl (null);
+		if (item.control == control) {
+			item.setControl (null);
+			break;
+		}
 	}
+	OS.GCHandle_Free (items);
 }
 
 int setBounds (int x, int y, int width, int height, int flags) {

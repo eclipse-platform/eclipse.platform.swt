@@ -359,7 +359,10 @@ void removeControl (Control control) {
 	super.removeControl (control);
 	for (int i=0; i<itemCount; i++) {
 		ExpandItem item = items [i];
-		if (item.control == control) item.setControl (null);
+		if (item.control == control) {
+			item.setControl (null);
+			break;
+		}
 	}
 }
 

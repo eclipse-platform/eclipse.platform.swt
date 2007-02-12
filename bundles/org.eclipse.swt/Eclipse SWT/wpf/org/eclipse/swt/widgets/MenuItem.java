@@ -227,7 +227,7 @@ void deregister () {
 
 void destroyWidget () {
 	parent.destroyItem (this);
-	super.destroyWidget ();
+	releaseHandle ();
 }
 
 void fixMenus (Decorations newParent) {
