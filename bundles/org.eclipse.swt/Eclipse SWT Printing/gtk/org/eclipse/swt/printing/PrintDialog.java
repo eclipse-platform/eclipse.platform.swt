@@ -217,7 +217,7 @@ public void setPrintToFile(boolean printToFile) {
  * </ul>
  */
 public PrinterData open() {
-	if (OS.GTK_VERSION < OS.VERSION (2, 9, 0)) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0)) {
 		return Printer.getDefaultPrinterData();
 	} else {
 		byte [] titleBytes = Converter.wcsToMbcs (null, getText(), true);
