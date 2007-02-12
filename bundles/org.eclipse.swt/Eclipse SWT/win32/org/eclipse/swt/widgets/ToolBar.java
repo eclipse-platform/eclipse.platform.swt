@@ -1021,22 +1021,20 @@ LRESULT WM_CAPTURECHANGED (int wParam, int lParam) {
 	if (result != null) return result;
 	/*
 	* Bug in Windows.  When the tool bar loses capture while an
-	* item is pressed in WM_LBUTTONDOWN, the item remains pressed.
-	* The fix is unpress the item using TB_SETSTATE.
+	* item is pressed, the item remains pressed.  The fix is
+	* unpress all items using TB_SETSTATE and TBSTATE_PRESSED.
 	*/
-	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
-		for (int i=0; i<items.length; i++) {
-			ToolItem item = items [i];
-			if (item != null) {
-				int fsState = OS.SendMessage (handle, OS.TB_GETSTATE, item.id, 0);
-				if ((fsState & OS.TBSTATE_PRESSED) != 0) {
-					fsState &= ~OS.TBSTATE_PRESSED;
-					OS.SendMessage (handle, OS.TB_SETSTATE, item.id, fsState);
-				}
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) {
+			int fsState = OS.SendMessage (handle, OS.TB_GETSTATE, item.id, 0);
+			if ((fsState & OS.TBSTATE_PRESSED) != 0) {
+				fsState &= ~OS.TBSTATE_PRESSED;
+				OS.SendMessage (handle, OS.TB_SETSTATE, item.id, fsState);
 			}
 		}
 	}
-	return null;
+	return result;
 }
 
 LRESULT WM_CHAR (int wParam, int lParam) {
