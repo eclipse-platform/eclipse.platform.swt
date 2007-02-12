@@ -373,7 +373,9 @@ void HandleClick (int sender, int e) {
 		if (parent.selected != null) OS.MenuItem_IsChecked (parent.selected.handle, false);
 		parent.selected = this;
 	}
-	postEvent (SWT.Selection);	
+	Event event = new Event ();
+	setInputState (event, SWT.Selection, 0, 0);
+	postEvent (SWT.Selection, event);	
 }
 
 void HandleSubmenuOpened (int sender, int e) {
