@@ -1735,13 +1735,14 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null && from.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (from == to) return new Point (x, y);
+	int newX, newY;
 	if (from != null && to != null) {
 		int point = OS.gcnew_Point (x, y);
-		int newPoint = OS.UIElement_TranslatePoint(from.topHandle (), point, to.topHandle ());
-		Point result = new Point ((int)OS.Point_X (newPoint), (int)OS.Point_Y (newPoint));
+		int newPoint = OS.UIElement_TranslatePoint (from.topHandle (), point, to.topHandle ());
+		newX = (int) (OS.Point_X (newPoint) + 0.5);
+		newY = (int) (OS.Point_Y (newPoint) + 0.5);
 		OS.GCHandle_Free (point);
 		OS.GCHandle_Free (newPoint);
-		return result;
 	} else {
 		if (from == null) {
 			Shell shell = to.getShell ();
@@ -1749,22 +1750,23 @@ public Point map (Control from, Control to, int x, int y) {
 			int point = OS.gcnew_Point (x - shellLocation.x, y - shellLocation.y);
 			OS.UIElement_UpdateLayout (to.topHandle ());
 			int newPoint = OS.UIElement_TranslatePoint (shell.shellHandle, point, to.topHandle ());
-			Point result = new Point ((int)OS.Point_X (newPoint), (int)OS.Point_Y (newPoint));
+			newX = (int) (OS.Point_X (newPoint) + 0.5);
+			newY = (int) (OS.Point_Y (newPoint) + 0.5);
 			OS.GCHandle_Free (point);
 			OS.GCHandle_Free (newPoint);
-			return result;
 		} else {
 			Shell shell = from.getShell ();
 			Point shellLocation = shell.getLocation ();
 			int point = OS.gcnew_Point (x, y);
 			OS.UIElement_UpdateLayout (from.topHandle ());
 			int newPoint = OS.UIElement_TranslatePoint (from.topHandle (), point, shell.shellHandle);
-			Point result = new Point ((int)OS.Point_X (newPoint) + shellLocation.x, (int)OS.Point_Y (newPoint) + shellLocation.y);
+			newX = (int) (OS.Point_X (newPoint) + 0.5) + shellLocation.x;
+			newY = (int) (OS.Point_Y (newPoint) + 0.5) + shellLocation.y;
 			OS.GCHandle_Free (point);
 			OS.GCHandle_Free (newPoint);
-			return result;
 		}
 	}
+	return new Point (newX, newY);
 }
 
 /**
@@ -2118,8 +2120,10 @@ protected void release () {
 }
 
 void releaseDisplay () {
-	OS.Application_Shutdown(application);
-	if (application != 0) OS.GCHandle_Free (application);
+	if (application != 0) {
+		OS.Application_Shutdown (application);
+		OS.GCHandle_Free (application);
+	}
 	application = 0;
 	if (dispatcher != 0) OS.GCHandle_Free (dispatcher);
 	dispatcher = 0;
