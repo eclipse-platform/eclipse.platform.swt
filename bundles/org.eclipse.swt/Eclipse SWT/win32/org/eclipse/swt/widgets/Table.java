@@ -3294,25 +3294,25 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 
 void setBackgroundImage (int hBitmap) {
 	super.setBackgroundImage (hBitmap);
-	setBackgroundTransparent (hBitmap != 0);
+	if (!customDraw) setBackgroundTransparent (hBitmap != 0);
 }
 
 void setBackgroundPixel (int newPixel) {
-	if (findImageControl () != null) return;
-	if (newPixel == -1) newPixel = defaultBackground ();
-	int oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
-	if (oldPixel != newPixel) {
-		if (oldPixel != OS.CLR_NONE) {
+	if (!customDraw) {
+		if (findImageControl () != null) return;
+		if (newPixel == -1) newPixel = defaultBackground ();
+		int oldPixel = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+		if (oldPixel != newPixel) {
 			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, newPixel);
 			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
 			if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
+			/*
+			* Feature in Windows.  When the background color is changed,
+			* the table does not redraw until the next WM_PAINT.  The fix
+			* is to force a redraw.
+			*/
+			OS.InvalidateRect (handle, null, true);
 		}
-		/*
-		* Feature in Windows.  When the background color is changed,
-		* the table does not redraw until the next WM_PAINT.  The fix
-		* is to force a redraw.
-		*/
-		OS.InvalidateRect (handle, null, true);
 	}
 }
 
