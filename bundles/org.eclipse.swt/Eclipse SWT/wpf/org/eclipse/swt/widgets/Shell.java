@@ -732,6 +732,11 @@ Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
 }
 
+public static Shell internal_new (Display display, int handle) {
+	//return new Shell (display, SWT.NO_TRIM);
+	return null;
+}
+
 public boolean isEnabled () {
 	checkWidget ();
 	return getEnabled ();
