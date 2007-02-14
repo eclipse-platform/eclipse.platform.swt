@@ -743,7 +743,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						String string = null;
 						if (index == 0) {
 							string = item.text;
-							rect.left = Math.min (rect.right, rect.left + 2);
 						} else {
 							String [] strings  = item.strings;
 							if (strings != null) string = strings [index];
