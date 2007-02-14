@@ -1788,6 +1788,18 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__IIZ
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IIZ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IIZ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2);
+	COM_NATIVE_EXIT(env, that, VtblCall__IIZ_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__II_3C
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__II_3C)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2)

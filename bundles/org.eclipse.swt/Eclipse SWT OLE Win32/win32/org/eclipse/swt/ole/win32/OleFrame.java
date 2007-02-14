@@ -86,6 +86,8 @@ public OleFrame(Composite parent, int style) {
 	listener = new Listener()  {
 		public void handleEvent(Event e) {
 			switch (e.type) {
+			case SWT.Activate :    onActivate(e); break;
+			case SWT.Deactivate :  onDeactivate(e); break;
 			case SWT.Dispose :  onDispose(e); break;
 			case SWT.Resize :
 			case SWT.Move :     onResize(e); break;
@@ -95,6 +97,9 @@ public OleFrame(Composite parent, int style) {
 		}
 	};
 	
+
+	addListener(SWT.Activate, listener);
+	addListener(SWT.Deactivate, listener);
 	addListener(SWT.Dispose, listener);
 
 	// inform inplaceactiveobject whenever frame resizes
@@ -504,12 +509,26 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 		OS.HeapFree(hHeap, 0, pszText);
 	return COM.S_OK;
 }
+void onActivate(Event e) {
+	if (objIOleInPlaceActiveObject != null) {
+		objIOleInPlaceActiveObject.OnDocWindowActivate(true);
+		objIOleInPlaceActiveObject.OnFrameWindowActivate(true);
+	}
+}
+void onDeactivate(Event e) {
+	if (objIOleInPlaceActiveObject != null) {
+		objIOleInPlaceActiveObject.OnDocWindowActivate(false);
+		objIOleInPlaceActiveObject.OnFrameWindowActivate(false);
+	}
+}
 private void onDispose(Event e) {
 
 	releaseObjectInterfaces();
 	currentdoc = null;
 
 	this.Release();
+	removeListener(SWT.Activate, listener);
+	removeListener(SWT.Deactivate, listener);
 	removeListener(SWT.Dispose, listener);
 	removeListener(SWT.Resize, listener);
 	removeListener(SWT.Move, listener);

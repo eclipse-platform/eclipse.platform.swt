@@ -498,6 +498,8 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int a
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, boolean arg1);
 
+public static final native int VtblCall (int fnNumber, int /*long*/ ppVtbl, boolean arg0);
+
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, CAUUID arg0);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, CONTROLINFO arg0);
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, FORMATETC arg0);

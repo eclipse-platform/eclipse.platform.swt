@@ -140,6 +140,7 @@ typedef enum {
 	VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2_FUNC,
 	VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2IZ_FUNC,
 	VtblCall__IILorg_eclipse_swt_internal_win32_RECT_2Lorg_eclipse_swt_internal_win32_RECT_2_FUNC,
+	VtblCall__IIZ_FUNC,
 	VtblCall__II_3C_FUNC,
 	VtblCall__II_3CI_FUNC,
 	VtblCall__II_3CIIII_3I_FUNC,

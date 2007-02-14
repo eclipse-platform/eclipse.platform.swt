@@ -21,6 +21,12 @@ public int TranslateAccelerator(MSG lpmsg) {
 	  //lpmsg - Pointer to message that may need translating
 	  return COM.VtblCall(5, address, lpmsg);
 }
+public void OnFrameWindowActivate(boolean fActivate) {
+	COM.VtblCall(6, getAddress(), fActivate);
+}
+public void OnDocWindowActivate(boolean fActivate) {
+	COM.VtblCall(7, getAddress(), fActivate);
+}
 public int ResizeBorder(RECT prcBorder, int /*long*/ pUIWindow, boolean fFrameWindow) {
 	return COM.VtblCall(8, address, prcBorder, pUIWindow, fFrameWindow);
 }
