@@ -410,6 +410,23 @@ public boolean forward () {
 }
 
 /**
+ * Returns the JavaXPCOM <code>org.mozilla.interfaces.nsIWebBrowser</code>
+ * of the receiver, or <code>null</code> if any of the following are true: <ul>
+ *    <li>the receiver's style is not <code>SWT.MOZILLA</code></li>
+ *    <li>the JavaXPCOM classes cannot be resolved at runtime</li>
+ *    <li>the version of the underlying XULRunner is not at least 1.8.1.2</li>
+ * </ul> 
+ *
+ * @return the receiver's JavaXPCOM <code>nsIWebBrowser</code> or <code>null</code>
+ * 
+ * @since 3.3
+ */
+public Object getWebBrowser () {
+	checkWidget();
+	return webBrowser.getWebBrowser ();
+}
+
+/**
  * Returns <code>true</code> if the receiver can navigate to the 
  * previous session history item, and <code>false</code> otherwise.
  *
@@ -719,16 +736,5 @@ public boolean setUrl (String url) {
 public void stop () {
 	checkWidget();
 	webBrowser.stop ();
-}
-
-/**
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>Browser</code>. It is likely to change and should
- * never be called from application code.
- * </p>
- */
-public long getWebBrowserHandle() {
-	checkWidget();
-	return webBrowser.getWebBrowserHandle ();
 }
 }

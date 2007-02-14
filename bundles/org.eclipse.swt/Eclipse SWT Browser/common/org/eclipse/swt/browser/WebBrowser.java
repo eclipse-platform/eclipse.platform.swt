@@ -25,85 +25,85 @@ abstract class WebBrowser {
 	static Runnable MozillaClearSessions;
 	static Runnable NativeClearSessions;
 
-public void addCloseWindowListener(CloseWindowListener listener) {
+public void addCloseWindowListener (CloseWindowListener listener) {
 	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length + 1];
 	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, closeWindowListeners.length);
 	closeWindowListeners = newCloseWindowListeners;
 	closeWindowListeners[closeWindowListeners.length - 1] = listener;
 }
 
-public void addLocationListener(LocationListener listener) {
+public void addLocationListener (LocationListener listener) {
 	LocationListener[] newLocationListeners = new LocationListener[locationListeners.length + 1];
 	System.arraycopy(locationListeners, 0, newLocationListeners, 0, locationListeners.length);
 	locationListeners = newLocationListeners;
 	locationListeners[locationListeners.length - 1] = listener;
 }
 
-public void addOpenWindowListener(OpenWindowListener listener) {
+public void addOpenWindowListener (OpenWindowListener listener) {
 	OpenWindowListener[] newOpenWindowListeners = new OpenWindowListener[openWindowListeners.length + 1];
 	System.arraycopy(openWindowListeners, 0, newOpenWindowListeners, 0, openWindowListeners.length);
 	openWindowListeners = newOpenWindowListeners;
 	openWindowListeners[openWindowListeners.length - 1] = listener;
 }
 
-public void addProgressListener(ProgressListener listener) {
+public void addProgressListener (ProgressListener listener) {
 	ProgressListener[] newProgressListeners = new ProgressListener[progressListeners.length + 1];
 	System.arraycopy(progressListeners, 0, newProgressListeners, 0, progressListeners.length);
 	progressListeners = newProgressListeners;
 	progressListeners[progressListeners.length - 1] = listener;
 }
 
-public void addStatusTextListener(StatusTextListener listener) {
+public void addStatusTextListener (StatusTextListener listener) {
 	StatusTextListener[] newStatusTextListeners = new StatusTextListener[statusTextListeners.length + 1];
 	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, statusTextListeners.length);
 	statusTextListeners = newStatusTextListeners;
 	statusTextListeners[statusTextListeners.length - 1] = listener;
 }
 
-public void addTitleListener(TitleListener listener) {
+public void addTitleListener (TitleListener listener) {
 	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length + 1];
 	System.arraycopy(titleListeners, 0, newTitleListeners, 0, titleListeners.length);
 	titleListeners = newTitleListeners;
 	titleListeners[titleListeners.length - 1] = listener;
 }
 
-public void addVisibilityWindowListener(VisibilityWindowListener listener) {
+public void addVisibilityWindowListener (VisibilityWindowListener listener) {
 	VisibilityWindowListener[] newVisibilityWindowListeners = new VisibilityWindowListener[visibilityWindowListeners.length + 1];
 	System.arraycopy(visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, visibilityWindowListeners.length);
 	visibilityWindowListeners = newVisibilityWindowListeners;
 	visibilityWindowListeners[visibilityWindowListeners.length - 1] = listener;
 }
 
-public abstract boolean back();
+public abstract boolean back ();
 
 public static void clearSessions () {
-	if (NativeClearSessions != null) NativeClearSessions.run();
-	if (MozillaClearSessions != null) MozillaClearSessions.run();
+	if (NativeClearSessions != null) NativeClearSessions.run ();
+	if (MozillaClearSessions != null) MozillaClearSessions.run ();
 }
 
-public abstract void create(Composite parent, int style);
+public abstract void create (Composite parent, int style);
 
-public abstract boolean execute(String script);
+public abstract boolean execute (String script);
 
-public abstract boolean forward();
+public abstract boolean forward ();
 
-public abstract String getUrl();
+public abstract String getUrl ();
 
-public long getWebBrowserHandle() {
-	return 0;
+public Object getWebBrowser () {
+	return null;
 }
 
-public abstract boolean isBackEnabled();
+public abstract boolean isBackEnabled ();
 
 public boolean isFocusControl () {
 	return false;
 }
 
-public abstract boolean isForwardEnabled();
+public abstract boolean isForwardEnabled ();
 
-public abstract void refresh();
+public abstract void refresh ();
 
-public void removeCloseWindowListener(CloseWindowListener listener) {
+public void removeCloseWindowListener (CloseWindowListener listener) {
 	if (closeWindowListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < closeWindowListeners.length; i++) {
@@ -118,12 +118,12 @@ public void removeCloseWindowListener(CloseWindowListener listener) {
 		return;
 	}
 	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length - 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, index);
-	System.arraycopy(closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
+	System.arraycopy (closeWindowListeners, 0, newCloseWindowListeners, 0, index);
+	System.arraycopy (closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
 	closeWindowListeners = newCloseWindowListeners;
 }
 
-public void removeLocationListener(LocationListener listener) {
+public void removeLocationListener (LocationListener listener) {
 	if (locationListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < locationListeners.length; i++) {
@@ -138,12 +138,12 @@ public void removeLocationListener(LocationListener listener) {
 		return;
 	}
 	LocationListener[] newLocationListeners = new LocationListener[locationListeners.length - 1];
-	System.arraycopy(locationListeners, 0, newLocationListeners, 0, index);
-	System.arraycopy(locationListeners, index + 1, newLocationListeners, index, locationListeners.length - index - 1);
+	System.arraycopy (locationListeners, 0, newLocationListeners, 0, index);
+	System.arraycopy (locationListeners, index + 1, newLocationListeners, index, locationListeners.length - index - 1);
 	locationListeners = newLocationListeners;
 }
 
-public void removeOpenWindowListener(OpenWindowListener listener) {
+public void removeOpenWindowListener (OpenWindowListener listener) {
 	if (openWindowListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < openWindowListeners.length; i++) {
@@ -158,12 +158,12 @@ public void removeOpenWindowListener(OpenWindowListener listener) {
 		return;
 	}
 	OpenWindowListener[] newOpenWindowListeners = new OpenWindowListener[openWindowListeners.length - 1];
-	System.arraycopy(openWindowListeners, 0, newOpenWindowListeners, 0, index);
-	System.arraycopy(openWindowListeners, index + 1, newOpenWindowListeners, index, openWindowListeners.length - index - 1);
+	System.arraycopy (openWindowListeners, 0, newOpenWindowListeners, 0, index);
+	System.arraycopy (openWindowListeners, index + 1, newOpenWindowListeners, index, openWindowListeners.length - index - 1);
 	openWindowListeners = newOpenWindowListeners;
 }
 
-public void removeProgressListener(ProgressListener listener) {
+public void removeProgressListener (ProgressListener listener) {
 	if (progressListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < progressListeners.length; i++) {
@@ -178,12 +178,12 @@ public void removeProgressListener(ProgressListener listener) {
 		return;
 	}
 	ProgressListener[] newProgressListeners = new ProgressListener[progressListeners.length - 1];
-	System.arraycopy(progressListeners, 0, newProgressListeners, 0, index);
-	System.arraycopy(progressListeners, index + 1, newProgressListeners, index, progressListeners.length - index - 1);
+	System.arraycopy (progressListeners, 0, newProgressListeners, 0, index);
+	System.arraycopy (progressListeners, index + 1, newProgressListeners, index, progressListeners.length - index - 1);
 	progressListeners = newProgressListeners;
 }
 
-public void removeStatusTextListener(StatusTextListener listener) {
+public void removeStatusTextListener (StatusTextListener listener) {
 	if (statusTextListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < statusTextListeners.length; i++) {
@@ -198,12 +198,12 @@ public void removeStatusTextListener(StatusTextListener listener) {
 		return;
 	}
 	StatusTextListener[] newStatusTextListeners = new StatusTextListener[statusTextListeners.length - 1];
-	System.arraycopy(statusTextListeners, 0, newStatusTextListeners, 0, index);
-	System.arraycopy(statusTextListeners, index + 1, newStatusTextListeners, index, statusTextListeners.length - index - 1);
+	System.arraycopy (statusTextListeners, 0, newStatusTextListeners, 0, index);
+	System.arraycopy (statusTextListeners, index + 1, newStatusTextListeners, index, statusTextListeners.length - index - 1);
 	statusTextListeners = newStatusTextListeners;
 }
 
-public void removeTitleListener(TitleListener listener) {
+public void removeTitleListener (TitleListener listener) {
 	if (titleListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < titleListeners.length; i++) {
@@ -218,12 +218,12 @@ public void removeTitleListener(TitleListener listener) {
 		return;
 	}
 	TitleListener[] newTitleListeners = new TitleListener[titleListeners.length - 1];
-	System.arraycopy(titleListeners, 0, newTitleListeners, 0, index);
-	System.arraycopy(titleListeners, index + 1, newTitleListeners, index, titleListeners.length - index - 1);
+	System.arraycopy (titleListeners, 0, newTitleListeners, 0, index);
+	System.arraycopy (titleListeners, index + 1, newTitleListeners, index, titleListeners.length - index - 1);
 	titleListeners = newTitleListeners;
 }
 
-public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
+public void removeVisibilityWindowListener (VisibilityWindowListener listener) {
 	if (visibilityWindowListeners.length == 0) return;
 	int index = -1;
 	for (int i = 0; i < visibilityWindowListeners.length; i++) {
@@ -238,18 +238,18 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 		return;
 	}
 	VisibilityWindowListener[] newVisibilityWindowListeners = new VisibilityWindowListener[visibilityWindowListeners.length - 1];
-	System.arraycopy(visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, index);
-	System.arraycopy(visibilityWindowListeners, index + 1, newVisibilityWindowListeners, index, visibilityWindowListeners.length - index - 1);
+	System.arraycopy (visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, index);
+	System.arraycopy (visibilityWindowListeners, index + 1, newVisibilityWindowListeners, index, visibilityWindowListeners.length - index - 1);
 	visibilityWindowListeners = newVisibilityWindowListeners;
 }
 
-public void setBrowser(Browser browser) {
+public void setBrowser (Browser browser) {
 	this.browser = browser;
 }
 
-public abstract boolean setText(String html);
+public abstract boolean setText (String html);
 
-public abstract boolean setUrl(String url);
+public abstract boolean setUrl (String url);
 
-public abstract void stop();
+public abstract void stop ();
 }

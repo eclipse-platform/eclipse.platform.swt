@@ -1203,6 +1203,23 @@ public String getUrl () {
 	return location;
 }
 
+public Object getWebBrowser () {
+	if ((browser.getStyle () & SWT.MOZILLA) == 0) return null;
+	try {
+		Class clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
+		Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
+		Object mozilla = method.invoke (null, new Object[0]);
+		method = clazz.getMethod ("wrapXPCOMObject", new Class[] {Long.TYPE, Class.forName ("java.lang.String")}); //$NON-NLS-1$ //$NON-NLS-2$
+		return method.invoke (mozilla, new Object[] {new Long (webBrowser.getAddress ()), nsIWebBrowser.NS_IWEBBROWSER_IID_STR});
+	} catch (ClassNotFoundException e) {
+	} catch (NoSuchMethodException e) {
+	} catch (IllegalArgumentException e) {
+	} catch (IllegalAccessException e) {
+	} catch (InvocationTargetException e) {
+	}
+	return null;
+}
+
 public boolean isBackEnabled () {
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
