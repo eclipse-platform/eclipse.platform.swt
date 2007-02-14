@@ -57,6 +57,7 @@ public class DNDExample {
 	private static final int TABLE = 6;
 	private static final int TREE = 7;
 	private static final int TEXT = 8;
+	private static final int STYLED_TEXT = 9;
 	
 public static void main(String[] args) {
 	Display display = new Display();
@@ -174,6 +175,11 @@ private void createDragSource() {
 						b.setText("");
 						break;
 					}
+					case STYLED_TEXT: {
+						StyledText text = (StyledText)dragControl;
+						text.insert("");
+						break;
+					}
 					case TABLE: {
 						Table table = (Table)dragControl;
 						TableItem[] items = table.getSelection();
@@ -240,6 +246,16 @@ private void createDragSource() {
 				case BUTTON_RADIO: {
 					Button b = (Button)dragControl;
 					dragDataText = b.getSelection() ? "true" : "false";
+					break;
+				}
+				case STYLED_TEXT: {
+					StyledText text = (StyledText)dragControl;
+					String s = text.getSelectionText();
+					if (s.length() == 0) {
+						event.doit = false;
+					} else {
+						dragDataText = s;
+					}
 					break;
 				}
 				case TABLE: {
@@ -443,7 +459,7 @@ private void createDragTypes(Composite parent) {
 private void createDragWidget(Composite parent) {
 	parent.setLayout(new FormLayout());
 	Combo combo = new Combo(parent, SWT.READ_ONLY);
-	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text"});
+	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text", "StyledText"});
 	combo.select(LABEL);
 	dragControlType = combo.getSelectionIndex();
 	dragControl = createWidget(dragControlType, parent, "Drag Source");
@@ -737,6 +753,13 @@ private void createDropTarget() {
 					b.setText(strings[0]);
 					break;
 				}
+				case STYLED_TEXT: {
+					StyledText text = (StyledText)dropControl;
+					for(int i = 0; i < strings.length; i++) {
+						text.insert(strings[i]);
+					}
+					break;
+				}
 				case TABLE: {
 					Table table = (Table)dropControl;
 					Point p = event.display.map(null, table, event.x, event.y);
@@ -930,7 +953,7 @@ private void createDropTypes(Composite parent) {
 private void createDropWidget(Composite parent) {
 	parent.setLayout(new FormLayout());
 	Combo combo = new Combo(parent, SWT.READ_ONLY);
-	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text"});
+	combo.setItems(new String[] {"Toggle Button", "Radio Button", "Checkbox", "Canvas", "Label", "List", "Table", "Tree", "Text", "StyledText"});
 	combo.select(LABEL);
 	dropControlType = combo.getSelectionIndex();
 	dropControl = createWidget(dropControlType, parent, "Drop Target");
@@ -1002,6 +1025,11 @@ private Control createWidget(int type, Composite parent, String prefix){
 			Button button = new Button(parent, SWT.RADIO);
 			button.setText(prefix+" Radio button");
 			return button;
+		}
+		case STYLED_TEXT: {
+			StyledText text = new StyledText(parent, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+			text.setText(prefix+" Styled Text");
+			return text;
 		}
 		case TABLE: {
 			Table table = new Table(parent, SWT.BORDER | SWT.MULTI);
