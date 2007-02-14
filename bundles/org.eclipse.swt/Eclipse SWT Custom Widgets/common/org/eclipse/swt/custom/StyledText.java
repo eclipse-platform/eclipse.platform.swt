@@ -5207,9 +5207,7 @@ void handleMouseUp(Event event) {
  */
 void handlePaint(Event event) {
 	if (event.width == 0 || event.height == 0) return;
-	if (clientAreaWidth == 0 || clientAreaHeight == 0) {
-		if (!"wpf".equals(SWT.getPlatform())) return;
-	}
+	if (clientAreaWidth == 0 || clientAreaHeight == 0) return;
 
 	int startLine = getLineIndex(event.y);
 	int y = getLinePixel(startLine);
