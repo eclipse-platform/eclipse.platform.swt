@@ -9926,6 +9926,19 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsKeyboardFocused)
 }
 #endif
 
+#ifndef NO_UIElement_1IsMeasureValid
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsMeasureValid)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsMeasureValid)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UIElement_1IsMeasureValid_FUNC);
+	rc = (jboolean)((UIElement^)TO_OBJECT(arg0))->IsMeasureValid;
+	OS_NATIVE_EXIT(env, that, UIElement_1IsMeasureValid_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UIElement_1IsMouseOver
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsMouseOver)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsMouseOver)

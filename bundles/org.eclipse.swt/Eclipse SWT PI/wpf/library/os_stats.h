@@ -841,6 +841,7 @@ typedef enum {
 	UIElement_1IsFocused_FUNC,
 	UIElement_1IsKeyboardFocusWithin_FUNC,
 	UIElement_1IsKeyboardFocused_FUNC,
+	UIElement_1IsMeasureValid_FUNC,
 	UIElement_1IsMouseOver_FUNC,
 	UIElement_1IsVisible_FUNC,
 	UIElement_1KeyDown_FUNC,

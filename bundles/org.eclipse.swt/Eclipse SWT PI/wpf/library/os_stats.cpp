@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1034;
-int OS_nativeFunctionCallCount[1034];
+int OS_nativeFunctionCount = 1035;
+int OS_nativeFunctionCallCount[1035];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -833,6 +833,7 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1IsFocused",
 	"UIElement_1IsKeyboardFocusWithin",
 	"UIElement_1IsKeyboardFocused",
+	"UIElement_1IsMeasureValid",
 	"UIElement_1IsMouseOver",
 	"UIElement_1IsVisible",
 	"UIElement_1KeyDown",
