@@ -705,6 +705,11 @@ void setSortDirection (int direction) {
 		}
 		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 		/* 
+		* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
+		* specify a selected column, Windows does not redraw either
+		* the new or the previous selected column.  The fix is to
+		* force a redraw of both.
+		* 
 		* Feature in Windows.  When LVM_SETBKCOLOR is used with
 		* CLR_NONE and LVM_SETSELECTEDCOLUMN is used to select
 		* a column, Windows fills the column with the selection
@@ -712,19 +717,14 @@ void setSortDirection (int direction) {
 		* other custom drawing.  The fix is to avoid setting the
 		* selected column.
 		*/
+		parent.forceResize ();
+		RECT rect = new RECT ();
+		OS.GetClientRect (hwnd, rect);
 		if (OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
 			int oldColumn = OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
 			int newColumn = direction == SWT.NONE ? -1 : index;
 			OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
-			/* 
-			* Bug in Windows.  When LVM_SETSELECTEDCOLUMN is used to
-			* specify a selected column, Windows does not redraw either
-			* the new or the previous selected column.  The fix is to
-			* force a redraw of both.
-			*/
-			parent.forceResize ();
-			RECT rect = new RECT (), headerRect = new RECT ();
-			OS.GetClientRect (hwnd, rect);
+			RECT headerRect = new RECT ();
 			if (oldColumn != -1) {
 				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldColumn, headerRect) != 0) {
 					OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
@@ -733,14 +733,13 @@ void setSortDirection (int direction) {
 					OS.InvalidateRect (hwnd, rect, true);
 				}
 			}
-			if (newColumn != -1) {
-				if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, newColumn, headerRect) != 0) {
-					OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
-					rect.left = headerRect.left;
-					rect.right = headerRect.right;
-					OS.InvalidateRect (hwnd, rect, true);
-				}
-			}
+		}
+		RECT headerRect = new RECT ();
+		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) != 0) {
+			OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+			rect.left = headerRect.left;
+			rect.right = headerRect.right;
+			OS.InvalidateRect (hwnd, rect, true);
 		}
 	} else {
 		switch (direction) {
