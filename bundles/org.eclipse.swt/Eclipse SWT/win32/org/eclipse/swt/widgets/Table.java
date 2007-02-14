@@ -535,6 +535,26 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						if (control == null) control = this;
 						fillBackground (nmcd.hdc, control.getBackgroundPixel (), rect);
+						if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+							if (sortColumn != null && sortDirection != SWT.NONE) {
+								int index = indexOf (sortColumn);
+								if (index != -1) {
+									parent.forceResize ();
+									int clrSortBk = getSortColumnPixel ();
+									RECT columnRect = new RECT (), headerRect = new RECT ();
+									OS.GetClientRect (handle, columnRect);
+									int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+									if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) != 0) {
+										OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+										columnRect.left = headerRect.left;
+										columnRect.right = headerRect.right;
+										if (OS.IntersectRect(columnRect, columnRect, rect)) {
+											fillBackground (nmcd.hdc, clrSortBk, columnRect);
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -680,7 +700,9 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						Control control = findBackgroundControl ();
 						if (control == null) control = this;
 						if (control.backgroundImage == null) {
-							nmcd.clrTextBk = control.getBackgroundPixel ();
+							if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+								nmcd.clrTextBk = control.getBackgroundPixel ();
+							}
 						}
 					}
 				} else {
@@ -2291,6 +2313,23 @@ public int [] getSelectionIndices () {
 public TableColumn getSortColumn () {
 	checkWidget ();
 	return sortColumn;
+}
+
+int getSortColumnPixel () {
+	int pixel = OS.IsWindowEnabled (handle) ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_3DFACE);
+	int red = pixel & 0xFF;
+	int green = (pixel & 0xFF00) >> 8;
+	int blue = (pixel & 0xFF0000) >> 16;
+	if (red > 240 && green > 240 && blue > 240) {
+		red -= 8;
+		green -= 8;
+		blue -= 8;
+	} else {
+		red = Math.min (0xFF, (red / 10) + red);
+		green = Math.min (0xFF, (green / 10) + green);
+		blue = Math.min (0xFF, (blue / 10) + blue);
+	}
+	return 0x02000000 | (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
 }
 
 /**
