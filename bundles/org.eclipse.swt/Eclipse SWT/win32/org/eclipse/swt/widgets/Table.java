@@ -644,30 +644,28 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				lvItem.iItem = nmcd.dwItemSpec;
 				int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
 				if ((result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0)) {
-					if (OS.GetFocus () == handle) {
-						clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-						clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
-					} else {
-						if ((style & SWT.HIDE_SELECTION) == 0) {
-							clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
-						}
-					}
-					if (clrTextBk != -1 && nmcd.iSubItem == 0) {
-						RECT itemRect = new RECT ();
-						itemRect.left = OS.LVIR_SELECTBOUNDS;
-						ignoreCustomDraw = true;
-						result = OS.SendMessage (handle, OS. LVM_GETITEMRECT, nmcd.dwItemSpec, itemRect);
-						ignoreCustomDraw = false;
-						if (result != 0) {
-							RECT headerRect = new RECT ();
-							int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-							if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) != 0) {
-								OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
-								itemRect.left = itemRect.right;
-								itemRect.right = headerRect.right;
-								fillBackground (hDC, clrTextBk, itemRect);
+					int clrSelection = -1;
+					if (nmcd.iSubItem == 0) {
+						if (OS.GetFocus () == handle) {
+							clrSelection = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+						} else {
+							if ((style & SWT.HIDE_SELECTION) == 0) {
+								clrSelection = OS.GetSysColor (OS.COLOR_3DFACE);
 							}
 						}
+					} else {
+						if (OS.GetFocus () == handle) {
+							clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+							clrTextBk = clrSelection = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+						} else {
+							if ((style & SWT.HIDE_SELECTION) == 0) {
+								clrTextBk = clrSelection = OS.GetSysColor (OS.COLOR_3DFACE);
+							}
+						}
+					}
+					if (clrSelection != -1) {
+						RECT rect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, nmcd.iSubItem != 0, true, false, hDC);
+						fillBackground (hDC, clrSelection, rect);
 					}
 				}
 			}
