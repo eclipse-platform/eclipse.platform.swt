@@ -157,10 +157,15 @@ int findScrollViewer (int current, int scrollViewerType) {
  */
 public Rectangle getClientArea () {
 	checkWidget ();
-	OS.UIElement_UpdateLayout (topHandle ());
 	int clientHandle = clientHandle ();
+	int topHandle = topHandle (); 
+	boolean update = !OS.UIElement_IsMeasureValid (topHandle);
+	if (update) OS.UIElement_UpdateLayout (topHandle);
 	int width = (int) OS.FrameworkElement_ActualWidth (clientHandle);
 	int height = (int) OS.FrameworkElement_ActualHeight (clientHandle);
+	if (update && (state & CANVAS) != 0) {
+		OS.UIElement_InvalidateVisual (handle);
+	}
 	return new Rectangle (0, 0, width, height);
 }
 
