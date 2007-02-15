@@ -429,9 +429,9 @@ public String getUrl () {
 }
 
 /**
- * Returns the JavaXPCOM <code>org.mozilla.interfaces.nsIWebBrowser</code>
- * of the receiver, or <code>null</code> if it is not available.  In order for an
- * <code>nsIWebBrowser</code> to be returned all of the following must be true: <ul>
+ * Returns the JavaXPCOM <code>nsIWebBrowser</code> for the receiver, or <code>null</code>
+ * if it is not available.  In order for an <code>nsIWebBrowser</code> to be returned all
+ * of the following must be true: <ul>
  *    <li>the receiver's style must be <code>SWT.MOZILLA</code></li>
  *    <li>the classes from JavaXPCOM &gt;= 1.8.1.2 must be resolvable at runtime</li>
  *    <li>the version of the underlying XULRunner must be &gt;= 1.8.1.2</li>
