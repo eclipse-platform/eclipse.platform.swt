@@ -1158,6 +1158,7 @@ public static final native int TypefaceCollection_Current(int sender);
 public static final native int TypefaceCollection_GetEnumerator(int sender);
 public static final native boolean Type_IsInstanceOfType(int sender, int object);
 public static final native int Type_FullName(int sender);
+public static final native int UIElementCollection_default(int sender, int index);
 public static final native void UIElementCollection_Add(int sender, int child);
 public static final native void UIElementCollection_Insert(int sender, int index, int child);
 public static final native int UIElementCollection_IndexOf(int sender, int child);

@@ -249,7 +249,7 @@ public TabItem getItem (int index) {
 TabItem getItem (int items, int index) {
 	int item = OS.ItemCollection_GetItemAt (items, index);
 	TabItem result = (TabItem) display.getWidget (item);
-	OS.GCHandle_Free(item);
+	OS.GCHandle_Free (item);
 	return result;
 }
 
@@ -450,14 +450,14 @@ void releaseChildren (boolean destroy) {
 }
 
 void removeChild (Control control) {
-	super.removeChild (control);//TODO MAKE SURE removeControl gets called first
+	super.removeChild (control);
 	int index = 0;
 	while (index < childCount) {
 		if (children [index] == control) break;
 		index++;
 	}
 	if (index == childCount) return;
-	System.arraycopy(children, index+1, children, index, --childCount - index);
+	System.arraycopy (children, index+1, children, index, --childCount - index);
 	children [childCount] = null;
 }
 

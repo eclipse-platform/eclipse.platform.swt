@@ -9745,6 +9745,19 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElementCollection_1Remove)
 }
 #endif
 
+#ifndef NO_UIElementCollection_1default
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(UIElementCollection_1default)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(UIElementCollection_1default)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UIElementCollection_1default_FUNC);
+	rc = (jint)TO_HANDLE(((UIElementCollection^)TO_OBJECT(arg0))->default[arg1]);
+	OS_NATIVE_EXIT(env, that, UIElementCollection_1default_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UIElement_1AddHandler
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1AddHandler)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT void JNICALL OS_NATIVE(UIElement_1AddHandler)

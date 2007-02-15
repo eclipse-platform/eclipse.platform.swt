@@ -826,6 +826,7 @@ typedef enum {
 	UIElementCollection_1IndexOf_FUNC,
 	UIElementCollection_1Insert_FUNC,
 	UIElementCollection_1Remove_FUNC,
+	UIElementCollection_1default_FUNC,
 	UIElement_1AddHandler_FUNC,
 	UIElement_1BeginAnimation_FUNC,
 	UIElement_1CaptureMouse_FUNC,
