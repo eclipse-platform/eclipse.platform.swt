@@ -1087,16 +1087,34 @@ void HandlePreviewMouseUp (int sender, int e) {
 
 void HandleMouseEnter (int sender, int e) {
 	if (!checkEvent (e)) return;
+	Control control = display.getCursorControl ();
+	if (control != this) return;
+	
+	Control lastMouseControl = display.mouseControl;
+	if (lastMouseControl != null && !lastMouseControl.isDisposed() && lastMouseControl != this) {
+		if (OS.Visual_IsDescendantOf (topHandle (), lastMouseControl.topHandle())) {
+			lastMouseControl.sendMouseEvent (SWT.MouseExit, e, false);
+		}
+	}
+	display.mouseControl = this;
 	sendMouseEvent (SWT.MouseEnter, e, false);
 }
 
 void HandleMouseLeave (int sender, int e) {
 	if (!checkEvent (e)) return;
+	if (this != display.mouseControl) return;
 	sendMouseEvent (SWT.MouseExit, e, false);
 }
 
 void HandlePreviewMouseMove (int sender, int e) {
 	if (!checkEvent (e)) return;
+	Control lastMouseControl = display.mouseControl;
+	if (lastMouseControl != null && !lastMouseControl.isDisposed() && lastMouseControl != this) {
+		if (OS.Visual_IsAncestorOf (topHandle (), lastMouseControl.topHandle ())) {
+			sendMouseEvent (SWT.MouseEnter, e, false);
+		}
+	}
+	display.mouseControl = this;
 	sendMouseEvent (SWT.MouseMove, e, false);
 }
 
@@ -1111,21 +1129,6 @@ void HandleTextInput(int sender, int e) {
 }
 
 boolean hasFocus () {
-//	/*
-//	* If a non-SWT child of the control has focus,
-//	* then this control is considered to have focus
-//	* even though it does not have focus in Windows.
-//	*/
-//	int hwndFocus = OS.GetFocus ();
-//	while (hwndFocus != 0) {
-//		if (hwndFocus == handle) return true;
-//		if (display.getControl (hwndFocus) != null) {
-//			return false;
-//		}
-//		hwndFocus = OS.GetParent (hwndFocus);
-//	}
-//	return false;
-	
 //	return OS.UIElement_IsFocused (handle);
 	return OS.UIElement_IsKeyboardFocused (handle);
 }
@@ -1271,18 +1274,7 @@ public boolean isEnabled () {
  */
 public boolean isFocusControl () {
 	checkWidget ();
-//	Control focusControl = display.focusControl;
-//	if (focusControl != null && !focusControl.isDisposed ()) {
-//		return this == focusControl;
-//	}
 	return hasFocus ();
-}
-
-boolean isFocusAncestor (Control control) {
-	while (control != null && control != this) {
-		control = control.parent;
-	}
-	return control == this;
 }
 
 /**

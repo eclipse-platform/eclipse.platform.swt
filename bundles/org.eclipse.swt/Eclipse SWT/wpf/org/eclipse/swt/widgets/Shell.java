@@ -817,6 +817,12 @@ void HandleLocationChanged (int sender, int e) {
 	}
 }
 
+void HandleMouseLeave (int sender, int e) {
+	super.HandleMouseLeave (sender, e);
+	if (!checkEvent (e)) return;
+	display.mouseControl = null;
+}
+
 void HandleSizeChanged (int sender, int e) {
 	if (!checkEvent (e)) return;
 	int width = (int) OS.FrameworkElement_ActualWidth (shellHandle);

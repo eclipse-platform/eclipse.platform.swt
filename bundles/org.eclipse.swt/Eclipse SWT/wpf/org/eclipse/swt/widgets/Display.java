@@ -106,10 +106,9 @@ public class Display extends Device {
 	char lastChar;
 	boolean deadChar;
 
-//	/* Focus */
-//	int focusEvent;
-//	Control focusControl;
-//	
+	/* Track Mouse Control */
+	Control mouseControl;
+	
 	/* Menus */
 	Menu []  popups;
 
@@ -2156,7 +2155,7 @@ void releaseDisplay () {
 //	if (systemFont != null) systemFont.dispose ();
 //	systemFont = null;
 //	lfSystemFont = null;
-//	
+		
 	/* Release the System Images */
 	if (errorImage != null) errorImage.dispose ();
 	if (infoImage != null) infoImage.dispose ();
@@ -2190,7 +2189,8 @@ void releaseDisplay () {
 //	data = null;
 	keys = null;
 	values = null;
-	popups = null;	
+	popups = null;
+	mouseControl = null;
 
 	/* Uninitialize OLE */
 	COM.OleUninitialize ();
