@@ -227,6 +227,7 @@ void checkGC(int mask) {
 	}
 	if ((state & BACKGROUND) != 0) {
 		if (data.brush != 0) OS.GCHandle_Free(data.brush);
+		data.brush = 0;
 		Pattern pattern = data.backgroundPattern;
 		if (pattern != null) {
 			data.currentBrush = pattern.handle;
@@ -384,7 +385,7 @@ public void dispose() {
 
 	int brush = data.brush;
 	if (brush != 0) OS.GCHandle_Free(brush);
-	data.brush = 0;	
+	data.brush = 0;
 	int pen = data.brush;
 	if (pen != 0) OS.GCHandle_Free(pen);
 	data.pen = 0;
