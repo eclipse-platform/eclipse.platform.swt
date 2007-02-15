@@ -150,12 +150,11 @@ void createHandle () {
 	OS.ToolBarTray_IsLocked (trayHandle, true);
 }
 
-
 void createItem (ToolItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	item.createWidget();
+	item.createWidget ();
 	int items = OS.ItemsControl_Items (handle);
-	OS.ItemCollection_Insert(items, index, item.topHandle ());
+	OS.ItemCollection_Insert (items, index, item.topHandle ());
 	int count = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
 	if (itemCount == count) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -409,7 +408,7 @@ void removeChild (Control control) {
 		index++;
 	}
 	if (index == childCount) return;
-	System.arraycopy(children, index+1, children, index, --childCount - index);
+	System.arraycopy (children, index+1, children, index, --childCount - index);
 	children [childCount] = null;
 }
 
@@ -456,5 +455,4 @@ void setForegroundBrush (int brush) {
 int topHandle() {
 	return parentingHandle;
 }
-
 }
