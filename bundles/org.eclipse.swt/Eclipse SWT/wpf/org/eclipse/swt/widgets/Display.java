@@ -2120,6 +2120,21 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	/* Release the timers */
+	OS.GCHandle_Free (timerHandler);
+	timerHandler = 0;
+	if (timerHandles != null) {
+		for (int i = 0; i < timerHandles.length; i++) {
+			int timer = timerHandles [i];
+			if (timer != 0) {
+				OS.DispatcherTimer_Stop (timer);
+				OS.GCHandle_Free (timer);
+			}
+		}
+	}
+	timerHandles = null;
+	timerList = null;
+	
 	if (application != 0) {
 		OS.Application_Shutdown (application);
 		OS.GCHandle_Free (application);
@@ -2137,21 +2152,6 @@ void releaseDisplay () {
 	}
 	colors = null;
 	
-	/* Release the timers */
-	OS.GCHandle_Free (timerHandler);
-	timerHandler = 0;
-	if (timerHandles != null) {
-		for (int i = 0; i < timerHandles.length; i++) {
-			int timer = timerHandles [i];
-			if (timer != 0) {
-				OS.DispatcherTimer_Stop (timer);
-				OS.GCHandle_Free (timer);
-			}
-		}
-	}
-	timerHandles = null;
-	timerList = null;	
-
 //	/* Release the System fonts */
 //	if (systemFont != null) systemFont.dispose ();
 //	systemFont = null;
