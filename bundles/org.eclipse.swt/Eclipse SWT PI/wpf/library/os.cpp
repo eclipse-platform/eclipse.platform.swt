@@ -1391,6 +1391,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(Control_1BackgroundProperty)
 }
 #endif
 
+#ifndef NO_Control_1BorderThickness
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1BorderThickness)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Control_1BorderThickness)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Control_1BorderThickness_FUNC);
+	((Control^)TO_OBJECT(arg0))->BorderThickness = ((Thickness)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Control_1BorderThickness_FUNC);
+}
+#endif
+
 #ifndef NO_Control_1FontFamily
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1FontFamily)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(Control_1FontFamily)

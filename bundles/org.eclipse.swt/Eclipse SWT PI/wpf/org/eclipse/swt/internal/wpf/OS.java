@@ -498,6 +498,7 @@ public static final native int Control_FontStyleProperty();
 public static final native int Control_FontWeightProperty();
 public static final native int Control_FontStretchProperty();
 public static final native int Control_FontSizeProperty();
+public static final native void Control_BorderThickness(int sender, int value);
 public static final native void Control_Background(int sender, int value);
 public static final native void Control_Foreground(int sender, int value);
 public static final native void Control_FontFamily(int sender, int value);

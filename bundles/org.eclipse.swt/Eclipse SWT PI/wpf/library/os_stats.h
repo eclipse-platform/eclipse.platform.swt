@@ -138,6 +138,7 @@ typedef enum {
 	ContextMenu_1VerticalOffset_FUNC,
 	Control_1Background_FUNC,
 	Control_1BackgroundProperty_FUNC,
+	Control_1BorderThickness_FUNC,
 	Control_1FontFamily_FUNC,
 	Control_1FontFamilyProperty_FUNC,
 	Control_1FontSize_FUNC,
