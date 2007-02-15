@@ -458,7 +458,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		if (i == 0) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				if ((selected || findImageControl () == null) && !ignoreDrawSelection && !ignoreDrawBackground) {
-					boolean drawBackground = true;
+					boolean draw = true;
 					RECT pClipRect = new RECT ();
 					OS.SetRect (pClipRect, width, nmcd.top, nmcd.right, nmcd.bottom);
 					if (EXPLORER_THEME) {
@@ -484,7 +484,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 											pRect.right = clientRect.right;
 										}
 									}
-									drawBackground = false;
+									draw = false;
 									int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
 									int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
 									if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
@@ -494,7 +494,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 							}
 						}
 					}
-					if (drawBackground) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
+					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
 				}
 			}
 		}
@@ -512,7 +512,15 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					}
 				}
 				if (selected && !ignoreDrawSelection && !ignoreDrawBackground) {
-					fillBackground (hDC, OS.GetBkColor (hDC), rect);
+					boolean draw = true;
+					if (EXPLORER_THEME) {
+						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+							if (explorerTheme) {
+								if ((style & SWT.FULL_SELECTION) == 0) draw = false;
+							}
+						}
+					}
+					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), rect);
 					drawBackground = false;
 				}
 				backgroundRect = rect;
@@ -564,9 +572,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			if (EXPLORER_THEME) {
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
 					if (explorerTheme) {
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							if (selected || (nmcd.uItemState & OS.CDIS_HOT) != 0) {
-								drawBackground = false;
+						if (selected || (nmcd.uItemState & OS.CDIS_HOT) != 0) {
+							drawBackground = false;
+							if ((style & SWT.FULL_SELECTION) == 0) {
+								if (index == 0) drawText = false;
 							}
 						}
 					}
@@ -743,6 +752,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						String string = null;
 						if (index == 0) {
 							string = item.text;
+							rect.left = Math.min (rect.right, rect.left + 2);
 						} else {
 							String [] strings  = item.strings;
 							if (strings != null) string = strings [index];
@@ -1303,6 +1313,19 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 }
 
 LRESULT CDDS_PREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
+	if (EXPLORER_THEME) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			if (explorerTheme) {
+				if ((style & SWT.FULL_SELECTION) == 0) {
+					if (findImageControl () != null) {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						drawBackground (nmcd.hdc, rect);
+					}
+				}
+			}
+		}
+	}
 	return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
 
@@ -3745,7 +3768,7 @@ void setBackgroundImage (int hBitmap) {
 	super.setBackgroundImage (hBitmap);
 	if (EXPLORER_THEME) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			setExplorerTheme (false);
+			if ((style & SWT.FULL_SELECTION) != 0) setExplorerTheme (false);
 		}
 	}
 	if (hBitmap != 0) {
