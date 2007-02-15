@@ -112,6 +112,10 @@ static ExpandBar checkNull (ExpandBar control) {
 void createHandle () {
 	handle = OS.gcnew_Expander ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int spacing = parent.spacing;
+	int thickness = OS.gcnew_Thickness (spacing, spacing, spacing, spacing);
+	OS.FrameworkElement_Margin (handle, thickness);	
+	OS.GCHandle_Free (thickness);
 	imageHandle = OS.gcnew_Image ();
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.Image_Stretch (imageHandle, OS.Stretch_None);
@@ -121,7 +125,7 @@ void createHandle () {
 	int panel = OS.gcnew_StackPanel ();
 	if (panel == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.StackPanel_Orientation (panel, OS.Orientation_Horizontal);
-	int thickness = OS.gcnew_Thickness (1, 1, 1, 1);
+	thickness = OS.gcnew_Thickness (1, 1, 1, 1);
 	if (thickness == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.FrameworkElement_Margin (panel, thickness);
 	OS.GCHandle_Free (thickness);

@@ -41,7 +41,6 @@ import org.eclipse.swt.events.*;
  */
 public class ExpandBar extends Composite {
 	int parentingHandle;
-	ExpandItem [] items;
 	Control [] children;
 	int itemCount, childCount;
 	int spacing;
@@ -137,7 +136,7 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	return super.computeSize(handle, wHint, hHint, changed);	
+	return computeSize (handle, wHint, hHint, changed);	
 }
 
 void createHandle () {
@@ -153,29 +152,18 @@ void createHandle () {
 
 void createItem (ExpandItem item, int style, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	if (itemCount == items.length) {
-		ExpandItem [] newItems = new ExpandItem [itemCount + 4];
-		System.arraycopy (items, 0, newItems, 0, items.length);
-		items = newItems;
-	}
-	System.arraycopy (items, index, items, index + 1, itemCount - index);
-	item.createWidget();
-	int uiElementCollectinon = OS.Panel_Children(handle);
-	OS.UIElementCollection_Insert(uiElementCollectinon, index, item.handle);
-	OS.GCHandle_Free(uiElementCollectinon);
-	int thickness = OS.gcnew_Thickness (spacing, spacing, spacing, spacing);
-	OS.FrameworkElement_Margin (item.handle, thickness);	
-	OS.GCHandle_Free (thickness);
-	items [index] = item;	
+	item.createWidget ();
+	int items = OS.Panel_Children (handle);
+	OS.UIElementCollection_Insert (items, index, item.topHandle ());
+	int count = OS.UIElementCollection_Count (items);
+	OS.GCHandle_Free (items);
+	if (itemCount == count) error (SWT.ERROR_ITEM_NOT_ADDED);
 	itemCount++;
 }
 
 void createWidget () {
 	super.createWidget ();
-	items = new ExpandItem [4];
-	itemCount = 0;
 	children = new Control [4];
-	childCount = 0;
 }
 
 int defaultBackground () {
@@ -188,14 +176,12 @@ void deregister () {
 }
 
 void destroyItem (ExpandItem item) {
-	int index = 0;
-	while (index < itemCount) {
-		if (items [index] == item) break;
-		index++;
-	}
-	if (index == itemCount) return;
-	System.arraycopy (items, index + 1, items, index, --itemCount - index);
-	items [itemCount] = null;
+	int items = OS.Panel_Children (handle);
+	OS.UIElementCollection_Remove (items, item.topHandle ());
+	int count = OS.UIElementCollection_Count (items);
+	OS.GCHandle_Free (items);
+	if (itemCount == count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	itemCount--;
 }
 
 Point getLocation (Control child) {
@@ -227,8 +213,18 @@ Point getLocation (Control child) {
  */
 public ExpandItem getItem (int index) {
 	checkWidget ();
-	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);	
-	return items [index];
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	int items = OS.Panel_Children (handle);
+	ExpandItem item = getItem (items, index);
+	OS.GCHandle_Free (items);
+	return item;
+}
+
+ExpandItem getItem (int items, int index) {
+	int item = OS.UIElementCollection_default (items, index);
+	ExpandItem result = (ExpandItem) display.getWidget (item);
+	OS.GCHandle_Free (item);
+	return result;
 }
 
 /**
@@ -265,7 +261,11 @@ public int getItemCount () {
 public ExpandItem [] getItems () {
 	checkWidget ();
 	ExpandItem [] result = new ExpandItem [itemCount];
-	System.arraycopy (items, 0, result, 0, itemCount);
+	int items = OS.Panel_Children (handle);
+	for (int i=0; i<itemCount; i++) {
+		result [i] = getItem (items, i);
+	}
+	OS.GCHandle_Free (items);
 	return result;
 }
 
@@ -309,10 +309,10 @@ boolean hasItems () {
 public int indexOf (ExpandItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i = 0; i < itemCount; i++) {
-		if (items [i] == item) return i;
-	}
-	return -1;
+	int items = OS.Panel_Children (handle);
+	int index = OS.UIElementCollection_IndexOf (items, item.topHandle ());
+	OS.GCHandle_Free (items);
+	return index;
 }
 
 int parentingHandle() {
@@ -325,15 +325,12 @@ void register () {
 }
 
 void releaseChildren (boolean destroy) {
-	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			ExpandItem item = items [i];
-			if (item != null && !item.isDisposed ()) {
-				item.release (false);
-			}
-		}
-		items = null;
+	int items = OS.Panel_Children (handle);
+	for (int i=0; i<itemCount; i++) {
+		ExpandItem item = getItem (items, i);
+		if (item != null && !item.isDisposed ()) item.release (false);
 	}
+	OS.GCHandle_Free (items);
 	super.releaseChildren (destroy);
 }
 
@@ -344,26 +341,28 @@ void releaseHandle () {
 }
 
 void removeChild (Control control) {
-	super.removeChild (control);//TODO MAKE SURE removeControl gets called first
+	super.removeChild (control);
 	int index = 0;
 	while (index < childCount) {
 		if (children [index] == control) break;
 		index++;
 	}
 	if (index == childCount) return;
-	System.arraycopy(children, index+1, children, index, --childCount - index);
+	System.arraycopy (children, index+1, children, index, --childCount - index);
 	children [childCount] = null;
 }
 
 void removeControl (Control control) {
 	super.removeControl (control);
+	int items = OS.Panel_Children (handle);
 	for (int i=0; i<itemCount; i++) {
-		ExpandItem item = items [i];
-		if (item.control == control) {
+		ExpandItem item = getItem (items, i);
+		if (item.control == control) { 
 			item.setControl (null);
 			break;
 		}
 	}
+	OS.GCHandle_Free (items);
 }
 
 /**
@@ -415,10 +414,12 @@ public void setSpacing (int spacing) {
 	if (spacing == this.spacing) return;
 	this.spacing = spacing;
 	int thickness = OS.gcnew_Thickness (spacing, spacing, spacing, spacing);
+	int items = OS.Panel_Children (handle);
 	for (int i = 0; i < itemCount; i++) {
-		ExpandItem item = items[i];
+		ExpandItem item = getItem (items, i);
 		OS.FrameworkElement_Margin (item.handle, thickness);	
 	}
+	OS.GCHandle_Free (items);
 	OS.GCHandle_Free (thickness);	
 }
 
