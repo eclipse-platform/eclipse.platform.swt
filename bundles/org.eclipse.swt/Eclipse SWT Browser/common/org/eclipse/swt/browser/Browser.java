@@ -410,11 +410,31 @@ public boolean forward () {
 }
 
 /**
+ * Returns the current URL.
+ *
+ * @return the current URL or an empty <code>String</code> if there is no current URL
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * @see #setUrl
+ * 
+ * @since 3.0
+ */
+public String getUrl () {
+	checkWidget();
+	return webBrowser.getUrl ();
+}
+
+/**
  * Returns the JavaXPCOM <code>org.mozilla.interfaces.nsIWebBrowser</code>
- * of the receiver, or <code>null</code> if any of the following are true: <ul>
- *    <li>the receiver's style is not <code>SWT.MOZILLA</code></li>
- *    <li>the JavaXPCOM classes cannot be resolved at runtime</li>
- *    <li>the version of the underlying XULRunner is not at least 1.8.1.2</li>
+ * of the receiver, or <code>null</code> if it is not available.  In order for an
+ * <code>nsIWebBrowser</code> to be returned all of the following must be true: <ul>
+ *    <li>the receiver's style must be <code>SWT.MOZILLA</code></li>
+ *    <li>the classes from JavaXPCOM &gt;= 1.8.1.2 must be resolvable at runtime</li>
+ *    <li>the version of the underlying XULRunner must be &gt;= 1.8.1.2</li>
  * </ul> 
  *
  * @return the receiver's JavaXPCOM <code>nsIWebBrowser</code> or <code>null</code>
@@ -444,6 +464,12 @@ public boolean isBackEnabled () {
 	return webBrowser.isBackEnabled ();
 }
 
+public boolean isFocusControl () {
+	checkWidget();
+	if (webBrowser.isFocusControl ()) return true;
+	return super.isFocusControl ();
+}
+
 /**
  * Returns <code>true</code> if the receiver can navigate to the 
  * next session history item, and <code>false</code> otherwise.
@@ -460,31 +486,6 @@ public boolean isBackEnabled () {
 public boolean isForwardEnabled () {
 	checkWidget();
 	return webBrowser.isForwardEnabled ();
-}
-
-/**
- * Returns the current URL.
- *
- * @return the current URL or an empty <code>String</code> if there is no current URL
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @see #setUrl
- * 
- * @since 3.0
- */
-public String getUrl () {
-	checkWidget();
-	return webBrowser.getUrl ();
-}
-
-public boolean isFocusControl () {
-	checkWidget();
-	if (webBrowser.isFocusControl ()) return true;
-	return super.isFocusControl ();
 }
 
 /**
