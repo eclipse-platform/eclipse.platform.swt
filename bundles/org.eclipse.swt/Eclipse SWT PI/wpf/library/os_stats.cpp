@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1036;
-int OS_nativeFunctionCallCount[1036];
+int OS_nativeFunctionCount = 1037;
+int OS_nativeFunctionCallCount[1037];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -413,6 +413,7 @@ char * OS_nativeFunctionNames[] = {
 	"ItemCollection_1Remove",
 	"ItemCollection_1RemoveAt",
 	"ItemsControl_1HasItems",
+	"ItemsControl_1IsTextSearchEnabled",
 	"ItemsControl_1Items",
 	"ItemsControl_1ItemsSource",
 	"ItemsPresenter_1typeid",

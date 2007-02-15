@@ -4863,6 +4863,17 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ItemsControl_1HasItems)
 }
 #endif
 
+#ifndef NO_ItemsControl_1IsTextSearchEnabled
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ItemsControl_1IsTextSearchEnabled)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ItemsControl_1IsTextSearchEnabled)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, ItemsControl_1IsTextSearchEnabled_FUNC);
+	((ItemsControl^)TO_OBJECT(arg0))->IsTextSearchEnabled = (arg1);
+	OS_NATIVE_EXIT(env, that, ItemsControl_1IsTextSearchEnabled_FUNC);
+}
+#endif
+
 #ifndef NO_ItemsControl_1Items
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ItemsControl_1Items)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(ItemsControl_1Items)

@@ -768,6 +768,7 @@ public static final native void ItemCollection_RemoveAt(int sender, int index);
 public static final native boolean ItemsControl_HasItems(int sender);
 public static final native int ItemsControl_Items(int sender);
 public static final native void ItemsControl_ItemsSource(int sender, int value);
+public static final native void ItemsControl_IsTextSearchEnabled(int sender, boolean value);
 public static final native int ItemsPresenter_typeid();
 public static final native int KeyInterop_VirtualKeyFromKey(int key);
 public static final native int Keyboard_FocusedElement();

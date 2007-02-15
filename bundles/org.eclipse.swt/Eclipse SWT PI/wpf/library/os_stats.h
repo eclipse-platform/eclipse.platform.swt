@@ -421,6 +421,7 @@ typedef enum {
 	ItemCollection_1Remove_FUNC,
 	ItemCollection_1RemoveAt_FUNC,
 	ItemsControl_1HasItems_FUNC,
+	ItemsControl_1IsTextSearchEnabled_FUNC,
 	ItemsControl_1Items_FUNC,
 	ItemsControl_1ItemsSource_FUNC,
 	ItemsPresenter_1typeid_FUNC,
