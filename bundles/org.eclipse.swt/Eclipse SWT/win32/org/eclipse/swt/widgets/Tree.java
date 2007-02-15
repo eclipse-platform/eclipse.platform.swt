@@ -531,6 +531,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				if (findImageControl () != null) {
 					drawItem = drawText = drawBackground = true;
 					rect = item.getBounds (index, true, false, false, false, true, hDC);
+					rect.left += 2;
 					if (linesVisible) {
 						rect.right++;
 						rect.bottom++;
@@ -741,7 +742,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					}
 					int inset = i != 0 ? INSET : 0;
 					if (image != null) {
-						if (index == 0) rect.left = Math.min (rect.right, rect.left + 2);
 						Rectangle bounds = image.getBounds ();
 						if (size == null) size = getImageSize ();
 						//int y = rect.top + (index == 0 ? (getItemHeight () - size.y) / 2 : 0);
@@ -757,9 +757,11 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 							gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left, y, size.x, size.y);
 							gc.dispose ();
 						}
-						OS.SetRect (rect, rect.left + size.x + INSET, rect.top, rect.right - inset, rect.bottom);
+						int offset = i != 0 ? INSET : INSET + 2;
+						OS.SetRect (rect, rect.left + size.x + offset, rect.top, rect.right - inset, rect.bottom);
 					} else {
-						OS.SetRect (rect, rect.left + INSET, rect.top, rect.right - inset, rect.bottom);
+						int offset = i != 0 ? INSET : 2;
+						OS.SetRect (rect, rect.left + offset, rect.top, rect.right - inset, rect.bottom);
 						if (i == 0 && OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
 							if (size == null) size = getImageSize ();
 							rect.left = Math.min (rect.left + size.x, rect.right);
@@ -777,7 +779,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						String string = null;
 						if (index == 0) {
 							string = item.text;
-							rect.left = Math.min (rect.right, rect.left + 2);
 						} else {
 							String [] strings  = item.strings;
 							if (strings != null) string = strings [index];
