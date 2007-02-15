@@ -412,8 +412,9 @@ public void copy () {
 void createHandle () {
 	handle = OS.gcnew_ComboBox ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((style & SWT.READ_ONLY) == 0) { 
+	if ((style & SWT.READ_ONLY) == 0) {
 		OS.ComboBox_IsEditable (handle, true);
+		OS.ItemsControl_IsTextSearchEnabled (handle, false);
 	}
 }
 
