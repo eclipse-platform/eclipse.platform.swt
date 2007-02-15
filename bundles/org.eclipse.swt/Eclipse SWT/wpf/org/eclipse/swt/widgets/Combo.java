@@ -721,8 +721,8 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget ();
-	//FIXME
-	return LIMIT;
+	if ((style & SWT.READ_ONLY) != 0) return LIMIT;
+	return OS.TextBox_MaxLength (textHandle);
 }
 
 /**
@@ -1337,7 +1337,8 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	//FIXME
+	if ((style & SWT.READ_ONLY) != 0) return;
+	OS.TextBox_MaxLength (textHandle, limit);
 }
 
 /**
