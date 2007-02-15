@@ -629,6 +629,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(CheckBox_1typeid)
 }
 #endif
 
+#ifndef NO_Clipboard_1ContainsData
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Clipboard_1ContainsData)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Clipboard_1ContainsData)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Clipboard_1ContainsData_FUNC);
+	rc = (jboolean)Clipboard::ContainsData((String^)TO_OBJECT(arg0));
+	OS_NATIVE_EXIT(env, that, Clipboard_1ContainsData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Clipboard_1GetData
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Clipboard_1GetData)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Clipboard_1GetData)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Clipboard_1GetData_FUNC);
+	rc = (jint)TO_HANDLE(Clipboard::GetData((String^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, Clipboard_1GetData_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Clipboard_1GetText
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Clipboard_1GetText)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(Clipboard_1GetText)
@@ -639,6 +665,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(Clipboard_1GetText)
 	rc = (jint)TO_HANDLE(Clipboard::GetText());
 	OS_NATIVE_EXIT(env, that, Clipboard_1GetText_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_Clipboard_1SetData
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Clipboard_1SetData)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Clipboard_1SetData)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Clipboard_1SetData_FUNC);
+	Clipboard::SetData((String^)TO_OBJECT(arg0), (Object^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Clipboard_1SetData_FUNC);
 }
 #endif
 
@@ -2042,6 +2079,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(DashStyles_1Solid)
 	OS_NATIVE_ENTER(env, that, DashStyles_1Solid_FUNC);
 	rc = (jint)TO_HANDLE(DashStyles::Solid);
 	OS_NATIVE_EXIT(env, that, DashStyles_1Solid_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DataFormats_1Rtf
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1Rtf)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1Rtf)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataFormats_1Rtf_FUNC);
+	rc = (jint)TO_HANDLE(DataFormats::Rtf);
+	OS_NATIVE_EXIT(env, that, DataFormats_1Rtf_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DataFormats_1UnicodeText
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1UnicodeText)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1UnicodeText)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataFormats_1UnicodeText_FUNC);
+	rc = (jint)TO_HANDLE(DataFormats::UnicodeText);
+	OS_NATIVE_EXIT(env, that, DataFormats_1UnicodeText_FUNC);
 	return rc;
 }
 #endif

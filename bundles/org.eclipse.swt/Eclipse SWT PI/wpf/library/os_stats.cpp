@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1038;
-int OS_nativeFunctionCallCount[1038];
+int OS_nativeFunctionCount = 1043;
+int OS_nativeFunctionCallCount[1043];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -68,7 +68,10 @@ char * OS_nativeFunctionNames[] = {
 	"CharacterHit_1FirstCharacterIndex",
 	"CharacterHit_1TrailingLength",
 	"CheckBox_1typeid",
+	"Clipboard_1ContainsData",
+	"Clipboard_1GetData",
 	"Clipboard_1GetText",
+	"Clipboard_1SetData",
 	"ColorDialog_1AnyColor",
 	"ColorDialog_1Color__I",
 	"ColorDialog_1Color__II",
@@ -180,6 +183,8 @@ char * OS_nativeFunctionNames[] = {
 	"DashStyles_1DashDotDot",
 	"DashStyles_1Dot",
 	"DashStyles_1Solid",
+	"DataFormats_1Rtf",
+	"DataFormats_1UnicodeText",
 	"DeleteGlobalRef",
 	"DeleteObject",
 	"DependencyObject_1ClearValue",

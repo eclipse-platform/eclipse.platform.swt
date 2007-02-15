@@ -336,6 +336,8 @@ public class OS extends C {
 	public static final int Colors_Black = Colors_Black();
 	public static final int Colors_Transparent = Colors_Transparent();
 	public static final int SystemColors_ControlColor = SystemColors_ControlColor();
+	public static final int DataFormats_UnicodeText = DataFormats_UnicodeText();
+	public static final int DataFormats_Rtf = DataFormats_Rtf();
 	
 	
 /** Win32 Natives */	
@@ -432,6 +434,9 @@ public static final native int CharacterHit_FirstCharacterIndex(int sender);
 public static final native int CharacterHit_TrailingLength(int sender);
 public static final native int CheckBox_typeid();
 public static final native int Clipboard_GetText();
+public static final native int Clipboard_GetData(int format);
+public static final native boolean Clipboard_ContainsData(int format);
+public static final native void Clipboard_SetData(int format, int data);
 public static final native int Color_FromArgb(byte a, byte r, byte g, byte b);
 public static final native byte Color_A(int sender);
 public static final native byte Color_B(int sender);
@@ -541,6 +546,8 @@ public static final native int DashStyles_DashDot();
 public static final native int DashStyles_DashDotDot();
 public static final native int DashStyles_Dot();
 public static final native int DashStyles_Solid();
+public static final native int DataFormats_UnicodeText();
+public static final native int DataFormats_Rtf();
 public static final native void DependencyObject_ClearValue(int sender, int property);
 public static final native void DependencyObject_SetValue(int sender, int property, int object);
 public static final native void Dispatcher_PushFrame(int frame);
