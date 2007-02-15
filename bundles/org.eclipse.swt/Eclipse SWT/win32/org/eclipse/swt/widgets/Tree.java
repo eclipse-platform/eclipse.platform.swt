@@ -228,8 +228,33 @@ void _setBackgroundPixel (int newPixel) {
 		* the background color to the default before setting
 		* the new color.
 		*/
-		if (oldPixel != -1) OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+		if (oldPixel != -1) {
+			OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+		}
+
+		/* Set the background color */
 		OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, newPixel);
+		
+		/*
+		* Feature in Windows.  When TVM_SETBKCOLOR is used to
+		* set the background color of a tree, the plus/minus
+		* animation draws badly.  The fix is to clear the effect.
+		*/	
+		if (EXPLORER_THEME) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if (explorerTheme) {
+					int bits2 = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+					if (newPixel == -1 && findImageControl () == null) {
+						bits2 |= OS.TVS_EX_FADEINOUTEXPANDOS;
+					} else {
+						bits2 &= ~OS.TVS_EX_FADEINOUTEXPANDOS;
+					}
+					OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits2);
+				}
+			}
+		}
+
+		/* Set the checkbox image list */
 		if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	}
 }
@@ -3787,7 +3812,7 @@ void setBackgroundImage (int hBitmap) {
 				OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
 			}
 		}
-		OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+		_setBackgroundPixel (-1);
 	} else {
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
