@@ -78,7 +78,7 @@ public class Table extends Composite {
 	static final int SORT_WIDTH = 10;
 	static final int HEADER_MARGIN = 12;
 	static final int HEADER_EXTRA = 3;
-	static final int EXPLORER_EXTRA = 2;
+	static final int VISTA_EXTRA = 2;
 	static final boolean EXPLORER_THEME = true;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
@@ -507,20 +507,16 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		* there is only a single column, the line looks strange.
 		* The fix is to draw the background using custom draw.
 		*/
-		if (EXPLORER_THEME) {
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				if (explorerTheme && columnCount == 0) {
-					int hDC = nmcd.hdc;
-					RECT rect = new RECT ();
-					OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-					if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
-						drawBackground (hDC, rect);
-					} else {
-						fillBackground (hDC, OS.GetSysColor (OS.COLOR_3DFACE), rect);
-					}
-					draw = false;
-				}
+		if (explorerTheme && columnCount == 0) {
+			int hDC = nmcd.hdc;
+			RECT rect = new RECT ();
+			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+			if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
+				drawBackground (hDC, rect);
+			} else {
+				fillBackground (hDC, OS.GetSysColor (OS.COLOR_3DFACE), rect);
 			}
+			draw = false;
 		}
 		if (draw) {
 			Control control = findBackgroundControl ();
@@ -4152,10 +4148,8 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		}
 		newWidth += INSET * 2;
 		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-		if (EXPLORER_THEME) {
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				newWidth += EXPLORER_EXTRA;
-			}
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			newWidth += VISTA_EXTRA;
 		}
 		if (newWidth > oldWidth) {
 			/*
@@ -5809,15 +5803,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 					* there is only a single column, the line looks strange.
 					* The fix is to draw the background using custom draw.
 					*/
-					if (EXPLORER_THEME) {
-						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-							if (explorerTheme && columnCount != 0) break;
-						} else {
-							break;
-						}
-					} else {
-						break;
-					}
+					if (!explorerTheme || columnCount != 0) break;
 				}
 			}
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
