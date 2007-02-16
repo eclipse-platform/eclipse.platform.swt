@@ -92,13 +92,29 @@ static int checkStyle (int style) {
 }
 
 void createHandle () {
-	state |= THEME_BACKGROUND;	
+	state |= THEME_BACKGROUND;
 	if ((style & SWT.SEPARATOR) != 0) {
-		handle = OS.gcnew_Separator ();
+		handle = OS.gcnew_UserControl ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		int separator = OS.gcnew_Label ();
+		if (separator == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.ContentControl_Content (handle, separator);
+		if ((style & SWT.VERTICAL) != 0) {
+			OS.FrameworkElement_Width (separator, OS.SystemParameters_ThinVerticalBorderWidth ());
+			OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Center);
+			OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
+		} else {
+			OS.FrameworkElement_Height (separator, OS.SystemParameters_ThinHorizontalBorderHeight ());
+			OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Stretch);
+			OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Center);
+		}
+		int brush = OS.SystemColors_ActiveBorderBrush ();
+		OS.Control_Background (separator, brush);
+		OS.GCHandle_Free (brush);
+		OS.GCHandle_Free (separator);
 	} else {
 		handle = OS.gcnew_Label ();
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);		
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		int value = OS.HorizontalAlignment_Left;
 		if ((style & SWT.CENTER) != 0) value = OS.HorizontalAlignment_Center;
 		if ((style & SWT.RIGHT) != 0) value = OS.HorizontalAlignment_Right;
