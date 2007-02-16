@@ -358,63 +358,8 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if ((style & SWT.FULL_SELECTION) != 0 || findImageControl () != null || ignoreDrawSelection) {
 		OS.SetBkMode (hDC, OS.TRANSPARENT);
 	}
-	boolean selected = false;
+	boolean selected = isItemSelected (nmcd);
 	if (OS.IsWindowEnabled (handle)) {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-		tvItem.hItem = item.handle;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
-			selected = true;
-			/*
-			* Feature in Windows.  When the mouse is pressed and the
-			* selection is first drawn for a tree, the previously
-			* selected item is redrawn but the the TVIS_SELECTED bits
-			* are not cleared.  When the user moves the mouse slightly
-			* and a drag and drop operation is not started, the item is
-			* drawn again and this time with TVIS_SELECTED is cleared.
-			* This means that an item that contains colored cells will
-			* not draw with the correct background until the mouse is
-			* moved.  The fix is to test for the selection colors and
-			* guess that the item is not selected.
-			* 
-			* NOTE: This code does not work when the foreground and
-			* background of the tree are set to the selection colors
-			* but this does not happen in a regular application.
-			*/
-			if (handle == OS.GetFocus ()) {
-				if (OS.GetTextColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
-					selected = false;
-				} else {
-					if (OS.GetBkColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
-						selected = false;
-					}
-				}
-			}
-		} else {
-			/*
-			* Feature in Windows.  When the mouse is pressed and the
-			* selection is first drawn for a tree, the item is drawn
-			* selected, but the TVIS_SELECTED bits for the item are
-			* not set.  When the user moves the mouse slightly and
-			* a drag and drop operation is not started, the item is
-			* drawn again and this time TVIS_SELECTED is set.  This
-			* means that an item that is in a tree that has the style
-			* TVS_FULLROWSELECT and that also contains colored cells
-			* will not draw the entire row selected until the user
-			* moves the mouse.  The fix is to test for the selection
-			* colors and guess that the item is selected.
-			* 
-			* NOTE: This code does not work when the foreground and
-			* background of the tree are set to the selection colors
-			* but this does not happen in a regular application.
-			*/
-			if (OS.GetTextColor (hDC) == OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
-				if (OS.GetBkColor (hDC) == OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
-					selected = true;
-				}
-			}
-		}
 		if (explorerTheme) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.TVS_TRACKSELECT) != 0) {
@@ -925,41 +870,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		}
 	}
 	int hDC = nmcd.hdc;
-	/*
-	* Feature in Windows.  When the mouse is pressed and the
-	* selection is first drawn for a tree, the previously
-	* selected item is redrawn but the the TVIS_SELECTED bits
-	* are not cleared.  When the user moves the mouse slightly
-	* and a drag and drop operation is not started, the item is
-	* drawn again and this time with TVIS_SELECTED is cleared.
-	* This means that an item that contains colored cells will
-	* not draw with the correct background until the mouse is
-	* moved.  The fix is to test for the selection colors and
-	* guess that the item is not selected.
-	* 
-	* NOTE: This code does not work when the foreground and
-	* background of the tree are set to the selection colors
-	* but this does not happen in a regular application.
-	*/
-	boolean selected = false;
-	if (OS.IsWindowEnabled (handle)) {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-		tvItem.hItem = item.handle;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
-			selected = true;
-			if (handle == OS.GetFocus ()) {
-				if (OS.GetTextColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
-					selected = false;
-				} else {
-					if (OS.GetBkColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
-						selected = false;
-					}
-				}
-			}
-		}
-	}
+	boolean selected = isItemSelected (nmcd);
 	if (OS.IsWindowVisible (handle) && nmcd.left < nmcd.right && nmcd.top < nmcd.bottom) {
 		if (hFont != -1) OS.SelectObject (hDC, hFont);
 		if (linesVisible) {
@@ -3372,6 +3283,70 @@ public int indexOf (TreeItem item) {
 	return hItem == 0 ? -1 : findIndex (hItem, item.handle);
 }
 
+boolean isItemSelected (NMTVCUSTOMDRAW nmcd) {
+	boolean selected = false;
+	if (OS.IsWindowEnabled (handle)) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+		tvItem.hItem = nmcd.dwItemSpec;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
+			selected = true;
+			/*
+			* Feature in Windows.  When the mouse is pressed and the
+			* selection is first drawn for a tree, the previously
+			* selected item is redrawn but the the TVIS_SELECTED bits
+			* are not cleared.  When the user moves the mouse slightly
+			* and a drag and drop operation is not started, the item is
+			* drawn again and this time with TVIS_SELECTED is cleared.
+			* This means that an item that contains colored cells will
+			* not draw with the correct background until the mouse is
+			* moved.  The fix is to test for the selection colors and
+			* guess that the item is not selected.
+			* 
+			* NOTE: This code does not work when the foreground and
+			* background of the tree are set to the selection colors
+			* but this does not happen in a regular application.
+			*/
+			if (handle == OS.GetFocus ()) {
+				if (OS.GetTextColor (nmcd.hdc) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+					selected = false;
+				} else {
+					if (OS.GetBkColor (nmcd.hdc) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+						selected = false;
+					}
+				}
+			}
+		} else {
+			if (nmcd.dwDrawStage == OS.CDDS_ITEMPOSTPAINT) {
+				/*
+				* Feature in Windows.  When the mouse is pressed and the
+				* selection is first drawn for a tree, the item is drawn
+				* selected, but the TVIS_SELECTED bits for the item are
+				* not set.  When the user moves the mouse slightly and
+				* a drag and drop operation is not started, the item is
+				* drawn again and this time TVIS_SELECTED is set.  This
+				* means that an item that is in a tree that has the style
+				* TVS_FULLROWSELECT and that also contains colored cells
+				* will not draw the entire row selected until the user
+				* moves the mouse.  The fix is to test for the selection
+				* colors and guess that the item is selected.
+				* 
+				* NOTE: This code does not work when the foreground and
+				* background of the tree are set to the selection colors
+				* but this does not happen in a regular application.
+				*/
+				if (OS.GetTextColor (nmcd.hdc) == OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+					if (OS.GetBkColor (nmcd.hdc) == OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+						selected = true;
+					}
+				}
+			}
+		}
+	}
+	return selected;
+}
+	
 void register () {
 	super.register ();
 	if (hwndParent != 0) display.addControl (hwndParent, this);
