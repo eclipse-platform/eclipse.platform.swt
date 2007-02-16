@@ -240,18 +240,14 @@ void _setBackgroundPixel (int newPixel) {
 		* set the background color of a tree, the plus/minus
 		* animation draws badly.  The fix is to clear the effect.
 		*/	
-		if (EXPLORER_THEME) {
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				if (explorerTheme) {
-					int bits2 = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
-					if (newPixel == -1 && findImageControl () == null) {
-						bits2 |= OS.TVS_EX_FADEINOUTEXPANDOS;
-					} else {
-						bits2 &= ~OS.TVS_EX_FADEINOUTEXPANDOS;
-					}
-					OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits2);
-				}
+		if (explorerTheme) {
+			int bits2 = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
+			if (newPixel == -1 && findImageControl () == null) {
+				bits2 |= OS.TVS_EX_FADEINOUTEXPANDOS;
+			} else {
+				bits2 &= ~OS.TVS_EX_FADEINOUTEXPANDOS;
 			}
+			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits2);
 		}
 
 		/* Set the checkbox image list */
@@ -438,14 +434,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				}
 			}
 		}
-		if (EXPLORER_THEME) {
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				if (explorerTheme) {
-					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-					if ((bits & OS.TVS_TRACKSELECT) != 0) {
-						OS.SetTextColor (hDC, getForegroundPixel ());
-					}
-				}
+		if (explorerTheme) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if ((bits & OS.TVS_TRACKSELECT) != 0) {
+				OS.SetTextColor (hDC, getForegroundPixel ());
 			}
 		}
 	}
@@ -486,37 +478,33 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					boolean draw = true;
 					RECT pClipRect = new RECT ();
 					OS.SetRect (pClipRect, width, nmcd.top, nmcd.right, nmcd.bottom);
-					if (EXPLORER_THEME) {
-						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-							if (explorerTheme) {
-								boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
-								if (selected || hot) {
-									RECT pRect = new RECT ();
-									OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-									if (count > 0 && hwndHeader != 0) {
-										int totalWidth = 0;
-										HDITEM hdItem = new HDITEM ();
-										hdItem.mask = OS.HDI_WIDTH;
-										for (int j=0; j<count; j++) {
-											OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
-											totalWidth += hdItem.cxy;
-										}
-										if (totalWidth > clientRect.right - clientRect.left) {
-											pRect.left = 0;
-											pRect.right = totalWidth;
-										} else {
-											pRect.left = clientRect.left;
-											pRect.right = clientRect.right;
-										}
-									}
-									draw = false;
-									int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
-									int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-									if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-									OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
-									OS.CloseThemeData (hTheme);
+					if (explorerTheme) {
+						boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
+						if (selected || hot) {
+							RECT pRect = new RECT ();
+							OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+							if (count > 0 && hwndHeader != 0) {
+								int totalWidth = 0;
+								HDITEM hdItem = new HDITEM ();
+								hdItem.mask = OS.HDI_WIDTH;
+								for (int j=0; j<count; j++) {
+									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
+									totalWidth += hdItem.cxy;
+								}
+								if (totalWidth > clientRect.right - clientRect.left) {
+									pRect.left = 0;
+									pRect.right = totalWidth;
+								} else {
+									pRect.left = clientRect.left;
+									pRect.right = clientRect.right;
 								}
 							}
+							draw = false;
+							int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+							int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+							if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+							OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+							OS.CloseThemeData (hTheme);
 						}
 					}
 					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
@@ -538,15 +526,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					}
 				}
 				if (selected && !ignoreDrawSelection && !ignoreDrawBackground) {
-					boolean draw = true;
-					if (EXPLORER_THEME) {
-						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-							if (explorerTheme) {
-								if ((style & SWT.FULL_SELECTION) == 0) draw = false;
-							}
-						}
-					}
-					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), rect);
+					if (!explorerTheme) fillBackground (hDC, OS.GetBkColor (hDC), rect);
 					drawBackground = false;
 				}
 				backgroundRect = rect;
@@ -595,15 +575,11 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					clrTextBk = clrSortBk;
 				}
 			}
-			if (EXPLORER_THEME) {
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					if (explorerTheme) {
-						if (selected || (nmcd.uItemState & OS.CDIS_HOT) != 0) {
-							drawBackground = false;
-							if ((style & SWT.FULL_SELECTION) == 0) {
-								if (index == 0) drawText = false;
-							}
-						}
+			if (explorerTheme) {
+				if (selected || (nmcd.uItemState & OS.CDIS_HOT) != 0) {
+					drawBackground = false;
+					if ((style & SWT.FULL_SELECTION) == 0) {
+						if (index == 0) drawText = false;
 					}
 				}
 			}
@@ -1339,16 +1315,12 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 }
 
 LRESULT CDDS_PREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
-	if (EXPLORER_THEME) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			if (explorerTheme) {
-				if ((style & SWT.FULL_SELECTION) == 0) {
-					if (findImageControl () != null) {
-						RECT rect = new RECT ();
-						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-						drawBackground (nmcd.hdc, rect);
-					}
-				}
+	if (explorerTheme) {
+		if ((style & SWT.FULL_SELECTION) == 0) {
+			if (findImageControl () != null) {
+				RECT rect = new RECT ();
+				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+				drawBackground (nmcd.hdc, rect);
 			}
 		}
 	}
