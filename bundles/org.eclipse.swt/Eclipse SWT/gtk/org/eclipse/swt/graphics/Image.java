@@ -545,13 +545,15 @@ public Image(Device device, String filename) {
 		byte [] buffer = Converter.wcsToMbcs(null, chars, true);
 		int /*long*/ pixbuf = OS.gdk_pixbuf_new_from_file(buffer, null);
 		if (pixbuf != 0) {
-			int /*long*/ [] pixmap_return = new int /*long*/ [1];
-			OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
-			this.type = SWT.BITMAP;
-			this.pixmap = pixmap_return[0];
-			if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha(pixbuf);
 			if (hasAlpha) {
+				/*
+				* Bug in GTK. Depending on the image (seems to affect images that have
+				* some degree of transparency all over the image), gdk_pixbuff_render_pixmap_and_mask()
+				* will return a corrupt pixmap. To avoid this, read in and store the alpha channel data
+				* for the image and then set it to 0xFF to prevent any possible corruption from 
+				* gdk_pixbuff_render_pixmap_and_mask(). 
+				*/
 				int width = OS.gdk_pixbuf_get_width(pixbuf);
 				int height = OS.gdk_pixbuf_get_height(pixbuf);
 				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
@@ -562,7 +564,9 @@ public Image(Device device, String filename) {
 					OS.memmove(line, pixels + (y * stride), stride);
 					for (int x = 0; x < width; x++) {
 						alphaData[y*width+x] = line[x*4 + 3];
+						line[x*4 + 3] = (byte) 0xFF;
 					}
+					OS.memmove(pixels + (y * stride), line, stride);
 				}
 				if (device.useXRender) {
 					mask = OS.gdk_pixmap_new(0, width, height, 8);
@@ -586,6 +590,11 @@ public Image(Device device, String filename) {
 					OS.g_object_unref(gc);
 				}
 			}
+			int /*long*/ [] pixmap_return = new int /*long*/ [1];
+			OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
+			this.type = SWT.BITMAP;
+			this.pixmap = pixmap_return[0];
+			if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			OS.g_object_unref (pixbuf);
 			return;
 		}
