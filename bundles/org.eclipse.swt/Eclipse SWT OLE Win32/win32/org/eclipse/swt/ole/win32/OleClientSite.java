@@ -986,7 +986,7 @@ protected int QueryInterface(int riid, int ppvObject) {
 			COM.MoveMemory(ppvObject, new int[] {iOleDocumentSite.getAddress()}, 4);
 			AddRef();
 			return COM.S_OK;
-		} else System.out.println(progID);
+		}
 	}
 	COM.MoveMemory(ppvObject, new int[] {0}, 4);
 	return COM.E_NOINTERFACE;
