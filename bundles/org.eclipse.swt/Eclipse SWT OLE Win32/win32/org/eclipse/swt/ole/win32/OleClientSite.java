@@ -571,7 +571,9 @@ public int doVerb(int verb) {
 		return COM.E_FAIL;
 	
 	// See PR: 1FV9RZW
-	int result = objIOleObject.DoVerb(verb, null, iOleClientSite.getAddress(), 0, handle, null);
+	RECT rect = new RECT();
+	OS.GetClientRect(handle, rect);
+	int result = objIOleObject.DoVerb(verb, null, iOleClientSite.getAddress(), 0, handle, rect);
 
 	if (state != STATE_RUNNING && inInit) {
 		updateStorage();
