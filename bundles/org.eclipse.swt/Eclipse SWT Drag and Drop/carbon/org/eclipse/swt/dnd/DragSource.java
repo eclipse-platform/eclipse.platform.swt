@@ -305,6 +305,7 @@ void drag(Event dragEvent) {
 	OS.SetDragSendProc(theDrag[0], DragSendDataProc.getAddress(), control.handle);
 	
 	int theRegion = 0;
+	Image newImage = null;
 	try {	
 		theRegion = OS.NewRgn();
 		OS.SetRectRgn(theRegion, (short)(pt.h), (short)(pt.v), (short)(pt.h+20), (short)(pt.v+20));
@@ -319,6 +320,15 @@ void drag(Event dragEvent) {
 			CGPoint imageOffsetPt = new CGPoint();
 			imageOffsetPt.x = 0;
 			imageOffsetPt.y = 0;
+			/* Bug174467: It seems that SetDragImageWithCGImage expects an image with the alpha
+			 * channel; otherwise the image will not be visible.
+			 */
+			if (OS.CGImageGetAlphaInfo(image.handle) == OS.kCGImageAlphaNoneSkipFirst) {
+				ImageData data = image.getImageData();
+				data.alpha = 0xFF;
+				newImage = new Image(image.getDevice(), data);
+				image = newImage;
+			}
 			OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, OS.kDragStandardTranslucency);
 		}
 		EventRecord theEvent = new EventRecord();
@@ -342,6 +352,7 @@ void drag(Event dragEvent) {
 		notifyListeners(DND.DragEnd, event);
 	} finally {	
 		if (theRegion != 0) OS.DisposeRgn(theRegion);
+		if (newImage != null) newImage.dispose();
 	}
 	OS.DisposeDrag(theDrag[0]);
 }
