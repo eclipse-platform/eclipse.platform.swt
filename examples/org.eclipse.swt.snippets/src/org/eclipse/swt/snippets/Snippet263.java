@@ -34,7 +34,7 @@ public class Snippet263 {
 		shell.setLayout(new FillLayout());
 		try {
 			OleFrame frame = new OleFrame(shell, SWT.NONE);
-			clientSite  = new OleClientSite(frame, SWT.NONE, "PowerPoint.Show");
+			clientSite  = new OleClientSite(frame, SWT.NONE, "PowerPoint.Slide");
 			addFileMenu(frame);
 		} catch (SWTError e) {
 			System.out.println("Unable to open activeX control");
