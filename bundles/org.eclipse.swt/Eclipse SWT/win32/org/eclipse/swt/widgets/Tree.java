@@ -400,38 +400,36 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		}
 		if (i == 0) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				if ((selected || findImageControl () == null) && !ignoreDrawSelection && !ignoreDrawBackground) {
+				boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
+				if ((selected || hot) && !ignoreDrawSelection && !ignoreDrawBackground) {
 					boolean draw = true;
 					RECT pClipRect = new RECT ();
 					OS.SetRect (pClipRect, width, nmcd.top, nmcd.right, nmcd.bottom);
 					if (explorerTheme) {
-						boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
-						if (selected || hot) {
-							RECT pRect = new RECT ();
-							OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-							if (count > 0 && hwndHeader != 0) {
-								int totalWidth = 0;
-								HDITEM hdItem = new HDITEM ();
-								hdItem.mask = OS.HDI_WIDTH;
-								for (int j=0; j<count; j++) {
-									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
-									totalWidth += hdItem.cxy;
-								}
-								if (totalWidth > clientRect.right - clientRect.left) {
-									pRect.left = 0;
-									pRect.right = totalWidth;
-								} else {
-									pRect.left = clientRect.left;
-									pRect.right = clientRect.right;
-								}
+						RECT pRect = new RECT ();
+						OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						if (count > 0 && hwndHeader != 0) {
+							int totalWidth = 0;
+							HDITEM hdItem = new HDITEM ();
+							hdItem.mask = OS.HDI_WIDTH;
+							for (int j=0; j<count; j++) {
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
+								totalWidth += hdItem.cxy;
 							}
-							draw = false;
-							int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
-							int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
-							if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
-							OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
-							OS.CloseThemeData (hTheme);
+							if (totalWidth > clientRect.right - clientRect.left) {
+								pRect.left = 0;
+								pRect.right = totalWidth;
+							} else {
+								pRect.left = clientRect.left;
+								pRect.right = clientRect.right;
+							}
 						}
+						draw = false;
+						int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+						OS.CloseThemeData (hTheme);
 					}
 					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
 				}
@@ -443,12 +441,38 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			if (i == 0) {
 				drawItem = drawImage = drawText = false;
 				if (findImageControl () != null) {
-					drawItem = drawText = drawBackground = true;
-					rect = item.getBounds (index, true, false, false, false, true, hDC);
-					rect.left += 2;
-					if (linesVisible) {
-						rect.right++;
-						rect.bottom++;
+					if (explorerTheme) {
+						if (OS.IsWindowEnabled (handle)) {
+							Image image = null;
+							if (index == 0) {
+								image = item.image;
+							} else {
+								Image [] images  = item.images;
+								if (images != null) image = images [index];
+							}
+							if (image != null) {
+								Rectangle bounds = image.getBounds ();
+								if (size == null) size = getImageSize ();
+								if (!ignoreDrawForeground) {
+									GCData data = new GCData();
+									data.device = display;
+									GC gc = GC.win32_new (hDC, data);
+									RECT iconRect = item.getBounds (index, false, true, false, false, true, hDC);
+									gc.setClipping (iconRect.left, iconRect.top, iconRect.right - iconRect.left, iconRect.bottom - iconRect.top);
+									gc.drawImage (image, 0, 0, bounds.width, bounds.height, iconRect.left, iconRect.top, size.x, size.y);
+									OS.SelectClipRgn (hDC, 0);
+									gc.dispose ();
+								}
+							}
+						}
+					} else {
+						drawItem = drawText = drawBackground = true;
+						rect = item.getBounds (index, true, false, false, false, true, hDC);
+						rect.left += 2;
+						if (linesVisible) {
+							rect.right++;
+							rect.bottom++;
+						}
 					}
 				}
 				if (selected && !ignoreDrawSelection && !ignoreDrawBackground) {
@@ -1094,18 +1118,46 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			}
 		}
 	}
-	/*
-	* Feature in Windows.  When the tree is disabled, it draws
-	* with a gray background over the sort column.  The fix is
-	* to fill the background with the sort column color.
-	*/
-	if (!OS.IsWindowEnabled (handle) && clrSortBk != -1) {
-		RECT rect = new RECT ();
-		HDITEM hdItem = new HDITEM ();
-		hdItem.mask = OS.HDI_WIDTH;
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
-		fillBackground (hDC, clrSortBk, rect);
+	if (OS.IsWindowEnabled (handle)) {
+		/*
+		* On Vista only, when an item is asked to draw disabled,
+		* the background of the text is not filled with the
+		* background color of the tree.  This is true for both
+		* regular and full selection trees.  In order to draw a
+		* background image, mark the item as disabled using
+		* CDIS_DISABLED (when not selected) and set the text
+		* to the regular text color to avoid drawing disabled.
+		*/
+		if (explorerTheme) {
+			if (findImageControl () !=  null) {
+				if (!selected && (nmcd.uItemState & (OS.CDIS_HOT | OS.CDIS_SELECTED)) == 0) {
+					nmcd.uItemState |= OS.CDIS_DISABLED;
+					/*
+					* Feature in Windows.  On Vista only, when the text
+					* color is unchanged and an item is asked to draw
+					* disabled, it uses the disabled color.  The fix is
+					* to modify the color slightly by adding one.
+					*/
+					int newColor = clrText == -1 ? getForegroundPixel () : clrText;
+					nmcd.clrText = nmcd.clrText == newColor ? newColor + 1 : newColor;
+					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+				}
+			}
+		}
+	} else {
+		/*
+		* Feature in Windows.  When the tree is disabled, it draws
+		* with a gray background over the sort column.  The fix is
+		* to fill the background with the sort column color.
+		*/
+		if (clrSortBk != -1) {
+			RECT rect = new RECT ();
+			HDITEM hdItem = new HDITEM ();
+			hdItem.mask = OS.HDI_WIDTH;
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+			fillBackground (hDC, clrSortBk, rect);
+		}
 	}
 	OS.SaveDC (hDC);
 	if (clipRect != null) {
@@ -1190,12 +1242,10 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 
 LRESULT CDDS_PREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (explorerTheme) {
-		if ((style & SWT.FULL_SELECTION) == 0) {
-			if (findImageControl () != null) {
-				RECT rect = new RECT ();
-				OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-				drawBackground (nmcd.hdc, rect);
-			}
+		if (findImageControl () != null) {
+			RECT rect = new RECT ();
+			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+			drawBackground (nmcd.hdc, rect);
 		}
 	}
 	return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
@@ -3724,11 +3774,6 @@ public void selectAll () {
 
 void setBackgroundImage (int hBitmap) {
 	super.setBackgroundImage (hBitmap);
-	if (EXPLORER_THEME) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			if ((style & SWT.FULL_SELECTION) != 0) setExplorerTheme (false);
-		}
-	}
 	if (hBitmap != 0) {
 		/*
 		* Feature in Windows.  If TVM_SETBKCOLOR is never
@@ -3740,10 +3785,8 @@ void setBackgroundImage (int hBitmap) {
 		* it is already the default) to make Windows use the
 		* brush.
 		*/
-		if (OS.COMCTL32_MAJOR < 6) {
-			if (OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0) == -1) {
-				OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
-			}
+		if (OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0) == -1) {
+			OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
 		}
 		_setBackgroundPixel (-1);
 	} else {
@@ -4770,7 +4813,7 @@ void updateFullSelection () {
 		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 		if ((newBits & OS.TVS_FULLROWSELECT) != 0) {
 			if (!OS.IsWindowEnabled (handle) || findImageControl () != null) {
-				newBits &= ~OS.TVS_FULLROWSELECT;
+				if (!explorerTheme) newBits &= ~OS.TVS_FULLROWSELECT;
 			}
 		} else {
 			if (OS.IsWindowEnabled (handle) && findImageControl () == null) {
@@ -6475,6 +6518,11 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 				lptvdi.iImage = lptvdi.iSelectedImage = OS.I_IMAGENONE;
 				if (image != null) {
 					lptvdi.iImage = lptvdi.iSelectedImage = imageIndex (image, index);
+				}
+				if (explorerTheme && OS.IsWindowEnabled (handle)) {
+					if (findImageControl () != null) {
+						lptvdi.iImage = lptvdi.iSelectedImage = OS.I_IMAGENONE;
+					}
 				}
 			}
 			OS.MoveMemory (lParam, lptvdi, NMTVDISPINFO.sizeof);
