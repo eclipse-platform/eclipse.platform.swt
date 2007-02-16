@@ -328,26 +328,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	}
 	int hDC = nmcd.hdc;
 	OS.RestoreDC (hDC, -1);
-
-	/*
-	* Bug in Windows.  If the lParam field of TVITEM
-	* is changed during custom draw using TVM_SETITEM,
-	* the lItemlParam field of the NMTVCUSTOMDRAW struct
-	* is not updated until the next custom draw.  The
-	* fix is to query the field from the item instead
-	* of using the struct.
-	*/
-	int id = nmcd.lItemlParam;
-	if ((style & SWT.VIRTUAL) != 0) {
-		if (id == -1) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-			tvItem.hItem = nmcd.dwItemSpec;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			id = tvItem.lParam;
-		}
-	}
-	TreeItem item = _getItem (nmcd.dwItemSpec, id);
+	TreeItem item = getItem (nmcd);
 	
 	/*
 	* Feature in Windows.  When a new tree item is inserted
@@ -891,25 +872,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 }
 
 LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
-	/*
-	* Bug in Windows.  If the lParam field of TVITEM
-	* is changed during custom draw using TVM_SETITEM,
-	* the lItemlParam field of the NMTVCUSTOMDRAW struct
-	* is not updated until the next custom draw.  The
-	* fix is to query the field from the item instead
-	* of using the struct.
-	*/
-	int id = nmcd.lItemlParam;
-	if ((style & SWT.VIRTUAL) != 0) {
-		if (id == -1) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-			tvItem.hItem = nmcd.dwItemSpec;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			id = tvItem.lParam;
-		}
-	}
-	TreeItem item = _getItem (nmcd.dwItemSpec, id);
+	TreeItem item = getItem (nmcd);
 	/*
 	* Feature in Windows.  When a new tree item is inserted
 	* using TVM_INSERTITEM and the tree is using custom draw,
@@ -2828,6 +2791,28 @@ public TreeItem getItem (int index) {
 	int hItem = findItem (hFirstItem, index);
 	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
 	return _getItem (hItem);
+}
+
+TreeItem getItem (NMTVCUSTOMDRAW nmcd) {
+	/*
+	* Bug in Windows.  If the lParam field of TVITEM
+	* is changed during custom draw using TVM_SETITEM,
+	* the lItemlParam field of the NMTVCUSTOMDRAW struct
+	* is not updated until the next custom draw.  The
+	* fix is to query the field from the item instead
+	* of using the struct.
+	*/
+	int id = nmcd.lItemlParam;
+	if ((style & SWT.VIRTUAL) != 0) {
+		if (id == -1) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+			tvItem.hItem = nmcd.dwItemSpec;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			id = tvItem.lParam;
+		}
+	}
+	return _getItem (nmcd.dwItemSpec, id);
 }
 
 /**
