@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1043;
-int OS_nativeFunctionCallCount[1043];
+int OS_nativeFunctionCount = 1048;
+int OS_nativeFunctionCallCount[1048];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -649,6 +649,7 @@ char * OS_nativeFunctionNames[] = {
 	"String_1Length",
 	"String_1ToCharArray",
 	"Style_1Setters",
+	"SystemColors_1ActiveBorderBrush",
 	"SystemColors_1ActiveBorderColor",
 	"SystemColors_1ActiveCaptionColor",
 	"SystemColors_1ActiveCaptionTextColor",
@@ -679,6 +680,8 @@ char * OS_nativeFunctionNames[] = {
 	"SystemParameters_1HorizontalScrollBarHeight",
 	"SystemParameters_1PrimaryScreenHeight",
 	"SystemParameters_1PrimaryScreenWidth",
+	"SystemParameters_1ThinHorizontalBorderHeight",
+	"SystemParameters_1ThinVerticalBorderWidth",
 	"SystemParameters_1VerticalScrollBarButtonHeight",
 	"SystemParameters_1VerticalScrollBarWidth",
 	"SystemParameters_1VirtualScreenHeight",
@@ -863,6 +866,7 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1PreviewMouseWheel",
 	"UIElement_1PreviewTextInput",
 	"UIElement_1ReleaseMouseCapture",
+	"UIElement_1SnapsToDevicePixels",
 	"UIElement_1TextInput",
 	"UIElement_1TranslatePoint",
 	"UIElement_1UpdateLayout",
@@ -1056,6 +1060,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1TreeViewItem",
 	"gcnew_1Typeface",
 	"gcnew_1Uri",
+	"gcnew_1UserControl",
 	"gcnew_1Window",
 	"gcnew_1WriteableBitmap__I",
 	"gcnew_1WriteableBitmap__IIDDII",

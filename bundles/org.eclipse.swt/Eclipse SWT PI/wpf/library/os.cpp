@@ -7662,6 +7662,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(Style_1Setters)
 }
 #endif
 
+#ifndef NO_SystemColors_1ActiveBorderBrush
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ActiveBorderBrush)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ActiveBorderBrush)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SystemColors_1ActiveBorderBrush_FUNC);
+	rc = (jint)TO_HANDLE(SystemColors::ActiveBorderBrush);
+	OS_NATIVE_EXIT(env, that, SystemColors_1ActiveBorderBrush_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SystemColors_1ActiveBorderColor
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ActiveBorderColor)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ActiveBorderColor)
@@ -8048,6 +8061,32 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1PrimaryScreenWidth)
 	OS_NATIVE_ENTER(env, that, SystemParameters_1PrimaryScreenWidth_FUNC);
 	rc = (jdouble)SystemParameters::PrimaryScreenWidth;
 	OS_NATIVE_EXIT(env, that, SystemParameters_1PrimaryScreenWidth_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SystemParameters_1ThinHorizontalBorderHeight
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1ThinHorizontalBorderHeight)(JNIEnv *env, jclass that);
+JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1ThinHorizontalBorderHeight)
+	(JNIEnv *env, jclass that)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, SystemParameters_1ThinHorizontalBorderHeight_FUNC);
+	rc = (jdouble)SystemParameters::ThinHorizontalBorderHeight;
+	OS_NATIVE_EXIT(env, that, SystemParameters_1ThinHorizontalBorderHeight_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SystemParameters_1ThinVerticalBorderWidth
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1ThinVerticalBorderWidth)(JNIEnv *env, jclass that);
+JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1ThinVerticalBorderWidth)
+	(JNIEnv *env, jclass that)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, SystemParameters_1ThinVerticalBorderWidth_FUNC);
+	rc = (jdouble)SystemParameters::ThinVerticalBorderWidth;
+	OS_NATIVE_EXIT(env, that, SystemParameters_1ThinVerticalBorderWidth_FUNC);
 	return rc;
 }
 #endif
@@ -10274,6 +10313,17 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1ReleaseMouseCapture)
 }
 #endif
 
+#ifndef NO_UIElement_1SnapsToDevicePixels
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1SnapsToDevicePixels)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1SnapsToDevicePixels)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1SnapsToDevicePixels_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->SnapsToDevicePixels = (arg1);
+	OS_NATIVE_EXIT(env, that, UIElement_1SnapsToDevicePixels_FUNC);
+}
+#endif
+
 #ifndef NO_UIElement_1TextInput
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1TextInput)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(UIElement_1TextInput)
@@ -12368,6 +12418,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Uri)
 	OS_NATIVE_ENTER(env, that, gcnew_1Uri_FUNC);
 	rc = (jint)TO_HANDLE(gcnew Uri((String^)TO_OBJECT(arg0), (UriKind)arg1));
 	OS_NATIVE_EXIT(env, that, gcnew_1Uri_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1UserControl
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1UserControl)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1UserControl)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1UserControl_FUNC);
+	rc = (jint)TO_HANDLE(gcnew UserControl());
+	OS_NATIVE_EXIT(env, that, gcnew_1UserControl_FUNC);
 	return rc;
 }
 #endif
