@@ -332,6 +332,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				while (OS.IEnumerator_MoveNext(enumerator)) {
 					int bounds = OS.TextBoundsCollection_Current(enumerator);
 					int textRect = OS.TextBounds_Rectangle(bounds);
+					OS.Rect_X(textRect, OS.Rect_X(textRect) + x);
 					OS.Rect_Y(textRect, OS.Rect_Y(textRect) + drawY);
 					OS.DrawingContext_DrawRectangle(drawingContext, selBrush, 0, textRect);
 					OS.GCHandle_Free(textRect);
