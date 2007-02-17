@@ -6763,6 +6763,28 @@ JNIEXPORT void JNICALL OS_NATIVE(ProgressBar_1Orientation)
 }
 #endif
 
+#ifndef NO_PropertyInfo_1SetValue
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(PropertyInfo_1SetValue)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3);
+JNIEXPORT void JNICALL OS_NATIVE(PropertyInfo_1SetValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, PropertyInfo_1SetValue_FUNC);
+	((PropertyInfo^)TO_OBJECT(arg0))->SetValue((Object^)TO_OBJECT(arg1), (Object^)TO_OBJECT(arg2), (array<Object^>^)TO_OBJECT(arg3));
+	OS_NATIVE_EXIT(env, that, PropertyInfo_1SetValue_FUNC);
+}
+#endif
+
+#ifndef NO_PropertyInfo_1SetValueBoolean
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(PropertyInfo_1SetValueBoolean)(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3);
+JNIEXPORT void JNICALL OS_NATIVE(PropertyInfo_1SetValueBoolean)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
+{
+	OS_NATIVE_ENTER(env, that, PropertyInfo_1SetValueBoolean_FUNC);
+	((PropertyInfo^)TO_OBJECT(arg0))->PropertyInfo::SetValue((Object^)TO_OBJECT(arg1), (bool)arg2, (array<Object^>^)TO_OBJECT(arg3));
+	OS_NATIVE_EXIT(env, that, PropertyInfo_1SetValueBoolean_FUNC);
+}
+#endif
+
 #ifndef NO_RangeBase_1LargeChange__I
 extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(RangeBase_1LargeChange__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jdouble JNICALL OS_NATIVE(RangeBase_1LargeChange__I)
@@ -7169,6 +7191,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(RoutedEventArgs_1typeid)
 	OS_NATIVE_ENTER(env, that, RoutedEventArgs_1typeid_FUNC);
 	rc = (jint)TO_HANDLE(RoutedEventArgs::typeid);
 	OS_NATIVE_EXIT(env, that, RoutedEventArgs_1typeid_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RoutedPropertyChangedEventArgs_1NewValue
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(RoutedPropertyChangedEventArgs_1NewValue)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(RoutedPropertyChangedEventArgs_1NewValue)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RoutedPropertyChangedEventArgs_1NewValue_FUNC);
+	rc = (jint)TO_HANDLE(((RoutedPropertyChangedEventArgs<Object^>^)TO_OBJECT(arg0))->NewValue);
+	OS_NATIVE_EXIT(env, that, RoutedPropertyChangedEventArgs_1NewValue_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RoutedPropertyChangedEventArgs_1OldValue
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(RoutedPropertyChangedEventArgs_1OldValue)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(RoutedPropertyChangedEventArgs_1OldValue)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RoutedPropertyChangedEventArgs_1OldValue_FUNC);
+	rc = (jint)TO_HANDLE(((RoutedPropertyChangedEventArgs<Object^>^)TO_OBJECT(arg0))->OldValue);
+	OS_NATIVE_EXIT(env, that, RoutedPropertyChangedEventArgs_1OldValue_FUNC);
 	return rc;
 }
 #endif
@@ -9567,14 +9615,27 @@ JNIEXPORT void JNICALL OS_NATIVE(TreeViewItem_1IsExpanded__IZ)
 }
 #endif
 
-#ifndef NO_TreeViewItem_1IsSelected
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(TreeViewItem_1IsSelected)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
-JNIEXPORT void JNICALL OS_NATIVE(TreeViewItem_1IsSelected)
+#ifndef NO_TreeViewItem_1IsSelected__I
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(TreeViewItem_1IsSelected__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(TreeViewItem_1IsSelected__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, TreeViewItem_1IsSelected__I_FUNC);
+	rc = (jboolean)((TreeViewItem^)TO_OBJECT(arg0))->IsSelected;
+	OS_NATIVE_EXIT(env, that, TreeViewItem_1IsSelected__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TreeViewItem_1IsSelected__IZ
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(TreeViewItem_1IsSelected__IZ)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(TreeViewItem_1IsSelected__IZ)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, TreeViewItem_1IsSelected_FUNC);
+	OS_NATIVE_ENTER(env, that, TreeViewItem_1IsSelected__IZ_FUNC);
 	((TreeViewItem^)TO_OBJECT(arg0))->IsSelected = (arg1);
-	OS_NATIVE_EXIT(env, that, TreeViewItem_1IsSelected_FUNC);
+	OS_NATIVE_EXIT(env, that, TreeViewItem_1IsSelected__IZ_FUNC);
 }
 #endif
 
@@ -9663,6 +9724,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(Type_1FullName)
 	OS_NATIVE_ENTER(env, that, Type_1FullName_FUNC);
 	rc = (jint)TO_HANDLE_STRUCT(((Type^)TO_OBJECT(arg0))->FullName);
 	OS_NATIVE_EXIT(env, that, Type_1FullName_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Type_1GetProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Type_1GetProperty)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT jint JNICALL OS_NATIVE(Type_1GetProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Type_1GetProperty_FUNC);
+	rc = (jint)TO_HANDLE(((Type^)TO_OBJECT(arg0))->GetProperty((String^)TO_OBJECT(arg1), (BindingFlags)arg2));
+	OS_NATIVE_EXIT(env, that, Type_1GetProperty_FUNC);
 	return rc;
 }
 #endif

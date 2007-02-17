@@ -852,6 +852,7 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if ((parent.style & SWT.MULTI) != 0) parent.removeSelectedItem (this);
 	if (imageList != 0) OS.GCHandle_Free (imageList);
 	imageList = 0;
 	if (stringList != 0) OS.GCHandle_Free (stringList);

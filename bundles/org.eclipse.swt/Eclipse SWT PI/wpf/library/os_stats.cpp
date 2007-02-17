@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1048;
-int OS_nativeFunctionCallCount[1048];
+int OS_nativeFunctionCount = 1055;
+int OS_nativeFunctionCallCount[1055];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -570,6 +570,8 @@ char * OS_nativeFunctionNames[] = {
 	"ProgressBar_1IsIndeterminate__I",
 	"ProgressBar_1IsIndeterminate__IZ",
 	"ProgressBar_1Orientation",
+	"PropertyInfo_1SetValue",
+	"PropertyInfo_1SetValueBoolean",
 	"RangeBase_1LargeChange__I",
 	"RangeBase_1LargeChange__ID",
 	"RangeBase_1Maximum__I",
@@ -604,6 +606,8 @@ char * OS_nativeFunctionNames[] = {
 	"RoutedEventArgs_1OriginalSource",
 	"RoutedEventArgs_1Source",
 	"RoutedEventArgs_1typeid",
+	"RoutedPropertyChangedEventArgs_1NewValue",
+	"RoutedPropertyChangedEventArgs_1OldValue",
 	"RowDefinitionCollection_1Add",
 	"RowDefinition_1Height",
 	"Run_1Text",
@@ -804,7 +808,8 @@ char * OS_nativeFunctionNames[] = {
 	"TreeViewItem_1ExpandedEvent",
 	"TreeViewItem_1IsExpanded__I",
 	"TreeViewItem_1IsExpanded__IZ",
-	"TreeViewItem_1IsSelected",
+	"TreeViewItem_1IsSelected__I",
+	"TreeViewItem_1IsSelected__IZ",
 	"TreeView_1SelectedItem",
 	"TreeView_1SelectedItemChanged",
 	"TreeView_1typeid",
@@ -812,6 +817,7 @@ char * OS_nativeFunctionNames[] = {
 	"TypeConverter_1ConvertToString",
 	"TypeDescriptor_1GetConverter",
 	"Type_1FullName",
+	"Type_1GetProperty",
 	"Type_1IsInstanceOfType",
 	"TypefaceCollection_1Count",
 	"TypefaceCollection_1Current",
@@ -1019,6 +1025,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1SWTTextParagraphProperties",
 	"gcnew_1SWTTextRunProperties",
 	"gcnew_1SWTTextSource",
+	"gcnew_1SWTTreeView",
 	"gcnew_1SWTTreeViewRowPresenter",
 	"gcnew_1SaveFileDialog",
 	"gcnew_1ScaleTransform",

@@ -16,6 +16,9 @@ import org.eclipse.swt.internal.*;
 public class OS extends C {
 	
 	/** Constants */
+	public static final int BindingFlags_Instance = 4;
+	public static final int BindingFlags_NonPublic = 32;
+	
 	public static final int Key_LeftAlt = 120;
 	public static final int Key_RightAlt = 121;
 	public static final int Key_LeftCtrl = 118;
@@ -924,6 +927,8 @@ public static final native int PresentationSource_FromVisual(int visual);
 public static final native void ProgressBar_IsIndeterminate(int sender, boolean value);
 public static final native void ProgressBar_IsIndeterminate(int sender);
 public static final native void ProgressBar_Orientation(int handle, int value);
+public static final native void PropertyInfo_SetValue(int sender, int obj, int value, int indexArray);
+public static final native void PropertyInfo_SetValueBoolean(int sender, int obj, boolean value, int indexArray);
 public static final native double RangeBase_LargeChange(int sender);
 public static final native void RangeBase_LargeChange(int sender, double value);
 public static final native double RangeBase_Maximum(int sender);
@@ -958,6 +963,8 @@ public static final native void RoutedEventArgs_Handled(int sender, boolean hand
 public static final native int RoutedEventArgs_typeid();
 public static final native int RoutedEventArgs_OriginalSource(int sender);
 public static final native int RoutedEventArgs_Source(int sender);
+public static final native int RoutedPropertyChangedEventArgs_NewValue(int sender);
+public static final native int RoutedPropertyChangedEventArgs_OldValue(int sender);
 public static final native void Run_Text(int sender, int value);
 public static final native int ScrollBar_Orientation(int sender);
 public static final native void ScrollBar_Orientation(int sender, int orientation);
@@ -1157,7 +1164,9 @@ public static final native int TreeViewItem_CollapsedEvent();
 public static final native int TreeViewItem_ExpandedEvent();
 public static final native boolean TreeViewItem_IsExpanded(int sender);
 public static final native void TreeViewItem_IsExpanded(int sender, boolean value);
+public static final native boolean TreeViewItem_IsSelected(int sender);
 public static final native void TreeViewItem_IsSelected(int sender, boolean value);
+public static final native int Type_GetProperty(int sender, int name, int bindingFlags);
 public static final native int TypeConverter_ConvertFromString(int sender, int string);
 public static final native int TypeConverter_ConvertToString(int sender, int object);
 public static final native int TypeDescriptor_GetConverter(int object);
@@ -1370,6 +1379,7 @@ public static final native int gcnew_SWTRow(int parentJniRef, int item);
 public static final native int gcnew_SWTTextEmbeddedObject(int properties, int lenght, double width, double height, double baseline);
 public static final native int gcnew_SWTTextRunProperties(int typeface, double size, double hittingSize, int textDecorations, int foregroundBrush, int backgroundBrush, int baselineAlignment, int culture);
 public static final native int gcnew_SWTTextParagraphProperties(int flowDirection, int textAlignment, boolean firstLineInParagraph, int defaultTextRunProperties, int textWrap, double lineHeight, double indent, int tabs);
+public static final native int gcnew_SWTTreeView(int jniRef);
 public static final native int gcnew_SWTTreeViewRowPresenter(int treeView);
 public static final native int gcnew_TabControl();
 public static final native int gcnew_TabItem();

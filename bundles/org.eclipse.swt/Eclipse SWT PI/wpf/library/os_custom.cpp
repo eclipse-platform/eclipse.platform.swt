@@ -58,6 +58,53 @@ public:
 /* Table and Tree Classes						*/
 /*												*/
 
+public ref class SWTTreeView : TreeView {
+private:
+	JniRefCookie^ cookie;
+	jmethodID HandlerMID;
+	
+	void callin (jmethodID mid, RoutedPropertyChangedEventArgs<Object^>^ args) {
+		jobject object = cookie->object;
+		if (object == NULL || mid == NULL) return;
+		JNIEnv* env;
+		int result = 0;
+		bool detach = false;
+
+#ifdef JNI_VERSION_1_2
+		if (IS_JNI_1_2) {
+			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+		}
+#endif
+		if (env == NULL) {
+			jvm->AttachCurrentThread((void **)&env, NULL);
+			if (IS_JNI_1_2) detach = true;
+		}
+		if (env != NULL) {
+			if (!env->ExceptionOccurred()) {
+				GCHandle gch0 = GCHandle::Alloc(args);
+				env->CallVoidMethod(object, mid, (int)(IntPtr)gch0);
+				gch0.Free();
+			}
+			if (detach) jvm->DetachCurrentThread();
+		}
+	}	
+protected:
+	virtual void OnSelectedItemChanged (RoutedPropertyChangedEventArgs<Object^>^ args) override {
+		callin(HandlerMID, args);
+		TreeView::OnSelectedItemChanged(args);
+	}
+public:
+	SWTTreeView (JNIEnv* env, jint jniRef) {
+		if (jvm == NULL) env->GetJavaVM(&jvm);
+		cookie = gcnew JniRefCookie(env, jniRef);
+		jobject object = cookie->object;
+		if (object) {
+			jclass javaClass = env->GetObjectClass(object);
+			HandlerMID = env->GetMethodID(javaClass, "OnSelectedItemChanged", "(I)V");
+		}
+	}	
+};
+
 public ref class SWTTreeViewRowPresenter : GridViewRowPresenter {
 private: 
 	TreeView^ tree;
@@ -938,6 +985,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextRunProperties)
 	OS_NATIVE_ENTER(env, that, gcnew_1SWTTextRunProperties_FUNC);
 	rc = (jint)TO_HANDLE(gcnew SWTTextRunProperties((Typeface^)TO_OBJECT(arg0), arg1, arg2, (TextDecorationCollection^)TO_OBJECT(arg3), (Brush^)TO_OBJECT(arg4), (Brush^)TO_OBJECT(arg5), (BaselineAlignment)arg6, (CultureInfo^)TO_OBJECT(arg7)));
 	OS_NATIVE_EXIT(env, that, gcnew_1SWTTextRunProperties_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1SWTTreeView
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeView) 
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1SWTTreeView_FUNC);
+	rc = (jint)TO_HANDLE(gcnew SWTTreeView(env, arg0));
+	OS_NATIVE_EXIT(env, that, gcnew_1SWTTreeView_FUNC);
 	return rc;
 }
 #endif

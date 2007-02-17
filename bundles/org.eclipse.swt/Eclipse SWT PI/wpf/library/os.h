@@ -21,6 +21,7 @@ using namespace System;
 using namespace System::ComponentModel;
 using namespace System::Collections;
 using namespace System::Globalization;
+using namespace System::Reflection;
 using namespace System::Windows;
 using namespace System::Windows::Data;
 using namespace System::Windows::Documents;
