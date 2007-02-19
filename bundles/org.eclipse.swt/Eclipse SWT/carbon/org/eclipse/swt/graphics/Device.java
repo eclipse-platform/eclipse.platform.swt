@@ -46,9 +46,10 @@ public abstract class Device implements Drawable {
 
 	/* System Font */
 	Font systemFont;
-	
-	Callback drawPatternCallback, axialShadingCallback;
-	int drawPatternProc, axialShadingProc;
+
+	/* Callbacks */
+	Callback drawPatternCallback, axialShadingCallback, releaseCallback;
+	int drawPatternProc, axialShadingProc, releaseProc;
 
 	final static Object CREATE_OBJECT = new Object();
 
@@ -542,6 +543,10 @@ public boolean getWarnings () {
 protected void init () {
 	colorspace = OS.CGColorSpaceCreateDeviceRGB();
 	if (colorspace == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+
+	releaseCallback = new Callback (this, "releaseProc", 3);
+	releaseProc = releaseCallback.getAddress ();
+	if (releaseProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Create the standard colors */
 	COLOR_BLACK = new Color (this, 0,0,0);
@@ -686,10 +691,11 @@ void new_Object (Object object) {
  * @see #destroy
  */
 protected void release () {
+	if (releaseCallback != null) releaseCallback.dispose ();
 	if (drawPatternCallback != null) drawPatternCallback.dispose();
 	if (axialShadingCallback != null) axialShadingCallback.dispose();
-	axialShadingCallback = drawPatternCallback = null;
-	axialShadingProc = drawPatternProc = 0;
+	releaseCallback = axialShadingCallback = drawPatternCallback = null;
+	releaseProc = axialShadingProc = drawPatternProc = 0;
 
 	OS.CGColorSpaceRelease(colorspace);
 	colorspace = 0;
@@ -697,6 +703,11 @@ protected void release () {
 	COLOR_BLACK = COLOR_DARK_RED = COLOR_DARK_GREEN = COLOR_DARK_YELLOW = COLOR_DARK_BLUE =
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
+}
+
+int releaseProc (int info, int data, int size) {
+	OS.DisposePtr(data);
+	return 0;
 }
 
 /**

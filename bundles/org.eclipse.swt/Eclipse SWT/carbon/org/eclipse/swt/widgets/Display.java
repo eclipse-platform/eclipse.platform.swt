@@ -109,11 +109,11 @@ public class Display extends Device {
 	Callback actionCallback, appleEventCallback, clockCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, searchCallback, trayItemCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, pollingCallback;
-	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback;
+	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback, releaseCallback;
 	int actionProc, appleEventProc, clockProc, commandProc, controlProc, appearanceProc, accessibilityProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, searchProc, trayItemProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, pollingProc;
-	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
+	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers, lastState, lastX, lastY;
 	boolean closing;
@@ -211,7 +211,7 @@ public class Display extends Device {
 	RGBColor highlightColor;
 
 	/* Dock icon */
-	int dockImage, dockImageData;
+	int dockImage;
 
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
@@ -696,7 +696,7 @@ int[] createImageFromFamily (int family, int type, int maskType, int width, int 
 	OS.DisposeHandle (maskHandle);
 	OS.DisposeHandle (dataHandle);
 
-	int provider = OS.CGDataProviderCreateWithData (0, data, dataSize, 0);
+	int provider = OS.CGDataProviderCreateWithData (0, data, dataSize, releaseProc);
 	if (provider == 0) {
 		OS.DisposePtr (data);
 		return null;
@@ -704,7 +704,6 @@ int[] createImageFromFamily (int family, int type, int maskType, int width, int 
 	int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
 	if (colorspace == 0) {
 		OS.CGDataProviderRelease (provider);
-		OS.DisposePtr (data);
 		return null;
 	}
 	int cgImage = OS.CGImageCreate (width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaFirst, provider, null, true, 0);
@@ -988,10 +987,9 @@ void createDisplay (DeviceData data) {
 		OS.SetFrontProcess (psn);
 		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
 		if (ptr != 0) {
-			int [] image = readImageRef (ptr);
-			if (image != null) {
-				dockImage = image [0];
-				dockImageData = image [1];
+			int image = readImageRef (ptr);
+			if (image != 0) {
+				dockImage = image;
 				OS.SetApplicationDockTileImage (dockImage);
 			}
 		}
@@ -2066,6 +2064,9 @@ void initializeCallbacks () {
 	searchCallback = new Callback (this, "searchProc", 3);
 	searchProc = searchCallback.getAddress ();
 	if (searchProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	releaseCallback = new Callback (this, "releaseDataProc", 3);
+	releaseProc = releaseCallback.getAddress ();
+	if (releaseProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -2804,8 +2805,8 @@ int mouseHoverProc (int id, int handle) {
 	return 0;
 }
 
-int[] readImageRef(int path) {
-	int[] image = null;
+int readImageRef(int path) {
+	int image = 0;
 	int url = OS.CFURLCreateFromFileSystemRepresentation(OS.kCFAllocatorDefault, path, OS.strlen(path), false);
 	if (url != 0) {
 		int extention = OS.CFURLCopyPathExtension(url);
@@ -2819,13 +2820,13 @@ int[] readImageRef(int path) {
 			if (ext.equalsIgnoreCase("png")) {
 				int provider = OS.CGDataProviderCreateWithURL(url);
 				if (provider != 0) {
-					image = new int[]{OS.CGImageCreateWithPNGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault), 0};
+					image = OS.CGImageCreateWithPNGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault);
 					OS.CGDataProviderRelease(provider);
 				}
 			} else if (ext.equalsIgnoreCase("jpeg") || ext.equals("jpg")) {
 				int provider = OS.CGDataProviderCreateWithURL(url);
 				if (provider != 0) {
-					image = new int[]{OS.CGImageCreateWithJPEGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault), 0};
+					image = OS.CGImageCreateWithJPEGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault);
 					OS.CGDataProviderRelease(provider);
 				}
 			} else if (ext.equalsIgnoreCase("icns")) {
@@ -2836,7 +2837,7 @@ int[] readImageRef(int path) {
 						int[] iconFamily = new int[1];
 						OS.ReadIconFile(fsSpec, iconFamily);						
 						if (iconFamily[0] != 0) {
-							image = createImageFromFamily(iconFamily[0], OS.kThumbnail32BitData, OS.kThumbnail8BitMask, 128, 128);
+							image = createImageFromFamily(iconFamily[0], OS.kThumbnail32BitData, OS.kThumbnail8BitMask, 128, 128)[0];
 							OS.DisposeHandle(iconFamily[0]);
 						}
 					}
@@ -3001,7 +3002,24 @@ void releaseDisplay () {
 		}
 	}
 	timerIds = null;
+
+	/* Release the System Images */
+	if (errorImage != null) errorImage.dispose ();
+	if (infoImage != null) infoImage.dispose ();
+	if (warningImage != null) warningImage.dispose ();
+	errorImage = infoImage = warningImage = null;
 	
+	/* Release the System Cursors */
+	for (int i = 0; i < cursors.length; i++) {
+		if (cursors [i] != null) cursors [i].dispose ();
+	}
+	cursors = null;
+	
+	/* Release Dock image */
+	if (dockImage != 0) OS.CGImageRelease (dockImage);
+	dockImage = 0;
+
+	releaseCallback.dispose ();	
 	actionCallback.dispose ();
 	appleEventCallback.dispose ();
 	caretCallback.dispose ();
@@ -3034,7 +3052,7 @@ void releaseDisplay () {
 	textInputCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = searchProc = trayItemProc = 0;
 	accessibilityProc = clockProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
-	helpProc = hitTestProc = keyboardProc = menuProc = pollingProc = 0;
+	helpProc = hitTestProc = keyboardProc = menuProc = pollingProc = releaseProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
 	textInputProc = 0;
 	timerCallback.dispose ();
@@ -3048,26 +3066,14 @@ void releaseDisplay () {
 	menus = popups = null;
 	menuBar = null;
 
-	/* Release the System Images */
-	if (errorImage != null) errorImage.dispose ();
-	if (infoImage != null) infoImage.dispose ();
-	if (warningImage != null) warningImage.dispose ();
-	errorImage = infoImage = warningImage = null;
-
-	/* Release the System Cursors */
-	for (int i = 0; i < cursors.length; i++) {
-		if (cursors [i] != null) cursors [i].dispose ();
-	}
-	cursors = null;
-	
-	/* Release Dock image */
-	if (dockImage != 0) OS.CGImageRelease (dockImage);
-	if (dockImageData != 0) OS.DisposePtr (dockImageData);
-	dockImage = dockImageData = 0;
-
 	//NOT DONE - call terminate TXN if this is the last display 
 	//NOTE: - display create and dispose needs to be synchronized on all platforms
 //	 TXNTerminateTextension ();
+}
+
+int releaseDataProc (int info, int data, int size) {
+	OS.DisposePtr(data);
+	return 0;
 }
 
 /**

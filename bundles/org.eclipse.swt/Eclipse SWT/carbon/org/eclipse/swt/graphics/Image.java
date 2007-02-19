@@ -243,7 +243,7 @@ public Image(Device device, Image srcImage, int flag) {
 	int dataSize = height * bpr;
 	data = OS.NewPtr(dataSize);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
+	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
 	if (provider == 0) {
 		OS.DisposePtr(data);
 		SWT.error(SWT.ERROR_NO_HANDLES);
@@ -543,7 +543,6 @@ public void dispose () {
 	if (device.isDisposed()) return;
 	if (memGC != null) memGC.dispose();
 	OS.CGImageRelease(handle);
-	OS.DisposePtr(data);
 	device = null;
 	data = handle = 0;
 	memGC = null;
@@ -729,7 +728,7 @@ void init(Device device, int width, int height) {
 	int dataSize = height * bpr;
 	data = OS.NewPtr(dataSize);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
+	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
 	if (provider == 0) {
 		OS.DisposePtr(data);
 		SWT.error(SWT.ERROR_NO_HANDLES);
@@ -772,7 +771,7 @@ void init(Device device, ImageData image) {
 	int dataSize = width * height * 4;
 	data = OS.NewPtr(dataSize);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
+	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, device.releaseProc);
 	if (provider == 0) {
 		OS.DisposePtr(data);
 		SWT.error(SWT.ERROR_NO_HANDLES);
