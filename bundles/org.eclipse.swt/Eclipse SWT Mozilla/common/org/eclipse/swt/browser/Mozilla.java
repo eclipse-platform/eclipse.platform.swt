@@ -215,6 +215,7 @@ public void create (Composite parent, int style) {
 		}
 
 		if (isXULRunner) {
+			if (Device.DEBUG) System.out.println ("XULRunner path: " + mozillaPath); //$NON-NLS-1$
 			try {
 				Library.loadLibrary ("swt-xulrunner"); //$NON-NLS-1$
 			} catch (UnsatisfiedLinkError e) {
@@ -264,6 +265,8 @@ public void create (Composite parent, int style) {
 				browser.dispose ();
 				SWT.error (SWT.ERROR_NO_HANDLES, null, " [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]"); //$NON-NLS-1$
 			}
+			if (Device.DEBUG) System.out.println ("Mozilla path: " + mozillaPath); //$NON-NLS-1$
+
 			/*
 			* Note.  Embedding a Mozilla GTK1.2 causes a crash.  The workaround
 			* is to check the version of GTK used by Mozilla by looking for
