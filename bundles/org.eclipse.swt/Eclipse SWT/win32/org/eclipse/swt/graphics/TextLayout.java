@@ -511,34 +511,46 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int foreground = data.foreground;
 	int alpha = data.alpha;
 	boolean gdip = gdipGraphics != 0 && (alpha != 0xFF || data.foregroundPattern != null);
-	int foregroundBrush = 0;
-	if (gdip) {
-		gc.checkGC(GC.FOREGROUND);
-		foregroundBrush = gc.getFgBrush();
-	}
 	int clipRgn = 0;
 	float[] lpXform = null;
 	Rect gdipRect = new Rect();
 	if (gdipGraphics != 0 && !gdip) {
-		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
-		int rgn = Gdip.Region_new();
-		Gdip.Graphics_GetClip(gdipGraphics, rgn);
-		if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
-			clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
-		}
-		Gdip.Region_delete(rgn);
-		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
 		if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+		int identity = gc.identity();
+		Gdip.Matrix_Invert(identity);
+		Gdip.Matrix_Multiply(matrix, identity, Gdip.MatrixOrderAppend);
+		Gdip.Matrix_delete(identity);
 		if (!Gdip.Matrix_IsIdentity(matrix)) {
 			lpXform = new float[6];
 			Gdip.Matrix_GetElements(matrix, lpXform);
 		}
 		Gdip.Matrix_delete(matrix);
-		hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+		if ((data.style & SWT.MIRRORED) != 0 && lpXform != null) {
+			gdip = true;
+			lpXform = null;
+		} else {
+			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+			int rgn = Gdip.Region_new();
+			Gdip.Graphics_GetClip(gdipGraphics, rgn);
+			if (!Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
+				clipRgn = Gdip.Region_GetHRGN(rgn, gdipGraphics);
+			}
+			Gdip.Region_delete(rgn);
+			Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+			hdc = Gdip.Graphics_GetHDC(gdipGraphics);
+		}
+	}
+	int foregroundBrush = 0;
+	if (gdip) {
+		gc.checkGC(GC.FOREGROUND);
+		foregroundBrush = gc.getFgBrush();
 	}
 	int state = OS.SaveDC(hdc);
+	if (!gdip && (data.style & SWT.MIRRORED) != 0) {
+		OS.SetLayout(hdc, OS.GetLayout(hdc) |OS.LAYOUT_RTL);
+	}
 	if (lpXform != null) {
 		OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
 		OS.SetWorldTransform(hdc, lpXform);
@@ -733,7 +745,16 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							case Gdip.TextRenderingHintClearTypeGridFit: textAntialias = Gdip.SmoothingModeAntiAlias; break;
 						}
 						Gdip.Graphics_SetSmoothingMode(gdipGraphics, textAntialias);
+						int gstate2 = 0;
+						if ((data.style & SWT.MIRRORED) != 0) {
+							gstate2 = Gdip.Graphics_Save(gdipGraphics);
+							Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
+							Gdip.Graphics_TranslateTransform(gdipGraphics, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);
+						}
 						Gdip.Graphics_FillPath(gdipGraphics, brush, path);
+						if ((data.style & SWT.MIRRORED) != 0) {
+							Gdip.Graphics_Restore(gdipGraphics, gstate2);
+						}
 						Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
 						if (run.style != null && (run.style.underline || run.style.strikeout)) {
 							int newPen = hasSelection ? selPen : Gdip.Pen_new(brush, 1);

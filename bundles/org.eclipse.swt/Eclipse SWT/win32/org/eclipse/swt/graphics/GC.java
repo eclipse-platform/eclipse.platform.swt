@@ -886,7 +886,16 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			};
 			Gdip.ImageAttributes_SetColorMatrix(attrib, matrix, Gdip.ColorMatrixFlagsDefault, Gdip.ColorAdjustTypeBitmap);
 		}
+		int gstate = 0;
+		if ((data.style & SWT.MIRRORED) != 0) {
+			gstate = Gdip.Graphics_Save(data.gdipGraphics);
+			Gdip.Graphics_ScaleTransform(data.gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
+			Gdip.Graphics_TranslateTransform(data.gdipGraphics, - 2 * destX - destWidth, 0, Gdip.MatrixOrderPrepend);		 		 		 
+		}
 		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, attrib, 0, 0);
+		if ((data.style & SWT.MIRRORED) != 0) {
+			Gdip.Graphics_Restore(data.gdipGraphics, gstate);
+		}
 		Gdip.ImageAttributes_delete(attrib);
 		Gdip.Bitmap_delete(img);
 		if (gdipImage[1] != 0) {
@@ -1932,19 +1941,31 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (length == 0) return;
 	char[] buffer = new char [length];
 	string.getChars(0, length, buffer, 0);
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		checkGC(FONT | FOREGROUND | (isTransparent ? 0 : BACKGROUND));
 		PointF pt = new PointF();
 		pt.X = x;
 		pt.Y = y;
 		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
-		Gdip.StringFormat_SetFormatFlags(format, Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces);
+		int formatFlags = Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces;
+		if ((data.style & SWT.MIRRORED) != 0) formatFlags |= Gdip.StringFormatFlagsDirectionRightToLeft;
+		Gdip.StringFormat_SetFormatFlags(format, formatFlags);
 		if (!isTransparent) {
 			RectF bounds = new RectF();
-			Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, data.gdipFont, pt, format, bounds);
-			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, Math.round(bounds.Width), Math.round(bounds.Height));
+			Gdip.Graphics_MeasureString(gdipGraphics, buffer, length, data.gdipFont, pt, format, bounds);
+			Gdip.Graphics_FillRectangle(gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, Math.round(bounds.Width), Math.round(bounds.Height));
 		}
-		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, data.gdipFont, pt, format, getFgBrush());
+		int gstate = 0;
+		if ((data.style & SWT.MIRRORED) != 0) {
+			gstate = Gdip.Graphics_Save(gdipGraphics);
+			Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
+			Gdip.Graphics_TranslateTransform(gdipGraphics, - 2 * x, 0, Gdip.MatrixOrderPrepend);		 		 		 
+		}
+		Gdip.Graphics_DrawString(gdipGraphics, buffer, length, data.gdipFont, pt, format, getFgBrush());
+		if ((data.style & SWT.MIRRORED) != 0) {
+			Gdip.Graphics_Restore(gdipGraphics, gstate);
+		}
 		Gdip.StringFormat_delete(format);
 		return;
 	}
@@ -2074,7 +2095,8 @@ public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		checkGC(FONT | FOREGROUND | ((flags & SWT.DRAW_TRANSPARENT) != 0 ? 0 : BACKGROUND));
 		int length = string.length();
 		char[] buffer = new char [length];
@@ -2083,7 +2105,9 @@ public void drawText (String string, int x, int y, int flags) {
 		pt.X = x;
 		pt.Y = y;
 		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
-		Gdip.StringFormat_SetFormatFlags(format, Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces);
+		int formatFlags = Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces;
+		if ((data.style & SWT.MIRRORED) != 0) formatFlags |= Gdip.StringFormatFlagsDirectionRightToLeft;
+		Gdip.StringFormat_SetFormatFlags(format, formatFlags);
 		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(data.gdipFont, format) * 8} : new float[1];
 		Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs); 
 		int hotkeyPrefix = (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone;
@@ -2091,10 +2115,19 @@ public void drawText (String string, int x, int y, int flags) {
 		Gdip.StringFormat_SetHotkeyPrefix(format, hotkeyPrefix);
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 			RectF bounds = new RectF();
-			Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, data.gdipFont, pt, format, bounds);
-			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, Math.round(bounds.Width), Math.round(bounds.Height));
+			Gdip.Graphics_MeasureString(gdipGraphics, buffer, length, data.gdipFont, pt, format, bounds);
+			Gdip.Graphics_FillRectangle(gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, Math.round(bounds.Width), Math.round(bounds.Height));
 		}
-		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, data.gdipFont, pt, format, getFgBrush());
+		int gstate = 0;
+		if ((data.style & SWT.MIRRORED) != 0) {
+			gstate = Gdip.Graphics_Save(gdipGraphics);
+			Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
+			Gdip.Graphics_TranslateTransform(gdipGraphics, - 2 * x, 0, Gdip.MatrixOrderPrepend);		 		 		 
+		}
+		Gdip.Graphics_DrawString(gdipGraphics, buffer, length, data.gdipFont, pt, format, getFgBrush());
+		if ((data.style & SWT.MIRRORED) != 0) {
+			Gdip.Graphics_Restore(gdipGraphics, gstate);
+		}
 		Gdip.StringFormat_delete(format);
 		return;
 	}
@@ -3283,6 +3316,10 @@ public void getTransform(Transform transform) {
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
 		Gdip.Graphics_GetTransform(gdipGraphics, transform.handle);
+		int identity = identity();
+		Gdip.Matrix_Invert(identity);
+		Gdip.Matrix_Multiply(transform.handle, identity, Gdip.MatrixOrderAppend);
+		Gdip.Matrix_delete(identity);
 	} else {
 		transform.setElements(1, 0, 0, 1, 0, 0);
 	}
@@ -3317,7 +3354,7 @@ public boolean getXORMode() {
 void initGdip() {
 	data.device.checkGDIP();
 	int gdipGraphics = data.gdipGraphics;
-	if (gdipGraphics != 0) return ;
+	if (gdipGraphics != 0) return;
 	/*
 	* Feature in GDI+. The GDI+ clipping set with Graphics->SetClip()
 	* is always intersected with the GDI clipping at the time the
@@ -3333,10 +3370,27 @@ void initGdip() {
 		OS.OffsetRgn (hRgn, pt.x, pt.y);
 	}
 	OS.SelectClipRgn(handle, 0);
+
+	/*
+	* Bug in GDI+.  GDI+ does not work when the HDC layout is RTL.  There
+	* are many issues like pixel corruption, but the most visible problem
+	* is that it does not have an effect when drawing to an bitmap.  The
+	* fix is to clear the bit before creating the GDI+ graphics and install
+	* a mirroring matrix ourselfs.
+	*/
+	if ((data.style & SWT.MIRRORED) != 0) {
+		OS.SetLayout(handle, OS.GetLayout(handle) & ~OS.LAYOUT_RTL);
+	}
+
 	gdipGraphics = data.gdipGraphics = Gdip.Graphics_new(handle);
 	if (gdipGraphics == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Gdip.Graphics_SetPageUnit(gdipGraphics, Gdip.UnitPixel);
 	Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+	if ((data.style & SWT.MIRRORED) != 0) {
+		int matrix = identity();
+		Gdip.Graphics_SetTransform(gdipGraphics, matrix);
+		Gdip.Matrix_delete(matrix);
+	}
 	if (result == 1) setClipping(hRgn);
 	OS.DeleteObject(hRgn);		
 	data.state = 0;
@@ -3350,6 +3404,26 @@ void initGdip() {
 		OS.DeleteObject(data.hBrush);
 		data.hBrush = 0;
 	}
+}
+
+int identity() {
+	if ((data.style & SWT.MIRRORED) != 0) {
+		int width = 0;
+		Image image = data.image;
+		if (image != null) {
+			BITMAP bm = new BITMAP();
+			OS.GetObject(image.handle, BITMAP.sizeof, bm);
+			width = bm.bmWidth;
+		} else if (data.hwnd != 0) {
+			RECT rect = new RECT();
+			OS.GetClientRect(data.hwnd, rect);
+			width = rect.right - rect.left;
+		}
+		POINT pt = new POINT ();
+		if (!OS.IsWinCE) OS.GetWindowOrgEx (handle, pt);
+		return Gdip.Matrix_new(-1, 0, 0, 1, width + 2 * pt.x, 0);
+	}
+	return Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
 }
 
 void init(Drawable drawable, GCData data, int hDC) {
@@ -3515,6 +3589,9 @@ public void setAdvanced(boolean advanced) {
 		data.backgroundPattern = data.foregroundPattern = null;
 		data.state = 0;
 		setClipping(0);
+		if ((data.style & SWT.MIRRORED) != 0) {
+			OS.SetLayout(handle, OS.GetLayout(handle) | OS.LAYOUT_RTL);
+		}
 	}
 }
 
@@ -4253,13 +4330,12 @@ public void setTransform(Transform transform) {
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.gdipGraphics == 0 && transform == null) return;
 	initGdip();
+	int identity = identity();
 	if (transform != null) {
-		Gdip.Graphics_SetTransform(data.gdipGraphics, transform.handle);
-	} else {
-		int identity = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-		Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
-		Gdip.Matrix_delete(identity);
+		 Gdip.Matrix_Multiply(identity, transform.handle, Gdip.MatrixOrderPrepend);
 	}
+	Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
+	Gdip.Matrix_delete(identity);
 }
 
 /**
@@ -4297,7 +4373,9 @@ public Point stringExtent(String string) {
 			buffer = new char[]{' '};
 		}
 		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
-		Gdip.StringFormat_SetFormatFlags(format, Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces);
+		int formatFlags = Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces;
+		if ((data.style & SWT.MIRRORED) != 0) formatFlags |= Gdip.StringFormatFlagsDirectionRightToLeft;
+		Gdip.StringFormat_SetFormatFlags(format, formatFlags);
 		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, buffer.length, data.gdipFont, pt, format, bounds);
 		Gdip.StringFormat_delete(format);
 		return new Point(length == 0 ? 0 : Math.round(bounds.Width), Math.round(bounds.Height));
@@ -4386,7 +4464,9 @@ public Point textExtent(String string, int flags) {
 			buffer = new char[]{' '};
 		}
 		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
-		Gdip.StringFormat_SetFormatFlags(format, Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces);
+		int formatFlags = Gdip.StringFormat_GetFormatFlags(format) | Gdip.StringFormatFlagsMeasureTrailingSpaces;
+		if ((data.style & SWT.MIRRORED) != 0) formatFlags |= Gdip.StringFormatFlagsDirectionRightToLeft;
+		Gdip.StringFormat_SetFormatFlags(format, formatFlags);
 		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(data.gdipFont, format) * 8} : new float[1];
 		Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs); 
 		Gdip.StringFormat_SetHotkeyPrefix(format, (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone);
