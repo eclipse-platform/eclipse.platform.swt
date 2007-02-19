@@ -400,8 +400,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		}
 		if (i == 0) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
+				boolean clear = !explorerTheme && findImageControl () == null;
 				boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
-				if ((selected || hot) && !ignoreDrawSelection && !ignoreDrawBackground) {
+				if ((selected || hot || clear) && !ignoreDrawSelection && !ignoreDrawBackground) {
 					boolean draw = true;
 					RECT pClipRect = new RECT ();
 					OS.SetRect (pClipRect, width, nmcd.top, nmcd.right, nmcd.bottom);
