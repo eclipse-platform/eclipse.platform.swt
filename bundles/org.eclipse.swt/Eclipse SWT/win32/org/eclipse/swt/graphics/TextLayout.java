@@ -542,22 +542,23 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			hdc = Gdip.Graphics_GetHDC(gdipGraphics);
 		}
 	}
-	int foregroundBrush = 0;
+	int foregroundBrush = 0, state = 0;
 	if (gdip) {
 		gc.checkGC(GC.FOREGROUND);
 		foregroundBrush = gc.getFgBrush();
-	}
-	int state = OS.SaveDC(hdc);
-	if (!gdip && (data.style & SWT.MIRRORED) != 0) {
-		OS.SetLayout(hdc, OS.GetLayout(hdc) |OS.LAYOUT_RTL);
-	}
-	if (lpXform != null) {
-		OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
-		OS.SetWorldTransform(hdc, lpXform);
-	}
-	if (clipRgn != 0) {
-		OS.SelectClipRgn(hdc, clipRgn);
-		OS.DeleteObject(clipRgn);
+	} else {
+		state = OS.SaveDC(hdc);
+		if ((data.style & SWT.MIRRORED) != 0) {
+			OS.SetLayout(hdc, OS.GetLayout(hdc) | OS.LAYOUT_RTL);
+		}
+		if (lpXform != null) {
+			OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
+			OS.SetWorldTransform(hdc, lpXform);
+		}
+		if (clipRgn != 0) {
+			OS.SelectClipRgn(hdc, clipRgn);
+			OS.DeleteObject(clipRgn);
+		}
 	}
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	if (hasSelection) {
@@ -842,12 +843,12 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			drawX += run.width;
 		}
 	}
-	OS.RestoreDC(hdc, state);
 	if (gdip) {
 		if (selBrush != 0) Gdip.SolidBrush_delete(selBrush);
 		if (selBrushFg != 0) Gdip.SolidBrush_delete(selBrushFg);
 		if (selPen != 0) Gdip.Pen_delete(selPen);
 	} else {
+		OS.RestoreDC(hdc, state);
 		if (gdipGraphics != 0) Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
 		if (selBrush != 0) OS.DeleteObject (selBrush);
 		if (selPen != 0) OS.DeleteObject (selPen);
