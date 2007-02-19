@@ -40,7 +40,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 	 * from the specified <code>Table</code>.
 	 *
 	 * @param table the <code>Table</code> that the user clicks on to initiate the drag
-	 **/
+	 */
 	public TableDragSourceEffect(Table table) {
 		super(table);
 	}
@@ -49,7 +49,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 	 * This implementation of <code>dragFinished</code> disposes the image
 	 * that was created in <code>TableDragSourceAdapter.dragStart</code>.
 	 * 
-	 * Subclasses that override this method should call <code>super.dragFinsihed(event)</code>
+	 * Subclasses that override this method should call <code>super.dragFinished(event)</code>
 	 * to dispose the image in the default implementation.
 	 * 
 	 * @param event the information associated with the drag finished event

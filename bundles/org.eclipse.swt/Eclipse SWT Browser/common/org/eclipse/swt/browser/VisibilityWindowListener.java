@@ -61,7 +61,7 @@ public void hide(WindowEvent event);
  * hosting the browser. It is <code>null</code> if no location is set. 
  * <li>(in) size the requested size for the <code>Browser</code>.
  * The client area of the <code>Shell</code> hosting the
- * <code>Browser</code> should be large enough to accomodate that size.
+ * <code>Browser</code> should be large enough to accommodate that size.
  * It is <code>null</code> if no size is set.
  * <li>(in) addressBar <code>true</code> if the <code>Shell</code> 
  * hosting the <code>Browser</code> should display an address bar or

@@ -46,7 +46,7 @@ public final class GridLayout extends Layout {
  	/**
  	 * numColumns specifies the number of cell columns in the layout.
  	 * If numColumns has a value less than 1, the layout will not
- 	 * set the size and postion of any controls.
+ 	 * set the size and position of any controls.
  	 *
  	 * The default value is 1.
  	 */

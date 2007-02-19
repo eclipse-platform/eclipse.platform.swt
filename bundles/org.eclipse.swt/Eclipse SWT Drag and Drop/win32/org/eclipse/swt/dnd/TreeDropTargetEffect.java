@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This class provides a default drag under effect (eg. select, insert, scroll and expand) 
- * when a drag occurs over a <code>Table</code>.
+ * when a drag occurs over a <code>Tree</code>.
  * 
  * <p>Classes that wish to provide their own drag under effect for a <code>Tree</code>
  * can extend the <code>DropTargetAdapter</code> class and override any applicable methods 

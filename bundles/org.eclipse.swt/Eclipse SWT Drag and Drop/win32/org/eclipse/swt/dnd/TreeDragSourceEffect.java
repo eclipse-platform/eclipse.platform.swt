@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.*;
  * This class provides default implementations to display a source image
  * when a drag is initiated from a <code>Tree</code>.
  * 
- * <p>Classes that wish to provide their own source image for a <code>Table</code> can
+ * <p>Classes that wish to provide their own source image for a <code>Tree</code> can
  * extend <code>DragSourceAdapter</code> class and override the <code>DragSourceAdapter.dragStart</code>
  * method and set the field <code>DragSourceEvent.image</code> with their own image.</p>
  *
@@ -39,7 +39,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 	 * from the specified <code>Tree</code>.
 	 *
 	 * @param tree the <code>Tree</code> that the user clicks on to initiate the drag
-	 **/
+	 */
 	public TreeDragSourceEffect(Tree tree) {
 		super(tree);
 	}
@@ -48,7 +48,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 	 * This implementation of <code>dragFinished</code> disposes the image
 	 * that was created in <code>TableDragSourceAdapter.dragStart</code>.
 	 * 
-	 * Subclasses that override this method should call <code>super.dragFinsihed(event)</code>
+	 * Subclasses that override this method should call <code>super.dragFinished(event)</code>
 	 * to dispose the image in the default implementation.
 	 * 
 	 * @param event the information associated with the drag finished event
