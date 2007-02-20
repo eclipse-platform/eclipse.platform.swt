@@ -124,6 +124,24 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	/*
+	* Bug in the Macintosh.  The tab folder tabs draw outside the widget
+	* bounds when they do not fit.  The fix is to clip the output to the
+	* widget bounds.
+	*/
+	int [] context = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
+	OS.CGContextSaveGState (context[0]);
+	CGRect rect = new CGRect ();
+	OS.HIViewGetBounds (handle, rect);
+	OS.CGContextAddRect (context[0], rect);
+	OS.CGContextClip (context [0]);
+	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	OS.CGContextRestoreGState (context[0]);
+	return result;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
