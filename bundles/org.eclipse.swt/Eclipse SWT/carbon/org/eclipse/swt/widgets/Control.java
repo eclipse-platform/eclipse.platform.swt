@@ -729,6 +729,16 @@ Control findBackgroundControl () {
 	return (state & PARENT_BACKGROUND) != 0 ? parent.findBackgroundControl () : null;
 }
 
+Menu [] findMenus (Control control) {
+	if (menu != null && this != control) return new Menu [] {menu};
+	return new Menu [0];
+}
+
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
+	oldShell.fixShell (newShell, this);
+	oldDecorations.fixDecorations (newDecorations, this, menus);
+}
+
 void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
@@ -1544,7 +1554,7 @@ public boolean isFocusControl () {
  */
 public boolean isReparentable () {
 	checkWidget();
-	return false;
+	return true;
 }
 
 boolean isShowing () {
@@ -3010,8 +3020,23 @@ public void setMenu (Menu menu) {
  */
 public boolean setParent (Composite parent) {
 	checkWidget();
+	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	return false;
+	if (this.parent == parent) return true;
+	if (!isReparentable ()) return false;
+	releaseParent ();
+	Shell newShell = parent.getShell (), oldShell = getShell ();
+	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
+	if (oldShell != newShell || oldDecorations != newDecorations) {
+		Menu [] menus = oldShell.findMenus (this);
+		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	}
+	int topHandle = topHandle ();
+	OS.HIViewAddSubview (parent.handle, topHandle);
+	OS.HIViewSetVisible (topHandle, (state & HIDDEN) == 0);
+	OS.HIViewSetZOrder (topHandle, OS.kHIViewZOrderBelow, 0);
+	this.parent = parent;
+	return true;
 }
 
 /**

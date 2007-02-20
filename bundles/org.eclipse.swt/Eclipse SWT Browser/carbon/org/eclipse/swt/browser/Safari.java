@@ -32,6 +32,7 @@ class Safari extends WebBrowser {
 	
 	/* Carbon HIView handle */
 	int webViewHandle;
+	int windowBoundsHandler;
 	
 	boolean changingLocation;
 	String html;
@@ -114,19 +115,27 @@ public void create (Composite parent, int style) {
 	}
 	
 	/*
-	 * Bug in Safari. The WebView does not receive mouse and key events when it is added
-	 * to a visible top window.  It is assumed that Safari hooks its own event listener
-	 * when the top window emits the kEventWindowShown event. The workaround is to send a
-	 * fake kEventWindowShown event to the top window after the WebView has been added
-	 * to the HIView (after the top window is visible) to give Safari a chance to hook
-	 * events.
-	 */
+	* Bug in Safari. The WebView does not draw properly if it is embedded as
+	* sub view of the browser handle.  The fix is to add the web view to the
+	* window root control and resize it on top of the browser handle.
+	* 
+	* Note that when reparent the browser is reparented, the web view has to
+	* be reparent by hand by hooking kEventControlOwningWindowChanged.
+	*/
 	int window = OS.GetControlOwner(browser.handle);
 	int[] contentView = new int[1];
 	OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
 	OS.HIViewAddSubview(contentView[0], webViewHandle);
 	OS.HIViewChangeFeatures(webViewHandle, OS.kHIViewFeatureIsOpaque, 0);
 
+	/*
+	* Bug in Safari. The WebView does not receive mouse and key events when it is added
+	* to a visible top window.  It is assumed that Safari hooks its own event listener
+	* when the top window emits the kEventWindowShown event. The workaround is to send a
+	* fake kEventWindowShown event to the top window after the WebView has been added
+	* to the HIView (after the top window is visible) to give Safari a chance to hook
+	* events.
+	*/
 	OS.HIViewSetVisible(webViewHandle, true);	
 	if (browser.getShell().isVisible()) {
 		int[] showEvent = new int[1];
@@ -167,16 +176,8 @@ public void create (Composite parent, int style) {
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
 
-					Shell shell = browser.getShell();
-					shell.removeListener(SWT.Resize, this);
-					shell.removeListener(SWT.Show, this);
-					shell.removeListener(SWT.Hide, this);
-					Control c = browser;
-					do {
-						c.removeListener(SWT.Show, this);
-						c.removeListener(SWT.Hide, this);
-						c = c.getParent();
-					} while (c != shell);
+					OS.RemoveEventHandler(windowBoundsHandler);
+					windowBoundsHandler = 0;
 
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
 
@@ -191,103 +192,10 @@ public void create (Composite parent, int style) {
 					html = null;
 					break;
 				}
-				case SWT.Hide: {
-					/*
-					* Bug on Safari. The web view cannot be obscured by other views above it.
-					* This problem is specified in the apple documentation for HiWebViewCreate.
-					* The workaround is to hook Hide and Show events on the browser's parents
-					* and set its size to 0 in Hide and to restore its size in Show.
-					*/
-					CGRect bounds = new CGRect();
-					bounds.x = bounds.y = -MIN_SIZE;
-					bounds.width = bounds.height = MIN_SIZE;
-					OS.HIViewSetFrame(webViewHandle, bounds);
-					break;
-				}
-				case SWT.Show: {
-					/*
-					* Do not update size when it is not visible. Note that isVisible()
-					* cannot be used because SWT.Show is sent before the widget is
-					* actually visible. 
-					*/
-					Shell shell = browser.getShell();
-					Composite parent = browser;
-					while (parent != shell && (parent.getVisible() || parent == e.widget)) {
-						parent = parent.getParent();
-					}
-					if (!(parent.getVisible() || parent == e.widget)) return;
-
-					/*
-					* Bug on Safari. The web view cannot be obscured by other views above it.
-					* This problem is specified in the apple documentation for HiWebViewCreate.
-					* The workaround is to hook Hide and Show events on the browser's parents
-					* and set its size to 0 in Hide and to restore its size in Show.
-					*/
-					CGRect bounds = new CGRect();
-					OS.HIViewGetBounds(browser.handle, bounds);
-					int[] contentView = new int[1];
-					OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
-					OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
-					/* 
-					* Bug in Safari.  For some reason, the web view will display incorrectly or
-					* blank depending on its contents, if its size is set to a value smaller than
-					* MIN_SIZE. It will not display properly even after the size is made larger.
-					* The fix is to avoid setting sizes smaller than MIN_SIZE. 
-					*/
-					if (bounds.width <= MIN_SIZE) bounds.width = MIN_SIZE;
-					if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
-					OS.HIViewSetFrame(webViewHandle, bounds);
-					break;
-				}
-				case SWT.Resize: {
-					/* Do not update size when it is not visible */
-					if (!browser.isVisible()) return;
-					/*
-					* Bug on Safari. Resizing the height of a Shell containing a Browser at
-					* a fixed location causes the Browser to redraw at a wrong location.
-					* The web view is a HIView container that internally hosts
-					* a Cocoa NSView that uses a coordinates system with the origin at the
-					* bottom left corner of a window instead of the coordinates system used
-					* in Carbon that starts at the top left corner. The workaround is to
-					* reposition the web view every time the Shell of the Browser is resized.
-					*/
-					CGRect bounds = new CGRect();
-					OS.HIViewGetBounds(browser.handle, bounds);
-					int[] contentView = new int[1];
-					OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
-					OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
-					/* 
-					* Bug in Safari.  For some reason, the web view will display incorrectly or
-					* blank depending on its contents, if its size is set to a value smaller than
-					* MIN_SIZE. It will not display properly even after the size is made larger.
-					* The fix is to avoid setting sizes smaller than MIN_SIZE. 
-					*/
-					if (bounds.width <= MIN_SIZE) bounds.width = MIN_SIZE;
-					if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
-					if (e.widget == browser.getShell()) {
-						bounds.x++;
-						/* Note that the bounds needs to change */
-						OS.HIViewSetFrame(webViewHandle, bounds);
-						bounds.x--;
-					}
-					OS.HIViewSetFrame(webViewHandle, bounds);
-					break;
-				}
 			}
 		}
 	};
 	browser.addListener(SWT.Dispose, listener);
-	browser.addListener(SWT.Resize, listener);
-	Shell shell = browser.getShell();
-	shell.addListener(SWT.Resize, listener);
-	shell.addListener(SWT.Show, listener);
-	shell.addListener(SWT.Hide, listener);
-	Control c = browser;
-	do {
-		c.addListener(SWT.Show, listener);
-		c.addListener(SWT.Hide, listener);
-		c = c.getParent();
-	} while (c != shell);
 	
 	if (Callback3 == null) Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
 	int callback3Address = Callback3.getAddress();
@@ -299,8 +207,19 @@ public void create (Composite parent, int style) {
 		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
 	};
-	int controlTarget = OS.GetControlEventTarget(webViewHandle);
-	OS.InstallEventHandler(controlTarget, callback3Address, mask.length / 2, mask, webViewHandle, null);
+	OS.InstallEventHandler(OS.GetControlEventTarget(webViewHandle), callback3Address, mask.length / 2, mask, webViewHandle, null);
+	int[] mask1 = new int[] {
+		OS.kEventClassControl, OS.kEventControlBoundsChanged,
+		OS.kEventClassControl, OS.kEventControlVisibilityChanged,
+		OS.kEventClassControl, OS.kEventControlOwningWindowChanged,
+	};
+	OS.InstallEventHandler(OS.GetControlEventTarget(browser.handle), callback3Address, mask1.length / 2, mask1, browser.handle, null);
+	int[] mask2 = new int[] {
+		OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
+	};
+	int[] outRef = new int[1];
+	OS.InstallEventHandler(OS.GetWindowEventTarget(window), callback3Address, mask2.length / 2, mask2, browser.handle, outRef);
+	windowBoundsHandler = outRef[0];
 
 	if (Callback7 == null) Callback7 = new Callback(this.getClass(), "eventProc7", 7); //$NON-NLS-1$
 	int callback7Address = Callback7.getAddress();
@@ -375,64 +294,160 @@ public String getUrl() {
 
 int handleCallback(int nextHandler, int theEvent) {
 	int eventKind = OS.GetEventKind(theEvent);
-	switch (eventKind) {
-		case OS.kEventControlSetCursor: {
-			return OS.noErr;
-		}
-		case OS.kEventControlDraw: {
-			/*
-			* Bug on Safari. The web view cannot be obscured by other views above it.
-			* This problem is specified in the apple documentation for HiWebViewCreate.
-			* The workaround is to don't draw the web view when it is not visible.
-			*/
-			if (!browser.isVisible ()) return OS.noErr;
-			break;
-		}
-		case OS.kEventRawKeyDown: {
-			/*
-			* Bug in Safari. The WebView blocks the propagation of certain Carbon events
-			* such as kEventRawKeyDown. On the Mac, Carbon events propagate from the
-			* Focus Target Handler to the Control Target Handler, Window Target and finally
-			* the Application Target Handler. It is assumed that WebView hooks its events
-			* on the Window Target and does not pass kEventRawKeyDown to the next handler.
-			* Since kEventRawKeyDown events never make it to the Application Target Handler,
-			* the Application Target Handler never gets to emit kEventTextInputUnicodeForKeyEvent
-			* used by SWT to send a SWT.KeyDown event.
-			* The workaround is to hook kEventRawKeyDown on the Control Target Handler which gets
-			* called before the WebView hook on the Window Target Handler. Then, forward this event
-			* directly to the Application Target Handler. Note that if in certain conditions Safari
-			* does not block the kEventRawKeyDown, then multiple kEventTextInputUnicodeForKeyEvent
-			* events might be generated as a result of this workaround.
-			*/
-			//TEMPORARY CODE
-//			doit = false;
-//			OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
-//			if (!doit) return OS.noErr;
-			break;
-		}
-		case OS.kEventTextInputUnicodeForKeyEvent: {
-			/*
-			* Note.  This event is received from the Window Target therefore after it was received
-			* by the Focus Target. The SWT.KeyDown event is sent by SWT on the Focus Target. If it
-			* is received here, then the SWT.KeyDown doit flag must have been left to the value
-			* true.  For package visibility reasons we cannot access the doit flag directly.
-			* 
-			* Sequence of events when the user presses a key down
-			* 
-			* .Control Target - kEventRawKeyDown
-			* 	.forward to ApplicationEventTarget
-			* 		.Focus Target kEventTextInputUnicodeForKeyEvent - SWT emits SWT.KeyDown - 
-			* 			blocks further propagation if doit false. Browser does not know directly about
-			* 			the doit flag value.
-			* 			.Window Target kEventTextInputUnicodeForKeyEvent - if received, Browser knows 
-			* 			SWT.KeyDown is not blocked and event should be sent to WebKit
-			*  Return from Control Target - kEventRawKeyDown: let the event go to WebKit if doit true 
-			*  (eventNotHandledErr) or stop it (noErr).
-			*/
-			//TEMPORARY CODE
-//			doit = true;
-			break;
-		}
+	switch (OS.GetEventClass(theEvent)) {
+		case OS.kEventClassControl:
+			switch (eventKind) {
+				case OS.kEventControlSetCursor: {
+					return OS.noErr;
+				}
+				case OS.kEventControlDraw: {
+					/*
+					 * Bug on Safari. The web view cannot be obscured by other views above it.
+					 * This problem is specified in the apple documentation for HiWebViewCreate.
+					 * The workaround is to don't draw the web view when it is not visible.
+					 */
+					if (!browser.isVisible ()) return OS.noErr;
+					break;
+				}
+				case OS.kEventControlOwningWindowChanged: {
+					/* Reparent the web view handler */
+					int window = OS.GetControlOwner(browser.handle);
+					int[] contentView = new int[1];
+					OS.HIViewFindByID(OS.HIViewGetRoot(window), OS.kHIViewWindowContentID(), contentView);
+					OS.HIViewAddSubview(contentView[0], webViewHandle);
+					
+					/* Reset the kEventWindowBoundsChanged handler */
+					OS.RemoveEventHandler(windowBoundsHandler);
+					int[] mask2 = new int[] {
+						OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
+					};
+					int[] outRef = new int[1];
+					OS.InstallEventHandler(OS.GetWindowEventTarget(window), Callback3.getAddress(), mask2.length / 2, mask2, browser.handle, outRef);
+					windowBoundsHandler = outRef[0];
+					break;
+				}
+				case OS.kEventControlBoundsChanged:
+				case OS.kEventControlVisibilityChanged: {
+					/*
+					 * Bug on Safari. The web view cannot be obscured by other views above it.
+					 * This problem is specified in the apple documentation for HiWebViewCreate.
+					 * The workaround is to hook kEventControlVisibilityChanged on the browser
+					 * and move the browser out of the screen when hidden and restore its bounds
+					 * when shown.
+					 */
+					CGRect bounds = new CGRect();
+					if (!browser.isVisible()) {
+						bounds.x = bounds.y = -MIN_SIZE;
+						bounds.width = bounds.height = MIN_SIZE;
+						OS.HIViewSetFrame(webViewHandle, bounds);
+					} else {
+						OS.HIViewGetBounds(browser.handle, bounds);
+						int[] contentView = new int[1];
+						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
+						OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
+						/* 
+						* Bug in Safari.  For some reason, the web view will display incorrectly or
+						* blank depending on its contents, if its size is set to a value smaller than
+						* MIN_SIZE. It will not display properly even after the size is made larger.
+						* The fix is to avoid setting sizes smaller than MIN_SIZE. 
+						*/
+						if (bounds.width <= MIN_SIZE) bounds.width = MIN_SIZE;
+						if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
+						OS.HIViewSetFrame(webViewHandle, bounds);
+					}
+					break;
+				}
+			}
+		case OS.kEventClassWindow:
+			switch (eventKind) {
+				case OS.kEventWindowBoundsChanged:
+					/*
+					 * Bug on Safari. Resizing the height of a Shell containing a Browser at
+					 * a fixed location causes the Browser to redraw at a wrong location.
+					 * The web view is a HIView container that internally hosts
+					 * a Cocoa NSView that uses a coordinates system with the origin at the
+					 * bottom left corner of a window instead of the coordinates system used
+					 * in Carbon that starts at the top left corner. The workaround is to
+					 * reposition the web view every time the Shell of the Browser is resized.
+					 * 
+					 * Note the size should not be updated if the browser is hidden.
+					 */
+					if (browser.isVisible()) {
+						CGRect oldBounds = new CGRect();
+						OS.GetEventParameter (theEvent, OS.kEventParamOriginalBounds, OS.typeHIRect, null, CGRect.sizeof, null, oldBounds);
+						CGRect bounds = new CGRect();
+						OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeHIRect, null, CGRect.sizeof, null, bounds);
+						if (oldBounds.height == bounds.height) break;
+						OS.HIViewGetBounds(browser.handle, bounds);
+						int[] contentView = new int[1];
+						OS.HIViewFindByID(OS.HIViewGetRoot(OS.GetControlOwner(browser.handle)), OS.kHIViewWindowContentID(), contentView);
+						OS.HIViewConvertRect(bounds, browser.handle, contentView[0]);
+						/* 
+						* Bug in Safari.  For some reason, the web view will display incorrectly or
+						* blank depending on its contents, if its size is set to a value smaller than
+						* MIN_SIZE. It will not display properly even after the size is made larger.
+						* The fix is to avoid setting sizes smaller than MIN_SIZE. 
+						*/
+						if (bounds.width <= MIN_SIZE) bounds.width = MIN_SIZE;
+						if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
+						bounds.x++;
+						/* Note that the bounds needs to change */
+						OS.HIViewSetFrame(webViewHandle, bounds);
+						bounds.x--;
+						OS.HIViewSetFrame(webViewHandle, bounds);
+					}
+			}
+		case OS.kEventClassKeyboard:
+			switch (eventKind) {
+				case OS.kEventRawKeyDown: {
+					/*
+					* Bug in Safari. The WebView blocks the propagation of certain Carbon events
+					* such as kEventRawKeyDown. On the Mac, Carbon events propagate from the
+					* Focus Target Handler to the Control Target Handler, Window Target and finally
+					* the Application Target Handler. It is assumed that WebView hooks its events
+					* on the Window Target and does not pass kEventRawKeyDown to the next handler.
+					* Since kEventRawKeyDown events never make it to the Application Target Handler,
+					* the Application Target Handler never gets to emit kEventTextInputUnicodeForKeyEvent
+					* used by SWT to send a SWT.KeyDown event.
+					* The workaround is to hook kEventRawKeyDown on the Control Target Handler which gets
+					* called before the WebView hook on the Window Target Handler. Then, forward this event
+					* directly to the Application Target Handler. Note that if in certain conditions Safari
+					* does not block the kEventRawKeyDown, then multiple kEventTextInputUnicodeForKeyEvent
+					* events might be generated as a result of this workaround.
+					*/
+					//TEMPORARY CODE
+//					doit = false;
+//					OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
+//					if (!doit) return OS.noErr;
+					break;
+				}
+			}
+		case OS.kEventClassTextInput:
+			switch (eventKind) {
+				case OS.kEventTextInputUnicodeForKeyEvent: {
+					/*
+					* Note.  This event is received from the Window Target therefore after it was received
+					* by the Focus Target. The SWT.KeyDown event is sent by SWT on the Focus Target. If it
+					* is received here, then the SWT.KeyDown doit flag must have been left to the value
+					* true.  For package visibility reasons we cannot access the doit flag directly.
+					* 
+					* Sequence of events when the user presses a key down
+					* 
+					* .Control Target - kEventRawKeyDown
+					* 	.forward to ApplicationEventTarget
+					* 		.Focus Target kEventTextInputUnicodeForKeyEvent - SWT emits SWT.KeyDown - 
+					* 			blocks further propagation if doit false. Browser does not know directly about
+					* 			the doit flag value.
+					* 			.Window Target kEventTextInputUnicodeForKeyEvent - if received, Browser knows 
+					* 			SWT.KeyDown is not blocked and event should be sent to WebKit
+					*  Return from Control Target - kEventRawKeyDown: let the event go to WebKit if doit true 
+					*  (eventNotHandledErr) or stop it (noErr).
+					*/
+					//TEMPORARY CODE
+//					doit = true;
+					break;
+				}
+			}
 	}
 	return OS.eventNotHandledErr;
 }

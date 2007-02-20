@@ -298,6 +298,31 @@ Composite findDeferredControl () {
 	return layoutCount > 0 ? this : parent.findDeferredControl ();
 }
 
+Menu [] findMenus (Control control) {
+	if (control == this) return new Menu [0];
+	Menu result [] = super.findMenus (control);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		Menu [] menuList = child.findMenus (control);
+		if (menuList.length != 0) {
+			Menu [] newResult = new Menu [result.length + menuList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (menuList, 0, newResult, result.length, menuList.length);
+			result = newResult;
+		}
+	}
+	return result;
+}
+
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
+	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		children [i].fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	}
+}
+
 void fixTabList (Control control) {
 	if (tabList == null) return;
 	int count = 0;

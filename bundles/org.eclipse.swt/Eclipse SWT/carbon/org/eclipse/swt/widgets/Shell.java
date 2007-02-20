@@ -630,6 +630,11 @@ Cursor findCursor () {
 	return cursor;
 }
 
+void fixShell (Shell newShell, Control control) {
+	if (this == newShell) return;
+	if (control == lastActive) setActiveControl (null);
+}
+
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 

@@ -340,6 +340,10 @@ void destroyWidget () {
 	}
 }
 
+void fixMenus (Decorations newParent) {
+	this.parent = newParent;
+}
+
 /*public*/ Rectangle getBounds () {
 	checkWidget ();
 	if ((style & SWT.BAR) != 0) {
