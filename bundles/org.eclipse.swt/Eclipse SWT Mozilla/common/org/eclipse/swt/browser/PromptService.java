@@ -95,6 +95,8 @@ int Release () {
 }
 
 Browser getBrowser (int /*long*/ aDOMWindow) {
+	if (aDOMWindow == 0) return null;
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = XPCOM.NS_GetServiceManager (result);
 	if (rc != XPCOM.NS_OK) Mozilla.error (rc);
@@ -173,7 +175,8 @@ public int /*long*/ Alert (int /*long*/ parent, int /*long*/ dialogTitle, int /*
 	XPCOM.memmove (dest, text, length * 2);
 	String textLabel = new String (dest);
 
-	MessageBox messageBox = new MessageBox (browser.getShell (), SWT.OK | SWT.ICON_WARNING);
+	Shell shell = browser == null ? new Shell () : browser.getShell (); 
+	MessageBox messageBox = new MessageBox (shell, SWT.OK | SWT.ICON_WARNING);
 	messageBox.setText (titleLabel);
 	messageBox.setMessage (textLabel);
 	messageBox.open ();
@@ -197,7 +200,8 @@ public int /*long*/ Confirm (int /*long*/ parent, int /*long*/ dialogTitle, int 
 	XPCOM.memmove (dest, text, length * 2);
 	String textLabel = new String (dest);
 
-	MessageBox messageBox = new MessageBox (browser.getShell (), SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
+	Shell shell = browser == null ? new Shell () : browser.getShell ();
+	MessageBox messageBox = new MessageBox (shell, SWT.OK | SWT.CANCEL | SWT.ICON_QUESTION);
 	messageBox.setText (titleLabel);
 	messageBox.setMessage (textLabel);
 	int id = messageBox.open ();
@@ -235,7 +239,8 @@ public int /*long*/ ConfirmEx (int /*long*/ parent, int /*long*/ dialogTitle, in
 	String button2Label = getLabel ((int)/*64*/buttonFlags, nsIPromptService.BUTTON_POS_1, button1Title);
 	String button3Label = getLabel ((int)/*64*/buttonFlags, nsIPromptService.BUTTON_POS_2, button2Title);
 	
-	PromptDialog dialog = new PromptDialog (browser.getShell ());
+	Shell shell = browser == null ? new Shell () : browser.getShell ();
+	PromptDialog dialog = new PromptDialog (shell);
 	int[] check = new int[1], result = new int[1];
 	if (checkValue != 0) XPCOM.memmove (check, checkValue, 4);
 	dialog.confirmEx (titleLabel, textLabel, checkLabel, button1Label, button2Label, button3Label, check, result);
@@ -279,8 +284,9 @@ public int /*long*/ Prompt (int /*long*/ parent, int /*long*/ dialogTitle, int /
 			checkLabel = new String (dest);
 		}
 	}
-	
-	PromptDialog dialog = new PromptDialog (browser.getShell());
+
+	Shell shell = browser == null ? new Shell () : browser.getShell ();
+	PromptDialog dialog = new PromptDialog (shell);
 	int[] check = new int[1], result = new int[1];
 	if (checkValue != 0) XPCOM.memmove (check, checkValue, 4);
 	dialog.prompt (titleLabel, textLabel, checkLabel, valueLabel, check, result);
@@ -372,8 +378,9 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/
 		XPCOM.memmove (dest, checkMsg, length * 2);
 		checkLabel = new String (dest);
 	}
-	
-	PromptDialog dialog = new PromptDialog (browser.getShell());
+
+	Shell shell = browser == null ? new Shell () : browser.getShell ();
+	PromptDialog dialog = new PromptDialog (shell);
 	int[] check = new int[1], result = new int[1];
 	if (checkValue != 0) XPCOM.memmove (check, checkValue, 4);
 	dialog.promptUsernameAndPassword (titleLabel, textLabel, checkLabel, userLabel, passLabel, check, result);
