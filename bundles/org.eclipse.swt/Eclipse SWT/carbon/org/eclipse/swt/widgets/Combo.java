@@ -1220,6 +1220,7 @@ public void removeAll () {
 		OS.DeleteMenuItems (menuHandle, (short)1, count);
 		OS.SetControl32BitValue (handle, 0);
 	} else {
+		setText ("", true);
 		if (count > 0) {
 			for (int i=count-1; i>=0; i--) {
   				OS.HIComboBoxRemoveItemAtIndex (handle, i);
