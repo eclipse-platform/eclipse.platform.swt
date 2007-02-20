@@ -669,6 +669,16 @@ void enableWidget (boolean enabled) {
 	}
 }
 
+boolean equals(float[] color1, float[] color2) {
+	if (color1 == color2) return true;
+	if (color1 == null) return color2 == null;
+	if (color2 == null) return color1 == null;	
+	for (int i = 0; i < color1.length; i++) {
+		if (color1 [0] != color2 [0]) return false;
+	}	
+	return true;
+}
+
 void fillBackground (int control, int context, Rectangle bounds) {
 	OS.CGContextSaveGState (context);
 	CGRect rect = new CGRect ();
@@ -2554,7 +2564,9 @@ public void setBackground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	background = color != null ? color.handle : null;
+	float[] background = color != null ? color.handle : null;
+	if (equals (background, this.background)) return;
+	this.background = background;
 	setBackground (background);
 	redrawWidget (handle, false);
 }
@@ -2884,7 +2896,9 @@ public void setForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	foreground = color != null ? color.handle : null;
+	float[] foreground = color != null ? color.handle : null;
+	if (equals (foreground, this.foreground)) return;
+	this.foreground = foreground;
 	setForeground (foreground);
 	redrawWidget (handle, false);
 }
