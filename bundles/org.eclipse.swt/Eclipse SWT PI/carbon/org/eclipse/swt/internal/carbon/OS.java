@@ -1077,6 +1077,7 @@ public static final native void CGContextAddArc (int ctx, float x, float y, floa
 public static final native void CGContextAddArcToPoint (int ctx, float x1, float y1, float x2, float y2, float radius);
 public static final native void CGContextAddLineToPoint (int ctx, float x, float y);
 public static final native void CGContextAddLines (int ctx, float[] points, int count);
+public static final native void CGContextAddRect (int context, CGRect rect);
 public static final native void CGContextAddPath (int context, int path);
 public static final native void CGContextBeginPath (int ctx);
 public static final native void CGContextClip (int ctx);

@@ -1624,6 +1624,20 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextAddPath)
 }
 #endif
 
+#ifndef NO_CGContextAddRect
+JNIEXPORT void JNICALL OS_NATIVE(CGContextAddRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextAddRect_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	CGContextAddRect((CGContextRef)arg0, *lparg1);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextAddRect_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextBeginPath
 JNIEXPORT void JNICALL OS_NATIVE(CGContextBeginPath)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -12480,19 +12494,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_carbon_Curs
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_carbon_Cursor_2I_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_carbon_EventRecord_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_carbon_EventRecord_2I)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
-{
-	EventRecord _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_carbon_EventRecord_2I_FUNC);
-	if (arg1) if ((lparg1 = getEventRecordFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_carbon_EventRecord_2I_FUNC);
 }
 #endif
 
