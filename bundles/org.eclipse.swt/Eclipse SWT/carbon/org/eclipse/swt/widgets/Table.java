@@ -950,6 +950,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		int headerHeight = getHeaderHeight ();
 		clientArea.y += headerHeight;
 		clientArea.height -= headerHeight;
+		if (clientArea.height < 0) clientArea.height = 0;
 		region.add (clientArea);		
 		if ((style & SWT.CHECK) != 0 || gridWidth != 0) {
 			int rgn = OS.NewRgn();
