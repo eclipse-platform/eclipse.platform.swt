@@ -378,6 +378,7 @@ public class OS extends C {
 	public static final int kEventParamControlSubControl = ('c'<<24) + ('s'<<16) + ('u'<<8) + 'b';
 	public static final int kEventControlRemovingSubControl = 153;
 	public static final int kEventControlOwningWindowChanged = 159;
+	public static final int kEventControlVisibilityChanged = 157;	
 	public static final int kEventControlTrack = 51;
 	public static final int kEventPriorityStandard = 1;
 	public static final double kEventDurationForever = -1.0;
