@@ -2738,16 +2738,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGPostKeyboardEvent)
 
 #ifndef NO_CGPostMouseEvent
 JNIEXPORT jint JNICALL OS_NATIVE(CGPostMouseEvent)
-	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1, jint arg2, jboolean arg3, jboolean arg4, jboolean arg5)
+	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1, jint arg2, jboolean arg3, jboolean arg4, jboolean arg5, jboolean arg6, jboolean arg7)
 {
 	CGPoint _arg0, *lparg0=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CGPostMouseEvent_FUNC);
 	if (arg0) if ((lparg0 = getCGPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jint)CGPostMouseEvent(*lparg0, (boolean_t)arg1, arg2, (boolean_t)arg3, (boolean_t)arg4, (boolean_t)arg5);
+	rc = (jint)CGPostMouseEvent(*lparg0, (boolean_t)arg1, arg2, (boolean_t)arg3, (boolean_t)arg4, (boolean_t)arg5, (boolean_t)arg6, (boolean_t)arg7);
 fail:
 	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, CGPostMouseEvent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPostScrollWheelEvent
+JNIEXPORT jint JNICALL OS_NATIVE(CGPostScrollWheelEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPostScrollWheelEvent_FUNC);
+	rc = (jint)CGPostScrollWheelEvent(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, CGPostScrollWheelEvent_FUNC);
 	return rc;
 }
 #endif

@@ -2408,28 +2408,50 @@ public boolean post(Event event) {
 			if (type == SWT.MouseMove) {
 				mouseCursorPosition.x = event.x;
 				mouseCursorPosition.y = event.y;
-				return OS.CGPostMouseEvent (mouseCursorPosition, true, 3, (chord & 0x1) != 0, (chord & 0x2) != 0, (chord & 0x4) != 0) == 0;
+				return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, (chord & 0x1) != 0, (chord & 0x2) != 0, (chord & 0x4) != 0, (chord & 0x8) != 0, (chord & 0x10) != 0) == 0;
 			} else {
 				int button = event.button;
-				if (button < 1 || button > 3) return false;
-				boolean button1 = false, button2 = false, button3 = false;
-				switch (button) {
+				if (button < 1 || button > 5) return false;
+				boolean button1 = false, button2 = false, button3 = false, button4 = false, button5 = false;
+ 				switch (button) {
 					case 1: {
 						button1 = type == SWT.MouseDown;
 						button2 = (chord & 0x4) != 0;
 						button3 = (chord & 0x2) != 0;
+						button4 = (chord & 0x8) != 0;
+						button5 = (chord & 0x10) != 0;
 						break;
 					}
 					case 2: {
 						button1 = (chord & 0x1) != 0;
 						button2 = type == SWT.MouseDown;
 						button3 = (chord & 0x2) != 0;
+						button4 = (chord & 0x8) != 0;
+						button5 = (chord & 0x10) != 0;
 						break;
 					}
 					case 3: {
 						button1 = (chord & 0x1) != 0;
 						button2 = (chord & 0x4) != 0;
 						button3 = type == SWT.MouseDown;
+						button4 = (chord & 0x8) != 0;
+						button5 = (chord & 0x10) != 0;
+						break;
+					}
+					case 4: {
+						button1 = (chord & 0x1) != 0;
+						button2 = (chord & 0x4) != 0;
+						button3 = (chord & 0x2) != 0;
+						button4 = type == SWT.MouseDown;
+						button5 = (chord & 0x10) != 0;
+						break;
+					}
+					case 5: {
+						button1 = (chord & 0x1) != 0;
+						button2 = (chord & 0x4) != 0;
+						button3 = (chord & 0x2) != 0;
+						button4 = (chord & 0x8) != 0;
+						button5 = type == SWT.MouseDown;
 						break;
 					}
 				}
@@ -2437,8 +2459,11 @@ public boolean post(Event event) {
 				OS.GetGlobalMouse (pt);
 				mouseCursorPosition.x = pt.h;
 				mouseCursorPosition.y = pt.v;
-				return OS.CGPostMouseEvent (mouseCursorPosition, true, 3, button1, button3, button2) == 0;
+				return OS.CGPostMouseEvent (mouseCursorPosition, true, 5, button1, button3, button2, button4, button5) == 0;
 			}
+		}
+		case SWT.MouseWheel: {
+			return OS.CGPostScrollWheelEvent (1, event.count) == 0;
 		}
 	} 
 	return false;

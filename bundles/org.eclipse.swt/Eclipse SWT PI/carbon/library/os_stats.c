@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 891;
-int OS_nativeFunctionCallCount[891];
+int OS_nativeFunctionCount = 892;
+int OS_nativeFunctionCallCount[892];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -229,6 +229,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGPointApplyAffineTransform",
 	"CGPostKeyboardEvent",
 	"CGPostMouseEvent",
+	"CGPostScrollWheelEvent",
 	"CGRectContainsPoint",
 	"CGShadingCreateAxial",
 	"CGShadingCreateRadial",
