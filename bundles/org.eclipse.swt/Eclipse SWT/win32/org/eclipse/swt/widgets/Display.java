@@ -738,6 +738,128 @@ protected void create (DeviceData data) {
 void createDisplay (DeviceData data) {
 }
 
+static int create32bitDIB (Image image) {
+	int transparentPixel = -1, alpha = -1, hMask = 0, hBitmap = 0;
+	byte[] alphaData = null;
+	switch (image.type) {
+		case SWT.ICON:
+			ICONINFO info = new ICONINFO ();
+			OS.GetIconInfo (image.handle, info);
+			hBitmap = info.hbmColor;
+			hMask = info.hbmMask;
+			break;
+		case SWT.BITMAP:
+			ImageData data = image.getImageData ();
+			hBitmap = image.handle;
+			alpha = data.alpha;
+			alphaData = data.alphaData;
+			transparentPixel = data.transparentPixel;
+			break;
+	}
+	BITMAP bm = new BITMAP ();
+	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
+	int imgWidth = bm.bmWidth;
+	int imgHeight = bm.bmHeight;
+	int hDC = OS.GetDC (0);
+	int srcHdc = OS.CreateCompatibleDC (hDC);
+	int oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
+	int memHdc = OS.CreateCompatibleDC (hDC);
+	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
+	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+	bmiHeader.biWidth = imgWidth;
+	bmiHeader.biHeight = -imgHeight;
+	bmiHeader.biPlanes = 1;
+	bmiHeader.biBitCount = (short)32;
+	bmiHeader.biCompression = OS.BI_RGB;
+	byte []	bmi = new byte [BITMAPINFOHEADER.sizeof];
+	OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+	int [] pBits = new int [1];
+	int memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	int oldMemBitmap = OS.SelectObject (memHdc, memDib);
+	BITMAP dibBM = new BITMAP ();
+	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
+	int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
+ 	OS.BitBlt (memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
+ 	byte red = 0, green = 0, blue = 0;
+ 	if (transparentPixel != -1) {
+		if (bm.bmBitsPixel <= 8) {
+			byte [] color = new byte [4];
+			OS.GetDIBColorTable (srcHdc, transparentPixel, 1, color);
+			blue = color [0];
+			green = color [1];
+			red = color [2];
+		} else {
+			switch (bm.bmBitsPixel) {
+				case 16:
+					blue = (byte)((transparentPixel & 0x1F) << 3);
+					green = (byte)((transparentPixel & 0x3E0) >> 2);
+					red = (byte)((transparentPixel & 0x7C00) >> 7);
+					break;
+				case 24:
+					blue = (byte)((transparentPixel & 0xFF0000) >> 16);
+					green = (byte)((transparentPixel & 0xFF00) >> 8);
+					red = (byte)(transparentPixel & 0xFF);
+					break;
+				case 32:
+					blue = (byte)((transparentPixel & 0xFF000000) >>> 24);
+					green = (byte)((transparentPixel & 0xFF0000) >> 16);
+					red = (byte)((transparentPixel & 0xFF00) >> 8);
+					break;
+			}
+		}
+ 	}
+ 	byte [] srcData = new byte [sizeInBytes];
+	OS.MoveMemory (srcData, pBits [0], sizeInBytes);
+	if (hMask != 0) {
+		OS.SelectObject(srcHdc, hMask);
+		for (int y = 0, dp = 0; y < imgHeight; ++y) {
+			for (int x = 0; x < imgWidth; ++x) {
+				if (OS.GetPixel(srcHdc, x, y) != 0) {
+					srcData[dp + 3] = (byte)0;
+				} else {
+					srcData[dp + 3] = (byte)0xFF;
+				}
+				dp += 4;
+			}
+		}
+	} else if (alpha != -1) {
+		for (int y = 0, dp = 0; y < imgHeight; ++y) {
+			for (int x = 0; x < imgWidth; ++x) {
+				srcData [dp + 3] = (byte)alpha;
+				dp += 4;
+			}
+		}
+	} else if (alphaData != null) {
+		for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
+			for (int x = 0; x < imgWidth; ++x) {
+				srcData [dp + 3] = alphaData [ap++];
+				dp += 4;
+			}
+		}
+	} else if (transparentPixel != -1) {
+		for (int y = 0, dp = 0; y < imgHeight; ++y) {
+			for (int x = 0; x < imgWidth; ++x) {
+				if (srcData [dp] == blue && srcData [dp + 1] == green && srcData [dp + 2] == red) {
+					srcData [dp + 3] = (byte)0;
+				} else {
+					srcData [dp + 3] = (byte)0xFF;
+				}
+				dp += 4;
+			}
+		}
+	}
+	OS.MoveMemory (pBits [0], srcData, sizeInBytes);
+	OS.SelectObject (srcHdc, oldSrcBitmap);
+	OS.SelectObject (memHdc, oldMemBitmap);
+	OS.DeleteObject (srcHdc);
+	OS.DeleteObject (memHdc);
+	OS.ReleaseDC (0, hDC);
+	if (hBitmap != image.handle && hBitmap != 0) OS.DeleteObject (hBitmap);
+	if (hMask != 0) OS.DeleteObject (hMask);
+	return memDib;
+}
+
 static int create32bitDIB (int hBitmap, int alpha, byte [] alphaData, int transparentPixel) {
 	BITMAP bm = new BITMAP ();
 	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
