@@ -427,14 +427,14 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		int [] outAttributes = new int [1];
 		OS.HISearchFieldGetAttributes (handle, outAttributes);
 		if ((outAttributes [0] & OS.kHISearchFieldAttributesSearchIcon) != 0) {
-			OS.GetThemeMetric (OS.kThemeMetricRoundTextFieldContentInsetWithIconLeft, left);
+			OS.GetThemeMetric (display.smallFonts ? OS.kThemeMetricRoundTextFieldSmallContentInsetWithIconLeft : OS.kThemeMetricRoundTextFieldContentInsetWithIconLeft, left);
 		} else {
-			OS.GetThemeMetric (OS.kThemeMetricRoundTextFieldContentInsetLeft, left);			
+			OS.GetThemeMetric (display.smallFonts ? OS.kThemeMetricRoundTextFieldSmallContentInsetLeft : OS.kThemeMetricRoundTextFieldContentInsetLeft, left);			
 		}
 		if ((outAttributes [0] & OS.kHISearchFieldAttributesCancel) != 0) {
-			OS.GetThemeMetric (OS.kThemeMetricRoundTextFieldContentInsetWithIconRight, right);
+			OS.GetThemeMetric (display.smallFonts ? OS.kThemeMetricRoundTextFieldSmallContentInsetWithIconRight : OS.kThemeMetricRoundTextFieldContentInsetWithIconRight, right);
 		} else {
-			OS.GetThemeMetric (OS.kThemeMetricRoundTextFieldContentInsetRight, right);			
+			OS.GetThemeMetric (display.smallFonts ? OS.kThemeMetricRoundTextFieldSmallContentInsetRight : OS.kThemeMetricRoundTextFieldContentInsetRight, right);			
 		}
 		width += left [0] + right [0];
 	}
@@ -530,6 +530,9 @@ void createHandle () {
 		}
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
+		if ((style & SWT.SEARCH) != 0 && display.smallFonts) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlSizeTag, 2, new short [] {OS.kControlSizeSmall});
+		}
 		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
 		if ((style & SWT.READ_ONLY) != 0) {
 			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {1});

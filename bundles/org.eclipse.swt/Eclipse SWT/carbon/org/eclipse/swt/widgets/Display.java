@@ -2136,6 +2136,9 @@ void initializeInsets () {
 	
 	int attributes = OS.kHISearchFieldAttributesSearchIcon | OS.kHISearchFieldAttributesCancel;
 	OS.HISearchFieldCreate (null, attributes, 0, 0, outControl);
+	if (smallFonts) {
+		OS.SetControlData (outControl[0], OS.kControlEntireControl, OS.kControlSizeTag, 2, new short [] {OS.kControlSizeSmall});
+	}
 	searchTextInset = computeInset (outControl [0]);
 	//FIXME - 
 	editTextInset.bottom = editTextInset.top;

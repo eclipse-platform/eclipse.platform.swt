@@ -238,6 +238,8 @@ public class OS extends C {
 	public static final int kControlSearchFieldCancelPart = 30;
 	public static final int kControlSearchFieldMenuPart = 31;
 	public static final int kControlSeparatorLineProc = 144;
+	public static final int kControlSizeTag = ('s'<<24) + ('i'<<16) + ('z'<<8) + 'e';
+	public static final int kControlSizeSmall = 1;
 	public static final int kControlSliderLiveFeedback = (1 << 0);
 	public static final int kControlSliderNonDirectional = (1 << 3);
 	public static final int kControlSliderProc = 48;
@@ -818,6 +820,10 @@ public class OS extends C {
 	public static final int kThemeMetricRoundTextFieldContentInsetTop = 79;
 	public static final int kThemeMetricRoundTextFieldContentInsetWithIconLeft = 109;
 	public static final int kThemeMetricRoundTextFieldContentInsetWithIconRight = 110;
+	public static final int kThemeMetricRoundTextFieldSmallContentInsetLeft = 120;
+	public static final int kThemeMetricRoundTextFieldSmallContentInsetRight = 121;
+	public static final int kThemeMetricRoundTextFieldSmallContentInsetWithIconLeft = 123;
+	public static final int kThemeMetricRoundTextFieldSmallContentInsetWithIconRight = 124;
 	public static final int kThemeMetricScrollBarWidth = 0;
 	public static final int kThemeMetricVSliderWidth = 45;
 	public static final int kThemeNotAllowedCursor = 18;
