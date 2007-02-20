@@ -848,6 +848,13 @@ static int create32bitDIB (Image image) {
 				dp += 4;
 			}
 		}
+	} else {
+		for (int y = 0, dp = 0; y < imgHeight; ++y) {
+			for (int x = 0; x < imgWidth; ++x) {
+				srcData [dp + 3] = (byte)0xFF;
+				dp += 4;
+			}
+		}
 	}
 	OS.MoveMemory (pBits [0], srcData, sizeInBytes);
 	OS.SelectObject (srcHdc, oldSrcBitmap);
