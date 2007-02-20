@@ -35,7 +35,7 @@ import org.eclipse.swt.events.*;
 
 public class MenuItem extends Item {
 	Menu parent, menu;
-	int id, accelerator;
+	int hBitmap, id, accelerator;
 	/*
 	* Feature in Windows.  On Windows 98, it is necessary
 	* to add 4 pixels to the width of the image or the image
@@ -511,6 +511,8 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (hBitmap != 0) OS.DeleteObject (hBitmap);
+	hBitmap = 0;
 	if (accelerator != 0) {
 		parent.destroyAccelerators ();
 	}
@@ -722,8 +724,15 @@ public void setImage (Image image) {
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_BITMAP;
-	if (image != null || parent.foreground != -1) {
+	if (parent.foreground != -1) {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
+	} else {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+			if (hBitmap != 0) OS.DeleteObject (hBitmap);
+			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image) : 0;
+		} else {
+			info.hbmpItem = OS.HBMMENU_CALLBACK;
+		}
 	}
 	int hMenu = parent.handle;
 	OS.SetMenuItemInfo (hMenu, id, false, info);
@@ -805,7 +814,7 @@ public void setMenu (Menu menu) {
 			index++;
 		}
 		if (info.dwItemData != id) return;
-		boolean hasBitmap = false, success = false;
+		boolean restoreBitmap = false, success = false;
 		
 		/*
 		* Bug in Windows.  When GetMenuItemInfo() is used to get the text,
@@ -818,8 +827,8 @@ public void setMenu (Menu menu) {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			info.fMask = OS.MIIM_BITMAP;
 			OS.GetMenuItemInfo (hMenu, index, true, info);
-			hasBitmap = info.hbmpItem != 0 || parent.foreground != -1;
-			if (hasBitmap) {
+			restoreBitmap = info.hbmpItem != 0 || parent.foreground != -1;
+			if (restoreBitmap) {
 				info.hbmpItem = 0;
 				success = OS.SetMenuItemInfo (hMenu, id, false, info);
 			}
@@ -873,13 +882,20 @@ public void setMenu (Menu menu) {
 			* MIIM_BITMAP.
 			*/
 			if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-				if (hasBitmap) {
+				if (restoreBitmap) {
 					info.fMask = OS.MIIM_BITMAP;
-					info.hbmpItem = OS.HBMMENU_CALLBACK;
+					if (parent.foreground != -1) {
+						info.hbmpItem = OS.HBMMENU_CALLBACK;
+					} else {
+						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+							info.hbmpItem = hBitmap;
+						} else {
+							info.hbmpItem = OS.HBMMENU_CALLBACK;
+						}
+					}
 					success = OS.SetMenuItemInfo (hMenu, id, false, info);
 				}
 			}
-			
 		}
 		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		if (!success) error (SWT.ERROR_CANNOT_SET_MENU);
@@ -1030,11 +1046,11 @@ public void setText (String string) {
 		* the MIIM_BITMAP style.  The fix is to reset both MIIM_BITMAP.
 		* Note, this does not happen on Windows 98.
 		*/
-		boolean hasBitmap = false;
+		boolean restoreBitmap = false;
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 			info.fMask = OS.MIIM_BITMAP;
 			OS.GetMenuItemInfo (hMenu, id, false, info);
-			hasBitmap = info.hbmpItem != 0 || parent.foreground != -1;
+			restoreBitmap = info.hbmpItem != 0 || parent.foreground != -1;
 		}
 		
 		/* Use the character encoding for the default locale */
@@ -1053,9 +1069,17 @@ public void setText (String string) {
 		* MIIM_BITMAP.
 		*/
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-			if (hasBitmap) {
+			if (restoreBitmap) {
 				info.fMask = OS.MIIM_BITMAP;
-				info.hbmpItem = OS.HBMMENU_CALLBACK;
+				if (parent.foreground != -1) {
+					info.hbmpItem = OS.HBMMENU_CALLBACK;
+				} else {
+					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+						info.hbmpItem = hBitmap;
+					} else {
+						info.hbmpItem = OS.HBMMENU_CALLBACK;
+					}
+				}
 				success = OS.SetMenuItemInfo (hMenu, id, false, info);
 			}
 		}

@@ -1466,17 +1466,23 @@ void update () {
 	* Under certain circumstances that have yet to be isolated,
 	* some menus can become huge and blank.  For now, do not
 	* run the code on Windows 98.
+	* 
+	* NOTE:  This work around doesn't run on Vista because
+	* WM_MEASURECHILD and WM_DRAWITEM cause Vista to lose
+	* the menu theme.
 	*/	
 	if (!OS.IsWin95) {
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_BITMAP;
-		for (int i=0; i<items.length; i++) {
-			MenuItem item = items [i];
-			if ((style & SWT.SEPARATOR) == 0) {
-				if (item.image == null || foreground != -1) {
-					info.hbmpItem = hasImage || foreground != -1 ? OS.HBMMENU_CALLBACK : 0;
-					OS.SetMenuItemInfo (handle, item.id, false, info);
+		if (OS.WIN32_VERSION < OS.VERSION (6, 0)) {
+			MENUITEMINFO info = new MENUITEMINFO ();
+			info.cbSize = MENUITEMINFO.sizeof;
+			info.fMask = OS.MIIM_BITMAP;
+			for (int i=0; i<items.length; i++) {
+				MenuItem item = items [i];
+				if ((style & SWT.SEPARATOR) == 0) {
+					if (item.image == null || foreground != -1) {
+						info.hbmpItem = hasImage || foreground != -1 ? OS.HBMMENU_CALLBACK : 0;
+						OS.SetMenuItemInfo (handle, item.id, false, info);
+					}
 				}
 			}
 		}
