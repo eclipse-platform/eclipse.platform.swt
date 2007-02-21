@@ -286,6 +286,7 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 	try {
 		if (file == null || file.isDirectory() || !file.exists()) OLE.error(OLE.ERROR_INVALID_ARGUMENT);				
 		appClsid = getClassID(progId);
+		if (appClsid == null) OLE.error(OLE.ERROR_INVALID_CLASSID);
 		
 		// Are we opening this file with the preferred OLE object?
 		char[] fileName = (file.getAbsolutePath()+"\0").toCharArray();
@@ -321,7 +322,7 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 				// its primary stream
 				String streamName = "CONTENTS"; //$NON-NLS-1$
 				GUID wordGUID = getClassID(WORDPROGID);
-				if (COM.IsEqualGUID(appClsid, wordGUID)) streamName = "WordDocument"; //$NON-NLS-1$
+				if (wordGUID != null && COM.IsEqualGUID(appClsid, wordGUID)) streamName = "WordDocument"; //$NON-NLS-1$
 				address = new int[1];
 				result = storage.CreateStream(streamName, mode, 0, 0, address); // Increments ref count if successful
 				if (result != COM.S_OK) {
@@ -650,8 +651,7 @@ protected GUID getClassID(String clientName) {
 	}
 	if (COM.CLSIDFromProgID(buffer, guid) != COM.S_OK){
 		int result = COM.CLSIDFromString(buffer, guid);
-		if (result != COM.S_OK)
-			OLE.error(OLE.ERROR_INVALID_CLASSID, result);
+		if (result != COM.S_OK) return null;
 	}
 	return guid;
 }
