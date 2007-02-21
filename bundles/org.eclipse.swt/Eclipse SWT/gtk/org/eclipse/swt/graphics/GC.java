@@ -758,7 +758,9 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface(srcImage.surface);
 			if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			Cairo.cairo_pattern_set_filter(pattern, filter);
-			Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REFLECT);
+			if (srcWidth != destWidth || srcHeight != destHeight) {
+				Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REFLECT);
+			}
 			Cairo.cairo_set_source(cairo, pattern);
 			if (data.alpha != 0xFF) {
 				Cairo.cairo_paint_with_alpha(cairo, data.alpha / (float)0xFF);
