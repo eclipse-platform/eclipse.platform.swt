@@ -794,7 +794,7 @@ void drawPolyLineSegment(int[] pointArray, boolean closed, boolean stroked) {
 //		case SWT.OFF: mode = OS.EdgeMode_Aliased; break;
 //	}
 //	OS.RenderOptions_SetEdgeMode(path, mode);
-//	OS.PathGeometry_FillRule(path, data.fillRule == SWT.FILL_EVEN_ODD ? OS.FillRule_EvenOdd : OS.FillRule_Nonzero);
+	if (!stroked) OS.PathGeometry_FillRule(path, data.fillRule == SWT.FILL_EVEN_ODD ? OS.FillRule_EvenOdd : OS.FillRule_Nonzero);
 	int figures = OS.PathGeometry_Figures(path);
 	OS.PathFigureCollection_Add(figures, figure);
 	OS.DrawingContext_DrawGeometry(handle, stroked ? 0 : data.brush, stroked ? data.pen : 0, path);
