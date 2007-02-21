@@ -816,7 +816,7 @@ static int create32bitDIB (Image image) {
 		for (int y = 0, dp = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
 				if (OS.GetPixel(srcHdc, x, y) != 0) {
-					srcData[dp + 3] = (byte)0;
+					srcData [dp + 0] = srcData [dp + 1] = srcData [dp + 2] = srcData[dp + 3] = (byte)0;
 				} else {
 					srcData[dp + 3] = (byte)0xFF;
 				}
@@ -827,6 +827,7 @@ static int create32bitDIB (Image image) {
 		for (int y = 0, dp = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
 				srcData [dp + 3] = (byte)alpha;
+				if (srcData [dp + 3] == 0) srcData [dp + 0] = srcData [dp + 1] = srcData [dp + 2] = 0;
 				dp += 4;
 			}
 		}
@@ -834,6 +835,7 @@ static int create32bitDIB (Image image) {
 		for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
 				srcData [dp + 3] = alphaData [ap++];
+				if (srcData [dp + 3] == 0) srcData [dp + 0] = srcData [dp + 1] = srcData [dp + 2] = 0;
 				dp += 4;
 			}
 		}
