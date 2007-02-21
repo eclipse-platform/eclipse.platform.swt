@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+import java.io.*;
+
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -24,14 +27,18 @@ import org.eclipse.swt.widgets.*;
  * @since 3.3
  */ 
 public class Snippet262 {
+	static OleClientSite clientSite;
+	static OleFrame frame;
+	
 	public static void main(String[] args) {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setText("Word Example");
 		shell.setLayout(new FillLayout());
 		try {
-			OleFrame frame = new OleFrame(shell, SWT.NONE);
-			new OleClientSite(frame, SWT.NONE, "Word.Document");
+			frame = new OleFrame(shell, SWT.NONE);
+			clientSite = new OleClientSite(frame, SWT.NONE, "Word.Document");
+			addFileMenu(frame);
 		} catch (SWTError e) {
 			System.out.println("Unable to open activeX control");
 			return;
@@ -44,5 +51,45 @@ public class Snippet262 {
 				display.sleep();
 		}
 		display.dispose();
+	}
+	
+	static void addFileMenu(OleFrame frame) {
+		final Shell shell = frame.getShell();
+		Menu menuBar = shell.getMenuBar();
+		if (menuBar == null) {
+			menuBar = new Menu(shell, SWT.BAR);
+			shell.setMenuBar(menuBar);
+		}
+		MenuItem fileMenu = new MenuItem(menuBar, SWT.CASCADE);
+		fileMenu.setText("&File");
+		Menu menuFile = new Menu(fileMenu);
+		fileMenu.setMenu(menuFile);
+		frame.setFileMenus(new MenuItem[] { fileMenu });
+
+		MenuItem menuFileOpen = new MenuItem(menuFile, SWT.CASCADE);
+		menuFileOpen.setText("Open...");
+		menuFileOpen.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				fileOpen();
+			}
+		});
+		MenuItem menuFileExit = new MenuItem(menuFile, SWT.CASCADE);
+		menuFileExit.setText("Exit");
+		menuFileExit.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				shell.dispose();
+			}
+		});
+	}
+
+	static void fileOpen() {
+		FileDialog dialog = new FileDialog(clientSite.getShell(), SWT.OPEN);
+		dialog.setFilterExtensions(new String[] { "*.doc" });
+		String fileName = dialog.open();
+		if (fileName != null) {
+			clientSite.dispose();
+			clientSite = new OleClientSite(frame, SWT.NONE, "Word.Document", new File(fileName));
+			clientSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
+		}
 	}
 }
