@@ -216,10 +216,6 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
-boolean hasBorder () {
-	return (style & SWT.BORDER) != 0;
-}
-
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0 && scrolledHandle != 0) {

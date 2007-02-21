@@ -196,7 +196,6 @@ public class Display extends Device {
 	
 	/* Fonts */
 	boolean smallFonts;
-	boolean noFocusRing;
 
 	/* Keyboard */
 	int kchrPtr;
@@ -2110,7 +2109,6 @@ void initializeCallbacks () {
 void initializeFonts () {
 	//TEMPORARY CODE
 	smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
-	noFocusRing = System.getProperty("org.eclipse.swt.internal.carbon.noFocusRing") != null;
 }
 
 void initializeInsets () {

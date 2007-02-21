@@ -626,7 +626,7 @@ void drawFocus (int control, int context, boolean hasFocus, boolean hasBorder, R
 }
 
 boolean drawFocusRing () {
-	return !display.noFocusRing || getShell ().parent != null;
+	return hasBorder ();
 }
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
@@ -1206,6 +1206,10 @@ int getVisibleRegion (int control, boolean clipChildren) {
 	int result = OS.NewRgn ();
 	OS.CopyRgn (visibleRgn, result);
 	return result;
+}
+
+boolean hasBorder () {
+	return (style & SWT.BORDER) != 0;
 }
 
 boolean hasFocus () {
