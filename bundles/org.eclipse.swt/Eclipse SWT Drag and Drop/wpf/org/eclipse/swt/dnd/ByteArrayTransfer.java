@@ -185,4 +185,23 @@ boolean checkText(Object object) {
 protected Object nativeToJava(TransferData transferData) {
 	return createJavaString(transferData.pValue);
 }
+
+/**
+ * This implementation of <code>javaToNative</code> converts a java 
+ * <code>byte[]</code> to a platform specific representation.  For additional
+ * information see <code>Transfer#javaToNative</code>.
+ * 
+ * @see Transfer#javaToNative
+ * 
+ * @param object a java <code>byte[]</code> containing the data to be converted
+ * @param transferData an empty <code>TransferData</code> object; this
+ *  object will be filled in on return with the platform specific format of the data
+ */
+protected void javaToNative (Object object, TransferData transferData) {
+	if (!checkText(object)) DND.error(DND.ERROR_INVALID_DATA);
+	if (isSupportedType(transferData)) {
+		transferData.pValue = createDotNetString((String)object);
+	}
+}
+
 }

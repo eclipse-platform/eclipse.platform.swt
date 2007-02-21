@@ -34,23 +34,6 @@ private RTFTransfer() {
 }
 
 /**
- * This implementation of <code>javaToNative</code> converts a java 
- * <code>byte[]</code> to a platform specific representation.  For additional
- * information see <code>Transfer#javaToNative</code>.
- * 
- * @see Transfer#javaToNative
- * 
- * @param object a java <code>byte[]</code> containing the data to be converted
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
- */
-protected void javaToNative (Object object, TransferData transferData) {
-	if (!checkText(object)) DND.error(DND.ERROR_INVALID_DATA);
-	transferData.pValue = createDotNetString((String)object);
-	transferData.format = OS.DataFormats_Rtf;
-}
-
-/**
  * Returns the singleton instance of the RTFTransfer class.
  *
  * @return the singleton instance of the RTFTransfer class

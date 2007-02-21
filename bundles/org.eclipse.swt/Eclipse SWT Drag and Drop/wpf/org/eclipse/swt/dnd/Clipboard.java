@@ -368,10 +368,16 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 	
 	for (int i = 0; i < dataTypes.length; i++) {
 		Transfer transfer = dataTypes[i];
-		TransferData transferData = new TransferData(); 
-		transfer.javaToNative(data[i], transferData);
-		OS.Clipboard_SetData(transferData.format, transferData.pValue);
-		OS.GCHandle_Free(transferData.pValue);
+		int[] formats = transfer.getTypeIds();
+		for (int j = 0; j < formats.length; j++) {
+			TransferData transferData = new TransferData(); 
+			transferData.format = formats[j];
+			transfer.javaToNative(data[i], transferData);
+			if (transferData.pValue != 0) {
+				OS.Clipboard_SetData(transferData.format, transferData.pValue);
+				OS.GCHandle_Free(transferData.pValue);
+			}
+		}
 	}
 }
 
