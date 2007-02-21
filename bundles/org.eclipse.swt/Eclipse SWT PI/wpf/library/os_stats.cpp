@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1055;
-int OS_nativeFunctionCallCount[1055];
+int OS_nativeFunctionCount = 1060;
+int OS_nativeFunctionCallCount[1060];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -308,6 +308,8 @@ char * OS_nativeFunctionNames[] = {
 	"FrameworkElement_1Name",
 	"FrameworkElement_1NameProperty",
 	"FrameworkElement_1Parent",
+	"FrameworkElement_1Resources__I",
+	"FrameworkElement_1Resources__II",
 	"FrameworkElement_1SizeChanged",
 	"FrameworkElement_1Tag__I",
 	"FrameworkElement_1Tag__II",
@@ -915,6 +917,8 @@ char * OS_nativeFunctionNames[] = {
 	"Window_1WindowState__II",
 	"Window_1WindowStyle",
 	"WriteableBitmap_1WritePixels",
+	"XamlReader_1Load",
+	"XmlReader_1Create",
 	"gcnew_1AccessText",
 	"gcnew_1Application",
 	"gcnew_1ArcSegment",
@@ -1042,6 +1046,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1StackPanel",
 	"gcnew_1StreamGeometry",
 	"gcnew_1String",
+	"gcnew_1StringReader",
 	"gcnew_1Style",
 	"gcnew_1TabControl",
 	"gcnew_1TabItem",

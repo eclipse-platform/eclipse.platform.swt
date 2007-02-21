@@ -1407,4 +1407,12 @@ public static final native int gcnew_Window();
 public static final native int gcnew_WriteableBitmap (int source);
 public static final native int gcnew_WriteableBitmap (int pixelWidth, int pixelHeight, double dpiX, double dpiY, int pixelFormat, int palette);
 public static final native void memcpy(char[] dest, int src, int size);
+
+
+//Demo
+public static final native int FrameworkElement_Resources(int sender);
+public static final native void FrameworkElement_Resources(int sender, int value);
+public static final native int gcnew_StringReader(int string);
+public static final native int XmlReader_Create(int stream);
+public static final native int XamlReader_Load(int stream);
 }

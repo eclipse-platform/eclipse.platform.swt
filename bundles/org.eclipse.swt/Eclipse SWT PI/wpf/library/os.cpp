@@ -3588,6 +3588,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Parent)
 }
 #endif
 
+#ifndef NO_FrameworkElement_1Resources__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Resources__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Resources__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1Resources__I_FUNC);
+	rc = (jint)TO_HANDLE(((FrameworkElement^)TO_OBJECT(arg0))->Resources);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1Resources__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FrameworkElement_1Resources__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Resources__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Resources__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1Resources__II_FUNC);
+	((FrameworkElement^)TO_OBJECT(arg0))->Resources = ((ResourceDictionary^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1Resources__II_FUNC);
+}
+#endif
+
 #ifndef NO_FrameworkElement_1SizeChanged
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1SizeChanged)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1SizeChanged)
@@ -10902,6 +10926,32 @@ fail:
 }
 #endif
 
+#ifndef NO_XamlReader_1Load
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(XamlReader_1Load)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(XamlReader_1Load)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, XamlReader_1Load_FUNC);
+	rc = (jint)TO_HANDLE(XamlReader::Load((XmlReader^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, XamlReader_1Load_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XmlReader_1Create
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(XmlReader_1Create)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(XmlReader_1Create)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, XmlReader_1Create_FUNC);
+	rc = (jint)TO_HANDLE(XmlReader::Create((System::IO::TextReader^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, XmlReader_1Create_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gcnew_1AccessText
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1AccessText)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1AccessText)
@@ -12206,6 +12256,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1String)
 fail:
 	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gcnew_1String_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1StringReader
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1StringReader)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1StringReader)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1StringReader_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::IO::StringReader((String^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, gcnew_1StringReader_FUNC);
 	return rc;
 }
 #endif

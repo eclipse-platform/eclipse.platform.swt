@@ -37,6 +37,8 @@ using namespace System::Windows::Controls;
 using namespace System::Windows::Controls::Primitives;
 using namespace System::Windows::Threading;
 using namespace Microsoft::Win32;
+using namespace System::Windows::Markup;
+using namespace System::Xml;
 
 extern "C" {
 extern jint GCHandle_GetHandle(Object^obj);
