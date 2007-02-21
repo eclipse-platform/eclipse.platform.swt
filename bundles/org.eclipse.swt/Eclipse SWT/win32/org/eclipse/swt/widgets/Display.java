@@ -841,7 +841,7 @@ static int create32bitDIB (Image image) {
 		for (int y = 0, dp = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
 				if (srcData [dp] == blue && srcData [dp + 1] == green && srcData [dp + 2] == red) {
-					srcData [dp + 3] = (byte)0;
+					srcData [dp + 0] = srcData [dp + 1] = srcData [dp + 2] = srcData [dp + 3] = (byte)0;
 				} else {
 					srcData [dp + 3] = (byte)0xFF;
 				}
