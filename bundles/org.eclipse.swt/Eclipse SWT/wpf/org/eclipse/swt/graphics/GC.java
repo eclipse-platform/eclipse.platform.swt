@@ -772,7 +772,7 @@ void drawPolyLineSegment(int[] pointArray, boolean closed, boolean stroked) {
 	if (pointArray.length < 4) return;
 	int list = OS.gcnew_PointCollection(pointArray.length / 2);
 	double offset = 0;
-	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) offset = 0.5;
+	if (stroked && (data.lineWidth == 0 || (data.lineWidth % 2) == 1)) offset = 0.5;
 	for (int i = 0; i < pointArray.length; i += 2) {
 		int point = OS.gcnew_Point(pointArray[i] + offset, pointArray[i + 1] + offset);
 		OS.PointCollection_Add(list, point);
