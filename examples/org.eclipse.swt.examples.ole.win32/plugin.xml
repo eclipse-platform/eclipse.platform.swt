@@ -56,5 +56,15 @@
             viewId="org.eclipse.swt.examples.ole.win32.browserView">
       </view>
    </item>
+   <item
+         name="%launchitem.OLEExample.name"
+         description="%launchitem.OLEExample.description"
+         category="org.eclipse.swt.examples.launchWin32OnlyCategory"
+         id="org.eclipse.swt.examples.ole.win32.standalonelauncher">
+      <program
+            pluginId="org.eclipse.swt.examples.ole.win32"
+            mainClass="org.eclipse.swt.examples.ole.win32.OLEExample">
+      </program>
+   </item>
 </extension>
 </plugin>
