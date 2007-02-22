@@ -222,6 +222,20 @@ Control [] _getChildren () {
 	return result;
 }
 
+public Rectangle getClientArea () {
+	checkWidget ();
+	Rectangle rect = super.getClientArea ();
+	int clientHandle = clientHandle ();
+	int topHandle = topHandle ();
+	int point = OS.gcnew_Point (0, 0);
+	int result = OS.UIElement_TranslatePoint (clientHandle, point, topHandle);
+	rect.x = (int) OS.Point_X (result);
+	rect.y = (int) OS.Point_Y (result);
+	OS.GCHandle_Free (point);
+	OS.GCHandle_Free (result);
+	return rect;
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -340,13 +354,29 @@ boolean hasItems () {
 	return true;
 }
 
-void HandleSelectionChange (int sender, int e) {
+void HandleSelectionChanged (int sender, int e) {
 	if (!checkEvent (e)) return;
-	if (ignoreSelection) return;
+	int removed = OS.SelectionChangedEventArgs_RemovedItems (e);
+	if (OS.ICollection_Count (removed) > 0) {
+		int oldSelection = OS.IList_default (removed, 0);
+		TabItem item = (TabItem) display.getWidget (oldSelection);
+		OS.GCHandle_Free (oldSelection);
+		Control control = item.getControl(); 
+		if (control != null && !control.isDisposed ()) {
+			control.setVisible (false);
+		}
+	}
+	OS.GCHandle_Free (removed);
 	int selectedItem = OS.Selector_SelectedItem (handle);
 	if (selectedItem == 0) return;
 	TabItem item = (TabItem) display.getWidget (selectedItem);
 	OS.GCHandle_Free (selectedItem);
+	
+	Control control = item.getControl(); 
+	if (control != null && !control.isDisposed ()) {
+		control.setVisible (true);
+	}
+	if (ignoreSelection) return;
 	Event event = new Event ();
 	event.item = item;
 	postEvent (SWT.Selection, event);
@@ -354,7 +384,7 @@ void HandleSelectionChange (int sender, int e) {
 
 void hookEvents () {
 	super.hookEvents ();
-	int handler = OS.gcnew_SelectionChangedEventHandler (jniRef, "HandleSelectionChange");
+	int handler = OS.gcnew_SelectionChangedEventHandler (jniRef, "HandleSelectionChanged");
 	OS.Selector_SelectionChanged (handle, handler);
 	OS.GCHandle_Free (handler);
 }

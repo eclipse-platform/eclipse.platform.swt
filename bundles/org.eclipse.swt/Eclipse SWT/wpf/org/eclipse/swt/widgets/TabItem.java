@@ -272,26 +272,21 @@ public void setControl (Control control) {
 		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
+	if (this.control != null && this.control.isDisposed ()) {
+		this.control = null;
+	}
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
-	int children = OS.Panel_Children (contentHandle);
-	int parentHandle = parent.parentingHandle ();
-	int parentChildren = OS.Panel_Children (parentHandle);
+	int index = parent.indexOf (this);
+	if (index != parent.getSelectionIndex ()) {
+		if (newControl != null) newControl.setVisible (false);
+		return;
+	}
 	if (newControl != null) {
-		int topHandle = newControl.topHandle ();
-		OS.UIElementCollection_Remove (parentChildren, topHandle);
-		OS.UIElementCollection_Add (children, topHandle);
-		if (OS.FrameworkElement_IsLoaded (handle)) {
-			newControl.setBounds (parent.getClientArea ());
-		}
+		newControl.setBounds (parent.getClientArea ());
+		newControl.setVisible (true);
 	}
-	if (oldControl != null) {
-		int topHandle = oldControl.topHandle ();
-		OS.UIElementCollection_Remove (children, topHandle);
-		OS.UIElementCollection_Add (parentChildren, topHandle);
-	}
-	OS.GCHandle_Free (children);
-	OS.GCHandle_Free (parentChildren);
+	if (oldControl != null) oldControl.setVisible (false);
 }
 
 public void setImage (Image image) {
