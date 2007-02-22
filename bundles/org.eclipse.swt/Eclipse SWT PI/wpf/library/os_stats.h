@@ -966,6 +966,7 @@ typedef enum {
 	gcnew_1DoubleCollection_FUNC,
 	gcnew_1DrawingVisual_FUNC,
 	gcnew_1Duration_FUNC,
+	gcnew_1EllipseGeometry_FUNC,
 	gcnew_1EventHandler_FUNC,
 	gcnew_1ExecutedRoutedEventHandler_FUNC,
 	gcnew_1Expander_FUNC,

@@ -1307,6 +1307,7 @@ public static final native int gcnew_DiscreteDoubleKeyFrame(double value, int ke
 public static final native int gcnew_DoubleCollection(int capacity);
 public static final native int gcnew_Duration(int timespan);
 public static final native int gcnew_Expander();
+public static final native int gcnew_EllipseGeometry(int rect);
 public static final native int gcnew_FileInfo(int path);
 public static final native int gcnew_FolderBrowserDialog();
 public static final native int gcnew_FontFamily(int str);

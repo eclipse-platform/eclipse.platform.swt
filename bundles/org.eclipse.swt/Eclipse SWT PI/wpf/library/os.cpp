@@ -11422,6 +11422,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Duration)
 }
 #endif
 
+#ifndef NO_gcnew_1EllipseGeometry
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1EllipseGeometry)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1EllipseGeometry)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1EllipseGeometry_FUNC);
+	rc = (jint)TO_HANDLE(gcnew EllipseGeometry((Rect)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, gcnew_1EllipseGeometry_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gcnew_1Expander
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Expander)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Expander)

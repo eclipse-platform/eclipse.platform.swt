@@ -126,8 +126,6 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	}
 	int startPoint = OS.gcnew_Point(x1, y1);
 	int endPoint = OS.gcnew_Point(x2, y2);
-	int size = OS.gcnew_Size(width / 2.0, height / 2.0);
-	int arc = OS.gcnew_ArcSegment(endPoint, size, 0, isLargeAngle, OS.SweepDirection_Clockwise, true);
 	int segments = OS.PathFigure_Segments(currentFigure);
 	if (OS.PathSegmentCollection_Count(segments) != 0) {
 		int segment = OS.gcnew_LineSegment(startPoint, true);
@@ -136,18 +134,25 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	} else {
 		OS.PathFigure_StartPoint(currentFigure, startPoint);
 	}
-	OS.PathSegmentCollection_Add(segments, arc);
-	OS.GCHandle_Free(segments);
-	OS.GCHandle_Free(arc);
-	OS.GCHandle_Free(size);
-	OS.GCHandle_Free(startPoint);
-	if (currentPoint != 0) OS.GCHandle_Free(currentPoint);
-	currentPoint = endPoint;
-	if (arcAngle > 360 || arcAngle < -360) {
+	if (arcAngle >= 360 || arcAngle <= -360) {
+		int rect = OS.gcnew_Rect(x, y, width, height);
+		int geometry = OS.gcnew_EllipseGeometry(rect);
+		OS.PathGeometry_AddGeometry(handle, geometry);
+		OS.GCHandle_Free(geometry);
+		OS.GCHandle_Free(rect);
 		OS.GCHandle_Free(currentFigure);
 		currentFigure = 0;
+	} else {
+		int size = OS.gcnew_Size(width / 2.0, height / 2.0);
+		int arc = OS.gcnew_ArcSegment(endPoint, size, 0, isLargeAngle, OS.SweepDirection_Clockwise, true);
+		OS.PathSegmentCollection_Add(segments, arc);
+		OS.GCHandle_Free(size);
+		OS.GCHandle_Free(arc);
 	}
-	
+	OS.GCHandle_Free(segments);
+	OS.GCHandle_Free(startPoint);
+	if (currentPoint != 0) OS.GCHandle_Free(currentPoint);
+	currentPoint = endPoint;	
 }
 
 /**
