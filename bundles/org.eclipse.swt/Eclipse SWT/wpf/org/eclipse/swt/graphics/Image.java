@@ -554,6 +554,7 @@ public Image (Device device, String filename) {
 		filename.getChars(0, length, chars, 0);
 		int str = OS.gcnew_String(chars);
 		if (str == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (!OS.File_Exists(str)) SWT.error(SWT.ERROR_IO);
 		int uri = OS.gcnew_Uri(str, OS.UriKind_RelativeOrAbsolute);
 		if (uri == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.BitmapImage_BeginInit(handle);
