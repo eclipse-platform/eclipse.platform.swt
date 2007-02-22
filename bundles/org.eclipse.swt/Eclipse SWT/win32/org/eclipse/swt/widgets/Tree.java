@@ -88,6 +88,7 @@ public class Tree extends Composite {
 	static final int HEADER_MARGIN = 12;
 	static final int HEADER_EXTRA = 3;
 	static final int INCREMENT = 5;
+	static final int EXPLORER_EXTRA = 2;
 	static final boolean EXPLORER_THEME = true;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
@@ -176,7 +177,9 @@ void _addListener (int eventType, Listener listener) {
 			* is to clear TVS_FULLROWSELECT.
 			*/
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				if (eventType != SWT.MeasureItem) bits &= ~OS.TVS_FULLROWSELECT;
+				if (eventType != SWT.MeasureItem) {
+					if (!explorerTheme) bits &= ~OS.TVS_FULLROWSELECT;
+				}
 			}
 			if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
 				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
@@ -190,11 +193,6 @@ void _addListener (int eventType, Listener listener) {
 				int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
 				if (count != 0) {
 					if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
-				}
-			}
-			if (EXPLORER_THEME) {
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					setExplorerTheme (false);
 				}
 			}
 			break;
@@ -355,7 +353,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	*/
 	if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) return null;
 	if (!OS.IsWindowVisible (handle)) return null;
-	if ((style & SWT.FULL_SELECTION) != 0 || findImageControl () != null || ignoreDrawSelection) {
+	if ((style & SWT.FULL_SELECTION) != 0 || findImageControl () != null || ignoreDrawSelection || explorerTheme) {
 		OS.SetBkMode (hDC, OS.TRANSPARENT);
 	}
 	boolean selected = isItemSelected (nmcd);
@@ -402,11 +400,19 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				boolean clear = !explorerTheme && findImageControl () == null;
 				boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
-				if ((selected || hot || clear) && !ignoreDrawSelection && !ignoreDrawBackground) {
+				if ((selected || hot || clear) && !ignoreDrawSelection) {
 					boolean draw = true;
 					RECT pClipRect = new RECT ();
 					OS.SetRect (pClipRect, width, nmcd.top, nmcd.right, nmcd.bottom);
 					if (explorerTheme) {
+						if (hooks (SWT.EraseItem)) {
+							RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
+							if (explorerTheme) {
+								itemRect.left -= EXPLORER_EXTRA;
+								itemRect.right += EXPLORER_EXTRA;
+							}
+							pClipRect.left = itemRect.left;
+						}
 						RECT pRect = new RECT ();
 						OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						if (count > 0 && hwndHeader != 0) {
@@ -433,6 +439,23 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						OS.CloseThemeData (hTheme);
 					}
 					if (draw) fillBackground (hDC, OS.GetBkColor (hDC), pClipRect);
+				}
+			} else {
+				if (explorerTheme && hooks (SWT.EraseItem)) {
+					boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
+					if ((selected || hot) && !ignoreDrawSelection) {
+						RECT pRect = item.getBounds (index, true, true, false, false, false, hDC);
+						RECT pClipRect = item.getBounds (index, true, true, false, false, true, hDC);
+						pRect.left -= EXPLORER_EXTRA;
+						pRect.right += EXPLORER_EXTRA;
+						pClipRect.left -= EXPLORER_EXTRA;
+						pClipRect.right += EXPLORER_EXTRA;
+						int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+						int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+						if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+						OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, pClipRect);	
+						OS.CloseThemeData (hTheme);
+					}
 				}
 			}
 		}
@@ -530,7 +553,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				if (selected || (nmcd.uItemState & OS.CDIS_HOT) != 0) {
 					drawBackground = false;
 					if ((style & SWT.FULL_SELECTION) == 0) {
-						if (index == 0) drawText = false;
+						if (index == 0 && !hooks (SWT.EraseItem)) drawText = false;
 					}
 				}
 			}
@@ -616,26 +639,30 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 								if (!selected) {
 									selectionForeground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 								} else {
-									drawBackground = true;
-									ignoreDrawBackground = false;
-									if (handle == OS.GetFocus () && OS.IsWindowEnabled (handle)) {
-										clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
-									} else {
-										clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
-									}
-									if (!ignoreFullSelection && index == count - 1) {
-										RECT selectionRect = new RECT ();
-										OS.SetRect (selectionRect, backgroundRect.left, backgroundRect.top, nmcd.right, backgroundRect.bottom);
-										backgroundRect = selectionRect;
+									if (!explorerTheme) {
+										drawBackground = true;
+										ignoreDrawBackground = false;
+										if (handle == OS.GetFocus () && OS.IsWindowEnabled (handle)) {
+											clrTextBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
+										} else {
+											clrTextBk = OS.GetSysColor (OS.COLOR_3DFACE);
+										}
+										if (!ignoreFullSelection && index == count - 1) {
+											RECT selectionRect = new RECT ();
+											OS.SetRect (selectionRect, backgroundRect.left, backgroundRect.top, nmcd.right, backgroundRect.bottom);
+											backgroundRect = selectionRect;
+										}
 									}
 								}
 							} else {
 								if (selected) {
 									selectionForeground = newTextClr;
-									if (clrTextBk == -1 && OS.IsWindowEnabled (handle)) {
-										Control control = findBackgroundControl ();
-										if (control == null) control = this;
-										clrTextBk = control.getBackgroundPixel ();
+									if (!explorerTheme) {
+										if (clrTextBk == -1 && OS.IsWindowEnabled (handle)) {
+											Control control = findBackgroundControl ();
+											if (control == null) control = this;
+											clrTextBk = control.getBackgroundPixel ();
+										}
 									}
 								}
 							}
@@ -1013,32 +1040,54 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				if (!selected) {
 					selectionForeground = clrText = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				}
-				/*
-				* Feature in Windows.  When the tree has the style
-				* TVS_FULLROWSELECT, the background color for the
-				* entire row is filled when an item is painted,
-				* drawing on top of any custom drawing.  The fix
-				* is to emulate TVS_FULLROWSELECT.
-				*/
-				if ((style & SWT.FULL_SELECTION) != 0) {
-					if ((style & SWT.FULL_SELECTION) != 0 && count == 0) {
-						fillBackground (hDC, OS.GetBkColor (hDC), rect);
+				if (!explorerTheme) {
+					/*
+					* Feature in Windows.  When the tree has the style
+					* TVS_FULLROWSELECT, the background color for the
+					* entire row is filled when an item is painted,
+					* drawing on top of any custom drawing.  The fix
+					* is to emulate TVS_FULLROWSELECT.
+					*/
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						if ((style & SWT.FULL_SELECTION) != 0 && count == 0) {
+							fillBackground (hDC, OS.GetBkColor (hDC), rect);
+						} else {
+							fillBackground (hDC, OS.GetBkColor (hDC), cellRect);
+						}
 					} else {
-						fillBackground (hDC, OS.GetBkColor (hDC), cellRect);
+						RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
+						fillBackground (hDC, OS.GetBkColor (hDC), textRect);
 					}
-				} else {
-					RECT textRect = item.getBounds (index, true, false, false, false, true, hDC);
-					fillBackground (hDC, OS.GetBkColor (hDC), textRect);
 				}
 			} else {
 				if (selected) {
 					selectionForeground = clrText = newTextClr;
 					ignoreDrawSelection = true;
 				}
+				if (explorerTheme) {
+					nmcd.uItemState |= OS.CDIS_DISABLED;
+					/*
+					* Feature in Windows.  On Vista only, when the text
+					* color is unchanged and an item is asked to draw
+					* disabled, it uses the disabled color.  The fix is
+					* to modify the color slightly by adding one.
+					*/
+					int newColor = clrText == -1 ? getForegroundPixel () : clrText;
+					nmcd.clrText = nmcd.clrText == newColor ? newColor + 1 : newColor;
+					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+				}
+			}
+			if (explorerTheme) {
+				nmcd.uItemState &= ~OS.CDIS_HOT;
+				OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 			}
 			RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
 			OS.SaveDC (hDC);
 			OS.SelectClipRgn (hDC, 0);
+			if (explorerTheme) {
+				itemRect.left -= EXPLORER_EXTRA;
+				itemRect.right += EXPLORER_EXTRA;
+			}
 			//TODO - bug in Windows selection or SWT itemRect
 			/*if (selected)*/ itemRect.right++;
 			if (linesVisible) itemRect.bottom++;
@@ -1243,7 +1292,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 
 LRESULT CDDS_PREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (explorerTheme) {
-		if (findImageControl () != null) {
+		if (hooks (SWT.EraseItem) || findImageControl () != null) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 			drawBackground (nmcd.hdc, rect);
