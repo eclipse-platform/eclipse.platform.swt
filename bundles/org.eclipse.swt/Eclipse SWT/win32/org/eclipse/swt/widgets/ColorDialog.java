@@ -32,6 +32,8 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class ColorDialog extends Dialog {
+	Display display;
+	int width, height;
 	RGB rgb;
 	
 /**
@@ -90,13 +92,32 @@ public ColorDialog (Shell parent, int style) {
 
 int CCHookProc (int hdlg, int uiMsg, int lParam, int lpData) {
 	switch (uiMsg) {
-		case OS.WM_INITDIALOG:
+		case OS.WM_INITDIALOG: {
+			RECT rect = new RECT ();
+			OS.GetWindowRect (hdlg, rect);
+			width = rect.right - rect.left;
+			height = rect.bottom - rect.top;
 			if (title != null && title.length () != 0) {
 				/* Use the character encoding for the default locale */
 				TCHAR buffer = new TCHAR (0, title, true);
 				OS.SetWindowText (hdlg, buffer);
 			}
 			break;
+		}
+		case OS.WM_DESTROY: {
+			RECT rect = new RECT ();
+			OS.GetWindowRect (hdlg, rect);
+			int newWidth = rect.right - rect.left;
+			int newHeight = rect.bottom - rect.top;
+			if (newWidth < width || newHeight < height) {
+				//display.fullOpen = false;
+			} else {
+				if (newWidth > width || newHeight > height) {
+					//display.fullOpen = true;
+				}
+			}
+			break;
+		}
 	}
 	return 0;
 }
@@ -136,7 +157,7 @@ public RGB open () {
 	if (lpfnHook == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Allocate the Custom Colors */
-	Display display = parent.display;
+	display = parent.display;
 	if (display.lpCustColors == 0) {
 		int hHeap = OS.GetProcessHeap ();
 		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 16 * 4);
@@ -146,6 +167,7 @@ public RGB open () {
 	CHOOSECOLOR lpcc = new CHOOSECOLOR ();
 	lpcc.lStructSize = CHOOSECOLOR.sizeof;
 	lpcc.Flags = OS.CC_ANYCOLOR | OS.CC_ENABLEHOOK;
+	//if (display.fullOpen) lpcc.Flags |= OS.CC_FULLOPEN;
 	lpcc.lpfnHook = lpfnHook;
 	lpcc.hwndOwner = hwndOwner;
 	lpcc.lpCustColors = display.lpCustColors;
