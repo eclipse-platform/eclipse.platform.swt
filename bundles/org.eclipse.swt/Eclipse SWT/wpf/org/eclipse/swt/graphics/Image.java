@@ -1000,10 +1000,6 @@ public int internal_new_GC (GCData data) {
 	OS.ContainerVisual_Clip (visual, geometry);
 	int dc = OS.DrawingVisual_RenderOpen(visual);
 	if (dc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	Point dpi = getDPI();
-	int pixelFormat = OS.PixelFormats_Pbgra32();
-	int	renderHandle = OS.gcnew_RenderTargetBitmap(width, height, dpi.x, dpi.y, pixelFormat);
-	if (renderHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.DrawingContext_DrawImage(dc, handle, rect);
 	OS.GCHandle_Free(rect);
 	OS.GCHandle_Free(geometry);
@@ -1018,7 +1014,6 @@ public int internal_new_GC (GCData data) {
 		data.foreground = OS.Colors_Black;
 		data.font = device.systemFont;
 		data.visual = visual;
-		data.renderHandle = renderHandle;
 	}
 	return dc;
 }
@@ -1038,7 +1033,10 @@ public int internal_new_GC (GCData data) {
  */
 public void internal_dispose_GC (int dc, GCData data) {
 	OS.DrawingContext_Close(dc);
-	int renderHandle = data.renderHandle;
+	Point dpi = getDPI();
+	int pixelFormat = OS.PixelFormats_Pbgra32();
+	int	renderHandle = OS.gcnew_RenderTargetBitmap(width, height, dpi.x, dpi.y, pixelFormat);
+	if (renderHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.RenderTargetBitmap_Render(renderHandle, data.visual);
 	OS.GCHandle_Free(data.visual);
 	OS.GCHandle_Free(dc);

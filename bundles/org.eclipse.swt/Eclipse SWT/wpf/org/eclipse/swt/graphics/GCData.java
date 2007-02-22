@@ -52,5 +52,4 @@ public final class GCData {
 	public int transform;
 	public int visual;
 	public int drawingContext;
-	public int renderHandle;
 }
