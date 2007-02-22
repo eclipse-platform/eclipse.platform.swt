@@ -797,7 +797,7 @@ void drawPolyLineSegment(int[] pointArray, boolean closed, boolean stroked) {
 	if (!stroked) OS.PathGeometry_FillRule(path, data.fillRule == SWT.FILL_EVEN_ODD ? OS.FillRule_EvenOdd : OS.FillRule_Nonzero);
 	int figures = OS.PathGeometry_Figures(path);
 	OS.PathFigureCollection_Add(figures, figure);
-	OS.DrawingContext_DrawGeometry(handle, stroked ? 0 : data.brush, stroked ? data.pen : 0, path);
+	OS.DrawingContext_DrawGeometry(handle, stroked ? 0 : data.currentBrush, stroked ? data.pen : 0, path);
 	OS.GCHandle_Free(figures);
 	OS.GCHandle_Free(path);
 	OS.GCHandle_Free(segments);
@@ -1183,7 +1183,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 	if (width == 0 || height == 0 || arcAngle == 0) return;
 	if (arcAngle >= 360 || arcAngle <= -360) {
 		int center = OS.gcnew_Point(x + width / 2f, y + height / 2f);
-		OS.DrawingContext_DrawEllipse(handle, data.brush, 0, center, width / 2f, height / 2f);
+		OS.DrawingContext_DrawEllipse(handle, data.currentBrush, 0, center, width / 2f, height / 2f);
 		OS.GCHandle_Free(center);
 		return;
 	}
@@ -1214,7 +1214,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 	int path = OS.gcnew_PathGeometry();
 	int figures = OS.PathGeometry_Figures(path);
 	OS.PathFigureCollection_Add(figures, figure);
-	OS.DrawingContext_DrawGeometry(handle, data.brush, 0, path);
+	OS.DrawingContext_DrawGeometry(handle, data.currentBrush, 0, path);
 	OS.GCHandle_Free(figures);
 	OS.GCHandle_Free(path);
 	OS.GCHandle_Free(segments);
@@ -1330,7 +1330,7 @@ public void fillPath (Path path) {
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	checkGC(FILL);
 	OS.PathGeometry_FillRule(path.handle, data.fillRule == SWT.FILL_EVEN_ODD ? OS.FillRule_EvenOdd : OS.FillRule_Nonzero);
-	OS.DrawingContext_DrawGeometry(handle, data.brush, 0, path.handle);
+	OS.DrawingContext_DrawGeometry(handle, data.currentBrush, 0, path.handle);
 }
 
 /** 
