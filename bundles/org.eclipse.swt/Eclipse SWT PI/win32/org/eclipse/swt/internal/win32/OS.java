@@ -120,9 +120,7 @@ public class OS extends C {
 		}
 		
 		/* Make the process DPI aware for Windows Vista */
-		if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			OS.SetProcessDPIAware ();
-		}
+		if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) OS.SetProcessDPIAware ();
 
 		/* Get the DBCS flag */
 		boolean dbcsEnabled = OS.GetSystemMetrics (SM_DBCSENABLED) != 0;
@@ -245,6 +243,13 @@ public class OS extends C {
 	public static final int AW_HOR_NEGATIVE = 0x00000002;
 	public static final int AW_VER_POSITIVE = 0x00000004;
 	public static final int AW_VER_NEGATIVE = 0x00000008;
+	public static final int BCM_FIRST = 0x1600;
+	public static final int BCM_GETIDEALSIZE = BCM_FIRST + 0x1;
+	public static final int BCM_GETIMAGELIST = BCM_FIRST + 0x3;
+	public static final int BCM_GETNOTE = BCM_FIRST + 0xa;
+	public static final int BCM_GETNOTELENGTH = BCM_FIRST + 0xb;
+	public static final int BCM_SETIMAGELIST = BCM_FIRST + 0x2;
+	public static final int BCM_SETNOTE = BCM_FIRST + 0x9;
 	public static final int BDR_RAISEDOUTER = 0x0001;
 	public static final int BDR_SUNKENOUTER = 0x0002;
 	public static final int BDR_RAISEDINNER = 0x0004;
@@ -273,10 +278,6 @@ public class OS extends C {
 	public static final int BI_RGB = 0;
 	public static final int BLACKNESS = 0x42;
 	public static final int BLACK_BRUSH = 4;
-	public static final int BCM_FIRST = 0x1600;
-	public static final int BCM_GETIDEALSIZE = BCM_FIRST + 0x1;
-	public static final int BCM_GETIMAGELIST = BCM_FIRST + 0x3;
-	public static final int BCM_SETIMAGELIST = BCM_FIRST + 0x2;
 	public static final int BUTTON_IMAGELIST_ALIGN_LEFT = 0;
 	public static final int BUTTON_IMAGELIST_ALIGN_RIGHT = 1;
 	public static final int BUTTON_IMAGELIST_ALIGN_CENTER = 4;
@@ -296,6 +297,7 @@ public class OS extends C {
 	public static final int BS_BITMAP = 0x80;
 	public static final int BS_CENTER = 0x300;
 	public static final int BS_CHECKBOX = 0x2;
+	public static final int BS_COMMANDLINK =  0xe;
 	public static final int BS_DEFPUSHBUTTON = 0x1;
 	public static final int BS_FLAT = 0x8000;
 	public static final int BS_GROUPBOX = 0x7;
@@ -400,12 +402,14 @@ public class OS extends C {
 	public static final int CDN_FIRST = -601;
 	public static final int CDN_SELCHANGE = CDN_FIRST - 1;
 	public static final int CDRF_DODEFAULT = 0x00000000;
+	public static final int CDRF_DOERASE = 0x00000008;
 	public static final int CDRF_NEWFONT = 0x00000002;
 	public static final int CDRF_NOTIFYITEMDRAW = 0x00000020;
 	public static final int CDRF_NOTIFYPOSTERASE = 0x00000040;
 	public static final int CDRF_NOTIFYPOSTPAINT = 0x00000010;
 	public static final int CDRF_NOTIFYSUBITEMDRAW = 0x00000020;
 	public static final int CDRF_SKIPDEFAULT = 0x04;
+	public static final int CDRF_SKIPPOSTPAINT = 0x00000100;
 	public static final int CFE_AUTOCOLOR = 0x40000000;
 	public static final int CFE_ITALIC = 0x2;
 	public static final int CFE_STRIKEOUT = 0x8;
@@ -846,6 +850,9 @@ public class OS extends C {
 	public static final int LIF_STATE = 0x2;
 	public static final int LIS_FOCUSED = 0x1;
 	public static final int LIS_ENABLED = 0x2;
+	public static final int LISS_HOT = 0x2;
+	public static final int LISS_SELECTED = 0x3;
+	public static final int LISS_SELECTEDNOTFOCUS = 0x5;
 	public static final int LM_GETIDEALHEIGHT = 0x701;
 	public static final int LM_SETITEM = 0x702;
 	public static final int LM_GETITEM = 0x703;
@@ -975,6 +982,7 @@ public class OS extends C {
 	public static final int LVN_MARQUEEBEGIN = 0xffffff64;
 	public static final int LVN_ODFINDITEMA = LVN_FIRST - 52;
 	public static final int LVN_ODFINDITEMW = LVN_FIRST - 79;
+	public static final int LVP_LISTITEM = 1;
 	public static final int LVSCW_AUTOSIZE = 0xffffffff;
 	public static final int LVSCW_AUTOSIZE_USEHEADER = 0xfffffffe;
 	public static final int LVSICF_NOINVALIDATEALL = 0x1;
@@ -1696,7 +1704,7 @@ public class OS extends C {
 	public static final int TVM_MAPHTREEITEMTOACCID = TV_FIRST + 43;
 	public static final int TVM_SELECTITEM = 0x110b;
 	public static final int TVM_SETBKCOLOR = 0x111d;
-	public static final int TVM_SETEXTENDEDSTYLE = OS.TV_FIRST + 44;
+	public static final int TVM_SETEXTENDEDSTYLE = TV_FIRST + 44;
 	public static final int TVM_SETIMAGELIST = 0x1109;
 	public static final int TVM_SETINSERTMARK = 0x111a;
 	public static final int TVM_SETITEM = IsUnicode ? 0x113f : 0x110d;
