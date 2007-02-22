@@ -79,6 +79,7 @@ public class Table extends Composite {
 	static final int HEADER_MARGIN = 12;
 	static final int HEADER_EXTRA = 3;
 	static final int VISTA_EXTRA = 2;
+	static final int EXPLORER_EXTRA = 2;
 	static final boolean EXPLORER_THEME = true;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
@@ -3104,7 +3105,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 				rect.left = 0;
 				rect.right = headerRect.right;
 				pClipRect.left = cellRect.left;
-				pClipRect.right += 2; //grid??
+				pClipRect.right += EXPLORER_EXTRA;
 			} 
 			int hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
 			int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
