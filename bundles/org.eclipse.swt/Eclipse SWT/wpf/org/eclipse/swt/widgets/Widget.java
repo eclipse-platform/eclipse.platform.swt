@@ -1222,6 +1222,7 @@ public void setData (String key, Object value) {
 		}
 	}
 	
+	// Demo 
 	if ("XAML".equals(key) && value instanceof String) {
 		String string = (String) value;
 		int ptr = createDotNetString(string, false);
@@ -1233,6 +1234,17 @@ public void setData (String key, Object value) {
 		OS.GCHandle_Free(stringReader);
 		OS.GCHandle_Free(xmlReader);
 		OS.GCHandle_Free(resource);	
+	}
+	if ("ResourceDictionary".equals(key) && value instanceof String) {
+		String string = (String) value;
+		int ptr = createDotNetString(string, false);
+		int uri = OS.gcnew_Uri(ptr, OS.UriKind_RelativeOrAbsolute);
+		int resources = OS.gcnew_ResourceDictionary();
+		OS.ResourceDictionary_Source(resources, uri);
+		OS.FrameworkElement_Resources(handle, resources);
+		OS.GCHandle_Free(resources);
+		OS.GCHandle_Free(uri);
+		OS.GCHandle_Free(ptr);
 	}
 }
 
