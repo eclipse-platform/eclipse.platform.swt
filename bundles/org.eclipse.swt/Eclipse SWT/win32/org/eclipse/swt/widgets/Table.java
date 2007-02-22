@@ -3369,14 +3369,14 @@ void setBackgroundPixel (int newPixel) {
 			OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, newPixel);
 			OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, newPixel);
 			if ((style & SWT.CHECK) != 0) fixCheckboxImageListColor (true);
-			/*
-			* Feature in Windows.  When the background color is changed,
-			* the table does not redraw until the next WM_PAINT.  The fix
-			* is to force a redraw.
-			*/
-			OS.InvalidateRect (handle, null, true);
 		}
 	}
+	/*
+	* Feature in Windows.  When the background color is changed,
+	* the table does not redraw until the next WM_PAINT.  The fix
+	* is to force a redraw.
+	*/
+	OS.InvalidateRect (handle, null, true);
 }
 
 void setBackgroundTransparent (boolean transparent) {
