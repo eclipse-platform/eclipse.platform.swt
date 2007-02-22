@@ -1699,6 +1699,33 @@ public void moveBelow (Control control) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
 		hwndAbove = control.topHandle ();
+	} else {
+		/*
+		* Bug in Windows.  When SetWindowPos() is called
+		* with HWND_BOTTOM on a dialog shell, the dialog
+		* and the parent are moved to the bottom of the
+		* desktop stack.  The fix is to move the dialog
+		* to the bottom of the dialog window stack by
+		* moving behind the first dialog child.
+		*/
+		Shell shell = getShell ();
+		if (this == shell && parent != null) {
+			/* 
+			* Bug in Windows.  For some reason, when GetWindow ()
+			* with GW_HWNDPREV is used to query the previous window
+			* in the z-order with the first child, Windows returns
+			* the first child instead of NULL.  The fix is to detect
+			* this case and do nothing because the control is already
+			* at the bottom.
+			*/
+			int hwndParent = parent.handle, hwnd = hwndParent;
+			hwndAbove = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
+			while (hwndAbove != 0 && hwndAbove != hwnd) {
+				if (OS.GetWindow (hwndAbove, OS.GW_OWNER) == hwndParent) break;
+				hwndAbove = OS.GetWindow (hwnd = hwndAbove, OS.GW_HWNDPREV);
+			}
+			if (hwndAbove == hwnd) return;
+		}
 	}
 	if (hwndAbove == 0 || hwndAbove == topHandle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
