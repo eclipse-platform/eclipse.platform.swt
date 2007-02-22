@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -37,7 +37,6 @@ class Mozilla extends WebBrowser {
 	XPCOMObject contextMenuListener;	
 	XPCOMObject uriContentListener;
 	XPCOMObject tooltipListener;
-	XPCOMObject directoryServiceProviderListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
 	int /*long*/ request;
@@ -48,10 +47,10 @@ class Mozilla extends WebBrowser {
 	Shell tip = null;
 
 	static nsIAppShell AppShell;
+	static AppFileLocProvider LocationProvider;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean initialized, ignoreDispose;
-	static String profileRootDirectory;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8"; //$NON-NLS-1$
@@ -67,11 +66,6 @@ class Mozilla extends WebBrowser {
 	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
 	static final String TOKENIZER_LOCALE = ","; //$NON-NLS-1$
 	static final String PROFILE_DIR = SEPARATOR_OS + "eclipse" + SEPARATOR_OS; //$NON-NLS-1$
-	static final String HISTORY_FILE = "history.dat"; //$NON-NLS-1$
-	static final String MIMETYPES_FILE = "mimeTypes.rdf"; //$NON-NLS-1$
-	static final String PREFERENCES_FILE = "prefs.js"; //$NON-NLS-1$
-	static final String CHROME_DIR = "chrome"; //$NON-NLS-1$
-	static final String LOCALSTORE_FILE = "localstore.rdf"; //$NON-NLS-1$
 	static final String PROFILE_AFTER_CHANGE = "profile-after-change"; //$NON-NLS-1$
 	static final String PROFILE_BEFORE_CHANGE = "profile-before-change"; //$NON-NLS-1$
 	static final String PROFILE_DO_CHANGE = "profile-do-change"; //$NON-NLS-1$
@@ -314,8 +308,11 @@ public void create (Composite parent, int style) {
 				error (XPCOM.NS_ERROR_NULL_POINTER);
 			}
 
+			LocationProvider = new AppFileLocProvider (mozillaPath);
+			LocationProvider.AddRef ();
+
 			nsIFile localFile = new nsILocalFile (retVal[0]);
-			rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), 0);
+			rc = XPCOM.NS_InitXPCOM2 (0, localFile.getAddress(), LocationProvider.getAddress ());
 			localFile.Release ();
 			if (rc != XPCOM.NS_OK) {
 				browser.dispose ();
@@ -372,7 +369,7 @@ public void create (Composite parent, int style) {
 				browser.dispose ();
 				error (XPCOM.NS_NOINTERFACE);
 			}
-			
+
 			AppShell = new nsIAppShell (result[0]);
 			rc = AppShell.Create (0, null);
 			if (rc != XPCOM.NS_OK) {
@@ -422,7 +419,7 @@ public void create (Composite parent, int style) {
 		}
 		windowWatcher.Release ();
 
-		/* compute the root profile directory */
+		/* compute the profile directory and set it on the AppFileLocProvider */
 		byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
 		rc = serviceManager.GetServiceByContractID (buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
 		if (rc != XPCOM.NS_OK) {
@@ -473,9 +470,41 @@ public void create (Composite parent, int style) {
 		int /*long*/ ptr = XPCOM.nsEmbedCString_get (path);
 		buffer = new byte [length];
 		XPCOM.memmove (buffer, ptr, length);
-		profileRootDirectory = new String (MozillaDelegate.mbcsToWcs (null, buffer)) + PROFILE_DIR;
+		String profilePath = new String (MozillaDelegate.mbcsToWcs (null, buffer)) + PROFILE_DIR;
+		LocationProvider.setProfilePath (profilePath);
 		XPCOM.nsEmbedCString_delete (path);
 		profileDir.Release ();
+
+		/* notify observers of a new profile directory being used */
+		buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
+		rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		if (result[0] == 0) {
+			browser.dispose ();
+			error (XPCOM.NS_NOINTERFACE);
+		}
+
+		nsIObserverService observerService = new nsIObserverService (result[0]);
+		result[0] = 0;
+		buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_DO_CHANGE, true);
+		length = STARTUP.length ();
+		char[] chars = new char [length + 1];
+		STARTUP.getChars (0, length, chars, 0);
+		rc = observerService.NotifyObservers (0, buffer, chars);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_AFTER_CHANGE, true);
+		rc = observerService.NotifyObservers (0, buffer, chars);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+		observerService.Release ();
 
 		display.addListener (SWT.Dispose, new Listener () {
 			public void handleEvent (Event event) {
@@ -844,69 +873,6 @@ public void create (Composite parent, int style) {
 		error (rc);
 	}
 
-	rc = XPCOM.NS_GetServiceManager (result);
-	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
-	}
-	if (result[0] == 0) {
-		browser.dispose ();
-		error (XPCOM.NS_NOINTERFACE);
-	}
-
-	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-	result[0] = 0;		
-	byte[] buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_DIRECTORYSERVICE_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (buffer, nsIDirectoryService.NS_IDIRECTORYSERVICE_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
-	}
-	if (result[0] == 0) {
-		browser.dispose ();
-		error (XPCOM.NS_NOINTERFACE);
-	}
-
-	nsIDirectoryService directoryService = new nsIDirectoryService (result[0]);
-	result[0] = 0;
-	rc = directoryService.RegisterProvider(directoryServiceProviderListener.getAddress ());
-	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
-	}
-	directoryService.Release ();
-
-	buffer = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_OBSERVER_CONTRACTID, true);
-	rc = serviceManager.GetServiceByContractID (buffer, nsIObserverService.NS_IOBSERVERSERVICE_IID, result);
-	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
-	}
-	if (result[0] == 0) {
-		browser.dispose ();
-		error (XPCOM.NS_NOINTERFACE);
-	}
-	serviceManager.Release ();
-
-	nsIObserverService observerService = new nsIObserverService (result[0]);
-	result[0] = 0;
-	buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_DO_CHANGE, true);
-	int length = STARTUP.length ();
-	char[] chars = new char [length + 1];
-	STARTUP.getChars (0, length, chars, 0);
-	rc = observerService.NotifyObservers (0, buffer, chars);
-	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
-	}
-	buffer = MozillaDelegate.wcsToMbcs (null, PROFILE_AFTER_CHANGE, true);
-	rc = observerService.NotifyObservers (0, buffer, chars);
-	if (rc != XPCOM.NS_OK) {
-		browser.dispose ();
-		error (rc);
-	}
-	observerService.Release ();
-
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
@@ -1080,13 +1046,6 @@ void createCOMInterfaces () {
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args) {return OnShowTooltip (args[0], args[1], args[2]);}
 		public int /*long*/ method4 (int /*long*/[] args) {return OnHideTooltip ();}		
-	};
-
-	directoryServiceProviderListener = new XPCOMObject (new int[] {2, 0, 0, 3}) {
-		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
-		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
-		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
-		public int /*long*/ method3 (int /*long*/[] args) {return GetFile (args[0], args[1], args[2]);}
 	};
 }
 
@@ -1565,11 +1524,6 @@ int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIDirectoryServiceProvider.NS_IDIRECTORYSERVICEPROVIDER_IID)) {
-		XPCOM.memmove (ppvObject, new int /*long*/[] {directoryServiceProviderListener.getAddress ()}, C.PTR_SIZEOF);
-		AddRef ();
-		return XPCOM.NS_OK;
-	}
 	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -1769,12 +1723,6 @@ int /*long*/ GetWebBrowser (int /*long*/ aWebBrowser) {
 	return XPCOM.NS_OK;
 }
 
-public long getWebBrowserHandle () {
-	if ((browser.getStyle () & SWT.MOZILLA) == 0) return 0;
-	if (webBrowser == null) return 0;
-	return webBrowser.getAddress ();
-}
-
 int /*long*/ SetWebBrowser (int /*long*/ aWebBrowser) {
 	if (webBrowser != null) webBrowser.Release ();
 	webBrowser = aWebBrowser != 0 ? new nsIWebBrowser (aWebBrowser) : null;  				
@@ -1784,8 +1732,7 @@ int /*long*/ SetWebBrowser (int /*long*/ aWebBrowser) {
 int /*long*/ GetChromeFlags (int /*long*/ aChromeFlags) {
 	int[] ret = new int[1];
 	ret[0] = chromeFlags;
-	/* aChromeFlags is a pointer to a type of size 4 */
-	XPCOM.memmove (aChromeFlags, ret, 4);
+	XPCOM.memmove (aChromeFlags, ret, 4); /* PRUint32 */
 	return XPCOM.NS_OK;
 }
 
@@ -1852,8 +1799,7 @@ int /*long*/ ShowAsModal () {
 }
 
 int /*long*/ IsWindowModal (int /*long*/ retval) {
-	/* Note. boolean remains of size 4 on 64 bit machine */
-	XPCOM.memmove (retval, new int[] {isModal ? 1 : 0}, 4);
+	XPCOM.memmove (retval, new int[] {isModal ? 1 : 0}, 4); /* PRBool */
 	return XPCOM.NS_OK;
 }
    
@@ -1892,11 +1838,10 @@ int /*long*/ SetFocus () {
 }	
 
 int /*long*/ GetVisibility (int /*long*/ aVisibility) {
-	/* Note. boolean remains of size 4 on 64 bit machine */
-	XPCOM.memmove (aVisibility, new int[] {browser.isVisible () ? 1 : 0}, 4);
+	XPCOM.memmove (aVisibility, new int[] {browser.isVisible () ? 1 : 0}, 4); /* PRBool */
 	return XPCOM.NS_OK;
 }
-   
+
 int /*long*/ SetVisibility (int /*long*/ aVisibility) {
 	WindowEvent event = new WindowEvent (browser);
 	event.display = browser.getDisplay ();
@@ -2048,7 +1993,7 @@ int /*long*/ OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 	XPCOM.nsEmbedCString_delete (aSpec);
 	String value = new String (dest);
 	if (locationListeners.length == 0) {
-		XPCOM.memmove (retval, new int[] {0}, 4);
+		XPCOM.memmove (retval, new int[] {0}, 4); /* PRBool */
 		return XPCOM.NS_OK;
 	}
 	boolean doit = true;
@@ -2071,8 +2016,7 @@ int /*long*/ OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 		}
 		doit = event.doit;
 	}
-	/* Note. boolean remains of size 4 on 64 bit machine */
-	XPCOM.memmove (retval, new int[] {doit ? 0 : 1}, 4);
+	XPCOM.memmove (retval, new int[] {doit ? 0 : 1}, 4); /* PRBool */
 	return XPCOM.NS_OK;
 }
 
@@ -2112,8 +2056,7 @@ int /*long*/ IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredConten
 		}
 	}
 
-	/* note that boolean remains of size 4 on 64 bit machines */
-	XPCOM.memmove(retval, new int[] {preferred ? 1 : 0}, 4);
+	XPCOM.memmove(retval, new int[] {preferred ? 1 : 0}, 4); /* PRBool */
 	return XPCOM.NS_OK;
 }
 
@@ -2175,49 +2118,4 @@ int /*long*/ OnHideTooltip () {
 	return XPCOM.NS_OK;
 }
 
-/* nsIDirectoryServiceProvider */
-
-int /*long*/ GetFile (int /*long*/ prop, int /*long*/ persistent, int /*long*/ retVal) {
-	int size = XPCOM.strlen (prop);
-	byte[] bytes = new byte[size];
-	XPCOM.memmove (bytes, prop, size);
-	String propertyName = new String (MozillaDelegate.mbcsToWcs (null, bytes));
-	String propertyValue = null;
-
-	if (propertyName.equals (XPCOM.NS_APP_HISTORY_50_FILE)) {
-		propertyValue = profileRootDirectory + HISTORY_FILE;
-	} else if (propertyName.equals (XPCOM.NS_APP_USER_MIMETYPES_50_FILE)) {
-		propertyValue = profileRootDirectory + MIMETYPES_FILE;
-	} else if (propertyName.equals (XPCOM.NS_APP_PREFS_50_FILE)) {
-		propertyValue = profileRootDirectory + PREFERENCES_FILE;
-	} else if (propertyName.equals (XPCOM.NS_APP_PREFS_50_DIR)) {
-		propertyValue = profileRootDirectory;
-	} else if (propertyName.equals (XPCOM.NS_APP_USER_CHROME_DIR)) {
-		propertyValue = profileRootDirectory + CHROME_DIR;
-	} else if (propertyName.equals (XPCOM.NS_APP_USER_PROFILE_50_DIR)) {
-		propertyValue = profileRootDirectory;
-	} else if (propertyName.equals (XPCOM.NS_APP_LOCALSTORE_50_FILE)) {
-		propertyValue = profileRootDirectory + LOCALSTORE_FILE;
-	} else if (propertyName.equals (XPCOM.NS_APP_CACHE_PARENT_DIR)) {
-		propertyValue = profileRootDirectory;
-	} else if (propertyName.equals (XPCOM.NS_OS_HOME_DIR)) {
-		propertyValue = System.getProperty("user.home");	//$NON-NLS-1$
-	} else if (propertyName.equals (XPCOM.NS_OS_TEMP_DIR)) {
-		propertyValue = System.getProperty("java.io.tmpdir");	//$NON-NLS-1$
-	}
-
-	if (propertyValue != null && propertyValue.length () > 0) {
-		int /*long*/[] result = new int /*long*/[1];
-		nsEmbedString pathString = new nsEmbedString (propertyValue);
-		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_ERROR_NULL_POINTER);
-		pathString.dispose ();
-		XPCOM.memmove (retVal, new int /*long*/[] {result[0]}, C.PTR_SIZEOF);
-		/* note that boolean remains of size 4 on 64 bit machines */
-		XPCOM.memmove (persistent, new int[] {1}, 4);
-	}
-
-	return XPCOM.NS_OK;
-}
 }

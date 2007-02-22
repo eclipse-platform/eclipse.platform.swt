@@ -60,16 +60,23 @@ public class XPCOM extends C {
 	public static final String NS_WINDOWWATCHER_CONTRACTID = "@mozilla.org/embedcomp/window-watcher;1"; //$NON-NLS-1$
 
 	/* directory service constants */
+	public static final String NS_APP_CACHE_PARENT_DIR = "cachePDir"; //$NON-NLS-1$
 	public static final String NS_APP_HISTORY_50_FILE = "UHist"; //$NON-NLS-1$
-	public static final String NS_APP_USER_MIMETYPES_50_FILE = "UMimTyp"; //$NON-NLS-1$
+	public static final String NS_APP_LOCALSTORE_50_FILE = "LclSt"; //$NON-NLS-1$
+	public static final String NS_APP_PLUGINS_DIR_LIST = "APluginsDL"; //$NON-NLS-1$
+	public static final String NS_APP_PREFS_50_DIR = "PrefD"; //$NON-NLS-1$
 	public static final String NS_APP_PREFS_50_FILE = "PrefF"; //$NON-NLS-1$
 	public static final String NS_APP_USER_CHROME_DIR = "UChrm"; //$NON-NLS-1$
-	public static final String NS_APP_LOCALSTORE_50_FILE = "LclSt"; //$NON-NLS-1$
+	public static final String NS_APP_USER_MIMETYPES_50_FILE = "UMimTyp"; //$NON-NLS-1$
 	public static final String NS_APP_USER_PROFILE_50_DIR = "ProfD"; //$NON-NLS-1$
-	public static final String NS_APP_PREFS_50_DIR = "PrefD"; //$NON-NLS-1$
-	public static final String NS_APP_CACHE_PARENT_DIR = "cachePDir"; //$NON-NLS-1$
+	public static final String NS_GRE_COMPONENT_DIR = "GreComsD"; //$NON-NLS-1$
+	public static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
+	public static final String NS_OS_CURRENT_PROCESS_DIR = "CurProcD"; //$NON-NLS-1$
 	public static final String NS_OS_HOME_DIR = "Home"; //$NON-NLS-1$
 	public static final String NS_OS_TEMP_DIR = "TmpD"; //$NON-NLS-1$
+	public static final String NS_XPCOM_COMPONENT_DIR = "ComsD"; //$NON-NLS-1$
+	public static final String NS_XPCOM_CURRENT_PROCESS_DIR = "XCurProcD"; //$NON-NLS-1$
+	public static final String NS_XPCOM_INIT_CURRENT_PROCESS_DIR = "MozBinD"; //$NON-NLS-1$
 
 	/* XPCOM constants */
 	public static final int NS_OK =  0;
