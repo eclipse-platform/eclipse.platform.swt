@@ -130,13 +130,7 @@ void _addListener (int eventType, Listener listener) {
 	switch (eventType) {
 		case SWT.MeasureItem:
 		case SWT.EraseItem:
-		case SWT.PaintItem:	
-			if (EXPLORER_THEME) {
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					explorerTheme = false;
-					OS.SetWindowTheme (handle, null, null);
-				}
-			}
+		case SWT.PaintItem:
 			setCustomDraw (true);
 			style |= SWT.DOUBLE_BUFFERED;
 			setBackgroundTransparent (true);
@@ -423,6 +417,12 @@ LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			}
 		}
 	}
+	if (explorerTheme && hooks (SWT.EraseItem)) {
+		OS.SaveDC (nmcd.hdc);
+		int hrgn = OS.CreateRectRgn (0, 0, 0, 0);
+		OS.SelectClipRgn (nmcd.hdc, hrgn);
+		OS.DeleteObject (hrgn);
+	}
 	return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
 
@@ -577,6 +577,9 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 }
 
 LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
+	if (explorerTheme && hooks (SWT.EraseItem)) {
+		OS.RestoreDC (nmcd.hdc, -1);
+	}
 	/*
 	* Feature in Windows.  When a new table item is inserted
 	* using LVM_INSERTITEM in a table that is transparent
@@ -3076,19 +3079,45 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		nmcd.uItemState &= ~OS.CDIS_FOCUS;
 		OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
 	}
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+	boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
 	if (ignoreDrawForeground) {
-		RECT clipRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, false, hDC);
-		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-		boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
-		boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
 		if (!ignoreDrawBackground && drawBackground) {
 			RECT backgroundRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 			fillBackground (hDC, clrTextBk, backgroundRect);
 		}
-		if (!ignoreDrawSelection && clrSelectionBk != -1) {
+	}
+	if (!ignoreDrawSelection && clrSelectionBk != -1) {
+		if (explorerTheme) {
+			boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
+			RECT pClipRect = new RECT ();
+			OS.SetRect (pClipRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+			RECT rect = new RECT ();
+			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+			if ((style & SWT.FULL_SELECTION) != 0) {
+				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+				int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
+				RECT headerRect = new RECT ();
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
+				OS.MapWindowPoints (hwndHeader, handle, headerRect, 2);
+				rect.left = 0;
+				rect.right = headerRect.right;
+				pClipRect.left = cellRect.left;
+				pClipRect.right += 2; //grid??
+			} 
+			int hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
+			int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
+			if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
+			OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, rect, pClipRect);
+			OS.CloseThemeData (hTheme);
+		} else {
 			RECT textRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 			fillBackground (hDC, clrSelectionBk, textRect);
 		}
+	}
+	if (ignoreDrawForeground) {
+		RECT clipRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, false, hDC);
 		OS.SaveDC (hDC);
 		OS.SelectClipRgn (hDC, 0);
 		OS.ExcludeClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);

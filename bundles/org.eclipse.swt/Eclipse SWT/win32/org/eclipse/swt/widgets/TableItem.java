@@ -240,15 +240,28 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 	int hwnd = parent.handle;
 	int bits = OS.SendMessage (hwnd, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	if (column == 0 && (bits & OS.LVS_EX_FULLROWSELECT) == 0) {
-		if (getText && getImage) {
-			rect.left = OS.LVIR_SELECTBOUNDS;
+		if (hDC != 0 && parent.explorerTheme) {
+			rect.left = OS.LVIR_ICON;
+			parent.ignoreCustomDraw = true;
+			int code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
+			parent.ignoreCustomDraw = false;
+			if (code == 0) return new RECT ();
+			RECT textRect = new RECT ();
+			TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
+			int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
+			OS.DrawText (hDC, buffer, buffer.length (), textRect, flags);
+			rect.right += textRect.right - textRect.left + Table.INSET * 3 + 1;
 		} else {
-			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
+			if (getText && getImage) {
+				rect.left = OS.LVIR_SELECTBOUNDS;
+			} else {
+				rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
+			}
+			parent.ignoreCustomDraw = true;
+			int code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
+			parent.ignoreCustomDraw = false;
+			if (code == 0) return new RECT ();
 		}
-		parent.ignoreCustomDraw = true;
-		int code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect);
-		parent.ignoreCustomDraw = false;
-		if (code == 0) return new RECT ();
 		if (fullText || fullImage) {
 			RECT headerRect = new RECT ();
 			int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
@@ -306,6 +319,13 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 				}
 			} else {
 				if (getImage && !getText) rect.right = rect.left;
+			}
+			if (column == 0 && fullImage) {
+				RECT headerRect = new RECT ();
+				int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect);
+				OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
+				rect.left = headerRect.left;
 			}
 		} else {
 			rect.left = OS.LVIR_ICON;
