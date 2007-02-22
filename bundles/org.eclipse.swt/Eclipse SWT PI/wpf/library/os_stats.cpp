@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1060;
-int OS_nativeFunctionCallCount[1060];
+int OS_nativeFunctionCount = 1063;
+int OS_nativeFunctionCallCount[1063];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -245,6 +245,7 @@ char * OS_nativeFunctionNames[] = {
 	"FileDialog_1Title",
 	"FileInfo_1DirectoryName",
 	"FileInfo_1Name",
+	"File_1Exists",
 	"FolderBrowserDialog_1Description",
 	"FolderBrowserDialog_1SelectedPath__I",
 	"FolderBrowserDialog_1SelectedPath__II",
@@ -604,6 +605,7 @@ char * OS_nativeFunctionNames[] = {
 	"RenderOptions_1SetEdgeMode",
 	"RenderTargetBitmap_1Render",
 	"RepeatBehavior_1Forever",
+	"ResourceDictionary_1Source",
 	"RoutedEventArgs_1Handled",
 	"RoutedEventArgs_1OriginalSource",
 	"RoutedEventArgs_1Source",
@@ -1016,6 +1018,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1RectangleGeometry",
 	"gcnew_1RenderTargetBitmap",
 	"gcnew_1RepeatButton",
+	"gcnew_1ResourceDictionary",
 	"gcnew_1RoutedEventHandler",
 	"gcnew_1RoutedPropertyChangedEventHandler",
 	"gcnew_1RoutedPropertyChangedEventHandlerObject",

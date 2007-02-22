@@ -610,6 +610,7 @@ public static final native void FileDialog_InitialDirectory(int sender, int valu
 public static final native void FileDialog_Title(int sender, int value);
 public static final native int FileInfo_DirectoryName(int sender);
 public static final native int FileInfo_Name(int sender);
+public static final native boolean File_Exists(int sender);
 public static final native void FolderBrowserDialog_Description(int sender, int value);
 public static final native int FolderBrowserDialog_SelectedPath(int sender);
 public static final native void FolderBrowserDialog_SelectedPath(int sender, int value);
@@ -1417,4 +1418,6 @@ public static final native void FrameworkElement_Resources(int sender, int value
 public static final native int gcnew_StringReader(int string);
 public static final native int XmlReader_Create(int stream);
 public static final native int XamlReader_Load(int stream);
+public static final native int gcnew_ResourceDictionary();
+public static final native void ResourceDictionary_Source(int sender, int uri);
 }

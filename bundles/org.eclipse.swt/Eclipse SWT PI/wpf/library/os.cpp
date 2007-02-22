@@ -2819,6 +2819,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(FileInfo_1Name)
 }
 #endif
 
+#ifndef NO_File_1Exists
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(File_1Exists)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(File_1Exists)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, File_1Exists_FUNC);
+	rc = (jboolean)System::IO::File::Exists((String^)TO_OBJECT(arg0));
+	OS_NATIVE_EXIT(env, that, File_1Exists_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_FolderBrowserDialog_1Description
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1Description)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1Description)
@@ -7166,6 +7179,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(RepeatBehavior_1Forever)
 	rc = (jint)TO_HANDLE(RepeatBehavior::Forever);
 	OS_NATIVE_EXIT(env, that, RepeatBehavior_1Forever_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_ResourceDictionary_1Source
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ResourceDictionary_1Source)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ResourceDictionary_1Source)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, ResourceDictionary_1Source_FUNC);
+	((ResourceDictionary^)TO_OBJECT(arg0))->Source = ((Uri^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, ResourceDictionary_1Source_FUNC);
 }
 #endif
 
@@ -12070,6 +12094,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RepeatButton)
 	OS_NATIVE_ENTER(env, that, gcnew_1RepeatButton_FUNC);
 	rc = (jint)TO_HANDLE(gcnew RepeatButton());
 	OS_NATIVE_EXIT(env, that, gcnew_1RepeatButton_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1ResourceDictionary
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1ResourceDictionary)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1ResourceDictionary)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1ResourceDictionary_FUNC);
+	rc = (jint)TO_HANDLE(gcnew ResourceDictionary());
+	OS_NATIVE_EXIT(env, that, gcnew_1ResourceDictionary_FUNC);
 	return rc;
 }
 #endif
