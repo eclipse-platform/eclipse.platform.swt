@@ -492,7 +492,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					} else {
 						drawItem = drawText = drawBackground = true;
 						rect = item.getBounds (index, true, false, false, false, true, hDC);
-						rect.left += 2;
 						if (linesVisible) {
 							rect.right++;
 							rect.bottom++;
@@ -686,6 +685,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						}
 					}
 				}
+				rect.left += INSET + 1;
 				if (drawImage) {
 					Image image = null;
 					if (index == 0) {
