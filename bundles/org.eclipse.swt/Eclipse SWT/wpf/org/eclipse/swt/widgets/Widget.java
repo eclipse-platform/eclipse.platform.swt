@@ -1221,6 +1221,19 @@ public void setData (String key, Object value) {
 			}
 		}
 	}
+	
+	if ("XAML".equals(key) && value instanceof String) {
+		String string = (String) value;
+		int ptr = createDotNetString(string, false);
+		int stringReader = OS.gcnew_StringReader (ptr);
+		int xmlReader = OS.XmlReader_Create (stringReader);
+		int resource = OS.XamlReader_Load (xmlReader);
+		OS.FrameworkElement_Resources (handle, resource);
+		OS.GCHandle_Free(ptr);
+		OS.GCHandle_Free(stringReader);
+		OS.GCHandle_Free(xmlReader);
+		OS.GCHandle_Free(resource);	
+	}
 }
 
 boolean sendFocusEvent (int type) {
