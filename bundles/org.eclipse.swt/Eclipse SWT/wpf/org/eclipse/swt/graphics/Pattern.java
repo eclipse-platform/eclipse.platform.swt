@@ -64,10 +64,8 @@ public Pattern(Device device, Image image) {
 	handle = OS.gcnew_ImageBrush(image.handle);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.TileBrush_TileMode(handle, OS.TileMode_Tile);
-	OS.TileBrush_Stretch(handle, OS.Stretch_None);
+	OS.TileBrush_Stretch(handle, OS.Stretch_Fill);
 	OS.TileBrush_ViewportUnits(handle, OS.BrushMappingMode_Absolute);
-	OS.TileBrush_AlignmentX(handle, OS.AlignmentX_Left);
-	OS.TileBrush_AlignmentY(handle, OS.AlignmentY_Top);
 	int rect = OS.gcnew_Rect(0, 0, OS.BitmapSource_PixelWidth(image.handle), OS.BitmapSource_PixelHeight(image.handle));
 	OS.TileBrush_Viewport(handle, rect);
 	OS.GCHandle_Free(rect);

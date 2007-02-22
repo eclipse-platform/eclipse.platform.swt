@@ -166,7 +166,9 @@ public class OS extends C {
 	public static final int UriKind_Relative = 2;
 	
 	public static final int Stretch_None = 0;
+	public static final int Stretch_Fill = 1;
 	public static final int Stretch_Uniform = 2;
+	public static final int Stretch_UniformToFill = 3;
 	
 	public static final int PenLineCap_Flat = 0;
 	public static final int PenLineCap_Round = 1;
