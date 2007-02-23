@@ -456,7 +456,7 @@ public Rectangle getBounds (int index) {
 	if (!(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	if (!OS.UIElement_IsVisible (handle)) return new Rectangle (0, 0, 0, 0);
 	int point = OS.gcnew_Point (0, 0);
-	OS.UIElement_UpdateLayout (handle);
+	updateLayout (handle);
 	int contentPresenter = findContentPresenter (handle, index);
 	int location = OS.UIElement_TranslatePoint (contentPresenter, point, parent.handle);
 	int x = (int) OS.Point_X (location);

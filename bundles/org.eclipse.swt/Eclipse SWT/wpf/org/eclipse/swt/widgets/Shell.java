@@ -485,7 +485,7 @@ void createHandle () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	if ((style & SWT.ON_TOP) != 0) return new Rectangle (x, y, width, height);
-	OS.UIElement_UpdateLayout(shellHandle);
+	updateLayout (shellHandle);
 	int clientX = (int) OS.Window_Left (shellHandle);
 	int clientY = (int) OS.Window_Top (shellHandle);
 	int w = (int) OS.FrameworkElement_ActualWidth (shellHandle);

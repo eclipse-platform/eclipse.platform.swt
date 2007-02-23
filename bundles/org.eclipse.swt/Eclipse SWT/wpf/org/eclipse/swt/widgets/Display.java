@@ -143,7 +143,10 @@ public class Display extends Device {
 	Object data;
 	String [] keys;
 	Object [] values;
-	
+
+	Control[] invalidate;
+	boolean ignoreRender;
+
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
 		
@@ -431,6 +434,25 @@ public void addFilter (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
 	filterTable.hook (eventType, listener);
+}
+
+void addInvalidate (Control control) {
+	if (invalidate == null) invalidate = new Control [4];
+	int length = invalidate.length;
+	for (int i=0; i<length; i++) {
+		if (invalidate [i] == control) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (invalidate [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Control [] temp = new Control [length + 4];
+		System.arraycopy (invalidate, 0, temp, 0, length);
+		invalidate = temp;
+	}
+	invalidate [index] = control;
 }
 
 /**
@@ -1747,7 +1769,7 @@ public Point map (Control from, Control to, int x, int y) {
 			Shell shell = to.getShell ();
 			Point shellLocation = shell.getLocation ();
 			int point = OS.gcnew_Point (x - shellLocation.x, y - shellLocation.y);
-			OS.UIElement_UpdateLayout (to.topHandle ());
+			to.updateLayout (to.topHandle ());
 			int newPoint = OS.UIElement_TranslatePoint (shell.shellHandle, point, to.topHandle ());
 			newX = (int) (OS.Point_X (newPoint) + 0.5);
 			newY = (int) (OS.Point_Y (newPoint) + 0.5);
@@ -1757,7 +1779,7 @@ public Point map (Control from, Control to, int x, int y) {
 			Shell shell = from.getShell ();
 			Point shellLocation = shell.getLocation ();
 			int point = OS.gcnew_Point (x, y);
-			OS.UIElement_UpdateLayout (from.topHandle ());
+			from.updateLayout (from.topHandle ());
 			int newPoint = OS.UIElement_TranslatePoint (from.topHandle (), point, shell.shellHandle);
 			newX = (int) (OS.Point_X (newPoint) + 0.5) + shellLocation.x;
 			newY = (int) (OS.Point_Y (newPoint) + 0.5) + shellLocation.y;
@@ -2041,6 +2063,7 @@ void removePopup (Menu menu) {
 public boolean readAndDispatch () {
 	checkDevice ();
 //	System.out.print("[");
+	runInvalidate ();
 	runPopups ();
 	try {
 		OS.DispatcherFrame_Continue(frame, true);
@@ -2308,6 +2331,19 @@ boolean runDeferredEvents () {
 
 	/* Clear the queue */
 	eventQueue = null;
+	return true;
+}
+
+boolean runInvalidate () {
+	if (invalidate == null) return false;
+	Control[] invalidate = this.invalidate;
+	this.invalidate = null;
+	for (int i = 0; i < invalidate.length; i++) {
+		Control control = invalidate [i];
+		if (control != null && !control.isDisposed()) {
+			control.redraw (true);
+		}
+	}
 	return true;
 }
 

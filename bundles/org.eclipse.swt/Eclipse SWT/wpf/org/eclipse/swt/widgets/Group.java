@@ -117,7 +117,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		double currentHeight = OS.FrameworkElement_Height (topHandle);
 		OS.FrameworkElement_Width (topHandle, 100);
 		OS.FrameworkElement_Height (topHandle, 100);
-		OS.UIElement_UpdateLayout (topHandle);
+		updateLayout (topHandle);
 		int w = (int) OS.FrameworkElement_ActualWidth (topHandle);
 		int h = (int) OS.FrameworkElement_ActualHeight (topHandle);
 		int clientWidth = (int) OS.FrameworkElement_ActualWidth (clientHandle);

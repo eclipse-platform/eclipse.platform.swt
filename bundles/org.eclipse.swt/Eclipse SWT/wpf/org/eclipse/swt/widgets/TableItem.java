@@ -201,7 +201,7 @@ int findRowPresenter (int current, int rowPresenterType) {
 }
 
 int findPart (int column, String partName) {
-	if (!OS.FrameworkElement_IsLoaded (handle)) OS.UIElement_UpdateLayout (handle);
+	if (!OS.FrameworkElement_IsLoaded (handle)) updateLayout (handle);
 	if (!OS.FrameworkElement_IsLoaded (handle)) return 0;
 	int rowPresenterType = OS.GridViewRowPresenter_typeid ();
 	int rowPresenter = findRowPresenter (handle, rowPresenterType);

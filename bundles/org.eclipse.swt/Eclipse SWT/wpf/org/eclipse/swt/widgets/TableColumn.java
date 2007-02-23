@@ -351,7 +351,7 @@ public int getWidth () {
 }
 
 int findPart (int part) {
-	if (!OS.FrameworkElement_IsLoaded (headerHandle)) OS.UIElement_UpdateLayout (headerHandle);
+	if (!OS.FrameworkElement_IsLoaded (headerHandle)) updateLayout (headerHandle);
 	int contentPresenterType = OS.ContentPresenter_typeid ();
 	int contentPresenter = findStackPanel (headerHandle, contentPresenterType);
 	OS.GCHandle_Free (contentPresenterType);

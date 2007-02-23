@@ -269,7 +269,7 @@ public void addVerifyListener (VerifyListener listener) {
 void addWidget () {
 	super.addWidget ();
 	if ((style & SWT.READ_ONLY) == 0) {
-		OS.UIElement_UpdateLayout (handle);
+		updateLayout (handle);
 		int name = createDotNetString ("PART_EditableTextBox", false);
 		int template = OS.Control_Template (handle);
 		textHandle = OS.FrameworkTemplate_FindName (template, name, handle);
@@ -367,7 +367,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.GCHandle_Free (size);
 	for (int i = 0; i < itemCount; i++) {
 		OS.Selector_SelectedIndex (handle, i);
-		OS.UIElement_UpdateLayout (handle);
+		updateLayout (handle);
 		OS.UIElement_Measure (handle, availSize);
 		size = OS.UIElement_DesiredSize (handle);
 		width = Math.max (width, (int) OS.Size_Width (size));

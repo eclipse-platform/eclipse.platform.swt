@@ -159,13 +159,9 @@ public Rectangle getClientArea () {
 	checkWidget ();
 	int clientHandle = clientHandle ();
 	int topHandle = topHandle (); 
-	boolean update = !OS.UIElement_IsMeasureValid (topHandle);
-	if (update) OS.UIElement_UpdateLayout (topHandle);
+	updateLayout (topHandle);
 	int width = (int) OS.FrameworkElement_ActualWidth (clientHandle);
 	int height = (int) OS.FrameworkElement_ActualHeight (clientHandle);
-	if (update && (state & CANVAS) != 0) {
-		OS.UIElement_InvalidateVisual (handle);
-	}
 	return new Rectangle (0, 0, width, height);
 }
 
@@ -210,7 +206,7 @@ int getScrollBarHandle (int style) {
 		OS.GCHandle_Free (enumerator);
 		OS.GCHandle_Free (children);
 	} else {
-		if (!OS.FrameworkElement_IsLoaded (handle)) OS.UIElement_UpdateLayout (handle);
+		if (!OS.FrameworkElement_IsLoaded (handle)) updateLayout (handle);
 		int scrollViewerType = OS.ScrollViewer_typeid ();
 		int scrollViewer = findScrollViewer (handle, scrollViewerType);
 		int template = OS.Control_Template (scrollViewer);

@@ -1390,4 +1390,11 @@ public String toString () {
 	return getName () + " {" + string + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
+void updateLayout (int updateHandle) {
+	boolean ignore = display.ignoreRender;
+	display.ignoreRender = true;
+	OS.UIElement_UpdateLayout (updateHandle);
+	display.ignoreRender = ignore;
+}
+
 }

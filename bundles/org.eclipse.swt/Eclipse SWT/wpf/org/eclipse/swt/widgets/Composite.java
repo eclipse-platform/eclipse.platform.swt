@@ -719,6 +719,10 @@ public void layout (Control [] changed) {
 void OnRender(int drawingContext) {
 	if (isDisposed ()) return;
 	OS.SWTCanvas_Visual (handle, 0);
+	if (display.ignoreRender) {
+		display.addInvalidate (this);
+		return;
+	}
 	if (!hooks (SWT.Paint)) return;
 	int width = (int)OS.FrameworkElement_ActualWidth (handle);
 	int height = (int)OS.FrameworkElement_ActualHeight (handle);
