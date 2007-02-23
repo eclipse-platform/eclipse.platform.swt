@@ -38,7 +38,7 @@ import org.eclipse.swt.internal.wpf.*;
  * </p>
  */
 public class ToolBar extends Composite {
-	int parentingHandle, trayHandle;
+	int parentingHandle;
 	int itemCount;
 	Control [] children;
 	int childCount;
@@ -129,25 +129,19 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	return super.computeSize (trayHandle, wHint, hHint, changed);
+	return super.computeSize (handle, wHint, hHint, changed);
 }
 
 void createHandle () {
 	parentingHandle = OS.gcnew_Canvas ();
 	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	trayHandle = OS.gcnew_ToolBarTray();
-	if (trayHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (IsVertical) OS.ToolBarTray_Orientation (trayHandle, OS.Orientation_Vertical);
-	int children = OS.Panel_Children (parentingHandle);
-	OS.UIElementCollection_Add (children, trayHandle);
-	OS.GCHandle_Free (children);
 	handle = OS.gcnew_ToolBar ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (IsVertical) OS.ToolBarTray_Orientation (handle, OS.Orientation_Vertical);
+	int children = OS.Panel_Children (parentingHandle);
+	OS.UIElementCollection_Add (children, handle);
+	OS.GCHandle_Free (children);
 	//FIXME: FLAT, WRAP, RIGHT, SHADOW_OUT
-	int toolBars = OS.ToolBarTray_ToolBars (trayHandle);
-	OS.IList_Add (toolBars, handle);
-	OS.GCHandle_Free (toolBars);
-	OS.ToolBarTray_IsLocked (trayHandle, true);
 }
 
 void createItem (ToolItem item, int index) {
@@ -168,7 +162,6 @@ void createWidget () {
 
 void deregister () {
 	super.deregister ();
-	display.removeWidget (trayHandle);
 	display.removeWidget (parentingHandle);
 }
 
@@ -323,13 +316,20 @@ boolean hasItems () {
 void HandleLoaded (int sender, int e) {
 	if (!checkEvent (e)) return;
 	int template = OS.Control_Template (handle);
-	int name = createDotNetString ("OverflowButton", false);
-	int thumb = OS.FrameworkTemplate_FindName (template, name, handle);
+	int buttonName = createDotNetString ("OverflowButton", false);
+	int button = OS.FrameworkTemplate_FindName (template, buttonName, handle);
+	if (button != 0) {
+		OS.UIElement_Visibility (button, OS.Visibility_Collapsed);
+		OS.GCHandle_Free (button);
+	}
+	OS.GCHandle_Free (buttonName);
+	int thumbName = createDotNetString ("ToolBarThumb", false);
+	int thumb = OS.FrameworkTemplate_FindName (template, thumbName, handle);
 	if (thumb != 0) {
 		OS.UIElement_Visibility (thumb, OS.Visibility_Collapsed);
 		OS.GCHandle_Free (thumb);
 	}
-	OS.GCHandle_Free (name);
+	OS.GCHandle_Free (thumbName);
 	OS.GCHandle_Free (template);
 }
 
@@ -386,7 +386,6 @@ int parentingHandle () {
 
 void register () {
 	super.register ();
-	display.addWidget (trayHandle, this);
 	display.addWidget (parentingHandle, this);
 }
 
@@ -414,8 +413,6 @@ void removeChild (Control control) {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	if (trayHandle != 0) OS.GCHandle_Free (trayHandle);
-	trayHandle = 0;
 	if (parentingHandle != 0) OS.GCHandle_Free (parentingHandle);
 	parentingHandle = 0;
 }
@@ -431,15 +428,6 @@ void removeControl (Control control) {
 		}
 	}
 	OS.GCHandle_Free (items);
-}
-
-int setBounds (int x, int y, int width, int height, int flags) {
-	int result = super.setBounds (x, y, width, height, flags);
-	if ((result & RESIZED) != 0) {
-		OS.FrameworkElement_Height (trayHandle, height);
-		OS.FrameworkElement_Width (trayHandle, width);
-	}
-	return result;
 }
 
 void setForegroundBrush (int brush) {
