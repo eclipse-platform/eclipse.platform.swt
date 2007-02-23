@@ -835,36 +835,38 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 		OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 	}
-	if (handle == OS.GetFocus ()) {
-		int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-		if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
-			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-			if (hItem == item.handle) {
-				if (!ignoreDrawFocus && (hooks (SWT.PaintItem) || findImageControl () != null)) {
-					if ((style & SWT.FULL_SELECTION) != 0) {
-						RECT focusRect = new RECT ();
-						OS.SetRect (focusRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
-						if (count > 0 && hwndHeader != 0) {
-							int width = 0;
-							HDITEM hdItem = new HDITEM ();
-							hdItem.mask = OS.HDI_WIDTH;
-							for (int j=0; j<count; j++) {
-								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
-								width += hdItem.cxy;
+	if (!explorerTheme) {
+		if (handle == OS.GetFocus ()) {
+			int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+			if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+				if (hItem == item.handle) {
+					if (!ignoreDrawFocus && (hooks (SWT.PaintItem) || findImageControl () != null)) {
+						if ((style & SWT.FULL_SELECTION) != 0) {
+							RECT focusRect = new RECT ();
+							OS.SetRect (focusRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+							if (count > 0 && hwndHeader != 0) {
+								int width = 0;
+								HDITEM hdItem = new HDITEM ();
+								hdItem.mask = OS.HDI_WIDTH;
+								for (int j=0; j<count; j++) {
+									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
+									width += hdItem.cxy;
+								}
+								focusRect.left = 0;
+								RECT rect = new RECT ();
+								OS.GetClientRect (handle, rect);
+								focusRect.right = Math.max (width, rect.right);
 							}
-							focusRect.left = 0;
-							RECT rect = new RECT ();
-							OS.GetClientRect (handle, rect);
-							focusRect.right = Math.max (width, rect.right);
+							OS.DrawFocusRect (hDC, focusRect);
+						} else {
+							int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+							RECT focusRect = item.getBounds (index, true, false, false, false, false, hDC);
+							RECT clipRect = item.getBounds (index, true, false, false, false, true, hDC);
+							OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
+							OS.DrawFocusRect (hDC, focusRect);
+							OS.SelectClipRgn (hDC, 0);
 						}
-						OS.DrawFocusRect (hDC, focusRect);
-					} else {
-						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
-						RECT focusRect = item.getBounds (index, true, false, false, false, false, hDC);
-						RECT clipRect = item.getBounds (index, true, false, false, false, true, hDC);
-						OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
-						OS.DrawFocusRect (hDC, focusRect);
-						OS.SelectClipRgn (hDC, 0);
 					}
 				}
 			}
