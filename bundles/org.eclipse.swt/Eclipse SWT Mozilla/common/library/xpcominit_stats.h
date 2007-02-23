@@ -27,4 +27,6 @@ extern char* XPCOMInit_nativeFunctionNames[];
 typedef enum {
 	GREVersionRange_1sizeof_FUNC,
 	GRE_1GetGREPathWithProperties_FUNC,
+	XPCOMGlueShutdown_FUNC,
+	XPCOMGlueStartup_FUNC,
 } XPCOMInit_FUNCS;

@@ -14,11 +14,13 @@
 
 #ifdef NATIVE_STATS
 
-int XPCOMInit_nativeFunctionCount = 2;
-int XPCOMInit_nativeFunctionCallCount[2];
+int XPCOMInit_nativeFunctionCount = 4;
+int XPCOMInit_nativeFunctionCallCount[4];
 char * XPCOMInit_nativeFunctionNames[] = {
 	"GREVersionRange_1sizeof",
 	"GRE_1GetGREPathWithProperties",
+	"XPCOMGlueShutdown",
+	"XPCOMGlueStartup",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

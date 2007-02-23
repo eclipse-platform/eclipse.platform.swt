@@ -45,3 +45,33 @@ fail:
 }
 #endif
 
+#ifndef NO_XPCOMGlueShutdown
+extern "C" JNIEXPORT jint JNICALL XPCOMInit_NATIVE(XPCOMGlueShutdown)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL XPCOMInit_NATIVE(XPCOMGlueShutdown)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	XPCOMInit_NATIVE_ENTER(env, that, XPCOMGlueShutdown_FUNC);
+	rc = (jint)XPCOMGlueShutdown();
+	XPCOMInit_NATIVE_EXIT(env, that, XPCOMGlueShutdown_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XPCOMGlueStartup
+extern "C" JNIEXPORT jint JNICALL XPCOMInit_NATIVE(XPCOMGlueStartup)(JNIEnv *env, jclass that, jbyteArray arg0);
+JNIEXPORT jint JNICALL XPCOMInit_NATIVE(XPCOMGlueStartup)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	XPCOMInit_NATIVE_ENTER(env, that, XPCOMGlueStartup_FUNC);
+	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
+	rc = (jint)XPCOMGlueStartup((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+	XPCOMInit_NATIVE_EXIT(env, that, XPCOMGlueStartup_FUNC);
+	return rc;
+}
+#endif
+

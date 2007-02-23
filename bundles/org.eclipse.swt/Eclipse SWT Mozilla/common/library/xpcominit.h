@@ -14,6 +14,7 @@
 
 #define NDEBUG
 
+#define XPCOM_GLUE 1
 #include "nsXPCOMGlue.h"
 
 #ifdef _WIN32

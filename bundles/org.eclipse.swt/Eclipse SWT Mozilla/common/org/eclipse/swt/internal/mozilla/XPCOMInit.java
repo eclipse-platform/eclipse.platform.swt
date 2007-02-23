@@ -30,6 +30,8 @@ package org.eclipse.swt.internal.mozilla;
 public class XPCOMInit {
 	public static final int PATH_MAX = 4096;
 	
-public static final native int GREVersionRange_sizeof();
-public static final native int GRE_GetGREPathWithProperties(GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen);
+public static final native int GREVersionRange_sizeof ();
+public static final native int GRE_GetGREPathWithProperties (GREVersionRange versions, int versionsLength, int /*long*/ properties, int propertiesLength, int /*long*/ buffer, int buflen);
+public static final native int XPCOMGlueStartup (byte[] place);
+public static final native int XPCOMGlueShutdown ();
 }

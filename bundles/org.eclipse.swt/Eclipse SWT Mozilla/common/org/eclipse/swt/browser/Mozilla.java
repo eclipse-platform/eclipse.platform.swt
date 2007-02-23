@@ -209,6 +209,26 @@ public void create (Composite parent, int style) {
 		}
 
 		if (isXULRunner) {
+			/*
+			 * Test whether the detected XULRunner can be used as the GRE before loading swt's
+			 * XULRunner library.  If it cannot be used then fall back to attempting to use
+			 * the GRE pointed to by MOZILLA_FIVE_HOME.
+			 * 
+			 * One case where this will fail is attempting to use a 64-bit xulrunner while swt
+			 * is running in 32-bit more, or vice versa.
+			 */
+			byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
+			int rc = XPCOMInit.XPCOMGlueStartup (path);
+			if (rc != XPCOM.NS_OK) {
+				isXULRunner = false;	/* failed */
+				mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
+				if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
+			} else {
+				XPCOMInit.XPCOMGlueShutdown ();
+			}
+		}
+
+		if (isXULRunner) {
 			if (Device.DEBUG) System.out.println ("XULRunner path: " + mozillaPath); //$NON-NLS-1$
 			try {
 				Library.loadLibrary ("swt-xulrunner"); //$NON-NLS-1$
@@ -244,7 +264,10 @@ public void create (Composite parent, int style) {
 		} else {
 			if ((style & SWT.MOZILLA) != 0) {
 				browser.dispose ();
-				SWT.error (SWT.ERROR_NO_HANDLES, null, " [Could not detect registered XULRunner to use]"); //$NON-NLS-1$
+				String errorString = (mozillaPath != null && mozillaPath.length () > 0) ?
+					" [Failed to use detected XULRunner: " + mozillaPath + "]" :
+					" [Could not detect registered XULRunner to use]";	//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				SWT.error (SWT.ERROR_NO_HANDLES, null, errorString);
 			}
 
 			/* attempt to use the GRE pointed at by MOZILLA_FIVE_HOME */
@@ -254,8 +277,7 @@ public void create (Composite parent, int style) {
 				byte[] buffer = new byte[length];
 				C.memmove (buffer, ptr, length);
 				mozillaPath = new String (MozillaDelegate.mbcsToWcs (null, buffer));
-			}
-			if (mozillaPath == null) {
+			} else {
 				browser.dispose ();
 				SWT.error (SWT.ERROR_NO_HANDLES, null, " [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]"); //$NON-NLS-1$
 			}
