@@ -165,12 +165,15 @@ public class OLEExample {
 				if (fileExtension.equalsIgnoreCase("pdf")) {
 					try {
 						clientSite = new OleClientSite(oleFrame, SWT.NONE, "PDF.PdfCtrl.5");
+						clientSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 					    OleAutomation pdf = new OleAutomation (clientSite);
 					    int loadFile[] = pdf.getIDsOfNames (new String [] {"LoadFile"});
 					    if (loadFile != null) {
 					    	Variant result = pdf.invoke(loadFile[0], new Variant[] {new Variant(fileName)});
 							if (result == null)
 								disposeClient();
+							else
+								result.dispose();
 					    } else {
 							disposeClient();
 					    }
@@ -193,6 +196,8 @@ public class OLEExample {
 					Variant result = explorer.invoke(navigate[0], new Variant[] {new Variant(fileName)});
 					if (result == null)
 						disposeClient();
+					else
+						result.dispose();
 				} else {
 					disposeClient();
 				}
