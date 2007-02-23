@@ -672,7 +672,7 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 	}
-	OS.UIElement_Visibility (topHandle, visible ? OS.Visibility_Visible : OS.Visibility_Hidden);
+	OS.UIElement_Visibility (topHandle, visible ? OS.Visibility_Visible : OS.Visibility_Collapsed);
 	if (isDisposed ()) return;
 	if (!visible) {
 		sendEvent (SWT.Hide);
