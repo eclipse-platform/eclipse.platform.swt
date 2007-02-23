@@ -876,6 +876,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 }
 
 LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
+	int hDC = nmcd.hdc;
 	TreeItem item = getItem (nmcd);
 	/*
 	* Feature in Windows.  When a new tree item is inserted
@@ -888,18 +889,16 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	* COMCTL32.DLL,
 	*/
 	if (item == null) return null;
+	int index = hwndHeader != 0 ? OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) : 0;
+	int hFont = item.cellFont != null ? item.cellFont [index] : -1;
+	if (hFont == -1) hFont = item.font;
+	if (hFont != -1) OS.SelectObject (hDC, hFont);
 	if (ignoreCustomDraw || (nmcd.left == nmcd.right)) {
-		int hDC = nmcd.hdc;
-		int index = hwndHeader != 0 ? OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) : 0;
-		int hFont = item.cellFont != null ? item.cellFont [index] : -1;
-		if (hFont == -1) hFont = item.font;
-		if (hFont != -1) OS.SelectObject (hDC, hFont);
 		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
 	}
+	int count = 0;
 	RECT clipRect = null;
-	int index = 0, count = 0;
 	if (hwndHeader != 0) {
-		index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		if (count != 0 && !printClient) {
 			clipRect = new RECT ();
@@ -910,8 +909,6 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		}
 	}
 	int clrText = -1, clrTextBk = -1;
-	int hFont = item.cellFont != null ? item.cellFont [index] : -1;
-	if (hFont == -1) hFont = item.font;
 	if (OS.IsWindowEnabled (handle)) {
 		clrText = item.cellForeground != null ? item.cellForeground [index] : -1;
 		if (clrText == -1) clrText = item.foreground;
@@ -928,7 +925,6 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			}
 		}
 	}
-	int hDC = nmcd.hdc;
 	boolean selected = isItemSelected (nmcd);
 	if (OS.IsWindowVisible (handle) && nmcd.left < nmcd.right && nmcd.top < nmcd.bottom) {
 		if (hFont != -1) OS.SelectObject (hDC, hFont);
