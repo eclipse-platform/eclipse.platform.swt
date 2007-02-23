@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1065;
-int OS_nativeFunctionCallCount[1065];
+int OS_nativeFunctionCount = 1076;
+int OS_nativeFunctionCallCount[1076];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -37,6 +37,13 @@ char * OS_nativeFunctionNames[] = {
 	"BindingExpression_1UpdateTarget",
 	"Binding_1Converter",
 	"Binding_1ConverterParameter",
+	"BitmapDecoder_1Create",
+	"BitmapDecoder_1Frames",
+	"BitmapEncoder_1Frames",
+	"BitmapEncoder_1Save",
+	"BitmapFrameCollection_1Add",
+	"BitmapFrameCollection_1default",
+	"BitmapFrame_1Create",
 	"BitmapImage_1BeginInit",
 	"BitmapImage_1CreateOptions",
 	"BitmapImage_1EndInit",
@@ -868,6 +875,7 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1MouseMove",
 	"UIElement_1MouseUp",
 	"UIElement_1MouseWheel",
+	"UIElement_1MoveFocus",
 	"UIElement_1OpacityProperty",
 	"UIElement_1PreviewGotKeyboardFocus",
 	"UIElement_1PreviewLostKeyboardFocus",
@@ -996,6 +1004,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1ListViewItem",
 	"gcnew_1Matrix",
 	"gcnew_1MatrixTransform",
+	"gcnew_1MemoryStream",
 	"gcnew_1Menu",
 	"gcnew_1MenuItem",
 	"gcnew_1MouseButtonEventHandler",
@@ -1066,6 +1075,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1TextTabProperties",
 	"gcnew_1TextTabPropertiesCollection",
 	"gcnew_1Thickness",
+	"gcnew_1TiffBitmapEncoder",
 	"gcnew_1TimeSpan",
 	"gcnew_1TimerHandler",
 	"gcnew_1ToggleButton",
@@ -1073,6 +1083,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1ToolBarTray",
 	"gcnew_1TransformGroup",
 	"gcnew_1TranslateTransform",
+	"gcnew_1TraversalRequest",
 	"gcnew_1TreeView",
 	"gcnew_1TreeViewItem",
 	"gcnew_1Typeface",

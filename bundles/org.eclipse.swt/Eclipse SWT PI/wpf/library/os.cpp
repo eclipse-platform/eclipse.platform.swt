@@ -253,6 +253,93 @@ JNIEXPORT void JNICALL OS_NATIVE(Binding_1ConverterParameter)
 }
 #endif
 
+#ifndef NO_BitmapDecoder_1Create
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(BitmapDecoder_1Create)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT jint JNICALL OS_NATIVE(BitmapDecoder_1Create)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BitmapDecoder_1Create_FUNC);
+	rc = (jint)TO_HANDLE(BitmapDecoder::Create((System::IO::Stream^)TO_OBJECT(arg0), (BitmapCreateOptions)arg1, (BitmapCacheOption)arg2));
+	OS_NATIVE_EXIT(env, that, BitmapDecoder_1Create_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_BitmapDecoder_1Frames
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(BitmapDecoder_1Frames)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(BitmapDecoder_1Frames)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BitmapDecoder_1Frames_FUNC);
+	rc = (jint)TO_HANDLE(((BitmapDecoder^)TO_OBJECT(arg0))->Frames);
+	OS_NATIVE_EXIT(env, that, BitmapDecoder_1Frames_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_BitmapEncoder_1Frames
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(BitmapEncoder_1Frames)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(BitmapEncoder_1Frames)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BitmapEncoder_1Frames_FUNC);
+	rc = (jint)TO_HANDLE(((BitmapEncoder^)TO_OBJECT(arg0))->Frames);
+	OS_NATIVE_EXIT(env, that, BitmapEncoder_1Frames_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_BitmapEncoder_1Save
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(BitmapEncoder_1Save)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(BitmapEncoder_1Save)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, BitmapEncoder_1Save_FUNC);
+	((BitmapEncoder^)TO_OBJECT(arg0))->Save((System::IO::Stream^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, BitmapEncoder_1Save_FUNC);
+}
+#endif
+
+#ifndef NO_BitmapFrameCollection_1Add
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(BitmapFrameCollection_1Add)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(BitmapFrameCollection_1Add)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, BitmapFrameCollection_1Add_FUNC);
+	((System::Collections::Generic::IList<BitmapFrame^>^)TO_OBJECT(arg0))->Add((BitmapFrame^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, BitmapFrameCollection_1Add_FUNC);
+}
+#endif
+
+#ifndef NO_BitmapFrameCollection_1default
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(BitmapFrameCollection_1default)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(BitmapFrameCollection_1default)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BitmapFrameCollection_1default_FUNC);
+	rc = (jint)TO_HANDLE(((System::Collections::Generic::IList<BitmapFrame^>^)TO_OBJECT(arg0))->default[arg1]);
+	OS_NATIVE_EXIT(env, that, BitmapFrameCollection_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_BitmapFrame_1Create
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(BitmapFrame_1Create)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(BitmapFrame_1Create)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BitmapFrame_1Create_FUNC);
+	rc = (jint)TO_HANDLE(BitmapFrame::Create((BitmapSource^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, BitmapFrame_1Create_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_BitmapImage_1BeginInit
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(BitmapImage_1BeginInit)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL OS_NATIVE(BitmapImage_1BeginInit)
@@ -10347,6 +10434,17 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1MouseWheel)
 }
 #endif
 
+#ifndef NO_UIElement_1MoveFocus
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1MoveFocus)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1MoveFocus)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1MoveFocus_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->MoveFocus((TraversalRequest^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1MoveFocus_FUNC);
+}
+#endif
+
 #ifndef NO_UIElement_1OpacityProperty
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1OpacityProperty)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1OpacityProperty)
@@ -11864,6 +11962,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1MatrixTransform)
 }
 #endif
 
+#ifndef NO_gcnew_1MemoryStream
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1MemoryStream)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1MemoryStream)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1MemoryStream_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::IO::MemoryStream());
+	OS_NATIVE_EXIT(env, that, gcnew_1MemoryStream_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gcnew_1Menu
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Menu)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Menu)
@@ -12492,6 +12603,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Thickness)
 }
 #endif
 
+#ifndef NO_gcnew_1TiffBitmapEncoder
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TiffBitmapEncoder)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TiffBitmapEncoder)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1TiffBitmapEncoder_FUNC);
+	rc = (jint)TO_HANDLE(gcnew TiffBitmapEncoder());
+	OS_NATIVE_EXIT(env, that, gcnew_1TiffBitmapEncoder_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gcnew_1TimeSpan
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TimeSpan)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TimeSpan)
@@ -12566,6 +12690,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TranslateTransform)
 	OS_NATIVE_ENTER(env, that, gcnew_1TranslateTransform_FUNC);
 	rc = (jint)TO_HANDLE(gcnew TranslateTransform(arg0, arg1));
 	OS_NATIVE_EXIT(env, that, gcnew_1TranslateTransform_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1TraversalRequest
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TraversalRequest)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TraversalRequest)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1TraversalRequest_FUNC);
+	rc = (jint)TO_HANDLE(gcnew TraversalRequest((FocusNavigationDirection)arg0));
+	OS_NATIVE_EXIT(env, that, gcnew_1TraversalRequest_FUNC);
 	return rc;
 }
 #endif

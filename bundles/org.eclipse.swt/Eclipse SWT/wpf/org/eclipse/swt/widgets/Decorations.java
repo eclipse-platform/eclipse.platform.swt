@@ -241,26 +241,24 @@ void closeWidget () {
 	if (event.doit && !isDisposed ()) dispose ();
 }
 
-int compare (ImageData data1, ImageData data2, int width, int height, int depth) {
-	int value1 = Math.abs (data1.width - width), value2 = Math.abs (data2.width - width);
-	if (value1 == value2) {
-		int transparent1 = data1.getTransparencyType ();
-		int transparent2 = data2.getTransparencyType ();
-		if (transparent1 == transparent2) {
-			if (data1.depth == data2.depth) return 0;
-			return data1.depth > data2.depth && data1.depth <= depth ? -1 : 1;
+int compare (ImageData data1, ImageData data2) {
+	int transparent1 = data1.getTransparencyType ();
+	int transparent2 = data2.getTransparencyType ();
+	if (transparent1 == transparent2) {
+		if (data1.depth != data2.depth) {
+			return data1.depth > data2.depth ? -1 : 1;
 		}
-		//if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-			if (transparent1 == SWT.TRANSPARENCY_ALPHA) return -1;
-			if (transparent2 == SWT.TRANSPARENCY_ALPHA) return 1;
-		//}
-		if (transparent1 == SWT.TRANSPARENCY_MASK) return -1;
-		if (transparent2 == SWT.TRANSPARENCY_MASK) return 1;
-		if (transparent1 == SWT.TRANSPARENCY_PIXEL) return -1;
-		if (transparent2 == SWT.TRANSPARENCY_PIXEL) return 1;
-		return 0;
+		if (data1.width * data1.height != data2.width * data2.height) {
+			return (data1.width * data1.height) > (data2.width * data2.height) ? -1 : 1;
+		}
 	}
-	return value1 < value2 ? -1 : 1;
+	if (transparent1 == SWT.TRANSPARENCY_ALPHA) return -1;
+	if (transparent2 == SWT.TRANSPARENCY_ALPHA) return 1;
+	if (transparent1 == SWT.TRANSPARENCY_MASK) return -1;
+	if (transparent2 == SWT.TRANSPARENCY_MASK) return 1;
+	if (transparent1 == SWT.TRANSPARENCY_PIXEL) return -1;
+	if (transparent2 == SWT.TRANSPARENCY_PIXEL) return 1;
+	return 0;
 }
 
 Control computeTabGroup () {
@@ -632,7 +630,42 @@ public void setImage (Image image) {
 }
 
 void setImages (Image image, Image [] images) {
-	//TODO
+	int encoder = OS.gcnew_TiffBitmapEncoder ();
+	int frames = OS.BitmapEncoder_Frames (encoder);
+	if (image != null) {
+		int frame = OS.BitmapFrame_Create (image.handle);
+		OS.BitmapFrameCollection_Add (frames, frame);
+		OS.GCHandle_Free (frame);
+	}
+	if (images != null) {
+		if (images.length > 1) {
+			ImageData [] datas = null;
+			Image [] bestImages = new Image [images.length];
+			System.arraycopy (images, 0, bestImages, 0, images.length);
+			datas = new ImageData [images.length];
+			for (int i=0; i<datas.length; i++) {
+				datas [i] = images [i].getImageData ();
+			}
+			images = bestImages;
+			sort (images, datas);
+		}
+		for (int i = 0; i < images.length; i++) {
+			int frame = OS.BitmapFrame_Create (images [i].handle);
+			OS.BitmapFrameCollection_Add (frames, frame);
+			OS.GCHandle_Free (frame);
+		}
+	}
+	OS.GCHandle_Free (frames);
+	int stream = OS.gcnew_MemoryStream ();
+	OS.BitmapEncoder_Save (encoder, stream);
+	OS.GCHandle_Free (encoder);
+	int decoder = OS.BitmapDecoder_Create (stream, OS.BitmapCreateOptions_None, OS.BitmapCacheOption_Default);
+	frames = OS.BitmapDecoder_Frames (decoder);
+	int icon = OS.BitmapFrameCollection_default (frames, 0);
+	OS.GCHandle_Free (frames);
+	OS.GCHandle_Free (decoder);
+	OS.Window_Icon(shellHandle, icon);
+	OS.GCHandle_Free (icon);
 }
 
 /**
@@ -798,14 +831,14 @@ public void setText (String string) {
 	OS.GCHandle_Free (strPtr);
 }
 
-void sort (Image [] images, ImageData [] datas, int width, int height, int depth) {
+void sort (Image [] images, ImageData [] datas) {
 	/* Shell Sort from K&R, pg 108 */
 	int length = images.length;
 	if (length <= 1) return;
 	for (int gap=length/2; gap>0; gap/=2) {
 		for (int i=gap; i<length; i++) {
 			for (int j=i-gap; j>=0; j-=gap) {
-		   		if (compare (datas [j], datas [j + gap], width, height, depth) >= 0) {
+		   		if (compare (datas [j], datas [j + gap]) >= 0) {
 					Image swap = images [j];
 					images [j] = images [j + gap];
 					images [j + gap] = swap;

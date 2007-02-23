@@ -269,7 +269,9 @@ public class OS extends C {
     public static final int WindowState_Minimized = 1;
     public static final int WindowState_Maximized = 2;
     
+    public static final int BitmapCreateOptions_None = 0;
     public static final int BitmapCreateOptions_PreservePixelFormat = 1;
+    public static final int BitmapCacheOption_Default = 0;
     
     public static final int MessageBoxButton_OK = 0;
     public static final int MessageBoxButton_OKCancel = 1;
@@ -301,6 +303,11 @@ public class OS extends C {
     public static final int DispatcherPriority_Send = 10;
     
     public static final int ScrollBarVisibility_Visible = 3;
+ 
+ 	public static final int FocusNavigationDirection_Next = 0;
+	public static final int FocusNavigationDirection_Previous = 1;
+	public static final int FocusNavigationDirection_First = 2;
+	public static final int FocusNavigationDirection_Last = 3;
 
 	/** GDI+ constants */
 	public static final int PixelFormat_Format24bppRgb = 137224;
@@ -408,6 +415,13 @@ public static final native void Binding_Converter(int sender, int value);
 public static final native void Binding_ConverterParameter(int sender, int value);
 public static final native void BindingExpression_UpdateTarget(int sender);
 public static final native int Bitmap_GetHicon(int sender);
+public static final native int BitmapDecoder_Create(int stream, int createOptions, int cacheOption);
+public static final native int BitmapDecoder_Frames(int sender);
+public static final native int BitmapEncoder_Frames(int sender);
+public static final native void BitmapEncoder_Save(int sender, int stream);
+public static final native int BitmapFrame_Create(int source);
+public static final native void BitmapFrameCollection_Add(int sender, int frame);
+public static final native int BitmapFrameCollection_default(int sender, int index);
 public static final native void BitmapImage_BeginInit(int sender);
 public static final native void BitmapImage_CreateOptions(int sender, int value);
 public static final native void BitmapImage_EndInit(int sender);
@@ -1219,6 +1233,7 @@ public static final native void UIElement_MouseLeave(int sender, int handler);
 public static final native void UIElement_MouseMove(int sender, int handler);
 public static final native void UIElement_MouseWheel(int sender, int handler);
 public static final native void UIElement_MouseUp(int sender, int handler);
+public static final native void UIElement_MoveFocus(int sender, int request);
 public static final native int UIElement_OpacityProperty();
 public static final native void UIElement_PreviewMouseDown(int sender, int handler);
 public static final native void UIElement_PreviewMouseMove(int sender, int handler);
@@ -1341,6 +1356,7 @@ public static final native int gcnew_ListView();
 public static final native int gcnew_ListViewItem();
 public static final native int gcnew_Matrix(double m11, double m12, double m21, double m22, double offsetX, double offsetY);
 public static final native int gcnew_MatrixTransform(int matrix);
+public static final native int gcnew_MemoryStream();
 public static final native int gcnew_Menu();
 public static final native int gcnew_MenuItem();
 public static final native int gcnew_OpenFileDialog();
@@ -1396,6 +1412,7 @@ public static final native int gcnew_TextBox();
 public static final native int gcnew_TextCharacters(int string, int offsetToFirstChar, int length, int textRunProperties);
 public static final native int gcnew_TextEndOfLine(int length, int textRunProperties);
 public static final native int gcnew_TextEndOfParagraph(int length, int textRunProperties);
+public static final native int gcnew_TiffBitmapEncoder();
 public static final native int gcnew_TimeSpan(long ticks);
 public static final native int gcnew_Thickness(double left, double top, double right, double bottom);
 public static final native int gcnew_ToggleButton();
@@ -1403,6 +1420,7 @@ public static final native int gcnew_ToolBar();
 public static final native int gcnew_ToolBarTray();
 public static final native int gcnew_TransformGroup();
 public static final native int gcnew_TranslateTransform(double offsetX, double offsetY);
+public static final native int gcnew_TraversalRequest(int direction);
 public static final native int gcnew_TreeView();
 public static final native int gcnew_TreeViewItem();
 public static final native int gcnew_Typeface(int fontFamily, int style, int weight, int stretch);
