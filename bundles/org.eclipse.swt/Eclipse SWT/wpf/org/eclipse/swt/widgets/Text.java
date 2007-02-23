@@ -787,12 +787,14 @@ void HandlePreviewExecutedRoutedEvent (int sender, int e) {
 	*/
 	if (!hooks (SWT.Verify)) return;
 	if (!doVerify) return;
-	String text = verifyText (input);
+	int start = OS.TextBox_SelectionStart (handle);
+	int end = start + OS.TextBox_SelectionLength (handle);
+	String text = verifyText (input, start, end, true);
 	if (text != null && !text.equals (input)) {
 		int strPtr = createDotNetString (text, false);
 		OS.TextBox_SelectedText (handle, strPtr);
 		OS.GCHandle_Free (strPtr);
-		int start = OS.TextBox_SelectionStart (handle);
+		start = OS.TextBox_SelectionStart (handle);
 		int length = OS.TextBox_SelectionLength (handle);
 		OS.TextBox_Select (handle, start+length, 0);
 		OS.TextBox_SelectionLength (handle, 0);
@@ -806,12 +808,14 @@ void HandlePreviewTextInput (int sender, int e) {
 	int textPtr = OS.TextCompositionEventArgs_Text (e);
 	String input = createJavaString(textPtr);
 	OS.GCHandle_Free (textPtr);
-	String text = verifyText (input);
+	int start = OS.TextBox_SelectionStart (handle);
+	int end = start + OS.TextBox_SelectionLength (handle);
+	String text = verifyText (input, start, end, true);
 	if (text != null && !text.equals (input)) {
 		textPtr = createDotNetString (text, false);
 		OS.TextBox_SelectedText (handle, textPtr);
 		OS.GCHandle_Free (textPtr);
-		int start = OS.TextBox_SelectionStart (handle);
+		start = OS.TextBox_SelectionStart (handle);
 		int length = OS.TextBox_SelectionLength (handle);
 		OS.TextBox_Select (handle, start+length, 0);
 		OS.TextBox_SelectionLength (handle, 0);
@@ -870,7 +874,9 @@ public void insert (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.PASSWORD) != 0) return;
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		string = verifyText (string);
+		int start = OS.TextBox_SelectionStart (handle);
+		int end = start + OS.TextBox_SelectionLength (handle);
+		string = verifyText (string, start, end, false);
 		if (string == null) return;
 	}
 	int strPtr = createDotNetString (string, false);
@@ -1227,7 +1233,7 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		string = verifyText (string);
+		string = verifyText (string, 0, getCharCount (), false);
 		if (string == null) return;
 	}
 	int ptr = createDotNetString (string, false);
@@ -1337,21 +1343,23 @@ int traversalCode (int key, int event) {
 	return bits;
 }
 
-String verifyText (String text) {
-	int start = OS.TextBox_SelectionStart (handle);
-	int length = OS.TextBox_SelectionLength (handle);
+String verifyText (String string, int start, int end, boolean keyEvent) {
 	Event event = new Event ();
-	event.text = text;
+	event.text = string;
 	event.start = start;
+	event.end = end;
+	if (keyEvent && string.length () == 1) {
+		event.character = string.charAt (0);
+		setInputState (event, SWT.KeyDown, 0, 0);
+	}
 	/*
-	* FIXME: end can be greater than start+length+1
-	* when Deleting special characters. 
-	* Note that backspace deletes one character at 
-	* a time. 
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the verify
+	* event.  If this happens, answer null to cancel
+	* the operation.
 	*/
-	event.end = start+length+1;
 	sendEvent (SWT.Verify, event);
-	if (!event.doit) return null;
+	if (!event.doit || isDisposed ()) return null;
 	return event.text;
 }
 
