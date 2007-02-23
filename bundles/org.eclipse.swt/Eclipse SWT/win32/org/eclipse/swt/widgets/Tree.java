@@ -466,7 +466,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				drawItem = drawImage = drawText = false;
 				if (findImageControl () != null) {
 					if (explorerTheme) {
-						if (OS.IsWindowEnabled (handle)) {
+						if (OS.IsWindowEnabled (handle) && !hooks (SWT.EraseItem)) {
 							Image image = null;
 							if (index == 0) {
 								image = item.image;
