@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1064;
-int OS_nativeFunctionCallCount[1064];
+int OS_nativeFunctionCount = 1065;
+int OS_nativeFunctionCallCount[1065];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -312,6 +312,7 @@ char * OS_nativeFunctionNames[] = {
 	"FrameworkElement_1Resources__I",
 	"FrameworkElement_1Resources__II",
 	"FrameworkElement_1SizeChanged",
+	"FrameworkElement_1StyleProperty",
 	"FrameworkElement_1Tag__I",
 	"FrameworkElement_1Tag__II",
 	"FrameworkElement_1ToolTip__I",
@@ -368,9 +369,9 @@ char * OS_nativeFunctionNames[] = {
 	"GridViewColumn_1Width__I",
 	"GridViewColumn_1Width__ID",
 	"GridViewColumn_1WidthProperty",
-	"GridViewHeaderRowPresenter_1ColumnsProperty",
 	"GridViewHeaderRowPresenter_1typeid",
 	"GridViewRowPresenterBase_1Columns",
+	"GridViewRowPresenterBase_1ColumnsProperty",
 	"GridViewRowPresenter_1Content__I",
 	"GridViewRowPresenter_1Content__II",
 	"GridViewRowPresenter_1typeid",

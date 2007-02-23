@@ -656,6 +656,7 @@ public static final native int FrameworkElement_MarginProperty();
 public static final native int FrameworkElement_Name(int sender);
 public static final native int FrameworkElement_NameProperty();
 public static final native int FrameworkElement_Parent(int sender);
+public static final native int FrameworkElement_StyleProperty();
 public static final native int FrameworkElement_Tag(int sender);
 public static final native void FrameworkElement_Tag(int sender, int tag);
 public static final native int FrameworkElement_typeid();
@@ -734,7 +735,7 @@ public static final native int GridViewColumnCollection_IndexOf(int sender, int 
 public static final native void GridViewColumnCollection_Insert(int sender, int index, int value);
 public static final native boolean GridViewColumnCollection_Remove(int sender, int value);
 public static final native void GridViewColumnHeader_Content(int sender, int value);
-public static final native int GridViewHeaderRowPresenter_ColumnsProperty();
+public static final native int GridViewRowPresenterBase_ColumnsProperty();
 public static final native int GridViewHeaderRowPresenter_typeid();
 public static final native void GridViewRowPresenter_Content(int sender, int value);
 public static final native int GridViewRowPresenter_Content(int sender);

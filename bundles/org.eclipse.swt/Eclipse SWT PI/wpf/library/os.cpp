@@ -3636,6 +3636,19 @@ JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1SizeChanged)
 }
 #endif
 
+#ifndef NO_FrameworkElement_1StyleProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1StyleProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1StyleProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1StyleProperty_FUNC);
+	rc = (jint)TO_HANDLE(FrameworkElement::StyleProperty);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1StyleProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_FrameworkElement_1Tag__I
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Tag__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Tag__I)
@@ -4314,19 +4327,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GridViewColumn_1WidthProperty)
 }
 #endif
 
-#ifndef NO_GridViewHeaderRowPresenter_1ColumnsProperty
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(GridViewHeaderRowPresenter_1ColumnsProperty)(JNIEnv *env, jclass that);
-JNIEXPORT jint JNICALL OS_NATIVE(GridViewHeaderRowPresenter_1ColumnsProperty)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GridViewHeaderRowPresenter_1ColumnsProperty_FUNC);
-	rc = (jint)TO_HANDLE(GridViewHeaderRowPresenter::ColumnsProperty);
-	OS_NATIVE_EXIT(env, that, GridViewHeaderRowPresenter_1ColumnsProperty_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GridViewHeaderRowPresenter_1typeid
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(GridViewHeaderRowPresenter_1typeid)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(GridViewHeaderRowPresenter_1typeid)
@@ -4348,6 +4348,19 @@ JNIEXPORT void JNICALL OS_NATIVE(GridViewRowPresenterBase_1Columns)
 	OS_NATIVE_ENTER(env, that, GridViewRowPresenterBase_1Columns_FUNC);
 	((GridViewRowPresenterBase^)TO_OBJECT(arg0))->Columns = ((GridViewColumnCollection^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, GridViewRowPresenterBase_1Columns_FUNC);
+}
+#endif
+
+#ifndef NO_GridViewRowPresenterBase_1ColumnsProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(GridViewRowPresenterBase_1ColumnsProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(GridViewRowPresenterBase_1ColumnsProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GridViewRowPresenterBase_1ColumnsProperty_FUNC);
+	rc = (jint)TO_HANDLE(GridViewRowPresenterBase::ColumnsProperty);
+	OS_NATIVE_EXIT(env, that, GridViewRowPresenterBase_1ColumnsProperty_FUNC);
+	return rc;
 }
 #endif
 

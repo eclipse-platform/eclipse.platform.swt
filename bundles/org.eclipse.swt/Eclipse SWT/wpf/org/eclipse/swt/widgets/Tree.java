@@ -86,6 +86,58 @@ public class Tree extends Composite {
 	static final int FOREGROUND_NOTIFY = 2;
 	static final int IMAGE_NOTIFY = 1;
 	static final int TEXT_NOTIFY = 0;
+	
+	static String scrollViewerStyle = "<Style TargetType=\"ScrollViewer\" " +
+			"xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
+			"xmlns:s=\"clr-namespace:System;assembly=mscorlib\" " +
+			"xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">" +
+		"<Setter Property=\"UIElement.Focusable\" Value=\"False\"/>" +
+		"<Setter Property=\"Control.Template\">" +
+			"<Setter.Value>" +
+				"<ControlTemplate TargetType=\"ScrollViewer\">" +
+					"<Grid Background=\"{TemplateBinding Panel.Background}\" SnapsToDevicePixels=\"True\">" +
+						"<Grid.ColumnDefinitions>" +
+							"<ColumnDefinition Width=\"*\" />" +
+							"<ColumnDefinition Width=\"Auto\" />" +
+						"</Grid.ColumnDefinitions>" +
+						"<Grid.RowDefinitions>" +
+							"<RowDefinition Height=\"*\" />" +
+							"<RowDefinition Height=\"Auto\" />" +
+						"</Grid.RowDefinitions>" +
+						"<DockPanel Margin=\"{TemplateBinding Control.Padding}\">" +
+							"<ScrollViewer HorizontalScrollBarVisibility=\"Hidden\" VerticalScrollBarVisibility=\"Hidden\" Focusable=\"False\" DockPanel.Dock=\"Top\">" +
+								"<GridViewHeaderRowPresenter Name=\"SWT_PART_HEADER\" Margin=\"2,0,2,0\" Visibility=\"Collapsed\" ColumnHeaderToolTip=\"{x:Null}\" " +
+										"ColumnHeaderContainerStyle=\"{x:Null}\" SnapsToDevicePixels=\"{TemplateBinding UIElement.SnapsToDevicePixels}\" " +
+										"AllowsColumnReorder=\"True\" ColumnHeaderTemplate=\"{x:Null}\" ColumnHeaderContextMenu=\"{x:Null}\">" +
+									"<GridViewHeaderRowPresenter.Columns>" +
+										"<TemplateBinding Property=\"GridViewHeaderRowPresenter.Columns\"/>" +
+									"</GridViewHeaderRowPresenter.Columns>" +
+								"</GridViewHeaderRowPresenter>" +
+							"</ScrollViewer>" +
+							"<ScrollContentPresenter VirtualizingStackPanel.IsVirtualizing=\"True\" CanVerticallyScroll=\"False\" " +
+									"CanHorizontallyScroll=\"False\" Name=\"PART_ScrollContentPresenter\" " +
+									"SnapsToDevicePixels=\"{TemplateBinding UIElement.SnapsToDevicePixels}\" " +
+									"ContentTemplate=\"{TemplateBinding ContentControl.ContentTemplate}\" " +
+									"CanContentScroll=\"{TemplateBinding ScrollViewer.CanContentScroll}\" " +
+									"Content=\"{TemplateBinding ContentControl.Content}\" KeyboardNavigation.DirectionalNavigation=\"Local\" />" +
+						"</DockPanel>" +
+						"<ScrollBar Value=\"{TemplateBinding HorizontalOffset}\" Maximum=\"{TemplateBinding ScrollViewer.ScrollableWidth}\" " +
+								"Visibility=\"{TemplateBinding ScrollViewer.ComputedHorizontalScrollBarVisibility}\" Name=\"PART_HorizontalScrollBar\" " +
+								"Cursor=\"Arrow\"  Minimum=\"0\"  Orientation=\"Horizontal\"  Grid.Row=\"1\" />" +
+						"<ScrollBar Value=\"{TemplateBinding VerticalOffset}\" Maximum=\"{TemplateBinding ScrollViewer.ScrollableHeight}\" " +
+								"Visibility=\"{TemplateBinding ScrollViewer.ComputedVerticalScrollBarVisibility}\"  Name=\"PART_VerticalScrollBar\" " +
+								"Cursor=\"Arrow\" Minimum=\"0\" Orientation=\"Vertical\" Grid.Column=\"1\" />" +
+						"<DockPanel Background=\"{x:Null}\" LastChildFill=\"False\" Grid.Column=\"1\" Grid.Row=\"1\">" +
+							"<Rectangle Width=\"1\" Visibility=\"{TemplateBinding ScrollViewer.ComputedVerticalScrollBarVisibility}\" " +
+									"Fill=\"#FFFFFFFF\" DockPanel.Dock=\"Left\" />" +
+							"<Rectangle Height=\"1\" Visibility=\"{TemplateBinding ScrollViewer.ComputedHorizontalScrollBarVisibility}\" " +
+									"Fill=\"#FFFFFFFF\" DockPanel.Dock=\"Top\" />" +
+						"</DockPanel>" +
+					"</Grid>" +
+				"</ControlTemplate>" +
+			"</Setter.Value>" +
+		"</Setter>" +
+   	"</Style>";
 
 /**
  * Constructs a new instance of this class given its parent
@@ -394,40 +446,33 @@ int createControlTemplate () {
 	int template = OS.gcnew_ControlTemplate ();
 	int borderType = OS.Border_typeid ();
 	int borderNode = OS.gcnew_FrameworkElementFactory (borderType);
-	int dockPanelType = OS.DockPanel_typeid ();
-	int dockPanelNode = OS.gcnew_FrameworkElementFactory (dockPanelType);
-	int headerType = OS.GridViewHeaderRowPresenter_typeid ();
-	int nameString = createDotNetString (HEADER_PART_NAME, false);
-	int headerNode = OS.gcnew_FrameworkElementFactory (headerType, nameString);
 	int scrollViewerType = OS.ScrollViewer_typeid ();
 	int scrollViewerName = createDotNetString (SCROLLVIEWER_PART_NAME, false);
 	int scrollViewerNode = OS.gcnew_FrameworkElementFactory (scrollViewerType, scrollViewerName);
-	int columnsProperty = OS.GridViewHeaderRowPresenter_ColumnsProperty ();
-	OS.FrameworkElementFactory_SetValue (headerNode, columnsProperty, columns);
-	int visibilityProperty = OS.UIElement_VisibilityProperty ();
-	OS.FrameworkElementFactory_SetValueVisibility (headerNode, visibilityProperty, headerVisibility);
-	int dockProperty = OS.DockPanel_DockProperty ();
-	OS.FrameworkElementFactory_SetValueDock (headerNode, dockProperty, OS.Dock_Top);
 	int itemsPresenterType = OS.ItemsPresenter_typeid ();
 	int itemsPresenterNode = OS.gcnew_FrameworkElementFactory (itemsPresenterType);
 	OS.FrameworkElementFactory_AppendChild (borderNode, scrollViewerNode);
-	OS.FrameworkElementFactory_AppendChild (scrollViewerNode, dockPanelNode);
-	OS.FrameworkElementFactory_AppendChild (dockPanelNode, headerNode);
-	OS.FrameworkElementFactory_AppendChild (dockPanelNode, itemsPresenterNode);
+	OS.FrameworkElementFactory_AppendChild (scrollViewerNode, itemsPresenterNode);
+	int ptr = createDotNetString(scrollViewerStyle, false);
+	int stringReader = OS.gcnew_StringReader (ptr);
+	int xmlReader = OS.XmlReader_Create (stringReader);
+	int xamlStyle = OS.XamlReader_Load (xmlReader);
+	int styleProperty = OS.FrameworkElement_StyleProperty();
+	OS.FrameworkElementFactory_SetValue (scrollViewerNode, styleProperty, xamlStyle);
+	int columnsProperty = OS.GridViewRowPresenterBase_ColumnsProperty ();
+	OS.FrameworkElementFactory_SetValue (scrollViewerNode, columnsProperty, columns);
 	OS.FrameworkTemplate_VisualTree (template, borderNode);
+	OS.GCHandle_Free (ptr);
+	OS.GCHandle_Free (stringReader);
+	OS.GCHandle_Free (xmlReader);
+	OS.GCHandle_Free (styleProperty);
+	OS.GCHandle_Free (columnsProperty);
+	OS.GCHandle_Free (xamlStyle);
 	OS.GCHandle_Free (scrollViewerType);
 	OS.GCHandle_Free (scrollViewerName);
 	OS.GCHandle_Free (scrollViewerNode);
-	OS.GCHandle_Free (nameString);
 	OS.GCHandle_Free (borderType);
 	OS.GCHandle_Free (borderNode);
-	OS.GCHandle_Free (dockPanelType);
-	OS.GCHandle_Free (dockPanelNode);
-	OS.GCHandle_Free (headerType);
-	OS.GCHandle_Free (headerNode);
-	OS.GCHandle_Free (columnsProperty);
-	OS.GCHandle_Free (visibilityProperty);
-	OS.GCHandle_Free (dockProperty);
 	OS.GCHandle_Free (itemsPresenterType);
 	OS.GCHandle_Free (itemsPresenterNode);
     return template;
@@ -1922,13 +1967,21 @@ public void setHeaderVisible (boolean show) {
 	checkWidget ();
 	headerVisibility = show ? OS.Visibility_Visible : OS.Visibility_Collapsed;
 	int template = OS.Control_Template (handle);
-	int nameString = createDotNetString (HEADER_PART_NAME, false);
-	int header = OS.FrameworkTemplate_FindName (template, nameString, handle);
-	if (header != 0) {
-		OS.UIElement_Visibility (header, headerVisibility);
-		OS.GCHandle_Free (header);
+	int scrollViewerName = createDotNetString (SCROLLVIEWER_PART_NAME, false);
+	int scrollViewer = OS.FrameworkTemplate_FindName (template, scrollViewerName, handle);
+	if (scrollViewer != 0) {
+		int scrollViewerTemplate = OS.Control_Template(scrollViewer);
+		int headerName = createDotNetString(HEADER_PART_NAME, false);
+		int header = OS.FrameworkTemplate_FindName (scrollViewerTemplate, headerName, scrollViewer);
+		if (header != 0) {
+			OS.UIElement_Visibility (header, headerVisibility);
+			OS.GCHandle_Free (header);
+		}
+		OS.GCHandle_Free (scrollViewerTemplate);
+		OS.GCHandle_Free (headerName);
+		OS.GCHandle_Free (scrollViewer);
 	}
-	OS.GCHandle_Free (nameString);
+	OS.GCHandle_Free (scrollViewerName);
 	OS.GCHandle_Free (template);
 }
 
