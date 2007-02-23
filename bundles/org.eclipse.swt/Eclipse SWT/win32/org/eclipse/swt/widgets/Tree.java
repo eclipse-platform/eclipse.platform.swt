@@ -550,9 +550,13 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			}
 			if (explorerTheme) {
 				if (selected || (nmcd.uItemState & OS.CDIS_HOT) != 0) {
-					drawBackground = false;
-					if ((style & SWT.FULL_SELECTION) == 0) {
-						if (index == 0 && !hooks (SWT.EraseItem)) drawText = false;
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						drawBackground = false;
+					} else {
+						if (i == 0) {
+							drawBackground = false;
+							if (!hooks (SWT.EraseItem)) drawText = false;
+						}
 					}
 				}
 			}
@@ -855,8 +859,9 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						}
 						OS.DrawFocusRect (hDC, focusRect);
 					} else {
-						RECT focusRect = item.getBounds (0, true, false, false, false, false, hDC);
-						RECT clipRect = item.getBounds (0, true, false, false, false, true, hDC);
+						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+						RECT focusRect = item.getBounds (index, true, false, false, false, false, hDC);
+						RECT clipRect = item.getBounds (index, true, false, false, false, true, hDC);
 						OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
 						OS.DrawFocusRect (hDC, focusRect);
 						OS.SelectClipRgn (hDC, 0);
