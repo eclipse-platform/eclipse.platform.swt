@@ -23,6 +23,7 @@ import org.eclipse.swt.layout.*;
 class Mozilla extends WebBrowser {
 	int /*long*/ embedHandle;
 	nsIWebBrowser webBrowser;
+	Object webBrowserObject;
 	MozillaDelegate delegate;
 
 	/* Interfaces for this Mozilla embedding notification */
@@ -1189,12 +1190,15 @@ public String getUrl () {
 
 public Object getWebBrowser () {
 	if ((browser.getStyle () & SWT.MOZILLA) == 0) return null;
+	if (webBrowserObject != null) return webBrowserObject;
+
 	try {
 		Class clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
 		Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
 		Object mozilla = method.invoke (null, new Object[0]);
 		method = clazz.getMethod ("wrapXPCOMObject", new Class[] {Long.TYPE, Class.forName ("java.lang.String")}); //$NON-NLS-1$ //$NON-NLS-2$
-		return method.invoke (mozilla, new Object[] {new Long (webBrowser.getAddress ()), nsIWebBrowser.NS_IWEBBROWSER_IID_STR});
+		webBrowserObject = method.invoke (mozilla, new Object[] {new Long (webBrowser.getAddress ()), nsIWebBrowser.NS_IWEBBROWSER_IID_STR});
+		return webBrowserObject;
 	} catch (ClassNotFoundException e) {
 	} catch (NoSuchMethodException e) {
 	} catch (IllegalArgumentException e) {
@@ -1253,11 +1257,16 @@ void onDispose (Display display) {
 	
 	Release ();
 	webBrowser.Release ();
-	
+	webBrowser = null;
+	webBrowserObject = null;
+
 	if (tip != null && !tip.isDisposed ()) tip.dispose ();
 	tip = null;
+	location = size = null;
 
 	delegate.onDispose (embedHandle);
+	delegate = null;
+
 	embedHandle = 0;
 	BrowserCount--;
 }
