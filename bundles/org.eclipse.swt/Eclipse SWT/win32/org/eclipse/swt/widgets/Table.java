@@ -562,9 +562,7 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 
 LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (ignoreCustomDraw) return null;
-	if (nmcd.left == nmcd.right) {
-		return new LRESULT (OS.CDRF_DODEFAULT);
-	}
+	if (nmcd.left == nmcd.right) return new LRESULT (OS.CDRF_DODEFAULT);
 	int hDC = nmcd.hdc;
 	if (ignoreDrawForeground) OS.RestoreDC (hDC, -1);
 	if (OS.IsWindowVisible (handle)) {
