@@ -177,7 +177,7 @@ public void paint(GC gc, int width, int height) {
  *            index is used to determine the appropriate font face
  */
 static String getPlatformFontFace(int index) {
-	if(SWT.getPlatform() == "win32") {
+	if(SWT.getPlatform() == "win32" || SWT.getPlatform() == "wpf") {
 		return new String [] {"Bookman Old Style", "Century Gothic", "Comic Sans MS", "Impact", "Garamond", "Lucida Console", "Monotype Corsiva"} [index];	
 	} else if (SWT.getPlatform() == "motif") {
 		return new String [] {"urw palladio l", "Courier", "qub", "URW Gothic L", "Times", "Lucida", "URW ChanceryL"} [index];
@@ -186,7 +186,7 @@ static String getPlatformFontFace(int index) {
 	} else if (SWT.getPlatform() == "carbon") {
 		return new String [] {"Apple Chancery", "Brush Script MT", "Comic Sans MS", "Impact", "Herculanum", "Lucida Grande", "Papyrus"} [index];
 	} else { // photon, etc ...
-		return new String [] {"Courier", "Verdana"} [index];
+		return new String [] {"Courier", "Verdana", "Verdana", "Verdana", "Verdana", "Verdana", "Verdana"} [index];
 	}
 }
 }
