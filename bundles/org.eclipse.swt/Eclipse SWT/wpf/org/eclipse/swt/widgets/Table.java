@@ -1045,7 +1045,7 @@ public int getItemHeight () {
 	double height = OS.FrameworkElement_ActualHeight (item);
 	OS.GCHandle_Free (item);
 	OS.GCHandle_Free (items);
-	return (int) height;
+	return height != 0 ? (int) height : 16;
 }
 
 /**
