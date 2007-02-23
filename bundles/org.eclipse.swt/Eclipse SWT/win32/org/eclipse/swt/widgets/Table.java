@@ -578,8 +578,9 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 }
 
 LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
+	int hDC = nmcd.hdc;
 	if (explorerTheme && hooks (SWT.EraseItem)) {
-		OS.RestoreDC (nmcd.hdc, -1);
+		OS.RestoreDC (hDC, -1);
 	}
 	/*
 	* Feature in Windows.  When a new table item is inserted
@@ -591,11 +592,10 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	*/
 	TableItem item = _getItem (nmcd.dwItemSpec);
 	if (item == null) return null;
+	int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
+	if (hFont == -1) hFont = item.font;
+	if (hFont != -1) OS.SelectObject (hDC, hFont);
 	if (ignoreCustomDraw || (nmcd.left == nmcd.right)) {
-		int hDC = nmcd.hdc;
-		int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
-		if (hFont == -1) hFont = item.font;
-		if (hFont != -1) OS.SelectObject (hDC, hFont);
 		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
 	}
 	int code = OS.CDRF_DODEFAULT;
@@ -613,9 +613,6 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		}
 		if (ignoreDrawForeground || hooks (SWT.PaintItem)) code |= OS.CDRF_NOTIFYPOSTPAINT;
 	}
-	int hDC = nmcd.hdc;
-	int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
-	if (hFont == -1) hFont = item.font;
 	int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
 	if (clrText == -1) clrText = item.foreground;
 	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
@@ -2992,7 +2989,11 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
 			if (OS.GetFocus () == handle) {
 				drawSelected = true;
-				data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				if (explorerTheme) {
+					data.foreground = clrText != -1 ? clrText : getForegroundPixel ();
+				} else {
+					data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				}
 				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 			} else {
 				drawSelected = (style & SWT.HIDE_SELECTION) == 0;
@@ -3082,7 +3083,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	}
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
-	boolean fullText = (style & SWT.FULL_SELECTION) != 0 || !firstColumn;
+	boolean fullText = explorerTheme || ((style & SWT.FULL_SELECTION) != 0 || !firstColumn);
 	if (ignoreDrawForeground) {
 		if (!ignoreDrawBackground && drawBackground) {
 			RECT backgroundRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
@@ -3288,7 +3289,17 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
 			if (OS.GetFocus () == handle) {
 				drawSelected = true;
-				data.foreground = selectionForeground != -1 ? selectionForeground : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+				if (selectionForeground != -1) {
+					data.foreground = selectionForeground;
+				} else {
+					if (explorerTheme) {
+						int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
+						if (clrText == -1) clrText = item.foreground;
+						data.foreground = clrText != -1 ? clrText : getForegroundPixel ();
+					} else {
+						data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
+					}
+				}
 				data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 			} else {
 				drawSelected = (style & SWT.HIDE_SELECTION) == 0;

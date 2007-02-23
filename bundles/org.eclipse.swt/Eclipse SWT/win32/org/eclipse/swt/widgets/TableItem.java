@@ -246,11 +246,14 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 			int code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
 			parent.ignoreCustomDraw = false;
 			if (code == 0) return new RECT ();
-			RECT textRect = new RECT ();
-			TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
-			int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
-			OS.DrawText (hDC, buffer, buffer.length (), textRect, flags);
-			rect.right += textRect.right - textRect.left + Table.INSET * 3 + 1;
+			if (getText) {
+				RECT textRect = new RECT ();
+				TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
+				int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
+				OS.DrawText (hDC, buffer, buffer.length (), textRect, flags);
+				if (!getImage) rect.left = rect.right;
+				rect.right += textRect.right - textRect.left + Table.INSET * 3 + 1;
+			}
 		} else {
 			if (getText && getImage) {
 				rect.left = OS.LVIR_SELECTBOUNDS;
