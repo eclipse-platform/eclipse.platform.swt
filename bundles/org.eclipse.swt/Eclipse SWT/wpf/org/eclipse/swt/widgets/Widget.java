@@ -1123,6 +1123,24 @@ boolean sendMouseEvent (int type, int e, boolean send) {
 	return event.doit;
 }
 
+//TEMPORARY CODE
+void setClipping (int widget, boolean clip) {
+	//TODO - should be is-kind-of UIElement rather than not DrawingVisual
+	int type = OS.Object_GetType(widget);
+	int drawingVisualType = OS.DrawingVisual_typeid();
+	if (!OS.Object_Equals(type, drawingVisualType)) {	
+		OS.UIElement_ClipToBounds (widget, clip);
+	}
+	OS.GCHandle_Free(drawingVisualType);
+	OS.GCHandle_Free(type);
+	int count = OS.VisualTreeHelper_GetChildrenCount(widget);
+	for (int i = 0; i < count; i++) {
+		int child = OS.VisualTreeHelper_GetChild (widget, i);
+		setClipping(child, clip);
+		OS.GCHandle_Free(child);
+	}		
+}
+
 /**
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
@@ -1224,16 +1242,19 @@ public void setData (String key, Object value) {
 	
 	// Demo 
 	if ("XAML".equals(key) && value instanceof String) {
+		setClipping (topHandle (), false);
 		String string = (String) value;
 		int ptr = createDotNetString(string, false);
 		int stringReader = OS.gcnew_StringReader (ptr);
 		int xmlReader = OS.XmlReader_Create (stringReader);
 		int resource = OS.XamlReader_Load (xmlReader);
-		OS.FrameworkElement_Resources (handle, resource);
-		OS.GCHandle_Free(ptr);
-		OS.GCHandle_Free(stringReader);
+		if (resource != 0) {
+			OS.FrameworkElement_Resources (handle, resource);
+			OS.GCHandle_Free(resource);
+		}
 		OS.GCHandle_Free(xmlReader);
-		OS.GCHandle_Free(resource);	
+		OS.GCHandle_Free(stringReader);
+		OS.GCHandle_Free(ptr);
 	}
 	if ("ResourceDictionary".equals(key) && value instanceof String) {
 		String string = (String) value;
