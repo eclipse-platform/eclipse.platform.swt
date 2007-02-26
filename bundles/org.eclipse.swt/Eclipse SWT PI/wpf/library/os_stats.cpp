@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1076;
-int OS_nativeFunctionCallCount[1076];
+int OS_nativeFunctionCount = 1077;
+int OS_nativeFunctionCallCount[1077];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -674,6 +674,7 @@ char * OS_nativeFunctionNames[] = {
 	"SystemColors_1ControlDarkColor",
 	"SystemColors_1ControlDarkDarkColor",
 	"SystemColors_1ControlLightColor",
+	"SystemColors_1ControlLightLightColor",
 	"SystemColors_1ControlTextBrush",
 	"SystemColors_1ControlTextColor",
 	"SystemColors_1GradientActiveCaptionColor",

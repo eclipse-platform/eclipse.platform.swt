@@ -1031,6 +1031,7 @@ public static final native int SystemColors_ControlTextBrush();
 public static final native int SystemColors_ControlTextColor();
 public static final native int SystemColors_ControlDarkColor();
 public static final native int SystemColors_ControlLightColor();
+public static final native int SystemColors_ControlLightLightColor();
 public static final native int SystemColors_ControlDarkDarkColor();
 public static final native int SystemColors_InfoColor();
 public static final native int SystemColors_InfoTextColor();

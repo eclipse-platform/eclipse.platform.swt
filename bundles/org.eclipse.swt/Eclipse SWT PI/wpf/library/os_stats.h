@@ -682,6 +682,7 @@ typedef enum {
 	SystemColors_1ControlDarkColor_FUNC,
 	SystemColors_1ControlDarkDarkColor_FUNC,
 	SystemColors_1ControlLightColor_FUNC,
+	SystemColors_1ControlLightLightColor_FUNC,
 	SystemColors_1ControlTextBrush_FUNC,
 	SystemColors_1ControlTextColor_FUNC,
 	SystemColors_1GradientActiveCaptionColor_FUNC,

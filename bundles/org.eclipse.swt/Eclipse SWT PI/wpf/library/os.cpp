@@ -7975,6 +7975,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlLightColor)
 }
 #endif
 
+#ifndef NO_SystemColors_1ControlLightLightColor
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlLightLightColor)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlLightLightColor)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SystemColors_1ControlLightLightColor_FUNC);
+	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ControlLightLightColor);
+	OS_NATIVE_EXIT(env, that, SystemColors_1ControlLightLightColor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SystemColors_1ControlTextBrush
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlTextBrush)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlTextBrush)
