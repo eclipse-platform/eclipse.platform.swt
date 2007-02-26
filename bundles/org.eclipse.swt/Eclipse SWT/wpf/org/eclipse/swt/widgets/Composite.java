@@ -520,6 +520,27 @@ public boolean getLayoutDeferred () {
 	return layoutCount > 0 ;
 }
 
+void HandlePreviewKeyDown (int sender, int e) {
+	super.HandlePreviewKeyDown (sender, e);
+	if (!checkEvent (e)) return;
+	/*
+	* In WPF arrows key move the focus around, this
+	* behavior is not expected in SWT.  
+	*/
+	if ((state & CANVAS) != 0) {
+		int key = OS.KeyEventArgs_Key(e);
+		switch (key) {
+			case OS.Key_Up:
+			case OS.Key_Left: 
+			case OS.Key_Down:
+			case OS.Key_Right: {
+				OS.RoutedEventArgs_Handled (e, true);
+				break;
+			}
+		}
+	}
+}
+
 void HandlePreviewMouseDown(int sender, int e) {
 	if (!checkEvent (e)) return;
 	super.HandlePreviewMouseDown (sender, e);
@@ -853,24 +874,14 @@ int setBounds (int x, int y, int width, int height, int flags) {
 	return result;
 }
 
-boolean setFixedFocus () {
-	checkWidget ();
+public boolean setFocus () {
+	checkWidget();
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.setRadioFocus ()) return true;
+		if (child.getVisible () && child.setFocus ()) return true;
 	}
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (child.setFixedFocus ()) return true;
-	}
-	return super.setFixedFocus ();
-}
-
-public boolean setFocus () {
-	checkWidget ();
-	if (OS.UIElement_IsFocused (handle)) return true;
-	return OS.UIElement_Focus (handle);
+	return super.setFocus ();
 }
 
 void setFont (int font, double size) {
@@ -969,10 +980,6 @@ boolean setTabGroupFocus () {
 	}
 	if (takeFocus && setTabItemFocus ()) return true;
 	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (child.isTabItem () && child.setRadioFocus ()) return true;
-	}
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child.isTabItem () && child.setTabItemFocus ()) return true;

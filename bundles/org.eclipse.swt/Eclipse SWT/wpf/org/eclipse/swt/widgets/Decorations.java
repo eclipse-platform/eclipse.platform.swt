@@ -513,7 +513,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
 	images = null;
-//	savedFocus = null;
+	savedFocus = null;
 //	defaultButton = saveDefault = null;
 }
 
@@ -529,7 +529,6 @@ void removeMenu (Menu menu) {
 
 boolean restoreFocus () {
 //	if (display.ignoreRestoreFocus) return true;
-	
 	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
 	if (savedFocus != null && savedFocus.setSavedFocus ()) return true;
 	/*

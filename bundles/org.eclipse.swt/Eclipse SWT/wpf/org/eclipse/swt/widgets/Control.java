@@ -575,6 +575,16 @@ char findMnemonic (String string) {
  	return '\0';
 }
 
+void fixFocus (Control focusControl) {
+	Shell shell = getShell ();
+	Control control = this;
+	while (control != shell && (control = control.parent) != null) {
+		if (control.setFocus ()) return;
+	}
+	shell.setSavedFocus (focusControl);
+	OS.UIElement_Focus (shell.shellHandle);
+}
+
 /**
  * Forces the receiver to have the <em>keyboard focus</em>, causing
  * all keyboard events to be delivered to it.
@@ -591,29 +601,14 @@ char findMnemonic (String string) {
 public boolean forceFocus () {
 	checkWidget ();
 //	if (display.focusEvent == SWT.FocusOut) return false;
-//	Decorations shell = menuShell ();
-//	shell.setSavedFocus (this);
+	Decorations shell = menuShell ();
+	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible () /*|| !isActive ()*/) return false;
 	if (isFocusControl ()) return true;
-//	shell.setSavedFocus (null);
-	/*
-	* This code is intentionally commented.
-	*
-	* When setting focus to a control, it is
-	* possible that application code can set
-	* the focus to another control inside of
-	* WM_SETFOCUS.  In this case, the original
-	* control will no longer have the focus
-	* and the call to setFocus() will return
-	* false indicating failure.
-	* 
-	* We are still working on a solution at
-	* this time.
-	*/
-//	if (OS.GetFocus () != OS.SetFocus (handle)) return false;
+	shell.setSavedFocus (null);
 	OS.UIElement_Focus (handle);
 	if (isDisposed ()) return false;
-//	shell.setSavedFocus (this);
+	shell.setSavedFocus (this);
 	return isFocusControl ();
 }
 
@@ -970,11 +965,14 @@ Control getWidgetControl () {
 
 void hookEvents () {
 	super.hookEvents ();
-	int handler = OS.gcnew_KeyEventHandler (jniRef, "HandleKeyDown");
-	OS.UIElement_KeyDown (handle, handler);
+	int handler = OS.gcnew_KeyEventHandler (jniRef, "HandlePreviewKeyDown");
+	OS.UIElement_PreviewKeyDown (handle, handler);
 	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_KeyEventHandler (jniRef, "HandleKeyUp");
-	OS.UIElement_KeyUp (handle, handler);
+	handler = OS.gcnew_KeyEventHandler (jniRef, "HandlePreviewKeyUp");
+	OS.UIElement_PreviewKeyUp (handle, handler);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_TextCompositionEventHandler (jniRef, "HandlePreviewTextInput");
+	OS.UIElement_PreviewTextInput (handle, handler);
 	OS.GCHandle_Free (handler);
 	
 	int topHandle = topHandle ();
@@ -995,9 +993,6 @@ void hookEvents () {
 	OS.GCHandle_Free (handler);
 	handler = OS.gcnew_MouseWheelEventHandler (jniRef, "HandlePreviewMouseWheel");
 	OS.UIElement_PreviewMouseWheel (topHandle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_TextCompositionEventHandler (jniRef, "HandleTextInput");
-	OS.UIElement_TextInput (topHandle, handler);
 	OS.GCHandle_Free (handler);
 
 	handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandlePreviewGotKeyboardFocus");
@@ -1034,7 +1029,7 @@ void HandleLostKeyboardFocus (int sender, int e) {
 	sendFocusEvent (SWT.FocusOut);
 }
 
-void HandleKeyDown (int sender, int e) {
+void HandlePreviewKeyDown (int sender, int e) {
 	if (!checkEvent (e)) return;
 	
 	/* Let OS handle mnemonics for now */	
@@ -1045,26 +1040,11 @@ void HandleKeyDown (int sender, int e) {
 	if (translateTraversal (e)) {
 		OS.RoutedEventArgs_Handled (e, true);
 		return;
-	}	
-	sendKeyEvent (SWT.KeyDown, e, false);
-
-	//FIXME hack code
-	/*
-	* In WPF arrows key move the focus around, this
-	* behavior is not expected in SWT.  
-	*/
-	int key = OS.KeyEventArgs_Key(e);
-	switch (key) {
-		case OS.Key_Up:
-		case OS.Key_Left: 
-		case OS.Key_Down:
-		case OS.Key_Right: {
-			OS.RoutedEventArgs_Handled (e, true);
-		}
 	}
+	sendKeyEvent (SWT.KeyDown, e, false);
 }
 
-void HandleKeyUp (int sender, int e) {
+void HandlePreviewKeyUp (int sender, int e) {
 	if (!checkEvent (e)) return;
 	sendKeyEvent (SWT.KeyUp, e, false);
 }
@@ -1123,14 +1103,15 @@ void HandlePreviewMouseWheel (int sender, int e) {
 	sendMouseEvent (SWT.MouseWheel, e, false);
 }
 
-void HandleTextInput(int sender, int e) {
+void HandlePreviewTextInput(int sender, int e) {
 	if (!checkEvent (e)) return;
 	sendKeyEvent (SWT.KeyDown, e, true);
 }
 
 boolean hasFocus () {
 //	return OS.UIElement_IsFocused (handle);
-	return OS.UIElement_IsKeyboardFocused (handle);
+//	return OS.UIElement_IsKeyboardFocused (handle);
+	return display._getFocusControl() == this;
 }
 
 /**	 
@@ -1277,6 +1258,13 @@ public boolean isFocusControl () {
 	return hasFocus ();
 }
 
+boolean isFocusAncestor (Control control) {
+	while (control != null && control != this && !(control instanceof Shell)) {
+		control = control.parent;
+	}
+	return control == this;
+}
+
 /**
  * Returns <code>true</code> if the underlying operating
  * system supports this reparenting, otherwise <code>false</code>
@@ -1358,7 +1346,9 @@ boolean isTabItem () {
  */
 public boolean isVisible () {
 	checkWidget ();
-	return OS.UIElement_IsVisible (topHandle ());
+	int topHandle = topHandle ();
+	updateLayout (topHandle);
+	return OS.UIElement_IsVisible (topHandle);
 }
 
 void markLayout (boolean changed, boolean all) {
@@ -2115,28 +2105,23 @@ public void setCursor (Cursor cursor) {
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 	if (OS.UIElement_IsEnabled (handle) == enabled) return;
-//	/*
-//	* Feature in Windows.  If the receiver has focus, disabling
-//	* the receiver causes no window to have focus.  The fix is
-//	* to assign focus to the first ancestor window that takes
-//	* focus.  If no window will take focus, set focus to the
-//	* desktop.
-//	*/
-//	Control control = null;
-//	boolean fixFocus = false;
-//	if (!enabled) {
-////		if (display.focusEvent != SWT.FocusOut) {
-//			control = display.getFocusControl ();
-//			fixFocus = isFocusAncestor (control);
-////		}
-//	}
+	/*
+	* Feature in Windows.  If the receiver has focus, disabling
+	* the receiver causes no window to have focus.  The fix is
+	* to assign focus to the first ancestor window that takes
+	* focus.  If no window will take focus, set focus to the
+	* desktop.
+	*/
+	Control control = null;
+	boolean fixFocus = false;
+	if (!enabled) {
+//		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+//		}
+	}
 	OS.UIElement_IsEnabled (handle, enabled);
-//	if (fixFocus) fixFocus (control);
-}
-
-boolean setFixedFocus () {
-	if ((style & SWT.NO_FOCUS) != 0) return false;
-	return forceFocus ();
+	if (fixFocus) fixFocus (control);
 }
 
 /**
@@ -2355,14 +2340,6 @@ public void setMenu (Menu menu) {
 	OS.FrameworkElement_ContextMenu(handle, menu != null ? menu.handle : 0);
 }
 
-boolean setRadioFocus () {
-	return false;
-}
-
-boolean setRadioSelection (boolean value) {
-	return false;
-}
-
 /**
  * If the argument is <code>false</code>, causes subsequent drawing
  * operations in the receiver to be ignored. No drawing of any kind
@@ -2535,21 +2512,21 @@ public void setVisible (boolean visible) {
 	* focus.  If no window will take focus, set focus to the
 	* desktop.
 	*/
-//	Control control = null;
-//	boolean fixFocus = false;
-//	if (!visible) {
-////		if (display.focusEvent != SWT.FocusOut) {
-//			control = display.getFocusControl ();
-//			fixFocus = isFocusAncestor (control);
-////		}
-//	}
+	Control control = null;
+	boolean fixFocus = false;
+	if (!visible) {
+//		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+//		}
+	}
 	OS.UIElement_Visibility (topHandle, visible ? OS.Visibility_Visible : OS.Visibility_Hidden);
 	if (isDisposed ()) return;
 	if (!visible) {
 		sendEvent (SWT.Hide);
 		if (isDisposed ()) return;
 	}
-//	if (fixFocus) fixFocus (control);
+	if (fixFocus) fixFocus (control);
 }
 
 void sort (int [] items) {

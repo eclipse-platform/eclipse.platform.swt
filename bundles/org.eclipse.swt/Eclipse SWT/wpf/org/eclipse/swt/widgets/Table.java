@@ -1315,10 +1315,9 @@ void HandleIndeterminate (int sender, int e) {
 	}
 }
 
-void HandleKeyDown (int sender, int e) {
+void HandlePreviewKeyDown (int sender, int e) {
+	super.HandlePreviewKeyDown (sender, e);
 	if (!checkEvent (e)) return;
-	super.HandleKeyDown (sender, e);
-	if (isDisposed ()) return;
 	int key = OS.KeyEventArgs_Key (e);
 	if (key == OS.Key_Return) {
 		int source = OS.RoutedEventArgs_OriginalSource (e);

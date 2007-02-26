@@ -771,7 +771,7 @@ void HandleActivated (int sender, int e) {
 	if (!checkEvent (e)) return;
 	sendEvent (SWT.Activate);
 	if (isDisposed ()) return;
-	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+	restoreFocus ();
 }
 
 void HandleClosed (int sender, int e) {
@@ -867,15 +867,7 @@ public void open () {
 	if (isDisposed ()) return;
 	setVisible (true);
 	if (isDisposed ()) return;
-	if ((style & SWT.ON_TOP) != 0) {
-		//FIXME
-		Control[] c = _getChildren();
-		for (int i = 0; i < c.length; i++) {
-			Control control = c[i];
-			if (control.forceFocus()) break;
-		}
-	}
-//	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
+	if (!restoreFocus () && !traverseGroup (true)) setFocus (); 
 }
 
 void register () {
@@ -1062,9 +1054,9 @@ public void setEnabled (boolean enabled) {
 	checkWidget ();
 	if (OS.UIElement_IsEnabled (handle) == enabled) return;
 	super.setEnabled (enabled);
-//	if (enabled && OS.Window_IsActive (shellHandle)) {
-//		if (!restoreFocus ()) traverseGroup (true);
-//	}
+	if (enabled && OS.Window_IsActive (shellHandle)) {
+		if (!restoreFocus ()) traverseGroup (true);
+	}
 }
 
 /**

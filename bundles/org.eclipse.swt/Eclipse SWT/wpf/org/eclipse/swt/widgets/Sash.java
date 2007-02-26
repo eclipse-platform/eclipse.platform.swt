@@ -121,13 +121,13 @@ int defaultBackground () {
 	return OS.SystemColors_ControlColor;
 }
 
-void HandleKeyDown (int sender, int e) {
-	super.HandleKeyDown (sender, e);
+void HandlePreviewKeyDown (int sender, int e) {
+	super.HandlePreviewKeyDown (sender, e);
 	//TODO
 }
 
-void HandleKeyUp (int sender, int e) {
-	super.HandleKeyUp (sender, e);
+void HandlePreviewKeyUp (int sender, int e) {
+	super.HandlePreviewKeyUp (sender, e);
 	//TODO
 }
 

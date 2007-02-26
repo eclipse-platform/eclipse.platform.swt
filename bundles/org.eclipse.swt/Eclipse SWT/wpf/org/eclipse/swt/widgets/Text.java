@@ -734,8 +734,8 @@ public int getTopPixel () {
 	return 0;
 }
 
-void HandleKeyDown (int sender, int e) {
-	super.HandleKeyDown (sender, e);
+void HandlePreviewKeyDown (int sender, int e) {
+	super.HandlePreviewKeyDown (sender, e);
 	if (!checkEvent (e)) return;
 	if ((style & SWT.SINGLE) != 0) {
 		int key = OS.KeyEventArgs_Key (e);
@@ -804,7 +804,9 @@ void HandlePreviewExecutedRoutedEvent (int sender, int e) {
 }
 
 void HandlePreviewTextInput (int sender, int e) {
+	super.HandlePreviewTextInput (sender, e);
 	if (!checkEvent (e)) return;
+	if ((style & SWT.PASSWORD) != 0) return;
 	int textPtr = OS.TextCompositionEventArgs_Text (e);
 	String input = createJavaString(textPtr);
 	OS.GCHandle_Free (textPtr);
@@ -839,11 +841,7 @@ void hookEvents () {
 		return;
 	}
 	
-	int handler = OS.gcnew_TextCompositionEventHandler (jniRef, "HandlePreviewTextInput");
-	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.UIElement_PreviewTextInput (handle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_ExecutedRoutedEventHandler (jniRef, "HandlePreviewExecutedRoutedEvent");
+	int handler = OS.gcnew_ExecutedRoutedEventHandler (jniRef, "HandlePreviewExecutedRoutedEvent");
 	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.CommandManager_AddPreviewExecutedHandler (handle, handler);
 	OS.GCHandle_Free (handler);

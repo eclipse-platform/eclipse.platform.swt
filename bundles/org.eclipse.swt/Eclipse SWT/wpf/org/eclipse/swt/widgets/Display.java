@@ -1777,7 +1777,7 @@ public Point map (Control from, Control to, int x, int y) {
 			OS.GCHandle_Free (temp);
 			OS.GCHandle_Free (point);
 			OS.GCHandle_Free (newPoint);
-			OS.GCHandle_Free(window);
+			OS.GCHandle_Free (window);
 		} else {
 			int topHandle = from.topHandle ();
 			int window = OS.Window_GetWindow (topHandle);
@@ -1790,7 +1790,7 @@ public Point map (Control from, Control to, int x, int y) {
 			OS.GCHandle_Free (temp);
 			OS.GCHandle_Free (point);
 			OS.GCHandle_Free (newPoint);
-			OS.GCHandle_Free(window);
+			OS.GCHandle_Free (window);
 		}
 	}
 	return new Point (newX, newY);
