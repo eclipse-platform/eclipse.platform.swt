@@ -207,9 +207,7 @@ public void create (Composite parent, int style) {
 				isXULRunner = mozillaPath.length () > 0;
 			}
 			C.free (greBuffer);
-		}
 
-		if (isXULRunner) {
 			/*
 			 * Test whether the detected XULRunner can be used as the GRE before loading swt's
 			 * XULRunner library.  If it cannot be used then fall back to attempting to use
@@ -219,7 +217,7 @@ public void create (Composite parent, int style) {
 			 * is running in 32-bit more, or vice versa.
 			 */
 			byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
-			int rc = XPCOMInit.XPCOMGlueStartup (path);
+			rc = XPCOMInit.XPCOMGlueStartup (path);
 			if (rc != XPCOM.NS_OK) {
 				isXULRunner = false;	/* failed */
 				mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
