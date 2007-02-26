@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1078;
-int OS_nativeFunctionCallCount[1078];
+int OS_nativeFunctionCount = 1081;
+int OS_nativeFunctionCallCount[1081];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -445,6 +445,7 @@ char * OS_nativeFunctionNames[] = {
 	"KeyboardDevice_1Modifiers",
 	"KeyboardEventArgs_1KeyboardDevice",
 	"KeyboardNavigation_1SetTabNavigation",
+	"Keyboard_1Focus",
 	"Keyboard_1FocusedElement",
 	"Keyboard_1Modifiers",
 	"ListBoxItem_1IsSelected__I",
@@ -879,6 +880,8 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1MoveFocus",
 	"UIElement_1OpacityProperty",
 	"UIElement_1PreviewGotKeyboardFocus",
+	"UIElement_1PreviewKeyDown",
+	"UIElement_1PreviewKeyUp",
 	"UIElement_1PreviewLostKeyboardFocus",
 	"UIElement_1PreviewMouseDown",
 	"UIElement_1PreviewMouseMove",

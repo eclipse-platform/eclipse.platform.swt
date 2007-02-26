@@ -5250,6 +5250,19 @@ JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetTabNavigation)
 }
 #endif
 
+#ifndef NO_Keyboard_1Focus
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Keyboard_1Focus)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Keyboard_1Focus)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Keyboard_1Focus_FUNC);
+	rc = (jint)TO_HANDLE(Keyboard::Focus((IInputElement^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, Keyboard_1Focus_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Keyboard_1FocusedElement
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Keyboard_1FocusedElement)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(Keyboard_1FocusedElement)
@@ -10479,6 +10492,28 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1PreviewGotKeyboardFocus)
 	OS_NATIVE_ENTER(env, that, UIElement_1PreviewGotKeyboardFocus_FUNC);
 	((UIElement^)TO_OBJECT(arg0))->PreviewGotKeyboardFocus += ((KeyboardFocusChangedEventHandler^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, UIElement_1PreviewGotKeyboardFocus_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1PreviewKeyDown
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1PreviewKeyDown)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1PreviewKeyDown)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1PreviewKeyDown_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->PreviewKeyDown += ((KeyEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1PreviewKeyDown_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1PreviewKeyUp
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1PreviewKeyUp)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1PreviewKeyUp)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1PreviewKeyUp_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->PreviewKeyUp += ((KeyEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1PreviewKeyUp_FUNC);
 }
 #endif
 

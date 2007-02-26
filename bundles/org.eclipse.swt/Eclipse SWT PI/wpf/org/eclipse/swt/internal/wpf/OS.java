@@ -801,6 +801,7 @@ public static final native void ItemsControl_IsTextSearchEnabled(int sender, boo
 public static final native int ItemsPresenter_typeid();
 public static final native int KeyInterop_VirtualKeyFromKey(int key);
 public static final native int Keyboard_FocusedElement();
+public static final native int Keyboard_Focus(int element);
 public static final native int Keyboard_Modifiers();
 public static final native void KeyboardNavigation_SetTabNavigation(int element, int mode);
 public static final native int KeyboardDevice_Modifiers(int sender);
@@ -1236,6 +1237,8 @@ public static final native void UIElement_MouseWheel(int sender, int handler);
 public static final native void UIElement_MouseUp(int sender, int handler);
 public static final native void UIElement_MoveFocus(int sender, int request);
 public static final native int UIElement_OpacityProperty();
+public static final native void UIElement_PreviewKeyDown(int sender, int handler);
+public static final native void UIElement_PreviewKeyUp(int sender, int handler);
 public static final native void UIElement_PreviewMouseDown(int sender, int handler);
 public static final native void UIElement_PreviewMouseMove(int sender, int handler);
 public static final native void UIElement_PreviewMouseWheel(int sender, int handler);
