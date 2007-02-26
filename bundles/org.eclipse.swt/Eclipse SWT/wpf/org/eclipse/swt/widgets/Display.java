@@ -1766,25 +1766,31 @@ public Point map (Control from, Control to, int x, int y) {
 		OS.GCHandle_Free (newPoint);
 	} else {
 		if (from == null) {
-			Shell shell = to.getShell ();
-			Point shellLocation = shell.getLocation ();
-			int point = OS.gcnew_Point (x - shellLocation.x, y - shellLocation.y);
-			to.updateLayout (to.topHandle ());
-			int newPoint = OS.UIElement_TranslatePoint (shell.shellHandle, point, to.topHandle ());
-			newX = (int) (OS.Point_X (newPoint) + 0.5);
-			newY = (int) (OS.Point_Y (newPoint) + 0.5);
-			OS.GCHandle_Free (point);
-			OS.GCHandle_Free (newPoint);
-		} else {
-			Shell shell = from.getShell ();
-			Point shellLocation = shell.getLocation ();
+			int topHandle = to.topHandle ();
+			int window = OS.Window_GetWindow (topHandle);
 			int point = OS.gcnew_Point (x, y);
-			from.updateLayout (from.topHandle ());
-			int newPoint = OS.UIElement_TranslatePoint (from.topHandle (), point, shell.shellHandle);
-			newX = (int) (OS.Point_X (newPoint) + 0.5) + shellLocation.x;
-			newY = (int) (OS.Point_Y (newPoint) + 0.5) + shellLocation.y;
+			int temp = OS.Visual_PointFromScreen (window, point);
+			to.updateLayout (topHandle);
+			int newPoint = OS.UIElement_TranslatePoint (window, temp, topHandle);
+			newX = (int) OS.Point_X (newPoint);
+			newY = (int) OS.Point_Y (newPoint);
+			OS.GCHandle_Free (temp);
 			OS.GCHandle_Free (point);
 			OS.GCHandle_Free (newPoint);
+			OS.GCHandle_Free(window);
+		} else {
+			int topHandle = from.topHandle ();
+			int window = OS.Window_GetWindow (topHandle);
+			int point = OS.gcnew_Point(x, y);
+			from.updateLayout (topHandle);
+			int temp = OS.UIElement_TranslatePoint (topHandle, point, window);
+			int newPoint = OS.Visual_PointToScreen (window, temp);
+			newX = (int) OS.Point_X (newPoint);
+			newY = (int) OS.Point_Y (newPoint);
+			OS.GCHandle_Free (temp);
+			OS.GCHandle_Free (point);
+			OS.GCHandle_Free (newPoint);
+			OS.GCHandle_Free(window);
 		}
 	}
 	return new Point (newX, newY);

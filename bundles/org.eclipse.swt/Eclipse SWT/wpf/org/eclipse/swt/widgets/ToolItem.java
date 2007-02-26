@@ -453,10 +453,10 @@ void HandleClick (int sender, int e) {
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int mousePos = OS.Mouse_GetPosition (handle);
-		int zero = OS.gcnew_Point (0, 0);
+		int zero = OS.gcnew_Point (0, OS.FrameworkElement_ActualHeight (topHandle ()));
 		int arrowPos = OS.UIElement_TranslatePoint (arrowHandle, zero, handle);
 		if (OS.Point_X (mousePos) > OS.Point_X (arrowPos)) {
-			event.detail = SWT.DROP_DOWN;
+			event.detail = SWT.ARROW;
 			int location = OS.UIElement_TranslatePoint (handle, zero, parent.handle);
 			event.x = (int) OS.Point_X (location);
 			event.y = (int) OS.Point_Y (location);
