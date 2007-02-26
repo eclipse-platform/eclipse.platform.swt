@@ -184,7 +184,30 @@ public int /*long*/ Alert (int /*long*/ parent, int /*long*/ dialogTitle, int /*
 }
 
 public int /*long*/ AlertCheck (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ checkMsg, int /*long*/ checkValue) {
-	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	Browser browser = getBrowser (parent);
+	
+	int length = XPCOM.strlen_PRUnichar (dialogTitle);
+	char[] dest = new char[length];
+	XPCOM.memmove (dest, dialogTitle, length * 2);
+	String titleLabel = new String (dest);
+
+	length = XPCOM.strlen_PRUnichar (text);
+	dest = new char[length];
+	XPCOM.memmove (dest, text, length * 2);
+	String textLabel = new String (dest);
+
+	length = XPCOM.strlen_PRUnichar (checkMsg);
+	dest = new char[length];
+	XPCOM.memmove (dest, checkMsg, length * 2);
+	String checkLabel = new String (dest);
+
+	Shell shell = browser == null ? new Shell () : browser.getShell ();
+	PromptDialog dialog = new PromptDialog (shell);
+	int[] check = new int[1];
+	if (checkValue != 0) XPCOM.memmove (check, checkValue, 4); /* PRBool */
+	dialog.alertCheck (titleLabel, textLabel, checkLabel, check);
+	if (checkValue != 0) XPCOM.memmove (checkValue, check, 4); /* PRBool */
+	return XPCOM.NS_OK;
 }
 
 public int /*long*/ Confirm (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ _retval) {

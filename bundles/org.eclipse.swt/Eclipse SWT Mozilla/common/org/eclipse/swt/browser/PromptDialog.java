@@ -24,6 +24,47 @@ class PromptDialog extends Dialog {
 		this(parent, 0);
 	}
 	
+	public void alertCheck(String title, String text, String check, final int[] checkValue) {
+		Shell parent = getParent();
+		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		if (title != null) shell.setText(title);
+		GridLayout gridLayout = new GridLayout();
+		shell.setLayout(gridLayout);
+		Label label = new Label(shell, SWT.WRAP);
+		label.setText(text);
+		GridData data = new GridData();
+		data.horizontalAlignment = GridData.FILL;
+		data.grabExcessHorizontalSpace = true;
+		label.setLayoutData (data);
+
+		final Button checkButton = check != null ? new Button(shell, SWT.CHECK) : null;
+		if (checkButton != null) {
+			checkButton.setText(check);
+			checkButton.setSelection(checkValue[0] != 0);
+			data = new GridData ();
+			data.horizontalAlignment = GridData.BEGINNING;
+			checkButton.setLayoutData (data);
+		}
+		Button okButton = new Button(shell, SWT.PUSH);
+		okButton.setText(SWT.getMessage("SWT_OK")); //$NON-NLS-1$
+		data = new GridData ();
+		data.horizontalAlignment = GridData.CENTER;
+		okButton.setLayoutData (data);
+		okButton.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event event) {
+				if (checkButton != null) checkValue[0] = checkButton.getSelection() ? 1 : 0;
+				shell.close();
+			}
+		});
+
+		shell.pack();
+		shell.open();
+		Display display = parent.getDisplay();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+	}
+
 	public void confirmEx(String title, String text, String check, String button1, String button2, String button3, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -56,7 +97,7 @@ class PromptDialog extends Dialog {
 			buttons[0].setText(check);
 			buttons[0].setSelection(checkValue[0] != 0);
 			data = new GridData ();
-			data.horizontalAlignment = GridData.END;
+			data.horizontalAlignment = GridData.BEGINNING;
 			buttons[0].setLayoutData (data);
 		}
 		Composite composite = new Composite(shell, SWT.NONE);
@@ -121,7 +162,7 @@ class PromptDialog extends Dialog {
 			buttons[0].setText(check);
 			buttons[0].setSelection(checkValue[0] != 0);
 			data = new GridData ();
-			data.horizontalAlignment = GridData.END;
+			data.horizontalAlignment = GridData.BEGINNING;
 			buttons[0].setLayoutData (data);
 		}
 		Composite composite = new Composite(shell, SWT.NONE);
@@ -145,6 +186,7 @@ class PromptDialog extends Dialog {
 			if (!display.readAndDispatch()) display.sleep();
 		}	
 	}
+
 	public void promptUsernameAndPassword(String title, String text, String check, final String[] user, final String[] pass, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
@@ -193,6 +235,7 @@ class PromptDialog extends Dialog {
 			buttons[0].setText(check);
 			buttons[0].setSelection(checkValue[0] != 0);
 			data = new GridData ();
+			data.horizontalAlignment = GridData.BEGINNING;
 			buttons[0].setLayoutData (data);
 		}
 		Composite composite = new Composite(shell, SWT.NONE);
