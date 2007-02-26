@@ -1767,10 +1767,10 @@ public Point map (Control from, Control to, int x, int y) {
 	} else {
 		if (from == null) {
 			int topHandle = to.topHandle ();
+			to.updateLayout (topHandle);
 			int window = OS.Window_GetWindow (topHandle);
 			int point = OS.gcnew_Point (x, y);
 			int temp = OS.Visual_PointFromScreen (window, point);
-			to.updateLayout (topHandle);
 			int newPoint = OS.UIElement_TranslatePoint (window, temp, topHandle);
 			newX = (int) OS.Point_X (newPoint);
 			newY = (int) OS.Point_Y (newPoint);
@@ -1780,9 +1780,9 @@ public Point map (Control from, Control to, int x, int y) {
 			OS.GCHandle_Free (window);
 		} else {
 			int topHandle = from.topHandle ();
-			int window = OS.Window_GetWindow (topHandle);
-			int point = OS.gcnew_Point(x, y);
 			from.updateLayout (topHandle);
+			int window = OS.Window_GetWindow (topHandle);
+			int point = OS.gcnew_Point (x, y);
 			int temp = OS.UIElement_TranslatePoint (topHandle, point, window);
 			int newPoint = OS.Visual_PointToScreen (window, temp);
 			newX = (int) OS.Point_X (newPoint);
