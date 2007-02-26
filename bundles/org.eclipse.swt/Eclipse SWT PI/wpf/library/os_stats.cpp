@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1077;
-int OS_nativeFunctionCallCount[1077];
+int OS_nativeFunctionCount = 1078;
+int OS_nativeFunctionCallCount[1078];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -910,6 +910,7 @@ char * OS_nativeFunctionNames[] = {
 	"Window_1Close",
 	"Window_1Closing",
 	"Window_1Deactivated",
+	"Window_1GetWindow",
 	"Window_1Hide",
 	"Window_1Icon",
 	"Window_1IsActive",

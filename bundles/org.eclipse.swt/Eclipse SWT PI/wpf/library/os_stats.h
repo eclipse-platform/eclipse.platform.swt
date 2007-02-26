@@ -918,6 +918,7 @@ typedef enum {
 	Window_1Close_FUNC,
 	Window_1Closing_FUNC,
 	Window_1Deactivated_FUNC,
+	Window_1GetWindow_FUNC,
 	Window_1Hide_FUNC,
 	Window_1Icon_FUNC,
 	Window_1IsActive_FUNC,

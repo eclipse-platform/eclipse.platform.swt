@@ -1269,6 +1269,7 @@ public static final native void Window_Closing(int sender, int handler);
 public static final native void Window_Activated(int sender, int handler);
 public static final native void Window_Deactivated(int sender, int handler);
 public static final native void Window_LocationChanged(int sender, int handler);
+public static final native int Window_GetWindow(int dependencyObject);
 public static final native void Window_Hide(int sender);
 public static final native void Window_Owner(int sender, int owner);
 public static final native void Window_Show(int sender);

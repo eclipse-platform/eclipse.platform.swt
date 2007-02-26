@@ -10851,6 +10851,19 @@ JNIEXPORT void JNICALL OS_NATIVE(Window_1Deactivated)
 }
 #endif
 
+#ifndef NO_Window_1GetWindow
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Window_1GetWindow)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Window_1GetWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Window_1GetWindow_FUNC);
+	rc = (jint)TO_HANDLE(Window::GetWindow((DependencyObject^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, Window_1GetWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Window_1Hide
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(Window_1Hide)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL OS_NATIVE(Window_1Hide)
