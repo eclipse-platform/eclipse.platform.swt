@@ -2701,9 +2701,9 @@ boolean translateTraversal (int e) {
 			break;
 		}
 		case OS.Key_Tab: {
-			int keyboardDevice = OS.KeyboardEventArgs_KeyboardDevice(e);
-			int modifiers = OS.KeyboardDevice_Modifiers(keyboardDevice);
-			OS.GCHandle_Free(keyboardDevice);
+			int keyboardDevice = OS.KeyboardEventArgs_KeyboardDevice (e);
+			int modifiers = OS.KeyboardDevice_Modifiers (keyboardDevice);
+			OS.GCHandle_Free (keyboardDevice);
 			boolean next = (modifiers & OS.ModifierKeys_Shift) == 0;
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
@@ -2719,7 +2719,10 @@ boolean translateTraversal (int e) {
 		case OS.Key_PageUp:
 		case OS.Key_PageDown: {
 			all = true;
-			//if ((keyEvent.state & OS.GDK_CONTROL_MASK) == 0) return false;
+			int keyboardDevice = OS.KeyboardEventArgs_KeyboardDevice (e);
+			int modifiers = OS.KeyboardDevice_Modifiers (keyboardDevice);
+			OS.GCHandle_Free (keyboardDevice);
+			if ((modifiers & OS.ModifierKeys_Control) == 0) return false;
 			detail = key == OS.Key_PageDown ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}
