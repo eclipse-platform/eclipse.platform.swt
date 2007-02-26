@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1081;
-int OS_nativeFunctionCallCount[1081];
+int OS_nativeFunctionCount = 1085;
+int OS_nativeFunctionCallCount[1085];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -444,6 +444,10 @@ char * OS_nativeFunctionNames[] = {
 	"KeyTime_1Uniform",
 	"KeyboardDevice_1Modifiers",
 	"KeyboardEventArgs_1KeyboardDevice",
+	"KeyboardNavigation_1GetIsTabStop",
+	"KeyboardNavigation_1SetControlTabNavigation",
+	"KeyboardNavigation_1SetDirectionalNavigation",
+	"KeyboardNavigation_1SetIsTabStop",
 	"KeyboardNavigation_1SetTabNavigation",
 	"Keyboard_1Focus",
 	"Keyboard_1FocusedElement",

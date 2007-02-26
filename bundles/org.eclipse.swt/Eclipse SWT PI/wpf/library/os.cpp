@@ -5239,6 +5239,52 @@ JNIEXPORT jint JNICALL OS_NATIVE(KeyboardEventArgs_1KeyboardDevice)
 }
 #endif
 
+#ifndef NO_KeyboardNavigation_1GetIsTabStop
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(KeyboardNavigation_1GetIsTabStop)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(KeyboardNavigation_1GetIsTabStop)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, KeyboardNavigation_1GetIsTabStop_FUNC);
+	rc = (jboolean)KeyboardNavigation::GetIsTabStop((DependencyObject^)TO_OBJECT(arg0));
+	OS_NATIVE_EXIT(env, that, KeyboardNavigation_1GetIsTabStop_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_KeyboardNavigation_1SetControlTabNavigation
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetControlTabNavigation)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetControlTabNavigation)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, KeyboardNavigation_1SetControlTabNavigation_FUNC);
+	KeyboardNavigation::SetControlTabNavigation((DependencyObject^)TO_OBJECT(arg0), (KeyboardNavigationMode)arg1);
+	OS_NATIVE_EXIT(env, that, KeyboardNavigation_1SetControlTabNavigation_FUNC);
+}
+#endif
+
+#ifndef NO_KeyboardNavigation_1SetDirectionalNavigation
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetDirectionalNavigation)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetDirectionalNavigation)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, KeyboardNavigation_1SetDirectionalNavigation_FUNC);
+	KeyboardNavigation::SetDirectionalNavigation((DependencyObject^)TO_OBJECT(arg0), (KeyboardNavigationMode)arg1);
+	OS_NATIVE_EXIT(env, that, KeyboardNavigation_1SetDirectionalNavigation_FUNC);
+}
+#endif
+
+#ifndef NO_KeyboardNavigation_1SetIsTabStop
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetIsTabStop)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetIsTabStop)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, KeyboardNavigation_1SetIsTabStop_FUNC);
+	KeyboardNavigation::SetIsTabStop((DependencyObject^)TO_OBJECT(arg0), arg1);
+	OS_NATIVE_EXIT(env, that, KeyboardNavigation_1SetIsTabStop_FUNC);
+}
+#endif
+
 #ifndef NO_KeyboardNavigation_1SetTabNavigation
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetTabNavigation)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(KeyboardNavigation_1SetTabNavigation)
