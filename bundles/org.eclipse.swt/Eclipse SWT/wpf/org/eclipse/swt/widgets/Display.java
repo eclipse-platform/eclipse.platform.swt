@@ -1610,7 +1610,7 @@ protected void init () {
 	colors [SWT.COLOR_WIDGET_DARK_SHADOW] = Color.wpf_new( this, OS.SystemColors_ControlDarkDarkColor ());
 	colors [SWT.COLOR_WIDGET_NORMAL_SHADOW] = Color.wpf_new (this, OS.SystemColors_ControlDarkColor ());
 	colors [SWT.COLOR_WIDGET_LIGHT_SHADOW] = Color.wpf_new (this, OS.SystemColors_ControlLightColor ());
-	colors [SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW] = Color.wpf_new (this, OS.SystemColors_ControlDarkDarkColor ());
+	colors [SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW] = Color.wpf_new (this, OS.SystemColors_ControlLightLightColor ());
 	colors [SWT.COLOR_WIDGET_FOREGROUND] = Color.wpf_new (this, OS.SystemColors_ControlTextColor ());
 	colors [SWT.COLOR_WIDGET_BACKGROUND] = Color.wpf_new (this, OS.SystemColors_ControlColor ());
 	colors [SWT.COLOR_WIDGET_BORDER] = Color.wpf_new (this, OS.SystemColors_ActiveBorderColor ());
