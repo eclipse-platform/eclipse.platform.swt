@@ -620,7 +620,7 @@ public boolean open () {
 	Display display = Display.getCurrent();
 	while (tracking && !cancelled) {
 		if (!display.readAndDispatch()) {
-			display.readAndDispatch();
+			display.sleep();
 		}
 	}
 
