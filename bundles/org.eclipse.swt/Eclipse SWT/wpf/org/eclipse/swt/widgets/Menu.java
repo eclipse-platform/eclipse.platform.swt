@@ -266,13 +266,9 @@ void createItem (MenuItem item, int index) {
 }
 	
 void createWidget () {
-	jniRef = OS.NewGlobalRef (this);
-	if (jniRef == 0) error (SWT.ERROR_NO_HANDLES);
 	checkOrientation (parent);
-	createHandle ();
+	super.createWidget ();
 	parent.addMenu (this);
-	hookEvents ();
-	itemCount = 0;
 }
 
 void deregister () {
