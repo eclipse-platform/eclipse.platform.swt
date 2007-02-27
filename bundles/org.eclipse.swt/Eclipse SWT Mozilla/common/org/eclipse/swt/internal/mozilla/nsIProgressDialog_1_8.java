@@ -27,9 +27,9 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIProgressDialog_1_8 extends nsIDownload {
+public class nsIProgressDialog_1_8 extends nsIDownload_1_8 {
 
-	static final int LAST_METHOD_ID = nsIDownload.LAST_METHOD_ID + 7;
+	static final int LAST_METHOD_ID = nsIDownload_1_8.LAST_METHOD_ID + 7;
 
 	public static final String NS_IPROGRESSDIALOG_IID_STR =
 		"20e790a2-76c6-462d-851a-22ab6cbbe48b";
@@ -42,30 +42,30 @@ public class nsIProgressDialog_1_8 extends nsIDownload {
 	}
 
 	public int Open(int /*long*/ aParent) {
-		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 1, getAddress(), aParent);
+		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 1, getAddress(), aParent);
 	}
 
 	public int GetCancelDownloadOnClose(boolean[] aCancelDownloadOnClose) {
-		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 2, getAddress(), aCancelDownloadOnClose);
+		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 2, getAddress(), aCancelDownloadOnClose);
 	}
 
 	public int SetCancelDownloadOnClose(boolean aCancelDownloadOnClose) {
-		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 3, getAddress(), aCancelDownloadOnClose);
+		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 3, getAddress(), aCancelDownloadOnClose);
 	}
 
 	public int GetObserver(int /*long*/[] aObserver) {
-		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 4, getAddress(), aObserver);
+		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 4, getAddress(), aObserver);
 	}
 
 	public int SetObserver(int /*long*/ aObserver) {
-		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 5, getAddress(), aObserver);
+		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 5, getAddress(), aObserver);
 	}
 
 	public int GetDialog(int /*long*/[] aDialog) {
-		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 6, getAddress(), aDialog);
+		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 6, getAddress(), aDialog);
 	}
 
 	public int SetDialog(int /*long*/ aDialog) {
-		return XPCOM.VtblCall(nsIDownload.LAST_METHOD_ID + 7, getAddress(), aDialog);
+		return XPCOM.VtblCall(nsIDownload_1_8.LAST_METHOD_ID + 7, getAddress(), aDialog);
 	}
 }

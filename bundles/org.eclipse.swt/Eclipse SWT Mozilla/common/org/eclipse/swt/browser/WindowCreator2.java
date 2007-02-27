@@ -86,12 +86,12 @@ int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIWindowCreator.NS_IWINDOWCREATOR_IID)) {
+	if (guid.Equals (XPCOM.NS_IWINDOWCREATOR_IID)) {
 		XPCOM.memmove (ppvObject, new int /*long*/[] {windowCreator.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIWindowCreator2.NS_IWINDOWCREATOR2_IID)) {
+	if (guid.Equals (XPCOM.NS_IWINDOWCREATOR2_IID)) {
 		XPCOM.memmove (ppvObject, new int /*long*/[] {windowCreator2.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
