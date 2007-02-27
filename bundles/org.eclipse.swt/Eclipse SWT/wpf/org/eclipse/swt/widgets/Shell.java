@@ -435,6 +435,7 @@ void createHandle () {
 	if ((style & SWT.ON_TOP) != 0) {
 		shellHandle = OS.gcnew_Popup ();
 		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		if ((style & SWT.NO_TRIM) != 0) OS.Popup_AllowsTransparency (shellHandle, true);
 		OS.KeyboardNavigation_SetTabNavigation (shellHandle, OS.KeyboardNavigationMode_None);
 		boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
 		createHandle (scrolled, true);
@@ -445,6 +446,7 @@ void createHandle () {
 	}
 	shellHandle = OS.gcnew_Window();
 	if (shellHandle == 0) error(SWT.ERROR_NO_HANDLES);
+	if ((style & SWT.NO_TRIM) != 0) OS.Window_AllowsTransparency (shellHandle, true);
 
 	/*
 	* Feature in WPF.  ...
@@ -1168,7 +1170,7 @@ public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
 	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	OS.UIElement_Clip (shellHandle, region.handle);
+	OS.UIElement_Clip ((style & SWT.ON_TOP) != 0 ? handle : shellHandle, region.handle);
 	this.region = region;
 }
 

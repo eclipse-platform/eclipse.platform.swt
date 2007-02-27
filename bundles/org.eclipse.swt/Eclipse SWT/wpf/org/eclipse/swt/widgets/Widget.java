@@ -1093,8 +1093,7 @@ boolean sendMouseEvent (int type, int e, boolean send) {
 			event.count = delta * lines / 120;
 		}
 	}
-	int topHandle = topHandle ();
-	int point = OS.MouseEventArgs_GetPosition (e, topHandle);
+	int point = OS.MouseEventArgs_GetPosition (e, handle);
 	event.x = (int) OS.Point_X (point);
 	event.y = (int) OS.Point_Y (point);
 	OS.GCHandle_Free (point);

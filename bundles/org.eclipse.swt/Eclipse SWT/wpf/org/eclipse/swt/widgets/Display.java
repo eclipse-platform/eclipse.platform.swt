@@ -1766,19 +1766,21 @@ public Point map (Control from, Control to, int x, int y) {
 	int newX, newY;
 	if (from != null && to != null) {
 		int point = OS.gcnew_Point (x, y);
-		int newPoint = OS.UIElement_TranslatePoint (from.topHandle (), point, to.topHandle ());
+		int newPoint = OS.UIElement_TranslatePoint (from.handle, point, to.handle);
 		newX = (int) (OS.Point_X (newPoint) + 0.5);
 		newY = (int) (OS.Point_Y (newPoint) + 0.5);
 		OS.GCHandle_Free (point);
 		OS.GCHandle_Free (newPoint);
 	} else {
 		if (from == null) {
-			int topHandle = to.topHandle ();
-			to.updateLayout (topHandle);
-			int window = OS.Window_GetWindow (topHandle);
+			int toHandle = to.handle;
+			to.updateLayout (toHandle);
+			int source = OS.PresentationSource_FromVisual (toHandle);
+			int window = OS.PresentationSource_RootVisual (source);
+			OS.GCHandle_Free (source);
 			int point = OS.gcnew_Point (x, y);
 			int temp = OS.Visual_PointFromScreen (window, point);
-			int newPoint = OS.UIElement_TranslatePoint (window, temp, topHandle);
+			int newPoint = OS.UIElement_TranslatePoint (window, temp, toHandle);
 			newX = (int) OS.Point_X (newPoint);
 			newY = (int) OS.Point_Y (newPoint);
 			OS.GCHandle_Free (temp);
@@ -1786,11 +1788,13 @@ public Point map (Control from, Control to, int x, int y) {
 			OS.GCHandle_Free (newPoint);
 			OS.GCHandle_Free (window);
 		} else {
-			int topHandle = from.topHandle ();
-			from.updateLayout (topHandle);
-			int window = OS.Window_GetWindow (topHandle);
+			int fromHandle = from.handle;
+			from.updateLayout (fromHandle);
+			int source = OS.PresentationSource_FromVisual (fromHandle);
+			int window = OS.PresentationSource_RootVisual (source);
+			OS.GCHandle_Free (source);
 			int point = OS.gcnew_Point (x, y);
-			int temp = OS.UIElement_TranslatePoint (topHandle, point, window);
+			int temp = OS.UIElement_TranslatePoint (fromHandle, point, window);
 			int newPoint = OS.Visual_PointToScreen (window, temp);
 			newX = (int) OS.Point_X (newPoint);
 			newY = (int) OS.Point_Y (newPoint);
