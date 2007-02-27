@@ -17,13 +17,13 @@ import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-class WindowCreator {
+class WindowCreator2 {
 	XPCOMObject supports;
 	XPCOMObject windowCreator;
 	XPCOMObject windowCreator2;
 	int refCount = 0;
 
-public WindowCreator () {
+public WindowCreator2 () {
 	createCOMInterfaces ();
 }
 

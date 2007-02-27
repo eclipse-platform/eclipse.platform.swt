@@ -48,7 +48,7 @@ class Mozilla extends WebBrowser {
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
-	static WindowCreator WindowCreator;
+	static WindowCreator2 WindowCreator;
 	static int BrowserCount;
 	static boolean initialized, ignoreDispose;
 
@@ -404,7 +404,7 @@ public void create (Composite parent, int style) {
 		}
 		result[0] = 0;
 
-		WindowCreator = new WindowCreator ();
+		WindowCreator = new WindowCreator2 ();
 		WindowCreator.AddRef ();
 		
 		rc = XPCOM.NS_GetServiceManager (result);
