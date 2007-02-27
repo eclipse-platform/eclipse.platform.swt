@@ -148,12 +148,9 @@ int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags,
 	boolean doit = true;
 	if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) {
 		/*
-		* Feature on Mozilla.  On platforms that lack a native dialog, Mozilla sends a
-		* requests for a new Browser instance in a modal window. e.g. on Windows, Mozilla
-		* brings up automatically a native Print Dialog in response to the javascript
-		* command window.print() whereas on Linux Mozilla requests a new modal window
-		* and a Browser to display an emulated HTML based print dialog. For this reason,
-		* modal requests are handled here and not exposed to the user.
+		* Mozilla will request a new Browser in a modal window in order to emulate a native
+		* dialog that is not available to it (eg.- a print dialog on Linux).  For this
+		* reason modal requests are handled here so that the user is not exposed to them.
 		*/
 		final Shell shell = src == null ?
 			new Shell (SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL) :

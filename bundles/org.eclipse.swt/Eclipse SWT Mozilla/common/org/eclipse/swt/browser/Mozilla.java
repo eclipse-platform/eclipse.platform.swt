@@ -213,7 +213,7 @@ public void create (Composite parent, int style) {
 			 * the GRE pointed to by MOZILLA_FIVE_HOME.
 			 * 
 			 * One case where this will fail is attempting to use a 64-bit xulrunner while swt
-			 * is running in 32-bit more, or vice versa.
+			 * is running in 32-bit mode, or vice versa.
 			 */
 			byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
 			rc = XPCOMInit.XPCOMGlueStartup (path);
