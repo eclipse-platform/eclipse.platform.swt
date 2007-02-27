@@ -43,8 +43,7 @@ class Mozilla extends WebBrowser {
 	int /*long*/ request;
 	Point location;
 	Point size;
-	boolean addressBar, menuBar, statusBar, toolBar;
-	boolean visible, isModal;
+	boolean visible;
 	Shell tip = null;
 
 	static nsIAppShell AppShell;
@@ -1769,7 +1768,7 @@ int /*long*/ SetChromeFlags (int /*long*/ aChromeFlags) {
 	chromeFlags = (int)/*64*/aChromeFlags;
 	return XPCOM.NS_OK;
 }
-   
+
 int /*long*/ DestroyBrowserWindow () {
 	WindowEvent newEvent = new WindowEvent (browser);
 	newEvent.display = browser.getDisplay ();
@@ -1789,6 +1788,7 @@ int /*long*/ DestroyBrowserWindow () {
    	
 int /*long*/ SizeBrowserTo (int /*long*/ aCX, int /*long*/ aCY) {
 	size = new Point ((int)/*64*/aCX, (int)/*64*/aCY);
+	boolean isModal = (chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0;
 	if (isModal) {
 		Shell shell = browser.getShell ();
 		shell.setSize (shell.computeSize (size.x, size.y));
@@ -1828,7 +1828,8 @@ int /*long*/ ShowAsModal () {
 }
 
 int /*long*/ IsWindowModal (int /*long*/ retval) {
-	XPCOM.memmove (retval, new int[] {isModal ? 1 : 0}, 4); /* PRBool */
+	int result = (chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0 ? 1 : 0;
+	XPCOM.memmove (retval, new int[] {result}, 4); /* PRBool */
 	return XPCOM.NS_OK;
 }
    
@@ -1885,10 +1886,10 @@ int /*long*/ SetVisibility (int /*long*/ aVisibility) {
 			visible = true;
 			event.location = location;
 			event.size = size;
-			event.addressBar = addressBar;
-			event.menuBar = menuBar;
-			event.statusBar = statusBar;
-			event.toolBar = toolBar;
+			event.addressBar = (chromeFlags & nsIWebBrowserChrome.CHROME_LOCATIONBAR) != 0;
+			event.menuBar = (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
+			event.statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
+			event.toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;
 			for (int i = 0; i < visibilityWindowListeners.length; i++) {
 				visibilityWindowListeners[i].show (event);
 			}

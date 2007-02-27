@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.*;
 class WindowCreator {
 	XPCOMObject supports;
 	XPCOMObject windowCreator;
+	XPCOMObject windowCreator2;
 	int refCount = 0;
 
 public WindowCreator () {
@@ -38,13 +39,21 @@ void createCOMInterfaces () {
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 	};
-	
+
 	windowCreator = new XPCOMObject (new int[] {2, 0, 0, 3}) {
 		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
 		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
 		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
 		public int /*long*/ method3 (int /*long*/[] args) {return CreateChromeWindow (args[0], args[1], args[2]);}
-	};		
+	};
+
+	windowCreator2 = new XPCOMObject (new int[] {2, 0, 0, 3, 6}) {
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public int /*long*/ method3 (int /*long*/[] args) {return CreateChromeWindow (args[0], args[1], args[2]);}
+		public int /*long*/ method4 (int /*long*/[] args) {return CreateChromeWindow2 (args[0], args[1], args[2], args[3], args[4], args[5]);}
+	};
 }
 
 void disposeCOMInterfaces () {
@@ -55,6 +64,11 @@ void disposeCOMInterfaces () {
 	if (windowCreator != null) {
 		windowCreator.dispose ();
 		windowCreator = null;	
+	}
+
+	if (windowCreator2 != null) {
+		windowCreator2.dispose ();
+		windowCreator2 = null;	
 	}
 }
 
@@ -77,7 +91,12 @@ int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	
+	if (guid.Equals (nsIWindowCreator2.NS_IWINDOWCREATOR2_IID)) {
+		XPCOM.memmove (ppvObject, new int /*long*/[] {windowCreator2.getAddress ()}, C.PTR_SIZEOF);
+		AddRef ();
+		return XPCOM.NS_OK;
+	}
+
 	XPCOM.memmove (ppvObject, new int /*long*/[] {0}, C.PTR_SIZEOF);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -91,6 +110,12 @@ int Release () {
 /* nsIWindowCreator */
 
 int /*long*/ CreateChromeWindow (int /*long*/ parent, int /*long*/ chromeFlags, int /*long*/ _retval) {
+	return CreateChromeWindow2 (parent, chromeFlags, 0, 0, 0, _retval);
+}
+
+/* nsIWindowCreator2 */
+
+int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags, int /*long*/ contextFlags, int /*long*/ uri, int /*long*/ cancel, int /*long*/ _retval) {
 	if (parent == 0 && (chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) == 0) {
 		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
@@ -116,11 +141,11 @@ int /*long*/ CreateChromeWindow (int /*long*/ parent, int /*long*/ chromeFlags, 
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (aParentNativeWindow[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 		baseWindow.Release ();
-	
+
 		src = Mozilla.findBrowser (aParentNativeWindow[0]);
 	}
 	final Browser browser;
-	boolean doit = false;
+	boolean doit = true;
 	if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) {
 		/*
 		* Feature on Mozilla.  On platforms that lack a native dialog, Mozilla sends a
@@ -145,7 +170,6 @@ int /*long*/ CreateChromeWindow (int /*long*/ parent, int /*long*/ chromeFlags, 
 					shell.setSize (shell.computeSize (size.x, size.y));
 				}
 				shell.open ();
-				((Mozilla)browser.webBrowser).isModal = true;
 			}
 		});
 		browser.addCloseWindowListener (new CloseWindowListener () {
@@ -153,7 +177,6 @@ int /*long*/ CreateChromeWindow (int /*long*/ parent, int /*long*/ chromeFlags, 
 				shell.close ();
 			}
 		});
-		doit = true;
 	} else {
 		WindowEvent event = new WindowEvent (src);
 		event.display = src.getDisplay ();
@@ -164,18 +187,32 @@ int /*long*/ CreateChromeWindow (int /*long*/ parent, int /*long*/ chromeFlags, 
 		}
 		browser = event.browser;
 		doit = browser != null && !browser.isDisposed ();
-		if (doit) {
-			((Mozilla)browser.webBrowser).addressBar = (chromeFlags & nsIWebBrowserChrome.CHROME_LOCATIONBAR) != 0;
-			((Mozilla)browser.webBrowser).menuBar = (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
-			((Mozilla)browser.webBrowser).statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
-			((Mozilla)browser.webBrowser).toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;
-		}
 	}
 	if (doit) {
-		int /*long*/ address = ((Mozilla)browser.webBrowser).webBrowserChrome.getAddress ();
-		nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome (address);
+		int /*long*/ chromePtr = ((Mozilla)browser.webBrowser).webBrowserChrome.getAddress ();
+		nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome (chromePtr);
+		webBrowserChrome.SetChromeFlags (chromeFlags);
 		webBrowserChrome.AddRef ();
-		XPCOM.memmove (_retval, new int /*long*/[] {address}, C.PTR_SIZEOF);
+		XPCOM.memmove (_retval, new int /*long*/[] {chromePtr}, C.PTR_SIZEOF);
+
+		if (uri != 0) {
+			nsIURI location = new nsIURI (uri);
+			int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
+			if (location.GetSpec (aSpec) == XPCOM.NS_OK) {
+				int length = XPCOM.nsEmbedCString_Length (aSpec);
+				if (length > 0) {
+					int /*long*/ buffer = XPCOM.nsEmbedCString_get (aSpec);
+					byte[] dest = new byte[length];
+					XPCOM.memmove (dest, buffer, length);
+					browser.setUrl (new String (dest));
+				}
+			}
+			XPCOM.nsEmbedCString_delete (aSpec);
+		}
+	} else {
+		if (cancel != 0) {
+			C.memmove (cancel, new int[] {1}, 4);	/* PRBool */
+		}
 	}
 	return doit ? XPCOM.NS_OK : XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }

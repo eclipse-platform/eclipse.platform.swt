@@ -397,9 +397,11 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/
 	
 	if (checkMsg != 0) {
 		length = XPCOM.strlen_PRUnichar (checkMsg);
-		dest = new char[length];
-		XPCOM.memmove (dest, checkMsg, length * 2);
-		checkLabel = new String (dest);
+		if (length > 0) {
+			dest = new char[length];
+			XPCOM.memmove (dest, checkMsg, length * 2);
+			checkLabel = new String (dest);
+		}
 	}
 
 	Shell shell = browser == null ? new Shell () : browser.getShell ();
