@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1085;
-int OS_nativeFunctionCallCount[1085];
+int OS_nativeFunctionCount = 1087;
+int OS_nativeFunctionCallCount[1087];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -253,6 +253,8 @@ char * OS_nativeFunctionNames[] = {
 	"FileInfo_1DirectoryName",
 	"FileInfo_1Name",
 	"File_1Exists",
+	"FocusManager_1GetFocusScope",
+	"FocusManager_1GetFocusedElement",
 	"FolderBrowserDialog_1Description",
 	"FolderBrowserDialog_1SelectedPath__I",
 	"FolderBrowserDialog_1SelectedPath__II",

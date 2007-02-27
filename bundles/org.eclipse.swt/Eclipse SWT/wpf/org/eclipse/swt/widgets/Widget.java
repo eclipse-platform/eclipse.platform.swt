@@ -370,7 +370,7 @@ int createDotNetString (String string, boolean fixMnemonic) {
 	return ptr;
 }
 
-String createJavaString (int ptr) {
+static String createJavaString (int ptr) {
 	int charArray = OS.String_ToCharArray (ptr);
 	char[] chars = new char[OS.String_Length (ptr)];
 	OS.memcpy (chars, charArray, chars.length * 2);
@@ -454,9 +454,11 @@ boolean dragOverride () {
 	return false;
 }
 
-void dumpObjectType (int object) {
-	int type = OS.Type_FullName(OS.Object_GetType(object));
+static void dumpObjectType (int object) {
+	int objectType = OS.Object_GetType(object);
+	int type = OS.Type_FullName(objectType);
 	String typeName = createJavaString(type);
+	OS.GCHandle_Free(objectType);
 	OS.GCHandle_Free(type);
 	System.out.println(typeName);
 }

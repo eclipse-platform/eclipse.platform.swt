@@ -384,6 +384,7 @@ Control _getFocusControl () {
 			Shell shell = ((Menu)widget).getShell();
 			OS.GCHandle_Free (focusedElement);
 			focusedElement = OS.FocusManager_GetFocusedElement (shell.shellHandle);
+			if (focusedElement == 0) return null;
 			widget = getWidget (focusedElement);
 		}
 		if (widget != null) control = widget.getWidgetControl ();

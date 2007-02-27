@@ -2919,6 +2919,32 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(File_1Exists)
 }
 #endif
 
+#ifndef NO_FocusManager_1GetFocusScope
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FocusManager_1GetFocusScope)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FocusManager_1GetFocusScope)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FocusManager_1GetFocusScope_FUNC);
+	rc = (jint)TO_HANDLE(FocusManager::GetFocusScope((DependencyObject^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, FocusManager_1GetFocusScope_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FocusManager_1GetFocusedElement
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FocusManager_1GetFocusedElement)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FocusManager_1GetFocusedElement)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FocusManager_1GetFocusedElement_FUNC);
+	rc = (jint)TO_HANDLE(FocusManager::GetFocusedElement((DependencyObject^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, FocusManager_1GetFocusedElement_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_FolderBrowserDialog_1Description
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1Description)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1Description)

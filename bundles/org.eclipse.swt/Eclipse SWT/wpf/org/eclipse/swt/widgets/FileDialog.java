@@ -197,10 +197,10 @@ public String open () {
 			int str = OS.IList_default (strings, i);
 			int fileInfo = OS.gcnew_FileInfo (str);
 			int name = OS.FileInfo_Name (fileInfo);
-			fileNames [i] = parent.createJavaString (name);
+			fileNames [i] = Widget.createJavaString (name);
 			if (i == 0) {
 				int dir = OS.FileInfo_DirectoryName (fileInfo);
-				filterPath = parent.createJavaString (dir);
+				filterPath = Widget.createJavaString (dir);
 				OS.GCHandle_Free (dir);
 			}
 			OS.GCHandle_Free (name);

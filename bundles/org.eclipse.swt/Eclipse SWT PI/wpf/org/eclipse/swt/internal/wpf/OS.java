@@ -625,6 +625,8 @@ public static final native void FileDialog_Title(int sender, int value);
 public static final native int FileInfo_DirectoryName(int sender);
 public static final native int FileInfo_Name(int sender);
 public static final native boolean File_Exists(int sender);
+public static final native int FocusManager_GetFocusScope(int element);
+public static final native int FocusManager_GetFocusedElement(int element);
 public static final native void FolderBrowserDialog_Description(int sender, int value);
 public static final native int FolderBrowserDialog_SelectedPath(int sender);
 public static final native void FolderBrowserDialog_SelectedPath(int sender, int value);

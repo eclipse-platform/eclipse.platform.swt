@@ -123,7 +123,7 @@ public String open () {
 	String result = null;
 	if (OS.FormsCommonDialog_ShowDialog (dialog) == OS.DialogResult_OK) {
 		int ptr = OS.FolderBrowserDialog_SelectedPath (dialog);
-		result = parent.createJavaString (ptr);
+		result = Widget.createJavaString (ptr);
 		OS.GCHandle_Free (ptr);
 	}
 	OS.GCHandle_Free (dialog);

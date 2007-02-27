@@ -261,6 +261,8 @@ typedef enum {
 	FileInfo_1DirectoryName_FUNC,
 	FileInfo_1Name_FUNC,
 	File_1Exists_FUNC,
+	FocusManager_1GetFocusScope_FUNC,
+	FocusManager_1GetFocusedElement_FUNC,
 	FolderBrowserDialog_1Description_FUNC,
 	FolderBrowserDialog_1SelectedPath__I_FUNC,
 	FolderBrowserDialog_1SelectedPath__II_FUNC,
