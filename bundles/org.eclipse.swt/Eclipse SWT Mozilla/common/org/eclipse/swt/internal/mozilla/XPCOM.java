@@ -174,13 +174,10 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, b
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, int /*long*/ arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, int /*long*/[] arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, boolean arg1, boolean arg2, int /*long*/ arg3, int arg4, int arg5, int arg6, int arg7, int arg8, boolean arg9, boolean arg10, boolean arg11, boolean arg12, short arg13, int /*long*/ arg14);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, boolean arg1);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, boolean[] arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, char[] arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, int /*long*/[] arg1, boolean[] arg2);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/[] arg0, int /*long*/[] arg1, int /*long*/[] arg2);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/[] arg0, int /*long*/[] arg1, int /*long*/[] arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int[] arg0, long[] arg1, int /*long*/[] arg2);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, int arg1, int[] arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, nsID arg1, boolean[] arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, nsID arg1, int /*long*/[] arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int /*long*/ arg1, int /*long*/[] arg2);
@@ -202,16 +199,13 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0,
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, int /*long*/ arg1, nsID arg2, int /*long*/[] arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, byte[] arg1, int /*long*/ arg2, int /*long*/[] arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, char[] arg1, char[] arg2, boolean[] arg3);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, char[] arg1, char[] arg2, int /*long*/[] arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int arg2, boolean arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, long arg2, boolean arg3);	// needed for 64-bit
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int arg2, char[] arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int arg2, int arg3);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int arg2, int[] arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int[] arg0, int[] arg1, int[] arg2, int[] arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, byte[] arg1, byte[] arg2, int /*long*/ arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, nsID arg0, int /*long*/ arg1, nsID arg2, int /*long*/[] arg3);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, char[] arg1, char[] arg2, boolean arg3);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, boolean arg1, int /*long*/ arg2, int /*long*/[] arg3, boolean[] arg4);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, char[] arg0, int arg1, int /*long*/ arg2, int /*long*/ arg3, int /*long*/ arg4);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, boolean arg1, boolean arg2, int /*long*/ arg3, int arg4);
@@ -242,6 +236,4 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, byte[] arg1);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, byte[] arg1, boolean arg2);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, byte[] arg1, char[] arg2);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, boolean[] arg1, int /*long*/[] arg2);
-//static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int arg1, int arg2, int /*long*/ arg3, boolean[] arg4, int /*long*/[] arg5);
 }

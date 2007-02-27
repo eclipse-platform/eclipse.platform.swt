@@ -188,7 +188,7 @@ int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags,
 	if (doit) {
 		int /*long*/ chromePtr = ((Mozilla)browser.webBrowser).webBrowserChrome.getAddress ();
 		nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome (chromePtr);
-		webBrowserChrome.SetChromeFlags (chromeFlags);
+		webBrowserChrome.SetChromeFlags ((int)/*64*/chromeFlags);
 		webBrowserChrome.AddRef ();
 		XPCOM.memmove (_retval, new int /*long*/[] {chromePtr}, C.PTR_SIZEOF);
 
