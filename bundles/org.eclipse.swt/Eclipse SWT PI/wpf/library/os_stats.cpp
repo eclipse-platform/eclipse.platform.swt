@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1087;
-int OS_nativeFunctionCallCount[1087];
+int OS_nativeFunctionCount = 1089;
+int OS_nativeFunctionCallCount[1089];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -574,6 +574,7 @@ char * OS_nativeFunctionNames[] = {
 	"PointCollection_1Add",
 	"Point_1X",
 	"Point_1Y",
+	"Popup_1AllowsTransparency",
 	"Popup_1Child__I",
 	"Popup_1Child__II",
 	"Popup_1Closed",
@@ -585,6 +586,7 @@ char * OS_nativeFunctionNames[] = {
 	"Popup_1VerticalOffset__I",
 	"Popup_1VerticalOffset__ID",
 	"PresentationSource_1FromVisual",
+	"PresentationSource_1RootVisual",
 	"ProgressBar_1IsIndeterminate__I",
 	"ProgressBar_1IsIndeterminate__IZ",
 	"ProgressBar_1Orientation",

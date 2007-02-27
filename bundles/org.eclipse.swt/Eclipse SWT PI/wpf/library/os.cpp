@@ -6821,6 +6821,17 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(Point_1Y)
 }
 #endif
 
+#ifndef NO_Popup_1AllowsTransparency
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Popup_1AllowsTransparency)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Popup_1AllowsTransparency)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, Popup_1AllowsTransparency_FUNC);
+	((Popup^)TO_OBJECT(arg0))->AllowsTransparency = (arg1);
+	OS_NATIVE_EXIT(env, that, Popup_1AllowsTransparency_FUNC);
+}
+#endif
+
 #ifndef NO_Popup_1Child__I
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Popup_1Child__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(Popup_1Child__I)
@@ -6948,6 +6959,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(PresentationSource_1FromVisual)
 	OS_NATIVE_ENTER(env, that, PresentationSource_1FromVisual_FUNC);
 	rc = (jint)TO_HANDLE(PresentationSource::FromVisual((Visual^)TO_OBJECT(arg0)));
 	OS_NATIVE_EXIT(env, that, PresentationSource_1FromVisual_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PresentationSource_1RootVisual
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(PresentationSource_1RootVisual)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(PresentationSource_1RootVisual)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PresentationSource_1RootVisual_FUNC);
+	rc = (jint)TO_HANDLE(((PresentationSource^)TO_OBJECT(arg0))->RootVisual);
+	OS_NATIVE_EXIT(env, that, PresentationSource_1RootVisual_FUNC);
 	return rc;
 }
 #endif
