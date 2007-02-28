@@ -1027,15 +1027,17 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = true;
 			}
 			if (!ignoreDrawBackground && clrTextBk != -1) {
-				if (count == 0) {
-					if ((style & SWT.FULL_SELECTION) != 0) {
-						fillBackground (hDC, clrTextBk, rect);
+				if (!explorerTheme || !selected) {
+					if (count == 0) {
+						if ((style & SWT.FULL_SELECTION) != 0) {
+							fillBackground (hDC, clrTextBk, rect);
+						} else {
+							RECT textRect = item.getBounds (index, true, false, true, false, true, hDC);
+							fillBackground (hDC, clrTextBk, textRect);
+						}
 					} else {
-						RECT textRect = item.getBounds (index, true, false, true, false, true, hDC);
-						fillBackground (hDC, clrTextBk, textRect);
+						fillBackground (hDC, clrTextBk, cellRect);
 					}
-				} else {
-					fillBackground (hDC, clrTextBk, cellRect);
 				}
 			}
 			if (ignoreDrawSelection) ignoreFullSelection = true;
@@ -1153,7 +1155,12 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							if (!selected) fillBackground (hDC, clrTextBk, rect);
 						} else {
-							fillBackground (hDC, clrTextBk, rect);
+							if (explorerTheme) {
+								boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
+								if (!selected && !hot) fillBackground (hDC, clrTextBk, rect);
+							} else {
+								fillBackground (hDC, clrTextBk, rect);
+							}
 						}
 					} else {
 						if ((style & SWT.FULL_SELECTION) != 0) {
@@ -1194,6 +1201,23 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					int newColor = clrText == -1 ? getForegroundPixel () : clrText;
 					nmcd.clrText = nmcd.clrText == newColor ? newColor + 1 : newColor;
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+					if (clrTextBk != -1) {
+						if ((style & SWT.FULL_SELECTION) != 0) {
+							RECT rect = new RECT ();
+							if (count != 0) {
+								HDITEM hdItem = new HDITEM ();
+								hdItem.mask = OS.HDI_WIDTH;
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+								OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+							} else {
+								OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+							}
+							fillBackground (hDC, clrTextBk, rect);
+						} else {
+							RECT textRect = item.getBounds (index, true, false, true, false, true, hDC);
+							fillBackground (hDC, clrTextBk, textRect);
+						}
+					}
 				}
 			}
 		}
@@ -1295,7 +1319,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 
 LRESULT CDDS_PREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (explorerTheme) {
-		if (hooks (SWT.EraseItem) || findImageControl () != null) {
+		if ((OS.IsWindowEnabled (handle) && hooks (SWT.EraseItem)) || findImageControl () != null) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 			drawBackground (nmcd.hdc, rect);
@@ -4084,48 +4108,6 @@ void setCheckboxImageList () {
 	int hOldStateList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hStateList);
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
-}
-
-void setExplorerTheme (boolean explorerTheme) {
-	if (EXPLORER_THEME) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			if (this.explorerTheme == explorerTheme) return;
-			this.explorerTheme = explorerTheme;
-			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			int bits2 = OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
-			if (explorerTheme) {
-				OS.SetWindowTheme (handle, Display.EXPLORER, null);
-				bits1 |= OS.TVS_TRACKSELECT;
-				bits1 &= ~OS.TVS_HASLINES;
-				bits2 |= OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP;
-				if ((style & SWT.FULL_SELECTION) == 0) {
-					bits2 |= OS.TVS_EX_AUTOHSCROLL;
-				}
-			} else {
-				OS.SetWindowTheme (handle, null, null);
-				bits1 &= ~OS.TVS_TRACKSELECT;
-				bits2 &= ~(OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP);
-				if ((style & SWT.FULL_SELECTION) == 0) {
-					bits2 &= ~OS.TVS_EX_AUTOHSCROLL;
-					bits1 |= OS.TVS_HASLINES;
-				}
-			}
-			if (bits1 != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
-				OS.SetWindowLong (handle, OS.GWL_STYLE, bits1);
-				OS.InvalidateRect (handle, null, true);
-			}
-			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits2);
-			/*
-			* Feature in Windows.  When the tree has the style
-			* TVS_FULLROWSELECT, the background color for the
-			* entire row is filled when an item is painted,
-			* drawing on top of the background image.  The fix
-			* is to clear TVS_FULLROWSELECT when a background
-			* image is set.
-			*/
-			updateFullSelection ();
-		}
-	}
 }
 
 public void setFont (Font font) {
