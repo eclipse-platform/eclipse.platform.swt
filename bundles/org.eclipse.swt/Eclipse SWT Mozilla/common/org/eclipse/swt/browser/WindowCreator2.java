@@ -186,7 +186,9 @@ int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags,
 		doit = browser != null && !browser.isDisposed ();
 	}
 	if (doit) {
-		int /*long*/ chromePtr = ((Mozilla)browser.webBrowser).webBrowserChrome.getAddress ();
+		Mozilla mozilla = (Mozilla)browser.webBrowser;
+		mozilla.isChild = true;
+		int /*long*/ chromePtr = mozilla.webBrowserChrome.getAddress ();
 		nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome (chromePtr);
 		webBrowserChrome.SetChromeFlags ((int)/*64*/chromeFlags);
 		webBrowserChrome.AddRef ();

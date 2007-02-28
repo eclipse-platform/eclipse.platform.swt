@@ -43,7 +43,7 @@ class Mozilla extends WebBrowser {
 	int /*long*/ request;
 	Point location;
 	Point size;
-	boolean visible;
+	boolean visible, isChild;
 	Shell tip = null;
 
 	static nsIAppShell AppShell;
@@ -1873,34 +1873,38 @@ int /*long*/ GetVisibility (int /*long*/ aVisibility) {
 }
 
 int /*long*/ SetVisibility (int /*long*/ aVisibility) {
-	WindowEvent event = new WindowEvent (browser);
-	event.display = browser.getDisplay ();
-	event.widget = browser;
-	if (aVisibility == 1) {
-		/*
-		* Bug in Mozilla.  When the JavaScript window.open is executed, Mozilla
-		* fires multiple SetVisibility 1 notifications.  The workaround is
-		* to ignore subsequent notifications. 
-		*/
-		if (!visible) {
-			visible = true;
-			event.location = location;
-			event.size = size;
-			event.addressBar = (chromeFlags & nsIWebBrowserChrome.CHROME_LOCATIONBAR) != 0;
-			event.menuBar = (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
-			event.statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
-			event.toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;
-			for (int i = 0; i < visibilityWindowListeners.length; i++) {
-				visibilityWindowListeners[i].show (event);
+	if (isChild) {
+		WindowEvent event = new WindowEvent (browser);
+		event.display = browser.getDisplay ();
+		event.widget = browser;
+		if (aVisibility == 1) {
+			/*
+			* Bug in Mozilla.  When the JavaScript window.open is executed, Mozilla
+			* fires multiple SetVisibility 1 notifications.  The workaround is
+			* to ignore subsequent notifications. 
+			*/
+			if (!visible) {
+				visible = true;
+				event.location = location;
+				event.size = size;
+				event.addressBar = (chromeFlags & nsIWebBrowserChrome.CHROME_LOCATIONBAR) != 0;
+				event.menuBar = (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
+				event.statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
+				event.toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;
+				for (int i = 0; i < visibilityWindowListeners.length; i++) {
+					visibilityWindowListeners[i].show (event);
+				}
+				location = null;
+				size = null;
 			}
-			location = null;
-			size = null;
+		} else {
+			visible = false;
+			for (int i = 0; i < visibilityWindowListeners.length; i++) {
+				visibilityWindowListeners[i].hide (event);
+			}
 		}
 	} else {
-		visible = false;
-		for (int i = 0; i < visibilityWindowListeners.length; i++) {
-			visibilityWindowListeners[i].hide (event);
-		}
+		visible = aVisibility != 0;
 	}
 	return XPCOM.NS_OK;     	
 }
