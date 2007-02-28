@@ -12,7 +12,7 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.C;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.mozilla.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -183,7 +183,14 @@ int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags,
 			src.webBrowser.openWindowListeners[i].open (event);
 		}
 		browser = event.browser;
+
+		/* Ensure that the Browser provided by the client is valid for use */ 
 		doit = browser != null && !browser.isDisposed ();
+		if (doit) {
+			String platform = Platform.PLATFORM;
+			boolean isMozillaNativePlatform = platform.equals ("gtk") || platform.equals ("motif");
+			doit = isMozillaNativePlatform || (browser.getStyle () & SWT.MOZILLA) != 0;
+		}
 	}
 	if (doit) {
 		Mozilla mozilla = (Mozilla)browser.webBrowser;
