@@ -257,6 +257,7 @@ typedef enum {
 	CloseDataBrowserContainer_FUNC,
 	CloseRgn_FUNC,
 	CollapseWindow_FUNC,
+	ContextualMenuSelect_FUNC,
 	ConvertEventRefToEventRecord_FUNC,
 	ConvertFromPStringToUnicode_FUNC,
 	ConvertFromUnicodeToPString_FUNC,

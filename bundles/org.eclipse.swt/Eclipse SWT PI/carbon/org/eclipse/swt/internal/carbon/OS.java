@@ -162,6 +162,7 @@ public class OS extends C {
 	public static final int kCGRenderingIntentDefault = 0;
 	public static final int kCGTextFill = 0;
 	public static final int kCGTextInvisible = 3;
+	public static final int kCMHelpItemRemoveHelp = 3;
 	public static final int kColorPickerDialogIsMoveable =  1;
 	public static final int kColorPickerDialogIsModal = 2;
 	public static final int kControlBehaviorPushbutton = 0;
@@ -1193,6 +1194,7 @@ public static final native int ClipCGContextToRegion(int inContext, Rect portRec
 public static final native int CloseDataBrowserContainer(int cHandle, int container);
 public static final native void CloseRgn(int dstRgn);
 public static final native int CollapseWindow(int wHandle, boolean collapse);
+public static final native int ContextualMenuSelect (int inMenu, Point inGlobalLocation, boolean inReserved, int  inHelpType, byte[] inHelpItemString, AEDesc inSelection, int[] outUserSelectionType, short[] outMenuID, short[] outMenuItem);
 public static final native boolean ConvertEventRefToEventRecord(int inEvent, EventRecord outEvent);
 public static final native int ConvertFromPStringToUnicode(int iTextToUnicodeInfo, byte[] iPascalStr, int iOutputBufLen, int[] oUnicodeLen, char[] oUnicodeStr);
 public static final native int ConvertFromUnicodeToPString (int iUnicodeToTextInfo, int iUnicodeLen, char[] iUnicodeStr, byte[] oPascalStr); 

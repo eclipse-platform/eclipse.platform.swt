@@ -3022,6 +3022,37 @@ JNIEXPORT jint JNICALL OS_NATIVE(CollapseWindow)
 }
 #endif
 
+#ifndef NO_ContextualMenuSelect
+JNIEXPORT jint JNICALL OS_NATIVE(ContextualMenuSelect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jboolean arg2, jint arg3, jbyteArray arg4, jobject arg5, jintArray arg6, jshortArray arg7, jshortArray arg8)
+{
+	Point _arg1, *lparg1=NULL;
+	jbyte *lparg4=NULL;
+	AEDesc _arg5, *lparg5=NULL;
+	jint *lparg6=NULL;
+	jshort *lparg7=NULL;
+	jshort *lparg8=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ContextualMenuSelect_FUNC);
+	if (arg1) if ((lparg1 = getPointFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = getAEDescFields(env, arg5, &_arg5)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetShortArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetShortArrayElements(env, arg8, NULL)) == NULL) goto fail;
+	rc = (jint)ContextualMenuSelect((MenuRef)arg0, *lparg1, arg2, arg3, (ConstStr255Param)lparg4, lparg5, (UInt32 *)lparg6, (SInt16 *)lparg7, (MenuItemIndex *)lparg8);
+fail:
+	if (arg8 && lparg8) (*env)->ReleaseShortArrayElements(env, arg8, lparg8, 0);
+	if (arg7 && lparg7) (*env)->ReleaseShortArrayElements(env, arg7, lparg7, 0);
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) setAEDescFields(env, arg5, lparg5);
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg1 && lparg1) setPointFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, ContextualMenuSelect_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ConvertEventRefToEventRecord
 JNIEXPORT jboolean JNICALL OS_NATIVE(ConvertEventRefToEventRecord)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
