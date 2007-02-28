@@ -2968,6 +2968,15 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	if (clrText == -1) clrText = item.foreground;
 	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 	if (clrTextBk == -1) clrTextBk = item.background;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (sortColumn != null && sortDirection != SWT.NONE) {
+			if (findImageControl () == null) {
+				if (indexOf (sortColumn) == nmcd.iSubItem) {
+					clrTextBk = getSortColumnPixel ();
+				}
+			}
+		}
+	}
 	/*
 	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
 	* even for items that are not selected.  The fix is to get
@@ -3109,7 +3118,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 			int hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
 			int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
 			if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
-			OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, rect, pClipRect);
+			OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
 			OS.CloseThemeData (hTheme);
 		} else {
 			RECT textRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
