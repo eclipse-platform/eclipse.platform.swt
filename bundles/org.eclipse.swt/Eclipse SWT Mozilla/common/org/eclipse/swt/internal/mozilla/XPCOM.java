@@ -48,6 +48,7 @@ public class XPCOM extends C {
 	/* IID constants */
 	public static final nsID NS_IDIRECTORYSERVICEPROVIDER_IID = new nsID("bbf8cab0-d43a-11d3-8cc2-00609792278c"); //$NON-NLS-1$
 	public static final nsID NS_IDIRECTORYSERVICEPROVIDER2_IID = new nsID("2f977d4b-5485-11d4-87e2-0010a4e75ef2"); //$NON-NLS-1$
+	public static final nsID NS_IFILEPICKER_1_8_IID = new nsID("80faf095-c807-4558-a2cc-185ed70754ea"); //$NON-NLS-1$
 	public static final nsID NS_IHELPERAPPLAUNCHERDIALOG_IID = new nsID("d7ebddf0-4c84-11d4-807a-00600811a9c3"); //$NON-NLS-1$
 	public static final nsID NS_IINPUTSTREAM_IID = new nsID("fa9c7f6c-61b3-11d4-9877-00c04fa0cf4a"); //$NON-NLS-1$
 	public static final nsID NS_IWINDOWCREATOR_IID = new nsID("30465632-a777-44cc-90f9-8145475ef999"); //$NON-NLS-1$
