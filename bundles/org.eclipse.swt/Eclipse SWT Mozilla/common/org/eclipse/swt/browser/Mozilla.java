@@ -1570,7 +1570,7 @@ int /*long*/ Release () {
 /* nsIWeakReference */	
 	
 int /*long*/ QueryReferent (int /*long*/ riid, int /*long*/ ppvObject) {
-	return QueryInterface (riid,ppvObject);
+	return QueryInterface (riid, ppvObject);
 }
 
 /* nsIInterfaceRequestor */
@@ -1587,7 +1587,7 @@ int /*long*/ GetInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		XPCOM.memmove (ppvObject, aContentDOMWindow, C.PTR_SIZEOF);
 		return rc;
 	}
-	return QueryInterface (riid,ppvObject);
+	return QueryInterface (riid, ppvObject);
 }
 
 int /*long*/ GetWeakReference (int /*long*/ ppvObject) {
