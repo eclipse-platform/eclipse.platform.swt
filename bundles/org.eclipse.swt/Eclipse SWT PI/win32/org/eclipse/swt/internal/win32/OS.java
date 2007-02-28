@@ -1682,6 +1682,7 @@ public class OS extends C {
 	public static final int TVI_FIRST = 0xffff0001;
 	public static final int TVI_LAST = 0xffff0002;
 	public static final int TVI_ROOT = 0xffff0000;
+	public static final int TVI_SORT = 0xFFFF0003;
 	public static final int TVM_CREATEDRAGIMAGE = TV_FIRST + 18;
 	public static final int TVM_DELETEITEM = 0x1101;
 	public static final int TVM_ENSUREVISIBLE = 0x1114;
@@ -1711,6 +1712,8 @@ public class OS extends C {
 	public static final int TVM_SETITEMHEIGHT = TV_FIRST + 27;
 	public static final int TVM_SETSCROLLTIME = TV_FIRST + 33;
 	public static final int TVM_SETTEXTCOLOR = 0x111e;
+	public static final int TVM_SORTCHILDREN = TV_FIRST + 19;
+	public static final int TVM_SORTCHILDRENCB = TV_FIRST + 21;
 	public static final int TVN_BEGINDRAGW = 0xfffffe38;
 	public static final int TVN_BEGINDRAGA = 0xfffffe69;
 	public static final int TVN_BEGINRDRAGW = 0xfffffe37;
