@@ -674,7 +674,7 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
 	MenuItem item = items [index [0] - 1];
-	if (item.accelerator == 0) {
+	if (item.accelerator == 0 && (style & SWT.POP_UP) == 0) {
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
 			String accelText = item.text.substring (accelIndex + 1);
@@ -756,7 +756,7 @@ int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
 	MenuItem item = items [index [0] - 1];
-	if (item.accelerator == 0) {
+	if (item.accelerator == 0 && (style & SWT.POP_UP) == 0) {
 		int accelIndex = item.text.indexOf ('\t');
 		if (accelIndex != -1) {
 			String accelText = item.text.substring (accelIndex + 1);
