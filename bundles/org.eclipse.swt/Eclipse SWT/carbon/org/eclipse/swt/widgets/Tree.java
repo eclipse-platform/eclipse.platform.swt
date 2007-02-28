@@ -558,7 +558,7 @@ void createHandle () {
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
 	if (OS.VERSION >= 0x1040) {
-		int inset = 4;
+		int inset = 1;
 		OS.DataBrowserSetMetric (handle, OS.kDataBrowserMetricCellContentInset, false, inset);
 		OS.DataBrowserSetMetric (handle, OS.kDataBrowserMetricDisclosureColumnEdgeInset, false, inset);		
 		OS.DataBrowserSetMetric (handle, OS.kDataBrowserMetricDisclosureTriangleAndContentGap, false, inset);
