@@ -205,10 +205,14 @@ void _setVisible (boolean visible) {
 	* This means that the first item in the menu will be under the mouse
 	* and will draw selected.  This is against the Macintosh User Guidelines.
 	* The fix is to offset the menu by one pixel in both directions when
-	* it coincides with the mouse location. 
+	* it coincides with the mouse location.
+	* 
+	*  Note that this problem is fixed in 10.4.x.
 	*/
-	if (left == where.h) left++;
-	if (top == where.v) top++;
+	if (OS.VERSION < 0x1040) {
+		if (left == where.h) left++;
+		if (top == where.v) top++;
+	}
 	int timer = 0;
 	Display display = this.display;
 	if (display.pollingTimer == 0) {
@@ -217,7 +221,9 @@ void _setVisible (boolean visible) {
 		OS.InstallEventLoopTimer (eventLoop, Display.POLLING_TIMEOUT / 1000.0, Display.POLLING_TIMEOUT / 1000.0, display.pollingProc, 0, id);
 		display.pollingTimer = timer = id [0];
 	}
-	OS.PopUpMenuSelect (handle, (short)top, (short)left, (short)-1);
+	where.h = (short) left;
+	where.v = (short) top;
+	OS.ContextualMenuSelect (handle, where, false, OS.kCMHelpItemRemoveHelp, null, null, null, null, null);
 	if (timer != 0) {
 		OS.RemoveEventLoopTimer (timer);
 		display.pollingTimer = 0;
