@@ -2824,11 +2824,28 @@ public boolean post (Event event) {
 				OS.XTestFakeMotionEvent (xDisplay, -1, event.x, event.y, 0);
 			} else {
 				int button = event.button;
-				if (button < 1 || button > 3) return false;
+				switch (button) {
+					case 1:
+					case 2:
+					case 3:	break;
+					case 4: button = 6;	break;
+					case 5: button = 7;	break;
+					default: return false;
+				}
 				OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseDown, 0);
 			}
 			return true;
 		}
+		/*
+		* This code is intentionally commented. After posting a
+		* mouse wheel event the system may respond unpredictably
+		* to subsequent mouse actions.
+		*/
+//		case SWT.MouseWheel: {
+//			if (event.count == 0) return false;
+//			int button = event.count < 0 ? 5 : 4;
+//			OS.XTestFakeButtonEvent (xDisplay, button, type == SWT.MouseWheel, 0);			
+//		}
 	}
 	return false;
 }
