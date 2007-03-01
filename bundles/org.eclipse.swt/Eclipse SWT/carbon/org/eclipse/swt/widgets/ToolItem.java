@@ -56,6 +56,7 @@ public class ToolItem extends Item {
 	static final int DEFAULT_HEIGHT = 22;
 	static final int DEFAULT_SEPARATOR_WIDTH = 6;
 	static final int ARROW_WIDTH = 9;
+	static final int INSET = 3;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -154,6 +155,14 @@ int actionProc (int theControl, int partCode) {
 	}
 	if (image != null && theControl == iconHandle) {
 		redrawWidget (labelHandle, false);
+	}
+	if (theControl == handle) {
+		if (image != null && iconHandle != 0) {
+			int transform = partCode != 0 ? OS.kTransformSelected : 0;
+			OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
+			redrawWidget (iconHandle, false);
+		}
+		if (labelHandle != 0) redrawWidget (labelHandle, false);
 	}
 	return result;
 }
@@ -328,9 +337,8 @@ Point computeSize () {
 		if ((style & SWT.DROP_DOWN) != 0) {
 			width += ARROW_WIDTH;
 		}
-		int inset = 3;
-		width += inset * 2;
-		height += inset * 2;
+		width += INSET * 2;
+		height += INSET * 2;
 	}
 	return new Point (width, height);
 }
@@ -642,6 +650,7 @@ void hookEvents () {
 	int [] mask1 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
+		OS.kEventClassControl, OS.kEventControlHitTest,
 		OS.kEventClassControl, OS.kEventControlTrack,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
@@ -662,6 +671,9 @@ void hookEvents () {
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, labelHandle, null);
 		OS.SetControlColorProc (labelHandle, colorProc);
 		OS.SetControlAction (labelHandle, display.actionProc);
+	}
+	if ((style & SWT.SEPARATOR) == 0) {
+		OS.SetControlAction (handle, display.actionProc);
 	}
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
@@ -722,12 +734,12 @@ int kEventControlHitTest (int nextHandler, int theEvent, int userData) {
 	if (display.clickCountButton == 2) return OS.noErr;
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	if (theControl [0] == labelHandle) {
+	if (theControl [0] == labelHandle || (theControl [0] == handle && (style & SWT.SEPARATOR) == 0)) {
 		CGRect rect = new CGRect ();
-		OS.HIViewGetBounds (labelHandle, rect);
+		OS.HIViewGetBounds (theControl [0], rect);
 		CGPoint pt = new CGPoint ();
 		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
-		if (OS.CGRectContainsPoint (rect, pt) != 0) {
+		if (OS.CGRectContainsPoint (rect, pt) != 0 && (theControl [0] != handle || (style & SWT.DROP_DOWN) == 0 || rect.width - pt.x >= ARROW_WIDTH + INSET)) {
 			OS.SetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, 2, new short[]{(short)1});
 			return OS.noErr;
 		}
@@ -761,7 +773,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		OS.HIViewGetBounds (handle, rect);
 		int x = (int) pt.x;
 		int width = (int) rect.width;
-		if (width - x < 12) {
+		if (width - x < ARROW_WIDTH + INSET) {
 			OS.HIViewConvertPoint (pt, handle, parent.handle);
 			Event event = new Event ();
 			event.detail = SWT.ARROW;
@@ -871,7 +883,6 @@ void setBounds (int x, int y, int width, int height) {
 	setBounds (handle, x, y, width, height, true, true, false);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int space = 0;
-	int inset = 3;
 	int stringWidth = 0, stringHeight = 0;
 	if (text.length () != 0) {
 		Point size = textExtent ();
@@ -890,17 +901,17 @@ void setBounds (int x, int y, int width, int height) {
 		arrowWidth = ARROW_WIDTH;
 	}
 	if ((parent.style & SWT.RIGHT) != 0) {
-		int imageX = inset;
-		int imageY = inset + (height - (inset * 2) - imageHeight) / 2;
+		int imageX = INSET;
+		int imageY = INSET + (height - (INSET * 2) - imageHeight) / 2;
 		setBounds (iconHandle, imageX, imageY, imageWidth, imageHeight, true, true, false);
 		int labelX = imageX + imageWidth + space;
-		int labelY = inset + (height - (inset * 2) - stringHeight) / 2;
+		int labelY = INSET + (height - (INSET * 2) - stringHeight) / 2;
 		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true, false);
 	} else {
-		int imageX = inset + (width - (inset * 2) - arrowWidth - imageWidth) / 2;
-		int imageY = inset + (height - imageHeight - stringHeight - inset * 2) / 2;
+		int imageX = INSET + (width - (INSET * 2) - arrowWidth - imageWidth) / 2;
+		int imageY = INSET + (height - imageHeight - stringHeight - INSET * 2) / 2;
 		setBounds (iconHandle, imageX, imageY, imageWidth, imageHeight, true, true, false);
-		int labelX = inset + (width - (inset * 2) - arrowWidth - stringWidth) / 2;
+		int labelX = INSET + (width - (INSET * 2) - arrowWidth - stringWidth) / 2;
 		int labelY = imageY + imageHeight + space;
 		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true, false);
 	}
