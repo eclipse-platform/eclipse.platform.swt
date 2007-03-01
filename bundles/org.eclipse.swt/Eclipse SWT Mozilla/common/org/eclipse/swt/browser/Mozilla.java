@@ -50,7 +50,7 @@ class Mozilla extends WebBrowser {
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount;
-	static boolean initialized, ignoreDispose;
+	static boolean initialized, ignoreDispose, isXULRunner;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8"; //$NON-NLS-1$
@@ -140,7 +140,6 @@ public void create (Composite parent, int style) {
 	if (!initialized) {
 		boolean initLoaded = false;
 		String mozillaPath = System.getProperty (XULRUNNER_PATH);
-		boolean isXULRunner = false;
 		if (mozillaPath == null) {
 			try {
 				Library.loadLibrary ("swt-xpcominit"); //$NON-NLS-1$
@@ -213,14 +212,16 @@ public void create (Composite parent, int style) {
 				 * One case where this will fail is attempting to use a 64-bit xulrunner while swt
 				 * is running in 32-bit mode, or vice versa.
 				 */
-				byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
-				rc = XPCOMInit.XPCOMGlueStartup (path);
-				if (rc != XPCOM.NS_OK) {
-					isXULRunner = false;	/* failed */
-					mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
-					if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
-				} else {
-					XPCOMInit.XPCOMGlueShutdown ();
+				if (isXULRunner) {
+					byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
+					rc = XPCOMInit.XPCOMGlueStartup (path);
+					if (rc != XPCOM.NS_OK) {
+						isXULRunner = false;	/* failed */
+						mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
+						if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
+					} else {
+						XPCOMInit.XPCOMGlueShutdown ();
+					}
 				}
 			}
 			C.free (greBuffer);
@@ -792,7 +793,7 @@ public void create (Composite parent, int style) {
 		}
 		downloadFactory_1_8.Release ();
 
-		FilePickerFactory pickerFactory = new FilePickerFactory ();
+		FilePickerFactory pickerFactory = isXULRunner ? new FilePickerFactory_1_8 () : new FilePickerFactory ();
 		pickerFactory.AddRef ();
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FILEPICKER_CONTRACTID, true);
 		aClassName = MozillaDelegate.wcsToMbcs (null, "FilePicker", true); //$NON-NLS-1$

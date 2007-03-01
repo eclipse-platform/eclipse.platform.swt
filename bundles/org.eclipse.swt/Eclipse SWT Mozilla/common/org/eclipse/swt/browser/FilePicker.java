@@ -112,18 +112,21 @@ int Release () {
 	return refCount;
 }
 
+/*
+ * As of Mozilla 1.8 some of nsIFilePicker's string arguments changed type.  This method
+ * answers a java string based on the type of string that is appropriate for the Mozilla
+ * version being used.
+ */
+String parseAString (int /*long*/ string) {
+	return null;
+}
+
 /* nsIFilePicker */
 
 int /*long*/ Init (int /*long*/ parent, int /*long*/ title, int /*long*/ mode) {
 	parentHandle = parent;
 	this.mode = (int)/*64*/mode;
-	if (title != 0) {
-		int length = XPCOM.strlen_PRUnichar (title);
-		char[] chars = new char[length];
-		XPCOM.memmove (chars, title, length * 2);
-		this.title = new String (chars);
-	}
-
+	this.title = parseAString (title);
 	return XPCOM.NS_OK;
 }
 
@@ -231,27 +234,27 @@ int /*long*/ GetFilterIndex (int /*long*/ aFilterIndex) {
 }
 
 int /*long*/ SetDefaultExtension (int /*long*/ aDefaultExtension) {
+	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ GetDefaultExtension (int /*long*/ aDefaultExtension) {
+	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ SetDefaultString (int /*long*/ aDefaultString) {
-	if (aDefaultString == 0) return XPCOM.NS_OK;
-	int length = XPCOM.strlen_PRUnichar (aDefaultString);
-	char[] chars = new char[length];
-	XPCOM.memmove (chars, aDefaultString, length * 2);
-	defaultFilename = new String (chars);
+	defaultFilename = parseAString (aDefaultString);
 	return XPCOM.NS_OK;
 }
 
 int /*long*/ GetDefaultString (int /*long*/ aDefaultString) {
+	/* note that the type of argument 1 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ AppendFilter (int /*long*/ title, int /*long*/ filter) {
+	/* note that the type of arguments 1 and 2 changed as of Mozilla 1.8 */
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
