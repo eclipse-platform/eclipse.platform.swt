@@ -2202,8 +2202,12 @@ public void setChecked (boolean value) {
 	checked = value;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (isInViewport ()) {
-		Rectangle bounds = getCheckboxBounds ();
-		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+		if (parent.hooks (SWT.EraseItem) || parent.hooks (SWT.PaintItem)) {
+			redrawItem ();
+		} else {
+			Rectangle bounds = getCheckboxBounds ();
+			parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+		}
 	}
 }
 /**

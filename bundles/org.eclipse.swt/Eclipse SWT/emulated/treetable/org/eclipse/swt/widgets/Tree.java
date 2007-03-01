@@ -3087,12 +3087,8 @@ void onSpace () {
 		redrawItem (focusItem.availableIndex, true);
 	}
 	if ((style & SWT.CHECK) != 0) {
-		focusItem.checked = !focusItem.checked;
-		if (focusItem.isInViewport ()) {
-			Rectangle bounds = focusItem.getCheckboxBounds ();
-			redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
-		}
-	}	
+		focusItem.setChecked (!focusItem.checked);
+	}
 	showItem (focusItem);
 	Event event = new Event ();
 	event.item = focusItem;
