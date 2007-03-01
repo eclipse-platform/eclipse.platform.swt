@@ -27,6 +27,9 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * </p><p>
+ * Note: Only one of the styles ICON_ERROR, ICON_INFORMATION,
+ * and ICON_WARNING may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
