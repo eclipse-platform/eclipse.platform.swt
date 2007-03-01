@@ -204,26 +204,26 @@ public void create (Composite parent, int style) {
 				C.memmove (bytes, greBuffer, length);
 				mozillaPath = new String (MozillaDelegate.mbcsToWcs (null, bytes));
 				isXULRunner = mozillaPath.length () > 0;
+
+				/*
+				 * Test whether the detected XULRunner can be used as the GRE before loading swt's
+				 * XULRunner library.  If it cannot be used then fall back to attempting to use
+				 * the GRE pointed to by MOZILLA_FIVE_HOME.
+				 * 
+				 * One case where this will fail is attempting to use a 64-bit xulrunner while swt
+				 * is running in 32-bit mode, or vice versa.
+				 */
+				byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
+				rc = XPCOMInit.XPCOMGlueStartup (path);
+				if (rc != XPCOM.NS_OK) {
+					isXULRunner = false;	/* failed */
+					mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
+					if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
+				} else {
+					XPCOMInit.XPCOMGlueShutdown ();
+				}
 			}
 			C.free (greBuffer);
-
-			/*
-			 * Test whether the detected XULRunner can be used as the GRE before loading swt's
-			 * XULRunner library.  If it cannot be used then fall back to attempting to use
-			 * the GRE pointed to by MOZILLA_FIVE_HOME.
-			 * 
-			 * One case where this will fail is attempting to use a 64-bit xulrunner while swt
-			 * is running in 32-bit mode, or vice versa.
-			 */
-			byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
-			rc = XPCOMInit.XPCOMGlueStartup (path);
-			if (rc != XPCOM.NS_OK) {
-				isXULRunner = false;	/* failed */
-				mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
-				if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
-			} else {
-				XPCOMInit.XPCOMGlueShutdown ();
-			}
 		}
 
 		if (isXULRunner) {
