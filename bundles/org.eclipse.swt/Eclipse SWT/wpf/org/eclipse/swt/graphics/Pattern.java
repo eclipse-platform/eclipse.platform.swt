@@ -137,17 +137,22 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
 	int startColor = OS.Color_FromArgb((byte)(alpha1 & 0xFF), OS.Color_R(color1.handle), OS.Color_G(color1.handle), OS.Color_B(color1.handle));
-	int endColor = OS.Color_FromArgb((byte)(alpha2 & 0xFF), OS.Color_R(color2.handle), OS.Color_G(color2.handle), OS.Color_B(color2.handle));
-	int startPoint = OS.gcnew_Point(x1, y1);
-	int endPoint = OS.gcnew_Point(x2, y2);
-	handle = OS.gcnew_LinearGradientBrush(startColor, endColor, startPoint, endPoint);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.GradientBrush_MappingMode(handle, OS.BrushMappingMode_Absolute);
-	OS.GradientBrush_SpreadMethod(handle, OS.GradientSpreadMethod_Repeat);
+	if (x1 == x2 && y1 == y2) {
+		handle = OS.gcnew_SolidColorBrush(startColor);
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	} else {
+		int startPoint = OS.gcnew_Point(x1, y1);
+		int endColor = OS.Color_FromArgb((byte)(alpha2 & 0xFF), OS.Color_R(color2.handle), OS.Color_G(color2.handle), OS.Color_B(color2.handle));
+		int endPoint = OS.gcnew_Point(x2, y2);
+		handle = OS.gcnew_LinearGradientBrush(startColor, endColor, startPoint, endPoint);
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.GradientBrush_MappingMode(handle, OS.BrushMappingMode_Absolute);
+		OS.GradientBrush_SpreadMethod(handle, OS.GradientSpreadMethod_Repeat);
+		OS.GCHandle_Free(endColor);
+		OS.GCHandle_Free(endPoint);
+		OS.GCHandle_Free(startPoint);
+	}
 	OS.GCHandle_Free(startColor);
-	OS.GCHandle_Free(endColor);
-	OS.GCHandle_Free(startPoint);
-	OS.GCHandle_Free(endPoint);
 	if (device.tracking) device.new_Object(this);
 }
 	
