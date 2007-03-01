@@ -1891,8 +1891,14 @@ void setBackground () {
 	int property = backgroundProperty ();
 	int brush = 0;
 	if (backgroundImage != null) {
-		brush = OS.gcnew_ImageBrush (backgroundImage.handle);
-		OS.TileBrush_TileMode (brush, OS.TileMode_Tile);//FIXME NOT WORKING
+		int imageHandle = backgroundImage.handle;
+		brush = OS.gcnew_ImageBrush (imageHandle);
+		OS.TileBrush_TileMode (brush, OS.TileMode_Tile);
+		OS.TileBrush_Stretch (brush, OS.Stretch_Fill);
+		OS.TileBrush_ViewportUnits (brush, OS.BrushMappingMode_Absolute);
+		int rect = OS.gcnew_Rect (0, 0, OS.BitmapSource_PixelWidth (imageHandle), OS.BitmapSource_PixelHeight (imageHandle));
+		OS.TileBrush_Viewport (brush, rect);
+		OS.GCHandle_Free (rect);
 	} else {
 		//TODO verify parent backgroundMode
 		int color = background;
