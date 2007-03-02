@@ -2776,32 +2776,46 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				boolean accentKey = false;
 				switch (keyMsg.message) {
 					case OS.WM_KEYDOWN:
-					case OS.WM_SYSKEYDOWN:
+					case OS.WM_SYSKEYDOWN: {
 						if (!OS.IsWinCE) {
-							/* 
-							* Bug in Windows. The high bit in the result of MapVirtualKey() on
-							* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
-							* They should both be bit 32.  The fix is to test the right bit.
-							*/
-							int mapKey = OS.MapVirtualKey (keyMsg.wParam, 2);
-							if (mapKey != 0) {
-								accentKey = (mapKey & (OS.IsWinNT ? 0x80000000 : 0x8000)) != 0;
-								if (!accentKey) {
-									for (int i=0; i<ACCENTS.length; i++) {
-										int value = OS.VkKeyScan (ACCENTS [i]);
-										if (value != -1 && (value & 0xFF) == keyMsg.wParam) {
-											int state = value >> 8;
-											if ((OS.GetKeyState (OS.VK_SHIFT) < 0) == ((state & 0x1) != 0) &&
-												(OS.GetKeyState (OS.VK_CONTROL) < 0) == ((state & 0x2) != 0) &&
-												(OS.GetKeyState (OS.VK_MENU) < 0) == ((state & 0x4) != 0)) {
-													if ((state & 0x7) != 0) accentKey = true;
-													break;
+							switch (keyMsg.wParam) {
+								case OS.VK_SHIFT:
+								case OS.VK_MENU:
+								case OS.VK_CONTROL:
+								case OS.VK_CAPITAL:
+								case OS.VK_NUMLOCK:
+								case OS.VK_SCROLL:
+									break;
+								default: {
+									/* 
+									* Bug in Windows. The high bit in the result of MapVirtualKey() on
+									* Windows NT is bit 32 while the high bit on Windows 95 is bit 16.
+									* They should both be bit 32.  The fix is to test the right bit.
+									*/
+									int mapKey = OS.MapVirtualKey (keyMsg.wParam, 2);
+									if (mapKey != 0) {
+										accentKey = (mapKey & (OS.IsWinNT ? 0x80000000 : 0x8000)) != 0;
+										if (!accentKey) {
+											for (int i=0; i<ACCENTS.length; i++) {
+												int value = OS.VkKeyScan (ACCENTS [i]);
+												if (value != -1 && (value & 0xFF) == keyMsg.wParam) {
+													int state = value >> 8;
+													if ((OS.GetKeyState (OS.VK_SHIFT) < 0) == ((state & 0x1) != 0) &&
+														(OS.GetKeyState (OS.VK_CONTROL) < 0) == ((state & 0x2) != 0) &&
+														(OS.GetKeyState (OS.VK_MENU) < 0) == ((state & 0x4) != 0)) {
+															if ((state & 0x7) != 0) accentKey = true;
+															break;
+													}
+												}
 											}
 										}
 									}
+									break;
 								}
 							}
 						}
+						break;
+					}
 				}
 				if (!accentKey && !ignoreNextKey) {
 					keyMsg.hwnd = control.handle;
@@ -2815,7 +2829,21 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				}
 				switch (keyMsg.message) {
 					case OS.WM_KEYDOWN:
-					case OS.WM_SYSKEYDOWN: ignoreNextKey = accentKey;
+					case OS.WM_SYSKEYDOWN: {
+						switch (keyMsg.wParam) {
+							case OS.VK_SHIFT:
+							case OS.VK_MENU:
+							case OS.VK_CONTROL:
+							case OS.VK_CAPITAL:
+							case OS.VK_NUMLOCK:
+							case OS.VK_SCROLL:
+								break;
+							default: {
+								ignoreNextKey = accentKey;
+								break;
+							}
+						}
+					}
 				}
 			}
 			if (consumed) {
