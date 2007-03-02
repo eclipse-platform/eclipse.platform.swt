@@ -561,11 +561,25 @@ void createColumn (TableColumn column, int index) {
 		column.handle = columnHandle;
 		column.modelIndex = modelIndex;
 	}
-	/* Set the search column whenever the model changes */
+	/* Disable searching when using VIRTUAL */
 	if ((style & SWT.VIRTUAL) != 0) {
-		/* Disable searching when using VIRTUAL */
-		OS.gtk_tree_view_set_enable_search (handle, false);
+		/*
+		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
+		* would prevent the user from being able to type in text to search the tree.
+		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
+		* search. This meant that even if FALSE was passed to enable_search, the user
+		* can still bring up the search pop up using the keybinding. GTK also introduced
+		* the notion of passing a -1 to gtk_set_search_column to disable searching
+		* (including the search key binding).  The fix is to use the right calls
+		* for the right version.
+		*/
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1); 
+		} else {
+			OS.gtk_tree_view_set_enable_search (handle, false);
+		}
 	} else {
+		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
 		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 	}
@@ -600,13 +614,27 @@ void createHandle (int index) {
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+	/* Disable searching when using VIRTUAL */
 	if ((style & SWT.VIRTUAL) != 0) {
 		/* The fixed_height_mode property only exists in GTK 2.3.2 and greater */
 		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
 			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 		}
-		/* Disable searching when using VIRTUAL */
-		OS.gtk_tree_view_set_enable_search (handle, false);
+		/*
+		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
+		* would prevent the user from being able to type in text to search the tree.
+		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
+		* search. This meant that even if FALSE was passed to enable_search, the user
+		* can still bring up the search pop up using the keybinding. GTK also introduced
+		* the notion of passing a -1 to gtk_set_search_column to disable searching
+		* (including the search key binding).  The fix is to use the right calls
+		* for the right version.
+		*/
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1); 
+		} else {
+			OS.gtk_tree_view_set_enable_search (handle, false);
+		}
 	}
 }
 
@@ -989,11 +1017,25 @@ void destroyItem (TableColumn column) {
 			createRenderers (checkColumn.handle, checkColumn.modelIndex, true, checkColumn.style);
 		}
 	}
-	/* Set the search column whenever the model changes */
+	/* Disable searching when using VIRTUAL */
 	if ((style & SWT.VIRTUAL) != 0) {
-		/* Disable searching when using VIRTUAL */
-		OS.gtk_tree_view_set_enable_search (handle, false);
+		/*
+		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
+		* would prevent the user from being able to type in text to search the tree.
+		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
+		* search. This meant that even if FALSE was passed to enable_search, the user
+		* can still bring up the search pop up using the keybinding. GTK also introduced
+		* the notion of passing a -1 to gtk_set_search_column to disable searching
+		* (including the search key binding).  The fix is to use the right calls
+		* for the right version.
+		*/
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1); 
+		} else {
+			OS.gtk_tree_view_set_enable_search (handle, false);
+		}
 	} else {
+		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
 		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 	}
@@ -2259,11 +2301,25 @@ public void removeAll () {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
 	resetCustomDraw ();
-	/* Set the search column whenever the model changes */
+	/* Disable searching when using VIRTUAL */
 	if ((style & SWT.VIRTUAL) != 0) {
-		/* Disable searching when using VIRTUAL */
-		OS.gtk_tree_view_set_enable_search (handle, false);
+		/*
+		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
+		* would prevent the user from being able to type in text to search the tree.
+		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
+		* search. This meant that even if FALSE was passed to enable_search, the user
+		* can still bring up the search pop up using the keybinding. GTK also introduced
+		* the notion of passing a -1 to gtk_set_search_column to disable searching
+		* (including the search key binding).  The fix is to use the right calls
+		* for the right version.
+		*/
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)){
+			OS.gtk_tree_view_set_search_column (handle, -1); 
+		} else {
+			OS.gtk_tree_view_set_enable_search (handle, false);
+		}
 	} else {
+		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
 		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 	}

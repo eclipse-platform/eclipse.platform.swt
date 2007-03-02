@@ -214,6 +214,30 @@ void createHandle (int index) {
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+	/*
+	* Bug in GTK. When a treeview is the child of an override shell, 
+	* and if the user has ever invokes the interactive search field, 
+	* and the treeview is disposed on a focus out event, it segment
+	* faults. The fix is to disable the search field in an override 
+	* shell.
+	*/
+	if ((getShell ().style & SWT.ON_TOP) != 0) {
+		/*
+		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
+		* would prevent the user from being able to type in text to search the tree.
+		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
+		* search. This meant that even if FALSE was passed to enable_search, the user
+		* can still bring up the search pop up using the keybinding. GTK also introduced
+		* the notion of passing a -1 to gtk_set_search_column to disable searching
+		* (including the search key binding).  The fix is to use the right calls
+		* for the right version.
+		*/
+		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
+			OS.gtk_tree_view_set_search_column (handle, -1);
+		} else {
+			OS.gtk_tree_view_set_enable_search (handle, false);
+		}
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
