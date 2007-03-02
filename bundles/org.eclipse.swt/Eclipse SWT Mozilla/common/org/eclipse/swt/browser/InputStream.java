@@ -66,7 +66,7 @@ int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (XPCOM.NS_IINPUTSTREAM_IID)) {
+	if (guid.Equals (nsIInputStream.NS_IINPUTSTREAM_IID)) {
 		XPCOM.memmove (ppvObject, new int /*long*/[] {inputStream.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

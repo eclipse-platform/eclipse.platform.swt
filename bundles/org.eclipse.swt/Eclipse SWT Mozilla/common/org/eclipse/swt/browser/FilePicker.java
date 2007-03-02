@@ -96,7 +96,7 @@ int /*long*/ QueryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (XPCOM.NS_IFILEPICKER_1_8_IID)) {
+	if (guid.Equals (nsIFilePicker_1_8.NS_IFILEPICKER_IID)) {
 		XPCOM.memmove(ppvObject, new int /*long*/[] {filePicker.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;

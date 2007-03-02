@@ -92,12 +92,12 @@ int /*long*/ queryInterface (int /*long*/ riid, int /*long*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (XPCOM.NS_IDIRECTORYSERVICEPROVIDER_IID)) {
+	if (guid.Equals (nsIDirectoryServiceProvider.NS_IDIRECTORYSERVICEPROVIDER_IID)) {
 		XPCOM.memmove (ppvObject, new int /*long*/[] {directoryServiceProvider.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (XPCOM.NS_IDIRECTORYSERVICEPROVIDER2_IID)) {
+	if (guid.Equals (nsIDirectoryServiceProvider2.NS_IDIRECTORYSERVICEPROVIDER2_IID)) {
 		XPCOM.memmove (ppvObject, new int /*long*/[] {directoryServiceProvider2.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
