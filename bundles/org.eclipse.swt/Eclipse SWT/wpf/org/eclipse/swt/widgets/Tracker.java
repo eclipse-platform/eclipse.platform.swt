@@ -420,12 +420,12 @@ public boolean getStippled () {
 
 void HandleKeyUp (int sender, int e) {
 	if (handle == 0) return;
-	if (!sendKeyEvent(SWT.KeyUp, e, false)) return;
+	if (!sendKeyEvent (SWT.KeyUp, e, false)) return;
 }
 
 void HandleKeyDown (int sender, int e) {
 	if (handle == 0) return;
-	if (!sendKeyEvent(SWT.KeyDown, e, false)) return;
+	if (!sendKeyEvent (SWT.KeyDown, e, false)) return;
 	
 	boolean ctrlDown = (OS.Keyboard_Modifiers() & OS.ModifierKeys_Control) != 0;
 	int stepSize = ctrlDown ? STEPSIZE_SMALL : STEPSIZE_LARGE;
@@ -486,19 +486,19 @@ void HandleKeyDown (int sender, int e) {
 
 void HandleMouseUp (int sender, int e) {
 	if (handle == 0) return;
-	if (!sendMouseEvent(SWT.MouseUp, e, false)) return;
+	if (!sendMouseEvent (SWT.MouseUp, e, false)) return;
 	if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 }
 
 void HandleMouseDown (int sender, int e) {
 	if (handle == 0) return;
-	if (!sendMouseEvent(SWT.MouseDown, e, false)) return;
+	if (!sendMouseEvent (SWT.MouseDown, e, false)) return;
 	if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 }
 
 void HandleMouseMove (int sender, int e) {
 	if (handle == 0) return;
-	if (!sendMouseEvent(SWT.MouseMove, e, false)) return;
+	if (!sendMouseEvent (SWT.MouseMove, e, false)) return;
 	int pointCanvas = OS.MouseEventArgs_GetPosition (e, canvasHandle);
 	int point = OS.Visual_PointToScreen (canvasHandle, pointCanvas);
 	int newX = (int) OS.Point_X (point);
@@ -600,7 +600,7 @@ public boolean open () {
 	
 	OS.Popup_IsOpen (handle, true);
 	OS.UIElement_Focusable (canvasHandle, true);
-	OS.UIElement_Focus (canvasHandle);//TODO DOTED LINE
+	OS.UIElement_Focus (canvasHandle);
 	OS.UIElement_CaptureMouse (canvasHandle);
 	
 	boolean mouseDown = OS.Mouse_LeftButton() == OS.MouseButtonState_Pressed;
