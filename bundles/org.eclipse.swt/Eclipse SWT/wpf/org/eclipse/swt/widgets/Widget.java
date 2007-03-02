@@ -86,12 +86,11 @@ public abstract class Widget {
 	static final int RELEASED		= 1<<11;
 	static final int DISPOSE_SENT	= 1<<12;
 	
-
 	static final int MOVED		= 1<<13;
 	static final int RESIZED	= 1<<14;
 	
-	/* Mouse track flag */
-	static final int TRACK_MOUSE	= 1<<13;
+	/* DragDetect */
+	static final int DRAG_DETECT	= 1<<15;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -989,10 +988,16 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-boolean sendDragEvent (int x, int y) {
+boolean sendDragEvent (int e) {
+	return sendMouseEvent (SWT.DragDetect, e, false);
+}
+
+boolean sendDragEvent (int button, int x, int y) {
 	Event event = new Event ();
+	event.button = button;
 	event.x = x;
 	event.y = y;
+	setInputState (event, SWT.DragDetect, 0, 0);
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
 	return event.doit;
@@ -1078,7 +1083,7 @@ boolean sendKeyEvent (int type, int e, boolean textInput) {
 boolean sendMouseEvent (int type, int e, boolean send) {
 	if (!hooks (type) && !filters (type)) return true;
 	Event event = new Event ();
-	if (type == SWT.MouseDown || type == SWT.MouseUp) {
+	if (type == SWT.MouseDown || type == SWT.MouseUp || type == SWT.DragDetect) {
 		event.button = OS.MouseButtonEventArgs_ChangedButton (e) + 1;
 		event.count = OS.MouseButtonEventArgs_ClickCount (e);
 	}

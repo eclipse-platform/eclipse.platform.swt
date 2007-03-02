@@ -143,6 +143,10 @@ public class Display extends Device {
 	Object data;
 	String [] keys;
 	Object [] values;
+	
+	/* DragDetect */
+	boolean dragging;
+	int dragDetectFrame, dragRect, dragMouseUp;
 
 	Control[] invalidate;
 	boolean ignoreRender;
@@ -971,7 +975,28 @@ Widget getWidget (int handle) {
  */
 public Control getCursorControl () {
 	checkDevice ();
-	int inputElement = OS.Mouse_DirectlyOver ();
+	int inputElement = 0;
+	int captured = OS.Mouse_Captured ();
+	if (captured != 0) {
+		int sources = OS.PresentationSource_CurrentSources ();
+		int enumerator = OS.IEnumerable_GetEnumerator (sources);
+		while (OS.IEnumerator_MoveNext (enumerator) && inputElement == 0) {
+			int current = OS.IEnumerator_Current (enumerator);
+			int root = OS.PresentationSource_RootVisual (current);
+			if (root != 0) {
+				int pt = OS.Mouse_GetPosition (root);
+				inputElement = OS.UIElement_InputHitTest (root, pt);
+				OS.GCHandle_Free (pt);
+				OS.GCHandle_Free (root);
+			}
+			OS.GCHandle_Free (current);
+		}
+		OS.GCHandle_Free (enumerator);
+		OS.GCHandle_Free (sources);
+		if (captured!=0)OS.GCHandle_Free (captured);
+	} else {
+		inputElement = OS.Mouse_DirectlyOver ();
+	}
 	if (inputElement != 0) {
 		Widget widget = getWidget (inputElement);
 		OS.GCHandle_Free (inputElement);

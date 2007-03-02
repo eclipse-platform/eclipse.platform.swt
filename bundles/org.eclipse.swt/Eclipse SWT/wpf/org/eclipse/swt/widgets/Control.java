@@ -506,7 +506,8 @@ Control [] computeTabList () {
 	return new Control [0];
 }
 
-void createWidget () { 
+void createWidget () {
+	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	super.createWidget ();
 	setClipping ();
@@ -538,6 +539,68 @@ void deregister () {
 void destroyWidget () {
 	parent.removeChild (this);
 	releaseHandle ();
+}
+
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param button the button that was pressed
+ * @param stateMask keyboard modifier keys
+ * @param x the widget-relative, x coordinate of the pointer
+ * @param y the widget-relative, y coordinate of the pointer
+ * 
+ * @return <code>true</code> if the gesture occured, and <code>false</code> otherwise.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
+public boolean dragDetect (int button, int stateMask, int x, int y) {
+	checkWidget ();
+	if (button != 1) return false;
+	boolean dragging = dragDetect (x, y);
+	if (display.dragMouseUp != 0) {
+		sendMouseEvent (SWT.MouseUp, display.dragMouseUp, false);	
+		OS.GCHandle_Free (display.dragMouseUp);
+		display.dragMouseUp = 0;
+	}
+	if (dragging) return sendDragEvent (button, x, y);
+	return false;
+}
+
+boolean dragDetect (double x, double y) {
+	display.dragging = false;
+	double minH = OS.SystemParameters_MinimumHorizontalDragDistance ();
+	double minV = OS.SystemParameters_MinimumVerticalDragDistance ();
+	int rect = display.dragRect = OS.gcnew_Rect(x - minH, y - minV, minH * 2, minV * 2);
+	int frame = display.dragDetectFrame = OS.gcnew_DispatcherFrame ();
+	OS.Dispatcher_PushFrame (frame);
+	OS.GCHandle_Free (rect);
+	OS.GCHandle_Free (frame);
+	display.dragDetectFrame = display.dragRect = 0;
+	return display.dragging;
 }
 
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
@@ -724,6 +787,24 @@ String getClipboardText () {
 		OS.GCHandle_Free(text);
 	}
 	return string;
+}
+
+/**
+ * Returns <code>true</code> if the receiver is detecting
+ * drag gestures, and  <code>false</code> otherwise. 
+ *
+ * @return the receiver's drag detect state
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public boolean getDragDetect () {
+	checkWidget ();
+	return (state & DRAG_DETECT) != 0;
 }
 
 /**
@@ -1054,13 +1135,39 @@ void HandlePreviewMouseDown (int sender, int e) {
 	if ((state & CANVAS) != 0) {
 		OS.UIElement_CaptureMouse (handle);
 	}
+	
+	boolean dragging = false;
+	if (OS.MouseButtonEventArgs_ChangedButton (e) == 0) {
+		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+			int point = OS.MouseEventArgs_GetPosition (e, handle);
+			double x = OS.Point_X (point);
+			double y = OS.Point_Y (point);
+			OS.GCHandle_Free (point);
+			dragging = dragDetect (x, y);
+		}
+	}
 	sendMouseEvent (SWT.MouseDown, e, false);
+	
+	if (dragging) {
+		sendDragEvent (e);
+	}
+	
+	if (display.dragMouseUp != 0) {
+		sendMouseEvent (SWT.MouseUp, display.dragMouseUp, false);	
+		OS.GCHandle_Free (display.dragMouseUp);
+		display.dragMouseUp = 0;
+	}
 }
 
 void HandlePreviewMouseUp (int sender, int e) {
 	if (!checkEvent (e)) return;
 	if ((state & CANVAS) != 0) {
 		OS.UIElement_ReleaseMouseCapture (handle);
+	}
+	if (display.dragDetectFrame != 0) {
+		OS.DispatcherFrame_Continue (display.dragDetectFrame, false);
+		display.dragMouseUp = OS.GCHandle_Alloc (e);
+		return;
 	}
 	sendMouseEvent (SWT.MouseUp, e, false);
 }
@@ -1088,6 +1195,17 @@ void HandleMouseLeave (int sender, int e) {
 
 void HandlePreviewMouseMove (int sender, int e) {
 	if (!checkEvent (e)) return;
+	if (display.dragDetectFrame != 0) {
+		OS.RoutedEventArgs_Handled (e, true);
+		int point = OS.MouseEventArgs_GetPosition (e, handle);
+		boolean contains = OS.Rect_Contains (display.dragRect, point);
+		OS.GCHandle_Free (point);
+		if (!contains) {
+			display.dragging = true;
+			OS.DispatcherFrame_Continue (display.dragDetectFrame, false);
+		}
+		return;
+	}
 	Control lastMouseControl = display.mouseControl;
 	if (lastMouseControl != null && !lastMouseControl.isDisposed() && lastMouseControl != this) {
 		if (OS.Visual_IsAncestorOf (topHandle (), lastMouseControl.topHandle ())) {
@@ -2092,6 +2210,29 @@ public void setCursor (Cursor cursor) {
 		int property = OS.FrameworkElement_CursorProperty ();
 		OS.DependencyObject_ClearValue (handle, property);
 		OS.GCHandle_Free (property);
+	}
+}
+
+/**
+ * Sets the receiver's drag detect state. If the argument is
+ * <code>true</code>, the receiver will detect drag gestures,
+ * otherwise these gestures will be ignored.
+ *
+ * @param dragDetect the new drag detect state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setDragDetect (boolean dragDetect) {
+	checkWidget ();
+	if (dragDetect) {
+		state |= DRAG_DETECT;
+	} else {
+		state &= ~DRAG_DETECT;
 	}
 }
 

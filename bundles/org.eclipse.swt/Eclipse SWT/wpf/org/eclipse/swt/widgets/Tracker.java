@@ -36,14 +36,14 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Tracker extends Widget {
-	Control parent;
-	boolean tracking, cancelled, stippled;
+	Composite parent;
+	boolean cancelled, stippled;
 	Rectangle [] rectangles, proportions;
 	Rectangle bounds;
 	int resizeCursor, clientCursor, cursorOrientation = SWT.NONE;
 	int oldX, oldY;
-	int [] rectShapes;
 	int canvasHandle;
+	int frame;
 	
 	/*
 	* The following values mirror step sizes on Windows
@@ -187,21 +187,16 @@ public void addKeyListener (KeyListener listener) {
 }
 
 Point adjustMoveCursor () {
+	if (bounds == null) return null;
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
-	if (parent != null) {
-		int point = OS.gcnew_Point (newX, newY);
-		int result = OS.Visual_PointToScreen (handle, point);
-		newX = (int) OS.Point_X(result);
-		newY = (int) OS.Point_Y(result);
-		OS.GCHandle_Free (point);
-		OS.GCHandle_Free (result);
-	}
-	OS.SetCursorPos (newX, newY);	
-	return new Point (newX, newY);
+	Point point = display.map (parent, null, newX, newY);
+	display.setCursorLocation (point);
+	return point;
 }
 
 Point adjustResizeCursor () {
+	if (bounds == null) return null;
 	int newX, newY;
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		newX = bounds.x;
@@ -218,15 +213,8 @@ Point adjustResizeCursor () {
 		newY = bounds.y + bounds.height / 2;
 	}
 
-	if (parent != null) {
-		int point = OS.gcnew_Point (newX, newY);
-		int result = OS.Visual_PointToScreen (handle, point);
-		newX = (int) OS.Point_X(result);
-		newY = (int) OS.Point_Y(result);
-		OS.GCHandle_Free (point);
-		OS.GCHandle_Free (result);
-	}
-	OS.SetCursorPos (newX, newY);
+	Point point = display.map (parent, null, newX, newY);
+	display.setCursorLocation (point);
 
 	/*
 	* If the client has not provided a custom cursor then determine
@@ -236,40 +224,40 @@ Point adjustResizeCursor () {
 		int newCursor = 0;
 		switch (cursorOrientation) {
 			case SWT.UP:
-				newCursor = OS.Cursors_SizeNS();
+				newCursor = OS.Cursors_SizeNS ();
 				break;
 			case SWT.DOWN:
-				newCursor = OS.Cursors_SizeNS();
+				newCursor = OS.Cursors_SizeNS ();
 				break;
 			case SWT.LEFT:
-				newCursor = OS.Cursors_SizeWE();
+				newCursor = OS.Cursors_SizeWE ();
 				break;
 			case SWT.RIGHT:
-				newCursor = OS.Cursors_SizeWE();
+				newCursor = OS.Cursors_SizeWE ();
 				break;
 			case SWT.LEFT | SWT.UP:
-				newCursor = OS.Cursors_SizeNWSE();
+				newCursor = OS.Cursors_SizeNWSE ();
 				break;
 			case SWT.RIGHT | SWT.DOWN:
-				newCursor = OS.Cursors_SizeNWSE();
+				newCursor = OS.Cursors_SizeNWSE ();
 				break;
 			case SWT.LEFT | SWT.DOWN:
-				newCursor = OS.Cursors_SizeNESW();
+				newCursor = OS.Cursors_SizeNESW ();
 				break;
 			case SWT.RIGHT | SWT.UP:
-				newCursor = OS.Cursors_SizeNESW();
+				newCursor = OS.Cursors_SizeNESW ();
 				break;
 			default:
-				newCursor = OS.Cursors_SizeAll();
+				newCursor = OS.Cursors_SizeAll ();
 				break;
 		}
-		OS.FrameworkElement_Cursor (handle, newCursor);
+		OS.FrameworkElement_Cursor (canvasHandle, newCursor);
 		if (resizeCursor != 0) {
 			OS.GCHandle_Free (resizeCursor);
 		}
 		resizeCursor = newCursor;
 	}
-	return new Point (newX, newY);
+	return point;
 }
 
 static int checkStyle (int style) {
@@ -290,10 +278,11 @@ static int checkStyle (int style) {
  */
 public void close () {
 	checkWidget ();
-	tracking = false;
+	if (frame != 0) OS.DispatcherFrame_Continue(frame, false);
 }
 
 Rectangle computeBounds () {
+	if (rectangles.length == 0) return null;
 	int xMin = rectangles [0].x;
 	int yMin = rectangles [0].y;
 	int xMax = rectangles [0].x + rectangles [0].width;
@@ -314,21 +303,23 @@ Rectangle computeBounds () {
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
 	bounds = computeBounds ();
-	for (int i = 0; i < rects.length; i++) {
-		int x = 0, y = 0, width = 0, height = 0;
-		if (bounds.width != 0) {
-			x = (rects [i].x - bounds.x) * 100 / bounds.width;
-			width = rects [i].width * 100 / bounds.width;
-		} else {
-			width = 100;
+	if (bounds != null) {
+		for (int i = 0; i < rects.length; i++) {
+			int x = 0, y = 0, width = 0, height = 0;
+			if (bounds.width != 0) {
+				x = (rects [i].x - bounds.x) * 100 / bounds.width;
+				width = rects [i].width * 100 / bounds.width;
+			} else {
+				width = 100;
+			}
+			if (bounds.height != 0) {
+				y = (rects [i].y - bounds.y) * 100 / bounds.height;
+				height = rects [i].height * 100 / bounds.height;
+			} else {
+				height = 100;
+			}
+			result [i] = new Rectangle (x, y, width, height);			
 		}
-		if (bounds.height != 0) {
-			y = (rects [i].y - bounds.y) * 100 / bounds.height;
-			height = rects [i].height * 100 / bounds.height;
-		} else {
-			height = 100;
-		}
-		result [i] = new Rectangle (x, y, width, height);			
 	}
 	return result;
 }
@@ -337,14 +328,55 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * Draw the rectangles displayed by the tracker.
  */
 void drawRectangles () {
-	for (int i = 0; i < rectShapes.length; i++) {
+	Rectangle bounds = this.bounds;
+	if (bounds == null) return;
+	int children = OS.Panel_Children (canvasHandle);
+	OS.UIElementCollection_Clear (children);
+	if (parent != null) {
+		Rectangle rect = parent.getClientArea ();
+		rect.intersect (bounds);
+		bounds = rect;
+		Point pt = display.map (parent, null, bounds.x, bounds.y);
+		OS.Popup_HorizontalOffset (handle, pt.x);
+		OS.Popup_VerticalOffset (handle, pt.y);
+	} else {
+		OS.Popup_HorizontalOffset (handle, bounds.x);
+		OS.Popup_VerticalOffset (handle, bounds.y);
+	}
+	OS.FrameworkElement_Width (handle, bounds.width);
+	OS.FrameworkElement_Height (handle, bounds.height);
+	int stroke, brush;
+	if (stippled) {
+		stroke = 3;
+		int pixelFormat = OS.PixelFormats_BlackWhite ();
+		byte [] buffer = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
+		int image = OS.BitmapSource_Create (8, 8, 96, 96, pixelFormat, 0, buffer, buffer.length, 2);	
+		OS.GCHandle_Free (pixelFormat);
+		brush = OS.gcnew_ImageBrush (image);
+		OS.TileBrush_TileMode (brush, OS.TileMode_Tile);
+		OS.TileBrush_Stretch (brush, OS.Stretch_Fill);
+		OS.TileBrush_ViewportUnits (brush, OS.BrushMappingMode_Absolute);
+		int rect = OS.gcnew_Rect (0, 0, OS.BitmapSource_PixelWidth(image), OS.BitmapSource_PixelHeight(image));
+		OS.TileBrush_Viewport (brush, rect);
+		OS.GCHandle_Free (rect);
+		OS.GCHandle_Free (image);
+	} else {
+		stroke = 1;
+		brush = OS.Brushes_Black ();
+	}
+	for (int i = 0; i < rectangles.length; i++) {
+		int child = OS.gcnew_Rectangle ();
+		OS.UIElementCollection_Add (children, child);
+		OS.Shape_StrokeThickness (child, stroke);
+		OS.Shape_Stroke (child, brush);
 		Rectangle rect = rectangles [i];
-		int child = rectShapes [i];
-		OS.Canvas_SetLeft (child, rect.x);
-		OS.Canvas_SetTop (child, rect.y);
+		OS.Canvas_SetLeft (child, rect.x - bounds.x);
+		OS.Canvas_SetTop (child, rect.y - bounds.y);
 		OS.FrameworkElement_Width (child, rect.width);
 		OS.FrameworkElement_Height (child, rect.height);
+		OS.GCHandle_Free (child);
 	}
+	OS.GCHandle_Free (brush);
 }
 
 /**
@@ -387,10 +419,12 @@ public boolean getStippled () {
 }
 
 void HandleKeyUp (int sender, int e) {
+	if (handle == 0) return;
 	if (!sendKeyEvent(SWT.KeyUp, e, false)) return;
 }
 
 void HandleKeyDown (int sender, int e) {
+	if (handle == 0) return;
 	if (!sendKeyEvent(SWT.KeyDown, e, false)) return;
 	
 	boolean ctrlDown = (OS.Keyboard_Modifiers() & OS.ModifierKeys_Control) != 0;
@@ -401,10 +435,10 @@ void HandleKeyDown (int sender, int e) {
 		case OS.Key_System:
 		case OS.Key_Escape:
 			cancelled = true;
-			tracking = false;
+			if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 			break;
 		case OS.Key_Return:
-			tracking = false;
+			if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 			break;
 		case OS.Key_Left:
 			xChange = -stepSize;
@@ -429,6 +463,7 @@ void HandleKeyDown (int sender, int e) {
 			sendEvent (SWT.Resize, event);
 			if (isDisposed ()) {
 				cancelled = true;
+				if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 				return;
 			}
 			drawRectangles ();
@@ -438,6 +473,7 @@ void HandleKeyDown (int sender, int e) {
 			sendEvent (SWT.Move, event);
 			if (isDisposed ()) {
 				cancelled = true;
+				if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 				return;
 			}
 			drawRectangles ();
@@ -449,20 +485,25 @@ void HandleKeyDown (int sender, int e) {
 }
 
 void HandleMouseUp (int sender, int e) {
+	if (handle == 0) return;
 	if (!sendMouseEvent(SWT.MouseUp, e, false)) return;
-	tracking = false;
+	if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 }
 
 void HandleMouseDown (int sender, int e) {
+	if (handle == 0) return;
 	if (!sendMouseEvent(SWT.MouseDown, e, false)) return;
-	tracking = false;
+	if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 }
 
 void HandleMouseMove (int sender, int e) {
+	if (handle == 0) return;
 	if (!sendMouseEvent(SWT.MouseMove, e, false)) return;
-	int point = OS.MouseEventArgs_GetPosition (e, handle);
+	int pointCanvas = OS.MouseEventArgs_GetPosition (e, canvasHandle);
+	int point = OS.Visual_PointToScreen (canvasHandle, pointCanvas);
 	int newX = (int) OS.Point_X (point);
 	int newY = (int) OS.Point_Y (point);
+	OS.GCHandle_Free (pointCanvas);
 	OS.GCHandle_Free (point);
 	if (newX != oldX || newY != oldY) {
 		Event event = new Event ();
@@ -473,6 +514,7 @@ void HandleMouseMove (int sender, int e) {
 			sendEvent (SWT.Resize, event);
 			if (isDisposed ()) {
 				cancelled = true;
+				if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 			}
 			drawRectangles ();
 			Point cursorPos = adjustResizeCursor ();
@@ -485,6 +527,7 @@ void HandleMouseMove (int sender, int e) {
 			sendEvent (SWT.Move, event);
 			if (isDisposed ()) {
 				cancelled = true;
+				if (frame != 0) OS.DispatcherFrame_Continue (frame, false);
 			}
 			drawRectangles ();
 		}
@@ -494,6 +537,7 @@ void HandleMouseMove (int sender, int e) {
 }
 
 void moveRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	if (xChange < 0 && ((style & SWT.LEFT) == 0)) xChange = 0;
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) xChange = 0;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) yChange = 0;
@@ -523,7 +567,6 @@ public boolean open () {
 	if (rectangles == null) return false;
 	if (rectangles.length == 0) return false;
 	cancelled = false;
-	tracking = true;
 
 	/*
 	* If exactly one of UP/DOWN is specified as a style then set the cursor
@@ -538,73 +581,35 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 	
-	handle = OS.gcnew_Window ();
+	jniRef = OS.NewGlobalRef (this);
+	if (jniRef == 0) error (SWT.ERROR_NO_HANDLES);
+	handle = OS.gcnew_Popup ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.Popup_AllowsTransparency (handle, true);
+	
 	canvasHandle = OS.gcnew_Canvas ();
 	if (canvasHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.ContentControl_Content (handle, canvasHandle);
-	if (parent != null) {
-		Rectangle bounds = parent.getBounds ();//	wrong
-		OS.Window_Left (handle, bounds.x);
-		OS.Window_Top (handle, bounds.y);
-		OS.FrameworkElement_Width (handle, bounds.width);
-		OS.FrameworkElement_Height (handle, bounds.height);
-	} else {
-		OS.Window_Left (handle, 0);
-		OS.Window_Top (handle, 0);
-		OS.FrameworkElement_Width (handle, OS.SystemParameters_PrimaryScreenWidth ());
-		OS.FrameworkElement_Height (handle, OS.SystemParameters_PrimaryScreenHeight ());
+	OS.Popup_Child (handle, canvasHandle);
+	OS.UIElement_IsHitTestVisible (canvasHandle, false);
+	OS.FrameworkElement_FocusVisualStyle (canvasHandle, 0);
+	if (clientCursor != 0) {
+		OS.FrameworkElement_Cursor (canvasHandle, clientCursor);
 	}
-	OS.Window_ShowInTaskbar (handle, false);
-	OS.Window_AllowsTransparency (handle, true);
-	OS.Window_ResizeMode (handle, OS.ResizeMode_NoResize);
-	OS.Window_WindowStyle (handle, OS.WindowStyle_None);
-	if (clientCursor != 0) OS.FrameworkElement_Cursor (handle, clientCursor);
-	int color = OS.Colors_Black;
-	int brush = OS.gcnew_SolidColorBrush (color);
-	OS.Brush_Opacity (brush, 0.01);
-	OS.Control_Background (handle, brush);
-	OS.GCHandle_Free (brush);
-	
-	int children = OS.Panel_Children (canvasHandle);
-	int stroke = stippled ? 3 : 1;
-	brush = stippled ? OS.Brushes_Navy() : OS.Brushes_Black();
-	rectShapes = new int[rectangles.length];
-	for (int i = 0; i < rectShapes.length; i++) {
-		int child = rectShapes [i] = OS.gcnew_Rectangle ();
-		OS.UIElementCollection_Add (children, child);
-		OS.Shape_StrokeThickness(child, stroke);
-		OS.Shape_Stroke(child, brush);
-	}
-	OS.GCHandle_Free(brush);
+
 	drawRectangles ();
 	
-	jniRef = OS.NewGlobalRef (this);
-	if (jniRef == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int handler = OS.gcnew_KeyEventHandler (jniRef, "HandleKeyDown");
-	OS.UIElement_KeyDown (handle, handler);	
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_KeyEventHandler (jniRef, "HandleKeyUp");
-	OS.UIElement_KeyUp (handle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_MouseEventHandler (jniRef, "HandleMouseMove");
-	OS.UIElement_MouseMove (handle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandleMouseUp");
-	OS.UIElement_MouseUp (handle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandleMouseDown");
-	OS.UIElement_MouseDown (handle, handler);
-	OS.GCHandle_Free (handler);
-	
-	OS.UIElement_Focus (handle);
-	OS.Window_Show (handle);
+	OS.Popup_IsOpen (handle, true);
+	OS.UIElement_Focusable (canvasHandle, true);
+	OS.UIElement_Focus (canvasHandle);//TODO DOTED LINE
+	OS.UIElement_CaptureMouse (canvasHandle);
 	
 	boolean mouseDown = OS.Mouse_LeftButton() == OS.MouseButtonState_Pressed;
 	Point cursorPos;
 	if (mouseDown) {
-		int point = OS.Mouse_GetPosition (handle);
+		int pointCanvas = OS.Mouse_GetPosition (canvasHandle);
+		int point = OS.Visual_PointToScreen (canvasHandle, pointCanvas);
 		cursorPos = new Point ((int) OS.Point_X (point), (int) OS.Point_Y (point));
+		OS.GCHandle_Free (pointCanvas);
 		OS.GCHandle_Free (point);
 	} else {
 		if ((style & SWT.RESIZE) != 0) {
@@ -616,32 +621,37 @@ public boolean open () {
 	oldX = cursorPos.x;
 	oldY = cursorPos.y;
 	
+	int handler = OS.gcnew_KeyEventHandler (jniRef, "HandleKeyDown");
+	OS.UIElement_KeyDown (canvasHandle, handler);	
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_KeyEventHandler (jniRef, "HandleKeyUp");
+	OS.UIElement_KeyUp (canvasHandle, handler);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_MouseEventHandler (jniRef, "HandleMouseMove");
+	OS.UIElement_MouseMove (canvasHandle, handler);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandleMouseUp");
+	OS.UIElement_MouseUp (canvasHandle, handler);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandleMouseDown");
+	OS.UIElement_MouseDown (canvasHandle, handler);
+	OS.GCHandle_Free (handler);
+	
 	/* Tracker behaves like a Dialog with its own OS event loop. */
-	Display display = Display.getCurrent();
-	while (tracking && !cancelled) {
-		if (!display.readAndDispatch()) {
-			display.sleep();
-		}
-	}
+	frame = OS.gcnew_DispatcherFrame ();
+	OS.Dispatcher_PushFrame (frame);
 
-	for (int i = 0; i < rectShapes.length; i++) {
-		int child = rectShapes [i];
-		OS.UIElementCollection_Remove (children, child);
-		OS.GCHandle_Free (child);
-	}
-	OS.GCHandle_Free (children);
 	if (resizeCursor != 0) {
 		OS.GCHandle_Free (resizeCursor);
 		resizeCursor = 0;
 	}
-	OS.Window_Close (handle);
+	OS.UIElement_ReleaseMouseCapture (canvasHandle);
+	OS.Popup_IsOpen (handle, false);
 	OS.GCHandle_Free (canvasHandle);
 	OS.GCHandle_Free (handle);
-	jniRef = 0;
+	if (frame != 0) OS.GCHandle_Free (frame);
 	OS.DeleteGlobalRef (jniRef);
-	handle = 0; 
-	rectShapes = null;
-	tracking = false;
+	jniRef = handle = canvasHandle = frame = 0;
 	
 	return !cancelled;
 }
@@ -697,6 +707,7 @@ public void removeKeyListener(KeyListener listener) {
 }
 
 void resizeRectangles (int xChange, int yChange) {
+	if (bounds == null) return;
 	/*
 	* If the cursor orientation has not been set in the orientation of
 	* this change then try to set it here.
@@ -820,12 +831,9 @@ void resizeRectangles (int xChange, int yChange) {
  */
 public void setCursor(Cursor newCursor) {
 	checkWidget();
-	clientCursor = 0;
-	if (newCursor != null) {
-		clientCursor = newCursor.handle;
-		if (handle != 0) {
-			OS.FrameworkElement_Cursor (handle, clientCursor);
-		}
+	clientCursor = newCursor != null ? newCursor.handle : 0;
+	if (canvasHandle != 0) {
+		OS.FrameworkElement_Cursor (canvasHandle, clientCursor);
 	}
 }
 
