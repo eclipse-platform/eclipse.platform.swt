@@ -993,7 +993,6 @@ public Control getCursorControl () {
 		}
 		OS.GCHandle_Free (enumerator);
 		OS.GCHandle_Free (sources);
-		if (captured!=0)OS.GCHandle_Free (captured);
 	} else {
 		inputElement = OS.Mouse_DirectlyOver ();
 	}
