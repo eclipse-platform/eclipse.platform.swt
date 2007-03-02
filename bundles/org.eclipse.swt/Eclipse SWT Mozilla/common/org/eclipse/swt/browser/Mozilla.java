@@ -43,14 +43,14 @@ class Mozilla extends WebBrowser {
 	int /*long*/ request;
 	Point location;
 	Point size;
-	boolean visible, isChild;
+	boolean visible, isChild, ignoreDispose;
 	Shell tip = null;
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount;
-	static boolean initialized, ignoreDispose, isXULRunner;
+	static boolean Initialized, IsXULRunner;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8"; //$NON-NLS-1$
@@ -79,7 +79,7 @@ class Mozilla extends WebBrowser {
 	static {
 		MozillaClearSessions = new Runnable () {
 			public void run () {
-				if (!initialized) return;
+				if (!Initialized) return;
 				int /*long*/[] result = new int /*long*/[1];
 				int rc = XPCOM.NS_GetServiceManager (result);
 				if (rc != XPCOM.NS_OK) error (rc);
@@ -137,8 +137,9 @@ public void create (Composite parent, int style) {
 	Display display = parent.getDisplay ();
 
 	int /*long*/[] result = new int /*long*/[1];
-	if (!initialized) {
+	if (!Initialized) {
 		boolean initLoaded = false;
+		IsXULRunner = false;
 		String mozillaPath = System.getProperty (XULRUNNER_PATH);
 		if (mozillaPath == null) {
 			try {
@@ -169,9 +170,9 @@ public void create (Composite parent, int style) {
 				 * Another browser has already initialized xulrunner in this process,
 				 * so just bind to it instead of trying to initialize a new one.
 				 */
-				initialized = true;
+				Initialized = true;
 			}
-			isXULRunner = true;
+			IsXULRunner = true;
 		}
 
 		if (initLoaded) {
@@ -202,7 +203,7 @@ public void create (Composite parent, int style) {
 				bytes = new byte[length];
 				C.memmove (bytes, greBuffer, length);
 				mozillaPath = new String (MozillaDelegate.mbcsToWcs (null, bytes));
-				isXULRunner = mozillaPath.length () > 0;
+				IsXULRunner = mozillaPath.length () > 0;
 
 				/*
 				 * Test whether the detected XULRunner can be used as the GRE before loading swt's
@@ -212,11 +213,11 @@ public void create (Composite parent, int style) {
 				 * One case where this will fail is attempting to use a 64-bit xulrunner while swt
 				 * is running in 32-bit mode, or vice versa.
 				 */
-				if (isXULRunner) {
+				if (IsXULRunner) {
 					byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
 					rc = XPCOMInit.XPCOMGlueStartup (path);
 					if (rc != XPCOM.NS_OK) {
-						isXULRunner = false;	/* failed */
+						IsXULRunner = false;	/* failed */
 						mozillaPath = mozillaPath.substring (0, mozillaPath.lastIndexOf (SEPARATOR_OS));
 						if (Device.DEBUG) System.out.println ("cannot use detected XULRunner: " + mozillaPath); //$NON-NLS-1$
 					} else {
@@ -227,7 +228,7 @@ public void create (Composite parent, int style) {
 			C.free (greBuffer);
 		}
 
-		if (isXULRunner) {
+		if (IsXULRunner) {
 			if (Device.DEBUG) System.out.println ("XULRunner path: " + mozillaPath); //$NON-NLS-1$
 			try {
 				Library.loadLibrary ("swt-xulrunner"); //$NON-NLS-1$
@@ -315,7 +316,7 @@ public void create (Composite parent, int style) {
 			}
 		}
 
-		if (!initialized) {
+		if (!Initialized) {
 			int /*long*/[] retVal = new int /*long*/[1];
 			nsEmbedString pathString = new nsEmbedString (mozillaPath);
 			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, retVal);
@@ -344,7 +345,7 @@ public void create (Composite parent, int style) {
 		}
 
 		/* If JavaXPCOM is detected then attempt to initialize it with the XULRunner being used */
-		if (isXULRunner) {
+		if (IsXULRunner) {
 			try {
 				Class clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
 				Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
@@ -793,7 +794,7 @@ public void create (Composite parent, int style) {
 		}
 		downloadFactory_1_8.Release ();
 
-		FilePickerFactory pickerFactory = isXULRunner ? new FilePickerFactory_1_8 () : new FilePickerFactory ();
+		FilePickerFactory pickerFactory = IsXULRunner ? new FilePickerFactory_1_8 () : new FilePickerFactory ();
 		pickerFactory.AddRef ();
 		aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_FILEPICKER_CONTRACTID, true);
 		aClassName = MozillaDelegate.wcsToMbcs (null, "FilePicker", true); //$NON-NLS-1$
@@ -806,7 +807,7 @@ public void create (Composite parent, int style) {
 
 		componentRegistrar.Release ();
 		componentManager.Release ();
-		initialized = true;
+		Initialized = true;
 	}
 
 	BrowserCount++;
