@@ -310,6 +310,7 @@ typedef enum {
 	FrameworkElement_1ContextMenuOpening_FUNC,
 	FrameworkElement_1Cursor_FUNC,
 	FrameworkElement_1CursorProperty_FUNC,
+	FrameworkElement_1FocusVisualStyle_FUNC,
 	FrameworkElement_1GetBindingExpression_FUNC,
 	FrameworkElement_1Height__I_FUNC,
 	FrameworkElement_1Height__ID_FUNC,

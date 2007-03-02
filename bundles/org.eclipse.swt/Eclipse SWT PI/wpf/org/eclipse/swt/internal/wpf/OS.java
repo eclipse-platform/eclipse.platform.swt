@@ -663,6 +663,7 @@ public static final native void FrameworkElement_Cursor(int sender, int cursor);
 public static final native int FrameworkElement_CursorProperty();
 public static final native int FrameworkElement_ActualHeightProperty();
 public static final native int FrameworkElement_ActualWidthProperty();
+public static final native void FrameworkElement_FocusVisualStyle(int sender, int style);
 public static final native int FrameworkElement_GetBindingExpression(int sender, int dp);
 public static final native void FrameworkElement_HorizontalAlignment(int sender, int value);
 public static final native boolean FrameworkElement_IsLoaded(int sender);

@@ -3518,6 +3518,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1CursorProperty)
 }
 #endif
 
+#ifndef NO_FrameworkElement_1FocusVisualStyle
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1FocusVisualStyle)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1FocusVisualStyle)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1FocusVisualStyle_FUNC);
+	((FrameworkElement^)TO_OBJECT(arg0))->FocusVisualStyle = ((Style^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1FocusVisualStyle_FUNC);
+}
+#endif
+
 #ifndef NO_FrameworkElement_1GetBindingExpression
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1GetBindingExpression)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1GetBindingExpression)
