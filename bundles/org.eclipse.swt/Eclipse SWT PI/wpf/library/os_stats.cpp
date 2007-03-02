@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1089;
-int OS_nativeFunctionCallCount[1089];
+int OS_nativeFunctionCount = 1097;
+int OS_nativeFunctionCallCount[1097];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -399,6 +399,7 @@ char * OS_nativeFunctionNames[] = {
 	"HeaderedItemsControl_1Header__II",
 	"Hyperlink_1Click",
 	"ICollection_1Count",
+	"IEnumerable_1GetEnumerator",
 	"IEnumerator_1Current",
 	"IEnumerator_1MoveNext",
 	"IList_1Add",
@@ -505,6 +506,7 @@ char * OS_nativeFunctionNames[] = {
 	"MouseEventArgs_1XButton1",
 	"MouseEventArgs_1XButton2",
 	"MouseWheelEventArgs_1Delta",
+	"Mouse_1Captured",
 	"Mouse_1DirectlyOver",
 	"Mouse_1GetPosition",
 	"Mouse_1LeftButton",
@@ -585,6 +587,7 @@ char * OS_nativeFunctionNames[] = {
 	"Popup_1Opened",
 	"Popup_1VerticalOffset__I",
 	"Popup_1VerticalOffset__ID",
+	"PresentationSource_1CurrentSources",
 	"PresentationSource_1FromVisual",
 	"PresentationSource_1RootVisual",
 	"ProgressBar_1IsIndeterminate__I",
@@ -603,6 +606,7 @@ char * OS_nativeFunctionNames[] = {
 	"RangeBase_1Value__I",
 	"RangeBase_1Value__ID",
 	"RangeBase_1ValueChanged",
+	"Rect_1Contains",
 	"Rect_1Height__I",
 	"Rect_1Height__ID",
 	"Rect_1Intersect",
@@ -704,6 +708,8 @@ char * OS_nativeFunctionNames[] = {
 	"SystemParameters_1HighContrast",
 	"SystemParameters_1HorizontalScrollBarButtonWidth",
 	"SystemParameters_1HorizontalScrollBarHeight",
+	"SystemParameters_1MinimumHorizontalDragDistance",
+	"SystemParameters_1MinimumVerticalDragDistance",
 	"SystemParameters_1PrimaryScreenHeight",
 	"SystemParameters_1PrimaryScreenWidth",
 	"SystemParameters_1ThinHorizontalBorderHeight",
@@ -849,6 +855,7 @@ char * OS_nativeFunctionNames[] = {
 	"Typeface_1Style",
 	"Typeface_1Weight",
 	"UIElementCollection_1Add",
+	"UIElementCollection_1Clear",
 	"UIElementCollection_1Contains",
 	"UIElementCollection_1Count",
 	"UIElementCollection_1Current",
@@ -870,6 +877,7 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1IsEnabled__I",
 	"UIElement_1IsEnabled__IZ",
 	"UIElement_1IsFocused",
+	"UIElement_1IsHitTestVisible",
 	"UIElement_1IsKeyboardFocusWithin",
 	"UIElement_1IsKeyboardFocused",
 	"UIElement_1IsMeasureValid",

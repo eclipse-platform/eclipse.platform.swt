@@ -4691,6 +4691,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(ICollection_1Count)
 }
 #endif
 
+#ifndef NO_IEnumerable_1GetEnumerator
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(IEnumerable_1GetEnumerator)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(IEnumerable_1GetEnumerator)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, IEnumerable_1GetEnumerator_FUNC);
+	rc = (jint)TO_HANDLE(((IEnumerable ^)TO_OBJECT(arg0))->GetEnumerator());
+	OS_NATIVE_EXIT(env, that, IEnumerable_1GetEnumerator_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_IEnumerator_1Current
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(IEnumerator_1Current)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(IEnumerator_1Current)
@@ -5974,6 +5987,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(MouseWheelEventArgs_1Delta)
 }
 #endif
 
+#ifndef NO_Mouse_1Captured
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Mouse_1Captured)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Mouse_1Captured)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Mouse_1Captured_FUNC);
+	rc = (jint)TO_HANDLE(Mouse::Captured);
+	OS_NATIVE_EXIT(env, that, Mouse_1Captured_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Mouse_1DirectlyOver
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Mouse_1DirectlyOver)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(Mouse_1DirectlyOver)
@@ -6950,6 +6976,19 @@ JNIEXPORT void JNICALL OS_NATIVE(Popup_1VerticalOffset__ID)
 }
 #endif
 
+#ifndef NO_PresentationSource_1CurrentSources
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(PresentationSource_1CurrentSources)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(PresentationSource_1CurrentSources)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PresentationSource_1CurrentSources_FUNC);
+	rc = (jint)TO_HANDLE(PresentationSource::CurrentSources);
+	OS_NATIVE_EXIT(env, that, PresentationSource_1CurrentSources_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PresentationSource_1FromVisual
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(PresentationSource_1FromVisual)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(PresentationSource_1FromVisual)
@@ -7159,6 +7198,19 @@ JNIEXPORT void JNICALL OS_NATIVE(RangeBase_1ValueChanged)
 	OS_NATIVE_ENTER(env, that, RangeBase_1ValueChanged_FUNC);
 	((RangeBase ^)TO_OBJECT(arg0))->ValueChanged += ((RoutedPropertyChangedEventHandler<double> ^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, RangeBase_1ValueChanged_FUNC);
+}
+#endif
+
+#ifndef NO_Rect_1Contains
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Rect_1Contains)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Rect_1Contains)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Rect_1Contains_FUNC);
+	rc = (jboolean)((Rect^)TO_OBJECT(arg0))->Contains((Point)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Rect_1Contains_FUNC);
+	return rc;
 }
 #endif
 
@@ -8353,6 +8405,32 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1HorizontalScrollBarHeight)
 	OS_NATIVE_ENTER(env, that, SystemParameters_1HorizontalScrollBarHeight_FUNC);
 	rc = (jdouble)SystemParameters::HorizontalScrollBarHeight;
 	OS_NATIVE_EXIT(env, that, SystemParameters_1HorizontalScrollBarHeight_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SystemParameters_1MinimumHorizontalDragDistance
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1MinimumHorizontalDragDistance)(JNIEnv *env, jclass that);
+JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1MinimumHorizontalDragDistance)
+	(JNIEnv *env, jclass that)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, SystemParameters_1MinimumHorizontalDragDistance_FUNC);
+	rc = (jdouble)SystemParameters::MinimumHorizontalDragDistance;
+	OS_NATIVE_EXIT(env, that, SystemParameters_1MinimumHorizontalDragDistance_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SystemParameters_1MinimumVerticalDragDistance
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1MinimumVerticalDragDistance)(JNIEnv *env, jclass that);
+JNIEXPORT jdouble JNICALL OS_NATIVE(SystemParameters_1MinimumVerticalDragDistance)
+	(JNIEnv *env, jclass that)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, SystemParameters_1MinimumVerticalDragDistance_FUNC);
+	rc = (jdouble)SystemParameters::MinimumVerticalDragDistance;
+	OS_NATIVE_EXIT(env, that, SystemParameters_1MinimumVerticalDragDistance_FUNC);
 	return rc;
 }
 #endif
@@ -10126,6 +10204,17 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElementCollection_1Add)
 }
 #endif
 
+#ifndef NO_UIElementCollection_1Clear
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElementCollection_1Clear)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(UIElementCollection_1Clear)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, UIElementCollection_1Clear_FUNC);
+	((UIElementCollection^)TO_OBJECT(arg0))->Clear();
+	OS_NATIVE_EXIT(env, that, UIElementCollection_1Clear_FUNC);
+}
+#endif
+
 #ifndef NO_UIElementCollection_1Contains
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(UIElementCollection_1Contains)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jboolean JNICALL OS_NATIVE(UIElementCollection_1Contains)
@@ -10378,6 +10467,17 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1IsFocused)
 	rc = (jboolean)((UIElement^)TO_OBJECT(arg0))->IsFocused;
 	OS_NATIVE_EXIT(env, that, UIElement_1IsFocused_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_UIElement_1IsHitTestVisible
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1IsHitTestVisible)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1IsHitTestVisible)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1IsHitTestVisible_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->IsHitTestVisible = (arg1);
+	OS_NATIVE_EXIT(env, that, UIElement_1IsHitTestVisible_FUNC);
 }
 #endif
 
