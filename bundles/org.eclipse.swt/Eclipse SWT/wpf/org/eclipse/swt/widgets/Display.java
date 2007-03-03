@@ -1597,8 +1597,14 @@ public Thread getThread () {
  */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	//TODO
-	return 0;
+	//TODO - for now, return a drawing context that can measure text
+	if (data == null) return 0;
+	int visual = OS.gcnew_DrawingVisual();
+	if (visual == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int dc = OS.DrawingVisual_RenderOpen (visual);
+	if (dc == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	data.visual = visual;
+	return data.drawingContext = dc;
 }
 
 /**
@@ -1697,7 +1703,13 @@ void HandleOperationPosted (int sender, int e) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int hDC, GCData data) {
+public void internal_dispose_GC (int dc, GCData data) {
+	//TODO - the wrong drawing context was created
+	if (data != null && data.drawingContext == 0) {
+		OS.DrawingContext_Close (dc);
+		OS.GCHandle_Free (dc);
+		OS.GCHandle_Free (data.visual);
+	}
 }
 
 boolean isValidThread () {
