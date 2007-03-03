@@ -603,6 +603,10 @@ boolean dragDetect (double x, double y) {
 	return display.dragging;
 }
 
+void enableWidget (boolean enabled) {
+	OS.UIElement_IsEnabled (handle, enabled);
+}
+
 boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
@@ -824,7 +828,7 @@ public boolean getDragDetect () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	return OS.UIElement_IsEnabled (handle);
+	return (state & DISABLED) == 0;
 }
 
 /**
@@ -2251,7 +2255,7 @@ public void setDragDetect (boolean dragDetect) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	if (OS.UIElement_IsEnabled (handle) == enabled) return;
+	if (((state & DISABLED) == 0) == enabled) return;
 	/*
 	* Feature in Windows.  If the receiver has focus, disabling
 	* the receiver causes no window to have focus.  The fix is
@@ -2267,7 +2271,12 @@ public void setEnabled (boolean enabled) {
 			fixFocus = isFocusAncestor (control);
 //		}
 	}
-	OS.UIElement_IsEnabled (handle, enabled);
+	if (enabled) {
+		state &= ~DISABLED;
+	} else {
+		state |= DISABLED;
+	}
+	enableWidget (enabled);
 	if (fixFocus) fixFocus (control);
 }
 

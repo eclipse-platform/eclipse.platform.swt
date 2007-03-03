@@ -140,6 +140,10 @@ int defaultBackground () {
 	return OS.SystemColors_ControlColor;
 }
 
+void enableWidget (boolean enabled) {
+	OS.UIElement_IsHitTestVisible (handle, enabled);
+}
+
 String getNameText () {
 	return getText ();
 }

@@ -349,6 +349,15 @@ int defaultBackground () {
 	return 0;
 }
 
+void enableWidget (boolean enabled) {
+	if ((state & CANVAS) != 0) {
+		OS.UIElement_IsHitTestVisible (topHandle (), enabled);
+	} else {
+		OS.UIElement_IsEnabled (handle, enabled);
+		OS.UIElement_IsHitTestVisible (parentingHandle (), enabled);
+	}
+}
+
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : parent.findDeferredControl ();
 }
