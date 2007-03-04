@@ -6108,7 +6108,7 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	/*
 	* Bug in Windows.  Under certain circumstances, when
 	* WM_SETREDRAW is used to turn off drawing and then
-	* WM_GETITEMRECT is sent to get the bounds of an item
+	* TVM_GETITEMRECT is sent to get the bounds of an item
 	* that is not inside the client area, Windows segment
 	* faults.  The fix is to call the default window proc
 	* rather than the default tree proc.
