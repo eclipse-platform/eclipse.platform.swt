@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1098;
-int OS_nativeFunctionCallCount[1098];
+int OS_nativeFunctionCount = 1110;
+int OS_nativeFunctionCallCount[1110];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -405,6 +405,9 @@ char * OS_nativeFunctionNames[] = {
 	"IEnumerator_1MoveNext",
 	"IList_1Add",
 	"IList_1GetEnumerator",
+	"IList_1IndexOf",
+	"IList_1Insert",
+	"IList_1Remove",
 	"IList_1default",
 	"ImageSource_1typeid",
 	"Image_1Source",
@@ -662,6 +665,8 @@ char * OS_nativeFunctionNames[] = {
 	"Shape_1Fill",
 	"Shape_1Stroke",
 	"Shape_1StrokeThickness",
+	"SizeChangedEventArgs_1NewSize",
+	"SizeChangedEventArgs_1PreviousSize",
 	"Size_1Height__I",
 	"Size_1Height__ID",
 	"Size_1Width__I",
@@ -826,9 +831,16 @@ char * OS_nativeFunctionNames[] = {
 	"ToggleButton_1IsThreeStateProperty",
 	"ToggleButton_1Unchecked",
 	"ToggleButton_1UncheckedEvent",
-	"ToolBarTray_1IsLocked",
+	"ToolBarTray_1Background",
+	"ToolBarTray_1IsLocked__I",
+	"ToolBarTray_1IsLocked__IZ",
 	"ToolBarTray_1Orientation",
 	"ToolBarTray_1ToolBars",
+	"ToolBar_1Band__I",
+	"ToolBar_1Band__II",
+	"ToolBar_1BandIndex__I",
+	"ToolBar_1BandIndex__II",
+	"ToolBar_1HasOverflowItems",
 	"ToolBar_1SetOverflowMode",
 	"TransformCollection_1Add",
 	"TransformGroup_1Children",

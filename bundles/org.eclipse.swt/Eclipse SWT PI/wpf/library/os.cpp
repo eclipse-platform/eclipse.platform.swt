@@ -4765,6 +4765,41 @@ JNIEXPORT jint JNICALL OS_NATIVE(IList_1GetEnumerator)
 }
 #endif
 
+#ifndef NO_IList_1IndexOf
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(IList_1IndexOf)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(IList_1IndexOf)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, IList_1IndexOf_FUNC);
+	rc = (jint)((IList^)TO_OBJECT(arg0))->IndexOf((Object^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, IList_1IndexOf_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_IList_1Insert
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(IList_1Insert)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT void JNICALL OS_NATIVE(IList_1Insert)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, IList_1Insert_FUNC);
+	((IList^)TO_OBJECT(arg0))->Insert(arg1, (Object^)TO_OBJECT(arg2));
+	OS_NATIVE_EXIT(env, that, IList_1Insert_FUNC);
+}
+#endif
+
+#ifndef NO_IList_1Remove
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(IList_1Remove)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(IList_1Remove)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, IList_1Remove_FUNC);
+	((IList^)TO_OBJECT(arg0))->Remove((Object^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, IList_1Remove_FUNC);
+}
+#endif
+
 #ifndef NO_IList_1default
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(IList_1default)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(IList_1default)
@@ -7827,6 +7862,32 @@ JNIEXPORT void JNICALL OS_NATIVE(Shape_1StrokeThickness)
 }
 #endif
 
+#ifndef NO_SizeChangedEventArgs_1NewSize
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SizeChangedEventArgs_1NewSize)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(SizeChangedEventArgs_1NewSize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SizeChangedEventArgs_1NewSize_FUNC);
+	rc = (jint)TO_HANDLE(((SizeChangedEventArgs^)TO_OBJECT(arg0))->NewSize);
+	OS_NATIVE_EXIT(env, that, SizeChangedEventArgs_1NewSize_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SizeChangedEventArgs_1PreviousSize
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SizeChangedEventArgs_1PreviousSize)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(SizeChangedEventArgs_1PreviousSize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SizeChangedEventArgs_1PreviousSize_FUNC);
+	rc = (jint)TO_HANDLE(((SizeChangedEventArgs^)TO_OBJECT(arg0))->PreviousSize);
+	OS_NATIVE_EXIT(env, that, SizeChangedEventArgs_1PreviousSize_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Size_1Height__I
 extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(Size_1Height__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jdouble JNICALL OS_NATIVE(Size_1Height__I)
@@ -9841,14 +9902,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(ToggleButton_1UncheckedEvent)
 }
 #endif
 
-#ifndef NO_ToolBarTray_1IsLocked
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(ToolBarTray_1IsLocked)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
-JNIEXPORT void JNICALL OS_NATIVE(ToolBarTray_1IsLocked)
+#ifndef NO_ToolBarTray_1Background
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ToolBarTray_1Background)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ToolBarTray_1Background)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, ToolBarTray_1Background_FUNC);
+	((ToolBarTray^)TO_OBJECT(arg0))->Background = ((Brush^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, ToolBarTray_1Background_FUNC);
+}
+#endif
+
+#ifndef NO_ToolBarTray_1IsLocked__I
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(ToolBarTray_1IsLocked__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(ToolBarTray_1IsLocked__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBarTray_1IsLocked__I_FUNC);
+	rc = (jboolean)((ToolBarTray^)TO_OBJECT(arg0))->IsLocked;
+	OS_NATIVE_EXIT(env, that, ToolBarTray_1IsLocked__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ToolBarTray_1IsLocked__IZ
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ToolBarTray_1IsLocked__IZ)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ToolBarTray_1IsLocked__IZ)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	OS_NATIVE_ENTER(env, that, ToolBarTray_1IsLocked_FUNC);
+	OS_NATIVE_ENTER(env, that, ToolBarTray_1IsLocked__IZ_FUNC);
 	((ToolBarTray^)TO_OBJECT(arg0))->IsLocked = (arg1);
-	OS_NATIVE_EXIT(env, that, ToolBarTray_1IsLocked_FUNC);
+	OS_NATIVE_EXIT(env, that, ToolBarTray_1IsLocked__IZ_FUNC);
 }
 #endif
 
@@ -9872,6 +9957,67 @@ JNIEXPORT jint JNICALL OS_NATIVE(ToolBarTray_1ToolBars)
 	OS_NATIVE_ENTER(env, that, ToolBarTray_1ToolBars_FUNC);
 	rc = (jint)TO_HANDLE(((ToolBarTray^)TO_OBJECT(arg0))->ToolBars);
 	OS_NATIVE_EXIT(env, that, ToolBarTray_1ToolBars_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ToolBar_1Band__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1Band__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1Band__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1Band__I_FUNC);
+	rc = (jint)((ToolBar^)TO_OBJECT(arg0))->Band;
+	OS_NATIVE_EXIT(env, that, ToolBar_1Band__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ToolBar_1Band__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ToolBar_1Band__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ToolBar_1Band__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, ToolBar_1Band__II_FUNC);
+	((ToolBar^)TO_OBJECT(arg0))->Band = (arg1);
+	OS_NATIVE_EXIT(env, that, ToolBar_1Band__II_FUNC);
+}
+#endif
+
+#ifndef NO_ToolBar_1BandIndex__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1BandIndex__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1BandIndex__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1BandIndex__I_FUNC);
+	rc = (jint)((ToolBar^)TO_OBJECT(arg0))->BandIndex;
+	OS_NATIVE_EXIT(env, that, ToolBar_1BandIndex__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ToolBar_1BandIndex__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ToolBar_1BandIndex__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ToolBar_1BandIndex__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, ToolBar_1BandIndex__II_FUNC);
+	((ToolBar^)TO_OBJECT(arg0))->BandIndex = (arg1);
+	OS_NATIVE_EXIT(env, that, ToolBar_1BandIndex__II_FUNC);
+}
+#endif
+
+#ifndef NO_ToolBar_1HasOverflowItems
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(ToolBar_1HasOverflowItems)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(ToolBar_1HasOverflowItems)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1HasOverflowItems_FUNC);
+	rc = (jboolean)((ToolBar^)TO_OBJECT(arg0))->HasOverflowItems;
+	OS_NATIVE_EXIT(env, that, ToolBar_1HasOverflowItems_FUNC);
 	return rc;
 }
 #endif
