@@ -580,26 +580,32 @@ void destroyWidget () {
 public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
 	if (button != 1) return false;
-	boolean dragging = dragDetect (x, y);
-	if (display.dragMouseUp != 0) {
-		sendMouseEvent (SWT.MouseUp, display.dragMouseUp, false);	
-		OS.GCHandle_Free (display.dragMouseUp);
-		display.dragMouseUp = 0;
-	}
-	if (dragging) return sendDragEvent (button, x, y);
+	boolean dragging = dragDetect (x, y, false);
+	if (dragging) return sendDragEvent (button, stateMask, x, y);
 	return false;
 }
 
-boolean dragDetect (double x, double y) {
+void dragHandler () {
+	int frame = display.dragDetectFrame = OS.gcnew_DispatcherFrame ();
+	OS.Dispatcher_PushFrame (frame);
+	OS.GCHandle_Free (frame);
+	OS.GCHandle_Free (display.dragRect);
+	if (display.dragMouseDown != 0) OS.GCHandle_Free (display.dragMouseDown);
+	display.dragMouseDown = display.dragDetectFrame = display.dragRect = 0;
+}
+
+boolean dragDetect (double x, double y, boolean post) {
 	display.dragging = false;
 	double minH = OS.SystemParameters_MinimumHorizontalDragDistance ();
 	double minV = OS.SystemParameters_MinimumVerticalDragDistance ();
-	int rect = display.dragRect = OS.gcnew_Rect(x - minH, y - minV, minH * 2, minV * 2);
-	int frame = display.dragDetectFrame = OS.gcnew_DispatcherFrame ();
-	OS.Dispatcher_PushFrame (frame);
-	OS.GCHandle_Free (rect);
-	OS.GCHandle_Free (frame);
-	display.dragDetectFrame = display.dragRect = 0;
+	display.dragRect = OS.gcnew_Rect(x - minH, y - minV, minH * 2, minV * 2);
+	if (post) {
+		int handler = OS.gcnew_NoArgsDelegate (jniRef, "dragHandler");
+		OS.Dispatcher_BeginInvoke (display.dispatcher, OS.DispatcherPriority_Send, handler);
+		OS.GCHandle_Free (handler);
+	} else {
+		dragHandler ();
+	}
 	return display.dragging;
 }
 
@@ -1140,27 +1146,18 @@ void HandlePreviewMouseDown (int sender, int e) {
 		OS.UIElement_CaptureMouse (handle);
 	}
 	
-	boolean dragging = false;
 	if (OS.MouseButtonEventArgs_ChangedButton (e) == 0) {
 		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 			int point = OS.MouseEventArgs_GetPosition (e, handle);
 			double x = OS.Point_X (point);
 			double y = OS.Point_Y (point);
 			OS.GCHandle_Free (point);
-			dragging = dragDetect (x, y);
+			display.dragMouseDown = OS.GCHandle_Alloc (e);
+			dragDetect (x, y, true);
 		}
 	}
+	
 	sendMouseEvent (SWT.MouseDown, e, false);
-	
-	if (dragging) {
-		sendDragEvent (e);
-	}
-	
-	if (display.dragMouseUp != 0) {
-		sendMouseEvent (SWT.MouseUp, display.dragMouseUp, false);	
-		OS.GCHandle_Free (display.dragMouseUp);
-		display.dragMouseUp = 0;
-	}
 }
 
 void HandlePreviewMouseUp (int sender, int e) {
@@ -1170,8 +1167,6 @@ void HandlePreviewMouseUp (int sender, int e) {
 	}
 	if (display.dragDetectFrame != 0) {
 		OS.DispatcherFrame_Continue (display.dragDetectFrame, false);
-		display.dragMouseUp = OS.GCHandle_Alloc (e);
-		return;
 	}
 	sendMouseEvent (SWT.MouseUp, e, false);
 }
@@ -1207,6 +1202,11 @@ void HandlePreviewMouseMove (int sender, int e) {
 		if (!contains) {
 			display.dragging = true;
 			OS.DispatcherFrame_Continue (display.dragDetectFrame, false);
+			if (display.dragMouseDown != 0) {
+				sendDragEvent (display.dragMouseDown);
+				OS.GCHandle_Free (display.dragMouseDown);
+				display.dragMouseDown = 0;
+			}
 		}
 		return;
 	}

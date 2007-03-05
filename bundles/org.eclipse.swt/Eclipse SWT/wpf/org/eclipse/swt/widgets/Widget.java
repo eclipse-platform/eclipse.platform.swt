@@ -445,10 +445,6 @@ public void dispose () {
 	release (true);
 }
 
-boolean dragDetect (int x, int y) {
-	return hooks (SWT.DragDetect);
-}
-
 boolean dragOverride () {
 	return false;
 }
@@ -992,14 +988,13 @@ boolean sendDragEvent (int e) {
 	return sendMouseEvent (SWT.DragDetect, e, false);
 }
 
-boolean sendDragEvent (int button, int x, int y) {
+boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
 	event.x = x;
 	event.y = y;
-	setInputState (event, SWT.DragDetect, 0, 0);
+	event.stateMask = stateMask;
 	postEvent (SWT.DragDetect, event);
-	if (isDisposed ()) return false;
 	return event.doit;
 }
 

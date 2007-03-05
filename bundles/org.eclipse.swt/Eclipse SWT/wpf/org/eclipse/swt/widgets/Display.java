@@ -146,7 +146,7 @@ public class Display extends Device {
 	
 	/* DragDetect */
 	boolean dragging;
-	int dragDetectFrame, dragRect, dragMouseUp;
+	int dragDetectFrame, dragRect, dragMouseDown;
 
 	Control[] invalidate;
 	boolean ignoreRender;
@@ -2909,8 +2909,11 @@ public void wake () {
 	wakeThread ();
 }
 
+void wakeThreadHandler () {
+}
+
 void wakeThread () {
-	int handler = OS.gcnew_NoArgsDelegate ();
+	int handler = OS.gcnew_NoArgsDelegate (jniRef, "wakeThreadHandler");
 	OS.Dispatcher_BeginInvoke (dispatcher, OS.DispatcherPriority_Send, handler);
 	OS.GCHandle_Free (handler);
 }
