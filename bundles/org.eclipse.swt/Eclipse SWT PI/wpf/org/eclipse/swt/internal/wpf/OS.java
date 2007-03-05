@@ -386,7 +386,7 @@ public static final native int gcnew_TimerHandler(int jniRef, String string);
 public static final native int gcnew_MouseEventHandler(int jniRef, String string);
 public static final native int gcnew_MouseButtonEventHandler(int jniRef, String string);
 public static final native int gcnew_MouseWheelEventHandler(int jniRef, String string);
-public static final native int gcnew_NoArgsDelegate();
+public static final native int gcnew_NoArgsDelegate(int jniRef, String string);
 
 /** JNI natives */
 public static final native int NewGlobalRef(Object object);

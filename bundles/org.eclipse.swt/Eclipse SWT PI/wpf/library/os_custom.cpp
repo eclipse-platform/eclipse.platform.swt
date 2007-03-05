@@ -645,7 +645,7 @@ public:
 	SWTHandler() {
 	}
 	
-	SWTHandler(JNIEnv* env, jint jniRef, jstring method) {
+	SWTHandler(JNIEnv* env, jint jniRef, jstring method, char* signature) {
 		const char * methodString;
 		if (jvm == NULL) env->GetJavaVM(&jvm);		
 		cookie = gcnew JniRefCookie(env, jniRef);
@@ -653,7 +653,7 @@ public:
 		if (method) methodString = (const char *) env->GetStringUTFChars(method, NULL);
 		if (object && methodString) {
 			jclass javaClass = env->GetObjectClass(object);    
-			mid = env->GetMethodID(javaClass, methodString, "(II)V");
+			mid = env->GetMethodID(javaClass, methodString, signature);
 		}
 		if (method && methodString) env->ReleaseStringUTFChars(method, methodString);
 	}
@@ -784,13 +784,34 @@ public:
 		EventHandler (sender, e);	
 	}
 		
-	void NoArgsDelegate() {}
+	void NoArgsDelegate() {	
+		jobject object = cookie->object;
+		if (object == NULL || mid == NULL) return; 	
+		JNIEnv* env;
+		bool detach = false;
+
+#ifdef JNI_VERSION_1_2
+		if (IS_JNI_1_2) {
+			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+		}
+#endif
+		if (env == NULL) {
+			jvm->AttachCurrentThread((void **)&env, NULL);
+			if (IS_JNI_1_2) detach = true;
+		}
+		if (env != NULL) {
+			if (!env->ExceptionOccurred()) {
+				env->CallVoidMethod(object, mid);
+			}
+			if (detach) jvm->DetachCurrentThread();
+		}	
+	}
 };
 
 #define HANDLER_CONSTRUCTOR(name) JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1##name##) (JNIEnv *env, jclass that, jint arg0, jstring arg1) { \
 	jint rc = 0; \
 	OS_NATIVE_ENTER(env, that, gcnew_1##name##_FUNC); \
-	rc = (jint)TO_HANDLE(gcnew name (gcnew SWTHandler(env, arg0, arg1), &SWTHandler::##name##)); \
+	rc = (jint)TO_HANDLE(gcnew name (gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::##name##)); \
 	OS_NATIVE_EXIT(env, that, gcnew_1##name##_FUNC); \
 	return rc; \
 } \
@@ -864,7 +885,7 @@ HANDLER_CONSTRUCTOR (RoutedEventHandler)
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TimerHandler) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1TimerHandler_FUNC);
-	rc = (jint)TO_HANDLE(gcnew EventHandler (gcnew SWTHandler(env, arg0, arg1), &SWTHandler::TimerHandler));
+	rc = (jint)TO_HANDLE(gcnew EventHandler (gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::TimerHandler));
 	OS_NATIVE_EXIT(env, that, gcnew_1TimerHandler_FUNC);
 	return rc;
 }
@@ -874,7 +895,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TimerHandler) (JNIEnv *env, jclass that,
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandlerObject) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1RoutedPropertyChangedEventHandlerObject_FUNC);
-	rc = (jint)TO_HANDLE(gcnew RoutedPropertyChangedEventHandler<Object^>(gcnew SWTHandler(env, arg0, arg1), &SWTHandler::RoutedPropertyChangedEventHandler));
+	rc = (jint)TO_HANDLE(gcnew RoutedPropertyChangedEventHandler<Object^>(gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::RoutedPropertyChangedEventHandler));
 	OS_NATIVE_EXIT(env, that, gcnew_1RoutedPropertyChangedEventHandlerObject_FUNC);
 	return rc;
 }
@@ -884,17 +905,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandlerObject)
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandler) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1RoutedPropertyChangedEventHandler_FUNC);
-	rc = (jint)TO_HANDLE(gcnew RoutedPropertyChangedEventHandler<double>(gcnew SWTHandler(env, arg0, arg1), &SWTHandler::RoutedPropertyChangedEventHandler));
+	rc = (jint)TO_HANDLE(gcnew RoutedPropertyChangedEventHandler<double>(gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::RoutedPropertyChangedEventHandler));
 	OS_NATIVE_EXIT(env, that, gcnew_1RoutedPropertyChangedEventHandler_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_gcnew_1NoArgsDelegate
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NoArgsDelegate) (JNIEnv *env, jclass that) {
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NoArgsDelegate) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1NoArgsDelegate_FUNC);
-	rc = (jint)TO_HANDLE(gcnew NoArgsDelegate(gcnew SWTHandler(), &SWTHandler::NoArgsDelegate));
+	rc = (jint)TO_HANDLE(gcnew NoArgsDelegate(gcnew SWTHandler(env, arg0, arg1, "()V"), &SWTHandler::NoArgsDelegate));
 	OS_NATIVE_EXIT(env, that, gcnew_1NoArgsDelegate_FUNC);
 	return rc;
 }
