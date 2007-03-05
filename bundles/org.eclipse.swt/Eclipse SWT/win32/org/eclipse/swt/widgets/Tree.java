@@ -900,12 +900,18 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	RECT clipRect = null;
 	if (hwndHeader != 0) {
 		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (count != 0 && !printClient) {
-			clipRect = new RECT ();
-			HDITEM hdItem = new HDITEM ();
-			hdItem.mask = OS.HDI_WIDTH;
-			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-			OS.SetRect (clipRect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+		if (count != 0) {
+			boolean clip = !printClient;
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				clip = true;
+			}
+			if (clip) {
+				clipRect = new RECT ();
+				HDITEM hdItem = new HDITEM ();
+				hdItem.mask = OS.HDI_WIDTH;
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+				OS.SetRect (clipRect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+			}
 		}
 	}
 	int clrText = -1, clrTextBk = -1;
