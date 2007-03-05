@@ -273,6 +273,7 @@ void createHandle () {
 void createHandle (boolean scrolled, boolean menubar) {
 	handle = OS.gcnew_SWTCanvas (jniRef);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.FrameworkElement_FocusVisualStyle (handle, 0);
 	if (scrolled || menubar) {
 		scrolledHandle = OS.gcnew_Grid ();
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
