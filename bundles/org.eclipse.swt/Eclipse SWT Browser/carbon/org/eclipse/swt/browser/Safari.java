@@ -419,6 +419,34 @@ int handleCallback(int nextHandler, int theEvent) {
 //					doit = false;
 //					OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
 //					if (!doit) return OS.noErr;
+
+					int[] length = new int[1];
+					int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
+					if (status == OS.noErr && length[0] != 0) {
+						int[] modifiers = new int[1];
+						OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+						char[] chars = new char[1];
+						OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 2, null, chars);
+						if ((modifiers[0] & OS.cmdKey) != 0) {
+							switch (chars[0]) {
+								case 'v': {
+									int webView = Cocoa.HIWebViewGetWebView (webViewHandle);
+									Cocoa.objc_msgSend (webView, Cocoa.S_paste);
+									return OS.noErr;
+								}
+								case 'c': {
+									int webView = Cocoa.HIWebViewGetWebView (webViewHandle);
+									Cocoa.objc_msgSend (webView, Cocoa.S_copy);
+									return OS.noErr;
+								}
+								case 'x': {
+									int webView = Cocoa.HIWebViewGetWebView (webViewHandle);
+									Cocoa.objc_msgSend (webView, Cocoa.S_cut);
+									return OS.noErr;
+								}
+							}
+						}
+					}
 					break;
 				}
 			}
