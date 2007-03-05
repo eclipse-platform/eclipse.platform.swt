@@ -1123,6 +1123,12 @@ void HandleLostKeyboardFocus (int sender, int e) {
 void HandlePreviewKeyDown (int sender, int e) {
 	if (!checkEvent (e)) return;
 	
+	if (display.dragDetectFrame != 0) {
+		if (OS.KeyEventArgs_Key (e) == OS.Key_Escape) {
+			OS.DispatcherFrame_Continue (display.dragDetectFrame, false);
+		}
+	}
+
 	/* Let OS handle mnemonics for now */	
 //	if (translateMnemonic (e)) {
 //		OS.RoutedEventArgs_Handled (e, true);
