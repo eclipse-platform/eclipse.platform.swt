@@ -404,6 +404,12 @@ void releaseHandle () {
 	parent = null;
 }
 
+void releaseWidget () {
+	super.releaseWidget ();
+	if (stringPtr != 0) OS.GCHandle_Free (stringPtr);
+	stringPtr = 0;
+}
+
 void register() {
 	display.addWidget (headerHandle, this);
 }
