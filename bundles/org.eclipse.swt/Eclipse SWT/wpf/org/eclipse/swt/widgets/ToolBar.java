@@ -158,6 +158,9 @@ void createItem (ToolItem item, int index) {
 void createWidget () {
 	super.createWidget();
 	children = new Control [4];
+	updateLayout (parentingHandle);
+	setThumbVisibility (OS.Visibility_Collapsed);
+	setButtonVisibility (OS.Visibility_Collapsed);
 }
 
 void deregister () {
@@ -313,33 +316,6 @@ boolean hasItems () {
 	return true;
 }
 
-void HandleLoaded (int sender, int e) {
-	if (!checkEvent (e)) return;
-	int template = OS.Control_Template (handle);
-	int buttonName = createDotNetString ("OverflowButton", false);
-	int button = OS.FrameworkTemplate_FindName (template, buttonName, handle);
-	if (button != 0) {
-		OS.UIElement_Visibility (button, OS.Visibility_Collapsed);
-		OS.GCHandle_Free (button);
-	}
-	OS.GCHandle_Free (buttonName);
-	int thumbName = createDotNetString ("ToolBarThumb", false);
-	int thumb = OS.FrameworkTemplate_FindName (template, thumbName, handle);
-	if (thumb != 0) {
-		OS.UIElement_Visibility (thumb, OS.Visibility_Collapsed);
-		OS.GCHandle_Free (thumb);
-	}
-	OS.GCHandle_Free (thumbName);
-	OS.GCHandle_Free (template);
-}
-
-void hookEvents() {
-	super.hookEvents ();
-	int handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleLoaded");
-	OS.FrameworkElement_Loaded (handle, handler);
-	OS.GCHandle_Free (handler);
-}
-
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -430,6 +406,28 @@ void removeControl (Control control) {
 	OS.GCHandle_Free (items);
 }
 
+void setButtonVisibility (byte visibility) {
+	int template = OS.Control_Template (handle);
+	int overFlowName = createDotNetString ("OverflowGrid", false);
+	int overFlowGrid = OS.FrameworkTemplate_FindName (template, overFlowName, handle);
+	if (overFlowGrid != 0) {
+		OS.UIElement_Visibility (overFlowGrid, visibility);
+		OS.GCHandle_Free (overFlowGrid);
+	}
+	OS.GCHandle_Free (overFlowName);
+	int borderName = createDotNetString ("MainPanelBorder", false);
+	int border = OS.FrameworkTemplate_FindName (template, borderName, handle);
+	if (border != 0) {
+		int left = visibility == OS.Visibility_Visible ? 11 : 0;
+		int margin = OS.gcnew_Thickness (0, 0, left, 0);
+		OS.FrameworkElement_Margin (border, margin);
+		OS.GCHandle_Free (border);
+		OS.GCHandle_Free (margin);
+	}
+	OS.GCHandle_Free (borderName);
+	OS.GCHandle_Free (template);	
+}
+
 void setForegroundBrush (int brush) {
 	if (brush != 0) {
 		OS.Control_Foreground (handle, brush);
@@ -438,6 +436,18 @@ void setForegroundBrush (int brush) {
 		OS.DependencyObject_ClearValue (handle, property);
 		OS.GCHandle_Free (property);
 	}
+}
+
+void setThumbVisibility (byte visibility) {
+	int template = OS.Control_Template (handle);
+	int thumbName = createDotNetString ("ToolBarThumb", false);
+	int thumb = OS.FrameworkTemplate_FindName (template, thumbName, handle);
+	if (thumb != 0) {
+		OS.UIElement_Visibility (thumb, visibility);
+		OS.GCHandle_Free (thumb);
+	}
+	OS.GCHandle_Free (thumbName);
+	OS.GCHandle_Free (template);	
 }
 
 int topHandle() {
