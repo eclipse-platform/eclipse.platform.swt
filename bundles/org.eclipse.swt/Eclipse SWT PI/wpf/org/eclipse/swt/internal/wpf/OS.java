@@ -55,6 +55,7 @@ public class OS extends C {
 	public static final int Key_Delete = 32;
 	public static final int Key_Escape = 13;
 	public static final int Key_Tab = 3;
+	public static final int Key_LineFeed = 4;
 	public static final int Key_NumPad0 = 74;
 	public static final int Key_NumPad1 = 75;
 	public static final int Key_NumPad2 = 76;
