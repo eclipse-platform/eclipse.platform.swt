@@ -174,6 +174,20 @@ int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags,
 				shell.close ();
 			}
 		});
+		if (uri != 0) {
+			nsIURI location = new nsIURI (uri);
+			int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
+			if (location.GetSpec (aSpec) == XPCOM.NS_OK) {
+				int length = XPCOM.nsEmbedCString_Length (aSpec);
+				if (length > 0) {
+					int /*long*/ buffer = XPCOM.nsEmbedCString_get (aSpec);
+					byte[] dest = new byte[length];
+					XPCOM.memmove (dest, buffer, length);
+					browser.setUrl (new String (dest));
+				}
+			}
+			XPCOM.nsEmbedCString_delete (aSpec);
+		}
 	} else {
 		WindowEvent event = new WindowEvent (src);
 		event.display = src.getDisplay ();
@@ -200,21 +214,6 @@ int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags,
 		webBrowserChrome.SetChromeFlags ((int)/*64*/chromeFlags);
 		webBrowserChrome.AddRef ();
 		XPCOM.memmove (_retval, new int /*long*/[] {chromePtr}, C.PTR_SIZEOF);
-
-		if (uri != 0) {
-			nsIURI location = new nsIURI (uri);
-			int /*long*/ aSpec = XPCOM.nsEmbedCString_new ();
-			if (location.GetSpec (aSpec) == XPCOM.NS_OK) {
-				int length = XPCOM.nsEmbedCString_Length (aSpec);
-				if (length > 0) {
-					int /*long*/ buffer = XPCOM.nsEmbedCString_get (aSpec);
-					byte[] dest = new byte[length];
-					XPCOM.memmove (dest, buffer, length);
-					browser.setUrl (new String (dest));
-				}
-			}
-			XPCOM.nsEmbedCString_delete (aSpec);
-		}
 	} else {
 		if (cancel != 0) {
 			C.memmove (cancel, new int[] {1}, 4);	/* PRBool */
