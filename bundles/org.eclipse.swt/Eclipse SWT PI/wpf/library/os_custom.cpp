@@ -81,9 +81,9 @@ private:
 		}
 		if (env != NULL) {
 			if (!env->ExceptionOccurred()) {
-				GCHandle gch0 = GCHandle::Alloc(args);
-				env->CallVoidMethod(object, mid, (int)(IntPtr)gch0);
-				gch0.Free();
+				int arg0 = TO_HANDLE(args);
+				env->CallVoidMethod(object, mid, arg0);
+				FREE_HANDLE(arg0);
 			}
 			if (detach) jvm->DetachCurrentThread();
 		}
@@ -194,9 +194,9 @@ private:
 		}
 		if (env != NULL) {
 			if (!env->ExceptionOccurred()) {
-				GCHandle gch0 = GCHandle::Alloc(item);
-				result = env->CallIntMethod(object, mid, (int)(IntPtr)gch0);
-				gch0.Free();
+				int arg0 = TO_HANDLE(item);
+				result = env->CallIntMethod(object, mid, arg0);
+				FREE_HANDLE(arg0);
 			}
 			if (detach) jvm->DetachCurrentThread();
 		}
@@ -288,7 +288,7 @@ private:
 	jmethodID OnRenderMID;
 	JniRefCookie^ cookie;
 
-	void callin (jmethodID mid, DrawingContext^ arg0) {
+	void callin (jmethodID mid, DrawingContext^ context) {
 		jobject object = cookie->object;
 		if (object == NULL || mid == NULL) return;
 		JNIEnv* env;
@@ -305,9 +305,9 @@ private:
 		}
 		if (env != NULL) {
 			if (!env->ExceptionOccurred()) {
-				GCHandle gch0 = GCHandle::Alloc(arg0);
-				env->CallVoidMethod(object, mid, (int)(IntPtr)gch0);
-				gch0.Free();
+				int arg0 = TO_HANDLE(context);
+				env->CallVoidMethod(object, mid, arg0);
+				FREE_HANDLE(arg0);
 			}
 			if (detach) jvm->DetachCurrentThread();
 		}
@@ -676,12 +676,12 @@ public:
 		if (env != NULL) {
 			if (!env->ExceptionOccurred()) {
 				//TODO alloc sender causes handle table corruption
-				//GCHandle gch0 = GCHandle::Alloc(sender);
-				GCHandle gch1 = GCHandle::Alloc(e);
-				//env->CallVoidMethod(object, mid, (int)(IntPtr)gch0, (int)(IntPtr)gch1);
-				env->CallVoidMethod(object, mid, 0, (int)(IntPtr)gch1);
-				//gch0.Free();
-				gch1.Free();
+				//int arg0 = TO_HANDLE(sender);
+				int arg1 = TO_HANDLE(e);
+				//env->CallVoidMethod(object, mid, arg0, arg1);
+				env->CallVoidMethod(object, mid, 0, arg1);
+				//FREE_HANDLE(arg0);
+				FREE_HANDLE(arg1);
 			}
 			if (detach) jvm->DetachCurrentThread();
 		}
@@ -707,9 +707,9 @@ public:
 				if (sender->GetType() == DispatcherTimer::typeid) {
 					DispatcherTimer^ timer = (DispatcherTimer^)sender;
 					int index = (int)timer->Tag;
-					GCHandle gch1 = GCHandle::Alloc(e);
-					env->CallVoidMethod(object, mid, index, (int)(IntPtr)gch1);
-					gch1.Free();
+					int arg1 = TO_HANDLE(e);
+					env->CallVoidMethod(object, mid, index, arg1);
+					FREE_HANDLE(arg1);
 				}
 			}
 			if (detach) jvm->DetachCurrentThread();
@@ -1092,9 +1092,7 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 
 JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Free) (JNIEnv *env, jclass that, jint arg0) {
 	OS_NATIVE_ENTER(env, that, GCHandle_1Free_FUNC);
-	GCHandle handle = GCHandle::FromIntPtr((IntPtr)arg0);
-	if (handle.Target == nullptr) throw gcnew Exception("Handle already freed"); 
-	handle.Free();
+	FREE_HANDLE(arg0);
 	OS_NATIVE_EXIT(env, that, GCHandle_1Free_FUNC);
 }
 

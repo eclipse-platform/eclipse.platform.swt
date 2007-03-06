@@ -46,6 +46,7 @@ extern jint GCHandle_GetHandle(Object^obj);
 #define TO_HANDLE(arg) GCHandle_GetHandle(arg)
 //#define TO_HANDLE(arg) (arg != nullptr ? (int)GCHandle::ToIntPtr(GCHandle::Alloc(arg)) : 0)
 #define TO_OBJECT(arg) (arg != 0 ? (GCHandle::FromIntPtr((IntPtr)arg)).Target : nullptr)
+#define FREE_HANDLE(arg) if (arg != 0) (GCHandle::FromIntPtr((IntPtr)arg)).Free()
 
 #ifndef NATIVE_STATS
 #define OS_NATIVE_ENTER(env, that, func) \
