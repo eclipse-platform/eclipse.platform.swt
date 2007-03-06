@@ -1372,6 +1372,14 @@ boolean setKeyState (Event event, int type, int e) {
 		return false;
 	}
 	event.keyCode = Display.translateKey (key);
+	switch (key) {
+		case OS.Key_Back:		event.character = SWT.BS; break;
+		case OS.Key_LineFeed:	event.character = SWT.LF; break;
+		case OS.Key_Return: 	event.character = SWT.CR; break;
+		case OS.Key_Delete:		event.character = SWT.DEL; break;
+		case OS.Key_Escape:		event.character = SWT.ESC; break;
+		case OS.Key_Tab: 		event.character = SWT.TAB; break;
+	}
 	if (type == SWT.KeyUp) event.character = result [0];
 	return setInputState (event, type, 0, e);
 }
