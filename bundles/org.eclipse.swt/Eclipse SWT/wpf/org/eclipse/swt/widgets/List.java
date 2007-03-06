@@ -549,7 +549,6 @@ void hookEvents () {
 	OS.Selector_SelectionChanged (handle, handler);
 	OS.GCHandle_Free (handler);
 	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandleMouseDoubleClick");
-	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.Control_MouseDoubleClick (handle, handler);
 	OS.GCHandle_Free (handler);
 }
