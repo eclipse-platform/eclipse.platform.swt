@@ -40,6 +40,8 @@ using namespace Microsoft::Win32;
 using namespace System::Windows::Markup;
 using namespace System::Xml;
 
+#ifdef GCHANDLE_TABLE
+
 extern "C" {
 extern jint GCHandle_GetHandle(Object^obj);
 }
@@ -48,6 +50,19 @@ extern jint GCHandle_GetHandle(Object^obj);
 #define TO_OBJECT(arg) (arg != 0 ? (GCHandle::FromIntPtr((IntPtr)arg)).Target : nullptr)
 #define FREE_HANDLE(arg) if (arg != 0) (GCHandle::FromIntPtr((IntPtr)arg)).Free()
 
+#else
+
+extern "C" {
+extern int SWTObjectTable_ToHandle(Object^obj);
+extern Object^ SWTObjectTable_ToObject(int handle);
+extern void SWTObjectTable_Free(int handle);
+}
+#define TO_HANDLE(arg) SWTObjectTable_ToHandle(arg)
+#define TO_OBJECT(arg) SWTObjectTable_ToObject(arg)
+#define FREE_HANDLE(arg) SWTObjectTable_Free(arg)
+
+#endif
+
 #ifndef NATIVE_STATS
 #define OS_NATIVE_ENTER(env, that, func) \
 	try {  
@@ -55,8 +70,8 @@ extern jint GCHandle_GetHandle(Object^obj);
 	} catch (Exception^ e) { \
 		jclass threadClass = env->FindClass("java/lang/Thread");  \
 		jmethodID dumpStackID = env->GetStaticMethodID(threadClass, "dumpStack", "()V");  \
-		System::Console::WriteLine(e); \
-		System::Console::WriteLine("Java: "); \
+		System::Console::Error->WriteLine(e); \
+		System::Console::Error->WriteLine("Java: "); \
 		if (dumpStackID != NULL) env->CallStaticVoidMethod(threadClass, dumpStackID, 0);  \
 	}
 #endif

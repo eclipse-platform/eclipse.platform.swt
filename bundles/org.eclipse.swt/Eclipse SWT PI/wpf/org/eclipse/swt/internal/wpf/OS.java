@@ -761,6 +761,7 @@ public static final native int GridViewRowPresenter_typeid();
 public static final native void GridViewRowPresenterBase_Columns(int sender, int value);
 public static final native int GCHandle_Alloc(int sender);
 public static final native void GCHandle_Free(int sender);
+public static final native void GCHandle_Dump();
 public static final native int HeaderedContentControl_Header(int sender);
 public static final native void HeaderedContentControl_Header(int sender, int header);
 public static final native int HeaderedItemsControl_Header(int sender);

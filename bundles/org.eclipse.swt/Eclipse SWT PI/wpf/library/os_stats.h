@@ -347,6 +347,7 @@ typedef enum {
 	Freezable_1Clone_FUNC,
 	Freezable_1Freeze_FUNC,
 	GCHandle_1Alloc_FUNC,
+	GCHandle_1Dump_FUNC,
 	GCHandle_1Free_FUNC,
 	GeometryCollection_1Add_FUNC,
 	GeometryCollection_1Clear_FUNC,

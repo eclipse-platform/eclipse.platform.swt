@@ -624,12 +624,78 @@ public:
 	}
 };
 
+#ifndef GCHANDLE_TABLE
+public ref class SWTObjectTable {
+private:
+	static array<Object^>^table = nullptr;
+	static int nextHandle = 0;
+	
+public:
+static int ToHandle(Object^ obj) {
+	if (obj == nullptr) return 0;	if (table == nullptr || nextHandle == -1) {
+		int length = 0;
+		if (table != nullptr) length = table->GetLength(0);		
+		int newLength = length * 2;
+		if (newLength < 1024) newLength = 1024;
+//		System::Console::Error->WriteLine("\t\t***grow={1}", length, newLength);
+		Array::Resize(table, newLength);
+		for (int i=length; i<newLength-1; i++) table[i] = i + 1;
+		table[newLength-1] = -1;
+		nextHandle = length;
+	}
+	int handle = nextHandle;
+	nextHandle = (int)(Int32)table[handle];
+	table[handle] = obj;
+//	System::Console::Error->WriteLine(">{0}={1}", handle + 1, obj);
+	return handle + 1;	
+}
+
+static Object^ ToObject(int handle) {
+	if (handle <= 0) return nullptr;
+	return table[handle - 1];
+}
+
+static void Free(int handle) {
+	if (handle <= 0) return;
+//	System::Console::Error->WriteLine("<{0}={1}", handle, table[handle - 1]);
+	table[handle - 1] = nextHandle;
+	nextHandle = handle - 1;
+}
+
+static void Dump() {
+	for (int i=0; i<table->GetLength(0); i++) {
+		if (table[i]->GetType() != Int32::typeid) {
+			System::Console::Error->WriteLine("LEAK -> {0}={1}", i, table[i]);
+		}
+	}
+}
+
+};
+#endif // GCHANDLE_TABLE
+
 extern "C" {
+
+#ifdef GCHANDLE_TABLE
 
 jint GCHandle_GetHandle(Object^ obj) {
 	return obj == nullptr ? 0 : (int)GCHandle::ToIntPtr(GCHandle::Alloc(obj));
 }
 
+#else
+
+jint SWTObjectTable_ToHandle(Object^ obj) {
+	return SWTObjectTable::ToHandle(obj);
+}
+
+Object^ SWTObjectTable_ToObject(int handle) {
+	return SWTObjectTable::ToObject(handle);
+}
+
+void SWTObjectTable_Free(int handle) {
+	return SWTObjectTable::Free(handle);
+}
+
+#endif // GCHANDLE_TABLE
 /*												*/
 /* Event Handler Class							*/
 /*												*/
@@ -676,11 +742,11 @@ public:
 		if (env != NULL) {
 			if (!env->ExceptionOccurred()) {
 				//TODO alloc sender causes handle table corruption
-				//int arg0 = TO_HANDLE(sender);
+				int arg0 = TO_HANDLE(sender);
 				int arg1 = TO_HANDLE(e);
-				//env->CallVoidMethod(object, mid, arg0, arg1);
-				env->CallVoidMethod(object, mid, 0, arg1);
-				//FREE_HANDLE(arg0);
+				env->CallVoidMethod(object, mid, arg0, arg1);
+				//env->CallVoidMethod(object, mid, 0, arg1);
+				FREE_HANDLE(arg0);
 				FREE_HANDLE(arg1);
 			}
 			if (detach) jvm->DetachCurrentThread();
@@ -1094,6 +1160,12 @@ JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Free) (JNIEnv *env, jclass that, jint
 	OS_NATIVE_ENTER(env, that, GCHandle_1Free_FUNC);
 	FREE_HANDLE(arg0);
 	OS_NATIVE_EXIT(env, that, GCHandle_1Free_FUNC);
+}
+
+JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Dump) (JNIEnv *env, jclass that) {
+	OS_NATIVE_ENTER(env, that, GCHandle_1Dump_FUNC);
+	SWTObjectTable::Dump();
+	OS_NATIVE_EXIT(env, that, GCHandle_1Dump_FUNC);
 }
 
 JNIEXPORT jint JNICALL OS_NATIVE(GCHandle_1Alloc) (JNIEnv *env, jclass that, jint arg0) {

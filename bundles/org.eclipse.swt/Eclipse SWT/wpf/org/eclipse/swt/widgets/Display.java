@@ -683,6 +683,7 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
+	OS.GCHandle_Dump();
 }
 
 /**

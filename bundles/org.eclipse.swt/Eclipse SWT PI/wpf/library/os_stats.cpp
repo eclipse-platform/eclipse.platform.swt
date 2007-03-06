@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1110;
-int OS_nativeFunctionCallCount[1110];
+int OS_nativeFunctionCount = 1111;
+int OS_nativeFunctionCallCount[1111];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -339,6 +339,7 @@ char * OS_nativeFunctionNames[] = {
 	"Freezable_1Clone",
 	"Freezable_1Freeze",
 	"GCHandle_1Alloc",
+	"GCHandle_1Dump",
 	"GCHandle_1Free",
 	"GeometryCollection_1Add",
 	"GeometryCollection_1Clear",
