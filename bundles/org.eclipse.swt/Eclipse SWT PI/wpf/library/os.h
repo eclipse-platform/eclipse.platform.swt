@@ -44,9 +44,7 @@ extern "C" {
 extern jint GCHandle_GetHandle(Object^obj);
 }
 #define TO_HANDLE(arg) GCHandle_GetHandle(arg)
-#define TO_HANDLE_STRUCT(arg) GCHandle_GetHandle(arg)
 //#define TO_HANDLE(arg) (arg != nullptr ? (int)GCHandle::ToIntPtr(GCHandle::Alloc(arg)) : 0)
-//#define TO_HANDLE_STRUCT(arg) (int)GCHandle::ToIntPtr(GCHandle::Alloc(arg))
 #define TO_OBJECT(arg) (arg != 0 ? (GCHandle::FromIntPtr((IntPtr)arg)).Target : nullptr)
 
 #ifndef NATIVE_STATS

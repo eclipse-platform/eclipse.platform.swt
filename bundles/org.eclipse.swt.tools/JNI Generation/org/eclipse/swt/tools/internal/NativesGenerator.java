@@ -653,11 +653,7 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		paramStart = 1;
 	} else if (methodData.getFlag(FLAG_CPP) || methodData.getFlag(FLAG_SETTER) || methodData.getFlag(FLAG_GETTER) || methodData.getFlag(FLAG_ADDER)) {
 		if (methodData.getFlag(FLAG_GCOBJECT)) {
-			if (methodData.getFlag(FLAG_STRUCT)) {
-				output("TO_HANDLE_STRUCT(");
-			} else {
-				output("TO_HANDLE(");
-			}
+			output("TO_HANDLE(");
 		}
 		output("(");
 		ParameterData paramData = getMetaData().getMetaData(method, 0);
@@ -727,11 +723,7 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		return;
 	} else {
 		if (methodData.getFlag(FLAG_GCOBJECT)) {
-			if (methodData.getFlag(FLAG_STRUCT)) {
-				output("TO_HANDLE_STRUCT(");
-			} else {
-				output("TO_HANDLE(");				
-			}
+			output("TO_HANDLE(");				
 		}
 		String accessor = methodData.getAccessor();
 		if (accessor.length() != 0) {

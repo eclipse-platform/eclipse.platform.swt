@@ -908,7 +908,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Color_1FromArgb)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Color_1FromArgb_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Color::FromArgb(arg0, arg1, arg2, arg3));
+	rc = (jint)TO_HANDLE(Color::FromArgb(arg0, arg1, arg2, arg3));
 	OS_NATIVE_EXIT(env, that, Color_1FromArgb_FUNC);
 	return rc;
 }
@@ -947,7 +947,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Black)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Black_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Black);
+	rc = (jint)TO_HANDLE(Colors::Black);
 	OS_NATIVE_EXIT(env, that, Colors_1Black_FUNC);
 	return rc;
 }
@@ -960,7 +960,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Blue)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Blue_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Blue);
+	rc = (jint)TO_HANDLE(Colors::Blue);
 	OS_NATIVE_EXIT(env, that, Colors_1Blue_FUNC);
 	return rc;
 }
@@ -973,7 +973,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Cyan)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Cyan_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Cyan);
+	rc = (jint)TO_HANDLE(Colors::Cyan);
 	OS_NATIVE_EXIT(env, that, Colors_1Cyan_FUNC);
 	return rc;
 }
@@ -986,7 +986,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1DarkGray)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1DarkGray_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::DarkGray);
+	rc = (jint)TO_HANDLE(Colors::DarkGray);
 	OS_NATIVE_EXIT(env, that, Colors_1DarkGray_FUNC);
 	return rc;
 }
@@ -999,7 +999,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Green)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Green_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Green);
+	rc = (jint)TO_HANDLE(Colors::Green);
 	OS_NATIVE_EXIT(env, that, Colors_1Green_FUNC);
 	return rc;
 }
@@ -1012,7 +1012,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1LightSkyBlue)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1LightSkyBlue_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::LightSkyBlue);
+	rc = (jint)TO_HANDLE(Colors::LightSkyBlue);
 	OS_NATIVE_EXIT(env, that, Colors_1LightSkyBlue_FUNC);
 	return rc;
 }
@@ -1025,7 +1025,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Lime)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Lime_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Lime);
+	rc = (jint)TO_HANDLE(Colors::Lime);
 	OS_NATIVE_EXIT(env, that, Colors_1Lime_FUNC);
 	return rc;
 }
@@ -1038,7 +1038,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Magenta)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Magenta_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Magenta);
+	rc = (jint)TO_HANDLE(Colors::Magenta);
 	OS_NATIVE_EXIT(env, that, Colors_1Magenta_FUNC);
 	return rc;
 }
@@ -1051,7 +1051,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Maroon)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Maroon_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Maroon);
+	rc = (jint)TO_HANDLE(Colors::Maroon);
 	OS_NATIVE_EXIT(env, that, Colors_1Maroon_FUNC);
 	return rc;
 }
@@ -1064,7 +1064,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Navy)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Navy_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Navy);
+	rc = (jint)TO_HANDLE(Colors::Navy);
 	OS_NATIVE_EXIT(env, that, Colors_1Navy_FUNC);
 	return rc;
 }
@@ -1077,7 +1077,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Olive)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Olive_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Olive);
+	rc = (jint)TO_HANDLE(Colors::Olive);
 	OS_NATIVE_EXIT(env, that, Colors_1Olive_FUNC);
 	return rc;
 }
@@ -1090,7 +1090,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Purple)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Purple_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Purple);
+	rc = (jint)TO_HANDLE(Colors::Purple);
 	OS_NATIVE_EXIT(env, that, Colors_1Purple_FUNC);
 	return rc;
 }
@@ -1103,7 +1103,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Red)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Red_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Red);
+	rc = (jint)TO_HANDLE(Colors::Red);
 	OS_NATIVE_EXIT(env, that, Colors_1Red_FUNC);
 	return rc;
 }
@@ -1116,7 +1116,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Silver)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Silver_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Silver);
+	rc = (jint)TO_HANDLE(Colors::Silver);
 	OS_NATIVE_EXIT(env, that, Colors_1Silver_FUNC);
 	return rc;
 }
@@ -1129,7 +1129,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Teal)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Teal_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Teal);
+	rc = (jint)TO_HANDLE(Colors::Teal);
 	OS_NATIVE_EXIT(env, that, Colors_1Teal_FUNC);
 	return rc;
 }
@@ -1142,7 +1142,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Transparent)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Transparent_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Transparent);
+	rc = (jint)TO_HANDLE(Colors::Transparent);
 	OS_NATIVE_EXIT(env, that, Colors_1Transparent_FUNC);
 	return rc;
 }
@@ -1155,7 +1155,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1White)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1White_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::White);
+	rc = (jint)TO_HANDLE(Colors::White);
 	OS_NATIVE_EXIT(env, that, Colors_1White_FUNC);
 	return rc;
 }
@@ -1168,7 +1168,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Colors_1Yellow)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Colors_1Yellow_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(Colors::Yellow);
+	rc = (jint)TO_HANDLE(Colors::Yellow);
 	OS_NATIVE_EXIT(env, that, Colors_1Yellow_FUNC);
 	return rc;
 }
@@ -8111,7 +8111,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ActiveBorderColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ActiveBorderColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ActiveBorderColor);
+	rc = (jint)TO_HANDLE(SystemColors::ActiveBorderColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ActiveBorderColor_FUNC);
 	return rc;
 }
@@ -8124,7 +8124,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ActiveCaptionColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ActiveCaptionColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ActiveCaptionColor);
+	rc = (jint)TO_HANDLE(SystemColors::ActiveCaptionColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ActiveCaptionColor_FUNC);
 	return rc;
 }
@@ -8137,7 +8137,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ActiveCaptionTextColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ActiveCaptionTextColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ActiveCaptionTextColor);
+	rc = (jint)TO_HANDLE(SystemColors::ActiveCaptionTextColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ActiveCaptionTextColor_FUNC);
 	return rc;
 }
@@ -8163,7 +8163,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ControlColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ControlColor);
+	rc = (jint)TO_HANDLE(SystemColors::ControlColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ControlColor_FUNC);
 	return rc;
 }
@@ -8176,7 +8176,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlDarkColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ControlDarkColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ControlDarkColor);
+	rc = (jint)TO_HANDLE(SystemColors::ControlDarkColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ControlDarkColor_FUNC);
 	return rc;
 }
@@ -8189,7 +8189,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlDarkDarkColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ControlDarkDarkColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ControlDarkDarkColor);
+	rc = (jint)TO_HANDLE(SystemColors::ControlDarkDarkColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ControlDarkDarkColor_FUNC);
 	return rc;
 }
@@ -8202,7 +8202,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlLightColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ControlLightColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ControlLightColor);
+	rc = (jint)TO_HANDLE(SystemColors::ControlLightColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ControlLightColor_FUNC);
 	return rc;
 }
@@ -8215,7 +8215,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlLightLightColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ControlLightLightColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ControlLightLightColor);
+	rc = (jint)TO_HANDLE(SystemColors::ControlLightLightColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ControlLightLightColor_FUNC);
 	return rc;
 }
@@ -8241,7 +8241,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1ControlTextColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1ControlTextColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::ControlTextColor);
+	rc = (jint)TO_HANDLE(SystemColors::ControlTextColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1ControlTextColor_FUNC);
 	return rc;
 }
@@ -8254,7 +8254,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1GradientActiveCaptionColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1GradientActiveCaptionColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::GradientActiveCaptionColor);
+	rc = (jint)TO_HANDLE(SystemColors::GradientActiveCaptionColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1GradientActiveCaptionColor_FUNC);
 	return rc;
 }
@@ -8267,7 +8267,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1GradientInactiveCaptionColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1GradientInactiveCaptionColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::GradientInactiveCaptionColor);
+	rc = (jint)TO_HANDLE(SystemColors::GradientInactiveCaptionColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1GradientInactiveCaptionColor_FUNC);
 	return rc;
 }
@@ -8293,7 +8293,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1HighlightColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1HighlightColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::HighlightColor);
+	rc = (jint)TO_HANDLE(SystemColors::HighlightColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1HighlightColor_FUNC);
 	return rc;
 }
@@ -8306,7 +8306,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1HighlightTextColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1HighlightTextColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::HighlightTextColor);
+	rc = (jint)TO_HANDLE(SystemColors::HighlightTextColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1HighlightTextColor_FUNC);
 	return rc;
 }
@@ -8319,7 +8319,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1InactiveCaptionColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1InactiveCaptionColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::InactiveCaptionColor);
+	rc = (jint)TO_HANDLE(SystemColors::InactiveCaptionColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1InactiveCaptionColor_FUNC);
 	return rc;
 }
@@ -8332,7 +8332,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1InactiveCaptionTextColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1InactiveCaptionTextColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::InactiveCaptionTextColor);
+	rc = (jint)TO_HANDLE(SystemColors::InactiveCaptionTextColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1InactiveCaptionTextColor_FUNC);
 	return rc;
 }
@@ -8345,7 +8345,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1InfoColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1InfoColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::InfoColor);
+	rc = (jint)TO_HANDLE(SystemColors::InfoColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1InfoColor_FUNC);
 	return rc;
 }
@@ -8358,7 +8358,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1InfoTextColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1InfoTextColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::InfoTextColor);
+	rc = (jint)TO_HANDLE(SystemColors::InfoTextColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1InfoTextColor_FUNC);
 	return rc;
 }
@@ -8371,7 +8371,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1WindowColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1WindowColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::WindowColor);
+	rc = (jint)TO_HANDLE(SystemColors::WindowColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1WindowColor_FUNC);
 	return rc;
 }
@@ -8384,7 +8384,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SystemColors_1WindowTextColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SystemColors_1WindowTextColor_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(SystemColors::WindowTextColor);
+	rc = (jint)TO_HANDLE(SystemColors::WindowTextColor);
 	OS_NATIVE_EXIT(env, that, SystemColors_1WindowTextColor_FUNC);
 	return rc;
 }
@@ -10227,7 +10227,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Type_1FullName)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Type_1FullName_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((Type^)TO_OBJECT(arg0))->FullName);
+	rc = (jint)TO_HANDLE(((Type^)TO_OBJECT(arg0))->FullName);
 	OS_NATIVE_EXIT(env, that, Type_1FullName_FUNC);
 	return rc;
 }
@@ -10305,7 +10305,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Typeface_1FontFamily)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Typeface_1FontFamily_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((Typeface^)TO_OBJECT(arg0))->FontFamily);
+	rc = (jint)TO_HANDLE(((Typeface^)TO_OBJECT(arg0))->FontFamily);
 	OS_NATIVE_EXIT(env, that, Typeface_1FontFamily_FUNC);
 	return rc;
 }
@@ -10318,7 +10318,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Typeface_1Stretch)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Typeface_1Stretch_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((Typeface^)TO_OBJECT(arg0))->Stretch);
+	rc = (jint)TO_HANDLE(((Typeface^)TO_OBJECT(arg0))->Stretch);
 	OS_NATIVE_EXIT(env, that, Typeface_1Stretch_FUNC);
 	return rc;
 }
@@ -10331,7 +10331,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Typeface_1Style)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Typeface_1Style_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((Typeface^)TO_OBJECT(arg0))->Style);
+	rc = (jint)TO_HANDLE(((Typeface^)TO_OBJECT(arg0))->Style);
 	OS_NATIVE_EXIT(env, that, Typeface_1Style_FUNC);
 	return rc;
 }
@@ -10344,7 +10344,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Typeface_1Weight)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Typeface_1Weight_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((Typeface^)TO_OBJECT(arg0))->Weight);
+	rc = (jint)TO_HANDLE(((Typeface^)TO_OBJECT(arg0))->Weight);
 	OS_NATIVE_EXIT(env, that, Typeface_1Weight_FUNC);
 	return rc;
 }
@@ -10536,7 +10536,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1DesiredSize)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, UIElement_1DesiredSize_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((UIElement^)TO_OBJECT(arg0))->DesiredSize);
+	rc = (jint)TO_HANDLE(((UIElement^)TO_OBJECT(arg0))->DesiredSize);
 	OS_NATIVE_EXIT(env, that, UIElement_1DesiredSize_FUNC);
 	return rc;
 }
@@ -10976,7 +10976,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1TranslatePoint)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, UIElement_1TranslatePoint_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((UIElement^)TO_OBJECT(arg0))->TranslatePoint((Point)TO_OBJECT(arg1), (UIElement^)TO_OBJECT(arg2)));
+	rc = (jint)TO_HANDLE(((UIElement^)TO_OBJECT(arg0))->TranslatePoint((Point)TO_OBJECT(arg1), (UIElement^)TO_OBJECT(arg2)));
 	OS_NATIVE_EXIT(env, that, UIElement_1TranslatePoint_FUNC);
 	return rc;
 }
@@ -11115,7 +11115,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Visual_1PointFromScreen)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Visual_1PointFromScreen_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((Visual^)TO_OBJECT(arg0))->PointFromScreen((Point)TO_OBJECT(arg1)));
+	rc = (jint)TO_HANDLE(((Visual^)TO_OBJECT(arg0))->PointFromScreen((Point)TO_OBJECT(arg1)));
 	OS_NATIVE_EXIT(env, that, Visual_1PointFromScreen_FUNC);
 	return rc;
 }
@@ -11128,7 +11128,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Visual_1PointToScreen)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Visual_1PointToScreen_FUNC);
-	rc = (jint)TO_HANDLE_STRUCT(((Visual^)TO_OBJECT(arg0))->PointToScreen((Point)TO_OBJECT(arg1)));
+	rc = (jint)TO_HANDLE(((Visual^)TO_OBJECT(arg0))->PointToScreen((Point)TO_OBJECT(arg1)));
 	OS_NATIVE_EXIT(env, that, Visual_1PointToScreen_FUNC);
 	return rc;
 }
