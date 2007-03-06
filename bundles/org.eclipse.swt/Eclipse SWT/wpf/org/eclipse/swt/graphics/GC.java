@@ -386,7 +386,7 @@ public void dispose() {
 	int brush = data.brush;
 	if (brush != 0) OS.GCHandle_Free(brush);
 	data.brush = 0;
-	int pen = data.brush;
+	int pen = data.pen;
 	if (pen != 0) OS.GCHandle_Free(pen);
 	data.pen = 0;
 	int clip = data.clip;

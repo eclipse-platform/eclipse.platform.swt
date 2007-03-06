@@ -1036,6 +1036,7 @@ public void internal_dispose_GC (int dc, GCData data) {
 	Point dpi = getDPI();
 	int pixelFormat = OS.PixelFormats_Pbgra32();
 	int	renderHandle = OS.gcnew_RenderTargetBitmap(width, height, dpi.x, dpi.y, pixelFormat);
+	OS.GCHandle_Free(pixelFormat);
 	if (renderHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.RenderTargetBitmap_Render(renderHandle, data.visual);
 	OS.GCHandle_Free(data.visual);
@@ -1044,9 +1045,10 @@ public void internal_dispose_GC (int dc, GCData data) {
 	int palette = OS.BitmapSource_Palette(handle);
 	OS.GCHandle_Free(handle);
 	handle = OS.gcnew_FormatConvertedBitmap(renderHandle, format, palette, 100);
+	OS.GCHandle_Free(palette);
+	OS.GCHandle_Free(format);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.GCHandle_Free(renderHandle);
-	renderHandle = 0;
 	if (OS.Freezable_CanFreeze(handle)) OS.Freezable_Freeze(handle);
 }
 
