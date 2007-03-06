@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
 
 class FilePicker_1_8 extends FilePicker {
