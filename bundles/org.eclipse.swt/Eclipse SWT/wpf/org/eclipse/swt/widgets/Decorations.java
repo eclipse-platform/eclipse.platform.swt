@@ -659,6 +659,7 @@ void setImages (Image image, Image [] images) {
 	OS.BitmapEncoder_Save (encoder, stream);
 	OS.GCHandle_Free (encoder);
 	int decoder = OS.BitmapDecoder_Create (stream, OS.BitmapCreateOptions_None, OS.BitmapCacheOption_Default);
+	OS.GCHandle_Free (stream);
 	frames = OS.BitmapDecoder_Frames (decoder);
 	int icon = OS.BitmapFrameCollection_default (frames, 0);
 	OS.GCHandle_Free (frames);
