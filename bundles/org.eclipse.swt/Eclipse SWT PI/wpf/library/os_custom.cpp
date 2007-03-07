@@ -26,6 +26,7 @@ public:
 	jobject object;
 	
 	JniRefCookie (JNIEnv* env, jint jniRef) {
+		if (jvm == NULL) env->GetJavaVM(&jvm);
 		this->object = env->NewGlobalRef((jobject)jniRef);
 	}
 
@@ -95,7 +96,6 @@ protected:
 	}
 public:
 	SWTTreeView (JNIEnv* env, jint jniRef) {
-		if (jvm == NULL) env->GetJavaVM(&jvm);
 		cookie = gcnew JniRefCookie(env, jniRef);
 		jobject object = cookie->object;
 		if (object) {
@@ -206,7 +206,6 @@ public:
 	virtual event PropertyChangedEventHandler^ PropertyChanged;
 	
 	SWTRow (JNIEnv* env, jint jniRef, FrameworkElement^ item) {
-		if (jvm == NULL) env->GetJavaVM(&jvm);
 		cookie = gcnew JniRefCookie(env, jniRef);
 		jobject object = cookie->object;
 		if (object) {
@@ -348,7 +347,6 @@ protected:
 
 public:
 	SWTCanvas (JNIEnv* env, jint jniRef) {
-		if (jvm == NULL) env->GetJavaVM(&jvm);
 		cookie = gcnew JniRefCookie(env, jniRef);
 		jobject object = cookie->object;
 		if (object) {
@@ -578,8 +576,7 @@ private:
 	JniRefCookie^ cookie;
 		
 public:
-	SWTTextSource (JNIEnv* env, jint jniRef) {
-		if (jvm == NULL) env->GetJavaVM(&jvm);		
+	SWTTextSource (JNIEnv* env, jint jniRef) {	
 		cookie = gcnew JniRefCookie(env, jniRef);
 		jobject object = cookie->object;
 		if (object) {
@@ -625,20 +622,29 @@ public:
 };
 
 #ifndef GCHANDLE_TABLE
+#define GCHANDLE_STACKS
 public ref class SWTObjectTable {
 private:
-	static array<Object^>^table = nullptr;
 	static int nextHandle = 0;
+	static array<Object^>^table = nullptr;
+
+#ifdef GCHANDLE_STACKS
+	static array<int>^exceptions = nullptr;
+#endif
 	
 public:
 static int ToHandle(Object^ obj) {
-	if (obj == nullptr) return 0;	if (table == nullptr || nextHandle == -1) {
+	if (obj == nullptr) return 0;
+	if (table == nullptr || nextHandle == -1) {
 		int length = 0;
 		if (table != nullptr) length = table->GetLength(0);		
 		int newLength = length * 2;
 		if (newLength < 1024) newLength = 1024;
 //		System::Console::Error->WriteLine("\t\t***grow={1}", length, newLength);
 		Array::Resize(table, newLength);
+#ifdef GCHANDLE_STACKS
+		Array::Resize(exceptions, newLength);
+#endif
 		for (int i=length; i<newLength-1; i++) table[i] = i + 1;
 		table[newLength-1] = -1;
 		nextHandle = length;
@@ -646,6 +652,17 @@ static int ToHandle(Object^ obj) {
 	int handle = nextHandle;
 	nextHandle = (int)(Int32)table[handle];
 	table[handle] = obj;
+#ifdef GCHANDLE_STACKS
+	if (jvm) {
+		JNIEnv* env;
+		if (IS_JNI_1_2) {
+			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+		}
+		jclass exceptionClass = env->FindClass("java/lang/Exception");
+		jobject exception = env->NewGlobalRef(env->NewObject(exceptionClass, env->GetMethodID(exceptionClass, "<init>", "()V")));
+		exceptions[handle] = (int)exception;
+	}
+#endif
 //	System::Console::Error->WriteLine(">{0}={1}", handle + 1, obj);
 	return handle + 1;	
 }
@@ -660,12 +677,32 @@ static void Free(int handle) {
 //	System::Console::Error->WriteLine("<{0}={1}", handle, table[handle - 1]);
 	table[handle - 1] = nextHandle;
 	nextHandle = handle - 1;
+#ifdef GCHANDLE_STACKS
+	if (exceptions[handle - 1] != 0) {
+		JNIEnv* env;
+		if (IS_JNI_1_2) {
+			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+		}
+		env->DeleteGlobalRef((jobject)exceptions[handle - 1]);
+	}
+	exceptions[handle - 1] = 0;
+#endif
 }
 
 static void Dump() {
 	for (int i=0; i<table->GetLength(0); i++) {
 		if (table[i]->GetType() != Int32::typeid) {
-			System::Console::Error->WriteLine("LEAK -> {0}={1}", i, table[i]);
+			System::Console::Error->WriteLine("LEAK -> {0}={1} type={2}", i, table[i], table[i]->GetType());
+#ifdef GCHANDLE_STACKS
+			if (exceptions[i] != 0) {
+				JNIEnv* env;
+				jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+				jclass exceptionClass = env->FindClass("java/lang/Throwable");
+				jmethodID mid = env->GetMethodID(exceptionClass, "printStackTrace", "()V");
+				if (mid != NULL) env->CallVoidMethod((jobject)exceptions[i], mid, 0);
+				env->DeleteGlobalRef((jobject)exceptions[i]);
+			}
+#endif
 		}
 	}
 }
@@ -712,8 +749,7 @@ public:
 	}
 	
 	SWTHandler(JNIEnv* env, jint jniRef, jstring method, char* signature) {
-		const char * methodString;
-		if (jvm == NULL) env->GetJavaVM(&jvm);		
+		const char * methodString;	
 		cookie = gcnew JniRefCookie(env, jniRef);
 		jobject object = cookie->object;
 		if (method) methodString = (const char *) env->GetStringUTFChars(method, NULL);
