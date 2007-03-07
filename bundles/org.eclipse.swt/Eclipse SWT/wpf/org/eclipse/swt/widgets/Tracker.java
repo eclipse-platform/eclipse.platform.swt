@@ -377,6 +377,7 @@ void drawRectangles () {
 		OS.GCHandle_Free (child);
 	}
 	OS.GCHandle_Free (brush);
+	OS.GCHandle_Free (children);
 }
 
 /**
