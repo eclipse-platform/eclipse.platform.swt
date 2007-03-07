@@ -79,11 +79,11 @@ abstract class AlignableTab extends Tab {
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
-		Control [] controls = getExampleWidgets ();
-		if (controls.length != 0) {
-			leftButton.setSelection ((controls [0].getStyle () & SWT.LEFT) != 0);
-			centerButton.setSelection ((controls [0].getStyle () & SWT.CENTER) != 0);
-			rightButton.setSelection ((controls [0].getStyle () & SWT.RIGHT) != 0);
+		Widget [] widgets = getExampleWidgets ();
+		if (widgets.length != 0) {
+			leftButton.setSelection ((widgets [0].getStyle () & SWT.LEFT) != 0);
+			centerButton.setSelection ((widgets [0].getStyle () & SWT.CENTER) != 0);
+			rightButton.setSelection ((widgets [0].getStyle () & SWT.RIGHT) != 0);
 		}
 	}
 }

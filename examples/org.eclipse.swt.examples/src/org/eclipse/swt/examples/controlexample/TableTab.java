@@ -371,8 +371,8 @@ class TableTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {table1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {table1};
 	}
 	
 	/**
@@ -396,21 +396,21 @@ class TableTab extends ScrollableTab {
 		}
 	}
 
-	Object[] parameterForType(String typeName, String value, Control control) {
+	Object[] parameterForType(String typeName, String value, Widget widget) {
 		if (value.equals("")) return new Object[] {new TableItem[0]}; // bug in Table?
 		if (typeName.equals("org.eclipse.swt.widgets.TableItem")) {
-			TableItem item = findItem(value, ((Table) control).getItems());
+			TableItem item = findItem(value, ((Table) widget).getItems());
 			if (item != null) return new Object[] {item};
 		}
 		if (typeName.equals("[Lorg.eclipse.swt.widgets.TableItem;")) {
 			String[] values = value.split(",");
 			TableItem[] items = new TableItem[values.length];
 			for (int i = 0; i < values.length; i++) {
-				items[i] = findItem(values[i], ((Table) control).getItems());
+				items[i] = findItem(values[i], ((Table) widget).getItems());
 			}
 			return new Object[] {items};
 		}
-		return super.parameterForType(typeName, value, control);
+		return super.parameterForType(typeName, value, widget);
 	}
 
 	TableItem findItem(String value, TableItem[] items) {

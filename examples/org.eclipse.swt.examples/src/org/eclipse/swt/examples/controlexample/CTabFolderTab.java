@@ -271,8 +271,8 @@ class CTabFolderTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {tabFolder1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {tabFolder1};
 	}
 	
 	/**

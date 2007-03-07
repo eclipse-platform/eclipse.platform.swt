@@ -77,8 +77,8 @@ class ProgressBarTab extends RangeTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {progressBar1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {progressBar1};
 	}
 
 	/**

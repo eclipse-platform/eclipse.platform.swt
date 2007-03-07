@@ -198,8 +198,8 @@ class SpinnerTab extends RangeTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {spinner1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {spinner1};
 	}
 	
 	/**

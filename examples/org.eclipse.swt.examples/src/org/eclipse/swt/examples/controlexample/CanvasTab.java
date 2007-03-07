@@ -205,8 +205,8 @@ class CanvasTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {canvas};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {canvas};
 	}
 	
 	/**

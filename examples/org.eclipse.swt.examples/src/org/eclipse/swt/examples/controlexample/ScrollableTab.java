@@ -51,13 +51,13 @@ abstract class ScrollableTab extends Tab {
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
-		Control [] controls = getExampleWidgets ();
-		if (controls.length != 0){
-			singleButton.setSelection ((controls [0].getStyle () & SWT.SINGLE) != 0);
-			multiButton.setSelection ((controls [0].getStyle () & SWT.MULTI) != 0);
-			horizontalButton.setSelection ((controls [0].getStyle () & SWT.H_SCROLL) != 0);
-			verticalButton.setSelection ((controls [0].getStyle () & SWT.V_SCROLL) != 0);
-			borderButton.setSelection ((controls [0].getStyle () & SWT.BORDER) != 0);
+		Widget [] widgets = getExampleWidgets ();
+		if (widgets.length != 0){
+			singleButton.setSelection ((widgets [0].getStyle () & SWT.SINGLE) != 0);
+			multiButton.setSelection ((widgets [0].getStyle () & SWT.MULTI) != 0);
+			horizontalButton.setSelection ((widgets [0].getStyle () & SWT.H_SCROLL) != 0);
+			verticalButton.setSelection ((widgets [0].getStyle () & SWT.V_SCROLL) != 0);
+			borderButton.setSelection ((widgets [0].getStyle () & SWT.BORDER) != 0);
 		}
 	}
 }

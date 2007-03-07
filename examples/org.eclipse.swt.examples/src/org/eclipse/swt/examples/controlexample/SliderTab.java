@@ -156,8 +156,8 @@ class SliderTab extends RangeTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {slider1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {slider1};
 	}
 	
 	/**

@@ -99,8 +99,8 @@ class SashFormTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {form};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {form};
 	}
 	
 	/**

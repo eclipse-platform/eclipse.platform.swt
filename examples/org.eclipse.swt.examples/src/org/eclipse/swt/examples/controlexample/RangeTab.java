@@ -155,13 +155,13 @@ abstract class RangeTab extends Tab {
 			setWidgetMaximum ();
 			setWidgetSelection ();
 		}
-		Control [] controls = getExampleWidgets ();
-		if (controls.length != 0) {
+		Widget [] widgets = getExampleWidgets ();
+		if (widgets.length != 0) {
 			if (orientationButtons) {
-				horizontalButton.setSelection ((controls [0].getStyle () & SWT.HORIZONTAL) != 0);
-				verticalButton.setSelection ((controls [0].getStyle () & SWT.VERTICAL) != 0);
+				horizontalButton.setSelection ((widgets [0].getStyle () & SWT.HORIZONTAL) != 0);
+				verticalButton.setSelection ((widgets [0].getStyle () & SWT.VERTICAL) != 0);
 			}
-			borderButton.setSelection ((controls [0].getStyle () & SWT.BORDER) != 0);
+			borderButton.setSelection ((widgets [0].getStyle () & SWT.BORDER) != 0);
 		}
 	}
 	

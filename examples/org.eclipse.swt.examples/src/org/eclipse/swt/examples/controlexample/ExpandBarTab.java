@@ -105,8 +105,8 @@ class ExpandBarTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {expandBar1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {expandBar1};
 	}
 	
 	/**
@@ -136,10 +136,10 @@ class ExpandBarTab extends Tab {
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
-		Control [] controls = getExampleWidgets ();
-		if (controls.length != 0){
-			verticalButton.setSelection ((controls [0].getStyle () & SWT.V_SCROLL) != 0);
-			borderButton.setSelection ((controls [0].getStyle () & SWT.BORDER) != 0);
+		Widget [] widgets = getExampleWidgets ();
+		if (widgets.length != 0){
+			verticalButton.setSelection ((widgets [0].getStyle () & SWT.V_SCROLL) != 0);
+			borderButton.setSelection ((widgets [0].getStyle () & SWT.BORDER) != 0);
 		}
 	}
 }

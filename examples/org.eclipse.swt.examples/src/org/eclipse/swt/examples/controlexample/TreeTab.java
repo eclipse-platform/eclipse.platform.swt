@@ -437,8 +437,8 @@ class TreeTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {tree1, tree2};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {tree1, tree2};
 	}
 	
 	/**
@@ -449,22 +449,22 @@ class TreeTab extends ScrollableTab {
 		return new String[] {"ColumnOrder", "Selection", "ToolTipText", "TopItem"};
 	}
 
-	Object[] parameterForType(String typeName, String value, Control control) {
+	Object[] parameterForType(String typeName, String value, Widget widget) {
 		if (typeName.equals("org.eclipse.swt.widgets.TreeItem")) {
-			TreeItem item = findItem(value, ((Tree) control).getItems());
+			TreeItem item = findItem(value, ((Tree) widget).getItems());
 			if (item != null) return new Object[] {item};
 		}
 		if (typeName.equals("[Lorg.eclipse.swt.widgets.TreeItem;")) {
 			String[] values = value.split(",");
 			TreeItem[] items = new TreeItem[values.length];
 			for (int i = 0; i < values.length; i++) {
-				TreeItem item = findItem(values[i], ((Tree) control).getItems());
+				TreeItem item = findItem(values[i], ((Tree) widget).getItems());
 				if (item == null) break;
 				items[i] = item;				
 			}
 			return new Object[] {items};
 		}
-		return super.parameterForType(typeName, value, control);
+		return super.parameterForType(typeName, value, widget);
 	}
 
 	TreeItem findItem(String value, TreeItem[] items) {

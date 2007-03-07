@@ -295,8 +295,8 @@ class StyledTextTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {styledText};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {styledText};
 	}
 	
 	/**

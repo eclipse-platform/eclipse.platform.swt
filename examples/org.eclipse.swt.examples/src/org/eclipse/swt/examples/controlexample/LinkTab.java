@@ -74,10 +74,10 @@ class LinkTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
+	Widget [] getExampleWidgets () {
 //		 temporary code for photon
-		if (link1 != null) return new Control [] {link1};
-		return new Control[] {};
+		if (link1 != null) return new Widget [] {link1};
+		return new Widget[] {};
 	}
 	
 	/**

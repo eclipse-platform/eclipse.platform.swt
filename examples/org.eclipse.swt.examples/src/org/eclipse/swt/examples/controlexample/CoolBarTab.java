@@ -264,8 +264,8 @@ class CoolBarTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {coolBar};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {coolBar};
 	}
 	
 	/**

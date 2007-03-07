@@ -128,8 +128,8 @@ class ScaleTab extends RangeTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {scale1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {scale1};
 	}
 	
 	/**

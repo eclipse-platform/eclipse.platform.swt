@@ -121,8 +121,8 @@ class LabelTab extends AlignableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {label1, label2, label3, label4, label5, label6};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {label1, label2, label3, label4, label5, label6};
 	}
 	
 	/**

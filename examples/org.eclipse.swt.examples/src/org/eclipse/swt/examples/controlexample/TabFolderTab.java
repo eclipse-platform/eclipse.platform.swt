@@ -98,8 +98,8 @@ class TabFolderTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {tabFolder1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {tabFolder1};
 	}
 	
 	/**
@@ -115,21 +115,21 @@ class TabFolderTab extends Tab {
 		return (methodRoot.equals("SelectionIndex")) ? "setSelection" : "set" + methodRoot;
 	}
 
-	Object[] parameterForType(String typeName, String value, Control control) {
+	Object[] parameterForType(String typeName, String value, Widget widget) {
 		if (value.equals("")) return new Object[] {new TabItem[0]};
 		if (typeName.equals("org.eclipse.swt.widgets.TabItem")) {
-			TabItem item = findItem(value, ((TabFolder) control).getItems());
+			TabItem item = findItem(value, ((TabFolder) widget).getItems());
 			if (item != null) return new Object[] {item};
 		}
 		if (typeName.equals("[Lorg.eclipse.swt.widgets.TabItem;")) {
 			String[] values = value.split(",");
 			TabItem[] items = new TabItem[values.length];
 			for (int i = 0; i < values.length; i++) {
-				items[i] = findItem(values[i], ((TabFolder) control).getItems());
+				items[i] = findItem(values[i], ((TabFolder) widget).getItems());
 			}
 			return new Object[] {items};
 		}
-		return super.parameterForType(typeName, value, control);
+		return super.parameterForType(typeName, value, widget);
 	}
 
 	TabItem findItem(String value, TabItem[] items) {

@@ -31,7 +31,7 @@ class DialogTab extends Tab {
 	Button retryButton;
 	Button abortButton, ignoreButton;
 	Button iconErrorButton, iconInformationButton, iconQuestionButton;
-	Button iconWarningButton, iconWorkingButton;
+	Button iconWarningButton, iconWorkingButton, noIconButton;
 	Button primaryModalButton, applicationModalButton, systemModalButton;
 	Button saveButton, openButton, multiButton;
 
@@ -307,7 +307,9 @@ class DialogTab extends Tab {
 		iconWarningButton.setText ("SWT.ICON_WARNING");
 		iconWorkingButton = new Button (iconStyleGroup, SWT.RADIO);
 		iconWorkingButton.setText ("SWT.ICON_WORKING");
-	
+		noIconButton = new Button (iconStyleGroup, SWT.RADIO);
+		noIconButton.setText (ControlExample.getResourceString("No_Icon"));
+		
 		/* Create a group for the modal style controls */
 		Group modalStyleGroup = new Group (controlGroup, SWT.NONE);
 		modalStyleGroup.setLayout (new GridLayout ());
@@ -378,11 +380,12 @@ class DialogTab extends Tab {
 		iconQuestionButton.setEnabled (false);
 		iconWarningButton.setEnabled (false);
 		iconWorkingButton.setEnabled (false);
+		noIconButton.setEnabled (false);
 		saveButton.setEnabled (false);
 		openButton.setEnabled (false);
 		openButton.setSelection (true);
 		multiButton.setEnabled (false);
-		iconInformationButton.setSelection (true);
+		noIconButton.setSelection (true);
 	}
 	
 	/**
@@ -442,7 +445,8 @@ class DialogTab extends Tab {
 		iconInformationButton.setEnabled (isMessageBox);
 		iconQuestionButton.setEnabled (isMessageBox);
 		iconWarningButton.setEnabled (isMessageBox);
-		iconWorkingButton.setEnabled  (isMessageBox);
+		iconWorkingButton.setEnabled (isMessageBox);
+		noIconButton.setEnabled (isMessageBox);
 		saveButton.setEnabled (isFileDialog);
 		openButton.setEnabled (isFileDialog);
 		multiButton.setEnabled (isFileDialog);
@@ -462,8 +466,8 @@ class DialogTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [0];
+	Widget [] getExampleWidgets () {
+		return new Widget [0];
 	}
 	
 	/**

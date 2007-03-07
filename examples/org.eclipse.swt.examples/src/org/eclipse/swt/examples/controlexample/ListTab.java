@@ -72,8 +72,8 @@ class ListTab extends ScrollableTab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {list1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {list1};
 	}
 	
 	/**

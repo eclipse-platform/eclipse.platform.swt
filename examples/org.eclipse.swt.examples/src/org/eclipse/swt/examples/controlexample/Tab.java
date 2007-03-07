@@ -304,7 +304,7 @@ abstract class Tab {
 			case FOREGROUND_COLOR: {
 				Color oldColor = foregroundColor;
 				if (oldColor == null) {
-					Control [] controls = getExampleWidgets ();
+					Control [] controls = getExampleControls ();
 					if (controls.length > 0) oldColor = controls [0].getForeground ();
 				}
 				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
@@ -319,7 +319,7 @@ abstract class Tab {
 			case BACKGROUND_COLOR: {
 				Color oldColor = backgroundColor;
 				if (oldColor == null) {
-					Control [] controls = getExampleWidgets ();
+					Control [] controls = getExampleControls ();
 					if (controls.length > 0) oldColor = controls [0].getBackground (); // seed dialog with current color
 				}
 				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB());
@@ -334,7 +334,7 @@ abstract class Tab {
 			case FONT: {
 				Font oldFont = font;
 				if (oldFont == null) {
-					Control [] controls = getExampleWidgets ();
+					Control [] controls = getExampleControls ();
 					if (controls.length > 0) oldFont = controls [0].getFont ();
 				}
 				if (oldFont != null) fontDialog.setFontList(oldFont.getFontData()); // seed dialog with current font
@@ -405,7 +405,7 @@ abstract class Tab {
 	 */
 	void createBackgroundModeGroup () {
 		// note that this method must be called after createExampleWidgets
-		if (getExampleWidgets ().length == 0) return;
+		if (getExampleControls ().length == 0) return;
 		
 		/* Create the group */
 		backgroundModeGroup = new Group (controlGroup, SWT.NONE);
@@ -736,11 +736,11 @@ abstract class Tab {
 	void getValue() {
 		String methodName = "get" + nameCombo.getText();
 		getText.setText("");
-		Control[] controls = getExampleWidgets();
-		for (int i = 0; i < controls.length; i++) {
+		Widget[] widgets = getExampleWidgets();
+		for (int i = 0; i < widgets.length; i++) {
 			try {
-				java.lang.reflect.Method method = controls[i].getClass().getMethod(methodName, null);
-				Object result = method.invoke(controls[i], null);
+				java.lang.reflect.Method method = widgets[i].getClass().getMethod(methodName, null);
+				Object result = method.invoke(widgets[i], null);
 				if (result == null) {
 					getText.append("null");
 				} else if (result.getClass().isArray()) {
@@ -757,7 +757,7 @@ abstract class Tab {
 			} catch (Exception e) {
 				getText.append(e.toString());
 			}
-			if (i + 1 < controls.length) {
+			if (i + 1 < widgets.length) {
 				getText.append("\n\n");
 			}
 		}
@@ -766,9 +766,9 @@ abstract class Tab {
 	Class getReturnType(String methodRoot) {
 		Class returnType = null;
 		String methodName = "get" + methodRoot;
-		Control[] controls = getExampleWidgets();
+		Widget[] widgets = getExampleWidgets();
 		try {
-			java.lang.reflect.Method method = controls[0].getClass().getMethod(methodName, null);
+			java.lang.reflect.Method method = widgets[0].getClass().getMethod(methodName, null);
 			returnType = method.getReturnType();
 		} catch (Exception e) {
 		}
@@ -781,10 +781,10 @@ abstract class Tab {
 		Class returnType = getReturnType(methodRoot);
 		String methodName = setMethodName(methodRoot);
 		String value = setText.getText();
-		Control[] controls = getExampleWidgets();
-		for (int i = 0; i < controls.length; i++) {
+		Widget[] widgets = getExampleWidgets();
+		for (int i = 0; i < widgets.length; i++) {
 			try {
-				java.lang.reflect.Method method = controls[i].getClass().getMethod(methodName, new Class[] {returnType});
+				java.lang.reflect.Method method = widgets[i].getClass().getMethod(methodName, new Class[] {returnType});
 				String typeName = returnType.getName();
 				Object[] parameter = null;
 				if (typeName.equals("int")) {
@@ -810,16 +810,16 @@ abstract class Tab {
 				} else if (typeName.equals("[Ljava.lang.String;")) {
 					parameter = new Object[] {value.split(",")};
 				} else {
-					parameter = parameterForType(typeName, value, controls[i]);
+					parameter = parameterForType(typeName, value, widgets[i]);
 				}
-				method.invoke(controls[i], parameter);
+				method.invoke(widgets[i], parameter);
 			} catch (Exception e) {
 				getText.setText(e.toString());
 			}
 		}
 	}
 
-	Object[] parameterForType(String typeName, String value, Control control) {
+	Object[] parameterForType(String typeName, String value, Widget widget) {
 		return new Object[] {value};
 	}
 
@@ -934,7 +934,7 @@ abstract class Tab {
 	}
 	
 	void setExampleWidgetPopupMenu() {
-		Control[] controls = getExampleWidgets();
+		Control[] controls = getExampleControls();
 		for (int i = 0; i < controls.length; i++) {
 			final Control control = controls [i];
 			control.addListener(SWT.MenuDetect, new Listener() {
@@ -964,9 +964,9 @@ abstract class Tab {
 	 * Disposes the "Example" widgets.
 	 */
 	void disposeExampleWidgets () {
-		Control [] controls = getExampleWidgets ();
-		for (int i=0; i<controls.length; i++) {
-			controls [i].dispose ();
+		Widget [] widgets = getExampleWidgets ();
+		for (int i=0; i<widgets.length; i++) {
+			widgets [i].dispose ();
 		}
 	}
 	
@@ -1053,12 +1053,32 @@ abstract class Tab {
 	}
 	
 	/**
-	 * Gets the "Example" widget children.
+	 * Gets the "Example" widgets.
 	 *
-	 * @return an array containing the example widget children
+	 * @return an array containing the example widgets
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [0];
+	Widget [] getExampleWidgets () {
+		return new Widget [0];
+	}
+	
+	/**
+	 * Gets the "Example" controls.
+	 * This is the subset of "Example" widgets that are controls.
+	 *
+	 * @return an array containing the example controls
+	 */
+	Control [] getExampleControls () {
+		Widget [] widgets = getExampleWidgets ();
+		Control [] controls = new Control [0];
+		for (int i = 0; i < widgets.length; i++) {
+			if (widgets[i] instanceof Control) {
+				Control[] newControls = new Control[controls.length + 1];
+				System.arraycopy(controls, 0, newControls, 0, controls.length);
+				controls = newControls;
+				controls[controls.length - 1] = (Control)widgets[i];
+			}
+		}
+		return controls;
 	}
 	
 	/**
@@ -1094,9 +1114,9 @@ abstract class Tab {
 	 */
 	void hookExampleWidgetListeners () {
 		if (logging) {
-			Control[] exampleControls = getExampleWidgets ();
-			for (int i = 0; i < exampleControls.length; i++) {
-				hookListeners (exampleControls [i]);
+			Widget[] widgets = getExampleWidgets ();
+			for (int i = 0; i < widgets.length; i++) {
+				hookListeners (widgets [i]);
 			}
 			Item[] exampleItems = getExampleWidgetItems ();
 			for (int i = 0; i < exampleItems.length; i++) {
@@ -1266,7 +1286,7 @@ abstract class Tab {
 	 */
 	void setExampleWidgetBackground () {
 		if (colorAndFontTable == null) return; // user cannot change color/font on this tab
-		Control [] controls = getExampleWidgets ();
+		Control [] controls = getExampleControls ();
 		if (!instance.startup) {
 			for (int i = 0; i < controls.length; i++) {
 				controls[i].setBackground (backgroundColor);
@@ -1286,7 +1306,7 @@ abstract class Tab {
 	 * Sets the enabled state of the "Example" widgets.
 	 */
 	void setExampleWidgetEnabled () {
-		Control [] controls = getExampleWidgets ();
+		Control [] controls = getExampleControls ();
 		for (int i=0; i<controls.length; i++) {
 			controls [i].setEnabled (enabledButton.getSelection ());
 		}
@@ -1297,7 +1317,7 @@ abstract class Tab {
 	 */
 	void setExampleWidgetFont () {
 		if (colorAndFontTable == null) return; // user cannot change color/font on this tab
-		Control [] controls = getExampleWidgets ();
+		Control [] controls = getExampleControls ();
 		if (!instance.startup) {
 			for (int i = 0; i < controls.length; i++) {
 				controls[i].setFont(font);
@@ -1320,7 +1340,7 @@ abstract class Tab {
 	 */
 	void setExampleWidgetForeground () {
 		if (colorAndFontTable == null) return; // user cannot change color/font on this tab
-		Control [] controls = getExampleWidgets ();
+		Control [] controls = getExampleControls ();
 		if (!instance.startup) {
 			for (int i = 0; i < controls.length; i++) {
 				controls[i].setForeground (foregroundColor);
@@ -1346,7 +1366,7 @@ abstract class Tab {
 		if (tooSmallButton.getSelection()) size = TOO_SMALL_SIZE;
 		if (smallButton.getSelection()) size = SMALL_SIZE;
 		if (largeButton.getSelection()) size = LARGE_SIZE;
-		Control [] controls = getExampleWidgets ();
+		Control [] controls = getExampleControls ();
 		for (int i=0; i<controls.length; i++) {
 			GridData gridData = new GridData(size, size); 
 			gridData.grabExcessHorizontalSpace = fillHButton.getSelection();
@@ -1378,7 +1398,7 @@ abstract class Tab {
 			setExampleWidgetSize ();
 		}
 		//TEMPORARY CODE
-//		Control [] controls = getExampleWidgets ();
+//		Control [] controls = getExampleControls ();
 //		for (int i=0; i<controls.length; i++) {
 //			log ("Control=" + controls [i] + ", border width=" + controls [i].getBorderWidth ());
 //		}
@@ -1388,7 +1408,7 @@ abstract class Tab {
 	 * Sets the visibility of the "Example" widgets.
 	 */
 	void setExampleWidgetVisibility () {
-		Control [] controls = getExampleWidgets ();
+		Control [] controls = getExampleControls ();
 		for (int i=0; i<controls.length; i++) {
 			controls [i].setVisible (visibleButton.getSelection ());
 		}
@@ -1398,7 +1418,7 @@ abstract class Tab {
 	 * Sets the background image of the "Example" widgets.
 	 */
 	void setExampleWidgetBackgroundImage () {
-		Control [] controls = getExampleWidgets ();
+		Control [] controls = getExampleControls ();
 		for (int i=0; i<controls.length; i++) {
 			controls [i].setBackgroundImage (backgroundImageButton.getSelection () ? instance.images[ControlExample.ciBackground] : null);
 		}

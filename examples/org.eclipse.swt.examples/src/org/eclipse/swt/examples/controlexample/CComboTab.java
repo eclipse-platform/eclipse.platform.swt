@@ -92,8 +92,8 @@ class CComboTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {combo1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {combo1};
 	}
 	
 	/**

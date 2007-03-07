@@ -276,8 +276,8 @@ class ToolBarTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {imageToolBar, textToolBar, imageTextToolBar};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {imageToolBar, textToolBar, imageTextToolBar};
 	}
 	
 	/**

@@ -90,8 +90,8 @@ class DateTimeTab extends Tab {
 	/**
 	 * Gets the "Example" widget children.
 	 */
-	Control [] getExampleWidgets () {
-		return new Control [] {dateTime1};
+	Widget [] getExampleWidgets () {
+		return new Widget [] {dateTime1};
 	}
 	
 	/**
