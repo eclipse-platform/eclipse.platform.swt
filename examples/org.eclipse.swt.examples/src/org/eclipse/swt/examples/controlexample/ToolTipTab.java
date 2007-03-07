@@ -14,7 +14,6 @@ package org.eclipse.swt.examples.controlexample;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.*;
 
 class ToolTipTab extends Tab {
@@ -30,6 +29,7 @@ class ToolTipTab extends Tab {
 	Button autoHideButton, showInTrayButton;
 	
 	Tray tray;
+	TrayItem trayItem;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -136,7 +136,7 @@ class ToolTipTab extends Tab {
 		autoHideButton = new Button(otherGroup, SWT.CHECK);
 		autoHideButton.setText(ControlExample.getResourceString("AutoHide"));
 		showInTrayButton = new Button(otherGroup, SWT.CHECK);
-		showInTrayButton.setText(ControlExample.getResourceString("ShowInTray"));
+		showInTrayButton.setText(ControlExample.getResourceString("Show_In_Tray"));
 		tray = display.getSystemTray();
 		showInTrayButton.setEnabled(tray != null);
 
@@ -218,12 +218,17 @@ class ToolTipTab extends Tab {
 	}
 	
 	void showExampleWidgetInTray () {
-		if (autoHideButton.getSelection ()) {
-			TrayItem item = new TrayItem(tray, SWT.NONE);
-			item.setImage(instance.images[ControlExample.ciTarget]);
-			item.setToolTip(toolTip1);
+		if (showInTrayButton.getSelection ()) {
+			if (trayItem == null) {
+				trayItem = new TrayItem(tray, SWT.NONE);
+				trayItem.setImage(instance.images[ControlExample.ciTarget]);
+			}
+			trayItem.setToolTip(toolTip1);
 		} else {
-			// TODO: how to turn off show in tray
+			if (trayItem != null) {
+				trayItem.dispose();
+				trayItem = null;
+			}
 		}
 	}
 }
