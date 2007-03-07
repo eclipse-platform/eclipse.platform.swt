@@ -13,13 +13,124 @@
 #include "os_structs.h"
 #include "os_stats.h"
 
-extern "C" {
-
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_wpf_OS_##func
 
 static JavaVM *jvm = NULL;
 
+#ifndef GCHANDLE_TABLE
+#define GCHANDLE_STACKS
+public ref class SWTObjectTable {
+private:
+	static int nextHandle = 0;
+	static array<Object^>^table = nullptr;
+
+#ifdef GCHANDLE_STACKS
+	static array<int>^exceptions = nullptr;
+#endif
+	
+public:
+static int ToHandle(Object^ obj) {
+	if (obj == nullptr) return 0;
+	if (table == nullptr || nextHandle == -1) {
+		int length = 0;
+		if (table != nullptr) length = table->GetLength(0);		
+		int newLength = length * 2;
+		if (newLength < 1024) newLength = 1024;
+//		System::Console::Error->WriteLine("\t\t***grow={1}", length, newLength);
+		Array::Resize(table, newLength);
+#ifdef GCHANDLE_STACKS
+		Array::Resize(exceptions, newLength);
+#endif
+		for (int i=length; i<newLength-1; i++) table[i] = i + 1;
+		table[newLength-1] = -1;
+		nextHandle = length;
+	}
+	int handle = nextHandle;
+	nextHandle = (int)(Int32)table[handle];
+	table[handle] = obj;
+#ifdef GCHANDLE_STACKS
+	if (jvm) {
+		JNIEnv* env;
+		if (IS_JNI_1_2) {
+			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+		}
+		jclass exceptionClass = env->FindClass("java/lang/Exception");
+		jobject exception = env->NewGlobalRef(env->NewObject(exceptionClass, env->GetMethodID(exceptionClass, "<init>", "()V")));
+		exceptions[handle] = (int)exception;
+	}
+#endif
+//	System::Console::Error->WriteLine(">{0}={1}", handle + 1, obj);
+	return handle + 1;	
 }
+
+static Object^ ToObject(int handle) {
+	if (handle <= 0) return nullptr;
+	return table[handle - 1];
+}
+
+static void Free(int handle) {
+	if (handle <= 0) return;
+//	System::Console::Error->WriteLine("<{0}={1}", handle, table[handle - 1]);
+	table[handle - 1] = nextHandle;
+	nextHandle = handle - 1;
+#ifdef GCHANDLE_STACKS
+	if (exceptions[handle - 1] != 0) {
+		JNIEnv* env;
+		if (IS_JNI_1_2) {
+			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+		}
+		env->DeleteGlobalRef((jobject)exceptions[handle - 1]);
+	}
+	exceptions[handle - 1] = 0;
+#endif
+}
+
+static void Dump() {
+	for (int i=0; i<table->GetLength(0); i++) {
+		if (table[i]->GetType() != Int32::typeid) {
+			System::Console::Error->WriteLine("LEAK -> {0}={1} type={2}", i, table[i], table[i]->GetType());
+#ifdef GCHANDLE_STACKS
+			if (exceptions[i] != 0) {
+				JNIEnv* env;
+				jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+				jclass exceptionClass = env->FindClass("java/lang/Throwable");
+				jmethodID mid = env->GetMethodID(exceptionClass, "printStackTrace", "()V");
+				if (mid != NULL) env->CallVoidMethod((jobject)exceptions[i], mid, 0);
+				env->DeleteGlobalRef((jobject)exceptions[i]);
+			}
+#endif
+		}
+	}
+}
+
+};
+#endif // GCHANDLE_TABLE
+
+extern "C" {
+
+#ifdef GCHANDLE_TABLE
+
+jint GCHandle_GetHandle(Object^ obj) {
+	return obj == nullptr ? 0 : (int)GCHandle::ToIntPtr(GCHandle::Alloc(obj));
+}
+
+#else
+
+int SWTObjectTable_ToHandle(Object^ obj) {
+	return SWTObjectTable::ToHandle(obj);
+}
+
+Object^ SWTObjectTable_ToObject(int handle) {
+	return SWTObjectTable::ToObject(handle);
+}
+
+void SWTObjectTable_Free(int handle) {
+	return SWTObjectTable::Free(handle);
+}
+
+#endif // GCHANDLE_TABLE
+
+} // extern "C" ends
 
 public ref class JniRefCookie {
 public:
@@ -621,118 +732,6 @@ public:
 	}
 };
 
-#ifndef GCHANDLE_TABLE
-#define GCHANDLE_STACKS
-public ref class SWTObjectTable {
-private:
-	static int nextHandle = 0;
-	static array<Object^>^table = nullptr;
-
-#ifdef GCHANDLE_STACKS
-	static array<int>^exceptions = nullptr;
-#endif
-	
-public:
-static int ToHandle(Object^ obj) {
-	if (obj == nullptr) return 0;
-	if (table == nullptr || nextHandle == -1) {
-		int length = 0;
-		if (table != nullptr) length = table->GetLength(0);		
-		int newLength = length * 2;
-		if (newLength < 1024) newLength = 1024;
-//		System::Console::Error->WriteLine("\t\t***grow={1}", length, newLength);
-		Array::Resize(table, newLength);
-#ifdef GCHANDLE_STACKS
-		Array::Resize(exceptions, newLength);
-#endif
-		for (int i=length; i<newLength-1; i++) table[i] = i + 1;
-		table[newLength-1] = -1;
-		nextHandle = length;
-	}
-	int handle = nextHandle;
-	nextHandle = (int)(Int32)table[handle];
-	table[handle] = obj;
-#ifdef GCHANDLE_STACKS
-	if (jvm) {
-		JNIEnv* env;
-		if (IS_JNI_1_2) {
-			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
-		}
-		jclass exceptionClass = env->FindClass("java/lang/Exception");
-		jobject exception = env->NewGlobalRef(env->NewObject(exceptionClass, env->GetMethodID(exceptionClass, "<init>", "()V")));
-		exceptions[handle] = (int)exception;
-	}
-#endif
-//	System::Console::Error->WriteLine(">{0}={1}", handle + 1, obj);
-	return handle + 1;	
-}
-
-static Object^ ToObject(int handle) {
-	if (handle <= 0) return nullptr;
-	return table[handle - 1];
-}
-
-static void Free(int handle) {
-	if (handle <= 0) return;
-//	System::Console::Error->WriteLine("<{0}={1}", handle, table[handle - 1]);
-	table[handle - 1] = nextHandle;
-	nextHandle = handle - 1;
-#ifdef GCHANDLE_STACKS
-	if (exceptions[handle - 1] != 0) {
-		JNIEnv* env;
-		if (IS_JNI_1_2) {
-			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
-		}
-		env->DeleteGlobalRef((jobject)exceptions[handle - 1]);
-	}
-	exceptions[handle - 1] = 0;
-#endif
-}
-
-static void Dump() {
-	for (int i=0; i<table->GetLength(0); i++) {
-		if (table[i]->GetType() != Int32::typeid) {
-			System::Console::Error->WriteLine("LEAK -> {0}={1} type={2}", i, table[i], table[i]->GetType());
-#ifdef GCHANDLE_STACKS
-			if (exceptions[i] != 0) {
-				JNIEnv* env;
-				jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
-				jclass exceptionClass = env->FindClass("java/lang/Throwable");
-				jmethodID mid = env->GetMethodID(exceptionClass, "printStackTrace", "()V");
-				if (mid != NULL) env->CallVoidMethod((jobject)exceptions[i], mid, 0);
-				env->DeleteGlobalRef((jobject)exceptions[i]);
-			}
-#endif
-		}
-	}
-}
-
-};
-#endif // GCHANDLE_TABLE
-
-extern "C" {
-
-#ifdef GCHANDLE_TABLE
-
-jint GCHandle_GetHandle(Object^ obj) {
-	return obj == nullptr ? 0 : (int)GCHandle::ToIntPtr(GCHandle::Alloc(obj));
-}
-
-#else
-
-int SWTObjectTable_ToHandle(Object^ obj) {
-	return SWTObjectTable::ToHandle(obj);
-}
-
-Object^ SWTObjectTable_ToObject(int handle) {
-	return SWTObjectTable::ToObject(handle);
-}
-
-void SWTObjectTable_Free(int handle) {
-	return SWTObjectTable::Free(handle);
-}
-
-#endif // GCHANDLE_TABLE
 /*												*/
 /* Event Handler Class							*/
 /*												*/
@@ -910,7 +909,8 @@ public:
 	}
 };
 
-#define HANDLER_CONSTRUCTOR(name) JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1##name##) (JNIEnv *env, jclass that, jint arg0, jstring arg1) { \
+#define HANDLER_CONSTRUCTOR(name) extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1##name##) (JNIEnv *env, jclass that, jint arg0, jstring arg1); \
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1##name##) (JNIEnv *env, jclass that, jint arg0, jstring arg1) { \
 	jint rc = 0; \
 	OS_NATIVE_ENTER(env, that, gcnew_1##name##_FUNC); \
 	rc = (jint)TO_HANDLE(gcnew name (gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::##name##)); \
@@ -984,6 +984,7 @@ HANDLER_CONSTRUCTOR (RoutedEventHandler)
 
 // special cases
 #ifndef NO_gcnew_1TimerHandler
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TimerHandler) (JNIEnv *env, jclass that, jint arg0, jstring arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TimerHandler) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1TimerHandler_FUNC);
@@ -994,6 +995,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TimerHandler) (JNIEnv *env, jclass that,
 #endif
 
 #ifndef NO_gcnew_1RoutedPropertyChangedEventHandlerObject
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandlerObject) (JNIEnv *env, jclass that, jint arg0, jstring arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandlerObject) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1RoutedPropertyChangedEventHandlerObject_FUNC);
@@ -1004,6 +1006,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandlerObject)
 #endif
 
 #ifndef NO_gcnew_1RoutedPropertyChangedEventHandler
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandler) (JNIEnv *env, jclass that, jint arg0, jstring arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandler) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1RoutedPropertyChangedEventHandler_FUNC);
@@ -1014,6 +1017,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandler) (JNIE
 #endif
 
 #ifndef NO_gcnew_1NoArgsDelegate
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NoArgsDelegate) (JNIEnv *env, jclass that, jint arg0, jstring arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NoArgsDelegate) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1NoArgsDelegate_FUNC);
@@ -1028,6 +1032,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NoArgsDelegate) (JNIEnv *env, jclass tha
 /*												*/
 
 #ifndef NO_gcnew_1SWTCanvas
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCanvas)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCanvas)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1040,6 +1045,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCanvas)
 #endif
 
 #ifndef NO_gcnew_1SWTRow
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTRow)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTRow)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1051,8 +1057,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTRow)
 }
 #endif
 
-
 #ifndef NO_gcnew_1SWTSafeHandle
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTSafeHandle)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTSafeHandle)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
@@ -1065,6 +1071,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTSafeHandle)
 #endif
 
 #ifndef NO_gcnew_1SWTTextSource
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextSource)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextSource)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1077,6 +1084,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextSource)
 #endif
 
 #ifndef NO_gcnew_1SWTTextParagraphProperties
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextParagraphProperties)(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4, jdouble arg5, jdouble arg6, int arg7);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextParagraphProperties)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4, jdouble arg5, jdouble arg6, int arg7)
 {
@@ -1089,6 +1097,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextParagraphProperties)
 #endif
 
 #ifndef NO_gcnew_1SWTTextEmbeddedObject
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextEmbeddedObject)(JNIEnv *env, jclass that, jint arg0, jint arg1, jdouble arg2, jdouble arg3, jdouble arg4);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextEmbeddedObject)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jdouble arg2, jdouble arg3, jdouble arg4)
 {
@@ -1101,6 +1110,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextEmbeddedObject)
 #endif
 
 #ifndef NO_gcnew_1SWTTextRunProperties
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextRunProperties)(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextRunProperties)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
 {
@@ -1113,6 +1123,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTextRunProperties)
 #endif
 
 #ifndef NO_gcnew_1SWTTreeView
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeView)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeView) 
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1125,6 +1136,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeView)
 #endif
 
 #ifndef NO_gcnew_1SWTTreeViewRowPresenter
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeViewRowPresenter)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeViewRowPresenter) 
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1137,6 +1149,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeViewRowPresenter)
 #endif
 
 #ifndef NO_gcnew_1SWTCellConverter
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCellConverter)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCellConverter) 
 	(JNIEnv *env, jclass that)
 {
@@ -1149,6 +1162,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCellConverter)
 #endif
 
 #ifndef NO_SWTTextRunProperties_1ForegroundBrush
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(SWTTextRunProperties_1ForegroundBrush)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(SWTTextRunProperties_1ForegroundBrush)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1159,6 +1173,7 @@ JNIEXPORT void JNICALL OS_NATIVE(SWTTextRunProperties_1ForegroundBrush)
 #endif
 
 #ifndef NO_SWTCanvas_1Visual__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SWTCanvas_1Visual__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(SWTCanvas_1Visual__I)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1171,6 +1186,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SWTCanvas_1Visual__I)
 #endif
 
 #ifndef NO_SWTCanvas_1Visual__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(SWTCanvas_1Visual__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(SWTCanvas_1Visual__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1181,6 +1197,7 @@ JNIEXPORT void JNICALL OS_NATIVE(SWTCanvas_1Visual__II)
 #endif
 
 #ifndef NO_JNIGetObject
+extern "C" JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1192,18 +1209,26 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 }
 #endif
 
+#ifndef NO_GCHandle_1Free
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Free) (JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Free) (JNIEnv *env, jclass that, jint arg0) {
 	OS_NATIVE_ENTER(env, that, GCHandle_1Free_FUNC);
 	FREE_HANDLE(arg0);
 	OS_NATIVE_EXIT(env, that, GCHandle_1Free_FUNC);
 }
+#endif
 
+#ifndef NO_GCHandle_1Dump
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Dump) (JNIEnv *env, jclass that);
 JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Dump) (JNIEnv *env, jclass that) {
 	OS_NATIVE_ENTER(env, that, GCHandle_1Dump_FUNC);
 	SWTObjectTable::Dump();
 	OS_NATIVE_EXIT(env, that, GCHandle_1Dump_FUNC);
 }
+#endif
 
+#ifndef NO_GCHandle_1Alloc
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(GCHandle_1Alloc) (JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(GCHandle_1Alloc) (JNIEnv *env, jclass that, jint arg0) {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GCHandle_1Alloc_FUNC);
@@ -1211,8 +1236,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(GCHandle_1Alloc) (JNIEnv *env, jclass that, jin
 	OS_NATIVE_EXIT(env, that, GCHandle_1Alloc_FUNC);
 	return rc;
 }
+#endif
 
 #ifndef NO_Bitmap_1GetHicon
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Bitmap_1GetHicon)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(Bitmap_1GetHicon)
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1225,6 +1252,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Bitmap_1GetHicon)
 #endif
 
 #ifndef NO_SWTRow_1NotifyPropertyChanged
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(SWTRow_1NotifyPropertyChanged)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(SWTRow_1NotifyPropertyChanged)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -1235,6 +1263,7 @@ JNIEXPORT void JNICALL OS_NATIVE(SWTRow_1NotifyPropertyChanged)
 #endif
 
 #ifndef NO_memcpy
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(memcpy)(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2);
 JNIEXPORT void JNICALL OS_NATIVE(memcpy)
 	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
 {
@@ -1265,8 +1294,6 @@ fail:
 	OS_NATIVE_EXIT(env, that, memcpy_FUNC);
 }
 #endif
-
-} // extern "C" ends
 
 #ifndef NO_ToggleButton_1IsCheckedNullSetter
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(ToggleButton_1IsCheckedNullSetter)(JNIEnv *env, jclass that, jint arg0);
