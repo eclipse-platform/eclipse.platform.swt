@@ -26,6 +26,7 @@ public ref class SWTObjectTable {
 private:
 	static int nextHandle = 0;
 	static array<Object^>^table = nullptr;
+	static Object^ mutex = gcnew Object();
 
 #ifdef GCHANDLE_STACKS
 	static array<int>^exceptions = nullptr;
@@ -33,6 +34,7 @@ private:
 	
 public:
 static int ToHandle(Object^ obj) {
+	System::Threading::Monitor::Enter(mutex);
 	if (obj == nullptr) return 0;
 	if (table == nullptr || nextHandle == -1) {
 		int length = 0;
@@ -58,37 +60,42 @@ static int ToHandle(Object^ obj) {
 			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
 		}
 		jclass exceptionClass = env->FindClass("java/lang/Exception");
-		jobject exception = env->NewGlobalRef(env->NewObject(exceptionClass, env->GetMethodID(exceptionClass, "<init>", "()V")));
-		exceptions[handle] = (int)exception;
+		exceptions[handle] = (int)env->NewGlobalRef(env->NewObject(exceptionClass, env->GetMethodID(exceptionClass, "<init>", "()V")));
 	}
 #endif
-//	System::Console::Error->WriteLine(">{0}={1}", handle + 1, obj);
+	System::Threading::Monitor::Exit(mutex);
 	return handle + 1;	
 }
 
 static Object^ ToObject(int handle) {
-	if (handle <= 0) return nullptr;
-	return table[handle - 1];
+	System::Threading::Monitor::Enter(mutex);
+	Object^ result = nullptr;
+	if (handle > 0) result = table[handle - 1];
+	System::Threading::Monitor::Exit(mutex);
+	return result;
 }
 
 static void Free(int handle) {
-	if (handle <= 0) return;
-//	System::Console::Error->WriteLine("<{0}={1}", handle, table[handle - 1]);
-	table[handle - 1] = nextHandle;
-	nextHandle = handle - 1;
+	System::Threading::Monitor::Enter(mutex);
+	if (handle > 0) {
+		table[handle - 1] = nextHandle;
+		nextHandle = handle - 1;
 #ifdef GCHANDLE_STACKS
-	if (exceptions[handle - 1] != 0) {
-		JNIEnv* env;
-		if (IS_JNI_1_2) {
-			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+		if (exceptions[handle - 1] != 0) {
+			JNIEnv* env;
+			if (IS_JNI_1_2) {
+				jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+			}
+			env->DeleteGlobalRef((jobject)exceptions[handle - 1]);
+			exceptions[handle - 1] = 0;
 		}
-		env->DeleteGlobalRef((jobject)exceptions[handle - 1]);
-	}
-	exceptions[handle - 1] = 0;
 #endif
+	}
+	System::Threading::Monitor::Exit(mutex);
 }
 
 static void Dump() {
+	System::Threading::Monitor::Enter(mutex);
 	for (int i=0; i<table->GetLength(0); i++) {
 		if (table[i]->GetType() != Int32::typeid) {
 			System::Console::Error->WriteLine("LEAK -> {0}={1} type={2}", i + 1, table[i], table[i]->GetType());
@@ -99,11 +106,11 @@ static void Dump() {
 				jclass exceptionClass = env->FindClass("java/lang/Throwable");
 				jmethodID mid = env->GetMethodID(exceptionClass, "printStackTrace", "()V");
 				if (mid != NULL) env->CallVoidMethod((jobject)exceptions[i], mid, 0);
-				env->DeleteGlobalRef((jobject)exceptions[i]);
 			}
 #endif
 		}
 	}
+	System::Threading::Monitor::Exit(mutex);
 }
 
 };
