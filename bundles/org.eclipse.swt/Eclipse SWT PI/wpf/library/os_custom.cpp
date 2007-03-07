@@ -91,7 +91,7 @@ static void Free(int handle) {
 static void Dump() {
 	for (int i=0; i<table->GetLength(0); i++) {
 		if (table[i]->GetType() != Int32::typeid) {
-			System::Console::Error->WriteLine("LEAK -> {0}={1} type={2}", i, table[i], table[i]->GetType());
+			System::Console::Error->WriteLine("LEAK -> {0}={1} type={2}", i + 1, table[i], table[i]->GetType());
 #ifdef GCHANDLE_STACKS
 			if (exceptions[i] != 0) {
 				JNIEnv* env;
