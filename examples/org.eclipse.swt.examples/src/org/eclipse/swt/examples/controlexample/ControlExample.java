@@ -90,6 +90,7 @@ public class ControlExample {
 			new TableTab (this),
 			new TextTab (this),
 			new ToolBarTab (this),
+			new ToolTipTab (this),
 			new TreeTab (this),
 		};
 	}
