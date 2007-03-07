@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1117;
-int OS_nativeFunctionCallCount[1117];
+int OS_nativeFunctionCount = 1128;
+int OS_nativeFunctionCallCount[1128];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -232,6 +232,7 @@ char * OS_nativeFunctionNames[] = {
 	"DrawingContext_1PushClip",
 	"DrawingContext_1PushOpacity",
 	"DrawingContext_1PushTransform",
+	"DrawingFontFamily_1Name",
 	"DrawingVisual_1RenderOpen",
 	"DrawingVisual_1typeid",
 	"EditingCommands_1Backspace",
@@ -258,6 +259,11 @@ char * OS_nativeFunctionNames[] = {
 	"FolderBrowserDialog_1Description",
 	"FolderBrowserDialog_1SelectedPath__I",
 	"FolderBrowserDialog_1SelectedPath__II",
+	"FontDialog_1Color__I",
+	"FontDialog_1Color__II",
+	"FontDialog_1Font__I",
+	"FontDialog_1Font__II",
+	"FontDialog_1ShowColor",
 	"FontFamily_1GetTypefaces",
 	"FontFamily_1Source",
 	"FontStretch_1FromOpenTypeStretch",
@@ -270,6 +276,9 @@ char * OS_nativeFunctionNames[] = {
 	"FontWeight_1ToOpenTypeWeight",
 	"FontWeights_1Bold",
 	"FontWeights_1Normal",
+	"Font_1FontFamily",
+	"Font_1Size",
+	"Font_1Style",
 	"Fonts_1SystemTypefaces",
 	"FormattedText_1Baseline",
 	"FormattedText_1BuildGeometry",
@@ -1014,6 +1023,8 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1Expander",
 	"gcnew_1FileInfo",
 	"gcnew_1FolderBrowserDialog",
+	"gcnew_1Font",
+	"gcnew_1FontDialog",
 	"gcnew_1FontFamily",
 	"gcnew_1FormatConvertedBitmap",
 	"gcnew_1FormattedText",

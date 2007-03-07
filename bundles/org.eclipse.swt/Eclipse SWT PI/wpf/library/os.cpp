@@ -2662,6 +2662,19 @@ JNIEXPORT void JNICALL OS_NATIVE(DrawingContext_1PushTransform)
 }
 #endif
 
+#ifndef NO_DrawingFontFamily_1Name
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DrawingFontFamily_1Name)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DrawingFontFamily_1Name)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DrawingFontFamily_1Name_FUNC);
+	rc = (jint)TO_HANDLE(((System::Drawing::FontFamily^)TO_OBJECT(arg0))->Name);
+	OS_NATIVE_EXIT(env, that, DrawingFontFamily_1Name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DrawingVisual_1RenderOpen
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DrawingVisual_1RenderOpen)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(DrawingVisual_1RenderOpen)
@@ -2980,6 +2993,65 @@ JNIEXPORT void JNICALL OS_NATIVE(FolderBrowserDialog_1SelectedPath__II)
 }
 #endif
 
+#ifndef NO_FontDialog_1Color__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FontDialog_1Color__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FontDialog_1Color__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FontDialog_1Color__I_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::FontDialog^)TO_OBJECT(arg0))->Color);
+	OS_NATIVE_EXIT(env, that, FontDialog_1Color__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FontDialog_1Color__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FontDialog_1Color__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FontDialog_1Color__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FontDialog_1Color__II_FUNC);
+	((System::Windows::Forms::FontDialog^)TO_OBJECT(arg0))->Color = ((System::Drawing::Color)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, FontDialog_1Color__II_FUNC);
+}
+#endif
+
+#ifndef NO_FontDialog_1Font__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FontDialog_1Font__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FontDialog_1Font__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FontDialog_1Font__I_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::FontDialog^)TO_OBJECT(arg0))->Font);
+	OS_NATIVE_EXIT(env, that, FontDialog_1Font__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FontDialog_1Font__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FontDialog_1Font__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FontDialog_1Font__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FontDialog_1Font__II_FUNC);
+	((System::Windows::Forms::FontDialog^)TO_OBJECT(arg0))->Font = ((System::Drawing::Font^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, FontDialog_1Font__II_FUNC);
+}
+#endif
+
+#ifndef NO_FontDialog_1ShowColor
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FontDialog_1ShowColor)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FontDialog_1ShowColor)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, FontDialog_1ShowColor_FUNC);
+	((System::Windows::Forms::FontDialog^)TO_OBJECT(arg0))->ShowColor = (arg1);
+	OS_NATIVE_EXIT(env, that, FontDialog_1ShowColor_FUNC);
+}
+#endif
+
 #ifndef NO_FontFamily_1GetTypefaces
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FontFamily_1GetTypefaces)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(FontFamily_1GetTypefaces)
@@ -3132,6 +3204,45 @@ JNIEXPORT jint JNICALL OS_NATIVE(FontWeights_1Normal)
 	OS_NATIVE_ENTER(env, that, FontWeights_1Normal_FUNC);
 	rc = (jint)TO_HANDLE(FontWeights::Normal);
 	OS_NATIVE_EXIT(env, that, FontWeights_1Normal_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Font_1FontFamily
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Font_1FontFamily)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Font_1FontFamily)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Font_1FontFamily_FUNC);
+	rc = (jint)TO_HANDLE(((System::Drawing::Font^)TO_OBJECT(arg0))->FontFamily);
+	OS_NATIVE_EXIT(env, that, Font_1FontFamily_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Font_1Size
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Font_1Size)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Font_1Size)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Font_1Size_FUNC);
+	rc = (jint)((System::Drawing::Font^)TO_OBJECT(arg0))->Size;
+	OS_NATIVE_EXIT(env, that, Font_1Size_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Font_1Style
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Font_1Style)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Font_1Style)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Font_1Style_FUNC);
+	rc = (jint)((System::Drawing::Font^)TO_OBJECT(arg0))->Style;
+	OS_NATIVE_EXIT(env, that, Font_1Style_FUNC);
 	return rc;
 }
 #endif
@@ -12073,6 +12184,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1FolderBrowserDialog)
 	OS_NATIVE_ENTER(env, that, gcnew_1FolderBrowserDialog_FUNC);
 	rc = (jint)TO_HANDLE(gcnew System::Windows::Forms::FolderBrowserDialog());
 	OS_NATIVE_EXIT(env, that, gcnew_1FolderBrowserDialog_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1Font
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Font)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jint arg2);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Font)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1Font_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::Drawing::Font((String^)TO_OBJECT(arg0), arg1, (System::Drawing::FontStyle)arg2));
+	OS_NATIVE_EXIT(env, that, gcnew_1Font_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1FontDialog
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1FontDialog)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1FontDialog)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1FontDialog_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::Windows::Forms::FontDialog());
+	OS_NATIVE_EXIT(env, that, gcnew_1FontDialog_FUNC);
 	return rc;
 }
 #endif
