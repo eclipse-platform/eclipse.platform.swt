@@ -112,30 +112,30 @@ public RGB getRGB () {
  * </ul>
  */
 public RGB open () {
-	int dialog = OS.gcnew_ColorDialog();
+	int dialog = OS.gcnew_ColorDialog ();
 	if (rgb != null) {
-		int color = OS.DrawingColor_FromArgb(174, rgb.red, rgb.blue, rgb.green);
-		OS.ColorDialog_Color(dialog, color);
-		OS.GCHandle_Free(color);
+		int color = OS.DrawingColor_FromArgb (174, rgb.red, rgb.blue, rgb.green);
+		OS.ColorDialog_Color (dialog, color);
+		OS.GCHandle_Free (color);
 	}
-	Display display = parent.getDisplay();
+	Display display = parent.getDisplay ();
 	int customColors = display.customColors;
-	OS.ColorDialog_AnyColor(dialog, true);
-	OS.ColorDialog_CustomColors(dialog, customColors);
-	int result = OS.FormsCommonDialog_ShowDialog(dialog);
+	OS.ColorDialog_AnyColor (dialog, true);
+	OS.ColorDialog_CustomColors (dialog, customColors);
+	int result = OS.FormsCommonDialog_ShowDialog (dialog);
 	RGB rgb = null;
 	if (result == OS.DialogResult_OK) {
-		int color = OS.ColorDialog_Color(dialog);
-		int argb = OS.DrawingColor_ToArgb(color);	
+		int color = OS.ColorDialog_Color (dialog);
+		int argb = OS.DrawingColor_ToArgb (color);	
 		int red = (argb & 0xFF0000) >> 16;
 		int green = (argb & 0xFF00) >> 8;
 		int blue = argb & 0xFF;
 		OS.GCHandle_Free (color);
-		rgb = new RGB(red, green, blue);
-		if (customColors != 0) OS.GCHandle_Free(customColors);
-		display.customColors = OS.ColorDialog_CustomColors(dialog);
+		rgb = new RGB (red, green, blue);
+		if (customColors != 0) OS.GCHandle_Free (customColors);
+		display.customColors = OS.ColorDialog_CustomColors (dialog);
 	}
-	OS.GCHandle_Free(dialog);
+	OS.GCHandle_Free (dialog);
 	return rgb;
 }
 
