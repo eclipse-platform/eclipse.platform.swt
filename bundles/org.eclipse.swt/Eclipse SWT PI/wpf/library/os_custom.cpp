@@ -17,6 +17,9 @@
 
 static JavaVM *jvm = NULL;
 
+/*												*/
+/* SWT Handle Table     						*/
+/*												*/
 #ifndef GCHANDLE_TABLE
 #define GCHANDLE_STACKS
 public ref class SWTObjectTable {
@@ -132,6 +135,9 @@ void SWTObjectTable_Free(int handle) {
 
 } // extern "C" ends
 
+/*												*/
+/* JNI Ref Cookie       						*/
+/*												*/
 public ref class JniRefCookie {
 public:
 	jobject object;
@@ -1222,7 +1228,9 @@ JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Free) (JNIEnv *env, jclass that, jint
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Dump) (JNIEnv *env, jclass that);
 JNIEXPORT void JNICALL OS_NATIVE(GCHandle_1Dump) (JNIEnv *env, jclass that) {
 	OS_NATIVE_ENTER(env, that, GCHandle_1Dump_FUNC);
+#ifndef GCHANDLE_TABLE	
 	SWTObjectTable::Dump();
+#endif	
 	OS_NATIVE_EXIT(env, that, GCHandle_1Dump_FUNC);
 }
 #endif
