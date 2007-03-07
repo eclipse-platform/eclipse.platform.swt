@@ -209,6 +209,7 @@ public class ControlExample {
 			if (! display.readAndDispatch()) display.sleep();
 		}
 		instance.dispose();
+		display.dispose();
 	}
 	
 	/**
