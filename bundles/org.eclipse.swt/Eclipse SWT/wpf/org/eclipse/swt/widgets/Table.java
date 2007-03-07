@@ -1554,11 +1554,13 @@ public void remove (int [] indices) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int items = OS.ItemsControl_Items (handle);
+	ignoreSelection = true;
 	for (int i = newIndices.length-1; i >= 0; i--) {
 		TableItem item = getItem (items, i, false);
 		if (item != null && !item.isDisposed ()) item.release (false);
 		OS.ItemCollection_RemoveAt (items, newIndices [i]);
 	}
+	ignoreSelection = false;
 	itemCount = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
 }
@@ -1583,7 +1585,9 @@ public void remove (int index) {
 	int items = OS.ItemsControl_Items (handle);
 	TableItem item = getItem (items, index, false);
 	if (item != null && !item.isDisposed ()) item.release (false);
+	ignoreSelection = true;
 	OS.ItemCollection_RemoveAt (items, index);
+	ignoreSelection = false;
 	itemCount = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
 }
@@ -1613,11 +1617,13 @@ public void remove (int start, int end) {
 		return;
 	} 
 	int items = OS.ItemsControl_Items (handle);
+	ignoreSelection = true;
 	for (int i = end; i >= start; i--) {
 		TableItem item = getItem (items, i, false);
 		if (item != null && !item.isDisposed ()) item.release (false);
 		OS.ItemCollection_RemoveAt (items, i);
 	}
+	ignoreSelection = false;
 	itemCount = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
 }
@@ -1637,7 +1643,10 @@ public void removeAll () {
 		TableItem item = getItem (items, i, false);
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
+	
+	ignoreSelection = true;
 	OS.ItemCollection_Clear (items);
+	ignoreSelection = false;
 	itemCount = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
 }
