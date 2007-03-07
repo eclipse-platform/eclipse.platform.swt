@@ -2813,8 +2813,8 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		if (milliseconds < 0) {
 			OS.DispatcherTimer_Stop (timer);
 			timerList [index] = null;
-			timerHandles [index] = 0;
 			OS.GCHandle_Free (timer);
+			timerHandles [index] = 0;
 			return;
 		}
 	} else {
@@ -2835,14 +2835,14 @@ public void timerExec (int milliseconds, Runnable runnable) {
 	}
 	int timer = OS.gcnew_DispatcherTimer();
 	if (timer != 0) {
-		OS.DispatcherTimer_Tag(timer, index);
-		int timeSpan = OS.TimeSpan_FromMilliseconds(milliseconds);
+		OS.DispatcherTimer_Tag (timer, index);
+		int timeSpan = OS.TimeSpan_FromMilliseconds (milliseconds);
 		OS.DispatcherTimer_Interval(timer, timeSpan);
-		OS.DispatcherTimer_Tick(timer, timerHandler);
-		OS.DispatcherTimer_Start(timer);
+		OS.DispatcherTimer_Tick (timer, timerHandler);
+		OS.DispatcherTimer_Start (timer);
 		timerList [index] = runnable;
 		timerHandles [index] = timer;
-		OS.GCHandle_Free(timeSpan);
+		OS.GCHandle_Free (timeSpan);
 	}
 }
 
