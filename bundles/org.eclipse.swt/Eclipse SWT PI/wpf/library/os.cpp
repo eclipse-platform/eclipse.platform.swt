@@ -3614,14 +3614,27 @@ JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Loaded)
 }
 #endif
 
-#ifndef NO_FrameworkElement_1Margin
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Margin)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Margin)
+#ifndef NO_FrameworkElement_1Margin__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Margin__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Margin__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1Margin__I_FUNC);
+	rc = (jint)TO_HANDLE(((FrameworkElement^)TO_OBJECT(arg0))->Margin);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1Margin__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FrameworkElement_1Margin__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Margin__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Margin__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, FrameworkElement_1Margin_FUNC);
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1Margin__II_FUNC);
 	((FrameworkElement^)TO_OBJECT(arg0))->Margin = ((Thickness)TO_OBJECT(arg1));
-	OS_NATIVE_EXIT(env, that, FrameworkElement_1Margin_FUNC);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1Margin__II_FUNC);
 }
 #endif
 
@@ -9659,6 +9672,58 @@ JNIEXPORT void JNICALL OS_NATIVE(TextTabPropertiesCollection_1Add)
 }
 #endif
 
+#ifndef NO_Thickness_1Bottom
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Bottom)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Bottom)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, Thickness_1Bottom_FUNC);
+	rc = (jdouble)((Thickness^)TO_OBJECT(arg0))->Bottom;
+	OS_NATIVE_EXIT(env, that, Thickness_1Bottom_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Thickness_1Left
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Left)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Left)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, Thickness_1Left_FUNC);
+	rc = (jdouble)((Thickness^)TO_OBJECT(arg0))->Left;
+	OS_NATIVE_EXIT(env, that, Thickness_1Left_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Thickness_1Right
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Right)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Right)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, Thickness_1Right_FUNC);
+	rc = (jdouble)((Thickness^)TO_OBJECT(arg0))->Right;
+	OS_NATIVE_EXIT(env, that, Thickness_1Right_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Thickness_1Top
+extern "C" JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Top)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Top)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jdouble rc = 0;
+	OS_NATIVE_ENTER(env, that, Thickness_1Top_FUNC);
+	rc = (jdouble)((Thickness^)TO_OBJECT(arg0))->Top;
+	OS_NATIVE_EXIT(env, that, Thickness_1Top_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TileBrush_1AlignmentX
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(TileBrush_1AlignmentX)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(TileBrush_1AlignmentX)
@@ -10030,6 +10095,19 @@ JNIEXPORT void JNICALL OS_NATIVE(ToolBar_1SetOverflowMode)
 	OS_NATIVE_ENTER(env, that, ToolBar_1SetOverflowMode_FUNC);
 	ToolBar::SetOverflowMode((DependencyObject^)TO_OBJECT(arg0), (OverflowMode)arg1);
 	OS_NATIVE_EXIT(env, that, ToolBar_1SetOverflowMode_FUNC);
+}
+#endif
+
+#ifndef NO_ToolBar_1typeid
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1typeid)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1typeid)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1typeid_FUNC);
+	rc = (jint)TO_HANDLE(ToolBar::typeid);
+	OS_NATIVE_EXIT(env, that, ToolBar_1typeid_FUNC);
+	return rc;
 }
 #endif
 

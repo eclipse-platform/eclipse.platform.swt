@@ -683,7 +683,7 @@ jint GCHandle_GetHandle(Object^ obj) {
 
 #else
 
-jint SWTObjectTable_ToHandle(Object^ obj) {
+int SWTObjectTable_ToHandle(Object^ obj) {
 	return SWTObjectTable::ToHandle(obj);
 }
 

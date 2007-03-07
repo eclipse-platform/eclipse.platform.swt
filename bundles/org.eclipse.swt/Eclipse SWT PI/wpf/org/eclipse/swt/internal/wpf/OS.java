@@ -1198,6 +1198,7 @@ public static final native int ToolBar_BandIndex(int sender);
 public static final native void ToolBar_BandIndex(int sender, int value);
 public static final native boolean ToolBar_HasOverflowItems(int sender);
 public static final native void ToolBar_SetOverflowMode(int element, int mode);
+public static final native int ToolBar_typeid();
 public static final native void ToolBarTray_Background(int sender, int value);
 public static final native boolean ToolBarTray_IsLocked(int sender);
 public static final native void ToolBarTray_IsLocked(int sender, boolean value);
@@ -1476,4 +1477,11 @@ public static final native int XmlReader_Create(int stream);
 public static final native int XamlReader_Load(int stream);
 public static final native int gcnew_ResourceDictionary();
 public static final native void ResourceDictionary_Source(int sender, int uri);
+
+
+public static final native int FrameworkElement_Margin(int sender);
+public static final native double Thickness_Left(int sender);
+public static final native double Thickness_Right(int sender);
+public static final native double Thickness_Top(int sender);
+public static final native double Thickness_Bottom(int sender);
 }

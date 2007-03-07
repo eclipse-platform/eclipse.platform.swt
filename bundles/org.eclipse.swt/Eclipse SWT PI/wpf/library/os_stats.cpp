@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1111;
-int OS_nativeFunctionCallCount[1111];
+int OS_nativeFunctionCount = 1117;
+int OS_nativeFunctionCallCount[1117];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -310,7 +310,8 @@ char * OS_nativeFunctionNames[] = {
 	"FrameworkElement_1HorizontalAlignment",
 	"FrameworkElement_1IsLoaded",
 	"FrameworkElement_1Loaded",
-	"FrameworkElement_1Margin",
+	"FrameworkElement_1Margin__I",
+	"FrameworkElement_1Margin__II",
 	"FrameworkElement_1MarginProperty",
 	"FrameworkElement_1MinHeight__I",
 	"FrameworkElement_1MinHeight__ID",
@@ -811,6 +812,10 @@ char * OS_nativeFunctionNames[] = {
 	"TextLine_1Width",
 	"TextLine_1WidthIncludingTrailingWhitespace",
 	"TextTabPropertiesCollection_1Add",
+	"Thickness_1Bottom",
+	"Thickness_1Left",
+	"Thickness_1Right",
+	"Thickness_1Top",
 	"TileBrush_1AlignmentX",
 	"TileBrush_1AlignmentY",
 	"TileBrush_1Stretch",
@@ -843,6 +848,7 @@ char * OS_nativeFunctionNames[] = {
 	"ToolBar_1BandIndex__II",
 	"ToolBar_1HasOverflowItems",
 	"ToolBar_1SetOverflowMode",
+	"ToolBar_1typeid",
 	"TransformCollection_1Add",
 	"TransformGroup_1Children",
 	"Transform_1Clone",
