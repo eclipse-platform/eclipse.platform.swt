@@ -90,9 +90,13 @@ static int checkStyle (int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the receiver is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
+ * <p>
+ * <code>widgetSelected</code> is called when the receiver is selected.
+ * <code>widgetDefaultSelected</code> is not called.
+ * </p>
  *
  * @param listener the listener which should be notified
  *
@@ -277,7 +281,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the receiver is selected.
  *
  * @param listener the listener which should no longer be notified
  *
