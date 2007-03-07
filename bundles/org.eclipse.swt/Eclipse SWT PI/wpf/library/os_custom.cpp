@@ -34,8 +34,8 @@ private:
 	
 public:
 static int ToHandle(Object^ obj) {
-	System::Threading::Monitor::Enter(mutex);
 	if (obj == nullptr) return 0;
+	System::Threading::Monitor::Enter(mutex);
 	if (table == nullptr || nextHandle == -1) {
 		int length = 0;
 		if (table != nullptr) length = table->GetLength(0);		
