@@ -758,39 +758,55 @@ void HandlePreviewExecutedRoutedEvent (int sender, int e) {
 	int command = OS.ExecutedRoutedEventArgs_Command (e);
 	boolean doVerify = false;
 	String input = null;
-	if (OS.Object_Equals (command, OS.ApplicationCommands_Paste)) {
+	int paste = OS.ApplicationCommands_Paste ();
+	int cut = OS.ApplicationCommands_Cut ();
+	int redo = OS.ApplicationCommands_Redo ();
+	int undo = OS.ApplicationCommands_Undo ();
+	int backspace = OS.EditingCommands_Backspace ();
+	int delete = OS.EditingCommands_Delete ();
+	int deleteNext = OS.EditingCommands_DeleteNextWord ();
+	int deletePrevious = OS.EditingCommands_DeletePreviousWord ();
+	if (OS.Object_Equals (command, paste)) {
 		doVerify = true;
 		int clipboardText = OS.Clipboard_GetText ();
 		input = createJavaString(clipboardText);
 		OS.GCHandle_Free(clipboardText);
-	} else if (OS.Object_Equals (command, OS.ApplicationCommands_Cut)){
+	} else if (OS.Object_Equals (command, cut)){
 		doVerify = true;
 		int content = OS.TextBox_SelectedText (textHandle);
 		input = createJavaString (content);
 		OS.GCHandle_Free (content);
-	} else if (OS.Object_Equals(command, OS.ApplicationCommands_Redo)) {
+	} else if (OS.Object_Equals(command, redo)) {
 		//FIXME
 		//doVerify = true;
 		OS.ExecutedRoutedEventArgs_Handled (e, true);
-	} else if (OS.Object_Equals(command, OS.ApplicationCommands_Undo)) {
+	} else if (OS.Object_Equals(command, undo)) {
 		//FIXME
 		//doVerify = true;
 		OS.ExecutedRoutedEventArgs_Handled (e, true);
-	} else if (OS.Object_Equals (command, OS.EditingCommands_Backspace)) {
+	} else if (OS.Object_Equals (command, backspace)) {
 		doVerify = true;
 		input = "";
-	} else if (OS.Object_Equals (command, OS.EditingCommands_Delete)) {
+	} else if (OS.Object_Equals (command, delete)) {
 		doVerify = true;
 		input = "";
-	} else if (OS.Object_Equals(command, OS.EditingCommands_DeleteNextWord)) {
+	} else if (OS.Object_Equals(command, deleteNext)) {
 		//FIXME
 		//doVerify = true;
 		OS.ExecutedRoutedEventArgs_Handled (e, true);
-	} else if (OS.Object_Equals(command, OS.EditingCommands_DeletePreviousWord)) {
+	} else if (OS.Object_Equals(command, deletePrevious)) {
 		//FIXME
 		//doVerify = true;
 		OS.ExecutedRoutedEventArgs_Handled (e, true);
 	}
+	OS.GCHandle_Free (paste);
+	OS.GCHandle_Free (cut);
+	OS.GCHandle_Free (redo);
+	OS.GCHandle_Free (undo);
+	OS.GCHandle_Free (backspace);
+	OS.GCHandle_Free (delete);
+	OS.GCHandle_Free (deleteNext);
+	OS.GCHandle_Free (deletePrevious);
 	OS.GCHandle_Free(command);
 	/*
 	* FIXME - should do this first, but for now we want to swallow

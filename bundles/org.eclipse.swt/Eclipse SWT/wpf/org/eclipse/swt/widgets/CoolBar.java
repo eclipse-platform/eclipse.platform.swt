@@ -176,7 +176,7 @@ void createWidget () {
 }
 
 int defaultBackground () {
-	return OS.Colors_Transparent ();
+	return OS.Colors_Transparent;
 }
 
 void deregister () {

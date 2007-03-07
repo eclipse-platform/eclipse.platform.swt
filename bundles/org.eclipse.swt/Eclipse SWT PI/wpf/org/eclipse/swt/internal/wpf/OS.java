@@ -337,14 +337,6 @@ public class OS extends C {
 	public static final int FontWeights_Bold = FontWeights_Bold();
 	public static final int FontWeights_Normal = FontWeights_Normal();	
 	public static final int FontStretches_Normal = FontStretches_Normal();
-	public static final int ApplicationCommands_Cut = ApplicationCommands_Cut();
-	public static final int ApplicationCommands_Paste = ApplicationCommands_Paste();
-	public static final int ApplicationCommands_Redo = ApplicationCommands_Redo();
-	public static final int ApplicationCommands_Undo = ApplicationCommands_Undo();
-	public static final int EditingCommands_Backspace = EditingCommands_Backspace();
-	public static final int EditingCommands_Delete = EditingCommands_Delete();
-	public static final int EditingCommands_DeleteNextWord = EditingCommands_DeleteNextWord();
-	public static final int EditingCommands_DeletePreviousWord = EditingCommands_DeletePreviousWord();
 	public static final int Colors_White = Colors_White();
 	public static final int Colors_Black = Colors_Black();
 	public static final int Colors_Transparent = Colors_Transparent();
