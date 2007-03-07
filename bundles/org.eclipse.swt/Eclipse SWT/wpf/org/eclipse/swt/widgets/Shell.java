@@ -484,6 +484,11 @@ void createHandle () {
 	OS.ContentControl_Content (shellHandle, super.topHandle());
 }
 
+void createWidget() {
+	super.createWidget ();
+	display.addShell (this);
+}
+
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	if ((style & SWT.ON_TOP) != 0) return new Rectangle (x, y, width, height);
@@ -901,6 +906,7 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 //	display.clearModal (this);
+	display.removeShell (this);
 	region = null;
 }
 

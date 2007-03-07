@@ -150,6 +150,8 @@ public class Display extends Device {
 
 	Control[] invalidate;
 	boolean ignoreRender;
+	
+	Shell [] shells;
 
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -514,6 +516,25 @@ void addPopup (Menu menu) {
 		popups = newPopups;
 	}
 	popups [index] = menu;
+}
+
+void addShell (Shell shell) {
+	if (shells == null) shells = new Shell [4];
+	int length = shells.length;
+	for (int i=0; i<length; i++) {
+		if (shells [i] == shell) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (shells [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Shell [] temp = new Shell [length + 4];
+		System.arraycopy (shells, 0, temp, 0, length);
+		shells = temp;
+	}
+	shells [index] = shell;
 }
 
 /**
@@ -1348,27 +1369,18 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	int index = 0;
-	int windows = OS.Application_Windows (application);
-	int count = OS.WindowCollection_Count (windows);
-	Shell [] result = new Shell [count];
-	if (count != 0) {
-		int enumerator = OS.WindowCollection_GetEnumerator (windows);
-		while (OS.IEnumerator_MoveNext (enumerator)) {
-			int window = OS.WindowCollection_Current (enumerator);
-			Widget widget = getWidget (window);
-			if (widget != null && widget instanceof Shell) {
-				result [index++] = (Shell) widget;
-			}
-			OS.GCHandle_Free (window);
-		}
-		OS.GCHandle_Free (enumerator);
+	if (shells == null) return new Shell [0];
+	int length = 0;
+	for (int i=0; i<shells.length; i++) {
+		if (shells [i] != null) length++;
 	}
-	OS.GCHandle_Free (windows);
-	if (index == result.length) return result;
-	Shell [] newResult = new Shell [index];
-	System.arraycopy (result, 0, newResult, 0, index);
-	return newResult;
+	int index = 0;
+	Shell [] result = new Shell [length];
+	for (int i=0; i<shells.length; i++) {
+		Shell widget = shells [i];
+		if (widget != null) result [index++] = widget;
+	}
+	return result;
 }
 
 /**
@@ -2091,6 +2103,16 @@ void removePopup (Menu menu) {
 	}
 }
 
+void removeShell (Shell shell) {
+	if (shells == null) return;
+	for (int i=0; i<shells.length; i++) {
+		if (shells [i] == shell) {
+			shells [i] = null;
+			return;
+		}
+	}
+}
+
 /**
  * Reads an event from the operating system's event queue,
  * dispatches it appropriately, and returns <code>true</code>
@@ -2269,7 +2291,8 @@ void releaseDisplay () {
 	values = null;
 	popups = null;
 	mouseControl = null;
-
+	shells = null;
+	
 	/* Uninitialize OLE */
 	COM.OleUninitialize ();
 }
