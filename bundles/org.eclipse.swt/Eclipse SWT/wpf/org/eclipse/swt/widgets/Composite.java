@@ -274,6 +274,9 @@ void createHandle (boolean scrolled, boolean menubar) {
 	handle = OS.gcnew_SWTCanvas (jniRef);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.FrameworkElement_FocusVisualStyle (handle, 0);
+	if ((style & SWT.NO_FOCUS) == 0) { 
+		OS.UIElement_Focusable (handle, true);
+	}
 	if (scrolled || menubar) {
 		scrolledHandle = OS.gcnew_Grid ();
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -538,7 +541,7 @@ void HandlePreviewKeyDown (int sender, int e) {
 	* behavior is not expected in SWT.  
 	*/
 	if ((state & CANVAS) != 0) {
-		int key = OS.KeyEventArgs_Key(e);
+		int key = OS.KeyEventArgs_Key (e);
 		switch (key) {
 			case OS.Key_Up:
 			case OS.Key_Left: 
@@ -561,14 +564,20 @@ void HandlePreviewMouseDown(int sender, int e) {
 			int children = OS.Panel_Children (handle);
 			int count = OS.UIElementCollection_Count (children);
 			OS.GCHandle_Free (children);
-			int caretHandle = getCaretHandle();
+			int caretHandle = getCaretHandle ();
 			if (caretHandle != 0) count--;
 			if (count == 0) {
-				//TODO improve, set the Focusable to true in some other time so Tab works 
-				OS.UIElement_Focusable (handle, true);
 				OS.UIElement_Focus (handle);
 			}
 		}
+	}
+}
+
+void HandlePreviewTextInput(int sender, int e) {
+	super.HandlePreviewTextInput (sender, e);
+	if (!checkEvent (e)) return;
+	if ((state & CANVAS) != 0) {
+		OS.RoutedEventArgs_Handled (e, true);
 	}
 }
 
