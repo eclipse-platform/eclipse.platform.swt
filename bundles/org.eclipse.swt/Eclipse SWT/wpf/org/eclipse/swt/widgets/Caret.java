@@ -290,6 +290,8 @@ void move (int x, int y) {
 }
 
 void releaseHandle() {
+	if (handle != 0) OS.GCHandle_Free (handle);
+	handle = 0;
 	if (imageHandle != 0) OS.GCHandle_Free (imageHandle);
 	imageHandle = 0; 
 	super.releaseHandle ();
