@@ -295,6 +295,11 @@ abstract class Tab {
 				foregroundColor = null;
 				backgroundColor = null;
 				font = null;				
+				TableItem [] items = colorAndFontTable.getItems();
+				for (int i = 0; i < items.length; i++) {
+					Image image = items[i].getImage();
+					if (image != null) image.dispose();
+				}
 			}
 		});
 	}
