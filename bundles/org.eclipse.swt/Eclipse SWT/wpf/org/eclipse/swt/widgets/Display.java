@@ -2808,8 +2808,9 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		if (timerList [index] == runnable) break;
 		index++;
 	}
+	int timer = 0;
 	if (index != timerList.length) {
-		int timer = timerHandles [index];
+		timer = timerHandles [index];
 		if (milliseconds < 0) {
 			OS.DispatcherTimer_Stop (timer);
 			timerList [index] = null;
@@ -2833,7 +2834,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 			timerHandles = newTimerHandles;
 		}
 	}
-	int timer = OS.gcnew_DispatcherTimer();
+	if (timer == 0) timer = OS.gcnew_DispatcherTimer();
 	if (timer != 0) {
 		OS.DispatcherTimer_Tag (timer, index);
 		int timeSpan = OS.TimeSpan_FromMilliseconds (milliseconds);
