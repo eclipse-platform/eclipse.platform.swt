@@ -2836,6 +2836,29 @@ JNIEXPORT void JNICALL OS_NATIVE(Expander_1IsExpanded__IZ)
 }
 #endif
 
+#ifndef NO_ExtractIconExW
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ExtractIconExW)(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jintArray arg2, jintArray arg3, jint arg4);
+JNIEXPORT jint JNICALL OS_NATIVE(ExtractIconExW)
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jintArray arg2, jintArray arg3, jint arg4)
+{
+	jchar *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ExtractIconExW_FUNC);
+	if (arg0) if ((lparg0 = env->GetCharArrayElements(arg0, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = env->GetIntArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetIntArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)ExtractIconExW((LPCWSTR)lparg0, arg1, (HICON*)lparg2, (HICON*)lparg3, (UINT)arg4);
+fail:
+	if (arg3 && lparg3) env->ReleaseIntArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
+	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, ExtractIconExW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_FileDialog_1FileName
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(FileDialog_1FileName)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(FileDialog_1FileName)

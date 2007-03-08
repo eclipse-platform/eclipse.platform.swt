@@ -27,6 +27,7 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
+	static final String [] ARGUMENTS = new String [] {"%1", "%l", "%L"};
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -76,8 +77,7 @@ public static Program findProgram (String extension) {
 	Program program = null;
 	int value = OS.RegistryKey_GetValue (registryKey, 0);
 	if (value != 0) {
-		String string = createJavaString (value);
-		program = getProgram (string);
+		program = getProgram (value);
 		OS.GCHandle_Free (value);
 	}
 	OS.GCHandle_Free (registryKey);
@@ -92,56 +92,96 @@ public static Program findProgram (String extension) {
  * @return an array of extensions
  */
 public static String [] getExtensions () {
-	//TODO
-	return new String[0];
+	String [] extensions = new String [1024];
+	int classesRoot = OS.Registry_ClassesRoot ();
+	int subKeys = OS.RegistryKey_GetSubKeyNames (classesRoot);
+	OS.GCHandle_Free (classesRoot);
+	int count = 0, length = OS.ICollection_Count (subKeys);
+	for (int i=0; i<length; i++) {
+		int key = OS.IList_default (subKeys, i);
+		String extension = createJavaString (key);
+		OS.GCHandle_Free (key);
+		if (extension.length () > 0 && extension.charAt (0) == '.') {
+			if (count == extensions.length) {
+				String [] newExtensions = new String [extensions.length + 1024];
+				System.arraycopy (extensions, 0, newExtensions, 0, extensions.length);
+				extensions = newExtensions;
+			}
+			extensions [count++] = extension;
+		}
+
+	}
+	OS.GCHandle_Free (subKeys);
+	if (count != extensions.length) {
+		String [] newExtension = new String [count];
+		System.arraycopy (extensions, 0, newExtension, 0, count);
+		extensions = newExtension;
+	}
+	return extensions;
 }
 
-static String getKeyValue (String string, boolean expand) {
-	int classesRoot = OS.Registry_ClassesRoot ();
-	int key = createDotNetString (string);
-	int registryKey = OS.RegistryKey_OpenSubKey (classesRoot, key);
-	OS.GCHandle_Free (key);
-	OS.GCHandle_Free (classesRoot);
-	if (registryKey == 0) return null;
-	String result = null;
-	int value = OS.RegistryKey_GetValue (registryKey, 0);
+static int getKeyValue (int key, boolean expand) {
+	int value = OS.RegistryKey_GetValue (key, 0);
 	if (value != 0) {
 		if (expand) {
 			int expandedValue = OS.Environment_ExpandEnvironmentVariables (value);
 			OS.GCHandle_Free (value);
 			value = expandedValue;
-		}
-		result = createJavaString (value);
-		OS.GCHandle_Free (value);		
+		}	
 	}
-	OS.GCHandle_Free (registryKey);
-	return result;
+	return value;
 }
 
-static Program getProgram (String key) {
+static Program getProgram (int key) {
+	int classesRoot = OS.Registry_ClassesRoot ();
+	int registryKey = OS.RegistryKey_OpenSubKey (classesRoot, key);
+	OS.GCHandle_Free (classesRoot);
 	/* Name */
-	String name = getKeyValue (key, false);
-	if (name == null || name.length () == 0) {
-		name = key;
-	}
-
+	int name = getKeyValue (registryKey, false);
+	String programName = createJavaString (name == 0 ? key : name);
+	OS.GCHandle_Free (name);
 	/* Command */
-	String DEFAULT_COMMAND = "\\shell"; //$NON-NLS-1$
-	String defaultCommand = getKeyValue (key + DEFAULT_COMMAND, true);
-	if (defaultCommand == null || defaultCommand.length() == 0) defaultCommand = "open"; //$NON-NLS-1$
-	String COMMAND = "\\shell\\" + defaultCommand + "\\command"; //$NON-NLS-1$
-	String command = getKeyValue (key + COMMAND, true);
-	if (command == null || command.length () == 0) return null;
-
-	/* Icon */
-	String DEFAULT_ICON = "\\DefaultIcon"; //$NON-NLS-1$
-	String iconName = getKeyValue (key + DEFAULT_ICON, true);
-	if (iconName == null) iconName = ""; //$NON-NLS-1$
-
+	int shellCommand = createDotNetString ("shell");
+	int shellKey = OS.RegistryKey_OpenSubKey (registryKey, shellCommand);
+	OS.GCHandle_Free (shellCommand);
+	int command = 0;
+	if (shellKey != 0) {
+		command = getKeyValue (shellKey, true);
+		if (command == 0) {
+			int openCommand = createDotNetString ("open");
+			int openKey = OS.RegistryKey_OpenSubKey (shellKey, openCommand);
+			if (openKey != 0) {
+				int commandCommand = createDotNetString ("command");
+				int commandKey = OS.RegistryKey_OpenSubKey (openKey, commandCommand);
+				if (commandKey != 0) {
+					command = getKeyValue (commandKey, true);
+					OS.GCHandle_Free (commandKey);			
+				}
+				OS.GCHandle_Free (commandCommand);
+				OS.GCHandle_Free (openKey);
+			}
+			OS.GCHandle_Free (openCommand);
+		}
+	}
+	OS.GCHandle_Free (shellKey);
+	int iconName = 0;
+	if (command != 0) {
+		int defaultIconCommand = createDotNetString ("DefaultIcon");
+		int defaultIconKey = OS.RegistryKey_OpenSubKey (registryKey, defaultIconCommand);
+		if (defaultIconKey != 0) {
+			iconName = getKeyValue (defaultIconKey, true);
+			OS.GCHandle_Free (defaultIconKey);
+		}
+		OS.GCHandle_Free (defaultIconCommand);
+	}
+	OS.GCHandle_Free (registryKey);
+	if (command == 0) return null;
 	Program program = new Program ();
-	program.name = name;
-	program.command = command;
-	program.iconName = iconName;
+	program.name = programName;
+	program.command = createJavaString (command);
+	OS.GCHandle_Free (command);
+	program.iconName = iconName != 0 ? createJavaString (iconName) : "";
+	OS.GCHandle_Free (iconName);
 	return program;
 }
 
@@ -153,18 +193,16 @@ static Program getProgram (String key) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	//TODO compare results with win32.
 	Program [] programs = new Program [1024];
 	int classesRoot = OS.Registry_ClassesRoot ();
-	int names = OS.RegistryKey_GetSubKeyNames (classesRoot);
+	int subKeyNames = OS.RegistryKey_GetSubKeyNames (classesRoot);
 	OS.GCHandle_Free (classesRoot);
-	int length = OS.ICollection_Count (names);
 	int count = 0;
+	int length = OS.ICollection_Count (subKeyNames);
 	for (int i = 0; i < length; i++) {
-		int name = OS.IList_default (names, i);
-		String string = createJavaString (name);
-		OS.GCHandle_Free (name);
-		Program program = getProgram (string);
+		int keyName = OS.IList_default (subKeyNames, i);
+		Program program = getProgram (keyName);
+		OS.GCHandle_Free (keyName);
 		if (program != null) {
 			if (count == programs.length) {
 				Program [] newPrograms = new Program [programs.length + 1024];
@@ -174,7 +212,7 @@ public static Program [] getPrograms () {
 			programs [count++] = program;
 		}
 	}
-	OS.GCHandle_Free (names);
+	OS.GCHandle_Free (subKeyNames);
 	if (count != programs.length) {
 		Program [] newPrograms = new Program [count];
 		System.arraycopy (programs, 0, newPrograms, 0, count);
@@ -198,8 +236,13 @@ public static Program [] getPrograms () {
  * </ul>
  */
 public static boolean launch (String fileName) {
-	//TODO
-	return false;
+	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	try {
+		Compatibility.exec (fileName);
+	} catch (IOException e) {
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -217,23 +260,23 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	boolean quote = true;
+	int index = 0;
+	boolean append = true;
 	String prefix = command, suffix = ""; //$NON-NLS-1$
-	int index = command.indexOf ("%1"); //$NON-NLS-1$
-	if (index != -1) {
-		int count=0;
-		int i=index + 2, length = command.length ();
-		while (i < length) {
-			if (command.charAt (i) == '"') count++;
-			i++;
+	while (index < ARGUMENTS.length) {
+		int i = command.indexOf (ARGUMENTS [index]);
+		if (i != -1) {
+			append = false;
+			prefix = command.substring (0, i);
+			suffix = command.substring (i + ARGUMENTS [index].length (), command.length ());
+			break;
 		}
-		quote = count % 2 == 0;
-		prefix = command.substring (0, index);
-		suffix = command.substring (index + 2, length);
+		index++;
 	}
-	if (quote) fileName = " \"" + fileName + "\""; //$NON-NLS-1$ //$NON-NLS-2$
+	if (append) fileName = " \"" + fileName + "\"";
 	try {
-		Compatibility.exec(prefix + fileName + suffix);
+		String commandLine = prefix + fileName + suffix;
+		Compatibility.exec (commandLine);
 	} catch (IOException e) {
 		return false;
 	}
@@ -248,8 +291,29 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-	//TODO
-	return null;
+	int nIconIndex = 0;
+	String fileName = iconName;
+	int index = iconName.indexOf (',');
+	if (index != -1) {
+		fileName = iconName.substring (0, index);
+		String iconIndex = iconName.substring (index + 1, iconName.length ()).trim ();
+		try {
+			nIconIndex = Integer.parseInt (iconIndex);
+		} catch (NumberFormatException e) {}
+	}
+	int length = fileName.length ();
+	char [] buffer = new char [length + 1];
+	fileName.getChars (0, length, buffer, 0);
+	int [] phiconSmall = new int [1], phiconLarge = null;
+	OS.ExtractIconExW (buffer, nIconIndex, phiconLarge, phiconSmall, 1);
+	if (phiconSmall [0] == 0) return null;
+	int empty = OS.Int32Rect_Empty ();
+	int source = OS.Imaging_CreateBitmapSourceFromHIcon (phiconSmall [0], empty, 0);
+	Image image = Image.wpf_new (null, SWT.ICON, source);
+	OS.GCHandle_Free (empty);
+	ImageData imageData = image.getImageData ();
+	image.dispose ();
+	return imageData;
 }
 
 /**
@@ -274,12 +338,12 @@ public String getName () {
  *
  * @see #hashCode()
  */
-public boolean equals(Object other) {
+public boolean equals (Object other) {
 	if (this == other) return true;
 	if (other instanceof Program) {
 		final Program program = (Program) other;
-		return name.equals(program.name) && command.equals(program.command)
-			&& iconName.equals(program.iconName);
+		return name.equals (program.name) && command.equals (program.command)
+			&& iconName.equals (program.iconName);
 	}
 	return false;
 }
@@ -294,8 +358,8 @@ public boolean equals(Object other) {
  *
  * @see #equals(Object)
  */
-public int hashCode() {
-	return name.hashCode() ^ command.hashCode() ^ iconName.hashCode();
+public int hashCode () {
+	return name.hashCode () ^ command.hashCode () ^ iconName.hashCode ();
 }
 
 /**

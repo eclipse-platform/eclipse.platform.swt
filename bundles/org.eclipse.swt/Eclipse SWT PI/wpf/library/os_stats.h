@@ -254,6 +254,7 @@ typedef enum {
 	Expander_1Expanded_FUNC,
 	Expander_1IsExpanded__I_FUNC,
 	Expander_1IsExpanded__IZ_FUNC,
+	ExtractIconExW_FUNC,
 	FileDialog_1FileName_FUNC,
 	FileDialog_1FileNames_FUNC,
 	FileDialog_1Filter_FUNC,

@@ -358,6 +358,7 @@ public static final native int CreateIconIndirect (ICONINFO lplf);
 public static final native boolean GetIconInfo (int hIcon, ICONINFO piconinfo);
 public static final native boolean DestroyIcon (int hIcon);
 public static final native boolean DeleteObject (int hGdiObj);
+public static final native int ExtractIconExW(char[] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);
 public static final native int ToUnicode(int wVirtKey, int wScanCode, byte [] lpKeyState, char [] pwszBuff, int cchBuff, int wFlags);
 public static final native boolean GetKeyboardState (byte [] lpKeyState);
 public static final native int MapVirtualKeyW (int uCode, int uMapType);
