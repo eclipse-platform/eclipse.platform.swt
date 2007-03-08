@@ -40,6 +40,14 @@ using namespace Microsoft::Win32;
 using namespace System::Windows::Markup;
 using namespace System::Xml;
 
+/* This is need to avoid clr compiler warnings */
+extern "C" {
+struct _jfieldID {
+};
+struct _jmethodID {
+};
+}
+
 #ifdef GCHANDLE_TABLE
 
 extern "C" {
