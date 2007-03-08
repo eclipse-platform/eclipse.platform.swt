@@ -149,6 +149,7 @@ public class Display extends Device {
 	int dragDetectFrame, dragRect, dragMouseDown;
 
 	Control[] invalidate;
+	int invalidateHandler;
 	boolean ignoreRender;
 	
 	Shell [] shells;
@@ -466,6 +467,12 @@ void addInvalidate (Control control) {
 		invalidate = temp;
 	}
 	invalidate [index] = control;
+	if (invalidateHandler == 0) {
+		int handler = invalidateHandler = OS.gcnew_NoArgsDelegate (jniRef, "invalidateHandler");
+		int operation = OS.Dispatcher_BeginInvoke (dispatcher, OS.DispatcherPriority_Send, handler);
+		OS.GCHandle_Free (operation);
+		OS.GCHandle_Free (handler);
+	}
 }
 
 /**
@@ -1681,6 +1688,20 @@ protected void init () {
 		
 }
 
+void invalidateHandler () {
+	invalidateHandler = 0;
+	if (invalidate != null) {
+		Control[] invalidate = this.invalidate;
+		this.invalidate = null;
+		for (int i = 0; i < invalidate.length; i++) {
+			Control control = invalidate [i];
+			if (control != null && !control.isDisposed()) {
+				control.redraw (true);
+			}
+		}
+	}
+}
+
 void HandleDispatcherInactive (int sender, int e) {
 	if (runAsyncMessages (false)) wakeThread ();
 	idle = true;
@@ -2140,7 +2161,6 @@ void removeShell (Shell shell) {
 public boolean readAndDispatch () {
 	checkDevice ();
 //	System.out.print("[");
-	runInvalidate ();
 	runPopups ();
 	try {
 		OS.DispatcherFrame_Continue(frame, true);
@@ -2409,19 +2429,6 @@ boolean runDeferredEvents () {
 
 	/* Clear the queue */
 	eventQueue = null;
-	return true;
-}
-
-boolean runInvalidate () {
-	if (invalidate == null) return false;
-	Control[] invalidate = this.invalidate;
-	this.invalidate = null;
-	for (int i = 0; i < invalidate.length; i++) {
-		Control control = invalidate [i];
-		if (control != null && !control.isDisposed()) {
-			control.redraw (true);
-		}
-	}
 	return true;
 }
 
