@@ -677,6 +677,7 @@ public static final native int FrameworkElement_GetBindingExpression(int sender,
 public static final native void FrameworkElement_HorizontalAlignment(int sender, int value);
 public static final native boolean FrameworkElement_IsLoaded(int sender);
 public static final native void FrameworkElement_Loaded(int sender, int handler);
+public static final native int FrameworkElement_Margin(int sender);
 public static final native void FrameworkElement_Margin(int sender, int value);
 public static final native int FrameworkElement_MarginProperty();
 public static final native int FrameworkElement_Name(int sender);
@@ -1180,6 +1181,10 @@ public static final native double TextLine_Start(int sender);
 public static final native double TextLine_Width(int sender);
 public static final native double TextLine_WidthIncludingTrailingWhitespace(int sender);
 public static final native void TextLine_Draw(int sender, int drawContext, int origin, int invertAxes);
+public static final native double Thickness_Left(int sender);
+public static final native double Thickness_Right(int sender);
+public static final native double Thickness_Top(int sender);
+public static final native double Thickness_Bottom(int sender);
 public static final native void TileBrush_TileMode(int sender, int mode);
 public static final native void TileBrush_Stretch(int sender, int stretch);
 public static final native void TileBrush_Viewport(int sender, int viewport);
@@ -1487,10 +1492,4 @@ public static final native int XamlReader_Load(int stream);
 public static final native int gcnew_ResourceDictionary();
 public static final native void ResourceDictionary_Source(int sender, int uri);
 
-
-public static final native int FrameworkElement_Margin(int sender);
-public static final native double Thickness_Left(int sender);
-public static final native double Thickness_Right(int sender);
-public static final native double Thickness_Top(int sender);
-public static final native double Thickness_Bottom(int sender);
 }
