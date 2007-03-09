@@ -65,7 +65,7 @@ class PromptDialog extends Dialog {
 		}
 	}
 
-	public void confirmEx(String title, String text, String check, String button1, String button2, String button3, final int[] checkValue, final int[] result) {
+	public void confirmEx(String title, String text, String check, String button0, String button1, String button2, int defaultIndex, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setText(title);
@@ -105,21 +105,24 @@ class PromptDialog extends Dialog {
 		data.horizontalAlignment = GridData.END;
 		composite.setLayoutData (data);
 		composite.setLayout(new RowLayout());
-		if (button1 != null) {
+		if (button0 != null) {
 			buttons[1] = new Button(composite, SWT.PUSH);
-			buttons[1].setText(button1);
+			buttons[1].setText(button0);
 			buttons[1].addListener(SWT.Selection, listener);
 		}
-		if (button2 != null) {
+		if (button1 != null) {
 			buttons[2] = new Button(composite, SWT.PUSH);
-			buttons[2].setText(button2);
+			buttons[2].setText(button1);
 			buttons[2].addListener(SWT.Selection, listener);
 		}
-		if (button3 != null) {
+		if (button2 != null) {
 			buttons[3] = new Button(composite, SWT.PUSH);
-			buttons[3].setText(button3);
+			buttons[3].setText(button2);
 			buttons[3].addListener(SWT.Selection, listener);
 		}
+		Button defaultButton = buttons [defaultIndex + 1];
+		if (defaultButton != null) shell.setDefaultButton (defaultButton);
+
 		shell.pack();
 		shell.open();
 		Display display = parent.getDisplay();

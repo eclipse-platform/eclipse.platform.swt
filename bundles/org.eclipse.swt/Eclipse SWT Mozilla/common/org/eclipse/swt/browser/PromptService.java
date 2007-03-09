@@ -162,17 +162,17 @@ String getLabel (int buttonFlag, int index, int /*long*/ buttonTitle) {
 
 /* nsIPromptService */
 
-public int /*long*/ Alert (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text) {
-	Browser browser = getBrowser (parent);
+public int /*long*/ Alert (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText) {
+	Browser browser = getBrowser (aParent);
 	
-	int length = XPCOM.strlen_PRUnichar (dialogTitle);
+	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
-	XPCOM.memmove (dest, dialogTitle, length * 2);
+	XPCOM.memmove (dest, aDialogTitle, length * 2);
 	String titleLabel = new String (dest);
 
-	length = XPCOM.strlen_PRUnichar (text);
+	length = XPCOM.strlen_PRUnichar (aText);
 	dest = new char[length];
-	XPCOM.memmove (dest, text, length * 2);
+	XPCOM.memmove (dest, aText, length * 2);
 	String textLabel = new String (dest);
 
 	Shell shell = browser == null ? new Shell () : browser.getShell (); 
@@ -183,44 +183,44 @@ public int /*long*/ Alert (int /*long*/ parent, int /*long*/ dialogTitle, int /*
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ AlertCheck (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ checkMsg, int /*long*/ checkValue) {
-	Browser browser = getBrowser (parent);
+public int /*long*/ AlertCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState) {
+	Browser browser = getBrowser (aParent);
 	
-	int length = XPCOM.strlen_PRUnichar (dialogTitle);
+	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
-	XPCOM.memmove (dest, dialogTitle, length * 2);
+	XPCOM.memmove (dest, aDialogTitle, length * 2);
 	String titleLabel = new String (dest);
 
-	length = XPCOM.strlen_PRUnichar (text);
+	length = XPCOM.strlen_PRUnichar (aText);
 	dest = new char[length];
-	XPCOM.memmove (dest, text, length * 2);
+	XPCOM.memmove (dest, aText, length * 2);
 	String textLabel = new String (dest);
 
-	length = XPCOM.strlen_PRUnichar (checkMsg);
+	length = XPCOM.strlen_PRUnichar (aCheckMsg);
 	dest = new char[length];
-	XPCOM.memmove (dest, checkMsg, length * 2);
+	XPCOM.memmove (dest, aCheckMsg, length * 2);
 	String checkLabel = new String (dest);
 
 	Shell shell = browser == null ? new Shell () : browser.getShell ();
 	PromptDialog dialog = new PromptDialog (shell);
 	int[] check = new int[1];
-	if (checkValue != 0) XPCOM.memmove (check, checkValue, 4); /* PRBool */
+	if (aCheckState != 0) XPCOM.memmove (check, aCheckState, 4); /* PRBool */
 	dialog.alertCheck (titleLabel, textLabel, checkLabel, check);
-	if (checkValue != 0) XPCOM.memmove (checkValue, check, 4); /* PRBool */
+	if (aCheckState != 0) XPCOM.memmove (aCheckState, check, 4); /* PRBool */
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ Confirm (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ _retval) {
-	Browser browser = getBrowser (parent);
+public int /*long*/ Confirm (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ _retval) {
+	Browser browser = getBrowser (aParent);
 	
-	int length = XPCOM.strlen_PRUnichar (dialogTitle);
+	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
-	XPCOM.memmove (dest, dialogTitle, length * 2);
+	XPCOM.memmove (dest, aDialogTitle, length * 2);
 	String titleLabel = new String (dest);
 
-	length = XPCOM.strlen_PRUnichar (text);
+	length = XPCOM.strlen_PRUnichar (aText);
 	dest = new char[length];
-	XPCOM.memmove (dest, text, length * 2);
+	XPCOM.memmove (dest, aText, length * 2);
 	String textLabel = new String (dest);
 
 	Shell shell = browser == null ? new Shell () : browser.getShell ();
@@ -233,65 +233,72 @@ public int /*long*/ Confirm (int /*long*/ parent, int /*long*/ dialogTitle, int 
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ ConfirmCheck (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ checkMsg, int /*long*/ checkValue, int /*long*/ _retval) {
+public int /*long*/ ConfirmCheck (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ ConfirmEx (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ buttonFlags, int /*long*/ button0Title, int /*long*/ button1Title, int /*long*/ button2Title, int /*long*/ checkMsg, int /*long*/ checkValue, int /*long*/ _retval) {
-	Browser browser = getBrowser (parent);
+public int /*long*/ ConfirmEx (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aButtonFlags, int /*long*/ aButton0Title, int /*long*/ aButton1Title, int /*long*/ aButton2Title, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+	Browser browser = getBrowser (aParent);
 	
-	int length = XPCOM.strlen_PRUnichar (dialogTitle);
+	int length = XPCOM.strlen_PRUnichar (aDialogTitle);
 	char[] dest = new char[length];
-	XPCOM.memmove (dest, dialogTitle, length * 2);
+	XPCOM.memmove (dest, aDialogTitle, length * 2);
 	String titleLabel = new String (dest);
 
-	length = XPCOM.strlen_PRUnichar (text);
+	length = XPCOM.strlen_PRUnichar (aText);
 	dest = new char[length];
-	XPCOM.memmove (dest, text, length * 2);
+	XPCOM.memmove (dest, aText, length * 2);
 	String textLabel = new String (dest);
 	
 	String checkLabel = null;
-	if (checkMsg != 0) {
-		length = XPCOM.strlen_PRUnichar (checkMsg);
+	if (aCheckMsg != 0) {
+		length = XPCOM.strlen_PRUnichar (aCheckMsg);
 		dest = new char[length];
-		XPCOM.memmove (dest, checkMsg, length * 2);
+		XPCOM.memmove (dest, aCheckMsg, length * 2);
 		checkLabel = new String (dest);
 	}
 	
-	String button1Label = getLabel ((int)/*64*/buttonFlags, nsIPromptService.BUTTON_POS_0, button0Title);
-	String button2Label = getLabel ((int)/*64*/buttonFlags, nsIPromptService.BUTTON_POS_1, button1Title);
-	String button3Label = getLabel ((int)/*64*/buttonFlags, nsIPromptService.BUTTON_POS_2, button2Title);
+	String button0Label = getLabel ((int)/*64*/aButtonFlags, nsIPromptService.BUTTON_POS_0, aButton0Title);
+	String button1Label = getLabel ((int)/*64*/aButtonFlags, nsIPromptService.BUTTON_POS_1, aButton1Title);
+	String button2Label = getLabel ((int)/*64*/aButtonFlags, nsIPromptService.BUTTON_POS_2, aButton2Title);
+	
+	int defaultIndex = 0;
+	if ((aButtonFlags & nsIPromptService.BUTTON_POS_1_DEFAULT) != 0) {
+		defaultIndex = 1;
+	} else if ((aButtonFlags & nsIPromptService.BUTTON_POS_2_DEFAULT) != 0) {
+		defaultIndex = 2;
+	}
 	
 	Shell shell = browser == null ? new Shell () : browser.getShell ();
 	PromptDialog dialog = new PromptDialog (shell);
 	int[] check = new int[1], result = new int[1];
-	if (checkValue != 0) XPCOM.memmove (check, checkValue, 4);
-	dialog.confirmEx (titleLabel, textLabel, checkLabel, button1Label, button2Label, button3Label, check, result);
-	if (checkValue != 0) XPCOM.memmove (checkValue, check, 4);
+	if (aCheckState != 0) XPCOM.memmove (check, aCheckState, 4);
+	dialog.confirmEx (titleLabel, textLabel, checkLabel, button0Label, button1Label, button2Label, defaultIndex, check, result);
+	if (aCheckState != 0) XPCOM.memmove (aCheckState, check, 4);
 	XPCOM.memmove (_retval, result, 4);
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ Prompt (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ value, int /*long*/ checkMsg, int /*long*/ checkValue, int /*long*/ _retval) {
-	Browser browser = getBrowser (parent);
+public int /*long*/ Prompt (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aValue, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+	Browser browser = getBrowser (aParent);
 	String titleLabel = null, textLabel, checkLabel = null;
 	String[] valueLabel = new String[1];
 	char[] dest;
 	int length;
-	if (dialogTitle != 0) {
-		length = XPCOM.strlen_PRUnichar (dialogTitle);
+	if (aDialogTitle != 0) {
+		length = XPCOM.strlen_PRUnichar (aDialogTitle);
 		dest = new char[length];
-		XPCOM.memmove (dest, dialogTitle, length * 2);
+		XPCOM.memmove (dest, aDialogTitle, length * 2);
 		titleLabel = new String (dest);
 	}
 	
-	length = XPCOM.strlen_PRUnichar (text);
+	length = XPCOM.strlen_PRUnichar (aText);
 	dest = new char[length];
-	XPCOM.memmove (dest, text, length * 2);
+	XPCOM.memmove (dest, aText, length * 2);
 	textLabel = new String (dest);
 	
 	int /*long*/[] valueAddr = new int /*long*/[1];
-	XPCOM.memmove (valueAddr, value, C.PTR_SIZEOF);
+	XPCOM.memmove (valueAddr, aValue, C.PTR_SIZEOF);
 	if (valueAddr[0] != 0) {
 		length = XPCOM.strlen_PRUnichar (valueAddr[0]);
 		dest = new char[length];
@@ -299,11 +306,11 @@ public int /*long*/ Prompt (int /*long*/ parent, int /*long*/ dialogTitle, int /
 		valueLabel[0] = new String (dest);		
 	}
 	
-	if (checkMsg != 0) {
-		length = XPCOM.strlen_PRUnichar (checkMsg);
+	if (aCheckMsg != 0) {
+		length = XPCOM.strlen_PRUnichar (aCheckMsg);
 		if (length > 0) {
 			dest = new char[length];
-			XPCOM.memmove (dest, checkMsg, length * 2);
+			XPCOM.memmove (dest, aCheckMsg, length * 2);
 			checkLabel = new String (dest);
 		}
 	}
@@ -311,7 +318,7 @@ public int /*long*/ Prompt (int /*long*/ parent, int /*long*/ dialogTitle, int /
 	Shell shell = browser == null ? new Shell () : browser.getShell ();
 	PromptDialog dialog = new PromptDialog (shell);
 	int[] check = new int[1], result = new int[1];
-	if (checkValue != 0) XPCOM.memmove (check, checkValue, 4);
+	if (aCheckState != 0) XPCOM.memmove (check, aCheckState, 4);
 	dialog.prompt (titleLabel, textLabel, checkLabel, valueLabel, check, result);
 
 	XPCOM.memmove (_retval, result, 4);
@@ -331,7 +338,7 @@ public int /*long*/ Prompt (int /*long*/ parent, int /*long*/ dialogTitle, int /
 			size = buffer.length * 2;
 			ptr = C.malloc (size);
 			XPCOM.memmove (ptr, buffer, size);
-			XPCOM.memmove (value, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
+			XPCOM.memmove (aValue, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
 
 			if (valueAddr[0] != 0) {
 				int rc = XPCOM.NS_GetServiceManager (result2);
@@ -353,32 +360,32 @@ public int /*long*/ Prompt (int /*long*/ parent, int /*long*/ dialogTitle, int /
 			}
 		}
 	}
-	if (checkValue != 0) XPCOM.memmove (checkValue, check, 4);
+	if (aCheckState != 0) XPCOM.memmove (aCheckState, check, 4);
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ username, int /*long*/ password, int /*long*/ checkMsg, int /*long*/ checkValue, int /*long*/ _retval) {
-	Browser browser = getBrowser (parent);
+public int /*long*/ PromptUsernameAndPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aUsername, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
+	Browser browser = getBrowser (aParent);
 	String titleLabel, textLabel, checkLabel = null;
 	String[] userLabel = new String[1], passLabel = new String[1];
 	char[] dest;
 	int length;
-	if (dialogTitle != 0) {
-		length = XPCOM.strlen_PRUnichar (dialogTitle);
+	if (aDialogTitle != 0) {
+		length = XPCOM.strlen_PRUnichar (aDialogTitle);
 		dest = new char[length];
-		XPCOM.memmove (dest, dialogTitle, length * 2);
+		XPCOM.memmove (dest, aDialogTitle, length * 2);
 		titleLabel = new String (dest);
 	} else {
 		titleLabel = "";	//$NON-NLS-1$
 	}
 	
-	length = XPCOM.strlen_PRUnichar (text);
+	length = XPCOM.strlen_PRUnichar (aText);
 	dest = new char[length];
-	XPCOM.memmove (dest, text, length * 2);
+	XPCOM.memmove (dest, aText, length * 2);
 	textLabel = new String (dest);
 	
 	int /*long*/[] userAddr = new int /*long*/[1];
-	XPCOM.memmove (userAddr, username, C.PTR_SIZEOF);
+	XPCOM.memmove (userAddr, aUsername, C.PTR_SIZEOF);
 	if (userAddr[0] != 0) {
 		length = XPCOM.strlen_PRUnichar (userAddr[0]);
 		dest = new char[length];
@@ -387,7 +394,7 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/
 	}
 	
 	int /*long*/[] passAddr = new int /*long*/[1];
-	XPCOM.memmove (passAddr, password, C.PTR_SIZEOF);
+	XPCOM.memmove (passAddr, aPassword, C.PTR_SIZEOF);
 	if (passAddr[0] != 0) {
 		length = XPCOM.strlen_PRUnichar (passAddr[0]);
 		dest = new char[length];
@@ -395,11 +402,11 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/
 		passLabel[0] = new String (dest);		
 	}
 	
-	if (checkMsg != 0) {
-		length = XPCOM.strlen_PRUnichar (checkMsg);
+	if (aCheckMsg != 0) {
+		length = XPCOM.strlen_PRUnichar (aCheckMsg);
 		if (length > 0) {
 			dest = new char[length];
-			XPCOM.memmove (dest, checkMsg, length * 2);
+			XPCOM.memmove (dest, aCheckMsg, length * 2);
 			checkLabel = new String (dest);
 		}
 	}
@@ -407,7 +414,7 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/
 	Shell shell = browser == null ? new Shell () : browser.getShell ();
 	PromptDialog dialog = new PromptDialog (shell);
 	int[] check = new int[1], result = new int[1];
-	if (checkValue != 0) XPCOM.memmove (check, checkValue, 4);
+	if (aCheckState != 0) XPCOM.memmove (check, aCheckState, 4);
 	dialog.promptUsernameAndPassword (titleLabel, textLabel, checkLabel, userLabel, passLabel, check, result);
 
 	XPCOM.memmove (_retval, result, 4);
@@ -427,7 +434,7 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/
 			size = buffer.length * 2;
 			ptr = C.malloc (size);
 			XPCOM.memmove (ptr, buffer, size);
-			XPCOM.memmove (username, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
+			XPCOM.memmove (aUsername, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
 
 			if (userAddr[0] != 0) {
 				int rc = XPCOM.NS_GetServiceManager (result2);
@@ -455,7 +462,7 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/
 			size = buffer.length * 2;
 			ptr = C.malloc (size);
 			XPCOM.memmove (ptr, buffer, size);
-			XPCOM.memmove (password, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
+			XPCOM.memmove (aPassword, new int /*long*/[] {ptr}, C.PTR_SIZEOF);
 			
 			if (passAddr[0] != 0) {
 				int rc = XPCOM.NS_GetServiceManager (result2);
@@ -477,15 +484,15 @@ public int /*long*/ PromptUsernameAndPassword (int /*long*/ parent, int /*long*/
 			}
 		}
 	}
-	if (checkValue != 0) XPCOM.memmove (checkValue, check, 4);
+	if (aCheckState != 0) XPCOM.memmove (aCheckState, check, 4);
 	return XPCOM.NS_OK;
 }
 
-public int /*long*/ PromptPassword (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ password, int /*long*/ checkMsg, int /*long*/ checkValue, int /*long*/ _retval) {
+public int /*long*/ PromptPassword (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aPassword, int /*long*/ aCheckMsg, int /*long*/ aCheckState, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-public int /*long*/ Select (int /*long*/ parent, int /*long*/ dialogTitle, int /*long*/ text, int /*long*/ count, int /*long*/ selectList, int /*long*/ outSelection, int /*long*/ _retval) {
+public int /*long*/ Select (int /*long*/ aParent, int /*long*/ aDialogTitle, int /*long*/ aText, int /*long*/ aCount, int /*long*/ aSelectList, int /*long*/ aOutSelection, int /*long*/ _retval) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 }
