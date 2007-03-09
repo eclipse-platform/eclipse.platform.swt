@@ -58,11 +58,11 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (parent); 
 }
 
-public static char[] mbcsToWcs (String codePage, byte [] buffer) {
+static char[] mbcsToWcs (String codePage, byte [] buffer) {
 	return Converter.mbcsToWcs (codePage, buffer);
 }
 
-public static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
+static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return Converter.wcsToMbcs (codePage, string, terminate);
 }
 

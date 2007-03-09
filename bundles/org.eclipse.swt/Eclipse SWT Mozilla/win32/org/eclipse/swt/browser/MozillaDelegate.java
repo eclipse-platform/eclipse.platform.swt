@@ -17,7 +17,7 @@ static Browser findBrowser (int /*long*/ handle) {
 	return (Browser)display.findWidget (handle);
 }
 
-public static char[] mbcsToWcs (String codePage, byte[] buffer) {
+static char[] mbcsToWcs (String codePage, byte[] buffer) {
 	char[] chars = new char[buffer.length];
 	int charCount = OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, buffer, buffer.length, chars, chars.length);
 	if (charCount == chars.length) return chars;
@@ -26,7 +26,7 @@ public static char[] mbcsToWcs (String codePage, byte[] buffer) {
 	return result;
 }
 
-public static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
+static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	int byteCount;
 	char[] chars = new char[string.length()];
 	string.getChars (0, chars.length, chars, 0);
