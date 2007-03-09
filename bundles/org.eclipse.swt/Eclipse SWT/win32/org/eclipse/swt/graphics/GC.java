@@ -170,7 +170,7 @@ void checkGC(int mask) {
 	if (gdipGraphics != 0) {
 		int pen = data.gdipPen;
 		float width = data.lineWidth;
-		if ((state & FOREGROUND) != 0) {
+		if ((state & FOREGROUND) != 0 || (pen == 0 && (state & (LINE_WIDTH | LINE_STYLE | LINE_MITERLIMIT | LINE_JOIN | LINE_CAP)) != 0)) {
 			if (data.gdipFgBrush != 0) Gdip.SolidBrush_delete(data.gdipFgBrush);
 			data.gdipFgBrush = 0;
 			int brush;
