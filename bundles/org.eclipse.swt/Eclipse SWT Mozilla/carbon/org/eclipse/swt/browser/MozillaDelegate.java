@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
+	boolean hasFocus;
 	static Hashtable handles = new Hashtable ();
 	
 MozillaDelegate (Browser browser) {
@@ -54,7 +55,7 @@ static char[] mbcsToWcs (String codePage, byte [] buffer) {
 	return chars;
 }
 
-public static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
+static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	char[] chars = new char [string.length()];
 	string.getChars (0, chars.length, chars, 0);
 	int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
@@ -128,7 +129,22 @@ String getLibraryName () {
 }
 
 void handleFocus () {
-	// TODO
+	if (hasFocus) return;
+	hasFocus = true;
+	((Mozilla)browser.webBrowser).Activate ();
+	browser.setFocus ();
+	Listener listener = new Listener () {
+		public void handleEvent (Event event) {
+			if (event.widget == browser) return;
+			((Mozilla)browser.webBrowser).Deactivate ();
+			hasFocus = false;
+			browser.getDisplay ().removeFilter (SWT.FocusIn, this);
+			browser.getShell ().removeListener (SWT.Deactivate, this);
+		}
+	
+	};
+	browser.getDisplay ().addFilter (SWT.FocusIn, listener);
+	browser.getShell ().addListener (SWT.Deactivate, listener);
 }
 
 void onDispose (int embedHandle) {
