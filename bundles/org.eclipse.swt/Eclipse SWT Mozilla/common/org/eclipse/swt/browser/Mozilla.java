@@ -1643,67 +1643,76 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 			}
 		}
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
-		int /*long*/[] result = new int /*long*/[1];
-		int rc = webBrowser.GetContentDOMWindow (result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+		/*
+		 * Feature of XULRunner.  Activation and deactivation of the GRE must be
+		 * performed by the embedder on non-Windows platforms.  Listen for focus
+		 * events on the page being loaded so that activate and deactivate handling
+		 * can be done as needed.
+		 */
+		if (IsXULRunner) {
+			int /*long*/[] result = new int /*long*/[1];
+			int rc = webBrowser.GetContentDOMWindow (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+	
+			nsIDOMWindow window = new nsIDOMWindow (result[0]);
+			result[0] = 0;
+			rc = window.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+	
+			nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+			result[0] = 0;
+			nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
+			rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+			if (rc != XPCOM.NS_OK) error (rc);
+			string.dispose ();
+			string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
+			rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+			if (rc != XPCOM.NS_OK) error (rc);
+			string.dispose ();
+			target.Release ();
 
-		nsIDOMWindow window = new nsIDOMWindow (result[0]);
-		result[0] = 0;
-		rc = window.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+			/* Listeners must be hooked in pages contained in frames */
+			rc = window.GetFrames (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+			nsIDOMWindowCollection frames = new nsIDOMWindowCollection (result[0]);
+			result[0] = 0;
+			int[] frameCount = new int[1];
+			rc = frames.GetLength (frameCount); /* PRUint32 */
+			if (rc != XPCOM.NS_OK) error (rc);
+			int count = frameCount[0];
 
-		nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
-		result[0] = 0;
-		nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-		if (rc != XPCOM.NS_OK) error (rc);
-		string.dispose ();
-		string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-		if (rc != XPCOM.NS_OK) error (rc);
-		string.dispose ();
-		target.Release ();
-
-		rc = window.GetFrames (result);
-		if (rc != XPCOM.NS_OK) error (rc);
-		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-		nsIDOMWindowCollection frames = new nsIDOMWindowCollection (result[0]);
-		result[0] = 0;
-		int[] frameCount = new int[1];
-		rc = frames.GetLength (frameCount); /* PRUint32 */
-		if (rc != XPCOM.NS_OK) error (rc);
-		int count = frameCount[0];
-
-		if (count > 0) {
-			for (int i = 0; i < count; i++) {
-				rc = frames.Item (i, result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-
-				nsIDOMWindow frame = new nsIDOMWindow (result[0]);
-				result[0] = 0;
-				rc = frame.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
-				if (rc != XPCOM.NS_OK) error (rc);
-				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-				frame.Release ();
-
-				target = new nsIDOMEventTarget (result[0]);
-				result[0] = 0;
-				string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-				rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-				if (rc != XPCOM.NS_OK) error (rc);
-				string.dispose ();
-				string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-				rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-				if (rc != XPCOM.NS_OK) error (rc);
-				string.dispose ();
-				target.Release ();
+			if (count > 0) {
+				for (int i = 0; i < count; i++) {
+					rc = frames.Item (i, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+	
+					nsIDOMWindow frame = new nsIDOMWindow (result[0]);
+					result[0] = 0;
+					rc = frame.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+					if (rc != XPCOM.NS_OK) error (rc);
+					if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+					frame.Release ();
+	
+					target = new nsIDOMEventTarget (result[0]);
+					result[0] = 0;
+					string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
+					rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+					if (rc != XPCOM.NS_OK) error (rc);
+					string.dispose ();
+					string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
+					rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+					if (rc != XPCOM.NS_OK) error (rc);
+					string.dispose ();
+					target.Release ();
+				}
 			}
+			frames.Release ();
+			window.Release ();
 		}
-		frames.Release ();
-		window.Release ();
 	}
 	return XPCOM.NS_OK;
 }	

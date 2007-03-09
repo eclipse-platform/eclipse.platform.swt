@@ -17,9 +17,9 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
-	static boolean gtkLoaded;
+	boolean hasFocus;
 
-	static boolean IsLinux;
+	static boolean GtkLoaded, IsLinux;
 	static {
 		String osName = System.getProperty ("os.name").toLowerCase (); //$NON-NLS-1$
 		IsLinux = osName.startsWith ("linux"); //$NON-NLS-1$
@@ -33,8 +33,8 @@ MozillaDelegate (Browser browser) {
 	}
 	this.browser = browser;
 	
-	if (!gtkLoaded) {
-		gtkLoaded = true;
+	if (!GtkLoaded) {
+		GtkLoaded = true;
 		try {
 			Library.loadLibrary ("swt-gtk"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {
@@ -104,7 +104,24 @@ int getHandle() {
 }
 
 String getLibraryName () {
-	return "libxpcom.so";
+	return "libxpcom.so"; //$NON-NLS-1$
+}
+
+void handleFocus () {
+	if (hasFocus) return;
+	hasFocus = true;
+	Listener listener = new Listener () {
+		public void handleEvent (Event event) {
+			if (event.widget == browser) return;
+			((Mozilla)browser.webBrowser).Deactivate ();
+			hasFocus = false;
+			browser.getDisplay ().removeFilter (SWT.FocusIn, this);
+			browser.getShell ().removeListener (SWT.Deactivate, this);
+		}
+	
+	};
+	browser.getDisplay ().addFilter (SWT.FocusIn, listener);
+	browser.getShell ().addListener (SWT.Deactivate, listener);
 }
 
 void onDispose (int embedHandle) {

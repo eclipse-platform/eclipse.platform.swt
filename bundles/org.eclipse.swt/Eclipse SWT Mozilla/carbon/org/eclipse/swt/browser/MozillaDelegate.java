@@ -124,7 +124,7 @@ int getHandle () {
 }
 
 String getLibraryName () {
-	return "libxpcom.dylib";
+	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
 void onDispose (int embedHandle) {
