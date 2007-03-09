@@ -127,6 +127,10 @@ String getLibraryName () {
 	return "libxpcom.dylib"; //$NON-NLS-1$
 }
 
+void handleFocus () {
+	// TODO
+}
+
 void onDispose (int embedHandle) {
 	handles.remove (new LONG (embedHandle));
 }
