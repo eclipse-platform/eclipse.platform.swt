@@ -49,7 +49,10 @@ int /*long*/ getHandle () {
 }
 
 String getLibraryName () {
-	return "xpcom.dll";
+	return "xpcom.dll"; //$NON-NLS-1$
+}
+
+void handleFocus () {
 }
 
 void onDispose (int /*long*/ embedHandle) {
