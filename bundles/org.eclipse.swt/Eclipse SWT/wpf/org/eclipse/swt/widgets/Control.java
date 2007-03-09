@@ -510,8 +510,9 @@ void createWidget () {
 	state |= DRAG_DETECT;
 	checkOrientation (parent);
 	super.createWidget ();
+	checkBackground ();
 	setClipping ();
-	if (defaultBackground () != 0) {
+	if (defaultBackground () != 0 || (state & PARENT_BACKGROUND) != 0) {
 		setBackground ();
 	}
 }
@@ -2019,36 +2020,37 @@ void setBackground () {
 	int backgroundHandle = backgroundHandle ();
 	int property = backgroundProperty ();
 	int brush = 0;
-	if (backgroundImage != null) {
-		int imageHandle = backgroundImage.handle;
-		brush = OS.gcnew_ImageBrush (imageHandle);
-		OS.TileBrush_TileMode (brush, OS.TileMode_Tile);
-		OS.TileBrush_Stretch (brush, OS.Stretch_Fill);
-		OS.TileBrush_ViewportUnits (brush, OS.BrushMappingMode_Absolute);
-		int rect = OS.gcnew_Rect (0, 0, OS.BitmapSource_PixelWidth (imageHandle), OS.BitmapSource_PixelHeight (imageHandle));
-		OS.TileBrush_Viewport (brush, rect);
-		OS.GCHandle_Free (rect);
-	} else {
-		//TODO verify parent backgroundMode
-		int color = background;
-		if (color == 0) {
-			color = defaultBackground ();
-			if ((state & THEME_BACKGROUND) != 0) {
-				Control themeControl = findThemeControl ();
-				if (themeControl != null) {
-					if (color != 0) {
-						/*
-						* Feature in WPF. If the control does not have a background
-						* brush it does not receive input events.
-						* The fix is to set a transparent background.  
-						*/
-						color = OS.Colors_Transparent;
+	if ((state & PARENT_BACKGROUND) == 0) {
+		if (backgroundImage != null) {
+			int imageHandle = backgroundImage.handle;
+			brush = OS.gcnew_ImageBrush (imageHandle);
+			OS.TileBrush_TileMode (brush, OS.TileMode_Tile);
+			OS.TileBrush_Stretch (brush, OS.Stretch_Fill);
+			OS.TileBrush_ViewportUnits (brush, OS.BrushMappingMode_Absolute);
+			int rect = OS.gcnew_Rect (0, 0, OS.BitmapSource_PixelWidth (imageHandle), OS.BitmapSource_PixelHeight (imageHandle));
+			OS.TileBrush_Viewport (brush, rect);
+			OS.GCHandle_Free (rect);
+		} else {
+			int color = background;
+			if (color == 0) {
+				color = defaultBackground ();
+				if ((state & THEME_BACKGROUND) != 0) {
+					Control themeControl = findThemeControl ();
+					if (themeControl != null) {
+						if (color != 0) {
+							/*
+							* Feature in WPF. If the control does not have a background
+							* brush it does not receive input events.
+							* The fix is to set a transparent background.  
+							*/
+							color = OS.Colors_Transparent;
+						}
 					}
 				}
 			}
-		}
-		if (color != 0) {
-			brush = OS.gcnew_SolidColorBrush (color);
+			if (color != 0) {
+				brush = OS.gcnew_SolidColorBrush (color);
+			}
 		}
 	}
 	if (brush != 0) {
