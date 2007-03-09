@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.*;
 class MozillaDelegate {
 	Browser browser;
 	int /*long*/ mozillaHandle;
+	boolean hasFocus;
 	static Callback eventCallback;
 	static int /*long*/ eventProc;
 	static final int STOP_PROPOGATE = 1;
@@ -148,6 +149,23 @@ int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/
 		}
 	}
 	return 0;
+}
+
+void handleFocus () {
+	if (hasFocus) return;
+	hasFocus = true;
+	Listener listener = new Listener () {
+		public void handleEvent (Event event) {
+			if (event.widget == browser) return;
+			((Mozilla)browser.webBrowser).Deactivate ();
+			hasFocus = false;
+			browser.getDisplay ().removeFilter (SWT.FocusIn, this);
+			browser.getShell ().removeListener (SWT.Deactivate, this);
+		}
+	
+	};
+	browser.getDisplay ().addFilter (SWT.FocusIn, listener);
+	browser.getShell ().addListener (SWT.Deactivate, listener);
 }
 
 void onDispose (int /*long*/ embedHandle) {

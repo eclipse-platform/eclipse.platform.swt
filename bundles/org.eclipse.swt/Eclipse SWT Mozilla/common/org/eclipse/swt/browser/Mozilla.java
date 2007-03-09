@@ -38,6 +38,7 @@ class Mozilla extends WebBrowser {
 	XPCOMObject contextMenuListener;	
 	XPCOMObject uriContentListener;
 	XPCOMObject tooltipListener;
+	XPCOMObject domEventListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
 	int /*long*/ request;
@@ -1071,6 +1072,13 @@ void createCOMInterfaces () {
 		public int /*long*/ method3 (int /*long*/[] args) {return OnShowTooltip (args[0], args[1], args[2]);}
 		public int /*long*/ method4 (int /*long*/[] args) {return OnHideTooltip ();}		
 	};
+
+	domEventListener = new XPCOMObject (new int[] {2, 0, 0, 1}) {
+		public int /*long*/ method0 (int /*long*/[] args) {return QueryInterface (args[0], args[1]);}
+		public int /*long*/ method1 (int /*long*/[] args) {return AddRef ();}
+		public int /*long*/ method2 (int /*long*/[] args) {return Release ();}
+		public int /*long*/ method3 (int /*long*/[] args) {return HandleEvent (args[0]);}
+	};
 }
 
 void disposeCOMInterfaces () {
@@ -1634,6 +1642,68 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 				progressListeners[i].completed (event2);
 			}
 		}
+	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
+		int /*long*/[] result = new int /*long*/[1];
+		int rc = webBrowser.GetContentDOMWindow (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+		nsIDOMWindow window = new nsIDOMWindow (result[0]);
+		result[0] = 0;
+		rc = window.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+		nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+		result[0] = 0;
+		nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
+		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+		if (rc != XPCOM.NS_OK) error (rc);
+		string.dispose ();
+		string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
+		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+		if (rc != XPCOM.NS_OK) error (rc);
+		string.dispose ();
+		target.Release ();
+
+		rc = window.GetFrames (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+		nsIDOMWindowCollection frames = new nsIDOMWindowCollection (result[0]);
+		result[0] = 0;
+		int[] frameCount = new int[1];
+		rc = frames.GetLength (frameCount); /* PRUint32 */
+		if (rc != XPCOM.NS_OK) error (rc);
+		int count = frameCount[0];
+
+		if (count > 0) {
+			for (int i = 0; i < count; i++) {
+				rc = frames.Item (i, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+				nsIDOMWindow frame = new nsIDOMWindow (result[0]);
+				result[0] = 0;
+				rc = frame.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+				frame.Release ();
+
+				target = new nsIDOMEventTarget (result[0]);
+				result[0] = 0;
+				string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
+				rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+				if (rc != XPCOM.NS_OK) error (rc);
+				string.dispose ();
+				string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
+				rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+				if (rc != XPCOM.NS_OK) error (rc);
+				string.dispose ();
+				target.Release ();
+			}
+		}
+		frames.Release ();
+		window.Release ();
 	}
 	return XPCOM.NS_OK;
 }	
@@ -2156,4 +2226,41 @@ int /*long*/ OnHideTooltip () {
 	return XPCOM.NS_OK;
 }
 
+/* nsIDOMEventListener */
+
+int /*long*/ HandleEvent (int /*long*/ event) {
+	nsIDOMEvent domEvent = new nsIDOMEvent (event);
+
+	int /*long*/ type = XPCOM.nsEmbedString_new ();
+	int rc = domEvent.GetType (type);
+	if (rc != XPCOM.NS_OK) error (rc);
+	int length = XPCOM.nsEmbedString_Length (type);
+	int /*long*/ buffer = XPCOM.nsEmbedString_get (type);
+	char[] chars = new char[length];
+	XPCOM.memmove (chars, buffer, length * 2);
+	String typeString = new String (chars);
+	XPCOM.nsEmbedString_delete (type);
+
+	if (XPCOM.DOMEVENT_FOCUS.equals (typeString)) {
+		delegate.handleFocus ();
+	} else if (XPCOM.DOMEVENT_UNLOAD.equals (typeString)) {
+		int /*long*/[] result = new int /*long*/[1];
+		rc = domEvent.GetTarget (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+		result[0] = 0;
+		nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
+		rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+		if (rc != XPCOM.NS_OK) error (rc);
+		string.dispose ();
+		string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
+		rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+		if (rc != XPCOM.NS_OK) error (rc);
+		string.dispose ();
+		target.Release ();
+	}
+	return XPCOM.NS_OK;
+}
 }
