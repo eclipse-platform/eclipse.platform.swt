@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1129;
-int OS_nativeFunctionCallCount[1129];
+int OS_nativeFunctionCount = 1139;
+int OS_nativeFunctionCallCount[1139];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -79,6 +79,7 @@ char * OS_nativeFunctionNames[] = {
 	"Clipboard_1GetData",
 	"Clipboard_1GetText",
 	"Clipboard_1SetData",
+	"CloseHandle",
 	"ColorDialog_1AnyColor",
 	"ColorDialog_1Color__I",
 	"ColorDialog_1Color__II",
@@ -161,6 +162,7 @@ char * OS_nativeFunctionNames[] = {
 	"Control_1VerticalContentAlignment",
 	"CreateCursor",
 	"CreateIconIndirect",
+	"CreateProcessW",
 	"CultureInfo_1CurrentUICulture",
 	"CursorInteropHelper_1Create",
 	"Cursors_1AppStarting",
@@ -371,6 +373,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetIconInfo",
 	"GetKeyboardState",
 	"GetModuleHandleW",
+	"GetProcessHeap",
 	"GlyphRun_1BidiLevel",
 	"GradientBrush_1MappingMode",
 	"GradientBrush_1SpreadMethod",
@@ -410,6 +413,8 @@ char * OS_nativeFunctionNames[] = {
 	"HeaderedContentControl_1Header__II",
 	"HeaderedItemsControl_1Header__I",
 	"HeaderedItemsControl_1Header__II",
+	"HeapAlloc",
+	"HeapFree",
 	"Hyperlink_1Click",
 	"ICollection_1Count",
 	"IEnumerable_1GetEnumerator",
@@ -531,11 +536,13 @@ char * OS_nativeFunctionNames[] = {
 	"Mouse_1SetCursor",
 	"Mouse_1XButton1",
 	"Mouse_1XButton2",
+	"MoveMemory",
 	"NewGlobalRef",
 	"Object_1Equals",
 	"Object_1GetType",
 	"Object_1ToString",
 	"OpenFileDialog_1Multiselect",
+	"PROCESS_1INFORMATION_1sizeof",
 	"Panel_1Background",
 	"Panel_1BackgroundProperty",
 	"Panel_1Children",
@@ -652,6 +659,8 @@ char * OS_nativeFunctionNames[] = {
 	"RowDefinitionCollection_1Add",
 	"RowDefinition_1Height",
 	"Run_1Text",
+	"SHELLEXECUTEINFOW_1sizeof",
+	"STARTUPINFOW_1sizeof",
 	"SWTCanvas_1Visual__I",
 	"SWTCanvas_1Visual__II",
 	"SWTRow_1NotifyPropertyChanged",
@@ -677,6 +686,7 @@ char * OS_nativeFunctionNames[] = {
 	"Shape_1Fill",
 	"Shape_1Stroke",
 	"Shape_1StrokeThickness",
+	"ShellExecuteExW",
 	"SizeChangedEventArgs_1NewSize",
 	"SizeChangedEventArgs_1PreviousSize",
 	"Size_1Height__I",

@@ -766,6 +766,19 @@ JNIEXPORT void JNICALL OS_NATIVE(Clipboard_1SetData)
 }
 #endif
 
+#ifndef NO_CloseHandle
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(CloseHandle)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(CloseHandle)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CloseHandle_FUNC);
+	rc = (jboolean)CloseHandle((HANDLE)arg0);
+	OS_NATIVE_EXIT(env, that, CloseHandle_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ColorDialog_1AnyColor
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(ColorDialog_1AnyColor)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
 JNIEXPORT void JNICALL OS_NATIVE(ColorDialog_1AnyColor)
@@ -1789,6 +1802,29 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateIconIndirect)
 fail:
 	if (arg0 && lparg0) setICONINFOFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, CreateIconIndirect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CreateProcessW
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(CreateProcessW)(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jboolean arg4, jint arg5, jint arg6, jint arg7, jobject arg8, jobject arg9);
+JNIEXPORT jboolean JNICALL OS_NATIVE(CreateProcessW)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jboolean arg4, jint arg5, jint arg6, jint arg7, jobject arg8, jobject arg9)
+{
+	jchar *lparg1=NULL;
+	STARTUPINFOW _arg8, *lparg8=NULL;
+	PROCESS_INFORMATION _arg9, *lparg9=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, CreateProcessW_FUNC);
+	if (arg1) if ((lparg1 = env->GetCharArrayElements(arg1, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = getSTARTUPINFOWFields(env, arg8, &_arg8)) == NULL) goto fail;
+	if (arg9) if ((lparg9 = getPROCESS_INFORMATIONFields(env, arg9, &_arg9)) == NULL) goto fail;
+	rc = (jboolean)CreateProcessW((LPCWSTR)arg0, (LPWSTR)lparg1, (LPSECURITY_ATTRIBUTES)arg2, (LPSECURITY_ATTRIBUTES)arg3, arg4, (DWORD)arg5, (LPVOID)arg6, (LPCWSTR)arg7, (LPSTARTUPINFOW)lparg8, (LPPROCESS_INFORMATION)lparg9);
+fail:
+	if (arg9 && lparg9) setPROCESS_INFORMATIONFields(env, arg9, lparg9);
+	if (arg8 && lparg8) setSTARTUPINFOWFields(env, arg8, lparg8);
+	if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CreateProcessW_FUNC);
 	return rc;
 }
 #endif
@@ -4356,6 +4392,19 @@ fail:
 }
 #endif
 
+#ifndef NO_GetProcessHeap
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(GetProcessHeap)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(GetProcessHeap)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetProcessHeap_FUNC);
+	rc = (jint)GetProcessHeap();
+	OS_NATIVE_EXIT(env, that, GetProcessHeap_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GlyphRun_1BidiLevel
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(GlyphRun_1BidiLevel)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(GlyphRun_1BidiLevel)
@@ -4822,6 +4871,32 @@ JNIEXPORT void JNICALL OS_NATIVE(HeaderedItemsControl_1Header__II)
 	OS_NATIVE_ENTER(env, that, HeaderedItemsControl_1Header__II_FUNC);
 	((HeaderedItemsControl^)TO_OBJECT(arg0))->Header = ((Object^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, HeaderedItemsControl_1Header__II_FUNC);
+}
+#endif
+
+#ifndef NO_HeapAlloc
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(HeapAlloc)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT jint JNICALL OS_NATIVE(HeapAlloc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HeapAlloc_FUNC);
+	rc = (jint)HeapAlloc((HANDLE)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, HeapAlloc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HeapFree
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(HeapFree)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT jboolean JNICALL OS_NATIVE(HeapFree)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, HeapFree_FUNC);
+	rc = (jboolean)HeapFree((HANDLE)arg0, arg1, (LPVOID)arg2);
+	OS_NATIVE_EXIT(env, that, HeapFree_FUNC);
+	return rc;
 }
 #endif
 
@@ -6297,6 +6372,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(Mouse_1XButton2)
 }
 #endif
 
+#ifndef NO_MoveMemory
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(MoveMemory)(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2);
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (jchar*)env->GetPrimitiveArrayCritical(arg1, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = env->GetCharArrayElements(arg1, NULL)) == NULL) goto fail;
+	}
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1 && lparg1) env->ReleasePrimitiveArrayCritical(arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, JNI_ABORT);
+	}
+	OS_NATIVE_EXIT(env, that, MoveMemory_FUNC);
+}
+#endif
+
 #ifndef NO_NewGlobalRef
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(NewGlobalRef)(JNIEnv *env, jclass that, jobject arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(NewGlobalRef)
@@ -6357,6 +6461,19 @@ JNIEXPORT void JNICALL OS_NATIVE(OpenFileDialog_1Multiselect)
 	OS_NATIVE_ENTER(env, that, OpenFileDialog_1Multiselect_FUNC);
 	((OpenFileDialog^)TO_OBJECT(arg0))->Multiselect = (arg1);
 	OS_NATIVE_EXIT(env, that, OpenFileDialog_1Multiselect_FUNC);
+}
+#endif
+
+#ifndef NO_PROCESS_1INFORMATION_1sizeof
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(PROCESS_1INFORMATION_1sizeof)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(PROCESS_1INFORMATION_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PROCESS_1INFORMATION_1sizeof_FUNC);
+	rc = (jint)PROCESS_INFORMATION_sizeof();
+	OS_NATIVE_EXIT(env, that, PROCESS_1INFORMATION_1sizeof_FUNC);
+	return rc;
 }
 #endif
 
@@ -7756,6 +7873,32 @@ JNIEXPORT void JNICALL OS_NATIVE(Run_1Text)
 }
 #endif
 
+#ifndef NO_SHELLEXECUTEINFOW_1sizeof
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SHELLEXECUTEINFOW_1sizeof)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(SHELLEXECUTEINFOW_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SHELLEXECUTEINFOW_1sizeof_FUNC);
+	rc = (jint)SHELLEXECUTEINFOW_sizeof();
+	OS_NATIVE_EXIT(env, that, SHELLEXECUTEINFOW_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_STARTUPINFOW_1sizeof
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(STARTUPINFOW_1sizeof)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(STARTUPINFOW_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, STARTUPINFOW_1sizeof_FUNC);
+	rc = (jint)STARTUPINFOW_sizeof();
+	OS_NATIVE_EXIT(env, that, STARTUPINFOW_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ScrollBar_1Orientation__I
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ScrollBar_1Orientation__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(ScrollBar_1Orientation__I)
@@ -8006,6 +8149,23 @@ JNIEXPORT void JNICALL OS_NATIVE(Shape_1StrokeThickness)
 	OS_NATIVE_ENTER(env, that, Shape_1StrokeThickness_FUNC);
 	((Shape^)TO_OBJECT(arg0))->StrokeThickness = (arg1);
 	OS_NATIVE_EXIT(env, that, Shape_1StrokeThickness_FUNC);
+}
+#endif
+
+#ifndef NO_ShellExecuteExW
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(ShellExecuteExW)(JNIEnv *env, jclass that, jobject arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(ShellExecuteExW)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	SHELLEXECUTEINFOW _arg0, *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ShellExecuteExW_FUNC);
+	if (arg0) if ((lparg0 = getSHELLEXECUTEINFOWFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jboolean)ShellExecuteExW((LPSHELLEXECUTEINFOW)lparg0);
+fail:
+	if (arg0 && lparg0) setSHELLEXECUTEINFOWFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, ShellExecuteExW_FUNC);
+	return rc;
 }
 #endif
 

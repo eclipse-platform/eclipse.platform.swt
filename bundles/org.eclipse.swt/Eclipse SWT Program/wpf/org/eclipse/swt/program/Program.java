@@ -10,10 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.program;
 
- 
-import java.io.IOException;
-
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -236,13 +232,21 @@ public static Program [] getPrograms () {
  * </ul>
  */
 public static boolean launch (String fileName) {
-	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	try {
-		Compatibility.exec (fileName);
-	} catch (IOException e) {
-		return false;
-	}
-	return true;
+	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	
+	int hHeap = OS.GetProcessHeap ();
+	int length = fileName.length ();
+	char [] buffer = new char [length + 1];
+	fileName.getChars (0, length, buffer, 0);
+	int byteCount = buffer.length  * 2;
+	int lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpFile, buffer, byteCount);
+	SHELLEXECUTEINFOW info = new SHELLEXECUTEINFOW ();
+	info.cbSize = SHELLEXECUTEINFOW.sizeof;
+	info.lpFile = lpFile;
+	info.nShow = OS.SW_SHOW;
+	boolean result = OS.ShellExecuteExW (info);
+	if (lpFile != 0) OS.HeapFree (hHeap, 0, lpFile);
+	return result;
 }
 
 /**
@@ -274,13 +278,17 @@ public boolean execute (String fileName) {
 		index++;
 	}
 	if (append) fileName = " \"" + fileName + "\"";
-	try {
-		String commandLine = prefix + fileName + suffix;
-		Compatibility.exec (commandLine);
-	} catch (IOException e) {
-		return false;
-	}
-	return true;
+	String commandLine = prefix + fileName + suffix;
+	int length = commandLine.length ();
+	char [] buffer = new char [length + 1];
+	commandLine.getChars (0, length, buffer, 0);
+	STARTUPINFOW lpStartupInfo = new STARTUPINFOW ();
+	lpStartupInfo.cb = STARTUPINFOW.sizeof;
+	PROCESS_INFORMATION lpProcessInformation = new PROCESS_INFORMATION ();
+	boolean success = OS.CreateProcessW (0, buffer, 0, 0, false, 0, 0, 0, lpStartupInfo, lpProcessInformation);
+	if (lpProcessInformation.hProcess != 0) OS.CloseHandle (lpProcessInformation.hProcess);
+	if (lpProcessInformation.hThread != 0) OS.CloseHandle (lpProcessInformation.hThread);
+	return success;
 }
 
 /**

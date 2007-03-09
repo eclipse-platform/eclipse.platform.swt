@@ -35,3 +35,39 @@ void setPOINTFields(JNIEnv *env, jobject lpObject, POINT *lpStruct);
 #define POINT_sizeof() 0
 #endif
 
+#ifndef NO_PROCESS_INFORMATION
+void cachePROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject);
+PROCESS_INFORMATION *getPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct);
+void setPROCESS_INFORMATIONFields(JNIEnv *env, jobject lpObject, PROCESS_INFORMATION *lpStruct);
+#define PROCESS_INFORMATION_sizeof() sizeof(PROCESS_INFORMATION)
+#else
+#define cachePROCESS_INFORMATIONFields(a,b)
+#define getPROCESS_INFORMATIONFields(a,b,c) NULL
+#define setPROCESS_INFORMATIONFields(a,b,c)
+#define PROCESS_INFORMATION_sizeof() 0
+#endif
+
+#ifndef NO_SHELLEXECUTEINFOW
+void cacheSHELLEXECUTEINFOWFields(JNIEnv *env, jobject lpObject);
+SHELLEXECUTEINFOW *getSHELLEXECUTEINFOWFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFOW *lpStruct);
+void setSHELLEXECUTEINFOWFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFOW *lpStruct);
+#define SHELLEXECUTEINFOW_sizeof() sizeof(SHELLEXECUTEINFOW)
+#else
+#define cacheSHELLEXECUTEINFOWFields(a,b)
+#define getSHELLEXECUTEINFOWFields(a,b,c) NULL
+#define setSHELLEXECUTEINFOWFields(a,b,c)
+#define SHELLEXECUTEINFOW_sizeof() 0
+#endif
+
+#ifndef NO_STARTUPINFOW
+void cacheSTARTUPINFOWFields(JNIEnv *env, jobject lpObject);
+STARTUPINFOW *getSTARTUPINFOWFields(JNIEnv *env, jobject lpObject, STARTUPINFOW *lpStruct);
+void setSTARTUPINFOWFields(JNIEnv *env, jobject lpObject, STARTUPINFOW *lpStruct);
+#define STARTUPINFOW_sizeof() sizeof(STARTUPINFOW)
+#else
+#define cacheSTARTUPINFOWFields(a,b)
+#define getSTARTUPINFOWFields(a,b,c) NULL
+#define setSTARTUPINFOWFields(a,b,c)
+#define STARTUPINFOW_sizeof() 0
+#endif
+
