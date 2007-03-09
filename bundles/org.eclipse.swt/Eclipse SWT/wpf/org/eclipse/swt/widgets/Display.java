@@ -1703,8 +1703,11 @@ void invalidateHandler () {
 }
 
 void HandleDispatcherInactive (int sender, int e) {
-	if (runAsyncMessages (false)) wakeThread ();
-	idle = true;
+	if (runAsyncMessages (false)) {
+		wakeThread ();
+	} else {
+		idle = true;
+	}
 }
 
 void HandleOperationAborted (int sender, int e) {
@@ -2163,14 +2166,14 @@ public boolean readAndDispatch () {
 //	System.out.print("[");
 	runPopups ();
 	try {
-		OS.DispatcherFrame_Continue(frame, true);
-		OS.Dispatcher_PushFrame(frame);
+		OS.DispatcherFrame_Continue (frame, true);
+		OS.Dispatcher_PushFrame (frame);
 		if (!idle) {
 			runDeferredEvents();
 			return true;
 		}
 //		return runAsyncMessages (false);
-		return true;
+		return !idle;
 	} finally {
 //		System.out.print("]");
 	}

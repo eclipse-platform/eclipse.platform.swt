@@ -238,10 +238,10 @@ public Shell (Display display) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Display display, int style) {
-	this (display, null, style, 0);
+	this (display, null, style, 0, false);
 }
 
-Shell (Display display, Shell parent, int style, int handle) {
+Shell (Display display, Shell parent, int style, int handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -255,7 +255,13 @@ Shell (Display display, Shell parent, int style, int handle) {
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
-	this.handle = handle;
+	if (handle != 0) {
+		if (embedded) {
+			this.handle = handle;
+		} else {
+			shellHandle = handle;
+		}
+	}
 	createWidget ();
 }
 
@@ -333,7 +339,7 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.display : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0, false);
 }
 
 /**	 
@@ -351,7 +357,11 @@ public Shell (Shell parent, int style) {
  * @return a new shell object containing the specified display and handle
  */
 public static Shell wpf_new (Display display, int handle) {
-	return new Shell (display, null, SWT.NO_TRIM, handle);
+	return new Shell (display, null, SWT.NO_TRIM, handle, true);
+}
+
+public static Shell internal_new (Display display, int handle) {
+	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
 static int checkStyle (int style) {
@@ -397,6 +407,7 @@ public void addShellListener (ShellListener listener) {
 void addWidget () {
 	if ((style & SWT.ON_TOP) != 0) return;
 	if (parent != null) {
+		if ((parent.style & SWT.ON_TOP) != 0) return;
 		OS.Window_Owner (shellHandle, ((Shell)parent).shellHandle);
 	}
 }
@@ -431,6 +442,15 @@ public void close () {
 }
 
 void createHandle () {
+	if (shellHandle != 0) {
+		scrolledHandle = OS.ContentControl_Content (shellHandle);
+		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		int children = OS.Panel_Children (scrolledHandle);
+		handle = OS.UIElementCollection_default (children, 0);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.GCHandle_Free (children);
+		return;
+	}
 	state |= CANVAS;
 	if ((style & SWT.ON_TOP) != 0) {
 		shellHandle = OS.gcnew_Popup ();
@@ -476,7 +496,6 @@ void createHandle () {
 	OS.Window_ShowInTaskbar (shellHandle, parent == null);
 	OS.Window_ResizeMode (shellHandle, resizeMode);
 	OS.Window_WindowStyle (shellHandle, windowStyle);
-	OS.Window_Topmost (shellHandle, (style & SWT.ON_TOP) != 0);
 	OS.KeyboardNavigation_SetTabNavigation (shellHandle, OS.KeyboardNavigationMode_None);
 	
 	boolean scrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
@@ -737,11 +756,6 @@ public Shell [] getShells () {
 
 Composite findDeferredControl () {
 	return layoutCount > 0 ? this : null;
-}
-
-public static Shell internal_new (Display display, int handle) {
-	//return new Shell (display, SWT.NO_TRIM);
-	return null;
 }
 
 public boolean isEnabled () {
