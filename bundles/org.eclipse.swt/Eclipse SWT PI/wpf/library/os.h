@@ -48,6 +48,8 @@ struct _jmethodID {
 };
 }
 
+#define GCHANDLE_TABLE
+
 #ifdef GCHANDLE_TABLE
 
 extern "C" {
