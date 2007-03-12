@@ -338,6 +338,7 @@
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVITEMCHANGE_2I
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVITEMCHANGE_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II
@@ -536,7 +537,9 @@
 #define NOTIFYICONDATAW_V2_SIZE     (FIELD_OFFSET(NOTIFYICONDATAW, dwInfoFlags)+sizeof(int))
 #endif
 
+#ifndef _WIN32_WCE
 #if (_WIN32_IE <= 0x0600)
+typedef HANDLE HPAINTBUFFER;
 typedef struct _BP_PAINTPARAMS {
     DWORD cbSize;
     DWORD dwFlags;
@@ -555,6 +558,7 @@ typedef struct tagTVITEMCHANGE {
     LPARAM lParam;
 } NMTVITEMCHANGE;
 #endif /* _WIN32_IE <= 0x0600 */
+#endif /* _WIN32_WCE */
 
 #include "os_custom.h"
 
