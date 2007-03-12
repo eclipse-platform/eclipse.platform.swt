@@ -1292,6 +1292,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 			if (control == null) control = this;
 			data.background = control.getBackgroundPixel ();
 			data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+			data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 			GC gc = GC.win32_new (wParam, data);
 			Event event = new Event ();
 			event.gc = gc;
