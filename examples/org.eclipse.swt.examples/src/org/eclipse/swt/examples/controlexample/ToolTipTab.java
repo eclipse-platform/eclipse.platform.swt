@@ -156,6 +156,11 @@ class ToolTipTab extends Tab {
 				showExampleWidgetInTray ();
 			}
 		});
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
+				disposeTrayItem();
+			}
+		});
 
 		/* Set the default state */
 		visibleButton.setSelection(false);
@@ -164,6 +169,14 @@ class ToolTipTab extends Tab {
 	
 	void createSizeGroup () {
 		// ToolTip does not need a size group.
+	}
+	
+	/**
+	 * Disposes the "Example" widgets.
+	 */
+	void disposeExampleWidgets () {
+		disposeTrayItem();
+		super.disposeExampleWidgets();
 	}
 	
 	/**
@@ -193,8 +206,9 @@ class ToolTipTab extends Tab {
 	 * Sets the state of the "Example" widgets.
 	 */
 	void setExampleWidgetState () {
-		super.setExampleWidgetState ();
+		showExampleWidgetInTray ();
 		setExampleWidgetAutoHide ();
+		super.setExampleWidgetState ();
 		balloonButton.setSelection ((toolTip1.getStyle () & SWT.BALLOON) != 0);
 		iconErrorButton.setSelection ((toolTip1.getStyle () & SWT.ICON_ERROR) != 0);
 		iconInformationButton.setSelection ((toolTip1.getStyle () & SWT.ICON_INFORMATION) != 0);
@@ -219,16 +233,25 @@ class ToolTipTab extends Tab {
 	
 	void showExampleWidgetInTray () {
 		if (showInTrayButton.getSelection ()) {
-			if (trayItem == null) {
-				trayItem = new TrayItem(tray, SWT.NONE);
-				trayItem.setImage(instance.images[ControlExample.ciTarget]);
-			}
+			createTrayItem();
 			trayItem.setToolTip(toolTip1);
 		} else {
-			if (trayItem != null) {
-				trayItem.dispose();
-				trayItem = null;
-			}
+			disposeTrayItem();
+		}
+	}
+
+	void createTrayItem() {
+		if (trayItem == null) {
+			trayItem = new TrayItem(tray, SWT.NONE);
+			trayItem.setImage(instance.images[ControlExample.ciTarget]);
+		}
+	}
+	
+	void disposeTrayItem() {
+		if (trayItem != null) {
+			trayItem.setToolTip(null);
+			trayItem.dispose();
+			trayItem = null;
 		}
 	}
 }
