@@ -337,6 +337,10 @@ static int checkStyle (int style) {
 }
 
 LRESULT CDDS_ITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
+	int hDC = nmcd.hdc;
+	if (explorerTheme && !ignoreCustomDraw && hooks (SWT.EraseItem) && (nmcd.left != nmcd.right)) {
+		OS.RestoreDC (hDC, -1);
+	}
 	/*
 	* Bug in Windows.  When the table has the extended style
 	* LVS_EX_FULLROWSELECT and LVM_SETBKCOLOR is used with
@@ -418,7 +422,7 @@ LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			}
 		}
 	}
-	if (explorerTheme && hooks (SWT.EraseItem)) {
+	if (explorerTheme && !ignoreCustomDraw && hooks (SWT.EraseItem) && (nmcd.left != nmcd.right)) {
 		OS.SaveDC (nmcd.hdc);
 		int hrgn = OS.CreateRectRgn (0, 0, 0, 0);
 		OS.SelectClipRgn (nmcd.hdc, hrgn);
@@ -577,7 +581,7 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 
 LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	int hDC = nmcd.hdc;
-	if (explorerTheme && hooks (SWT.EraseItem)) {
+	if (explorerTheme && !ignoreCustomDraw && hooks (SWT.EraseItem) && (nmcd.left != nmcd.right)) {
 		OS.RestoreDC (hDC, -1);
 	}
 	/*
