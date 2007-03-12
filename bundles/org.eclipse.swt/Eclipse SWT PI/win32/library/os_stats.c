@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 855;
-int OS_nativeFunctionCallCount[855];
+int OS_nativeFunctionCount = 862;
+int OS_nativeFunctionCallCount[862];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -31,13 +31,18 @@ char * OS_nativeFunctionNames[] = {
 	"BITMAPINFOHEADER_1sizeof",
 	"BITMAP_1sizeof",
 	"BLENDFUNCTION_1sizeof",
+	"BP_1PAINTPARAMS_1sizeof",
 	"BROWSEINFO_1sizeof",
 	"BUTTON_1IMAGELIST_1sizeof",
+	"BeginBufferedPaint",
 	"BeginDeferWindowPos",
 	"BeginPaint",
 	"BeginPath",
 	"BitBlt",
 	"BringWindowToTop",
+	"BufferedPaintInit",
+	"BufferedPaintSetAlpha",
+	"BufferedPaintUnInit",
 	"CHOOSECOLOR_1sizeof",
 	"CHOOSEFONT_1sizeof",
 	"COMBOBOXINFO_1sizeof",
@@ -143,11 +148,13 @@ char * OS_nativeFunctionNames[] = {
 	"DrawThemeIcon",
 	"DrawThemeParentBackground",
 	"DrawThemeText",
+	"DwmExtendFrameIntoClientArea",
 	"EXTLOGPEN_1sizeof",
 	"Ellipse",
 	"EnableMenuItem",
 	"EnableScrollBar",
 	"EnableWindow",
+	"EndBufferedPaint",
 	"EndDeferWindowPos",
 	"EndDoc",
 	"EndPage",

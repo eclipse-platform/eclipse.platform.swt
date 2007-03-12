@@ -30,7 +30,6 @@
 #include <oleacc.h>
 #include <usp10.h>
 #include <uxtheme.h>
-#include <winable.h>
 #include <vfw.h>
 #endif // _WIN32_WCE
 
@@ -49,6 +48,7 @@
 #ifdef _WIN32_WCE
 #define NO_ACTCTX
 #define NO_BLENDFUNCTION
+#define NO_BP_PAINTPARAMS
 #define NO_BROWSEINFO
 #define NO_BUTTON_IMAGELIST
 #define NO_CHOOSEFONT
@@ -138,7 +138,11 @@
 #define NO_AttachThreadInput
 #define NO_AlphaBlend
 #define NO_AnimateWindow
+#define NO_BeginBufferedPaint
 #define NO_BeginPath
+#define NO_BufferedPaintInit
+#define NO_BufferedPaintSetAlpha
+#define NO_BufferedPaintUnInit
 #define NO_CallNextHookEx
 #define NO_CallWindowProcA
 #define NO_CharLowerA
@@ -180,7 +184,9 @@
 #define NO_DrawThemeIcon
 #define NO_DrawThemeParentBackground
 #define NO_DrawThemeText
+#define NO_DwmExtendFrameIntoClientArea
 #define NO_EnableScrollBar
+#define NO_EndBufferedPaint
 #define NO_EndDoc
 #define NO_EndPage
 #define NO_EndPath
@@ -528,6 +534,15 @@
 #undef NOTIFYICONDATAW_V2_SIZE
 #define NOTIFYICONDATAA_V2_SIZE     (FIELD_OFFSET(NOTIFYICONDATAA, dwInfoFlags)+sizeof(int))
 #define NOTIFYICONDATAW_V2_SIZE     (FIELD_OFFSET(NOTIFYICONDATAW, dwInfoFlags)+sizeof(int))
+#endif
+
+#if (_WIN32_IE <= 0x0600)
+typedef struct _BP_PAINTPARAMS {
+    DWORD cbSize;
+    DWORD dwFlags;
+    const RECT *prcExclude;
+    const BLENDFUNCTION *pBlendFunction;
+} BP_PAINTPARAMS, *PBP_PAINTPARAMS;
 #endif
 
 #if (_WIN32_IE <= 0x0600)

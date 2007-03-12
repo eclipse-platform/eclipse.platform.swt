@@ -254,6 +254,46 @@ void setBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject, BLENDFUNCTION *lpStru
 }
 #endif
 
+#ifndef NO_BP_PAINTPARAMS
+typedef struct BP_PAINTPARAMS_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, dwFlags, prcExclude, pBlendFunction;
+} BP_PAINTPARAMS_FID_CACHE;
+
+BP_PAINTPARAMS_FID_CACHE BP_PAINTPARAMSFc;
+
+void cacheBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject)
+{
+	if (BP_PAINTPARAMSFc.cached) return;
+	BP_PAINTPARAMSFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	BP_PAINTPARAMSFc.cbSize = (*env)->GetFieldID(env, BP_PAINTPARAMSFc.clazz, "cbSize", "I");
+	BP_PAINTPARAMSFc.dwFlags = (*env)->GetFieldID(env, BP_PAINTPARAMSFc.clazz, "dwFlags", "I");
+	BP_PAINTPARAMSFc.prcExclude = (*env)->GetFieldID(env, BP_PAINTPARAMSFc.clazz, "prcExclude", "I");
+	BP_PAINTPARAMSFc.pBlendFunction = (*env)->GetFieldID(env, BP_PAINTPARAMSFc.clazz, "pBlendFunction", "I");
+	BP_PAINTPARAMSFc.cached = 1;
+}
+
+BP_PAINTPARAMS *getBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject, BP_PAINTPARAMS *lpStruct)
+{
+	if (!BP_PAINTPARAMSFc.cached) cacheBP_PAINTPARAMSFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, BP_PAINTPARAMSFc.cbSize);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, BP_PAINTPARAMSFc.dwFlags);
+	lpStruct->prcExclude = (RECT*)(*env)->GetIntField(env, lpObject, BP_PAINTPARAMSFc.prcExclude);
+	lpStruct->pBlendFunction = (BLENDFUNCTION*)(*env)->GetIntField(env, lpObject, BP_PAINTPARAMSFc.pBlendFunction);
+	return lpStruct;
+}
+
+void setBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject, BP_PAINTPARAMS *lpStruct)
+{
+	if (!BP_PAINTPARAMSFc.cached) cacheBP_PAINTPARAMSFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, BP_PAINTPARAMSFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, BP_PAINTPARAMSFc.dwFlags, (jint)lpStruct->dwFlags);
+	(*env)->SetIntField(env, lpObject, BP_PAINTPARAMSFc.prcExclude, (jint)lpStruct->prcExclude);
+	(*env)->SetIntField(env, lpObject, BP_PAINTPARAMSFc.pBlendFunction, (jint)lpStruct->pBlendFunction);
+}
+#endif
+
 #ifndef NO_BROWSEINFO
 typedef struct BROWSEINFO_FID_CACHE {
 	int cached;

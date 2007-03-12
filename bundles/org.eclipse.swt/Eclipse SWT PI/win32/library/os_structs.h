@@ -71,6 +71,18 @@ void setBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject, BLENDFUNCTION *lpStru
 #define BLENDFUNCTION_sizeof() 0
 #endif
 
+#ifndef NO_BP_PAINTPARAMS
+void cacheBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject);
+BP_PAINTPARAMS *getBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject, BP_PAINTPARAMS *lpStruct);
+void setBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject, BP_PAINTPARAMS *lpStruct);
+#define BP_PAINTPARAMS_sizeof() sizeof(BP_PAINTPARAMS)
+#else
+#define cacheBP_PAINTPARAMSFields(a,b)
+#define getBP_PAINTPARAMSFields(a,b,c) NULL
+#define setBP_PAINTPARAMSFields(a,b,c)
+#define BP_PAINTPARAMS_sizeof() 0
+#endif
+
 #ifndef NO_BROWSEINFO
 void cacheBROWSEINFOFields(JNIEnv *env, jobject lpObject);
 BROWSEINFO *getBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct);

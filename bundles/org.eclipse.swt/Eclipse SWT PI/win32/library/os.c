@@ -263,6 +263,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(BLENDFUNCTION_1sizeof)
 }
 #endif
 
+#ifndef NO_BP_1PAINTPARAMS_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(BP_1PAINTPARAMS_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BP_1PAINTPARAMS_1sizeof_FUNC);
+	rc = (jint)BP_PAINTPARAMS_sizeof();
+	OS_NATIVE_EXIT(env, that, BP_1PAINTPARAMS_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_BROWSEINFO_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(BROWSEINFO_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -283,6 +295,44 @@ JNIEXPORT jint JNICALL OS_NATIVE(BUTTON_1IMAGELIST_1sizeof)
 	OS_NATIVE_ENTER(env, that, BUTTON_1IMAGELIST_1sizeof_FUNC);
 	rc = (jint)BUTTON_IMAGELIST_sizeof();
 	OS_NATIVE_EXIT(env, that, BUTTON_1IMAGELIST_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_BeginBufferedPaint
+JNIEXPORT jint JNICALL OS_NATIVE(BeginBufferedPaint)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jobject arg3, jintArray arg4)
+{
+	RECT _arg1, *lparg1=NULL;
+	BP_PAINTPARAMS _arg3, *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BeginBufferedPaint_FUNC);
+	if (arg1) if ((lparg1 = getRECTFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getBP_PAINTPARAMSFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)BeginBufferedPaint((HDC)arg0, lparg1, arg2, lparg3, (HDC*)lparg4);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(BeginBufferedPaint_LIB);
+			if (hm) fp = GetProcAddress(hm, "BeginBufferedPaint");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HDC)arg0, lparg1, arg2, lparg3, (HDC*)lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) setBP_PAINTPARAMSFields(env, arg3, lparg3);
+	if (arg1 && lparg1) setRECTFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, BeginBufferedPaint_FUNC);
 	return rc;
 }
 #endif
@@ -347,6 +397,94 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(BringWindowToTop)
 	OS_NATIVE_ENTER(env, that, BringWindowToTop_FUNC);
 	rc = (jboolean)BringWindowToTop((HWND)arg0);
 	OS_NATIVE_EXIT(env, that, BringWindowToTop_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_BufferedPaintInit
+JNIEXPORT jint JNICALL OS_NATIVE(BufferedPaintInit)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BufferedPaintInit_FUNC);
+/*
+	rc = (jint)BufferedPaintInit();
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(BufferedPaintInit_LIB);
+			if (hm) fp = GetProcAddress(hm, "BufferedPaintInit");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, BufferedPaintInit_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_BufferedPaintSetAlpha
+JNIEXPORT jint JNICALL OS_NATIVE(BufferedPaintSetAlpha)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyte arg2)
+{
+	RECT _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BufferedPaintSetAlpha_FUNC);
+	if (arg1) if ((lparg1 = getRECTFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jint)BufferedPaintSetAlpha((HPAINTBUFFER)arg0, lparg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(BufferedPaintSetAlpha_LIB);
+			if (hm) fp = GetProcAddress(hm, "BufferedPaintSetAlpha");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HPAINTBUFFER)arg0, lparg1, arg2);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setRECTFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, BufferedPaintSetAlpha_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_BufferedPaintUnInit
+JNIEXPORT jint JNICALL OS_NATIVE(BufferedPaintUnInit)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, BufferedPaintUnInit_FUNC);
+/*
+	rc = (jint)BufferedPaintUnInit();
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(BufferedPaintUnInit_LIB);
+			if (hm) fp = GetProcAddress(hm, "BufferedPaintUnInit");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp();
+		}
+	}
+	OS_NATIVE_EXIT(env, that, BufferedPaintUnInit_FUNC);
 	return rc;
 }
 #endif
@@ -2040,6 +2178,38 @@ fail:
 }
 #endif
 
+#ifndef NO_DwmExtendFrameIntoClientArea
+JNIEXPORT jint JNICALL OS_NATIVE(DwmExtendFrameIntoClientArea)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MARGINS _arg1, *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DwmExtendFrameIntoClientArea_FUNC);
+	if (arg1) if ((lparg1 = getMARGINSFields(env, arg1, &_arg1)) == NULL) goto fail;
+/*
+	rc = (jint)DwmExtendFrameIntoClientArea((HWND)arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(DwmExtendFrameIntoClientArea_LIB);
+			if (hm) fp = GetProcAddress(hm, "DwmExtendFrameIntoClientArea");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HWND)arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) setMARGINSFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, DwmExtendFrameIntoClientArea_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_EXTLOGPEN_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(EXTLOGPEN_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2096,6 +2266,34 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EnableWindow)
 	OS_NATIVE_ENTER(env, that, EnableWindow_FUNC);
 	rc = (jboolean)EnableWindow((HWND)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, EnableWindow_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_EndBufferedPaint
+JNIEXPORT jint JNICALL OS_NATIVE(EndBufferedPaint)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, EndBufferedPaint_FUNC);
+/*
+	rc = (jint)EndBufferedPaint((HPAINTBUFFER)arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(EndBufferedPaint_LIB);
+			if (hm) fp = GetProcAddress(hm, "EndBufferedPaint");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HPAINTBUFFER)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, EndBufferedPaint_FUNC);
 	return rc;
 }
 #endif

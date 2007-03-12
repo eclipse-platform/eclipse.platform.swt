@@ -2477,8 +2477,11 @@ protected void init () {
 	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true));
 
 	/* Initialize OLE */
-	if (!OS.IsWinCE) {
-		OS.OleInitialize (0);
+	if (!OS.IsWinCE) OS.OleInitialize (0);
+	
+	/* Initialize buffered painting */
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)){
+		OS.BufferedPaintInit ();
 	}
 	
 	/* Initialize the Widget Table */
@@ -3437,8 +3440,11 @@ void releaseDisplay () {
 	lpCustColors = 0;
 	
 	/* Uninitialize OLE */
-	if (!OS.IsWinCE) {
-		OS.OleUninitialize ();
+	if (!OS.IsWinCE) OS.OleUninitialize ();
+
+	/* Uninitialize buffered painting */
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+		OS.BufferedPaintUnInit ();
 	}
 	
 	/* Release references */

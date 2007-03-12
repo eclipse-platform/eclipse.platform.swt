@@ -1097,113 +1097,155 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
 	if (hooks (SWT.Paint)) {
 
-		/* Create the paint GC */
-		GCData data = new GCData ();
-		data.ps = ps;
-		data.hwnd = handle;
-		GC gc = GC.win32_new (this, data);
-
-		/* Get the system region for the paint HDC */
-		int sysRgn = 0;
-		if ((style & (SWT.NO_MERGE_PAINTS | SWT.DOUBLE_BUFFERED)) != 0) {
-			sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
-			if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
-				if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-					if ((OS.GetLayout (gc.handle) & OS.LAYOUT_RTL) != 0) {
-						int nBytes = OS.GetRegionData (sysRgn, 0, null);
-						int [] lpRgnData = new int [nBytes / 4];
-						OS.GetRegionData (sysRgn, nBytes, lpRgnData);
-						int newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
-						OS.DeleteObject (sysRgn);
-						sysRgn = newSysRgn;
-					}
-				}
-				if (OS.IsWinNT) {
-					POINT pt = new POINT();
-					OS.MapWindowPoints (0, handle, pt, 1);
-					OS.OffsetRgn (sysRgn, pt.x, pt.y);
-				}
-			}
-		}
-		
-		/* Send the paint event */
-		int width = ps.right - ps.left;
-		int height = ps.bottom - ps.top;
-		if (width != 0 && height != 0) {
-			GC paintGC = null;
-			Image image = null;
-			if ((style & SWT.DOUBLE_BUFFERED) != 0) {
-				image = new Image (display, width, height);
-				paintGC = gc;
-				gc = new GC (image, paintGC.getStyle() & SWT.RIGHT_TO_LEFT);
-				GCData gcData = gc.getGCData ();
-				gcData.uiState = data.uiState;
-				gc.setForeground (getForeground ());
-				gc.setBackground (getBackground ());
-				gc.setFont (getFont ());
-				OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
-				OS.SelectClipRgn (gc.handle, sysRgn);
-				OS.OffsetRgn (sysRgn, ps.left, ps.top);
-				OS.SetMetaRgn (gc.handle);	
-				OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
-				OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
+		/* Use the buffered paint when available */
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && (style & SWT.DOUBLE_BUFFERED) != 0 && (style & SWT.NO_MERGE_PAINTS) == 0) {
+			int hDC = OS.BeginPaint (handle, ps);
+			int width = ps.right - ps.left;
+			int height = ps.bottom - ps.top;
+			if (width != 0 && height != 0) {
+				int [] phdc = new int [1];
+				int flags = OS.BPBF_COMPATIBLEBITMAP;
+				RECT prcTarget = new RECT ();
+				OS.SetRect (prcTarget, ps.left, ps.top, ps.right, ps.bottom);
+				int hBufferedPaint = OS.BeginBufferedPaint (hDC, prcTarget, flags, null, phdc);
+				GCData data = new GCData ();
+				data.device = display;
+				data.foreground = getForegroundPixel ();
+				Control control = findBackgroundControl ();
+				if (control == null) control = this;
+				data.background = control.getBackgroundPixel ();
+				data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
+				data.hBrush = OS.CreateSolidBrush (data.background);
+				data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 				if ((style & SWT.NO_BACKGROUND) != 0) {
 					/* This code is intentionally commented because it may be slow to copy bits from the screen */
 					//paintGC.copyArea (image, ps.left, ps.top);
 				} else {
 					RECT rect = new RECT ();
 					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-					drawBackground (gc.handle, rect);
+					drawBackground (phdc [0], rect);
 				}
-			}
-			Event event = new Event ();
-			event.gc = gc;			
-			RECT rect = null;
-			if ((style & SWT.NO_MERGE_PAINTS) != 0 && OS.GetRgnBox (sysRgn, rect = new RECT ()) == OS.COMPLEXREGION) {
-				int nBytes = OS.GetRegionData (sysRgn, 0, null);
-				int [] lpRgnData = new int [nBytes / 4];
-				OS.GetRegionData (sysRgn, nBytes, lpRgnData);
-				int count = lpRgnData [2];
-				for (int i=0; i<count; i++) {
-					int offset = 8 + (i << 2);
-					OS.SetRect (rect, lpRgnData [offset], lpRgnData [offset + 1], lpRgnData [offset + 2], lpRgnData [offset + 3]);
-					if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
-						drawBackground (gc.handle, rect);
-					}
-					event.x = rect.left;
-					event.y = rect.top;
-					event.width = rect.right - rect.left;
-					event.height = rect.bottom - rect.top;
-					event.count = count - 1 - i;
-					sendEvent (SWT.Paint, event);
-				}
-			} else {
-				if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
-					if (rect == null) rect = new RECT ();
-					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-					drawBackground (gc.handle, rect);
-				}
+				GC gc = GC.win32_new (phdc [0], data);
+				Event event = new Event ();
+				event.gc = gc;			
 				event.x = ps.left;
 				event.y = ps.top;
 				event.width = width;
 				event.height = height;
 				sendEvent (SWT.Paint, event);
+				OS.EndBufferedPaint (hBufferedPaint, true);
+				gc.dispose ();
 			}
-			// widget could be disposed at this point
-			event.gc = null;
-			if ((style & SWT.DOUBLE_BUFFERED) != 0) {
-				gc.dispose();
-				if (!isDisposed ()) {
-					paintGC.drawImage (image, ps.left, ps.top);
+			OS.EndPaint (handle, ps);
+		} else {
+			
+			/* Create the paint GC */
+			GCData data = new GCData ();
+			data.ps = ps;
+			data.hwnd = handle;
+			GC gc = GC.win32_new (this, data);
+
+			/* Get the system region for the paint HDC */
+			int sysRgn = 0;
+			if ((style & (SWT.NO_MERGE_PAINTS | SWT.DOUBLE_BUFFERED)) != 0) {
+				sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
+				if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
+					if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+						if ((OS.GetLayout (gc.handle) & OS.LAYOUT_RTL) != 0) {
+							int nBytes = OS.GetRegionData (sysRgn, 0, null);
+							int [] lpRgnData = new int [nBytes / 4];
+							OS.GetRegionData (sysRgn, nBytes, lpRgnData);
+							int newSysRgn = OS.ExtCreateRegion (new float [] {-1, 0, 0, 1, 0, 0}, nBytes, lpRgnData);
+							OS.DeleteObject (sysRgn);
+							sysRgn = newSysRgn;
+						}
+					}
+					if (OS.IsWinNT) {
+						POINT pt = new POINT();
+						OS.MapWindowPoints (0, handle, pt, 1);
+						OS.OffsetRgn (sysRgn, pt.x, pt.y);
+					}
 				}
-				image.dispose ();
-				gc = paintGC;
 			}
+			
+			/* Send the paint event */
+			int width = ps.right - ps.left;
+			int height = ps.bottom - ps.top;
+			if (width != 0 && height != 0) {
+				GC paintGC = null;
+				Image image = null;
+				if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+					image = new Image (display, width, height);
+					paintGC = gc;
+					gc = new GC (image, paintGC.getStyle() & SWT.RIGHT_TO_LEFT);
+					GCData gcData = gc.getGCData ();
+					gcData.uiState = data.uiState;
+					gc.setForeground (getForeground ());
+					gc.setBackground (getBackground ());
+					gc.setFont (getFont ());
+					OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
+					OS.SelectClipRgn (gc.handle, sysRgn);
+					OS.OffsetRgn (sysRgn, ps.left, ps.top);
+					OS.SetMetaRgn (gc.handle);	
+					OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
+					OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
+					if ((style & SWT.NO_BACKGROUND) != 0) {
+						/* This code is intentionally commented because it may be slow to copy bits from the screen */
+						//paintGC.copyArea (image, ps.left, ps.top);
+					} else {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+						drawBackground (gc.handle, rect);
+					}
+				}
+				Event event = new Event ();
+				event.gc = gc;			
+				RECT rect = null;
+				if ((style & SWT.NO_MERGE_PAINTS) != 0 && OS.GetRgnBox (sysRgn, rect = new RECT ()) == OS.COMPLEXREGION) {
+					int nBytes = OS.GetRegionData (sysRgn, 0, null);
+					int [] lpRgnData = new int [nBytes / 4];
+					OS.GetRegionData (sysRgn, nBytes, lpRgnData);
+					int count = lpRgnData [2];
+					for (int i=0; i<count; i++) {
+						int offset = 8 + (i << 2);
+						OS.SetRect (rect, lpRgnData [offset], lpRgnData [offset + 1], lpRgnData [offset + 2], lpRgnData [offset + 3]);
+						if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
+							drawBackground (gc.handle, rect);
+						}
+						event.x = rect.left;
+						event.y = rect.top;
+						event.width = rect.right - rect.left;
+						event.height = rect.bottom - rect.top;
+						event.count = count - 1 - i;
+						sendEvent (SWT.Paint, event);
+					}
+				} else {
+					if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
+						if (rect == null) rect = new RECT ();
+						OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
+						drawBackground (gc.handle, rect);
+					}
+					event.x = ps.left;
+					event.y = ps.top;
+					event.width = width;
+					event.height = height;
+					sendEvent (SWT.Paint, event);
+				}
+				// widget could be disposed at this point
+				event.gc = null;
+				if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+					gc.dispose();
+					if (!isDisposed ()) paintGC.drawImage (image, ps.left, ps.top);
+					image.dispose ();
+					gc = paintGC;
+				}
+			}
+			if (sysRgn != 0) OS.DeleteObject (sysRgn);
+			
+			/* Dispose the paint GC */
+			gc.dispose ();
 		}
-		
-		/* Dispose the paint GC */
-		gc.dispose ();
-		if (sysRgn != 0) OS.DeleteObject (sysRgn);
 	} else {
 		int hDC = OS.BeginPaint (handle, ps);
 		if ((style & SWT.NO_BACKGROUND) == 0) {
