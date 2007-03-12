@@ -133,8 +133,8 @@ void _addListener (int eventType, Listener listener) {
 		case SWT.EraseItem:
 		case SWT.PaintItem:
 			setCustomDraw (true);
-			style |= SWT.DOUBLE_BUFFERED;
 			setBackgroundTransparent (true);
+			if (OS.COMCTL32_MAJOR < 6) style |= SWT.DOUBLE_BUFFERED;
 			//TODO - LVS_EX_LABELTIP causes white rectangles (turn it off)
 			OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_LABELTIP, 0);
 			break;
@@ -4470,7 +4470,13 @@ void setTableEmpty () {
 		if (itemHeight != -1) setItemHeight (false);
 	}
 	if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
-		setCustomDraw (false);
+		Control control = findBackgroundControl ();
+		if (control == null) control = this;
+		if (control.backgroundImage == null) {
+			setCustomDraw (false);
+			setBackgroundTransparent (false);
+			if (OS.COMCTL32_MAJOR < 6) style &= ~SWT.DOUBLE_BUFFERED;
+		}
 	}
 	items = new TableItem [4];
 	if (columnCount == 0) {
