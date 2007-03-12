@@ -3119,7 +3119,10 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 				rect.right = headerRect.right;
 				pClipRect.left = cellRect.left;
 				pClipRect.right += EXPLORER_EXTRA;
-			} 
+			} else {
+				rect.right += EXPLORER_EXTRA;
+				pClipRect.right += EXPLORER_EXTRA;
+			}
 			int hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
 			int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
 			if (OS.GetFocus () != handle && selected && !hot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
