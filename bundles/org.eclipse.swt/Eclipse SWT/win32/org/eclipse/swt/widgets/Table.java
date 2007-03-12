@@ -3036,6 +3036,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
 	data.hBrush = OS.CreateSolidBrush (data.background);
 	data.hFont = hFont;
+	data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
 	RECT cellRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
@@ -3344,6 +3345,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	}
 	data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
 	data.hBrush = OS.CreateSolidBrush (data.background);
+	data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
 	RECT itemRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, true, false, false, hDC);
