@@ -1079,6 +1079,19 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJJJJ)
 }
 #endif
 
+#ifndef NO_VtblCall__IIJJZ
+extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJZ)(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jboolean arg4);
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIJJZ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jlong arg2, jlong arg3, jboolean arg4)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIJJZ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jlong, jlong, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIJJZ_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2I
 extern "C" JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2I)(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3);
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2I)

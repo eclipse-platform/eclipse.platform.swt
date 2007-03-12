@@ -85,6 +85,7 @@ typedef enum {
 	VtblCall__IIJJ_FUNC,
 	VtblCall__IIJJI_FUNC,
 	VtblCall__IIJJJJJ_FUNC,
+	VtblCall__IIJJZ_FUNC,
 	VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2I_FUNC,
 	VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2ILorg_eclipse_swt_internal_mozilla_nsID_2_3I_FUNC,
 	VtblCall__IILorg_eclipse_swt_internal_mozilla_nsID_2Lorg_eclipse_swt_internal_mozilla_nsID_2_3I_FUNC,
