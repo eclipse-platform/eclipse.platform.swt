@@ -467,6 +467,7 @@ String getNameText () {
  */
 public String getText () {
 	checkWidget ();
+	if ((style & SWT.ON_TOP) != 0) return "";
 	int shellHandle = topHandle ();
 	int str = OS.Window_Title (shellHandle);
 	String string = createJavaString(str);
@@ -629,6 +630,7 @@ public void setImage (Image image) {
 }
 
 void setImages (Image image, Image [] images) {
+	if ((style & SWT.ON_TOP) != 0) return;
 	int encoder = OS.gcnew_TiffBitmapEncoder ();
 	int frames = OS.BitmapEncoder_Frames (encoder);
 	if (image != null) {

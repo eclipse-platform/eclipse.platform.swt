@@ -678,7 +678,7 @@ public boolean forceFocus () {
 //	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
-	if (!isEnabled () || !isVisible () /*|| !isActive ()*/) return false;
+	if (!isEnabled () || !isVisible () || !isActive ()) return false;
 	if (isFocusControl ()) return true;
 	shell.setSavedFocus (null);
 	OS.UIElement_Focus (handle);
@@ -1319,10 +1319,10 @@ public void internal_dispose_GC (int dc, GCData data) {
 }
 
 boolean isActive () {
-	Shell dialogShell = display.getModalDialogShell ();
-	if (dialogShell != null && dialogShell != getShell ()) {
-		return false;
-	}
+//	Shell dialogShell = display.getModalDialogShell ();
+//	if (dialogShell != null && dialogShell != getShell ()) {
+//		return false;
+//	}
 	Shell shell = null;
 	Shell [] modalShells = display.modalShells;
 	if (modalShells != null) {

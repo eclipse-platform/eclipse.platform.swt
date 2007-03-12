@@ -919,7 +919,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-//	display.clearModal (this);
+	display.clearModal (this);
 	display.removeShell (this);
 	region = null;
 }
@@ -1197,7 +1197,33 @@ public void setRegion (Region region) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if (visible) {
+	if ((OS.UIElement_Visibility (topHandle ()) == OS.Visibility_Visible) == visible) return;
+	
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	if ((style & mask) != 0) {
+		if (visible) {
+			display.setModalShell (this);
+//				Control control = display._getFocusControl ();
+//				if (control != null && !control.isActive ()) {
+//					bringToTop ();
+//					if (isDisposed ()) return;
+//				}
+//				int hwndShell = OS.GetActiveWindow ();
+//				if (hwndShell == 0) {
+//					if (parent != null) hwndShell = parent.handle;
+//				}
+//				if (hwndShell != 0) {
+//					OS.SendMessage (hwndShell, OS.WM_CANCELMODE, 0, 0);
+//				}
+//				OS.ReleaseCapture ();
+		} else {
+			display.clearModal (this);
+		}
+	} else {
+		updateModal ();
+	}
+
+	if (visible) {		
 		if ((style & SWT.ON_TOP) != 0) {
 			OS.Popup_IsOpen (shellHandle, visible);
 		} else {
@@ -1235,61 +1261,6 @@ public void setVisible (boolean visible) {
 			}
 		}
 	}
-//	if (drawCount != 0) {
-//		if (((state & HIDDEN) == 0) == visible) return;
-//	} else {
-//		if (visible == OS.IsWindowVisible (handle)) return;
-//	}
-//	
-//	/*
-//	* Feature in Windows.  When ShowWindow() is called used to hide
-//	* a window, Windows attempts to give focus to the parent. If the
-//	* parent is disabled by EnableWindow(), focus is assigned to
-//	* another windows on the desktop.  This means that if you hide
-//	* a modal window before the parent is enabled, the parent will
-//	* not come to the front.  The fix is to change the modal state
-//	* before hiding or showing a window so that this does not occur.
-//	*/
-//	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-//	if ((style & mask) != 0) {
-//		if (visible) {
-//			display.setModalShell (this);
-//			Control control = display._getFocusControl ();
-//			if (control != null && !control.isActive ()) {
-//				bringToTop ();
-//				if (isDisposed ()) return;
-//			}
-//			int hwndShell = OS.GetActiveWindow ();
-//			if (hwndShell == 0) {
-//				if (parent != null) hwndShell = parent.handle;
-//			}
-//			if (hwndShell != 0) {
-//				OS.SendMessage (hwndShell, OS.WM_CANCELMODE, 0, 0);
-//			}
-//			OS.ReleaseCapture ();
-//		} else {
-//			display.clearModal (this);
-//		}
-//	} else {
-//		updateModal ();
-//	}
-//	
-//	/*
-//	* Bug in Windows.  Calling ShowOwnedPopups() to hide the
-//	* child windows of a hidden window causes the application
-//	* to be deactivated.  The fix is to call ShowOwnedPopups()
-//	* to hide children before hiding the parent.
-//	*/
-//	if (showWithParent && !visible) {
-//		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
-//	}
-//	super.setVisible (visible);
-//	if (isDisposed ()) return;
-//	if (showWithParent == visible) return;
-//	showWithParent = visible;
-//	if (visible) {
-//		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, true);
-//	}
 }
 
 int topHandle () {
@@ -1307,6 +1278,16 @@ boolean traverseEscape () {
 	if (!isVisible () || !isEnabled ()) return false;
 	close ();
 	return true;
+}
+
+void updateModal () {
+	int source = OS.PresentationSource_FromVisual (handle);
+	if (source != 0) {
+		int hwnd = OS.HwndSource_Handle (source);
+		OS.EnableWindow (OS.IntPtr_ToInt32 (hwnd), isActive ());
+		OS.GCHandle_Free (hwnd);
+		OS.GCHandle_Free (source);
+	}
 }
 
 }

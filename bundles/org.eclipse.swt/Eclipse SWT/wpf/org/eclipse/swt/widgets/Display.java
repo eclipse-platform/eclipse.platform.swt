@@ -297,21 +297,8 @@ public class Display extends Device {
 	
 	/* Modality */
 	Shell [] modalShells;
-	Shell modalDialogShell;
-	static boolean TrimEnabled = false;
+//	Shell modalDialogShell;
 
-	/* Private SWT Window Messages */
-//	static final int SWT_GETACCELCOUNT	= OS.WM_APP;
-//	static final int SWT_GETACCEL 		= OS.WM_APP + 1;
-//	static final int SWT_KEYMSG	 		= OS.WM_APP + 2;
-//	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
-//	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
-//	static final int SWT_NULL			= OS.WM_APP + 5;
-//	static int SWT_TASKBARCREATED;
-	
-	/* Workaround for Adobe Reader 7.0 */
-	int hitCount;
-	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
 	/*
@@ -626,19 +613,19 @@ void checkExitFrame (int e) {
 }
 
 void clearModal (Shell shell) {
-//	if (modalShells == null) return;
-//	int index = 0, length = modalShells.length;
-//	while (index < length) {
-//		if (modalShells [index] == shell) break;
-//		if (modalShells [index] == null) return;
-//		index++;
-//	}
-//	if (index == length) return;
-//	System.arraycopy (modalShells, index + 1, modalShells, index, --length - index);
-//	modalShells [length] = null;
-//	if (index == 0 && modalShells [0] == null) modalShells = null;
-//	Shell [] shells = getShells ();
-//	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+	if (modalShells == null) return;
+	int index = 0, length = modalShells.length;
+	while (index < length) {
+		if (modalShells [index] == shell) break;
+		if (modalShells [index] == null) return;
+		index++;
+	}
+	if (index == length) return;
+	System.arraycopy (modalShells, index + 1, modalShells, index, --length - index);
+	modalShells [length] = null;
+	if (index == 0 && modalShells [0] == null) modalShells = null;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
 /**
@@ -1324,10 +1311,10 @@ Shell getModalShell () {
 	return null;
 }
 
-Shell getModalDialogShell () {
-	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
-	return modalDialogShell;
-}
+//Shell getModalDialogShell () {
+//	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
+//	return modalDialogShell;
+//}
 
 /**
  * Returns an array of monitors attached to the device.
@@ -2306,10 +2293,9 @@ void releaseDisplay () {
 
 	/* Release references */
 	thread = null;
-//	keyboard = null;
 //	modalDialogShell = null;
-//	modalShells = null;
-//	data = null;
+	modalShells = null;
+	data = null;
 	keys = null;
 	values = null;
 	popups = null;
@@ -2701,29 +2687,29 @@ public static void setAppName (String name) {
 	/* Do nothing */
 }
 
-void setModalDialogShell (Shell modalDailog) {
+//void setModalDialogShell (Shell modalDailog) {
 //	if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
 //	this.modalDialogShell = modalDailog;
 //	Shell [] shells = getShells ();
 //	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
-}
+//}
 
 void setModalShell (Shell shell) {
-//	if (modalShells == null) modalShells = new Shell [4];
-//	int index = 0, length = modalShells.length;
-//	while (index < length) {
-//		if (modalShells [index] == shell) return;
-//		if (modalShells [index] == null) break;
-//		index++;
-//	}
-//	if (index == length) {
-//		Shell [] newModalShells = new Shell [length + 4];
-//		System.arraycopy (modalShells, 0, newModalShells, 0, length);
-//		modalShells = newModalShells;
-//	}
-//	modalShells [index] = shell;
-//	Shell [] shells = getShells ();
-//	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+	if (modalShells == null) modalShells = new Shell [4];
+	int index = 0, length = modalShells.length;
+	while (index < length) {
+		if (modalShells [index] == shell) return;
+		if (modalShells [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Shell [] newModalShells = new Shell [length + 4];
+		System.arraycopy (modalShells, 0, newModalShells, 0, length);
+		modalShells = newModalShells;
+	}
+	modalShells [index] = shell;
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
 
 /**

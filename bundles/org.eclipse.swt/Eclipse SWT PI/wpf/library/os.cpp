@@ -2789,6 +2789,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(EditingCommands_1DeletePreviousWord)
 }
 #endif
 
+#ifndef NO_EnableWindow
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(EnableWindow)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(EnableWindow)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, EnableWindow_FUNC);
+	EnableWindow((HWND)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, EnableWindow_FUNC);
+}
+#endif
+
 #ifndef NO_Environment_1ExpandEnvironmentVariables
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Environment_1ExpandEnvironmentVariables)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(Environment_1ExpandEnvironmentVariables)
@@ -4896,6 +4907,19 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HeapFree)
 	OS_NATIVE_ENTER(env, that, HeapFree_FUNC);
 	rc = (jboolean)HeapFree((HANDLE)arg0, arg1, (LPVOID)arg2);
 	OS_NATIVE_EXIT(env, that, HeapFree_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HwndSource_1Handle
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(HwndSource_1Handle)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(HwndSource_1Handle)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HwndSource_1Handle_FUNC);
+	rc = (jint)TO_HANDLE(((HwndSource^)TO_OBJECT(arg0))->Handle);
+	OS_NATIVE_EXIT(env, that, HwndSource_1Handle_FUNC);
 	return rc;
 }
 #endif

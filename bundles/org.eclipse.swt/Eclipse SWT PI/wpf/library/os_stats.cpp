@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1139;
-int OS_nativeFunctionCallCount[1139];
+int OS_nativeFunctionCount = 1141;
+int OS_nativeFunctionCallCount[1141];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -241,6 +241,7 @@ char * OS_nativeFunctionNames[] = {
 	"EditingCommands_1Delete",
 	"EditingCommands_1DeleteNextWord",
 	"EditingCommands_1DeletePreviousWord",
+	"EnableWindow",
 	"Environment_1ExpandEnvironmentVariables",
 	"ExecutedRoutedEventArgs_1Command",
 	"ExecutedRoutedEventArgs_1Handled",
@@ -415,6 +416,7 @@ char * OS_nativeFunctionNames[] = {
 	"HeaderedItemsControl_1Header__II",
 	"HeapAlloc",
 	"HeapFree",
+	"HwndSource_1Handle",
 	"Hyperlink_1Click",
 	"ICollection_1Count",
 	"IEnumerable_1GetEnumerator",

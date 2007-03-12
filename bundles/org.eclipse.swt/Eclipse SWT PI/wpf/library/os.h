@@ -27,7 +27,7 @@ using namespace System::Windows::Data;
 using namespace System::Windows::Documents;
 using namespace System::Runtime::InteropServices;
 using namespace System::Windows::Input;
-//using namespace System::Windows::Interop;
+using namespace System::Windows::Interop;
 using namespace System::Windows::Shapes;
 using namespace System::Windows::Media;
 using namespace System::Windows::Media::Animation;

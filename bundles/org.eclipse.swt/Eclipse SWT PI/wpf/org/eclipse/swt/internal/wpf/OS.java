@@ -361,6 +361,7 @@ public static final native boolean CreateProcessW(int lpApplicationName, char []
 public static final native int CreateIconIndirect (ICONINFO lplf);
 public static final native boolean DeleteObject (int hGdiObj);
 public static final native boolean DestroyIcon (int hIcon);
+public static final native void EnableWindow(int window, boolean enabled);
 public static final native int ExtractIconExW(char[] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);
 public static final native void GetCursorPos (POINT point);
 public static final native boolean GetIconInfo (int hIcon, ICONINFO piconinfo);
@@ -789,6 +790,7 @@ public static final native int HeaderedContentControl_Header(int sender);
 public static final native void HeaderedContentControl_Header(int sender, int header);
 public static final native int HeaderedItemsControl_Header(int sender);
 public static final native void HeaderedItemsControl_Header(int sender, int value);
+public static final native int HwndSource_Handle(int sender);
 public static final native void Hyperlink_Click(int sender, int handler);
 public static final native int ICollection_Count(int sender);
 public static final native int IEnumerable_GetEnumerator(int sender);
