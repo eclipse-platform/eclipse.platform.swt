@@ -309,7 +309,7 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
-	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index != 0 && !parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	int rowPresenterType = OS.GridViewRowPresenter_typeid ();
 	int rowPresenter = findRowPresenter (handle, rowPresenterType);
@@ -503,7 +503,7 @@ public Image getImage (int index) {
 public Rectangle getImageBounds (int index) {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (!(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	int parentHandle = parent.topHandle ();
 	int part = findPart (index, Table.IMAGE_PART_NAME);
 	int point = OS.gcnew_Point (0, 0);
