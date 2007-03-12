@@ -54,7 +54,8 @@ class Mozilla extends WebBrowser {
 	static boolean Initialized, IsXULRunner;
 
 	/* XULRunner detect constants */
-	static final String GRERANGE_LOWER = "1.8"; //$NON-NLS-1$
+	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
+	static final String GRERANGE_LOWER_FALLBACK = "1.8"; //$NON-NLS-1$
 	static final boolean LowerRangeInclusive = true;
 	static final String GRERANGE_UPPER = "1.9"; //$NON-NLS-1$
 	static final boolean UpperRangeInclusive = false;
@@ -195,6 +196,20 @@ public void create (Composite parent, int style) {
 			int /*long*/ greBuffer = C.malloc (length);
 			int /*long*/ propertiesPtr = C.malloc (2 * C.PTR_SIZEOF);
 			int rc = XPCOMInit.GRE_GetGREPathWithProperties (range, 1, propertiesPtr, 0, greBuffer, length);
+
+			/*
+			 * A XULRunner was not found that supports wrapping of XPCOM handles as JavaXPCOM objects.
+			 * Drop the lower version bound and try to detect an earlier XULRunner installation.
+			 */
+			if (rc != XPCOM.NS_OK) {
+				C.free (lower);
+				bytes = MozillaDelegate.wcsToMbcs (null, GRERANGE_LOWER_FALLBACK, true);
+				lower = C.malloc (bytes.length);
+				C.memmove (lower, bytes, bytes.length);
+				range.lower = lower;
+				rc = XPCOMInit.GRE_GetGREPathWithProperties (range, 1, propertiesPtr, 0, greBuffer, length);
+			}
+
 			C.free (lower);
 			C.free (upper);
 			C.free (propertiesPtr);
