@@ -1524,7 +1524,7 @@ public void moveAbove (Control control) {
 		if (parent != control.parent) return;
 	}
 	int index;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	int children = OS.Panel_Children (parentHandle);
 	if (control != null) {
 		index = OS.UIElementCollection_IndexOf (children, control.topHandle ());
@@ -1566,12 +1566,16 @@ public void moveBelow (Control control) {
 		if (parent != control.parent) return;
 	}
 	int index;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	int children = OS.Panel_Children (parentHandle);
 	if (control != null) {
 		index = Math.max (0, OS.UIElementCollection_IndexOf (children, control.topHandle ()) - 1);
 	} else {
-		index = 0;
+		if (parentHandle != parent.handle) {
+			index = 1;
+		} else {
+			index = 0;
+		}
 	}
 	int topHandle = topHandle ();
 	if (OS.UIElementCollection_IndexOf (children, topHandle) > index) {
