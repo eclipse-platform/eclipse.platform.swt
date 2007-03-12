@@ -321,9 +321,7 @@ int borderHandle () {
 
 LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	if (ignoreCustomDraw) return null;
-	if (nmcd.left == nmcd.right) {
-		return new LRESULT (OS.CDRF_DODEFAULT);
-	}
+	if (nmcd.left == nmcd.right) return new LRESULT (OS.CDRF_DODEFAULT);
 	int hDC = nmcd.hdc;
 	OS.RestoreDC (hDC, -1);
 	TreeItem item = getItem (nmcd);
@@ -622,7 +620,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						gc.setClipping (event.x, event.y, event.width, event.height);
 						sendEvent (SWT.EraseItem, event);
 						event.gc = null;
-						int newTextClr = OS.GetTextColor (hDC);
+						int newTextClr = data.foreground;
 						gc.dispose ();
 						OS.RestoreDC (hDC, nSavedDC);
 						if (isDisposed () || item.isDisposed ()) break;
@@ -689,7 +687,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						}
 					}
 				}
-				rect.left += INSET + 1;
+				rect.left += INSET - 1;
 				if (drawImage) {
 					Image image = null;
 					if (index == 0) {
@@ -718,8 +716,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						int offset = i != 0 ? INSET : INSET + 2;
 						OS.SetRect (rect, rect.left + size.x + offset, rect.top, rect.right - inset, rect.bottom);
 					} else {
-						int offset = i != 0 ? INSET : 2;
-						OS.SetRect (rect, rect.left + offset, rect.top, rect.right - inset, rect.bottom);
 						if (i == 0 && OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
 							if (size == null) size = getImageSize ();
 							rect.left = Math.min (rect.left + size.x, rect.right);
@@ -987,7 +983,11 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			int nSavedDC = OS.SaveDC (hDC);
 			GCData data = new GCData ();
 			data.device = display;
-			data.foreground = OS.GetTextColor (hDC);
+			if (selected && explorerTheme) {
+				data.foreground = OS.GetSysColor (OS.COLOR_WINDOWTEXT);
+			} else {
+				data.foreground = OS.GetTextColor (hDC);
+			}
 			data.background = OS.GetBkColor (hDC);
 			if (!selected) {
 				if (clrText != -1) data.foreground = clrText;
@@ -1020,7 +1020,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			gc.setClipping (event.x, event.y, event.width, event.height);
 			sendEvent (SWT.EraseItem, event);
 			event.gc = null;
-			int newTextClr = OS.GetTextColor (hDC);
+			int newTextClr = data.foreground;
 			gc.dispose ();
 			OS.RestoreDC (hDC, nSavedDC);
 			if (isDisposed () || item.isDisposed ()) return null;
