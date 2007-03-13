@@ -778,6 +778,12 @@ void hookEvents () {
 		handler = OS.gcnew_EventHandler (jniRef, "HandleClosed");
 		OS.Popup_Closed (shellHandle, handler);
 		OS.GCHandle_Free (handler);
+		handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandlePreviewGotKeyboardFocusActivate");
+		OS.UIElement_PreviewGotKeyboardFocus (shellHandle, handler);
+		OS.GCHandle_Free (handler);
+		handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandleLostKeyboardFocusDeactivate");
+		OS.UIElement_LostKeyboardFocus (shellHandle, handler);
+		OS.GCHandle_Free (handler);
 	} else {
 		handler = OS.gcnew_CancelEventHandler (jniRef, "HandleClosing");
 		OS.Window_Closing (shellHandle, handler);
@@ -844,10 +850,22 @@ void HandleLocationChanged (int sender, int e) {
 	}
 }
 
+void HandleLostKeyboardFocusDeactivate (int sender, int e) {
+	if (isDisposed ()) return;
+	if (OS.UIElement_IsKeyboardFocusWithin (handle)) return;
+	sendEvent (SWT.Deactivate);
+}
+
 void HandleMouseLeave (int sender, int e) {
 	super.HandleMouseLeave (sender, e);
 	if (!checkEvent (e)) return;
 	display.mouseControl = null;
+}
+
+void HandlePreviewGotKeyboardFocusActivate (int sender, int e) {
+	if (isDisposed ()) return;
+	if (!OS.UIElement_IsKeyboardFocusWithin (handle)) return;
+	sendEvent (SWT.Activate);
 }
 
 void HandleSizeChanged (int sender, int e) {
