@@ -718,6 +718,12 @@ public Shell getShell () {
 	return this;
 }
 
+public boolean getVisible () {
+	checkWidget ();
+	if ((style & SWT.ON_TOP) != 0)return OS.Popup_IsOpen (shellHandle);
+	return super.getVisible ();
+}
+
 /**
  * Returns an array containing all shells which are 
  * descendents of the receiver.
@@ -1197,7 +1203,7 @@ public void setRegion (Region region) {
 
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if ((OS.UIElement_Visibility (topHandle ()) == OS.Visibility_Visible) == visible) return;
+	if (getVisible () == visible) return;
 	
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
