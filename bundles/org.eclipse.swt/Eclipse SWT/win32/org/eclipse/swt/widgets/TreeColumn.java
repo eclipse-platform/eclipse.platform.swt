@@ -403,7 +403,8 @@ public void pack () {
 	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (hwnd, hDC);
-	setWidth (Math.max (headerWidth, columnWidth));
+	int gridWidth = parent.linesVisible ? Tree.GRID_WIDTH : 0;
+	setWidth (Math.max (headerWidth, columnWidth + gridWidth));
 }
 
 void releaseHandle () {

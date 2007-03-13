@@ -6351,7 +6351,7 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
 						rect.right = Math.max (rect.right, headerRect.right);
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
-						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+						int gridWidth = linesVisible ? GRID_WIDTH : 0;
 						rect.left = headerRect.right - gridWidth;
 						if (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 							OS.InvalidateRect (handle, rect, true);
