@@ -201,9 +201,17 @@ public void addSelectionListener(SelectionListener listener) {
 }
 
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
-	if (control == labelHandle && partCode != 0) {
+	if (control == labelHandle && (partCode != 0 || ((state & DISABLED) != 0 && OS.VERSION >= 0x1040))) {
 		HIThemeTextInfo info = new HIThemeTextInfo ();
-		info.state = OS.kThemeStatePressed;
+		if (partCode != 0) {
+			info.state = OS.kThemeStatePressed;
+		} else {
+			if (OS.IsControlActive (labelHandle)) {
+				info.state = (state & DISABLED) == 0 ? OS.kThemeStateActive : OS.kThemeStateUnavailable;
+			} else {
+				info.state = (state & DISABLED) == 0 ? OS.kThemeStateInactive : OS.kThemeStateUnavailableInactive;
+			}
+		}
 		Font font = parent.font;
 		if (font != null) {
 			short [] family = new short [1], style = new short [1];
@@ -219,10 +227,14 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 		OS.HIViewGetBounds (labelHandle, rect);
 		int [] context = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
-		int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
-		OS.CGContextSetFillColorSpace (context [0], colorspace);
-		OS.CGColorSpaceRelease (colorspace);
-		OS.CGContextSetFillColor (context [0], parent.getForegroundColor ().handle);
+		if ((state & DISABLED) != 0 && OS.VERSION >= 0x1040) {
+			OS.HIThemeSetTextFill (OS.kThemeTextColorMenuItemDisabled, 0, context [0], OS.kHIThemeOrientationNormal);
+		} else {
+			int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+			OS.CGContextSetFillColorSpace (context [0], colorspace);
+			OS.CGColorSpaceRelease (colorspace);
+			OS.CGContextSetFillColor (context [0], parent.getForegroundColor ().handle);
+		}
 		int [] ptr = new int [1];
 		OS.GetControlData (labelHandle, (short) 0, OS.kControlStaticTextCFStringTag, 4, ptr, null);
 		OS.HIThemeDrawTextBox (ptr [0], rect, info, context [0], OS.kHIThemeOrientationNormal);
@@ -251,6 +263,9 @@ int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEv
 				OS.HIViewGetBounds (iconHandle, rect);
 				if (partCode != 0) {
 					OS.HICreateTransformedCGImage (imageHandle, OS.kHITransformSelected, buffer);
+					imageHandle = buffer [0];
+				} else if ((state & DISABLED) != 0) {
+					OS.HICreateTransformedCGImage (imageHandle, OS.kHITransformDisabled, buffer);
 					imageHandle = buffer [0];
 				}
 				OS.HIViewDrawCGImage (context, rect, imageHandle);

@@ -541,6 +541,7 @@ public class OS extends C {
 	public static final int kThemeTabSouth = 1;
 	public static final int kThemeTabEast = 2;
 	public static final int kThemeTabWest = 3;
+	public static final int kThemeTextColorMenuItemDisabled = 36;
 	public static final int kHIThemeOrientationNormal = 0;
 	public static final int kHIThemeOrientationInverted = 1;
 	public static final int kHIThemeTextHorizontalFlushLeft = 0;
@@ -1479,6 +1480,7 @@ public static final native int HIThemeGetTrackLiveValue(HIThemeTrackDrawInfo inD
 public static final native boolean HIThemeHitTestScrollBarArrows(CGRect inScrollBarBounds, HIScrollBarTrackInfo inTrackInfo, boolean inIsHoriz, CGPoint inPtHit, CGRect outTrackBounds, short[] outPartCode);
 public static final native boolean HIThemeHitTestTrack(HIThemeTrackDrawInfo inDrawInfo, CGPoint inMousePoint, short[] outPartHit);
 public static final native int HIThemeSetFill(int inBrush, int inInfo, int inContext, int inOrientation);
+public static final native int HIThemeSetTextFill(int inColor, int inInfo, int inContext, int inOrientation);
 public static final native int HIViewAddSubview(int parent, int child);
 public static final native int HIViewChangeAttributes(int inView, int inAttrsToSet, int inAttrsToClear);
 public static final native int HIViewChangeFeatures(int inView, int inFeaturesToSet, int inFeaturesToClear);

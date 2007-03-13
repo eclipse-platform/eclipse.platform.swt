@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 893;
-int OS_nativeFunctionCallCount[893];
+int OS_nativeFunctionCount = 894;
+int OS_nativeFunctionCallCount[894];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -533,6 +533,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIThemeHitTestScrollBarArrows",
 	"HIThemeHitTestTrack",
 	"HIThemeSetFill",
+	"HIThemeSetTextFill",
 	"HIViewAddSubview",
 	"HIViewChangeAttributes",
 	"HIViewChangeFeatures",

@@ -7667,6 +7667,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIThemeSetFill)
 }
 #endif
 
+#ifndef NO_HIThemeSetTextFill
+JNIEXPORT jint JNICALL OS_NATIVE(HIThemeSetTextFill)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIThemeSetTextFill_FUNC);
+/*
+	rc = (jint)HIThemeSetTextFill(arg0, arg1, arg2, arg3);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIThemeSetTextFill_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIThemeSetTextFill"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, HIThemeSetTextFill_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HIViewAddSubview
 JNIEXPORT jint JNICALL OS_NATIVE(HIViewAddSubview)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

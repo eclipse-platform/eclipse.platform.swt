@@ -541,6 +541,7 @@ typedef enum {
 	HIThemeHitTestScrollBarArrows_FUNC,
 	HIThemeHitTestTrack_FUNC,
 	HIThemeSetFill_FUNC,
+	HIThemeSetTextFill_FUNC,
 	HIViewAddSubview_FUNC,
 	HIViewChangeAttributes_FUNC,
 	HIViewChangeFeatures_FUNC,
