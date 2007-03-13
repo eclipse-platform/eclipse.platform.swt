@@ -897,6 +897,18 @@ public:
 	void ContextMenuEventHandler (Object^ sender, ContextMenuEventArgs^ e) {
 		EventHandler (sender, e);	
 	}
+
+	void DragEventHandler (Object^ sender, DragEventArgs^ e) {
+		EventHandler (sender, e);	
+	}
+		
+	void GiveFeedbackEventHandler (Object^ sender, GiveFeedbackEventArgs^ e) {
+		EventHandler (sender, e);	
+	}
+		
+	void QueryContinueDragEventHandler (Object^ sender, QueryContinueDragEventArgs^ e) {
+		EventHandler (sender, e);	
+	}
 		
 	void NoArgsDelegate() {	
 		jobject object = cookie->object;
@@ -993,6 +1005,18 @@ HANDLER_CONSTRUCTOR (ContextMenuEventHandler)
 
 #ifndef NO_gcnew_1RoutedEventHandler
 HANDLER_CONSTRUCTOR (RoutedEventHandler)
+#endif
+
+#ifndef NO_gcnew_1DragEventHandler
+HANDLER_CONSTRUCTOR (DragEventHandler)
+#endif
+
+#ifndef NO_gcnew_1GiveFeedbackEventHandler
+HANDLER_CONSTRUCTOR (GiveFeedbackEventHandler)
+#endif
+
+#ifndef NO_gcnew_1QueryContinueDragEventHandler
+HANDLER_CONSTRUCTOR (QueryContinueDragEventHandler)
 #endif
 
 // special cases

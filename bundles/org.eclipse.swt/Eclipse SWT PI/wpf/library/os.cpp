@@ -2219,6 +2219,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1Rtf)
 }
 #endif
 
+#ifndef NO_DataFormats_1StringFormat
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1StringFormat)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1StringFormat)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataFormats_1StringFormat_FUNC);
+	rc = (jint)TO_HANDLE(DataFormats::StringFormat);
+	OS_NATIVE_EXIT(env, that, DataFormats_1StringFormat_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DataFormats_1UnicodeText
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1UnicodeText)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1UnicodeText)
@@ -2229,6 +2242,56 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataFormats_1UnicodeText)
 	rc = (jint)TO_HANDLE(DataFormats::UnicodeText);
 	OS_NATIVE_EXIT(env, that, DataFormats_1UnicodeText_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_DataObject_1GetData
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DataObject_1GetData)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(DataObject_1GetData)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataObject_1GetData_FUNC);
+	rc = (jint)TO_HANDLE(((DataObject^)TO_OBJECT(arg0))->GetData((String^)TO_OBJECT(arg1)));
+	OS_NATIVE_EXIT(env, that, DataObject_1GetData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DataObject_1GetDataPresent
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(DataObject_1GetDataPresent)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jboolean JNICALL OS_NATIVE(DataObject_1GetDataPresent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, DataObject_1GetDataPresent_FUNC);
+	rc = (jboolean)((DataObject^)TO_OBJECT(arg0))->GetDataPresent((String^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, DataObject_1GetDataPresent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DataObject_1GetFormats
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DataObject_1GetFormats)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DataObject_1GetFormats)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataObject_1GetFormats_FUNC);
+	rc = (jint)TO_HANDLE(((DataObject^)TO_OBJECT(arg0))->GetFormats());
+	OS_NATIVE_EXIT(env, that, DataObject_1GetFormats_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DataObject_1SetData
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(DataObject_1SetData)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT void JNICALL OS_NATIVE(DataObject_1SetData)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, DataObject_1SetData_FUNC);
+	((DataObject^)TO_OBJECT(arg0))->SetData((String^)TO_OBJECT(arg1), (Object^)TO_OBJECT(arg2));
+	OS_NATIVE_EXIT(env, that, DataObject_1SetData_FUNC);
 }
 #endif
 
@@ -2549,6 +2612,95 @@ JNIEXPORT jint JNICALL OS_NATIVE(DoubleKeyFrameCollection_1Add)
 	OS_NATIVE_ENTER(env, that, DoubleKeyFrameCollection_1Add_FUNC);
 	rc = (jint)((DoubleKeyFrameCollection^)TO_OBJECT(arg0))->Add((DoubleKeyFrame^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, DoubleKeyFrameCollection_1Add_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DragDrop_1DoDragDrop
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragDrop_1DoDragDrop)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT jint JNICALL OS_NATIVE(DragDrop_1DoDragDrop)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DragDrop_1DoDragDrop_FUNC);
+	rc = (jint)DragDrop::DoDragDrop((DependencyObject^)TO_OBJECT(arg0), (Object^)TO_OBJECT(arg1), (DragDropEffects)arg2);
+	OS_NATIVE_EXIT(env, that, DragDrop_1DoDragDrop_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DragEventArgs_1AllowedEffects
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1AllowedEffects)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1AllowedEffects)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DragEventArgs_1AllowedEffects_FUNC);
+	rc = (jint)((DragEventArgs^)TO_OBJECT(arg0))->AllowedEffects;
+	OS_NATIVE_EXIT(env, that, DragEventArgs_1AllowedEffects_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DragEventArgs_1Data
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1Data)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1Data)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DragEventArgs_1Data_FUNC);
+	rc = (jint)TO_HANDLE(((DragEventArgs^)TO_OBJECT(arg0))->Data);
+	OS_NATIVE_EXIT(env, that, DragEventArgs_1Data_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DragEventArgs_1Effects__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1Effects__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1Effects__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DragEventArgs_1Effects__I_FUNC);
+	rc = (jint)((DragEventArgs^)TO_OBJECT(arg0))->Effects;
+	OS_NATIVE_EXIT(env, that, DragEventArgs_1Effects__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DragEventArgs_1Effects__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(DragEventArgs_1Effects__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(DragEventArgs_1Effects__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, DragEventArgs_1Effects__II_FUNC);
+	((DragEventArgs^)TO_OBJECT(arg0))->Effects = ((DragDropEffects)arg1);
+	OS_NATIVE_EXIT(env, that, DragEventArgs_1Effects__II_FUNC);
+}
+#endif
+
+#ifndef NO_DragEventArgs_1GetPosition
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1GetPosition)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1GetPosition)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DragEventArgs_1GetPosition_FUNC);
+	rc = (jint)TO_HANDLE(((DragEventArgs^)TO_OBJECT(arg0))->GetPosition((IInputElement^)TO_OBJECT(arg1)));
+	OS_NATIVE_EXIT(env, that, DragEventArgs_1GetPosition_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DragEventArgs_1KeyStates
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1KeyStates)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(DragEventArgs_1KeyStates)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DragEventArgs_1KeyStates_FUNC);
+	rc = (jint)((DragEventArgs^)TO_OBJECT(arg0))->KeyStates;
+	OS_NATIVE_EXIT(env, that, DragEventArgs_1KeyStates_FUNC);
 	return rc;
 }
 #endif
@@ -4425,6 +4577,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetProcessHeap)
 	OS_NATIVE_ENTER(env, that, GetProcessHeap_FUNC);
 	rc = (jint)GetProcessHeap();
 	OS_NATIVE_EXIT(env, that, GetProcessHeap_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GiveFeedbackEventArgs_1Effects
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(GiveFeedbackEventArgs_1Effects)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(GiveFeedbackEventArgs_1Effects)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GiveFeedbackEventArgs_1Effects_FUNC);
+	rc = (jint)((GiveFeedbackEventArgs^)TO_OBJECT(arg0))->Effects;
+	OS_NATIVE_EXIT(env, that, GiveFeedbackEventArgs_1Effects_FUNC);
 	return rc;
 }
 #endif
@@ -7427,6 +7592,30 @@ JNIEXPORT void JNICALL OS_NATIVE(PropertyInfo_1SetValueBoolean)
 	OS_NATIVE_ENTER(env, that, PropertyInfo_1SetValueBoolean_FUNC);
 	((PropertyInfo^)TO_OBJECT(arg0))->PropertyInfo::SetValue((Object^)TO_OBJECT(arg1), (bool)arg2, (array<Object^>^)TO_OBJECT(arg3));
 	OS_NATIVE_EXIT(env, that, PropertyInfo_1SetValueBoolean_FUNC);
+}
+#endif
+
+#ifndef NO_QueryContinueDragEventArgs_1Action
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(QueryContinueDragEventArgs_1Action)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(QueryContinueDragEventArgs_1Action)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, QueryContinueDragEventArgs_1Action_FUNC);
+	((QueryContinueDragEventArgs^)TO_OBJECT(arg0))->Action = ((DragAction)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, QueryContinueDragEventArgs_1Action_FUNC);
+}
+#endif
+
+#ifndef NO_QueryContinueDragEventArgs_1EscapePressed
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(QueryContinueDragEventArgs_1EscapePressed)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(QueryContinueDragEventArgs_1EscapePressed)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, QueryContinueDragEventArgs_1EscapePressed_FUNC);
+	rc = (jboolean)((QueryContinueDragEventArgs^)TO_OBJECT(arg0))->EscapePressed;
+	OS_NATIVE_EXIT(env, that, QueryContinueDragEventArgs_1EscapePressed_FUNC);
+	return rc;
 }
 #endif
 
@@ -10905,6 +11094,17 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1AddHandler)
 }
 #endif
 
+#ifndef NO_UIElement_1AllowDrop
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1AllowDrop)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1AllowDrop)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1AllowDrop_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->AllowDrop = (arg1);
+	OS_NATIVE_EXIT(env, that, UIElement_1AllowDrop_FUNC);
+}
+#endif
+
 #ifndef NO_UIElement_1BeginAnimation
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1BeginAnimation)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT void JNICALL OS_NATIVE(UIElement_1BeginAnimation)
@@ -10964,6 +11164,50 @@ JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1DesiredSize)
 }
 #endif
 
+#ifndef NO_UIElement_1DragEnter
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1DragEnter)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1DragEnter)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1DragEnter_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->DragEnter += ((DragEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1DragEnter_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1DragLeave
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1DragLeave)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1DragLeave)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1DragLeave_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->DragLeave += ((DragEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1DragLeave_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1DragOver
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1DragOver)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1DragOver)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1DragOver_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->DragOver += ((DragEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1DragOver_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1Drop
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1Drop)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1Drop)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1Drop_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->Drop += ((DragEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1Drop_FUNC);
+}
+#endif
+
 #ifndef NO_UIElement_1Focus
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1Focus)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL OS_NATIVE(UIElement_1Focus)
@@ -10985,6 +11229,17 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1Focusable)
 	OS_NATIVE_ENTER(env, that, UIElement_1Focusable_FUNC);
 	((UIElement^)TO_OBJECT(arg0))->Focusable = (arg1);
 	OS_NATIVE_EXIT(env, that, UIElement_1Focusable_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1GiveFeedback
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1GiveFeedback)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1GiveFeedback)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1GiveFeedback_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->GiveFeedback += ((GiveFeedbackEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1GiveFeedback_FUNC);
 }
 #endif
 
@@ -11355,6 +11610,17 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1PreviewTextInput)
 	OS_NATIVE_ENTER(env, that, UIElement_1PreviewTextInput_FUNC);
 	((UIElement^)TO_OBJECT(arg0))->PreviewTextInput += ((TextCompositionEventHandler^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, UIElement_1PreviewTextInput_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1QueryContinueDrag
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1QueryContinueDrag)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1QueryContinueDrag)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1QueryContinueDrag_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->QueryContinueDrag += ((QueryContinueDragEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, UIElement_1QueryContinueDrag_FUNC);
 }
 #endif
 
@@ -12261,6 +12527,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1DashStyle)
 	OS_NATIVE_ENTER(env, that, gcnew_1DashStyle_FUNC);
 	rc = (jint)TO_HANDLE(gcnew DashStyle((DoubleCollection^)TO_OBJECT(arg0), arg1));
 	OS_NATIVE_EXIT(env, that, gcnew_1DashStyle_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1DataObject
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1DataObject)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1DataObject)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1DataObject_FUNC);
+	rc = (jint)TO_HANDLE(gcnew DataObject());
+	OS_NATIVE_EXIT(env, that, gcnew_1DataObject_FUNC);
 	return rc;
 }
 #endif
