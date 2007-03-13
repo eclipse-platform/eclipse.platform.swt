@@ -355,11 +355,16 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		OS.SetBkMode (hDC, OS.TRANSPARENT);
 	}
 	boolean selected = isItemSelected (nmcd);
+	boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
 	if (OS.IsWindowEnabled (handle)) {
 		if (explorerTheme) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.TVS_TRACKSELECT) != 0) {
-				OS.SetTextColor (hDC, getForegroundPixel ());
+				if ((style & SWT.FULL_SELECTION) != 0 && (selected || hot)) {
+					OS.SetTextColor (hDC, OS.GetSysColor (OS.COLOR_WINDOWTEXT));
+				} else {
+					OS.SetTextColor (hDC, getForegroundPixel ());
+				}
 			}
 		}
 	}
@@ -397,7 +402,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		if (i == 0) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
 				boolean clear = !explorerTheme && findImageControl () == null;
-				boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
 				if ((selected || hot || clear) && !ignoreDrawSelection) {
 					boolean draw = true;
 					RECT pClipRect = new RECT ();
@@ -405,11 +409,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					if (explorerTheme) {
 						if (hooks (SWT.EraseItem)) {
 							RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
-							if (explorerTheme) {
-								itemRect.left -= EXPLORER_EXTRA;
-								itemRect.right += EXPLORER_EXTRA;
-							}
+							itemRect.left -= EXPLORER_EXTRA;
+							itemRect.right += EXPLORER_EXTRA;
 							pClipRect.left = itemRect.left;
+							pClipRect.right = itemRect.right + 1;
 						}
 						RECT pRect = new RECT ();
 						OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
@@ -440,7 +443,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				}
 			} else {
 				if (explorerTheme && hooks (SWT.EraseItem)) {
-					boolean hot = explorerTheme && (nmcd.uItemState & OS.CDIS_HOT) != 0;
 					if ((selected || hot) && !ignoreDrawSelection) {
 						RECT pRect = item.getBounds (index, true, true, false, false, false, hDC);
 						RECT pClipRect = item.getBounds (index, true, true, false, false, true, hDC);
@@ -654,6 +656,31 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 											OS.SetRect (selectionRect, backgroundRect.left, backgroundRect.top, nmcd.right, backgroundRect.bottom);
 											backgroundRect = selectionRect;
 										}
+									} else {
+										RECT pRect = new RECT ();
+										OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+										if (count > 0 && hwndHeader != 0) {
+											int totalWidth = 0;
+											HDITEM hdItem = new HDITEM ();
+											hdItem.mask = OS.HDI_WIDTH;
+											for (int j=0; j<count; j++) {
+												OS.SendMessage (hwndHeader, OS.HDM_GETITEM, j, hdItem);
+												totalWidth += hdItem.cxy;
+											}
+											if (totalWidth > clientRect.right - clientRect.left) {
+												pRect.left = 0;
+												pRect.right = totalWidth;
+											} else {
+												pRect.left = clientRect.left;
+												pRect.right = clientRect.right;
+											}
+											if (index == count - 1) backgroundRect.right = pRect.right;
+										}
+										int hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
+										int iStateId = selected ? OS.TREIS_SELECTED : OS.TREIS_HOT;
+										if (OS.GetFocus () != handle && selected /*&& !hot*/) iStateId = OS.TREIS_SELECTEDNOTFOCUS;
+										OS.DrawThemeBackground (hTheme, hDC, OS.TVP_TREEITEM, iStateId, pRect, backgroundRect);	
+										OS.CloseThemeData (hTheme);
 									}
 								}
 							} else {
@@ -1084,10 +1111,15 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					* Feature in Windows.  On Vista only, when the text
 					* color is unchanged and an item is asked to draw
 					* disabled, it uses the disabled color.  The fix is
-					* to modify the color slightly by adding one.
+					* to modify the color so that is it no longer equal.
 					*/
 					int newColor = clrText == -1 ? getForegroundPixel () : clrText;
-					nmcd.clrText = nmcd.clrText == newColor ? newColor + 1 : newColor;
+					if (nmcd.clrText == newColor) {
+						nmcd.clrText |= 0x20000000;
+						if (nmcd.clrText == newColor) nmcd.clrText &= ~0x20000000;
+					} else {
+						nmcd.clrText = newColor;
+					}
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 				}
 			}
@@ -1205,10 +1237,15 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					* Feature in Windows.  On Vista only, when the text
 					* color is unchanged and an item is asked to draw
 					* disabled, it uses the disabled color.  The fix is
-					* to modify the color slightly by adding one.
+					* to modify the color so it is no longer equal.
 					*/
 					int newColor = clrText == -1 ? getForegroundPixel () : clrText;
-					nmcd.clrText = nmcd.clrText == newColor ? newColor + 1 : newColor;
+					if (nmcd.clrText == newColor) {
+						nmcd.clrText |= 0x20000000;
+						if (nmcd.clrText == newColor) nmcd.clrText &= ~0x20000000;
+					} else {
+						nmcd.clrText = newColor;
+					}
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 					if (clrTextBk != -1) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
