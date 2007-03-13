@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1142;
-int OS_nativeFunctionCallCount[1142];
+int OS_nativeFunctionCount = 1143;
+int OS_nativeFunctionCallCount[1143];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -197,6 +197,7 @@ char * OS_nativeFunctionNames[] = {
 	"DeleteGlobalRef",
 	"DeleteObject",
 	"DependencyObject_1ClearValue",
+	"DependencyObject_1GetValue",
 	"DependencyObject_1SetValue",
 	"DestroyIcon",
 	"DispatcherFrame_1Continue",

@@ -583,6 +583,7 @@ public static final native int DashStyles_Solid();
 public static final native int DataFormats_UnicodeText();
 public static final native int DataFormats_Rtf();
 public static final native void DependencyObject_ClearValue(int sender, int property);
+public static final native int DependencyObject_GetValue(int sender, int property);
 public static final native void DependencyObject_SetValue(int sender, int property, int object);
 public static final native void Dispatcher_PushFrame(int frame);
 public static final native int Dispatcher_Hooks(int sender);

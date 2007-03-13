@@ -205,6 +205,7 @@ typedef enum {
 	DeleteGlobalRef_FUNC,
 	DeleteObject_FUNC,
 	DependencyObject_1ClearValue_FUNC,
+	DependencyObject_1GetValue_FUNC,
 	DependencyObject_1SetValue_FUNC,
 	DestroyIcon_FUNC,
 	DispatcherFrame_1Continue_FUNC,

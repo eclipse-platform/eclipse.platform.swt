@@ -2267,6 +2267,19 @@ JNIEXPORT void JNICALL OS_NATIVE(DependencyObject_1ClearValue)
 }
 #endif
 
+#ifndef NO_DependencyObject_1GetValue
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DependencyObject_1GetValue)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(DependencyObject_1GetValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DependencyObject_1GetValue_FUNC);
+	rc = (jint)TO_HANDLE(((DependencyObject^)TO_OBJECT(arg0))->GetValue((DependencyProperty^)TO_OBJECT(arg1)));
+	OS_NATIVE_EXIT(env, that, DependencyObject_1GetValue_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DependencyObject_1SetValue
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(DependencyObject_1SetValue)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT void JNICALL OS_NATIVE(DependencyObject_1SetValue)
