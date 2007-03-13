@@ -109,6 +109,9 @@ public class Display extends Device {
 	/* Track Mouse Control */
 	Control mouseControl;
 	
+	/* Focus */
+	Control focusControl;
+
 	/* Menus */
 	Menu []  popups;
 
@@ -1198,6 +1201,9 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return focusControl;
+	}
 	return _getFocusControl ();
 }
 

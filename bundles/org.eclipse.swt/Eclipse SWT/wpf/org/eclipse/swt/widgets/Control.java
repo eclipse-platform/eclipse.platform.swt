@@ -1241,7 +1241,7 @@ void HandlePreviewTextInput(int sender, int e) {
 boolean hasFocus () {
 //	return OS.UIElement_IsFocused (handle);
 //	return OS.UIElement_IsKeyboardFocused (handle);
-	return display._getFocusControl() == this;
+	return display.getFocusControl() == this;
 }
 
 /**	 
@@ -1960,7 +1960,9 @@ boolean sendFocusEvent (int type) {
 	Shell shell = getShell ();
 	
 	Display display = this.display;
+	display.focusControl = this;
 	sendEvent (type);
+	display.focusControl = null;
 
 	/*
 	* It is possible that the shell may be
