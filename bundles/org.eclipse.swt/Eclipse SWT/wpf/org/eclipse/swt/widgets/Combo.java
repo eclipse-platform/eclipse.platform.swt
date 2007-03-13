@@ -1047,7 +1047,9 @@ public void remove (String string) {
 public void removeAll () {
 	checkWidget ();
 	int itemCollection = OS.ItemsControl_Items (handle);
+	ignoreSelection = true;
 	OS.ItemCollection_Clear (itemCollection);
+	ignoreSelection = false;
 	OS.GCHandle_Free (itemCollection);
 }
 
@@ -1217,6 +1219,7 @@ public void setItems (String [] items) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int itemCollection = OS.ItemsControl_Items(handle);
+	ignoreSelection = true;
 	OS.ItemCollection_Clear(itemCollection);
 	for (int i = 0; i < items.length; i++) {
 		int itemHandle = OS.gcnew_ComboBoxItem ();
@@ -1226,6 +1229,7 @@ public void setItems (String [] items) {
 		OS.ItemCollection_Add (itemCollection, itemHandle);
 		OS.GCHandle_Free (itemHandle);
 	}
+	ignoreSelection = false;
 	OS.GCHandle_Free(itemCollection);
 }
 

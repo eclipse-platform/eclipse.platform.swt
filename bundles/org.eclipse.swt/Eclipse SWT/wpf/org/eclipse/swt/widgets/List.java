@@ -770,7 +770,9 @@ public void remove (String string) {
 public void removeAll () {
 	checkWidget ();
 	int items = OS.ItemsControl_Items (handle);
+	ignoreSelection = true;
 	OS.ItemCollection_Clear (items);
+	ignoreSelection = false;
 	OS.GCHandle_Free (items);
 }
 
@@ -991,6 +993,7 @@ public void setItems (String [] items) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int itemCollection = OS.ItemsControl_Items (handle);
+	ignoreSelection = true;
 	OS.ItemCollection_Clear (itemCollection);
 	for (int i = 0; i < items.length; i++) {
 		String string = items [i];
@@ -1001,6 +1004,7 @@ public void setItems (String [] items) {
 		OS.ItemCollection_Add (itemCollection, item);
 		OS.GCHandle_Free (item);
 	}
+	ignoreSelection = false;
 	OS.GCHandle_Free (itemCollection);
 }
 

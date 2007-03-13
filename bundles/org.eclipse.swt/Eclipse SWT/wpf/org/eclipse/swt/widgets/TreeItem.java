@@ -892,7 +892,9 @@ public void removeAll () {
 		TreeItem item = parent.getItem (items, i, false);
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
+	parent.ignoreSelection = true;
 	OS.ItemCollection_Clear (items);
+	parent.ignoreSelection = false;
 	OS.GCHandle_Free (items);
 }
 

@@ -1692,7 +1692,9 @@ public void removeAll () {
 		TreeItem item = getItem (items, i, false);
 		if (item != null && !item.isDisposed ()) item.release (false);
 	}
+	ignoreSelection = true;
 	OS.ItemCollection_Clear (items);
+	ignoreSelection = false;
 	itemCount = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
 }
