@@ -212,12 +212,6 @@ public void changed (Control[] changed) {
 	}
 }
 
-void checkBuffered () {
-	if ((state & CANVAS) == 0) {
-		super.checkBuffered ();
-	}
-}
-
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }

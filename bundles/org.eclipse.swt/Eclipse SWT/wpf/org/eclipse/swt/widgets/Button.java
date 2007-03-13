@@ -133,6 +133,15 @@ static int checkStyle (int style) {
 	return style;
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	Point size = computeSize (handle, wHint, hHint, changed);
+	int border = getBorderWidth ();
+	int width = size.x + border * 2;
+	int height = size.y + border * 2;
+	return new Point (width, height);
+}
+
 void createArrow () { 
 	int geometry = OS.gcnew_StreamGeometry ();
 	int context = OS.StreamGeometry_Open (geometry);

@@ -367,7 +367,7 @@ void checkBorder () {
 }
 
 void checkBuffered () {
-	style &= ~SWT.DOUBLE_BUFFERED;
+	style |= SWT.DOUBLE_BUFFERED;
 }
 
 /**
@@ -437,11 +437,7 @@ public Point computeSize (int wHint, int hHint) {
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	Point size = computeSize (handle, wHint, hHint, changed);
-	int border = getBorderWidth ();
-	int width = size.x + border * 2;
-	int height = size.y + border * 2;
-	return new Point (width, height);
+	return computeSize (handle, wHint, hHint, changed);
 }
 
 Point computeSize (int handle, int wHint, int hHint, boolean changed) {
@@ -511,6 +507,7 @@ void createWidget () {
 	checkOrientation (parent);
 	super.createWidget ();
 	checkBackground ();
+	checkBuffered ();
 	setClipping ();
 	if (defaultBackground () != 0 || (state & PARENT_BACKGROUND) != 0) {
 		setBackground ();
