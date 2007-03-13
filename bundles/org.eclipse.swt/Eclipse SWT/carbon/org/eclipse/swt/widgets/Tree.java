@@ -3121,7 +3121,7 @@ public void setTopItem (TreeItem item) {
 		int border = getBorder ();
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
-		OS.SetDataBrowserScrollPosition (handle, top [0] + rect.top - border, left [0]);
+		OS.SetDataBrowserScrollPosition (handle, top [0] + rect.top - border - getHeaderHeight (), left [0]);
 	}
 }
 
