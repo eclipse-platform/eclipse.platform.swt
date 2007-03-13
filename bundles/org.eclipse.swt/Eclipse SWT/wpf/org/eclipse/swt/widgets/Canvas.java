@@ -149,17 +149,35 @@ public void drawBackground (GC gc, int x, int y, int width, int height) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	//int pixel = background == -1 ? gc.getBackground ().handle : -1;
-	//TODO WHAT COLOR TO USE ?
-	
-	gc.fillRectangle (x, y, width, height);
-//	int drawingContext = gc.handle;
-//	int color = getBackgroundColor ();
-//	int brush = OS.gcnew_SolidColorBrush (color);
-//	int rect = OS.gcnew_Rect (x, y, width, height);
-//	OS.DrawingContext_DrawRectangle (drawingContext, brush, 0, rect);
-//	OS.GCHandle_Free (rect);
-//	OS.GCHandle_Free (brush);
+	Control control = findBackgroundControl ();
+	if (control != null) {
+		if (width < 0) {
+			x = x + width;
+			width = -width;
+		}
+		if (height < 0) {
+			y = y + height;
+			height = -height;
+		}
+		Point pt = display.map (this, control, 0, 0);
+		int transform = OS.gcnew_TranslateTransform (-pt.x, -pt.y);
+		OS.DrawingContext_PushTransform (gc.handle, transform);
+		x += pt.x;
+		y += pt.y;
+		int rect = OS.gcnew_Rect (x, y, width, height);
+		int backgroundHandle = control.backgroundHandle ();
+		int property = backgroundProperty ();
+		int brush = OS.DependencyObject_GetValue (backgroundHandle, property);
+		OS.GCHandle_Free (property);
+		OS.DrawingContext_DrawRectangle (gc.handle, brush, 0, rect);
+		OS.DrawingContext_Pop (gc.handle);
+		OS.GCHandle_Free (transform);
+		OS.GCHandle_Free (rect);
+		OS.GCHandle_Free (brush);
+	} else {
+		gc.fillRectangle (x, y, width, height);
+	}
+
 }
 
 /**
