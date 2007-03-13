@@ -118,6 +118,31 @@ TableItem (Table parent, int style, int index, int handle) {
 	}
 }
 
+double computeWidth (int columnIndex) {
+	int rowPresenterType = OS.GridViewRowPresenter_typeid ();
+	int rowPresenter = findRowPresenter (handle, rowPresenterType);
+	int contentPresenter = OS.VisualTreeHelper_GetChild (rowPresenter, columnIndex);
+	/*
+	* Bug in WPF. The DesiredSize property of the content presenter is always 0
+	* for all columns except the first column. The work around is to Measure the
+	* content presenter before asking for its DesiredSize. Calling Measure on the 
+	* first column does not work because it will set DesiredSize to be equal to the 
+	* available size you pass into the Measure function. 
+	*/
+	if (columnIndex != 0) { 
+		int availSize = OS.gcnew_Size (0x7FFFFFFF,0x7FFFFFFF);
+		OS.UIElement_Measure (contentPresenter, availSize);
+		OS.GCHandle_Free (availSize);
+	}
+	int size = OS.UIElement_DesiredSize (contentPresenter);
+	double width = OS.Size_Width (size);
+	OS.GCHandle_Free (size);
+	OS.GCHandle_Free (rowPresenter);
+	OS.GCHandle_Free (rowPresenterType);
+	OS.GCHandle_Free (contentPresenter);
+	return width;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }

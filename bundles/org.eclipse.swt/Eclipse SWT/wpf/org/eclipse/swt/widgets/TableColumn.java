@@ -33,8 +33,7 @@ import org.eclipse.swt.events.*;
 public class TableColumn extends Item {
 	static final int IMAGE_PART = 0;
 	static final int TEXT_PART = 1;
-	int headerHandle;
-	int stringPtr;
+	int headerHandle, stringHandle;
 	boolean moveable, resizable;
 	Table parent;
 
@@ -225,9 +224,9 @@ int GetImage (int itemHandle) {
 int GetText (int itemHandle) {
 	int result = 0;
 	if (text != null) {
-		result = stringPtr;
+		result = stringHandle;
 		if (result == 0) {
-			result = stringPtr = createDotNetString (text, false);
+			result = stringHandle = createDotNetString (text, false);
 		}
 	}
 	return result;
@@ -388,12 +387,23 @@ int findStackPanel (int element, int contentPresenterType) {
  */
 public void pack () {
 	checkWidget ();
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int widthProperty = OS.GridViewColumn_WidthProperty ();
-	OS.DependencyObject_ClearValue (handle, widthProperty);
-	OS.GCHandle_Free (widthProperty);
-//	OS.UIElement_UpdateLayout (headerHandle);
+	updateLayout (parent.handle);
+	double width = 0;
+	if (headerHandle != 0) {
+		int size = OS.UIElement_DesiredSize (headerHandle);
+		width = OS.Size_Width (size);
+		OS.GCHandle_Free (size);
+	}
+	int columnIndex = parent.indexOf (this);
+	int items = OS.ItemsControl_Items (parent.handle);
+	for (int i=0; i<parent.itemCount; i++) {
+		TableItem item = parent.getItem (items, i, false);
+		if (item != null) {
+			width = Math.max (width, item.computeWidth (columnIndex));
+		}
+	}
+	OS.GCHandle_Free (items);
+	OS.GridViewColumn_Width (handle, width);
 }
 
 void releaseHandle () {
@@ -406,8 +416,8 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (stringPtr != 0) OS.GCHandle_Free (stringPtr);
-	stringPtr = 0;
+	if (stringHandle != 0) OS.GCHandle_Free (stringHandle);
+	stringHandle = 0;
 }
 
 void register() {
@@ -547,9 +557,9 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.equals (text)) return;
 	text = string;
-	if (stringPtr != 0) {
-		OS.GCHandle_Free (stringPtr);
-		stringPtr = 0;
+	if (stringHandle != 0) {
+		OS.GCHandle_Free (stringHandle);
+		stringHandle = 0;
 	}
 	if (OS.FrameworkElement_IsLoaded (headerHandle)) {
 		int part = findPart (TEXT_PART);
