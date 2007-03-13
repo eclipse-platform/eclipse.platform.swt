@@ -915,6 +915,7 @@ public static final native int Object_ToString(int sender);
 public static final native void OpenFileDialog_Multiselect (int sender, boolean value);
 public static final native void RowDefinition_Height(int sender, int height);
 public static final native void RowDefinitionCollection_Add(int sender, int row);
+public static final native int Panel_Background(int sender);
 public static final native void Panel_Background(int sender, int brush);
 public static final native int Panel_BackgroundProperty();
 public static final native int Panel_Children(int sender);

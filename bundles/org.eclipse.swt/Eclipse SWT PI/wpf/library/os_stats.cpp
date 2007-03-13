@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1141;
-int OS_nativeFunctionCallCount[1141];
+int OS_nativeFunctionCount = 1142;
+int OS_nativeFunctionCallCount[1142];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -545,7 +545,8 @@ char * OS_nativeFunctionNames[] = {
 	"Object_1ToString",
 	"OpenFileDialog_1Multiselect",
 	"PROCESS_1INFORMATION_1sizeof",
-	"Panel_1Background",
+	"Panel_1Background__I",
+	"Panel_1Background__II",
 	"Panel_1BackgroundProperty",
 	"Panel_1Children",
 	"Panel_1GetZIndex",

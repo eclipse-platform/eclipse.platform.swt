@@ -6501,14 +6501,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(PROCESS_1INFORMATION_1sizeof)
 }
 #endif
 
-#ifndef NO_Panel_1Background
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Panel_1Background)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Panel_1Background)
+#ifndef NO_Panel_1Background__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Panel_1Background__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Panel_1Background__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Panel_1Background__I_FUNC);
+	rc = (jint)TO_HANDLE(((Panel^)TO_OBJECT(arg0))->Background);
+	OS_NATIVE_EXIT(env, that, Panel_1Background__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Panel_1Background__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Panel_1Background__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Panel_1Background__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, Panel_1Background_FUNC);
+	OS_NATIVE_ENTER(env, that, Panel_1Background__II_FUNC);
 	((Panel^)TO_OBJECT(arg0))->Background = ((Brush^)TO_OBJECT(arg1));
-	OS_NATIVE_EXIT(env, that, Panel_1Background_FUNC);
+	OS_NATIVE_EXIT(env, that, Panel_1Background__II_FUNC);
 }
 #endif
 
