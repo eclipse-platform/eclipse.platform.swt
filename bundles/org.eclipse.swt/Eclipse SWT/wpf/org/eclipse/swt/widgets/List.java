@@ -281,7 +281,9 @@ public void deselect (int start, int end) {
  */
 public void deselectAll () {
 	checkWidget ();
+	ignoreSelection = true;
 	OS.ListBox_UnselectAll (handle);
+	ignoreSelection = false;
 }
 
 /**
