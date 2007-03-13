@@ -629,7 +629,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	* drawing the selection.
 	*/
 	if (OS.IsWindowVisible (handle) && OS.IsWindowEnabled (handle)) {
-		if (!ignoreDrawSelection && (style & SWT.FULL_SELECTION) != 0) {
+		if (!explorerTheme && !ignoreDrawSelection && (style & SWT.FULL_SELECTION) != 0) {
 			int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 			if ((bits & OS.LVS_EX_FULLROWSELECT) == 0) {
 				/*
@@ -5957,8 +5957,8 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 						rect.left = headerRect.right;
 						rect.top = itemRect.top;
 						rect.bottom = itemRect.bottom;
+						OS.InvalidateRect (handle, rect, true);
 					}
-					OS.InvalidateRect (handle, rect, true);
 				}
 			}
 			break;
