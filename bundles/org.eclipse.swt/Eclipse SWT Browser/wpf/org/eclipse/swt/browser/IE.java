@@ -18,6 +18,8 @@ class IE extends WebBrowser {
 	
 	int frame;
 
+	boolean ignoreDispose;
+
 	static {
 		NativeClearSessions = new Runnable() {
 			public void run() {
@@ -40,10 +42,18 @@ public void create(Composite parent, int style) {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose: {
+					if (ignoreDispose) {
+						ignoreDispose = false;
+						break;
+					}
+					ignoreDispose = true;
+					browser.notifyListeners (event.type, event);
+					event.type = SWT.NONE;
+					OS.GCHandle_Free(frame);
+					frame = 0;
 					break;
 				}
 				case SWT.Resize: {
-					System.out.println(OS.FrameworkElement_ActualWidth(browser.handle) + " " +  OS.FrameworkElement_ActualHeight(browser.handle));
 					OS.FrameworkElement_Width(frame, OS.FrameworkElement_Width(browser.handle));
 					OS.FrameworkElement_Height(frame, OS.FrameworkElement_Height(browser.handle));
 					break;
@@ -53,7 +63,6 @@ public void create(Composite parent, int style) {
 	};
 	browser.addListener(SWT.Resize, listener);
 	browser.addListener(SWT.Dispose, listener);
-//	browser.addListener(SWT.Resize, listener);
 }
 
 public boolean back() {
@@ -104,7 +113,7 @@ public boolean forward() {
 }
 
 public String getUrl() {
-	int uri = OS.Frame_CurrentSource(frame);
+	int uri = OS.Frame_Source(frame);
 	int str = OS.Object_ToString(uri);
 	int charArray = OS.String_ToCharArray(str);
 	char[] chars = new char[OS.String_Length(str)];
