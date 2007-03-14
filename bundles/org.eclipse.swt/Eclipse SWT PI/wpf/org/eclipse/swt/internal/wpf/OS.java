@@ -160,6 +160,8 @@ public class OS extends C {
 	
 	public static final int OverflowMode_Never = 2;
 	
+	public static final int NavigationUIVisibility_Hidden = 2;
+	
 	public static final int ScrollEventType_EndScroll = 0;
 	public static final int ScrollEventType_First = 1;
 	public static final int ScrollEventType_LargeDecrement = 2;
@@ -710,6 +712,7 @@ public static final native int Frame_CurrentSource(int sender);
 public static final native int Frame_Source(int sender);
 public static final native void Frame_Source(int sender, int uri);
 public static final native boolean Frame_Navigate(int sender, int uri);
+public static final native void Frame_NavigationUIVisibily(int sender, int visiblity);
 public static final native void Frame_GoBack(int sender);
 public static final native void Frame_GoForward(int sender);
 public static final native void Frame_Refresh(int sender);
