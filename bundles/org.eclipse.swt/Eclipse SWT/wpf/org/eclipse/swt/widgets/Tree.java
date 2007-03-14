@@ -123,10 +123,12 @@ public class Tree extends Composite {
 						"</DockPanel>" +
 						"<ScrollBar Value=\"{TemplateBinding HorizontalOffset}\" Maximum=\"{TemplateBinding ScrollViewer.ScrollableWidth}\" " +
 								"Visibility=\"{TemplateBinding ScrollViewer.ComputedHorizontalScrollBarVisibility}\" Name=\"PART_HorizontalScrollBar\" " +
-								"Cursor=\"Arrow\"  Minimum=\"0\"  Orientation=\"Horizontal\"  Grid.Row=\"1\" />" +
+								"Cursor=\"Arrow\"  Minimum=\"0\"  Orientation=\"Horizontal\"  Grid.Row=\"1\" " +
+								"ViewportSize=\"{TemplateBinding ViewportWidth}\"/>" +
 						"<ScrollBar Value=\"{TemplateBinding VerticalOffset}\" Maximum=\"{TemplateBinding ScrollViewer.ScrollableHeight}\" " +
 								"Visibility=\"{TemplateBinding ScrollViewer.ComputedVerticalScrollBarVisibility}\"  Name=\"PART_VerticalScrollBar\" " +
-								"Cursor=\"Arrow\" Minimum=\"0\" Orientation=\"Vertical\" Grid.Column=\"1\" />" +
+								"Cursor=\"Arrow\" Minimum=\"0\" Orientation=\"Vertical\" Grid.Column=\"1\" " +
+								"ViewportSize=\"{TemplateBinding ViewportHeight}\" />" +
 						"<DockPanel Background=\"{x:Null}\" LastChildFill=\"False\" Grid.Column=\"1\" Grid.Row=\"1\">" +
 							"<Rectangle Width=\"1\" Visibility=\"{TemplateBinding ScrollViewer.ComputedVerticalScrollBarVisibility}\" " +
 									"Fill=\"#FFFFFFFF\" DockPanel.Dock=\"Left\" />" +
