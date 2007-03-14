@@ -3652,7 +3652,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1Navigate)
 {
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, Frame_1Navigate_FUNC);
-	rc = (jboolean)((Frame^)TO_OBJECT(arg0))->Navigate(arg1);
+	rc = (jboolean)((Frame^)TO_OBJECT(arg0))->Navigate((Uri^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, Frame_1Navigate_FUNC);
 	return rc;
 }
