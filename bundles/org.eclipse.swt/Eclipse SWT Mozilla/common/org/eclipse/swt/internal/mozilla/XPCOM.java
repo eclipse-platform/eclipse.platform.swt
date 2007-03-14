@@ -35,6 +35,11 @@ public class XPCOM extends C {
 	public static final String CONTENT_MULTIPART = "multipart/x-mixed-replace"; //$NON-NLS-1$
 	public static final String DOMEVENT_FOCUS = "focus"; //$NON-NLS-1$
 	public static final String DOMEVENT_UNLOAD = "unload"; //$NON-NLS-1$
+	public static final String DOMEVENT_MOUSEDOWN = "mousedown"; //$NON-NLS-1$
+	public static final String DOMEVENT_MOUSEUP = "mouseup"; //$NON-NLS-1$
+	public static final String DOMEVENT_MOUSEMOVE = "mousemove"; //$NON-NLS-1$
+	public static final String DOMEVENT_MOUSEOVER = "mouseover"; //$NON-NLS-1$
+	public static final String DOMEVENT_MOUSEOUT = "mouseout"; //$NON-NLS-1$
 	
 	/* CID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$

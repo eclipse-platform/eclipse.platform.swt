@@ -1390,6 +1390,14 @@ public boolean setText (String html) {
 		return false;
 	}
 
+	/*
+	 * Feature of Mozilla.  Setting the browser's content from a stream does not
+	 * fire a DOM "unload" event for the previous page, which is the event that
+	 * is used to unhook registered DOM listeners.  As a workaround, unhook them
+	 * now before setting the new page content.  
+	 */
+	unhookDOMListeners ();
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = XPCOM.NS_GetServiceManager (result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1486,6 +1494,7 @@ public boolean setText (String html) {
 
 	XPCOM.nsEmbedCString_delete (aContentType);
 	uri.Release ();
+	hookDOMListeners ();
 	return true;
 }
 
@@ -1514,6 +1523,170 @@ public void stop () {
 	rc = webNavigation.Stop (nsIWebNavigation.STOP_ALL);
 	if (rc != XPCOM.NS_OK) error (rc);
 	webNavigation.Release ();
+}
+
+void hookDOMListeners () {
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = webBrowser.GetContentDOMWindow (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+	nsIDOMWindow window = new nsIDOMWindow (result[0]);
+	result[0] = 0;
+	rc = window.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+	nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+	result[0] = 0;
+	hookDOMListeners (target);
+	target.Release ();
+
+	/* Listeners must be hooked in pages contained in frames */
+	rc = window.GetFrames (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+	nsIDOMWindowCollection frames = new nsIDOMWindowCollection (result[0]);
+	result[0] = 0;
+	int[] frameCount = new int[1];
+	rc = frames.GetLength (frameCount); /* PRUint32 */
+	if (rc != XPCOM.NS_OK) error (rc);
+	int count = frameCount[0];
+
+	if (count > 0) {
+		for (int i = 0; i < count; i++) {
+			rc = frames.Item (i, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+			nsIDOMWindow frame = new nsIDOMWindow (result[0]);
+			result[0] = 0;
+			rc = frame.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+			target = new nsIDOMEventTarget (result[0]);
+			result[0] = 0;
+			hookDOMListeners (target);
+			target.Release ();
+			frame.Release ();
+		}
+	}
+	frames.Release ();
+	window.Release ();
+}
+
+void hookDOMListeners (nsIDOMEventTarget target) {
+	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
+	int rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDOWN);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEUP);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
+	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+}
+
+void unhookDOMListeners () {
+	int /*long*/[] result = new int /*long*/[1];
+	int rc = webBrowser.GetContentDOMWindow (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+	nsIDOMWindow window = new nsIDOMWindow (result[0]);
+	result[0] = 0;
+	rc = window.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+	nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+	result[0] = 0;
+	unhookDOMListeners (target);
+	target.Release ();
+
+	/* Listeners must be unhooked in pages contained in frames */
+	rc = window.GetFrames (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+	nsIDOMWindowCollection frames = new nsIDOMWindowCollection (result[0]);
+	result[0] = 0;
+	int[] frameCount = new int[1];
+	rc = frames.GetLength (frameCount); /* PRUint32 */
+	if (rc != XPCOM.NS_OK) error (rc);
+	int count = frameCount[0];
+
+	if (count > 0) {
+		for (int i = 0; i < count; i++) {
+			rc = frames.Item (i, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+			nsIDOMWindow frame = new nsIDOMWindow (result[0]);
+			result[0] = 0;
+			rc = frame.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+			target = new nsIDOMEventTarget (result[0]);
+			result[0] = 0;
+			unhookDOMListeners (target);
+			target.Release ();
+			frame.Release ();
+		}
+	}
+	frames.Release ();
+	window.Release ();
+}
+
+void unhookDOMListeners (nsIDOMEventTarget target) {
+	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
+	int rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	string.dispose ();
+	if (rc != XPCOM.NS_OK) return; 	/* listeners not hooked */
+	string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEDOWN);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEUP);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEMOVE);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
+	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
+	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
+	if (rc != XPCOM.NS_OK) error (rc);
+	string.dispose ();
 }
 
 /* nsISupports */
@@ -1658,76 +1831,7 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 			}
 		}
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
-		/*
-		 * Feature of XULRunner.  Activation and deactivation of the GRE must be
-		 * performed by the embedder on non-Windows platforms.  Listen for focus
-		 * events on the page being loaded so that activate and deactivate handling
-		 * can be done as needed.
-		 */
-		if (IsXULRunner) {
-			int /*long*/[] result = new int /*long*/[1];
-			int rc = webBrowser.GetContentDOMWindow (result);
-			if (rc != XPCOM.NS_OK) error (rc);
-			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-	
-			nsIDOMWindow window = new nsIDOMWindow (result[0]);
-			result[0] = 0;
-			rc = window.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
-			if (rc != XPCOM.NS_OK) error (rc);
-			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-	
-			nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
-			result[0] = 0;
-			nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-			rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-			if (rc != XPCOM.NS_OK) error (rc);
-			string.dispose ();
-			string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-			rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-			if (rc != XPCOM.NS_OK) error (rc);
-			string.dispose ();
-			target.Release ();
-
-			/* Listeners must be hooked in pages contained in frames */
-			rc = window.GetFrames (result);
-			if (rc != XPCOM.NS_OK) error (rc);
-			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-			nsIDOMWindowCollection frames = new nsIDOMWindowCollection (result[0]);
-			result[0] = 0;
-			int[] frameCount = new int[1];
-			rc = frames.GetLength (frameCount); /* PRUint32 */
-			if (rc != XPCOM.NS_OK) error (rc);
-			int count = frameCount[0];
-
-			if (count > 0) {
-				for (int i = 0; i < count; i++) {
-					rc = frames.Item (i, result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-	
-					nsIDOMWindow frame = new nsIDOMWindow (result[0]);
-					result[0] = 0;
-					rc = frame.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
-					if (rc != XPCOM.NS_OK) error (rc);
-					if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-					frame.Release ();
-	
-					target = new nsIDOMEventTarget (result[0]);
-					result[0] = 0;
-					string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-					rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-					if (rc != XPCOM.NS_OK) error (rc);
-					string.dispose ();
-					string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-					rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-					if (rc != XPCOM.NS_OK) error (rc);
-					string.dispose ();
-					target.Release ();
-				}
-			}
-			frames.Release ();
-			window.Release ();
-		}
+		hookDOMListeners ();
 	}
 	return XPCOM.NS_OK;
 }	
@@ -2265,25 +2369,98 @@ int /*long*/ HandleEvent (int /*long*/ event) {
 	String typeString = new String (chars);
 	XPCOM.nsEmbedString_delete (type);
 
-	if (XPCOM.DOMEVENT_FOCUS.equals (typeString)) {
-		delegate.handleFocus ();
-	} else if (XPCOM.DOMEVENT_UNLOAD.equals (typeString)) {
+	if (XPCOM.DOMEVENT_UNLOAD.equals (typeString)) {
 		int /*long*/[] result = new int /*long*/[1];
 		rc = domEvent.GetTarget (result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
 		nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
-		result[0] = 0;
-		nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
-		rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-		if (rc != XPCOM.NS_OK) error (rc);
-		string.dispose ();
-		string = new nsEmbedString (XPCOM.DOMEVENT_UNLOAD);
-		rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-		if (rc != XPCOM.NS_OK) error (rc);
-		string.dispose ();
+		unhookDOMListeners (target);
 		target.Release ();
+		return XPCOM.NS_OK;
+	}
+
+	if (XPCOM.DOMEVENT_FOCUS.equals (typeString)) {
+		delegate.handleFocus ();
+		return XPCOM.NS_OK;
+	}
+
+	/* mouse event */
+
+	int /*long*/[] result = new int /*long*/[1];
+	rc = domEvent.QueryInterface (nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	nsIDOMMouseEvent domMouseEvent = new nsIDOMMouseEvent (result[0]);
+	result[0] = 0;
+
+	/*
+	 * MouseOver and MouseOut events are fired any time the mouse enters or exits
+	 * any element within the Browser.  To ensure that SWT events are only
+	 * fired for mouse movements into or out of the Browser, do not fire an
+	 * event if the element being exited (on MouseOver) or entered (on MouseExit)
+	 * is within the Browser.
+	 */
+	if (XPCOM.DOMEVENT_MOUSEOVER.equals (typeString) || XPCOM.DOMEVENT_MOUSEOUT.equals (typeString)) {
+		rc = domMouseEvent.GetRelatedTarget (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] != 0) {
+			domMouseEvent.Release ();
+			return XPCOM.NS_OK;
+		}
+	}
+
+	int[] aClientX = new int[1], aClientY = new int[1], aDetail = new int[1]; /* PRInt32 */
+	rc = domMouseEvent.GetClientX (aClientX);
+	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetClientY (aClientY);
+	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetDetail (aDetail);
+	if (rc != XPCOM.NS_OK) error (rc);
+	short[] aButton = new short[1]; /* PRUint16 */
+	rc = domMouseEvent.GetButton (aButton);
+	if (rc != XPCOM.NS_OK) error (rc);
+	boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1]; 
+	rc = domMouseEvent.GetAltKey (aAltKey);
+	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetCtrlKey (aCtrlKey);
+	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetShiftKey (aShiftKey);
+	if (rc != XPCOM.NS_OK) error (rc);
+	domMouseEvent.Release ();
+
+	Event mouseEvent = new Event ();
+	mouseEvent.widget = browser;
+	mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
+	mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0);
+
+	if (XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
+		mouseEvent.type = SWT.MouseDown;
+		mouseEvent.button = aButton[0] + 1;
+		mouseEvent.count = aDetail[0];
+	} else if (XPCOM.DOMEVENT_MOUSEUP.equals (typeString)) {
+		mouseEvent.type = SWT.MouseUp;
+		mouseEvent.button = aButton[0] + 1;
+		mouseEvent.count = aDetail[0];
+	} else if (XPCOM.DOMEVENT_MOUSEMOVE.equals (typeString)) {
+		mouseEvent.type = SWT.MouseMove;
+	} else if (XPCOM.DOMEVENT_MOUSEOVER.equals (typeString)) {
+		mouseEvent.type = SWT.MouseEnter;
+	} else if (XPCOM.DOMEVENT_MOUSEOUT.equals (typeString)) {
+		mouseEvent.type = SWT.MouseExit;
+	}
+
+	browser.notifyListeners (mouseEvent.type, mouseEvent);
+	if (aDetail[0] == 2 && XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
+		mouseEvent = new Event ();
+		mouseEvent.widget = browser;
+		mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
+		mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0);
+		mouseEvent.type = SWT.MouseDoubleClick;
+		mouseEvent.button = aButton[0] + 1;
+		mouseEvent.count = aDetail[0];
+		browser.notifyListeners (mouseEvent.type, mouseEvent);	
 	}
 	return XPCOM.NS_OK;
 }
