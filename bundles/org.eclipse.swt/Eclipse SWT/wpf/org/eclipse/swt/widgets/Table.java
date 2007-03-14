@@ -900,8 +900,14 @@ public int getGridLineWidth () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	// TODO
-	return -1;
+	int columns = OS.GridView_Columns (gridViewHandle);
+	int column = OS.GridViewColumnCollection_default (columns, 0);
+	int header = OS.GridViewColumn_Header (column);
+	int height = (int) OS.FrameworkElement_ActualHeight (header);
+	OS.GCHandle_Free (header);
+	OS.GCHandle_Free (column);
+	OS.GCHandle_Free (columns);
+	return height;
 }
 
 /**
@@ -923,8 +929,14 @@ public int getHeaderHeight () {
  */
 public boolean getHeaderVisible () {
 	checkWidget ();
-	//TODO
-	return true;
+	int columns = OS.GridView_Columns (gridViewHandle);
+	int column = OS.GridViewColumnCollection_default (columns, 0);
+	int header = OS.GridViewColumn_Header (column);
+	boolean visible = OS.UIElement_Visibility(header) == OS.Visibility_Visible;
+	OS.GCHandle_Free (header);
+	OS.GCHandle_Free (column);
+	OS.GCHandle_Free (columns);
+	return visible;
 }
 
 /**
