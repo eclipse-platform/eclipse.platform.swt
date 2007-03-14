@@ -318,6 +318,7 @@ typedef enum {
 	Frame_1GoBack_FUNC,
 	Frame_1GoForward_FUNC,
 	Frame_1Navigate_FUNC,
+	Frame_1NavigationUIVisibility_FUNC,
 	Frame_1Refresh_FUNC,
 	Frame_1Source__I_FUNC,
 	Frame_1Source__II_FUNC,

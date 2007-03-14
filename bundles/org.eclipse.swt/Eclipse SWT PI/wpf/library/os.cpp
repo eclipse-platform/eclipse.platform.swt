@@ -3658,6 +3658,17 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1Navigate)
 }
 #endif
 
+#ifndef NO_Frame_1NavigationUIVisibility
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Frame_1NavigationUIVisibility)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Frame_1NavigationUIVisibility)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Frame_1NavigationUIVisibility_FUNC);
+	((Frame^)TO_OBJECT(arg0))->NavigationUIVisibility = ((System::Windows::Navigation::NavigationUIVisibility)arg1);
+	OS_NATIVE_EXIT(env, that, Frame_1NavigationUIVisibility_FUNC);
+}
+#endif
+
 #ifndef NO_Frame_1Refresh
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(Frame_1Refresh)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT void JNICALL OS_NATIVE(Frame_1Refresh)

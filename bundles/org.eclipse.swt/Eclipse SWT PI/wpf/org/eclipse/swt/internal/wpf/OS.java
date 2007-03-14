@@ -712,7 +712,7 @@ public static final native int Frame_CurrentSource(int sender);
 public static final native int Frame_Source(int sender);
 public static final native void Frame_Source(int sender, int uri);
 public static final native boolean Frame_Navigate(int sender, int uri);
-public static final native void Frame_NavigationUIVisibily(int sender, int visiblity);
+public static final native void Frame_NavigationUIVisibility(int sender, int visiblity);
 public static final native void Frame_GoBack(int sender);
 public static final native void Frame_GoForward(int sender);
 public static final native void Frame_Refresh(int sender);

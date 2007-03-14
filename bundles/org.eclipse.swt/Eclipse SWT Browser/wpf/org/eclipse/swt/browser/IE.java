@@ -31,6 +31,7 @@ class IE extends WebBrowser {
 public void create(Composite parent, int style) {
 	frame = OS.gcnew_Frame();
 	if (frame == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.Frame_NavigationUIVisibility(frame, OS.NavigationUIVisibility_Hidden);
 	int parentHandle = browser.handle;
 	int children = OS.Panel_Children(parentHandle);
 	OS.UIElementCollection_Insert(children, 0, frame);
@@ -138,7 +139,7 @@ public void refresh() {
 }
 
 public boolean setText(String html) {
-	return false;
+	return true;
 //	/*
 //	* If the html field is non-null then the about:blank page is already being
 //	* loaded, so no Stop or Navigate is required.  Just set the html that is to
@@ -197,6 +198,7 @@ public boolean setText(String html) {
 }
 
 public boolean setUrl(String url) {
+	if (url.indexOf(':') == -1) url = "http://" + url;
 	int length = url.length ();
 	char [] buffer = new char [length + 1];
 	url.getChars (0, length, buffer, 0);

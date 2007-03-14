@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1180;
-int OS_nativeFunctionCallCount[1180];
+int OS_nativeFunctionCount = 1181;
+int OS_nativeFunctionCallCount[1181];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -310,6 +310,7 @@ char * OS_nativeFunctionNames[] = {
 	"Frame_1GoBack",
 	"Frame_1GoForward",
 	"Frame_1Navigate",
+	"Frame_1NavigationUIVisibility",
 	"Frame_1Refresh",
 	"Frame_1Source__I",
 	"Frame_1Source__II",
