@@ -2421,19 +2421,21 @@ int /*long*/ HandleEvent (int /*long*/ event) {
 	short[] aButton = new short[1]; /* PRUint16 */
 	rc = domMouseEvent.GetButton (aButton);
 	if (rc != XPCOM.NS_OK) error (rc);
-	boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1]; 
+	boolean[] aAltKey = new boolean[1], aCtrlKey = new boolean[1], aShiftKey = new boolean[1], aMetaKey = new boolean[1]; 
 	rc = domMouseEvent.GetAltKey (aAltKey);
 	if (rc != XPCOM.NS_OK) error (rc);
 	rc = domMouseEvent.GetCtrlKey (aCtrlKey);
 	if (rc != XPCOM.NS_OK) error (rc);
 	rc = domMouseEvent.GetShiftKey (aShiftKey);
 	if (rc != XPCOM.NS_OK) error (rc);
+	rc = domMouseEvent.GetMetaKey (aMetaKey);
+	if (rc != XPCOM.NS_OK) error (rc);
 	domMouseEvent.Release ();
 
 	Event mouseEvent = new Event ();
 	mouseEvent.widget = browser;
 	mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
-	mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0);
+	mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
 
 	if (XPCOM.DOMEVENT_MOUSEDOWN.equals (typeString)) {
 		mouseEvent.type = SWT.MouseDown;
@@ -2456,7 +2458,7 @@ int /*long*/ HandleEvent (int /*long*/ event) {
 		mouseEvent = new Event ();
 		mouseEvent.widget = browser;
 		mouseEvent.x = aClientX[0]; mouseEvent.y = aClientY[0];
-		mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0);
+		mouseEvent.stateMask = (aAltKey[0] ? SWT.ALT : 0) | (aCtrlKey[0] ? SWT.CTRL : 0) | (aShiftKey[0] ? SWT.SHIFT : 0) | (aMetaKey[0] ? SWT.MOD1 : 0);
 		mouseEvent.type = SWT.MouseDoubleClick;
 		mouseEvent.button = aButton[0] + 1;
 		mouseEvent.count = aDetail[0];
