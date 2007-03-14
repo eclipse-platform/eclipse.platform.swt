@@ -1539,7 +1539,7 @@ void hookDOMListeners () {
 
 	nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
 	result[0] = 0;
-	hookDOMListeners (target);
+	hookDOMListeners (target, true);
 	target.Release ();
 
 	/* Listeners must be hooked in pages contained in frames */
@@ -1567,7 +1567,7 @@ void hookDOMListeners () {
 
 			target = new nsIDOMEventTarget (result[0]);
 			result[0] = 0;
-			hookDOMListeners (target);
+			hookDOMListeners (target, false);
 			target.Release ();
 			frame.Release ();
 		}
@@ -1576,7 +1576,7 @@ void hookDOMListeners () {
 	window.Release ();
 }
 
-void hookDOMListeners (nsIDOMEventTarget target) {
+void hookDOMListeners (nsIDOMEventTarget target, boolean isTop) {
 	nsEmbedString string = new nsEmbedString (XPCOM.DOMEVENT_FOCUS);
 	int rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1597,14 +1597,21 @@ void hookDOMListeners (nsIDOMEventTarget target) {
 	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
 	if (rc != XPCOM.NS_OK) error (rc);
 	string.dispose ();
-	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
-	string.dispose ();
-	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
-	rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
-	string.dispose ();
+
+	/*
+	* Only hook mouseover and mouseout if the target is a top-level frame, so that mouse moves
+	* between frames will not generate events.
+	*/
+	if (isTop) {
+		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
+		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+		if (rc != XPCOM.NS_OK) error (rc);
+		string.dispose ();
+		string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
+		rc = target.AddEventListener (string.getAddress (), domEventListener.getAddress (), false);
+		if (rc != XPCOM.NS_OK) error (rc);
+		string.dispose ();
+	}
 }
 
 void unhookDOMListeners () {
@@ -1681,11 +1688,9 @@ void unhookDOMListeners (nsIDOMEventTarget target) {
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOVER);
 	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
 	string.dispose ();
 	string = new nsEmbedString (XPCOM.DOMEVENT_MOUSEOUT);
 	rc = target.RemoveEventListener (string.getAddress (), domEventListener.getAddress (), false);
-	if (rc != XPCOM.NS_OK) error (rc);
 	string.dispose ();
 }
 
