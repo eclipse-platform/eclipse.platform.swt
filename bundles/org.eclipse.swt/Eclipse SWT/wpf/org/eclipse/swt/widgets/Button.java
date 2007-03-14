@@ -136,10 +136,12 @@ static int checkStyle (int style) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	Point size = computeSize (handle, wHint, hHint, changed);
-	int border = getBorderWidth ();
-	int width = size.x + border * 2;
-	int height = size.y + border * 2;
-	return new Point (width, height);
+	if ((style & SWT.ARROW) == 0) {
+		int border = getBorderWidth ();
+		size.x += border * 2;
+		size.y += border * 2;
+	}
+	return size;
 }
 
 void createArrow () { 
