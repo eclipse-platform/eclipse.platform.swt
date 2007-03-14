@@ -320,16 +320,19 @@ void drag(Event dragEvent) {
 			CGPoint imageOffsetPt = new CGPoint();
 			imageOffsetPt.x = 0;
 			imageOffsetPt.y = 0;
-			/* Bug174467: It seems that SetDragImageWithCGImage expects an image with the alpha
-			 * channel; otherwise the image will not be visible.
-			 */
+			/*
+			* Bug in the Macintosh.  For  some reason, it seems that SetDragImageWithCGImage() 
+			* expects an image with the alpha, otherwise the image does not draw.  The fix is
+			* to make sure that the image has an alpha by creating a new image with alpha
+			* when necessary.
+			*/
 			if (OS.CGImageGetAlphaInfo(image.handle) == OS.kCGImageAlphaNoneSkipFirst) {
 				ImageData data = image.getImageData();
 				data.alpha = 0xFF;
 				newImage = new Image(image.getDevice(), data);
 				image = newImage;
 			}
-			OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, OS.kDragStandardTranslucency);
+			OS.SetDragImageWithCGImage(theDrag[0], image.handle, imageOffsetPt, 0);
 		}
 		EventRecord theEvent = new EventRecord();
 		theEvent.message = OS.kEventMouseMoved;
