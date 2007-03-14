@@ -119,6 +119,7 @@ void createWidget () {
 	super.createWidget ();
 	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
 	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
+	fixScrollbarVisibility ();
 }
 
 void deregister () {
@@ -139,6 +140,15 @@ int findScrollViewer (int current, int scrollViewerType) {
 		if (result != 0) return result;
 	}
 	return 0;
+}
+
+void fixScrollbarVisibility () {
+	if ((style & SWT.H_SCROLL) == 0) {
+		OS.ScrollViewer_SetHorizontalScrollBarVisibility (handle, OS.ScrollBarVisibility_Hidden);
+	}
+	if ((style & SWT.V_SCROLL) == 0) {
+		OS.ScrollViewer_SetVerticalScrollBarVisibility (handle, OS.ScrollBarVisibility_Hidden);
+	}
 }
 
 /**

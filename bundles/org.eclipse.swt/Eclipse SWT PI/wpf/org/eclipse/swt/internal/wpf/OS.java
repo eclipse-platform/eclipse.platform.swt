@@ -325,6 +325,9 @@ public class OS extends C {
     public static final int DispatcherPriority_Normal = 9;
     public static final int DispatcherPriority_Send = 10;
     
+    public static final int ScrollBarVisibility_Disabled = 0;
+    public static final int ScrollBarVisibility_Auto = 1;
+    public static final int ScrollBarVisibility_Hidden = 2;
     public static final int ScrollBarVisibility_Visible = 3;
  
  	public static final int FocusNavigationDirection_Next = 0;
@@ -1082,7 +1085,9 @@ public static final native double ScrollBar_ViewportSize(int sender);
 public static final native void ScrollBar_ViewportSize(int sender, double value);
 public static final native int ScrollBar_typeid();
 public static final native int ScrollEventArgs_ScrollEventType(int sender);
-public static final native int ScrollViewer_typeid ();
+public static final native void ScrollViewer_SetVerticalScrollBarVisibility(int sender, int visibility);
+public static final native void ScrollViewer_SetHorizontalScrollBarVisibility(int sender, int visibility);
+public static final native int ScrollViewer_typeid();
 public static final native void Selector_IsSynchronizedWithCurrentItem(int sender, boolean value);
 public static final native int Selector_SelectedIndex(int sender);
 public static final native void Selector_SelectedIndex(int sender, int value);

@@ -8354,6 +8354,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(ScrollEventArgs_1ScrollEventType)
 }
 #endif
 
+#ifndef NO_ScrollViewer_1SetHorizontalScrollBarVisibility
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1SetHorizontalScrollBarVisibility)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1SetHorizontalScrollBarVisibility)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, ScrollViewer_1SetHorizontalScrollBarVisibility_FUNC);
+	ScrollViewer::SetHorizontalScrollBarVisibility((DependencyObject^)TO_OBJECT(arg0), (ScrollBarVisibility)arg1);
+	OS_NATIVE_EXIT(env, that, ScrollViewer_1SetHorizontalScrollBarVisibility_FUNC);
+}
+#endif
+
+#ifndef NO_ScrollViewer_1SetVerticalScrollBarVisibility
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1SetVerticalScrollBarVisibility)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(ScrollViewer_1SetVerticalScrollBarVisibility)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, ScrollViewer_1SetVerticalScrollBarVisibility_FUNC);
+	ScrollViewer::SetVerticalScrollBarVisibility((DependencyObject^)TO_OBJECT(arg0), (ScrollBarVisibility)arg1);
+	OS_NATIVE_EXIT(env, that, ScrollViewer_1SetVerticalScrollBarVisibility_FUNC);
+}
+#endif
+
 #ifndef NO_ScrollViewer_1typeid
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ScrollViewer_1typeid)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(ScrollViewer_1typeid)

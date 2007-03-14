@@ -710,6 +710,8 @@ typedef enum {
 	ScrollBar_1ViewportSize__ID_FUNC,
 	ScrollBar_1typeid_FUNC,
 	ScrollEventArgs_1ScrollEventType_FUNC,
+	ScrollViewer_1SetHorizontalScrollBarVisibility_FUNC,
+	ScrollViewer_1SetVerticalScrollBarVisibility_FUNC,
 	ScrollViewer_1typeid_FUNC,
 	SelectionChangedEventArgs_1AddedItems_FUNC,
 	SelectionChangedEventArgs_1RemovedItems_FUNC,

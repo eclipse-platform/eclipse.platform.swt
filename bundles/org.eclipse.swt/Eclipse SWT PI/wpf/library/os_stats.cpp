@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1181;
-int OS_nativeFunctionCallCount[1181];
+int OS_nativeFunctionCount = 1183;
+int OS_nativeFunctionCallCount[1183];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -702,6 +702,8 @@ char * OS_nativeFunctionNames[] = {
 	"ScrollBar_1ViewportSize__ID",
 	"ScrollBar_1typeid",
 	"ScrollEventArgs_1ScrollEventType",
+	"ScrollViewer_1SetHorizontalScrollBarVisibility",
+	"ScrollViewer_1SetVerticalScrollBarVisibility",
 	"ScrollViewer_1typeid",
 	"SelectionChangedEventArgs_1AddedItems",
 	"SelectionChangedEventArgs_1RemovedItems",
