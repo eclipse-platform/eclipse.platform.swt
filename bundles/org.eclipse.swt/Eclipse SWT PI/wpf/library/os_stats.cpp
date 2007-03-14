@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1169;
-int OS_nativeFunctionCallCount[1169];
+int OS_nativeFunctionCount = 1180;
+int OS_nativeFunctionCallCount[1180];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -304,6 +304,16 @@ char * OS_nativeFunctionNames[] = {
 	"FormattedText_1SetTextDecorations",
 	"FormattedText_1WidthIncludingTrailingWhitespace",
 	"FormsCommonDialog_1ShowDialog",
+	"Frame_1CanGoBack",
+	"Frame_1CanGoForward",
+	"Frame_1CurrentSource",
+	"Frame_1GoBack",
+	"Frame_1GoForward",
+	"Frame_1Navigate",
+	"Frame_1Refresh",
+	"Frame_1Source__I",
+	"Frame_1Source__II",
+	"Frame_1StopLoading",
 	"FrameworkContentElement_1Parent",
 	"FrameworkContentElement_1Tag__I",
 	"FrameworkContentElement_1Tag__II",
@@ -1067,6 +1077,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1FontFamily",
 	"gcnew_1FormatConvertedBitmap",
 	"gcnew_1FormattedText",
+	"gcnew_1Frame",
 	"gcnew_1FrameworkElementFactory__I",
 	"gcnew_1FrameworkElementFactory__II",
 	"gcnew_1GeometryGroup",

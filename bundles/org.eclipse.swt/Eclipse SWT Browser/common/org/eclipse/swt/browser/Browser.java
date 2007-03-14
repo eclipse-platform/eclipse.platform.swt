@@ -77,7 +77,7 @@ public Browser (Composite parent, int style) {
 	if ((style & SWT.MOZILLA) != 0) {
 		className = "org.eclipse.swt.browser.Mozilla"; //$NON-NLS-1$
 	} else {
-		if ("win32".equals (platform)) { //$NON-NLS-1$
+		if ("win32".equals (platform) || "wpf".equals (platform)) { //$NON-NLS-1$ $NON-NLS-2$
 			className = "org.eclipse.swt.browser.IE"; //$NON-NLS-1$
 		} else if ("motif".equals (platform)) { //$NON-NLS-1$
 			className = "org.eclipse.swt.browser.Mozilla"; //$NON-NLS-1$

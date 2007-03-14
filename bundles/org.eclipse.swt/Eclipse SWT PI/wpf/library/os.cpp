@@ -3584,6 +3584,126 @@ JNIEXPORT jint JNICALL OS_NATIVE(FormsCommonDialog_1ShowDialog)
 }
 #endif
 
+#ifndef NO_Frame_1CanGoBack
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1CanGoBack)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1CanGoBack)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Frame_1CanGoBack_FUNC);
+	rc = (jboolean)((Frame^)TO_OBJECT(arg0))->CanGoBack;
+	OS_NATIVE_EXIT(env, that, Frame_1CanGoBack_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Frame_1CanGoForward
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1CanGoForward)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1CanGoForward)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Frame_1CanGoForward_FUNC);
+	rc = (jboolean)((Frame^)TO_OBJECT(arg0))->CanGoForward;
+	OS_NATIVE_EXIT(env, that, Frame_1CanGoForward_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Frame_1CurrentSource
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Frame_1CurrentSource)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Frame_1CurrentSource)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Frame_1CurrentSource_FUNC);
+	rc = (jint)TO_HANDLE(((Frame^)TO_OBJECT(arg0))->CurrentSource);
+	OS_NATIVE_EXIT(env, that, Frame_1CurrentSource_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Frame_1GoBack
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Frame_1GoBack)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(Frame_1GoBack)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, Frame_1GoBack_FUNC);
+	((Frame^)TO_OBJECT(arg0))->GoBack();
+	OS_NATIVE_EXIT(env, that, Frame_1GoBack_FUNC);
+}
+#endif
+
+#ifndef NO_Frame_1GoForward
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Frame_1GoForward)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(Frame_1GoForward)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, Frame_1GoForward_FUNC);
+	((Frame^)TO_OBJECT(arg0))->GoForward();
+	OS_NATIVE_EXIT(env, that, Frame_1GoForward_FUNC);
+}
+#endif
+
+#ifndef NO_Frame_1Navigate
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1Navigate)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1Navigate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, Frame_1Navigate_FUNC);
+	rc = (jboolean)((Frame^)TO_OBJECT(arg0))->Navigate(arg1);
+	OS_NATIVE_EXIT(env, that, Frame_1Navigate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Frame_1Refresh
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Frame_1Refresh)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(Frame_1Refresh)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, Frame_1Refresh_FUNC);
+	((Frame^)TO_OBJECT(arg0))->Refresh();
+	OS_NATIVE_EXIT(env, that, Frame_1Refresh_FUNC);
+}
+#endif
+
+#ifndef NO_Frame_1Source__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Frame_1Source__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Frame_1Source__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Frame_1Source__I_FUNC);
+	rc = (jint)TO_HANDLE(((Frame^)TO_OBJECT(arg0))->Source);
+	OS_NATIVE_EXIT(env, that, Frame_1Source__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Frame_1Source__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Frame_1Source__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Frame_1Source__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Frame_1Source__II_FUNC);
+	((Frame^)TO_OBJECT(arg0))->Source = ((Uri^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Frame_1Source__II_FUNC);
+}
+#endif
+
+#ifndef NO_Frame_1StopLoading
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Frame_1StopLoading)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(Frame_1StopLoading)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, Frame_1StopLoading_FUNC);
+	((Frame^)TO_OBJECT(arg0))->StopLoading();
+	OS_NATIVE_EXIT(env, that, Frame_1StopLoading_FUNC);
+}
+#endif
+
 #ifndef NO_FrameworkContentElement_1Parent
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkContentElement_1Parent)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(FrameworkContentElement_1Parent)
@@ -12761,6 +12881,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1FormattedText)
 	OS_NATIVE_ENTER(env, that, gcnew_1FormattedText_FUNC);
 	rc = (jint)TO_HANDLE(gcnew FormattedText((String^)TO_OBJECT(arg0), (CultureInfo^)TO_OBJECT(arg1), (FlowDirection)arg2, (Typeface^)TO_OBJECT(arg3), arg4, (Brush^)TO_OBJECT(arg5)));
 	OS_NATIVE_EXIT(env, that, gcnew_1FormattedText_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1Frame
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Frame)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Frame)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1Frame_FUNC);
+	rc = (jint)TO_HANDLE(gcnew Frame());
+	OS_NATIVE_EXIT(env, that, gcnew_1Frame_FUNC);
 	return rc;
 }
 #endif
