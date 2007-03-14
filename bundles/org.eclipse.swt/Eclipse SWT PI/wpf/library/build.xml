@@ -12,7 +12,7 @@
 	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat">
 		<arg line="install"/>
 	</exec>
-	<eclipse.refreshLocal resource="org.eclipse.swt.win32.wpf.x86" depth="infinite" />
+	<eclipse.refreshLocal resource="org.eclipse.swt.wpf.win32.x86" depth="infinite" />
 </target>
 
 <target name="clean">

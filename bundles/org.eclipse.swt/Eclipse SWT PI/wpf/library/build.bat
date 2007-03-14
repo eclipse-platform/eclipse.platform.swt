@@ -25,6 +25,6 @@ call "J:\dev\PRODUCTS\PLATSDK\March2007VistaRTM\Bin\setenv.cmd" /vista
 rem ****** 
 rem OUTPUT DIR
 rem ******
-set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.wpf.x86
+set OUTPUT_DIR=..\..\..\org.eclipse.swt.wpf.win32.x86
 
 nmake -f make_wpf.mak %1 %2 %3 %4
