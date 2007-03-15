@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 import org.mozilla.interfaces.*;
 
 /*
- * Browser example snippet: Toggle a Mozilla-based Browser between Design mode and View mode.
+ * Browser example snippet: Toggle a Mozilla Browser between Design mode and View mode.
  * 
  * IMPORTANT: For this snippet to work properly all of the requirements for running a
  * Mozilla-based Browser instance listed in http://www.eclipse.org/swt/faq.php#howusemozilla
