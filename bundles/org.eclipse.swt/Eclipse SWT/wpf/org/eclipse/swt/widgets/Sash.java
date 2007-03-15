@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -112,6 +112,7 @@ void createHandle () {
 	state |= THEME_BACKGROUND;
 	handle = OS.gcnew_Canvas ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.UIElement_Focusable (handle, true);
 	int newCursor = (style & SWT.VERTICAL)!= 0 ? OS.Cursors_SizeWE () : OS.Cursors_SizeNS ();  
 	OS.FrameworkElement_Cursor (handle, newCursor);
 	OS.GCHandle_Free (newCursor);
@@ -121,14 +122,73 @@ int defaultBackground () {
 	return OS.SystemColors_ControlColor;
 }
 
-void HandlePreviewKeyDown (int sender, int e) {
-	super.HandlePreviewKeyDown (sender, e);
-	//TODO
+void HandlePreviewGotKeyboardFocus (int sender, int e) {
+	super.HandlePreviewGotKeyboardFocus (sender, e);
+	if (!checkEvent (e)) return;
+	Point location = getLocation();
+	lastX = location.x;
+	lastY = location.y;
 }
 
-void HandlePreviewKeyUp (int sender, int e) {
-	super.HandlePreviewKeyUp (sender, e);
-	//TODO
+void HandlePreviewKeyDown (int sender, int e) {
+	super.HandlePreviewKeyDown (sender, e);
+	if (!checkEvent (e)) return;
+	int key = OS.KeyEventArgs_Key (e);
+	switch (key) {
+		case OS.Key_Left:
+		case OS.Key_Right:
+		case OS.Key_Up:
+		case OS.Key_Down:
+			int xChange = 0, yChange = 0;
+			int stepSize = PAGE_INCREMENT;
+			int keyboardDevice = OS.KeyboardEventArgs_KeyboardDevice(e);
+			int modifiers = OS.KeyboardDevice_Modifiers(keyboardDevice);
+			OS.GCHandle_Free(keyboardDevice);
+			if ((modifiers & OS.ModifierKeys_Control) != 0) stepSize = INCREMENT;
+			if ((style & SWT.VERTICAL) != 0) {
+				if (key == OS.Key_Up || key == OS.Key_Down) break;
+				xChange = key == OS.Key_Left ? -stepSize : stepSize;
+			} else {
+				if (key == OS.Key_Left || key == OS.Key_Right) break;
+				yChange = key == OS.Key_Up ? -stepSize : stepSize;
+			}
+			
+			Rectangle bounds = getBounds ();
+			int width = bounds.width, height = bounds.height;
+			Rectangle parentBounds = parent.getBounds ();
+			int parentWidth = parentBounds.width;
+			int parentHeight = parentBounds.height;
+			int newX = lastX, newY = lastY;
+			if ((style & SWT.VERTICAL) != 0) {
+				newX = Math.min (Math.max (0, lastX + xChange), parentWidth - width);
+			} else {
+				newY = Math.min (Math.max (0, lastY + yChange), parentHeight - height);
+			}
+			if (newX == lastX && newY == lastY) return;
+			Event event = new Event ();
+			event.x = newX;
+			event.y = newY;
+			event.width = width;
+			event.height = height;
+			sendEvent (SWT.Selection, event);
+			if (isDisposed ()) break;
+			if (event.doit) {
+				setBounds (event.x, event.y, width, height);
+				if (isDisposed ()) break;
+				lastX = event.x;
+				lastY = event.y;
+				if (isDisposed ()) return;
+				int cursorX = event.x, cursorY = event.y;
+				if ((style & SWT.VERTICAL) != 0) {
+					cursorY += height / 2;
+				} else {
+					cursorX += width / 2;
+				}
+				display.setCursorLocation (parent.toDisplay (cursorX, cursorY));
+			}
+			OS.RoutedEventArgs_Handled(e, true);
+			break;
+	}	
 }
 
 void HandlePreviewMouseDown (int sender, int e) {
