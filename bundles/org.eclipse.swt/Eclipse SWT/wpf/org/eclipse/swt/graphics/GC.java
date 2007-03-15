@@ -177,7 +177,7 @@ void checkGC(int mask) {
 		OS.Pen_Brush(pen, brush);
 		if (pattern == null) OS.GCHandle_Free(brush);
 		float width = data.lineWidth;
-		OS.Pen_Thickness(pen, width);
+		OS.Pen_Thickness(pen, width == 0 ? 1 : width);
 		double[] dashes = null;
 		int dashStyle = 0; 
 		switch (data.lineStyle) {
