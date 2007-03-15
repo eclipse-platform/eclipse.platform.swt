@@ -129,25 +129,28 @@ protected void checkSubclass () {
 
 static int checkStyle (int style) {
 	style &= ~SWT.H_SCROLL;
-	//TODO implement scrollbar for this widget
-	style &= ~SWT.V_SCROLL;
 	return style | SWT.NO_BACKGROUND;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	return computeSize (handle, wHint, hHint, changed);	
+	Point size = computeSize (handle, wHint, hHint, changed);
+	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	return new Point (trim.width, trim.height);
 }
 
 void createHandle () {
 	state |= THEME_BACKGROUND;
 	parentingHandle = OS.gcnew_Canvas ();
 	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	scrolledHandle = OS.gcnew_ScrollViewer ();
+	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gcnew_StackPanel ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	int children = OS.Panel_Children (parentingHandle);
-	OS.UIElementCollection_Add (children, handle);
+	OS.UIElementCollection_Add (children, scrolledHandle);
 	OS.GCHandle_Free (children);
+	OS.ContentControl_Content (scrolledHandle, handle);
 }
 
 void createItem (ExpandItem item, int style, int index) {
@@ -182,6 +185,13 @@ void destroyItem (ExpandItem item) {
 	OS.GCHandle_Free (items);
 	if (itemCount == count) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	itemCount--;
+}
+
+void fixScrollbarVisibility () {
+	OS.ScrollViewer_SetHorizontalScrollBarVisibility (scrolledHandle, OS.ScrollBarVisibility_Hidden);
+	if ((style & SWT.V_SCROLL) != 0) {
+		OS.ScrollViewer_SetVerticalScrollBarVisibility (scrolledHandle, OS.ScrollBarVisibility_Auto);
+	}
 }
 
 Point getLocation (Control child) {
@@ -267,6 +277,17 @@ public ExpandItem [] getItems () {
 	}
 	OS.GCHandle_Free (items);
 	return result;
+}
+
+int getScrollBarHandle (int style) {
+	if ((style & SWT.H_SCROLL) != 0) return 0;
+	updateLayout (handle);
+	int template = OS.Control_Template (scrolledHandle);
+	int part = createDotNetString ("PART_VerticalScrollBar", false);
+	int scrollbar = OS.FrameworkTemplate_FindName (template, part, scrolledHandle);
+	OS.GCHandle_Free (part);
+	OS.GCHandle_Free (template);
+	return scrollbar;
 }
 
 /**
@@ -393,8 +414,8 @@ public void removeExpandListener (ExpandListener listener) {
 int setBounds (int x, int y, int width, int height, int flags) {
 	int result = super.setBounds (x, y, width, height, flags);
 	if ((result & RESIZED) != 0) {
-		OS.FrameworkElement_Height (handle, height);
-		OS.FrameworkElement_Width (handle, width);
+		OS.FrameworkElement_Height (scrolledHandle, height);
+		OS.FrameworkElement_Width (scrolledHandle, width);
 	}
 	return result;
 }

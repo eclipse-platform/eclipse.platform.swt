@@ -13620,6 +13620,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1ScrollBar)
 }
 #endif
 
+#ifndef NO_gcnew_1ScrollViewer
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1ScrollViewer)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1ScrollViewer)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1ScrollViewer_FUNC);
+	rc = (jint)TO_HANDLE(gcnew ScrollViewer());
+	OS_NATIVE_EXIT(env, that, gcnew_1ScrollViewer_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gcnew_1Separator
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Separator)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Separator)

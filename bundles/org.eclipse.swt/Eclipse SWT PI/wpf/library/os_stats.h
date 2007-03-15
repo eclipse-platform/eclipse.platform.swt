@@ -1164,6 +1164,7 @@ typedef enum {
 	gcnew_1ScaleTransform_FUNC,
 	gcnew_1ScrollBar_FUNC,
 	gcnew_1ScrollEventHandler_FUNC,
+	gcnew_1ScrollViewer_FUNC,
 	gcnew_1SelectionChangedEventHandler_FUNC,
 	gcnew_1Separator_FUNC,
 	gcnew_1Setter_FUNC,

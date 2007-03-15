@@ -1509,6 +1509,7 @@ public static final native int gcnew_RowDefinition();
 public static final native int gcnew_Run();
 public static final native int gcnew_SaveFileDialog();
 public static final native int gcnew_ScrollBar();
+public static final native int gcnew_ScrollViewer();
 public static final native int gcnew_Separator();
 public static final native int gcnew_Setter(int dp, int value);
 public static final native int gcnew_Size();

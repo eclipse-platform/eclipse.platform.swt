@@ -216,7 +216,7 @@ int getScrollBarHandle (int style) {
 		OS.GCHandle_Free (enumerator);
 		OS.GCHandle_Free (children);
 	} else {
-		if (!OS.FrameworkElement_IsLoaded (handle)) updateLayout (handle);
+		updateLayout (handle);
 		int scrollViewerType = OS.ScrollViewer_typeid ();
 		int scrollViewer = findScrollViewer (handle, scrollViewerType);
 		int template = OS.Control_Template (scrollViewer);
