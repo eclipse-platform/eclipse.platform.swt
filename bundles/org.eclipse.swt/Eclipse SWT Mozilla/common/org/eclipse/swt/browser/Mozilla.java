@@ -1391,12 +1391,12 @@ public boolean setText (String html) {
 	}
 
 	/*
-	 * Feature of Mozilla.  Setting the browser's content from a stream does not
+	 * Feature of XULRunner.  Setting the browser's content from a stream does not
 	 * fire a DOM "unload" event for the previous page, which is the event that
 	 * is used to unhook registered DOM listeners.  As a workaround, unhook them
 	 * now before setting the new page content.  
 	 */
-	unhookDOMListeners ();
+	if (IsXULRunner) unhookDOMListeners ();
 
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = XPCOM.NS_GetServiceManager (result);
@@ -1494,7 +1494,13 @@ public boolean setText (String html) {
 
 	XPCOM.nsEmbedCString_delete (aContentType);
 	uri.Release ();
-	hookDOMListeners ();
+
+	/*
+	 * Feature of XULRunner.  Setting the browser's content from a stream does not
+	 * lead to nsIWebProgressListener.OnStateChange being called with STATE_TRANSFERRING,
+	 * which is the event that is used to hook DOM listeners, so hook them here.
+	 */
+	if (IsXULRunner) hookDOMListeners ();
 	return true;
 }
 
