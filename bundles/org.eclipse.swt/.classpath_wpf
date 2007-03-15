@@ -27,6 +27,7 @@
     <classpathentry kind="src" path="Eclipse SWT Program/common"/>
     <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
     <classpathentry kind="src" path="Eclipse SWT Browser/common"/>
+    <classpathentry kind="src" path="Eclipse SWT Browser/forms"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
     <classpathentry kind="src" path="Eclipse SWT Theme/emulated"/>
