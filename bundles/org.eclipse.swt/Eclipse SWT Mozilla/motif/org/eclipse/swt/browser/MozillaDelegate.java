@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
+	Listener listener;
 	boolean hasFocus;
 
 	static boolean GtkLoaded, IsLinux;
@@ -110,13 +111,14 @@ String getLibraryName () {
 void handleFocus () {
 	if (hasFocus) return;
 	hasFocus = true;
-	Listener listener = new Listener () {
+	listener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.widget == browser) return;
 			((Mozilla)browser.webBrowser).Deactivate ();
 			hasFocus = false;
 			browser.getDisplay ().removeFilter (SWT.FocusIn, this);
 			browser.getShell ().removeListener (SWT.Deactivate, this);
+			listener = null;
 		}
 	
 	};
@@ -125,10 +127,18 @@ void handleFocus () {
 }
 
 void onDispose (int embedHandle) {
+	if (listener != null) {
+		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
+		browser.getShell ().removeListener (SWT.Deactivate, listener);
+		listener = null;
+	}
+
 	GTK.gtk_widget_destroy (embedHandle);
 	while (GTK.gtk_events_pending () != 0) {
 		GTK.gtk_main_iteration ();
 	}
+
+	browser = null;
 }
 
 void setSize(int embedHandle, int width, int height) {
