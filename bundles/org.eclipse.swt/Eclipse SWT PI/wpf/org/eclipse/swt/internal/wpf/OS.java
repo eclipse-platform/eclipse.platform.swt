@@ -1013,6 +1013,7 @@ public static final native void Pen_DashStyle(int sender, int value);
 public static final native void Pen_EndLineCap(int sender, int value);
 public static final native void Pen_StartLineCap(int sender, int value);
 public static final native void Pen_LineJoin(int sender, int value);
+public static final native void Pen_MiterLimit(int sender, double value);
 public static final native void Pen_Thickness(int sender, double value);
 public static final native int PixelFormat_BitsPerPixel(int sender);
 public static final native int PixelFormats_Bgr101010();

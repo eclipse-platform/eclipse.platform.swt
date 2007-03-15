@@ -38,10 +38,12 @@ public final class GCData {
 	public int antialias = SWT.DEFAULT;
 	public int textAntialias = SWT.DEFAULT;
 	public int lineStyle = SWT.LINE_SOLID;
-	public int lineWidth;
+	public float lineWidth;
 	public int lineCap = SWT.CAP_FLAT;
 	public int lineJoin = SWT.JOIN_MITER;
-	public int[] lineDashes;
+	public float lineDashesOffset;
+	public float[] lineDashes;
+	public float lineMiterLimit = 10;
 	public int alpha = 0xFF;
 
 	public Image image;

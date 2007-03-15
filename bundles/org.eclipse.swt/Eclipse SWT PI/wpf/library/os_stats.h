@@ -617,6 +617,7 @@ typedef enum {
 	Pen_1DashStyle_FUNC,
 	Pen_1EndLineCap_FUNC,
 	Pen_1LineJoin_FUNC,
+	Pen_1MiterLimit_FUNC,
 	Pen_1StartLineCap_FUNC,
 	Pen_1Thickness_FUNC,
 	PixelFormat_1BitsPerPixel_FUNC,

@@ -7262,6 +7262,17 @@ JNIEXPORT void JNICALL OS_NATIVE(Pen_1LineJoin)
 }
 #endif
 
+#ifndef NO_Pen_1MiterLimit
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Pen_1MiterLimit)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Pen_1MiterLimit)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, Pen_1MiterLimit_FUNC);
+	((Pen^)TO_OBJECT(arg0))->MiterLimit = (arg1);
+	OS_NATIVE_EXIT(env, that, Pen_1MiterLimit_FUNC);
+}
+#endif
+
 #ifndef NO_Pen_1StartLineCap
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(Pen_1StartLineCap)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(Pen_1StartLineCap)

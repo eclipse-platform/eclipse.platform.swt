@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1218;
-int OS_nativeFunctionCallCount[1218];
+int OS_nativeFunctionCount = 1219;
+int OS_nativeFunctionCallCount[1219];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -609,6 +609,7 @@ char * OS_nativeFunctionNames[] = {
 	"Pen_1DashStyle",
 	"Pen_1EndLineCap",
 	"Pen_1LineJoin",
+	"Pen_1MiterLimit",
 	"Pen_1StartLineCap",
 	"Pen_1Thickness",
 	"PixelFormat_1BitsPerPixel",
