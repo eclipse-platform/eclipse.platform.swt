@@ -39,7 +39,6 @@ class StyledTextEvent extends Event {
 	int y;
 	int ascent;
 	int descent;
-	GC gc;
 	StyleRange style;
 
 StyledTextEvent (StyledTextContent content) {
