@@ -1753,13 +1753,14 @@ public void removeTreeListener(TreeListener listener) {
 int setBounds (int x, int y, int width, int height, int flags) {
 	int result = super.setBounds (x, y, width, height, flags);
 	if ((result & RESIZED) != 0) {
-		if (columnCount == 0) {
-			int column = OS.GridViewColumnCollection_default (columns, 0);
-			OS.GridViewColumn_Width (column, width);
-			OS.GCHandle_Free (column);
-		}
 		OS.FrameworkElement_Width (handle, width);
 		OS.FrameworkElement_Height (handle, height);
+		if (columnCount == 0) {
+			double columnWidth = width - OS.SystemParameters_VerticalScrollBarWidth () - (getBorderWidth() * 2);
+			int column = OS.GridViewColumnCollection_default (columns, 0);
+			OS.GridViewColumn_Width (column, columnWidth);
+			OS.GCHandle_Free (column);
+		}
 	}
 	return result;
 }
