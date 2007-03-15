@@ -842,7 +842,7 @@ public:
 		EventHandler (sender, e);
 	}
 
-	void RoutedPropertyChangedEventHandler  (Object^ sender, RoutedPropertyChangedEventArgs<Object^>^ e) {
+	void RoutedPropertyChangedEventHandlerObject  (Object^ sender, RoutedPropertyChangedEventArgs<Object^>^ e) {
 		EventHandler (sender, e);
 	}
 
@@ -905,11 +905,27 @@ public:
 	void GiveFeedbackEventHandler (Object^ sender, GiveFeedbackEventArgs^ e) {
 		EventHandler (sender, e);	
 	}
-		
+
 	void QueryContinueDragEventHandler (Object^ sender, QueryContinueDragEventArgs^ e) {
 		EventHandler (sender, e);	
 	}
 		
+	void WebBrowserNavigatingEventHandler (Object^ sender, System::Windows::Forms::WebBrowserNavigatingEventArgs^ e) {
+		EventHandler (sender, e);	
+	}
+
+	void WebBrowserNavigatedEventHandler (Object^ sender, System::Windows::Forms::WebBrowserNavigatedEventArgs^ e) {
+		EventHandler (sender, e);	
+	}
+	
+	void WebBrowserProgressChangedEventHandler (Object^ sender, System::Windows::Forms::WebBrowserProgressChangedEventArgs^ e) {
+		EventHandler (sender, e);	
+	}	
+	
+	void WebBrowserDocumentCompletedEventHandler (Object^ sender, System::Windows::Forms::WebBrowserDocumentCompletedEventArgs^ e) {
+		EventHandler (sender, e);	
+	}
+
 	void NoArgsDelegate() {	
 		jobject object = cookie->object;
 		if (object == NULL || mid == NULL) return; 	
@@ -934,89 +950,117 @@ public:
 	}
 };
 
-#define HANDLER_CONSTRUCTOR(name) extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1##name##) (JNIEnv *env, jclass that, jint arg0, jstring arg1); \
+#define HANDLER_CONSTRUCTOR(name, type, signature) extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1##name##) (JNIEnv *env, jclass that, jint arg0, jstring arg1); \
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1##name##) (JNIEnv *env, jclass that, jint arg0, jstring arg1) { \
 	jint rc = 0; \
 	OS_NATIVE_ENTER(env, that, gcnew_1##name##_FUNC); \
-	rc = (jint)TO_HANDLE(gcnew name (gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::##name##)); \
+	rc = (jint)TO_HANDLE(gcnew type (gcnew SWTHandler(env, arg0, arg1, signature), &SWTHandler::##name##)); \
 	OS_NATIVE_EXIT(env, that, gcnew_1##name##_FUNC); \
 	return rc; \
 } \
 
 #ifndef NO_gcnew_1EventHandler
-HANDLER_CONSTRUCTOR (EventHandler)
+HANDLER_CONSTRUCTOR (EventHandler, EventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1CancelEventHandler
-HANDLER_CONSTRUCTOR (CancelEventHandler)
+HANDLER_CONSTRUCTOR (CancelEventHandler, CancelEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1ExecutedRoutedEventHandler
-HANDLER_CONSTRUCTOR (ExecutedRoutedEventHandler)
+HANDLER_CONSTRUCTOR (ExecutedRoutedEventHandler, ExecutedRoutedEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1DispatcherHookEventHandler
-HANDLER_CONSTRUCTOR (DispatcherHookEventHandler)
+HANDLER_CONSTRUCTOR (DispatcherHookEventHandler, DispatcherHookEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1SizeChangedEventHandler
-HANDLER_CONSTRUCTOR (SizeChangedEventHandler)
+HANDLER_CONSTRUCTOR (SizeChangedEventHandler, SizeChangedEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1ScrollEventHandler
-HANDLER_CONSTRUCTOR (ScrollEventHandler)
+HANDLER_CONSTRUCTOR (ScrollEventHandler, ScrollEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1SelectionChangedEventHandler
-HANDLER_CONSTRUCTOR (SelectionChangedEventHandler)
+HANDLER_CONSTRUCTOR (SelectionChangedEventHandler, SelectionChangedEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1KeyEventHandler
-HANDLER_CONSTRUCTOR (KeyEventHandler)
+HANDLER_CONSTRUCTOR (KeyEventHandler, KeyEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1MouseEventHandler
-HANDLER_CONSTRUCTOR (MouseEventHandler)
+HANDLER_CONSTRUCTOR (MouseEventHandler, MouseEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1MouseButtonEventHandler
-HANDLER_CONSTRUCTOR (MouseButtonEventHandler)
+HANDLER_CONSTRUCTOR (MouseButtonEventHandler, MouseButtonEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1MouseWheelEventHandler
-HANDLER_CONSTRUCTOR (MouseWheelEventHandler)
+HANDLER_CONSTRUCTOR (MouseWheelEventHandler, MouseWheelEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1TextCompositionEventHandler
-HANDLER_CONSTRUCTOR (TextCompositionEventHandler)
+HANDLER_CONSTRUCTOR (TextCompositionEventHandler, TextCompositionEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1TextChangedEventHandler
-HANDLER_CONSTRUCTOR (TextChangedEventHandler)
+HANDLER_CONSTRUCTOR (TextChangedEventHandler, TextChangedEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1KeyboardFocusChangedEventHandler
-HANDLER_CONSTRUCTOR (KeyboardFocusChangedEventHandler)
+HANDLER_CONSTRUCTOR (KeyboardFocusChangedEventHandler, KeyboardFocusChangedEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1ContextMenuEventHandler
-HANDLER_CONSTRUCTOR (ContextMenuEventHandler)
+HANDLER_CONSTRUCTOR (ContextMenuEventHandler, ContextMenuEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1RoutedEventHandler
-HANDLER_CONSTRUCTOR (RoutedEventHandler)
+HANDLER_CONSTRUCTOR (RoutedEventHandler, RoutedEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1DragEventHandler
-HANDLER_CONSTRUCTOR (DragEventHandler)
+HANDLER_CONSTRUCTOR (DragEventHandler, DragEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1GiveFeedbackEventHandler
-HANDLER_CONSTRUCTOR (GiveFeedbackEventHandler)
+HANDLER_CONSTRUCTOR (GiveFeedbackEventHandler, GiveFeedbackEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1QueryContinueDragEventHandler
-HANDLER_CONSTRUCTOR (QueryContinueDragEventHandler)
+HANDLER_CONSTRUCTOR (QueryContinueDragEventHandler, QueryContinueDragEventHandler, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1RoutedPropertyChangedEventHandlerObject
+HANDLER_CONSTRUCTOR (RoutedPropertyChangedEventHandlerObject, RoutedPropertyChangedEventHandler<Object^>, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1RoutedPropertyChangedEventHandler
+HANDLER_CONSTRUCTOR (RoutedPropertyChangedEventHandler, RoutedPropertyChangedEventHandler<double>, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1WebBrowserNavigatingEventHandler
+HANDLER_CONSTRUCTOR (WebBrowserNavigatingEventHandler, System::Windows::Forms::WebBrowserNavigatingEventHandler, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1WebBrowserNavigatedEventHandler
+HANDLER_CONSTRUCTOR (WebBrowserNavigatedEventHandler, System::Windows::Forms::WebBrowserNavigatedEventHandler, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1WebBrowserProgressChangedEventHandler
+HANDLER_CONSTRUCTOR (WebBrowserProgressChangedEventHandler, System::Windows::Forms::WebBrowserProgressChangedEventHandler, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1WebBrowserDocumentCompletedEventHandler
+HANDLER_CONSTRUCTOR (WebBrowserDocumentCompletedEventHandler, System::Windows::Forms::WebBrowserDocumentCompletedEventHandler, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1NoArgsDelegate
+HANDLER_CONSTRUCTOR (NoArgsDelegate, NoArgsDelegate, "()V")
 #endif
 
 // special cases
@@ -1027,39 +1071,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TimerHandler) (JNIEnv *env, jclass that,
 	OS_NATIVE_ENTER(env, that, gcnew_1TimerHandler_FUNC);
 	rc = (jint)TO_HANDLE(gcnew EventHandler (gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::TimerHandler));
 	OS_NATIVE_EXIT(env, that, gcnew_1TimerHandler_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gcnew_1RoutedPropertyChangedEventHandlerObject
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandlerObject) (JNIEnv *env, jclass that, jint arg0, jstring arg1);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandlerObject) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1RoutedPropertyChangedEventHandlerObject_FUNC);
-	rc = (jint)TO_HANDLE(gcnew RoutedPropertyChangedEventHandler<Object^>(gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::RoutedPropertyChangedEventHandler));
-	OS_NATIVE_EXIT(env, that, gcnew_1RoutedPropertyChangedEventHandlerObject_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gcnew_1RoutedPropertyChangedEventHandler
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandler) (JNIEnv *env, jclass that, jint arg0, jstring arg1);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RoutedPropertyChangedEventHandler) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1RoutedPropertyChangedEventHandler_FUNC);
-	rc = (jint)TO_HANDLE(gcnew RoutedPropertyChangedEventHandler<double>(gcnew SWTHandler(env, arg0, arg1, "(II)V"), &SWTHandler::RoutedPropertyChangedEventHandler));
-	OS_NATIVE_EXIT(env, that, gcnew_1RoutedPropertyChangedEventHandler_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gcnew_1NoArgsDelegate
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NoArgsDelegate) (JNIEnv *env, jclass that, jint arg0, jstring arg1);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NoArgsDelegate) (JNIEnv *env, jclass that, jint arg0, jstring arg1) {
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1NoArgsDelegate_FUNC);
-	rc = (jint)TO_HANDLE(gcnew NoArgsDelegate(gcnew SWTHandler(env, arg0, arg1, "()V"), &SWTHandler::NoArgsDelegate));
-	OS_NATIVE_EXIT(env, that, gcnew_1NoArgsDelegate_FUNC);
 	return rc;
 }
 #endif
@@ -1273,6 +1284,23 @@ JNIEXPORT jint JNICALL OS_NATIVE(GCHandle_1Alloc) (JNIEnv *env, jclass that, jin
 	OS_NATIVE_ENTER(env, that, GCHandle_1Alloc_FUNC);
 	rc = TO_HANDLE (TO_OBJECT (arg0));	
 	OS_NATIVE_EXIT(env, that, GCHandle_1Alloc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GCHandle_1ToHandle
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(GCHandle_1ToHandle) (JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(GCHandle_1ToHandle) (JNIEnv *env, jclass that, jint arg0) {
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GCHandle_1ToHandle_FUNC);
+#ifdef GCHANDLE_TABLE	
+	rc = arg0; 
+#else
+	GCHandle gc = GCHandle::FromIntPtr((IntPtr)arg0);
+	rc = TO_HANDLE (gc.Target);
+	gc.Free();
+#endif
+	OS_NATIVE_EXIT(env, that, GCHandle_1ToHandle_FUNC);
 	return rc;
 }
 #endif

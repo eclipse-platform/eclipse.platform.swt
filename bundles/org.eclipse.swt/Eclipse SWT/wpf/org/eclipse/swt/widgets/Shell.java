@@ -361,6 +361,7 @@ public static Shell wpf_new (Display display, int handle) {
 }
 
 public static Shell internal_new (Display display, int handle) {
+	handle = OS.GCHandle_ToHandle (handle);
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 

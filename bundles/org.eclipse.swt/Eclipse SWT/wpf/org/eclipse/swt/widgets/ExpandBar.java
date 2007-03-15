@@ -129,7 +129,7 @@ protected void checkSubclass () {
 
 static int checkStyle (int style) {
 	style &= ~SWT.H_SCROLL;
-	return style | SWT.NO_BACKGROUND;
+	return style;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {

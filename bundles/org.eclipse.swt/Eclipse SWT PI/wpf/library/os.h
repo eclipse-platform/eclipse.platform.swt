@@ -48,7 +48,7 @@ struct _jmethodID {
 };
 }
 
-#define GCHANDLE_TABLE
+//#define GCHANDLE_TABLE
 
 #ifdef GCHANDLE_TABLE
 

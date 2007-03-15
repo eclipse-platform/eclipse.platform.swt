@@ -475,7 +475,7 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	OS.UIElement_IsEnabled (topHandle (), enabled);
+	OS.UIElement_IsEnabled (handle, enabled);
 }
 
 /**

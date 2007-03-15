@@ -276,6 +276,13 @@ public class OS extends C {
 	public static final int WindowStyle_ThreeDBorderWindow = 2;
 	public static final int WindowStyle_ToolWindow = 3;
 	
+
+	public static final int WebBrowserReadyState_Uninitialized = 0;
+	public static final int WebBrowserReadyState_Loading = 1;
+	public static final int WebBrowserReadyState_Loaded = 2;
+	public static final int WebBrowserReadyState_Interactive = 3;
+	public static final int WebBrowserReadyState_Complete = 4;
+	
 	public static final int Dock_Top = 1;
 	public static final int Dock_Bottom = 3;
 
@@ -424,6 +431,10 @@ public static final native int gcnew_NoArgsDelegate(int jniRef, String string);
 public static final native int gcnew_GiveFeedbackEventHandler(int jniRef, String string);
 public static final native int gcnew_QueryContinueDragEventHandler(int jniRef, String string);
 public static final native int gcnew_DragEventHandler(int jniRef, String string);
+public static final native int gcnew_WebBrowserNavigatingEventHandler(int jniRef, String string);
+public static final native int gcnew_WebBrowserNavigatedEventHandler(int jniRef, String string);
+public static final native int gcnew_WebBrowserProgressChangedEventHandler(int jniRef, String string);
+public static final native int gcnew_WebBrowserDocumentCompletedEventHandler(int jniRef, String string);
 
 /** JNI natives */
 public static final native int NewGlobalRef(Object object);
@@ -833,10 +844,12 @@ public static final native void GridViewRowPresenterBase_Columns(int sender, int
 public static final native int GCHandle_Alloc(int sender);
 public static final native void GCHandle_Free(int sender);
 public static final native void GCHandle_Dump();
+public static final native int GCHandle_ToHandle(int gchandle);
 public static final native int HeaderedContentControl_Header(int sender);
 public static final native void HeaderedContentControl_Header(int sender, int header);
 public static final native int HeaderedItemsControl_Header(int sender);
-public static final native void HeaderedItemsControl_Header(int sender, int value);
+public static final native void HeaderedItemsControl_Header(int sender, int value);  
+public static final native int HtmlDocument_InvokeScript(int sender, int string);
 public static final native int HwndSource_Handle(int sender);
 public static final native void Hyperlink_Click(int sender, int handler);
 public static final native int ICollection_Count(int sender);
@@ -1383,6 +1396,31 @@ public static final native int Visual_PointFromScreen(int sender, int point);
 public static final native int VisualTreeHelper_GetChild(int sender, int value);
 public static final native int VisualTreeHelper_GetChildrenCount(int sender);
 public static final native int VisualTreeHelper_GetParent(int sender);
+public static final native boolean WebBrowser_CanGoBack(int sender);
+public static final native boolean WebBrowser_CanGoForward(int sender);
+public static final native int WebBrowser_Document(int sender);
+public static final native void WebBrowser_DocumentText(int sender, int string);
+public static final native int WebBrowser_DocumentTitle(int sender);
+public static final native void WebBrowser_DocumentCompleted(int sender, int handler);
+public static final native boolean WebBrowser_GoBack(int sender);
+public static final native boolean WebBrowser_GoForward(int sender);
+public static final native void WebBrowser_Navigating(int sender, int handler);
+public static final native void WebBrowser_Navigated(int sender, int handler);
+public static final native void WebBrowser_Navigate(int sender, int urlString);
+public static final native void WebBrowser_ProgressChanged(int sender, int handler);
+public static final native void WebBrowser_DocumentTitleChanged(int sender, int handler);
+public static final native int WebBrowser_StatusText(int sender);
+public static final native void WebBrowser_StatusTextChanged(int sender, int handler);
+public static final native int WebBrowser_ReadyState(int sender);
+public static final native void WebBrowser_Refresh(int sender);
+public static final native void WebBrowser_Stop(int sender);
+public static final native void WebBrowser_ScriptErrorsSuppressed(int sender, boolean value);
+public static final native int WebBrowser_Url(int sender);
+public static final native int WebBrowserNavigatingEventArgs_Url(int sender);
+public static final native int WebBrowserNavigatedEventArgs_Url(int sender);
+public static final native int WebBrowserDocumentCompletedEventArgs_Url(int sender);
+public static final native long WebBrowserProgressChangedEventArgs_CurrentProgress(int sender);
+public static final native long WebBrowserProgressChangedEventArgs_MaximumProgress(int sender);
 public static final native int WindowCollection_Count(int sender);
 public static final native int WindowCollection_Current(int sender);
 public static final native int WindowCollection_GetEnumerator(int sender);
@@ -1411,6 +1449,7 @@ public static final native void Window_ShowInTaskbar(int sender, boolean value);
 public static final native void Window_ResizeMode(int sender, int value);
 public static final native int Window_Title(int sender);
 public static final native void Window_Title(int sender, int string);
+public static final native void WindowsFormsHost_Child(int sender, int child);
 public static final native void WriteableBitmap_WritePixels(int sender, int sourceRect, byte[] buffer, int bufferSize, int stride);
 
 public static final native int gcnew_AccessText();
@@ -1555,6 +1594,8 @@ public static final native int gcnew_TreeViewItem();
 public static final native int gcnew_Typeface(int fontFamily, int style, int weight, int stretch);
 public static final native int gcnew_UserControl();
 public static final native int gcnew_Uri(int str, int type);
+public static final native int gcnew_WebBrowser();
+public static final native int gcnew_WindowsFormsHost();
 public static final native int gcnew_Window();
 public static final native int gcnew_WriteableBitmap (int source);
 public static final native int gcnew_WriteableBitmap (int pixelWidth, int pixelHeight, double dpiX, double dpiY, int pixelFormat, int palette);

@@ -5220,6 +5220,19 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HeapFree)
 }
 #endif
 
+#ifndef NO_HtmlDocument_1InvokeScript
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(HtmlDocument_1InvokeScript)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(HtmlDocument_1InvokeScript)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HtmlDocument_1InvokeScript_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::HtmlDocument^)TO_OBJECT(arg0))->InvokeScript((String^)TO_OBJECT(arg1)));
+	OS_NATIVE_EXIT(env, that, HtmlDocument_1InvokeScript_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HwndSource_1Handle
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(HwndSource_1Handle)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(HwndSource_1Handle)
@@ -11975,6 +11988,309 @@ JNIEXPORT jint JNICALL OS_NATIVE(Visual_1PointToScreen)
 }
 #endif
 
+#ifndef NO_WebBrowserDocumentCompletedEventArgs_1Url
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowserDocumentCompletedEventArgs_1Url)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowserDocumentCompletedEventArgs_1Url)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowserDocumentCompletedEventArgs_1Url_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::WebBrowserDocumentCompletedEventArgs^)TO_OBJECT(arg0))->Url);
+	OS_NATIVE_EXIT(env, that, WebBrowserDocumentCompletedEventArgs_1Url_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowserNavigatedEventArgs_1Url
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowserNavigatedEventArgs_1Url)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowserNavigatedEventArgs_1Url)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowserNavigatedEventArgs_1Url_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::WebBrowserNavigatedEventArgs^)TO_OBJECT(arg0))->Url);
+	OS_NATIVE_EXIT(env, that, WebBrowserNavigatedEventArgs_1Url_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowserNavigatingEventArgs_1Url
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowserNavigatingEventArgs_1Url)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowserNavigatingEventArgs_1Url)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowserNavigatingEventArgs_1Url_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::WebBrowserNavigatingEventArgs^)TO_OBJECT(arg0))->Url);
+	OS_NATIVE_EXIT(env, that, WebBrowserNavigatingEventArgs_1Url_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowserProgressChangedEventArgs_1CurrentProgress
+extern "C" JNIEXPORT jlong JNICALL OS_NATIVE(WebBrowserProgressChangedEventArgs_1CurrentProgress)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jlong JNICALL OS_NATIVE(WebBrowserProgressChangedEventArgs_1CurrentProgress)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowserProgressChangedEventArgs_1CurrentProgress_FUNC);
+	rc = (jlong)((System::Windows::Forms::WebBrowserProgressChangedEventArgs^)TO_OBJECT(arg0))->CurrentProgress;
+	OS_NATIVE_EXIT(env, that, WebBrowserProgressChangedEventArgs_1CurrentProgress_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowserProgressChangedEventArgs_1MaximumProgress
+extern "C" JNIEXPORT jlong JNICALL OS_NATIVE(WebBrowserProgressChangedEventArgs_1MaximumProgress)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jlong JNICALL OS_NATIVE(WebBrowserProgressChangedEventArgs_1MaximumProgress)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowserProgressChangedEventArgs_1MaximumProgress_FUNC);
+	rc = (jlong)((System::Windows::Forms::WebBrowserProgressChangedEventArgs^)TO_OBJECT(arg0))->MaximumProgress;
+	OS_NATIVE_EXIT(env, that, WebBrowserProgressChangedEventArgs_1MaximumProgress_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1CanGoBack
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(WebBrowser_1CanGoBack)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(WebBrowser_1CanGoBack)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1CanGoBack_FUNC);
+	rc = (jboolean)((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->CanGoBack;
+	OS_NATIVE_EXIT(env, that, WebBrowser_1CanGoBack_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1CanGoForward
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(WebBrowser_1CanGoForward)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(WebBrowser_1CanGoForward)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1CanGoForward_FUNC);
+	rc = (jboolean)((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->CanGoForward;
+	OS_NATIVE_EXIT(env, that, WebBrowser_1CanGoForward_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1Document
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1Document)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1Document)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1Document_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->Document);
+	OS_NATIVE_EXIT(env, that, WebBrowser_1Document_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1DocumentCompleted
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentCompleted)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentCompleted)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1DocumentCompleted_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->DocumentCompleted += ((System::Windows::Forms::WebBrowserDocumentCompletedEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WebBrowser_1DocumentCompleted_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1DocumentText
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentText)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentText)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1DocumentText_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->DocumentText = ((String^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WebBrowser_1DocumentText_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1DocumentTitle
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1DocumentTitle)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1DocumentTitle)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1DocumentTitle_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->DocumentTitle);
+	OS_NATIVE_EXIT(env, that, WebBrowser_1DocumentTitle_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1DocumentTitleChanged
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentTitleChanged)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1DocumentTitleChanged)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1DocumentTitleChanged_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->DocumentTitleChanged += ((EventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WebBrowser_1DocumentTitleChanged_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1GoBack
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(WebBrowser_1GoBack)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(WebBrowser_1GoBack)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1GoBack_FUNC);
+	rc = (jboolean)((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->GoBack();
+	OS_NATIVE_EXIT(env, that, WebBrowser_1GoBack_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1GoForward
+extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(WebBrowser_1GoForward)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jboolean JNICALL OS_NATIVE(WebBrowser_1GoForward)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1GoForward_FUNC);
+	rc = (jboolean)((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->GoForward();
+	OS_NATIVE_EXIT(env, that, WebBrowser_1GoForward_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1Navigate
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Navigate)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Navigate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1Navigate_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->Navigate((String^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WebBrowser_1Navigate_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1Navigated
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Navigated)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Navigated)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1Navigated_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->Navigated += ((System::Windows::Forms::WebBrowserNavigatedEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WebBrowser_1Navigated_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1Navigating
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Navigating)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Navigating)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1Navigating_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->Navigating += ((System::Windows::Forms::WebBrowserNavigatingEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WebBrowser_1Navigating_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1ProgressChanged
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1ProgressChanged)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1ProgressChanged)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1ProgressChanged_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->ProgressChanged += ((System::Windows::Forms::WebBrowserProgressChangedEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WebBrowser_1ProgressChanged_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1ReadyState
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1ReadyState)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1ReadyState)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1ReadyState_FUNC);
+	rc = (jint)((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->ReadyState;
+	OS_NATIVE_EXIT(env, that, WebBrowser_1ReadyState_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1Refresh
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Refresh)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Refresh)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1Refresh_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->Refresh();
+	OS_NATIVE_EXIT(env, that, WebBrowser_1Refresh_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1ScriptErrorsSuppressed
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1ScriptErrorsSuppressed)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1ScriptErrorsSuppressed)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1ScriptErrorsSuppressed_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->ScriptErrorsSuppressed = (arg1);
+	OS_NATIVE_EXIT(env, that, WebBrowser_1ScriptErrorsSuppressed_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1StatusText
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1StatusText)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1StatusText)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1StatusText_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->StatusText);
+	OS_NATIVE_EXIT(env, that, WebBrowser_1StatusText_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_WebBrowser_1StatusTextChanged
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1StatusTextChanged)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1StatusTextChanged)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1StatusTextChanged_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->StatusTextChanged += ((EventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WebBrowser_1StatusTextChanged_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1Stop
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Stop)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT void JNICALL OS_NATIVE(WebBrowser_1Stop)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, WebBrowser_1Stop_FUNC);
+	((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->Stop();
+	OS_NATIVE_EXIT(env, that, WebBrowser_1Stop_FUNC);
+}
+#endif
+
+#ifndef NO_WebBrowser_1Url
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1Url)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(WebBrowser_1Url)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, WebBrowser_1Url_FUNC);
+	rc = (jint)TO_HANDLE(((System::Windows::Forms::WebBrowser^)TO_OBJECT(arg0))->Url);
+	OS_NATIVE_EXIT(env, that, WebBrowser_1Url_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_WindowCollection_1Count
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(WindowCollection_1Count)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(WindowCollection_1Count)
@@ -12298,6 +12614,17 @@ JNIEXPORT void JNICALL OS_NATIVE(Window_1WindowStyle)
 	OS_NATIVE_ENTER(env, that, Window_1WindowStyle_FUNC);
 	((Window^)TO_OBJECT(arg0))->WindowStyle = ((WindowStyle)arg1);
 	OS_NATIVE_EXIT(env, that, Window_1WindowStyle_FUNC);
+}
+#endif
+
+#ifndef NO_WindowsFormsHost_1Child
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(WindowsFormsHost_1Child)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(WindowsFormsHost_1Child)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, WindowsFormsHost_1Child_FUNC);
+	((System::Windows::Forms::Integration::WindowsFormsHost^)TO_OBJECT(arg0))->Child = ((System::Windows::Forms::Control^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, WindowsFormsHost_1Child_FUNC);
 }
 #endif
 
@@ -14092,6 +14419,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1UserControl)
 }
 #endif
 
+#ifndef NO_gcnew_1WebBrowser
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1WebBrowser)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1WebBrowser)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1WebBrowser_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::Windows::Forms::WebBrowser());
+	OS_NATIVE_EXIT(env, that, gcnew_1WebBrowser_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gcnew_1Window
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Window)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Window)
@@ -14101,6 +14441,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Window)
 	OS_NATIVE_ENTER(env, that, gcnew_1Window_FUNC);
 	rc = (jint)TO_HANDLE(gcnew Window());
 	OS_NATIVE_EXIT(env, that, gcnew_1Window_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1WindowsFormsHost
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1WindowsFormsHost)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1WindowsFormsHost)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1WindowsFormsHost_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::Windows::Forms::Integration::WindowsFormsHost());
+	OS_NATIVE_EXIT(env, that, gcnew_1WindowsFormsHost_FUNC);
 	return rc;
 }
 #endif
