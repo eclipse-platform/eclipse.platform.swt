@@ -11,6 +11,7 @@
 package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -35,7 +36,12 @@ public class Snippet267 {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(2, true));
 		shell.setText("Use Mozilla's Design Mode");
-		browser = new Browser(shell, SWT.MOZILLA);
+		try {
+			browser = new Browser(shell, SWT.MOZILLA);
+		} catch (SWTError e) {
+			System.out.println("Count not instantiate Browser: " + e.getMessage());
+			return;
+		}
 		browser.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1));
 
 		final Button offButton = new Button(shell, SWT.RADIO);
@@ -61,6 +67,7 @@ public class Snippet267 {
 		offButton.setSelection(true);
 
 		browser.setUrl("http://www.google.com");
+		shell.setSize(400,400);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();

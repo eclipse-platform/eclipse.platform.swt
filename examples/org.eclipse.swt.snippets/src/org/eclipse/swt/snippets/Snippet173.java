@@ -31,7 +31,13 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setText("Main Window");
 	shell.setLayout(new FillLayout());
-	Browser browser = new Browser(shell, SWT.NONE);
+	final Browser browser;
+	try {
+		browser = new Browser(shell, SWT.NONE);
+	} catch (SWTError e) {
+		System.out.println("Count not instantiate Browser: " + e.getMessage());
+		return;
+	}
 	initialize(display, browser);
 	shell.open();
 	/* any website with popups */

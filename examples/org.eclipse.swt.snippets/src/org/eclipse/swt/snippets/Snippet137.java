@@ -35,7 +35,13 @@ public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser;
+	try {
+		browser = new Browser(shell, SWT.NONE);
+	} catch (SWTError e) {
+		System.out.println("Count not instantiate Browser: " + e.getMessage());
+		return;
+	}
 	browser.setText(html);
 	shell.open();
 	while (!shell.isDisposed()) {

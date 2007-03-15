@@ -30,7 +30,13 @@ public class Snippet260 {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText("Mozilla");
-		Browser browser = new Browser(shell, SWT.MOZILLA);
+		final Browser browser;
+		try {
+			browser = new Browser(shell, SWT.MOZILLA);
+		} catch (SWTError e) {
+			System.out.println("Count not instantiate Browser: " + e.getMessage());
+			return;
+		}
 		shell.open();
 		browser.setUrl("http://mozilla.org");
 		while (!shell.isDisposed()) {

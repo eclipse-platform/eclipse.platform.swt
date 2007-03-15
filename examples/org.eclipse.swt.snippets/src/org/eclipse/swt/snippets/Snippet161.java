@@ -29,7 +29,13 @@ public class Snippet161 {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		final Browser browser = new Browser(shell, SWT.BORDER);
+		final Browser browser;
+		try {
+			browser = new Browser(shell, SWT.BORDER);
+		} catch (SWTError e) {
+			System.out.println("Count not instantiate Browser: " + e.getMessage());
+			return;
+		}
 		Composite comp = new Composite(shell, SWT.NONE);
 		comp.setLayout(new FillLayout(SWT.VERTICAL));
 		final Text text = new Text(comp, SWT.MULTI);

@@ -29,7 +29,13 @@ public class Snippet160 {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		final Browser browser = new Browser(shell, SWT.NONE);
+		final Browser browser;
+		try {
+			browser = new Browser(shell, SWT.NONE);
+		} catch (SWTError e) {
+			System.out.println("Count not instantiate Browser: " + e.getMessage());
+			return;
+		}
 		browser.addStatusTextListener(new StatusTextListener() {
 			public void changed(StatusTextEvent event) {
 				browser.setData("query", event.text);

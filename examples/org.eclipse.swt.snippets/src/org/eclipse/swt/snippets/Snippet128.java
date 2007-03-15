@@ -56,7 +56,13 @@ public class Snippet128 {
 		data.grabExcessHorizontalSpace = true;
 		location.setLayoutData(data);
 
-		final Browser browser = new Browser(shell, SWT.NONE);
+		final Browser browser;
+		try {
+			browser = new Browser(shell, SWT.NONE);
+		} catch (SWTError e) {
+			System.out.println("Count not instantiate Browser: " + e.getMessage());
+			return;
+		}
 		data = new GridData();
 		data.horizontalAlignment = GridData.FILL;
 		data.verticalAlignment = GridData.FILL;
