@@ -34,6 +34,7 @@ public class Snippet267 {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout(2, true));
+		shell.setText("Use Mozilla's Design Mode");
 		browser = new Browser(shell, SWT.MOZILLA);
 		browser.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 2, 1));
 
@@ -59,7 +60,7 @@ public class Snippet267 {
 		});
 		offButton.setSelection(true);
 
-		browser.setUrl("http://www.eclipse.org");
+		browser.setUrl("http://www.google.com");
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
