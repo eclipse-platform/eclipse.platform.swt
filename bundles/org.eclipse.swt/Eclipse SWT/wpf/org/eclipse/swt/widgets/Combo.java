@@ -829,6 +829,13 @@ void HandlePreviewExecutedRoutedEvent (int sender, int e) {
 	if (text == null) OS.ExecutedRoutedEventArgs_Handled (e, true);
 }
 
+void HandlePreviewKeyDown (int sender, int e) {
+	super.HandlePreviewKeyDown (sender, e);
+	if (!checkEvent (e)) return;
+	int key = OS.KeyEventArgs_Key (e);
+	if (key == OS.Key_Return) postEvent (SWT.DefaultSelection);
+}
+
 void HandlePreviewTextInput (int sender, int e) {
 	if (!checkEvent (e)) return;
 	int textPtr = OS.TextCompositionEventArgs_Text (e);
