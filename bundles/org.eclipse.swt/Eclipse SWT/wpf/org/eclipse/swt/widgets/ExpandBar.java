@@ -189,7 +189,9 @@ void destroyItem (ExpandItem item) {
 
 void fixScrollbarVisibility () {
 	OS.ScrollViewer_SetHorizontalScrollBarVisibility (scrolledHandle, OS.ScrollBarVisibility_Hidden);
-	if ((style & SWT.V_SCROLL) != 0) {
+	if ((style & SWT.V_SCROLL) == 0) {
+		OS.ScrollViewer_SetVerticalScrollBarVisibility (scrolledHandle, OS.ScrollBarVisibility_Hidden);
+	} else {
 		OS.ScrollViewer_SetVerticalScrollBarVisibility (scrolledHandle, OS.ScrollBarVisibility_Auto);
 	}
 }
