@@ -20,6 +20,7 @@ class MozillaDelegate {
 	Browser browser;
 	int /*long*/ mozillaHandle;
 	boolean hasFocus;
+	Listener listener;
 	static Callback eventCallback;
 	static int /*long*/ eventProc;
 	static final int STOP_PROPOGATE = 1;
@@ -154,15 +155,15 @@ int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/
 void handleFocus () {
 	if (hasFocus) return;
 	hasFocus = true;
-	Listener listener = new Listener () {
+	listener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.widget == browser) return;
 			((Mozilla)browser.webBrowser).Deactivate ();
 			hasFocus = false;
 			browser.getDisplay ().removeFilter (SWT.FocusIn, this);
 			browser.getShell ().removeListener (SWT.Deactivate, this);
+			listener = null;
 		}
-	
 	};
 	browser.getDisplay ().addFilter (SWT.FocusIn, listener);
 	browser.getShell ().addListener (SWT.Deactivate, listener);
@@ -170,6 +171,12 @@ void handleFocus () {
 
 void onDispose (int /*long*/ embedHandle) {
 	browser.getDisplay ().setData (ADD_WIDGET_KEY, new Object[] {new LONG (mozillaHandle), null});
+	if (listener != null) {
+		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
+		browser.getShell ().removeListener (SWT.Deactivate, listener);
+		listener = null;
+	}
+	browser = null;
 }
 
 void setSize (int /*long*/ embedHandle, int width, int height) {
