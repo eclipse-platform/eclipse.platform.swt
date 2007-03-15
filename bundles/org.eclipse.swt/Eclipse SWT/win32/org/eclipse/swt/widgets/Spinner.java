@@ -28,7 +28,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, Modify</dd>
+ * <dd>Selection, Modify, Verify</dd>
  * </dl>
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
