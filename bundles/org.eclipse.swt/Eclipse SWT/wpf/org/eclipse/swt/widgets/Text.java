@@ -506,6 +506,30 @@ public int getLineHeight () {
 }
 
 /**
+ * Returns the widget message. When the widget is created
+ * with the style <code>SWT.SEARCH</code>, the message text
+ * is displayed as a hint for the user, indicating the
+ * purpose of the field.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not
+ * supported on platforms that do not have this concept.
+ * </p>
+ * 
+ * @return the widget message
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public String getMessage () {
+	checkWidget ();
+	return "";
+}
+
+/**
  * Returns the orientation of the receiver, which will be one of the
  * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
@@ -1080,6 +1104,34 @@ void setFont (int font, double size) {
 	super.setFont (font, size);
 	//FIXME
 //	setTabStops (tabs);
+}
+
+/**
+ * Sets the widget message. When the widget is created
+ * with the style <code>SWT.SEARCH</code>, the message text
+ * is displayed as a hint for the user, indicating the
+ * purpose of the field.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not
+ * supported on platforms that do not have this concept.
+ * </p>
+ * 
+ * @param message the new message
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the message is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	//TODO
 }
 
 /**

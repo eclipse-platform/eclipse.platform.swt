@@ -117,6 +117,34 @@ public void addControlListener(ControlListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
+ * be notified when a drag gesture occurs, by sending it
+ * one of the messages defined in the <code>DragDetectListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #removeDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void addDragDetectListener (DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.DragDetect,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
  * be notified when the control gains or loses focus, by sending
  * it one of the messages defined in the <code>FocusListener</code>
  * interface.
@@ -796,6 +824,25 @@ String getClipboardText () {
 		OS.GCHandle_Free(text);
 	}
 	return string;
+}
+
+/**
+ * Returns the receiver's cursor, or null if it has not been set.
+ * <p>
+ * When the mouse pointer passes over a control its appearance
+ * is changed to match the control's cursor.
+ * </p>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public Cursor getCursor () {
+	checkWidget ();
+	return cursor;
 }
 
 /**
@@ -1753,6 +1800,32 @@ public void removeControlListener (ControlListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when a drag gesture occurs.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @since 3.3
+ */
+public void removeDragDetectListener(DragDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.DragDetect, listener);
 }
 
 /**

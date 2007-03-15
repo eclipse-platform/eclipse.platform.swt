@@ -1822,6 +1822,22 @@ public int getInterpolation() {
 }
 
 /** 
+ * Returns the receiver's line attributes.
+ *
+ * @return the line attributes used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.3 
+ */
+public LineAttributes getLineAttributes() {
+	//TODO
+	return null;
+}
+
+/** 
  * Returns the receiver's line cap style, which will be one
  * of the constants <code>SWT.CAP_FLAT</code>, <code>SWT.CAP_ROUND</code>,
  * or <code>SWT.CAP_SQUARE</code>.
@@ -2465,6 +2481,25 @@ public void setInterpolation(int interpolation) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.interpolation = interpolation;
+}
+
+/**
+ * Sets the receiver's line attributes.
+ *
+ * @param attributes the line attributes
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the attributes is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the line attributes is not valid</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+public void setLineAttributes(LineAttributes attributes) {
+	//TODO
 }
 
 /** 

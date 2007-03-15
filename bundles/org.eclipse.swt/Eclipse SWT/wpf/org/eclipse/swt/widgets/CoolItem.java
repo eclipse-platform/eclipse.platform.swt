@@ -654,7 +654,7 @@ public void setSize (Point size) {
 	setSize (size.x, size.y);
 }
 
-public int topHandle () {
+int topHandle () {
 	if (isToolBar (control)) return control.handle;
 	return handle;
 }
