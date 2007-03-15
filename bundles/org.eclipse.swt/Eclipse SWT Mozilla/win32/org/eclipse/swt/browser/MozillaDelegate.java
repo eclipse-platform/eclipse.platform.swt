@@ -56,6 +56,7 @@ void handleFocus () {
 }
 
 void onDispose (int /*long*/ embedHandle) {
+	browser = null;
 }
 
 void setSize (int /*long*/ embedHandle, int width, int height) {
