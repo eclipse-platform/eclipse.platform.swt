@@ -951,6 +951,10 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 int /*long*/ gtk_changed (int /*long*/ widget) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
 		if (widget == handle) {
+			if (entryHandle == 0) {
+				sendEvent(SWT.Modify);
+				if (isDisposed ()) return 0;
+			}
 			postEvent (SWT.Selection);
 			return 0;
 		}
