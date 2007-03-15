@@ -194,6 +194,33 @@ public void addKeyListener(KeyListener listener) {
 }
 /**
  * Adds the listener to the collection of listeners who will
+ * be notified when the platform-specific context menu trigger
+ * has occurred, by sending it one of the messages defined in
+ * the <code>MenuDetectListener</code> interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #removeMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void addMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.MenuDetect, typedListener);
+}
+/**
+ * Adds the listener to the collection of listeners who will
  * be notified when mouse buttons are pressed and released, by sending
  * it one of the messages defined in the <code>MouseListener</code>
  * interface.
@@ -218,6 +245,31 @@ public void addMouseListener(MouseListener listener) {
 	addListener(SWT.MouseDown,typedListener);
 	addListener(SWT.MouseUp,typedListener);
 	addListener(SWT.MouseDoubleClick,typedListener);
+}
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the mouse moves, by sending it one of the
+ * messages defined in the <code>MouseMoveListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseMoveListener
+ * @see #removeMouseMoveListener
+ */
+public void addMouseMoveListener(MouseMoveListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener(SWT.MouseMove,typedListener);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -248,9 +300,9 @@ public void addMouseTrackListener (MouseTrackListener listener) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the mouse moves, by sending it one of the
- * messages defined in the <code>MouseMoveListener</code>
- * interface.
+ * be notified when the mouse wheel is scrolled, by sending
+ * it one of the messages defined in the
+ * <code>MouseWheelListener</code> interface.
  *
  * @param listener the listener which should be notified
  *
@@ -262,14 +314,16 @@ public void addMouseTrackListener (MouseTrackListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see MouseMoveListener
- * @see #removeMouseMoveListener
+ * @see MouseWheelListener
+ * @see #removeMouseWheelListener
+ *
+ * @since 3.3
  */
-public void addMouseMoveListener(MouseMoveListener listener) {
-	checkWidget();
+public void addMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener(SWT.MouseMove,typedListener);
+	addListener (SWT.MouseWheel, typedListener);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -1695,6 +1749,32 @@ public void removeKeyListener(KeyListener listener) {
 }
 /**
  * Removes the listener from the collection of listeners who will
+ * be notified when the platform-secific context menu trigger has
+ * occurred.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MenuDetectListener
+ * @see #addMenuDetectListener
+ *
+ * @since 3.3
+ */
+public void removeMenuDetectListener (MenuDetectListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MenuDetect, listener);
+}
+/**
+ * Removes the listener from the collection of listeners who will
  * be notified when mouse buttons are pressed and released.
  *
  * @param listener the listener which should no longer be notified
@@ -1765,6 +1845,31 @@ public void removeMouseTrackListener(MouseTrackListener listener) {
 	eventTable.unhook (SWT.MouseEnter, listener);
 	eventTable.unhook (SWT.MouseExit, listener);
 	eventTable.unhook (SWT.MouseHover, listener);
+}
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the mouse wheel is scrolled.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see MouseWheelListener
+ * @see #addMouseWheelListener
+ *
+ * @since 3.3
+ */
+public void removeMouseWheelListener (MouseWheelListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.MouseWheel, listener);
 }
 /**
  * Removes the listener from the collection of listeners who will
