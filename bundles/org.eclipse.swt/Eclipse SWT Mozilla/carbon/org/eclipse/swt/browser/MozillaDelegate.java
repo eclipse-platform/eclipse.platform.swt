@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
+	Listener listener;
 	boolean hasFocus;
 	static Hashtable handles = new Hashtable ();
 	
@@ -133,13 +134,14 @@ void handleFocus () {
 	hasFocus = true;
 	((Mozilla)browser.webBrowser).Activate ();
 	browser.setFocus ();
-	Listener listener = new Listener () {
+	listener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.widget == browser) return;
 			((Mozilla)browser.webBrowser).Deactivate ();
 			hasFocus = false;
 			browser.getDisplay ().removeFilter (SWT.FocusIn, this);
 			browser.getShell ().removeListener (SWT.Deactivate, this);
+			listener = null;
 		}
 	
 	};
@@ -149,6 +151,12 @@ void handleFocus () {
 
 void onDispose (int embedHandle) {
 	handles.remove (new LONG (embedHandle));
+	if (listener != null) {
+		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
+		browser.getShell ().removeListener (SWT.Deactivate, listener);
+		listener = null;
+	}
+	browser = null;
 }
 
 void setSize (int embedHandle, int width, int height) {
