@@ -42,8 +42,8 @@ class Mozilla extends WebBrowser {
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
 	int /*long*/ request;
-	Point location;
-	Point size;
+	Point location, size;
+	byte[] htmlBytes;
 	boolean visible, isChild, ignoreDispose;
 	Shell tip = null;
 
@@ -938,7 +938,7 @@ public void create (Composite parent, int style) {
 				}
 				case SWT.Show: {
 					/*
-					* Feature on GTK Mozilla.  Mozilla does not show up when
+					* Feature in GTK Mozilla.  Mozilla does not show up when
 					* its container (a GTK fixed handle) is made visible
 					* after having been hidden.  The workaround is to reset
 					* its size after the container has been made visible. 
@@ -1287,6 +1287,7 @@ void onDispose (Display display) {
 	if (tip != null && !tip.isDisposed ()) tip.dispose ();
 	tip = null;
 	location = size = null;
+	htmlBytes = null;
 
 	delegate.onDispose (embedHandle);
 	delegate = null;
@@ -1379,10 +1380,7 @@ public boolean setText (String html) {
 	*/
 	if (browser != browser.getDisplay ().getFocusControl ()) Deactivate ();
 	
-	/*
-	 * Convert the String containing HTML to an array of
-	 * bytes with UTF-8 data.
-	 */
+	/* convert the String containing HTML to an array of bytes with UTF-8 data */
 	byte[] data = null;
 	try {
 		data = html.getBytes ("UTF-8"); //$NON-NLS-1$
@@ -1391,91 +1389,93 @@ public boolean setText (String html) {
 	}
 
 	/*
-	 * Feature of XULRunner.  Setting the browser's content from a stream does not
-	 * fire a DOM "unload" event for the previous page, which is the event that
-	 * is used to unhook registered DOM listeners.  As a workaround, unhook them
-	 * now before setting the new page content.  
+	 * First detect if the nsIWebBrowserStream interface is available, since this interface is frozen.
+	 * However, this may fail because this interface was only introduced as of mozilla 1.8; if this
+	 * interface is not found then use the pre-1.8 approach of utilizing nsIDocShell instead. 
 	 */
-	if (IsXULRunner) unhookDOMListeners ();
-
 	int /*long*/[] result = new int /*long*/[1];
-	int rc = XPCOM.NS_GetServiceManager (result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-
-	nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
-	result[0] = 0;
-	rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	serviceManager.Release ();
-
-	nsIIOService ioService = new nsIIOService (result[0]);
-	result[0] = 0;
-	/*
-	* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
-	* when the URI protocol for the nsInputStreamChannel
-	* is about:blank.  The fix is to specify the file protocol.
-	*/
-	byte[] aString = MozillaDelegate.wcsToMbcs (null, URI_FROMMEMORY, false);
-	int /*long*/ aSpec = XPCOM.nsEmbedCString_new (aString, aString.length);
-	rc = ioService.NewURI (aSpec, null, 0, result);
-	XPCOM.nsEmbedCString_delete (aSpec);
-	if (rc != XPCOM.NS_OK) error (rc);
-	if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	ioService.Release ();
-	
-	nsIURI uri = new nsIURI (result[0]);
-	result[0] = 0;
-
-	/* aContentType */
-	byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
-	int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
-
-	/*
-	 * First try to use nsIWebBrowserStream to set the text into the Browser, since this
-	 * interface is frozen.  However, this may fail because this interface was only introduced
-	 * as of mozilla 1.8; if this interface is not found then use the pre-1.8 approach of
-	 * utilizing nsIDocShell instead. 
-	 */
-	result[0] = 0;
-	rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
+	int rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
 	if (rc == XPCOM.NS_OK) {
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-		nsIWebBrowserStream stream = new nsIWebBrowserStream (result[0]);
-		rc = stream.OpenStream (uri.getAddress (), aContentType);
+		new nsISupports (result[0]).Release ();
+		result[0] = 0;
+
+		/*
+		* Feature of nsIWebBrowserStream.  Setting the browser's content directly through
+		* its nsIWebBrowserStream does not cause a page change to occur, and therefore the
+		* events that typically signal a page change are not fired.  To make this behave
+		* as expected, navigate to about:blank first, and then set the html content once
+		* the page has loaded.
+		*/
+
+		/*
+		* If the htmlBytes field is non-null then the about:blank page is already being
+		* loaded, so no Navigate is required.  Just set the html that is to be shown.
+		*/
+		boolean blankLoading = htmlBytes != null;
+		htmlBytes = data;
+		if (blankLoading) return true;
+
+		/* navigate to about:blank */
+		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 		if (rc != XPCOM.NS_OK) error (rc);
-		int /*long*/ ptr = C.malloc (data.length);
-		XPCOM.memmove (ptr, data, data.length);
-		int pageSize = 8192;
-		int pageCount = data.length / pageSize + 1;
-		int /*long*/ current = ptr;
-		for (int i = 0; i < pageCount; i++) {
-			int length = i == pageCount - 1 ? data.length % pageSize : pageSize;
-			if (length > 0) {
-				rc = stream.AppendToStream (current, length);
-				if (rc != XPCOM.NS_OK) error (rc);
-			}
-			current += pageSize;
-		}
-		rc = stream.CloseStream ();
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+		nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
+		result[0] = 0;
+	    char[] uri = new char[ABOUT_BLANK.length () + 1];
+	    ABOUT_BLANK.getChars (0, ABOUT_BLANK.length (), uri, 0);
+		rc = webNavigation.LoadURI (uri, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
 		if (rc != XPCOM.NS_OK) error (rc);
-		C.free (ptr);
-		stream.Release ();
+		webNavigation.Release ();
 	} else {
+		result[0] = 0;
+
+		byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
+		int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
+		byte[] contentCharsetBuffer = MozillaDelegate.wcsToMbcs (null, "UTF-8", true);	//$NON-NLS-1$
+		int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new (contentCharsetBuffer, contentCharsetBuffer.length);
+
+		rc = XPCOM.NS_GetServiceManager (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+		nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+		result[0] = 0;
+		rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		serviceManager.Release ();
+
+		nsIIOService ioService = new nsIIOService (result[0]);
+		result[0] = 0;
+		/*
+		* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
+		* when the URI protocol for the nsInputStreamChannel
+		* is about:blank.  The fix is to specify the file protocol.
+		*/
+		byte[] aString = MozillaDelegate.wcsToMbcs (null, URI_FROMMEMORY, false);
+		int /*long*/ aSpec = XPCOM.nsEmbedCString_new (aString, aString.length);
+		rc = ioService.NewURI (aSpec, null, 0, result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		XPCOM.nsEmbedCString_delete (aSpec);
+		ioService.Release ();
+		
+		nsIURI uri = new nsIURI (result[0]);
+		result[0] = 0;
+
 		rc = webBrowser.QueryInterface (nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
 		nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor (result[0]);
 		result[0] = 0;
-		rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);				
+		rc = interfaceRequestor.GetInterface (nsIDocShell.NS_IDOCSHELL_IID, result);
+		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 		interfaceRequestor.Release ();
 
 		nsIDocShell docShell = new nsIDocShell (result[0]);
 		result[0] = 0;
-		byte[] contentCharsetBuffer = MozillaDelegate.wcsToMbcs (null, "UTF-8", true);	//$NON-NLS-1$
-		int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new (contentCharsetBuffer, contentCharsetBuffer.length);
 
 		/*
 		* Feature in Mozilla. LoadStream invokes the nsIInputStream argument
@@ -1485,36 +1485,30 @@ public boolean setText (String html) {
 		*/
 		InputStream inputStream = new InputStream (data);
 		inputStream.AddRef ();
-		rc = docShell.LoadStream(inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
+		rc = docShell.LoadStream (inputStream.getAddress (), uri.getAddress (), aContentType,  aContentCharset, 0);
 		if (rc != XPCOM.NS_OK) error (rc);
-		XPCOM.nsEmbedCString_delete (aContentCharset);
 		inputStream.Release ();
 		docShell.Release ();
+		uri.Release ();
+		XPCOM.nsEmbedCString_delete (aContentCharset);
+		XPCOM.nsEmbedCString_delete (aContentType);
 	}
 
-	XPCOM.nsEmbedCString_delete (aContentType);
-	uri.Release ();
-
-	/*
-	 * Feature of XULRunner.  Setting the browser's content from a stream does not
-	 * lead to nsIWebProgressListener.OnStateChange being called with STATE_TRANSFERRING,
-	 * which is the event that is used to hook DOM listeners, so hook them here.
-	 */
-	if (IsXULRunner) hookDOMListeners ();
 	return true;
 }
 
 public boolean setUrl (String url) {
+	htmlBytes = null;
+
 	int /*long*/[] result = new int /*long*/[1];
 	int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 
 	nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
-    char[] arg = url.toCharArray (); 
-    char[] c = new char[arg.length + 1];
-    System.arraycopy (arg, 0, c, 0, arg.length);
-	rc = webNavigation.LoadURI (c, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
+    char[] uri = new char[url.length () + 1];
+    url.getChars (0, url.length (), uri, 0);
+	rc = webNavigation.LoadURI (uri, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
 	webNavigation.Release ();
 	return rc == XPCOM.NS_OK;
 }
@@ -1817,7 +1811,97 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 		if (request == aRequest) request = 0;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		/*
-		* Feature on Mozilla.  When a request is redirected (STATE_REDIRECTING),
+		 * If htmlBytes is not null then there is html from a previous setText() call
+		 * waiting to be set into the about:blank page once it has completed loading. 
+		 */
+		if (htmlBytes != null) {
+			nsIRequest req = new nsIRequest (aRequest);
+			int /*long*/ name = XPCOM.nsEmbedCString_new ();
+			int rc = req.GetName (name);
+			if (rc != XPCOM.NS_OK) error (rc);
+			int length = XPCOM.nsEmbedCString_Length (name);
+			int /*long*/ buffer = XPCOM.nsEmbedCString_get (name);
+			byte[] dest = new byte[length];
+			XPCOM.memmove (dest, buffer, length);
+			XPCOM.nsEmbedCString_delete (name);
+			String url = new String (dest);
+
+			if (url.equals (ABOUT_BLANK)) {
+				/*
+				 * Setting the browser's content with nsIWebBrowserStream invalidates the 
+				 * DOM listeners that were hooked on it (about:blank), so remove them and
+				 * add new ones after the content has been set.
+				 */
+				unhookDOMListeners ();
+
+				int /*long*/[] result = new int /*long*/[1];
+				rc = XPCOM.NS_GetServiceManager (result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+	
+				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
+				result[0] = 0;
+				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				serviceManager.Release ();
+	
+				nsIIOService ioService = new nsIIOService (result[0]);
+				result[0] = 0;
+				/*
+				* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
+				* when the URI protocol for the nsInputStreamChannel
+				* is about:blank.  The fix is to specify the file protocol.
+				*/
+				byte[] aString = MozillaDelegate.wcsToMbcs (null, URI_FROMMEMORY, false);
+				int /*long*/ aSpec = XPCOM.nsEmbedCString_new (aString, aString.length);
+				rc = ioService.NewURI (aSpec, null, 0, result);
+				XPCOM.nsEmbedCString_delete (aSpec);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				ioService.Release ();
+				
+				nsIURI uri = new nsIURI (result[0]);
+				result[0] = 0;
+	
+				rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+				nsIWebBrowserStream stream = new nsIWebBrowserStream (result[0]);
+				result[0] = 0;
+				
+				byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
+				int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
+	
+				rc = stream.OpenStream (uri.getAddress (), aContentType);
+				if (rc != XPCOM.NS_OK) error (rc);
+				int /*long*/ ptr = C.malloc (htmlBytes.length);
+				XPCOM.memmove (ptr, htmlBytes, htmlBytes.length);
+				int pageSize = 8192;
+				int pageCount = htmlBytes.length / pageSize + 1;
+				int /*long*/ current = ptr;
+				for (int i = 0; i < pageCount; i++) {
+					length = i == pageCount - 1 ? htmlBytes.length % pageSize : pageSize;
+					if (length > 0) {
+						rc = stream.AppendToStream (current, length);
+						if (rc != XPCOM.NS_OK) error (rc);
+					}
+					current += pageSize;
+				}
+				rc = stream.CloseStream ();
+				if (rc != XPCOM.NS_OK) error (rc);
+
+				C.free (ptr);
+				XPCOM.nsEmbedCString_delete (aContentType);
+				stream.Release ();
+				uri.Release ();
+				htmlBytes = null;
+				hookDOMListeners ();
+			}
+		}
+
+		/*
+		* Feature in Mozilla.  When a request is redirected (STATE_REDIRECTING),
 		* it never reaches the state STATE_STOP and it is replaced with a new request.
 		* The new request is received when it is in the state STATE_STOP.
 		* To handle this case,  the variable request is set to 0 when the corresponding
@@ -1862,7 +1946,7 @@ int /*long*/ OnProgressChange (int /*long*/ aWebProgress, int /*long*/ aRequest,
 
 int /*long*/ OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aLocation) {
 	/*
-	* Feature on Mozilla.  When a page is loaded via setText before a previous
+	* Feature in Mozilla.  When a page is loaded via setText before a previous
 	* setText page load has completed, the expected OnStateChange STATE_STOP for the
 	* original setText never arrives because it gets replaced by the OnStateChange
 	* STATE_STOP for the new request.  This results in the request field never being
