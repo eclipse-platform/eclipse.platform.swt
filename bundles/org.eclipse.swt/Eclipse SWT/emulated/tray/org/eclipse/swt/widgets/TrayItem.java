@@ -211,7 +211,7 @@ void releaseHandle () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the platform-secific context menu trigger has
+ * be notified when the platform-specific context menu trigger has
  * occurred.
  *
  * @param listener the listener which should no longer be notified
