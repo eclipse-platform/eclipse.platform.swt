@@ -1200,15 +1200,6 @@ public static final int /*long*/ GTK_TYPE_FIXED() {
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _GTK_TYPE_MENU();
-public static final int /*long*/ GTK_TYPE_MENU() {
-	lock.lock();
-	try {
-		return _GTK_TYPE_MENU();
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native int /*long*/ _GTK_TYPE_WIDGET();
 public static final int /*long*/ GTK_TYPE_WIDGET() {
 	lock.lock();

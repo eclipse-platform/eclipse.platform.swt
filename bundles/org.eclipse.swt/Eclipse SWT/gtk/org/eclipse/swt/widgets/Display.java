@@ -138,7 +138,6 @@ public class Display extends Device {
 	Control focusControl;
 	Shell activeShell;
 	boolean activePending;
-	boolean ignoreActivate;
 	
 	/* Input method resources */
 	Control imControl;

@@ -911,20 +911,6 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 		return super.gtk_focus_in_event (widget, event);
 	}
 	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
-	/*
-	* Feature in GTK. The GTK combo box popup under some window managers is 
-	* implemented as a GTK_MENU. When it pops up, it causes the combo box shell to
-	* lose focus and no focus in is received for the menu. As a result, no active shell
-	* is set while the pop up is present. The fix is to check the current grab handle
-	* and see if it is a GTK_MENU. If it is, we set the ignoreActivate flag on Display
-	* and leave the current active shell in place. When the menu pops down, the focus in
-	* event received by the shell will be ignored. The ignoreActivate is reset for the next
-	* time.
-	*/
-	if (display.ignoreActivate) { 
-		display.ignoreActivate = false;
-		return 0;
-	}
 	display.activeShell = this;
 	display.activePending = false;
 	sendEvent (SWT.Activate);
@@ -936,22 +922,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 		return super.gtk_focus_out_event (widget, event);
 	}
 	if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
-	/*
-	* Feature in GTK. The GTK combo box popup under some window managers is 
-	* implemented as a GTK_MENU. When it pops up, it causes the combo box shell to
-	* lose focus and no focus in is received for the menu. As a result, no active shell
-	* is set while the pop up is present. The fix is to check the current grab handle
-	* and see if it is a GTK_MENU. If it is, we set the ignoreActivate flag on Display
-	* and leave the current active shell in place. When the menu pops down, the focus in
-	* event received by the shell will be ignored.
-	*/
 	Display display = this.display;
-	display.ignoreActivate = false;
-	int grabHandle = OS.gtk_grab_get_current ();
-	if (grabHandle != 0) {
-		if (OS.G_OBJECT_TYPE(grabHandle) == OS.GTK_TYPE_MENU()) display.ignoreActivate = true;
-		return 0;
-	}
 	sendEvent (SWT.Deactivate);
 	setActiveControl (null);
 	if (display.activeShell == this) {
