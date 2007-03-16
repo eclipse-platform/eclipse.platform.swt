@@ -200,6 +200,16 @@ public class CTabFolder extends Composite {
 	static final int[] SIMPLE_BOTTOM_LEFT_CORNER = new int[] {0,-2, 1,-1, 2,0};
 	static final int[] SIMPLE_BOTTOM_RIGHT_CORNER = new int[] {-2,0, -1,-1, 0,-2};
 
+	static final int[] TOP_LEFT_CORNER_BORDERLESS = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
+	static final int[] TOP_RIGHT_CORNER_BORDERLESS = new int[] {-7,0, -6,1, -5,1, -2,4, -2,5, -1,6};
+	static final int[] BOTTOM_LEFT_CORNER_BORDERLESS = new int[] {0,-6, 1,-6, 1,-5, 2,-4, 4,-2, 5,-1, 6,-1, 6,0};
+	static final int[] BOTTOM_RIGHT_CORNER_BORDERLESS = new int[] {-7,0, -7,-1, -6,-1, -5,-2, -3,-4, -2,-5, -2,-6, -1,-6};
+
+	static final int[] SIMPLE_TOP_LEFT_CORNER_BORDERLESS = new int[] {0,2, 1,1, 2,0};
+	static final int[] SIMPLE_TOP_RIGHT_CORNER_BORDERLESS= new int[] {-3,0, -2,1, -1,2};
+	static final int[] SIMPLE_BOTTOM_LEFT_CORNER_BORDERLESS = new int[] {0,-3, 1,-2, 2,-1, 3,0};
+	static final int[] SIMPLE_BOTTOM_RIGHT_CORNER_BORDERLESS = new int[] {-4,0, -3,-1, -2,-2, -1,-3};
+
 	static final int SELECTION_FOREGROUND = SWT.COLOR_LIST_FOREGROUND;
 	static final int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
@@ -975,6 +985,8 @@ void drawTabArea(Event event) {
 	int[] shape = null;
 	
 	if (tabHeight == 0) {
+		int style = getStyle();
+		if ((style & SWT.FLAT) != 0 && (style & SWT.BORDER) == 0) return;
 		int x1 = borderLeft - 1;
 		int x2 = size.x - borderRight;
 		int y1 = onBottom ? size.y - borderBottom - highlight_header - 1 : borderTop + highlight_header;
@@ -1008,8 +1020,14 @@ void drawTabArea(Event event) {
 	
 	// Draw Tab Header
 	if (onBottom) {
-		int[] left = simple ? SIMPLE_BOTTOM_LEFT_CORNER : BOTTOM_LEFT_CORNER;
-		int[] right = simple ? SIMPLE_BOTTOM_RIGHT_CORNER : BOTTOM_RIGHT_CORNER;
+		int[] left, right;
+		if ((getStyle() & SWT.BORDER) != 0) {
+			left = simple ? SIMPLE_BOTTOM_LEFT_CORNER : BOTTOM_LEFT_CORNER;
+			right = simple ? SIMPLE_BOTTOM_RIGHT_CORNER : BOTTOM_RIGHT_CORNER;
+		} else {
+			left = simple ? SIMPLE_BOTTOM_LEFT_CORNER_BORDERLESS : BOTTOM_LEFT_CORNER_BORDERLESS;
+			right = simple ? SIMPLE_BOTTOM_RIGHT_CORNER_BORDERLESS : BOTTOM_RIGHT_CORNER_BORDERLESS;
+		}
 		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
@@ -1027,8 +1045,14 @@ void drawTabArea(Event event) {
 		shape[index++] = x+width;
 		shape[index++] = y-highlight_header;
 	} else {
-		int[] left = simple ? SIMPLE_TOP_LEFT_CORNER : TOP_LEFT_CORNER;
-		int[] right = simple ? SIMPLE_TOP_RIGHT_CORNER : TOP_RIGHT_CORNER;
+		int[] left, right;
+		if ((getStyle() & SWT.BORDER) != 0) {
+			left = simple ? SIMPLE_TOP_LEFT_CORNER : TOP_LEFT_CORNER;
+			right = simple ? SIMPLE_TOP_RIGHT_CORNER : TOP_RIGHT_CORNER;
+		} else {
+			left = simple ? SIMPLE_TOP_LEFT_CORNER_BORDERLESS : TOP_LEFT_CORNER_BORDERLESS;
+			right = simple ? SIMPLE_TOP_RIGHT_CORNER_BORDERLESS : TOP_RIGHT_CORNER_BORDERLESS;
+		}
 		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
@@ -2230,7 +2254,7 @@ void onResize() {
 			redraw();
 		} else {
 			int x1 = Math.min(size.x, oldSize.x);
-			if (size.x != oldSize.x) x1 -= borderRight + highlight_margin;
+			if (size.x != oldSize.x) x1 -= borderRight + highlight_margin + 2;
 			if (!simple) x1 -= 5; // rounded top right corner
 			int y1 = Math.min(size.y, oldSize.y);
 			if (size.y != oldSize.y) y1 -= borderBottom + highlight_margin;
@@ -3740,6 +3764,8 @@ boolean updateItems(int showIndex) {
 	return changed;
 }
 boolean updateTabHeight(boolean force){
+	int style = getStyle();
+	if (fixedTabHeight == 0 && (style & SWT.FLAT) != 0 && (style & SWT.BORDER) == 0) highlight_header = 0;		
 	int oldHeight = tabHeight;
 	if (fixedTabHeight != SWT.DEFAULT) {
 		tabHeight = fixedTabHeight == 0 ? 0 : fixedTabHeight + 1; // +1 for line drawn across top of tab
