@@ -871,6 +871,12 @@ int _getOffset (int offset, int movement, boolean forward) {
 				if (logAttr.is_word_start) break;
 			}
 		}
+		if ((movement & SWT.MOVEMENT_WORD_START) != 0) {
+			if (logAttr.is_word_start) break;
+		}
+		if ((movement & SWT.MOVEMENT_WORD_END) != 0) {
+			if (logAttr.is_word_end) break;
+		}
 		offset = validateOffset(offset, step);
 	}
 	OS.g_free(attrs[0]);
