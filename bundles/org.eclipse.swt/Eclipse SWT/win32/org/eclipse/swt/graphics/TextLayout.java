@@ -1401,6 +1401,7 @@ int _getOffset(int offset, int movement, boolean forward) {
 						}
 						break;
 					}
+					case SWT.MOVEMENT_WORD_START:
 					case SWT.MOVEMENT_WORD: {
 						if (properties.fNeedsWordBreaking) {
 							if (!logAttr.fInvalid && logAttr.fWordStop) return untranslateOffset(offset);
@@ -1413,6 +1414,16 @@ int _getOffset(int offset, int movement, boolean forward) {
 										return untranslateOffset(offset);
 									}
 								}
+							}
+						}
+						break;
+					}
+					case SWT.MOVEMENT_WORD_END: {
+						if (offset > 0) {
+							boolean isLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset));
+							boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset - 1));
+							if (!isLetterOrDigit && previousLetterOrDigit) {
+								return untranslateOffset(offset);
 							}
 						}
 						break;
