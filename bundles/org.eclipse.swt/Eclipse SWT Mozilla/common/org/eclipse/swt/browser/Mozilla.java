@@ -1982,11 +1982,20 @@ int /*long*/ OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest,
 	byte[] dest = new byte[length];
 	XPCOM.memmove (dest, buffer, length);
 	XPCOM.nsEmbedCString_delete (aSpec);
+	String url = new String (dest);
+
+	/*
+	 * XULRunner feature.  The first time that XULRunner is used to display a page,
+	 * regardless of whether it's via Browser.setURL() or Browser.setText(), it
+	 * navigates to about:blank and fires the corresponding events.  Do not send
+	 * this event on the user since it is not expected.
+	 */
+	if (IsXULRunner && aRequest == 0 && url.equals (ABOUT_BLANK)) return XPCOM.NS_OK;
 
 	LocationEvent event = new LocationEvent (browser);
 	event.display = browser.getDisplay ();
 	event.widget = browser;
-	event.location = new String (dest);
+	event.location = url;
 	if (event.location.equals (URI_FROMMEMORY)) {
 		/*
 		 * If the URI indicates that the page is being rendered from memory
