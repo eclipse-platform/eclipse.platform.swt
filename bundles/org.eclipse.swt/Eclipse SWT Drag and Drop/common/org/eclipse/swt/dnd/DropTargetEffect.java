@@ -84,7 +84,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 	 * @param y the y coordinate used to locate the item
 	 * @return the item at the given x-y coordinate, or null if the coordinate is not in a selectable item
 	 */
-	/*public*/ Item getItem(int x, int y) {
+	public Widget getItem(int x, int y) {
 		if (control instanceof Table) {
 			return getItem((Table) control, x, y);
 		}
@@ -94,7 +94,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 		return null;
 	}
 	
-	Item getItem(Table table, int x, int y) {
+	Widget getItem(Table table, int x, int y) {
 		Point coordinates = new Point(x, y);
 		coordinates = table.toControl(coordinates);
 		Item item = table.getItem(coordinates);
@@ -114,7 +114,7 @@ public class DropTargetEffect extends DropTargetAdapter {
 		return item;
 	}
 	
-	Item getItem(Tree tree, int x, int y) {
+	Widget getItem(Tree tree, int x, int y) {
 		Point coordinates = new Point(x, y);
 		coordinates = tree.toControl(coordinates);
 		Item item = tree.getItem(coordinates);
