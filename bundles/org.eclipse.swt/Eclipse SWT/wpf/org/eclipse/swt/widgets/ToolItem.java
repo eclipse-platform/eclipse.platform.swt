@@ -645,6 +645,9 @@ public void setEnabled (boolean enabled) {
 	checkWidget ();
 	OS.UIElement_IsEnabled (handle, enabled);
 	updateImages (enabled && parent.getEnabled ());
+	if (arrowHandle != 0) {
+		OS.UIElement_Opacity (arrowHandle, enabled ? 1 : 0.4);
+	}
 }
 
 /**
