@@ -3276,6 +3276,27 @@ public class SWT {
 	 */	
 	public static final int MOVEMENT_WORD = 1 << 2;
 
+	/**
+	 * The word end movement type (value is 1&lt;&lt;3).
+	 * 
+	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
+	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
+	 * 
+	 * @since 3.3
+	 */	
+	public static final int MOVEMENT_WORD_END = 1 << 3;
+
+	/**
+	 * The word start movement type (value is 1&lt;&lt;4).
+	 * 
+	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
+	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
+	 * 
+	 * @since 3.3
+	 */	
+	public static final int MOVEMENT_WORD_START = 1 << 4;
+
+	
 /**
  * Answers a concise, human readable description of the error code.
  *
