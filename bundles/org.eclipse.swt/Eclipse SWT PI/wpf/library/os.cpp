@@ -3482,6 +3482,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(Font_1Style)
 }
 #endif
 
+#ifndef NO_Fonts_1GetTypefaces
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Fonts_1GetTypefaces)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Fonts_1GetTypefaces)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Fonts_1GetTypefaces_FUNC);
+	rc = (jint)TO_HANDLE(Fonts::GetTypefaces((Uri^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, Fonts_1GetTypefaces_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Fonts_1SystemTypefaces
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Fonts_1SystemTypefaces)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(Fonts_1SystemTypefaces)
@@ -11675,6 +11688,17 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1MoveFocus)
 	OS_NATIVE_ENTER(env, that, UIElement_1MoveFocus_FUNC);
 	((UIElement^)TO_OBJECT(arg0))->MoveFocus((TraversalRequest^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, UIElement_1MoveFocus_FUNC);
+}
+#endif
+
+#ifndef NO_UIElement_1Opacity
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1Opacity)(JNIEnv *env, jclass that, jint arg0, jdouble arg1);
+JNIEXPORT void JNICALL OS_NATIVE(UIElement_1Opacity)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	OS_NATIVE_ENTER(env, that, UIElement_1Opacity_FUNC);
+	((UIElement^)TO_OBJECT(arg0))->Opacity = (arg1);
+	OS_NATIVE_EXIT(env, that, UIElement_1Opacity_FUNC);
 }
 #endif
 

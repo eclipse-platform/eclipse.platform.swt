@@ -380,7 +380,7 @@ public class OS extends C {
 	public static final int DataFormats_Rtf = DataFormats_Rtf();
 	
 	
-/** Win32 Natives */	
+/** Win32 Natives */
 public static final native boolean CloseHandle(int hObject);
 public static final native int CreateCursor (int hInst, int xHotSpot, int yHotSpot, int nWidth, int nHeight, byte [] pvANDPlane, byte [] pvXORPlane);
 public static final native boolean CreateProcessW(int lpApplicationName, char [] lpCommandLine, int lpProcessAttributes, int lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, int lpEnvironment, int lpCurrentDirectory, STARTUPINFOW lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
@@ -712,6 +712,7 @@ public static final native int FontWeights_Normal();
 public static final native int FontStretches_Normal();
 public static final native int FontStretch_FromOpenTypeStretch(int stretch);
 public static final native int FontStretch_ToOpenTypeStretch(int sender);
+public static final native int Fonts_GetTypefaces(int uri);
 public static final native int Fonts_SystemTypefaces();
 public static final native double FormattedText_Baseline(int sender);
 public static final native int FormattedText_BuildGeometry(int sender, int origin);
@@ -1369,6 +1370,7 @@ public static final native void UIElement_MouseMove(int sender, int handler);
 public static final native void UIElement_MouseWheel(int sender, int handler);
 public static final native void UIElement_MouseUp(int sender, int handler);
 public static final native void UIElement_MoveFocus(int sender, int request);
+public static final native void UIElement_Opacity(int sender, double value);
 public static final native int UIElement_OpacityProperty();
 public static final native void UIElement_PreviewKeyDown(int sender, int handler);
 public static final native void UIElement_PreviewKeyUp(int sender, int handler);

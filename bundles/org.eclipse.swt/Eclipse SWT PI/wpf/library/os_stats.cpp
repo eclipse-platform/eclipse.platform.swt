@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1219;
-int OS_nativeFunctionCallCount[1219];
+int OS_nativeFunctionCount = 1221;
+int OS_nativeFunctionCallCount[1221];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -296,6 +296,7 @@ char * OS_nativeFunctionNames[] = {
 	"Font_1FontFamily",
 	"Font_1Size",
 	"Font_1Style",
+	"Fonts_1GetTypefaces",
 	"Fonts_1SystemTypefaces",
 	"FormattedText_1Baseline",
 	"FormattedText_1BuildGeometry",
@@ -975,6 +976,7 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1MouseUp",
 	"UIElement_1MouseWheel",
 	"UIElement_1MoveFocus",
+	"UIElement_1Opacity",
 	"UIElement_1OpacityProperty",
 	"UIElement_1PreviewGotKeyboardFocus",
 	"UIElement_1PreviewKeyDown",
