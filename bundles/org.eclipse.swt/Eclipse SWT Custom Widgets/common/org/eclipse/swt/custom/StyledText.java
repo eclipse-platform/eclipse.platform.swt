@@ -92,6 +92,8 @@ public class StyledText extends Canvas {
 	static final int TextChanged = 3006;
 	static final int LineGetSegments = 3007;
 	static final int PaintObject = 3008;
+	static final int WordNext = 3009;
+	static final int WordPrevious = 3010;
 	
 	static final int PREVIOUS_OFFSET_TRAILING = 0;
 	static final int OFFSET_LEADING = 1;
@@ -1426,6 +1428,28 @@ public void addVerifyListener(VerifyListener verifyListener) {
 	if (verifyListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	addListener(SWT.Verify, new TypedListener(verifyListener));
 }
+/**	 
+ * Adds a word movement listener. A movement event is sent when the boundary 
+ * of a word is needed. For example, this occurs during word next and word 
+ * previous actions.
+ *
+ * @param movementListener the listener
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
+ * 
+ * @since 3.3 
+ */
+public void addWordMovementListener(MovementListener movementListener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	addListener(WordNext, new StyledTextListener(movementListener));
+	addListener(WordPrevious, new StyledTextListener(movementListener));
+}
 /** 
  * Appends a string to the text at the end of the widget.
  *
@@ -2212,7 +2236,7 @@ void doDeleteWordNext() {
 		Event event = new Event();
 		event.text = "";
 		event.start = caretOffset;
-		event.end = getWordEnd(caretOffset);
+		event.end = getWordNext(caretOffset, SWT.MOVEMENT_WORD);
 		sendKeyEvent(event);
 	}
 }
@@ -2227,7 +2251,7 @@ void doDeleteWordPrevious() {
 	} else {
 		Event event = new Event();
 		event.text = "";
-		event.start = getWordStart(caretOffset);
+		event.start = getWordPrevious(caretOffset, SWT.MOVEMENT_WORD);
 		event.end = caretOffset;
 		sendKeyEvent(event);
 	}
@@ -2447,9 +2471,9 @@ int doMouseWordSelect(int x, int newCaretOffset, int line) {
 		int wordOffset;
 		// find the previous/next word
 		if (caretOffset == selection.x) {
-			wordOffset = getWordStart(newCaretOffset);
+			wordOffset = getWordPrevious(newCaretOffset, SWT.MOVEMENT_WORD_START);
 		} else {
-			wordOffset = getWordEndNoSpaces(newCaretOffset);
+			wordOffset = getWordNext(newCaretOffset, SWT.MOVEMENT_WORD_END);
 		}
 		// mouse word select only on same line mouse cursor is on
 		if (content.getLineAtOffset(wordOffset) == line) {
@@ -2906,7 +2930,7 @@ void doSelectionPageUp(int pixels) {
  * Moves the caret to the end of the next word .
  */
 void doSelectionWordNext() {
-	int newCaretOffset = getWordEnd(caretOffset);
+	int newCaretOffset = getWordNext(caretOffset, SWT.MOVEMENT_WORD);
 	// Force symmetrical movement for word next and previous. Fixes 14536
 	caretAlignment = OFFSET_LEADING;
 	// don't change caret position if in single line mode and the cursor 
@@ -2922,7 +2946,7 @@ void doSelectionWordNext() {
  */
 void doSelectionWordPrevious() {
 	caretAlignment = OFFSET_LEADING;
-	caretOffset = getWordStart(caretOffset);
+	caretOffset = getWordPrevious(caretOffset, SWT.MOVEMENT_WORD);
 	int caretLine = content.getLineAtOffset(caretOffset);
 	// word previous always comes from bottom line. when
 	// wrapping lines, stay on bottom line when on line boundary
@@ -4599,111 +4623,52 @@ int getWrapWidth () {
 	}
 	return -1;
 }
-/**
- * Returns the offset of the character after the word at the specified
- * offset.
- * <p>
- * There are two classes of words formed by a sequence of characters:
- * <ul>
- * <li>from 0-9 and A-z (ASCII 48-57 and 65-122)
- * <li>every other character except line breaks
- * </ul>
- * </p><p>
- * Space characters ' ' (ASCII 20) are special as they are treated as
- * part of the word leading up to the space character.  Line breaks are 
- * treated as one word.
- * </p>
- */
-int getWordEnd(int offset) {
+int getWordNext (int offset, int movement) {
+	int newOffset, lineOffset;
+	String lineText;
 	if (offset >= getCharCount()) {
-		return offset;
-	}
-	int lineIndex = content.getLineAtOffset(offset);
-	int lineOffset = content.getOffsetAtLine(lineIndex);
-	int lineLength = content.getLine(lineIndex).length();
-	if (offset == lineOffset + lineLength) {
-		offset = content.getOffsetAtLine(lineIndex + 1);
+		newOffset = offset;
+		int lineIndex = content.getLineCount() - 1;
+		lineOffset = content.getOffsetAtLine(lineIndex);
+		lineText = content.getLine(lineIndex);
 	} else {
-		TextLayout layout = renderer.getTextLayout(lineIndex);
-		offset -= lineOffset;
-		offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD);
-		offset += lineOffset;
-		renderer.disposeTextLayout(layout);
-	}
-	return offset;
-}
-/**
- * Returns the offset of the character after the word at the specified
- * offset.
- * <p>
- * There are two classes of words formed by a sequence of characters:
- * <ul>
- * <li>from 0-9 and A-z (ASCII 48-57 and 65-122)
- * <li>every other character except line breaks
- * </ul>
- * </p><p>
- * Spaces are ignored and do not represent a word.  Line breaks are treated 
- * as one word.
- * </p>
- */
-int getWordEndNoSpaces(int offset) {
-	if (offset >= getCharCount()) {
-		return offset;
-	}
-	int line = content.getLineAtOffset(offset);
-	int lineOffset = content.getOffsetAtLine(line);
-	String lineText = content.getLine(line);
-	int lineLength = lineText.length();
-	if (offset == lineOffset + lineLength) {
-		line++;
-		offset = content.getOffsetAtLine(line);
-	} else {
-		offset -= lineOffset;
-		char ch = lineText.charAt(offset);
-		boolean letterOrDigit = Compatibility.isLetterOrDigit(ch);
-		while (offset < lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && !Compatibility.isSpaceChar(ch)) {
-			offset++;
-			ch = lineText.charAt(offset);
+		int lineIndex = content.getLineAtOffset(offset);
+		lineOffset = content.getOffsetAtLine(lineIndex);
+		lineText = content.getLine(lineIndex);
+		int lineLength = lineText.length();
+		if (offset == lineOffset + lineLength) {
+			newOffset = content.getOffsetAtLine(lineIndex + 1);
+		} else {
+			TextLayout layout = renderer.getTextLayout(lineIndex);
+			newOffset = lineOffset + layout.getNextOffset(offset - lineOffset, movement);
+			renderer.disposeTextLayout(layout);
 		}
-		if (offset == lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && !Compatibility.isSpaceChar(ch)) {
-			offset++;
-		}
-		offset += lineOffset;
 	}
-	return offset;
+	return sendWordBoundaryEvent(WordNext, movement, offset, newOffset, lineText, lineOffset);
 }
-/**
- * Returns the start offset of the word at the specified offset.
- * There are two classes of words formed by a sequence of characters:
- * <p>
- * <ul>
- * <li>from 0-9 and A-z (ASCII 48-57 and 65-122)
- * <li>every other character except line breaks
- * </ul>
- * </p><p>
- * Space characters ' ' (ASCII 20) are special as they are treated as
- * part of the word leading up to the space character.  Line breaks are treated 
- * as one word.
- * </p>
- */
-int getWordStart(int offset) {
+int getWordPrevious(int offset, int movement) {
+	int newOffset, lineOffset;
+	String lineText;
 	if (offset <= 0) {
-		return offset;
-	}
-	int lineIndex = content.getLineAtOffset(offset);
-	int lineOffset = content.getOffsetAtLine(lineIndex);
-	if (offset == lineOffset) {
-		lineIndex--;
-		String lineText = content.getLine(lineIndex);
-		offset = content.getOffsetAtLine(lineIndex) + lineText.length();
+		newOffset = 0;
+		int lineIndex = content.getLineAtOffset(newOffset);
+		lineOffset = content.getOffsetAtLine(lineIndex);
+		lineText = content.getLine(lineIndex);
 	} else {
-		TextLayout layout = renderer.getTextLayout(lineIndex);
-		offset -= lineOffset;
-		offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD);
-		offset += lineOffset;
-		renderer.disposeTextLayout(layout); 
+		int lineIndex = content.getLineAtOffset(offset);
+		lineOffset = content.getOffsetAtLine(lineIndex);
+		lineText = content.getLine(lineIndex);
+		if (offset == lineOffset) {
+			String nextLineText = content.getLine(lineIndex - 1);
+			int nextLineOffset = content.getOffsetAtLine(lineIndex - 1); 
+			newOffset = nextLineOffset + nextLineText.length();
+		} else {
+			TextLayout layout = renderer.getTextLayout(lineIndex);
+			newOffset = lineOffset + layout.getPreviousOffset(offset - lineOffset, movement);
+			renderer.disposeTextLayout(layout); 
+		}
 	}
-	return offset;
+	return sendWordBoundaryEvent(WordPrevious, movement, offset, newOffset, lineText, lineOffset);
 }
 /**
  * Returns whether the widget wraps lines.
@@ -5111,9 +5076,9 @@ void handleMouseDoubleClick(Event event) {
 		return;
 	}
 	mouseDoubleClick = true;
-	caretOffset = getWordStart(caretOffset);
+	caretOffset = getWordPrevious(caretOffset, SWT.MOVEMENT_WORD_START);
 	resetSelection();
-	caretOffset = getWordEndNoSpaces(caretOffset);
+	caretOffset = getWordNext(caretOffset, SWT.MOVEMENT_WORD_END);
 	showCaret();
 	doMouseSelection();
 	doubleClickSelection = new Point(selection.x, selection.y);
@@ -6196,6 +6161,27 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	removeListener(VerifyKey, listener);
 }
+/**
+ * Removes the specified word movement listener.
+ *
+ * @param listener the listener
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+
+public void removeWordMovementListener(MovementListener listener) {
+	checkWidget();
+	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	removeListener(WordNext, listener);	
+	removeListener(WordPrevious, listener);
+}
 /** 
  * Replaces the styles in the given range with new styles.  This method
  * effectively deletes the styles in the given range and then adds the
@@ -6544,6 +6530,32 @@ void sendSelectionEvent() {
 	event.x = selection.x;
 	event.y = selection.y;
 	notifyListeners(SWT.Selection, event);
+}
+int sendWordBoundaryEvent(int eventType, int movement, int offset, int newOffset, String lineText, int lineOffset) {
+	if (isListening(eventType)) {
+		StyledTextEvent event = new StyledTextEvent(content);
+		event.detail = lineOffset;
+		event.text = lineText;
+		event.count = movement;
+		event.start = offset;
+		event.end = newOffset;
+		notifyListeners(eventType, event);
+		offset = event.end;
+		if (offset != newOffset) {
+			int length = getCharCount();
+			if (offset < 0) {
+				offset = 0;
+			} else if (offset > length) {
+				offset = length;
+			} else {
+				if (isLineDelimiter(offset)) {
+					SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+				}
+			}
+		}
+		return offset;
+	}
+	return newOffset;
 }
 /**
  * Sets the alignment of the widget. The argument should be one of <code>SWT.LEFT</code>, 
