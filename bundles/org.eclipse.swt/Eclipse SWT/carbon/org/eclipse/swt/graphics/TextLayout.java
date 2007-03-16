@@ -963,10 +963,19 @@ int _getOffset (int offset, int movement, boolean forward) {
 		OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
 		offset = newOffset[0];
 		newOffset[0] = untranslateOffset(newOffset[0]);
-		if (movement == SWT.MOVEMENT_WORD) {
+		if (movement == SWT.MOVEMENT_WORD || movement == SWT.MOVEMENT_WORD_END) {
 			while (newOffset[0] < length && 
 					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) &&
 					Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
+				OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
+				offset = newOffset[0];
+				newOffset[0] = untranslateOffset(newOffset[0]);
+			}
+		}
+		if (movement == SWT.MOVEMENT_WORD_START) {
+			while (newOffset[0] < length && 
+					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) &&
+					!Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
 				OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
 				offset = newOffset[0];
 				newOffset[0] = untranslateOffset(newOffset[0]);
@@ -976,10 +985,19 @@ int _getOffset (int offset, int movement, boolean forward) {
 		OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
 		offset = newOffset[0];
 		newOffset[0] = untranslateOffset(newOffset[0]);
-		if (movement == SWT.MOVEMENT_WORD) {
+		if (movement == SWT.MOVEMENT_WORD || movement == SWT.MOVEMENT_WORD_START) {
 			while (newOffset[0] > 0 && 
 					(!(Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) && 
 					!Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
+				OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
+				offset = newOffset[0];
+				newOffset[0] = untranslateOffset(newOffset[0]);
+			}
+		}
+		if (movement == SWT.MOVEMENT_WORD_END) {
+			while (newOffset[0] > 0 && 
+					(!(!Compatibility.isLetterOrDigit(text.charAt(newOffset[0])) && 
+					Compatibility.isLetterOrDigit(text.charAt(newOffset[0] - 1))))) {
 				OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
 				offset = newOffset[0];
 				newOffset[0] = untranslateOffset(newOffset[0]);
