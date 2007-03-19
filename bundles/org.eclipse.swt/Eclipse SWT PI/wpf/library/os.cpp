@@ -1528,6 +1528,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(Control_1BackgroundProperty)
 }
 #endif
 
+#ifndef NO_Control_1BorderBrushProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Control_1BorderBrushProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Control_1BorderBrushProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Control_1BorderBrushProperty_FUNC);
+	rc = (jint)TO_HANDLE(Control::BorderBrushProperty);
+	OS_NATIVE_EXIT(env, that, Control_1BorderBrushProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Control_1BorderThickness
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1BorderThickness)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(Control_1BorderThickness)
@@ -1536,6 +1549,19 @@ JNIEXPORT void JNICALL OS_NATIVE(Control_1BorderThickness)
 	OS_NATIVE_ENTER(env, that, Control_1BorderThickness_FUNC);
 	((Control^)TO_OBJECT(arg0))->BorderThickness = ((Thickness)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, Control_1BorderThickness_FUNC);
+}
+#endif
+
+#ifndef NO_Control_1BorderThicknessProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Control_1BorderThicknessProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Control_1BorderThicknessProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Control_1BorderThicknessProperty_FUNC);
+	rc = (jint)TO_HANDLE(Control::BorderThicknessProperty);
+	OS_NATIVE_EXIT(env, that, Control_1BorderThicknessProperty_FUNC);
+	return rc;
 }
 #endif
 
@@ -14264,6 +14290,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TabItem)
 	OS_NATIVE_ENTER(env, that, gcnew_1TabItem_FUNC);
 	rc = (jint)TO_HANDLE(gcnew TabItem());
 	OS_NATIVE_EXIT(env, that, gcnew_1TabItem_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1TemplateBindingExtension
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TemplateBindingExtension)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1TemplateBindingExtension)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1TemplateBindingExtension_FUNC);
+	rc = (jint)TO_HANDLE(gcnew TemplateBindingExtension((DependencyProperty^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, gcnew_1TemplateBindingExtension_FUNC);
 	return rc;
 }
 #endif

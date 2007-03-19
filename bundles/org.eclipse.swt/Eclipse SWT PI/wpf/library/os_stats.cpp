@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1229;
-int OS_nativeFunctionCallCount[1229];
+int OS_nativeFunctionCount = 1232;
+int OS_nativeFunctionCallCount[1232];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -141,7 +141,9 @@ char * OS_nativeFunctionNames[] = {
 	"ContextMenu_1VerticalOffset",
 	"Control_1Background",
 	"Control_1BackgroundProperty",
+	"Control_1BorderBrushProperty",
 	"Control_1BorderThickness",
+	"Control_1BorderThicknessProperty",
 	"Control_1FontFamily",
 	"Control_1FontFamilyProperty",
 	"Control_1FontSize",
@@ -1211,6 +1213,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1Style",
 	"gcnew_1TabControl",
 	"gcnew_1TabItem",
+	"gcnew_1TemplateBindingExtension",
 	"gcnew_1TextBlock",
 	"gcnew_1TextBox",
 	"gcnew_1TextChangedEventHandler",
