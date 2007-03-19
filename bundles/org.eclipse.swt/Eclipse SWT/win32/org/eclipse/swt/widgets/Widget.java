@@ -1723,12 +1723,14 @@ LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
 }
 
 LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
+	Display display = this.display;
 	LRESULT result = null;
 	int x = (short) (lParam & 0xFFFF);
 	int y = (short) (lParam >> 16);
 	boolean [] consume = null, detect = null;
 	boolean dragging = false, mouseDown = true;
-	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+	int count = display.getClickCount (SWT.MouseDown, 1, hwnd, lParam);
+	if (count == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 		if (!OS.IsWinCE) {
 			/*
 			* Feature in Windows.  It's possible that the drag
@@ -1745,9 +1747,8 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 			mouseDown = OS.GetKeyState (OS.VK_LBUTTON) < 0;
 		}
 	}
-	Display display = this.display;
 	display.captureChanged = false;
-	boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
+	boolean dispatch = sendMouseEvent (SWT.MouseDown, 1, count, 0, false, hwnd, OS.WM_LBUTTONDOWN, wParam, lParam);
 	if (dispatch && (consume == null || !consume [0])) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_LBUTTONDOWN, wParam, lParam));	
 	} else {

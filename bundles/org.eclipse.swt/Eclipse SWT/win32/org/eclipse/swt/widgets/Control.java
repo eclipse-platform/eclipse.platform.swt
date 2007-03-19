@@ -669,13 +669,55 @@ void destroyWidget () {
  * listener to conditionally detect a drag.
  * </p>
  *
- * @param button the button that was pressed
- * @param stateMask keyboard modifier keys
- * @param x the widget-relative, x coordinate of the pointer
- * @param y the widget-relative, y coordinate of the pointer
+ * @param event the mouse down event
  * 
  * @return <code>true</code> if the gesture occured, and <code>false</code> otherwise.
  *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *  
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
+public boolean dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occured, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -689,9 +731,22 @@ void destroyWidget () {
  * 
  * @since 3.3
  */
+public boolean dragDetect (MouseEvent event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+/**
+ * @deprecated use dragDetect(Event) 
+ */
 public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
-	if (button != 1) return false;
+	return dragDetect (button, 1, stateMask, x, y);
+}
+
+boolean dragDetect (int button, int count, int stateMask, int x, int y) {
+	if (button != 1 || count != 1) return false;
 	boolean dragging = dragDetect (handle, x, y, false, null, null);
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
