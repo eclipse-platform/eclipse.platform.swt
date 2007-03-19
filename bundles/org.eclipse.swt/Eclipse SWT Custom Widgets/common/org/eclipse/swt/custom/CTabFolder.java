@@ -471,9 +471,9 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection, typedListener);
 }
 void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
-	// Don't perform anti-aliasing on Mac because the platform
+	// Don't perform anti-aliasing on Mac and WPF because the platform
 	// already does it.  The simple style also does not require anti-aliasing.
-	if (simple || "carbon".equals(SWT.getPlatform())) return; //$NON-NLS-1$
+	if (simple || "carbon".equals(SWT.getPlatform()) || "wpf".equals(SWT.getPlatform())) return; //$NON-NLS-1$
 	// Don't perform anti-aliasing on low resolution displays
 	if (getDisplay().getDepth() < 15) return;
 	if (outerRGB != null) {
