@@ -944,7 +944,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	*/
 	Display display = this.display;
 	display.ignoreActivate = false;
-	int grabHandle = OS.gtk_grab_get_current ();
+	int /*long*/ grabHandle = OS.gtk_grab_get_current ();
 	if (grabHandle != 0) {
 		if (OS.G_OBJECT_TYPE(grabHandle) == OS.GTK_TYPE_MENU()) display.ignoreActivate = true;
 		return 0;
