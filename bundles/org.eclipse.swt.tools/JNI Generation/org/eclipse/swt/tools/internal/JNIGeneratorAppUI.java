@@ -519,14 +519,14 @@ void createMembersPanel(Composite panel) {
 		public void handleEvent(Event e) {
 			String pattern = searchText.getText();
 			int selection = membersLt.getSelectionIndex();
-			if (selection == -1) selection = 0;
+			selection++;
 			int count = membersLt.getItemCount();
 			for (int i = selection; i < count; i++) {
 				TableItem item = membersLt.getItem(i);
 				String text = item.getText();
 				try {
 					if (text.matches(pattern)) {
-						membersLt.showItem(item);
+						membersLt.setSelection(i);
 						break;
 					}
 				} catch (Exception ex) {}
