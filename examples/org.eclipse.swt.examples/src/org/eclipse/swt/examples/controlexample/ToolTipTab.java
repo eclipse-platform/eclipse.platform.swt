@@ -44,16 +44,16 @@ class ToolTipTab extends Tab {
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
-		/* Create a group for the combo box */
+		/* Create a group for the tooltip visibility check box */
 		toolTipGroup = new Group (exampleGroup, SWT.NONE);
 		toolTipGroup.setLayout (new GridLayout ());
 		toolTipGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 		toolTipGroup.setText ("ToolTip");
-		Button button = new Button (toolTipGroup, SWT.PUSH);
-		button.setText(ControlExample.getResourceString("Press_For_ToolTip"));
-		button.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event event) {
-				toolTip1.setVisible(true);
+		visibleButton = new Button(toolTipGroup, SWT.CHECK);
+		visibleButton.setText(ControlExample.getResourceString("Visible"));
+		visibleButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setExampleWidgetVisibility ();
 			}
 		});
 	}
@@ -131,8 +131,6 @@ class ToolTipTab extends Tab {
 		otherGroup.setText (ControlExample.getResourceString("Other"));
 	
 		/* Create the controls */
-		visibleButton = new Button(otherGroup, SWT.CHECK);
-		visibleButton.setText(ControlExample.getResourceString("Visible"));
 		autoHideButton = new Button(otherGroup, SWT.CHECK);
 		autoHideButton.setText(ControlExample.getResourceString("AutoHide"));
 		showInTrayButton = new Button(otherGroup, SWT.CHECK);
@@ -141,11 +139,6 @@ class ToolTipTab extends Tab {
 		showInTrayButton.setEnabled(tray != null);
 
 		/* Add the listeners */
-		visibleButton.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				setExampleWidgetVisibility ();
-			}
-		});
 		autoHideButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setExampleWidgetAutoHide ();
@@ -163,7 +156,6 @@ class ToolTipTab extends Tab {
 		});
 
 		/* Set the default state */
-		visibleButton.setSelection(false);
 		autoHideButton.setSelection(true);
 	}
 	
