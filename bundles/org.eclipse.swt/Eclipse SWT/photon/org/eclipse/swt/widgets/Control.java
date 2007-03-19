@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.photon.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.*;
@@ -552,7 +553,27 @@ boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
-public boolean dragDetect (int button, int stateMask, int x, int y) {	checkWidget ();
+public boolean dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+public boolean dragDetect (MouseEvent event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+/**
+ * @deprecated use dragDetect(Event) 
+ */
+public boolean dragDetect (int button, int stateMask, int x, int y) {
+	checkWidget ();
+	return dragDetect (button, 1, stateMask, x, y);
+}
+
+boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 	//TODO - not implemented
 	return false;
 }
