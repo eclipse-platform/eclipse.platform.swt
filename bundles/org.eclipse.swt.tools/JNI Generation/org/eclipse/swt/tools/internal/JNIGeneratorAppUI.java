@@ -502,10 +502,38 @@ void createClassesPanel(Composite panel) {
 }
 
 void createMembersPanel(Composite panel) {
-	Label membersLb = new Label(panel, SWT.NONE);
-	membersLb.setText("Mem&bers:");
-
 	GridData data;
+	Composite comp = new Composite(panel, SWT.NONE);
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	comp.setLayoutData(data);	
+	GridLayout layout = new GridLayout(2, false);
+	layout.marginWidth = layout.marginHeight = 0;
+	comp.setLayout(layout);
+	Label membersLb = new Label(comp, SWT.NONE);
+	membersLb.setText("Mem&bers [regex]:");
+	final Text searchText = new Text(comp, SWT.SINGLE | SWT.SEARCH);
+	searchText.setText(".*");
+	data = new GridData(GridData.FILL_HORIZONTAL);
+	searchText.setLayoutData(data);
+	searchText.addListener(SWT.DefaultSelection, new Listener() {
+		public void handleEvent(Event e) {
+			String pattern = searchText.getText();
+			int selection = membersLt.getSelectionIndex();
+			if (selection == -1) selection = 0;
+			int count = membersLt.getItemCount();
+			for (int i = selection; i < count; i++) {
+				TableItem item = membersLt.getItem(i);
+				String text = item.getText();
+				try {
+					if (text.matches(pattern)) {
+						membersLt.showItem(item);
+						break;
+					}
+				} catch (Exception ex) {}
+			}
+		}
+	});
+
 	membersLt = new Table(panel, SWT.CHECK | SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 	data = new GridData(GridData.FILL_BOTH);
 	data.heightHint = membersLt.getItemHeight() * 6;
