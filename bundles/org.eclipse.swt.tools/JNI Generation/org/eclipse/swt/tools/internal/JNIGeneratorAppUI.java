@@ -516,20 +516,27 @@ void createMembersPanel(Composite panel) {
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	searchText.setLayoutData(data);
 	searchText.addListener(SWT.DefaultSelection, new Listener() {
+		boolean match (int index, String pattern) {
+			TableItem item = membersLt.getItem(index);
+			String text = item.getText();
+			try {
+				if (text.matches(pattern)) {
+					membersLt.setSelection(index);
+					return true;
+				}
+			} catch (Exception ex) {}
+			return false;
+		}
 		public void handleEvent(Event e) {
 			String pattern = searchText.getText();
 			int selection = membersLt.getSelectionIndex();
-			selection++;
 			int count = membersLt.getItemCount();
+			selection++;
 			for (int i = selection; i < count; i++) {
-				TableItem item = membersLt.getItem(i);
-				String text = item.getText();
-				try {
-					if (text.matches(pattern)) {
-						membersLt.setSelection(i);
-						break;
-					}
-				} catch (Exception ex) {}
+				if (match (i, pattern)) return;
+			}
+			for (int i = 0; i < selection; i++) {
+				if (match (i, pattern)) return;
 			}
 		}
 	});
