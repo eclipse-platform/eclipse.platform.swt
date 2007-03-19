@@ -214,6 +214,11 @@ public void append (String string) {
 }
 
 static int checkStyle (int style) {
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~SWT.PASSWORD;
+	}
+	style &= ~SWT.SEARCH;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
