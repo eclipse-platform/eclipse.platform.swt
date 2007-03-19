@@ -912,14 +912,12 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	}
 	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
 	/*
-	* Feature in GTK. The GTK combo box popup under some window managers is 
-	* implemented as a GTK_MENU. When it pops up, it causes the combo box shell to
-	* lose focus and no focus in is received for the menu. As a result, no active shell
-	* is set while the pop up is present. The fix is to check the current grab handle
-	* and see if it is a GTK_MENU. If it is, we set the ignoreActivate flag on Display
-	* and leave the current active shell in place. When the menu pops down, the focus in
-	* event received by the shell will be ignored. The ignoreActivate is reset for the next
-	* time.
+	* Feature in GTK. The GTK combo box popup under some window managers
+	* is  implemented as a GTK_MENU.  When it pops up, it causes the combo
+	* box shell to lose focus when no focus is received for the menu.  As
+	* a result, no active shell is set while the pop up is visible.  The
+	* fix is to check the current grab handle and see if it is a GTK_MENU
+	* and ignore the focus event when the menu is both shown and hidden.
 	*/
 	if (display.ignoreActivate) { 
 		display.ignoreActivate = false;
@@ -937,13 +935,12 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	}
 	if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
 	/*
-	* Feature in GTK. The GTK combo box popup under some window managers is 
-	* implemented as a GTK_MENU. When it pops up, it causes the combo box shell to
-	* lose focus and no focus in is received for the menu. As a result, no active shell
-	* is set while the pop up is present. The fix is to check the current grab handle
-	* and see if it is a GTK_MENU. If it is, we set the ignoreActivate flag on Display
-	* and leave the current active shell in place. When the menu pops down, the focus in
-	* event received by the shell will be ignored.
+	* Feature in GTK. The GTK combo box popup under some window managers
+	* is  implemented as a GTK_MENU.  When it pops up, it causes the combo
+	* box shell to lose focus when no focus is received for the menu.  As
+	* a result, no active shell is set while the pop up is visible.  The
+	* fix is to check the current grab handle and see if it is a GTK_MENU
+	* and ignore the focus event when the menu is both shown and hidden.
 	*/
 	Display display = this.display;
 	display.ignoreActivate = false;
