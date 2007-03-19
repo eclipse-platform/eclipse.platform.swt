@@ -383,18 +383,22 @@ int findContentPresenter (int element, int column) {
 	int controlTemplate = OS.Control_Template (handle);
 	int headerName = createDotNetString ("PART_Header", false);
 	int partHeader = OS.FrameworkTemplate_FindName (controlTemplate, headerName, handle);
-	//TODO - test this on classic look
-	int rowPresenter = OS.VisualTreeHelper_GetChild (partHeader, 0);
-	int contentPresenter = OS.VisualTreeHelper_GetChild (rowPresenter, column);
-	OS.GCHandle_Free (partHeader);
+	int contentPresenter;
+	if (parent.columnCount == 0) {
+		contentPresenter = partHeader;
+	} else {
+		int rowPresenter = OS.VisualTreeHelper_GetChild (partHeader, 0);
+		contentPresenter = OS.VisualTreeHelper_GetChild (rowPresenter, column);
+		OS.GCHandle_Free(rowPresenter);
+		OS.GCHandle_Free (partHeader);
+	}
 	OS.GCHandle_Free (headerName);
 	OS.GCHandle_Free (controlTemplate);
-	OS.GCHandle_Free(rowPresenter);
 	return contentPresenter;
 }
 
 int findPart (int column, String part) {
-	if (!OS.FrameworkElement_IsLoaded (handle)) return 0;
+	updateLayout(handle);
 	if (OS.UIElement_Visibility (handle) != OS.Visibility_Visible) return 0;
 	int contentPresenter = findContentPresenter (handle, column);
 	int cellTemplate;

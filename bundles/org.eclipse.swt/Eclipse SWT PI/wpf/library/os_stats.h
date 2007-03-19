@@ -167,6 +167,7 @@ typedef enum {
 	Control_1HorizontalContentAlignment__I_FUNC,
 	Control_1HorizontalContentAlignment__II_FUNC,
 	Control_1MouseDoubleClick_FUNC,
+	Control_1Padding_FUNC,
 	Control_1Template__I_FUNC,
 	Control_1Template__II_FUNC,
 	Control_1TemplateProperty_FUNC,

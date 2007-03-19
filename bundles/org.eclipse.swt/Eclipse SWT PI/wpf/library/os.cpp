@@ -1744,6 +1744,17 @@ JNIEXPORT void JNICALL OS_NATIVE(Control_1MouseDoubleClick)
 }
 #endif
 
+#ifndef NO_Control_1Padding
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1Padding)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Control_1Padding)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Control_1Padding_FUNC);
+	((Control^)TO_OBJECT(arg0))->Padding = ((Thickness)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Control_1Padding_FUNC);
+}
+#endif
+
 #ifndef NO_Control_1Template__I
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Control_1Template__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(Control_1Template__I)

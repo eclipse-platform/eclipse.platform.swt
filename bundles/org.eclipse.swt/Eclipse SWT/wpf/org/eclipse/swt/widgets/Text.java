@@ -275,9 +275,11 @@ void createHandle () {
 	}
 	if ((style & SWT.BORDER) == 0) {
 		int thickness = OS.gcnew_Thickness (0, 0, 0, 0);
-		OS.Control_BorderThickness (handle, thickness);	
+		OS.Control_BorderThickness (handle, thickness);
+		OS.Control_Padding(handle, thickness);
 		OS.GCHandle_Free (thickness);
 	}
+	
 	if ((style & SWT.READ_ONLY) != 0) OS.TextBoxBase_IsReadOnly (handle, true);
 	if ((style & SWT.CENTER) != 0) OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Center);
 	if ((style & SWT.RIGHT) != 0) OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Right);
