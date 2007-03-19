@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -129,7 +129,10 @@ public class CTabFolder extends Composite {
 	int[] selectionGradientPercents;
 	boolean selectionGradientVertical;
 	Color selectionForeground;
-	Color selectionBackground;
+	Color selectionBackground;  //selection fade end
+	Color selectionFadeStart;
+	Color[] selectionHighlightGradientColors = null;  //null is a legal value, check on access (see allocSelectionHighlightGradientColors())
+
 	
 	/* Unselected item appearance */
 	Image bgImage;
@@ -173,6 +176,8 @@ public class CTabFolder extends Composite {
 	int highlight_header = 0;
 	
 	int[] curve;
+	int[] topCurveHighlightStart;
+	int[] topCurveHighlightEnd;
 	int curveWidth = 0;
 	int curveIndent = 0;
 	
@@ -191,6 +196,11 @@ public class CTabFolder extends Composite {
 	static final int BUTTON_SIZE = 18;
 
 	static final int[] TOP_LEFT_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
+
+	//TOP_LEFT_CORNER_HILITE is layed out in reverse (ie. top to bottom)
+	//so can fade in same direction as right swoop curve
+	static final int[] TOP_LEFT_CORNER_HILITE = new int[] {5,2, 4,2, 3,3, 2,4, 2,5, 1,6};
+
 	static final int[] TOP_RIGHT_CORNER = new int[] {-6,0, -5,1, -4,1, -1,4, -1,5, 0,6};
 	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-6, 1,-5, 1,-4, 4,-1, 5,-1, 6,0};
 	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-6,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-6};
@@ -1837,6 +1847,7 @@ void onDispose(Event event) {
 
 	selectionBackground = null;
 	selectionForeground = null;
+	deallocSelectionHighlightGradientColors();	
 }
 void onDragDetect(Event event) {
 	boolean consume = false;
@@ -3327,6 +3338,7 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		selectionGradientPercents = null;
 		selectionGradientVertical = false;
 		setSelectionBackground((Color)null);
+		deallocSelectionHighlightGradientColors();
 	} else {
 		selectionGradientColors = new Color[colors.length];
 		for (int i = 0; i < colors.length; ++i) {
@@ -3338,6 +3350,7 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		}
 		selectionGradientVertical = vertical;
 		setSelectionBackground(selectionGradientColors[selectionGradientColors.length-1]);
+		allocSelectionHighlightGradientColors();
 	}
 
 	// Refresh with the new settings
@@ -3361,6 +3374,7 @@ public void setSelectionBackground(Image image) {
 	if (image != null) {
 		selectionGradientColors = null;
 		selectionGradientPercents = null;
+		deallocSelectionHighlightGradientColors();
 	}
 	selectionBgImage = image;
 	if (selectedIndex > -1) redraw();
@@ -3382,6 +3396,79 @@ public void setSelectionForeground (Color color) {
 	selectionForeground = color;
 	if (selectedIndex > -1) redraw();
 }
+
+/*
+ * Return an RGB that is the midpoint color between RGB from and to.
+ */
+private RGB blend(RGB from, RGB to){
+	int red = (from.red + to.red) / 2;
+	int green = (from.green + to.green) / 2;
+	int blue = (from.blue + to.blue) / 2;
+	return new RGB(red, green, blue);
+}
+
+/*
+ * Allocate colors for the highlight line.
+ * Colours will be a gradual blend ranging from to.
+ * Blend length will be tab height.
+ * Recompute this if tab height changes.
+ * Could remain null if there'd be no gradient (start=end or low colour display)
+ */
+private void allocSelectionHighlightGradientColors() {
+	deallocSelectionHighlightGradientColors(); //dealloc if existing
+
+	//don't bother on low colour
+	if (getDisplay().getDepth() < 15)
+		return;
+
+	//alloc colours for entire height to ensure it matches wherever we stop drawing
+	int fadeGradientSize = tabHeight;
+
+	Color white = getDisplay().getSystemColor(SWT.COLOR_WHITE);
+	RGB backgroundBegin = getSelectionBackgroundGradientBegin().getRGB();
+	RGB to = selectionBackground.getRGB();
+
+	//if start = end then don't bother
+	if(backgroundBegin.equals(to))
+		return;
+	
+	//from is 50/50 white/backgroundBegin so doesn't stand out too much
+	RGB from = blend(white.getRGB(), backgroundBegin);
+
+	selectionHighlightGradientColors = new Color[fadeGradientSize];
+
+	for (int i = 0; i < fadeGradientSize; i++) {
+		int denom = fadeGradientSize;
+		int propFrom = fadeGradientSize - i;
+		int propTo = i;
+		int red = (to.red * propTo + from.red * propFrom) / denom;
+		int green = (to.green * propTo  + from.green * propFrom) / denom;
+		int blue = (to.blue * propTo  + from.blue * propFrom) / denom;
+		selectionHighlightGradientColors[i] = new Color(getDisplay(), red, green, blue);
+	}
+}
+
+private void deallocSelectionHighlightGradientColors() {
+	if(selectionHighlightGradientColors == null)
+		return;
+	for (int i = 0; i < selectionHighlightGradientColors.length; i++) {
+		selectionHighlightGradientColors[i].dispose();
+	}
+	selectionHighlightGradientColors = null;
+}
+
+/*
+ * Return the gradient start color for selected tabs, which is the start of the tab fade
+ * (end is selectionBackground).
+ */
+private Color getSelectionBackgroundGradientBegin() {
+	if (selectionGradientColors == null)
+		return getSelectionBackground();
+	if (selectionGradientColors.length == 0)
+		return getSelectionBackground();
+	return selectionGradientColors[0];
+}
+
 /**
  * Sets the shape that the CTabFolder will use to render itself.  
  * 
@@ -3799,6 +3886,24 @@ boolean updateTabHeight(boolean force){
 				          12+d,7+d, 13+d,7+d, 15+d,9+d, 16+d,9+d, 17+d,10+d, 19+d,10+d, 20+d,11+d, 22+d,11+d, 23+d,12+d};
 		curveWidth = 26+d;
 		curveIndent = curveWidth/3;
+		
+		//this could be static but since values depend on curve, better to keep in one place
+		topCurveHighlightStart = new int[] { 
+				0, 2,  1, 2,  2, 2,    
+				3, 3,  4, 3,  5, 3, 
+				6, 4,  7, 4,
+				8, 5, 
+				9, 6, 10, 6};
+		
+		//also, by adding in 'd' here we save some math cost when drawing the curve
+		topCurveHighlightEnd = new int[] { 
+				10+d, 6+d,
+				11+d, 7+d,
+				12+d, 8+d,  13+d, 8+d,
+				14+d, 9+d,
+				15+d, 10+d,  16+d, 10+d,
+				17+d, 11+d,  18+d, 11+d,  19+d, 11+d,
+				20+d, 12+d,  21+d, 12+d,  22+d,  12+d }; 
 	}
 	notifyListeners(SWT.Resize, new Event());
 	return true;
