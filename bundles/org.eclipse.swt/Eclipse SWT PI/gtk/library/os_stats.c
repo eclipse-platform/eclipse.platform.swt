@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1206;
-int OS_nativeFunctionCallCount[1206];
+int OS_nativeFunctionCount = 1207;
+int OS_nativeFunctionCallCount[1207];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -127,6 +127,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1TYPE_1CELL_1RENDERER_1TEXT",
 	"_1GTK_1TYPE_1CELL_1RENDERER_1TOGGLE",
 	"_1GTK_1TYPE_1FIXED",
+	"_1GTK_1TYPE_1MENU",
 	"_1GTK_1TYPE_1WIDGET",
 	"_1GTK_1WIDGET_1FLAGS",
 	"_1GTK_1WIDGET_1HAS_1DEFAULT",

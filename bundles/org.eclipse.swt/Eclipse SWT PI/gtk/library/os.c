@@ -1288,6 +1288,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1TYPE_1FIXED)
 }
 #endif
 
+#ifndef NO__1GTK_1TYPE_1MENU
+JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1TYPE_1MENU)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1GTK_1TYPE_1MENU_FUNC);
+	rc = (jint)GTK_TYPE_MENU;
+	OS_NATIVE_EXIT(env, that, _1GTK_1TYPE_1MENU_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1GTK_1TYPE_1WIDGET
 JNIEXPORT jint JNICALL OS_NATIVE(_1GTK_1TYPE_1WIDGET)
 	(JNIEnv *env, jclass that)
