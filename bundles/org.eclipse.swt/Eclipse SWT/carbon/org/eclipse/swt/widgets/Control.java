@@ -633,9 +633,28 @@ void destroyWidget () {
 	}
 }
 
+public boolean dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+public boolean dragDetect (MouseEvent event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+/**
+ * @deprecated use dragDetect(Event) 
+ */
 public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
-	if (button != 1) return false;
+	return dragDetect (button, 1, stateMask, x, y);
+}
+
+boolean dragDetect (int button, int count, int stateMask, int x, int y) {
+	if (button != 1 || count != 1) return false;
 	if (!dragDetect (x, y, false, null)) return false;
 	return sendDragEvent (button, stateMask, x, y);
 }
@@ -1821,7 +1840,9 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	boolean [] consume = new boolean [1];
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+	int [] clickCount = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
+	if (button [0] == 1 && clickCount [0] == 1 && (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 		CGPoint pt = new CGPoint ();
 		OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, CGPoint.sizeof, null, pt);
 		OS.HIViewConvertPoint (pt, 0, handle);
