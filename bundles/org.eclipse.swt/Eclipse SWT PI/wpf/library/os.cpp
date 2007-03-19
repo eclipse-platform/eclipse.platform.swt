@@ -1742,6 +1742,19 @@ JNIEXPORT void JNICALL OS_NATIVE(Control_1Template__II)
 }
 #endif
 
+#ifndef NO_Control_1TemplateProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Control_1TemplateProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Control_1TemplateProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Control_1TemplateProperty_FUNC);
+	rc = (jint)TO_HANDLE(Control::TemplateProperty);
+	OS_NATIVE_EXIT(env, that, Control_1TemplateProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Control_1VerticalContentAlignment
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1VerticalContentAlignment)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(Control_1VerticalContentAlignment)
@@ -3489,7 +3502,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(Fonts_1GetTypefaces)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, Fonts_1GetTypefaces_FUNC);
-	rc = (jint)TO_HANDLE(Fonts::GetTypefaces((Uri^)TO_OBJECT(arg0)));
+	rc = (jint)TO_HANDLE(Fonts::GetTypefaces((String^)TO_OBJECT(arg0)));
 	OS_NATIVE_EXIT(env, that, Fonts_1GetTypefaces_FUNC);
 	return rc;
 }
@@ -4260,6 +4273,30 @@ JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1SizeChanged)
 	OS_NATIVE_ENTER(env, that, FrameworkElement_1SizeChanged_FUNC);
 	((FrameworkElement^)TO_OBJECT(arg0))->SizeChanged += ((SizeChangedEventHandler^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, FrameworkElement_1SizeChanged_FUNC);
+}
+#endif
+
+#ifndef NO_FrameworkElement_1Style__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Style__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1Style__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1Style__I_FUNC);
+	rc = (jint)TO_HANDLE(((FrameworkElement^)TO_OBJECT(arg0))->Style);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1Style__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FrameworkElement_1Style__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Style__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Style__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1Style__II_FUNC);
+	((FrameworkElement^)TO_OBJECT(arg0))->Style = ((Style^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1Style__II_FUNC);
 }
 #endif
 
@@ -5204,6 +5241,19 @@ JNIEXPORT void JNICALL OS_NATIVE(HeaderedItemsControl_1Header__II)
 	OS_NATIVE_ENTER(env, that, HeaderedItemsControl_1Header__II_FUNC);
 	((HeaderedItemsControl^)TO_OBJECT(arg0))->Header = ((Object^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, HeaderedItemsControl_1Header__II_FUNC);
+}
+#endif
+
+#ifndef NO_HeaderedItemsControl_1HeaderTemplateProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(HeaderedItemsControl_1HeaderTemplateProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(HeaderedItemsControl_1HeaderTemplateProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HeaderedItemsControl_1HeaderTemplateProperty_FUNC);
+	rc = (jint)TO_HANDLE(HeaderedItemsControl::HeaderTemplateProperty);
+	OS_NATIVE_EXIT(env, that, HeaderedItemsControl_1HeaderTemplateProperty_FUNC);
+	return rc;
 }
 #endif
 
@@ -10897,6 +10947,43 @@ JNIEXPORT jint JNICALL OS_NATIVE(TreeViewItem_1ExpandedEvent)
 }
 #endif
 
+#ifndef NO_TreeViewItem_1HeaderTemplate__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(TreeViewItem_1HeaderTemplate__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(TreeViewItem_1HeaderTemplate__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, TreeViewItem_1HeaderTemplate__I_FUNC);
+	rc = (jint)TO_HANDLE(((TreeViewItem^)TO_OBJECT(arg0))->HeaderTemplate);
+	OS_NATIVE_EXIT(env, that, TreeViewItem_1HeaderTemplate__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TreeViewItem_1HeaderTemplate__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(TreeViewItem_1HeaderTemplate__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(TreeViewItem_1HeaderTemplate__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, TreeViewItem_1HeaderTemplate__II_FUNC);
+	((TreeViewItem^)TO_OBJECT(arg0))->HeaderTemplate = ((DataTemplate^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, TreeViewItem_1HeaderTemplate__II_FUNC);
+}
+#endif
+
+#ifndef NO_TreeViewItem_1HeaderTemplateProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(TreeViewItem_1HeaderTemplateProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(TreeViewItem_1HeaderTemplateProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, TreeViewItem_1HeaderTemplateProperty_FUNC);
+	rc = (jint)TO_HANDLE(TreeViewItem::HeaderTemplateProperty);
+	OS_NATIVE_EXIT(env, that, TreeViewItem_1HeaderTemplateProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TreeViewItem_1IsExpanded__I
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(TreeViewItem_1IsExpanded__I)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL OS_NATIVE(TreeViewItem_1IsExpanded__I)
@@ -14015,8 +14102,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Setter)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, gcnew_1Setter_FUNC);
-	rc = (jint)TO_HANDLE(gcnew Setter((DependencyProperty^)TO_OBJECT(arg0), (Visibility)arg1));
+	rc = (jint)TO_HANDLE(gcnew Setter((DependencyProperty^)TO_OBJECT(arg0), (Object^)TO_OBJECT(arg1)));
 	OS_NATIVE_EXIT(env, that, gcnew_1Setter_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1SetterVisibility
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SetterVisibility)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SetterVisibility)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1SetterVisibility_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::Windows::Setter((DependencyProperty^)TO_OBJECT(arg0), (Visibility)arg1));
+	OS_NATIVE_EXIT(env, that, gcnew_1SetterVisibility_FUNC);
 	return rc;
 }
 #endif

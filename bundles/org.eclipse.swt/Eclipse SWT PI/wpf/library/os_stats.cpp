@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1221;
-int OS_nativeFunctionCallCount[1221];
+int OS_nativeFunctionCount = 1229;
+int OS_nativeFunctionCallCount[1229];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -159,6 +159,7 @@ char * OS_nativeFunctionNames[] = {
 	"Control_1MouseDoubleClick",
 	"Control_1Template__I",
 	"Control_1Template__II",
+	"Control_1TemplateProperty",
 	"Control_1VerticalContentAlignment",
 	"CreateCursor",
 	"CreateIconIndirect",
@@ -361,6 +362,8 @@ char * OS_nativeFunctionNames[] = {
 	"FrameworkElement_1Resources__I",
 	"FrameworkElement_1Resources__II",
 	"FrameworkElement_1SizeChanged",
+	"FrameworkElement_1Style__I",
+	"FrameworkElement_1Style__II",
 	"FrameworkElement_1StyleProperty",
 	"FrameworkElement_1Tag__I",
 	"FrameworkElement_1Tag__II",
@@ -441,6 +444,7 @@ char * OS_nativeFunctionNames[] = {
 	"HeaderedContentControl_1Header__II",
 	"HeaderedItemsControl_1Header__I",
 	"HeaderedItemsControl_1Header__II",
+	"HeaderedItemsControl_1HeaderTemplateProperty",
 	"HeapAlloc",
 	"HeapFree",
 	"HtmlDocument_1InvokeScript",
@@ -910,6 +914,9 @@ char * OS_nativeFunctionNames[] = {
 	"Transform_1Clone",
 	"TreeViewItem_1CollapsedEvent",
 	"TreeViewItem_1ExpandedEvent",
+	"TreeViewItem_1HeaderTemplate__I",
+	"TreeViewItem_1HeaderTemplate__II",
+	"TreeViewItem_1HeaderTemplateProperty",
 	"TreeViewItem_1IsExpanded__I",
 	"TreeViewItem_1IsExpanded__IZ",
 	"TreeViewItem_1IsSelected__I",
@@ -1191,6 +1198,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1SelectionChangedEventHandler",
 	"gcnew_1Separator",
 	"gcnew_1Setter",
+	"gcnew_1SetterVisibility",
 	"gcnew_1Size__",
 	"gcnew_1Size__DD",
 	"gcnew_1SizeChangedEventHandler",

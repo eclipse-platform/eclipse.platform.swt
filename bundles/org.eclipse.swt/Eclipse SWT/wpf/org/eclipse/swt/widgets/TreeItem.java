@@ -215,12 +215,17 @@ void clear () {
 //	cellBackground = cellForeground = cellFont = null;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 	if (ignoreNotify) return;
-	int header = OS.HeaderedItemsControl_Header (handle);
-	int row = OS.GridViewRowPresenter_Content (header);
+	int row;
+	if (parent.columnCount == 0) {
+		row = OS.HeaderedItemsControl_Header (handle);
+	} else {
+		int header = OS.HeaderedItemsControl_Header (handle);
+		row = OS.GridViewRowPresenter_Content (header);
+		OS.GCHandle_Free (header);
+	}
 	OS.SWTRow_NotifyPropertyChanged (row, Tree.TEXT_NOTIFY);
 	OS.SWTRow_NotifyPropertyChanged (row, Tree.IMAGE_NOTIFY);
 	OS.GCHandle_Free (row);
-	OS.GCHandle_Free (header);
 }
 
 /**
@@ -277,15 +282,29 @@ public void clearAll (boolean all) {
 }
 
 void columnAdded (int index) {
-	int newLength = parent.columnCount + 1;
-	if (images != null) {
-		Image [] temp = new Image [newLength];
-		System.arraycopy (images, 0, temp, 0, index);
-		System.arraycopy (images, index, temp, index + 1, parent.columnCount - index);
-		images = temp;
+	if (parent.columnCount == 0) {
+		int headerTemplate = OS.HeaderedItemsControl_HeaderTemplateProperty ();
+		OS.DependencyObject_ClearValue (handle, headerTemplate);
+		OS.GCHandle_Free (headerTemplate);
+		int row = OS.HeaderedItemsControl_Header (handle);
+		int header = OS.gcnew_SWTTreeViewRowPresenter (parent.handle);
+		if (header == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.GridViewRowPresenterBase_Columns (header, parent.columns);
+		OS.HeaderedItemsControl_Header (handle, header);
+		OS.GridViewRowPresenter_Content (header, row);
+		OS.GCHandle_Free (header);
+		OS.GCHandle_Free (row);
+	} else {
+		int newLength = parent.columnCount + 1;
+		if (images != null) {
+			Image [] temp = new Image [newLength];
+			System.arraycopy (images, 0, temp, 0, index);
+			System.arraycopy (images, index, temp, index + 1, parent.columnCount - index);
+			images = temp;
+		}
+		OS.ArrayList_Insert (stringList, index, 0);
+		if (imageList != 0) OS.ArrayList_Insert (imageList, index, 0);
 	}
-	OS.ArrayList_Insert (stringList, index, 0);
-	OS.ArrayList_Insert (imageList, index, 0);
 	int items = OS.ItemsControl_Items (handle);
     for (int i=0; i<itemCount; i++) {
 		TreeItem item = parent.getItem (items, i, false);
@@ -297,14 +316,25 @@ void columnAdded (int index) {
 }
 
 void columnRemoved(int index) {
-	if (images != null) {
-		Image [] temp = new Image [parent.columnCount];
-		System.arraycopy (images, 0, temp, 0, index);
-		System.arraycopy (images, index + 1, temp, index, parent.columnCount - index);
-		images = temp;
+	if (parent.columnCount == 0) {
+		int header = OS.HeaderedItemsControl_Header (handle);
+		int row = OS.GridViewRowPresenter_Content (header);
+		OS.TreeViewItem_HeaderTemplate (handle, parent.headerTemplate);
+		OS.HeaderedItemsControl_Header (handle, row);
+		OS.GCHandle_Free (header);
+		OS.GCHandle_Free (row);
+	} else {
+		if (images != null) {
+			Image [] temp = new Image [parent.columnCount];
+			System.arraycopy (images, 0, temp, 0, index);
+			System.arraycopy (images, index + 1, temp, index, parent.columnCount - index);
+			images = temp;
+		}
+		if (parent.columnCount != 0) {
+			OS.ArrayList_RemoveAt (stringList, index);
+			if (imageList != 0) OS.ArrayList_RemoveAt (imageList, index);
+		}
 	}
-	OS.ArrayList_RemoveAt (stringList, index);
-	OS.ArrayList_RemoveAt (imageList, index);
 	int items = OS.ItemsControl_Items (handle);
     for (int i=0; i<itemCount; i++) {
 		TreeItem item = parent.getItem (items, i, false);
@@ -319,14 +349,21 @@ void createHandle () {
 	if (handle == 0) {
 		handle = OS.gcnew_TreeViewItem ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		int headerHandle = OS.gcnew_SWTTreeViewRowPresenter (parent.handle);
-		if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.GridViewRowPresenterBase_Columns (headerHandle, parent.columns);
-		OS.HeaderedItemsControl_Header (handle, headerHandle);
-		int row = OS.gcnew_SWTRow (parent.jniRef, handle);
-		OS.GridViewRowPresenter_Content (headerHandle, row);
-		OS.GCHandle_Free (headerHandle);
-		OS.GCHandle_Free (row);
+		if (parent.columnCount != 0) {
+			int headerHandle = OS.gcnew_SWTTreeViewRowPresenter (parent.handle);
+			if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.GridViewRowPresenterBase_Columns (headerHandle, parent.columns);
+			OS.HeaderedItemsControl_Header (handle, headerHandle);
+			int row = OS.gcnew_SWTRow (parent.jniRef, handle);
+			OS.GridViewRowPresenter_Content (headerHandle, row);
+			OS.GCHandle_Free (headerHandle);
+			OS.GCHandle_Free (row);
+		} else {
+			int row = OS.gcnew_SWTRow (parent.jniRef, handle);
+			OS.HeaderedItemsControl_Header (handle, row);
+			OS.GCHandle_Free (row);
+			OS.TreeViewItem_HeaderTemplate (handle, parent.headerTemplate);
+		}
 	}
 	OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Stretch);
 	OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
@@ -360,11 +397,16 @@ int findPart (int column, String part) {
 	if (!OS.FrameworkElement_IsLoaded (handle)) return 0;
 	if (OS.UIElement_Visibility (handle) != OS.Visibility_Visible) return 0;
 	int contentPresenter = findContentPresenter (handle, column);
-	int columnHandle = OS.GridViewColumnCollection_default (parent.columns, column);
-	int cellTemplate = OS.GridViewColumn_CellTemplate (columnHandle);
+	int cellTemplate;
+	if (parent.columnCount != 0) {
+		int columnHandle = OS.GridViewColumnCollection_default (parent.columns, column);
+		cellTemplate = OS.GridViewColumn_CellTemplate (columnHandle);
+		OS.GCHandle_Free (columnHandle);
+	} else {
+		cellTemplate = OS.TreeViewItem_HeaderTemplate (handle);
+	}
 	int name = createDotNetString (part, false);
 	int result = OS.FrameworkTemplate_FindName (cellTemplate, name, contentPresenter);
-	OS.GCHandle_Free (columnHandle);
 	if (name != 0) OS.GCHandle_Free (name);
 	OS.GCHandle_Free (cellTemplate);
 	OS.GCHandle_Free (contentPresenter);
@@ -1188,11 +1230,16 @@ public void setImage (int index, Image image) {
 	int imageHandle = image != null ? image.handle : 0;
 	OS.ArrayList_default (imageList, index, imageHandle);
 	if (ignoreNotify) return;
-	int header = OS.HeaderedItemsControl_Header (handle);
-	int row = OS.GridViewRowPresenter_Content (header);
+	int row;
+	if (parent.columnCount != 0) {
+		int header = OS.HeaderedItemsControl_Header (handle);
+		row = OS.GridViewRowPresenter_Content (header);
+		OS.GCHandle_Free (header);
+	} else {
+		row = OS.HeaderedItemsControl_Header (handle);
+	}
 	OS.SWTRow_NotifyPropertyChanged (row, Tree.IMAGE_NOTIFY);
 	OS.GCHandle_Free (row);
-	OS.GCHandle_Free (header);
 }
 
 public void setImage (Image image) {
@@ -1273,11 +1320,16 @@ public void setText (int index, String string) {
 	OS.ArrayList_default (stringList, index, str);
 	OS.GCHandle_Free (str);
 	if (ignoreNotify) return;
-	int header = OS.HeaderedItemsControl_Header (handle);
-	int row = OS.GridViewRowPresenter_Content (header);
+	int row;
+	if (parent.columnCount != 0) {
+		int header = OS.HeaderedItemsControl_Header (handle);
+		row = OS.GridViewRowPresenter_Content (header);
+		OS.GCHandle_Free (header);
+	} else {
+		row = OS.HeaderedItemsControl_Header (handle);
+	}
 	OS.SWTRow_NotifyPropertyChanged (row, Tree.TEXT_NOTIFY);
 	OS.GCHandle_Free (row);
-	OS.GCHandle_Free (header);
 }
 
 public void setText (String string) {
@@ -1294,11 +1346,16 @@ void updateCheckState (boolean notify) {
 		checkState = OS.gcnew_IntPtr (0);
 	}
 	if (notify) {
-		int header = OS.HeaderedItemsControl_Header (handle);
-		int row = OS.GridViewRowPresenter_Content (header);
+		int row;
+		if (parent.columnCount != 0) {
+			int header = OS.HeaderedItemsControl_Header (handle);
+			row = OS.GridViewRowPresenter_Content (header);
+			OS.GCHandle_Free (header);
+		} else {
+			row = OS.HeaderedItemsControl_Header (handle);
+		}
 		OS.SWTRow_NotifyPropertyChanged (row, Table.CHECK_NOTIFY);
 		OS.GCHandle_Free (row);
-		OS.GCHandle_Free (header);
 	}
 }
 

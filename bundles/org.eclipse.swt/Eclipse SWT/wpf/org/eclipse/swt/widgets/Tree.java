@@ -67,7 +67,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Tree extends Composite {
-	int columns, parentingHandle;
+	int columns, parentingHandle, headerTemplate;
 	int columnCount, itemCount, selectedItemCount;
 	TreeItem [] selectedItems;
 	TreeItem anchor;
@@ -435,15 +435,6 @@ int createCellTemplate (int index) {
 	return template;
 }
 
-void createDefaultColumn () {
-	int column = OS.gcnew_GridViewColumn ();
-	OS.GridViewColumnCollection_Insert (columns, 0, column);
-	int cellTemplate = createCellTemplate (0);
-	OS.GridViewColumn_CellTemplate (column, cellTemplate);
-	OS.GCHandle_Free (column);
-	OS.GCHandle_Free (cellTemplate);
-}
-
 int createControlTemplate () {
 	int template = OS.gcnew_ControlTemplate ();
 	int borderType = OS.Border_typeid ();
@@ -489,12 +480,6 @@ void createHandle () {
 		handle = OS.gcnew_SWTTreeView (jniRef);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	columns = OS.gcnew_GridViewColumnCollection ();
-	if (columns == 0) error (SWT.ERROR_NO_HANDLES);
-	createDefaultColumn ();
-	int template = createControlTemplate ();
-	OS.Control_Template (handle, template);
-	OS.GCHandle_Free (template);
 	OS.Canvas_SetLeft (handle, 0);
 	OS.Canvas_SetTop (handle, 0);
 	int children = OS.Panel_Children (parentingHandle);
@@ -537,7 +522,6 @@ int createHeaderTemplate () {
 	OS.GCHandle_Free (imagePath);
 	OS.GCHandle_Free (imageBinding);
 	OS.GCHandle_Free (imageProperty);
-	
 	OS.GCHandle_Free (imageType);
 	OS.GCHandle_Free (textName);
 	OS.GCHandle_Free (textType);
@@ -555,6 +539,14 @@ int createHeaderTemplate () {
 
 void createItem (TreeColumn column, int index) {
     if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
+    if (columnCount == 0) {
+    	columns = OS.gcnew_GridViewColumnCollection ();
+    	if (columns == 0) error (SWT.ERROR_NO_HANDLES);
+    	int template = createControlTemplate ();
+    	OS.Control_Template (handle, template);   	
+    	OS.GCHandle_Free (template);
+    	updateHeaderVisibility ();
+    }
 	column.createWidget ();
 	int template = createHeaderTemplate ();
 	OS.GridViewColumn_HeaderTemplate (column.handle, template);
@@ -600,6 +592,7 @@ void createWidget() {
 		selectedItemCount = 0;
 		selectedItems = new TreeItem [4];
 	}
+	headerTemplate = createCellTemplate (0);
 }
 
 int defaultBackground () {
@@ -644,7 +637,11 @@ void destroyItem (TreeColumn column) {
     if (!removed) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	columnCount--;
 	if (columnCount == 0) {
-		createDefaultColumn ();
+		OS.GCHandle_Free (columns);
+		columns = 0;
+		int templateProperty = OS.Control_TemplateProperty ();
+		OS.DependencyObject_ClearValue(handle, templateProperty);
+		OS.GCHandle_Free(templateProperty);
 	} 
 	int items = OS.ItemsControl_Items (handle);
     for (int i=0; i<itemCount; i++) {
@@ -673,12 +670,15 @@ void destroyItem (TreeItem item) {
 }
 
 int findScrollViewer(int current, int scrollViewerType) {
-	int template = OS.Control_Template (handle);
-	int scrollViewerName = createDotNetString (SCROLLVIEWER_PART_NAME, false);
-	int scrollViewer = OS.FrameworkTemplate_FindName (template, scrollViewerName, handle);
-	OS.GCHandle_Free (scrollViewerName);
-	OS.GCHandle_Free (template);
-	return scrollViewer;
+	if (columnCount != 0) {
+		int template = OS.Control_Template (handle);
+		int scrollViewerName = createDotNetString (SCROLLVIEWER_PART_NAME, false);
+		int scrollViewer = OS.FrameworkTemplate_FindName (template, scrollViewerName, handle);
+		OS.GCHandle_Free (scrollViewerName);
+		OS.GCHandle_Free (template);
+		return scrollViewer;
+	}
+	return super.findScrollViewer (current, scrollViewerType);
 }
 
 int GetBackground (int itemHandle) {
@@ -1315,15 +1315,7 @@ void HandlePreviewKeyDown (int sender, int e) {
 
 void HandleLoaded (int sender, int e) {
 	if (!checkEvent (e)) return;
-	int template = OS.Control_Template (handle);
-	int nameString = createDotNetString (HEADER_PART_NAME, false);
-	int header = OS.FrameworkTemplate_FindName (template, nameString, handle);
-	if (header != 0) {
-		OS.UIElement_Visibility (header, headerVisibility);
-		OS.GCHandle_Free (header);
-	}
-	OS.GCHandle_Free (nameString);
-	OS.GCHandle_Free (template);
+	updateHeaderVisibility();
 }
 
 void HandleMouseDoubleClick (int sender, int e) {
@@ -1481,6 +1473,7 @@ void hookEvents() {
 public int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (columns == 0) return -1; 
 	int index = OS.GridViewColumnCollection_IndexOf (columns, column.handle);
 	return index;
 }
@@ -1670,6 +1663,8 @@ void releaseHandle () {
 	super.releaseHandle ();
 	if (columns != 0) OS.GCHandle_Free (columns);
 	columns = 0;
+	if (headerTemplate != 0) OS.GCHandle_Free (headerTemplate);
+	headerTemplate = 0;
 	OS.GCHandle_Free (parentingHandle);
 	parentingHandle = 0;
 }
@@ -1755,12 +1750,6 @@ int setBounds (int x, int y, int width, int height, int flags) {
 	if ((result & RESIZED) != 0) {
 		OS.FrameworkElement_Width (handle, width);
 		OS.FrameworkElement_Height (handle, height);
-		if (columnCount == 0) {
-			double columnWidth = width - OS.SystemParameters_VerticalScrollBarWidth () - (getBorderWidth() * 2);
-			int column = OS.GridViewColumnCollection_default (columns, 0);
-			OS.GridViewColumn_Width (column, columnWidth);
-			OS.GCHandle_Free (column);
-		}
 	}
 	return result;
 }
@@ -1826,14 +1815,21 @@ void setItemCount (TreeItem parentItem, int count) {
 		for (int i=itemCount; i<count; i++) {
 			int item = OS.gcnew_TreeViewItem ();
 			if (item == 0) error (SWT.ERROR_NO_HANDLES);
-			int headerHandle = OS.gcnew_SWTTreeViewRowPresenter (handle);
-			if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.GridViewRowPresenterBase_Columns (headerHandle, columns);
-			OS.HeaderedItemsControl_Header (item, headerHandle);
-			int row = OS.gcnew_SWTRow (jniRef, item);
-			OS.GridViewRowPresenter_Content (headerHandle, row);
-			OS.GCHandle_Free (row);
-			OS.GCHandle_Free (headerHandle);
+			if (columnCount != 0) {
+				int headerHandle = OS.gcnew_SWTTreeViewRowPresenter (handle);
+				if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				OS.GridViewRowPresenterBase_Columns (headerHandle, columns);
+				OS.HeaderedItemsControl_Header (item, headerHandle);
+				int row = OS.gcnew_SWTRow (jniRef, item);
+				OS.GridViewRowPresenter_Content (headerHandle, row);
+				OS.GCHandle_Free (row);
+				OS.GCHandle_Free (headerHandle);
+			} else {
+				int row = OS.gcnew_SWTRow (jniRef, item);
+				OS.HeaderedItemsControl_Header (item, row);
+				OS.TreeViewItem_HeaderTemplate (item, headerTemplate);
+				OS.GCHandle_Free (row);
+			}
 			OS.ItemCollection_Add (items, item);
 			OS.GCHandle_Free (item);
 		}
@@ -1972,23 +1968,7 @@ void setForegroundBrush (int brush) {
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
 	headerVisibility = show ? OS.Visibility_Visible : OS.Visibility_Collapsed;
-	int template = OS.Control_Template (handle);
-	int scrollViewerName = createDotNetString (SCROLLVIEWER_PART_NAME, false);
-	int scrollViewer = OS.FrameworkTemplate_FindName (template, scrollViewerName, handle);
-	if (scrollViewer != 0) {
-		int scrollViewerTemplate = OS.Control_Template(scrollViewer);
-		int headerName = createDotNetString(HEADER_PART_NAME, false);
-		int header = OS.FrameworkTemplate_FindName (scrollViewerTemplate, headerName, scrollViewer);
-		if (header != 0) {
-			OS.UIElement_Visibility (header, headerVisibility);
-			OS.GCHandle_Free (header);
-		}
-		OS.GCHandle_Free (scrollViewerTemplate);
-		OS.GCHandle_Free (headerName);
-		OS.GCHandle_Free (scrollViewer);
-	}
-	OS.GCHandle_Free (scrollViewerName);
-	OS.GCHandle_Free (template);
+	updateHeaderVisibility ();
 }
 
 /**
@@ -2228,6 +2208,26 @@ public void showSelection () {
 
 int topHandle () {
 	return parentingHandle;
+}
+
+void updateHeaderVisibility() {
+	int template = OS.Control_Template (handle);
+	int scrollViewerName = createDotNetString (SCROLLVIEWER_PART_NAME, false);
+	int scrollViewer = OS.FrameworkTemplate_FindName (template, scrollViewerName, handle);
+	if (scrollViewer != 0) {
+		int scrollViewerTemplate = OS.Control_Template(scrollViewer);
+		int headerName = createDotNetString(HEADER_PART_NAME, false);
+		int header = OS.FrameworkTemplate_FindName (scrollViewerTemplate, headerName, scrollViewer);
+		if (header != 0) {
+			OS.UIElement_Visibility (header, headerVisibility);
+			OS.GCHandle_Free (header);
+		}
+		OS.GCHandle_Free (scrollViewerTemplate);
+		OS.GCHandle_Free (headerName);
+		OS.GCHandle_Free (scrollViewer);
+	}
+	OS.GCHandle_Free (scrollViewerName);
+	OS.GCHandle_Free (template);
 }
 
 }
