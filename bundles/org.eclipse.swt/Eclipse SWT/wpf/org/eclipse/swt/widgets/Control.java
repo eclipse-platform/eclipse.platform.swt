@@ -623,45 +623,28 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+public boolean dragDetect (Event event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
+public boolean dragDetect (MouseEvent event) {
+	checkWidget ();
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
+}
+
 /**
- * Detects a drag and drop gesture.  This method is used
- * to detect a drag gesture when called from within a mouse
- * down listener.
- * 
- * <p>By default, a drag is detected when the gesture
- * occurs anywhere within the client area of a control.
- * Some controls, such as tables and trees, override this
- * behavior.  In addition to the operating system specific
- * drag gesture, they require the mouse to be inside an
- * item.  Custom widget writers can use <code>setDragDetect</code>
- * to disable the default detection, listen for mouse down,
- * and then call <code>dragDetect()</code> from within the
- * listener to conditionally detect a drag.
- * </p>
- *
- * @param button the button that was pressed
- * @param stateMask keyboard modifier keys
- * @param x the widget-relative, x coordinate of the pointer
- * @param y the widget-relative, y coordinate of the pointer
- * 
- * @return <code>true</code> if the gesture occured, and <code>false</code> otherwise.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @see DragDetectListener
- * @see #addDragDetectListener
- * 
- * @see #getDragDetect
- * @see #setDragDetect
- * 
- * @since 3.3
+ * @deprecated use dragDetect(Event) 
  */
 public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
-	if (button != 1) return false;
+	return dragDetect (button, 1, stateMask, x, y);
+}
+
+boolean dragDetect (int button, int count, int stateMask, int x, int y) {
+	if (button != 1 || count != 1) return false;
 	boolean dragging = dragDetect (x, y, false);
 	if (dragging) return sendDragEvent (button, stateMask, x, y);
 	return false;
@@ -1254,7 +1237,7 @@ void HandlePreviewMouseDown (int sender, int e) {
 		OS.UIElement_CaptureMouse (handle);
 	}
 	
-	if (OS.MouseButtonEventArgs_ChangedButton (e) == 0) {
+	if (OS.MouseButtonEventArgs_ChangedButton (e) == 0 && OS.MouseButtonEventArgs_ClickCount (e) == 1) {
 		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 			int point = OS.MouseEventArgs_GetPosition (e, handle);
 			double x = OS.Point_X (point);
