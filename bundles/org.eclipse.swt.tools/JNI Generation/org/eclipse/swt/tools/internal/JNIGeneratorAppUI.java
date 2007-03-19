@@ -156,7 +156,7 @@ void generateAll() {
 		Control child = children[i];
 		if (child instanceof Button) child.setEnabled(false);				
 	}
-	final boolean showProgress = false;
+	final boolean showProgress = true;
 	if (showProgress) {
 		progressLabel.setText("");
 		progressBar.setSelection(0);
@@ -168,17 +168,24 @@ void generateAll() {
 		public void run() {
 			try {
 				app.generate(!showProgress ? null : new ProgressMonitor() {
+					int total, step;
+					int STEP_SIZE = 100;
 					public void setTotal(final int total) {
+						this.total = total;
 						display.syncExec(new Runnable() {
 							public void run() {
-								progressBar.setMaximum(total);
+								progressBar.setMaximum(STEP_SIZE);
 							}
 						});
 					}
 					public void step() {
+						int oldValue = step * STEP_SIZE / total;
+						step++;
+						final int newValue = step * STEP_SIZE / total;
+						if (oldValue == newValue) return;
 						display.syncExec(new Runnable() {
 							public void run() {
-								progressBar.setSelection(progressBar.getSelection() + 1);
+								progressBar.setSelection(newValue);
 							}
 						});					
 					}
