@@ -33,7 +33,7 @@ public class Snippet161 {
 		try {
 			browser = new Browser(shell, SWT.BORDER);
 		} catch (SWTError e) {
-			System.out.println("Count not instantiate Browser: " + e.getMessage());
+			System.out.println("Could not instantiate Browser: " + e.getMessage());
 			return;
 		}
 		Composite comp = new Composite(shell, SWT.NONE);

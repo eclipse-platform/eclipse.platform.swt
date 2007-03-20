@@ -34,7 +34,7 @@ public class Snippet260 {
 		try {
 			browser = new Browser(shell, SWT.MOZILLA);
 		} catch (SWTError e) {
-			System.out.println("Count not instantiate Browser: " + e.getMessage());
+			System.out.println("Could not instantiate Browser: " + e.getMessage());
 			return;
 		}
 		shell.open();

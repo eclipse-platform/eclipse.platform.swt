@@ -60,7 +60,7 @@ public class Snippet128 {
 		try {
 			browser = new Browser(shell, SWT.NONE);
 		} catch (SWTError e) {
-			System.out.println("Count not instantiate Browser: " + e.getMessage());
+			System.out.println("Could not instantiate Browser: " + e.getMessage());
 			return;
 		}
 		data = new GridData();
