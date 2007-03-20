@@ -1562,6 +1562,29 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	OS.HIViewSetFrame (control, newBounds);
 	invalidateVisibleRegion (control);
 	
+	/*
+	* Bug in the Macintosh.  When HIViewSetDrawingEnabled() is used to
+	* turn off drawing for a control and the control is moved or resized, 
+	* the Mac does not redraw the area where the control once was in the
+	* parent.  The fix is to detect this case and redraw the area.
+	*/
+	if (!OS.HIViewIsDrawingEnabled (control)) {
+		int parent = OS.HIViewGetSuperview (control);
+		if (parent != 0 && OS.HIViewIsDrawingEnabled (parent)) {
+			int rgn = OS.NewRgn ();
+			Rect rect = new Rect ();
+			OS.SetRect (rect, (short) oldBounds.x, (short) oldBounds.y, (short) (oldBounds.x + oldBounds.width), (short) (oldBounds.y + oldBounds.height));
+			OS.RectRgn (rgn, rect);
+			if (display.inPaint) {
+				OS.HIViewConvertRegion (rgn, parent, 0);
+				invalWindowRgn (0, rgn);
+			} else {
+				OS.HIViewSetNeedsDisplayInRegion (parent, rgn, true);
+			}
+			OS.DisposeRgn (rgn);
+		}
+	}
+
 	/* Send events */
 	int result = 0;
 	if (move && !sameOrigin) {
