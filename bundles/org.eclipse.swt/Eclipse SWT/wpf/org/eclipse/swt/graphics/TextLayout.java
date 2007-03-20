@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
 
@@ -640,7 +641,7 @@ public Rectangle getLineBounds(int lineIndex) {
 	}
 	int line = lines[lineIndex];
 	double x = OS.TextLine_Start(line);
-	double width = OS.TextLine_Width(line);
+	double width = OS.TextLine_WidthIncludingTrailingWhitespace(line);
 	double height = OS.TextLine_Height(line);
 	if (ascent != -1 && descent != -1) height = Math.max(height, ascent + descent);
 	char ch;
@@ -835,37 +836,70 @@ int _getOffset(int offset, int movement, boolean forward) {
 	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + step;
 	length = segmentsText.length();
 	offset = translateOffset(offset);
-	int lineStart = 0;
-	for (int line=0; line<lines.length; line++) {
-		int lineLength = OS.TextLine_Length(lines[line]);
-		if (lineStart <= offset && offset < lineStart + lineLength) {
-			if (forward) {
-				if (offset >= lineStart + lineLength - OS.TextLine_NewlineLength(lines[line])) {
-					return untranslateOffset(lineStart + lineLength); 
-				}
-			} else {
-				if (offset == lineStart) {
-					if (line == 0) return 0;
-					int breakLength = OS.TextLine_NewlineLength(lines[line - 1]);
-					if (breakLength != 0) {
-						return untranslateOffset(offset - breakLength); 
+	int lineStart = 0, lineIndex;	
+	for (lineIndex=0; lineIndex<lines.length; lineIndex++) {
+		int lineLength = OS.TextLine_Length(lines[lineIndex]);
+		if (lineStart + lineLength > offset) break;
+		lineStart += lineLength;
+	}
+	int line = lines[lineIndex];
+	int lineLength = OS.TextLine_Length(line);
+	int lineBreak = OS.TextLine_NewlineLength (line);
+	while (lineStart <= offset && offset <= lineStart + lineLength) {
+		int resultCharHit;
+		int characterHit = OS.gcnew_CharacterHit(offset, 0);
+		if (forward) {
+			resultCharHit = OS.TextLine_GetNextCaretCharacterHit(line, characterHit);
+		} else {
+			resultCharHit = OS.TextLine_GetPreviousCaretCharacterHit(line, characterHit);
+		}
+		int newOffset = OS.CharacterHit_FirstCharacterIndex(resultCharHit);
+		int trailing = OS.CharacterHit_TrailingLength(resultCharHit);
+		OS.GCHandle_Free(resultCharHit);
+		OS.GCHandle_Free(characterHit);
+		if (forward) {
+			if (newOffset + trailing >= lineStart + lineLength - lineBreak) {
+				int lineEnd = lineStart + lineLength;
+				if (trailing != 0) lineEnd -= lineBreak;
+				return untranslateOffset(Math.min(length, lineEnd)); 
+			}
+		} else {
+			if (newOffset + trailing == lineStart) {
+				if (lineIndex == 0) return 0;
+				int lineEnd = 0;
+				if (newOffset + trailing == offset) lineEnd = OS.TextLine_NewlineLength(lines[lineIndex - 1]);
+				return untranslateOffset(Math.max(0, newOffset + trailing - lineEnd)); 
+			}
+		}
+		offset = newOffset + trailing;
+
+		switch (movement) {
+			case SWT.MOVEMENT_CLUSTER:
+				return untranslateOffset(newOffset);
+			case SWT.MOVEMENT_WORD:
+			case SWT.MOVEMENT_WORD_START: {
+				if (offset > 0) {
+					boolean letterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset));
+					boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset - 1));
+					if (letterOrDigit != previousLetterOrDigit || !letterOrDigit) {
+						if (!Compatibility.isWhitespace(segmentsText.charAt(offset))) {
+							return untranslateOffset(offset);
+						}
 					}
 				}
+				break;
 			}
-			int resultCharHit;
-			int characterHit = OS.gcnew_CharacterHit(offset, 0);
-			if (forward) {
-				resultCharHit = OS.TextLine_GetNextCaretCharacterHit(lines[line], characterHit);
-			} else {
-				resultCharHit = OS.TextLine_GetPreviousCaretCharacterHit(lines[line], characterHit);
+			case SWT.MOVEMENT_WORD_END: {
+				if (offset > 0) {
+					boolean isLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset));
+					boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset - 1));
+					if (!isLetterOrDigit && previousLetterOrDigit) {
+						return untranslateOffset(offset);
+					}
+				}
+				break;
 			}
-			int result = OS.CharacterHit_FirstCharacterIndex(resultCharHit);
-			int trailing = OS.CharacterHit_TrailingLength(resultCharHit);
-			OS.GCHandle_Free(resultCharHit);
-			OS.GCHandle_Free(characterHit);
-			return untranslateOffset(result + trailing);
 		}
-		lineStart += lineLength;
 	}
 	return forward ? text.length() : 0;
 }
