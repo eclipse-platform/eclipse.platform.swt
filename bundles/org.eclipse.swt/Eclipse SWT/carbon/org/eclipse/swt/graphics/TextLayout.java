@@ -239,8 +239,8 @@ public TextLayout (Device device) {
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	layout = buffer[0];
 	setLayoutControl(OS.kATSULineDirectionTag, OS.kATSULeftToRightBaseDirection, 1);
-	setLayoutControl(OS.kATSULineLayoutOptionsTag, OS.kATSLineLastNoJustification, 4);
-	setLayoutControl(OS.kATSULineLayoutOptionsTag, OS.kATSLineUseDeviceMetrics, 4);
+	int lineOptions = OS.kATSLineLastNoJustification | OS.kATSLineUseDeviceMetrics;
+	setLayoutControl(OS.kATSULineLayoutOptionsTag, lineOptions, 4);
 	OS.ATSUSetHighlightingMethod(layout, OS.kRedrawHighlighting, new ATSUUnhighlightData());
 	ascent = descent = -1;
 	text = "";
