@@ -1686,6 +1686,28 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3I
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jintArray arg4)
+{
+	GUID _arg2, *lparg2=NULL;
+	GUID _arg3, *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3I_FUNC);
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, GUID *, GUID *, jint *))(*(jint **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
+	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
+	COM_NATIVE_EXIT(env, that, VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3I_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3I
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jintArray arg3)

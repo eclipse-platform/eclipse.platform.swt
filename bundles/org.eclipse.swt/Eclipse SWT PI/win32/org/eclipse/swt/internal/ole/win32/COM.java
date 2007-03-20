@@ -223,7 +223,7 @@ public class COM extends OS {
 	public static final int E_NOTIMPL = -2147467263;
 	public static final int E_NOTSUPPORTED = 0x80040100;
 	//public static final int E_NOTLICENSED = -2147221230;
-	//public static final int E_OUTOFMEMORY = -2147024882;
+	public static final int E_OUTOFMEMORY = -2147024882;
 	//public static final int E_POINTER = -2147467261;
 	public static final int GMEM_FIXED = 0;
 	//public static final int GMEM_MOVABLE = 2;
@@ -508,6 +508,8 @@ public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, FORMA
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int /*long*/[] arg1);
+
+public static final native int VtblCall(int fnNumber, int ppVtbl, GUID arg0, GUID arg1, int[] arg2);
 
 public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, GUID arg0, int /*long*/ arg1, int arg2, int arg3, int[] arg4);
 

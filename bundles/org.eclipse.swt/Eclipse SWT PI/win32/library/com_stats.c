@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int COM_nativeFunctionCount = 150;
-int COM_nativeFunctionCallCount[150];
+int COM_nativeFunctionCount = 151;
+int COM_nativeFunctionCallCount[151];
 char * COM_nativeFunctionNames[] = {
 	"CAUUID_1sizeof",
 	"CLSIDFromProgID",
@@ -126,6 +126,7 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2IIII",
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2III_3I",
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2ILorg_eclipse_swt_internal_ole_win32_OLECMD_2Lorg_eclipse_swt_internal_ole_win32_OLECMDTEXT_2",
+	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2_3I",
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_GUID_2_3I",
 	"VtblCall__IILorg_eclipse_swt_internal_ole_win32_LICINFO_2",
 	"VtblCall__IILorg_eclipse_swt_internal_win32_MSG_2",
