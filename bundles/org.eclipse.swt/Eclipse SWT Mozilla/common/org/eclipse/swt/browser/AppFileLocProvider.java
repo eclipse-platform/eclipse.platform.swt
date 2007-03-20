@@ -19,15 +19,17 @@ class AppFileLocProvider {
 	XPCOMObject directoryServiceProvider2;	
 	int refCount = 0;
 	String mozillaPath, profilePath;
+	String[] pluginDirs;
 	
+	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String CHROME_DIR = "chrome"; //$NON-NLS-1$
 	static final String COMPONENTS_DIR = "components"; //$NON-NLS-1$
 	static final String HISTORY_FILE = "history.dat"; //$NON-NLS-1$
 	static final String LOCALSTORE_FILE = "localstore.rdf"; //$NON-NLS-1$
 	static final String MIMETYPES_FILE = "mimeTypes.rdf"; //$NON-NLS-1$
 	static final String PLUGINS_DIR = "plugins"; //$NON-NLS-1$
+	static final String USER_PLUGINS_DIR = ".mozilla" + SEPARATOR_OS + "plugins"; //$NON-NLS-1$ //$NON-NLS-2$
 	static final String PREFERENCES_FILE = "prefs.js"; //$NON-NLS-1$
-	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	
 public AppFileLocProvider (String path) {
 	mozillaPath = path + SEPARATOR_OS;
@@ -124,32 +126,62 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 	byte[] bytes = new byte[size];
 	XPCOM.memmove (bytes, prop, size);
 	String propertyName = new String (MozillaDelegate.mbcsToWcs (null, bytes));
-	String propertyValue = null;
+	String[] propertyValues = null;
 
 	if (propertyName.equals (XPCOM.NS_APP_PLUGINS_DIR_LIST)) {
-		propertyValue = mozillaPath + PLUGINS_DIR;
+		if (pluginDirs == null) {
+			int index = 0;
+			/* set the first value to the MOZ_PLUGIN_PATH environment variable value if it's defined */
+			int /*long*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_PLUGIN_PATH, true));
+			if (ptr != 0) {
+				int length = C.strlen (ptr);
+				byte[] buffer = new byte[length];
+				C.memmove (buffer, ptr, length);
+				String value = new String (MozillaDelegate.mbcsToWcs (null, buffer));
+				if (value.length () > 0) {
+					pluginDirs = new String[3];
+					pluginDirs[index++] = value;
+				}
+			}
+			if (pluginDirs == null) {
+				pluginDirs = new String[2];
+			}
+
+			/* set the next value to the GRE path + "plugins" */
+			pluginDirs[index++] = mozillaPath + PLUGINS_DIR;
+
+			/* set the next value to the home directory + "/.mozilla/plugins" */
+			pluginDirs[index++] = System.getProperty("user.home") + SEPARATOR_OS + USER_PLUGINS_DIR;
+		}
+		propertyValues = pluginDirs;
 	}
 
 	XPCOM.memmove(_retval, new int /*long*/[] {0}, C.PTR_SIZEOF);
-	if (propertyValue != null && propertyValue.length () > 0) {
+	if (propertyValues != null) {
 		int /*long*/[] result = new int /*long*/[1];
-		nsEmbedString pathString = new nsEmbedString (propertyValue);
-		int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
-		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
-		pathString.dispose ();
+		nsISupports[] files = new nsISupports [propertyValues.length];
+		for (int i = 0; i < propertyValues.length; i++) {
+			nsEmbedString pathString = new nsEmbedString (propertyValues[i]);
+			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+			pathString.dispose ();
 
-		nsILocalFile localFile = new nsILocalFile (result[0]);
-		result[0] = 0;
-	    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
-		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
-		localFile.Release ();
+			nsILocalFile localFile = new nsILocalFile (result[0]);
+			result[0] = 0;
+		    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
+			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+			if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+			localFile.Release ();
 
-		nsIFile file = new nsIFile (result [0]);
-		result[0] = 0;
-		SingletonEnumerator enumerator = new SingletonEnumerator (file);
-		enumerator.AddRef (); 
+			nsIFile file = new nsIFile (result[0]);
+			result[0] = 0;
+			files[i] = file;
+		}
+
+		SimpleEnumerator enumerator = new SimpleEnumerator (files);
+		enumerator.AddRef ();
+
 		XPCOM.memmove (_retval, new int /*long*/[] {enumerator.getAddress ()}, C.PTR_SIZEOF);
 		return XPCOM.NS_OK;
 	}

@@ -13,16 +13,18 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
 
-class SingletonEnumerator {
+class SimpleEnumerator {
 	XPCOMObject supports;
 	XPCOMObject simpleEnumerator;
 	int refCount = 0;
-	nsISupports value;
-	boolean consumed;
+	nsISupports[] values;
+	int index = 0;
 
-public SingletonEnumerator (nsISupports value) {
-	this.value = value;
-	this.value.AddRef ();  
+public SimpleEnumerator (nsISupports[] values) {
+	this.values = values;
+	for (int i = 0; i < values.length; i++) {
+		values[i].AddRef ();
+	}
 	createCOMInterfaces ();
 }
 
@@ -57,9 +59,11 @@ void disposeCOMInterfaces () {
 		simpleEnumerator.dispose ();
 		simpleEnumerator = null;	
 	}
-	if (value != null) {
-		value.Release ();
-		value = null;	
+	if (values != null) {
+		for (int i = 0; i < values.length; i++) {
+			values[i].Release ();
+		}
+		values = null;
 	}
 }
 
@@ -94,14 +98,15 @@ int Release () {
 }
 
 int HasMoreElements (int /*long*/ _retval) {
-	XPCOM.memmove (_retval, new int[] {consumed ? 0 : 1}, 4); /*PRBool */
+	boolean more = values != null && index < values.length;
+	XPCOM.memmove (_retval, new int[] {more ? 1 : 0}, 4); /*PRBool */
 	return XPCOM.NS_OK;
 }	
 	
 int GetNext (int /*long*/ _retval) {
-	if (consumed) return XPCOM.NS_ERROR_UNEXPECTED;
-	consumed = true;
-    value.AddRef (); 
+	if (values == null || index == values.length) return XPCOM.NS_ERROR_UNEXPECTED;
+	nsISupports value = values[index++];
+    value.AddRef ();
     XPCOM.memmove (_retval, new int /*long*/[] {value.getAddress ()}, C.PTR_SIZEOF);
     return XPCOM.NS_OK;
 }		
