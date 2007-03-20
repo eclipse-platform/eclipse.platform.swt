@@ -61,7 +61,7 @@ public MyList (Composite parent, int style) {
 			selection = index;
 			redraw ();
 			update ();
-			dragDetect (event.button, event.stateMask, event.x, event.y);
+			dragDetect (event);
 		}
 	});
 	addPaintListener (new PaintListener () {
