@@ -433,8 +433,8 @@ private void drawHighlight(GC gc, int rightEdge) {
 			1 + y);
 	
 	int[] leftHighlightCurve = CTabFolder.TOP_LEFT_CORNER_HILITE;
-	
-	int d = parent.tabHeight - 12;
+
+	int d = parent.tabHeight - parent.topCurveHighlightEnd.length /2;
 
 	int lastX = 0;
 	int lastY = 0;
@@ -465,14 +465,19 @@ private void drawHighlight(GC gc, int rightEdge) {
 		lastX = rawX + rightEdgeOffset;
 		lastY = rawY + y;
 		lastColorIndex = rawY - 1;
+		if(lastColorIndex >= gradientsSize)
+			break;	//can happen if tabs are unusually short and cut off the curve
 		gc.setForeground(gradients[lastColorIndex]);
 		gc.drawPoint(lastX, lastY);
 	}
 	//draw right diagonal line highlight
 	for(int i = lastColorIndex; i < lastColorIndex + d; i++) {
+		if(i >= gradientsSize)
+			break;	//can happen if tabs are unusually short and cut off the curve
 		gc.setForeground(gradients[i]);
 		gc.drawPoint(1 + lastX++, 1 + lastY++);
 	}
+
 	//draw right swoop highlight from diagonal portion to end
 	for (int i = 0; i < parent.topCurveHighlightEnd.length /2; i++) {
 		int rawX = parent.topCurveHighlightEnd[i * 2]; //d is already encoded in this value
@@ -480,6 +485,8 @@ private void drawHighlight(GC gc, int rightEdge) {
 		lastX = rawX + rightEdgeOffset;
 		lastY = rawY + y;
 		lastColorIndex = rawY - 1;
+		if(lastColorIndex >= gradientsSize)
+			break;	//can happen if tabs are unusually short and cut off the curve
 		gc.setForeground(gradients[lastColorIndex]);
 		gc.drawPoint(lastX, lastY);
 	}	
