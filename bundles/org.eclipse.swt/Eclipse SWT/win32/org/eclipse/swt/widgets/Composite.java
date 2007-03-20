@@ -1160,8 +1160,8 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				event.width = width;
 				event.height = height;
 				sendEvent (SWT.Paint, event);
-				OS.EndBufferedPaint (hBufferedPaint, true);
 				gc.dispose ();
+				OS.EndBufferedPaint (hBufferedPaint, true);
 			}
 			OS.EndPaint (handle, ps);
 		} else {
