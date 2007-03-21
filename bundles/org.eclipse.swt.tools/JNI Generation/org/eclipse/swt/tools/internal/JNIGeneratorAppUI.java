@@ -592,7 +592,7 @@ void createMembersPanel(Composite panel) {
 						break;
 					}
 					case FIELD_ACCESSOR_COLUMN: {
-						fieldData.setAccessor(text);
+						fieldData.setAccessor(text.equals(fieldData.getField().getName()) ? "" : text);
 						item.setText(column, fieldData.getAccessor());
 						break;
 					}
@@ -608,7 +608,7 @@ void createMembersPanel(Composite panel) {
 				MethodData methodData = (MethodData)memberData;
 				switch (column) {
 					case METHOD_ACCESSOR_COLUMN: {
-						methodData.setAccessor(text);
+						methodData.setAccessor(text.equals(methodData.getMethod().getName()) ? "" : text);
 						item.setText(column, methodData.getAccessor());
 						break;
 					}
@@ -699,7 +699,11 @@ void createMembersPanel(Composite panel) {
 							String text = "";
 							switch (column) {
 								case FIELD_CAST_COLUMN: text = data.getCast(); break;
-								case FIELD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
+								case FIELD_ACCESSOR_COLUMN: {
+									text = data.getAccessor(); 
+									if (text.length() == 0) text = data.getField().getName();
+									break;
+								}
 								case FIELD_EXCLUDE_COLUMN: text = data.getExclude(); break;
 							}
 							memberEditorTx.setText(text);
@@ -723,7 +727,11 @@ void createMembersPanel(Composite panel) {
 							memberTextEditor.setItem(item);
 							String text = "";
 							switch (column) {
-								case METHOD_ACCESSOR_COLUMN: text = data.getAccessor(); break;
+								case METHOD_ACCESSOR_COLUMN: {
+									text = data.getAccessor();
+									if (text.length() == 0) text = data.getMethod().getName();
+									break;
+								}
 								case METHOD_EXCLUDE_COLUMN: text = data.getExclude(); break;
 							}
 							memberEditorTx.setText(text);
