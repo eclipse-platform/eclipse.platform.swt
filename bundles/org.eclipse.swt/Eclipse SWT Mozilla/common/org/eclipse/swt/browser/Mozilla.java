@@ -1269,11 +1269,13 @@ void onDispose (Display display) {
 	rc = webBrowser.SetParentURIContentListener (0);
 	if (rc != XPCOM.NS_OK) error (rc);
 	
+	unhookDOMListeners ();
+
 	int /*long*/[] result = new int /*long*/[1];
 	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
 	if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-	
+
 	nsIBaseWindow baseWindow = new nsIBaseWindow (result[0]);
 	rc = baseWindow.Destroy ();
 	if (rc != XPCOM.NS_OK) error (rc);
