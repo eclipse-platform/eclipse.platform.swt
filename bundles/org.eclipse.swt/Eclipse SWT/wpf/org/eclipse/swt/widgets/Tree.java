@@ -694,6 +694,15 @@ int findScrollViewer(int current, int scrollViewerType) {
 	return super.findScrollViewer (current, scrollViewerType);
 }
 
+void fixScrollbarVisibility () {
+	int typeid = OS.ScrollViewer_typeid();
+	int scrolledHandle = findScrollViewer(handle, typeid);
+	OS.ScrollViewer_SetHorizontalScrollBarVisibility (scrolledHandle, OS.ScrollBarVisibility_Visible);
+	OS.ScrollViewer_SetVerticalScrollBarVisibility (scrolledHandle, OS.ScrollBarVisibility_Visible);
+	OS.GCHandle_Free(scrolledHandle);
+	OS.GCHandle_Free(typeid);
+}
+
 int GetBackground (int itemHandle) {
 	TreeItem item = getItem (itemHandle, true); 
 	checkData (item);
@@ -1642,6 +1651,21 @@ void OnSelectedItemChanged (int args) {
         		OS.GCHandle_Free (oldItemRef);
         	}
             break;
+        default:
+			for (int i = 0; i < selectedItemCount; i++) {
+				if (newItemRef == 0 || !OS.Object_Equals (newItemRef, selectedItems [i].handle)) {
+					OS.TreeViewItem_IsSelected (selectedItems [i].handle, false);
+				}
+			}
+			if (newItem != null) {
+				OS.TreeViewItem_IsSelected (newItem.handle, true);
+				selectedItems = new TreeItem [] { newItem };
+				selectedItemCount = 1;
+			} else {
+				selectedItems = new TreeItem [0];
+				selectedItemCount = 0;
+			}
+			anchor = newItem;
     }
 	OS.PropertyInfo_SetValueBoolean (property, handle, false, 0);
 	OS.GCHandle_Free (property);
