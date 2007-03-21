@@ -775,7 +775,7 @@ void drawPolyLineSegment(int[] pointArray, boolean closed, boolean stroked) {
 	int list = OS.gcnew_PointCollection(pointArray.length / 2);
 	double offset = 0;
 	if (stroked && (data.lineWidth == 0 || (data.lineWidth % 2) == 1)) offset = 0.5;
-	for (int i = 0; i < pointArray.length; i += 2) {
+	for (int i = 2; i < pointArray.length; i += 2) {
 		int point = OS.gcnew_Point(pointArray[i] + offset, pointArray[i + 1] + offset);
 		OS.PointCollection_Add(list, point);
 		OS.GCHandle_Free(point);
@@ -783,7 +783,7 @@ void drawPolyLineSegment(int[] pointArray, boolean closed, boolean stroked) {
 	int poly = OS.gcnew_PolyLineSegment(list, stroked);
 	OS.GCHandle_Free(list);
 	int figure = OS.gcnew_PathFigure();
-	int startPoint = OS.gcnew_Point(pointArray[0], pointArray[1]);
+	int startPoint = OS.gcnew_Point(pointArray[0] + offset, pointArray[1] + offset);
 	OS.PathFigure_StartPoint(figure, startPoint);
 	OS.PathFigure_IsClosed(figure, closed);
 	int segments = OS.PathFigure_Segments(figure);

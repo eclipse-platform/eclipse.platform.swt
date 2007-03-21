@@ -209,7 +209,7 @@ public void add (Region region) {
 void combine (int[] pointArray, int mode) {
 	if (pointArray.length < 4) return;
 	int list = OS.gcnew_PointCollection(pointArray.length / 2);
-	for (int i = 0; i < pointArray.length; i += 2) {
+	for (int i = 2; i < pointArray.length; i += 2) {
 		int point = OS.gcnew_Point(pointArray[i], pointArray[i + 1]);
 		OS.PointCollection_Add(list, point);
 		OS.GCHandle_Free(point);
