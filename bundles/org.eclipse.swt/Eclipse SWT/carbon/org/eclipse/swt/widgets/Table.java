@@ -78,7 +78,7 @@ public class Table extends Composite {
 	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, itemHeight, lastIndexOf;
 	boolean  ignoreSelect, wasSelected, fixScrollWidth, drawBackground;
 	Rectangle imageBounds;
-	int showIndex, lastHittest, lastHittestColumn;
+	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
 	static final int GRID_WIDTH = 1;
@@ -1440,8 +1440,9 @@ public TableItem getItem (Point point) {
 	Rect rect = new Rect ();
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) point.x, (short) point.y);
-	if (0 < lastHittest && lastHittest <= itemCount && lastHittestColumn != 0) {
-		if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, lastHittestColumn, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+	int columnId = (columnCount == 0) ? column_id : columns [0].id;
+	if (0 < lastHittest && lastHittest <= itemCount) {
+		if (OS.GetDataBrowserItemPartBounds (handle, lastHittest, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			if (rect.top <= pt.v && pt.v <= rect.bottom) {
 				if ((style & SWT.FULL_SELECTION) != 0) {
 					return _getItem (lastHittest - 1);
@@ -1462,26 +1463,12 @@ public TableItem getItem (Point point) {
 	for (int i = 0; i < offsets.length; i++) {
 		int index = (top[0] - header [0] + point.y) / height [0] + offsets [i];
 		if (0 <= index && index < itemCount) {
-			if (columnCount == 0) {
-				if (OS.GetDataBrowserItemPartBounds (handle, index + 1, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					if (rect.top <= pt.v && pt.v <= rect.bottom) {
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							return _getItem (index);
-						} else {
-							return OS.PtInRect (pt, rect) ? _getItem (index) : null;
-						}
-					}
-				}
-			} else {
-				for (int j = 0; j < columnCount; j++) {
-					if (OS.GetDataBrowserItemPartBounds (handle, index + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-						if (rect.top <= pt.v && pt.v <= rect.bottom) {
-							if ((style & SWT.FULL_SELECTION) != 0) {
-								return _getItem (index);
-							} else {
-								return OS.PtInRect (pt, rect) ? _getItem (index) : null;
-							}
-						}
+			if (OS.GetDataBrowserItemPartBounds (handle, index + 1, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+				if (rect.top <= pt.v && pt.v <= rect.bottom) {
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						return _getItem (index);
+					} else {
+						return OS.PtInRect (pt, rect) ? _getItem (index) : null;
 					}
 				}
 			}
@@ -1489,26 +1476,12 @@ public TableItem getItem (Point point) {
 	}
 	//TODO - optimize
 	for (int i=0; i<itemCount; i++) {
-		if (columnCount == 0) {
-			if (OS.GetDataBrowserItemPartBounds (handle, i + 1, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-				if (rect.top <= pt.v && pt.v <= rect.bottom) {
-					if ((style & SWT.FULL_SELECTION) != 0) {
-						return _getItem (i);
-					} else {
-						return OS.PtInRect (pt, rect) ? _getItem (i) : null;
-					}
-				}
-			}
-		} else {
-			for (int j = 0; j < columnCount; j++) {
-				if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					if (rect.top <= pt.v && pt.v <= rect.bottom) {
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							return _getItem (i);
-						} else {
-							return OS.PtInRect (pt, rect) ? _getItem (i) : null;
-						}
-					}
+		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			if (rect.top <= pt.v && pt.v <= rect.bottom) {
+				if ((style & SWT.FULL_SELECTION) != 0) {
+					return _getItem (i);
+				} else {
+					return OS.PtInRect (pt, rect) ? _getItem (i) : null;
 				}
 			}
 		}
@@ -1906,7 +1879,6 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 
 int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
 	lastHittest = id;
-	lastHittestColumn = property;
 	return 1;
 }
 
