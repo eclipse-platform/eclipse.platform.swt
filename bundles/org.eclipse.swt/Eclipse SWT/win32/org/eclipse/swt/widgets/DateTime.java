@@ -746,7 +746,7 @@ public void setYear (int year) {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
-	if ((style & SWT.CALENDAR) != 0) return bits;
+	if ((style & SWT.CALENDAR) != 0) return bits | OS.MCS_NOTODAY;
 	/*
 	* Bug in Windows: When WS_CLIPCHILDREN is set in a
 	* Date and Time Picker, the widget draws on top of

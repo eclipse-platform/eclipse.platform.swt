@@ -1043,6 +1043,7 @@ public class OS extends C {
 	public static final int MCN_FIRST = 0xFFFFFD12;
 	public static final int MCN_SELCHANGE = MCN_FIRST + 1; 
 	public static final int MCM_GETMINREQRECT = MCM_FIRST + 9;
+	public static final int MCS_NOTODAY = 0x0010;
 	public static final int MDIS_ALLCHILDSTYLES = 0x0001;
 	public static final int MFS_CHECKED = 0x8;
 	public static final int MFS_DISABLED = 0x3;
