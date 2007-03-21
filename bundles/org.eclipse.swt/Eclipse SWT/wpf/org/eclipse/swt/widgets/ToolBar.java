@@ -137,7 +137,8 @@ void createHandle () {
 	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gcnew_ToolBar ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (IsVertical) OS.ToolBarTray_Orientation (handle, OS.Orientation_Vertical);
+	//FIXME
+//	if (IsVertical) OS.ToolBarTray_Orientation (handle, OS.Orientation_Vertical);
 	int children = OS.Panel_Children (parentingHandle);
 	OS.UIElementCollection_Add (children, handle);
 	OS.GCHandle_Free (children);
