@@ -314,7 +314,6 @@ class TreeTab extends ScrollableTab {
 		packColumns(tree1);
 		try {
 			TreeColumn column = tree1.getColumn(0);
-			moveableColumns.setSelection (column.getMoveable());
 			resizableColumns.setSelection (column.getResizable());
 		} catch (IllegalArgumentException ex) {}
 
