@@ -679,7 +679,9 @@ void destroyItem (TableColumn column) {
 
 void destroyItem (TableItem item) {
 	int items = OS.ItemsControl_Items (handle);
+	ignoreSelection = true;
 	OS.ItemCollection_Remove (items, item.handle);
+	ignoreSelection = false;
 	int count = OS.ItemCollection_Count (items);
 	OS.GCHandle_Free (items);
 	if (itemCount == count) error (SWT.ERROR_ITEM_NOT_REMOVED);
