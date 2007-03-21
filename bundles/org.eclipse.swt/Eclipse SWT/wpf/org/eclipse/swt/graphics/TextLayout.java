@@ -740,7 +740,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			height = Math.max(height, ascent + descent);
 		}
 	}
-	return FontMetrics.wpf_new((int)baseline, (int)(height - baseline), 0, 0, (int)height);
+	return FontMetrics.wpf_new((int)baseline, (int)height - (int)baseline, 0, 0, (int)height);
 }
 
 /**
