@@ -877,7 +877,7 @@ int _getOffset(int offset, int movement, boolean forward) {
 
 		switch (movement) {
 			case SWT.MOVEMENT_CLUSTER:
-				return untranslateOffset(newOffset);
+				return untranslateOffset(offset);
 			case SWT.MOVEMENT_WORD:
 			case SWT.MOVEMENT_WORD_START: {
 				if (offset > 0) {
