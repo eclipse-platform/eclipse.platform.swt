@@ -18,6 +18,8 @@ public class StructsGenerator extends JNIGenerator {
 
 boolean header;
 
+static final boolean GLOBAL_REF = false;
+
 public StructsGenerator(boolean header) {
 	this.header = header;
 }
@@ -217,9 +219,17 @@ void generateCacheFunction(Class clazz) {
 	output("\t");
 	output(clazzName);
 	if (isCPP) {
-		output("Fc.clazz = env->GetObjectClass(lpObject);");
+		if (GLOBAL_REF) {
+			output("Fc.clazz = (jclass)env->NewGlobalRef(env->GetObjectClass(lpObject));");
+		} else {
+			output("Fc.clazz = env->GetObjectClass(lpObject);");
+		}
 	} else {
-		output("Fc.clazz = (*env)->GetObjectClass(env, lpObject);");
+		if (GLOBAL_REF) {
+			output("Fc.clazz = (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, lpObject));");
+		} else {
+			output("Fc.clazz = (*env)->GetObjectClass(env, lpObject);");
+		}
 	}
 	outputln();
 	Field[] fields = clazz.getDeclaredFields();
