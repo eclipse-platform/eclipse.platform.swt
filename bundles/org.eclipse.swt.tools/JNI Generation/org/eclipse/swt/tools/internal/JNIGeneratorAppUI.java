@@ -168,20 +168,19 @@ void generateAll() {
 		public void run() {
 			try {
 				app.generate(!showProgress ? null : new ProgressMonitor() {
-					int total, step;
-					int STEP_SIZE = 100;
+					int total, step, maximum = 100;
 					public void setTotal(final int total) {
 						this.total = total;
 						display.syncExec(new Runnable() {
 							public void run() {
-								progressBar.setMaximum(STEP_SIZE);
+								progressBar.setMaximum(maximum);
 							}
 						});
 					}
 					public void step() {
-						int oldValue = step * STEP_SIZE / total;
+						int oldValue = step * maximum / total;
 						step++;
-						final int newValue = step * STEP_SIZE / total;
+						final int newValue = step * maximum / total;
 						if (oldValue == newValue) return;
 						display.syncExec(new Runnable() {
 							public void run() {
