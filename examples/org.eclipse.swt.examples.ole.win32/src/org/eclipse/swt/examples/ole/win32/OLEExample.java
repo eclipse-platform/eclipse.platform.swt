@@ -241,7 +241,7 @@ public class OLEExample {
 		displayArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 
 		Button excelButton = new Button(buttons, SWT.RADIO);
-		excelButton.setText("New Exel Sheet");
+		excelButton.setText("New Excel Sheet");
 		excelButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (((Button) e.widget).getSelection())
