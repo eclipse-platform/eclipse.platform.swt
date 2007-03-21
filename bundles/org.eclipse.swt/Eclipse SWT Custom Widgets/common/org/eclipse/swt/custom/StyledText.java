@@ -156,12 +156,13 @@ public class StyledText extends Canvas {
 	int indent;
 	int lineSpacing;
 
-	final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
+	final static boolean IS_CARBON, IS_GTK, IS_MOTIF, IS_WPF;
 	static {
 		String platform = SWT.getPlatform();
 		IS_CARBON = "carbon".equals(platform);
 		IS_GTK = "gtk".equals(platform);
 		IS_MOTIF = "motif".equals(platform);
+		IS_WPF = "wpf".equals(platform);
 	}
 
 	/**

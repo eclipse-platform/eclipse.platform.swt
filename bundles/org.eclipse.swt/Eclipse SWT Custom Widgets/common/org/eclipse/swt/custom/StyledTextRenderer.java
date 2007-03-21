@@ -365,38 +365,16 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	if (event != null && event.lineBackground != null) lineBackground = event.lineBackground;
 	
 	boolean fullSelection = (styledText.getStyle() & SWT.FULL_SELECTION) != 0;
-	if (!fullSelection || selectionStart > lineOffset || selectionEnd <= lineOffset + lineLength) {
-		// draw background if full selection is off or if line is not completely selected
-		gc.setBackground(lineBackground);
-		styledText.drawBackground(gc, client.x, paintY, client.width, layout.getBounds().height);
-	}
-	if (selectionStart != selectionEnd) {
-		int y = paintY;
+	boolean isWPF = StyledText.IS_WPF;
+	gc.setBackground(lineBackground);
+	int height = layout.getBounds().height;
+	styledText.drawBackground(gc, client.x, paintY, client.width, height);
+	
+	if (!isWPF && selectionStart != selectionEnd) {
 		gc.setBackground(styledText.getSelectionBackground());
-		int lineCount = layout.getLineCount();
-		if (fullSelection) {
-			int[] offsets = layout.getLineOffsets();
-			for (int i = 0; i < lineCount - 1; i++) {
-				int lineStart = offsets[i];
-				if (lineStart >= selectionEnd - lineOffset) break;
-				int lineEnd = offsets[i + 1];
-				Rectangle lineBounds = layout.getLineBounds(i);
-				if (selectionStart - lineOffset <= lineEnd && lineEnd <= selectionEnd - lineOffset) {
-					int x = paintX + lineBounds.x + lineBounds.width;
-					gc.fillRectangle(x, y, client.width - x, lineBounds.height);
-				}
-				y += lineBounds.height + layout.getSpacing();
-			}
-		}
-		if (selectionStart - lineOffset <= lineLength && lineLength < selectionEnd - lineOffset) {
-			Rectangle lineBounds = layout.getLineBounds(lineCount - 1);
-			int x = paintX + lineBounds.x + lineBounds.width;
-			if (fullSelection) {
-				gc.fillRectangle(x, paintY + lineBounds.y, client.width - styledText.rightMargin - x, lineBounds.height);
-			} else {
-				gc.fillRectangle(x, paintY + lineBounds.y, lineEndSpaceWidth, lineBounds.height);
-			}
-		}
+		int selStart = selectionStart - lineOffset;
+		int selEnd = selectionEnd - lineOffset;
+		drawLineSelection(paintX, paintY, gc, layout, lineLength, selStart, selEnd, client.width, fullSelection);
 	}
 	gc.setForeground(widgetForeground);
 	gc.setBackground(lineBackground);	
@@ -408,6 +386,16 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 		Color selectionFg = styledText.getSelectionForeground();
 		Color selectionBg = styledText.getSelectionBackground();
 		layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg);
+	}
+	
+	if (isWPF && selectionStart != selectionEnd) {
+		int alpha = gc.getAlpha();
+		gc.setAlpha(102);
+		gc.setBackground(styledText.getSelectionBackground());
+		int selStart = selectionStart - lineOffset;
+		int selEnd = selectionEnd - lineOffset;
+		drawLineSelection(paintX, paintY, gc, layout, lineLength, selStart, selEnd, client.width, fullSelection);
+		gc.setAlpha(alpha);
 	}
 
 	// draw objects
@@ -455,9 +443,35 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 			styledText.paintObject(gc, point.x + paintX, point.y + paintY, lineAscent, metrics.getDescent(), style, null, 0);
 		}
 	}
-	int height = layout.getBounds().height;
 	disposeTextLayout(layout);
 	return height;
+}
+void drawLineSelection(int x, int y, GC gc, TextLayout layout, int length, int selectionStart, int selectionEnd, int width, boolean fullSelection) {
+	int lineCount = layout.getLineCount();
+	if (fullSelection) {
+		int drawY = y;
+		int[] offsets = layout.getLineOffsets();
+		for (int i = 0; i < lineCount - 1; i++) {
+			int lineStart = offsets[i];
+			if (lineStart >= selectionEnd) break;
+			int lineEnd = offsets[i + 1];
+			Rectangle lineBounds = layout.getLineBounds(i);
+			if (selectionStart <= lineEnd && lineEnd <= selectionEnd) {
+				int drawX = x + lineBounds.x + lineBounds.width;
+				gc.fillRectangle(drawX, drawY, width - drawX, lineBounds.height);
+			}
+			drawY += lineBounds.height + layout.getSpacing();
+		}
+	}
+	if (selectionStart <= length && length < selectionEnd) {
+		Rectangle lineBounds = layout.getLineBounds(lineCount - 1);
+		int x1 = x + lineBounds.x + lineBounds.width;
+		if (fullSelection) {
+			gc.fillRectangle(x1, y + lineBounds.y, width - styledText.rightMargin - x1, lineBounds.height);
+		} else {
+			gc.fillRectangle(x1, y + lineBounds.y, lineEndSpaceWidth, lineBounds.height);
+		}
+	}
 }
 int getBaseline() {
 	return ascent;

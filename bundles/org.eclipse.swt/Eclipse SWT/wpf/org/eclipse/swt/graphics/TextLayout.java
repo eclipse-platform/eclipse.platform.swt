@@ -320,6 +320,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		} else {
 			nextDrawY = drawY + lineHeight + lineSpacing;
 		}
+
+		//draw line text
+		int point = OS.gcnew_Point(x, drawY);
+		OS.TextLine_Draw(line, drawingContext, point, 0);
+		OS.GCHandle_Free(point);
 		
 		//draw line selection
 		boolean fullSelection = selectionStart <= lineStart && selectionEnd >= lineEnd;
@@ -330,6 +335,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			int rects = OS.TextLine_GetTextBounds(line, selLineStart, selLineEnd - selLineStart + 1);
 			if (rects != 0) {
 				int enumerator = OS.TextBoundsCollection_GetEnumerator(rects);
+				OS.DrawingContext_PushOpacity(drawingContext, 0.4);
 				while (OS.IEnumerator_MoveNext(enumerator)) {
 					int bounds = OS.TextBoundsCollection_Current(enumerator);
 					int textRect = OS.TextBounds_Rectangle(bounds);
@@ -339,16 +345,12 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					OS.GCHandle_Free(textRect);
 					OS.GCHandle_Free(bounds);
 				}
+				OS.DrawingContext_Pop(drawingContext);
 				OS.GCHandle_Free(enumerator);
 			}
 			OS.GCHandle_Free(rects);
 		}
-		
-		//draw line text
-		int point = OS.gcnew_Point(x, drawY);
-		OS.TextLine_Draw(line, drawingContext, point, 0);
-		OS.GCHandle_Free(point);
-		
+				
 		drawY = nextDrawY;
 	}
 	if (selBrush != 0) OS.GCHandle_Free(selBrush);
