@@ -198,7 +198,10 @@ protected Object nativeToJava(TransferData transferData) {
  *  object will be filled in on return with the platform specific format of the data
  */
 protected void javaToNative (Object object, TransferData transferData) {
-	if (!checkText(object)) DND.error(DND.ERROR_INVALID_DATA);
+	//TEMPORARY CODE FAIL WITHOUT EXCEPTION
+	if (!checkText(object)) return;
+	//if (!checkText(object)) DND.error(DND.ERROR_INVALID_DATA);
+	
 	if (isSupportedType(transferData)) {
 		transferData.pValue = createDotNetString((String)object);
 	}
