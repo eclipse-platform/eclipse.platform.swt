@@ -1667,8 +1667,7 @@ protected void init () {
 	colors [SWT.COLOR_WIDGET_BORDER] = Color.wpf_new (this, OS.SystemColors_ActiveBorderColor ());
 	colors [SWT.COLOR_LIST_FOREGROUND] = Color.wpf_new (this, OS.SystemColors_WindowTextColor ());
 	colors [SWT.COLOR_LIST_BACKGROUND] = Color.wpf_new (this, OS.SystemColors_WindowColor ());
-//	colors [SWT.COLOR_LIST_SELECTION] = Color.wpf_new (this, OS.SystemColors_HighlightColor ());
-	colors [SWT.COLOR_LIST_SELECTION] = Color.wpf_new (this, OS.Colors_LightSkyBlue ());
+	colors [SWT.COLOR_LIST_SELECTION] = Color.wpf_new (this, OS.SystemColors_HighlightColor ());
 	colors [SWT.COLOR_LIST_SELECTION_TEXT] = Color.wpf_new (this, OS.SystemColors_HighlightTextColor ());
 	colors [SWT.COLOR_INFO_FOREGROUND] = Color.wpf_new (this, OS.SystemColors_InfoTextColor ());
 	colors [SWT.COLOR_INFO_BACKGROUND] = Color.wpf_new (this, OS.SystemColors_InfoColor ());
