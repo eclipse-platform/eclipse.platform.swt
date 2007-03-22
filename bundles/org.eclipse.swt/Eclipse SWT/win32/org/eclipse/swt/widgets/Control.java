@@ -738,7 +738,7 @@ public boolean dragDetect (MouseEvent event) {
 }
 
 /**
- * @deprecated use dragDetect(Event) 
+ * @deprecated use dragDetect(Event) - This API was added between 3.2 and 3.3, and will be removed for 3.3. 
  */
 public boolean dragDetect (int button, int stateMask, int x, int y) {
 	checkWidget ();
