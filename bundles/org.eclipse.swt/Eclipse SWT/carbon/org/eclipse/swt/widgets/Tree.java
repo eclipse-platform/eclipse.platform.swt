@@ -86,7 +86,7 @@ public class Tree extends Composite {
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded, inClearAll, drawBackground;
 	Rectangle imageBounds;
 	TreeItem showItem;
-	int lastHittest, lastHittestColumn, visibleCount;
+	int lastHittest, visibleCount;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
 	static final int GRID_WIDTH = 1;
@@ -1491,10 +1491,11 @@ public TreeItem getItem (Point point) {
 	Rect rect = new Rect ();
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) point.x, (short) point.y);
-	if (0 < lastHittest && lastHittest <= items.length && lastHittestColumn != 0) {
+	int columnId = (columnCount == 0) ? column_id : columns [0].id;
+	if (0 < lastHittest && lastHittest <= items.length) {
 		TreeItem item = _getItem (lastHittest, false);
 		if (item != null) {
-			if (OS.GetDataBrowserItemPartBounds (handle, item.id, lastHittestColumn, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 				if (rect.top <= pt.v && pt.v <= rect.bottom) {
 					if ((style & SWT.FULL_SELECTION) != 0) {
 						return item;
@@ -1509,26 +1510,12 @@ public TreeItem getItem (Point point) {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
-			if (columnCount == 0) {
-				if (OS.GetDataBrowserItemPartBounds (handle, item.id, column_id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					if (rect.top <= pt.v && pt.v <= rect.bottom) {
-						if ((style & SWT.FULL_SELECTION) != 0) {
-							return item;
-						} else {
-							return OS.PtInRect (pt, rect) ? item : null;
-						}
-					}
-				}
-			} else {
-				for (int j = 0; j < columnCount; j++) {
-					if (OS.GetDataBrowserItemPartBounds (handle, item.id, columns [j].id, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-						if (rect.top <= pt.v && pt.v <= rect.bottom) {
-							if ((style & SWT.FULL_SELECTION) != 0) {
-								return item;
-							} else {
-								return OS.PtInRect (pt, rect) ? item : null;
-							}
-						}
+			if (OS.GetDataBrowserItemPartBounds (handle, item.id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+				if (rect.top <= pt.v && pt.v <= rect.bottom) {
+					if ((style & SWT.FULL_SELECTION) != 0) {
+						return item;
+					} else {
+						return OS.PtInRect (pt, rect) ? item : null;
 					}
 				}
 			}
@@ -1962,7 +1949,6 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 
 int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
 	lastHittest = id;
-	lastHittestColumn = property;
 	return 1;
 }
 
