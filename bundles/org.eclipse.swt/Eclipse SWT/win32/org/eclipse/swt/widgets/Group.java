@@ -199,7 +199,7 @@ void enableWidget (boolean enabled) {
 	/*
 	* Bug in Windows.  When a group control is right-to-left and
 	* is disabled, the first pixel of the text is clipped.  The
-	* fix is to append a space on either side of the text.
+	* fix is to add a space to both sides of the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
@@ -304,7 +304,7 @@ public void setText (String string) {
 	/*
 	* Bug in Windows.  When a group control is right-to-left and
 	* is disabled, the first pixel of the text is clipped.  The
-	* fix is to append a space on either side of the text.
+	* fix is to add a space to both sides of the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
