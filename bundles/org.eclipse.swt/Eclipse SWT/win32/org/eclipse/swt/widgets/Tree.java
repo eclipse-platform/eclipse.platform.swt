@@ -1062,7 +1062,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			} else {
 				ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = true;
 			}
-			if (!ignoreDrawBackground && clrTextBk != -1) {
+			if (!ignoreDrawBackground && !ignoreDrawSelection && clrTextBk != -1) {
 				if (!explorerTheme || !selected) {
 					if (count == 0) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
