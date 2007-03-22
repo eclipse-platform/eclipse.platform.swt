@@ -2585,16 +2585,12 @@ public Rectangle getClipping() {
 	/* Intersect visible bounds with clipping in device space and then convert then to user space */
 	int cairo = data.cairo;
 	int clipRgn = data.clipRgn;
-	int damageRgn = data.damageRgn;
-	if (clipRgn != 0 || damageRgn != 0 || cairo != 0) {
+	if (clipRgn != 0 || cairo != 0) {
 		int rgn = OS.XCreateRegion ();
 		XRectangle rect = new XRectangle();
 		rect.width = (short)width;
 		rect.height = (short)height;
 		OS.XUnionRectWithRegion(rect, rgn, rgn);
-		if (damageRgn != 0) {
-			OS.XIntersectRegion (damageRgn, rgn, rgn);
-		}
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */

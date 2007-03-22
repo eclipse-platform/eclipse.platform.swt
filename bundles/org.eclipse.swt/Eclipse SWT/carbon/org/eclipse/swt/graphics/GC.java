@@ -1976,13 +1976,9 @@ public Rectangle getClipping() {
 	}
 	/* Intersect visible bounds with clipping in device space and then convert the user space */
 	int clipRgn = data.clipRgn;
-	int visibleRgn = data.visibleRgn;
-	if (clipRgn != 0 || visibleRgn != 0 || data.inverseTransform != null) {
+	if (clipRgn != 0 || data.inverseTransform != null) {
 		int rgn = OS.NewRgn();
 		OS.SetRectRgn(rgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
-		if (visibleRgn != 0) {
-			OS.SectRgn(rgn, visibleRgn, rgn);			
-		}
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */

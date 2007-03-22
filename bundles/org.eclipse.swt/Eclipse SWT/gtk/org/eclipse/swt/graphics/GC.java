@@ -2155,16 +2155,12 @@ public Rectangle getClipping() {
 	/* Intersect visible bounds with clipping in device space and then convert then to user space */
 	int /*long*/ cairo = data.cairo;
 	int /*long*/ clipRgn = data.clipRgn;
-	int /*long*/ damageRgn = data.damageRgn;
-	if (clipRgn != 0 || damageRgn != 0 || cairo != 0) {
+	if (clipRgn != 0 || cairo != 0) {
 		int /*long*/ rgn = OS.gdk_region_new();
 		GdkRectangle rect = new GdkRectangle();
 		rect.width = width;
 		rect.height = height;
 		OS.gdk_region_union_with_rect(rgn, rect);
-		if (damageRgn != 0) {
-			OS.gdk_region_intersect (rgn, damageRgn);
-		}
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */
