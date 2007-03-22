@@ -904,9 +904,12 @@ public int getHeaderHeight () {
 	checkWidget ();
 	int columns = OS.GridView_Columns (gridViewHandle);
 	int column = OS.GridViewColumnCollection_default (columns, 0);
+	int height = 0;
 	int header = OS.GridViewColumn_Header (column);
-	int height = (int) OS.FrameworkElement_ActualHeight (header);
-	OS.GCHandle_Free (header);
+	if (header != 0) {
+		height = (int) OS.FrameworkElement_ActualHeight (header);
+		OS.GCHandle_Free (header);
+	}
 	OS.GCHandle_Free (column);
 	OS.GCHandle_Free (columns);
 	return height;
