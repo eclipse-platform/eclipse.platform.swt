@@ -10,18 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * This listener is invoked when a new offset is required based on the current
  * offset and a movement type.
  *
- * @see SWT#MOVEMENT_WORD
- * @see SWT#MOVEMENT_WORD_END 
- * @see SWT#MOVEMENT_WORD_START
- * @see SWT#MOVEMENT_CHAR
- * @see SWT#MOVEMENT_CLUSTER
+ * @see org.eclipse.swt.SWT#MOVEMENT_WORD
+ * @see org.eclipse.swt.SWT#MOVEMENT_WORD_END 
+ * @see org.eclipse.swt.SWT#MOVEMENT_WORD_START
+ * @see org.eclipse.swt.SWT#MOVEMENT_CHAR
+ * @see org.eclipse.swt.SWT#MOVEMENT_CLUSTER
  * 
  * @since 3.3
  */
