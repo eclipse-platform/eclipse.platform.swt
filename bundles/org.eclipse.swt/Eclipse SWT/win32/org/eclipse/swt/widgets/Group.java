@@ -197,13 +197,13 @@ void createHandle () {
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	/*
-	* Bug in Windows.  When a Group control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The fix
-	* is to append a space to the text.
+	* Bug in Windows.  When a group control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The
+	* fix is to append a space on either side of the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			String string = enabled ? text : text + " ";
+			String string = enabled ? text : " " + text + " ";
 			TCHAR buffer = new TCHAR (getCodePage (), string, true);
 			OS.SetWindowText (handle, buffer);
 		}
@@ -302,13 +302,13 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 	/*
-	* Bug in Windows.  When a Button control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The fix
-	* is to append a space to the text.
+	* Bug in Windows.  When a group control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The
+	* fix is to append a space on either side of the text.
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			string = OS.IsWindowEnabled (handle) ? string : string + " ";
+			string = OS.IsWindowEnabled (handle) ? string : " " + string + " ";
 		}
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
