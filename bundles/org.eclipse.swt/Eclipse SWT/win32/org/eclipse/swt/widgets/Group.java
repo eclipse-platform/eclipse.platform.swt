@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class Group extends Composite {
+	String text = "";
 	static final int CLIENT_INSET = 3;
 	static final int GroupProc;
 	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
@@ -193,6 +194,22 @@ void createHandle () {
 	state &= ~CANVAS;
 }
 
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	/*
+	* Bug in Windows.  When a Group control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The fix
+	* is to append a space to the text.
+	*/
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+			String string = enabled ? text : text + " ";
+			TCHAR buffer = new TCHAR (getCodePage (), string, true);
+			OS.SetWindowText (handle, buffer);
+		}
+	}
+}
+
 public Rectangle getClientArea () {
 	checkWidget ();
 	forceResize ();
@@ -230,11 +247,7 @@ String getNameText () {
  */
 public String getText () {
 	checkWidget ();
-	int length = OS.GetWindowTextLength (handle);
-	if (length == 0) return "";
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-	OS.GetWindowText (handle, buffer, length + 1);
-	return buffer.toString (0, length);
+	return text;
 }
 
 boolean mnemonicHit (char key) {
@@ -245,6 +258,11 @@ boolean mnemonicMatch (char key) {
 	char mnemonic = findMnemonic (getText ());
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	text = null;
 }
 
 public void setFont (Font font) {
@@ -282,6 +300,17 @@ public void setFont (Font font) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	text = string;
+	/*
+	* Bug in Windows.  When a Button control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The fix
+	* is to append a space to the text.
+	*/
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+			string = OS.IsWindowEnabled (handle) ? string : string + " ";
+		}
+	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
