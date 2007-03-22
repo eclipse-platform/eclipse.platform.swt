@@ -229,21 +229,14 @@ public class ImageAnalyzer {
 		layout.numColumns = 2;
 		shell.setLayout(layout);
 
-		// Separate the menu bar from the rest of the widgets.
-		Label separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
-		gridData.horizontalAlignment = GridData.FILL;
-		separator.setLayoutData(gridData);
-		
 		// Add a composite to contain some control widgets across the top.
 		Composite controls = new Composite(shell, SWT.NONE);
 		RowLayout rowLayout = new RowLayout();
-		rowLayout.marginTop = 0;
+		rowLayout.marginTop = 5;
 		rowLayout.marginBottom = 5;
 		rowLayout.spacing = 8;
 		controls.setLayout(rowLayout);
-		gridData = new GridData();
+		GridData gridData = new GridData();
 		gridData.horizontalSpan = 2;
 		controls.setLayoutData(gridData);
 		
@@ -474,7 +467,7 @@ public class ImageAnalyzer {
 		timeToLoadLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Separate the animation fields from the rest of the fields.
-		separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
+		Label separator = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
 		separator.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Label to show the logical screen size for animation.
