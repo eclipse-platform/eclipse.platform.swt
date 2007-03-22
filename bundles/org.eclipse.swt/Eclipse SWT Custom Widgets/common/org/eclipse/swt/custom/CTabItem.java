@@ -501,11 +501,14 @@ private void drawRightUnselectedBorder(GC gc) {
 
 	int[] shape = null;
 	int rightEdge = Math.min(x + width, parent.getRightItemEdge());
+
 	if (this.parent.onBottom) {
-		int[] left = parent.simple ? CTabFolder.SIMPLE_BOTTOM_LEFT_CORNER
-				: CTabFolder.BOTTOM_LEFT_CORNER;
-		int[] right = parent.simple ? CTabFolder.SIMPLE_BOTTOM_RIGHT_CORNER
-				: CTabFolder.BOTTOM_RIGHT_CORNER;
+		int[] left = parent.simple
+			? CTabFolder.SIMPLE_BOTTOM_LEFT_CORNER
+			: CTabFolder.BOTTOM_LEFT_CORNER;
+		int[] right = parent.simple
+			? CTabFolder.SIMPLE_BOTTOM_RIGHT_CORNER
+			: CTabFolder.BOTTOM_RIGHT_CORNER;
 		if (parent.borderLeft == 0
 				&& parent.indexOf(this) == parent.firstIndex) {
 			left = new int[] { x, y + height };
@@ -534,13 +537,10 @@ private void drawRightUnselectedBorder(GC gc) {
 				+ parent.curveWidth - parent.curveIndent;
 		shape[index++] = y - 1;
 	} else {
-		int[] right = parent.simple ? CTabFolder.SIMPLE_TOP_RIGHT_CORNER
-				: CTabFolder.TOP_RIGHT_CORNER;
-
-		if (parent.borderRight == 0
-				&& parent.indexOf(this) == parent.items.length - 1) {
-			right = new int[] { x, y };
-		}
+		int[] right = parent.simple
+			? CTabFolder.SIMPLE_TOP_RIGHT_CORNER
+			: CTabFolder.TOP_RIGHT_CORNER;
+		
 		shape = new int[right.length + 4];
 		int index = 0;
 
