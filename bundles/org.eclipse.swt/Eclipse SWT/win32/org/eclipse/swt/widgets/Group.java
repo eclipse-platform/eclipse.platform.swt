@@ -148,21 +148,33 @@ protected void checkSubclass () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	Point size = super.computeSize (wHint, hHint, changed);
-	int length = OS.GetWindowTextLength (handle);
+	int length = text.length ();
 	if (length != 0) {
+		/*
+		* Bug in Windows.  When a group control is right-to-left and
+		* is disabled, the first pixel of the text is clipped.  The
+		* fix is to add a space to both sides of the text.  Note that
+		* the work around must run all the time to stop the preferred
+		* size from changing when a group is enabled and disabled.
+		*/
+		String string = text;
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+				string = " " + string + " ";
+			}
+		}
 		/*
 		* If the group has text, and the text is wider than the
 		* client area, pad the width so the text is not clipped.
 		*/
-		TCHAR buffer1 = new TCHAR (getCodePage (), length + 1);
-		OS.GetWindowText (handle, buffer1, length + 1);
+		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		int newFont, oldFont = 0;
 		int hDC = OS.GetDC (handle);
 		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		RECT rect = new RECT ();
 		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-		OS.DrawText (hDC, buffer1, length, rect, flags);
+		OS.DrawText (hDC, buffer, -1, rect, flags);
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 		size.x = Math.max (size.x, rect.right - rect.left + CLIENT_INSET * 6);
@@ -203,7 +215,7 @@ void enableWidget (boolean enabled) {
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			String string = enabled ? text : " " + text + " ";
+			String string = enabled || text.length() == 0 ? text : " " + text + " ";
 			TCHAR buffer = new TCHAR (getCodePage (), string, true);
 			OS.SetWindowText (handle, buffer);
 		}
@@ -308,7 +320,9 @@ public void setText (String string) {
 	*/
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			string = OS.IsWindowEnabled (handle) ? string : " " + string + " ";
+			if (!OS.IsWindowEnabled (handle)) {
+				if (string.length() != 0) string = " " + string + " ";
+			}
 		}
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
