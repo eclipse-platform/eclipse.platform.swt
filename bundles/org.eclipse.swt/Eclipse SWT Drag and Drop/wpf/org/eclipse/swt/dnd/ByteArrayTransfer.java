@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.wpf.OS;
+import org.eclipse.swt.internal.wpf.*;
 
 
 /**
@@ -118,56 +118,62 @@ import org.eclipse.swt.internal.wpf.OS;
  * </code></pre>
  */
 public abstract class ByteArrayTransfer extends Transfer {
-
-
-int createDotNetString (String string) {
-	if (string == null) return 0;
-	int length = string.length();
-	char[] buffer = new char[length + 1];
-	string.getChars(0, length, buffer, 0);
-	return OS.gcnew_String(buffer);
-}
-
-String createJavaString (int ptr) {
-	int charArray = OS.String_ToCharArray(ptr);
-	char[] chars = new char[OS.String_Length(ptr)];
-	OS.memcpy(chars, charArray, chars.length * 2);
-	OS.GCHandle_Free(charArray);
-	return new String(chars);
-}
 	
+boolean checkByteArray(Object object) {
+	return (object != null && object instanceof byte[] && ((byte[])object).length > 0);
+}
+
 public TransferData[] getSupportedTypes(){
 	int[] ids = getTypeIds();
 	TransferData[] result = new TransferData[ids.length];
 	for (int i = 0; i < result.length; i++) {
 		result[i] = new TransferData();
-		result[i].format = ids[i];
+		result[i].type = ids[i];
 	}
 	return result;
 }
-
 
 protected String[] getTypeNames(){
 	int[] ids = getTypeIds();
 	String[] result = new String[ids.length];
 	for (int i = 0; i < result.length; i++) {
-		result[i] = createJavaString(ids[i]);
+		result[i] = getTypeName(ids[i]);
 	}
 	return result;
 }
-
 
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
 	int[] ids = getTypeIds();
 	for (int i = 0; i < ids.length; i++) {
-		if (transferData.format == ids[i]) return true;
+		if (transferData.type == ids[i]) return true;
 	}
 	return false;
 }
 
-boolean checkText(Object object) {
-	return object != null && object instanceof String && ((String)object).length() > 0;
+/**
+ * This implementation of <code>javaToNative</code> converts a java 
+ * <code>byte[]</code> to a platform specific representation.  For additional
+ * information see <code>Transfer#javaToNative</code>.
+ * 
+ * @see Transfer#javaToNative
+ * 
+ * @param object a java <code>byte[]</code> containing the data to be converted
+ * @param transferData an empty <code>TransferData</code> object; this
+ *  object will be filled in on return with the platform specific format of the data
+ */
+protected void javaToNative (Object object, TransferData transferData) {
+	if (!checkByteArray(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	byte[] buffer = (byte[])object;
+	if (buffer.length == 0) return;
+	int typeid = OS.Byte_typeid();
+	int pValue = OS.Array_CreateInstance(typeid, buffer.length);
+	OS.GCHandle_Free(typeid);
+	if (pValue == 0) return;
+	OS.memcpy(pValue, buffer, buffer.length);
+	transferData.pValue = pValue;
 }
 
 /**
@@ -183,28 +189,12 @@ boolean checkText(Object object) {
  * conversion was successful; otherwise null
  */
 protected Object nativeToJava(TransferData transferData) {
-	return createJavaString(transferData.pValue);
+	if ( !isSupportedType(transferData) || transferData.pValue == 0) return null;
+	int byteArray = transferData.pValue;
+	int length = OS.Array_GetLength(byteArray, 0);
+	byte[] buffer = new byte[length];
+	if (length == 0) return buffer;
+	OS.memcpy(buffer, transferData.pValue, length);
+	return buffer;
 }
-
-/**
- * This implementation of <code>javaToNative</code> converts a java 
- * <code>byte[]</code> to a platform specific representation.  For additional
- * information see <code>Transfer#javaToNative</code>.
- * 
- * @see Transfer#javaToNative
- * 
- * @param object a java <code>byte[]</code> containing the data to be converted
- * @param transferData an empty <code>TransferData</code> object; this
- *  object will be filled in on return with the platform specific format of the data
- */
-protected void javaToNative (Object object, TransferData transferData) {
-	//TEMPORARY CODE FAIL WITHOUT EXCEPTION
-	if (!checkText(object)) return;
-	//if (!checkText(object)) DND.error(DND.ERROR_INVALID_DATA);
-	
-	if (isSupportedType(transferData)) {
-		transferData.pValue = createDotNetString((String)object);
-	}
-}
-
 }

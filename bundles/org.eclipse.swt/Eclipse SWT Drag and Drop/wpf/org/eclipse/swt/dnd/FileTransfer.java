@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.wpf.*;
  
 /**
  * The class <code>FileTransfer</code> provides a platform specific mechanism 
@@ -31,16 +32,41 @@ package org.eclipse.swt.dnd;
  * </code></pre>
  */
 public class FileTransfer extends ByteArrayTransfer {
-	
-private FileTransfer() {}
+
+private static FileTransfer _instance = new FileTransfer();
+private static int TYPEID = getTypeId();
+
 /**
  * Returns the singleton instance of the FileTransfer class.
  *
  * @return the singleton instance of the FileTransfer class
  */
 public static FileTransfer getInstance () {
-	return null;
+	return _instance;
 }
+
+static int getTypeId() {
+	int format = OS.DataFormats_FileDrop();
+	String name = createJavaString(format);
+	OS.GCHandle_Free(format);
+	return registerType(name);
+}
+
+private FileTransfer() {}
+
+boolean checkFile(Object object) {
+	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
+	String[] strings = (String[])object;
+	for (int i = 0; i < strings.length; i++) {
+		if (strings[i] == null || strings[i].length() == 0) return false;
+	}
+	return true;
+}
+
+protected int[] getTypeIds(){
+	return new int[]{TYPEID};
+}
+
 /**
  * This implementation of <code>javaToNative</code> converts a list of file names
  * represented by a java <code>String[]</code> to a platform specific representation.
@@ -54,7 +80,22 @@ public static FileTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
+	if (!checkFile(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	String[] fileNames = (String[]) object;
+	int length = fileNames.length;
+	int pStringId = OS.String_typeid();
+	int pStringArray = OS.Array_CreateInstance(pStringId, length);
+	for (int i = 0; i < length; i++) {
+		int pString = createDotNetString(fileNames[i]);
+		OS.Array_SetValue(pStringArray, pString, i);
+		OS.GCHandle_Free(pString);
+	}
+	transferData.pValue = pStringArray;
+	OS.GCHandle_Free(pStringId);	
 }
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of a list of file names to a java <code>String[]</code>.  
@@ -66,13 +107,18 @@ public void javaToNative(Object object, TransferData transferData) {
  * @return a java <code>String[]</code> containing a list of file names if the 
  * conversion was successful; otherwise null
  */
+
 public Object nativeToJava(TransferData transferData) {
-	return null;
-}
-protected String[] getTypeNames(){
-	return null;
-}
-protected int[] getTypeIds(){
-	return null;
+	if (!isSupportedType(transferData) || transferData.pValue == 0)  return null;
+	
+	int pStringArray = transferData.pValue;
+	int length = OS.Array_GetLength(pStringArray, 0);
+	String[] fileNames = new String [length];
+	for (int i = 0; i < length; i++) {
+		int pString = OS.Array_GetValue(pStringArray, i);
+		fileNames[i] = createJavaString(pString);
+		OS.GCHandle_Free(pString);
+	}
+	return fileNames;
 }
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.wpf.*;
+
 /**
  * The class <code>HTMLTransfer</code> provides a platform specific mechanism 
  * for converting text in HTML format represented as a java <code>String</code> 
@@ -25,14 +27,9 @@ package org.eclipse.swt.dnd;
  */
 public class HTMLTransfer extends ByteArrayTransfer {
 
-	private static HTMLTransfer _instance = new HTMLTransfer();
-	private static final String TYPENAME1 = "text/html\0";
-	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "TEXT/HTML\0";
-	private static final int TYPEID2 = registerType(TYPENAME2);
+private static HTMLTransfer _instance = new HTMLTransfer();
+private static int TYPEID = getTypeId();
 
-private HTMLTransfer() {
-}
 /**
  * Returns the singleton instance of the HTMLTransfer class.
  *
@@ -41,6 +38,25 @@ private HTMLTransfer() {
 public static HTMLTransfer getInstance () {
 	return _instance;
 }
+
+static int getTypeId() {
+	int format = OS.DataFormats_Html();
+	String name = createJavaString(format);
+	OS.GCHandle_Free(format);
+	return registerType(name);
+}
+
+private HTMLTransfer() {
+}
+
+boolean checkHTML(Object object) {
+	return (object != null && object instanceof String && ((String)object).length() > 0);
+}
+
+protected int[] getTypeIds(){
+	return new int[]{TYPEID};
+}
+
 /**
  * This implementation of <code>javaToNative</code> converts HTML-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
@@ -51,7 +67,12 @@ public static HTMLTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
+	if (!checkHTML(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	transferData.pValue = createDotNetString((String)object);
 }
+
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
  * representation of HTML text to a java <code>String</code>.
@@ -63,12 +84,8 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	return null;
-}
-protected String[] getTypeNames(){
-	return new String[]{TYPENAME1, TYPENAME2};
-}
-protected int[] getTypeIds(){
-	return new int[]{TYPEID1, TYPEID2};
+	if (!isSupportedType(transferData) || transferData.pValue == 0) return null;
+
+	return createJavaString(transferData.pValue);
 }
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.*;
 
 /**
  * <code>Transfer</code> provides a mechanism for converting between a java 
@@ -24,7 +26,27 @@ package org.eclipse.swt.dnd;
  * @see ByteArrayTransfer
  */
 public abstract class Transfer {
-	
+
+private static String[] registeredTypes = new String[0];
+
+static int createDotNetString (String string) {
+	if (string == null) return 0;
+	int length = string.length();
+	char[] buffer = new char[length + 1];
+	string.getChars(0, length, buffer, 0);
+	int result = OS.gcnew_String(buffer);
+	if (result == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	return result;
+}
+
+static String createJavaString (int ptr) {
+	int charArray = OS.String_ToCharArray(ptr);
+	char[] chars = new char[OS.String_Length(ptr)];
+	OS.memcpy(chars, charArray, chars.length * 2);
+	OS.GCHandle_Free(charArray);
+	return new String(chars);
+}
+
 /**
  * Returns a list of the platform specific data types that can be converted using 
  * this transfer agent.
@@ -128,6 +150,30 @@ abstract protected Object nativeToJava(TransferData transferData);
  * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName){
-	return 0;
+	int length = registeredTypes.length;
+	for (int i = 0; i < length; i++) {
+		if (registeredTypes[i].equals(formatName))
+			return i + 1;
+	}
+	String[] newTypes = new String[length + 1];
+	System.arraycopy(registeredTypes, 0, newTypes, 0, length);
+	newTypes[length] = formatName;
+	registeredTypes = newTypes;
+	return length + 1;
 }
+
+static String getTypeName(int registeredType) {
+	--registeredType;
+	if (registeredType < 0 || registeredType >= registeredTypes.length)
+		DND.error(DND.ERROR_INVALID_DATA);
+	return registeredTypes[registeredType];
+}
+
+static int getWPFFormat(int registeredType) {
+	--registeredType;
+	if (registeredType < 0 || registeredType >= registeredTypes.length)
+		DND.error(DND.ERROR_INVALID_DATA);
+	return createDotNetString(registeredTypes[registeredType]);
+}
+
 }

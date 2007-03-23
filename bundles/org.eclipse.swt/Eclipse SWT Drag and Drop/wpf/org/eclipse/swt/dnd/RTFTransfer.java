@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.wpf.OS;
+import org.eclipse.swt.internal.wpf.*;
 
  
 /**
@@ -28,10 +28,8 @@ import org.eclipse.swt.internal.wpf.OS;
  */
 public class RTFTransfer extends ByteArrayTransfer {
 
-	private static RTFTransfer _instance = new RTFTransfer();
-
-private RTFTransfer() {
-}
+private static RTFTransfer _instance = new RTFTransfer();
+private static int TYPEID = getTypeId();
 
 /**
  * Returns the singleton instance of the RTFTransfer class.
@@ -42,7 +40,53 @@ public static RTFTransfer getInstance () {
 	return _instance;
 }
 
+static int getTypeId() {
+	int format = OS.DataFormats_Rtf();
+	String name = createJavaString(format);
+	OS.GCHandle_Free(format);
+	return registerType(name);
+}
+
+private RTFTransfer() {
+}
+
+boolean checkRTF(Object object) {
+	return (object != null  && object instanceof String && ((String)object).length() > 0);
+}
+
 protected int[] getTypeIds(){
-	return new int[]{OS.DataFormats_Rtf};
+	return new int[]{TYPEID};
+}
+
+/**
+ * This implementation of <code>javaToNative</code> converts RTF-formatted text
+ * represented by a java <code>String</code> to a platform specific representation.
+ * For additional information see <code>Transfer#javaToNative</code>.
+ * 
+ * @param object a java <code>String</code> containing RTF text
+ * @param transferData an empty <code>TransferData</code> object; this
+ *  object will be filled in on return with the platform specific format of the data
+ */
+protected void javaToNative (Object object, TransferData transferData) {
+	if (!checkRTF(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
+	transferData.pValue = createDotNetString((String)object);
+}
+
+/**
+ * This implementation of <code>nativeToJava</code> converts a platform specific 
+ * representation of RTF text to a java <code>String</code>.
+ * For additional information see <code>Transfer#nativeToJava</code>.
+ * 
+ * @param transferData the platform specific representation of the data to be 
+ * been converted
+ * @return a java <code>String</code> containing RTF text if the 
+ * conversion was successful; otherwise null
+ */
+protected Object nativeToJava(TransferData transferData) {
+	if (!isSupportedType(transferData) || transferData.pValue == 0) return null;
+
+	return createJavaString(transferData.pValue);
 }
 }

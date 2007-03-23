@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1233;
-int OS_nativeFunctionCallCount[1233];
+int OS_nativeFunctionCount = 1252;
+int OS_nativeFunctionCallCount[1252];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -34,6 +34,10 @@ char * OS_nativeFunctionNames[] = {
 	"ArrayList_1RemoveAt",
 	"ArrayList_1default__II",
 	"ArrayList_1default__III",
+	"Array_1CreateInstance",
+	"Array_1GetLength",
+	"Array_1GetValue",
+	"Array_1SetValue",
 	"BindingExpression_1UpdateTarget",
 	"Binding_1Converter",
 	"Binding_1ConverterParameter",
@@ -67,6 +71,7 @@ char * OS_nativeFunctionNames[] = {
 	"ButtonBase_1Click",
 	"Button_1IsDefault__I",
 	"Button_1IsDefault__IZ",
+	"Byte_1typeid",
 	"CancelEventArgs_1Cancel",
 	"Canvas_1GetLeft",
 	"Canvas_1GetTop",
@@ -75,10 +80,13 @@ char * OS_nativeFunctionNames[] = {
 	"CharacterHit_1FirstCharacterIndex",
 	"CharacterHit_1TrailingLength",
 	"CheckBox_1typeid",
+	"Clipboard_1Clear",
 	"Clipboard_1ContainsData",
 	"Clipboard_1GetData",
+	"Clipboard_1GetDataObject",
 	"Clipboard_1GetText",
 	"Clipboard_1SetData",
+	"Clipboard_1SetDataObject",
 	"CloseHandle",
 	"ColorDialog_1AnyColor",
 	"ColorDialog_1Color__I",
@@ -196,8 +204,9 @@ char * OS_nativeFunctionNames[] = {
 	"DashStyles_1DashDotDot",
 	"DashStyles_1Dot",
 	"DashStyles_1Solid",
+	"DataFormats_1FileDrop",
+	"DataFormats_1Html",
 	"DataFormats_1Rtf",
-	"DataFormats_1StringFormat",
 	"DataFormats_1UnicodeText",
 	"DataObject_1GetData",
 	"DataObject_1GetDataPresent",
@@ -748,6 +757,7 @@ char * OS_nativeFunctionNames[] = {
 	"StreamGeometry_1Open",
 	"String_1Length",
 	"String_1ToCharArray",
+	"String_1typeid",
 	"Style_1Setters",
 	"SystemColors_1ActiveBorderBrush",
 	"SystemColors_1ActiveBorderColor",
@@ -958,12 +968,17 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1ClipToBounds",
 	"UIElement_1DesiredSize",
 	"UIElement_1DragEnter",
+	"UIElement_1DragEnterEvent",
 	"UIElement_1DragLeave",
+	"UIElement_1DragLeaveEvent",
 	"UIElement_1DragOver",
+	"UIElement_1DragOverEvent",
 	"UIElement_1Drop",
+	"UIElement_1DropEvent",
 	"UIElement_1Focus",
 	"UIElement_1Focusable",
 	"UIElement_1GiveFeedback",
+	"UIElement_1GiveFeedbackEvent",
 	"UIElement_1InputHitTest",
 	"UIElement_1InvalidateVisual",
 	"UIElement_1IsEnabled__I",
@@ -998,7 +1013,9 @@ char * OS_nativeFunctionNames[] = {
 	"UIElement_1PreviewMouseWheel",
 	"UIElement_1PreviewTextInput",
 	"UIElement_1QueryContinueDrag",
+	"UIElement_1QueryContinueDragEvent",
 	"UIElement_1ReleaseMouseCapture",
+	"UIElement_1RemoveHandler",
 	"UIElement_1SnapsToDevicePixels",
 	"UIElement_1TextInput",
 	"UIElement_1TranslatePoint",
@@ -1249,7 +1266,9 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1WindowsFormsHost",
 	"gcnew_1WriteableBitmap__I",
 	"gcnew_1WriteableBitmap__IIDDII",
-	"memcpy",
+	"memcpy__I_3BI",
+	"memcpy___3BII",
+	"memcpy___3CII",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

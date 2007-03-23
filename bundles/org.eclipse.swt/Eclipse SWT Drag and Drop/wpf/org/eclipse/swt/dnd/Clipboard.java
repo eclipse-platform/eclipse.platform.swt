@@ -11,8 +11,8 @@
 package org.eclipse.swt.dnd;
 
 
+import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.wpf.OS;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -119,6 +119,57 @@ protected void checkWidget () {
 }
 
 /**
+ * If this clipboard is currently the owner of the data on the system clipboard,
+ * clear the contents.  If this clipboard is not the owner, then nothing is done.
+ * Note that there are clipboard assistant applications that take ownership of 
+ * data or make copies of data when it is placed on the clipboard.  In these 
+ * cases, it may not be possible to clear the clipboard.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void clearContents() {
+	clearContents(DND.CLIPBOARD);
+}
+
+/**
+ * If this clipboard is currently the owner of the data on the specified 
+ * clipboard, clear the contents.  If this clipboard is not the owner, then 
+ * nothing is done.
+ * 
+ * <p>Note that there are clipboard assistant applications that take ownership
+ * of data or make copies of data when it is placed on the clipboard.  In these 
+ * cases, it may not be possible to clear the clipboard.</p>
+ * 
+ * <p>The clipboards value is either one of the clipboard constants defined in
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>DND</code> clipboard constants.</p>
+ * 
+ * @param clipboards to be cleared
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see DND#CLIPBOARD
+ * @see DND#SELECTION_CLIPBOARD
+ * 
+ * @since 3.1
+ */
+public void clearContents(int clipboards) {
+	checkWidget();
+	if ((clipboards & DND.CLIPBOARD) != 0) {
+		OS.Clipboard_Clear();
+	}
+}
+
+/**
  * Disposes of the operating system resources associated with the clipboard. 
  * The data will still be available on the system clipboard after the dispose 
  * method is called.  
@@ -134,6 +185,97 @@ public void dispose () {
 	if (isDisposed()) return;
 	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	display = null;
+}
+
+/**
+ * Returns a platform specific list of the data types currently available on the 
+ * system clipboard.
+ * 
+ * <p>Note: <code>getAvailableTypeNames</code> is a utility for writing a Transfer 
+ * sub-class.  It should NOT be used within an application because it provides 
+ * platform specific information.</p>
+ * 
+ * @return a platform specific list of the data types currently available on the 
+ * system clipboard
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public String[] getAvailableTypeNames() {
+	checkWidget();
+	
+	int pDataObject = OS.Clipboard_GetDataObject();
+	int pFormats = OS.DataObject_GetFormats(pDataObject, true);
+	int length = OS.Array_GetLength(pFormats, 0);
+	String[] result = new String [length];
+	for (int i = 0; i < length; i++) {
+		int pFormat = OS.Array_GetValue(pFormats, i);
+		result[i] = Transfer.createJavaString(pFormat);
+		OS.GCHandle_Free(pFormat);
+	}
+	OS.GCHandle_Free(pDataObject);
+	OS.GCHandle_Free(pFormats);
+	return result;
+}
+
+/**
+ * Returns an array of the data types currently available on the system 
+ * clipboard. Use with Transfer.isSupportedType.
+ *
+ * @return array of data types currently available on the system clipboard
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Transfer#isSupportedType
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	return getAvailableTypes(DND.CLIPBOARD);
+}
+
+/**
+ * Returns an array of the data types currently available on the specified 
+ * clipboard. Use with Transfer.isSupportedType.
+ * 
+ * <p>The clipboards value is either one of the clipboard constants defined in
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>DND</code> clipboard constants.</p>
+ * 
+ * @param clipboards from which to get the data types
+ * @return array of data types currently available on the specified clipboard
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Transfer#isSupportedType
+ * @see DND#CLIPBOARD
+ * @see DND#SELECTION_CLIPBOARD
+ * 
+ * @since 3.1
+ */
+public TransferData[] getAvailableTypes(int clipboards) {
+	checkWidget();
+	if ((clipboards & DND.CLIPBOARD) == 0) return new TransferData[0];
+
+	String[] typeNames = getAvailableTypeNames();
+	int length = typeNames.length;
+	TransferData[] result = new TransferData [length];
+	for (int i = 0; i < length; i++) {
+		int type = Transfer.registerType(typeNames[i]);
+		TransferData transferData = new TransferData();
+		transferData.type = type;
+		result[i++] = transferData;
+	}
+	return result;
 }
 
 /**
@@ -218,12 +360,12 @@ public Object getContents(Transfer transfer) {
 public Object getContents(Transfer transfer, int clipboards) {
 	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-	int[] ids = transfer.getTypeIds();
-	for (int i = 0; i < ids.length; i++) {
-		int format = ids[i];
-		if (format != 0 && OS.Clipboard_ContainsData(format)) {
-			int pValue = OS.Clipboard_GetData(format);
+	int[] types = transfer.getTypeIds();
+	for (int i = 0; i < types.length; i++) {
+		int pValue = getData(types[i]);
+		if (pValue != 0) {
 			TransferData data = new TransferData();
+			data.type = types[i];
 			data.pValue = pValue;
 			Object result = transfer.nativeToJava(data);
 			OS.GCHandle_Free(pValue);
@@ -231,6 +373,16 @@ public Object getContents(Transfer transfer, int clipboards) {
 		}
 	}
 	return null;
+}
+
+int getData(int type) {
+	int pFormat = Transfer.getWPFFormat(type);
+	int result = 0;
+	if (OS.Clipboard_ContainsData(pFormat)) {
+		result = OS.Clipboard_GetData(pFormat);
+	}
+	OS.GCHandle_Free (pFormat);
+	return result;
 }
 
 /**
@@ -366,59 +518,24 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	
+	int pDataObject = OS.gcnew_DataObject();
 	for (int i = 0; i < dataTypes.length; i++) {
 		Transfer transfer = dataTypes[i];
-		int[] formats = transfer.getTypeIds();
-		for (int j = 0; j < formats.length; j++) {
+		Object value = data[i];
+		int[] types = transfer.getTypeIds();
+		for (int j = 0; j < types.length; j++) {
 			TransferData transferData = new TransferData(); 
-			transferData.format = formats[j];
-			transfer.javaToNative(data[i], transferData);
+			transferData.type = types[j];
+			transfer.javaToNative(value, transferData);
 			if (transferData.pValue != 0) {
-				OS.Clipboard_SetData(transferData.format, transferData.pValue);
+				int pFormat = Transfer.getWPFFormat(transferData.type);
+				OS.DataObject_SetData(pDataObject, pFormat, transferData.pValue, true);
+				OS.GCHandle_Free(pFormat);
 				OS.GCHandle_Free(transferData.pValue);
 			}
 		}
 	}
-}
-
-/**
- * Returns an array of the data types currently available on the system 
- * clipboard. Use with Transfer.isSupportedType.
- *
- * @return array of data types currently available on the system clipboard
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see Transfer#isSupportedType
- * 
- * @since 3.0
- */
-public TransferData[] getAvailableTypes() {
-	checkWidget();
-	return new TransferData[0];
-}
-
-/**
- * Returns a platform specific list of the data types currently available on the 
- * system clipboard.
- * 
- * <p>Note: <code>getAvailableTypeNames</code> is a utility for writing a Transfer 
- * sub-class.  It should NOT be used within an application because it provides 
- * platform specific information.</p>
- * 
- * @return a platform specific list of the data types currently available on the 
- * system clipboard
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public String[] getAvailableTypeNames() {
-	checkWidget();
-	return new String[0];
+	OS.Clipboard_SetDataObject(pDataObject, false);
+	OS.GCHandle_Free(pDataObject);
 }
 }
