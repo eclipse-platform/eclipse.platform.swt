@@ -5541,6 +5541,21 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if (lpht.hItem != 0) {
+		/*
+		* Bug in Windows.  When a tree item that has an image
+		* with alpha is expanded or collapsed, the area where
+		* the image is drawn is not erased before it is drawn.
+		* This means that the image gets darker each time.
+		* The fix is to redraw the item.
+		*/
+		if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6) {
+			if ((lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
+				RECT rect = new RECT ();
+				rect.left = lpht.hItem;
+				OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect);
+				OS.InvalidateRect (handle, rect, true);
+			}
+		}
 		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & OS.TVHT_ONITEM) != 0) {
 			Event event = new Event ();
 			event.item = _getItem (lpht.hItem);
@@ -5605,6 +5620,21 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		if (dragStarted) {
 			if (!display.captureChanged && !isDisposed ()) {
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			}
+		}
+		/*
+		* Bug in Windows.  When a tree item that has an image
+		* with alpha is expanded or collapsed, the area where
+		* the image is drawn is not erased before it is drawn.
+		* This means that the image gets darker each time.
+		* The fix is to redraw the item.
+		*/
+		if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6) {
+			if (lpht.hItem != 0) {
+				RECT rect = new RECT ();
+				rect.left = lpht.hItem;
+				OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect);
+				OS.InvalidateRect (handle, rect, true);
 			}
 		}
 		if (deselected) {
