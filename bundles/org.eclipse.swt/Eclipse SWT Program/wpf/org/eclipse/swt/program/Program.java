@@ -64,6 +64,7 @@ public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
 	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
+	if (extension.length() > 0xff) return null;
 	int key = createDotNetString (extension);
 	int classesRoot = OS.Registry_ClassesRoot ();
 	int registryKey = OS.RegistryKey_OpenSubKey (classesRoot, key);
