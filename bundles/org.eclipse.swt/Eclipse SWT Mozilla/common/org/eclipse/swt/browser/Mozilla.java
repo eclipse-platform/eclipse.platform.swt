@@ -46,6 +46,7 @@ class Mozilla extends WebBrowser {
 	byte[] htmlBytes;
 	boolean visible, isChild, ignoreDispose;
 	Shell tip = null;
+	Vector unhookedDOMWindows = new Vector ();
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocationProvider;
@@ -1291,6 +1292,13 @@ void onDispose (Display display) {
 	location = size = null;
 	htmlBytes = null;
 
+	Enumeration elements = unhookedDOMWindows.elements ();
+	while (elements.hasMoreElements ()) {
+		LONG ptrObject = (LONG)elements.nextElement ();
+		new nsISupports (ptrObject.value).Release ();
+	}
+	unhookedDOMWindows = null;
+
 	delegate.onDispose (embedHandle);
 	delegate = null;
 
@@ -1809,9 +1817,65 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 	if ((aStateFlags & nsIWebProgressListener.STATE_IS_DOCUMENT) == 0) return XPCOM.NS_OK;
 	if ((aStateFlags & nsIWebProgressListener.STATE_START) != 0) {
 		if (request == 0) request = aRequest;
+
+		/*
+		 * Add the page's nsIDOMWindow to the collection of windows that will
+		 * have DOM listeners added to them later on in the page loading
+		 * process.  These listeners cannot be added yet because the
+		 * nsIDOMWindow is not ready to take them at this stage.
+		 */
+		int /*long*/[] result = new int /*long*/[1];
+		nsIWebProgress progress = new nsIWebProgress (aWebProgress);
+		int rc = progress.GetDOMWindow (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		unhookedDOMWindows.addElement (new LONG (result[0]));
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_REDIRECTING) != 0) {
 		if (request == aRequest) request = 0;
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
+		/*
+		* If this page's nsIDOMWindow handle is still in unhookedDOMWindows then
+		* add its DOM listeners now.  It's possible for this to happen since
+		* there is no guarantee that a STATE_TRANSFERRING state change will be
+		* received for every window in a page, which is when these listeners
+		* are typically added.
+		*/
+		int /*long*/[] result = new int /*long*/[1];
+		nsIWebProgress progress = new nsIWebProgress (aWebProgress);
+		int rc = progress.GetDOMWindow (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIDOMWindow domWindow = new nsIDOMWindow (result[0]);
+
+		LONG ptrObject = new LONG (result[0]);
+		result[0] = 0;
+		int index = unhookedDOMWindows.indexOf (ptrObject);
+		if (index != -1) {
+			rc = domWindow.GetTop (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+			boolean isTop = result[0] == domWindow.getAddress ();
+			new nsISupports (result[0]).Release ();
+			result[0] = 0;
+
+			rc = domWindow.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+			nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+			result[0] = 0;
+			hookDOMListeners (target, isTop);
+			target.Release ();
+
+			/*
+			* Remove and unreference the nsIDOMWindow from the collection of windows
+			* that are waiting to have DOM listeners hooked on them. 
+			*/
+			unhookedDOMWindows.remove (ptrObject);
+			new nsISupports (ptrObject.value).Release ();
+		}
+		domWindow.Release ();
+
 		/*
 		 * If htmlBytes is not null then there is html from a previous setText() call
 		 * waiting to be set into the about:blank page once it has completed loading. 
@@ -1819,7 +1883,7 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 		if (htmlBytes != null) {
 			nsIRequest req = new nsIRequest (aRequest);
 			int /*long*/ name = XPCOM.nsEmbedCString_new ();
-			int rc = req.GetName (name);
+			rc = req.GetName (name);
 			if (rc != XPCOM.NS_OK) error (rc);
 			int length = XPCOM.nsEmbedCString_Length (name);
 			int /*long*/ buffer = XPCOM.nsEmbedCString_get (name);
@@ -1836,18 +1900,17 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 				 */
 				unhookDOMListeners ();
 
-				int /*long*/[] result = new int /*long*/[1];
 				rc = XPCOM.NS_GetServiceManager (result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
-	
+
 				nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 				result[0] = 0;
 				rc = serviceManager.GetService (XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 				serviceManager.Release ();
-	
+
 				nsIIOService ioService = new nsIIOService (result[0]);
 				result[0] = 0;
 				/*
@@ -1862,19 +1925,19 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 				ioService.Release ();
-				
+
 				nsIURI uri = new nsIURI (result[0]);
 				result[0] = 0;
-	
+
 				rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
 				if (rc != XPCOM.NS_OK) error (rc);
 				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 				nsIWebBrowserStream stream = new nsIWebBrowserStream (result[0]);
 				result[0] = 0;
-				
+
 				byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
 				int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
-	
+
 				rc = stream.OpenStream (uri.getAddress (), aContentType);
 				if (rc != XPCOM.NS_OK) error (rc);
 				int /*long*/ ptr = C.malloc (htmlBytes.length);
@@ -1928,10 +1991,48 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 			}
 		}
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_TRANSFERRING) != 0) {
-		hookDOMListeners ();
+		/*
+		* Hook DOM listeners to the page's nsIDOMWindow here because this is
+		* the earliest opportunity to do so.    
+		*/
+		int /*long*/[] result = new int /*long*/[1];
+		nsIWebProgress progress = new nsIWebProgress (aWebProgress);
+		int rc = progress.GetDOMWindow (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+		nsIDOMWindow domWindow = new nsIDOMWindow (result[0]);
+
+		LONG ptrObject = new LONG (result[0]);
+		result[0] = 0;
+		int index = unhookedDOMWindows.indexOf (ptrObject);
+		if (index != -1) {
+			rc = domWindow.GetTop (result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+			boolean isTop = result[0] == domWindow.getAddress ();
+			new nsISupports (result[0]).Release ();
+			result[0] = 0;
+
+			rc = domWindow.QueryInterface (nsIDOMEventTarget.NS_IDOMEVENTTARGET_IID, result);
+			if (rc != XPCOM.NS_OK) error (rc);
+			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
+
+			nsIDOMEventTarget target = new nsIDOMEventTarget (result[0]);
+			result[0] = 0;
+			hookDOMListeners (target, isTop);
+			target.Release ();
+
+			/*
+			* Remove and unreference the nsIDOMWindow from the collection of windows
+			* that are waiting to have DOM listeners hooked on them. 
+			*/
+			unhookedDOMWindows.remove (ptrObject);
+			new nsISupports (ptrObject.value).Release ();
+		}
+		domWindow.Release ();
 	}
 	return XPCOM.NS_OK;
-}	
+}
 
 int /*long*/ OnProgressChange (int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aCurSelfProgress, int /*long*/ aMaxSelfProgress, int /*long*/ aCurTotalProgress, int /*long*/ aMaxTotalProgress) {
 	if (progressListeners.length == 0) return XPCOM.NS_OK;
