@@ -41,7 +41,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Button extends Control {
-	String text = "";
+	String text = "", message = "";
 	Image image, image2, disabledImage;
 	ImageList imageList;
 	boolean ignoreMouse;
@@ -108,6 +108,7 @@ public Button (Composite parent, int style) {
 }
 
 void _setImage (Image image) {
+	if ((style & SWT.COMMAND) != 0) return;
 	if (OS.COMCTL32_MAJOR >= 6) {
 		if (imageList != null) imageList.dispose ();
 		imageList = null;
@@ -329,6 +330,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, 0);
+	//style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, SWT.COMMAND);
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		return checkBits (style, SWT.CENTER, SWT.LEFT, SWT.RIGHT, 0, 0, 0);
 	}
@@ -389,61 +391,81 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width += OS.GetSystemMetrics (OS.SM_CXHSCROLL);
 			height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 		}
-		if (wHint != SWT.DEFAULT) width = wHint;
-		if (hHint != SWT.DEFAULT) height = hHint;
-		width += border * 2; height += border * 2;
-		return new Point (width, height);
-	}
-	int extra = 0;
-	boolean hasImage = image != null, hasText = true;
-	if (OS.COMCTL32_MAJOR < 6) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
-		if (hasImage) hasText = false;
-	}
-	if (hasImage) {
-		if (image != null) {
-			Rectangle rect = image.getBounds ();
-			width = rect.width;
-			if (hasText && text.length () != 0) {
-				width += MARGIN * 2;
+	} else {
+		if ((style & SWT.COMMAND) != 0) {
+			SIZE size = new SIZE ();
+			if (wHint != SWT.DEFAULT) {
+				size.cx = wHint;
+				OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, size);
+				width = size.cx;
+				height = size.cy;
+			} else {
+				OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, size);
+				width = size.cy;
+				height = size.cy;
+				size.cy = 0;
+				while (size.cy != height) {
+					size.cx = width++;
+					size.cy = 0;
+					OS.SendMessage (handle, OS.BCM_GETIDEALSIZE, 0, size);
+				}
 			}
-			height = rect.height;
-			extra = MARGIN * 2;
-		}
-	}
-	if (hasText) {
-		int oldFont = 0;
-		int hDC = OS.GetDC (handle);
-		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-		OS.GetTextMetrics (hDC, lptm);
-		int length = text.length ();
-		if (length == 0) {
-			height = Math.max (height, lptm.tmHeight);
 		} else {
-			extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
-			TCHAR buffer = new TCHAR (getCodePage (), text, true);
-			RECT rect = new RECT ();
-			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-			OS.DrawText (hDC, buffer, -1, rect, flags);
-			width += rect.right - rect.left;
-			height = Math.max (height, rect.bottom - rect.top);
+			int extra = 0;
+			boolean hasImage = image != null, hasText = true;
+			if (OS.COMCTL32_MAJOR < 6) {
+				if ((style & SWT.PUSH) == 0) {
+					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+					hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
+					if (hasImage) hasText = false;
+				}
+			}
+			if (hasImage) {
+				if (image != null) {
+					Rectangle rect = image.getBounds ();
+					width = rect.width;
+					if (hasText && text.length () != 0) {
+						width += MARGIN * 2;
+					}
+					height = rect.height;
+					extra = MARGIN * 2;
+				}
+			}
+			if (hasText) {
+				int oldFont = 0;
+				int hDC = OS.GetDC (handle);
+				int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+				if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+				TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+				OS.GetTextMetrics (hDC, lptm);
+				int length = text.length ();
+				if (length == 0) {
+					height = Math.max (height, lptm.tmHeight);
+				} else {
+					extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
+					TCHAR buffer = new TCHAR (getCodePage (), text, true);
+					RECT rect = new RECT ();
+					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
+					OS.DrawText (hDC, buffer, -1, rect, flags);
+					width += rect.right - rect.left;
+					height = Math.max (height, rect.bottom - rect.top);
+				}
+				if (newFont != 0) OS.SelectObject (hDC, oldFont);
+				OS.ReleaseDC (handle, hDC);
+			}
+			if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+				width += CHECK_WIDTH + extra;
+				height = Math.max (height, CHECK_HEIGHT + 3);
+			}
+			if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+				width += 12;  height += 10;
+			}
 		}
-		if (newFont != 0) OS.SelectObject (hDC, oldFont);
-		OS.ReleaseDC (handle, hDC);
-	}
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		width += CHECK_WIDTH + extra;
-		height = Math.max (height, CHECK_HEIGHT + 3);
-	}
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-		width += 12;  height += 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	width += border * 2; height += border * 2;
+	width += border * 2; 
+	height += border * 2;
 	return new Point (width, height);
 }
 
@@ -582,6 +604,25 @@ boolean getDefault () {
 public Image getImage () {
 	checkWidget ();
 	return image;
+}
+
+/**
+ * Returns the widget message. When the widget is created
+ * with the style <code>SWT.COMMAND</code>, the message text
+ * is displayed to provide further information for the user.
+ * 
+ * @return the widget message
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ String getMessage () {
+	checkWidget ();
+	return message;
 }
 
 String getNameText () {
@@ -825,6 +866,37 @@ public void setImage (Image image) {
 	_setImage (image);
 }
 
+/**
+ * Sets the widget message. When the widget is created
+ * with the style <code>SWT.COMMAND</code>, the message text
+ * is displayed to provide further information for the user.
+ * 
+ * @param message the new message
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void setMessage (String message) {
+	checkWidget ();
+	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.message = message;
+	if (OS.COMCTL32_VERSION >= OS.VERSION (6, 1)) {
+		if ((style & SWT.COMMAND) != 0) {
+			int length = message.length ();
+			char [] chars = new char [length + 1];
+			message.getChars(0, length, chars, 0);
+			OS.SendMessage (handle, OS.BCM_SETNOTE, 0, chars);
+		}
+	}
+}
+
 boolean setRadioFocus () {
 	if ((style & SWT.RADIO) == 0 || !getSelection ()) return false;
 	return setFocus ();
@@ -937,6 +1009,7 @@ int widgetStyle () {
 	if ((style & SWT.CHECK) != 0) return bits | OS.BS_CHECKBOX | OS.WS_TABSTOP;
 	if ((style & SWT.RADIO) != 0) return bits | OS.BS_RADIOBUTTON;
 	if ((style & SWT.TOGGLE) != 0) return bits | OS.BS_PUSHLIKE | OS.BS_CHECKBOX | OS.WS_TABSTOP;
+	if ((style & SWT.COMMAND) != 0) return bits | OS.BS_COMMANDLINK | OS.WS_TABSTOP;
 	return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 }
 
