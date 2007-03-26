@@ -38,7 +38,7 @@ import org.eclipse.swt.internal.wpf.*;
  * </p>
  */
 public class ToolBar extends Composite {
-	int parentingHandle;
+	int parentingHandle, trayHandle;
 	int itemCount;
 	Control [] children;
 	int childCount;
@@ -137,10 +137,17 @@ void createHandle () {
 	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = OS.gcnew_ToolBar ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	//FIXME
-//	if (IsVertical) OS.ToolBarTray_Orientation (handle, OS.Orientation_Vertical);
+	trayHandle = OS.gcnew_ToolBarTray ();
+	if (trayHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	int brush = OS.Brushes_Transparent ();
+	OS.ToolBarTray_Background (trayHandle, brush);
+	OS.GCHandle_Free (brush);
+	int toolbars = OS.ToolBarTray_ToolBars (trayHandle);
+	OS.IList_Add (toolbars, handle);
+	OS.GCHandle_Free (toolbars);
+	if (IsVertical) OS.ToolBarTray_Orientation (trayHandle, OS.Orientation_Vertical);
 	int children = OS.Panel_Children (parentingHandle);
-	OS.UIElementCollection_Add (children, handle);
+	OS.UIElementCollection_Add (children, trayHandle);
 	OS.GCHandle_Free (children);
 	//FIXME: FLAT, WRAP, RIGHT, SHADOW_OUT
 }
@@ -392,6 +399,8 @@ void releaseHandle () {
 	super.releaseHandle ();
 	if (parentingHandle != 0) OS.GCHandle_Free (parentingHandle);
 	parentingHandle = 0;
+	if (trayHandle != 0) OS.GCHandle_Free (trayHandle);
+	trayHandle = 0;
 }
 
 void removeControl (Control control) {

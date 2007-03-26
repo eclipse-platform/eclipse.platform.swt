@@ -87,6 +87,7 @@ public CoolBar (Composite parent, int style) {
 
 static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
+	IsVertical = (style & SWT.V_SCROLL) != 0;
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -124,6 +125,7 @@ void createHandle () {
 	int children = OS.Panel_Children (parentingHandle);
 	OS.UIElementCollection_Add (children, handle);
 	OS.GCHandle_Free (children);
+	if (IsVertical) OS.ToolBarTray_Orientation (handle, OS.Orientation_Vertical);
 }
 
 void createItem (CoolItem item, int index) {

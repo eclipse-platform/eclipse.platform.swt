@@ -466,8 +466,8 @@ public void setControl (Control control) {
 			toolbar.setThumbVisibility (OS.Visibility_Collapsed);
 			toolbar.setButtonVisibility (OS.Visibility_Collapsed);
 			OS.IList_Remove (toolbars, toolbar.handle);
-			int children = OS.Panel_Children (toolbar.parentingHandle ());
-			OS.UIElementCollection_Add (children, toolbar.handle);
+			int children = OS.ToolBarTray_ToolBars (toolbar.trayHandle);
+			OS.IList_Add (children, toolbar.handle);
 			OS.GCHandle_Free (children);
 			OS.IList_Insert (toolbars, index, handle);
 			OS.ToolBar_Band (handle, band);
@@ -486,8 +486,8 @@ public void setControl (Control control) {
 		if (isToolBar (newControl)) {
 			ToolBar toolbar = (ToolBar) newControl;
 			int controlHandle = toolbar.handle;
-			int children = OS.Panel_Children (toolbar.parentingHandle ());
-			OS.UIElementCollection_Remove (children, controlHandle);
+			int children = OS.ToolBarTray_ToolBars (toolbar.trayHandle);
+			OS.IList_Remove (children, controlHandle);
 			OS.GCHandle_Free (children);
 			OS.IList_Remove (toolbars, handle);
 			OS.IList_Insert (toolbars, index, controlHandle);
