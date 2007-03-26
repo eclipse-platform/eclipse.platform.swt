@@ -378,7 +378,6 @@ Menu [] findMenus (Control control) {
 }
 
 void fixScrollbarVisibility () {
-	//no subclass of Composite needs this fix
 }
 
 void fixTabList (Control control) {
