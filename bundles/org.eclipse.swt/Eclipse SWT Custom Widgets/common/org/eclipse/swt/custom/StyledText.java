@@ -131,8 +131,7 @@ public class StyledText extends Canvas {
 	Color background = null;			// workaround for bug 4791
 	Color foreground = null;			//
 	Clipboard clipboard;
-	boolean mouseDown = false;
-	boolean mouseDoubleClick = false;	// true=a double click ocurred. Don't do mouse swipe selection.
+	int clickCount;
 	int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
 	int autoScrollDistance = 0;
 	int lastTextChangeStart;			// cache data of the 
@@ -2413,7 +2412,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	int oldCaretAlignment = caretAlignment;
 	int newCaretOffset = getOffsetAtPoint(x, y);
 	
-	if (mouseDoubleClick) {
+	if (clickCount > 1) {
 		// double click word select the previous/next word. fixes bug 15610
 		newCaretOffset = doMouseWordSelect(x, newCaretOffset, line);
 	}
@@ -2473,16 +2472,23 @@ int doMouseWordSelect(int x, int newCaretOffset, int line) {
 		selectionAnchor = doubleClickSelection.x;
 	}
 	if (0 <= x && x < clientAreaWidth) {
-		int wordOffset;
-		// find the previous/next word
+		boolean wordSelect = (clickCount & 1) == 0;
 		if (caretOffset == selection.x) {
-			wordOffset = getWordPrevious(newCaretOffset, SWT.MOVEMENT_WORD_START);
+			if (wordSelect) {
+				newCaretOffset = getWordPrevious(newCaretOffset, SWT.MOVEMENT_WORD_START);
+			} else {
+				newCaretOffset = content.getOffsetAtLine(line);
+			}
 		} else {
-			wordOffset = getWordNext(newCaretOffset, SWT.MOVEMENT_WORD_END);
-		}
-		// mouse word select only on same line mouse cursor is on
-		if (content.getLineAtOffset(wordOffset) == line) {
-			newCaretOffset = wordOffset;
+			if (wordSelect) {
+				newCaretOffset = getWordNext(newCaretOffset, SWT.MOVEMENT_WORD_END);
+			} else {
+				int lineEnd = content.getCharCount();
+				if (line + 1 < content.getLineCount()) {
+					lineEnd = content.getOffsetAtLine(line + 1);
+				}
+				newCaretOffset = lineEnd; 
+			}
 		}
 	}
 	return newCaretOffset;
@@ -4791,7 +4797,6 @@ void installListeners() {
 				case SWT.KeyUp: handleKeyUp(event); break;
 				case SWT.MouseDown: handleMouseDown(event); break;
 				case SWT.MouseUp: handleMouseUp(event); break;
-				case SWT.MouseDoubleClick: handleMouseDoubleClick(event); break;
 				case SWT.MouseMove: handleMouseMove(event); break;
 				case SWT.Paint: handlePaint(event); break;
 				case SWT.Resize: handleResize(event); break;
@@ -4804,7 +4809,6 @@ void installListeners() {
 	addListener(SWT.KeyUp, listener);
 	addListener(SWT.MouseDown, listener);
 	addListener(SWT.MouseUp, listener);
-	addListener(SWT.MouseDoubleClick, listener);
 	addListener(SWT.MouseMove, listener);
 	addListener(SWT.Paint, listener);
 	addListener(SWT.Resize, listener);
@@ -5071,35 +5075,18 @@ void handleKeyUp(Event event) {
 	}
 	clipboardSelection = null;
 }
-/**
- * Updates the caret location and selection if mouse button 1 has been 
- * pressed.
- */
-void handleMouseDoubleClick(Event event) {
-	if (event.button != 1 || !doubleClickEnabled) {
-		return;
-	}
-	mouseDoubleClick = true;
-	caretOffset = getWordPrevious(caretOffset, SWT.MOVEMENT_WORD_START);
-	resetSelection();
-	caretOffset = getWordNext(caretOffset, SWT.MOVEMENT_WORD_END);
-	showCaret();
-	doMouseSelection();
-	doubleClickSelection = new Point(selection.x, selection.y);
-}
 /** 
  * Updates the caret location and selection if mouse button 1 has been 
  * pressed.
  */
 void handleMouseDown(Event event) {
-	mouseDoubleClick = false;
-	
 	//force focus (object support)
 	forceFocus();
-	
+		
+	//drag detect
 	if (dragDetect && checkDragDetect(event)) return;
-	
-	mouseDown = true;	
+		
+	//paste clipboard selection
 	if (event.button == 2) {
 		String text = (String)getClipboardContent(DND.SELECTION_CLIPBOARD);
 		if (text != null && text.length() > 0) {
@@ -5113,21 +5100,48 @@ void handleMouseDown(Event event) {
 			sendKeyEvent(e);
 		}
 	}
+	
+	//set selection
 	if ((event.button != 1) || (IS_CARBON && (event.stateMask & SWT.MOD4) != 0)) {
 		return;	
 	}
-	boolean select = (event.stateMask & SWT.MOD2) != 0;
-	doMouseLocationChange(event.x, event.y, select);
+	clickCount = event.count;
+	if (clickCount == 1) {
+		boolean select = (event.stateMask & SWT.MOD2) != 0;
+		doMouseLocationChange(event.x, event.y, select);
+	} else {
+		if (doubleClickEnabled) {
+			clearSelection(false);
+			int offset = getOffsetAtPoint(event.x, event.y);
+			int lineIndex = content.getLineAtOffset(offset);
+			int lineOffset = content.getOffsetAtLine(lineIndex);
+			int lineEnd = content.getCharCount();
+			if (lineIndex + 1 < content.getLineCount()) {
+				lineEnd = content.getOffsetAtLine(lineIndex + 1);
+			}
+			int start, end;
+			if ((clickCount & 1) == 0) {
+				start = Math.max(lineOffset, getWordPrevious(offset, SWT.MOVEMENT_WORD_START));
+				end = Math.min(lineEnd, getWordNext(start, SWT.MOVEMENT_WORD_END));
+			} else {
+				start = lineOffset;
+				end = lineEnd;
+			}
+			selection.x = selection.y = start;
+			selectionAnchor = -1;
+			caretOffset = end;
+			showCaret();
+			doMouseSelection();
+			doubleClickSelection = new Point(selection.x, selection.y);
+		}
+	}
 }
 /** 
  * Updates the caret location and selection if mouse button 1 is pressed 
  * during the mouse move.
  */
 void handleMouseMove(Event event) {
-	if (!mouseDown) return;
-	if ((event.stateMask & SWT.BUTTON1) == 0) {
-		return;
-	}
+	if (clickCount == 0) return;
 	doMouseLocationChange(event.x, event.y, true);
 	update();
 	doAutoScroll(event);
@@ -5136,8 +5150,7 @@ void handleMouseMove(Event event) {
  * Autoscrolling ends when the mouse button is released.
  */
 void handleMouseUp(Event event) {
-	mouseDown = false;
-	mouseDoubleClick = false;
+	clickCount = 0;
 	endAutoScroll();
 	if (event.button == 1) {
 		try {
@@ -7301,7 +7314,7 @@ void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargi
  * Flips selection anchor based on word selection direction.
  */
 void setMouseWordSelectionAnchor() {
-	if (mouseDoubleClick) {
+	if (clickCount > 1) {
 		if (caretOffset < doubleClickSelection.x) {
 			selectionAnchor = doubleClickSelection.y;
 		} else if (caretOffset > doubleClickSelection.y) {
