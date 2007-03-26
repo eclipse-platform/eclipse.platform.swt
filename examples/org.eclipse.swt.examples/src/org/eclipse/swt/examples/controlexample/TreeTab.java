@@ -282,6 +282,8 @@ class TreeTab extends ScrollableTab {
 		int style = getDefaultStyle();
 		if (singleButton.getSelection()) style |= SWT.SINGLE;
 		if (multiButton.getSelection()) style |= SWT.MULTI;
+		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;
+		if (verticalButton.getSelection ()) style |= SWT.V_SCROLL;
 		if (checkButton.getSelection()) style |= SWT.CHECK;
 		if (fullSelectionButton.getSelection ()) style |= SWT.FULL_SELECTION;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
