@@ -2477,7 +2477,7 @@ int /*long*/ HandleEvent (int /*long*/ event) {
 
 	if (XPCOM.DOMEVENT_UNLOAD.equals (typeString)) {
 		int /*long*/[] result = new int /*long*/[1];
-		rc = domEvent.GetTarget (result);
+		rc = domEvent.GetCurrentTarget (result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
