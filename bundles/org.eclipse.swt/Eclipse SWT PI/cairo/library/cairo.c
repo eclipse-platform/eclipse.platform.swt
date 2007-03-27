@@ -25,6 +25,18 @@
 
 #define Cairo_NATIVE(func) Java_org_eclipse_swt_internal_cairo_Cairo_##func
 
+#ifndef NO_CAIRO_1VERSION_1ENCODE
+JNIEXPORT jint JNICALL Cairo_NATIVE(CAIRO_1VERSION_1ENCODE)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, CAIRO_1VERSION_1ENCODE_FUNC);
+	rc = (jint)CAIRO_VERSION_ENCODE(arg0, arg1, arg2);
+	Cairo_NATIVE_EXIT(env, that, CAIRO_1VERSION_1ENCODE_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_cairo_1append_1path
 JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1append_1path)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -1717,6 +1729,18 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
 	Cairo_NATIVE_EXIT(env, that, cairo_1user_1to_1device_1distance_FUNC);
+}
+#endif
+
+#ifndef NO_cairo_1version
+JNIEXPORT jint JNICALL Cairo_NATIVE(cairo_1version)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Cairo_NATIVE_ENTER(env, that, cairo_1version_FUNC);
+	rc = (jint)cairo_version();
+	Cairo_NATIVE_EXIT(env, that, cairo_1version_FUNC);
+	return rc;
 }
 #endif
 
