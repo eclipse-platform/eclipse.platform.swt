@@ -428,6 +428,10 @@ public void draw(GC gc, int x, int y) {
  * </ul>
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+
+/*public*/ void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -435,18 +439,22 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = translateOffset(text.length());
-	if (length == 0) return;
+	if (length == 0 && flags == 0) return;
 	gc.checkGC(GC.FOREGROUND_FILL);
 	if (gc.data.updateClip) gc.setCGClipping();
 	OS.CGContextSaveGState(gc.handle);
 	setLayoutControl(OS.kATSUCGContextTag, gc.handle, 4);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	boolean restoreColor = false;
-	if (hasSelection && selectionBackground != null) {
-		restoreColor = true;
-		int color = OS.CGColorCreate(device.colorspace, selectionBackground.handle);
-		setLayoutControl(OS.kATSULineHighlightCGColorTag, color, 4);
-		OS.CGColorRelease(color);
+	if (hasSelection || (flags & 4) != 0) {
+		if (selectionBackground != null) {
+			restoreColor = true;
+			int color = OS.CGColorCreate(device.colorspace, selectionBackground.handle);
+			setLayoutControl(OS.kATSULineHighlightCGColorTag, color, 4);
+			OS.CGColorRelease(color);
+		} else {
+			selectionBackground = device.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+		}
 	}
 	/* 
 	* Feature in ATSU. There is no API to set a background attribute
@@ -506,6 +514,40 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			int fixYDraw = OS.Long2Fix(-(drawY + lineAscent[i]));
 			OS.ATSUDrawText(layout, start, lineLength, drawX, fixYDraw);
 			int end = start + lineLength - 1;
+			if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+				boolean extent = false;
+				if (i == breaks.length - 1 && (flags & 4) != 0) {
+					extent = true;
+				} else {
+					boolean hardBreak = false;
+					for (int j = 0; j < hardBreaks.length; j++) {
+						if (end + 1 == hardBreaks[j]) {
+							hardBreak = true;
+							break;
+						}
+					}
+					if (hardBreak) {
+						if (selectionStart <= end + 1 && end + 1 <= selectionEnd) extent = true;
+					} else {
+						if (selectionStart <= end + 1 && end + 1 < selectionEnd && (flags & 2) != 0) {
+							extent = true;
+						}
+					}
+				}
+				if (extent) {
+					if (rect == null) rect = new CGRect();
+					rect.x = x + lineWidth[i];
+					rect.y = drawY;
+					rect.width = (flags & 2) != 0 ? 0x7fffffff : 10;
+					rect.height = lineHeight[i];
+					OS.CGContextSaveGState(gc.handle);
+					OS.CGContextTranslateCTM(gc.handle, 0, -(lineHeight[i] + 2 * drawY));
+					OS.CGContextSetFillColorSpace(gc.handle, device.colorspace);
+					OS.CGContextSetFillColor(gc.handle, selectionBackground.handle);
+					OS.CGContextFillRect(gc.handle, rect);
+					OS.CGContextRestoreGState(gc.handle);
+				}
+			}
 			if (hasSelection && !(selectionStart > end || start > selectionEnd)) {
 				int selStart = Math.max(selectionStart, start);
 				int selEnd = Math.min(selectionEnd, end);
