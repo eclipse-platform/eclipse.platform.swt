@@ -496,6 +496,32 @@ public void draw (GC gc, int x, int y) {
  * </ul>
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+
+/**
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
+ * 
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param selectionStart the offset where the selections starts, or -1 indicating no selection
+ * @param selectionEnd the offset where the selections ends, or -1 indicating no selection
+ * @param selectionForeground selection foreground, or NULL to use the system default color
+ * @param selectionBackground selection background, or NULL to use the system default color
+ * @param flags drawing options
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
 	computeRuns(gc);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -503,7 +529,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
-	if (length == 0) return;
+	if (length == 0 && flags == 0) return;
 	int hdc = gc.handle;
 	Rectangle clip = gc.getClipping();
 	GCData data = gc.data;
@@ -561,7 +587,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 	}
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	if (hasSelection) {
+	if (hasSelection || (flags & 4) != 0) {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
@@ -571,7 +597,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 	RECT rect = new RECT();
 	int selBrush = 0, selPen = 0, selBrushFg = 0;
-	if (hasSelection) {
+	if (hasSelection || (flags & 4) != 0) {
 		if (gdip) {
 			int bg = selectionBackground.handle;
 			int argb = ((alpha & 0xFF) << 24) | ((bg >> 16) & 0xFF) | (bg & 0xFF00) | ((bg & 0xFF) << 16);
@@ -602,6 +628,32 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 		int lineHeight = lineY[line+1] - lineY[line];
 		int alignmentX = drawX;
+		if (hasSelection || (flags & 4) != 0) {
+			boolean extents = false;
+			if (line == runs.length - 1 && (flags & 4) != 0) {
+				extents = true;
+			} else {
+				StyleItem run = lineRuns[lineRuns.length - 1];
+				if (run.lineBreak && !run.softBreak) {
+					if (selectionStart <= run.start && run.start <= selectionEnd) extents = true;
+				} else {
+					int endOffset = run.start + run.length - 1;
+					if (selectionStart <= endOffset && endOffset < selectionEnd && (flags & 2) != 0) {
+						extents = true;
+					}
+				}
+			}
+			if (extents) {
+				int selX = drawX + lineWidth[line];
+				int width = (flags & 2) != 0 ? 10000 : 10;
+				if (gdip) {
+					Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, selX, drawY, width, lineHeight - lineSpacing);
+				} else {
+					OS.SelectObject(hdc, selBrush);
+					OS.PatBlt(hdc, selX, drawY, width, lineHeight - lineSpacing, OS.PATCOPY);
+				}
+			}
+		}
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
 			if (run.length == 0) continue;
