@@ -1083,6 +1083,7 @@ typedef enum {
 	_1gtk_1window_1set_1icon_1list_FUNC,
 	_1gtk_1window_1set_1modal_FUNC,
 	_1gtk_1window_1set_1resizable_FUNC,
+	_1gtk_1window_1set_1skip_1taskbar_1hint_FUNC,
 	_1gtk_1window_1set_1title_FUNC,
 	_1gtk_1window_1set_1transient_1for_FUNC,
 	_1gtk_1window_1set_1type_1hint_FUNC,

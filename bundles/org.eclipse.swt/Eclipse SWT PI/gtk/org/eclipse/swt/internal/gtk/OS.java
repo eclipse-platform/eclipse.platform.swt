@@ -9358,6 +9358,15 @@ public static final void gtk_window_set_title(int /*long*/ window, byte[] title)
 		lock.unlock();
 	}
 }
+public static final native void _gtk_window_set_skip_taskbar_hint(int /*long*/ window, boolean skips_taskbar);
+public static final void gtk_window_set_skip_taskbar_hint(int /*long*/ window, boolean skips_taskbar) {
+	lock.lock();
+	try {
+		_gtk_window_set_skip_taskbar_hint(window, skips_taskbar);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_window_set_type_hint(int /*long*/ window, int hint);
 public static final void gtk_window_set_type_hint(int /*long*/ window, int hint) {
 	lock.lock();

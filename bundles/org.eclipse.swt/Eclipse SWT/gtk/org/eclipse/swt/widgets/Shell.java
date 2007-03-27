@@ -580,6 +580,10 @@ void createHandle (int index) {
 			OS.gtk_window_set_destroy_with_parent (shellHandle, true);
 			if (!isUndecorated ()) {
 				OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
+			} else {
+				if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
+					OS.gtk_window_set_skip_taskbar_hint (shellHandle, true);
+				}
 			}
 		}
 		/*

@@ -15273,6 +15273,32 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1resizable)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1set_1skip_1taskbar_1hint
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1skip_1taskbar_1hint)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1set_1skip_1taskbar_1hint_FUNC);
+/*
+	gtk_window_set_skip_taskbar_hint((GtkWindow *)arg0, (gboolean)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GtkWindow *, gboolean);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_window_set_skip_taskbar_hint_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_window_set_skip_taskbar_hint");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GtkWindow *)arg0, (gboolean)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1skip_1taskbar_1hint_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1window_1set_1title
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1title)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
