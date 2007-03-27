@@ -64,6 +64,7 @@ class Mozilla extends WebBrowser {
 	static final String SEPARATOR_OS = System.getProperty ("file.separator"); //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
 	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
@@ -754,6 +755,20 @@ public void create (Composite parent, int style) {
 			rc = prefBranch.SetComplexValue (buffer, nsIPrefLocalizedString.NS_IPREFLOCALIZEDSTRING_IID, localizedString.getAddress ());
 		}
 		if (localizedString != null) localizedString.Release ();
+
+		/*
+		* Ensure that windows that are shown during page loads are not blocked.  Firefox may
+		* try to block these by default since such windows are often unwelcome, but this
+		* assumption should not be made in the Browser's context.  Since the Browser client
+		* is responsible for creating the new Browser and Shell in an OpenWindowListener,
+		* they should decide whether the new window is unwelcome or not and act accordingly. 
+		*/
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_DISABLEOPENDURINGLOAD, true);
+		rc = prefBranch.SetBoolPref (buffer, 0);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
 		prefBranch.Release ();
 
 		PromptServiceFactory factory = new PromptServiceFactory ();
