@@ -742,9 +742,9 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		if (data.alpha != 0) {
 			srcImage.createSurface();
 			Cairo.cairo_save(cairo);
-			Cairo.cairo_rectangle(cairo, destX , destY, destWidth, destHeight);
+			Cairo.cairo_rectangle(cairo, destX + 0.5, destY + 0.5, destWidth, destHeight);
 			Cairo.cairo_clip(cairo);
-			Cairo.cairo_translate(cairo, destX - srcX, destY - srcY);
+			Cairo.cairo_translate(cairo, destX - srcX + 0.5, destY - srcY + 0.5);
 			if (srcWidth != destWidth || srcHeight != destHeight) {
 				Cairo.cairo_scale(cairo, destWidth / (float)srcWidth,  destHeight / (float)srcHeight);
 			}
@@ -757,60 +757,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			}
 			int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface(srcImage.surface);
 			if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			if (srcWidth != destWidth || srcHeight != destHeight) {
-				/*
-				* Bug in Cairo.  When drawing the image streched with an interpolation
-				* alghorithm, the edges of the image are faded.  This is not a bug, but
-				* it is not desired.  To avoid the faded edges, it should be possible to
-				* use cairo_pattern_set_extend() to set the pattern extend to either
-				* CAIRO_EXTEND_REFLECT or CAIRO_EXTEND_PAD, but these are not implemented
-				* in some versions of cairo (1.2.x) and have bugs in others (in 1.4.2 it
-				* draws with black edges).  The fix is to implement CAIRO_EXTEND_REFLECT
-				* by creating an image that is 3 times bigger than the original, drawing
-				* the original image in every quadrant (with an appropriate transform) and
-				* use this image as the pattern.
-				* 
-				* NOTE: For some reaons, it is necessary to use CAIRO_EXTEND_PAD with
-				* the image that was created or the edges are still faded.
-				*/
-				if (Cairo.cairo_version () >= Cairo.CAIRO_VERSION_ENCODE(1, 4, 2)) {
-					int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, imgWidth * 3, imgHeight * 3);
-					int /*long*/ cr = Cairo.cairo_create(surface);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_scale(cr, -1, -1);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth, -imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth * 3, -imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth, -imgHeight * 3);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth * 3, -imgHeight * 3);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_scale(cr, 1, -1);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth, imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, -imgWidth * 3, imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_scale(cr, -1, -1);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, -imgHeight);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, -imgHeight * 3);
-					Cairo.cairo_paint(cr);
-					Cairo.cairo_destroy(cr);
-					int /*long*/ newPattern = Cairo.cairo_pattern_create_for_surface(surface);
-					Cairo.cairo_surface_destroy(surface);
-					if (newPattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					Cairo.cairo_pattern_destroy(pattern);
-					pattern = newPattern;
-					Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_PAD);
-					double[] matrix = new double[6]; 
-					Cairo.cairo_matrix_init_translate(matrix, imgWidth, imgHeight);
-					Cairo.cairo_pattern_set_matrix(pattern, matrix);
-				}
-//				Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REFLECT);
-			}
 			Cairo.cairo_pattern_set_filter(pattern, filter);
+			if (srcWidth != destWidth || srcHeight != destHeight) {
+				Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REFLECT);
+			}
 			Cairo.cairo_set_source(cairo, pattern);
 			if (data.alpha != 0xFF) {
 				Cairo.cairo_paint_with_alpha(cairo, data.alpha / (float)0xFF);

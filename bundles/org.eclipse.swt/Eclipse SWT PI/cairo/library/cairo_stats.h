@@ -35,7 +35,6 @@ extern char* Cairo_nativeFunctionNames[];
 #endif
 
 typedef enum {
-	CAIRO_1VERSION_1ENCODE_FUNC,
 	cairo_1append_1path_FUNC,
 	cairo_1arc_FUNC,
 	cairo_1arc_1negative_FUNC,
@@ -173,7 +172,6 @@ typedef enum {
 	cairo_1translate_FUNC,
 	cairo_1user_1to_1device_FUNC,
 	cairo_1user_1to_1device_1distance_FUNC,
-	cairo_1version_FUNC,
 	cairo_1xlib_1surface_1create_FUNC,
 	cairo_1xlib_1surface_1create_1for_1bitmap_FUNC,
 	cairo_1xlib_1surface_1set_1size_FUNC,

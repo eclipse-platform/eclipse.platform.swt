@@ -91,7 +91,6 @@ public class Cairo {
 	public static final int CAIRO_EXTEND_NONE = 0;
 	public static final int CAIRO_EXTEND_REPEAT = 1;
 	public static final int CAIRO_EXTEND_REFLECT = 2;
-	public static final int CAIRO_EXTEND_PAD = 3;
 	public static final int CAIRO_PATH_MOVE_TO = 0;
 	public static final int CAIRO_PATH_LINE_TO = 1;
 	public static final int CAIRO_PATH_CURVE_TO = 2;
@@ -104,8 +103,6 @@ public static final synchronized native int cairo_path_t_sizeof ();
 public static final synchronized native int cairo_text_extents_t_sizeof ();
 	
 /** Natives */
-public static final synchronized native int CAIRO_VERSION_ENCODE(int major, int minor, int micro);
-public static final synchronized native int cairo_version();
 public static final synchronized native int /*long*/ cairo_create (int /*long*/ target);
 public static final synchronized native int /*long*/ cairo_reference (int /*long*/ cr);
 public static final synchronized native void cairo_destroy (int /*long*/ cr);
