@@ -696,7 +696,9 @@ public String getText () {
  */
 public int getTextHeight () {
 	checkWidget ();
-	//FIXME
+	if (textHandle != 0) {
+		return (int) OS.FrameworkElement_ActualHeight(textHandle);
+	}
 	return 0;
 }
 
@@ -740,7 +742,6 @@ public int getTextLimit () {
  */
 public int getVisibleItemCount () {
 	checkWidget ();
-	//FIXME
 	return 0;
 }
 
@@ -1256,7 +1257,7 @@ public void setItems (String [] items) {
  */
 /*public*/ void setListVisible (boolean visible) {
 	checkWidget ();
-	OS.ComboBox_IsDropDownOpen(handle, visible);
+	OS.ComboBox_IsDropDownOpen (handle, visible);
 }
 
 /**
@@ -1275,7 +1276,8 @@ public void setItems (String [] items) {
  */
 public void setOrientation (int orientation) {
 	checkWidget();
-	//FIXME
+	int flowDirection = orientation == SWT.RIGHT_TO_LEFT ? OS.FlowDirection_RightToLeft  : OS.FlowDirection_LeftToRight;
+	OS.FrameworkElement_FlowDirection (handle, flowDirection);
 }
 
 /**
@@ -1383,8 +1385,7 @@ public void setTextLimit (int limit) {
  */
 public void setVisibleItemCount (int count) {
 	checkWidget ();
-	if (count < 0) return;
-	//FIXME
+	return;
 }
 
 String verifyText (String text) {
