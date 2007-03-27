@@ -1450,10 +1450,10 @@ public void setSelection (String [] items) {
  */
 public void setTopIndex (int index) {
 	checkWidget();
-	if (!(0 <= index && index < itemCount)) return;
+	int itemHeight = getItemHeight ();
     int [] top = new int [1], left = new int [1];
     OS.GetDataBrowserScrollPosition (handle, top, left);
-    top [0] = index * getItemHeight ();
+    top [0] = Math.min (itemHeight * itemCount - getClientArea ().height, index * itemHeight);
     OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
 }
 
