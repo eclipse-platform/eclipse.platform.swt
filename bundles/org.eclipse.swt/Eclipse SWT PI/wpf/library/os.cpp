@@ -4169,6 +4169,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1CursorProperty)
 }
 #endif
 
+#ifndef NO_FrameworkElement_1FlowDirection__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1FlowDirection__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1FlowDirection__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1FlowDirection__I_FUNC);
+	rc = (jint)((FrameworkElement^)TO_OBJECT(arg0))->FlowDirection;
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1FlowDirection__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FrameworkElement_1FlowDirection__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1FlowDirection__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1FlowDirection__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1FlowDirection__II_FUNC);
+	((FrameworkElement^)TO_OBJECT(arg0))->FlowDirection = ((FlowDirection)arg1);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1FlowDirection__II_FUNC);
+}
+#endif
+
 #ifndef NO_FrameworkElement_1FocusVisualStyle
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1FocusVisualStyle)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1FocusVisualStyle)

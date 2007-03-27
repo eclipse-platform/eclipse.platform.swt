@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1252;
-int OS_nativeFunctionCallCount[1252];
+int OS_nativeFunctionCount = 1254;
+int OS_nativeFunctionCallCount[1254];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -353,6 +353,8 @@ char * OS_nativeFunctionNames[] = {
 	"FrameworkElement_1ContextMenuOpening",
 	"FrameworkElement_1Cursor",
 	"FrameworkElement_1CursorProperty",
+	"FrameworkElement_1FlowDirection__I",
+	"FrameworkElement_1FlowDirection__II",
 	"FrameworkElement_1FocusVisualStyle",
 	"FrameworkElement_1GetBindingExpression",
 	"FrameworkElement_1Height__I",
