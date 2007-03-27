@@ -299,6 +299,10 @@ public void draw(GC gc, int x, int y) {
  * </ul>
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+
+/*public*/ void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {	
 	checkLayout ();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -307,10 +311,75 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	gc.checkGC(GC.FOREGROUND);
 	int length = text.length();
-	if (length == 0) return;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	GCData data = gc.data;
 	int /*long*/ cairo = data.cairo;
+	if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+		int /*long*/[] attrs = new int /*long*/[1];
+		int[] nAttrs = new int[1];
+		PangoLogAttr logAttr = new PangoLogAttr();
+		PangoRectangle rect = new PangoRectangle();
+		int lineCount = OS.pango_layout_get_line_count(layout);
+		int /*long*/ ptr = OS.pango_layout_get_text(layout);
+		int /*long*/ iter = OS.pango_layout_get_iter(layout);
+		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
+		if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+			Cairo.cairo_save(cairo);
+			GdkColor color = selectionBackground.handle;
+			Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
+		} else {
+			OS.gdk_gc_set_foreground(gc.handle, selectionBackground.handle);
+		}
+		int lineIndex = 0;
+		do {
+			int lineEnd;
+			OS.pango_layout_iter_get_line_extents(iter, null, rect);
+			if (OS.pango_layout_iter_next_line(iter)) {
+				int bytePos = OS.pango_layout_iter_get_index(iter);
+				lineEnd = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
+			} else {
+				lineEnd = (int)/*64*/OS.g_utf8_strlen(ptr, -1);
+			}
+			boolean extent = false;
+			if (lineIndex == lineCount - 1 && (flags & 4) != 0) {
+				extent = true;
+			} else {
+				if (attrs[0] == 0) OS.pango_layout_get_log_attrs(layout, attrs, nAttrs);
+				OS.memmove(logAttr, attrs[0] + lineEnd * PangoLogAttr.sizeof, PangoLogAttr.sizeof);
+				if (!logAttr.is_line_break) {
+					if (selectionStart <= lineEnd && lineEnd <= selectionEnd) extent = true;
+				} else {
+					if (selectionStart <= lineEnd && lineEnd < selectionEnd && (flags & 2) != 0) {
+						extent = true;
+					}
+				}
+			}
+			if (extent) {
+				int lineX = x + OS.PANGO_PIXELS(rect.x) + OS.PANGO_PIXELS(rect.width);
+				int lineY = y + OS.PANGO_PIXELS(rect.y);
+				int width = (flags & 2) != 0 ? 0x7fffffff : 10;
+				int height = OS.PANGO_PIXELS(rect.height);
+				if (ascent != -1 && descent != -1) {
+					height = Math.max (height, ascent + descent);
+				}
+				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+					Cairo.cairo_rectangle(cairo, lineX, lineY, width, height);
+					Cairo.cairo_fill(cairo);
+				} else {
+					OS.gdk_draw_rectangle(data.drawable, gc.handle, 1, lineX, lineY, width, height);
+				}
+			}
+			lineIndex++;
+		} while (lineIndex < lineCount);
+		OS.pango_layout_iter_free(iter);
+		if (attrs[0] != 0) OS.g_free(attrs[0]);
+		if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
+			Cairo.cairo_restore(cairo);	
+		} else {
+			OS.gdk_gc_set_foreground(gc.handle, data.foreground);
+		}
+	}
+	if (length == 0) return;
 	if (!hasSelection) {
 		if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
 			Cairo.cairo_move_to(cairo, x, y);

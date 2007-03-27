@@ -322,6 +322,10 @@ public void draw (GC gc, int x, int y) {
  * </ul>
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+
+/*public*/ void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -330,9 +334,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	gc.checkGC(GC.FOREGROUND);
 	int length = text.length(); 
-	if (length == 0) return;
+	if (length == 0 && flags == 0) return;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	if (hasSelection) {
+	if (hasSelection || (flags & 4) != 0) {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);		
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
@@ -353,6 +357,27 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			baseline = Math.max(baseline, lineRuns[i].baseline);
 		}
 		int lineHeight = lineY[line+1] - lineY[line];
+		if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+			boolean extent = false;
+			if (line == runs.length - 1 && (flags & 4) != 0) {
+				extent = true;
+			} else {
+				StyleItem run = lineRuns[lineRuns.length - 1];
+				if (run.lineBreak && !run.softBreak) {
+					if (selectionStart <= run.start && run.start <= selectionEnd) extent = true;
+				} else {
+					int endOffset = run.start + run.length - 1;
+					if (selectionStart <= endOffset && endOffset < selectionEnd && (flags & 2) != 0) {
+						extent = true;
+					}
+				}
+			}
+			if (extent) {
+				gc.setBackground(selectionBackground);
+				int width = (flags & 2) != 0 ? 0x7fffffff : 10;
+				gc.fillRectangle(drawX + lineWidth[line], drawY, width, lineHeight);
+			}
+		}
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
 			if (run.length == 0) continue;
