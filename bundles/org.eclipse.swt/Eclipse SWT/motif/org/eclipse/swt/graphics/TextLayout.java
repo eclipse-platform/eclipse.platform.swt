@@ -927,7 +927,12 @@ public int getNextOffset (int offset, int movement) {
 	offset++;
 	while (offset < lineEnd) {
 		boolean spaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset));
-		if (!spaceChar && previousSpaceChar) break;
+		if (movement == SWT.MOVEMENT_WORD || movement == SWT.MOVEMENT_WORD_END) {
+			if (spaceChar && !previousSpaceChar) break;
+		}
+		if (movement == SWT.MOVEMENT_WORD_START) {
+			if (!spaceChar && previousSpaceChar) break;
+		}
 		previousSpaceChar = spaceChar;
 		offset++;
 	}
@@ -1096,7 +1101,12 @@ public int getPreviousOffset (int offset, int movement) {
 	boolean previousSpaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset));
 	while (lineStart < offset) {
 		boolean spaceChar = !Compatibility.isLetterOrDigit(text.charAt(offset - 1));
-		if (spaceChar && !previousSpaceChar) break;
+		if (movement == SWT.MOVEMENT_WORD_END) {
+			if (!spaceChar && previousSpaceChar) break;
+		}
+		if (movement == SWT.MOVEMENT_WORD || movement == SWT.MOVEMENT_WORD_START) {
+			if (spaceChar && !previousSpaceChar) break;
+		}
 		offset--;
 		previousSpaceChar = spaceChar;
 	}
