@@ -27,12 +27,14 @@ public class COMObject {
 	
 public COMObject(int[] argCounts) {
 	int[] callbackAddresses = new int[argCounts.length];
-	for (int i = 0, length = argCounts.length; i < length; i++){
-		if ((Callbacks[i][argCounts[i]]) == null) {
-			Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true, COM.E_FAIL); //$NON-NLS-1$
-			if (Callbacks[i][argCounts[i]].getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	synchronized (Callbacks) {
+		for (int i = 0, length = argCounts.length; i < length; i++){
+			if ((Callbacks[i][argCounts[i]]) == null) {
+				Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true, COM.E_FAIL); //$NON-NLS-1$
+				if (Callbacks[i][argCounts[i]].getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+			}
+			callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress();
 		}
-		callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress();
 	}
 
 	int pVtable = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, 4 * argCounts.length);
