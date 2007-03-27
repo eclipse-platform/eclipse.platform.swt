@@ -773,7 +773,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				* NOTE: For some reaons, it is necessary to use CAIRO_EXTEND_PAD with
 				* the image that was created or the edges are still faded.
 				*/
-				if (Cairo.cairo_version () >= Cairo.CAIRO_VERSION_ENCODE(1, 4, 2)) {
+				if (Cairo.cairo_version () >= Cairo.CAIRO_VERSION_ENCODE(1, 4, 0)) {
 					int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, imgWidth * 3, imgHeight * 3);
 					int /*long*/ cr = Cairo.cairo_create(surface);
 					Cairo.cairo_set_source_surface(cr, srcImage.surface, imgWidth, imgHeight);
