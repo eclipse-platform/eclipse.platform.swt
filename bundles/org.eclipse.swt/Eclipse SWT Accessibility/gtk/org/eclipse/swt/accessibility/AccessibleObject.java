@@ -651,7 +651,7 @@ class AccessibleObject {
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
 		String text = object.getText ();
-		if (text != null) return (int)text.charAt ((int)/*64*/offset); // TODO
+		if (text != null) return text.charAt ((int)/*64*/offset); // TODO
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
 			int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 			AtkTextIface textIface = new AtkTextIface ();
