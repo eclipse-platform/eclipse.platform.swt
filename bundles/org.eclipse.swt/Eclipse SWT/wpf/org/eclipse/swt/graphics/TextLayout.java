@@ -272,6 +272,9 @@ public void draw (GC gc, int x, int y) {
  * </ul>
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+/*public*/ void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -279,7 +282,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
-	if (length == 0) return;
+	if (length == 0 && flags == 0) return;
 	gc.checkGC(GC.FOREGROUND);
 	int fg = OS.Pen_Brush(gc.data.pen);
 	OS.SWTTextRunProperties_ForegroundBrush(defaultTextProperties, fg);
@@ -291,8 +294,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 	int drawingContext = gc.handle;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	int selBrush = 0;
-	if (hasSelection) {
+	int selBrush = 0, selGeometry = 0, geometries = 0;
+	if (hasSelection || (flags & 4) != 0) {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
 		selectionStart = translateOffset(selectionStart);
@@ -302,6 +305,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		} else {
 			selBrush = OS.Brushes_LightSkyBlue();
 		}
+		selGeometry = OS.gcnew_GeometryGroup();
+		geometries = OS.GeometryGroup_Children(selGeometry);
 	}
 	int lineStart = 0, lineEnd = 0;
 	double drawY = y;
@@ -310,7 +315,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		if (line == 0) break;
 		lineStart = lineEnd;
 		lineEnd = lineStart + OS.TextLine_Length(line);
-		double nextDrawY;
+		double nextDrawY, selY = drawY;
 		int lineHeight = (int)OS.TextLine_Height(line);
 		if (ascent != -1 && descent != -1) {
 			lineHeight = Math.max(lineHeight, ascent + descent);
@@ -329,29 +334,60 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		//draw line selection
 		boolean fullSelection = selectionStart <= lineStart && selectionEnd >= lineEnd;
 		boolean partialSelection = !(selectionStart > lineEnd || lineStart > selectionEnd);
+		if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+			boolean extent = false;
+			if (i == lines.length - 1 && (flags & 4) != 0) {
+				extent = true;
+			} else {
+				int breakLength = OS.TextLine_NewlineLength(line);
+				if (breakLength != 0) {
+					if (selectionStart <= lineEnd && lineEnd <= selectionEnd) extent = true;
+				} else {
+					if (selectionStart <= lineEnd && lineEnd < selectionEnd && (flags & 2) != 0) {
+						extent = true;
+					}
+				}
+			}
+			if (extent) {
+				int extentWidth = (flags & 2) != 0 ? 0x7ffffff : 10;
+				int textRect = OS.gcnew_Rect(OS.TextLine_WidthIncludingTrailingWhitespace(line) + x, selY, extentWidth, lineHeight);
+				int geometry = OS.gcnew_RectangleGeometry(textRect);
+				OS.GeometryCollection_Add(geometries, geometry);
+				OS.GCHandle_Free(geometry);
+				OS.GCHandle_Free(textRect);
+			}
+		}
 		if (hasSelection && (fullSelection || partialSelection)) {
 			int selLineStart = Math.max (lineStart, selectionStart);
 			int selLineEnd = Math.min (lineEnd, selectionEnd);
 			int rects = OS.TextLine_GetTextBounds(line, selLineStart, selLineEnd - selLineStart + 1);
 			if (rects != 0) {
 				int enumerator = OS.TextBoundsCollection_GetEnumerator(rects);
-				OS.DrawingContext_PushOpacity(drawingContext, 0.4);
 				while (OS.IEnumerator_MoveNext(enumerator)) {
 					int bounds = OS.TextBoundsCollection_Current(enumerator);
 					int textRect = OS.TextBounds_Rectangle(bounds);
 					OS.Rect_X(textRect, OS.Rect_X(textRect) + x);
-					OS.Rect_Y(textRect, OS.Rect_Y(textRect) + drawY);
-					OS.DrawingContext_DrawRectangle(drawingContext, selBrush, 0, textRect);
+					OS.Rect_Y(textRect, selY);
+					OS.Rect_Height(textRect, lineHeight);
+					int geometry = OS.gcnew_RectangleGeometry(textRect);
+					OS.GeometryCollection_Add(geometries, geometry);
+					OS.GCHandle_Free(geometry);
 					OS.GCHandle_Free(textRect);
 					OS.GCHandle_Free(bounds);
 				}
-				OS.DrawingContext_Pop(drawingContext);
 				OS.GCHandle_Free(enumerator);
 			}
 			OS.GCHandle_Free(rects);
 		}
-				
+
 		drawY = nextDrawY;
+	}
+	if (selGeometry != 0) {
+		OS.DrawingContext_PushOpacity(drawingContext, 0.4);
+		OS.DrawingContext_DrawGeometry(drawingContext, selBrush, 0, selGeometry);
+		OS.DrawingContext_Pop(drawingContext);
+		OS.GCHandle_Free(geometries);
+		OS.GCHandle_Free(selGeometry);
 	}
 	if (selBrush != 0) OS.GCHandle_Free(selBrush);
 	OS.GCHandle_Free(fg);
