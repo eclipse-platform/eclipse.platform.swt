@@ -628,7 +628,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 		int lineHeight = lineY[line+1] - lineY[line];
 		int alignmentX = drawX;
-		if (hasSelection || (flags & 4) != 0) {
+		if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
 			boolean extents = false;
 			if (line == runs.length - 1 && (flags & 4) != 0) {
 				extents = true;
