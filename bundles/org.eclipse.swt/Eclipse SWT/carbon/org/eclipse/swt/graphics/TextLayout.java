@@ -592,6 +592,8 @@ public Rectangle getBounds() {
 		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
 		int ascent = (int)(0.5f + metrics.ascent * font.size);
 		int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
+		ascent = Math.max(ascent, this.ascent);
+		descent = Math.max(descent, this.descent);
 		height = ascent + descent;
 	} else {
 		for (int i=0; i<breaks.length; i++) {
@@ -827,7 +829,8 @@ public Rectangle getLineBounds(int lineIndex) {
 	}
 	int lineX = this.lineX[lineIndex];
 	int lineWidth = this.lineWidth[lineIndex];
-	return new Rectangle(lineX, lineY, lineWidth, lineHeight[lineIndex] - spacing);
+	int lineHeight = this.lineHeight[lineIndex] - spacing;
+	return new Rectangle(lineX, lineY, lineWidth, lineHeight);
 }
 
 /**
@@ -872,6 +875,8 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		OS.ATSFontGetHorizontalMetrics(font.handle, OS.kATSOptionFlagsDefault, metrics);
 		int ascent = (int)(0.5f + metrics.ascent * font.size);
 		int descent = (int)(0.5f + (-metrics.descent + metrics.leading) * font.size);
+		ascent = Math.max(ascent, this.ascent);
+		descent = Math.max(descent, this.descent);
 		return FontMetrics.carbon_new(ascent, descent, 0, 0, ascent + descent);
 	}
 	int start = lineIndex == 0 ? 0 : breaks[lineIndex - 1];
