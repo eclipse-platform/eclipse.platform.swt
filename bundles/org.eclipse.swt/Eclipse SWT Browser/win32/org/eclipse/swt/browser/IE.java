@@ -343,8 +343,11 @@ public void create(Composite parent, int style) {
 					for (int i = 0; i < openWindowListeners.length; i++) {
 						openWindowListeners[i].open(newEvent);
 					}
-					IE browser = (IE)newEvent.browser.webBrowser;
-					boolean doit = browser != null && !browser.browser.isDisposed(); // TODO
+					IE browser = null;
+					if (newEvent.browser != null && newEvent.browser.webBrowser instanceof IE) {
+						browser = (IE)newEvent.browser.webBrowser;
+					}
+					boolean doit = browser != null && !browser.browser.isDisposed();
 					if (doit) {
 						Variant variant = new Variant(browser.auto);
 						IDispatch iDispatch = variant.getDispatch();
