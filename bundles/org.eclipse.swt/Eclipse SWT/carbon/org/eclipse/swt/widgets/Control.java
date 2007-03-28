@@ -741,7 +741,7 @@ boolean equals(float[] color1, float[] color2) {
 	if (color1 == null) return color2 == null;
 	if (color2 == null) return color1 == null;	
 	for (int i = 0; i < color1.length; i++) {
-		if (color1 [0] != color2 [0]) return false;
+		if (color1 [i] != color2 [i]) return false;
 	}	
 	return true;
 }
