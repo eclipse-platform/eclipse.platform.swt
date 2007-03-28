@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser snippet: show a browser with pop-up blocker
+ * Browser snippet: show a browser with pop-up window support
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.browser.*;
 
-public class Snippet173 {
+public class Snippet270 {
 
 public static void main(String[] args) {
 	Display display = new Display();
@@ -40,8 +40,7 @@ public static void main(String[] args) {
 	}
 	initialize(display, browser);
 	shell.open();
-	/* any website with popups */
-	browser.setUrl("http://www.cnn.com");
+	browser.setUrl("http://www.eclipse.org");
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
 			display.sleep();
@@ -53,6 +52,7 @@ public static void main(String[] args) {
 static void initialize(final Display display, Browser browser) {
 	browser.addOpenWindowListener(new OpenWindowListener() {
 		public void open(WindowEvent event) {
+			if (!event.required) return;	/* only do it if necessary */
 			Shell shell = new Shell(display);
 			shell.setText("New Window");
 			shell.setLayout(new FillLayout());
@@ -70,16 +70,6 @@ static void initialize(final Display display, Browser browser) {
 		public void show(WindowEvent event) {
 			Browser browser = (Browser)event.widget;
 			final Shell shell = browser.getShell();
-			/* popup blocker - ignore windows with no style */
-			if (!event.addressBar && !event.menuBar && !event.statusBar && !event.toolBar) {
-				System.out.println("Popup blocked.");
-				event.display.asyncExec(new Runnable() {
-					public void run() {
-						shell.close();
-					}
-				});
-				return;
-			}
 			if (event.location != null) shell.setLocation(event.location);
 			if (event.size != null) {
 				Point size = event.size;
