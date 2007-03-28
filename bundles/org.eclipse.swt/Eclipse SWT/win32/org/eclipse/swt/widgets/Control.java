@@ -737,14 +737,6 @@ public boolean dragDetect (MouseEvent event) {
 	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
 }
 
-/**
- * @deprecated use dragDetect(Event) - This API was added between 3.2 and 3.3, and will be removed for 3.3. 
- */
-public boolean dragDetect (int button, int stateMask, int x, int y) {
-	checkWidget ();
-	return dragDetect (button, 1, stateMask, x, y);
-}
-
 boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 	if (button != 1 || count != 1) return false;
 	boolean dragging = dragDetect (handle, x, y, false, null, null);
