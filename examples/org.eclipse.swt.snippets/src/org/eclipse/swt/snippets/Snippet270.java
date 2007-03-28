@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser snippet: show a browser with pop-up window support
+ * Browser snippet: bring up a browser with pop-up window support
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/

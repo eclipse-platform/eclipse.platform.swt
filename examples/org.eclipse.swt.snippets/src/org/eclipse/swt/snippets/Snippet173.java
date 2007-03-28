@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Browser snippet: show a browser with pop-up blocker
+ * Browser snippet: bring up a browser with pop-up blocker
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
