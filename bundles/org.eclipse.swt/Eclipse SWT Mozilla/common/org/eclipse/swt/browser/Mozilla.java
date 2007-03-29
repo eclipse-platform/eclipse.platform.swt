@@ -1866,7 +1866,7 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 		result[0] = 0;
 		int index = unhookedDOMWindows.indexOf (ptrObject);
 		if (index != -1) {
-			rc = domWindow.GetTop (result);
+			rc = webBrowser.GetContentDOMWindow (result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 			boolean isTop = result[0] == domWindow.getAddress ();
@@ -2021,7 +2021,7 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 		result[0] = 0;
 		int index = unhookedDOMWindows.indexOf (ptrObject);
 		if (index != -1) {
-			rc = domWindow.GetTop (result);
+			rc = webBrowser.GetContentDOMWindow (result);
 			if (rc != XPCOM.NS_OK) error (rc);
 			if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 			boolean isTop = result[0] == domWindow.getAddress ();
