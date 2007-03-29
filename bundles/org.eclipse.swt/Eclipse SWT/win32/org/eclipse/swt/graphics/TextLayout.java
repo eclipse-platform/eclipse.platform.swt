@@ -521,7 +521,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
  * 
  * @since 3.3
  */
-/*public*/ void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
+public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
 	computeRuns(gc);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

@@ -301,6 +301,10 @@ public void draw (GC gc, int x, int y) {
  * </ul>
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
+}
+
+public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
