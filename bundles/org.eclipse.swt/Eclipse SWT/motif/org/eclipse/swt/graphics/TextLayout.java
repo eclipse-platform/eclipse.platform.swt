@@ -336,7 +336,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	int length = text.length(); 
 	if (length == 0 && flags == 0) return;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	if (hasSelection || (flags & 4) != 0) {
+	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);		
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
@@ -357,9 +357,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			baseline = Math.max(baseline, lineRuns[i].baseline);
 		}
 		int lineHeight = lineY[line+1] - lineY[line];
-		if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+		if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 			boolean extent = false;
-			if (line == runs.length - 1 && (flags & 4) != 0) {
+			if (line == runs.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
 				extent = true;
 			} else {
 				StyleItem run = lineRuns[lineRuns.length - 1];
@@ -367,14 +367,14 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					if (selectionStart <= run.start && run.start <= selectionEnd) extent = true;
 				} else {
 					int endOffset = run.start + run.length - 1;
-					if (selectionStart <= endOffset && endOffset < selectionEnd && (flags & 2) != 0) {
+					if (selectionStart <= endOffset && endOffset < selectionEnd && (flags & SWT.FULL_SELECTION) != 0) {
 						extent = true;
 					}
 				}
 			}
 			if (extent) {
 				gc.setBackground(selectionBackground);
-				int width = (flags & 2) != 0 ? 0x7fffffff : 10;
+				int width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : lineHeight / 3;
 				gc.fillRectangle(drawX + lineWidth[line], drawY, width, lineHeight);
 			}
 		}

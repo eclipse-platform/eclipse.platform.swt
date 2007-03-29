@@ -314,7 +314,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	GCData data = gc.data;
 	int /*long*/ cairo = data.cairo;
-	if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+	if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 		int /*long*/[] attrs = new int /*long*/[1];
 		int[] nAttrs = new int[1];
 		PangoLogAttr logAttr = new PangoLogAttr();
@@ -341,7 +341,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				lineEnd = (int)/*64*/OS.g_utf8_strlen(ptr, -1);
 			}
 			boolean extent = false;
-			if (lineIndex == lineCount - 1 && (flags & 4) != 0) {
+			if (lineIndex == lineCount - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
 				extent = true;
 			} else {
 				if (attrs[0] == 0) OS.pango_layout_get_log_attrs(layout, attrs, nAttrs);
@@ -349,7 +349,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 				if (!logAttr.is_line_break) {
 					if (selectionStart <= lineEnd && lineEnd <= selectionEnd) extent = true;
 				} else {
-					if (selectionStart <= lineEnd && lineEnd < selectionEnd && (flags & 2) != 0) {
+					if (selectionStart <= lineEnd && lineEnd < selectionEnd && (flags & SWT.FULL_SELECTION) != 0) {
 						extent = true;
 					}
 				}
@@ -357,11 +357,11 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			if (extent) {
 				int lineX = x + OS.PANGO_PIXELS(rect.x) + OS.PANGO_PIXELS(rect.width);
 				int lineY = y + OS.PANGO_PIXELS(rect.y);
-				int width = (flags & 2) != 0 ? 0x7fffffff : 10;
 				int height = OS.PANGO_PIXELS(rect.height);
 				if (ascent != -1 && descent != -1) {
 					height = Math.max (height, ascent + descent);
 				}
+				int width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : height / 3;
 				if (cairo != 0 && OS.GTK_VERSION >= OS.VERSION(2, 8, 0)) {
 					Cairo.cairo_rectangle(cairo, lineX, lineY, width, height);
 					Cairo.cairo_fill(cairo);

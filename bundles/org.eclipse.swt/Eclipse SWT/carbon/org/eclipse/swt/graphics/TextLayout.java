@@ -431,7 +431,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
 }
 
-/*public*/ void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
+public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout ();
 	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -446,7 +446,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	setLayoutControl(OS.kATSUCGContextTag, gc.handle, 4);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	boolean restoreColor = false;
-	if (hasSelection || (flags & 4) != 0) {
+	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 		if (selectionBackground != null) {
 			restoreColor = true;
 			int color = OS.CGColorCreate(device.colorspace, selectionBackground.handle);
@@ -514,9 +514,9 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 			int fixYDraw = OS.Long2Fix(-(drawY + lineAscent[i]));
 			OS.ATSUDrawText(layout, start, lineLength, drawX, fixYDraw);
 			int end = start + lineLength - 1;
-			if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+			if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 				boolean extent = false;
-				if (i == breaks.length - 1 && (flags & 4) != 0) {
+				if (i == breaks.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
 					extent = true;
 				} else {
 					boolean hardBreak = false;
@@ -529,7 +529,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					if (hardBreak) {
 						if (selectionStart <= end + 1 && end + 1 <= selectionEnd) extent = true;
 					} else {
-						if (selectionStart <= end + 1 && end + 1 < selectionEnd && (flags & 2) != 0) {
+						if (selectionStart <= end + 1 && end + 1 < selectionEnd && (flags & SWT.FULL_SELECTION) != 0) {
 							extent = true;
 						}
 					}
@@ -538,7 +538,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					if (rect == null) rect = new CGRect();
 					rect.x = x + lineWidth[i];
 					rect.y = drawY;
-					rect.width = (flags & 2) != 0 ? 0x7fffffff : 10;
+					rect.width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fffffff : lineHeight[i] / 3;
 					rect.height = lineHeight[i];
 					OS.CGContextSaveGState(gc.handle);
 					OS.CGContextTranslateCTM(gc.handle, 0, -(lineHeight[i] + 2 * drawY));
