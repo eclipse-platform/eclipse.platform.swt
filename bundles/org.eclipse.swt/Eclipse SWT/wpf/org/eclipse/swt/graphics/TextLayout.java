@@ -295,7 +295,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	int drawingContext = gc.handle;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	int selBrush = 0, selGeometry = 0, geometries = 0;
-	if (hasSelection || (flags & 4) != 0) {
+	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
 		selectionStart = translateOffset(selectionStart);
@@ -334,22 +334,22 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		//draw line selection
 		boolean fullSelection = selectionStart <= lineStart && selectionEnd >= lineEnd;
 		boolean partialSelection = !(selectionStart > lineEnd || lineStart > selectionEnd);
-		if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+		if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 			boolean extent = false;
-			if (i == lines.length - 1 && (flags & 4) != 0) {
+			if (i == lines.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
 				extent = true;
 			} else {
 				int breakLength = OS.TextLine_NewlineLength(line);
 				if (breakLength != 0) {
 					if (selectionStart <= lineEnd && lineEnd <= selectionEnd) extent = true;
 				} else {
-					if (selectionStart <= lineEnd && lineEnd < selectionEnd && (flags & 2) != 0) {
+					if (selectionStart <= lineEnd && lineEnd < selectionEnd && (flags & SWT.FULL_SELECTION) != 0) {
 						extent = true;
 					}
 				}
 			}
 			if (extent) {
-				int extentWidth = (flags & 2) != 0 ? 0x7ffffff : 10;
+				int extentWidth = (flags & SWT.FULL_SELECTION) != 0 ? 0x7ffffff : lineHeight / 3;
 				int textRect = OS.gcnew_Rect(OS.TextLine_WidthIncludingTrailingWhitespace(line) + x, selY, extentWidth, lineHeight);
 				int geometry = OS.gcnew_RectangleGeometry(textRect);
 				OS.GeometryCollection_Add(geometries, geometry);
