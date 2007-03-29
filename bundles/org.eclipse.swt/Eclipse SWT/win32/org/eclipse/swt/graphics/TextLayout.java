@@ -587,7 +587,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 	}
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	if (hasSelection || (flags & 4) != 0) {
+	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
@@ -597,7 +597,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 	RECT rect = new RECT();
 	int selBrush = 0, selPen = 0, selBrushFg = 0;
-	if (hasSelection || (flags & 4) != 0) {
+	if (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0) {
 		if (gdip) {
 			int bg = selectionBackground.handle;
 			int argb = ((alpha & 0xFF) << 24) | ((bg >> 16) & 0xFF) | (bg & 0xFF00) | ((bg & 0xFF) << 16);
@@ -628,9 +628,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		}
 		int lineHeight = lineY[line+1] - lineY[line];
 		int alignmentX = drawX;
-		if (flags != 0 && (hasSelection || (flags & 4) != 0)) {
+		if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 			boolean extents = false;
-			if (line == runs.length - 1 && (flags & 4) != 0) {
+			if (line == runs.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
 				extents = true;
 			} else {
 				StyleItem run = lineRuns[lineRuns.length - 1];
@@ -638,19 +638,23 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					if (selectionStart <= run.start && run.start <= selectionEnd) extents = true;
 				} else {
 					int endOffset = run.start + run.length - 1;
-					if (selectionStart <= endOffset && endOffset < selectionEnd && (flags & 2) != 0) {
+					if (selectionStart <= endOffset && endOffset < selectionEnd && (flags & SWT.FULL_SELECTION) != 0) {
 						extents = true;
 					}
 				}
 			}
 			if (extents) {
-				int selX = drawX + lineWidth[line];
-				int width = (flags & 2) != 0 ? 10000 : 10;
+				int width;
+				if ((flags & SWT.FULL_SELECTION) != 0) {
+					width = OS.IsWin95 ? 0x7FFF : 0x6FFFFFF;
+				} else {
+					width = (lineHeight - lineSpacing) / 3;
+				}
 				if (gdip) {
-					Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, selX, drawY, width, lineHeight - lineSpacing);
+					Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, drawX + lineWidth[line], drawY, width, lineHeight - lineSpacing);
 				} else {
 					OS.SelectObject(hdc, selBrush);
-					OS.PatBlt(hdc, selX, drawY, width, lineHeight - lineSpacing, OS.PATCOPY);
+					OS.PatBlt(hdc, drawX + lineWidth[line], drawY, width, lineHeight - lineSpacing, OS.PATCOPY);
 				}
 			}
 		}
