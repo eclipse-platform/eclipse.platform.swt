@@ -1203,12 +1203,15 @@ public class SWT {
 	public static final int HIDE_SELECTION = 1 << 15;
 
 	/**
-	 * Style constant for full row selection behavior. (value is 1&lt;&lt;16).
-	 * <br>Note that this is a <em>HINT</em>.
+	 * Style constant for full row selection behavior and 
+	 * selection constant indicating that a full line should be 
+	 * drawn. (value is 1&lt;&lt;16).
+	 * <br>Note that for some widgets this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>StyledText</code></li>
 	 * <li><code>Table</code></li>
 	 * <li><code>Tree</code></li>
+	 * <li><code>StyledText</code></li>
+	 * <li><code>TextLayout</code></li> 
 	 * </ul></p>
 	 */
 	public static final int FULL_SELECTION = 1 << 16;
@@ -2560,6 +2563,38 @@ public class SWT {
 	 * should handle mnemonics (value is 1&lt;&lt;3).
 	 */
 	public static final int DRAW_MNEMONIC = 1 << 3;	
+
+	
+	/**
+	 * Selection constant indicating that a line delimiter should be 
+	 * drawn (value is 1&lt;&lt;17).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextLayout</code></li>
+	 * </ul></p>
+	 *
+	 * @see FULL_SELECTION
+	 * @see LAST_LINE_SELECTION
+	 * 
+	 * @since 3.3
+	 */
+	public static final int DELIMITER_SELECTION = 1 << 17;
+	
+	/**
+	 * Selection constant indicating that the last line is selected
+	 * to the end and should be drawn using either a line delimiter 
+	 * or full line selection (value is 1&lt;&lt;20).
+	 * 
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>TextLayout</code></li>
+	 * </ul></p>
+	 * 
+	 * @see DELIMITER_SELECTION
+	 * @see FULL_SELECTION
+	 * 
+	 * @since 3.3
+	 */
+	public static final int LAST_LINE_SELECTION = 1 << 20;
 	
 	/** 
 	 * SWT error constant indicating that no error number was specified
