@@ -17,7 +17,8 @@ import org.eclipse.swt.*;
 
 public class Browser6 {
 	public static boolean verbose = false;
-	public static boolean passed = false;	
+	public static boolean passed = false;
+	public static boolean asyncDispose = true;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
@@ -33,7 +34,16 @@ public class Browser6 {
 				String url = browser.getUrl();
 				if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url+">");
 				passed = true;
-				shell.close();
+				Runnable runnable = new Runnable() {
+					public void run() {
+						shell.close();
+					}
+				};
+				if (asyncDispose) {
+					display.asyncExec(runnable);
+				} else {
+					runnable.run();
+				}
 			}
 		});
 		
