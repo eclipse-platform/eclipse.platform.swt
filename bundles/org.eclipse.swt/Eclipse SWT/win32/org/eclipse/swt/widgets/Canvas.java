@@ -278,6 +278,31 @@ public void setFont (Font font) {
 	super.setFont (font);
 }
 
+LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
+	LRESULT result  = super.WM_IME_COMPOSITION (wParam, lParam);
+	if (caret != null && caret.isFocusCaret ()) {
+		if (OS.IsDBLocale) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (5, 1)) {
+				short langID = OS.GetSystemDefaultUILanguage ();
+				short primaryLang = OS.PRIMARYLANGID (langID);
+				if (primaryLang == OS.LANG_KOREAN) {
+					POINT ptCurrentPos = new POINT ();
+					if (OS.GetCaretPos (ptCurrentPos)) {
+						COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
+						lpCompForm.dwStyle = OS.CFS_POINT;
+						lpCompForm.x = ptCurrentPos.x;
+						lpCompForm.y = ptCurrentPos.y;
+						int hIMC = OS.ImmGetContext (handle);
+						OS.ImmSetCompositionWindow (hIMC, lpCompForm);
+						OS.ImmReleaseContext (handle, hIMC);
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
 	LRESULT result  = super.WM_INPUTLANGCHANGE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) {
