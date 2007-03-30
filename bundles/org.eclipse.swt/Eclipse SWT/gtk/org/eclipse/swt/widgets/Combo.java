@@ -53,7 +53,7 @@ import org.eclipse.swt.events.*;
  * @see List
  */
 public class Combo extends Composite {
-	int /*long*/ arrowHandle, entryHandle, listHandle, textRenderer;
+	int /*long*/ buttonHandle, entryHandle, listHandle, textRenderer;
 	int lastEventTime, visibleCount = 5;
 	int /*long*/ gdkEventKey = 0;
 	int fixStart = -1, fixEnd = -1;
@@ -381,7 +381,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = OS.PANGO_PIXELS (h [0]) + yborder  * 2;
 
 	GtkRequisition arrowRequesition = new GtkRequisition ();
-	OS.gtk_widget_size_request (arrowHandle, arrowRequesition);
+	OS.gtk_widget_size_request (buttonHandle, arrowRequesition);
 	GtkRequisition listRequesition = new GtkRequisition ();
 	int /*long*/ listParent = OS.gtk_widget_get_parent (listHandle);
 	OS.gtk_widget_size_request (listParent != 0 ? listParent : listHandle, listRequesition);
@@ -439,6 +439,27 @@ void createHandle (int index) {
 		display.setWarnings (warnings);
 		OS.gtk_cell_layout_pack_start (handle, textRenderer, true);
 		OS.gtk_cell_layout_set_attributes (handle, textRenderer, OS.text, 0, 0);
+
+		/*
+		* Feature in GTK.  There is no API to query the button
+		* handle from a combo box although it is possible to get the
+		* text field.  The button handle is needed to hook events.  The
+		* fix is to walk the combo tree and find the first child that is 
+		* an instance of button.
+		*/
+		OS.gtk_container_forall (handle, display.allChildrenProc, 0);
+		if (display.allChildren != 0) {
+			int /*long*/ list = display.allChildren;
+			while (list != 0) {
+				int /*long*/ widget = OS.g_list_data (list);
+				if (OS.GTK_IS_BUTTON (widget)) {
+					buttonHandle = widget;
+					break;
+				}
+			}
+			OS.g_list_free (display.allChildren);
+			display.allChildren = 0;
+		}
 	} else {
 		handle = OS.gtk_combo_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -461,7 +482,7 @@ void createHandle (int index) {
 			while (i<count) {
 				int /*long*/ childHandle = OS.g_list_nth_data (list, i);
 				if (childHandle != entryHandle && childHandle != listHandle) {
-					arrowHandle = childHandle;
+					buttonHandle = childHandle;
 					break;
 				}
 				i++;
@@ -497,7 +518,7 @@ public void cut () {
 
 void deregister () {
 	super.deregister ();
-	if (arrowHandle != 0) display.removeWidget (arrowHandle);
+	if (buttonHandle != 0) display.removeWidget (buttonHandle);
 	if (entryHandle != 0) display.removeWidget (entryHandle);
 	if (listHandle != 0) display.removeWidget (listHandle);
 	int /*long*/ imContext = imContext ();
@@ -543,6 +564,9 @@ int /*long*/ fontHandle () {
 }
 
 int /*long*/ focusHandle () {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 4, 0)) {
+		if ((style & SWT.READ_ONLY) != 0) return buttonHandle;
+	}
 	if (entryHandle != 0) return entryHandle;
 	return super.focusHandle ();
 }
@@ -568,16 +592,7 @@ void hookEvents () {
 	}
 	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | 
 		OS.GDK_BUTTON_RELEASE_MASK;
- 	int /*long*/ [] handles;
-	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
-		if (entryHandle != 0) {
-			handles = new int /*long*/ [] {entryHandle};
-		} else {
-			handles = new int /*long*/ [0];
-		}
-	} else {
-		handles = new int /*long*/ [] {arrowHandle, entryHandle, listHandle};
-	}
+ 	int /*long*/ [] handles = new int /*long*/ [] {buttonHandle, entryHandle, listHandle};
 	for (int i=0; i<handles.length; i++) {
 		int /*long*/ eventHandle = handles [i];
 		if (eventHandle != 0) {
@@ -598,7 +613,7 @@ void hookEvents () {
 			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT_INVERSE], true);
 
 			/* Connect the event_after signal for both key and mouse */
-			if (eventHandle != entryHandle) {
+			if (eventHandle != focusHandle ()) {
 				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.closures [EVENT_AFTER], false);
 			}
 		}
@@ -1221,7 +1236,7 @@ int /*long*/ parentingHandle() {
 
 void register () {
 	super.register ();
-	if (arrowHandle != 0) display.addWidget (arrowHandle, this);
+	if (buttonHandle != 0) display.addWidget (buttonHandle, this);
 	if (entryHandle != 0) display.addWidget (entryHandle, this);
 	if (listHandle != 0) display.addWidget (listHandle, this);
 	int /*long*/ imContext = imContext ();
@@ -1230,7 +1245,7 @@ void register () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	entryHandle = listHandle = 0;
+	buttonHandle = entryHandle = listHandle = 0;
 }
 
 void releaseWidget () {
@@ -1830,7 +1845,7 @@ public void setTextLimit (int limit) {
 
 void setToolTipText (Shell shell, String newString) {
 	if (entryHandle != 0) shell.setToolTipText (entryHandle, newString);
-	if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
+	if (buttonHandle != 0) shell.setToolTipText (buttonHandle, newString);
 }
 
 /**

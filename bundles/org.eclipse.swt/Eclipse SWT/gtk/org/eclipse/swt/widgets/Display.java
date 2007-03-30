@@ -138,7 +138,7 @@ public class Display extends Device {
 	Control focusControl;
 	Shell activeShell;
 	boolean activePending;
-	boolean ignoreActivate;
+	boolean ignoreActivate, ignoreFocus;
 	
 	/* Input method resources */
 	Control imControl;
@@ -205,6 +205,10 @@ public class Display extends Device {
 	int /*long*/ setDirectionProc;
 	Callback setDirectionCallback;
 	
+	/* Get all children callback */
+	int /*long*/ allChildrenProc, allChildren;
+	Callback allChildrenCallback;
+
 	/* Settings callbacks */
 	int /*long*/ styleSetProc;
 	Callback styleSetCallback;
@@ -562,6 +566,14 @@ public void addListener (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, listener);
+}
+
+int /*long*/ allChildrenProc (int /*long*/ widget, int /*long*/ recurse) {
+	allChildren = OS.g_list_append (allChildren, widget);
+	if (recurse != 0 && OS.GTK_IS_CONTAINER (widget)) {
+		OS.gtk_container_forall (widget, allChildrenProc, recurse);
+	}
+	return 0;
 }
 
 void addMouseHoverTimeout (int /*long*/ handle) {
@@ -2386,6 +2398,10 @@ void initializeCallbacks () {
 	setDirectionProc = setDirectionCallback.getAddress ();
 	if (setDirectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+	allChildrenCallback = new Callback (this, "allChildrenProc", 2);
+	allChildrenProc = allChildrenCallback.getAddress ();
+	if (allChildrenProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
 	checkIfEventCallback = new Callback (this, "checkIfEventProc", 3);
 	checkIfEventProc = checkIfEventCallback.getAddress ();
 	if (checkIfEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -3032,6 +3048,10 @@ void releaseDisplay () {
 	/* Dispose the set direction callback */
 	setDirectionCallback.dispose (); setDirectionCallback = null;
 	setDirectionProc = 0;
+
+	/* Dispose the set direction callback */
+	allChildrenCallback.dispose (); allChildrenCallback = null;
+	allChildrenProc = 0;
 
 	/* Dispose the caret callback */
 	if (caretId != 0) OS.gtk_timeout_remove (caretId);

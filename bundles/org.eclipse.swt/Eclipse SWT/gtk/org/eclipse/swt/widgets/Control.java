@@ -2265,6 +2265,31 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 			if (widget != focusHandle ()) break;
 			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+
+			/*
+			 * Feature in GTK. The GTK combo box popup under some window managers
+			 * is implemented as a GTK_MENU.  When it pops up, it causes the combo
+			 * box to lose focus when focus is received for the menu.  The
+			 * fix is to check the current grab handle and see if it is a GTK_MENU
+			 * and ignore the focus event when the menu is both shown and hidden.
+			 */
+			Display display = this.display;
+			if (gdkEventFocus.in != 0) {
+				if (display.ignoreFocus) { 
+					display.ignoreFocus = false;
+					break;
+				}
+			} else {
+				display.ignoreFocus = false;
+				int /*long*/ grabHandle = OS.gtk_grab_get_current ();
+				if (grabHandle != 0) {
+					if (OS.G_OBJECT_TYPE (grabHandle) == OS.GTK_TYPE_MENU ()) {
+						display.ignoreFocus = true;
+					}
+					break;
+				}
+			}
+
 			sendFocusEvent (gdkEventFocus.in != 0 ? SWT.FocusIn : SWT.FocusOut);
 			break;
 		}
