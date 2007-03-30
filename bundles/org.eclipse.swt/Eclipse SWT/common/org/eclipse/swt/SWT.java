@@ -2573,8 +2573,8 @@ public class SWT {
 	 * <li><code>TextLayout</code></li>
 	 * </ul></p>
 	 *
-	 * @see FULL_SELECTION
-	 * @see LAST_LINE_SELECTION
+	 * @see #FULL_SELECTION
+	 * @see #LAST_LINE_SELECTION
 	 * 
 	 * @since 3.3
 	 */
@@ -2589,8 +2589,8 @@ public class SWT {
 	 * <li><code>TextLayout</code></li>
 	 * </ul></p>
 	 * 
-	 * @see DELIMITER_SELECTION
-	 * @see FULL_SELECTION
+	 * @see #DELIMITER_SELECTION
+	 * @see #FULL_SELECTION
 	 * 
 	 * @since 3.3
 	 */
