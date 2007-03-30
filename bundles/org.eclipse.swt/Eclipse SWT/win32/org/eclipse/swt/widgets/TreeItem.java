@@ -1115,6 +1115,21 @@ public void setChecked (boolean checked) {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	tvItem.state = state;
 	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+	/*
+	* Bug in Windows.  When TVM_SETITEM is used to set
+	* the state image of an item inside TVN_GETDISPINFO,
+	* the new state is not redrawn.  The fix is to force
+	* a redraw.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (parent.currentItem == this && OS.IsWindowVisible (hwnd)) {
+			RECT rect = new RECT ();
+			rect.left = handle;
+			if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+				OS.InvalidateRect (hwnd, rect, true);
+			}
+		}
+	}
 }
 
 /**
@@ -1552,6 +1567,21 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	tvItem.state = state;
 	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+	/*
+	* Bug in Windows.  When TVM_SETITEM is used to set
+	* the state image of an item inside TVN_GETDISPINFO,
+	* the new state is not redrawn.  The fix is to force
+	* a redraw.
+	*/
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (parent.currentItem == this && OS.IsWindowVisible (hwnd)) {
+			RECT rect = new RECT ();
+			rect.left = handle;
+			if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+				OS.InvalidateRect (hwnd, rect, true);
+			}
+		}
+	}
 }
 
 /**
