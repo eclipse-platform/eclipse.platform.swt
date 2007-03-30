@@ -278,6 +278,39 @@ public void setFont (Font font) {
 	super.setFont (font);
 }
 
+LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
+	LRESULT result  = super.WM_IME_COMPOSITION (wParam, lParam);
+	/*
+	* Bug in Windows.  On Korean Windows XP, the IME window
+	* for the Korean Input System (MS-IME 2002) always opens 
+	* in the top left corner of the screen, despite the fact
+	* that ImmSetCompositionWindow() was called to position
+	* the IME when focus is gained.  The fix is to position
+	* the IME on every WM_IME_COMPOSITION message.
+	*/
+	if (!OS.IsWinCE && OS.WIN32_VERSION == OS.VERSION (5, 1)) {
+		if (OS.IsDBLocale) {
+			short langID = OS.GetSystemDefaultUILanguage ();
+			short primaryLang = OS.PRIMARYLANGID (langID);
+			if (primaryLang == OS.LANG_KOREAN) {
+				if (caret != null && caret.isFocusCaret ()) {
+					POINT ptCurrentPos = new POINT ();
+					if (OS.GetCaretPos (ptCurrentPos)) {
+						COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
+						lpCompForm.dwStyle = OS.CFS_POINT;
+						lpCompForm.x = ptCurrentPos.x;
+						lpCompForm.y = ptCurrentPos.y;
+						int hIMC = OS.ImmGetContext (handle);
+						OS.ImmSetCompositionWindow (hIMC, lpCompForm);
+						OS.ImmReleaseContext (handle, hIMC);
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
 	LRESULT result  = super.WM_INPUTLANGCHANGE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) {
