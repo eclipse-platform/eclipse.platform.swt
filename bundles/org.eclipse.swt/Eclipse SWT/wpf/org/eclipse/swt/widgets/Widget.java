@@ -460,11 +460,13 @@ static void dumpObjectType (int object) {
 
 void dumpVisualTree (int visual, int depth) {
 	for (int i = 0; i < depth; i++) System.out.print ("\t");
-	int type = OS.Type_FullName(OS.Object_GetType(visual));
-	String typeName = createJavaString (type);
+	int type = OS.Object_GetType (visual);
+	int typeNamePtr = OS.Type_FullName (type);
+	OS.GCHandle_Free (type);
+	String typeName = createJavaString (typeNamePtr);
+	OS.GCHandle_Free(typeNamePtr);
 	int name = OS.FrameworkElement_Name (visual);
 	String widgetName = createJavaString (name);
-	OS.GCHandle_Free(type);
 	OS.GCHandle_Free (name);
 	System.out.println(typeName + " ["+widgetName+"]");
 	int count = OS.VisualTreeHelper_GetChildrenCount(visual);
