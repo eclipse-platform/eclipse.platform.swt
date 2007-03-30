@@ -301,6 +301,10 @@ int /*long*/ eventWindow () {
 	return paintWindow ();
 }
 
+int /*long*/ enterExitHandle () {
+	return fixedHandle;
+}
+
 boolean filterKey (int keyval, int /*long*/ event) {
 	int time = OS.gdk_event_get_time (event);
 	if (time != lastEventTime) {

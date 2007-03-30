@@ -539,6 +539,7 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+	parent.gtk_enter_notify_event (widget, event);
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if (drawHotImage && imageHandle != 0) {
 		ImageList imageList = parent.imageList;

@@ -566,10 +566,9 @@ void hookEvents () {
 		OS.g_signal_connect_closure (entryHandle, OS.delete_text, display.closures [DELETE_TEXT], false);
 		OS.g_signal_connect_closure (entryHandle, OS.activate, display.closures [ACTIVATE], false);
 	}
-	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK |
-		OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_ENTER_NOTIFY_MASK |
-		OS.GDK_LEAVE_NOTIFY_MASK;
-	int /*long*/ [] handles;
+	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | 
+		OS.GDK_BUTTON_RELEASE_MASK;
+ 	int /*long*/ [] handles;
 	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
 		if (entryHandle != 0) {
 			handles = new int /*long*/ [] {entryHandle};
@@ -587,8 +586,6 @@ void hookEvents () {
 			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
 			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
 			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT], false);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
-			OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
 			/*
 			* Feature in GTK.  Events such as mouse move are propagated up
 			* the widget hierarchy and are seen by the parent.  This is the
@@ -676,6 +673,10 @@ public void deselectAll () {
 		OS.gtk_entry_set_text (entryHandle, new byte[1]);
 		ignoreSelect = false;
 	}
+}
+
+int /*long*/ enterExitHandle () {
+	return fixedHandle;
 }
 
 int /*long*/ eventWindow () {

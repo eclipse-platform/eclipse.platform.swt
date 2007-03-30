@@ -266,6 +266,10 @@ int hScrollBarWidth() {
 	return requisition.height + spacing;
 }
 
+boolean sendLeaveNotify () {
+	return scrolledHandle != 0;
+}
+
 void setOrientation () {
 	super.setOrientation ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {

@@ -179,6 +179,11 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
+int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+	parent.gtk_enter_notify_event (widget, event);
+	return 0;
+}
+
 int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
@@ -186,6 +191,7 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 void hookEvents () {
 	super.hookEvents ();
 	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.closures [MNEMONIC_ACTIVATE], false);
+	OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 }
 
 void register () {

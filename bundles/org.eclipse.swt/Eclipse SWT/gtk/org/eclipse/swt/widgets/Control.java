@@ -112,6 +112,10 @@ void enableWidget (boolean enabled) {
 	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
+int /*long*/ enterExitHandle () {
+	return eventHandle ();
+}
+
 int /*long*/ eventHandle () {
 	return handle;
 }
@@ -178,15 +182,20 @@ void hookEvents () {
 	/* Connect the mouse signals */
 	int /*long*/ eventHandle = eventHandle ();
 	int eventMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK |
-		OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_ENTER_NOTIFY_MASK |
-		OS.GDK_LEAVE_NOTIFY_MASK;
+		OS.GDK_BUTTON_RELEASE_MASK;
 	OS.gtk_widget_add_events (eventHandle, eventMask);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.closures [MOTION_NOTIFY_EVENT], false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
-	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [SCROLL_EVENT], 0, display.closures [SCROLL_EVENT], false);
+	
+	/* Connect enter/exit signals */
+	int /*long*/ enterExitHandle = enterExitHandle ();
+	int enterExitMask = OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK;
+	OS.gtk_widget_add_events (enterExitHandle, enterExitMask);
+	OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
+	OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.closures [LEAVE_NOTIFY_EVENT], false);
+
 	/*
 	* Feature in GTK.  Events such as mouse move are propagate up
 	* the widget hierarchy and are seen by the parent.  This is the
@@ -2216,12 +2225,20 @@ int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 }
 
 int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+	if (display.currentControl == this) return 0;
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
 	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL && gdkEvent.mode != OS.GDK_CROSSING_UNGRAB) return 0;
 	if ((gdkEvent.state & (OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK)) != 0) return 0;
-	if (gdkEvent.subwindow != 0) return 0;
-	return sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+	if (display.currentControl != null && !display.currentControl.isDisposed ()) {
+		display.removeMouseHoverTimeout (display.currentControl.handle);
+		display.currentControl.sendMouseEvent (SWT.MouseExit,  0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state);
+	}
+	if (!isDisposed ()) {
+		display.currentControl = this;
+		return sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+	}
+	return 0;
 }
 
 int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
@@ -2341,13 +2358,18 @@ int /*long*/ gtk_key_release_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
+	if (display.currentControl != this) return 0;
 	display.removeMouseHoverTimeout (handle);
-	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
-	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL && gdkEvent.mode != OS.GDK_CROSSING_UNGRAB) return 0;
-	if ((gdkEvent.state & (OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK)) != 0) return 0;
-	if (gdkEvent.subwindow != 0) return 0;
-	return sendMouseEvent (SWT.MouseExit, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+	int result = 0;
+	if (sendLeaveNotify () || display.getCursorControl () == null) {
+		GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+		OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
+		if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL && gdkEvent.mode != OS.GDK_CROSSING_UNGRAB) return 0;
+		if ((gdkEvent.state & (OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK)) != 0) return 0;
+		result = sendMouseEvent (SWT.MouseExit, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
+		display.currentControl = null;
+	}
+	return result;
 }
 
 int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
@@ -2374,7 +2396,7 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, event, GdkEventMotion.sizeof);
-	if (hooks (SWT.MouseHover) || filters (SWT.MouseHover)) {
+	if (this == display.currentControl && (hooks (SWT.MouseHover) || filters (SWT.MouseHover))) {
 		display.addMouseHoverTimeout (handle);
 	}
 	double x = gdkEvent.x_root, y = gdkEvent.y_root;
@@ -2792,6 +2814,7 @@ void releaseParent () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (display.currentControl == this) display.currentControl = null;
 	display.removeMouseHoverTimeout (handle);
 	int /*long*/ imHandle = imHandle ();
 	if (imHandle != 0) {
@@ -2866,6 +2889,10 @@ boolean sendHelpEvent (int /*long*/ helpType) {
 		}
 		control = control.parent;
 	}
+	return false;
+}
+
+boolean sendLeaveNotify() {
 	return false;
 }
 

@@ -142,6 +142,10 @@ int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
+int enterExitHandle() {
+	return handle;
+}
+
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	ToolItem [] items = getItems ();

@@ -339,6 +339,11 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	return 0;
 }
 
+int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
+	parent.gtk_enter_notify_event(widget, event);
+	return 0;
+}
+
 boolean hasFocus () {
 	return OS.GTK_WIDGET_HAS_FOCUS (handle);
 }
@@ -351,6 +356,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
 		OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.closures [SIZE_ALLOCATE], true);
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 	}
 }
 

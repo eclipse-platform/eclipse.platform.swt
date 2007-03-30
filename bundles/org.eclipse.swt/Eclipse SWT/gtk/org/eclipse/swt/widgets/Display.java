@@ -213,7 +213,10 @@ public class Display extends Device {
 	
 	/* Entry focus behaviour */
 	boolean entrySelectOnFocus;
-
+	
+	/* Enter/Exit events */
+	Control currentControl;
+	
 	/* Flush exposes */
 	int /*long*/ checkIfEventProc;
 	Callback checkIfEventCallback;
