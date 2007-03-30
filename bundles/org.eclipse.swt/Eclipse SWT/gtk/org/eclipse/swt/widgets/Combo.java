@@ -559,7 +559,7 @@ void hookEvents () {
 	if (OS.GTK_VERSION >= OS.VERSION(2, 4, 0)) {
 		OS.g_signal_connect_closure (handle, OS.changed, display.closures [CHANGED], true);
 	}
-	//TODO - fix multiple enter/exit
+
 	if (entryHandle != 0) {
 		OS.g_signal_connect_closure (entryHandle, OS.changed, display.closures [CHANGED], true);
 		OS.g_signal_connect_closure (entryHandle, OS.insert_text, display.closures [INSERT_TEXT], false);

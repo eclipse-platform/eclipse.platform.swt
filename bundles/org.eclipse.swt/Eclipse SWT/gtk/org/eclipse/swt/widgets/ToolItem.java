@@ -577,6 +577,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
+	parent.gtk_leave_notify_event (widget, event);
 	if (drawHotImage) {
 		drawHotImage = false;
 		if (imageHandle != 0 && image != null) {
