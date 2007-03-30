@@ -25,6 +25,7 @@ extern char* COM_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	AccessibleObjectFromWindow_FUNC,
 	CAUUID_1sizeof_FUNC,
 	CLSIDFromProgID_FUNC,
 	CLSIDFromString_FUNC,

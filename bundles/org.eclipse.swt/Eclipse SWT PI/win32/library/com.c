@@ -15,6 +15,41 @@
 
 #define COM_NATIVE(func) Java_org_eclipse_swt_internal_ole_win32_COM_##func
 
+#ifndef NO_AccessibleObjectFromWindow
+JNIEXPORT jint JNICALL COM_NATIVE(AccessibleObjectFromWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jintArray arg3)
+{
+	GUID _arg2, *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc = 0;
+	COM_NATIVE_ENTER(env, that, AccessibleObjectFromWindow_FUNC);
+	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)AccessibleObjectFromWindow((HWND)arg0, (DWORD)arg1, lparg2, (LPVOID *)lparg3);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(AccessibleObjectFromWindow_LIB);
+			if (hm) fp = GetProcAddress(hm, "AccessibleObjectFromWindow");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((HWND)arg0, (DWORD)arg1, lparg2, (LPVOID *)lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
+	COM_NATIVE_EXIT(env, that, AccessibleObjectFromWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CAUUID_1sizeof
 JNIEXPORT jint JNICALL COM_NATIVE(CAUUID_1sizeof)
 	(JNIEnv *env, jclass that)

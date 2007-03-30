@@ -629,6 +629,7 @@ public static final int STATE_SYSTEM_MULTISELECTABLE = 0x1000000;
 //public static final int STATE_SYSTEM_VALID = 0x3fffffff;
 
 /** Accessibility natives */
+public static final native int AccessibleObjectFromWindow (int /*long*/ hwnd, int dwObjectID, GUID riid, int /*long*/[] ppvObject);
 public static final native int CreateStdAccessibleObject (int /*long*/ hwnd, int idObject, GUID riidInterface, int /*long*/[] ppvObject);
 public static final native int /*long*/ LresultFromObject (GUID riid, int /*long*/ wParam, int /*long*/ pAcc);
 /*USED*/public static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int arg0, int arg1, int arg2, int arg3);

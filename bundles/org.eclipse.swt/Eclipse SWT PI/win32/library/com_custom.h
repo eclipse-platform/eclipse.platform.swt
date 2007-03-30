@@ -10,5 +10,6 @@
  *******************************************************************************/
 
 /* Libraries for dynamic loaded functions */
+#define AccessibleObjectFromWindow_LIB "oleacc.dll"
 #define CreateStdAccessibleObject_LIB "oleacc.dll"
 #define LresultFromObject_LIB "oleacc.dll"
