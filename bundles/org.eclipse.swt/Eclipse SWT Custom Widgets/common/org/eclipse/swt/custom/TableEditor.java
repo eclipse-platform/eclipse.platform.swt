@@ -75,6 +75,8 @@ public class TableEditor extends ControlEditor {
 	TableItem item;
 	int column = -1;
 	ControlListener columnListener;
+	Runnable timer;
+	static final int TIMEOUT = 1000;
 /**
 * Creates a TableEditor for the specified Table.
 *
@@ -90,6 +92,11 @@ public TableEditor (Table table) {
 			layout ();
 		}
 		public void controlResized(ControlEvent e){
+			layout ();
+		}
+	};
+	timer = new Runnable () {
+		public void run() {
 			layout ();
 		}
 	};
@@ -146,6 +153,7 @@ public void dispose () {
 		tableColumn.removeControlListener(columnListener);
 	}
 	columnListener = null;
+	timer = null;
 	table = null;
 	item = null;
 	column = -1;
@@ -168,7 +176,20 @@ public int getColumn () {
 public TableItem getItem () {
 	return item;
 }
-
+void resize () {
+	layout();
+	/*
+	 * On some platforms, the table scrolls when an item that
+	 * is partially visible at the bottom of the table is
+	 * selected.  Ensure that the correct row is edited by
+	 * laying out one more time in a timerExec().
+	 */
+	if (table != null) {
+		Display display = table.getDisplay();
+		display.timerExec(-1, timer);
+		display.timerExec(TIMEOUT, timer);
+	}
+}
 /**
 * Sets the zero based index of the column of the cell being tracked by this editor.
 * 
@@ -180,7 +201,7 @@ public void setColumn(int column) {
 	// In this situation, there is a single default column.
 	if (columnCount == 0) {
 		this.column = (column == 0) ? 0 : -1;
-		layout();
+		resize();
 		return;
 	}
 	if (this.column > -1 && this.column < columnCount){
@@ -194,13 +215,16 @@ public void setColumn(int column) {
 	this.column = column;
 	TableColumn tableColumn = table.getColumn(this.column);
 	tableColumn.addControlListener(columnListener);
-	layout();
+	resize();
 }
 public void setItem (TableItem item) {	
 	this.item = item;
-	layout();
+	resize();
 }
-
+public void setEditor (Control editor) {
+	super.setEditor(editor);
+	resize();
+}
 /**
 * Specify the Control that is to be displayed and the cell in the table that it is to be positioned above.
 *
