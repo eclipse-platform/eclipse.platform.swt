@@ -272,7 +272,7 @@ public void setEditor (Control editor, TreeItem item) {
 }
 
 public void layout () {
-	if (tree.isDisposed()) return;
+	if (tree == null || tree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;	
 	int columnCount = tree.getColumnCount();
 	if (columnCount == 0 && column != 0) return;

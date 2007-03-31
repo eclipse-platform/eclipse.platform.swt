@@ -245,7 +245,7 @@ public void setEditor (Control editor, TableTreeItem item, int column) {
 	setEditor(editor);
 }
 public void layout () {
-	if (tableTree.isDisposed()) return;
+	if (tableTree == null || tableTree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;
 	Table table = tableTree.getTable();
 	int columnCount = table.getColumnCount();

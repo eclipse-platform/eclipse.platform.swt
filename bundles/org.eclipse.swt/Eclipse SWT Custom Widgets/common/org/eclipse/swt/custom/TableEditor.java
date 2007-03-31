@@ -217,7 +217,7 @@ public void setEditor (Control editor, TableItem item, int column) {
 	setEditor(editor);
 }
 public void layout () {
-	if (table.isDisposed()) return;
+	if (table == null || table.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;
 	int columnCount = table.getColumnCount();
 	if (columnCount == 0 && column != 0) return;

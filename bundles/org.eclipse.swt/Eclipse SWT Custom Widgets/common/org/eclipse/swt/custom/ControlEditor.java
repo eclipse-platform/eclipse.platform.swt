@@ -180,7 +180,7 @@ Rectangle computeBounds () {
  * composite and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-	if (!parent.isDisposed()) {
+	if (parent != null && !parent.isDisposed()) {
 		for (int i=0; i<EVENTS.length; i++) {
 			parent.removeListener (EVENTS [i], controlListener);
 		}
