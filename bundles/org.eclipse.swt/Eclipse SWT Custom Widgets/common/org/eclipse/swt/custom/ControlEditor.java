@@ -105,8 +105,10 @@ public class ControlEditor {
 	Composite parent;
 	Control editor;
 	private boolean hadFocus;
-	private Listener tableListener;
+	private Listener controlListener;
 	private Listener scrollbarListener;
+	
+	private final static int [] EVENTS = {SWT.KeyDown, SWT.KeyUp, SWT.MouseDown, SWT.MouseUp, SWT.Resize};
 /**
 * Creates a ControlEditor for the specified Composite.
 *
@@ -116,12 +118,14 @@ public class ControlEditor {
 public ControlEditor (Composite parent) {
 	this.parent = parent;
 
-	tableListener = new Listener() {
+	controlListener = new Listener() {
 		public void handleEvent(Event e) {
 			layout ();
 		}
-	};	
-	parent.addListener (SWT.Resize, tableListener);
+	};
+	for (int i=0; i<EVENTS.length; i++) {
+		parent.addListener (EVENTS [i], controlListener);
+	}
 	
 	scrollbarListener = new Listener() {
 		public void handleEvent(Event e) {
@@ -177,7 +181,9 @@ Rectangle computeBounds () {
  */
 public void dispose () {
 	if (!parent.isDisposed()) {
-		parent.removeListener (SWT.Resize, tableListener);
+		for (int i=0; i<EVENTS.length; i++) {
+			parent.removeListener (EVENTS [i], controlListener);
+		}
 		ScrollBar hBar = parent.getHorizontalBar ();
 		if (hBar != null) hBar.removeListener (SWT.Selection, scrollbarListener);
 		ScrollBar vBar = parent.getVerticalBar ();
@@ -187,7 +193,7 @@ public void dispose () {
 	parent = null;
 	editor = null;
 	hadFocus = false;
-	tableListener = null;
+	controlListener = null;
 	scrollbarListener = null;
 }
 /**
