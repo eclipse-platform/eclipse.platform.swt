@@ -396,8 +396,9 @@ int Drop(int pDataObject, int grfKeyState, int pt_x, int pt_y, int pdwEffect) {
 	// Get Data in a Java format
 	Object object = null;
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(selectedDataType)){
-			object = transferAgents[i].nativeToJava(selectedDataType);
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(selectedDataType)){
+			object = transfer.nativeToJava(selectedDataType);
 			break;
 		}
 	}
@@ -643,7 +644,8 @@ boolean setEventData(DNDEvent event, int pDataObject, int grfKeyState, int pt_x,
 					transferData.type = transferData.formatetc.cfFormat;
 					transferData.pIDataObject = pDataObject;
 					for (int i = 0; i < transferAgents.length; i++){
-						if (transferAgents[i].isSupportedType(transferData)){
+						Transfer transfer = transferAgents[i];
+						if (transfer != null && transfer.isSupportedType(transferData)){
 							TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
 							System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);
 							newDataTypes[dataTypes.length] = transferData;

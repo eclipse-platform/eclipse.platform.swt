@@ -391,7 +391,7 @@ int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	Object object = null;
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
-		if (transfer.isSupportedType(selectedDataType)) {
+		if (transfer != null && transfer.isSupportedType(selectedDataType)) {
 			selectedDataType.data = data;
 			object = transfer.nativeToJava(selectedDataType);
 			break;
@@ -698,7 +698,8 @@ boolean setEventData(int theDrag, DNDEvent event) {
 			TransferData data = new TransferData();
 			data.type = flavors[i];
 			for (int j = 0; j < transferAgents.length; j++) {
-				if (transferAgents[j].isSupportedType(data)) {
+				Transfer transfer = transferAgents[j];
+				if (transfer != null && transfer.isSupportedType(data)) {
 					dataTypes[++index] = data;
 					break;
 				}

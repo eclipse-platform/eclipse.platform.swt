@@ -275,30 +275,32 @@ void drag(Event dragEvent) {
 	OS.GetGlobalMouse (pt);
 
 	for (int i = 0; i < transferAgents.length; i++) {
-		int[] types = transferAgents[i].getTypeIds();
-		if (transferAgents[i] instanceof FileTransfer) {
-			TransferData transferData = new TransferData();
-			transferData.type = types[0];
-			event = new DNDEvent();
-			event.widget = this;
-			event.time = (int)System.currentTimeMillis(); 
-			event.dataType = transferData; 
-			notifyListeners(DND.DragSetData, event);
-			if (event.data == null) return;
-			Transfer transferAgent = transferAgents[i];
-			for (int j = 0; j < types.length; j++) {
-				transferData.type = types[j];
-				transferAgent.javaToNative(event.data, transferData);
-				if (transferData.result != OS.noErr) return;
-				for (int k = 0; k < transferData.data.length; k++) {
-					byte[] datum = transferData.data[k];
-					OS.AddDragItemFlavor(theDrag[0], 1 + k, types[j], datum, datum.length, 0);
+		Transfer transfer = transferAgents[i];
+		if (transfer != null) {
+			int[] types = transfer.getTypeIds();
+			if (transfer instanceof FileTransfer) {
+				TransferData transferData = new TransferData();
+				transferData.type = types[0];
+				event = new DNDEvent();
+				event.widget = this;
+				event.time = (int)System.currentTimeMillis(); 
+				event.dataType = transferData; 
+				notifyListeners(DND.DragSetData, event);
+				if (event.data == null) return;
+				for (int j = 0; j < types.length; j++) {
+					transferData.type = types[j];
+					transfer.javaToNative(event.data, transferData);
+					if (transferData.result != OS.noErr) return;
+					for (int k = 0; k < transferData.data.length; k++) {
+						byte[] datum = transferData.data[k];
+						OS.AddDragItemFlavor(theDrag[0], 1 + k, types[j], datum, datum.length, 0);
+					}
 				}
+			} else {
+				for (int j = 0; j < types.length; j++) {
+					OS.AddDragItemFlavor(theDrag[0], 1, types[j], null, 0, 0);	
+				}	
 			}
-		} else {
-			for (int j = 0; j < types.length; j++) {
-				OS.AddDragItemFlavor(theDrag[0], 1, types[j], null, 0, 0);	
-			}	
 		}
 	}
 	
@@ -371,8 +373,9 @@ int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDra
 	notifyListeners(DND.DragSetData, event);
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++) {
-		if (transferAgents[i].isSupportedType(transferData)) {
-			transfer = transferAgents[i];
+		Transfer transferAgent = transferAgents[i];
+		if (transferAgent != null && transferAgent.isSupportedType(transferData)) {
+			transfer = transferAgent;
 			break;
 		}
 	}

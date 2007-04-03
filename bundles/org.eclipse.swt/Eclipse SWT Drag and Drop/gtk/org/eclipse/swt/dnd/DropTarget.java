@@ -346,8 +346,9 @@ void drag_data_received ( int /*long*/ widget, int /*long*/ context, int x, int 
 		transferData.pValue = selectionData.data;
 		transferData.format = selectionData.format;
 		for (int i = 0; i < transferAgents.length; i++) {
-			if (transferAgents[i].isSupportedType(transferData)) {
-				object = transferAgents[i].nativeToJava(transferData);
+			Transfer transfer = transferAgents[i];
+			if (transfer != null && transfer.isSupportedType(transferData)) {
+				object = transfer.nativeToJava(transferData);
 				break;
 			}
 		}
@@ -625,19 +626,21 @@ public void setTransfer(Transfer[] transferAgents){
 	GtkTargetEntry[] targets = new GtkTargetEntry[0];
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
-		int[] typeIds = transfer.getTypeIds();
-		String[] typeNames = transfer.getTypeNames();
-		for (int j = 0; j < typeIds.length; j++) {
-			GtkTargetEntry entry = new GtkTargetEntry();
-			byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
-			entry.target = OS.g_malloc(buffer.length);
-			OS.memmove(entry.target, buffer, buffer.length);						
-			entry.info = typeIds[j];
-			GtkTargetEntry[] newTargets = new GtkTargetEntry[targets.length + 1];
-			System.arraycopy(targets, 0, newTargets, 0, targets.length);
-			newTargets[targets.length] = entry;
-			targets = newTargets;
-		}	
+		if (transfer != null) {
+			int[] typeIds = transfer.getTypeIds();
+			String[] typeNames = transfer.getTypeNames();
+			for (int j = 0; j < typeIds.length; j++) {
+				GtkTargetEntry entry = new GtkTargetEntry();
+				byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
+				entry.target = OS.g_malloc(buffer.length);
+				OS.memmove(entry.target, buffer, buffer.length);						
+				entry.info = typeIds[j];
+				GtkTargetEntry[] newTargets = new GtkTargetEntry[targets.length + 1];
+				System.arraycopy(targets, 0, newTargets, 0, targets.length);
+				newTargets[targets.length] = entry;
+				targets = newTargets;
+			}
+		}
 	}
 	
 	int /*long*/ pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
@@ -698,7 +701,8 @@ boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent even
 		TransferData data = new TransferData();
 		data.type = gtkTargetPair.target;
 		for (int j = 0; j < transferAgents.length; j++) {
-			if (transferAgents[j].isSupportedType(data)) {
+			Transfer transfer = transferAgents[j];
+			if (transfer != null && transfer.isSupportedType(data)) {
 				TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
 				System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);
 				newDataTypes[dataTypes.length] = data;

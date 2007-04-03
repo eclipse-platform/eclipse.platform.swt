@@ -410,11 +410,14 @@ private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	// what types have been registered?
 	TransferData[] allowedDataTypes = new TransferData[0];
 	for (int i = 0; i < transferAgents.length; i++){
-		TransferData[] formats = transferAgents[i].getSupportedTypes();
-		TransferData[] newAllowedDataTypes = new TransferData[allowedDataTypes.length + formats.length];
-		System.arraycopy(allowedDataTypes, 0, newAllowedDataTypes, 0, allowedDataTypes.length);
-		System.arraycopy(formats, 0, newAllowedDataTypes, allowedDataTypes.length, formats.length);
-		allowedDataTypes = newAllowedDataTypes;
+		Transfer transferAgent = transferAgents[i];
+		if (transferAgent != null) {
+			TransferData[] formats = transferAgent.getSupportedTypes();
+			TransferData[] newAllowedDataTypes = new TransferData[allowedDataTypes.length + formats.length];
+			System.arraycopy(allowedDataTypes, 0, newAllowedDataTypes, 0, allowedDataTypes.length);
+			System.arraycopy(formats, 0, newAllowedDataTypes, allowedDataTypes.length, formats.length);
+			allowedDataTypes = newAllowedDataTypes;
+		}
 	}
 	
 	OleEnumFORMATETC enumFORMATETC = new OleEnumFORMATETC();
@@ -465,8 +468,9 @@ private int GetData(int pFormatetc, int pmedium) {
 	// get matching transfer agent to perform conversion
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData)){
-			transfer = transferAgents[i];
+		Transfer transferAgent = transferAgents[i];
+		if (transferAgent != null && transferAgent.isSupportedType(transferData)){
+			transfer = transferAgent;
 			break;
 		}
 	}
@@ -580,7 +584,8 @@ private int QueryGetData(int pFormatetc) {
 
 	// is this type supported by the transfer agent?
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData))
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(transferData))
 			return COM.S_OK;
 	}
 	
