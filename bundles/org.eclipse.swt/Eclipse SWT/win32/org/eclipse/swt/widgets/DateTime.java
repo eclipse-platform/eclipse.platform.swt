@@ -311,7 +311,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width += upDownWidth + MARGIN;
 			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
 			// TODO: On Vista, can send DTM_GETDATETIMEPICKERINFO to ask the Edit control what its margins are
-			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) upDownHeight++;
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) upDownHeight += 7;
 			height = Math.max (height, upDownHeight);
 		}
 	}
