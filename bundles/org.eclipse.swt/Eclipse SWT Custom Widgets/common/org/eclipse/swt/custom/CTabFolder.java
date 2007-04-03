@@ -1377,10 +1377,9 @@ int getRightItemEdge (){
 	return Math.max(0, x);
 }
 /**
- * Return the selected tab item, or an empty array if there
- * is no selection.
+ * Return the selected tab item, or null if there is no selection.
  * 
- * @return the selected tab item
+ * @return the selected tab item, or null if none has been selected
  * 
  * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
