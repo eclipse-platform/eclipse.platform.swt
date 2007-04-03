@@ -966,7 +966,7 @@ boolean translateTraversal (MSG msg) {
 			case OS.VK_RIGHT: 
 			case OS.VK_PRIOR:
 			case OS.VK_NEXT:
-				OS.SendMessage (msg.hwnd, OS.WM_UPDATEUISTATE, OS.UIS_INITIALIZE, 0);
+				OS.SendMessage (msg.hwnd, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 				break;
 		}
 	}
