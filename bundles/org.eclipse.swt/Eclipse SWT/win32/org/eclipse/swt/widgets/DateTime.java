@@ -309,8 +309,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.ReleaseDC (handle, hDC);
 			int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 			width += upDownWidth + MARGIN;
-			// TODO: On Vista, can send DTM_GETDATETIMEPICKERINFO to ask the Edit control what its margins are
 			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
+			// TODO: On Vista, can send DTM_GETDATETIMEPICKERINFO to ask the Edit control what its margins are
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) upDownHeight++;
 			height = Math.max (height, upDownHeight);
 		}
 	}
@@ -319,7 +320,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int border = getBorderWidth ();
-	width += border * 2; height += border * 2;
+	width += border * 2;
+	height += border * 2;
 	return new Point (width, height);
 }
 

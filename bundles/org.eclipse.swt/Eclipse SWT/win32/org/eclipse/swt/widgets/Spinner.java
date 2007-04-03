@@ -302,6 +302,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	Rectangle trim = computeTrim (0, 0, width, height);
 	if (hHint == SWT.DEFAULT) {
 		int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL) + 2 * getBorderWidth ();
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) upDownHeight++;
 		trim.height = Math.max (trim.height, upDownHeight);
 	}
 	return new Point (trim.width, trim.height);
