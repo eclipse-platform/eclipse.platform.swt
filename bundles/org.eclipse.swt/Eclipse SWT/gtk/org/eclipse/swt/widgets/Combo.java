@@ -456,6 +456,7 @@ void createHandle (int index) {
 					buttonHandle = widget;
 					break;
 				}
+				list = OS.g_list_next (list);
 			}
 			OS.g_list_free (display.allChildren);
 			display.allChildren = 0;
