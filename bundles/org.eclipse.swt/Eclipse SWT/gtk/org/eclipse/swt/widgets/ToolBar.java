@@ -142,7 +142,7 @@ int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
-int enterExitHandle() {
+int /*long*/ enterExitHandle() {
 	return handle;
 }
 
