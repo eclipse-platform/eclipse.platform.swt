@@ -46,6 +46,7 @@ class Mozilla extends WebBrowser {
 	byte[] htmlBytes;
 	boolean visible, isChild, ignoreDispose;
 	Shell tip = null;
+	Listener listener;
 	Vector unhookedDOMWindows = new Vector ();
 
 	static nsIAppShell AppShell;
@@ -929,7 +930,7 @@ public void create (Composite parent, int style) {
 		error (rc);
 	}
 
-	Listener listener = new Listener () {
+	listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
 				case SWT.Dispose: {
@@ -1287,6 +1288,22 @@ void onDispose (Display display) {
 	
 	unhookDOMListeners ();
 
+	if (listener != null) {
+		int[] folderEvents = new int[] {
+			SWT.Dispose,
+			SWT.Resize,  
+			SWT.FocusIn,
+			SWT.Activate,
+			SWT.Deactivate,
+			SWT.Show,
+			SWT.KeyDown,
+		};
+		for (int i = 0; i < folderEvents.length; i++) {
+			browser.removeListener (folderEvents[i], listener);
+		}
+		listener = null;
+	}
+
 	int /*long*/[] result = new int /*long*/[1];
 	rc = webBrowser.QueryInterface (nsIBaseWindow.NS_IBASEWINDOW_IID, result);
 	if (rc != XPCOM.NS_OK) error (rc);
@@ -1313,7 +1330,7 @@ void onDispose (Display display) {
 		new nsISupports (ptrObject.value).Release ();
 	}
 	unhookedDOMWindows = null;
-
+	
 	delegate.onDispose (embedHandle);
 	delegate = null;
 
