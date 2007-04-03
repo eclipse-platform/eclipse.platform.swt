@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit.browser;
 
+import org.eclipse.swt.tests.junit.SwtJunit;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.browser.*;
@@ -18,7 +19,7 @@ import org.eclipse.swt.*;
 public class Browser6 {
 	public static boolean verbose = false;
 	public static boolean passed = false;
-	public static boolean asyncDispose = true;
+	public static boolean asyncDispose = SwtJunit.isGTK || SwtJunit.isMotif;
 	
 	public static boolean test1(String url) {
 		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
