@@ -14473,19 +14473,36 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1StreamGeometry)
 }
 #endif
 
-#ifndef NO_gcnew_1String
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1String)(JNIEnv *env, jclass that, jcharArray arg0);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1String)
+#ifndef NO_gcnew_1String___3C
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1String___3C)(JNIEnv *env, jclass that, jcharArray arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1String___3C)
 	(JNIEnv *env, jclass that, jcharArray arg0)
 {
 	jchar *lparg0=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1String_FUNC);
+	OS_NATIVE_ENTER(env, that, gcnew_1String___3C_FUNC);
 	if (arg0) if ((lparg0 = env->GetCharArrayElements(arg0, NULL)) == NULL) goto fail;
 	rc = (jint)TO_HANDLE(gcnew String((const wchar_t *)lparg0));
 fail:
 	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, gcnew_1String_FUNC);
+	OS_NATIVE_EXIT(env, that, gcnew_1String___3C_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1String___3CII
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1String___3CII)(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1String___3CII)
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
+{
+	jchar *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1String___3CII_FUNC);
+	if (arg0) if ((lparg0 = env->GetCharArrayElements(arg0, NULL)) == NULL) goto fail;
+	rc = (jint)TO_HANDLE(gcnew String((const wchar_t *)lparg0, arg1, arg2));
+fail:
+	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, gcnew_1String___3CII_FUNC);
 	return rc;
 }
 #endif

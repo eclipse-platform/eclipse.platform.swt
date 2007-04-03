@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1254;
-int OS_nativeFunctionCallCount[1254];
+int OS_nativeFunctionCount = 1255;
+int OS_nativeFunctionCallCount[1255];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -1228,7 +1228,8 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1SolidColorBrush",
 	"gcnew_1StackPanel",
 	"gcnew_1StreamGeometry",
-	"gcnew_1String",
+	"gcnew_1String___3C",
+	"gcnew_1String___3CII",
 	"gcnew_1StringReader",
 	"gcnew_1Style",
 	"gcnew_1TabControl",

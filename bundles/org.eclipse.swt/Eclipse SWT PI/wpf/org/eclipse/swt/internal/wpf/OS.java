@@ -1589,6 +1589,7 @@ public static final native int gcnew_SolidColorBrush(int color);
 public static final native int gcnew_StackPanel();
 public static final native int gcnew_StreamGeometry();
 public static final native int gcnew_String(char[] value);
+public static final native int gcnew_String(char[] value, int startIndex, int length);
 public static final native int gcnew_Style();
 public static final native int gcnew_SWTCanvas(int jniRef);
 public static final native int gcnew_SWTSafeHandle(int handle, boolean isIcon);
