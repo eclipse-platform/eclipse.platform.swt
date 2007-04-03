@@ -293,7 +293,8 @@ int convertProcCallback(int widget, int pSelection, int pTarget, int pType_retur
 	TransferData transferData = new TransferData();
 	transferData.type = target[0];
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData)){
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(transferData)){
 			dataMatch = true;
 			break;
 		}
@@ -308,8 +309,9 @@ int convertProcCallback(int widget, int pSelection, int pTarget, int pType_retur
 
 	Transfer transferAgent = null;
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData)){
-			transferAgent = transferAgents[i];
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(transferData)){
+			transferAgent = transfer;
 			break;
 		}
 	}
@@ -361,11 +363,14 @@ void drag(Event dragEvent) {
 	// Copy targets to global memory
 	TransferData[] transferData = new TransferData[0];
 	for (int i = 0; i < transferAgents.length; i++){
-		TransferData[] data = transferAgents[i].getSupportedTypes();
-		TransferData[] newTransferData = new TransferData[transferData.length + data.length];
-		System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
-		System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
-		transferData = newTransferData;
+		Transfer transfer = transferAgents[i];
+		if (transfer != null) {
+			TransferData[] data = transfer.getSupportedTypes();
+			TransferData[] newTransferData = new TransferData[transferData.length + data.length];
+			System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
+			System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
+			transferData = newTransferData;
+		}
 	}
 	int[] dataTypes = new int[transferData.length];
 	for (int i = 0; i < transferData.length; i++){

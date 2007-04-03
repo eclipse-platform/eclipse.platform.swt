@@ -594,14 +594,17 @@ void registerDropTarget() {
 		OS.XmNdropSiteType,       OS.XmDROP_SITE_COMPOSITE,
 	};
 	
-	if (transferAgents.length != 0) {
+	if (transferAgents != null && transferAgents.length != 0) {
 		TransferData[] transferData = new TransferData[0];
 		for (int i = 0, length = transferAgents.length; i < length; i++){
-			TransferData[] data = transferAgents[i].getSupportedTypes();
-			TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
-			System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
-			System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
-			transferData = newTransferData;
+			Transfer transfer = transferAgents[i];
+			if (transfer != null) {
+				TransferData[] data = transfer.getSupportedTypes();
+				TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
+				System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
+				System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
+				transferData = newTransferData;
+			}
 		}
 		
 		int[] atoms = new int[transferData.length];
@@ -721,7 +724,8 @@ boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int t
 		for (int j = 0; j < transferAgents.length; j++){
 			TransferData transferData = new TransferData();
 			transferData.type = exportTargets[i];
-			if (transferAgents[j].isSupportedType(transferData)) {
+			Transfer transfer = transferAgents[j];
+			if (transfer != null && transfer.isSupportedType(transferData)) {
 				TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
 				System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);
 				newDataTypes[dataTypes.length] = transferData;
@@ -773,11 +777,14 @@ public void setTransfer(Transfer[] transferAgents){
 	// register data types
 	TransferData[] transferData = new TransferData[0];
 	for (int i = 0, length = transferAgents.length; i < length; i++){
-		TransferData[] data = transferAgents[i].getSupportedTypes();
-		TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
-		System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
-		System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
-		transferData = newTransferData;
+		Transfer transfer = transferAgents[i];
+		if (transfer != null) {
+			TransferData[] data = transfer.getSupportedTypes();
+			TransferData[] newTransferData = new TransferData[transferData.length +  data.length];
+			System.arraycopy(transferData, 0, newTransferData, 0, transferData.length);
+			System.arraycopy(data, 0, newTransferData, transferData.length, data.length);
+			transferData = newTransferData;
+		}
 	}
 	
 	int[] atoms = new int[transferData.length];
@@ -831,8 +838,9 @@ void transferProcCallback(int widget, int client_data, int pSelection, int pType
 	transferData.pValue = pValue;
 	transferData.format = format[0];
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData)){
-			object = transferAgents[i].nativeToJava(transferData);
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(transferData)){
+			object = transfer.nativeToJava(transferData);
 			break;
 		}
 	}
