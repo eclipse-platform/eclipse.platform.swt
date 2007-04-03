@@ -109,9 +109,9 @@ void computeRuns () {
 	Font font = this.font != null ? this.font : device.systemFont;
 	segmentsText = getSegmentsText();
 	int length = segmentsText.length();
-	char [] buffer = new char [length + 1];
+	char [] buffer = new char [length];
 	segmentsText.getChars (0, length, buffer, 0);
-	string = OS.gcnew_String(buffer);
+	string = OS.gcnew_String(buffer, 0 ,length);
 	int culture = OS.CultureInfo_CurrentUICulture();
 	defaultTextProperties = OS.gcnew_SWTTextRunProperties(font.handle, font.size, font.size, 0, 0, 0, OS.BaselineAlignment_Baseline, culture);
 	for (int i = 0; i < styles.length; i++) {
@@ -823,7 +823,6 @@ public Point getLocation (int offset, boolean trailing) {
 	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	length = segmentsText.length();
 	offset = translateOffset(offset);
 	double y = 0;
 	int start = 0, line;	
@@ -872,7 +871,6 @@ int _getOffset(int offset, int movement, boolean forward) {
 	if (!forward && offset == 0) return 0;
 	int step = forward ? 1 : -1;
 	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + step;
-	length = segmentsText.length();
 	offset = translateOffset(offset);
 	int lineStart = 0, lineIndex;	
 	for (lineIndex=0; lineIndex<lines.length; lineIndex++) {
@@ -939,7 +937,7 @@ int _getOffset(int offset, int movement, boolean forward) {
 			}
 		}
 	}
-	return forward ? text.length() : 0;
+	return forward ? length : 0;
 }
 
 /**
