@@ -150,11 +150,11 @@ public String getFilterPath () {
  */
 public String open () {
 	int dialog;
-	if ((style & SWT.OPEN) != 0) {
+	if ((style & SWT.SAVE) != 0) {
+		dialog = OS.gcnew_SaveFileDialog ();
+	} else {
 		dialog = OS.gcnew_OpenFileDialog ();
 		if ((style & SWT.MULTI) != 0) OS.OpenFileDialog_Multiselect (dialog, true);
-	} else {
-		dialog = OS.gcnew_SaveFileDialog ();
 	}
 	int titlePtr = parent.createDotNetString (title, false);
 	OS.FileDialog_Title (dialog, titlePtr);
