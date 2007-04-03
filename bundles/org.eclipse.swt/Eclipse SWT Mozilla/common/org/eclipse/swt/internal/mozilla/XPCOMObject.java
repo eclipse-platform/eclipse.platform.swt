@@ -25,13 +25,15 @@ public class XPCOMObject {
 	
 public XPCOMObject (int[] argCounts) {
 	int /*long*/[] callbackAddresses = new int /*long*/[argCounts.length];
-	for (int i = 0, length = argCounts.length; i < length; i++){
-		if ((Callbacks[i][argCounts[i]]) == null) {
-			Callbacks[i][argCounts[i]] = new Callback (getClass (), "callback"+i, argCounts[i] + 1, true); //$NON-NLS-1$
+	synchronized (Callbacks) {
+		for (int i = 0, length = argCounts.length; i < length; i++){
+			if ((Callbacks[i][argCounts[i]]) == null) {
+				Callbacks[i][argCounts[i]] = new Callback (getClass (), "callback"+i, argCounts[i] + 1, true); //$NON-NLS-1$
+			}
+			callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress ();
+			if (callbackAddresses[i] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		}
-		callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress ();
-		if (callbackAddresses[i] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-	}	
+	}
 
 	int /*long*/ pVtable = C.malloc (C.PTR_SIZEOF * argCounts.length);
 	XPCOM.memmove (pVtable, callbackAddresses, C.PTR_SIZEOF * argCounts.length);
