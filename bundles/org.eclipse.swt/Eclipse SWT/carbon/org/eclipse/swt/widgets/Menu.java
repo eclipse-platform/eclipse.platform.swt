@@ -203,7 +203,12 @@ void _setVisible (boolean visible) {
 		OS.InstallEventLoopTimer (eventLoop, Display.POLLING_TIMEOUT / 1000.0, Display.POLLING_TIMEOUT / 1000.0, display.pollingProc, 0, id);
 		display.pollingTimer = timer = id [0];
 	}
-	OS.ContextualMenuSelect (handle, where, false, OS.kCMHelpItemRemoveHelp, null, null, null, null, null);
+	/*
+	* Feature in the Macintosh.  When the application FruitMenu is installed,
+	* the output parameters cannot be NULL or ContextualMenuSelect() crashes.
+	* The fix is to ensure they are not NULL.
+	*/
+	OS.ContextualMenuSelect (handle, where, false, OS.kCMHelpItemRemoveHelp, null, null, new int [1], new short [1], new short [1]);
 	if (timer != 0) {
 		OS.RemoveEventLoopTimer (timer);
 		display.pollingTimer = 0;
