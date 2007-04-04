@@ -11,6 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -1690,6 +1692,12 @@ void clearAll (int hItem, TVITEM tvItem, boolean all) {
 	}
 }
 
+int CompareFunc (int lParam1, int lParam2, int lParamSort) {
+	TreeItem item1 = items [lParam1], item2 = items [lParam2];
+	String text1 = item1.getText (lParamSort), text2 = item2.getText (lParamSort);
+	return sortDirection == SWT.UP ? text1.compareTo (text2) : text2.compareTo (text1);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -3027,7 +3035,7 @@ TreeItem [] getItems (int hTreeItem) {
 	tvItem.hItem = hTreeItem;
 	/*
 	* Feature in Windows.  In some cases an expand or collapse message
-	* can occurs from within TVM_DELETEITEM.  When this happens, the item
+	* can occur from within TVM_DELETEITEM.  When this happens, the item
 	* being destroyed has been removed from the list of items but has not
 	* been deleted from the tree.  The fix is to check for null items and
 	* remove them from the list.
@@ -4814,6 +4822,32 @@ public void showSelection () {
 	if (hItem != 0) showItem (hItem);
 }
 
+/*public*/ void sort () {
+	checkWidget ();
+	if ((style & SWT.VIRTUAL) != 0) return;
+	sort (OS.TVI_ROOT, false);
+}
+
+void sort (int hParent, boolean all) {
+	if (sortDirection == SWT.NONE) return;
+	int itemCount = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
+	if (itemCount == 0) return;
+	hFirstIndexOf = hLastIndexOf = 0;
+	itemCount = -1;
+	if (sortDirection == SWT.UP) {
+		OS.SendMessage (handle, OS.TVM_SORTCHILDREN, all ? 1 : 0, hParent);
+		return;
+	}
+	Callback compareCallback = new Callback (this, "CompareFunc", 3);
+	int lpfnCompare = compareCallback.getAddress ();
+	TVSORTCB psort = new TVSORTCB ();
+	psort.hParent = hParent;
+	psort.lpfnCompare = lpfnCompare;
+	psort.lParam = sortColumn == null ? 0 : indexOf (sortColumn);
+	OS.SendMessage (handle, OS.TVM_SORTCHILDRENCB, all ? 1 : 0, psort);
+	compareCallback.dispose ();
+}
+
 void subclass () {
 	super.subclass ();
 	if (hwndHeader != 0) {
@@ -4825,7 +4859,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
 	if (headerToolTipHandle == hdr.hwndFrom) {
-		int count = OS.SendMessage(hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			TreeColumn column = columns [i];
 			if (column.id == hdr.idFrom) return column.toolTipText;

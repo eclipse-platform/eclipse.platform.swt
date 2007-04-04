@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
+//import java.util.*;
+
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -4729,6 +4731,27 @@ public void showSelection () {
 	checkWidget (); 
 	int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_SELECTED);
 	if (index != -1) showItem (index);
+}
+
+/*public*/ void sort () {
+	checkWidget ();
+	if ((style & SWT.VIRTUAL) != 0) return;
+	if (sortDirection == SWT.NONE) return;
+//	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+//	if (itemCount == 0) return;
+//	Comparator comparator = new Comparator () {
+//		int index = sortColumn == null ? 0 : indexOf (sortColumn);
+//		public int compare (Object object1, Object object2) {
+//			TableItem item1 = (TableItem) object1, item2 = (TableItem) object2;
+//			if (sortDirection == SWT.UP) {
+//				return item1.getText (index).compareTo (item2.getText (index));
+//			} else {
+//				return item2.getText (index).compareTo (item1.getText (index));
+//			}
+//		}
+//	};
+//	Arrays.sort (items, 0, itemCount, comparator);
+//	redraw ();
 }
 
 void subclass () {
