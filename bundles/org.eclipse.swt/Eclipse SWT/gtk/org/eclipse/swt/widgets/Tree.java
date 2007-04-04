@@ -1980,6 +1980,39 @@ int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
 	return 0;
 }
 
+void gtk_widget_size_request (int /*long*/ widget, GtkRequisition requisition) {
+	/*
+	 * Bug in GTK.  For some reason, gtk_widget_size_request() fails
+	 * to include the height of the tree view items when there are
+	 * no columns visible.  The fix is to temporarily make one column
+	 * visible. 
+	 */
+	if (columnCount == 0) {
+		super.gtk_widget_size_request (widget, requisition);
+		return;
+	}
+	int /*long*/ columns = OS.gtk_tree_view_get_columns (handle), list = columns;
+	boolean fixVisible = columns != 0;
+	while (list != 0) {
+		int /*long*/ column = OS.g_list_data (list);
+		if (OS.gtk_tree_view_column_get_visible (column)) {
+			fixVisible = false;
+			break;
+		}
+		list = OS.g_list_next (list);
+	}
+	int /*long*/ columnHandle = 0;
+	if (fixVisible) {
+		columnHandle = OS.g_list_data (columns);
+		OS.gtk_tree_view_column_set_visible (columnHandle, true);
+	}
+	super.gtk_widget_size_request (widget, requisition);
+	if (fixVisible) {
+		OS.gtk_tree_view_column_set_visible (columnHandle, false);
+	}
+	if (columns != 0) OS.g_list_free (columns);
+}
+
 void hideFirstColumn () {
 	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
 	OS.gtk_tree_view_column_set_visible (firstColumn, false);	

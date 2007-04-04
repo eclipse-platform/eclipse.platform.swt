@@ -424,7 +424,7 @@ Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed) 
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (h, requisition);
+		gtk_widget_size_request (h, requisition);
 		width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
 		height = OS.GTK_WIDGET_REQUISITION_HEIGHT (h);
 	} else if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
@@ -432,7 +432,7 @@ Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed) 
 		OS.gtk_widget_get_size_request (h, reqWidth, reqHeight);
 		OS.gtk_widget_set_size_request (h, wHint, hHint);
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (h, requisition);
+		gtk_widget_size_request (h, requisition);
 		OS.gtk_widget_set_size_request (h, reqWidth [0], reqHeight [0]);
 		width = wHint == SWT.DEFAULT ? requisition.width : wHint;
 		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
@@ -448,7 +448,7 @@ void forceResize () {
 	*/
 	int /*long*/ topHandle = topHandle ();
 	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (topHandle, requisition);
+	gtk_widget_size_request (topHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
 	allocation.x = OS.GTK_WIDGET_X (topHandle);
 	allocation.y = OS.GTK_WIDGET_Y (topHandle);
@@ -623,7 +623,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		* a call to gtk_widget_size_request().
 		*/
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (topHandle, requisition);
+		gtk_widget_size_request (topHandle, requisition);
 		GtkAllocation allocation = new GtkAllocation ();
 		if (move) {
 			allocation.x = x;
@@ -2524,6 +2524,10 @@ int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ even
 		}
 	}
 	return 0;
+}
+
+void gtk_widget_size_request (int /*long*/ widget, GtkRequisition requisition) {
+	OS.gtk_widget_size_request (widget, requisition);	
 }
 
 /**	 
