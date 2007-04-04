@@ -2129,6 +2129,7 @@ public static final native int TVHITTESTINFO_sizeof ();
 public static final native int TVINSERTSTRUCT_sizeof ();
 public static final native int TVITEM_sizeof ();
 public static final native int TVITEMEX_sizeof ();
+public static final native int TVSORTCB_sizeof ();
 public static final native int UDACCEL_sizeof ();
 public static final native int WINDOWPLACEMENT_sizeof ();
 public static final native int WINDOWPOS_sizeof ();
@@ -2943,6 +2944,11 @@ public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVSORTCB lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int /*long*/ SendMessage (int /*long*/ hWnd, int Msg, int /*long*/ wParam, UDACCEL lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -3671,6 +3677,7 @@ public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVINSERTSTRUCT lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVITEM lParam);
+public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVSORTCB lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, UDACCEL lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, HDHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageW (int /*long*/ hWnd, int Msg, int /*long*/ wParam, HDITEM lParam);
@@ -3700,6 +3707,7 @@ public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVINSERTSTRUCT lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVITEM lParam);
+public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, TVSORTCB lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, UDACCEL lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, HDHITTESTINFO lParam);
 public static final native int /*long*/ SendMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, HDITEM lParam);

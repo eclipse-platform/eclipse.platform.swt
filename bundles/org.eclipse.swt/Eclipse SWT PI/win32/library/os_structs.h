@@ -1487,6 +1487,18 @@ void setTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct);
 #define TVITEMEX_sizeof() 0
 #endif
 
+#ifndef NO_TVSORTCB
+void cacheTVSORTCBFields(JNIEnv *env, jobject lpObject);
+TVSORTCB *getTVSORTCBFields(JNIEnv *env, jobject lpObject, TVSORTCB *lpStruct);
+void setTVSORTCBFields(JNIEnv *env, jobject lpObject, TVSORTCB *lpStruct);
+#define TVSORTCB_sizeof() sizeof(TVSORTCB)
+#else
+#define cacheTVSORTCBFields(a,b)
+#define getTVSORTCBFields(a,b,c) NULL
+#define setTVSORTCBFields(a,b,c)
+#define TVSORTCB_sizeof() 0
+#endif
+
 #ifndef NO_UDACCEL
 void cacheUDACCELFields(JNIEnv *env, jobject lpObject);
 UDACCEL *getUDACCELFields(JNIEnv *env, jobject lpObject, UDACCEL *lpStruct);

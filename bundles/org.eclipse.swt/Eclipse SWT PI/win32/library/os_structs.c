@@ -6769,6 +6769,43 @@ void setTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct)
 }
 #endif
 
+#ifndef NO_TVSORTCB
+typedef struct TVSORTCB_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hParent, lpfnCompare, lParam;
+} TVSORTCB_FID_CACHE;
+
+TVSORTCB_FID_CACHE TVSORTCBFc;
+
+void cacheTVSORTCBFields(JNIEnv *env, jobject lpObject)
+{
+	if (TVSORTCBFc.cached) return;
+	TVSORTCBFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TVSORTCBFc.hParent = (*env)->GetFieldID(env, TVSORTCBFc.clazz, "hParent", "I");
+	TVSORTCBFc.lpfnCompare = (*env)->GetFieldID(env, TVSORTCBFc.clazz, "lpfnCompare", "I");
+	TVSORTCBFc.lParam = (*env)->GetFieldID(env, TVSORTCBFc.clazz, "lParam", "I");
+	TVSORTCBFc.cached = 1;
+}
+
+TVSORTCB *getTVSORTCBFields(JNIEnv *env, jobject lpObject, TVSORTCB *lpStruct)
+{
+	if (!TVSORTCBFc.cached) cacheTVSORTCBFields(env, lpObject);
+	lpStruct->hParent = (HTREEITEM)(*env)->GetIntField(env, lpObject, TVSORTCBFc.hParent);
+	lpStruct->lpfnCompare = (PFNTVCOMPARE)(*env)->GetIntField(env, lpObject, TVSORTCBFc.lpfnCompare);
+	lpStruct->lParam = (LPARAM)(*env)->GetIntField(env, lpObject, TVSORTCBFc.lParam);
+	return lpStruct;
+}
+
+void setTVSORTCBFields(JNIEnv *env, jobject lpObject, TVSORTCB *lpStruct)
+{
+	if (!TVSORTCBFc.cached) cacheTVSORTCBFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, TVSORTCBFc.hParent, (jint)lpStruct->hParent);
+	(*env)->SetIntField(env, lpObject, TVSORTCBFc.lpfnCompare, (jint)lpStruct->lpfnCompare);
+	(*env)->SetIntField(env, lpObject, TVSORTCBFc.lParam, (jint)lpStruct->lParam);
+}
+#endif
+
 #ifndef NO_UDACCEL
 typedef struct UDACCEL_FID_CACHE {
 	int cached;

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 862;
-int OS_nativeFunctionCallCount[862];
+int OS_nativeFunctionCount = 865;
+int OS_nativeFunctionCallCount[865];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -723,6 +723,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVSORTCB_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_UDACCEL_2",
 	"SendMessageA__III_3B",
 	"SendMessageA__III_3C",
@@ -752,6 +753,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVITEM_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVSORTCB_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_UDACCEL_2",
 	"SendMessageW__III_3C",
 	"SendMessageW__III_3I",
@@ -843,6 +845,7 @@ char * OS_nativeFunctionNames[] = {
 	"TVINSERTSTRUCT_1sizeof",
 	"TVITEMEX_1sizeof",
 	"TVITEM_1sizeof",
+	"TVSORTCB_1sizeof",
 	"ToAscii",
 	"ToUnicode",
 	"TrackMouseEvent",
