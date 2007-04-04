@@ -629,27 +629,20 @@ void setToolTipText (Shell shell, String newString) {
  */
 public void setWidth (int width) {
 	checkWidget();
+	if (width == lastWidth) return;
 	if (width > 0) {
 		useFixedWidth = true;
-		/*
-		* Bug in GTK.  For some reason, calling gtk_tree_view_column_set_visible()
-		* when the parent is not realized fails to show the column. The fix is to
-		* ensure that the table has been realized.
-		*/
-		OS.gtk_widget_realize (parent.handle);
-		boolean sendResize = false;
-		if (!OS.gtk_tree_view_column_get_visible (handle)) {
-			sendResize = OS.gtk_tree_view_column_get_fixed_width (handle) == width;
-		}
 		OS.gtk_tree_view_column_set_fixed_width (handle, width);
-		OS.gtk_tree_view_column_set_visible (handle, true);
-		if (sendResize) 	sendEvent (SWT.Resize);
-	} else {
-		if (OS.gtk_tree_view_column_get_visible (handle)) {
-			OS.gtk_tree_view_column_set_visible (handle, false);
-			sendEvent (SWT.Resize);
-		}
 	}
+	/*
+	 * Bug in GTK.  For some reason, calling gtk_tree_view_column_set_visible()
+	 * when the parent is not realized fails to show the column. The fix is to
+	 * ensure that the table has been realized.
+	 */
+	if (width != 0) OS.gtk_widget_realize (parent.handle);
+	OS.gtk_tree_view_column_set_visible (handle, width != 0);
+	lastWidth = width;
+	sendEvent (SWT.Resize);
 }
 
 }
