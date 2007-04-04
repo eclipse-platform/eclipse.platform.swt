@@ -53,7 +53,7 @@ class Mozilla extends WebBrowser {
 	static AppFileLocProvider LocationProvider;
 	static WindowCreator2 WindowCreator;
 	static int BrowserCount;
-	static boolean Initialized, IsXULRunner;
+	static boolean Initialized, IsXULRunner, Is_1_8;
 
 	/* XULRunner detect constants */
 	static final String GRERANGE_LOWER = "1.8.1.2"; //$NON-NLS-1$
@@ -842,6 +842,7 @@ public void create (Composite parent, int style) {
 
 		componentRegistrar.Release ();
 		componentManager.Release ();
+		Is_1_8 = IsXULRunner;
 		Initialized = true;
 	}
 
@@ -871,9 +872,23 @@ public void create (Composite parent, int style) {
 	componentManager.Release ();
 	
 	webBrowser = new nsIWebBrowser (result[0]);
+	result[0] = 0;
 
 	createCOMInterfaces ();
 	AddRef ();
+
+	if (!Is_1_8) {
+		/*
+		* Check for the availability of frozen interface nsIWebBrowserStream to determine if the
+		* GRE's version is >= 1.8. 
+		*/
+		rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
+		if (rc == XPCOM.NS_OK && result[0] != 0) {
+			Is_1_8 = true;
+			new nsISupports (result[0]).Release ();
+			result[0] = 0;
+		}
+	}
 
 	rc = webBrowser.SetContainerWindow (webBrowserChrome.getAddress());
 	if (rc != XPCOM.NS_OK) {
@@ -1431,17 +1446,11 @@ public boolean setText (String html) {
 	}
 
 	/*
-	 * First detect if the nsIWebBrowserStream interface is available, since this interface is frozen.
-	 * However, this may fail because this interface was only introduced as of mozilla 1.8; if this
-	 * interface is not found then use the pre-1.8 approach of utilizing nsIDocShell instead. 
-	 */
-	int /*long*/[] result = new int /*long*/[1];
-	int rc = webBrowser.QueryInterface (nsIWebBrowserStream.NS_IWEBBROWSERSTREAM_IID, result);
-	if (rc == XPCOM.NS_OK) {
-		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
-		new nsISupports (result[0]).Release ();
-		result[0] = 0;
-
+	* If the GRE version is >= 1.8 then use frozen interface nsIWebBrowserStream.
+	* If this interface is not available then use the pre-1.8 approach of utilizing
+	* nsIDocShell instead.
+	*/
+	if (Is_1_8) {
 		/*
 		* Feature of nsIWebBrowserStream.  Setting the browser's content directly through
 		* its nsIWebBrowserStream does not cause a page change to occur, and therefore the
@@ -1459,7 +1468,8 @@ public boolean setText (String html) {
 		if (blankLoading) return true;
 
 		/* navigate to about:blank */
-		rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
+		int /*long*/[] result = new int /*long*/[1];
+		int rc = webBrowser.QueryInterface (nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_ERROR_NO_INTERFACE);
 		nsIWebNavigation webNavigation = new nsIWebNavigation (result[0]);
@@ -1470,14 +1480,13 @@ public boolean setText (String html) {
 		if (rc != XPCOM.NS_OK) error (rc);
 		webNavigation.Release ();
 	} else {
-		result[0] = 0;
-
 		byte[] contentTypeBuffer = MozillaDelegate.wcsToMbcs (null, "text/html", true); // $NON-NLS-1$
 		int /*long*/ aContentType = XPCOM.nsEmbedCString_new (contentTypeBuffer, contentTypeBuffer.length);
 		byte[] contentCharsetBuffer = MozillaDelegate.wcsToMbcs (null, "UTF-8", true);	//$NON-NLS-1$
 		int /*long*/ aContentCharset = XPCOM.nsEmbedCString_new (contentCharsetBuffer, contentCharsetBuffer.length);
 
-		rc = XPCOM.NS_GetServiceManager (result);
+		int /*long*/[] result = new int /*long*/[1];
+		int rc = XPCOM.NS_GetServiceManager (result);
 		if (rc != XPCOM.NS_OK) error (rc);
 		if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
@@ -2120,12 +2129,12 @@ int /*long*/ OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest,
 	String url = new String (dest);
 
 	/*
-	 * XULRunner feature.  The first time that XULRunner is used to display a page,
-	 * regardless of whether it's via Browser.setURL() or Browser.setText(), it
-	 * navigates to about:blank and fires the corresponding events.  Do not send
+	 * As of Mozilla 1.8, the first time that a page is displayed, regardless of
+	 * whether it's via Browser.setURL() or Browser.setText(), the GRE navigates
+	 * to about:blank and fires the corresponding navigation events.  Do not send
 	 * this event on the user since it is not expected.
 	 */
-	if (IsXULRunner && aRequest == 0 && url.equals (ABOUT_BLANK)) return XPCOM.NS_OK;
+	if (Is_1_8 && aRequest == 0 && url.equals (ABOUT_BLANK)) return XPCOM.NS_OK;
 
 	LocationEvent event = new LocationEvent (browser);
 	event.display = browser.getDisplay ();
