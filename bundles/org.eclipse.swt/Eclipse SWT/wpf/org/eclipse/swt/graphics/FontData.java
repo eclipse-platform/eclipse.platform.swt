@@ -185,7 +185,8 @@ public FontData(String string) {
 	end = string.indexOf('|', start);
 	if (end == -1) return;
 	String version2 = string.substring(start, end);
-
+	
+	stretch = OS.FontStretch_ToOpenTypeStretch(OS.FontStretches_Normal);
 	if (platform.equals("WPF") && version2.equals("1")) {
 		try {
 			start = end + 1;
