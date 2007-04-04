@@ -392,7 +392,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		}
 	}
 	Point size = null;
-	int x = 0, gridWidth = linesVisible ? GRID_WIDTH : 0;
+	int x = 0; //, gridWidth = linesVisible ? GRID_WIDTH : 0;
 	for (int i=0; i<Math.max (1, count); i++) {
 		int index = order == null ? i : order [i], width = nmcd.right - nmcd.left;
 		if (count > 0 && hwndHeader != 0) {
@@ -517,7 +517,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			} else {
 				selectionForeground = -1;
 				ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = false;
-				OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom - gridWidth);
+				OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom /*- gridWidth*/);
 				backgroundRect = rect;
 			}
 			int clrText = -1, clrTextBk = -1;
@@ -727,6 +727,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						if (images != null) image = images [index];
 					}
 					int inset = i != 0 ? INSET : 0;
+					int offset = i != 0 ? INSET : INSET + 2;
 					if (image != null) {
 						Rectangle bounds = image.getBounds ();
 						if (size == null) size = getImageSize ();
@@ -743,12 +744,15 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 							gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left, y, size.x, size.y);
 							gc.dispose ();
 						}
-						int offset = i != 0 ? INSET : INSET + 2;
 						OS.SetRect (rect, rect.left + size.x + offset, rect.top, rect.right - inset, rect.bottom);
 					} else {
-						if (i == 0 && OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
-							if (size == null) size = getImageSize ();
-							rect.left = Math.min (rect.left + size.x, rect.right);
+						if (i == 0) {
+							if (OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
+								if (size == null) size = getImageSize ();
+								rect.left = Math.min (rect.left + size.x, rect.right);
+							}
+						} else {
+							OS.SetRect (rect, rect.left + offset, rect.top, rect.right - inset, rect.bottom);
 						}
 					}
 				}
