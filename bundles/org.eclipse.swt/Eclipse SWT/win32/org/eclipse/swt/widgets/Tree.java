@@ -4829,23 +4829,22 @@ public void showSelection () {
 }
 
 void sort (int hParent, boolean all) {
-	if (sortDirection == SWT.NONE) return;
 	int itemCount = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
-	if (itemCount == 0) return;
+	if (itemCount == 0 || itemCount == 1) return;
 	hFirstIndexOf = hLastIndexOf = 0;
 	itemCount = -1;
-	if (sortDirection == SWT.UP) {
+	if (sortDirection == SWT.UP || sortDirection == SWT.NONE) {
 		OS.SendMessage (handle, OS.TVM_SORTCHILDREN, all ? 1 : 0, hParent);
-		return;
+	} else {
+		Callback compareCallback = new Callback (this, "CompareFunc", 3);
+		int lpfnCompare = compareCallback.getAddress ();
+		TVSORTCB psort = new TVSORTCB ();
+		psort.hParent = hParent;
+		psort.lpfnCompare = lpfnCompare;
+		psort.lParam = sortColumn == null ? 0 : indexOf (sortColumn);
+		OS.SendMessage (handle, OS.TVM_SORTCHILDRENCB, all ? 1 : 0, psort);
+		compareCallback.dispose ();
 	}
-	Callback compareCallback = new Callback (this, "CompareFunc", 3);
-	int lpfnCompare = compareCallback.getAddress ();
-	TVSORTCB psort = new TVSORTCB ();
-	psort.hParent = hParent;
-	psort.lpfnCompare = lpfnCompare;
-	psort.lParam = sortColumn == null ? 0 : indexOf (sortColumn);
-	OS.SendMessage (handle, OS.TVM_SORTCHILDRENCB, all ? 1 : 0, psort);
-	compareCallback.dispose ();
 }
 
 void subclass () {

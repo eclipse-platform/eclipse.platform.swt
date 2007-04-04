@@ -4735,15 +4735,14 @@ public void showSelection () {
 
 /*public*/ void sort () {
 	checkWidget ();
-	if ((style & SWT.VIRTUAL) != 0) return;
-	if (sortDirection == SWT.NONE) return;
+//	if ((style & SWT.VIRTUAL) != 0) return;
 //	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-//	if (itemCount == 0) return;
+//	if (itemCount == 0 || itemCount == 1) return;
 //	Comparator comparator = new Comparator () {
 //		int index = sortColumn == null ? 0 : indexOf (sortColumn);
 //		public int compare (Object object1, Object object2) {
 //			TableItem item1 = (TableItem) object1, item2 = (TableItem) object2;
-//			if (sortDirection == SWT.UP) {
+//			if (sortDirection == SWT.UP || sortDirection == SWT.NONE) {
 //				return item1.getText (index).compareTo (item2.getText (index));
 //			} else {
 //				return item2.getText (index).compareTo (item1.getText (index));
