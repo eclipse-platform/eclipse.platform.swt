@@ -44,12 +44,13 @@ public static void main(String[] args) {
 	comp.addControlListener(new ControlAdapter() {
 		public void controlResized(ControlEvent e) {
 			Rectangle area = comp.getClientArea();
-			Point preferredSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-			int width = area.width - 2*table.getBorderWidth();
-			if (preferredSize.y > area.height + table.getHeaderHeight()) {
+			Point size = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			ScrollBar vBar = table.getVerticalBar();
+			int width = area.width - table.computeTrim(0,0,0,0).width - vBar.getSize().x;
+			if (size.y > area.height + table.getHeaderHeight()) {
 				// Subtract the scrollbar width from the total column width
 				// if a vertical scrollbar will be required
-				Point vBarSize = table.getVerticalBar().getSize();
+				Point vBarSize = vBar.getSize();
 				width -= vBarSize.x;
 			}
 			Point oldSize = table.getSize();
