@@ -563,6 +563,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	if (width < 0) return;
 	/*
 	* Feature in the Macintosh. The data browser widget adds the left inset
 	* of the disclosure column to the specified width making the column too

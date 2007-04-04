@@ -552,6 +552,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	if (width < 0) return;
 	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
 	updateHeader ();
 	if (width != lastWidth) resized (width);

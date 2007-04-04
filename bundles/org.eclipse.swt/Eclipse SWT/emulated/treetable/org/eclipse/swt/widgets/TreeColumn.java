@@ -691,7 +691,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int value) {
 	checkWidget ();
-	value = Math.max (value, 0);
+	if (width < 0) return;
 	if (width == value) return;							/* same value */
 	parent.updateColumnWidth (this, value);
 }

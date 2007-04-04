@@ -829,6 +829,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	if (width < 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int hwnd = parent.handle;

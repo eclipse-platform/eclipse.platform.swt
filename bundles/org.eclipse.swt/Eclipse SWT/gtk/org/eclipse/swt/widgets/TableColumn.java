@@ -644,6 +644,7 @@ void setToolTipText (Shell shell, String newString) {
  */
 public void setWidth (int width) {
 	checkWidget();
+	if (width < 0) return;
 	if (width == lastWidth) return;
 	if (width > 0) {
 		useFixedWidth = true;
