@@ -23,12 +23,13 @@ set path=%JAVA_HOME%;%path%
 rem ********
 rem MSVC 6.0
 rem ********
-call k:\dev\products\msvc60\vc98\bin\vcvars32.bat
+set DEV_TOOLS=K:\dev\PRODUCTS
+call %DEV_TOOLS%\msvc60\vc98\bin\vcvars32.bat
 
 rem ****** 
 rem MS-SDK
 rem ******
-set Mssdk=K:\dev\PRODUCTS\PLATSDK\feb2003
+set Mssdk=%DEV_TOOLS%\PLATSDK\feb2003
 call %mssdk%\setenv.bat
 
 rem ********* 
