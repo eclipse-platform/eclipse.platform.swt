@@ -399,8 +399,8 @@ int /*long*/ gtk_activate (int /*long*/ widget) {
 	* Bug in GTK.  When an ancestor menu is disabled and
 	* the user types an accelerator key, GTK delivers the
 	* the activate signal even though the menu item cannot
-	* be invoked using the mouse.  The fix is to ignore activate
-	* signals when an ancestor menu is disabled.
+	* be invoked using the mouse.  The fix is to ignore
+	* activate signals when an ancestor menu is disabled.
 	*/
 	if (!isEnabled ()) return 0;
 	Event event = new Event ();
