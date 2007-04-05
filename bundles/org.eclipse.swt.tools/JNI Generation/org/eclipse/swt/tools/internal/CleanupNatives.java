@@ -18,37 +18,6 @@ public class CleanupNatives extends CleanupClass {
 public CleanupNatives() {
 }
 
-String[] getArgNames(Method method) {
-	int n_args = method.getParameterTypes().length;
-	if (n_args == 0) return new String[0];
-	String name = method.getName();
-	String params = "";
-	int index = 0;
-	while (true) {
-		index = classSource.indexOf(name, index + 1);
-		if (!Character.isWhitespace(classSource.charAt(index - 1))) continue;
-		if (index == -1) return null;
-		int parantesesStart = classSource.indexOf("(", index);
-		if (classSource.substring(index + name.length(), parantesesStart).trim().length() == 0) {
-			int parantesesEnd = classSource.indexOf(")", parantesesStart);
- 			params = classSource.substring(parantesesStart + 1, parantesesEnd);
- 			break;
-		}
-	}
-	String[] names = new String[n_args];
-	StringTokenizer tk = new StringTokenizer(params, ",");
-	for (int i = 0; i < names.length; i++) {
-		String s = tk.nextToken().trim();
-		StringTokenizer tk1 = new StringTokenizer(s, " ");
-		String s1 = null;
-		while (tk1.hasMoreTokens()) {
-			s1 = tk1.nextToken();
-		}
-		names[i] = s1.trim();
-	}
-	return names;	
-}
-
 public void generate(Class clazz) {
 	unusedCount = usedCount = 0;
 	super.generate(clazz);
