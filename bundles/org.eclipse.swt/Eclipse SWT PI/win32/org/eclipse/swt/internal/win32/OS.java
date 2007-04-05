@@ -2137,6 +2137,15 @@ public static final native int WNDCLASS_sizeof ();
 
 /** Ansi/Unicode wrappers */
 
+public static final int /*long*/ AddFontResourceEx (TCHAR lpszFilename, int fl, int /*long*/ pdv) {
+	if (IsUnicode) {
+		char [] lpszFilename1 = lpszFilename == null ? null : lpszFilename.chars;
+		return AddFontResourceExW (lpszFilename1, fl, pdv);
+	}
+	byte [] lpszFilename1 = lpszFilename == null ? null : lpszFilename.bytes;
+	return AddFontResourceExA (lpszFilename1, fl, pdv);
+}
+
 public static final int /*long*/ CallWindowProc (int /*long*/ lpPrevWndFunc, int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (IsUnicode) return CallWindowProcW (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 	return CallWindowProcA (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
@@ -3090,6 +3099,7 @@ public static final native int AbortDoc (int /*long*/ hdc);
 public static final native boolean ActivateActCtx (int /*long*/ hActCtx, int /*long*/ [] lpCookie);
 public static final native int /*long*/ ActivateKeyboardLayout(int /*long*/ hkl, int Flags);
 public static final native int AddFontResourceExW(char[] lpszFilename, int fl, int /*long*/ pdv);
+public static final native int AddFontResourceExA(byte[] lpszFilename, int fl, int /*long*/ pdv);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
 public static final native boolean AlphaBlend(int /*long*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int /*long*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
 public static final native boolean AnimateWindow(int /*long*/ hwnd, int dwTime, int dwFlags);
@@ -3626,7 +3636,6 @@ public static final native int RegQueryValueExA (int /*long*/ hKey, byte[] lpVal
 public static final native int RegQueryValueExA (int /*long*/ hKey, byte[] lpValueName, int /*long*/ lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
 public static final native boolean ReleaseCapture ();
 public static final native int ReleaseDC (int /*long*/ hWnd, int /*long*/ hDC);
-public static final native boolean RemoveFontResourceExW(char[] lpszFilename, int fl, int /*long*/ pdv);
 public static final native boolean RemoveMenu (int /*long*/ hMenu, int uPosition, int uFlags);
 public static final native int /*long*/ RemovePropA (int /*long*/ hWnd, int /*long*/ lpString);
 public static final native int /*long*/ RemovePropW (int /*long*/ hWnd, int /*long*/ lpString);

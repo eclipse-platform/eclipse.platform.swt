@@ -773,10 +773,11 @@ public boolean isDisposed () {
 public boolean loadFont (String path) {
 	checkDevice();
 	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int length = path.length ();
-	char[] buffer = new char [length + 1];
-	path.getChars (0, length, buffer, 0);
-	return OS.AddFontResourceExW (buffer, OS.FR_PRIVATE, 0) != 0;
+	if (OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		TCHAR lpszFilename = new TCHAR (0, path, true);
+		return OS.AddFontResourceEx (lpszFilename, OS.FR_PRIVATE, 0) != 0;
+	}
+	return false;
 }
 
 void new_Object (Object object) {

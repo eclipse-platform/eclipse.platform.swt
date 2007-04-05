@@ -10,6 +10,8 @@
  *******************************************************************************/
 
 /* Libraries for dynamic loaded functions */
+#define AddFontResourceExA_LIB "gdi32.dll"
+#define AddFontResourceExW_LIB "gdi32.dll"
 #define ActivateActCtx_LIB "kernel32.dll"
 #define AlphaBlend_LIB "msimg32.dll"
 #define AnimateWindow_LIB "user32.dll"
@@ -63,5 +65,3 @@
 #define SetProcessDPIAware_LIB "user32.dll"
 #define SetWindowTheme_LIB "uxtheme.dll"
 #define TransparentBlt_LIB "msimg32.dll"
-#define AddFontResourceExW_LIB "gdi32.dll"
-#define RemoveFontResourceExW_LIB "gdi32.dll"
