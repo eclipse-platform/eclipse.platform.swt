@@ -1442,6 +1442,7 @@ public static final native int HIComboBoxCreate(CGRect boundsRect, int text, Con
 public static final native int HIComboBoxGetItemCount(int inComboBox);
 public static final native int HIComboBoxInsertTextItemAtIndex(int inComboBox, int inIndex, int inText);
 public static final native int HIComboBoxRemoveItemAtIndex(int inComboBox, int inIndex);
+public static final native int HIComboBoxSetListVisible (int inComboBox, boolean inVisible);
 public static final native int HICopyAccessibilityRoleDescription(int inRole, int inSubrole);
 public static final native int HIObjectCopyClassID(int inObject);
 public static final native int HIObjectCreate(int inClassID, int inConstructData, int[] outObject);

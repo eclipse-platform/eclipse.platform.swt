@@ -503,6 +503,7 @@ typedef enum {
 	HIComboBoxGetItemCount_FUNC,
 	HIComboBoxInsertTextItemAtIndex_FUNC,
 	HIComboBoxRemoveItemAtIndex_FUNC,
+	HIComboBoxSetListVisible_FUNC,
 	HICopyAccessibilityRoleDescription_FUNC,
 	HICreateTransformedCGImage_FUNC,
 	HIObjectCopyClassID_FUNC,

@@ -10,16 +10,17 @@
  *******************************************************************************/
 
 /* Libraries for dynamic loaded functions */
+#define CGBitmapContextCreateImage_LIB "com.apple.Carbon"
 #define CGImageCreateWithImageInRect_LIB "com.apple.Carbon"
 #define DataBrowserChangeAttributes_LIB "com.apple.Carbon"
 #define DataBrowserGetAttributes_LIB "com.apple.Carbon"
 #define DataBrowserGetMetric_LIB "com.apple.Carbon"
 #define DataBrowserSetMetric_LIB "com.apple.Carbon"
 #define GetIconRefFromIconFamilyPtr_LIB "com.apple.Carbon"
+#define HIComboBoxSetListVisible_LIB "com.apple.Carbon"
 #define HICreateTransformedCGImage_LIB "com.apple.Carbon"
 #define HIThemeSetFill_LIB "com.apple.Carbon"
 #define HIThemeSetTextFill_LIB "com.apple.Carbon"
-#define NavDialogSetFilterTypeIdentifiers_LIB "com.apple.Carbon"
 #define LSCopyAllRoleHandlersForContentType_LIB "com.apple.Carbon"
 #define LSOpenItemsWithRole_LIB "com.apple.Carbon"
-#define CGBitmapContextCreateImage_LIB "com.apple.Carbon"
+#define NavDialogSetFilterTypeIdentifiers_LIB "com.apple.Carbon"

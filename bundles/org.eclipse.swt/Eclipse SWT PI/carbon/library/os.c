@@ -6934,6 +6934,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIComboBoxRemoveItemAtIndex)
 }
 #endif
 
+#ifndef NO_HIComboBoxSetListVisible
+JNIEXPORT jint JNICALL OS_NATIVE(HIComboBoxSetListVisible)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIComboBoxSetListVisible_FUNC);
+/*
+	rc = (jint)HIComboBoxSetListVisible((HIViewRef)arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(HIViewRef, jboolean);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(HIComboBoxSetListVisible_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("HIComboBoxSetListVisible"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((HIViewRef)arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, HIComboBoxSetListVisible_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HICopyAccessibilityRoleDescription
 JNIEXPORT jint JNICALL OS_NATIVE(HICopyAccessibilityRoleDescription)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
