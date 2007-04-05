@@ -463,12 +463,12 @@ void createHandle () {
 		OS.CreatePopupButtonControl(window, null, 0, (short)-12345, false, (short)0, (short)0, 0, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
-		int[] menuRef= new int[1];
-		OS.CreateNewMenu ((short)0, 0, menuRef);
+		int[] menuRef= new int [1];
+		OS.CreateNewMenu ((short) 0, 0, menuRef);
 		if (menuRef [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		menuHandle = menuRef[0];
-		OS.SetControlPopupMenuHandle(handle, menuHandle);
-		OS.SetControl32BitMaximum(handle, 0x7FFF);
+		OS.SetControlPopupMenuHandle (handle, menuHandle);
+		OS.SetControl32BitMaximum (handle, 0x7FFF);
 	} else {
 		int [] outControl = new int [1];
 		CGRect rect = new CGRect ();
@@ -1487,6 +1487,15 @@ public void setItems (String [] items) {
 		}
 		OS.CFRelease(ptr);
 		if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+}
+
+/*public*/ void setListVisible (boolean visible) {
+	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		//TODO - show the menu in the right place
+	} else {
+		OS.HIComboBoxSetListVisible (handle, visible);
 	}
 }
 
