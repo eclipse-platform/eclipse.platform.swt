@@ -66,6 +66,7 @@ class Mozilla extends WebBrowser {
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String PREFERENCE_DISABLEOPENDURINGLOAD = "dom.disable_open_during_load"; //$NON-NLS-1$
+	static final String PREFERENCE_DISABLEWINDOWSTATUSCHANGE = "dom.disable_window_status_change"; //$NON-NLS-1$
 	static final String PREFERENCE_LANGUAGES = "intl.accept_languages"; //$NON-NLS-1$
 	static final String PREFERENCE_CHARSET = "intl.charset.default"; //$NON-NLS-1$
 	static final String SEPARATOR_LOCALE = "-"; //$NON-NLS-1$
@@ -770,6 +771,15 @@ public void create (Composite parent, int style) {
 			browser.dispose ();
 			error (rc);
 		}
+
+		/* Ensure that the status text can be set through means like javascript */ 
+		buffer = MozillaDelegate.wcsToMbcs (null, PREFERENCE_DISABLEWINDOWSTATUSCHANGE, true);
+		rc = prefBranch.SetBoolPref (buffer, 0);
+		if (rc != XPCOM.NS_OK) {
+			browser.dispose ();
+			error (rc);
+		}
+
 		prefBranch.Release ();
 
 		PromptServiceFactory factory = new PromptServiceFactory ();
