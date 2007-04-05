@@ -94,7 +94,18 @@ public MethodData getMetaData(Method method) {
 			key = className + "_" + JNIGenerator.getFunctionName(method, paramTypes);
 			value = getMetaData(key, null);
 		}
-	}	
+	}
+	/*
+	* Support for lock.
+	*/
+	if (value == null && method.getName().startsWith("_")) {
+		key = className + "_" + JNIGenerator.getFunctionName(method).substring(2);
+		value = getMetaData(key, null);
+		if (value == null) {
+			key = className + "_" + method.getName().substring(1);
+			value = getMetaData(key, null);
+		}
+	}
 	if (value == null) value = "";	
 	return new MethodData(method, value);
 }
@@ -106,7 +117,7 @@ public ParameterData getMetaData(Method method, int parameter) {
 	if (value == null) {
 		key = className + "_" + method.getName() + "_" + parameter;
 		value = getMetaData(key, null);
-	}	
+	}
 	/*
 	* Support for 64 bit port.
 	*/
@@ -116,7 +127,18 @@ public ParameterData getMetaData(Method method, int parameter) {
 			key = className + "_" + JNIGenerator.getFunctionName(method, paramTypes) + "_" + parameter;
 			value = getMetaData(key, null);
 		}
-	}	
+	}
+	/*
+	* Support for lock.
+	*/
+	if (value == null && method.getName().startsWith("_")) {
+		key = className + "_" + JNIGenerator.getFunctionName(method).substring(2) + "_" + parameter;
+		value = getMetaData(key, null);
+		if (value == null) {
+			key = className + "_" + method.getName().substring(1) + "_" + parameter;
+			value = getMetaData(key, null);
+		}
+	}
 	if (value == null) value = "";	
 	return new ParameterData(method, parameter, value);
 }
