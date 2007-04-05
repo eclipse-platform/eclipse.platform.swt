@@ -391,8 +391,8 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			}
 		}
 	}
+	int x = 0;
 	Point size = null;
-	int x = 0; //, gridWidth = linesVisible ? GRID_WIDTH : 0;
 	for (int i=0; i<Math.max (1, count); i++) {
 		int index = order == null ? i : order [i], width = nmcd.right - nmcd.left;
 		if (count > 0 && hwndHeader != 0) {
@@ -517,7 +517,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			} else {
 				selectionForeground = -1;
 				ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = false;
-				OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom /*- gridWidth*/);
+				OS.SetRect (rect, x, nmcd.top, x + width, nmcd.bottom);
 				backgroundRect = rect;
 			}
 			int clrText = -1, clrTextBk = -1;
