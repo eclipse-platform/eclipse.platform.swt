@@ -13,6 +13,6 @@ package org.eclipse.swt.internal.photon;
 public class PtWebDataReqCallback_t {
 	public int type;
 	public int length;
-	public byte[] url = new byte[OS.MAX_URL_LENGTH];
-	public static final int sizeof = OS.MAX_URL_LENGTH + 8;
+	public int url;
+	public static final int sizeof = 12;
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -3521,16 +3521,17 @@ fail:
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I)
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PtWebClient2Data_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PtWebClient2Data_1t_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
-	PtWebClientData_t _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I_FUNC);
-	if (arg1) if ((lparg1 = getPtWebClientData_tFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	PtWebClient2Data_t _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_photon_PtWebClient2Data_1t_2I_FUNC);
+	if (arg1) if ((lparg1 = getPtWebClient2Data_tFields(env, arg1, &_arg1)) == NULL) goto fail;
+	memmove(arg0, lparg1, arg2);
 fail:
-	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I_FUNC);
+	if (arg1 && lparg1) setPtWebClient2Data_tFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_photon_PtWebClient2Data_1t_2I_FUNC);
 }
 #endif
 

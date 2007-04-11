@@ -825,7 +825,7 @@ public static final native void memmove(PtWebStatusCallback_t dest, int src, int
 public static final native void memmove(PtWebDataReqCallback_t dest, int src, int size);
 public static final native void memmove(PtWebWindowCallback_t dest, int src, int size);
 public static final native void memmove(PtWebMetaDataCallback_t dest, int src, int size);
-public static final native void memmove(int dest, PtWebClientData_t src, int size);
+public static final native void memmove(int dest, PtWebClient2Data_t src, int size);
 public static final native int strdup(int string);
 public static final native int uname(utsname udata);
 

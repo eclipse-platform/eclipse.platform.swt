@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -271,7 +271,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__ILorg_eclipse_swt_internal_photon_PhRect_1t_2I",
 	"memmove__ILorg_eclipse_swt_internal_photon_PhTile_1t_2I",
 	"memmove__ILorg_eclipse_swt_internal_photon_PtTextCallback_1t_2I",
-	"memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I",
+	"memmove__ILorg_eclipse_swt_internal_photon_PtWebClient2Data_1t_2I",
 	"memmove__Lorg_eclipse_swt_internal_photon_FontDetails_2II",
 	"memmove__Lorg_eclipse_swt_internal_photon_PgAlpha_1t_2II",
 	"memmove__Lorg_eclipse_swt_internal_photon_PgMap_1t_2II",

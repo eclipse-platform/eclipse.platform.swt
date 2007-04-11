@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.photon;
 
-public class PtWebClientData_t {
+public class PtWebClient2Data_t {
 	public int type;
-	public byte[] url = new byte[OS.MAX_URL_LENGTH];
+	public int url;
 	public int length;
 	public int data;
-	public static final int sizeof = OS.MAX_URL_LENGTH + 12;
+	public static final int sizeof = 16;
 }

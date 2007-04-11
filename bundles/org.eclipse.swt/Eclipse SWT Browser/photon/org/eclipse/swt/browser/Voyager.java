@@ -241,7 +241,7 @@ int Pt_CB_WEB_DATA_REQ(int info) {
 	OS.memmove(cbinfo_t, info, PtCallbackInfo_t.sizeof);
 	PtWebDataReqCallback_t dataReq = new PtWebDataReqCallback_t();
 	OS.memmove(dataReq, cbinfo_t.cbdata, PtWebDataReqCallback_t.sizeof);
-	PtWebClientData_t clientData = new PtWebClientData_t();
+	PtWebClient2Data_t clientData = new PtWebClient2Data_t();
 	clientData.type = dataReq.type;
 	clientData.data = 0;
 	String data = null;
@@ -276,9 +276,9 @@ int Pt_CB_WEB_DATA_REQ(int info) {
 		OS.memmove(clientData.data, buffer, buffer.length);
 		clientData.length = buffer.length - 1;
 	}
-	System.arraycopy(dataReq.url, 0, clientData.url, 0, dataReq.url.length);
-	int ptr = OS.malloc(PtWebClientData_t.sizeof);
-	OS.memmove(ptr, clientData, PtWebClientData_t.sizeof);
+	dataReq.url = clientData.url;
+	int ptr = OS.malloc(PtWebClient2Data_t.sizeof);
+	OS.memmove(ptr, clientData, PtWebClient2Data_t.sizeof);
 	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_DATA, clientData.data, ptr);
 	OS.free(ptr);
 	if (clientData.data != 0) OS.free(clientData.data);
