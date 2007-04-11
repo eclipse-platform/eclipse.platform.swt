@@ -402,14 +402,15 @@ int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int p
 	*/
 	int policy = IE.URLPOLICY_ALLOW;
 	/*
-	* Note. The URLACTION_JAVA flags refer to the applet tag that normally resolve to
-	* the Microsoft VM, not to the java OBJECT tag that resolves to the
-	* Sun plugin. Return URLPOLICY_JAVA_LOW to authorize applets instead of
-	* URLPOLICY_ALLOW that is interpreted as URLPOLICY_JAVA_PROHIBIT in this
-	* context. 
+	* The URLACTION_JAVA flags refer to the <applet> tag, which resolves to
+	* the Microsoft VM if the applet is java 1.1.x compliant, or to the OS's
+	* java plug-in VM otherwise.  Applets launched with the MS VM work in the
+	* Browser, but applets launched with the OS's java plug-in VM crash as a
+	* result of the VM failing to load.  Set the policy to URLPOLICY_JAVA_PROHIBIT
+	* so that applets compiled with java compliance > 1.1.x will not crash. 
 	*/
 	if (dwAction >= IE.URLACTION_JAVA_MIN && dwAction <= IE.URLACTION_JAVA_MAX) {
-		policy = IE.URLPOLICY_JAVA_LOW;
+		policy = IE.URLPOLICY_JAVA_PROHIBIT;
 	}
 	/*
 	* Note.  Some ActiveX plugins crash when executing
@@ -426,7 +427,7 @@ int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int p
 		}
 	}
 	if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {policy}, 4);
-	return COM.S_OK;
+	return policy == IE.URLPOLICY_ALLOW ? COM.S_OK : COM.S_FALSE;
 }
 
 int QueryCustomPolicy(int pwszUrl, int guidKey, int ppPolicy, int pcbPolicy, int pContext, int cbContext, int dwReserved) {
