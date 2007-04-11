@@ -407,8 +407,6 @@ public void setPageIncrement (int value) {
 	OS.RangeBase_LargeChange (handle, value);
 }
 
-
-
 /**
  * Sets the 'selection', which is the receiver's
  * value, to the argument which must be greater than or equal
