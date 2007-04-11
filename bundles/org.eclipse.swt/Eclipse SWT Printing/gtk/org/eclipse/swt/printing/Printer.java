@@ -58,6 +58,7 @@ public final class Printer extends Device {
 	byte [] settingsData;
 	int start, end;
 
+	static final String GTK_LPR_BACKEND = "GtkPrintBackendLpr"; //$NON-NLS-1$
 
 /**
  * Returns an array of <code>PrinterData</code> objects
@@ -84,6 +85,15 @@ static int /*long*/ GtkPrinterFunc_List (int /*long*/ printer, int /*long*/ user
 	System.arraycopy (printerList, 0, newList, 0, length);
 	printerList = newList;
 	printerList [length] = printerDataFromGtkPrinter(printer);
+	/*
+	* Bug in GTK. While performing a gtk_enumerate_printers(), GTK finds all of the 
+	* available printers from each backend and can hang. If a backend requires more 
+	* time to gather printer info, GTK will start an event loop waiting for a done 
+    * signal before continuing. For the Lpr backend, GTK does not send a done signal
+    * which means the event loop never ends. The fix is to check to see if the driver
+    * is of type Lpr, and stop the enumeration, which exits the event loop.
+	*/
+	if (printerList[length].driver.equals (GTK_LPR_BACKEND)) return 1;
 	return 0;
 }
 
