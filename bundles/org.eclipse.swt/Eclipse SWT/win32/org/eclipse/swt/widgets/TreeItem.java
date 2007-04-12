@@ -473,7 +473,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 			return new RECT ();
 		}
 		rect.left = headerRect.left;
-		if (fullText) {
+		if (fullText && getImage) {
 			rect.right = headerRect.right;
 		} else {
 			rect.right = headerRect.left;
@@ -888,6 +888,30 @@ public String getText (int index) {
 		}
 	}
 	return "";
+}
+
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * tree.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ Rectangle getTextBounds (int index) {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	RECT rect = getBounds (index, true, false, true);
+	rect.left = Math.min (rect.left + (index == 0 ? Tree.INSET : 0), rect.right);
+	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	return new Rectangle (rect.left, rect.top, width, height);
 }
 
 /**

@@ -606,6 +606,33 @@ public String getText (int index) {
 	return "";
 }
 
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * table.  An empty rectangle is returned if index exceeds
+ * the index of the table's last column.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
+/*public*/ Rectangle getTextBounds (int index) {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+	RECT rect = getBounds (itemIndex, index, true, false, true);
+	rect.left = Math.min (rect.left + 2 + (index != 0 ? Table.INSET : 0), rect.right);
+	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	return new Rectangle (rect.left, rect.top, width, height);
+}
+
 void redraw () {
 	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
