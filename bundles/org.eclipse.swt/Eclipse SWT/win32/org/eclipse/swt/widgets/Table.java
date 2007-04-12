@@ -3002,16 +3002,15 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
 			if (OS.GetFocus () == handle) {
 				drawSelected = true;
-				if (explorerTheme) {
-					data.foreground = clrText != -1 ? clrText : getForegroundPixel ();
-				} else {
-					data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-				}
+				data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 			} else {
 				drawSelected = (style & SWT.HIDE_SELECTION) == 0;
 				data.foreground = OS.GetTextColor (hDC);
 				data.background = clrSelectionBk = OS.GetSysColor (OS.COLOR_3DFACE);
+			}
+			if (explorerTheme) {
+				data.foreground = clrText != -1 ? clrText : getForegroundPixel ();
 			}
 		} else {
 			drawBackground = clrTextBk != -1;
@@ -3309,19 +3308,18 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 				if (selectionForeground != -1) {
 					data.foreground = selectionForeground;
 				} else {
-					if (explorerTheme) {
-						int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
-						if (clrText == -1) clrText = item.foreground;
-						data.foreground = clrText != -1 ? clrText : getForegroundPixel ();
-					} else {
-						data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
-					}
+					data.foreground = OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
 				}
 				data.background = OS.GetSysColor (OS.COLOR_HIGHLIGHT);
 			} else {
 				drawSelected = (style & SWT.HIDE_SELECTION) == 0;
 				data.foreground = OS.GetTextColor (hDC);
 				data.background = OS.GetSysColor (OS.COLOR_3DFACE);
+			}
+			if (explorerTheme && selectionForeground == -1) {
+				int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
+				if (clrText == -1) clrText = item.foreground;
+				data.foreground = clrText != -1 ? clrText : getForegroundPixel ();
 			}
 		} else {
 			int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
