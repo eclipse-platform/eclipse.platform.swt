@@ -375,7 +375,7 @@ public void create (Composite parent, int style) {
 					method.invoke (mozilla, new Object[0]);
 				} catch (InvocationTargetException e) {
 					/* indicates that JavaXPCOM has not been initialized yet */
-					method = clazz.getMethod ("initialize", new Class[] {Class.forName ("java.io.File")}); //$NON-NLS-1$ //$NON-NLS-2$
+					method = clazz.getMethod ("initialize", new Class[] {File.class}); //$NON-NLS-1$
 					method.invoke (mozilla, new Object[] {new File (mozillaPath)});
 				}
 			} catch (ClassNotFoundException e) {
@@ -1262,7 +1262,7 @@ public Object getWebBrowser () {
 		Class clazz = Class.forName ("org.mozilla.xpcom.Mozilla"); //$NON-NLS-1$
 		Method method = clazz.getMethod ("getInstance", new Class[0]); //$NON-NLS-1$
 		Object mozilla = method.invoke (null, new Object[0]);
-		method = clazz.getMethod ("wrapXPCOMObject", new Class[] {Long.TYPE, Class.forName ("java.lang.String")}); //$NON-NLS-1$ //$NON-NLS-2$
+		method = clazz.getMethod ("wrapXPCOMObject", new Class[] {Long.TYPE, String.class}); //$NON-NLS-1$
 		webBrowserObject = method.invoke (mozilla, new Object[] {new Long (webBrowser.getAddress ()), nsIWebBrowser.NS_IWEBBROWSER_IID_STR});
 		return webBrowserObject;
 	} catch (ClassNotFoundException e) {
