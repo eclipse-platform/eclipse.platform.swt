@@ -1358,7 +1358,9 @@ void updateCheckState (boolean notify) {
 		} else {
 			row = OS.HeaderedItemsControl_Header (handle);
 		}
+		parent.ignoreSelection = true;
 		OS.SWTRow_NotifyPropertyChanged (row, Table.CHECK_NOTIFY);
+		parent.ignoreSelection = false;
 		OS.GCHandle_Free (row);
 	}
 }

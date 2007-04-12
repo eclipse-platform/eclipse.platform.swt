@@ -1261,6 +1261,13 @@ boolean hasItems () {
 
 void HandleChecked (int sender, int e) {
 	if (!checkEvent (e)) return;
+	if (ignoreSelection) return;
+	int origsource = OS.RoutedEventArgs_OriginalSource (e);
+	int typeid = OS.CheckBox_typeid ();
+	boolean isCheckBox = OS.Type_IsInstanceOfType (typeid, origsource);
+	OS.GCHandle_Free (typeid);
+	OS.GCHandle_Free (origsource);
+	if (!isCheckBox) return;
 	int source = OS.RoutedEventArgs_Source (e);
 	TreeItem item = (TreeItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
