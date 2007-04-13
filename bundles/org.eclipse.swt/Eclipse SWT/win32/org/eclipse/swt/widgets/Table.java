@@ -577,9 +577,6 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		* color draws on top of the background color for an item.  The fix
 		* is to clear the sort column in CDDS_SUBITEMPREPAINT, and reset it
 		* in CDDS_SUBITEMPOSTPAINT.
-		* 
-		* NOTE:  This work around relies on the fact that LVM_SETSELECTEDCOLUMN
-		* does not cause a redraw.
 		*/
 		if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
 			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
@@ -587,7 +584,17 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					int oldColumn = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
 					if (oldColumn == -1) {
 						int newColumn = indexOf (sortColumn);
+						int result = 0, rgn = 0;
+						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+							rgn = OS.CreateRectRgn (0, 0, 0, 0);
+							result = OS.GetUpdateRgn (handle, rgn, true);
+						}
 						OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
+						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+							OS.ValidateRect (handle, null);
+							if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
+							OS.DeleteObject (rgn);
+						}
 					}
 				}
 			}
@@ -738,14 +745,21 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		* color draws on top of the background color for an item.  The fix
 		* is to clear the sort column in CDDS_SUBITEMPREPAINT, and reset it
 		* in CDDS_SUBITEMPOSTPAINT.
-		* 
-		* NOTE:  This work around relies on the fact that LVM_SETSELECTEDCOLUMN
-		* does not cause a redraw.
 		*/
 		if (clrTextBk != -1) {
 			int oldColumn = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
 			if (oldColumn != -1 && oldColumn == nmcd.iSubItem) {
+				int result = 0, rgn = 0;
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					rgn = OS.CreateRectRgn (0, 0, 0, 0);
+					result = OS.GetUpdateRgn (handle, rgn, true);
+				}
 				OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, -1, 0);
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+					OS.ValidateRect (handle, null);
+					if (result != OS.NULLREGION) OS.InvalidateRgn (handle, rgn, true);
+					OS.DeleteObject (rgn);
+				}
 				code |= OS.CDRF_NOTIFYPOSTPAINT;
 			}
 		}
