@@ -557,24 +557,24 @@ String getLastErrorText () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-	int pixel = 0x02000000;
+	int pixel = 0x00000000;
 	switch (id) {
-		case SWT.COLOR_WHITE:				pixel = 0x02FFFFFF;  break;
-		case SWT.COLOR_BLACK:				pixel = 0x02000000;  break;
-		case SWT.COLOR_RED:					pixel = 0x020000FF;  break;
-		case SWT.COLOR_DARK_RED:			pixel = 0x02000080;  break;
-		case SWT.COLOR_GREEN:				pixel = 0x0200FF00;  break;
-		case SWT.COLOR_DARK_GREEN:			pixel = 0x02008000;  break;
-		case SWT.COLOR_YELLOW:				pixel = 0x0200FFFF;  break;
-		case SWT.COLOR_DARK_YELLOW:			pixel = 0x02008080;  break;
-		case SWT.COLOR_BLUE:				pixel = 0x02FF0000;  break;
-		case SWT.COLOR_DARK_BLUE:			pixel = 0x02800000;  break;
-		case SWT.COLOR_MAGENTA:				pixel = 0x02FF00FF;  break;
-		case SWT.COLOR_DARK_MAGENTA:		pixel = 0x02800080;  break;
-		case SWT.COLOR_CYAN:				pixel = 0x02FFFF00;  break;
-		case SWT.COLOR_DARK_CYAN:			pixel = 0x02808000;  break;
-		case SWT.COLOR_GRAY:				pixel = 0x02C0C0C0;  break;
-		case SWT.COLOR_DARK_GRAY:			pixel = 0x02808080;  break;
+		case SWT.COLOR_WHITE:				pixel = 0x00FFFFFF;  break;
+		case SWT.COLOR_BLACK:				pixel = 0x00000000;  break;
+		case SWT.COLOR_RED:					pixel = 0x000000FF;  break;
+		case SWT.COLOR_DARK_RED:			pixel = 0x00000080;  break;
+		case SWT.COLOR_GREEN:				pixel = 0x0000FF00;  break;
+		case SWT.COLOR_DARK_GREEN:			pixel = 0x00008000;  break;
+		case SWT.COLOR_YELLOW:				pixel = 0x0000FFFF;  break;
+		case SWT.COLOR_DARK_YELLOW:			pixel = 0x00008080;  break;
+		case SWT.COLOR_BLUE:				pixel = 0x00FF0000;  break;
+		case SWT.COLOR_DARK_BLUE:			pixel = 0x00800000;  break;
+		case SWT.COLOR_MAGENTA:				pixel = 0x00FF00FF;  break;
+		case SWT.COLOR_DARK_MAGENTA:		pixel = 0x00800080;  break;
+		case SWT.COLOR_CYAN:				pixel = 0x00FFFF00;  break;
+		case SWT.COLOR_DARK_CYAN:			pixel = 0x00808000;  break;
+		case SWT.COLOR_GRAY:				pixel = 0x00C0C0C0;  break;
+		case SWT.COLOR_DARK_GRAY:			pixel = 0x00808080;  break;
 	}
 	return Color.win32_new (this, pixel);
 }

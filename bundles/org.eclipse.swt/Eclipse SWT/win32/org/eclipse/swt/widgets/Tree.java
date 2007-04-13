@@ -3329,7 +3329,7 @@ int getSortColumnPixel () {
 		green = Math.min (0xFF, (green / 10) + green);
 		blue = Math.min (0xFF, (blue / 10) + blue);
 	}
-	return 0x02000000 | (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
+	return (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
 }
 
 /**

@@ -2123,7 +2123,7 @@ public Thread getSyncThread () {
  */
 public Color getSystemColor (int id) {
 	checkDevice ();
-	int pixel = 0x02000000;
+	int pixel = 0x00000000;
 	switch (id) {
 		case SWT.COLOR_WIDGET_DARK_SHADOW:		pixel = OS.GetSysColor (OS.COLOR_3DDKSHADOW);	break;
 		case SWT.COLOR_WIDGET_NORMAL_SHADOW:	pixel = OS.GetSysColor (OS.COLOR_3DSHADOW); 	break;

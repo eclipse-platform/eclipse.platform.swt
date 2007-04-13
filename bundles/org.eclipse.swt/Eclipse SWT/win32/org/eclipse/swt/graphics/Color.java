@@ -245,7 +245,7 @@ void init(Device device, int red, int green, int blue) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.device = device;
-	handle = 0x02000000 | (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
+	handle = (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
 	
 	/* If this is not a palette-based device, return */
 	int hPal = device.hPalette;

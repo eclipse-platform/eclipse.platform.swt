@@ -1112,7 +1112,7 @@ public Color getBackground() {
 	
 	/* Release the HDC for the device */
 	device.internal_dispose_GC(hDC, null);
-	return Color.win32_new(device, 0x02000000 | (blue << 16) | (green << 8) | red);
+	return Color.win32_new(device, (blue << 16) | (green << 8) | red);
 }
 
 /**
