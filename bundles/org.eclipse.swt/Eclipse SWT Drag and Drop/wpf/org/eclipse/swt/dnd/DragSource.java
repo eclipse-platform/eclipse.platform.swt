@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
  
+import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -92,14 +93,20 @@ import org.eclipse.swt.widgets.*;
  */
 public class DragSource extends Widget {
 
+	private static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
+	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	static int checkStyle (int style) {
+		if (style == SWT.NONE) return DND.DROP_MOVE;
+		return style;
+	}
 	// info for registering as a drag source
 	private Control control;
 	private Listener controlListener;
+
 	private Transfer[] transferAgents = new Transfer[0];
 	private DragSourceEffect dragEffect;
 
-	private static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
-	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	private int jniRef;
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -137,6 +144,11 @@ public DragSource(Control control, int style) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	control.setData(DRAGSOURCEID, this);
 
+	jniRef = OS.NewGlobalRef (this);
+	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	
+	hookEventHandlers();
+	
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			if (event.type == SWT.Dispose) {
@@ -146,7 +158,7 @@ public DragSource(Control control, int style) {
 			}
 			if (event.type == SWT.DragDetect) {
 				if (!DragSource.this.isDisposed()) {
-					//DragSource.this.drag(event);
+					DragSource.this.drag(event);
 				}
 			}
 		}
@@ -208,17 +220,57 @@ public void addDragListener(DragSourceListener listener) {
 	addListener (DND.DragEnd, typedListener);
 }
 
-static int checkStyle (int style) {
-	if (style == SWT.NONE) return DND.DROP_MOVE;
-	return style;
-}
-
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DragSource.class.getName();
 	if (!validName.equals(name)) {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
+}
+
+void drag(Event dragEvent) {
+	DNDEvent event = new DNDEvent();
+	event.widget = this;
+	event.x = dragEvent.x;
+	event.y = dragEvent.y;
+	event.time = (int)System.currentTimeMillis();
+	event.doit = true;
+	notifyListeners(DND.DragStart,event);
+	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
+	
+	int pDataObject = OS.gcnew_DataObject();
+	for (int i = 0; i < transferAgents.length; i++) {
+		Transfer transfer = transferAgents[i];
+		if (transfer != null) {
+			TransferData supportedTypes[] = transfer.getSupportedTypes();
+			for (int j = 0; j < supportedTypes.length; j++) {
+				TransferData transferData = supportedTypes[j]; 
+				event = new DNDEvent();
+				event.widget = this;
+				event.time = (int)System.currentTimeMillis(); 
+				event.dataType = transferData; 
+				notifyListeners(DND.DragSetData, event);
+				transfer.javaToNative(event.data, transferData);
+				if (transferData.pValue != 0) {
+					int pFormat = Transfer.getWPFFormat(transferData.type);
+				    OS.DataObject_SetData(pDataObject, pFormat, transferData.pValue, true);
+					OS.GCHandle_Free(transferData.pValue);
+					OS.GCHandle_Free(pFormat);
+				}
+			}
+		}
+	}
+
+	int operations = opToOsOp(getStyle());
+	int result = OS.DragDrop_DoDragDrop(control.handle, pDataObject, operations);
+	OS.GCHandle_Free(pDataObject);
+
+	event = new DNDEvent();
+	event.widget = this;
+	event.time = (int)System.currentTimeMillis();
+	event.doit = (result != OS.DragDropEffects_None);
+	event.detail = osOpToOp(result);
+	notifyListeners(DND.DragEnd,event);
 }
 
 /**
@@ -252,17 +304,53 @@ public Transfer[] getTransfer(){
 	return transferAgents;
 }
 
-private void onDispose() {
+void hookEventHandlers () {
+}
+
+void onDispose() {
 	if (control == null)
 		return;
 	if (controlListener != null) {
 		control.removeListener(SWT.Dispose, controlListener);
 		control.removeListener(SWT.DragDetect, controlListener);
 	}
+	
+	unhookEventHandlers();
+	if (jniRef != 0) OS.DeleteGlobalRef (jniRef);
+	jniRef = 0;
+
 	controlListener = null;
 	control.setData(DRAGSOURCEID, null);
 	control = null;
 	transferAgents = null;
+}
+
+int opToOsOp(int operation){
+	int osOperation = 0;
+	if ((operation & DND.DROP_COPY) != 0){
+		osOperation |= OS.DragDropEffects_Copy;
+	}
+	if ((operation & DND.DROP_LINK) != 0) {
+		osOperation |= OS.DragDropEffects_Link;
+	}
+	if ((operation & DND.DROP_MOVE) != 0) {
+		osOperation |= OS.DragDropEffects_Move;
+	}
+	return osOperation;
+}
+
+int osOpToOp(int osOperation){
+	int operation = 0;
+	if ((osOperation & OS.DragDropEffects_Copy) != 0){
+		operation |= DND.DROP_COPY;
+	}
+	if ((osOperation & OS.DragDropEffects_Link) != 0) {
+		operation |= DND.DROP_LINK;
+	}
+	if ((osOperation & OS.DragDropEffects_Move) != 0) {
+		operation |= DND.DROP_MOVE;
+	}
+	return operation;
 }
 
 /**
@@ -311,6 +399,9 @@ public void setDragSourceEffect(DragSourceEffect effect) {
  */
 public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
+}
+
+void unhookEventHandlers () {
 }
 
 }

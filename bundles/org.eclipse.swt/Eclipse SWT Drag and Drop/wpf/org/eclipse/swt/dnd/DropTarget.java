@@ -11,7 +11,9 @@
 package org.eclipse.swt.dnd;
 
 
+import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -67,14 +69,30 @@ import org.eclipse.swt.widgets.*;
  */
 public class DropTarget extends Widget {
 
+	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
+	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	static int checkStyle (int style) {
+		if (style == SWT.NONE) return DND.DROP_MOVE;
+		return style;
+	}
 	// info for registering as a droptarget	
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
 	DropTargetEffect dropEffect;
+	
+	int jniRef;
+	int dragEnterEventHandler;
+	int dragLeaveEventHandler;
+	int dragOverEventHandler;
+	int dropEventHandler;
 
-	static final String DEFAULT_DROP_TARGET_EFFECT = "DEFAULT_DROP_TARGET_EFFECT"; //$NON-NLS-1$
-	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	// Track application selections
+	TransferData selectedDataType;
+	int selectedOperation;
+
+	// workaround - There is no event for "operation changed" so track operation based on key state
+	int keyOperation = -1;
 
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -114,6 +132,11 @@ public DropTarget(Control control, int style) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	control.setData(DROPTARGETID, this);
 
+	jniRef = OS.NewGlobalRef (this);
+	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	
+	hookEventHandlers();
+	
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			if (!DropTarget.this.isDisposed()){
@@ -183,9 +206,24 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DropAccept, typedListener);
 }
 
-static int checkStyle (int style) {
-	if (style == SWT.NONE) return DND.DROP_MOVE;
-	return style;
+boolean checkEventArgs (int eventArgs) {
+	if (isDisposed ()) return false;
+	int routedEventType =  OS.RoutedEventArgs_typeid ();
+	int source = 0;
+	if (OS.Type_IsInstanceOfType (routedEventType, eventArgs)) {
+		source = OS.RoutedEventArgs_OriginalSource (eventArgs);
+	}
+	OS.GCHandle_Free (routedEventType);
+	if (source == 0) return true;
+	if (OS.Object_Equals (source, control.handle)) {
+		OS.GCHandle_Free (source);
+		return true;
+	}
+	Widget widget = getDisplay().findWidget (source);
+	OS.GCHandle_Free (source);
+	if (widget == control) return true;
+
+	return false;
 }
 
 protected void checkSubclass () {
@@ -193,6 +231,184 @@ protected void checkSubclass () {
 	String validName = DropTarget.class.getName();
 	if (!validName.equals(name)) {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
+	}
+}
+
+void DragEnter(int sender, int dragEventArgs) {
+	if (!checkEventArgs (dragEventArgs)) return;
+
+	selectedDataType = null;
+	selectedOperation = DND.DROP_NONE;
+	keyOperation = -1;
+
+	DNDEvent event = new DNDEvent();
+	if (!setEventData(event, dragEventArgs)) {
+		freeData(event.dataTypes);
+		return;
+	}
+	
+	int allowedOperations = event.operations;
+	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
+	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
+	notifyListeners(DND.DragEnter, event);
+
+	if (event.detail == DND.DROP_DEFAULT) {
+		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+	}
+	
+	selectedDataType = null;
+	for (int i = 0; i < allowedDataTypes.length; i++) {
+		if (sameType(allowedDataTypes[i], event.dataType)) {
+			selectedDataType = allowedDataTypes[i];
+			break;
+		}
+	}
+	
+	selectedOperation = DND.DROP_NONE;
+	if (selectedDataType != null && ((allowedOperations & event.detail) != 0)) {
+		selectedOperation = event.detail;
+	}
+	
+	freeData(event.dataTypes);
+	OS.RoutedEventArgs_Handled (dragEventArgs, true);
+}
+
+void DragLeave(int sender, int dragEventArgs) {
+	if (!checkEventArgs (dragEventArgs)) return;
+	
+	keyOperation = -1;
+	DNDEvent event = new DNDEvent();
+	event.widget = this;
+	event.time = (int)System.currentTimeMillis();
+	event.detail = DND.DROP_NONE;
+	notifyListeners(DND.DragLeave, event);
+	OS.RoutedEventArgs_Handled (dragEventArgs, true);
+}
+
+void DragOver(int sender, int dragEventArgs) {
+	if (!checkEventArgs (dragEventArgs)) return;
+	
+	int oldKeyOperation = keyOperation;
+	DNDEvent event = new DNDEvent();
+	if (!setEventData(event, dragEventArgs)) {
+		freeData(event.dataTypes);
+		keyOperation = -1;
+		OS.DragEventArgs_Effects(dragEventArgs, OS.DragDropEffects_None);
+		return;
+	}
+	
+	int allowedOperations = event.operations;
+	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
+	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
+
+	if (keyOperation == oldKeyOperation) {
+		event.type = DND.DragOver;
+		event.dataType = selectedDataType;
+		event.detail = selectedOperation;
+	} else {
+		event.type = DND.DragOperationChanged;
+		event.dataType = selectedDataType;
+	}
+	notifyListeners(event.type, event);
+
+	if (event.detail == DND.DROP_DEFAULT) {
+		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+	}
+	
+	selectedDataType = null;
+	for (int i = 0; i < allowedDataTypes.length; i++) {
+		if (sameType(allowedDataTypes[i], event.dataType)){
+			selectedDataType = allowedDataTypes[i];
+			break;
+		}
+	}
+
+	selectedOperation = DND.DROP_NONE;
+	if (selectedDataType != null && ((allowedOperations & event.detail) == event.detail)) {
+		selectedOperation = event.detail;
+	}
+	
+	OS.DragEventArgs_Effects(dragEventArgs, opToOsOp(selectedOperation));
+	freeData(event.dataTypes);
+	OS.RoutedEventArgs_Handled (dragEventArgs, true);
+}
+
+void Drop(int sender, int dragEventArgs) {
+	if (!checkEventArgs (dragEventArgs)) return;
+
+	DNDEvent event = new DNDEvent();
+	event.widget = this;
+	event.time = (int)System.currentTimeMillis();
+	if (dropEffect != null) {
+		Point position = getPosition(dragEventArgs);
+		event.item = dropEffect.getItem(position.x, position.y);
+	}
+	event.detail = DND.DROP_NONE;
+	notifyListeners(DND.DragLeave, event);
+	
+	event = new DNDEvent();
+	if (!setEventData(event, dragEventArgs)) {
+		keyOperation = -1;
+		freeData(event.dataTypes);
+		return;
+	}
+	keyOperation = -1;
+	int allowedOperations = event.operations;
+	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
+	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
+	event.dataType = selectedDataType;
+	event.detail = selectedOperation;
+	notifyListeners(DND.DropAccept,event);
+	
+	selectedDataType = null;
+	for (int i = 0; i < allowedDataTypes.length; i++) {
+		if (sameType(allowedDataTypes[i], event.dataType)){
+			selectedDataType = allowedDataTypes[i];
+			break;
+		}
+	}
+	selectedOperation = DND.DROP_NONE;
+	if (selectedDataType != null && (allowedOperations & event.detail) == event.detail) {
+		selectedOperation = event.detail;
+	}
+
+	if (selectedOperation == DND.DROP_NONE) {
+		freeData(event.dataTypes);
+		return;
+	}
+	
+	// Get Data in a Java format
+	Object object = null;
+	for (int i = 0; i < transferAgents.length; i++){
+		Transfer transfer = transferAgents[i];
+		if (transfer != null && transfer.isSupportedType(selectedDataType)){
+			object = transfer.nativeToJava(selectedDataType);
+			break;
+		}
+	}
+	if (object == null){
+		selectedOperation = DND.DROP_NONE;
+	}
+	
+	event.detail = selectedOperation;
+	event.dataType = selectedDataType;
+	event.data = object;
+	notifyListeners(DND.Drop,event);
+
+	selectedOperation = DND.DROP_NONE;
+	if ((allowedOperations & event.detail) == event.detail) {
+		selectedOperation = event.detail;
+	}
+	
+	freeData(event.dataTypes);
+	OS.RoutedEventArgs_Handled (dragEventArgs, true);
+}
+
+void freeData(TransferData[] dataTypes) {
+	if (dataTypes == null) return;
+	for (int i = 0; i < dataTypes.length; i++) {
+		if (dataTypes[i].pValue != 0)
+			OS.GCHandle_Free(dataTypes[i].pValue);
 	}
 }
 
@@ -204,6 +420,16 @@ protected void checkSubclass () {
  */
 public Control getControl () {
 	return control;
+}
+
+int getData(int pDataObject, int type) {
+	int pFormat = Transfer.getWPFFormat(type);
+	int result = 0;
+	if (OS.DataObject_GetDataPresent(pDataObject, pFormat, true)) {
+		result = OS.DataObject_GetData(pDataObject, pFormat, true);
+	}
+	OS.GCHandle_Free (pFormat);
+	return result;
 }
 
 /**
@@ -219,6 +445,27 @@ public DropTargetEffect getDropTargetEffect() {
 	return dropEffect;
 }
 
+int getOperationFromKeyState(int keyState) {
+	boolean ctrl = (keyState & OS.DragDropKeyStates_ControlKey) != 0;
+	boolean shift = (keyState & OS.DragDropKeyStates_ShiftKey) != 0;
+	boolean alt = (keyState & OS.DragDropKeyStates_AltKey) != 0;
+	if (alt) {
+		if (ctrl || shift) return DND.DROP_DEFAULT;
+		return DND.DROP_LINK;
+	}
+	if (ctrl && shift) return DND.DROP_LINK;
+	if (ctrl)return DND.DROP_COPY;
+	if (shift)return DND.DROP_MOVE;
+	return DND.DROP_DEFAULT;
+}
+
+Point getPosition(int dragEventArgs) {
+	int position = OS.DragEventArgs_GetPosition(dragEventArgs, control.handle);
+	Point pt = control.getDisplay().map(control, null, (int) OS.Point_X(position), (int) OS.Point_Y(position));
+	OS.GCHandle_Free (position);
+	return pt;
+}
+
 /**
  * Returns a list of the data types that can be transferred to this DropTarget.
  *
@@ -228,15 +475,63 @@ public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
+void hookEventHandlers() {
+	int handle = control.handle;
+	OS.UIElement_AllowDrop(handle, true);
+	
+	dragEnterEventHandler = OS.gcnew_DragEventHandler(jniRef, "DragEnter");
+	OS.UIElement_DragEnter(handle, dragEnterEventHandler);
+
+	dragLeaveEventHandler = OS.gcnew_DragEventHandler(jniRef, "DragLeave");
+	OS.UIElement_DragLeave(handle, dragLeaveEventHandler);
+
+	dragOverEventHandler = OS.gcnew_DragEventHandler(jniRef, "DragOver");
+	OS.UIElement_DragOver(handle, dragOverEventHandler);
+
+	dropEventHandler = OS.gcnew_DragEventHandler(jniRef, "Drop");
+	OS.UIElement_Drop(handle, dropEventHandler);
+}
+
 void onDispose () {	
 	if (control == null)
 		return;
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
+	unhookEventHandlers();
+	if (jniRef != 0) OS.DeleteGlobalRef (jniRef);
+	jniRef = 0;
 	controlListener = null;
 	control.setData(DROPTARGETID, null);
 	transferAgents = null;
 	control = null;
+}
+
+int osOpToOp(int osOperation){
+	int operation = 0;
+	if ((osOperation & OS.DragDropEffects_Copy) != 0){
+		operation |= DND.DROP_COPY;
+	}
+	if ((osOperation & OS.DragDropEffects_Link) != 0) {
+		operation |= DND.DROP_LINK;
+	}
+	if ((osOperation & OS.DragDropEffects_Move) != 0) {
+		operation |= DND.DROP_MOVE;
+	}
+	return operation;
+}
+
+int opToOsOp(int operation){
+	int osOperation = 0;
+	if ((operation & DND.DROP_COPY) != 0){
+		osOperation |= OS.DragDropEffects_Copy;
+	}
+	if ((operation & DND.DROP_LINK) != 0) {
+		osOperation |= OS.DragDropEffects_Link;
+	}
+	if ((operation & DND.DROP_MOVE) != 0) {
+		osOperation |= OS.DragDropEffects_Move;
+	}
+	return osOperation;
 }
 
 /**
@@ -266,6 +561,12 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DropAccept, listener);
 }
 
+boolean sameType(TransferData data1, TransferData data2) {
+	if (data1 == data2) return true;
+	if (data1 == null || data2 == null) return false;
+	return data1.type == data2.type;
+}
+
 /**
  * Specifies the drop effect for this DropTarget.  This drop effect will be 
  * used during a drag and drop to display the drag under effect on the 
@@ -277,6 +578,64 @@ public void removeDropListener(DropTargetListener listener) {
  */
 public void setDropTargetEffect(DropTargetEffect effect) {
 	dropEffect = effect;
+}
+
+boolean setEventData(DNDEvent event, int dragEventArgs) {
+	Point position = getPosition(dragEventArgs);
+
+	// get allowed operations
+	int style = getStyle();
+	int operations = osOpToOp(OS.DragEventArgs_Effects(dragEventArgs)) & style;
+	if (operations == DND.DROP_NONE) return false;
+	
+	// get current operation
+	int operation = getOperationFromKeyState(OS.DragEventArgs_KeyStates(dragEventArgs));
+	keyOperation = operation;
+	if (operation == DND.DROP_DEFAULT) {
+		if ((style & DND.DROP_DEFAULT) == 0) {
+			operation = (operations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+		}
+	} else {
+		if ((operation & operations) == 0) operation = DND.DROP_NONE;
+	}
+
+	// Get allowed transfer types
+	TransferData[] dataTypes = new TransferData[0];
+	int pDataObject = OS.DragEventArgs_Data(dragEventArgs);
+	for (int i = 0; i < transferAgents.length; i++) {
+		Transfer transfer = transferAgents[i];
+		if (transfer != null) {
+			int[] types = transfer.getTypeIds();
+			for (int j = 0; j < types.length; j++) {
+				TransferData data = new TransferData();
+				data.type = types[j];
+				data.pValue = getData(pDataObject, data.type);
+				if (data.pValue != 0) {
+					TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
+					System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);
+					newDataTypes[dataTypes.length] = data;
+					dataTypes = newDataTypes;	
+					break;
+				}
+			}
+		}
+	}
+	OS.GCHandle_Free (pDataObject);
+	if (dataTypes.length == 0) return false;
+
+	event.widget = this;
+	event.x = position.x;
+	event.y = position.y;
+	event.time = (int)System.currentTimeMillis();
+	event.feedback = DND.FEEDBACK_SELECT;
+	event.dataTypes = dataTypes;
+	event.dataType = dataTypes[0];
+	event.operations = operations;
+	event.detail = operation;
+	if (dropEffect != null) {
+		event.item = dropEffect.getItem(position.x, position.y);
+	}
+	return true;
 }
 
 /**
@@ -295,6 +654,35 @@ public void setDropTargetEffect(DropTargetEffect effect) {
 public void setTransfer(Transfer[] transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	this.transferAgents = transferAgents;
+}
+
+void unhookEventHandlers() {
+	int handle = control.handle;
+	OS.UIElement_AllowDrop(handle, false);
+
+	int dragEnterEvent = OS.UIElement_DragEnterEvent();
+	OS.UIElement_RemoveHandler(handle, dragEnterEvent, dragEnterEventHandler);
+	OS.GCHandle_Free(dragEnterEventHandler);
+	OS.GCHandle_Free(dragEnterEvent);
+	dragEnterEventHandler = 0;
+	
+	int dragLeaveEvent = OS.UIElement_DragLeaveEvent();
+	OS.UIElement_RemoveHandler(handle, dragLeaveEvent, dragLeaveEventHandler);
+	OS.GCHandle_Free(dragLeaveEventHandler);
+	OS.GCHandle_Free(dragLeaveEvent);
+	dragLeaveEventHandler = 0;
+
+	int dragOverEvent = OS.UIElement_DragOverEvent();
+	OS.UIElement_RemoveHandler(handle, dragOverEvent, dragOverEventHandler);
+	OS.GCHandle_Free(dragOverEventHandler);
+	OS.GCHandle_Free(dragOverEvent);
+	dragOverEventHandler = 0;
+
+	int dropEvent = OS.UIElement_DropEvent();
+	OS.UIElement_RemoveHandler(handle, dropEvent, dropEventHandler);
+	OS.GCHandle_Free(dropEventHandler);
+	OS.GCHandle_Free(dropEvent);
+	dropEventHandler = 0;
 }
 
 }
