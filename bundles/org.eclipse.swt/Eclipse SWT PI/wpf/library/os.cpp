@@ -7991,7 +7991,7 @@ JNIEXPORT void JNICALL OS_NATIVE(QueryContinueDragEventArgs_1Action)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	OS_NATIVE_ENTER(env, that, QueryContinueDragEventArgs_1Action_FUNC);
-	((QueryContinueDragEventArgs^)TO_OBJECT(arg0))->Action = ((DragAction)TO_OBJECT(arg1));
+	((QueryContinueDragEventArgs^)TO_OBJECT(arg0))->Action = ((DragAction)arg1);
 	OS_NATIVE_EXIT(env, that, QueryContinueDragEventArgs_1Action_FUNC);
 }
 #endif
