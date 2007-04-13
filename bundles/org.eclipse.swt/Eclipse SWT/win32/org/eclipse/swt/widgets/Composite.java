@@ -1140,8 +1140,6 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				Control control = findBackgroundControl ();
 				if (control == null) control = this;
 				data.background = control.getBackgroundPixel ();
-				data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-				data.hBrush = OS.CreateSolidBrush (data.background);
 				data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 				data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 				if ((style & SWT.NO_BACKGROUND) != 0) {

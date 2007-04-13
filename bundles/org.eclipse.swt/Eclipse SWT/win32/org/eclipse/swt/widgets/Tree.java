@@ -597,8 +597,6 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 							if (clrText != -1) data.foreground = clrText;
 							if (clrTextBk != -1) data.background = clrTextBk;
 						}
-						data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-						data.hBrush = OS.CreateSolidBrush (data.background);
 						data.hFont = hFont;
 						data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 						GC gc = GC.win32_new (hDC, data);
@@ -807,11 +805,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					if (clrText != -1) data.foreground = clrText;
 					if (clrTextBk != -1) data.background = clrTextBk;
 				}
-				data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-				data.hBrush = OS.CreateSolidBrush (data.background);
 				data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-				OS.SelectObject (hDC, data.hPen);
-				OS.SelectObject (hDC, data.hBrush);
 				GC gc = GC.win32_new (hDC, data);
 				Event event = new Event ();
 				event.item = item;
@@ -1029,12 +1023,8 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				if (clrText != -1) data.foreground = clrText;
 				if (clrTextBk != -1) data.background = clrTextBk;
 			}
-			data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-			data.hBrush = OS.CreateSolidBrush (data.background);
 			data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 			if (hFont != -1) data.hFont = hFont;
-			OS.SelectObject (hDC, data.hPen);
-			OS.SelectObject (hDC, data.hBrush);
 			GC gc = GC.win32_new (hDC, data);
 			Event event = new Event ();
 			event.index = index;

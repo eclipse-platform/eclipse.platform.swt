@@ -3085,8 +3085,6 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 		if (selected) clrSelectionBk = data.background;
 	}
-	data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-	data.hBrush = OS.CreateSolidBrush (data.background);
 	data.hFont = hFont;
 	data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 	int nSavedDC = OS.SaveDC (hDC);
@@ -3397,8 +3395,6 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 		data.foreground = OS.GetSysColor (OS.COLOR_GRAYTEXT);
 		data.background = OS.GetSysColor (OS.COLOR_3DFACE);
 	}
-	data.hPen = OS.CreatePen (OS.PS_SOLID, 0, data.foreground);
-	data.hBrush = OS.CreateSolidBrush (data.background);
 	data.uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 	int nSavedDC = OS.SaveDC (hDC);
 	GC gc = GC.win32_new (hDC, data);
