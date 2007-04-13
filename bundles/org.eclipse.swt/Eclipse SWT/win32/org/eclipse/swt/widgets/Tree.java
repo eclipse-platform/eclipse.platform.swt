@@ -6459,7 +6459,7 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
 						int gridWidth = linesVisible ? GRID_WIDTH : 0;
 						rect.left = headerRect.right - gridWidth;
-						if (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
+						if (explorerTheme || (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem))) {
 							OS.InvalidateRect (handle, rect, true);
 						} else {
 							HDITEM oldItem = new HDITEM ();
@@ -6491,7 +6491,12 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 							if (ignoreColumnMove) {
 								int oldStyle = style;
 								style |= SWT.DOUBLE_BUFFERED;
-								OS.UpdateWindow (handle);
+								if (OS.IsWinCE) {
+									OS.UpdateWindow (handle);
+								} else {
+									int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+									OS.RedrawWindow (handle, null, 0, flags);
+								}
 								style = oldStyle;
 							}
 						}
