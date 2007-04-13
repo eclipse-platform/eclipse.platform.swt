@@ -572,6 +572,26 @@ LRESULT CDDS_SUBITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	int hDC = nmcd.hdc;
 	if (ignoreDrawForeground) OS.RestoreDC (hDC, -1);
 	if (OS.IsWindowVisible (handle)) {
+		/*
+		* Feature in Windows.  When there is a sort column, the sort column
+		* color draws on top of the background color for an item.  The fix
+		* is to clear the sort column in CDDS_SUBITEMPREPAINT, and reset it
+		* in CDDS_SUBITEMPOSTPAINT.
+		* 
+		* NOTE:  This work around relies on the fact that LVM_SETSELECTEDCOLUMN
+		* does not cause a redraw.
+		*/
+		if (OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+			if ((sortDirection & (SWT.UP | SWT.DOWN)) != 0) {
+				if (sortColumn != null && !sortColumn.isDisposed ()) {
+					int oldColumn = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+					if (oldColumn == -1) {
+						int newColumn = indexOf (sortColumn);
+						OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
+					}
+				}
+			}
+		} 
 		if (hooks (SWT.PaintItem)) {
 			TableItem item = _getItem (nmcd.dwItemSpec);
 			sendPaintItemEvent (item, nmcd);
@@ -712,12 +732,29 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			code |= OS.CDRF_NEWFONT;
 		}
 	}
-	/*
-	* Feature in Windows.  When the table is disabled, it draws
-	* with a gray background but does not gray the text.  The fix
-	* is to explicitly gray the text.
-	*/
-	if (!OS.IsWindowEnabled (handle)) {
+	if (OS.IsWindowEnabled (handle)) {
+		/*
+		* Feature in Windows.  When there is a sort column, the sort column
+		* color draws on top of the background color for an item.  The fix
+		* is to clear the sort column in CDDS_SUBITEMPREPAINT, and reset it
+		* in CDDS_SUBITEMPOSTPAINT.
+		* 
+		* NOTE:  This work around relies on the fact that LVM_SETSELECTEDCOLUMN
+		* does not cause a redraw.
+		*/
+		if (clrTextBk != -1) {
+			int oldColumn = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+			if (oldColumn != -1 && oldColumn == nmcd.iSubItem) {
+				OS.SendMessage (handle, OS.LVM_SETSELECTEDCOLUMN, -1, 0);
+				code |= OS.CDRF_NOTIFYPOSTPAINT;
+			}
+		}
+	} else {
+		/*
+		* Feature in Windows.  When the table is disabled, it draws
+		* with a gray background but does not gray the text.  The fix
+		* is to explicitly gray the text.
+		*/
 		nmcd.clrText = OS.GetSysColor (OS.COLOR_GRAYTEXT);
 		if (findImageControl () != null) {
 			nmcd.clrTextBk = OS.CLR_NONE;
