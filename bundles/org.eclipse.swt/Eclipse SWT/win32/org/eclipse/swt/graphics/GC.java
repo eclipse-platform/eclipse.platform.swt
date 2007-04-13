@@ -3428,13 +3428,13 @@ int identity() {
 
 void init(Drawable drawable, GCData data, int hDC) {
 	int foreground = data.foreground;
-	if (foreground != -1 && OS.GetTextColor(hDC) != foreground) {
+	if (foreground != -1) {
 		data.state &= ~(FOREGROUND | FOREGROUND_TEXT | PEN);
 	} else {
 		data.foreground = OS.GetTextColor(hDC);
 	}
 	int background = data.background;
-	if (background != -1 && OS.GetBkColor(hDC) != background) {
+	if (background != -1) {
 		data.state &= ~(BACKGROUND | BACKGROUND_TEXT | BRUSH);
 	} else {
 		data.background = OS.GetBkColor(hDC);

@@ -1497,10 +1497,12 @@ public int internal_new_GC (GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = display;
-		data.foreground = getForegroundPixel ();
+		int foreground = getForegroundPixel ();
+		if (foreground != OS.GetTextColor (hDC)) data.foreground = foreground;
 		Control control = findBackgroundControl ();
 		if (control == null) control = this;
-		data.background = control.getBackgroundPixel ();
+		int background = control.getBackgroundPixel ();
+		if (background != OS.GetBkColor (hDC)) data.background = background;
 		data.hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 		data.uiState = OS.SendMessage (hwnd, OS.WM_QUERYUISTATE, 0, 0);
 	}
