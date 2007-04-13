@@ -238,7 +238,7 @@ boolean checkEvent (int e) {
 	int routedEventType =  OS.RoutedEventArgs_typeid ();
 	int source = 0;
 	if (OS.Type_IsInstanceOfType (routedEventType, e)) {
-		source = OS.RoutedEventArgs_Source (e);
+		source = OS.RoutedEventArgs_OriginalSource (e);
 	}
 	OS.GCHandle_Free (routedEventType);
 	if (source == 0) return true;
