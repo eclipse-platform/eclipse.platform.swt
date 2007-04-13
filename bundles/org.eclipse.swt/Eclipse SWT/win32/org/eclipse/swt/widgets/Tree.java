@@ -542,10 +542,10 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				if (drawBackground) {
 					clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
-					if (index == sortIndex) clrTextBk = clrSortBk;
+					if (clrTextBk == -1 && index == sortIndex) clrTextBk = clrSortBk;
 				}
 			} else {
-				if (index == sortIndex) {
+				if (clrTextBk == -1 && index == sortIndex) {
 					drawBackground = true;
 					clrTextBk = clrSortBk;
 				}
@@ -957,7 +957,8 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 		if (sortColumn != null && sortDirection != SWT.NONE) {
 			if (findImageControl () == null) {
 				if (indexOf (sortColumn) == index) {
-					clrTextBk = clrSortBk = getSortColumnPixel ();
+					clrSortBk = getSortColumnPixel ();
+					if (clrTextBk == -1) clrTextBk = clrSortBk; 
 				}
 			}
 		}
