@@ -328,8 +328,8 @@ void DragOver(int sender, int dragEventArgs) {
 		selectedOperation = event.detail;
 	}
 	
-	OS.DragEventArgs_Effects(dragEventArgs, opToOsOp(selectedOperation));
 	freeData(event.dataTypes);
+	OS.DragEventArgs_Effects(dragEventArgs, opToOsOp(selectedOperation));
 	OS.RoutedEventArgs_Handled (dragEventArgs, true);
 }
 
@@ -401,6 +401,7 @@ void Drop(int sender, int dragEventArgs) {
 	}
 	
 	freeData(event.dataTypes);
+	OS.DragEventArgs_Effects(dragEventArgs, opToOsOp(selectedOperation));
 	OS.RoutedEventArgs_Handled (dragEventArgs, true);
 }
 
