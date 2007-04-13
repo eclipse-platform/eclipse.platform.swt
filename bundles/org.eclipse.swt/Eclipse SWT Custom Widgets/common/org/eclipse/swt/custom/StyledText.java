@@ -5120,8 +5120,8 @@ void handleMouseDown(Event event) {
 			}
 			int start, end;
 			if ((clickCount & 1) == 0) {
-				start = Math.max(lineOffset, getWordPrevious(offset, SWT.MOVEMENT_WORD_START));
-				end = Math.min(lineEnd, getWordNext(start, SWT.MOVEMENT_WORD_END));
+				start = Math.max(0, getWordPrevious(offset, SWT.MOVEMENT_WORD_START));
+				end = Math.min(getCharCount(), getWordNext(start, SWT.MOVEMENT_WORD_END));
 			} else {
 				start = lineOffset;
 				end = lineEnd;
