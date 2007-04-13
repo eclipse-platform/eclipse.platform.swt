@@ -6487,17 +6487,17 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 					HDITEM pitem = new HDITEM ();
 					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 					if ((pitem.mask & OS.HDI_WIDTH) != 0) {
-						if ((style & SWT.DOUBLE_BUFFERED) == 0) {
-							if (ignoreColumnMove) {
-								int oldStyle = style;
-								style |= SWT.DOUBLE_BUFFERED;
-								if (OS.IsWinCE) {
+						if (ignoreColumnMove) {
+							if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+								int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+								OS.RedrawWindow (handle, null, 0, flags);
+							} else {
+								if ((style & SWT.DOUBLE_BUFFERED) == 0) {
+									int oldStyle = style;
+									style |= SWT.DOUBLE_BUFFERED;
 									OS.UpdateWindow (handle);
-								} else {
-									int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-									OS.RedrawWindow (handle, null, 0, flags);
+									style = oldStyle;
 								}
-								style = oldStyle;
 							}
 						}
 						TreeColumn column = columns [phdn.iItem];
