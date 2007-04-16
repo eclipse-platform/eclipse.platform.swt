@@ -1394,6 +1394,10 @@ int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*lon
 	return 0;
 }
 
+int /*long*/ sizeRequestProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+	return 0;
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

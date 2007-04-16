@@ -183,6 +183,8 @@ public class Display extends Device {
 	/* Tooltip size allocate callback */
 	int /*long*/ sizeAllocateProc;
 	Callback sizeAllocateCallback;
+	int /*long*/ sizeRequestProc;
+	Callback sizeRequestCallback;
 
 	/* Shell map callback */
 	int /*long*/ shellMapProc;
@@ -2379,6 +2381,10 @@ void initializeCallbacks () {
 	sizeAllocateProc = sizeAllocateCallback.getAddress();
 	if (sizeAllocateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
+	sizeRequestCallback = new Callback(this, "sizeRequestProc", 3);
+	sizeRequestProc = sizeRequestCallback.getAddress();
+	if (sizeRequestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
 	shellMapCallback = new Callback(this, "shellMapProc", 3);
 	shellMapProc = shellMapCallback.getAddress();
 	if (shellMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -3030,6 +3036,8 @@ void releaseDisplay () {
 	/* Dispose the tooltip map callback */
 	sizeAllocateCallback.dispose (); sizeAllocateCallback = null;
 	sizeAllocateProc = 0;
+	sizeRequestCallback.dispose (); sizeRequestCallback = null;
+	sizeRequestProc = 0;
 	
 	/* Dispose the shell map callback */
 	shellMapCallback.dispose (); shellMapCallback = null;
@@ -3737,6 +3745,12 @@ int /*long*/ sizeAllocateProc (int /*long*/ handle, int /*long*/ arg0, int /*lon
 	Widget widget = getWidget (user_data);
 	if (widget == null) return 0;
 	return widget.sizeAllocateProc (handle, arg0, user_data);
+}
+
+int /*long*/ sizeRequestProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
+	Widget widget = getWidget (user_data);
+	if (widget == null) return 0;
+	return widget.sizeRequestProc (handle, arg0, user_data);
 }
 
 int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*long*/ iter, int /*long*/ data) {
