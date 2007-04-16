@@ -23,6 +23,7 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
+	String extension;
 	static final String [] ARGUMENTS = new String [] {"%1", "%l", "%L"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 /**
@@ -87,7 +88,7 @@ public static Program findProgram (String extension) {
 		if (result == 0) {
 			TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
 			result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
-			if (result == 0) program = getProgram (lpData.toString (0, lpData.strlen ()));
+			if (result == 0) program = getProgram (lpData.toString (0, lpData.strlen ()), extension);
 		}
 		OS.RegCloseKey (phkResult [0]);
 	} else {
@@ -103,6 +104,7 @@ public static Program findProgram (String extension) {
 			program.name = name;
 			program.command = command;
 			program.iconName = iconName;
+			program.extension = extension;
 		}
 	}
 	return program;
@@ -177,7 +179,7 @@ static String getKeyValue (String string, boolean expand) {
 	return result;
 }
 
-static Program getProgram (String key) {
+static Program getProgram (String key, String extension) {
 
 	/* Name */
 	String name = getKeyValue (key, false);
@@ -198,10 +200,12 @@ static Program getProgram (String key) {
 	String iconName = getKeyValue (key + DEFAULT_ICON, true);
 	if (iconName == null) iconName = ""; //$NON-NLS-1$
 
+	/* Program */
 	Program program = new Program ();
 	program.name = name;
 	program.command = command;
 	program.iconName = iconName;
+	program.extension = extension;
 	return program;
 }
 
@@ -222,7 +226,7 @@ public static Program [] getPrograms () {
 	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
 		String path = lpName.toString (0, lpcName [0]);
 		lpcName [0] = lpName.length ();
-		Program program = getProgram (path);
+		Program program = getProgram (path, null);
 		if (program != null) {
 			if (count == programs.length) {
 				Program [] newPrograms = new Program [programs.length + 1024];
@@ -327,6 +331,18 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
+	if (extension != null) {
+		SHFILEINFO shfi = OS.IsUnicode ? (SHFILEINFO) new SHFILEINFOW () : new SHFILEINFOA ();
+		int flags = OS.SHGFI_ICON | OS.SHGFI_SMALLICON | OS.SHGFI_USEFILEATTRIBUTES;
+		TCHAR pszPath = new TCHAR (0, extension, true);
+		OS.SHGetFileInfo (pszPath, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
+		if (shfi.hIcon != 0) {
+			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon);
+			ImageData imageData = image.getImageData ();
+			image.dispose ();
+			return imageData;
+		}
+	}
 	int nIconIndex = 0;
 	String fileName = iconName;
 	int index = iconName.indexOf (',');
@@ -342,7 +358,7 @@ public ImageData getImageData () {
 	int [] phiconSmall = new int[1], phiconLarge = null;
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
-	Image image = Image.win32_new (null, SWT.ICON, phiconSmall[0]);
+	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
 	ImageData imageData = image.getImageData ();
 	image.dispose ();
 	return imageData;
