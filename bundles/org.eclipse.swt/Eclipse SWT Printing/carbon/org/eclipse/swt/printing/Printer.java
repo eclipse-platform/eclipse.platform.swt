@@ -16,6 +16,7 @@ import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.PMRect;
 import org.eclipse.swt.internal.carbon.PMResolution;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class are used to print to a printer.
@@ -329,6 +330,14 @@ public int internal_new_GC(GCData data) {
 		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
+		PMRect paperRect= new PMRect();
+		OS.PMGetAdjustedPaperRect(pageFormat, paperRect);
+		Rect portRect = new Rect();
+		portRect.left = (short)paperRect.left;
+		portRect.right = (short)paperRect.right;
+		portRect.top = (short)paperRect.top;
+		portRect.bottom = (short)paperRect.bottom;
+		data.portRect = portRect;
 		isGCCreated = true;
 	}
 	return context;

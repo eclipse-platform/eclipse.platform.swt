@@ -2216,6 +2216,7 @@ public int internal_new_GC (GCData data) {
 		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = getSystemFont ();
 		data.updateClip = true;
+		data.portRect = portRect;
 	} else {
 		OS.ShowWindow (window);
 	}

@@ -1972,6 +1972,9 @@ public Rectangle getClipping() {
 			int image = data.image.handle;
 			width = OS.CGImageGetWidth(image);
 			height = OS.CGImageGetHeight(image);
+		} else if (data.portRect != null) {
+			width = data.portRect.right - data.portRect.left;
+			height = data.portRect.bottom - data.portRect.top;
 		}
 	}
 	/* Intersect visible bounds with clipping in device space and then convert the user space */
@@ -2043,6 +2046,9 @@ public void getClipping(Region region) {
 				int image = data.image.handle;
 				width = OS.CGImageGetWidth(image);
 				height = OS.CGImageGetHeight(image);
+			} else if (data.portRect != null) {
+				width = data.portRect.right - data.portRect.left;
+				height = data.portRect.bottom - data.portRect.top;
 			}
 		}
 		OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
