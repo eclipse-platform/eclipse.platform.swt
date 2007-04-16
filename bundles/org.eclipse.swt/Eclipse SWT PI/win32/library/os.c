@@ -247,6 +247,88 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(Arc)
 }
 #endif
 
+#ifndef NO_AssocQueryStringA
+JNIEXPORT jint JNICALL OS_NATIVE(AssocQueryStringA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jintArray arg5)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AssocQueryStringA_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)AssocQueryStringA(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(AssocQueryStringA_LIB);
+			if (hm) fp = GetProcAddress(hm, "AssocQueryStringA");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, AssocQueryStringA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_AssocQueryStringW
+JNIEXPORT jint JNICALL OS_NATIVE(AssocQueryStringW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jcharArray arg3, jcharArray arg4, jintArray arg5)
+{
+	jchar *lparg2=NULL;
+	jchar *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AssocQueryStringW_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)AssocQueryStringW(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(AssocQueryStringW_LIB);
+			if (hm) fp = GetProcAddress(hm, "AssocQueryStringW");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, lparg2, lparg3, lparg4, lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, AssocQueryStringW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AttachThreadInput
 JNIEXPORT jboolean JNICALL OS_NATIVE(AttachThreadInput)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)

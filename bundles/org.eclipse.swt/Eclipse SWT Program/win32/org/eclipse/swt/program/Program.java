@@ -31,6 +31,32 @@ public final class Program {
 Program () {
 }
 
+static String assocQueryString (int assocStr, TCHAR key, boolean expand) {
+	TCHAR pszOut = new TCHAR(0, 1024);
+	int[] pcchOut = new int[1];
+	pcchOut[0] = pszOut.length();
+	int result = OS.AssocQueryString(OS.ASSOCF_NOTRUNCATE, assocStr, key, null, pszOut, pcchOut);
+	if (result == OS.E_POINTER) {
+		pszOut = new TCHAR(0, pcchOut [0]);
+		result = OS.AssocQueryString(OS.ASSOCF_NOTRUNCATE, assocStr, key, null, pszOut, pcchOut);
+	}
+	if (result == 0) {
+		if (!OS.IsWinCE && expand) {
+			int length = OS.ExpandEnvironmentStrings (pszOut, null, 0);
+			if (length != 0) {
+				TCHAR lpDst = new TCHAR (0, length);
+				OS.ExpandEnvironmentStrings (pszOut, lpDst, length);
+				return lpDst.toString (0, Math.max (0, length - 1));
+			} else {
+				return "";
+			}
+		} else {
+			return pszOut.toString (0, Math.max (0, pcchOut [0] - 1));
+		}
+	}
+	return null;
+}
+
 /**
  * Finds the program that is associated with an extension.
  * The extension may or may not begin with a '.'.  Note that
@@ -50,19 +76,35 @@ public static Program findProgram (String extension) {
 	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
 	/* Use the character encoding for the default locale */
 	TCHAR key = new TCHAR (0, extension, true);
-	int [] phkResult = new int [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
-		return null;
-	}
 	Program program = null;
-	int [] lpcbData = new int [1];
-	int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
-	if (result == 0) {
-		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
-		result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
-		if (result == 0) program = getProgram (lpData.toString (0, lpData.strlen ()));
+	if (OS.IsWinCE) {
+		int [] phkResult = new int [1];
+		if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
+			return null;
+		}
+		int [] lpcbData = new int [1];
+		int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, (TCHAR) null, lpcbData);
+		if (result == 0) {
+			TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
+			result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
+			if (result == 0) program = getProgram (lpData.toString (0, lpData.strlen ()));
+		}
+		OS.RegCloseKey (phkResult [0]);
+	} else {
+		String command = assocQueryString (OS.ASSOCSTR_COMMAND, key, true);
+		if (command != null) {
+			String name = null;
+			if (name == null) name = assocQueryString (OS.ASSOCSTR_FRIENDLYDOCNAME, key, false);
+			if (name == null) name = assocQueryString (OS.ASSOCSTR_FRIENDLYAPPNAME, key, false);
+			if (name == null) name = "";
+			String iconName = assocQueryString (OS.ASSOCSTR_DEFAULTICON, key, true);
+			if (iconName == null) iconName = "";
+			program = new Program ();
+			program.name = name;
+			program.command = command;
+			program.iconName = iconName;
+		}
 	}
-	OS.RegCloseKey (phkResult [0]);
 	return program;
 }
 

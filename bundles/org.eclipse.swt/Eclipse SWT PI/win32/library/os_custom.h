@@ -10,11 +10,13 @@
  *******************************************************************************/
 
 /* Libraries for dynamic loaded functions */
+#define ActivateActCtx_LIB "kernel32.dll"
 #define AddFontResourceExA_LIB "gdi32.dll"
 #define AddFontResourceExW_LIB "gdi32.dll"
-#define ActivateActCtx_LIB "kernel32.dll"
 #define AlphaBlend_LIB "msimg32.dll"
 #define AnimateWindow_LIB "user32.dll"
+#define AssocQueryStringA_LIB "shlwapi.dll"
+#define AssocQueryStringW_LIB "shlwapi.dll"
 #define BufferedPaintInit_LIB "uxtheme.dll"
 #define BufferedPaintUnInit_LIB "uxtheme.dll"
 #define BufferedPaintSetAlpha_LIB "uxtheme.dll"

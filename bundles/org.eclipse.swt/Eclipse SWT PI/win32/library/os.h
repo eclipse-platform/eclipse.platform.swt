@@ -133,8 +133,11 @@
 #define NO_AbortDoc
 #define NO_ActivateActCtx
 #define NO_ActivateKeyboardLayout
+#define NO_AddFontResourceExA
 #define NO_AddFontResourceExW
 #define NO_Arc
+#define NO_AssocQueryStringA
+#define NO_AssocQueryStringW
 #define NO_AttachThreadInput
 #define NO_AlphaBlend
 #define NO_AnimateWindow

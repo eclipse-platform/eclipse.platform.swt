@@ -36,6 +36,8 @@ typedef enum {
 	AlphaBlend_FUNC,
 	AnimateWindow_FUNC,
 	Arc_FUNC,
+	AssocQueryStringA_FUNC,
+	AssocQueryStringW_FUNC,
 	AttachThreadInput_FUNC,
 	BITMAPINFOHEADER_1sizeof_FUNC,
 	BITMAP_1sizeof_FUNC,

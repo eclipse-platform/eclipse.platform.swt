@@ -234,6 +234,11 @@ public class OS extends C {
 //	public static final int ACTCTX_FLAG_RESOURCE_NAME_VALID = 0x00000008;
 //	public static final int ACTCTX_FLAG_SET_PROCESS_DEFAULT = 0x00000010;
 	public static final int ALTERNATE = 1;
+	public static final int ASSOCF_NOTRUNCATE = 0x00000020;
+	public static final int ASSOCSTR_COMMAND = 1;
+	public static final int ASSOCSTR_DEFAULTICON = 15;
+	public static final int ASSOCSTR_FRIENDLYAPPNAME = 4;
+	public static final int ASSOCSTR_FRIENDLYDOCNAME = 3;
 	public static final int AW_SLIDE = 0x00040000;
 	public static final int AW_ACTIVATE = 0x00020000;
 	public static final int AW_BLEND = 0x00080000;
@@ -545,6 +550,7 @@ public class OS extends C {
 	public static final int DTS_SHORTDATEFORMAT = 0x0000;
 	public static final int DTS_TIMEFORMAT = 0x0009;
 	public static final int DTS_UPDOWN = 0x0001;
+	public static final int E_POINTER = 0x80004003;
 	public static final int EBP_NORMALGROUPBACKGROUND = 5;
 	public static final int EBP_NORMALGROUPCOLLAPSE = 6;
 	public static final int EBP_NORMALGROUPEXPAND = 7;
@@ -2146,6 +2152,19 @@ public static final int /*long*/ AddFontResourceEx (TCHAR lpszFilename, int fl, 
 	return AddFontResourceExA (lpszFilename1, fl, pdv);
 }
 
+public static final int /*long*/ AssocQueryString(int flags, int str, TCHAR pszAssoc, TCHAR pszExtra, TCHAR pszOut, int[] pcchOut) {
+	if (IsUnicode) {
+		char [] pszAssoc1 = pszAssoc == null ? null : pszAssoc.chars;
+		char [] pszExtra1 = pszExtra == null ? null : pszExtra.chars;
+		char [] pszOut1 = pszOut == null ? null : pszOut.chars;
+		return AssocQueryStringW (flags, str, pszAssoc1, pszExtra1, pszOut1, pcchOut);
+	}
+	byte [] pszAssoc1 = pszAssoc == null ? null : pszAssoc.bytes;
+	byte [] pszExtra1 = pszExtra == null ? null : pszExtra.bytes;
+	byte [] pszOut1 = pszOut == null ? null : pszOut.bytes;
+	return AssocQueryStringA (flags, str, pszAssoc1, pszExtra1, pszOut1, pcchOut);
+}
+
 public static final int /*long*/ CallWindowProc (int /*long*/ lpPrevWndFunc, int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam) {
 	if (IsUnicode) return CallWindowProcW (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 	return CallWindowProcA (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
@@ -3104,6 +3123,8 @@ public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle,
 public static final native boolean AlphaBlend(int /*long*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int /*long*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
 public static final native boolean AnimateWindow(int /*long*/ hwnd, int dwTime, int dwFlags);
 public static final native boolean Arc (int /*long*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
+public static final native int AssocQueryStringA(int flags, int str, byte[] pszAssoc, byte[] pszExtra, byte[] pszOut, int[] pcchOut);
+public static final native int AssocQueryStringW(int flags, int str, char[] pszAssoc, char[] pszExtra, char[] pszOut, int[] pcchOut);
 public static final native boolean AttachThreadInput (int idAttach, int idAttachTo, boolean fAttach);
 public static final native int /*long*/ BeginBufferedPaint (int /*long*/ hdcTarget, RECT prcTarget, int dwFormat, BP_PAINTPARAMS pPaintParams, int /*long*/ [] phdc);
 public static final native int /*long*/ BeginDeferWindowPos (int nNumWindows);

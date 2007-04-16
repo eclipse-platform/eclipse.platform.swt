@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 865;
-int OS_nativeFunctionCallCount[865];
+int OS_nativeFunctionCount = 867;
+int OS_nativeFunctionCallCount[867];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -28,6 +28,8 @@ char * OS_nativeFunctionNames[] = {
 	"AlphaBlend",
 	"AnimateWindow",
 	"Arc",
+	"AssocQueryStringA",
+	"AssocQueryStringW",
 	"AttachThreadInput",
 	"BITMAPINFOHEADER_1sizeof",
 	"BITMAP_1sizeof",
