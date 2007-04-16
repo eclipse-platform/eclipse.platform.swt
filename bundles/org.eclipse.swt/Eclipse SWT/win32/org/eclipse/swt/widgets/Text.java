@@ -440,7 +440,8 @@ public void cut () {
 }
 
 int defaultBackground () {
-	return OS.GetSysColor (OS.COLOR_WINDOW);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	return OS.GetSysColor ((bits & OS.ES_READONLY) != 0 ? OS.COLOR_3DFACE : OS.COLOR_WINDOW);
 }
 
 boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
