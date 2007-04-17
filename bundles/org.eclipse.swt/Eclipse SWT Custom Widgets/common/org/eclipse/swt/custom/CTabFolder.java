@@ -131,8 +131,15 @@ public class CTabFolder extends Composite {
 	Color selectionForeground;
 	Color selectionBackground;  //selection fade end
 	Color selectionFadeStart;
-	Color[] selectionHighlightGradientColors = null;  //null is a legal value, check on access (see allocSelectionHighlightGradientColors())
-
+	
+	Color selectionHighlightGradientBegin = null;  //null == no highlight
+	//Although we are given new colours all the time to show different states (active, etc),
+	//some of which may have a highlight and some not, we'd like to retain the highlight colours
+	//as a cache so that we can reuse them if we're again told to show the highlight.
+	//We are relying on the fact that only one tab state usually gets a highlight, so only
+	//a single cache is required. If that happens to not be true, cache simply becomes less effective,
+	//but we don't leak colours.
+	Color[] selectionHighlightGradientColorsCache = null;  //null is a legal value, check on access
 	
 	/* Unselected item appearance */
 	Image bgImage;
@@ -1846,7 +1853,7 @@ void onDispose(Event event) {
 
 	selectionBackground = null;
 	selectionForeground = null;
-	deallocSelectionHighlightGradientColors();	
+	disposeSelectionHighlightGradientColors();	
 }
 void onDragDetect(Event event) {
 	boolean consume = false;
@@ -3224,6 +3231,7 @@ void setSelection(int index, boolean notify) {
  */
 public void setSelectionBackground (Color color) {
 	checkWidget();
+	setSelectionHighlightGradientColor(null);
 	if (selectionBackground == color) return;
 	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
 	selectionBackground = color;
@@ -3288,8 +3296,14 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
  */
 public void setSelectionBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
+	int colorsLength;
+	Color highlightBeginColor = null;  //null == no highlight
+
 	if (colors != null) {
-		if (percents == null || percents.length != colors.length - 1) {
+		//The colors array can optionally have an extra entry which describes the highlight top color
+		//Thus its either one or two larger than the percents array
+		if (percents == null || 
+				! ((percents.length == colors.length - 1) || (percents.length == colors.length - 2))){
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 		for (int i = 0; i < percents.length; i++) {
@@ -3300,17 +3314,27 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 			}
 		}
+		//If the colors is exactly two more than percents then last is highlight
+		//Keep track of *real* colorsLength (minus the highlight)
+		if(percents.length == colors.length - 2) {
+			highlightBeginColor = colors[colors.length - 1];
+			colorsLength = colors.length - 1;
+		} else {
+			colorsLength = colors.length;
+		}
 		if (getDisplay().getDepth() < 15) {
 			// Don't use gradients on low color displays
-			colors = new Color[] {colors[colors.length - 1]};
+			colors = new Color[] {colors[colorsLength - 1]};
 			percents = new int[] {};
 		}
+	} else {
+		colorsLength = 0;
 	}
 	
 	// Are these settings the same as before?
 	if (selectionBgImage == null) {
 		if ((selectionGradientColors != null) && (colors != null) && 
-			(selectionGradientColors.length == colors.length)) {
+			(selectionGradientColors.length == colorsLength)) {
 			boolean same = false;
 			for (int i = 0; i < selectionGradientColors.length; i++) {
 				if (selectionGradientColors[i] == null) {
@@ -3337,10 +3361,10 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		selectionGradientPercents = null;
 		selectionGradientVertical = false;
 		setSelectionBackground((Color)null);
-		deallocSelectionHighlightGradientColors();
+		setSelectionHighlightGradientColor(null);
 	} else {
-		selectionGradientColors = new Color[colors.length];
-		for (int i = 0; i < colors.length; ++i) {
+		selectionGradientColors = new Color[colorsLength];
+		for (int i = 0; i < colorsLength; ++i) {
 			selectionGradientColors[i] = colors[i];
 		}
 		selectionGradientPercents = new int[percents.length];
@@ -3349,11 +3373,69 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		}
 		selectionGradientVertical = vertical;
 		setSelectionBackground(selectionGradientColors[selectionGradientColors.length-1]);
-		allocSelectionHighlightGradientColors();
+		setSelectionHighlightGradientColor(highlightBeginColor);
 	}
 
 	// Refresh with the new settings
 	if (selectedIndex > -1) redraw();
+}
+
+/*
+ * Set the color for the highlight start for selected tabs.
+ * Update the cache of highlight gradient colors if required.
+ */
+
+void setSelectionHighlightGradientColor(Color start) {
+	//Set to null to match all the early return cases.
+	//For early returns, don't realloc the cache, we may get a cache hit next time we're given the highlight
+	selectionHighlightGradientBegin = null;
+
+	if(start == null)
+		return;
+
+	//don't bother on low colour
+	if (getDisplay().getDepth() < 15)
+		return;
+	
+	//don't bother if we don't have a background gradient
+	if(selectionGradientColors.length < 2) 
+		return;
+
+	//OK we know its a valid gradient now
+	selectionHighlightGradientBegin = start;
+
+	if(! isSelectionHighlightColorsCacheHit(start))
+		createSelectionHighlightGradientColors(start);  //if no cache hit then compute new ones
+}
+
+/*
+ * Return true if given start color, the cache of highlight colors we have
+ * would match the highlight colors we'd compute.
+ */
+boolean isSelectionHighlightColorsCacheHit(Color start) {
+
+	if(selectionHighlightGradientColorsCache == null)
+		return false;
+	
+	//this case should never happen but check to be safe before accessing array indexes
+	if(selectionHighlightGradientColorsCache.length < 2)
+		return false;
+
+	Color highlightBegin = selectionHighlightGradientColorsCache[0];
+	Color highlightEnd = selectionHighlightGradientColorsCache[selectionHighlightGradientColorsCache.length - 1];
+
+	if(! highlightBegin.equals(start))
+		return false;	
+	
+	//Compare number of colours we have vs. we'd compute
+	if(selectionHighlightGradientColorsCache.length != tabHeight)
+		return false;
+	
+	//Compare existing highlight end to what it would be (selectionBackground)
+	if(! highlightEnd.equals(selectionBackground))
+		return false;
+	
+	return true;
 }
 
 /**
@@ -3369,11 +3451,12 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
  */
 public void setSelectionBackground(Image image) {
 	checkWidget();
+	setSelectionHighlightGradientColor(null);
 	if (image == selectionBgImage) return;
 	if (image != null) {
 		selectionGradientColors = null;
 		selectionGradientPercents = null;
-		deallocSelectionHighlightGradientColors();
+		disposeSelectionHighlightGradientColors();
 	}
 	selectionBgImage = image;
 	if (selectedIndex > -1) redraw();
@@ -3397,70 +3480,51 @@ public void setSelectionForeground (Color color) {
 }
 
 /*
- * Return an RGB that is the midpoint color between RGB from and to.
- */
-private RGB blend(RGB from, RGB to){
-	int red = (from.red + to.red) / 2;
-	int green = (from.green + to.green) / 2;
-	int blue = (from.blue + to.blue) / 2;
-	return new RGB(red, green, blue);
-}
-
-/*
  * Allocate colors for the highlight line.
  * Colours will be a gradual blend ranging from to.
  * Blend length will be tab height.
  * Recompute this if tab height changes.
  * Could remain null if there'd be no gradient (start=end or low colour display)
  */
-private void allocSelectionHighlightGradientColors() {
-	deallocSelectionHighlightGradientColors(); //dealloc if existing
+void createSelectionHighlightGradientColors(Color start) {
+	disposeSelectionHighlightGradientColors(); //dispose if existing
 
-	//don't bother on low colour
-	if (getDisplay().getDepth() < 15)
+	if(start == null)  //shouldn't happen but just to be safe
 		return;
 
 	//alloc colours for entire height to ensure it matches wherever we stop drawing
 	int fadeGradientSize = tabHeight;
 
-	Color white = getDisplay().getSystemColor(SWT.COLOR_WHITE);
-	RGB backgroundBegin = getSelectionBackgroundGradientBegin().getRGB();
+	RGB from = start.getRGB();
 	RGB to = selectionBackground.getRGB();
 
-	//if start = end then don't bother
-	if(backgroundBegin.equals(to))
-		return;
-	
-	//from is 50/50 white/backgroundBegin so doesn't stand out too much
-	RGB from = blend(white.getRGB(), backgroundBegin);
-
-	selectionHighlightGradientColors = new Color[fadeGradientSize];
+	selectionHighlightGradientColorsCache = new Color[fadeGradientSize];
+	int denom = fadeGradientSize - 1;
 
 	for (int i = 0; i < fadeGradientSize; i++) {
-		int denom = fadeGradientSize;
-		int propFrom = fadeGradientSize - i;
+		int propFrom = denom - i;
 		int propTo = i;
 		int red = (to.red * propTo + from.red * propFrom) / denom;
 		int green = (to.green * propTo  + from.green * propFrom) / denom;
 		int blue = (to.blue * propTo  + from.blue * propFrom) / denom;
-		selectionHighlightGradientColors[i] = new Color(getDisplay(), red, green, blue);
+		selectionHighlightGradientColorsCache[i] = new Color(getDisplay(), red, green, blue);
 	}
 }
 
-private void deallocSelectionHighlightGradientColors() {
-	if(selectionHighlightGradientColors == null)
+void disposeSelectionHighlightGradientColors() {
+	if(selectionHighlightGradientColorsCache == null)
 		return;
-	for (int i = 0; i < selectionHighlightGradientColors.length; i++) {
-		selectionHighlightGradientColors[i].dispose();
+	for (int i = 0; i < selectionHighlightGradientColorsCache.length; i++) {
+		selectionHighlightGradientColorsCache[i].dispose();
 	}
-	selectionHighlightGradientColors = null;
+	selectionHighlightGradientColorsCache = null;
 }
 
 /*
  * Return the gradient start color for selected tabs, which is the start of the tab fade
  * (end is selectionBackground).
  */
-private Color getSelectionBackgroundGradientBegin() {
+Color getSelectionBackgroundGradientBegin() {
 	if (selectionGradientColors == null)
 		return getSelectionBackground();
 	if (selectionGradientColors.length == 0)

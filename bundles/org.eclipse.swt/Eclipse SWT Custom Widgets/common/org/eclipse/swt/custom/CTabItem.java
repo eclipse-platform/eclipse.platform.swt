@@ -411,12 +411,15 @@ void drawSelected(GC gc ) {
  * Only for curved tabs, on top.
  * Do not draw if insufficient colors.
  */
-private void drawHighlight(GC gc, int rightEdge) {
+void drawHighlight(GC gc, int rightEdge) {
 	//only draw for curvy tabs and only draw for top tabs
 	if(parent.simple || this.parent.onBottom)
 		return;
 	
-	Color[] gradients = parent.selectionHighlightGradientColors;
+	if(parent.selectionHighlightGradientBegin == null)
+		return;
+	
+	Color[] gradients = parent.selectionHighlightGradientColorsCache;
 	if(gradients == null)
 		return;
 	int gradientsSize = gradients.length;
@@ -497,7 +500,7 @@ private void drawHighlight(GC gc, int rightEdge) {
  * 
  * @param gc
  */
-private void drawRightUnselectedBorder(GC gc) {
+void drawRightUnselectedBorder(GC gc) {
 
 	int[] shape = null;
 
@@ -543,7 +546,7 @@ private void drawRightUnselectedBorder(GC gc) {
  * @param gc
  * @param shape
  */
-private void drawBorder(GC gc, int[] shape) {
+void drawBorder(GC gc, int[] shape) {
 
 	gc.setForeground(CTabFolder.borderColor);
 	gc.drawPolyline(shape);
@@ -554,7 +557,7 @@ private void drawBorder(GC gc, int[] shape) {
  * 
  * @param gc
  */
-private void drawLeftUnselectedBorder(GC gc) {
+void drawLeftUnselectedBorder(GC gc) {
 
 	int[] shape = null;
 	if (this.parent.onBottom) {
