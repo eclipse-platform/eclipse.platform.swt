@@ -582,6 +582,28 @@ public void deselectAll () {
 	// widget could be disposed at this point
 }
 
+boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, boolean [] consume) {
+	if (filter && (style & SWT.READ_ONLY) == 0) {
+		int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+		if (hwndText != 0) {
+			int [] start = new int [1], end = new int [1];
+			OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
+			if (start [0] != end [0]) {
+				int lParam = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
+				int position = OS.SendMessage (hwndText, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
+				if (start [0] <= position && position < end [0]) {
+					if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
+						if (consume != null) consume [0] = true;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	}
+	return super.dragDetect (hwnd, x, y, filter, detect, consume);
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
