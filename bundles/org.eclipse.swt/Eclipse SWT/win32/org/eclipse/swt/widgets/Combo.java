@@ -714,7 +714,10 @@ public String [] getItems () {
  */
 /*public*/ boolean getListVisible () {
 	checkWidget ();
-	return OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0;
+	if ((style & SWT.DROP_DOWN) != 0) {
+		return OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0;
+	}
+	return true;
 }
 
 String getNameText () {
@@ -1871,6 +1874,16 @@ boolean traverseEscape () {
 	return super.traverseEscape ();
 }
 
+boolean traverseReturn () {
+	if ((style & SWT.DROP_DOWN) != 0) {
+		if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+			OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, 0, 0);
+			return true;
+		}
+	}
+	return super.traverseReturn ();
+}
+
 void unsubclass () {
 	super.unsubclass ();
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
@@ -2184,7 +2197,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	switch (wParam) {
 		case SWT.TAB: return LRESULT.ZERO;
 		case SWT.CR:
-			postEvent (SWT.DefaultSelection);
+			if ((style & SWT.SIMPLE) != 0) postEvent (SWT.DefaultSelection);
 			// FALL THROUGH
 		case SWT.ESC:
 			if ((style & SWT.DROP_DOWN) != 0) {
@@ -2367,6 +2380,20 @@ LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
 	// widget could be disposed at this point
 	display.lastKey = display.lastAscii = 0;
 	return new LRESULT (result);
+}
+
+LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
+	if (ignoreCharacter) return null;
+	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
+	switch (wParam) {
+		case OS.VK_RETURN:
+			if ((style & SWT.DROP_DOWN) != 0) {
+				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
+					postEvent (SWT.DefaultSelection);
+				}
+			}
+	}
+	return result;
 }
 
 LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
