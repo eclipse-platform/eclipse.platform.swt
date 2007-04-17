@@ -181,8 +181,8 @@ void createHandle (int index) {
 	state |= HANDLE;
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
-		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
-	};
+			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
+		};
 	parentingHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
 	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int clazz = display.PtPanelGroup;
@@ -206,7 +206,7 @@ void createItem (TabItem item, int index) {
 		TabItem [] newItems = new TabItem [items.length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
-	}
+	}	
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int oldPtr = args [1];
@@ -234,6 +234,7 @@ void createItem (TabItem item, int index) {
 	OS.free (newPtr);
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
+
 	itemCount++;
 }
 
@@ -248,7 +249,7 @@ void destroyItem (TabItem item) {
 	while (index < count) {
 		if (items [index] == item) break;
 		index++;
-	}
+	}	
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int oldPtr = args [1];
@@ -280,15 +281,23 @@ void destroyItem (TabItem item) {
 public Rectangle getClientArea () {
 	checkWidget();
 	PhArea_t area = new PhArea_t ();
-	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
-	/* Check for versions >= 6.2.1 */
-	if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
-		PhRect_t rect = new PhRect_t();
-		OS.PtCalcCanvas (handle, rect);
-		return new Rectangle (rect.ul_x, rect.ul_y, rect.lr_x - rect.ul_x + 1, rect.lr_y - rect.ul_y + 1);
-	}
+	if (OS.PtWidgetIsRealized(handle) == false) OS.PtExtentWidgetFamily(handle);
 	int clientHandle = OS.PtWidgetChildBack (handle);
 	OS.PtWidgetArea (clientHandle, area);
+	
+	int args[] = {OS.Pt_ARG_MARGIN_RIGHT, 0, 0,
+				  OS.Pt_ARG_MARGIN_BOTTOM, 0, 0,};
+	
+	OS.PtGetResources (handle, args.length / 3, args);
+	PhArea_t parentArea = new PhArea_t();
+	
+	OS.PtWidgetArea(handle, parentArea);
+	int deltaX = area.pos_x - parentArea.pos_x; 
+    int deltaY = area.pos_y - parentArea.pos_y;
+    
+    area.size_w = (short) (parentArea.size_w - ( deltaX + args[1]));
+    area.size_h = (short) (parentArea.size_h - ( deltaY + args [4]));
+    
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
 }
 
