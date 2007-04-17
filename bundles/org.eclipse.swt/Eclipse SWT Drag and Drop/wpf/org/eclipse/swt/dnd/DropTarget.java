@@ -222,7 +222,14 @@ boolean checkEventArgs (int eventArgs) {
 	Widget widget = getDisplay().findWidget (source);
 	OS.GCHandle_Free (source);
 	if (widget == control) return true;
-
+	
+	if (widget instanceof TreeItem) {
+		Composite parent = ((TreeItem) widget).getParent();
+		if (parent == control) return true;
+	} else if (widget instanceof TableItem) {
+		Composite parent = ((TableItem) widget).getParent();
+		if (parent == control) return true;
+	}
 	return false;
 }
 
