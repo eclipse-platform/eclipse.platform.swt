@@ -415,6 +415,20 @@ void createHandle () {
 		setParent ();
 		setSystemMenu ();
 	}
+	/*
+	* Set the default icon for the shell to IDI_APPLICATION.
+	* This is not necessary for native applications but later
+	* versions of Java set the icon in javaw.exe instead of
+	* leaving the default.
+	* 
+	* NOTE:  The icon is not leaked.  It is shared within
+	* the process by all theads and is released when the
+	* process exits.
+	*/
+	if (!OS.IsWinCE) {
+		int hIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
+		OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hIcon);
+	}
 }
 
 void createWidget () {
@@ -980,6 +994,18 @@ void setImages (Image image, Image [] images) {
 				hSmallIcon = smallIcon.handle;
 				break;
 		}
+	} else {
+		/*
+		* Set the default icon for the shell to IDI_APPLICATION.
+		* This is not necessary for native applications but later
+		* versions of Java set the icon in javaw.exe instead of
+		* leaving the default.
+		* 
+		* NOTE:  The icon is not leaked.  It is shared within
+		* the process by all theads and is released when the
+		* process exits.
+		*/
+		hSmallIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
 	}
 	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hSmallIcon);
 	if (largeIcon != null) {

@@ -787,6 +787,7 @@ public class OS extends C {
 	public static final int IDC_SIZEWE = 0x7f84;
 	public static final int IDC_UPARROW = 0x7f04;
 	public static final int IDC_WAIT = 0x7f02;
+	public static final int IDI_APPLICATION = 32512;
 	public static final int IDNO = 0x7;
 	public static final int IDOK = 0x1;
 	public static final int IDRETRY = 0x4;
