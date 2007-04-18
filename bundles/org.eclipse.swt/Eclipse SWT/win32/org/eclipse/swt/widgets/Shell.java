@@ -517,7 +517,7 @@ void createHandle () {
 	/*
 	* The following code is intentionally commented.
 	*/
-//	if ((style & SWT.ON_TOP) != 0) display.lockActiveWindow = true;'
+//	if ((style & SWT.ON_TOP) != 0) display.lockActiveWindow = true;
 	if (handle == 0 || embedded) {
 		super.createHandle ();
 	} else {
