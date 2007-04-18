@@ -425,9 +425,11 @@ void createHandle () {
 	* the process by all theads and is released when the
 	* process exits.
 	*/
-	if (!OS.IsWinCE) {
-		int hIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
-		OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hIcon);
+	if ((state & FOREIGN_HANDLE) == 0) {
+		if (!OS.IsWinCE) {
+			int hIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
+			OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hIcon);
+		}
 	}
 }
 
@@ -1005,7 +1007,9 @@ void setImages (Image image, Image [] images) {
 		* the process by all theads and is released when the
 		* process exits.
 		*/
-		hSmallIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
+		if ((state & FOREIGN_HANDLE) == 0) {
+			hSmallIcon = OS.LoadIcon (0, OS.IDI_APPLICATION);
+		}
 	}
 	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hSmallIcon);
 	if (largeIcon != null) {
