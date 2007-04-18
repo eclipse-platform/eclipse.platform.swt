@@ -1464,16 +1464,24 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.KeyDown: {
+			Event keyEvent = new Event ();
+			keyEvent.time = event.time;
+			keyEvent.character = event.character;
+			keyEvent.keyCode = event.keyCode;
+			keyEvent.stateMask = event.stateMask;
+			notifyListeners (SWT.KeyDown, keyEvent);
+			if (isDisposed ()) break;
+			event.doit = keyEvent.doit;
+			if (!event.doit) break;
+			
 			if (event.character == SWT.CR) {
 				dropDown (false);
-				Event e = new Event ();
-				e.time = event.time;
-				e.stateMask = event.stateMask;
-				notifyListeners (SWT.DefaultSelection, e);
+				Event selectionEvent = new Event ();
+				selectionEvent.time = event.time;
+				selectionEvent.stateMask = event.stateMask;
+				notifyListeners (SWT.DefaultSelection, selectionEvent);
+				if (isDisposed ()) break;
 			}
-			//At this point the widget may have been disposed.
-			// If so, do not continue.
-			if (isDisposed ()) break;
 			
 			if (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN) {
 				event.doit = false;
@@ -1497,20 +1505,11 @@ void textEvent (Event event) {
 					e.stateMask = event.stateMask;
 					notifyListeners (SWT.Selection, e);
 				}
-				//At this point the widget may have been disposed.
-				// If so, do not continue.
 				if (isDisposed ()) break;
 			}
 			
 			// Further work : Need to add support for incremental search in 
 			// pop up list as characters typed in text widget
-						
-			Event e = new Event ();
-			e.time = event.time;
-			e.character = event.character;
-			e.keyCode = event.keyCode;
-			e.stateMask = event.stateMask;
-			notifyListeners (SWT.KeyDown, e);
 			break;
 		}
 		case SWT.KeyUp: {
@@ -1520,6 +1519,7 @@ void textEvent (Event event) {
 			e.keyCode = event.keyCode;
 			e.stateMask = event.stateMask;
 			notifyListeners (SWT.KeyUp, e);
+			event.doit = e.doit;
 			break;
 		}
 		case SWT.MenuDetect: {
