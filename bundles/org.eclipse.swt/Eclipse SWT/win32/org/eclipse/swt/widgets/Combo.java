@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Combo extends Composite {
-	boolean noSelection, ignoreModify, ignoreCharacter;
+	boolean noSelection, ignoreDefaultSelection, ignoreCharacter, ignoreModify;
 	int cbtHook, scrollWidth, visibleCount = 5;
 	
 	/**
@@ -2197,7 +2197,8 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	switch (wParam) {
 		case SWT.TAB: return LRESULT.ZERO;
 		case SWT.CR:
-			if ((style & SWT.SIMPLE) != 0) postEvent (SWT.DefaultSelection);
+			if (!ignoreDefaultSelection) postEvent (SWT.DefaultSelection);
+			ignoreDefaultSelection = false;
 			// FALL THROUGH
 		case SWT.ESC:
 			if ((style & SWT.DROP_DOWN) != 0) {
@@ -2385,13 +2386,14 @@ LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
 LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
-	switch (wParam) {
-		case OS.VK_RETURN:
-			if ((style & SWT.DROP_DOWN) != 0) {
-				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
-					postEvent (SWT.DefaultSelection);
-				}
+	if (result != null) return result;
+	ignoreDefaultSelection = false;
+	if (wParam == OS.VK_RETURN) {
+		if ((style & SWT.DROP_DOWN) != 0) {
+			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+				ignoreDefaultSelection = true;
 			}
+		}
 	}
 	return result;
 }
