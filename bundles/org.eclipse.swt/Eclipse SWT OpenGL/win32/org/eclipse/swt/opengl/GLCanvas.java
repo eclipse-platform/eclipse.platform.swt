@@ -90,9 +90,9 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
-			case SWT.Dispose:
-				WGL.wglDeleteContext (context);
-				break;
+				case SWT.Dispose:
+					WGL.wglDeleteContext (context);
+					break;
 			}
 		}
 	};
@@ -144,7 +144,7 @@ public GLData getGLData () {
  */
 public boolean isCurrent () {
 	checkWidget ();
-	return WGL.wglGetCurrentContext () == handle;
+	return WGL.wglGetCurrentContext () == context;
 }
 
 /**
@@ -158,7 +158,7 @@ public boolean isCurrent () {
  */
 public void setCurrent () {
 	checkWidget ();
-	if (WGL.wglGetCurrentContext () == handle) return;
+	if (WGL.wglGetCurrentContext () == context) return;
 	int hDC = OS.GetDC (handle);
 	WGL.wglMakeCurrent (hDC, context);
 	OS.ReleaseDC (handle, hDC);
