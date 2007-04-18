@@ -146,8 +146,8 @@ public class Display extends Device {
 	int hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
 	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
-	final static char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
-	final static char [] EXPLORERBAR = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 'B', 'A', 'R', 0};
+	static final char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
+	static final char [] EXPLORERBAR = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 'B', 'A', 'R', 0};
 	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
 	static final char [] LISTVIEW = new char [] {'L', 'I', 'S', 'T', 'V', 'I', 'E', 'W', 0};
 	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
@@ -338,8 +338,8 @@ public class Display extends Device {
 	static Display [] Displays = new Display [4];
 
 	/* Multiple Monitors */
-	static Monitor[] monitors = null;
-	static int monitorCount = 0;
+	Monitor[] monitors = null;
+	int monitorCount = 0;
 	
 	/* Modality */
 	Shell [] modalShells;
