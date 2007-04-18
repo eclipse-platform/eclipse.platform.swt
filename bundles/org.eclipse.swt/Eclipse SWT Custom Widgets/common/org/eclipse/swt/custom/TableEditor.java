@@ -148,16 +148,17 @@ Rectangle computeBounds () {
  * Table and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-	if (this.column > -1 && this.column < table.getColumnCount()){
-		TableColumn tableColumn = table.getColumn(this.column);
-		tableColumn.removeControlListener(columnListener);
+	if (table != null && !table.isDisposed()) {
+		if (this.column > -1 && this.column < table.getColumnCount()){
+			TableColumn tableColumn = table.getColumn(this.column);
+			tableColumn.removeControlListener(columnListener);
+		}
 	}
 	columnListener = null;
-	timer = null;
 	table = null;
 	item = null;
 	column = -1;
-	
+	timer = null;
 	super.dispose();
 }
 /**

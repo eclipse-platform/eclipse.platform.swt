@@ -171,13 +171,14 @@ Rectangle computeBounds () {
  * tree and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-	if (this.column > -1 && this.column < tree.getColumnCount()){
-		TreeColumn treeColumn = tree.getColumn(this.column);
-		treeColumn.removeControlListener(columnListener);
+	if (tree != null && !tree.isDisposed()) {
+		if (this.column > -1 && this.column < tree.getColumnCount()){
+			TreeColumn treeColumn = tree.getColumn(this.column);
+			treeColumn.removeControlListener(columnListener);
+		}
+		if (treeListener != null) tree.removeTreeListener(treeListener);
 	}
 	columnListener = null;
-	if (treeListener != null) 
-		tree.removeTreeListener(treeListener);
 	treeListener = null;
 	tree = null;
 	item = null;

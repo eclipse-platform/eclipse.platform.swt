@@ -171,18 +171,21 @@ Rectangle computeBounds () {
  * TableTree and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-	if (treeListener != null) 
-		tableTree.removeTreeListener(treeListener);
-	treeListener = null;	
-	Table table = tableTree.getTable();
-	if (this.column > -1 && this.column < table.getColumnCount()){
-		TableColumn tableColumn = table.getColumn(this.column);
-		tableColumn.removeControlListener(columnListener);
+	if (tableTree != null && !tableTree.isDisposed()) {
+		Table table = tableTree.getTable();
+		if (table != null && !table.isDisposed()) {
+			if (this.column > -1 && this.column < table.getColumnCount()){
+				TableColumn tableColumn = table.getColumn(this.column);
+				tableColumn.removeControlListener(columnListener);
+			}
+		}
+		if (treeListener != null) tableTree.removeTreeListener(treeListener);
 	}
+	treeListener = null;
+	columnListener = null;
 	tableTree = null;
 	item = null;
 	column = -1;
-	
 	super.dispose();
 }
 /**
