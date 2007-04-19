@@ -3023,8 +3023,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	if (hFont == -1) hFont = item.font;
 	int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
 	if (clrText == -1) clrText = item.foreground;
-	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
-	if (clrTextBk == -1) clrTextBk = item.background;
+	int clrTextBk = -1;
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		if (sortColumn != null && sortDirection != SWT.NONE) {
 			if (findImageControl () == null) {
@@ -3034,6 +3033,8 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 			}
 		}
 	}
+	clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
+	if (clrTextBk == -1) clrTextBk = item.background;
 	/*
 	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
 	* even for items that are not selected.  The fix is to get
