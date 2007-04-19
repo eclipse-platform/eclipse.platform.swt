@@ -3297,6 +3297,11 @@ boolean runEnterExit () {
 	if (!OS.StillDown () && theWindow [0] != 0 && theControl [0] != 0) {
 		Rect rect = new Rect ();
 		OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+		CGPoint pt = new CGPoint ();
+		OS.HIViewConvertPoint (pt, theControl [0], 0);
+		where.h -= (int) pt.x;
+		where.v -= (int) pt.y;
+		OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
 		where.h -= rect.left;
 		where.v -= rect.top;
 		int modifiers = OS.GetCurrentEventKeyModifiers ();

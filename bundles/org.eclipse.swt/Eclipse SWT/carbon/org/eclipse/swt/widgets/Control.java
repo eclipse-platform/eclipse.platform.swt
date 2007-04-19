@@ -2884,6 +2884,11 @@ public void setCursor (Cursor cursor) {
 			}
 		}
 	}
+	CGPoint pt = new CGPoint ();
+	OS.HIViewConvertPoint (pt, theControl [0], 0);
+	where.h -= (int) pt.x;
+	where.v -= (int) pt.y;
+	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
 	where.h -= rect.left;
 	where.v -= rect.top;
 	int modifiers = OS.GetCurrentEventKeyModifiers ();
