@@ -412,7 +412,7 @@ void paint(Event event) {
 		x += imageSize.width;
 	}
 	String text = row.getText(columnIndex);
-	if (text != "") { //$NON-NLS-1$
+	if (text.length() > 0) {
 		Rectangle bounds = row.getBounds(columnIndex);
 		Point extent = gc.stringExtent(text);
 		// Temporary code - need a better way to determine table trim
