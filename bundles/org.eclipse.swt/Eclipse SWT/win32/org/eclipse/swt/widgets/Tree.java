@@ -739,7 +739,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 							//if (index == 0) { //must clear
 								//gc.setClipping (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 							//}
-							gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left, y, size.x, size.y);
+							gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left - inset + 1, y, size.x, size.y);
 							gc.dispose ();
 						}
 						OS.SetRect (rect, rect.left + size.x + offset, rect.top, rect.right - inset, rect.bottom);

@@ -488,29 +488,34 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 				rect.right += size.x;
 			}
 			if (getText) {
-				String string = index == 0 ? text : strings != null ? strings [index] : null;
-				if (string != null) {
-					RECT textRect = new RECT ();
-					TCHAR buffer = new TCHAR (parent.getCodePage (), string, false);
-					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
-					int hNewDC = hDC, hFont = 0;
-					if (hDC == 0) {
-						hNewDC = OS.GetDC (hwnd);
-						hFont = cellFont != null ? cellFont [index] : -1;
-						if (hFont == -1) hFont = font;
-						if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
-						hFont = OS.SelectObject (hNewDC, hFont);
-					}
-					OS.DrawText (hNewDC, buffer, buffer.length (), textRect, flags);
-					if (hDC == 0) {
-						OS.SelectObject (hNewDC, hFont);
-						OS.ReleaseDC (hwnd, hNewDC);
-					}
-					if (getImage) {
-						rect.right += textRect.right - textRect.left + Tree.INSET * 3;
-					} else {
-						rect.left = rect.right + Tree.INSET;
-						rect.right = rect.left + (textRect.right - textRect.left) + Tree.INSET;
+				if (fullText) {
+					rect.left = rect.right + Tree.INSET;
+					rect.right = headerRect.right;
+				} else {
+					String string = index == 0 ? text : strings != null ? strings [index] : null;
+					if (string != null) {
+						RECT textRect = new RECT ();
+						TCHAR buffer = new TCHAR (parent.getCodePage (), string, false);
+						int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
+						int hNewDC = hDC, hFont = 0;
+						if (hDC == 0) {
+							hNewDC = OS.GetDC (hwnd);
+							hFont = cellFont != null ? cellFont [index] : -1;
+							if (hFont == -1) hFont = font;
+							if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+							hFont = OS.SelectObject (hNewDC, hFont);
+						}
+						OS.DrawText (hNewDC, buffer, buffer.length (), textRect, flags);
+						if (hDC == 0) {
+							OS.SelectObject (hNewDC, hFont);
+							OS.ReleaseDC (hwnd, hNewDC);
+						}
+						if (getImage) {
+							rect.right += textRect.right - textRect.left + Tree.INSET * 3;
+						} else {
+							rect.left = rect.right + Tree.INSET;
+							rect.right = rect.left + (textRect.right - textRect.left) + Tree.INSET;
+						}
 					}
 				}
 			}
@@ -909,8 +914,11 @@ public String getText (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, true, false, true);
-	rect.left = Math.min (rect.left + (index == 0 ? Tree.INSET : 0), rect.right);
-	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	if (index == 0) rect.left += Tree.INSET - 1;
+	rect.left = Math.min (rect.left, rect.right);
+	rect.right = rect.right - Tree.INSET;
+	int width = Math.max (0, rect.right - rect.left);
+	int height = Math.max (0, rect.bottom - rect.top);
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 

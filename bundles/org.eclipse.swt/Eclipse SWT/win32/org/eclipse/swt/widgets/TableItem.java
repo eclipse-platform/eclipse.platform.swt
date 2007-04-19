@@ -628,8 +628,12 @@ public String getText (int index) {
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
 	RECT rect = getBounds (itemIndex, index, true, false, true);
-	rect.left = Math.min (rect.left + 2 + (index != 0 ? Table.INSET : 0), rect.right);
-	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	rect.left += 2;
+	if (index != 0) rect.left += Table.INSET;
+	rect.left = Math.min (rect.left, rect.right);
+	rect.right = rect.right - Table.INSET;
+	int width = Math.max (0, rect.right - rect.left);
+	int height = Math.max (0, rect.bottom - rect.top);
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
