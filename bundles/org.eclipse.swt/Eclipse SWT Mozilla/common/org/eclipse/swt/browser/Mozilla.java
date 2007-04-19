@@ -1247,7 +1247,7 @@ public String getUrl () {
 	/*
 	 * If the URI indicates that the current page is being rendered from
 	 * memory (ie.- via setText()) then answer about:blank as the URL
-	 * to be consistent with win32.
+	 * to be consistent with IE.
 	 */
 	String location = new String (dest);
 	if (location.equals (URI_FROMMEMORY)) location = ABOUT_BLANK;
@@ -2154,7 +2154,7 @@ int /*long*/ OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest,
 		/*
 		 * If the URI indicates that the page is being rendered from memory
 		 * (ie.- via setText()) then set the event location to about:blank
-		 * to be consistent with win32.
+		 * to be consistent with IE.
 		 */
 		event.location = ABOUT_BLANK;
 	}
@@ -2500,7 +2500,7 @@ int /*long*/ OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 			/*
 			 * If the URI indicates that the page is being rendered from memory
 			 * (ie.- via setText()) then set the event location to about:blank
-			 * to be consistent with win32.
+			 * to be consistent with IE.
 			 */
 			event.location = ABOUT_BLANK;
 		}
@@ -2551,6 +2551,9 @@ int /*long*/ IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredConten
 	}
 
 	XPCOM.memmove(retval, new int[] {preferred ? 1 : 0}, 4); /* PRBool */
+	if (preferred) {
+		XPCOM.memmove (aDesiredContentType, new int /*long*/[] {0}, C.PTR_SIZEOF);
+	}
 	return XPCOM.NS_OK;
 }
 
