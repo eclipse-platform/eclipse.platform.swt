@@ -428,6 +428,7 @@ void createHandle (int index) {
 		OS.gtk_container_add (fixedHandle, handle);
 		textRenderer = OS.gtk_cell_renderer_text_new ();
 		if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.g_object_set (textRenderer, OS.ypad, 0, 0);
 		/*
 		* Feature in GTK.  In version 2.4.9 of GTK, a warning is issued
 		* when a call to gtk_cell_layout_clear() is made. The fix is to hide
