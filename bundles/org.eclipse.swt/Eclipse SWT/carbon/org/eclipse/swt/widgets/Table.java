@@ -302,10 +302,7 @@ public void clear (int index) {
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
 	if (item != null) {
-		if (currentItem != item) {
-			item.clear ();
-			item.cached = false;
-		}
+		if (currentItem != item) item.clear ();
 		if (currentItem == null && drawCount == 0) {
 			int [] id = new int [] {index + 1};
 			OS.UpdateDataBrowserItems (handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
@@ -408,10 +405,7 @@ public void clearAll () {
 	checkWidget();
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
-		if (item != null) {
-			item.clear ();
-			item.cached = false;
-		}
+		if (item != null) item.clear ();
 	}
 	if (currentItem == null && drawCount == 0) {
 		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);

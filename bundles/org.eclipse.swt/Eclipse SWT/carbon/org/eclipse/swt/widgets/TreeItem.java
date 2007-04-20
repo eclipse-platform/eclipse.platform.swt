@@ -859,7 +859,6 @@ public int indexOf (TreeItem item) {
 }
 
 void redraw (int propertyID) {
-	cached = true;
 	if (parent.ignoreRedraw) return;
 	if (parent.drawCount != 0 && propertyID != Tree.CHECK_COLUMN_ID) return;
 	int parentHandle = parent.handle;
@@ -1279,8 +1278,8 @@ public void setImage (int index, Image image) {
 		}
 		images [index] = image;	
 	}
-	if (index == 0) parent.setScrollWidth (this);
 	cached = true;
+	if (index == 0) parent.setScrollWidth (this);
 	redraw (OS.kDataBrowserNoItem);
 }
 
@@ -1361,8 +1360,8 @@ public void setText (int index, String string) {
 		if (string.equals (strings [index])) return;
 		strings [index] = string;
 	}
-	if (index == 0) parent.setScrollWidth (this);
 	cached = true;
+	if (index == 0) parent.setScrollWidth (this);
 	redraw (OS.kDataBrowserNoItem);
 }
 
