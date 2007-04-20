@@ -25,6 +25,7 @@ class MozillaDelegate {
 	boolean hasFocus;
 	Callback callback3;
 	static Hashtable handles = new Hashtable ();
+	static final boolean USE_COCOA_VIEW_CREATE = false;
 	
 MozillaDelegate (Browser browser) {
 	super ();
@@ -90,7 +91,7 @@ int getHandle () {
 	embedHandle = Cocoa.objc_msgSend (embedHandle, Cocoa.S_initWithFrame, r);
 	int rc;
 	int[] outControl = new int[1];
-	if (OS.VERSION >= 0x1050) {
+	if (USE_COCOA_VIEW_CREATE && OS.VERSION >= 0x1050) {
 		rc = Cocoa.HICocoaViewCreate (embedHandle, 0, outControl);
 	} else {
 		try {
