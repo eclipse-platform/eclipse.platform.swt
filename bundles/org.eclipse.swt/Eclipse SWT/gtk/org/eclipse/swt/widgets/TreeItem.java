@@ -886,7 +886,12 @@ public String getText (int index) {
 	// TODO fully test on early and later versions of GTK
 	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
 	int /*long*/ parentHandle = parent.handle;
-	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
+	int /*long*/ column = 0;
+	if (index >= 0 && index < parent.columnCount) {
+		column = parent.columns [index].handle;
+	} else {
+		column = OS.gtk_tree_view_get_column (parentHandle, index);
+	}
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
 	int /*long*/ textRenderer = parent.getTextRenderer (column);
 	int /*long*/ pixbufRenderer = parent.getPixbufRenderer (column);
