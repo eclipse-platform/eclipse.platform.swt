@@ -20,13 +20,6 @@ import org.eclipse.swt.widgets.*;
 
 class Safari extends WebBrowser {
 	
-	/* Package Name */
-	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
-	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
-	static final int MAX_PROGRESS = 100;
-	
-	static Callback Callback3, Callback7;
-
 	/* Objective-C WebView delegate */
 	int delegate;
 	
@@ -45,7 +38,14 @@ class Safari extends WebBrowser {
 	//TEMPORARY CODE
 //	boolean doit;
 
+	static Callback Callback3, Callback7;
+
 	static final int MIN_SIZE = 16;
+	static final int MAX_PROGRESS = 100;
+	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
+	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
+	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
 
 	static {
 		NativeClearSessions = new Runnable() {
@@ -553,10 +553,9 @@ void _setText(String html) {
 	html.getChars(0, length, buffer, 0);
 	int string = OS.CFStringCreateWithCharacters(0, buffer, length);
 
-	String baseURL = "about:blank"; //$NON-NLS-1$
-	length = baseURL.length();
+	length = URI_FROMMEMORY.length();
 	buffer = new char[length];
-	baseURL.getChars(0, length, buffer, 0);
+	URI_FROMMEMORY.getChars(0, length, buffer, 0);
 	int URLString = OS.CFStringCreateWithCharacters(0, buffer, length);
 	
 	/*
@@ -773,8 +772,15 @@ void didCommitLoadForFrame(int frame) {
 	range.length = length;
 	OS.CFStringGetCharacters(s, range, buffer);
 	String url2 = new String(buffer);
-	final Display display = browser.getDisplay();
+	/*
+	 * If the URI indicates that the page is being rendered from memory
+	 * (via setText()) then set it to about:blank to be consistent with IE.
+	 */
+	if (url2.startsWith (URI_FROMMEMORY)) {
+		url2 = ABOUT_BLANK + url2.substring (URI_FROMMEMORY.length ());
+	}
 
+	final Display display = browser.getDisplay();
 	boolean top = frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
 	if (top) {
 		/* reset resource status variables */
@@ -811,16 +817,18 @@ void didCommitLoadForFrame(int frame) {
 		statusText.display = display;
 		statusText.widget = browser;
 		statusText.text = url2;
-		for (int i = 0; i < statusTextListeners.length; i++)
+		for (int i = 0; i < statusTextListeners.length; i++) {
 			statusTextListeners[i].changed(statusText);
+		}
 	}
 	LocationEvent location = new LocationEvent(browser);
 	location.display = display;
 	location.widget = browser;
 	location.location = url2;
 	location.top = top;
-	for (int i = 0; i < locationListeners.length; i++)
+	for (int i = 0; i < locationListeners.length; i++) {
 		locationListeners[i].changed(location);
+	}
 }
 
 /* WebResourceLoadDelegate */
@@ -921,8 +929,9 @@ int createWebViewWithRequest(int request) {
 	newEvent.widget = browser;
 	newEvent.required = true;
 	if (openWindowListeners != null) {
-		for (int i = 0; i < openWindowListeners.length; i++)
+		for (int i = 0; i < openWindowListeners.length; i++) {
 			openWindowListeners[i].open(newEvent);
+		}
 	}
 	int webView = 0;
 	Browser browser = newEvent.browser;
@@ -973,8 +982,9 @@ void webViewShow(int sender) {
 	newEvent.menuBar = true;
 	newEvent.statusBar = statusBar;
 	newEvent.toolBar = toolBar;
-	for (int i = 0; i < visibilityWindowListeners.length; i++)
+	for (int i = 0; i < visibilityWindowListeners.length; i++) {
 		visibilityWindowListeners[i].show(newEvent);
+	}
 	location = null;
 	size = null;
 }
@@ -1041,8 +1051,9 @@ void webViewClose() {
 	WindowEvent newEvent = new WindowEvent(browser);
 	newEvent.display = browser.getDisplay();
 	newEvent.widget = browser;
-	for (int i = 0; i < closeWindowListeners.length; i++)
-		closeWindowListeners[i].close(newEvent);	
+	for (int i = 0; i < closeWindowListeners.length; i++) {
+		closeWindowListeners[i].close(newEvent);
+	}
 	browser.dispose();
 	if (parent.isDisposed()) return;
 	/*
@@ -1096,8 +1107,9 @@ void setStatusText(int text) {
 	statusText.display = browser.getDisplay();
 	statusText.widget = browser;
 	statusText.text = new String(buffer);
-	for (int i = 0; i < statusTextListeners.length; i++)
+	for (int i = 0; i < statusTextListeners.length; i++) {
 		statusTextListeners[i].changed(statusText);
+	}
 }
 
 void setResizable(int visible) {
@@ -1129,6 +1141,13 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	range.length = length;
 	OS.CFStringGetCharacters(s, range, buffer);
 	String url2 = new String(buffer);
+	/*
+	 * If the URI indicates that the page is being rendered from memory
+	 * (via setText()) then set it to about:blank to be consistent with IE.
+	 */
+	if (url2.startsWith (URI_FROMMEMORY)) {
+		url2 = ABOUT_BLANK + url2.substring (URI_FROMMEMORY.length ());
+	}
 
 	LocationEvent newEvent = new LocationEvent(browser);
 	newEvent.display = browser.getDisplay();
@@ -1137,8 +1156,9 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	newEvent.doit = true;
 	if (locationListeners != null) {
 		changingLocation = true;
-		for (int i = 0; i < locationListeners.length; i++) 
+		for (int i = 0; i < locationListeners.length; i++) {
 			locationListeners[i].changing(newEvent);
+		}
 		changingLocation = false;
 	}
 

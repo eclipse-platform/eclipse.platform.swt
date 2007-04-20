@@ -1244,13 +1244,15 @@ public String getUrl () {
 		uri.Release ();
 	}
 	if (dest == null) return ""; //$NON-NLS-1$
-	/*
-	 * If the URI indicates that the current page is being rendered from
-	 * memory (ie.- via setText()) then answer about:blank as the URL
-	 * to be consistent with IE.
-	 */
+
 	String location = new String (dest);
-	if (location.equals (URI_FROMMEMORY)) location = ABOUT_BLANK;
+	/*
+	 * If the URI indicates that the page is being rendered from memory
+	 * (via setText()) then set it to about:blank to be consistent with IE.
+	 */
+	if (location.startsWith (URI_FROMMEMORY)) {
+		location = ABOUT_BLANK + location.substring (URI_FROMMEMORY.length ());
+	}
 	return location;
 }
 
@@ -1943,7 +1945,7 @@ int /*long*/ OnStateChange (int /*long*/ aWebProgress, int /*long*/ aRequest, in
 			XPCOM.nsEmbedCString_delete (name);
 			String url = new String (dest);
 
-			if (url.equals (ABOUT_BLANK)) {
+			if (url.startsWith (ABOUT_BLANK)) {
 				/*
 				 * Setting the browser's content with nsIWebBrowserStream invalidates the 
 				 * DOM listeners that were hooked on it (about:blank), so remove them and
@@ -2144,19 +2146,18 @@ int /*long*/ OnLocationChange (int /*long*/ aWebProgress, int /*long*/ aRequest,
 	 * to about:blank and fires the corresponding navigation events.  Do not send
 	 * this event on the user since it is not expected.
 	 */
-	if (Is_1_8 && aRequest == 0 && url.equals (ABOUT_BLANK)) return XPCOM.NS_OK;
+	if (Is_1_8 && aRequest == 0 && url.startsWith (ABOUT_BLANK)) return XPCOM.NS_OK;
 
 	LocationEvent event = new LocationEvent (browser);
 	event.display = browser.getDisplay ();
 	event.widget = browser;
 	event.location = url;
-	if (event.location.equals (URI_FROMMEMORY)) {
-		/*
-		 * If the URI indicates that the page is being rendered from memory
-		 * (ie.- via setText()) then set the event location to about:blank
-		 * to be consistent with IE.
-		 */
-		event.location = ABOUT_BLANK;
+	/*
+	 * If the URI indicates that the page is being rendered from memory
+	 * (via setText()) then set it to about:blank to be consistent with IE.
+	 */
+	if (event.location.startsWith (URI_FROMMEMORY)) {
+		event.location = ABOUT_BLANK + event.location.substring (URI_FROMMEMORY.length ());
 	}
 	event.top = aTop[0] == aDOMWindow[0];
 	for (int i = 0; i < locationListeners.length; i++) {
@@ -2496,13 +2497,12 @@ int /*long*/ OnStartURIOpen (int /*long*/ aURI, int /*long*/ retval) {
 		event.display = browser.getDisplay();
 		event.widget = browser;
 		event.location = value;
-		if (event.location.equals (URI_FROMMEMORY)) {
-			/*
-			 * If the URI indicates that the page is being rendered from memory
-			 * (ie.- via setText()) then set the event location to about:blank
-			 * to be consistent with IE.
-			 */
-			event.location = ABOUT_BLANK;
+		/*
+		 * If the URI indicates that the page is being rendered from memory
+		 * (via setText()) then set it to about:blank to be consistent with IE.
+		 */
+		if (event.location.startsWith (URI_FROMMEMORY)) {
+			event.location = ABOUT_BLANK + event.location.substring (URI_FROMMEMORY.length ());
 		}
 		event.doit = doit;
 		for (int i = 0; i < locationListeners.length; i++) {
