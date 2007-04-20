@@ -375,6 +375,7 @@ public class OS extends C {
 	public static final int CB_SETDROPPEDWIDTH= 0x0160;
 	public static final int CB_SETEDITSEL = 0x142;
 	public static final int CB_SETHORIZONTALEXTENT = 0x015e;
+	public static final int CB_SETITEMHEIGHT = 0x0153;
 	public static final int CB_SHOWDROPDOWN = 0x14f;
 	public static final int CBXS_NORMAL = 1;
 	public static final int CBXS_HOT = 2;
