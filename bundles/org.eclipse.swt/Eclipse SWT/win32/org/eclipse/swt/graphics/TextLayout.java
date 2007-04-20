@@ -180,7 +180,8 @@ void breakRun(StyleItem run) {
 	char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
 	int hHeap = OS.GetProcessHeap();
-	run.psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length); 
+	run.psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length);
+	if (run.psla == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.ScriptBreak(chars, chars.length, run.analysis, run.psla);
 }
 
@@ -396,6 +397,7 @@ void computeRuns (GC gc) {
 					int iDx = item.width * wrapWidth / lineWidth;
 					if (iDx != item.width) {
 						item.justify = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, item.glyphCount * 4);
+						if (item.justify == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 						OS.ScriptJustify(item.visAttrs, item.advances, item.glyphCount, iDx - item.width, 2, item.justify);
 						item.width = iDx;
 					}
@@ -1854,6 +1856,7 @@ StyleItem[] itemize () {
 	
 	int hHeap = OS.GetProcessHeap();
 	int pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);
+	if (pItems == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] pcItems = new int[1];	
 	char[] chars = new char[length];
 	segmentsText.getChars(0, length, chars, 0); 
@@ -2371,9 +2374,13 @@ void shape (final int hdc, final StyleItem run) {
 	int maxGlyphs = (chars.length * 3 / 2) + 16;
 	int hHeap = OS.GetProcessHeap();
 	run.glyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
+	if (run.glyphs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.clusters = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
+	if (run.clusters == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.visAttrs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * SCRIPT_VISATTR_SIZEOF);
+	if (run.visAttrs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, 4);
+	if (run.psc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (!shape(hdc, run, chars, buffer,  maxGlyphs)) {
 		if (mLangFontLink2 != 0) {
 			int[] dwCodePages = new int[1];
@@ -2403,7 +2410,9 @@ void shape (final int hdc, final StyleItem run) {
 	}
 	int[] abc = new int[3];
 	run.advances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
+	if (run.advances == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.goffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
+	if (run.goffsets == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, run.advances, run.goffsets, abc);
 	if (run.style != null && run.style.metrics != null) {
 		GlyphMetrics metrics = run.style.metrics;

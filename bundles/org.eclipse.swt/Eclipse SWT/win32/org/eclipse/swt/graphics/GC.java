@@ -2414,6 +2414,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	if (OS.IsWinNT && rop2 != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
 		final int hHeap = OS.GetProcessHeap();
 		final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
+		if (pMesh == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		final int pVertex = pMesh + GRADIENT_RECT.sizeof;
 	
 		GRADIENT_RECT gradientRect = new GRADIENT_RECT();

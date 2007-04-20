@@ -669,7 +669,7 @@ public Image (Device device, String filename) {
 										int paletteSize = Gdip.Image_GetPaletteSize(bitmap);
 										int hHeap = OS.GetProcessHeap();
 										int palette = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, paletteSize);
-										if (palette == 0) break;
+										if (palette == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 										Gdip.Image_GetPalette(bitmap, palette, paletteSize);
 										ColorPalette colorPalette = new ColorPalette();
 										Gdip.MoveMemory(colorPalette, palette, ColorPalette.sizeof);
@@ -926,6 +926,7 @@ int[] createGdipImage() {
 				}
 				int hHeap = OS.GetProcessHeap();
 				int pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, srcData.length);
+				if (pixels == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				OS.MoveMemory(pixels, srcData, sizeInBytes);
 				return new int[]{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, Gdip.PixelFormat32bppARGB, pixels), pixels};
 			}
@@ -982,6 +983,7 @@ int[] createGdipImage() {
 				device.internal_dispose_GC(hDC, null);
 				int hHeap = OS.GetProcessHeap();
 				pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, srcData.length);
+				if (pixels == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				OS.MoveMemory(pixels, srcData, srcData.length);
 				img = Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, Gdip.PixelFormat32bppARGB, pixels);
 			} else {
@@ -1229,7 +1231,8 @@ public ImageData getImageData() {
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
 			int hHeap = OS.GetProcessHeap();
-			int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);	
+			int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+			if (lpvBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
 			OS.MoveMemory(data, lpvBits, imageSize);
@@ -1286,6 +1289,7 @@ public ImageData getImageData() {
 				imageSize = bmiHeader.biSizeImage;
 				maskData = new byte[imageSize];
 				int lpvMaskBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+				if (lpvMaskBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, lpvMaskBits, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(maskData, lpvMaskBits, imageSize);	
@@ -1424,7 +1428,8 @@ public ImageData getImageData() {
 				}
 			} else {
 				int hHeap = OS.GetProcessHeap();
-				int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);		
+				int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+				if (lpvBits == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, handle, 0, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(data, lpvBits, imageSize);
