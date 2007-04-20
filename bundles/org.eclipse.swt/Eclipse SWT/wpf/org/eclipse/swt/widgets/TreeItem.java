@@ -821,6 +821,25 @@ public TreeItem getParentItem () {
 	return result;
 }
 
+/*public*/ Rectangle getTextBounds (int index) {
+	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
+	int parentHandle = parent.topHandle ();
+	int part = findPart (index, Tree.TEXT_PART_NAME);
+	int point = OS.gcnew_Point (0, 0);
+	if (point == 0) error (SWT.ERROR_NO_HANDLES);
+	int location = OS.UIElement_TranslatePoint (part, point, parentHandle);
+	int x = (int) OS.Point_X (location);
+	int y = (int) OS.Point_Y (location);
+	OS.GCHandle_Free (point);
+	OS.GCHandle_Free (location);
+	int width = (int) OS.FrameworkElement_ActualWidth (part);
+	int height = (int) OS.FrameworkElement_ActualHeight (part);
+	OS.GCHandle_Free (part);
+	return new Rectangle (x, y, width, height);
+}
+
 public String getText () {
 	checkWidget ();
 	return getText (0);
