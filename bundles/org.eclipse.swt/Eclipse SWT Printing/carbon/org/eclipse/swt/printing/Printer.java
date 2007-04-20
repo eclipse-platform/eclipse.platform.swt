@@ -430,6 +430,7 @@ public void endJob() {
 		inPage = false;
 	}
 	OS.PMSessionEndDocumentNoDialog(printSession);
+	context = 0;
 }
 
 /**
@@ -442,6 +443,12 @@ public void endJob() {
 public void cancelJob() {
 	checkDevice();
 	OS.PMSessionSetError(printSession, OS.kPMCancel);
+	if (inPage) {
+		OS.PMSessionEndPageNoDialog(printSession);
+		inPage = false;
+	}
+	OS.PMSessionEndDocumentNoDialog(printSession);
+	context = 0;
 }
 
 static DeviceData checkNull (PrinterData data) {
