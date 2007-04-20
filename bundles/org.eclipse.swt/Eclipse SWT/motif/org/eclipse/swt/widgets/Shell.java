@@ -1814,10 +1814,16 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 					}
 					break;
 				case OS.FocusOut:
+					Display display = this.display;
 					if (display.postFocusOut) {
 						postEvent (SWT.Deactivate);
 					} else {
 						sendEvent (SWT.Deactivate);
+					}
+					Control focusedCombo = display.focusedCombo;
+					display.focusedCombo = null;
+					if (focusedCombo != null && focusedCombo != this && !focusedCombo.isDisposed ()) {
+						display.sendFocusEvent (focusedCombo, SWT.FocusOut);
 					}
 					break;
 			}

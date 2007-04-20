@@ -1939,6 +1939,17 @@ boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateM
 	if (isDisposed ()) return false;
 	return event.doit;
 }
+void sendFocusEvent (int type) {
+	Display display = this.display;
+	if (type == SWT.FocusIn) {
+		Control focusedCombo = display.focusedCombo;
+		display.focusedCombo = null;
+		if (focusedCombo != null && focusedCombo != this && !focusedCombo.isDisposed ()) {
+			display.sendFocusEvent (focusedCombo, SWT.FocusOut);
+		}
+	}
+	display.sendFocusEvent (this, type);
+}
 void sendHelpEvent (int callData) {
 	Control control = this;
 	while (control != null) {
@@ -3383,11 +3394,7 @@ int xFocusIn (XFocusChangeEvent xEvent) {
 		int focusHandle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
 		OS.XmImSetFocusValues (focusHandle, null, 0);
 	} 
-	Display display = this.display;
-	display.focusEvent = SWT.FocusIn;
-	sendEvent (SWT.FocusIn);
-	// widget could be disposed at this point
-	display.focusEvent = SWT.None;
+	sendFocusEvent (SWT.FocusIn);
 	return 0;
 }
 int xFocusOut (XFocusChangeEvent xEvent) {
@@ -3417,17 +3424,8 @@ int xFocusOut (XFocusChangeEvent xEvent) {
 			OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
 		}
 	}
-	
-	/* Issue the focus out event */
-	if (display.postFocusOut) {
-		postEvent (SWT.FocusOut);
-	} else {
-		Display display = this.display;
-		display.focusEvent = SWT.FocusOut;
-		sendEvent (SWT.FocusOut);
-		// widget could be disposed at this point
-		display.focusEvent = SWT.None;
-	}
+
+	sendFocusEvent (SWT.FocusOut);
 
 	/* Restore XmNtraversalOn if it was focus was forced */
 	if (handle == 0) return 0;

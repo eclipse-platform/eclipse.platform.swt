@@ -993,6 +993,7 @@ void register () {
 }
 void releaseWidget () {
 	super.releaseWidget ();
+	if (display.focusedCombo == this) display.focusedCombo = null;
 	/*
 	* Bug in Motif.  Disposing a Combo while its list is visible
 	* causes Motif to crash.  The fix is to hide the drop down
@@ -1165,6 +1166,14 @@ public void select (int index) {
 		ignoreSelect = true;
 		OS.XtSetValues(handle, argList2, argList2.length / 2);
 		ignoreSelect = false;
+	}
+}
+void sendFocusEvent (int type) {
+	Display display = this.display;
+	Control focusedCombo = display.focusedCombo;
+	if (type == SWT.FocusIn && focusedCombo != this) {
+		super.sendFocusEvent (type);
+		if (!isDisposed ()) display.focusedCombo = this;
 	}
 }
 boolean sendIMKeyEvent (int type, XKeyEvent xEvent) {

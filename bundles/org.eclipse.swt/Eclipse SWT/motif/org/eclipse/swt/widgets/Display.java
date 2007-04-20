@@ -117,6 +117,7 @@ public class Display extends Device {
 	/* Focus */
 	int focusEvent;
 	boolean postFocusOut;
+	Combo focusedCombo;
 	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	Font defaultFont;
@@ -2976,6 +2977,7 @@ void releaseDisplay () {
 	COLOR_INFO_BACKGROUND = null;
 
 	popups = null;
+	focusedCombo = null;
 }
 void releaseToolTipHandle (int handle) {
 	if (mouseHoverHandle == handle) removeMouseHoverTimeOut ();
@@ -3174,6 +3176,21 @@ void sendEvent (int eventType, Event event) {
 	if (event.time == 0) event.time = getLastEventTime ();
 	if (!filterEvent (event)) {
 		if (eventTable != null) eventTable.sendEvent (event);
+	}
+}
+void sendFocusEvent (Control control, int type) {
+	if (type == SWT.FocusIn) {		
+		focusEvent = SWT.FocusIn;
+		control.sendEvent (SWT.FocusIn);
+		focusEvent = SWT.None;
+	} else {
+		if (postFocusOut) {
+			control.postEvent (SWT.FocusOut);
+		} else {
+			focusEvent = SWT.FocusOut;
+			control.sendEvent (SWT.FocusOut);
+			focusEvent = SWT.None;
+		}
 	}
 }
 /**
