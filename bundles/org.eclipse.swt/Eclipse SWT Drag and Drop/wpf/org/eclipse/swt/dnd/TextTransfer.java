@@ -69,7 +69,7 @@ protected int[] getTypeIds(){
  *  
  * @see Transfer#javaToNative
  */
-protected void javaToNative (Object object, TransferData transferData) {
+public void javaToNative (Object object, TransferData transferData) {
 	if (!checkText(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
@@ -85,7 +85,7 @@ protected void javaToNative (Object object, TransferData transferData) {
  * 
  * @see Transfer#nativeToJava
  */
-protected Object nativeToJava(TransferData transferData) {
+public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.pValue == 0) return null;
 
 	return createJavaString(transferData.pValue);
