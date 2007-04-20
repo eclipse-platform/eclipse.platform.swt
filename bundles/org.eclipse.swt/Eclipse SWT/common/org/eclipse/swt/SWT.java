@@ -650,7 +650,15 @@ public class SWT {
 	 * @since 3.2
 	 */
 	public static final int FOREGROUND = 1 << 4;
-
+	
+	/**
+	 * Event detail field that indicates a user-interface component
+	 * state is hot (value is 1&lt;&lt;5).
+	 *
+	 * @since 3.3
+	 */
+	public static final int HOT = 1 << 5;
+	
 	/* This code is intentionally commented */
 	//public static final int PRESSED = 1 << 3;
 	//public static final int ACTIVE = 1 << 4;
