@@ -973,6 +973,48 @@ String getText (int columnIndex, boolean checkData) {
 	if (texts [columnIndex] == null) return "";	//$NON-NLS-1$
 	return texts [columnIndex];
 }
+/*public*/ Rectangle getTextBounds (int columnIndex) {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	TableColumn[] columns = parent.columns;
+	int columnCount = columns.length;
+	int validColumnCount = Math.max (1, columnCount);
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	/*
+	 * If there are no columns then this is the bounds of the receiver's content,
+	 * starting from the text.
+	 */
+	if (columnCount == 0) {
+		int x = getTextX (0) + MARGIN_TEXT;
+		int width = Math.max (0, getContentX(0) + getContentWidth (0) - x);
+		return new Rectangle (
+			x,
+			parent.getItemY (this),
+			width,
+			parent.itemHeight - 1);
+	}
+	
+	TableColumn column = columns [columnIndex];
+	if (columnIndex == 0) {
+		/* 
+		 * For column 0 this is bounds from the beginning of the content to the
+		 * end of the column, starting from the text.
+		 */
+		int x = getTextX (0) + MARGIN_TEXT;
+		int offset = x - column.getX ();
+		int width = Math.max (0, column.width - offset - 1);		/* max is for columns with small widths */
+		return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
+	}
+	/*
+	 * For columns > 0 this is the bounds of the table cell, starting from the text.
+	 */
+	int x = getTextX (columnIndex) + MARGIN_TEXT;
+	int offset = x - column.getX ();
+	int width = Math.max (0, column.width - offset - MARGIN_TEXT);
+	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
+}
 /*
  * Returns the x value where the receiver's text begins.
  */

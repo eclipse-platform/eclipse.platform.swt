@@ -878,6 +878,63 @@ public String getText (int index) {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
+/*public*/ Rectangle getTextBounds (int index) {
+	checkWidget ();
+	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return new Rectangle (0, 0, 0, 0);
+	// TODO fully test on early and later versions of GTK
+	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
+	int /*long*/ parentHandle = parent.handle;
+	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
+	if (column == 0) return new Rectangle (0, 0, 0, 0);
+	int /*long*/ textRenderer = parent.getTextRenderer (column);
+	int /*long*/ pixbufRenderer = parent.getPixbufRenderer (column);
+	if (textRenderer == 0 || pixbufRenderer == 0)  return new Rectangle (0, 0, 0, 0);
+
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	OS.gtk_widget_realize (parentHandle);
+	
+	boolean isExpander = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle) > 0;
+	boolean isExpanded = OS.gtk_tree_view_row_expanded (parentHandle, path);
+	OS.gtk_tree_view_column_cell_set_cell_data (column, parent.modelHandle, handle, isExpander, isExpanded);
+	
+	GdkRectangle rect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
+	OS.gtk_tree_path_free (path);
+	int right = rect.x + rect.width;
+
+	int [] x = new int [1], w = new int [1];
+	parent.ignoreSize = true;
+	OS.gtk_cell_renderer_get_size (textRenderer, parentHandle, null, null, null, w, null);
+	parent.ignoreSize = false;
+	int [] buffer = new int [1];
+	if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (parentHandle) == column) {
+		OS.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
+		rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+	}
+	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+	int horizontalSeparator = buffer[0];
+	rect.x += horizontalSeparator;
+	if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
+		OS.gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
+		rect.x += x [0];
+	} else {
+		if ((parent.style & SWT.CHECK) != 0) {
+			OS.gtk_cell_renderer_get_size (parent.checkRenderer, parentHandle, null, null, null, w, null);
+			rect.x += w [0] + horizontalSeparator;
+		}
+		OS.gtk_cell_renderer_get_size (pixbufRenderer, parentHandle, null, null, null, w, null);
+		rect.x += w [0] + horizontalSeparator;
+	}
+	if (parent.columnCount > 0) {
+		if (rect.x + rect.width > right) {
+			rect.width = Math.max (0, right - rect.x);
+		}
+	}
+	return new Rectangle (rect.x, rect.y, rect.width + 1, rect.height + 1);
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 

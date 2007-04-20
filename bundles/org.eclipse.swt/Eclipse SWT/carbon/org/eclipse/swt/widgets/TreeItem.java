@@ -384,7 +384,7 @@ public Rectangle getBounds () {
 	int width = 0;
 	if (image != null) {
 		Rectangle bounds = image.getBounds ();
-		x += bounds.width + 2;
+		x += bounds.width + parent.getGap ();
 	}
 	GC gc = new GC (parent);
 	Point extent = gc.stringExtent (text);
@@ -787,6 +787,47 @@ public String getText (int index) {
 		}
 	}
 	return "";
+}
+
+/*public*/ Rectangle getTextBounds (int index) {
+	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
+	Rect rect = new Rect();
+	int columnId = parent.columnCount == 0 ? parent.column_id : parent.columns [index].id;
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int[] disclosure = new int [1];
+	OS.GetDataBrowserListViewDisclosureColumn (parent.handle, disclosure, new boolean [1]);
+	int imageWidth = 0;
+	int margin = index == 0 ? 0 : parent.getInsetWidth (columnId, false) / 2;
+	Image image = getImage (index);
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		imageWidth = bounds.width + parent.getGap ();
+	}
+	int x, y, width, height;
+	if (OS.VERSION >= 0x1040 && disclosure [0] != columnId) {
+		if (parent.getLinesVisible ()) {
+			rect.left += Tree.GRID_WIDTH;
+			rect.top += Tree.GRID_WIDTH;
+		}
+		x = rect.left + imageWidth + margin;
+		y = rect.top;
+		width = Math.max (0, rect.right - rect.left - imageWidth - margin * 2);;
+		height = rect.bottom - rect.top;
+	} else {
+		Rect rect2 = new Rect();
+		if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		x = rect2.left + imageWidth + margin;
+		y = rect2.top;
+		width = Math.max (0, rect.right - rect2.left + 1 - imageWidth - margin * 2);
+		height = rect2.bottom - rect2.top + 1;
+	}
+	return new Rectangle (x, y, width, height);
 }
 
 /**
