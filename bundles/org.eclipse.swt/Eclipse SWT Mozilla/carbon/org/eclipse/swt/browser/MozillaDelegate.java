@@ -14,7 +14,7 @@ import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
-import org.eclipse.swt.internal.LONG;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.widgets.*;
@@ -23,6 +23,7 @@ class MozillaDelegate {
 	Browser browser;
 	Listener listener;
 	boolean hasFocus;
+	Callback callback3;
 	static Hashtable handles = new Hashtable ();
 	
 MozillaDelegate (Browser browser) {
@@ -76,26 +77,32 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return buffer;
 }
 
+public int eventProc3 (int nextHandler, int theEvent, int userData) {
+	browser.getShell ().forceActive ();
+	((Mozilla)browser.webBrowser).Activate ();
+	return OS.eventNotHandledErr;
+}
+
 int getHandle () {
     int embedHandle = Cocoa.objc_msgSend (Cocoa.C_NSImageView, Cocoa.S_alloc);
-	if (embedHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	NSRect r = new NSRect();
+	if (embedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	NSRect r = new NSRect ();
 	embedHandle = Cocoa.objc_msgSend (embedHandle, Cocoa.S_initWithFrame, r);
 	int rc;
 	int[] outControl = new int[1];
 	if (OS.VERSION >= 0x1050) {
-		rc = Cocoa.HICocoaViewCreate(embedHandle, 0, outControl);
+		rc = Cocoa.HICocoaViewCreate (embedHandle, 0, outControl);
 	} else {
 		try {
-			System.loadLibrary("frameembedding");
+			System.loadLibrary ("frameembedding"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {}
-		rc = Cocoa.HIJavaViewCreateWithCocoaView(outControl, embedHandle);
+		rc = Cocoa.HIJavaViewCreateWithCocoaView (outControl, embedHandle);
 	}
-	if (rc != OS.noErr || outControl[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (rc != OS.noErr || outControl[0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	int subHIView = outControl[0];
-	HILayoutInfo newLayoutInfo = new HILayoutInfo();
+	HILayoutInfo newLayoutInfo = new HILayoutInfo ();
 	newLayoutInfo.version = 0;
-	OS.HIViewGetLayoutInfo(subHIView, newLayoutInfo);
+	OS.HIViewGetLayoutInfo (subHIView, newLayoutInfo);
 	HISideBinding biding = newLayoutInfo.binding.top;
 	biding.toView = 0;
 	biding.kind = OS.kHILayoutBindMin;
@@ -112,16 +119,24 @@ int getHandle () {
 	biding.toView = 0;
 	biding.kind = OS.kHILayoutBindMax;
 	biding.offset = 0;
-	OS.HIViewSetLayoutInfo(subHIView, newLayoutInfo);
-	OS.HIViewChangeFeatures(subHIView, OS.kHIViewFeatureIsOpaque, 0);
-	OS.HIViewSetVisible(subHIView, true);
+	OS.HIViewSetLayoutInfo (subHIView, newLayoutInfo);
+	OS.HIViewChangeFeatures (subHIView, OS.kHIViewFeatureIsOpaque, 0);
+	OS.HIViewSetVisible (subHIView, true);
 	int parentHandle = browser.handle;
-	OS.HIViewAddSubview(browser.handle, subHIView);
-	CGRect rect = new CGRect();
-	OS.HIViewGetFrame(parentHandle, rect);
+	OS.HIViewAddSubview (browser.handle, subHIView);
+	CGRect rect = new CGRect ();
+	OS.HIViewGetFrame (parentHandle, rect);
 	rect.x = rect.y = 0;
-	OS.HIViewSetFrame(subHIView, rect);
+	OS.HIViewSetFrame (subHIView, rect);
 	handles.put (new LONG (embedHandle), new LONG (browser.handle));
+
+	callback3 = new Callback (this, "eventProc3", 3); //$NON-NLS-1$
+	int [] mask = new int [] {
+		OS.kEventClassMouse, OS.kEventMouseDown,
+	};
+	int controlTarget = OS.GetControlEventTarget (subHIView);
+	OS.InstallEventHandler (controlTarget, callback3.getAddress (), mask.length / 2, mask, subHIView, null);
+
 	return embedHandle;
 }
 
@@ -151,6 +166,10 @@ void handleFocus () {
 
 void onDispose (int embedHandle) {
 	handles.remove (new LONG (embedHandle));
+	if (callback3 != null) {
+		callback3.dispose ();
+		callback3 = null;
+	}
 	if (listener != null) {
 		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
 		browser.getShell ().removeListener (SWT.Deactivate, listener);
