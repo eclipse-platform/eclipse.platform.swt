@@ -621,15 +621,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x + getLineIndent(line);
 		int drawY = y + lineY[line];
-		if (drawX > clip.x + clip.width) continue;
-		if (drawX + lineWidth[line] < clip.x) continue;
 		StyleItem[] lineRuns = runs[line];
-		int baseline = Math.max(0, this.ascent);
-		for (int i = 0; i < lineRuns.length; i++) {
-			baseline = Math.max(baseline, lineRuns[i].ascent);
-		}
 		int lineHeight = lineY[line+1] - lineY[line];
-		int alignmentX = drawX;
 		if (flags != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 			boolean extents = false;
 			if (line == runs.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
@@ -660,6 +653,13 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				}
 			}
 		}
+		if (drawX > clip.x + clip.width) continue;
+		if (drawX + lineWidth[line] < clip.x) continue;
+		int baseline = Math.max(0, this.ascent);
+		for (int i = 0; i < lineRuns.length; i++) {
+			baseline = Math.max(baseline, lineRuns[i].ascent);
+		}
+		int alignmentX = drawX;
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
 			if (run.length == 0) continue;
