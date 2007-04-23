@@ -507,7 +507,7 @@ void drawRightUnselectedBorder(GC gc) {
 
 	if (this.parent.onBottom) {
 		int[] right = parent.simple
-			? CTabFolder.SIMPLE_BOTTOM_RIGHT_CORNER
+			? CTabFolder.SIMPLE_UNSELECTED_INNER_CORNER
 			: CTabFolder.BOTTOM_RIGHT_CORNER;
 		
 		shape = new int[right.length + 2];
@@ -521,7 +521,7 @@ void drawRightUnselectedBorder(GC gc) {
 		shape[index++] = y - 1;
 	} else {
 		int[] right = parent.simple
-			? CTabFolder.SIMPLE_TOP_RIGHT_CORNER
+			? CTabFolder.SIMPLE_UNSELECTED_INNER_CORNER
 			: CTabFolder.TOP_RIGHT_CORNER;
 		
 		shape = new int[right.length + 2];
@@ -563,7 +563,7 @@ void drawLeftUnselectedBorder(GC gc) {
 	int[] shape = null;
 	if (this.parent.onBottom) {
 		int[] left = parent.simple
-			? CTabFolder.SIMPLE_BOTTOM_LEFT_CORNER
+			? CTabFolder.SIMPLE_UNSELECTED_INNER_CORNER
 			: CTabFolder.BOTTOM_LEFT_CORNER;
 		
 		shape = new int[left.length + 2];
@@ -576,7 +576,7 @@ void drawLeftUnselectedBorder(GC gc) {
 		}
 	} else {
 		int[] left = parent.simple
-			? CTabFolder.SIMPLE_TOP_LEFT_CORNER
+			? CTabFolder.SIMPLE_UNSELECTED_INNER_CORNER
 			: CTabFolder.TOP_LEFT_CORNER;
 
 		shape = new int[left.length + 2];
