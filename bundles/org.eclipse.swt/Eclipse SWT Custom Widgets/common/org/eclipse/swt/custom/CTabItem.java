@@ -503,6 +503,7 @@ void drawHighlight(GC gc, int rightEdge) {
 void drawRightUnselectedBorder(GC gc) {
 
 	int[] shape = null;
+	int startX = x + width - 1;
 
 	if (this.parent.onBottom) {
 		int[] right = parent.simple
@@ -513,10 +514,10 @@ void drawRightUnselectedBorder(GC gc) {
 		int index = 0;
 		
 		for (int i = 0; i < right.length / 2; i++) {
-			shape[index++] = x + width + right[2 * i];
+			shape[index++] = startX + right[2 * i];
 			shape[index++] = y + height + right[2 * i + 1] - 1;
 		}
-		shape[index++] = x + width;
+		shape[index++] = startX;
 		shape[index++] = y - 1;
 	} else {
 		int[] right = parent.simple
@@ -527,11 +528,11 @@ void drawRightUnselectedBorder(GC gc) {
 		int index = 0;
 
 		for (int i = 0; i < right.length / 2; i++) {
-			shape[index++] = x + width + right[2 * i];
+			shape[index++] = startX + right[2 * i];
 			shape[index++] = y + right[2 * i + 1];
 		}
 
-		shape[index++] = x + width;
+		shape[index++] = startX;
 		shape[index++] = y + height;
 
 	}
