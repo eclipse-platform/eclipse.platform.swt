@@ -148,9 +148,9 @@ public int open () {
 	buffer = Converter.wcsToMbcs(null, title, true);
 	OS.gtk_window_set_title(handle,buffer);
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	int idleHandle = OS.g_idle_add (display.idleProc, 0);
+	display.addIdleProc ();
 	int result = OS.gtk_dialog_run (handle);
-	OS.g_source_remove (idleHandle);
+	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	return result;
 }

@@ -192,9 +192,13 @@ public class Display extends Device {
 	
 	/* Idle proc callback */
 	int /*long*/ idleProc;
+	int idleHandle;
 	Callback idleCallback;
-	static final String IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.idleProc";
-
+	static final String ADD_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.addIdleProc";
+	static final String REMOVE_IDLE_PROC_KEY = "org.eclipse.swt.internal.gtk2.removeIdleProc";
+	Object idleLock = new Object();
+	boolean idleNeeded;
+	
 	/* GtkTreeView callbacks */
 	int[] treeSelection;
 	int treeSelectionLength;
@@ -539,6 +543,15 @@ void addGdkEvent (int /*long*/ event) {
 	gdkEventCount++;
 }
 
+void addIdleProc() {
+	synchronized (idleLock){
+		this.idleNeeded = true;
+		if (idleHandle == 0) {
+			idleHandle = OS.g_idle_add (idleProc, 0);
+		}
+	}
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when an event of the given type occurs. The event
@@ -650,6 +663,12 @@ void addWidget (int /*long*/ handle, Widget widget) {
  */
 public void asyncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	synchronized (idleLock) {
+		if (idleNeeded && idleHandle == 0) {
+ 			//NOTE: calling unlocked function in OS
+			idleHandle = OS._g_idle_add (idleProc, 0);
+		}
+	}
 	synchronizer.asyncExec (runnable);
 }
 
@@ -1502,9 +1521,6 @@ public Object getData (String key) {
 	if (key.equals (DISPATCH_EVENT_KEY)) {
 		return dispatchEvents;
 	}
-	if (key.equals (IDLE_PROC_KEY)) {
-		return new LONG (idleProc);
-	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -2212,8 +2228,13 @@ Widget getWidget (int /*long*/ handle) {
 }
 
 int /*long*/ idleProc (int /*long*/ data) {
-	runAsyncMessages (false);
-	return 1;
+	boolean result = runAsyncMessages (false);
+	if (!result) {
+		synchronized (idleLock) {
+			idleHandle = 0;
+		}
+	}
+	return result ? 1 : 0;
 }
 
 /**
@@ -3046,7 +3067,9 @@ void releaseDisplay () {
 	/* Dispose the run async messages callback */
 	idleCallback.dispose (); idleCallback = null;
 	idleProc = 0;
-
+	if (idleHandle != 0) OS.g_source_remove (idleHandle);
+	idleHandle = 0;
+	
 	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;
@@ -3199,6 +3222,13 @@ int /*long*/ removeGdkEvent () {
 	return event;
 }
 
+void removeIdleProc () {
+	synchronized(idleLock) {
+		if (idleHandle != 0) OS.g_source_remove (idleHandle);
+		idleNeeded = false;
+		idleHandle = 0;
+	}
+}
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when an event of the given type occurs. The event type
@@ -3437,6 +3467,15 @@ public void setData (String key, Object value) {
 		} else {
 			removeWidget (handle);
 		}
+	}
+	
+	if (key.equals (ADD_IDLE_PROC_KEY)) {	
+		addIdleProc ();
+		return;
+	}
+	if (key.equals (REMOVE_IDLE_PROC_KEY)) {
+		removeIdleProc ();
+		return;
 	}
 
 	/* Remove the key/value pair */
@@ -3846,6 +3885,12 @@ int /*long*/ styleSetProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/
  */
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	synchronized (idleLock) {
+		if (idleNeeded && idleHandle == 0) {
+			//NOTE: calling unlocked function in OS
+			idleHandle = OS._g_idle_add (idleProc, 0);
+		}
+	}
 	synchronizer.syncExec (runnable);
 }
 

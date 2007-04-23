@@ -155,7 +155,7 @@ public FontData open () {
 		OS.gtk_font_selection_dialog_set_font_name (handle, buffer);
 	}
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	int idleHandle = OS.g_idle_add (display.idleProc, 0);
+	display.addIdleProc ();
 	int response = OS.gtk_dialog_run(handle);
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
@@ -169,7 +169,7 @@ public FontData open () {
 		fontData = font.getFontData () [0];
 		OS.pango_font_description_free (fontDesc);		
 	}
-	OS.g_source_remove (idleHandle);
+	display.removeIdleProc ();
 	OS.gtk_widget_destroy(handle);
 	if (!success) return null;
 	return fontData;

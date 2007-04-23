@@ -131,7 +131,7 @@ public RGB open () {
 	}
 	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	int idleHandle = OS.g_idle_add (display.idleProc, 0);
+	display.addIdleProc ();
 	int response = OS.gtk_dialog_run (handle);
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
@@ -141,7 +141,7 @@ public RGB open () {
 		int blue = (color.blue >> 8) & 0xFF;
 		rgb = new RGB (red, green, blue);
 	}
-	OS.g_source_remove (idleHandle);
+	display.removeIdleProc ();
 	OS.gtk_widget_destroy (handle);
 	if (!success) return null;
 	return rgb;
