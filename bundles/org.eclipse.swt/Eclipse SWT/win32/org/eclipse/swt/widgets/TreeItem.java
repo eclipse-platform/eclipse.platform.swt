@@ -910,7 +910,7 @@ public String getText (int index) {
  * 
  * @since 3.3
  */
-/*public*/ Rectangle getTextBounds (int index) {
+public Rectangle getTextBounds (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, true, false, true);

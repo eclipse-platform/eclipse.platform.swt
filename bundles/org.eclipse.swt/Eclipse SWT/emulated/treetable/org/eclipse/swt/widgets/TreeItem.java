@@ -1514,7 +1514,7 @@ String getText (int columnIndex, boolean checkData) {
 	if (texts [columnIndex] == null) return "";	//$NON-NLS-1$
 	return texts [columnIndex];
 }
-/*public*/ Rectangle getTextBounds (int columnIndex) {
+public Rectangle getTextBounds (int columnIndex) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);

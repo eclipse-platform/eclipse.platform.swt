@@ -556,7 +556,7 @@ public String getText (int index) {
 	return "";
 }
 
-/*public*/ Rectangle getTextBounds (int index) {
+public Rectangle getTextBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	parent.checkItems (true);

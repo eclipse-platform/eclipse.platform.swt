@@ -821,7 +821,7 @@ public TreeItem getParentItem () {
 	return result;
 }
 
-/*public*/ Rectangle getTextBounds (int index) {
+public Rectangle getTextBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
