@@ -54,6 +54,7 @@ public class CTabItem extends Item {
 	static final int RIGHT_MARGIN = 4;
 	static final int INTERNAL_SPACING = 4;
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC;
+	static final String ELLIPSIS = "..."; //$NON-NLS-1$ // could use the ellipsis glyph on some platforms "\u2026"
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -124,20 +125,36 @@ public CTabItem (CTabFolder parent, int style, int index) {
 static int checkStyle(int style) {
 	return SWT.NONE;
 }
-static String shortenText(GC gc, String text, int width) {
+
+/*
+ * Return whether to use ellipses or just truncate labels
+ */
+boolean useEllipses() {
+	return parent.simple;
+}
+
+String shortenText(GC gc, String text, int width) {
+	return useEllipses()
+		? shortenText(gc, text, width, ELLIPSIS)
+		: shortenText(gc, text, width, ""); //$NON-NLS-1$
+}
+
+String shortenText(GC gc, String text, int width, String ellipses) {
 	if (gc.textExtent(text, FLAGS).x <= width) return text;
+	int ellipseWidth = gc.textExtent(ellipses, FLAGS).x;
 	int length = text.length();
 	int end = length - 1;
 	while (end > 0) {
 		text = text.substring(0, end);
 		int l = gc.textExtent(text, FLAGS).x;
-		if (l <= width) {
-			return text;
+		if (l + ellipseWidth <= width) {
+			return text + ellipses;
 		}
 		end--;
 	}
 	return text.substring(0,1);
 }
+
 public void dispose() {
 	if (isDisposed ()) return;
 	//if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -803,8 +820,14 @@ int preferredWidth(GC gc, boolean isSelected, boolean minimum) {
 		int minChars = parent.minChars;
 		text = minChars == 0 ? null : getText();
 		if (text != null && text.length() > minChars) {
-			int end = minChars;
-			text = text.substring(0, end);
+			if (useEllipses()) {
+				int end = minChars < ELLIPSIS.length() + 1 ? minChars : minChars - ELLIPSIS.length();
+				text = text.substring(0, end);
+				if (minChars > ELLIPSIS.length() + 1) text += ELLIPSIS;
+			} else {
+				int end = minChars;
+				text = text.substring(0, end);
+			}
 		}
 	} else {
 		text = getText();
