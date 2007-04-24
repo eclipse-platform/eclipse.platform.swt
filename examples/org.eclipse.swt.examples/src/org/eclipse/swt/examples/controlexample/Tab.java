@@ -805,17 +805,17 @@ abstract class Tab {
 				} else if (typeName.equals("java.lang.String")) {
 					parameter = new Object[] {value};
 				} else if (typeName.equals("org.eclipse.swt.graphics.Point")) {
-					String xy[] = value.split(",");
+					String xy[] = split(value, ',');
 					parameter = new Object[] {new Point(new Integer(xy[0]).intValue(),new Integer(xy[1]).intValue())};
 				} else if (typeName.equals("[I")) {
-					String strings[] = value.split(",");
+					String strings[] = split(value, ',');
 					int[] ints = new int[strings.length];
 					for (int j = 0; j < strings.length; j++) {
 						ints[j] = new Integer(strings[j]).intValue();
 					}
 					parameter = new Object[] {ints};
 				} else if (typeName.equals("[Ljava.lang.String;")) {
-					parameter = new Object[] {value.split(",")};
+					parameter = new Object[] {split(value, ',')};
 				} else {
 					parameter = parameterForType(typeName, value, widgets[i]);
 				}
@@ -1102,7 +1102,7 @@ abstract class Tab {
 	 *
 	 * @return the short text for the tab item
 	 */
-	public String getShortTabText() {
+	String getShortTabText() {
 		return getTabText();
 	}
 
@@ -1429,5 +1429,28 @@ abstract class Tab {
 		for (int i=0; i<controls.length; i++) {
 			controls [i].setBackgroundImage (backgroundImageButton.getSelection () ? instance.images[ControlExample.ciBackground] : null);
 		}
+	}
+	
+	/**
+	 * Splits the given string around matches of the given character.
+	 * 
+	 * This subset of java.lang.String.split(String regex)
+	 * uses only code that can be run on CLDC platforms.
+	 */
+	String [] split (String string, char ch) {
+		String [] result = new String[0];
+		int start = 0;
+		int length = string.length();
+		while (start < length) {
+			int end = string.indexOf(ch, start);
+			if (end == -1) end = length;
+			String substr = string.substring(start, end);
+			String [] newResult = new String[result.length + 1];
+			System.arraycopy(result, 0, newResult, 0, result.length);
+			newResult [result.length] = substr;
+			result = newResult;
+			start = end + 1;
+		}
+		return result;
 	}
 }

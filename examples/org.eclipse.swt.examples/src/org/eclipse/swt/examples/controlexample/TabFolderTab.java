@@ -122,7 +122,7 @@ class TabFolderTab extends Tab {
 			if (item != null) return new Object[] {item};
 		}
 		if (typeName.equals("[Lorg.eclipse.swt.widgets.TabItem;")) {
-			String[] values = value.split(",");
+			String[] values = split(value, ',');
 			TabItem[] items = new TabItem[values.length];
 			for (int i = 0; i < values.length; i++) {
 				items[i] = findItem(values[i], ((TabFolder) widget).getItems());

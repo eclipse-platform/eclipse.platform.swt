@@ -403,7 +403,7 @@ class TableTab extends ScrollableTab {
 			if (item != null) return new Object[] {item};
 		}
 		if (typeName.equals("[Lorg.eclipse.swt.widgets.TableItem;")) {
-			String[] values = value.split(",");
+			String[] values = split(value, ',');
 			TableItem[] items = new TableItem[values.length];
 			for (int i = 0; i < values.length; i++) {
 				items[i] = findItem(values[i], ((Table) widget).getItems());
