@@ -5792,6 +5792,18 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			if ((style & SWT.VIRTUAL) != 0) return new LRESULT (-1);
 			break;
 		}
+		case OS.LVN_ODSTATECHANGED: {
+			if ((style & SWT.VIRTUAL) != 0) {
+				if (!ignoreSelect) {
+					NMLVODSTATECHANGE lpStateChange  = new NMLVODSTATECHANGE ();
+					OS.MoveMemory (lpStateChange, lParam, NMLVODSTATECHANGE.sizeof);
+					boolean oldSelected = (lpStateChange.uOldState & OS.LVIS_SELECTED) != 0;
+					boolean newSelected = (lpStateChange.uNewState & OS.LVIS_SELECTED) != 0;
+					if (oldSelected != newSelected) wasSelected = true;
+				}
+			}
+			break;
+		}
 		case OS.LVN_GETDISPINFOA:
 		case OS.LVN_GETDISPINFOW: {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
