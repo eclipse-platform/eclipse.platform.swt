@@ -2522,7 +2522,7 @@ int /*long*/ IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredConten
 	boolean preferred = false;
 	int size = XPCOM.strlen (aContentType);
 	if (size > 0) {
-		byte[] typeBytes = new byte[size + 1];
+		byte[] typeBytes = new byte[size];
 		XPCOM.memmove (typeBytes, aContentType, size);
 		String contentType = new String (typeBytes);
 
@@ -2535,18 +2535,36 @@ int /*long*/ IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredConten
 			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 			nsIServiceManager serviceManager = new nsIServiceManager (result[0]);
 			result[0] = 0;
-			rc = serviceManager.GetService (XPCOM.NS_CATEGORYMANAGER_CID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
-			serviceManager.Release ();
-			if (rc != XPCOM.NS_OK) error (rc);
-			if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
 
-			nsICategoryManager categoryManager = new nsICategoryManager (result[0]);
-			result[0] = 0;
-			byte[] categoryBytes = MozillaDelegate.wcsToMbcs (null, "Gecko-Content-Viewers", true);	//$NON-NLS-1$
-			rc = categoryManager.GetCategoryEntry (categoryBytes, typeBytes, result);
-			categoryManager.Release ();
-			/* if no viewer for the content type is registered then rc == XPCOM.NS_ERROR_NOT_AVAILABLE */
-			preferred = rc == XPCOM.NS_OK;
+			/* First try to use the nsIWebNavigationInfo if it's available (>= mozilla 1.8) */
+			byte[] aContractID = MozillaDelegate.wcsToMbcs (null, XPCOM.NS_WEBNAVIGATIONINFO_CONTRACTID, true);
+			rc = serviceManager.GetServiceByContractID (aContractID, nsIWebNavigationInfo.NS_IWEBNAVIGATIONINFO_IID, result);
+			if (rc == 0) {
+				byte[] bytes = MozillaDelegate.wcsToMbcs (null, contentType, true);
+				int /*long*/ typePtr = XPCOM.nsEmbedCString_new (bytes, bytes.length);
+				nsIWebNavigationInfo info = new nsIWebNavigationInfo (result[0]);
+				result[0] = 0;
+				rc = info.IsTypeSupported (typePtr, 0, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				info.Release ();
+				XPCOM.nsEmbedCString_delete (typePtr);
+				preferred = result[0] != 0;
+			} else {
+				/* nsIWebNavigationInfo is not available, so do the type lookup */
+				result[0] = 0;
+				rc = serviceManager.GetService (XPCOM.NS_CATEGORYMANAGER_CID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
+				if (rc != XPCOM.NS_OK) error (rc);
+				if (result[0] == 0) error (XPCOM.NS_NOINTERFACE);
+
+				nsICategoryManager categoryManager = new nsICategoryManager (result[0]);
+				result[0] = 0;
+				byte[] categoryBytes = MozillaDelegate.wcsToMbcs (null, "Gecko-Content-Viewers", true);	//$NON-NLS-1$
+				rc = categoryManager.GetCategoryEntry (categoryBytes, typeBytes, result);
+				categoryManager.Release ();
+				/* if no viewer for the content type is registered then rc == XPCOM.NS_ERROR_NOT_AVAILABLE */
+				preferred = rc == XPCOM.NS_OK;
+			}
+			serviceManager.Release ();
 		}
 	}
 
