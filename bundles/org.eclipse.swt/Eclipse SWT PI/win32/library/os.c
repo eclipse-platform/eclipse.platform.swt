@@ -8384,6 +8384,20 @@ fail:
 }
 #endif
 
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NMLVODSTATECHANGE _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setNMLVODSTATECHANGEFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2II_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -9146,6 +9160,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(NMLVFINDITEM_1sizeof)
 	OS_NATIVE_ENTER(env, that, NMLVFINDITEM_1sizeof_FUNC);
 	rc = (jint)NMLVFINDITEM_sizeof();
 	OS_NATIVE_EXIT(env, that, NMLVFINDITEM_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NMLVODSTATECHANGE_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(NMLVODSTATECHANGE_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NMLVODSTATECHANGE_1sizeof_FUNC);
+	rc = (jint)NMLVODSTATECHANGE_sizeof();
+	OS_NATIVE_EXIT(env, that, NMLVODSTATECHANGE_1sizeof_FUNC);
 	return rc;
 }
 #endif

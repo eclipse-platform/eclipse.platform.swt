@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 867;
-int OS_nativeFunctionCallCount[867];
+int OS_nativeFunctionCount = 869;
+int OS_nativeFunctionCallCount[869];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -527,6 +527,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVDISPINFO_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVODSTATECHANGE_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2II",
@@ -571,6 +572,7 @@ char * OS_nativeFunctionNames[] = {
 	"NMLVCUSTOMDRAW_1sizeof",
 	"NMLVDISPINFO_1sizeof",
 	"NMLVFINDITEM_1sizeof",
+	"NMLVODSTATECHANGE_1sizeof",
 	"NMREBARCHEVRON_1sizeof",
 	"NMREBARCHILDSIZE_1sizeof",
 	"NMRGINFO_1sizeof",

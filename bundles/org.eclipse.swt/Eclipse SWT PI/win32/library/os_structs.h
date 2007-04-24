@@ -707,6 +707,18 @@ void setNMLVFINDITEMFields(JNIEnv *env, jobject lpObject, NMLVFINDITEM *lpStruct
 #define NMLVFINDITEM_sizeof() 0
 #endif
 
+#ifndef NO_NMLVODSTATECHANGE
+void cacheNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject);
+NMLVODSTATECHANGE *getNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject, NMLVODSTATECHANGE *lpStruct);
+void setNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject, NMLVODSTATECHANGE *lpStruct);
+#define NMLVODSTATECHANGE_sizeof() sizeof(NMLVODSTATECHANGE)
+#else
+#define cacheNMLVODSTATECHANGEFields(a,b)
+#define getNMLVODSTATECHANGEFields(a,b,c) NULL
+#define setNMLVODSTATECHANGEFields(a,b,c)
+#define NMLVODSTATECHANGE_sizeof() 0
+#endif
+
 #ifndef NO_NMREBARCHEVRON
 void cacheNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject);
 NMREBARCHEVRON *getNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpStruct);

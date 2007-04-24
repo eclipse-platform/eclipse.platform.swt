@@ -3069,6 +3069,49 @@ void setNMLVFINDITEMFields(JNIEnv *env, jobject lpObject, NMLVFINDITEM *lpStruct
 }
 #endif
 
+#ifndef NO_NMLVODSTATECHANGE
+typedef struct NMLVODSTATECHANGE_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID iFrom, iTo, uNewState, uOldState;
+} NMLVODSTATECHANGE_FID_CACHE;
+
+NMLVODSTATECHANGE_FID_CACHE NMLVODSTATECHANGEFc;
+
+void cacheNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMLVODSTATECHANGEFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMLVODSTATECHANGEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMLVODSTATECHANGEFc.iFrom = (*env)->GetFieldID(env, NMLVODSTATECHANGEFc.clazz, "iFrom", "I");
+	NMLVODSTATECHANGEFc.iTo = (*env)->GetFieldID(env, NMLVODSTATECHANGEFc.clazz, "iTo", "I");
+	NMLVODSTATECHANGEFc.uNewState = (*env)->GetFieldID(env, NMLVODSTATECHANGEFc.clazz, "uNewState", "I");
+	NMLVODSTATECHANGEFc.uOldState = (*env)->GetFieldID(env, NMLVODSTATECHANGEFc.clazz, "uOldState", "I");
+	NMLVODSTATECHANGEFc.cached = 1;
+}
+
+NMLVODSTATECHANGE *getNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject, NMLVODSTATECHANGE *lpStruct)
+{
+	if (!NMLVODSTATECHANGEFc.cached) cacheNMLVODSTATECHANGEFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->iFrom = (*env)->GetIntField(env, lpObject, NMLVODSTATECHANGEFc.iFrom);
+	lpStruct->iTo = (*env)->GetIntField(env, lpObject, NMLVODSTATECHANGEFc.iTo);
+	lpStruct->uNewState = (*env)->GetIntField(env, lpObject, NMLVODSTATECHANGEFc.uNewState);
+	lpStruct->uOldState = (*env)->GetIntField(env, lpObject, NMLVODSTATECHANGEFc.uOldState);
+	return lpStruct;
+}
+
+void setNMLVODSTATECHANGEFields(JNIEnv *env, jobject lpObject, NMLVODSTATECHANGE *lpStruct)
+{
+	if (!NMLVODSTATECHANGEFc.cached) cacheNMLVODSTATECHANGEFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMLVODSTATECHANGEFc.iFrom, (jint)lpStruct->iFrom);
+	(*env)->SetIntField(env, lpObject, NMLVODSTATECHANGEFc.iTo, (jint)lpStruct->iTo);
+	(*env)->SetIntField(env, lpObject, NMLVODSTATECHANGEFc.uNewState, (jint)lpStruct->uNewState);
+	(*env)->SetIntField(env, lpObject, NMLVODSTATECHANGEFc.uOldState, (jint)lpStruct->uOldState);
+}
+#endif
+
 #ifndef NO_NMREBARCHEVRON
 typedef struct NMREBARCHEVRON_FID_CACHE {
 	int cached;

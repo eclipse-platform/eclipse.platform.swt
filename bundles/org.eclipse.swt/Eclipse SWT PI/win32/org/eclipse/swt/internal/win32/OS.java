@@ -997,6 +997,7 @@ public class OS extends C {
 	public static final int LVN_MARQUEEBEGIN = 0xffffff64;
 	public static final int LVN_ODFINDITEMA = LVN_FIRST - 52;
 	public static final int LVN_ODFINDITEMW = LVN_FIRST - 79;
+	public static final int LVN_ODSTATECHANGED = LVN_FIRST - 15;
 	public static final int LVP_LISTITEM = 1;
 	public static final int LVSCW_AUTOSIZE = 0xffffffff;
 	public static final int LVSCW_AUTOSIZE_USEHEADER = 0xfffffffe;
@@ -2079,6 +2080,7 @@ public static final native int NMLISTVIEW_sizeof ();
 public static final native int NMLVCUSTOMDRAW_sizeof ();
 public static final native int NMLVDISPINFO_sizeof ();
 public static final native int NMLVFINDITEM_sizeof ();
+public static final native int NMLVODSTATECHANGE_sizeof ();
 public static final native int NMREBARCHEVRON_sizeof ();
 public static final native int NMREBARCHILDSIZE_sizeof ();
 public static final native int NMRGINFO_sizeof ();
@@ -3585,6 +3587,7 @@ public static final native void MoveMemory (int /*long*/ Destination, NMTVDISPIN
 public static final native void MoveMemory (NMLVDISPINFO Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMTVDISPINFO Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMLVFINDITEM Destination, int /*long*/ Source, int Length);
+public static final native void MoveMemory (NMLVODSTATECHANGE Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMHEADER Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMLINK Destination, int /*long*/ Source, int Length);
 public static final native void MoveMemory (NMLISTVIEW Destination, int /*long*/ Source, int Length);

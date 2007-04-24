@@ -78,7 +78,7 @@ CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
-all: $(SWT_LIB) $(AWT_LIB) $(GDIP_LIB) $(WGL_LIB) $(XULRUNNER_LIB) $(XPCOMINIT_LIB)
+all: $(SWT_LIB) $(AWT_LIB) $(GDIP_LIB) $(WGL_LIB)
 
 xpcom_custom.obj: xpcom_custom.cpp
 	cl $(MOZILLACFLAGS) xpcom_custom.cpp
