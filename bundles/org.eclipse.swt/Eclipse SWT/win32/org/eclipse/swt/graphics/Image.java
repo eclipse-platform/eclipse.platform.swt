@@ -872,10 +872,19 @@ int[] createGdipImage() {
 						red = color[2];
 					} else {
 						switch (bm.bmBitsPixel) {
-							case 16:
-								blue = (byte)((transparentPixel & 0x1F) << 3);
-								green = (byte)((transparentPixel & 0x3E0) >> 2);
-								red = (byte)((transparentPixel & 0x7C00) >> 7);
+							case 16:								
+								int blueMask = 0x1F;
+								int blueShift = ImageData.getChannelShift(blueMask);
+								byte[] blues = ImageData.ANY_TO_EIGHT[ImageData.getChannelWidth(blueMask, blueShift)];
+								blue = blues[(transparentPixel & blueMask) >> blueShift];
+								int greenMask = 0x3E0;
+								int greenShift = ImageData.getChannelShift(greenMask);
+								byte[] greens = ImageData.ANY_TO_EIGHT[ImageData.getChannelWidth(greenMask, greenShift)];
+								green = greens[(transparentPixel & greenMask) >> greenShift];								
+								int redMask = 0x7C00;
+								int redShift = ImageData.getChannelShift(redMask);
+								byte[] reds = ImageData.ANY_TO_EIGHT[ImageData.getChannelWidth(redMask, redShift)];
+								red = reds[(transparentPixel & redMask) >> redShift];							
 								break;
 							case 24:
 								blue = (byte)((transparentPixel & 0xFF0000) >> 16);
