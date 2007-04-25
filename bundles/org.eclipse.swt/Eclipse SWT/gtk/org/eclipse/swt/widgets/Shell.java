@@ -921,10 +921,10 @@ int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ directionType) {
 }
 
 int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
-	if (display.lastFocusChangeEvent.mode == OS.NotifyUngrab) return 0;
 	if (widget != shellHandle) {
 		return super.gtk_focus_in_event (widget, event);
 	}
+	if (display.lastFocusChangeEvent.mode == OS.NotifyUngrab) return 0;
 	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
 	/*
 	* Feature in GTK. The GTK combo box popup under some window managers
