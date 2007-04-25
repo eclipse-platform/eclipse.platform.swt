@@ -139,6 +139,7 @@ public class Display extends Device {
 	Shell activeShell;
 	boolean activePending;
 	boolean ignoreActivate, ignoreFocus;
+	XFocusChangeEvent lastFocusChangeEvent = new XFocusChangeEvent ();
 	
 	/* Input method resources */
 	Control imControl;
@@ -1452,7 +1453,9 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 			}
 		}
 	}
-	return 0;
+	Widget widget = getWidget (data);
+	if (widget == null) return 0;
+	return widget.filterProc (xEvent, gdkEvent, data);
 }
 
 /**

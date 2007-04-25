@@ -635,6 +635,14 @@ void createHandle (int index) {
 	OS.gtk_widget_realize (shellHandle);
 }
 
+int filterProc (int xEvent, int gdkEvent, int data2) {
+	int eventType = OS.X_EVENT_TYPE (xEvent);
+	if (eventType == OS.FocusOut || eventType == OS.FocusIn) {
+		OS.memmove (display.lastFocusChangeEvent, xEvent, XFocusChangeEvent.sizeof);
+	}
+	return 0;
+}
+
 Control findBackgroundControl () {
 	return (state & BACKGROUND) != 0 || backgroundImage != null ? this : null;
 }
@@ -660,6 +668,8 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.closures [MOVE_FOCUS], false);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
 }
 
 public boolean isEnabled () {
@@ -911,6 +921,7 @@ int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ directionType) {
 }
 
 int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
+	if (display.lastFocusChangeEvent.mode == OS.NotifyUngrab) return 0;
 	if (widget != shellHandle) {
 		return super.gtk_focus_in_event (widget, event);
 	}
@@ -937,6 +948,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	if (widget != shellHandle) {
 		return super.gtk_focus_out_event (widget, event);
 	}
+	if (display.lastFocusChangeEvent.mode == OS.NotifyGrab || display.lastFocusChangeEvent.mode == OS.NotifyWhileGrabbed) return 0;
 	if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
 	/*
 	* Feature in GTK. The GTK combo box popup under some window managers
@@ -1705,6 +1717,8 @@ void releaseWidget () {
 	if (display.activeShell == this) display.activeShell = null;
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
 	region = null;
 	lastActive = null;
 }

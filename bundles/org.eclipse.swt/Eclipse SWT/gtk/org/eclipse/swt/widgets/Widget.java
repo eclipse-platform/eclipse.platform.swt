@@ -803,6 +803,10 @@ int fontHeight (int /*long*/ font, int /*long*/ widgetHandle) {
 	return OS.PANGO_PIXELS (ascent + descent);
 }
 
+int filterProc(int xEvent, int gdkEvent, int data2) {
+	return 0;
+}
+
 boolean filters (int eventType) {
 	return display.filters (eventType);
 }
@@ -1521,6 +1525,5 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 		default: return 0;
 	}
 }
-
 
 }
