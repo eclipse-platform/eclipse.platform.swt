@@ -635,7 +635,7 @@ void createHandle (int index) {
 	OS.gtk_widget_realize (shellHandle);
 }
 
-int filterProc (int xEvent, int gdkEvent, int data2) {
+int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data2) {
 	int eventType = OS.X_EVENT_TYPE (xEvent);
 	if (eventType == OS.FocusOut || eventType == OS.FocusIn) {
 		OS.memmove (display.lastFocusChangeEvent, xEvent, XFocusChangeEvent.sizeof);

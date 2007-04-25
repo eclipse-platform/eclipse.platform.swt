@@ -803,7 +803,7 @@ int fontHeight (int /*long*/ font, int /*long*/ widgetHandle) {
 	return OS.PANGO_PIXELS (ascent + descent);
 }
 
-int filterProc(int xEvent, int gdkEvent, int data2) {
+int /*long*/ filterProc(int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data2) {
 	return 0;
 }
 
