@@ -2544,11 +2544,12 @@ int /*long*/ IsPreferred (int /*long*/ aContentType, int /*long*/ aDesiredConten
 				int /*long*/ typePtr = XPCOM.nsEmbedCString_new (bytes, bytes.length);
 				nsIWebNavigationInfo info = new nsIWebNavigationInfo (result[0]);
 				result[0] = 0;
-				rc = info.IsTypeSupported (typePtr, 0, result);
+				int[] isSupportedResult = new int[1]; /* PRUint32 */
+				rc = info.IsTypeSupported (typePtr, 0, isSupportedResult);
 				if (rc != XPCOM.NS_OK) error (rc);
 				info.Release ();
 				XPCOM.nsEmbedCString_delete (typePtr);
-				preferred = result[0] != 0;
+				preferred = isSupportedResult[0] != 0;
 			} else {
 				/* nsIWebNavigationInfo is not available, so do the type lookup */
 				result[0] = 0;
