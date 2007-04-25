@@ -547,7 +547,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
 	int border = 0;
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 		border = OS.gtk_container_get_border_width (shellHandle);
 	}
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
@@ -615,7 +615,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 	OS.gtk_window_set_title (shellHandle, new byte [1]);
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 		OS.gtk_container_set_border_width (shellHandle, 1);
 		GdkColor color = new GdkColor ();
 		OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);
@@ -780,7 +780,11 @@ public Point getSize () {
 	checkWidget ();
 	int width = OS.GTK_WIDGET_WIDTH (vboxHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (vboxHandle);
-	return new Point (width + trimWidth (), height + trimHeight ());
+	int border = 0;
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
+		border = OS.gtk_container_get_border_width (shellHandle);
+	}
+	return new Point (width + trimWidth () + 2*border, height + trimHeight () + 2*border);
 }
 
 public boolean getVisible () {
@@ -1692,7 +1696,11 @@ public Rectangle getBounds () {
 	OS.gtk_window_get_position (shellHandle, x, y);
 	int width = OS.GTK_WIDGET_WIDTH (vboxHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (vboxHandle);
-	return new Rectangle (x [0], y [0], width + trimWidth (), height + trimHeight ());
+	int border = 0;
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
+		border = OS.gtk_container_get_border_width (shellHandle);
+	}
+	return new Rectangle (x [0], y [0], width + trimWidth () + 2*border, height + trimHeight () + 2*border);
 }
 
 void releaseHandle () {

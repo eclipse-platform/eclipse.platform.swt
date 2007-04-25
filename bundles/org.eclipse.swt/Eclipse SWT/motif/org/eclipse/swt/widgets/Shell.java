@@ -571,7 +571,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	* border must be added back into the trim.
 	*/
 	int border = 0;
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 		int [] argList = {OS.XmNborderWidth, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		border = argList [1];
@@ -713,7 +713,7 @@ void createHandle (int index) {
 	* or the main window handle fail.  The fix is to set the border
 	* on the client area.
 	*/
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 		int [] argList2 = {OS.XmNborderWidth, 1};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
