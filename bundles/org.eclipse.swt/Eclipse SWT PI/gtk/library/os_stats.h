@@ -682,6 +682,8 @@ typedef enum {
 	_1gtk_1notebook_1get_1scrollable_FUNC,
 	_1gtk_1notebook_1insert_1page_FUNC,
 	_1gtk_1notebook_1new_FUNC,
+	_1gtk_1notebook_1next_1page_FUNC,
+	_1gtk_1notebook_1prev_1page_FUNC,
 	_1gtk_1notebook_1remove_1page_FUNC,
 	_1gtk_1notebook_1set_1current_1page_FUNC,
 	_1gtk_1notebook_1set_1scrollable_FUNC,

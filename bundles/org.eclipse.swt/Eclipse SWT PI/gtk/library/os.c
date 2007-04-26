@@ -9200,6 +9200,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1notebook_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1notebook_1next_1page
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1notebook_1next_1page)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1notebook_1next_1page_FUNC);
+	gtk_notebook_next_page((GtkNotebook *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1notebook_1next_1page_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1notebook_1prev_1page
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1notebook_1prev_1page)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1notebook_1prev_1page_FUNC);
+	gtk_notebook_prev_page((GtkNotebook *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1notebook_1prev_1page_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1notebook_1remove_1page
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1notebook_1remove_1page)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

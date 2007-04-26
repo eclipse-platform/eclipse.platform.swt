@@ -679,8 +679,12 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
-boolean traversePage (boolean next) {
-	OS.g_signal_emit_by_name (handle, OS.change_current_page, next ? 1 : -1);
+boolean traversePage (final boolean next) {
+	if (next) {
+		OS.gtk_notebook_next_page (handle);
+	} else {
+		OS.gtk_notebook_prev_page (handle);
+	}
 	return true;
 }
 

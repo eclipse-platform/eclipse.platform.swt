@@ -5735,6 +5735,24 @@ public static final int /*long*/ gtk_notebook_new() {
 		lock.unlock();
 	}
 }
+public static final native void _gtk_notebook_next_page(int /*long*/ notebook);
+public static final void gtk_notebook_next_page(int /*long*/ notebook) {
+	lock.lock();
+	try {
+		_gtk_notebook_next_page(notebook);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_notebook_prev_page(int /*long*/ notebook);
+public static final void gtk_notebook_prev_page(int /*long*/ notebook) {
+	lock.lock();
+	try {
+		_gtk_notebook_prev_page(notebook);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_notebook_remove_page(int /*long*/ notebook, int page_num);
 public static final void gtk_notebook_remove_page(int /*long*/ notebook, int page_num) {
 	lock.lock();

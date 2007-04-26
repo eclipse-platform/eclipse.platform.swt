@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1208;
-int OS_nativeFunctionCallCount[1208];
+int OS_nativeFunctionCount = 1210;
+int OS_nativeFunctionCallCount[1210];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -674,6 +674,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1notebook_1get_1scrollable",
 	"_1gtk_1notebook_1insert_1page",
 	"_1gtk_1notebook_1new",
+	"_1gtk_1notebook_1next_1page",
+	"_1gtk_1notebook_1prev_1page",
 	"_1gtk_1notebook_1remove_1page",
 	"_1gtk_1notebook_1set_1current_1page",
 	"_1gtk_1notebook_1set_1scrollable",
