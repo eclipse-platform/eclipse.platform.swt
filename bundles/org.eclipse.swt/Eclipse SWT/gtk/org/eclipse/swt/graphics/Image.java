@@ -573,6 +573,7 @@ public Image(Device device, String filename) {
 					if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					GdkImage gdkImage = new GdkImage();
 					int /*long*/ imagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
+					if (imagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 					OS.memmove(gdkImage, imagePtr);
 					if (gdkImage.bpl == width) {
 						OS.memmove(gdkImage.mem, alphaData, alphaData.length);
@@ -1056,6 +1057,7 @@ void init(Device device, ImageData image) {
 				OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, 1, 1);
 			} else {
 				int /*long*/ imagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
+				if (imagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				GdkImage gdkImage = new GdkImage();
 				OS.memmove(gdkImage, imagePtr);
 				if (gdkImage.bpl == width) {
