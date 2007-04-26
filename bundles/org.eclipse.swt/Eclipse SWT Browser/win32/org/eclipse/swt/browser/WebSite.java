@@ -245,26 +245,30 @@ int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
 	}
 	/*
 	* Feature on Internet Explorer.  By default the embedded Internet Explorer control runs
-	* the Internet Explorer shortcuts.  F5 causes refresh.  CTRL-N opens a standalone Internet 
-	* Explorer.  These behaviours are undesired when rendering HTML in memory.
-	* The workaround is to block the default CTRL-N and F5 handling by IE when the URL is about:blank.
+	* the Internet Explorer shortcuts.  CTRL-N opens a standalone IE, which is undesirable
+	* and can cause a crash in some contexts.  F5 causes a refresh, which is not appropriate
+	* when rendering HTML from memory.  The workaround is to block the handling of these
+	* shortcuts by IE when necessary.
 	*/
-	OleAutomation auto = new OleAutomation(this);
-	int[] rgdispid = auto.getIDsOfNames(new String[] { "LocationURL" }); //$NON-NLS-1$
-	Variant pVarResult = auto.getProperty(rgdispid[0]);
-	auto.dispose();
 	int result = COM.S_FALSE;
-	if (pVarResult != null) {
-		if (pVarResult.getType() == OLE.VT_BSTR) {
-			String url = pVarResult.getString();
-			if (url.equals(IE.ABOUT_BLANK)) {
-				MSG msg = new MSG();
-				OS.MoveMemory(msg, lpMsg, MSG.sizeof);
-				if (msg.message == OS.WM_KEYDOWN && msg.wParam == OS.VK_F5) result = COM.S_OK;
-				if (msg.message == OS.WM_KEYDOWN && msg.wParam == OS.VK_N && OS.GetKeyState (OS.VK_CONTROL) < 0) result = COM.S_OK;
+	MSG msg = new MSG();
+	OS.MoveMemory(msg, lpMsg, MSG.sizeof);
+	if (msg.message == OS.WM_KEYDOWN && msg.wParam == OS.VK_N && OS.GetKeyState (OS.VK_CONTROL) < 0) {
+		result = COM.S_OK;
+	} else {
+		if (msg.message == OS.WM_KEYDOWN && msg.wParam == OS.VK_F5) {
+			OleAutomation auto = new OleAutomation(this);
+			int[] rgdispid = auto.getIDsOfNames(new String[] { "LocationURL" }); //$NON-NLS-1$
+			Variant pVarResult = auto.getProperty(rgdispid[0]);
+			auto.dispose();
+			if (pVarResult != null) {
+				if (pVarResult.getType() == OLE.VT_BSTR) {
+					String url = pVarResult.getString();
+					if (url.equals(IE.ABOUT_BLANK)) result = COM.S_OK;
+				}
+				pVarResult.dispose();
 			}
 		}
-		pVarResult.dispose();
 	}
 	return result;
 }
