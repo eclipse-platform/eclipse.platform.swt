@@ -22,6 +22,7 @@ class IE extends WebBrowser {
 	OleFrame frame;
 	OleControlSite site;
 	OleAutomation auto;
+	OleListener mouseListener;
 
 	boolean back, forward, navigate, delaySetText, ignoreDispose;
 	Point location;
@@ -149,6 +150,12 @@ public void create(Composite parent, int style) {
 	site.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	auto = new OleAutomation(site);
 
+	mouseListener = new OleListener() {
+		public void handleEvent (OleEvent e) {
+			handleMouseEvent(e);
+		}
+	};
+
 	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
 			switch (e.type) {
@@ -161,6 +168,7 @@ public void create(Composite parent, int style) {
 					ignoreDispose = true;
 					browser.notifyListeners (e.type, e);
 					e.type = SWT.NONE;
+					mouseListener = null;
 					if (auto != null) auto.dispose();
 					auto = null;
 					break;
@@ -332,6 +340,14 @@ public void create(Composite parent, int style) {
 					Variant varResult = event.arguments[0];
 					IDispatch dispatch = varResult.getDispatch();
 					if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
+
+					OleAutomation webBrowser = varResult.getAutomation();
+					varResult = event.arguments[1];
+					Variant variant = new Variant(auto);
+					IDispatch top = variant.getDispatch();
+					boolean isTop = top.getAddress() == dispatch.getAddress();
+					hookMouseListeners(webBrowser, isTop);
+					webBrowser.dispose();
 					break;
 				}
 				case NewWindow2: {
@@ -735,5 +751,195 @@ public boolean setUrl(String url) {
 public void stop() {
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
+}
+
+void handleMouseEvent (OleEvent e) {
+	Variant arg = e.arguments[0];
+	OleAutomation event = arg.getAutomation();
+	int[] rgdispid = event.getIDsOfNames(new String[]{ "type" }); //$NON-NLS-1$
+	int dispIdMember = rgdispid[0];
+	Variant pVarResult = event.getProperty(dispIdMember);
+	String eventType = pVarResult.getString();
+	pVarResult.dispose();
+
+	/*
+	 * Feature in IE. MouseOver/MouseOut events are fired any time the mouse enters
+	 * or exits any element within the Browser.  To ensure that SWT events are only
+	 * fired for mouse movements into or out of the Browser, do not fire an event if
+	 * the element being exited (on MouseOver) or entered (on MouseExit) is within
+	 * the Browser.
+	 */
+	if (eventType.equals("mouseover")) { //$NON-NLS-1$
+		rgdispid = event.getIDsOfNames(new String[] { "fromElement" }); //$NON-NLS-1$
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		boolean isInternal = pVarResult.getType() != COM.VT_EMPTY;
+		pVarResult.dispose();
+		if (isInternal) {
+			event.dispose();
+			return;
+		}
+	}
+	if (eventType.equals("mouseout")) { //$NON-NLS-1$
+		rgdispid = event.getIDsOfNames(new String[] { "toElement" }); //$NON-NLS-1$
+		dispIdMember = rgdispid[0];
+		pVarResult = event.getProperty(dispIdMember);
+		boolean isInternal = pVarResult.getType() != COM.VT_EMPTY;
+		pVarResult.dispose();
+		if (isInternal) {
+			event.dispose();
+			return;
+		}
+	}
+
+	int x, y, mask = 0;
+	Event newEvent = new Event();
+	newEvent.widget = browser;
+
+	rgdispid = event.getIDsOfNames(new String[] { "clientX" }); //$NON-NLS-1$
+	dispIdMember = rgdispid[0];
+	pVarResult = event.getProperty(dispIdMember);
+	x = pVarResult.getInt();
+	newEvent.x = x;
+	pVarResult.dispose();
+
+	rgdispid = event.getIDsOfNames(new String[] { "clientY" }); //$NON-NLS-1$
+	dispIdMember = rgdispid[0];
+	pVarResult = event.getProperty(dispIdMember);
+	y = pVarResult.getInt();
+	newEvent.y = y;
+	pVarResult.dispose();
+
+	rgdispid = event.getIDsOfNames(new String[] { "ctrlKey" }); //$NON-NLS-1$
+	dispIdMember = rgdispid[0];
+	pVarResult = event.getProperty(dispIdMember);
+	if (pVarResult.getBoolean()) mask |= SWT.CTRL;
+	pVarResult.dispose();
+
+	rgdispid = event.getIDsOfNames(new String[] { "altKey" }); //$NON-NLS-1$
+	dispIdMember = rgdispid[0];
+	pVarResult = event.getProperty(dispIdMember);
+	if (pVarResult.getBoolean()) mask |= SWT.ALT;
+	pVarResult.dispose();
+
+	rgdispid = event.getIDsOfNames(new String[] { "shiftKey" }); //$NON-NLS-1$
+	dispIdMember = rgdispid[0];
+	pVarResult = event.getProperty(dispIdMember);
+	if (pVarResult.getBoolean()) mask |= SWT.SHIFT;
+	pVarResult.dispose();
+
+	newEvent.stateMask = mask;
+
+	rgdispid = event.getIDsOfNames(new String[] { "button" }); //$NON-NLS-1$
+	dispIdMember = rgdispid[0];
+	pVarResult = event.getProperty(dispIdMember);
+	int button = pVarResult.getInt();
+	pVarResult.dispose();
+	switch (button) {
+		case 1: button = 1; break;
+		case 2: button = 3; break;
+		case 4: button = 2; break;
+	};
+
+	event.dispose();
+
+	if (eventType.equals("mousedown")) { //$NON-NLS-1$
+		newEvent.type = SWT.MouseDown;
+		newEvent.button = button;
+		newEvent.count = 1;
+	} else if (eventType.equals("mouseup")) { //$NON-NLS-1$
+		newEvent.type = SWT.MouseUp;
+		newEvent.button = button;
+		newEvent.count = 1;
+	} else if (eventType.equals("mousemove")) { //$NON-NLS-1$
+		newEvent.type = SWT.MouseMove;
+	} else if (eventType.equals("mouseover")) { //$NON-NLS-1$
+		newEvent.type = SWT.MouseEnter;
+	} else if (eventType.equals("mouseout")) { //$NON-NLS-1$
+		newEvent.type = SWT.MouseExit;
+	} else if (eventType.equals("dragstart")) { //$NON-NLS-1$
+		newEvent.type = SWT.DragDetect;
+	}
+
+	browser.notifyListeners(newEvent.type, newEvent);
+	
+	if (eventType.equals("dblclick")) { //$NON-NLS-1$
+		newEvent = new Event ();
+		newEvent.widget = browser;
+		newEvent.type = SWT.MouseDoubleClick;
+		newEvent.x = x; newEvent.y = y;
+		newEvent.stateMask = mask;
+		newEvent.type = SWT.MouseDoubleClick;
+		newEvent.button = 1; /* dblclick only comes for button 1 and does not set the button property */
+		newEvent.count = 2;
+		browser.notifyListeners (newEvent.type, newEvent);	
+	}
+}
+
+void hookMouseListeners(OleAutomation webBrowser, final boolean isTop) {
+	int[] rgdispid = webBrowser.getIDsOfNames(new String[]{ "Document" }); //$NON-NLS-1$
+	int dispIdMember = rgdispid[0];
+	Variant	pVarResult = webBrowser.getProperty(dispIdMember);
+	if (pVarResult == null) return;
+	if (pVarResult.getType() == COM.VT_EMPTY) {
+		pVarResult.dispose();
+		return;
+	}
+	final OleAutomation document = pVarResult.getAutomation();
+	pVarResult.dispose();
+	
+	OleListener stopListener = new OleListener () {
+		public void handleEvent(OleEvent event) {
+			unhookMouseListeners (document, isTop);
+			char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
+			GUID guid = new GUID();
+			if (COM.IIDFromString(buffer, guid) == COM.S_OK) {
+				site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONSTOP, this);
+			}
+		}
+	};
+
+	/*
+	 * Feature of IE.  ONSTOP is fired for a document that is replaced by navigating to
+	 * a new document, but it is not fired for a document that is replaced by a Back or
+	 * Forward operation.  As a result, it's possible that the current document may
+	 * already have mouse listeners hooked on it from a previous viewing.  Unhook mouse
+	 * listeners from the current document before hooking our mouse listeners to ensure
+	 * that multiple sets of events will not be received.
+	 */
+	unhookMouseListeners (document, isTop);
+	char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
+	GUID guid = new GUID();
+	if (COM.IIDFromString(buffer, guid) == COM.S_OK) {
+		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONSTOP, stopListener);
+	}
+
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
+	site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONSTOP, stopListener);
+	/* ensure that enter/exit are only fired once, by the top-level document */
+	if (isTop) {
+		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, mouseListener);
+		site.addEventListener(document, COM.IIDIHTMLDocumentEvents2, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, mouseListener);
+	}
+}
+
+void unhookMouseListeners(OleAutomation document, boolean isTop) {
+	char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
+	GUID guid = new GUID();
+	if (COM.IIDFromString(buffer, guid) == COM.S_OK) {
+		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN, mouseListener);
+		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP, mouseListener);
+		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK, mouseListener);
+		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE, mouseListener);
+		site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART, mouseListener);
+		if (isTop) {
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER, mouseListener);
+			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT, mouseListener);
+		}
+	}
 }
 }

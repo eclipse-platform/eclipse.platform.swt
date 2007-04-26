@@ -57,6 +57,7 @@ public class COM extends OS {
 	//public static final GUID IIDIExternalConnection = IIDFromString("{00000019-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIFont = IIDFromString("{BEF6E002-A874-101A-8BBA-00AA00300CAB}"); //$NON-NLS-1$
 	//public static final GUID IIDIFontDisp = IIDFromString("{BEF6E003-A874-101A-8BBA-00AA00300CAB}"); //$NON-NLS-1$
+	public static final /*GUID*/ String IIDIHTMLDocumentEvents2 = /*IIDFromString(*/"{3050F613-98B5-11CF-BB82-00AA00BDCE0B}"/*)*/;
 	public static final GUID IIDIInternetSecurityManager = IIDFromString("{79eac9ee-baf9-11ce-8c82-00aa004ba90b}"); //$NON-NLS-1$
 	//public static final GUID IIDILockBytes = IIDFromString("{0000000A-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	//public static final GUID IIDIMalloc = IIDFromString("{00000002-0000-0000-C000-000000000046}"); //$NON-NLS-1$
@@ -200,6 +201,15 @@ public class COM extends OS {
 	public static final int DISPID_FONT_UNDER = 5;
 	public static final int DISPID_FONT_WEIGHT = 7;
 	public static final int DISPID_FORECOLOR = -513;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONDBLCLICK = 0xFFFFFDA7;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONDRAGSTART = 0x8001000B;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOUT = 0x80010009;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEOVER = 0x80010008;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE = 0xFFFFFDA2;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN = 0xFFFFFDA3;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP = 0xFFFFFDA1;
+	public static final int DISPID_HTMLDOCUMENTEVENTS_ONSTOP = 0x00000402;
+
 	//public static final int DISPID_READYSTATE = -525;
 	//public static final int DISPID_READYSTATECHANGE = -609;
 	public static final int DRAGDROP_S_DROP = 0x00040100;
