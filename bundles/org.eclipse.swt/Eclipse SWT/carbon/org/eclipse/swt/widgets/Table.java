@@ -2734,16 +2734,19 @@ public void setItemCount (int count) {
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	if (count < itemCount) {
 		int index = count;
+		int[] id = new int [itemCount - count];
 		while (index < itemCount) {
 			TableItem item = items [index];
 			if (item != null) item.release (false);
-			int [] id = new int [] {index + 1};
-			if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
-				break;
-			}
+			id [index-count] = index + 1;
 			index++;
 		}
-		if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0);
+		int [] newItemCount = new int [1];
+		if (OS.GetDataBrowserItemCount (handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemAnyState, newItemCount) != OS.noErr) {
+			error (SWT.ERROR_CANNOT_GET_COUNT);
+		}
+		if (count != newItemCount[0]) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	int length = Math.max (4, (count + 3) / 4 * 4);
 	TableItem [] newItems = new TableItem [length];
