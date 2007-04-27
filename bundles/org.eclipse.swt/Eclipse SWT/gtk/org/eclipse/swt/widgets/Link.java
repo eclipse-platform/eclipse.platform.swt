@@ -171,6 +171,10 @@ void enableWidget (boolean enabled) {
 	redraw ();
 }
 
+void fixStyle () {
+	fixStyle (handle);
+}
+
 void initAccessible () {
 	Accessible accessible = getAccessible ();
 	accessible.addAccessibleListener (new AccessibleAdapter () {

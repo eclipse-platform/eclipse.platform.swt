@@ -3360,6 +3360,7 @@ boolean runSettings () {
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) {
+			shell.fixStyle ();
 			shell.redraw (true);
 			shell.layout (true, true);
 		}

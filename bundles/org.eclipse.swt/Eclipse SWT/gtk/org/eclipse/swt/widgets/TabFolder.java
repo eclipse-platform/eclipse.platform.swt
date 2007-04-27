@@ -94,6 +94,8 @@ protected void checkSubclass () {
 }
 
 int /*long*/ childStyle () {
+	int /*long*/ rcStyle = OS.gtk_widget_get_modifier_style (handle);
+	if ((OS.gtk_rc_style_get_color_flags (rcStyle, 0) & OS.GTK_RC_BG) != 0) return 0;
 	OS.gtk_widget_realize (handle);
 	return OS.gtk_widget_get_style (handle);
 }

@@ -139,18 +139,28 @@ void fixFocus (Control focusControl) {
 	OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
 }
 
+void fixStyle () {
+	if (fixedHandle != 0) fixStyle (fixedHandle);
+}
+
 void fixStyle (int /*long*/ handle) {
 	/*
 	* Feature in GTK.  Some GTK themes apply a different background to
 	* the contents of a GtkNotebook.  However, in an SWT TabFolder, the
 	* children are not parented below the GtkNotebook widget, and usually
 	* have their own GtkFixed.  The fix is to look up the correct style
-	* for a child of a GtkNotebook and apply it to any GtkFixed widgets
-	* that are direct children of an SWT TabFolder.
+	* for a child of a GtkNotebook and apply its background to any GtkFixed
+	* widgets that are direct children of an SWT TabFolder.
+	* 
+	* Note that this has to be when the theme settings changes and that it
+	* should not override the application background.
 	*/
+	if ((state & BACKGROUND) != 0) return;
 	int /*long*/ childStyle = parent.childStyle ();
-	if (childStyle != 0) {
-		OS.gtk_widget_set_style (handle, childStyle);
+	if (childStyle != 0) {		
+		GdkColor color = new GdkColor();
+		OS.gtk_style_get_bg (childStyle, 0, color);
+		OS.gtk_widget_modify_bg (handle, 0, color);
 	}
 }
 
@@ -371,6 +381,7 @@ void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
 	checkBackground ();
+	if ((state & PARENT_BACKGROUND) != 0) setBackground ();
 	checkBuffered ();
 	showWidget ();
 	setInitialBounds ();
@@ -2456,9 +2467,6 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 		OS.gtk_im_context_set_client_window (imHandle, window);
 	}
-	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
-		setParentBackground ();
-	}
 	if (backgroundImage != null) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 		if (window != 0) OS.gdk_window_set_back_pixmap (window, backgroundImage.pixmap, false);
@@ -2488,9 +2496,6 @@ int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 }
 
 int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
-	if ((state & PARENT_BACKGROUND) != 0 && (state & BACKGROUND) == 0 && backgroundImage == null) {
-		setParentBackground ();
-	}
 	if (backgroundImage != null) {
 		setBackgroundPixmap (backgroundImage.pixmap);
 	}
@@ -3419,12 +3424,8 @@ public boolean setParent (Composite parent) {
 }
 
 void setParentBackground () {
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
-	if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, true);
-	if (fixedHandle != 0) {
-		window = OS.GTK_WIDGET_WINDOW (fixedHandle);
-		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, true);
-	}
+	setBackgroundColor (handle, null);
+	if (fixedHandle != 0) setBackgroundColor (fixedHandle, null);
 }
 
 void setParentWindow (int /*long*/ widget) {

@@ -413,6 +413,15 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 	}
 }
 
+void fixStyle () {
+	super.fixStyle ();
+	if (scrolledHandle == 0) fixStyle (handle);
+	Control[] children = _getChildren ();
+	for (int i = 0; i < children.length; i++) {
+		children [i].fixStyle ();
+	}
+}
+
 void fixTabList (Control control) {
 	if (tabList == null) return;
 	int count = 0;
