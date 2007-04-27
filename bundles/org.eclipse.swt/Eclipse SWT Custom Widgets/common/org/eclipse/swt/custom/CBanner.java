@@ -47,7 +47,7 @@ public class CBanner extends Composite {
 	
 	boolean simple = true;
 	
-	int[] curve;
+	int[] curve = new int[0];
 	int curveStart = 0;
 	Rectangle curveRect = new Rectangle(0, 0, 0, 0);
 	int curve_width = 5;
