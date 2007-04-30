@@ -1455,7 +1455,7 @@ public class SWT {
 		
 	/**
 	 * Style constant for align right behavior (value is 1&lt;&lt;17).
-	 * This is a synonym for TRAIL (value is 1&lt;&lt;14).  Newer
+	 * This is a synonym for TRAIL (value is 1&lt;&lt;17).  Newer
 	 * applications should use TRAIL instead of RIGHT to make code more
 	 * understandable on right-to-left platforms.
 	 */
