@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.opengl.win32;
 
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
 
-public class WGL {	
+public class WGL extends Platform {	
 	static {
 		Library.loadLibrary("swt-wgl");
 	}
