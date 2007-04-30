@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.opengl.carbon;
 
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
 
-public class AGL {
+public class AGL extends Platform {
 	static {
 		Library.loadLibrary("swt-agl");
 	}
