@@ -177,6 +177,15 @@ void checkGC(int mask) {
 			Pattern pattern = data.foregroundPattern;
 			if (pattern != null) {
 				brush = pattern.handle;
+				if ((data.style & SWT.MIRRORED) != 0) {
+					switch (Gdip.Brush_GetType(brush)) {
+						case Gdip.BrushTypeTextureFill:
+							brush = Gdip.Brush_Clone(brush);
+							if (brush == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+							Gdip.TextureBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
+							data.gdipFgBrush = brush;
+					}
+				}
 			} else {
 				int foreground = data.foreground;
 				int rgb = ((foreground >> 16) & 0xFF) | (foreground & 0xFF00) | ((foreground & 0xFF) << 16);
@@ -186,7 +195,6 @@ void checkGC(int mask) {
 				if (brush == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				Gdip.Color_delete(color);
 				data.gdipFgBrush = brush;
-				brush = data.gdipFgBrush;
 			}
 			if (pen != 0) {
 				Gdip.Pen_SetBrush(pen, brush);
@@ -258,6 +266,15 @@ void checkGC(int mask) {
 			Pattern pattern = data.backgroundPattern;
 			if (pattern != null) {
 				data.gdipBrush = pattern.handle;
+				if ((data.style & SWT.MIRRORED) != 0) {
+					switch (Gdip.Brush_GetType(data.gdipBrush)) {
+						case Gdip.BrushTypeTextureFill:
+							int brush = Gdip.Brush_Clone(data.gdipBrush);
+							if (brush == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+							Gdip.TextureBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
+							data.gdipBrush = data.gdipBgBrush = brush;
+					}
+				}
 			} else {
 				int background = data.background;
 				int rgb = ((background >> 16) & 0xFF) | (background & 0xFF00) | ((background & 0xFF) << 16);
