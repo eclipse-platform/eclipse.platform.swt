@@ -27,7 +27,9 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class XPCOMInit {
+import org.eclipse.swt.internal.Platform;
+
+public class XPCOMInit extends Platform {
 	public static final int PATH_MAX = 4096;
 	
 public static final native int GREVersionRange_sizeof ();
