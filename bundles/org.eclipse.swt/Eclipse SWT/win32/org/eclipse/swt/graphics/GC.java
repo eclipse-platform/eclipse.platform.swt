@@ -1954,16 +1954,34 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 			Gdip.Graphics_MeasureString(gdipGraphics, buffer, length, data.gdipFont, pt, format, bounds);
 			Gdip.Graphics_FillRectangle(gdipGraphics, data.gdipBrush, x, y, Math.round(bounds.Width), Math.round(bounds.Height));
 		}
-		int gstate = 0;
+		int gstate = 0, brush = getFgBrush();
 		if ((data.style & SWT.MIRRORED) != 0) {
+			switch (Gdip.Brush_GetType(brush)) {
+				case Gdip.BrushTypeLinearGradient:
+					Gdip.LinearGradientBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
+					Gdip.LinearGradientBrush_TranslateTransform(brush, - 2 * x, 0, Gdip.MatrixOrderPrepend);	
+					break;			
+				case Gdip.BrushTypeTextureFill:
+					Gdip.TextureBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
+					Gdip.TextureBrush_TranslateTransform(brush, - 2 * x, 0, Gdip.MatrixOrderPrepend);	
+					break;			
+			}
 			gstate = Gdip.Graphics_Save(gdipGraphics);
 			Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
 			Gdip.Graphics_TranslateTransform(gdipGraphics, - 2 * x, 0, Gdip.MatrixOrderPrepend);		 		 		 
 		}
 		pt.X = x;
 		pt.Y = y;
-		Gdip.Graphics_DrawString(gdipGraphics, buffer, length, data.gdipFont, pt, format, getFgBrush());
+		Gdip.Graphics_DrawString(gdipGraphics, buffer, length, data.gdipFont, pt, format, brush);
 		if ((data.style & SWT.MIRRORED) != 0) {
+			switch (Gdip.Brush_GetType(brush)) {
+				case Gdip.BrushTypeLinearGradient:
+					Gdip.LinearGradientBrush_ResetTransform(brush);
+					break;
+				case Gdip.BrushTypeTextureFill:
+					Gdip.TextureBrush_ResetTransform(brush);
+					break;
+			}
 			Gdip.Graphics_Restore(gdipGraphics, gstate);
 		}
 		Gdip.StringFormat_delete(format);
@@ -2116,16 +2134,34 @@ public void drawText (String string, int x, int y, int flags) {
 			Gdip.Graphics_MeasureString(gdipGraphics, buffer, length, data.gdipFont, pt, format, bounds);
 			Gdip.Graphics_FillRectangle(gdipGraphics, data.gdipBrush, x, y, Math.round(bounds.Width), Math.round(bounds.Height));
 		}
-		int gstate = 0;
+		int gstate = 0, brush = getFgBrush();
 		if ((data.style & SWT.MIRRORED) != 0) {
+			switch (Gdip.Brush_GetType(brush)) {
+				case Gdip.BrushTypeLinearGradient:
+					Gdip.LinearGradientBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
+					Gdip.LinearGradientBrush_TranslateTransform(brush, - 2 * x, 0, Gdip.MatrixOrderPrepend);	
+					break;			
+				case Gdip.BrushTypeTextureFill:
+					Gdip.TextureBrush_ScaleTransform(brush, -1, 1, Gdip.MatrixOrderPrepend);
+					Gdip.TextureBrush_TranslateTransform(brush, - 2 * x, 0, Gdip.MatrixOrderPrepend);	
+					break;			
+			}
 			gstate = Gdip.Graphics_Save(gdipGraphics);
 			Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
 			Gdip.Graphics_TranslateTransform(gdipGraphics, - 2 * x, 0, Gdip.MatrixOrderPrepend);		 		 		 
 		}
 		pt.X = x;
 		pt.Y = y;
-		Gdip.Graphics_DrawString(gdipGraphics, buffer, length, data.gdipFont, pt, format, getFgBrush());
+		Gdip.Graphics_DrawString(gdipGraphics, buffer, length, data.gdipFont, pt, format, brush);
 		if ((data.style & SWT.MIRRORED) != 0) {
+			switch (Gdip.Brush_GetType(brush)) {
+				case Gdip.BrushTypeLinearGradient:
+					Gdip.LinearGradientBrush_ResetTransform(brush);
+					break;
+				case Gdip.BrushTypeTextureFill:
+					Gdip.TextureBrush_ResetTransform(brush);
+					break;
+			}
 			Gdip.Graphics_Restore(gdipGraphics, gstate);
 		}
 		Gdip.StringFormat_delete(format);
