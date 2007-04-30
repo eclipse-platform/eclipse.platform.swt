@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 164;
-int Gdip_nativeFunctionCallCount[164];
+int Gdip_nativeFunctionCount = 170;
+int Gdip_nativeFunctionCallCount[170];
 char * Gdip_nativeFunctionNames[] = {
 	"BitmapData_1delete",
 	"BitmapData_1new",
@@ -125,8 +125,11 @@ char * Gdip_nativeFunctionNames[] = {
 	"Image_1GetPaletteSize",
 	"Image_1GetPixelFormat",
 	"Image_1GetWidth",
+	"LinearGradientBrush_1ResetTransform",
+	"LinearGradientBrush_1ScaleTransform",
 	"LinearGradientBrush_1SetInterpolationColors",
 	"LinearGradientBrush_1SetWrapMode",
+	"LinearGradientBrush_1TranslateTransform",
 	"LinearGradientBrush_1delete",
 	"LinearGradientBrush_1new",
 	"Matrix_1GetElements",
@@ -178,7 +181,10 @@ char * Gdip_nativeFunctionNames[] = {
 	"StringFormat_1SetHotkeyPrefix",
 	"StringFormat_1SetTabStops",
 	"StringFormat_1delete",
+	"TextureBrush_1ResetTransform",
+	"TextureBrush_1ScaleTransform",
 	"TextureBrush_1SetTransform",
+	"TextureBrush_1TranslateTransform",
 	"TextureBrush_1delete",
 	"TextureBrush_1new",
 };

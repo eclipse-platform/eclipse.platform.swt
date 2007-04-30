@@ -1438,6 +1438,32 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetWidth)
 }
 #endif
 
+#ifndef NO_LinearGradientBrush_1ResetTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1ResetTransform)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1ResetTransform)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, LinearGradientBrush_1ResetTransform_FUNC);
+	rc = (jint)((LinearGradientBrush *)arg0)->ResetTransform();
+	Gdip_NATIVE_EXIT(env, that, LinearGradientBrush_1ResetTransform_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LinearGradientBrush_1ScaleTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1ScaleTransform)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
+JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1ScaleTransform)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, LinearGradientBrush_1ScaleTransform_FUNC);
+	rc = (jint)((LinearGradientBrush *)arg0)->ScaleTransform(arg1, arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, LinearGradientBrush_1ScaleTransform_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LinearGradientBrush_1SetWrapMode
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetWrapMode)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetWrapMode)
@@ -1447,6 +1473,19 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetWrapMode)
 	Gdip_NATIVE_ENTER(env, that, LinearGradientBrush_1SetWrapMode_FUNC);
 	rc = (jint)((LinearGradientBrush *)arg0)->SetWrapMode((WrapMode)arg1);
 	Gdip_NATIVE_EXIT(env, that, LinearGradientBrush_1SetWrapMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LinearGradientBrush_1TranslateTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1TranslateTransform)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
+JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1TranslateTransform)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, LinearGradientBrush_1TranslateTransform_FUNC);
+	rc = (jint)((LinearGradientBrush *)arg0)->TranslateTransform(arg1, arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, LinearGradientBrush_1TranslateTransform_FUNC);
 	return rc;
 }
 #endif
@@ -2099,6 +2138,32 @@ JNIEXPORT void JNICALL Gdip_NATIVE(StringFormat_1delete)
 }
 #endif
 
+#ifndef NO_TextureBrush_1ResetTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1ResetTransform)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1ResetTransform)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, TextureBrush_1ResetTransform_FUNC);
+	rc = (jint)((TextureBrush *)arg0)->ResetTransform();
+	Gdip_NATIVE_EXIT(env, that, TextureBrush_1ResetTransform_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TextureBrush_1ScaleTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1ScaleTransform)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
+JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1ScaleTransform)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, TextureBrush_1ScaleTransform_FUNC);
+	rc = (jint)((TextureBrush *)arg0)->ScaleTransform(arg1, arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, TextureBrush_1ScaleTransform_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TextureBrush_1SetTransform
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)
@@ -2108,6 +2173,19 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)
 	Gdip_NATIVE_ENTER(env, that, TextureBrush_1SetTransform_FUNC);
 	rc = (jint)((TextureBrush *)arg0)->SetTransform((Matrix *)arg1);
 	Gdip_NATIVE_EXIT(env, that, TextureBrush_1SetTransform_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TextureBrush_1TranslateTransform
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1TranslateTransform)(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3);
+JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1TranslateTransform)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, TextureBrush_1TranslateTransform_FUNC);
+	rc = (jint)((TextureBrush *)arg0)->TranslateTransform(arg1, arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, TextureBrush_1TranslateTransform_FUNC);
 	return rc;
 }
 #endif

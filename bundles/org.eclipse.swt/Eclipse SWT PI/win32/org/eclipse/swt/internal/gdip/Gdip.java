@@ -248,6 +248,9 @@ public static final native int /*long*/ LinearGradientBrush_new(PointF point1, P
 public static final native void LinearGradientBrush_delete(int /*long*/ brush);
 public static final native int LinearGradientBrush_SetInterpolationColors(int /*long*/ brush, int /*long*/[] presetColors, float[] blendPositions, int count);
 public static final native int LinearGradientBrush_SetWrapMode(int /*long*/ brush, int wrapMode);
+public static final native int LinearGradientBrush_ResetTransform(int /*long*/ brush);
+public static final native int LinearGradientBrush_ScaleTransform(int /*long*/ brush, float sx, float sy, int order);
+public static final native int LinearGradientBrush_TranslateTransform(int /*long*/ brush, float dx, float dy, int order);
 public static final native int /*long*/ Matrix_new(float m11, float m12, float m21, float m22, float dx, float dy);
 public static final native void Matrix_delete(int /*long*/ matrix);
 public static final native int Matrix_GetElements(int /*long*/ matrix, float[] m);
@@ -300,4 +303,7 @@ public static final native int StringFormat_SetTabStops(int /*long*/ format, flo
 public static final native int /*long*/ TextureBrush_new(int /*long*/ image, int wrapMode, float dstX, float dstY, float dstWidth, float dstHeight);
 public static final native void TextureBrush_delete(int /*long*/ brush);
 public static final native int TextureBrush_SetTransform(int /*long*/ brush, int /*long*/ matrix);
+public static final native int TextureBrush_ResetTransform(int /*long*/ brush);
+public static final native int TextureBrush_ScaleTransform(int /*long*/ brush, float sx, float sy, int order);
+public static final native int TextureBrush_TranslateTransform(int /*long*/ brush, float dx, float dy, int order);
 }
