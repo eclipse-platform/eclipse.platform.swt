@@ -16,7 +16,7 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  * 
- * @since 3.2
+ * @since 3.3
  */
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
@@ -67,7 +67,8 @@ public static void main(String [] args) {
 	 * as efficient as possible.
 	 */
 	tree.addListener(SWT.EraseItem, new Listener() {
-		public void handleEvent(Event event) {			
+		public void handleEvent(Event event) {
+			event.detail &= ~SWT.HOT;
 			if ((event.detail & SWT.SELECTED) != 0) {
 				GC gc = event.gc;
 				Rectangle area = tree.getClientArea();

@@ -15,6 +15,7 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  * 
+ * @since 3.3
  */
 
 import org.eclipse.swt.*;
@@ -71,10 +72,11 @@ public static void main (String [] args) {
 		}
 	});
 	// On Windows, the selection is gray if the table does not have focus.
-	// To make both tables appear in focus, draw teh selection background here.
+	// To make both tables appear in focus, draw the selection background here.
 	// This part only works on version 3.2 or later.
 	Listener eraseListener = new Listener() {
 		public void handleEvent(Event event) {
+			event.detail &= ~SWT.HOT;
 			if((event.detail & SWT.SELECTED) != 0) {
 				GC gc = event.gc;
 				Rectangle rect = event.getBounds();
