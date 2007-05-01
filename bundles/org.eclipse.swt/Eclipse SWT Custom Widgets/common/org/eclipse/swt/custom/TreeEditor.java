@@ -74,6 +74,8 @@ public class TreeEditor extends ControlEditor {
 	int column = 0;
 	ControlListener columnListener;
 	TreeListener treeListener;
+	Runnable timer;
+	static final int TIMEOUT = 500;
 	
 /**
 * Creates a TreeEditor for the specified Tree.
@@ -91,6 +93,11 @@ public TreeEditor (Tree tree) {
 		}
 		public void controlResized(ControlEvent e){
 			layout();
+		}
+	};
+	timer = new Runnable () {
+		public void run() {
+			layout ();
 		}
 	};
 	treeListener = new TreeListener () {
@@ -183,6 +190,7 @@ public void dispose () {
 	tree = null;
 	item = null;
 	column = 0;
+	timer = null;
 	super.dispose();
 }
 
@@ -206,6 +214,21 @@ public TreeItem getItem () {
 	return item;
 }
 
+void resize () {
+	layout();
+	/*
+	 * On some platforms, the table scrolls when an item that
+	 * is partially visible at the bottom of the table is
+	 * selected.  Ensure that the correct row is edited by
+	 * laying out one more time in a timerExec().
+	 */
+	if (tree != null) {
+		Display display = tree.getDisplay();
+		display.timerExec(-1, timer);
+		display.timerExec(TIMEOUT, timer);
+	}
+}
+
 /**
 * Sets the zero based index of the column of the cell being tracked by this editor.
 * 
@@ -219,7 +242,7 @@ public void setColumn(int column) {
 	// In this situation, there is a single default column.
 	if (columnCount == 0) {
 		this.column = (column == 0) ? 0 : -1;
-		layout();
+		resize();
 		return;
 	}
 	if (this.column > -1 && this.column < columnCount){
@@ -233,12 +256,12 @@ public void setColumn(int column) {
 	this.column = column;
 	TreeColumn treeColumn = tree.getColumn(this.column);
 	treeColumn.addControlListener(columnListener);
-	layout();
+	resize();
 }
 
 public void setItem (TreeItem item) {
 	this.item = item;
-	layout();
+	resize();
 }
 
 /**
@@ -258,6 +281,11 @@ public void setEditor (Control editor, TreeItem item, int column) {
 	setColumn(column);
 	setEditor(editor);
 }
+public void setEditor (Control editor) {
+	super.setEditor(editor);
+	resize();
+}
+
 /**
 * Specify the Control that is to be displayed and the cell in the tree that it is to be positioned above.
 *
