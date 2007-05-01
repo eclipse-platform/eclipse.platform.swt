@@ -1480,7 +1480,7 @@ void createItem (TableItem item, int index) {
 
 void createWidget () {
 	super.createWidget ();
-	itemHeight = -1;
+	itemHeight = hotIndex = -1;
 	items = new TableItem [4];
 	columns = new TableColumn [4];
 }
