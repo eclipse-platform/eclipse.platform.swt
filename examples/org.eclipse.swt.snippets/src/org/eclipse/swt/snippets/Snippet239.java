@@ -73,7 +73,7 @@ public static void main(String [] args) {
 						}
 						event.gc.setForeground(red);
 						int y = event.y + (event.height - extent.y)/2;
-						event.gc.drawString(string, event.x - offset, y);
+						event.gc.drawString(string, event.x - offset, y, true);
 					}
 					break;
 				}
