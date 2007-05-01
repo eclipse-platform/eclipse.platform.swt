@@ -70,10 +70,10 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection;
+	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
-	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground;
+	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -340,8 +340,11 @@ static int checkStyle (int style) {
 
 LRESULT CDDS_ITEMPOSTPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	int hDC = nmcd.hdc;
-	if (explorerTheme && !ignoreCustomDraw && hooks (SWT.EraseItem) && (nmcd.left != nmcd.right)) {
-		OS.RestoreDC (hDC, -1);
+	if (explorerTheme && !ignoreCustomDraw) {
+		hotIndex = -1;
+		if (hooks (SWT.EraseItem) && nmcd.left != nmcd.right) {
+			OS.RestoreDC (hDC, -1);
+		}
 	}
 	/*
 	* Bug in Windows.  When the table has the extended style
@@ -424,11 +427,14 @@ LRESULT CDDS_ITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			}
 		}
 	}
-	if (explorerTheme && !ignoreCustomDraw && hooks (SWT.EraseItem) && (nmcd.left != nmcd.right)) {
-		OS.SaveDC (nmcd.hdc);
-		int hrgn = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.SelectClipRgn (nmcd.hdc, hrgn);
-		OS.DeleteObject (hrgn);
+	if (explorerTheme && !ignoreCustomDraw) {
+		hotIndex = (nmcd.uItemState & OS.CDIS_HOT) != 0 ? nmcd.dwItemSpec : -1;
+		if (hooks (SWT.EraseItem) && nmcd.left != nmcd.right) {
+			OS.SaveDC (nmcd.hdc);
+			int hrgn = OS.CreateRectRgn (0, 0, 0, 0);
+			OS.SelectClipRgn (nmcd.hdc, hrgn);
+			OS.DeleteObject (hrgn);
+		}
 	}
 	return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
 }
@@ -3049,7 +3055,10 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	GCData data = new GCData ();
 	data.device = display;
 	int clrSelectionBk = -1;
-	boolean drawSelected = false, drawBackground = false;
+	boolean drawSelected = false, drawBackground = false, drawHot = false;
+	if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
+		drawHot = hotIndex == nmcd.dwItemSpec;
+	}
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
 			if (OS.GetFocus () == handle) {
@@ -3105,6 +3114,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 			}
 		}
 	}
+	if (drawHot) event.detail |= SWT.HOT;
 	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
 	event.x = cellRect.left;
@@ -3123,11 +3133,13 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 		ignoreDrawBackground = (event.detail & SWT.BACKGROUND) == 0;
 		ignoreDrawSelection = (event.detail & SWT.SELECTED) == 0;
 		ignoreDrawFocus = (event.detail & SWT.FOCUSED) == 0;
+		ignoreDrawHot = (event.detail & SWT.HOT) == 0;
 	} else {
-		ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = true;
+		ignoreDrawForeground = ignoreDrawBackground = ignoreDrawSelection = ignoreDrawFocus = ignoreDrawHot = true;
 	}
 	if (drawSelected) {
 		if (ignoreDrawSelection) {
+			ignoreDrawHot = true;
 			if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
 				selectionForeground = clrSelectionText;
 			}
@@ -3147,15 +3159,15 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 	boolean fullText = explorerTheme || ((style & SWT.FULL_SELECTION) != 0 || !firstColumn);
-	if (ignoreDrawForeground) {
+	if (ignoreDrawForeground && ignoreDrawHot) {
 		if (!ignoreDrawBackground && drawBackground) {
 			RECT backgroundRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 			fillBackground (hDC, clrTextBk, backgroundRect);
 		}
 	}
-	if (!ignoreDrawSelection && clrSelectionBk != -1) {
+	if (!ignoreDrawHot || (!ignoreDrawSelection && clrSelectionBk != -1)) {
 		if (explorerTheme) {
-			boolean hot = (nmcd.uItemState & OS.CDIS_HOT) != 0;
+			boolean hot = drawHot;
 			RECT pClipRect = new RECT ();
 			OS.SetRect (pClipRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 			RECT rect = new RECT ();
@@ -3350,7 +3362,10 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	lvItem.iItem = nmcd.dwItemSpec;
 	int result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
 	boolean selected = result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0;
-	boolean drawSelected = false, drawBackground = false;
+	boolean drawSelected = false, drawBackground = false, drawHot = false;
+	if (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0) {
+		drawHot = hotIndex == nmcd.dwItemSpec;
+	}
 	if (OS.IsWindowEnabled (handle)) {
 		if (selected && (nmcd.iSubItem == 0 || (style & SWT.FULL_SELECTION) != 0)) {
 			if (OS.GetFocus () == handle) {
@@ -3414,6 +3429,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 			}
 		}
 	}
+	if (drawHot) event.detail |= SWT.HOT;
 	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
 	event.x = itemRect.left;
