@@ -153,6 +153,15 @@ void releaseWidget () {
 	timerId = 0;
 }
 
+void setParentBackground () {
+	/*
+	* Bug in GTK.  For some reason, some theme managers will crash
+	* when the progress bar is inheriting the background from a parent.
+	* The fix is to stop inheriting the background. This is acceptable
+	* since progress bars do not use the inherited background. 
+	*/
+}
+
 /**
  * Sets the maximum value that the receiver will allow.  This new
  * value will be ignored if it is not greater than the receiver's current
