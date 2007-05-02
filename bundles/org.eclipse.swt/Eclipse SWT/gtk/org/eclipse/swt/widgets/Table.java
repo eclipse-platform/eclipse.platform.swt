@@ -1435,7 +1435,9 @@ public int getItemHeight () {
 	if (itemCount == 0) {
 		int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
 		int [] w = new int [1], h = new int [1];
+		ignoreSize = true;
 		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		ignoreSize = false;
 		return h [0];
 	} else {
 		int height = 0;
