@@ -4444,6 +4444,8 @@ public void setSelection (TreeItem [] items) {
 		ignoreSelect = false;
 		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hNewItem);
+			int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hNewItem);
+			if (hParent == 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
 		}
 		if (fixScroll) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
@@ -4585,7 +4587,6 @@ public void setTopItem (TreeItem item) {
 	int hTopItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	if (hItem == hTopItem) return;
 	boolean fixScroll = checkScroll (hItem), redraw = false;
-	int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
 	if (fixScroll) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
@@ -4594,6 +4595,7 @@ public void setTopItem (TreeItem item) {
 		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+	int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
 	if (hParent == 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
 	if (fixScroll) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
@@ -4624,7 +4626,8 @@ void showItem (int hItem) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
+		int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+		if (hParent == 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
 		if (fixScroll) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
