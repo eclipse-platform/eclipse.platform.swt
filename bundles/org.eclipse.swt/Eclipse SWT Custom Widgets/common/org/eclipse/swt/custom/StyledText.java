@@ -8046,18 +8046,7 @@ public void setWordWrap(boolean wrap) {
 	setCaretLocation();
 	super.redraw();
 }
-/**
- * Scrolls the specified location into view.
- * 
- * @param x the x coordinate that should be made visible.
- * @param line the line that should be made visible. Relative to the
- *	first line in the document.
- * @return 
- *	true=the widget was scrolled to make the specified location visible. 
- *	false=the specified location is already visible, the widget was 
- *	not scrolled. 	
- */
-boolean showLocation(Rectangle rect) {
+boolean showLocation(Rectangle rect, boolean scrollPage) {
 	int clientAreaWidth = this.clientAreaWidth - leftMargin - rightMargin;
 	int clientAreaHeight = this.clientAreaHeight - topMargin - bottomMargin;
 	boolean scrolled = false;
@@ -8071,13 +8060,13 @@ boolean showLocation(Rectangle rect) {
 		}
 	}
 	if (clientAreaWidth > 0) {
-		// always make 1/4 of a page visible
+		int minScroll = scrollPage ? clientAreaWidth / 4 : 0;
 		if (rect.x < leftMargin) {
-			int scrollWidth = Math.max(leftMargin - rect.x, clientAreaWidth / 4);
+			int scrollWidth = Math.max(leftMargin - rect.x, minScroll);
 			int maxScroll = horizontalScrollOffset;
 			scrolled = scrollHorizontal(-Math.min(maxScroll, scrollWidth), true);
 		} else if (rect.x + rect.width > clientAreaWidth) {
-			int scrollWidth =  Math.max(rect.x + rect.width - clientAreaWidth, clientAreaWidth / 4);
+			int scrollWidth =  Math.max(rect.x + rect.width - clientAreaWidth, minScroll);
 			int maxScroll = renderer.getWidth() - horizontalScrollOffset - this.clientAreaWidth;
 			scrolled = scrollHorizontal(Math.min(maxScroll, scrollWidth), true);
 		}
@@ -8089,7 +8078,7 @@ boolean showLocation(Rectangle rect) {
  */
 void showCaret() {
 	Rectangle bounds = getBoundsAtOffset(caretOffset);
-	if (!showLocation(bounds)) {
+	if (!showLocation(bounds, true)) {
 		setCaretLocation();
 	}
 }
@@ -8123,20 +8112,22 @@ public void showSelection() {
 	Rectangle endBounds = getBoundsAtOffset(endOffset);
 	
 	// can the selection be fully displayed within the widget's visible width?
-	int w = clientAreaWidth;
+	int w = clientAreaWidth - leftMargin - rightMargin;
 	boolean selectionFits = rightToLeft ? startBounds.x - endBounds.x <= w : endBounds.x - startBounds.x <= w;
 	if (selectionFits) {
 		// show as much of the selection as possible by first showing
 		// the start of the selection
-		if (showLocation(startBounds)) {
+		if (showLocation(startBounds, false)) {
 			// endX value could change if showing startX caused a scroll to occur
 			endBounds = getBoundsAtOffset(endOffset);
 		}
-		showLocation(endBounds);
+		// the character at endOffset is not part of the selection
+		endBounds.width = 0;
+		showLocation(endBounds, false);
 	} else {
 		// just show the end of the selection since the selection start 
 		// will not be visible
-		showLocation(endBounds);
+		showLocation(endBounds, true);
 	}
 }
 /**
