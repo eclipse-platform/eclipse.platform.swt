@@ -657,6 +657,7 @@ boolean hasBorder () {
 
 void hookEvents () {
 	super.hookEvents ();
+	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.closures [KEY_PRESS_EVENT], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.closures [MAP_EVENT], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [UNMAP_EVENT], 0, display.closures [UNMAP_EVENT], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.closures [WINDOW_STATE_EVENT], false);
@@ -981,6 +982,14 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 		display.activePending = false;
 	}
 	return 0;
+}
+
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+	/* Stop menu mnemonics when the shell is disabled */
+	if (widget == shellHandle) {
+		return (state & DISABLED) != 0 ? 1 : 0;
+	}
+	return super.gtk_key_press_event (widget, event);
 }
 
 int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
