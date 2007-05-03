@@ -5333,6 +5333,7 @@ void handleTextChanging(TextChangingEvent event) {
 	if (srcY < 0 && destY < 0) {
 		lastLineBottom += srcY - destY;
 		verticalScrollOffset += destY - srcY;
+		calculateTopIndex(destY - srcY);
 		setScrollBars(true);
 	} else {
 		scrollText(srcY, destY);
