@@ -112,9 +112,6 @@ public Control (Composite parent, int style) {
 int actionProc (int theControl, int partCode) {
 	int result = super.actionProc (theControl, partCode);
 	if (result == OS.noErr) return result;
-	if (display.pollingTimer != 0) {
-		OS.SetEventLoopTimerNextFireTime (display.pollingTimer, Display.POLLING_TIMEOUT / 1000.0);
-	}
 	if (isDisposed ()) return OS.noErr;
 	sendTrackEvents ();
 	return result;

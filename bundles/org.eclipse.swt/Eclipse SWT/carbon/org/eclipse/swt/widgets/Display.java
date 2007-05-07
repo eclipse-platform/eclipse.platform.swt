@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.CFRange;
+import org.eclipse.swt.internal.carbon.CFRunLoopSourceContext;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -103,19 +104,17 @@ import org.eclipse.swt.graphics.*;
 public class Display extends Device {
 	
 	/* Windows and Events */
-	static final int WAKE_CLASS = 'S' << 24 | 'W' << 16 | 'T' << 8 | '-';
-	static final int WAKE_KIND = 1;
 	Event [] eventQueue;
 	Callback actionCallback, appleEventCallback, clockCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, searchCallback, trayItemCallback;
-	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, pollingCallback;
+	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, observerCallback, sourceCallback;
 	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback, releaseCallback;
 	int actionProc, appleEventProc, clockProc, commandProc, controlProc, appearanceProc, accessibilityProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, searchProc, trayItemProc;
-	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, pollingProc;
+	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, observerProc, sourceProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc;
 	EventTable eventTable, filterTable;
-	int queue, lastModifiers, lastState, lastX, lastY;
+	int queue, runLoop, runLoopSource, lastModifiers, lastState, lastX, lastY;
 	boolean closing;
 	
 	boolean inPaint, needsPaint;
@@ -130,6 +129,7 @@ public class Display extends Device {
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
+	boolean runAsyncMessages = true;
 	
 	/* Widget Table */
 	int freeSlot;
@@ -158,14 +158,12 @@ public class Display extends Device {
 	Tray tray;
 	
 	/* Timers */
-	int pollingTimer;
 	int [] timerIds;
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
 	boolean allowTimers = true;
-	static final int POLLING_TIMEOUT = 10;
-		
+
 	/* Current caret */
 	Caret currentCaret;
 	Callback caretCallback;
@@ -1004,6 +1002,7 @@ void createDisplay (DeviceData data) {
 	*/
 	OS.ClearMenuBar ();
 	queue = OS.GetCurrentEventQueue ();
+	runLoop = OS.GetCFRunLoopFromEventLoop (OS.GetCurrentEventLoop ());
 	OS.TXNInitTextension (0, 0, 0);
 	
 	/* Save the current highlight color */
@@ -2057,9 +2056,12 @@ void initializeCallbacks () {
 	trayItemCallback = new Callback (this, "trayItemProc", 4);
 	trayItemProc = trayItemCallback.getAddress ();
 	if (trayItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	pollingCallback = new Callback (this, "pollingProc", 2);
-	pollingProc = pollingCallback.getAddress ();
-	if (pollingProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	observerCallback = new Callback (this, "observerProc", 3);
+	observerProc = observerCallback.getAddress ();
+	if (observerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	sourceCallback = new Callback (this, "sourceProc", 1);
+	sourceProc = sourceCallback.getAddress ();
+	if (sourceProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	searchCallback = new Callback (this, "searchProc", 3);
 	searchProc = searchCallback.getAddress ();
 	if (searchProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2104,6 +2106,19 @@ void initializeCallbacks () {
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAESmallSystemFontChanged, appearanceProc, 0, false);
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAESystemFontChanged, appearanceProc, 0, false);
 	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAEViewsFontChanged, appearanceProc, 0, false);
+
+	int mode = OS.kCFRunLoopCommonModes ();
+	int activities = OS.kCFRunLoopBeforeWaiting;
+	int observer = OS.CFRunLoopObserverCreate (OS.kCFAllocatorDefault, activities, true, 0, observerProc, 0);
+	if (observer == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.CFRunLoopAddObserver (runLoop, observer, mode);
+	OS.CFRelease (observer);
+	CFRunLoopSourceContext context = new CFRunLoopSourceContext ();
+	context.version = 0;
+	context.perform = sourceProc;
+	runLoopSource = OS.CFRunLoopSourceCreate (OS.kCFAllocatorDefault, 0, context);
+	if (runLoopSource == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.CFRunLoopAddSource (runLoop, runLoopSource, mode);
 }
 
 void initializeFonts () {
@@ -2294,11 +2309,6 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 		if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
-}
-
-int pollingProc (int inTimer, int inUserData) {
-	runAsyncMessages (false);
-	return 0;
 }
 
 /**
@@ -2759,18 +2769,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			if (eventKind == OS.kEventMouseDown) {
 				clearMenuFlags ();
 				if (menuBar == null || menuBar.isEnabled ()) {
-					int timer = 0;
-					if (pollingTimer == 0) {
-						int [] id = new int [1];
-						int eventLoop = OS.GetCurrentEventLoop ();
-						OS.InstallEventLoopTimer (eventLoop, Display.POLLING_TIMEOUT / 1000.0, Display.POLLING_TIMEOUT / 1000.0, pollingProc, 0, id);
-						pollingTimer = timer = id [0];
-					}
 					OS.MenuSelect (where);
-					if (timer != 0) {
-						OS.RemoveEventLoopTimer (timer);
-						pollingTimer = 0;
-					}
 				}					 
 				clearMenuFlags ();
 				return OS.noErr;
@@ -2828,6 +2827,17 @@ int mouseHoverProc (int id, int handle) {
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
 		Point pt = currentControl.toControl (getCursorLocation ());
 		currentControl.sendMouseEvent (SWT.MouseHover, (short)0, 0, true, chord, (short)pt.x, (short)pt.y, modifiers);
+	}
+	return 0;
+}
+
+int observerProc (int observer, int activity, int info) {
+	switch (activity) {
+		case OS.kCFRunLoopBeforeWaiting:
+			if (runAsyncMessages) {
+				if (runAsyncMessages (false)) wakeThread ();
+			}
+			break;
 	}
 	return 0;
 }
@@ -2907,14 +2917,11 @@ public boolean readAndDispatch () {
 	boolean events = false;
 	events |= runSettings ();
 	events |= runTimers ();
-	events |= runEnterExit ();
 	events |= runPopups ();
 	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
 	if (status == OS.noErr) {
 		events = true;
-		int eventClass = OS.GetEventClass (outEvent [0]);
-		int eventKind = OS.GetEventKind (outEvent [0]);
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
 
@@ -2928,25 +2935,11 @@ public boolean readAndDispatch () {
 		if (focusCombo != null && !focusCombo.isDisposed ()) {
 			focusCombo.checkSelection ();
 		}
-
-		/*
-		* Feature in the Macintosh.  When an indeterminate progress
-		* bar is running, it floods the event queue with messages in
-		* order to show the animation.  This means that async messages
-		* will never run because there are always messages from the
-		* operating system.  The fix is to run async messages when ever
-		* there is a wake message.
-		*
-		* NOTE:  This is not the correct behavior.  Operating system
-		* messages are supposed to have priority over async messages.
-		*/
-		if (eventClass == WAKE_CLASS && eventKind == WAKE_KIND) {
-			runAsyncMessages (false);
-		}
 	}
 	events |= runPaint ();
 	if (events) {
 		runDeferredEvents ();
+		runEnterExit ();
 		return true;
 	}
 	return runAsyncMessages (false);
@@ -3046,6 +3039,12 @@ void releaseDisplay () {
 	if (dockImage != 0) OS.CGImageRelease (dockImage);
 	dockImage = 0;
 
+	if (runLoopSource != 0) {
+		OS.CFRunLoopSourceInvalidate (runLoopSource);
+		OS.CFRelease (runLoopSource);
+	}
+	runLoop = runLoopSource = 0;
+
 	releaseCallback.dispose ();	
 	actionCallback.dispose ();
 	appleEventCallback.dispose ();
@@ -3070,16 +3069,17 @@ void releaseDisplay () {
 	textInputCallback.dispose ();
 	appearanceCallback.dispose ();
 	trayItemCallback.dispose ();
-	pollingCallback.dispose ();
+	observerCallback.dispose ();
+	sourceCallback.dispose ();
 	searchCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = appearanceCallback = null;
 	accessibilityCallback = clockCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = searchCallback = trayItemCallback = null;
-	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = pollingCallback = null;
+	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = observerCallback = sourceCallback = null;
 	textInputCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = searchProc = trayItemProc = 0;
 	accessibilityProc = clockProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
-	helpProc = hitTestProc = keyboardProc = menuProc = pollingProc = releaseProc = 0;
+	helpProc = hitTestProc = keyboardProc = menuProc = observerProc = sourceProc = releaseProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
 	textInputProc = 0;
 	timerCallback.dispose ();
@@ -3715,14 +3715,20 @@ public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
 	disposeWindows ();
+	
+	/*
+	* Feature in the Macintosh.  No kAppearanceEventClass event exists
+	* for a change of the Highlight Color.  The fix is to poll for the
+	* change while waiting for an event.
+	*/
 	if (eventTable != null && eventTable.hooks (SWT.Settings)) {
 		RGBColor color = new RGBColor ();
-		int status = OS.noErr, depth = getDepth ();
+		int result = 0, depth = getDepth ();
 		do {
-			allowTimers = false;
-			status = OS.ReceiveNextEvent (0, null, 0.5, false, null);
-			allowTimers = true;
-			if (status == OS.eventLoopTimedOutErr) {
+			allowTimers = runAsyncMessages = false;
+			result = OS.CFRunLoopRunInMode (OS.kCFRunLoopDefaultMode (), 0.5, true);
+			allowTimers = runAsyncMessages = true;
+			if (result == OS.kCFRunLoopRunTimedOut) {
 				OS.GetThemeBrushAsColor ((short) OS.kThemeBrushPrimaryHighlightColor, (short) depth, true, color);
 				if (highlightColor.red != color.red || highlightColor.green != color.green || highlightColor.blue != color.blue) {
 					highlightColor = color;
@@ -3730,13 +3736,19 @@ public boolean sleep () {
 					return true;
 				}
 			}
-		} while (status == OS.eventLoopTimedOutErr);
-		return status == OS.noErr;
+		} while (result == OS.kCFRunLoopRunTimedOut);
+		return result == OS.kCFRunLoopRunHandledSource;
 	}
-	allowTimers = false;
-	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null);
-	allowTimers = true;
-	return status == OS.noErr;
+	
+	/* Wait for an event and timeout after a day */
+	allowTimers = runAsyncMessages = false;
+	int result = OS.CFRunLoopRunInMode (OS.kCFRunLoopDefaultMode (), 60 * 60 * 24, true);
+	allowTimers = runAsyncMessages = true;
+	return result == OS.kCFRunLoopRunHandledSource;
+}
+
+int sourceProc (int info) {
+	return 0;
 }
 
 /**
@@ -3961,10 +3973,8 @@ public void wake () {
 }
 
 void wakeThread () {
-	int [] wakeEvent = new int [1];
-	OS.CreateEvent (0, WAKE_CLASS, WAKE_KIND, 0.0, OS.kEventAttributeUserEvent, wakeEvent);
-	OS.PostEventToQueue (queue, wakeEvent [0], (short) OS.kEventPriorityStandard);
-	if (wakeEvent [0] != 0) OS.ReleaseEvent (wakeEvent [0]);
+	OS.CFRunLoopSourceSignal (runLoopSource);
+	OS.CFRunLoopWakeUp (runLoop);
 }
 
 int windowProc (int nextHandler, int theEvent, int userData) {
