@@ -3326,6 +3326,7 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		if (getDisplay().getDepth() < 15) {
 			// Don't use gradients on low color displays
 			colors = new Color[] {colors[colorsLength - 1]};
+			colorsLength = colors.length;
 			percents = new int[] {};
 		}
 	} else {
