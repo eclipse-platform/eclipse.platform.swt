@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 895;
-int OS_nativeFunctionCallCount[895];
+int OS_nativeFunctionCount = 907;
+int OS_nativeFunctionCallCount[907];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -94,6 +94,15 @@ char * OS_nativeFunctionNames[] = {
 	"CFNumberFormatterCreate",
 	"CFRelease",
 	"CFRetain",
+	"CFRunLoopAddObserver",
+	"CFRunLoopAddSource",
+	"CFRunLoopObserverCreate",
+	"CFRunLoopRunInMode",
+	"CFRunLoopSourceCreate",
+	"CFRunLoopSourceInvalidate",
+	"CFRunLoopSourceSignal",
+	"CFRunLoopStop",
+	"CFRunLoopWakeUp",
 	"CFStringCreateWithBytes",
 	"CFStringCreateWithCharacters__III",
 	"CFStringCreateWithCharacters__I_3CI",
@@ -347,6 +356,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetAvailableWindowAttributes",
 	"GetAvailableWindowPositioningBounds",
 	"GetBestControlRect",
+	"GetCFRunLoopFromEventLoop",
 	"GetCaretTime",
 	"GetClip",
 	"GetControl32BitMaximum",
@@ -886,6 +896,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1_1BIG_1ENDIAN_1_1",
 	"getpid",
 	"kCFNumberFormatterDecimalSeparator",
+	"kCFRunLoopCommonModes",
+	"kCFRunLoopDefaultMode",
 	"kFontPanelAttributeSizesKey",
 	"kFontPanelAttributeTagsKey",
 	"kFontPanelAttributeValuesKey",

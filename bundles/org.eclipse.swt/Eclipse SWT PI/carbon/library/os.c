@@ -1194,6 +1194,106 @@ JNIEXPORT void JNICALL OS_NATIVE(CFRetain)
 }
 #endif
 
+#ifndef NO_CFRunLoopAddObserver
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopAddObserver)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopAddObserver_FUNC);
+	CFRunLoopAddObserver((CFRunLoopRef)arg0, (CFRunLoopObserverRef)arg1, (CFStringRef)arg2);
+	OS_NATIVE_EXIT(env, that, CFRunLoopAddObserver_FUNC);
+}
+#endif
+
+#ifndef NO_CFRunLoopAddSource
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopAddSource)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopAddSource_FUNC);
+	CFRunLoopAddSource((CFRunLoopRef)arg0, (CFRunLoopSourceRef)arg1, (CFStringRef)arg2);
+	OS_NATIVE_EXIT(env, that, CFRunLoopAddSource_FUNC);
+}
+#endif
+
+#ifndef NO_CFRunLoopObserverCreate
+JNIEXPORT jint JNICALL OS_NATIVE(CFRunLoopObserverCreate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFRunLoopObserverCreate_FUNC);
+	rc = (jint)CFRunLoopObserverCreate((CFAllocatorRef)arg0, (CFOptionFlags)arg1, arg2, (CFIndex)arg3, (CFRunLoopObserverCallBack)arg4, (CFRunLoopObserverContext *)arg5);
+	OS_NATIVE_EXIT(env, that, CFRunLoopObserverCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFRunLoopRunInMode
+JNIEXPORT jint JNICALL OS_NATIVE(CFRunLoopRunInMode)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jboolean arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFRunLoopRunInMode_FUNC);
+	rc = (jint)CFRunLoopRunInMode((CFStringRef)arg0, (CFTimeInterval)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, CFRunLoopRunInMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFRunLoopSourceCreate
+JNIEXPORT jint JNICALL OS_NATIVE(CFRunLoopSourceCreate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	CFRunLoopSourceContext _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFRunLoopSourceCreate_FUNC);
+	if (arg2) if ((lparg2 = getCFRunLoopSourceContextFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)CFRunLoopSourceCreate((CFAllocatorRef)arg0, (CFIndex)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) setCFRunLoopSourceContextFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, CFRunLoopSourceCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFRunLoopSourceInvalidate
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopSourceInvalidate)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopSourceInvalidate_FUNC);
+	CFRunLoopSourceInvalidate((CFRunLoopSourceRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRunLoopSourceInvalidate_FUNC);
+}
+#endif
+
+#ifndef NO_CFRunLoopSourceSignal
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopSourceSignal)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopSourceSignal_FUNC);
+	CFRunLoopSourceSignal((CFRunLoopSourceRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRunLoopSourceSignal_FUNC);
+}
+#endif
+
+#ifndef NO_CFRunLoopStop
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopStop)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopStop_FUNC);
+	CFRunLoopStop((CFRunLoopRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRunLoopStop_FUNC);
+}
+#endif
+
+#ifndef NO_CFRunLoopWakeUp
+JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopWakeUp)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CFRunLoopWakeUp_FUNC);
+	CFRunLoopWakeUp((CFRunLoopRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFRunLoopWakeUp_FUNC);
+}
+#endif
+
 #ifndef NO_CFStringCreateWithBytes
 JNIEXPORT jint JNICALL OS_NATIVE(CFStringCreateWithBytes)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jboolean arg4)
@@ -4600,6 +4700,18 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, GetBestControlRect_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetCFRunLoopFromEventLoop
+JNIEXPORT jint JNICALL OS_NATIVE(GetCFRunLoopFromEventLoop)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetCFRunLoopFromEventLoop_FUNC);
+	rc = (jint)GetCFRunLoopFromEventLoop((EventLoopRef)arg0);
+	OS_NATIVE_EXIT(env, that, GetCFRunLoopFromEventLoop_FUNC);
 	return rc;
 }
 #endif
@@ -12459,6 +12571,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(kCFNumberFormatterDecimalSeparator)
 	OS_NATIVE_ENTER(env, that, kCFNumberFormatterDecimalSeparator_FUNC);
 	rc = (jint)kCFNumberFormatterDecimalSeparator;
 	OS_NATIVE_EXIT(env, that, kCFNumberFormatterDecimalSeparator_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kCFRunLoopCommonModes
+JNIEXPORT jint JNICALL OS_NATIVE(kCFRunLoopCommonModes)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFRunLoopCommonModes_FUNC);
+	rc = (jint)kCFRunLoopCommonModes;
+	OS_NATIVE_EXIT(env, that, kCFRunLoopCommonModes_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kCFRunLoopDefaultMode
+JNIEXPORT jint JNICALL OS_NATIVE(kCFRunLoopDefaultMode)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFRunLoopDefaultMode_FUNC);
+	rc = (jint)kCFRunLoopDefaultMode;
+	OS_NATIVE_EXIT(env, that, kCFRunLoopDefaultMode_FUNC);
 	return rc;
 }
 #endif

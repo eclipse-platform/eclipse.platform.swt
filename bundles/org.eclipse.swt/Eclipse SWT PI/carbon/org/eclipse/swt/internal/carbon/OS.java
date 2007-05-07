@@ -118,6 +118,12 @@ public class OS extends C {
 	public static final int kATSUseLineHeight = 0x7FFFFFFF;
 	public static final int kATSUSizeTag = 262;
 	public static final int kATSUToTextEnd = 0xFFFFFFFF;
+	public static final int kCFRunLoopBeforeWaiting = 1 << 5;
+	public static final int kCFRunLoopAfterWaiting = 1 << 6;
+	public static final int kCFRunLoopRunFinished = 1;
+	public static final int kCFRunLoopRunStopped = 2;
+	public static final int kCFRunLoopRunTimedOut = 3;
+	public static final int kCFRunLoopRunHandledSource = 4;
 	public static final int kAvailBoundsChangedForDock = 1 << 0;
 	public static final int kCGBitmapByteOrderDefault = 0 << 12;
 	public static final int kCGBitmapByteOrder16Little = 1 << 12;
@@ -959,6 +965,8 @@ public static final native Object JNIGetObject(int globalRef);
 
 /** Natives */
 public static final native boolean __BIG_ENDIAN__();
+public static final native int kCFRunLoopCommonModes();
+public static final native int kCFRunLoopDefaultMode();
 public static final native int kFontPanelAttributesKey();
 public static final native int kFontPanelAttributeTagsKey();
 public static final native int kFontPanelAttributeSizesKey();
@@ -1028,6 +1036,16 @@ public static final native int AutoSizeDataBrowserListViewColumns(int cHandle);
 public static final native void BringToFront(int wHandle);
 public static final native void CFRelease(int sHandle);
 public static final native void CFRetain(int sHandle);
+public static final native int GetCFRunLoopFromEventLoop(int inEventLoop);
+public static final native void CFRunLoopAddObserver(int rl, int observer, int mode);
+public static final native void CFRunLoopAddSource(int rl, int source, int mode);
+public static final native int CFRunLoopObserverCreate(int allocator, int activities, boolean repeats, int order, int callout, int context);
+public static final native int CFRunLoopRunInMode(int mode, double seconds, boolean returnAfterSourceHandled);
+public static final native int CFRunLoopSourceCreate(int allocator, int order, CFRunLoopSourceContext context);
+public static final native void CFRunLoopSourceInvalidate(int source);
+public static final native void CFRunLoopSourceSignal(int source);
+public static final native void CFRunLoopStop(int rl);
+public static final native void CFRunLoopWakeUp(int rl);
 public static final native void CFArrayAppendValue(int theArray, int value);
 public static final native int CFArrayCreateMutable(int allocator, int capacity, int callBacks);
 public static final native int CFArrayGetCount(int theArray);

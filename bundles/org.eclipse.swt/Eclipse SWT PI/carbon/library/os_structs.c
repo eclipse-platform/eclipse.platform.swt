@@ -466,6 +466,64 @@ void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
 }
 #endif
 
+#ifndef NO_CFRunLoopSourceContext
+typedef struct CFRunLoopSourceContext_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, info, retain, release, copyDescription, equal, hash, schedule, cancel, perform;
+} CFRunLoopSourceContext_FID_CACHE;
+
+CFRunLoopSourceContext_FID_CACHE CFRunLoopSourceContextFc;
+
+void cacheCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject)
+{
+	if (CFRunLoopSourceContextFc.cached) return;
+	CFRunLoopSourceContextFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CFRunLoopSourceContextFc.version = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "version", "I");
+	CFRunLoopSourceContextFc.info = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "info", "I");
+	CFRunLoopSourceContextFc.retain = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "retain", "I");
+	CFRunLoopSourceContextFc.release = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "release", "I");
+	CFRunLoopSourceContextFc.copyDescription = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "copyDescription", "I");
+	CFRunLoopSourceContextFc.equal = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "equal", "I");
+	CFRunLoopSourceContextFc.hash = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "hash", "I");
+	CFRunLoopSourceContextFc.schedule = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "schedule", "I");
+	CFRunLoopSourceContextFc.cancel = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "cancel", "I");
+	CFRunLoopSourceContextFc.perform = (*env)->GetFieldID(env, CFRunLoopSourceContextFc.clazz, "perform", "I");
+	CFRunLoopSourceContextFc.cached = 1;
+}
+
+CFRunLoopSourceContext *getCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject, CFRunLoopSourceContext *lpStruct)
+{
+	if (!CFRunLoopSourceContextFc.cached) cacheCFRunLoopSourceContextFields(env, lpObject);
+	lpStruct->version = (CFIndex)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.version);
+	lpStruct->info = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.info);
+	lpStruct->retain = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.retain);
+	lpStruct->release = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.release);
+	lpStruct->copyDescription = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.copyDescription);
+	lpStruct->equal = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.equal);
+	lpStruct->hash = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.hash);
+	lpStruct->schedule = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.schedule);
+	lpStruct->cancel = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.cancel);
+	lpStruct->perform = (void *)(*env)->GetIntField(env, lpObject, CFRunLoopSourceContextFc.perform);
+	return lpStruct;
+}
+
+void setCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject, CFRunLoopSourceContext *lpStruct)
+{
+	if (!CFRunLoopSourceContextFc.cached) cacheCFRunLoopSourceContextFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.info, (jint)lpStruct->info);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.retain, (jint)lpStruct->retain);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.release, (jint)lpStruct->release);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.copyDescription, (jint)lpStruct->copyDescription);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.equal, (jint)lpStruct->equal);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.hash, (jint)lpStruct->hash);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.schedule, (jint)lpStruct->schedule);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.cancel, (jint)lpStruct->cancel);
+	(*env)->SetIntField(env, lpObject, CFRunLoopSourceContextFc.perform, (jint)lpStruct->perform);
+}
+#endif
+
 #ifndef NO_CGFunctionCallbacks
 typedef struct CGFunctionCallbacks_FID_CACHE {
 	int cached;

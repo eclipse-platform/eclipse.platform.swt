@@ -131,6 +131,18 @@ void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
 #define CFRange_sizeof() 0
 #endif
 
+#ifndef NO_CFRunLoopSourceContext
+void cacheCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject);
+CFRunLoopSourceContext *getCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject, CFRunLoopSourceContext *lpStruct);
+void setCFRunLoopSourceContextFields(JNIEnv *env, jobject lpObject, CFRunLoopSourceContext *lpStruct);
+#define CFRunLoopSourceContext_sizeof() sizeof(CFRunLoopSourceContext)
+#else
+#define cacheCFRunLoopSourceContextFields(a,b)
+#define getCFRunLoopSourceContextFields(a,b,c) NULL
+#define setCFRunLoopSourceContextFields(a,b,c)
+#define CFRunLoopSourceContext_sizeof() 0
+#endif
+
 #ifndef NO_CGFunctionCallbacks
 void cacheCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject);
 CGFunctionCallbacks *getCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject, CGFunctionCallbacks *lpStruct);
