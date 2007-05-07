@@ -1266,7 +1266,7 @@ public void setExpanded (boolean expanded) {
 	* of a subtree that has the focus item, Windows moves
 	* the selection to the root of the subtree and issues
 	* a TVN_SELCHANGED to inform the programmer that the
-	* seletion has changed.  When the programmer collapses
+	* selection has changed.  When the programmer collapses
 	* the same subtree using TVM_EXPAND, Windows does not
 	* send the selection changed notification.  This is not
 	* strictly wrong but is inconsistent.  The fix is to
