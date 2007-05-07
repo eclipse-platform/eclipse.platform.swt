@@ -637,8 +637,33 @@ void createHandle (int index) {
 
 int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*/ data2) {
 	int eventType = OS.X_EVENT_TYPE (xEvent);
-	if (eventType == OS.FocusOut || eventType == OS.FocusIn) {
-		OS.memmove (display.lastFocusChangeEvent, xEvent, XFocusChangeEvent.sizeof);
+	if (eventType != OS.FocusOut && eventType != OS.FocusIn) return 0;
+	XFocusChangeEvent xFocusEvent = new XFocusChangeEvent();
+	OS.memmove (xFocusEvent, xEvent, XFocusChangeEvent.sizeof);
+	switch (eventType) {
+		case OS.FocusIn: 
+			if (xFocusEvent.mode == OS.NotifyNormal || xFocusEvent.mode == OS.NotifyWhileGrabbed) {
+				if (xFocusEvent.detail == OS.NotifyNonlinear) {
+					if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
+					display.activeShell = this;
+					display.activePending = false;
+					sendEvent (SWT.Activate);
+				}
+			} 
+			break;
+		case 10:
+			if (xFocusEvent.mode == OS.NotifyNormal || xFocusEvent.mode == OS.NotifyWhileGrabbed) {
+				if (xFocusEvent.detail == OS.NotifyNonlinearVirtual || xFocusEvent.detail == OS.NotifyVirtual) {
+					if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
+					sendEvent (SWT.Deactivate);
+					setActiveControl (null);
+					if (display.activeShell == this) {
+						display.activeShell = null;
+						display.activePending = false;
+					}
+				}
+			}
+			break;
 	}
 	return 0;
 }
@@ -664,14 +689,11 @@ void hookEvents () {
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE], 0, display.closures [SIZE_ALLOCATE], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.closures [CONFIGURE_EVENT], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [DELETE_EVENT], 0, display.closures [DELETE_EVENT], false);
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.closures [FOCUS_IN_EVENT], false);
-	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.closures [FOCUS_OUT_EVENT], false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MAP_EVENT], 0, display.shellMapProcClosure, false);
 	OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.closures [ENTER_NOTIFY_EVENT], false);
 	OS.g_signal_connect_closure (shellHandle, OS.move_focus, display.closures [MOVE_FOCUS], false);
-	/* This code is intentionally commented. */
-//	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
-//	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
 }
 
 public boolean isEnabled () {
@@ -924,64 +946,6 @@ int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ directionType) {
 	}
 	OS.g_signal_stop_emission_by_name (shellHandle, OS.move_focus);
 	return 1;
-}
-
-int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
-	if (widget != shellHandle) {
-		return super.gtk_focus_in_event (widget, event);
-	}
-	/* This code is intentionally commented.*/
-//	if (display.lastFocusChangeEvent.mode == OS.NotifyUngrab) return 0;
-	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
-	/*
-	* Feature in GTK. The GTK combo box popup under some window managers
-	* is  implemented as a GTK_MENU.  When it pops up, it causes the combo
-	* box shell to lose focus when no focus is received for the menu.  As
-	* a result, no active shell is set while the pop up is visible.  The
-	* fix is to check the current grab handle and see if it is a GTK_MENU
-	* and ignore the focus event when the menu is both shown and hidden.
-	*/
-	if (display.ignoreActivate) { 
-		display.ignoreActivate = false;
-		return 0;
-	}
-	display.activeShell = this;
-	display.activePending = false;
-	sendEvent (SWT.Activate);
-	return 0;
-}
-
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
-	if (widget != shellHandle) {
-		return super.gtk_focus_out_event (widget, event);
-	}
-	/* This code is intentionally commented. */
-//	if (display.lastFocusChangeEvent.mode == OS.NotifyGrab || display.lastFocusChangeEvent.mode == OS.NotifyWhileGrabbed) return 0;
-	if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
-	/*
-	* Feature in GTK. The GTK combo box popup under some window managers
-	* is  implemented as a GTK_MENU.  When it pops up, it causes the combo
-	* box shell to lose focus when no focus is received for the menu.  As
-	* a result, no active shell is set while the pop up is visible.  The
-	* fix is to check the current grab handle and see if it is a GTK_MENU
-	* and ignore the focus event when the menu is both shown and hidden.
-	*/
-	Display display = this.display;
-	display.ignoreActivate = false;
-	int /*long*/ grabHandle = OS.gtk_grab_get_current ();
-	if (grabHandle != 0) {
-		if (OS.G_OBJECT_TYPE (grabHandle) == OS.GTK_TYPE_MENU ()) {
-			display.ignoreActivate = true;
-			return 0;
-		}
-	}
-	sendEvent (SWT.Deactivate);
-	setActiveControl (null);
-	if (display.activeShell == this) {
-		display.activeShell = null;
-		display.activePending = false;
-	}
-	return 0;
 }
 
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
@@ -1737,9 +1701,8 @@ void releaseWidget () {
 	if (display.activeShell == this) display.activeShell = null;
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
-	/* This code is intentionally commented. */
-//	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
-//	OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	OS.gdk_window_remove_filter(window, display.filterProc, shellHandle);
 	region = null;
 	lastActive = null;
 }

@@ -139,7 +139,6 @@ public class Display extends Device {
 	Shell activeShell;
 	boolean activePending;
 	boolean ignoreActivate, ignoreFocus;
-	XFocusChangeEvent lastFocusChangeEvent = new XFocusChangeEvent ();
 	
 	/* Input method resources */
 	Control imControl;
