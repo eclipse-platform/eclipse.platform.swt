@@ -10,6 +10,7 @@
 <!-- Required plugins -->
 <requires>
    <import plugin="org.eclipse.swt"/>
+   <import plugin="org.eclipse.swt.examples.launcher" optional="true"/>
 </requires>
 
 <!-- Runtime -->
