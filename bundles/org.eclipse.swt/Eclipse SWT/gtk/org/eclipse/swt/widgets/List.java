@@ -363,6 +363,25 @@ public void deselectAll () {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
+boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
+	boolean selected = false;
+	if (filter) {
+		int /*long*/ [] path = new int /*long*/ [1];
+		if (OS.gtk_tree_view_get_path_at_pos (handle, x, y, path, null, null, null)) {
+			if (path [0] != 0) {
+				int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+				if (OS.gtk_tree_selection_path_is_selected (selection, path [0])) selected = true;
+				OS.gtk_tree_path_free (path [0]);
+			}
+		} else {
+			return false;
+		}
+	}
+	boolean dragDetect = super.dragDetect (x, y, filter, consume);
+	if (dragDetect && selected && consume != null) consume [0] = true;
+	return dragDetect;
+}
+
 int /*long*/ eventWindow () {
 	return paintWindow ();
 }
