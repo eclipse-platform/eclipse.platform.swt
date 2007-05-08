@@ -692,6 +692,26 @@ public void deselectAll () {
 	}
 }
 
+boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
+	if (filter && entryHandle != 0) {
+		int [] index = new int [1];
+		int [] trailing = new int [1];
+		int /*long*/ layout = OS.gtk_entry_get_layout (entryHandle);
+		OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
+		int /*long*/ ptr = OS.pango_layout_get_text (layout);
+		int position = (int)/*64*/OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
+		Point selection = getSelection ();
+		if (selection.x <= position && position < selection.y) {
+			if (super.dragDetect (x, y, filter, consume)) {
+				if (consume != null) consume [0] = true;
+				return true;
+			}
+		}
+		return false;
+	}
+	return super.dragDetect (x, y, filter, consume);
+}
+
 int /*long*/ enterExitHandle () {
 	return fixedHandle;
 }
