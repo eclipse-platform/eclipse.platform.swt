@@ -610,11 +610,13 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
 							if (hot) event.detail |= SWT.HOT;
 							if (selected) event.detail |= SWT.SELECTED;
-							//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-							if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
-								if (handle == OS.GetFocus ()) {
-									int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-									if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+							if (!explorerTheme) {
+								//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+								if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
+									if (handle == OS.GetFocus ()) {
+										int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+										if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+									}
 								}
 							}
 						}
@@ -825,12 +827,14 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				if (selected && (i == 0 /*nmcd.iSubItem == 0*/ || (style & SWT.FULL_SELECTION) != 0)) {
 					event.detail |= SWT.SELECTED;
 				}
-				//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-				if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
-					if (i == 0 /*nmcd.iSubItem == 0*/ || (style & SWT.FULL_SELECTION) != 0) {
-						if (handle == OS.GetFocus ()) {
-							int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-							if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+				if (!explorerTheme) {
+					//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+					if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
+						if (i == 0 /*nmcd.iSubItem == 0*/ || (style & SWT.FULL_SELECTION) != 0) {
+							if (handle == OS.GetFocus ()) {
+								int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+								if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+							}
 						}
 					}
 				}				
@@ -1044,11 +1048,13 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			if (clrTextBk != -1) event.detail |= SWT.BACKGROUND;
 			if (hot) event.detail |= SWT.HOT;
 			if (selected) event.detail |= SWT.SELECTED;
-			//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-			if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
-				if (handle == OS.GetFocus ()) {
-					int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-					if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+			if (!explorerTheme) {
+				//if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
+				if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0) == nmcd.dwItemSpec) {
+					if (handle == OS.GetFocus ()) {
+						int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+						if ((uiState & OS.UISF_HIDEFOCUS) == 0) event.detail |= SWT.FOCUSED;
+					}
 				}
 			}
 			event.x = cellRect.left;
