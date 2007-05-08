@@ -170,7 +170,8 @@ void _addListener (int eventType, Listener listener) {
 			style |= SWT.DOUBLE_BUFFERED;
 			OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			bits |= OS.TVS_NOHSCROLL | OS.TVS_NOTOOLTIPS;
+			bits |= OS.TVS_NOTOOLTIPS;
+			if (eventType == SWT.MeasureItem) bits |= OS.TVS_NOHSCROLL;
 			/*
 			* Feature in Windows.  When the tree has the style
 			* TVS_FULLROWSELECT, the background color for the
@@ -190,7 +191,7 @@ void _addListener (int eventType, Listener listener) {
 				* Bug in Windows.  When TVS_NOHSCROLL is set after items
 				* have been inserted into the tree, Windows shows the
 				* scroll bar.  The fix is to check for this case and
-				* explicilty hide the scroll bar.
+				* explicitly hide the scroll bar.
 				*/
 				int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
 				if (count != 0) {
@@ -754,7 +755,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						if (i == 0) {
 							if (OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
 								if (size == null) size = getImageSize ();
-								rect.left = Math.min (rect.left + size.x, rect.right);
+								rect.left = Math.min (rect.left + size.x + offset, rect.right);
 							}
 						} else {
 							OS.SetRect (rect, rect.left + offset, rect.top, rect.right - inset, rect.bottom);
@@ -1924,7 +1925,7 @@ void createItem (TreeColumn column, int index) {
 		* Bug in Windows.  When TVS_NOHSCROLL is set after items
 		* have been inserted into the tree, Windows shows the
 		* scroll bar.  The fix is to check for this case and
-		* explicilty hide the scroll bar explicitly.
+		* explicitly hide the scroll bar explicitly.
 		*/
 		int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
 		if (count != 0) {
@@ -2354,7 +2355,7 @@ void destroyItem (TreeColumn column) {
 	*/
 	if (columnCount == 0) {
 		scrollWidth = 0;
-		if (!hooks (SWT.MeasureItem) && !hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
+		if (!hooks (SWT.MeasureItem)) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			bits &= ~OS.TVS_NOHSCROLL;
 			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
@@ -6254,11 +6255,11 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 
 LRESULT WM_SIZE (int wParam, int lParam) {
 	/*
-	 * Bug in Windows.  When TVS_NOHSCROLL is set when the
-	 * size of the tree is zero, the scroll bar is shown the
-	 * next time the tree resizes.  The fix is to hide the
-	 * scroll bar every time the tree is resized.
-	 */
+	* Bug in Windows.  When TVS_NOHSCROLL is set when the
+	* size of the tree is zero, the scroll bar is shown the
+	* next time the tree resizes.  The fix is to hide the
+	* scroll bar every time the tree is resized.
+	*/
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.TVS_NOHSCROLL) != 0) {
 		if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
