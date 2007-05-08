@@ -192,347 +192,359 @@ public void create(Composite parent, int style) {
 	
 	OleListener oleListener = new OleListener() {
 		public void handleEvent(OleEvent event) {
-			if (auto == null) return;		/* receiver was disposed, callback is asynchronous */
-			switch (event.type) {
-				case BeforeNavigate2: {
-					Variant varResult = event.arguments[1];
-					String url = varResult.getString();
-					LocationEvent newEvent = new LocationEvent(browser);
-					newEvent.display = browser.getDisplay();
-					newEvent.widget = browser;
-					newEvent.location = url;
-					newEvent.doit = true;
-					for (int i = 0; i < locationListeners.length; i++) {
-						locationListeners[i].changing(newEvent);
+			/* callbacks are asynchronous, auto could be disposed */
+			if (auto != null) {
+				switch (event.type) {
+					case BeforeNavigate2: {
+						Variant varResult = event.arguments[1];
+						String url = varResult.getString();
+						LocationEvent newEvent = new LocationEvent(browser);
+						newEvent.display = browser.getDisplay();
+						newEvent.widget = browser;
+						newEvent.location = url;
+						newEvent.doit = true;
+						for (int i = 0; i < locationListeners.length; i++) {
+							locationListeners[i].changing(newEvent);
+						}
+						Variant cancel = event.arguments[6];
+						if (cancel != null) {
+							int pCancel = cancel.getByRef();
+							COM.MoveMemory(pCancel, new short[]{newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+					   }					
+						break;
 					}
-					Variant cancel = event.arguments[6];
-					if (cancel != null) {
-						int pCancel = cancel.getByRef();
-						COM.MoveMemory(pCancel, new short[]{newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
-				   }					
-					break;
-				}
-				case CommandStateChange: {
-					boolean enabled = false;
-					Variant varResult = event.arguments[0];
-					int command = varResult.getInt();
-					varResult = event.arguments[1];
-					enabled = varResult.getBoolean();
-					switch (command) {
-						case CSC_NAVIGATEBACK : back = enabled; break;
-						case CSC_NAVIGATEFORWARD : forward = enabled; break;
+					case CommandStateChange: {
+						boolean enabled = false;
+						Variant varResult = event.arguments[0];
+						int command = varResult.getInt();
+						varResult = event.arguments[1];
+						enabled = varResult.getBoolean();
+						switch (command) {
+							case CSC_NAVIGATEBACK : back = enabled; break;
+							case CSC_NAVIGATEFORWARD : forward = enabled; break;
+						}
+						break;
 					}
-					break;
-				}
-				case DocumentComplete: {
-					Variant varResult = event.arguments[0];
-					IDispatch dispatch = varResult.getDispatch();
-
-					varResult = event.arguments[1];
-					String url = varResult.getString();
-					if (html != null && url.equals(ABOUT_BLANK)) {
-						Runnable runnable = new Runnable () {
-							public void run() {
-								if (browser.isDisposed() || html == null) return;
-								int charCount = html.length();
-								char[] chars = new char[charCount];
-								html.getChars(0, charCount, chars, 0);
-								html = null;
-								int byteCount = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, null, 0, null, null);
-								/*
-								* Note. Internet Explorer appears to treat the data loaded with 
-								* nsIPersistStreamInit.Load as if it were encoded using the default
-								* local charset.  There does not seem to be an API to set the
-								* desired charset explicitely in this case.  The fix is to
-								* prepend the UTF-8 Byte Order Mark signature to the data.
-								*/
-								byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
-								int	hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
-								if (hGlobal != 0) {
-									OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
-									OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
-									int[] ppstm = new int[1];
-									/* 
-									* Note.  CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
-									* If the call succeeds the buffer hGlobal is freed automatically
-									* when the IStream object is released. If the call fails, free the buffer
-									* hGlobal.
+					case DocumentComplete: {
+						Variant varResult = event.arguments[0];
+						IDispatch dispatch = varResult.getDispatch();
+	
+						varResult = event.arguments[1];
+						String url = varResult.getString();
+						if (html != null && url.equals(ABOUT_BLANK)) {
+							Runnable runnable = new Runnable () {
+								public void run() {
+									if (browser.isDisposed() || html == null) return;
+									int charCount = html.length();
+									char[] chars = new char[charCount];
+									html.getChars(0, charCount, chars, 0);
+									html = null;
+									int byteCount = OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, null, 0, null, null);
+									/*
+									* Note. Internet Explorer appears to treat the data loaded with 
+									* nsIPersistStreamInit.Load as if it were encoded using the default
+									* local charset.  There does not seem to be an API to set the
+									* desired charset explicitely in this case.  The fix is to
+									* prepend the UTF-8 Byte Order Mark signature to the data.
 									*/
-									if (OS.CreateStreamOnHGlobal(hGlobal, true, ppstm) == OS.S_OK) {
-										int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
-										Variant pVarResult = auto.getProperty(rgdispid[0]);
-										IDispatch dispatchDocument = pVarResult.getDispatch();
-										int[] ppvObject = new int[1];
-										int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
-										if (result == OS.S_OK) {
-											IPersistStreamInit persistStreamInit = new IPersistStreamInit(ppvObject[0]);
-											if (persistStreamInit.InitNew() == OS.S_OK) {
-												persistStreamInit.Load(ppstm[0]);
-											}
-											persistStreamInit.Release();
-										}
-										pVarResult.dispose();
-										/*
-										* This code is intentionally commented.  The IDispatch obtained from a Variant
-										* did not increase the reference count for the enclosed interface.
+									byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
+									int	hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, UTF8BOM.length + byteCount);
+									if (hGlobal != 0) {
+										OS.MoveMemory(hGlobal, UTF8BOM, UTF8BOM.length);
+										OS.WideCharToMultiByte(OS.CP_UTF8, 0, chars, charCount, hGlobal + UTF8BOM.length, byteCount, null, null);							
+										int[] ppstm = new int[1];
+										/* 
+										* Note.  CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
+										* If the call succeeds the buffer hGlobal is freed automatically
+										* when the IStream object is released. If the call fails, free the buffer
+										* hGlobal.
 										*/
-										//dispatchDocument.Release();
-										IUnknown stream = new IUnknown(ppstm[0]);
-										stream.Release();
-									} else {
-										OS.GlobalFree(hGlobal);
+										if (OS.CreateStreamOnHGlobal(hGlobal, true, ppstm) == OS.S_OK) {
+											int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
+											Variant pVarResult = auto.getProperty(rgdispid[0]);
+											IDispatch dispatchDocument = pVarResult.getDispatch();
+											int[] ppvObject = new int[1];
+											int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
+											if (result == OS.S_OK) {
+												IPersistStreamInit persistStreamInit = new IPersistStreamInit(ppvObject[0]);
+												if (persistStreamInit.InitNew() == OS.S_OK) {
+													persistStreamInit.Load(ppstm[0]);
+												}
+												persistStreamInit.Release();
+											}
+											pVarResult.dispose();
+											/*
+											* This code is intentionally commented.  The IDispatch obtained from a Variant
+											* did not increase the reference count for the enclosed interface.
+											*/
+											//dispatchDocument.Release();
+											IUnknown stream = new IUnknown(ppstm[0]);
+											stream.Release();
+										} else {
+											OS.GlobalFree(hGlobal);
+										}
 									}
 								}
+							};
+							if (delaySetText) {
+								delaySetText = false;
+								browser.getDisplay().asyncExec(runnable);
+							} else {
+								runnable.run();
 							}
-						};
-						if (delaySetText) {
-							delaySetText = false;
-							browser.getDisplay().asyncExec(runnable);
 						} else {
-							runnable.run();
+							Variant variant = new Variant(auto);
+							IDispatch top = variant.getDispatch();
+							LocationEvent locationEvent = new LocationEvent(browser);
+							locationEvent.display = browser.getDisplay();
+							locationEvent.widget = browser;
+							locationEvent.location = url;
+							locationEvent.top = top.getAddress() == dispatch.getAddress();
+							for (int i = 0; i < locationListeners.length; i++) {
+								locationListeners[i].changed(locationEvent);
+							}
+							if (browser.isDisposed()) return;
+							/*
+							 * This code is intentionally commented.  A Variant constructed from an
+							 * OleAutomation object does not increase its reference count.  The IDispatch
+							 * obtained from this Variant did not increase the reference count for the
+							 * OleAutomation instance either. 
+							 */
+							//top.Release();
+							//variant.dispose();
+							/*
+							 * Note.  The completion of the page loading is detected as
+							 * described in the MSDN article "Determine when a page is
+							 * done loading in WebBrowser Control". 
+							 */
+							if (globalDispatch != 0 && dispatch.getAddress() == globalDispatch) {
+								/* final document complete */
+								globalDispatch = 0;
+								ProgressEvent progressEvent = new ProgressEvent(browser);
+								progressEvent.display = browser.getDisplay();
+								progressEvent.widget = browser;
+								for (int i = 0; i < progressListeners.length; i++) {
+									progressListeners[i].completed(progressEvent);
+								}
+							}
 						}
-					} else {
+												
+						/*
+						* This code is intentionally commented.  This IDispatch was received
+						* as an argument from the OleEvent and it will be disposed along with
+						* the other arguments.  
+						*/
+						//dispatch.Release();
+						break;
+					}
+					case NavigateComplete2: {
+						Variant varResult = event.arguments[0];
+						IDispatch dispatch = varResult.getDispatch();
+						if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
+	
+						OleAutomation webBrowser = varResult.getAutomation();
+						varResult = event.arguments[1];
 						Variant variant = new Variant(auto);
 						IDispatch top = variant.getDispatch();
-						LocationEvent locationEvent = new LocationEvent(browser);
-						locationEvent.display = browser.getDisplay();
-						locationEvent.widget = browser;
-						locationEvent.location = url;
-						locationEvent.top = top.getAddress() == dispatch.getAddress();
-						for (int i = 0; i < locationListeners.length; i++) {
-							locationListeners[i].changed(locationEvent);
+						boolean isTop = top.getAddress() == dispatch.getAddress();
+						hookMouseListeners(webBrowser, isTop);
+						webBrowser.dispose();
+						break;
+					}
+					case NewWindow2: {
+						Variant cancel = event.arguments[1];
+						int pCancel = cancel.getByRef();
+						WindowEvent newEvent = new WindowEvent(browser);
+						newEvent.display = browser.getDisplay();
+						newEvent.widget = browser;
+						newEvent.required = false;
+						for (int i = 0; i < openWindowListeners.length; i++) {
+							openWindowListeners[i].open(newEvent);
 						}
-						if (browser.isDisposed()) return;
+						IE browser = null;
+						if (newEvent.browser != null && newEvent.browser.webBrowser instanceof IE) {
+							browser = (IE)newEvent.browser.webBrowser;
+						}
+						boolean doit = browser != null && !browser.browser.isDisposed();
+						if (doit) {
+							Variant variant = new Variant(browser.auto);
+							IDispatch iDispatch = variant.getDispatch();
+							Variant ppDisp = event.arguments[0];
+							int byref = ppDisp.getByRef();
+							if (byref != 0) COM.MoveMemory(byref, new int[] {iDispatch.getAddress()}, 4);
+							/*
+							* This code is intentionally commented.  A Variant constructed from an
+							* OleAutomation object does not increase its reference count.  The IDispatch
+							* obtained from this Variant did not increase the reference count for the
+							* OleAutomation instance either. 
+							*/
+							//variant.dispose();
+							//iDispatch.Release();
+						}
+						if (newEvent.required) {
+							COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+						}
+						break;
+					}
+					case OnMenuBar: {
+						Variant arg0 = event.arguments[0];
+						menuBar = arg0.getBoolean();
+						break;
+					}
+					case OnStatusBar: {
+						Variant arg0 = event.arguments[0];
+						statusBar = arg0.getBoolean();
+						break;
+					}
+					case OnToolBar: {
+						Variant arg0 = event.arguments[0];
+						toolBar = arg0.getBoolean();
 						/*
-						 * This code is intentionally commented.  A Variant constructed from an
-						 * OleAutomation object does not increase its reference count.  The IDispatch
-						 * obtained from this Variant did not increase the reference count for the
-						 * OleAutomation instance either. 
-						 */
-						//top.Release();
-						//variant.dispose();
-						/*
-						 * Note.  The completion of the page loading is detected as
-						 * described in the MSDN article "Determine when a page is
-						 * done loading in WebBrowser Control". 
-						 */
-						if (globalDispatch != 0 && dispatch.getAddress() == globalDispatch) {
-							/* final document complete */
-							globalDispatch = 0;
-							ProgressEvent progressEvent = new ProgressEvent(browser);
-							progressEvent.display = browser.getDisplay();
-							progressEvent.widget = browser;
-							for (int i = 0; i < progressListeners.length; i++) {
-								progressListeners[i].completed(progressEvent);
+						* Feature in Internet Explorer.  OnToolBar FALSE is emitted 
+						* when both tool bar, address bar and menu bar must not be visible.
+						* OnToolBar TRUE is emitted when either of tool bar, address bar
+						* or menu bar is visible.
+						*/
+						if (!toolBar) {
+							addressBar = false;
+							menuBar = false;
+						}
+						break;
+					}
+					case OnVisible: {
+						Variant arg1 = event.arguments[0];
+						boolean visible = arg1.getBoolean();
+						WindowEvent newEvent = new WindowEvent(browser);
+						newEvent.display = browser.getDisplay();
+						newEvent.widget = browser;
+						if (visible) {
+							if (addressBar) {
+								/*
+								* Bug in Internet Explorer.  There is no distinct notification for
+								* the address bar.  If neither address, menu or tool bars are visible,
+								* OnToolBar FALSE is emitted. For some reason, querying the value of
+								* AddressBar in this case returns true even though it should not be
+								* set visible.  The workaround is to only query the value of AddressBar
+								* when OnToolBar FALSE has not been emitted.
+								*/
+								int[] rgdispid = auto.getIDsOfNames(new String[] { "AddressBar" }); //$NON-NLS-1$
+								Variant pVarResult = auto.getProperty(rgdispid[0]);
+								if (pVarResult != null && pVarResult.getType() == OLE.VT_BOOL) addressBar = pVarResult.getBoolean();
+							}
+							newEvent.addressBar = addressBar;
+							newEvent.menuBar = menuBar;
+							newEvent.statusBar = statusBar;
+							newEvent.toolBar = toolBar;
+							newEvent.location = location;
+							newEvent.size = size;
+							for (int i = 0; i < visibilityWindowListeners.length; i++) {
+								visibilityWindowListeners[i].show(newEvent);
+							}
+							location = null;
+							size = null;
+						} else {
+							for (int i = 0; i < visibilityWindowListeners.length; i++) {
+								visibilityWindowListeners[i].hide(newEvent);
 							}
 						}
+						break;
 					}
-											
-					/*
-					* This code is intentionally commented.  This IDispatch was received
-					* as an argument from the OleEvent and it will be disposed along with
-					* the other arguments.  
-					*/
-					//dispatch.Release();
-					break;
-				}
-				case NavigateComplete2: {
-					Variant varResult = event.arguments[0];
-					IDispatch dispatch = varResult.getDispatch();
-					if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
-
-					OleAutomation webBrowser = varResult.getAutomation();
-					varResult = event.arguments[1];
-					Variant variant = new Variant(auto);
-					IDispatch top = variant.getDispatch();
-					boolean isTop = top.getAddress() == dispatch.getAddress();
-					hookMouseListeners(webBrowser, isTop);
-					webBrowser.dispose();
-					break;
-				}
-				case NewWindow2: {
-					Variant cancel = event.arguments[1];
-					int pCancel = cancel.getByRef();
-					WindowEvent newEvent = new WindowEvent(browser);
-					newEvent.display = browser.getDisplay();
-					newEvent.widget = browser;
-					newEvent.required = false;
-					for (int i = 0; i < openWindowListeners.length; i++) {
-						openWindowListeners[i].open(newEvent);
+					case ProgressChange: {
+						Variant arg1 = event.arguments[0];
+						int nProgress = arg1.getType() != OLE.VT_I4 ? 0 : arg1.getInt(); // may be -1
+						Variant arg2 = event.arguments[1];
+						int nProgressMax = arg2.getType() != OLE.VT_I4 ? 0 : arg2.getInt();
+						ProgressEvent newEvent = new ProgressEvent(browser);
+						newEvent.display = browser.getDisplay();
+						newEvent.widget = browser;
+						newEvent.current = nProgress;
+						newEvent.total = nProgressMax;
+						if (nProgress != -1) {
+							for (int i = 0; i < progressListeners.length; i++) {
+								progressListeners[i].changed(newEvent);
+							}
+						}
+						break;
 					}
-					IE browser = null;
-					if (newEvent.browser != null && newEvent.browser.webBrowser instanceof IE) {
-						browser = (IE)newEvent.browser.webBrowser;
+					case StatusTextChange: {
+						Variant arg1 = event.arguments[0];
+						if (arg1.getType() == OLE.VT_BSTR) {
+							String text = arg1.getString();
+							StatusTextEvent newEvent = new StatusTextEvent(browser);
+							newEvent.display = browser.getDisplay();
+							newEvent.widget = browser;
+							newEvent.text = text;
+							for (int i = 0; i < statusTextListeners.length; i++) {
+								statusTextListeners[i].changed(newEvent);
+							}
+						}
+						break;
 					}
-					boolean doit = browser != null && !browser.browser.isDisposed();
-					if (doit) {
-						Variant variant = new Variant(browser.auto);
-						IDispatch iDispatch = variant.getDispatch();
-						Variant ppDisp = event.arguments[0];
-						int byref = ppDisp.getByRef();
-						if (byref != 0) COM.MoveMemory(byref, new int[] {iDispatch.getAddress()}, 4);
+					case TitleChange: {
+						Variant arg1 = event.arguments[0];
+						if (arg1.getType() == OLE.VT_BSTR) {
+							String title = arg1.getString();
+							TitleEvent newEvent = new TitleEvent(browser);
+							newEvent.display = browser.getDisplay();
+							newEvent.widget = browser;
+							newEvent.title = title;
+							for (int i = 0; i < titleListeners.length; i++) {
+								titleListeners[i].changed(newEvent);
+							}
+						}
+						break;
+					}
+					case WindowClosing: {
 						/*
-						* This code is intentionally commented.  A Variant constructed from an
-						* OleAutomation object does not increase its reference count.  The IDispatch
-						* obtained from this Variant did not increase the reference count for the
-						* OleAutomation instance either. 
+						* Disposing the Browser directly from this callback will crash if the
+						* Browser has a text field with an active caret.  As a workaround fire
+						* the Close event and dispose the Browser in an async block. 
 						*/
-						//variant.dispose();
-						//iDispatch.Release();
+						browser.getDisplay().asyncExec(new Runnable() {
+							public void run() {
+								if (browser.isDisposed()) return;
+								WindowEvent newEvent = new WindowEvent(browser);
+								newEvent.display = browser.getDisplay();
+								newEvent.widget = browser;
+								for (int i = 0; i < closeWindowListeners.length; i++) {
+									closeWindowListeners[i].close(newEvent);
+								}
+								browser.dispose();
+							}
+						});
+						Variant cancel = event.arguments[1];
+						int pCancel = cancel.getByRef();
+						Variant arg1 = event.arguments[0];
+						boolean isChildWindow = arg1.getBoolean();
+						COM.MoveMemory(pCancel, new short[]{isChildWindow ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+						break;
 					}
-					if (newEvent.required) {
-						COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+					case WindowSetHeight: {
+						if (size == null) size = new Point(0, 0);
+						Variant arg1 = event.arguments[0];
+						size.y = arg1.getInt();
+						break;
 					}
-					break;
-				}
-				case OnMenuBar: {
-					Variant arg0 = event.arguments[0];
-					menuBar = arg0.getBoolean();
-					break;
-				}
-				case OnStatusBar: {
-					Variant arg0 = event.arguments[0];
-					statusBar = arg0.getBoolean();
-					break;
-				}
-				case OnToolBar: {
-					Variant arg0 = event.arguments[0];
-					toolBar = arg0.getBoolean();
-					/*
-					* Feature in Internet Explorer.  OnToolBar FALSE is emitted 
-					* when both tool bar, address bar and menu bar must not be visible.
-					* OnToolBar TRUE is emitted when either of tool bar, address bar
-					* or menu bar is visible.
-					*/
-					if (!toolBar) {
-						addressBar = false;
-						menuBar = false;
+					case WindowSetLeft: {
+						if (location == null) location = new Point(0, 0);
+						Variant arg1 = event.arguments[0];
+						location.x = arg1.getInt();
+						break;
 					}
-					break;
-				}
-				case OnVisible: {
-					Variant arg1 = event.arguments[0];
-					boolean visible = arg1.getBoolean();
-					WindowEvent newEvent = new WindowEvent(browser);
-					newEvent.display = browser.getDisplay();
-					newEvent.widget = browser;
-					if (visible) {
-						if (addressBar) {
-							/*
-							* Bug in Internet Explorer.  There is no distinct notification for
-							* the address bar.  If neither address, menu or tool bars are visible,
-							* OnToolBar FALSE is emitted. For some reason, querying the value of
-							* AddressBar in this case returns true even though it should not be
-							* set visible.  The workaround is to only query the value of AddressBar
-							* when OnToolBar FALSE has not been emitted.
-							*/
-							int[] rgdispid = auto.getIDsOfNames(new String[] { "AddressBar" }); //$NON-NLS-1$
-							Variant pVarResult = auto.getProperty(rgdispid[0]);
-							if (pVarResult != null && pVarResult.getType() == OLE.VT_BOOL) addressBar = pVarResult.getBoolean();
-						}
-						newEvent.addressBar = addressBar;
-						newEvent.menuBar = menuBar;
-						newEvent.statusBar = statusBar;
-						newEvent.toolBar = toolBar;
-						newEvent.location = location;
-						newEvent.size = size;
-						for (int i = 0; i < visibilityWindowListeners.length; i++) {
-							visibilityWindowListeners[i].show(newEvent);
-						}
-						location = null;
-						size = null;
-					} else {
-						for (int i = 0; i < visibilityWindowListeners.length; i++) {
-							visibilityWindowListeners[i].hide(newEvent);
-						}
+					case WindowSetTop: {
+						if (location == null) location = new Point(0, 0);
+						Variant arg1 = event.arguments[0];
+						location.y = arg1.getInt();
+						break;
 					}
-					break;
-				}
-				case ProgressChange: {
-					Variant arg1 = event.arguments[0];
-					int nProgress = arg1.getType() != OLE.VT_I4 ? 0 : arg1.getInt(); // may be -1
-					Variant arg2 = event.arguments[1];
-					int nProgressMax = arg2.getType() != OLE.VT_I4 ? 0 : arg2.getInt();
-					ProgressEvent newEvent = new ProgressEvent(browser);
-					newEvent.display = browser.getDisplay();
-					newEvent.widget = browser;
-					newEvent.current = nProgress;
-					newEvent.total = nProgressMax;
-					if (nProgress != -1) {
-						for (int i = 0; i < progressListeners.length; i++) {
-							progressListeners[i].changed(newEvent);
-						}
+					case WindowSetWidth: {
+						if (size == null) size = new Point(0, 0);
+						Variant arg1 = event.arguments[0];
+						size.x = arg1.getInt();
+						break;
 					}
-					break;
 				}
-				case StatusTextChange: {
-					Variant arg1 = event.arguments[0];
-					if (arg1.getType() == OLE.VT_BSTR) {
-						String text = arg1.getString();
-						StatusTextEvent newEvent = new StatusTextEvent(browser);
-						newEvent.display = browser.getDisplay();
-						newEvent.widget = browser;
-						newEvent.text = text;
-						for (int i = 0; i < statusTextListeners.length; i++) {
-							statusTextListeners[i].changed(newEvent);
-						}
-					}
-					break;
-				}
-				case TitleChange: {
-					Variant arg1 = event.arguments[0];
-					if (arg1.getType() == OLE.VT_BSTR) {
-						String title = arg1.getString();
-						TitleEvent newEvent = new TitleEvent(browser);
-						newEvent.display = browser.getDisplay();
-						newEvent.widget = browser;
-						newEvent.title = title;
-						for (int i = 0; i < titleListeners.length; i++) {
-							titleListeners[i].changed(newEvent);
-						}
-					}
-					break;
-				}
-				case WindowClosing: {
-					WindowEvent newEvent = new WindowEvent(browser);
-					newEvent.display = browser.getDisplay();
-					newEvent.widget = browser;
-					for (int i = 0; i < closeWindowListeners.length; i++) {
-						closeWindowListeners[i].close(newEvent);
-					}
-					Variant cancel = event.arguments[1];
-					int pCancel = cancel.getByRef();
-					Variant arg1 = event.arguments[0];
-					boolean isChildWindow = arg1.getBoolean();
-					COM.MoveMemory(pCancel, new short[]{isChildWindow ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
-					browser.dispose();
-					break;
-				}
-				case WindowSetHeight: {
-					if (size == null) size = new Point(0, 0);
-					Variant arg1 = event.arguments[0];
-					size.y = arg1.getInt();
-					break;
-				}
-				case WindowSetLeft: {
-					if (location == null) location = new Point(0, 0);
-					Variant arg1 = event.arguments[0];
-					location.x = arg1.getInt();
-					break;
-				}
-				case WindowSetTop: {
-					if (location == null) location = new Point(0, 0);
-					Variant arg1 = event.arguments[0];
-					location.y = arg1.getInt();
-					break;
-				}
-				case WindowSetWidth: {
-					if (size == null) size = new Point(0, 0);
-					Variant arg1 = event.arguments[0];
-					size.x = arg1.getInt();
-					break;
-				}
-			}			
+			}
 			/*
 			* Dispose all arguments passed in the OleEvent.  This must be
 			* done to properly release any IDispatch reference that was
