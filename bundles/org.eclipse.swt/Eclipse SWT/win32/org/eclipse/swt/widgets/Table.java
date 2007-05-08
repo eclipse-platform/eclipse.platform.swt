@@ -3158,10 +3158,9 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 	}
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	boolean firstColumn = nmcd.iSubItem == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
-	boolean fullText = explorerTheme || ((style & SWT.FULL_SELECTION) != 0 || !firstColumn);
 	if (ignoreDrawForeground && ignoreDrawHot) {
 		if (!ignoreDrawBackground && drawBackground) {
-			RECT backgroundRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
+			RECT backgroundRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, true, false, hDC);
 			fillBackground (hDC, clrTextBk, backgroundRect);
 		}
 	}
@@ -3192,6 +3191,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, int lParam) {
 			OS.DrawThemeBackground (hTheme, hDC, OS.LVP_LISTITEM, iStateId, rect, pClipRect);
 			OS.CloseThemeData (hTheme);
 		} else {
+			boolean fullText = ((style & SWT.FULL_SELECTION) != 0 || !firstColumn);
 			RECT textRect = item.getBounds (nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 			fillBackground (hDC, clrSelectionBk, textRect);
 		}

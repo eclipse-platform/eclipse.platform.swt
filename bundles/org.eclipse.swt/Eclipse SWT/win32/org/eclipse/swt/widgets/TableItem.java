@@ -240,30 +240,60 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 	int hwnd = parent.handle;
 	int bits = OS.SendMessage (hwnd, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	if (column == 0 && (bits & OS.LVS_EX_FULLROWSELECT) == 0) {
-		if (hDC != 0 && parent.explorerTheme) {
+		if (parent.explorerTheme) {
 			rect.left = OS.LVIR_ICON;
 			parent.ignoreCustomDraw = true;
-			int code = OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect);
+			int code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect);
 			parent.ignoreCustomDraw = false;
 			if (code == 0) return new RECT ();
 			if (getText) {
-				RECT textRect = new RECT ();
-				TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
-				int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
-				OS.DrawText (hDC, buffer, buffer.length (), textRect, flags);
+				int width = 0;
+				int hFont = cellFont != null ? cellFont [column] : -1;
+				if (hFont == -1) hFont = font;
+				if (hFont == -1 && hDC == 0) {
+					TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
+					width = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
+				} else {
+					TCHAR buffer = new TCHAR (parent.getCodePage (), text, false);
+					int textDC = hDC != 0 ? hDC : OS.GetDC (hwnd), oldFont = -1;
+					if (hDC == 0) {
+						if (hFont == -1) hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+						oldFont = OS.SelectObject (textDC, hFont);
+					}
+					RECT textRect = new RECT ();
+					int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_CALCRECT;
+					OS.DrawText (textDC, buffer, buffer.length (), textRect, flags);
+					width = textRect.right - textRect.left;
+					if (hDC == 0) {
+						if (oldFont != -1) OS.SelectObject (textDC, oldFont);
+						OS.ReleaseDC (hwnd, textDC);
+					}
+				}
 				if (!getImage) rect.left = rect.right;
-				rect.right += textRect.right - textRect.left + Table.INSET * 3 + 1;
+				rect.right += width + Table.INSET * 2;
 			}
 		} else {
-			if (getText && getImage) {
+			if (getText) {
 				rect.left = OS.LVIR_SELECTBOUNDS;
+				parent.ignoreCustomDraw = true;
+				int code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
+				parent.ignoreCustomDraw = false;
+				if (code == 0) return new RECT ();
+				if (!getImage) {
+					RECT iconRect = new RECT ();
+					iconRect.left = OS.LVIR_ICON;
+					parent.ignoreCustomDraw = true;
+					code = OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, iconRect);
+					parent.ignoreCustomDraw = false;
+					if (code != 0) rect.left = iconRect.right;
+				}
 			} else {
-				rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
+				rect.left = OS.LVIR_ICON;
+				parent.ignoreCustomDraw = true;
+				int code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
+				parent.ignoreCustomDraw = false;
+				if (code == 0) return new RECT ();
 			}
-			parent.ignoreCustomDraw = true;
-			int code = OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, row, rect);
-			parent.ignoreCustomDraw = false;
-			if (code == 0) return new RECT ();
 		}
 		if (fullText || fullImage) {
 			RECT headerRect = new RECT ();
@@ -284,7 +314,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage, boolean 
 		rect.top = column;
 		if (fullText || fullImage || hDC == 0) {
 			/*
-			* Bug in Windows.  Despite the fact that the documenation states
+			* Bug in Windows.  Despite the fact that the documentation states
 			* that LVIR_BOUNDS and LVIR_LABEL are identical when used with
 			* LVM_GETSUBITEMRECT, LVIR_BOUNDS can return a zero height.  The
 			* fix is to use LVIR_LABEL.
