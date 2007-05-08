@@ -655,6 +655,7 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 			if (xFocusEvent.mode == OS.NotifyNormal || xFocusEvent.mode == OS.NotifyWhileGrabbed) {
 				if (xFocusEvent.detail == OS.NotifyNonlinearVirtual || xFocusEvent.detail == OS.NotifyVirtual) {
 					if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
+					Display display = this.display;
 					sendEvent (SWT.Deactivate);
 					setActiveControl (null);
 					if (display.activeShell == this) {
