@@ -1135,6 +1135,11 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				OS.SetRect (prcTarget, ps.left, ps.top, ps.right, ps.bottom);
 				int hBufferedPaint = OS.BeginBufferedPaint (hDC, prcTarget, flags, null, phdc);
 				GCData data = new GCData ();
+				if ((OS.GetLayout (hDC) & OS.LAYOUT_RTL) != 0) {
+					data.style = SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
+				} else {
+					data.style = SWT.LEFT_TO_RIGHT;
+				}
 				data.device = display;
 				data.foreground = getForegroundPixel ();
 				Control control = findBackgroundControl ();
@@ -1150,12 +1155,6 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 					drawBackground (phdc [0], rect);
 				}
-				if ((OS.GetLayout (hDC) & OS.LAYOUT_RTL) != 0) {
-					data.style = SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
-				} else {
-					data.style = SWT.LEFT_TO_RIGHT;
-				}
-
 				GC gc = GC.win32_new (phdc [0], data);
 				Event event = new Event ();
 				event.gc = gc;			
