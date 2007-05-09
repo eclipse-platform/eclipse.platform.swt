@@ -24,6 +24,7 @@ class WebSite extends OleControlSite {
 	COMObject iOleCommandTarget;
 
 	static final int OLECMDID_SHOWSCRIPTERROR = 40;
+	static final String CONSUME_KEY = "org.eclipse.swt.OleFrame.ConsumeKey"; //$NON-NLS-1$
 
 public WebSite(Composite parent, int style, String progId) {
 	super(parent, style, progId);		
@@ -246,28 +247,37 @@ int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
 	/*
 	* Feature on Internet Explorer.  By default the embedded Internet Explorer control runs
 	* the Internet Explorer shortcuts.  CTRL-N opens a standalone IE, which is undesirable
-	* and can cause a crash in some contexts.  F5 causes a refresh, which is not appropriate
+	* and can cause a crash in some contexts.  CTRL-O is being intercepted by IE, but this
+	* accelerator should be handled by Eclipse. F5 causes a refresh, which is not appropriate
 	* when rendering HTML from memory.  The workaround is to block the handling of these
-	* shortcuts by IE when necessary.
+	* shortcuts by IE when necessary, and in some cases ensure that Eclipse has an opportunity
+	* to handle these accelerators.
 	*/
 	int result = COM.S_FALSE;
 	MSG msg = new MSG();
 	OS.MoveMemory(msg, lpMsg, MSG.sizeof);
-	if (msg.message == OS.WM_KEYDOWN && msg.wParam == OS.VK_N && OS.GetKeyState (OS.VK_CONTROL) < 0) {
-		result = COM.S_OK;
-	} else {
-		if (msg.message == OS.WM_KEYDOWN && msg.wParam == OS.VK_F5) {
-			OleAutomation auto = new OleAutomation(this);
-			int[] rgdispid = auto.getIDsOfNames(new String[] { "LocationURL" }); //$NON-NLS-1$
-			Variant pVarResult = auto.getProperty(rgdispid[0]);
-			auto.dispose();
-			if (pVarResult != null) {
-				if (pVarResult.getType() == OLE.VT_BSTR) {
-					String url = pVarResult.getString();
-					if (url.equals(IE.ABOUT_BLANK)) result = COM.S_OK;
+	if (msg.message == OS.WM_KEYDOWN) {
+		switch (msg.wParam) {
+			case OS.VK_N:
+			case OS.VK_O:
+				if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+					getParent().setData(CONSUME_KEY, "true"); //$NON-NLS-1$
+					result = COM.S_OK;
 				}
-				pVarResult.dispose();
-			}
+				break;
+			case OS.VK_F5:
+				OleAutomation auto = new OleAutomation(this);
+				int[] rgdispid = auto.getIDsOfNames(new String[] { "LocationURL" }); //$NON-NLS-1$
+				Variant pVarResult = auto.getProperty(rgdispid[0]);
+				auto.dispose();
+				if (pVarResult != null) {
+					if (pVarResult.getType() == OLE.VT_BSTR) {
+						String url = pVarResult.getString();
+						if (url.equals(IE.ABOUT_BLANK)) result = COM.S_OK;
+					}
+					pVarResult.dispose();
+				}
+				break;
 		}
 	}
 	return result;

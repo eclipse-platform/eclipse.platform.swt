@@ -62,6 +62,8 @@ final public class OleFrame extends Composite
 	private static boolean ignoreNextKey;
 	private static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 	
+	private static final String CONSUME_KEY = "org.eclipse.swt.OleFrame.ConsumeKey"; //$NON-NLS-1$
+
 /**
  * Create an OleFrame child widget using style bits
  * to select a particular look or set of properties.
@@ -212,7 +214,10 @@ static int getMsgProc(int code, int wParam, int lParam) {
 					int mask = OS.GUI_INMENUMODE | OS.GUI_INMOVESIZE | OS.GUI_POPUPMENUMODE | OS.GUI_SYSTEMMENUMODE;
 					if (!rc || (lpgui.flags & mask) == 0) {
 						OleFrame frame = site.frame;
+						frame.setData(CONSUME_KEY, null);
 						consumed = frame.translateOleAccelerator(msg);
+						if (frame.getData(CONSUME_KEY) != null) consumed = false;
+						frame.setData(CONSUME_KEY, null);
 					}
 					boolean accentKey = false;
 					switch (msg.message) {
