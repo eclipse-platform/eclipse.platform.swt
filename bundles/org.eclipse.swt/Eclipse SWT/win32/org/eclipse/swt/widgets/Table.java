@@ -72,7 +72,7 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, ignoreMenuDetect;
 	int headerToolTipHandle, itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
@@ -3323,9 +3323,23 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 		int flags = OS.LVHT_ONITEMICON | OS.LVHT_ONITEMLABEL;
 		dragDetect = pinfo.iItem == -1 || (pinfo.flags & flags) == 0;
 	}
+	/*
+	* Feature in Windows.  For some reason, when the right mouse
+	* button is pressed over an item, the table sends WM_CONTEXTMENU
+	* from WM_RBUTTONDOWN without ignoring the usual context menu
+	* request that is normally sent from WM_RBUTTONUP.  This causes
+	* two context menus requests to be sent to the application.
+	* The fix is to ignore WM_CONTEXTMENU for mouse down messages.
+	* 
+	* NOTE: This only happens when drag detect is disabled.  When
+	* the table is detecting drag, the unwanted WM_CONTEXTMENU is
+	* not sent.
+	*/
+	ignoreMenuDetect = true;
 	if (!dragDetect) display.runDragDrop = false;
 	int code = callWindowProc (handle, msg, wParam, lParam, forceSelect);
 	if (!dragDetect) display.runDragDrop = true;
+	ignoreMenuDetect = false;
 	if (dragStarted || !dragDetect) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -5064,6 +5078,11 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 			return LRESULT.ZERO;
 	}
 	return result;
+}
+
+LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
+	if (ignoreMenuDetect) return LRESULT.ZERO;
+	return super.WM_CONTEXTMENU (wParam, lParam);
 }
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
