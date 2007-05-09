@@ -261,7 +261,7 @@ int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
 			case OS.VK_N:
 			case OS.VK_O:
 				if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-					getParent().setData(CONSUME_KEY, "true"); //$NON-NLS-1$
+					getParent().setData(CONSUME_KEY, "false"); //$NON-NLS-1$
 					result = COM.S_OK;
 				}
 				break;
