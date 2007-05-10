@@ -608,6 +608,7 @@ public static final int NotifyGrab = 1;
 public static final int NotifyHint = 1;
 public static final int NotifyUngrab = 2;
 public static final int NotifyWhileGrabbed = 3;
+public static final int NotifyAncestor = 0;
 public static final int NotifyVirtual = 1;
 public static final int NotifyNonlinear = 3;
 public static final int NotifyNonlinearVirtual = 4;

@@ -640,10 +640,11 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 	if (eventType != OS.FocusOut && eventType != OS.FocusIn) return 0;
 	XFocusChangeEvent xFocusEvent = new XFocusChangeEvent();
 	OS.memmove (xFocusEvent, xEvent, XFocusChangeEvent.sizeof);
+	System.out.println("focus event: type:" + xFocusEvent.type + " detail:" + xFocusEvent.detail + " mode:"+ xFocusEvent.mode);
 	switch (eventType) {
 		case OS.FocusIn: 
 			if (xFocusEvent.mode == OS.NotifyNormal || xFocusEvent.mode == OS.NotifyWhileGrabbed) {
-				if (xFocusEvent.detail == OS.NotifyNonlinear) {
+				if (xFocusEvent.detail == OS.NotifyNonlinear || xFocusEvent.detail == OS.NotifyAncestor) {
 					if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
 					display.activeShell = this;
 					display.activePending = false;
