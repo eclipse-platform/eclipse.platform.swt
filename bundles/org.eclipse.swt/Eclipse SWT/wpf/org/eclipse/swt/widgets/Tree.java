@@ -1607,6 +1607,7 @@ void OnSelectedItemChanged (int args) {
 	if (newItemRef != 0) {
 		newItem = getItem (newItemRef, false);
 		OS.GCHandle_Free (newItemRef);
+		newItemRef = 0;
 	} 	
     int treeType = OS.Object_GetType (handle);
     int propertyName = createDotNetString ("IsSelectionChangeActive", false);
