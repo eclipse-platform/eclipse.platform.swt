@@ -286,14 +286,16 @@ void drag(Event dragEvent) {
 				event.time = (int)System.currentTimeMillis(); 
 				event.dataType = transferData; 
 				notifyListeners(DND.DragSetData, event);
-				if (event.data == null) return;
-				for (int j = 0; j < types.length; j++) {
-					transferData.type = types[j];
-					transfer.javaToNative(event.data, transferData);
-					if (transferData.result != OS.noErr) return;
-					for (int k = 0; k < transferData.data.length; k++) {
-						byte[] datum = transferData.data[k];
-						OS.AddDragItemFlavor(theDrag[0], 1 + k, types[j], datum, datum.length, 0);
+				if (event.data != null) {
+					for (int j = 0; j < types.length; j++) {
+						transferData.type = types[j];
+						transfer.javaToNative(event.data, transferData);
+						if (transferData.result == OS.noErr) {
+							for (int k = 0; k < transferData.data.length; k++) {
+								byte[] datum = transferData.data[k];
+								OS.AddDragItemFlavor(theDrag[0], 1 + k, types[j], datum, datum.length, 0);
+							}
+						}
 					}
 				}
 			} else {
