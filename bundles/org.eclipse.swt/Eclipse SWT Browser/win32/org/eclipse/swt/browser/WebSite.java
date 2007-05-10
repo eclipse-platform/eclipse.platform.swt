@@ -223,7 +223,7 @@ int ShowContextMenu(int dwID, int ppt, int pcmdtReserved, int pdispReserved) {
 }
 
 int ShowUI(int dwID, int pActiveObject, int pCommandTarget, int pFrame, int pDoc) {
-	return COM.E_NOTIMPL;
+	return COM.S_FALSE;
 }
 
 int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
