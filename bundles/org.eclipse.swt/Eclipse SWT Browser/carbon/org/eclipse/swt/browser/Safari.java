@@ -780,9 +780,7 @@ void didCommitLoadForFrame(int frame) {
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.startsWith (URI_FROMMEMORY)) {
-		url2 = ABOUT_BLANK + url2.substring (URI_FROMMEMORY.length ());
-	}
+	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
 
 	final Display display = browser.getDisplay();
 	boolean top = frame == Cocoa.objc_msgSend(webView, Cocoa.S_mainFrame);
@@ -1197,9 +1195,7 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	 * If the URI indicates that the page is being rendered from memory
 	 * (via setText()) then set it to about:blank to be consistent with IE.
 	 */
-	if (url2.startsWith (URI_FROMMEMORY)) {
-		url2 = ABOUT_BLANK + url2.substring (URI_FROMMEMORY.length ());
-	}
+	if (url2.equals (URI_FROMMEMORY)) url2 = ABOUT_BLANK;
 
 	LocationEvent newEvent = new LocationEvent(browser);
 	newEvent.display = browser.getDisplay();
