@@ -122,7 +122,7 @@ public class Shell extends Decorations {
 	String toolTitle, balloonTitle;
 	int toolIcon, balloonIcon;
 	int windowProc;
-	Control lastActive;
+	Control lastActive, lockToolTipControl;
 	SHACTIVATEINFO psai;
 	Region region;
 	static /*final*/ int ToolTipProc;
@@ -1160,6 +1160,7 @@ void releaseWidget () {
 	lastActive = null;
 	region = null;
 	toolTitle = balloonTitle = null;
+	lockToolTipControl = null;
 }
 
 void removeMenu (Menu menu) {
@@ -2020,6 +2021,22 @@ LRESULT WM_MOVE (int wParam, int lParam) {
 	if (result != null) return result;
 	ToolTip tip = getCurrentToolTip ();
 	if (tip != null) tip.setVisible (false);
+	return result;
+}
+
+LRESULT WM_NCACTIVATE (int wParam, int lParam) {
+	Display display = this.display;
+	LRESULT result = super.WM_NCACTIVATE (wParam, lParam);
+	if (display.isXMouseActive ()) {
+		if (lockToolTipControl != null) {
+			if (OS.GetAsyncKeyState (OS.VK_LBUTTON) < 0) return result;
+			if (OS.GetAsyncKeyState (OS.VK_MBUTTON) < 0) return result;
+			if (OS.GetAsyncKeyState (OS.VK_RBUTTON) < 0) return result;
+			if (OS.GetAsyncKeyState (OS.VK_XBUTTON1) < 0) return result;
+			if (OS.GetAsyncKeyState (OS.VK_XBUTTON2) < 0) return result;
+			return LRESULT.ZERO;
+		}
+	}
 	return result;
 }
 
