@@ -627,6 +627,7 @@ typedef enum {
 	PostThreadMessageW_FUNC,
 	PrintDlgA_FUNC,
 	PrintDlgW_FUNC,
+	PrintWindow_FUNC,
 	PtInRect_FUNC,
 	PtInRegion_FUNC,
 	REBARBANDINFO_1sizeof_FUNC,

@@ -9815,6 +9815,34 @@ fail:
 }
 #endif
 
+#ifndef NO_PrintWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(PrintWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, PrintWindow_FUNC);
+/*
+	rc = (jboolean)PrintWindow((HWND)arg0, (HDC)arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(PrintWindow_LIB);
+			if (hm) fp = GetProcAddress(hm, "PrintWindow");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp((HWND)arg0, (HDC)arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, PrintWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PtInRect
 JNIEXPORT jboolean JNICALL OS_NATIVE(PtInRect)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)

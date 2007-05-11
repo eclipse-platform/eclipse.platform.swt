@@ -61,6 +61,7 @@
 #define MonitorFromWindow_LIB "user32.dll"
 #define NotifyWinEvent_LIB "user32.dll"
 #define OpenThemeData_LIB "uxtheme.dll"
+#define PrintWindow_LIB "user32.dll"
 #define SetLayeredWindowAttributes_LIB "user32.dll"
 #define SetLayout_LIB "gdi32.dll"
 #define SetMenuInfo_LIB "user32.dll"

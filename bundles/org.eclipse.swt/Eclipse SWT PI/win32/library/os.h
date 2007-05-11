@@ -361,6 +361,7 @@
 #define NO_PRIMARYLANGID
 #define NO_PrintDlgA
 #define NO_PrintDlgW
+#define NO_PrintWindow
 #define NO_RedrawWindow
 #define NO_RegEnumKeyExA
 #define NO_RegOpenKeyExA

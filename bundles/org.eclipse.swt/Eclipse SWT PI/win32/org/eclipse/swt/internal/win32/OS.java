@@ -3639,6 +3639,7 @@ public static final native boolean PostThreadMessageA (int idThread, int Msg, in
 public static final native short PRIMARYLANGID (short lgid);
 public static final native boolean PrintDlgW (PRINTDLG lppd);
 public static final native boolean PrintDlgA (PRINTDLG lppd);
+public static final native boolean PrintWindow (int /*long*/ hwnd, int /*long*/ hdcBlt, int nFlags);
 public static final native boolean PtInRect (RECT rect, POINT pt);
 public static final native boolean PtInRegion (int /*long*/ hrgn, int X, int Y);
 public static final native int RealizePalette (int /*long*/ hDC);
