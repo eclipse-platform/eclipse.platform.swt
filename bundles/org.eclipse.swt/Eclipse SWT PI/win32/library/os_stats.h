@@ -205,6 +205,7 @@ typedef enum {
 	GdiSetBatchLimit_FUNC,
 	GetACP_FUNC,
 	GetActiveWindow_FUNC,
+	GetAsyncKeyState_FUNC,
 	GetBkColor_FUNC,
 	GetCapture_FUNC,
 	GetCaretPos_FUNC,

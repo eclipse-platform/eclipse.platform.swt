@@ -3080,6 +3080,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetActiveWindow)
 }
 #endif
 
+#ifndef NO_GetAsyncKeyState
+JNIEXPORT jshort JNICALL OS_NATIVE(GetAsyncKeyState)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jshort rc = 0;
+	OS_NATIVE_ENTER(env, that, GetAsyncKeyState_FUNC);
+	rc = (jshort)GetAsyncKeyState(arg0);
+	OS_NATIVE_EXIT(env, that, GetAsyncKeyState_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetBkColor
 JNIEXPORT jint JNICALL OS_NATIVE(GetBkColor)
 	(JNIEnv *env, jclass that, jint arg0)

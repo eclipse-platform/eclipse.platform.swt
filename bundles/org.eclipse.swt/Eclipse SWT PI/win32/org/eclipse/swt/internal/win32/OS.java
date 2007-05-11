@@ -3275,6 +3275,7 @@ public static final native int FormatMessageW (int dwFlags, int /*long*/ lpSourc
 public static final native boolean FreeLibrary (int /*long*/ hLibModule);
 public static final native int GdiSetBatchLimit (int dwLimit);
 public static final native int GetACP ();
+public static final native short GetAsyncKeyState (int nVirtKey);
 public static final native int /*long*/ GetActiveWindow ();
 public static final native int GetBkColor (int /*long*/ hDC);
 public static final native int /*long*/ GetCapture ();

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 869;
-int OS_nativeFunctionCallCount[869];
+int OS_nativeFunctionCount = 870;
+int OS_nativeFunctionCallCount[870];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -197,6 +197,7 @@ char * OS_nativeFunctionNames[] = {
 	"GdiSetBatchLimit",
 	"GetACP",
 	"GetActiveWindow",
+	"GetAsyncKeyState",
 	"GetBkColor",
 	"GetCapture",
 	"GetCaretPos",
