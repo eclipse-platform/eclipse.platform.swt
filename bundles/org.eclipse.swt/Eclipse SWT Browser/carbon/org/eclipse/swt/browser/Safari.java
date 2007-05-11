@@ -28,6 +28,7 @@ class Safari extends WebBrowser {
 	int windowBoundsHandler;
 	
 	boolean changingLocation;
+	String lastHoveredLinkURL;
 	String html;
 	int identifier;
 	int resourceCount;
@@ -42,6 +43,7 @@ class Safari extends WebBrowser {
 
 	static final int MIN_SIZE = 16;
 	static final int MAX_PROGRESS = 100;
+	static final String WebElementLinkURLKey = "WebElementLinkURL"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
@@ -190,6 +192,7 @@ public void create (Composite parent, int style) {
 					Cocoa.objc_msgSend(delegate, Cocoa.S_release);
 					OS.DisposeControl(webViewHandle);
 					html = null;
+					lastHoveredLinkURL = null;
 					break;
 				}
 			}
@@ -514,6 +517,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 27: ret = runJavaScriptConfirmPanelWithMessage(arg0); break;
 		case 28: runOpenPanelForFileButtonWithResultListener(arg0); break;
 		case 29: decideDestinationWithSuggestedFilename(arg0, arg1); break;
+		case 30: mouseDidMoveOverElement(arg0, arg1); break;
 	}
 	return ret;
 }
@@ -535,7 +539,7 @@ public void refresh() {
 
 public boolean setText(String html) {
 	/*
-	* Bug in Safari.  The web view segment faults in some circunstances
+	* Bug in Safari.  The web view segment faults in some circumstances
 	* when the text changes during the location changing callback.  The
 	* fix is to defer the work until the callback is done. 
 	*/
@@ -1046,6 +1050,7 @@ void runOpenPanelForFileButtonWithResultListener(int resultListener) {
 	Cocoa.objc_msgSend(resultListener, Cocoa.S_chooseFilename, filename);
 	OS.CFRelease(filename);
 }
+
 void webViewClose() {
 	Shell parent = browser.getShell();
 	WindowEvent newEvent = new WindowEvent(browser);
@@ -1118,6 +1123,53 @@ void setResizable(int visible) {
 void setToolbarsVisible(int visible) {
 	/* Note.  Webkit only emits the notification when the tool bar should be hidden. */
 	toolBar = visible != 0;
+}
+
+void mouseDidMoveOverElement (int elementInformation, int modifierFlags) {
+	if (elementInformation == 0) return;
+
+	int length = WebElementLinkURLKey.length();
+	char[] chars = new char[length];
+	WebElementLinkURLKey.getChars(0, length, chars, 0);
+	int key = OS.CFStringCreateWithCharacters(0, chars, length);
+	int value = Cocoa.objc_msgSend(elementInformation, Cocoa.S_valueForKey, key);
+	OS.CFRelease(key);
+	if (value == 0) {
+		/* not currently over a link */
+		if (lastHoveredLinkURL == null) return;
+		lastHoveredLinkURL = null;
+		StatusTextEvent statusText = new StatusTextEvent(browser);
+		statusText.display = browser.getDisplay();
+		statusText.widget = browser;
+		statusText.text = "";	//$NON-NLS-1$
+		for (int i = 0; i < statusTextListeners.length; i++) {
+			statusTextListeners[i].changed(statusText);
+		}
+		return;
+	}
+
+	int stringPtr = Cocoa.objc_msgSend(value, Cocoa.S_absoluteString);
+	length = OS.CFStringGetLength(stringPtr);
+	String urlString;
+	if (length == 0) {
+		urlString = "";	//$NON-NLS-1$
+	} else {
+		chars = new char[length];
+		CFRange range = new CFRange();
+		range.length = length;
+		OS.CFStringGetCharacters(stringPtr, range, chars);
+		urlString = new String(chars);
+	}
+	if (urlString.equals(lastHoveredLinkURL)) return;
+
+	lastHoveredLinkURL = urlString;
+	StatusTextEvent statusText = new StatusTextEvent(browser);
+	statusText.display = browser.getDisplay();
+	statusText.widget = browser;
+	statusText.text = urlString;
+	for (int i = 0; i < statusTextListeners.length; i++) {
+		statusTextListeners[i].changed(statusText);
+	}
 }
 
 /* PolicyDelegate */

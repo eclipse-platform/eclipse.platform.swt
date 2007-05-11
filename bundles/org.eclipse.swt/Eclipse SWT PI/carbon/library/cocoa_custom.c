@@ -240,6 +240,11 @@ JNIEXPORT jint JNICALL Cocoa_NATIVE(objc_1msgSend__IIF)
 	proc((int)sender, user_data, 28, (int)resultListener, 0, 0, 0);
 }
 
+- (void)webView:(WebView *)sender mouseDidMoveOverElement:(NSDictionary *)elementInformation modifierFlags:(unsigned int)modifierFlags
+{
+	proc((int)sender, user_data, 30, (int)elementInformation, (int)modifierFlags, 0, 0);
+}
+
 /* WebPolicyDelegate */
 - (void)webView:(WebView *)sender decidePolicyForMIMEType:(NSString *)type request:(NSURLRequest *)request frame:(WebFrame*)frame decisionListener:(id<WebPolicyDecisionListener>)listener
 {

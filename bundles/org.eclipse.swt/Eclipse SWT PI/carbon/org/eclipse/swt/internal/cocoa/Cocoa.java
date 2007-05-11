@@ -93,6 +93,7 @@ public static final int S_stopLoading = Cocoa.sel_registerName("stopLoading:"); 
 public static final int S_stringByEvaluatingJavaScriptFromString = Cocoa.sel_registerName("stringByEvaluatingJavaScriptFromString:"); //$NON-NLS-1$
 public static final int S_takeStringURLFrom = Cocoa.sel_registerName("takeStringURLFrom:"); //$NON-NLS-1$
 public static final int S_use = Cocoa.sel_registerName("use"); //$NON-NLS-1$
+public static final int S_valueForKey = Cocoa.sel_registerName("valueForKey:"); //$NON-NLS-1$
 public static final int S_webFrame = Cocoa.sel_registerName("webFrame"); //$NON-NLS-1$
 public static final int S_URL = Cocoa.sel_registerName("URL"); //$NON-NLS-1$
 public static final int S_URLWithString = Cocoa.sel_registerName("URLWithString:"); //$NON-NLS-1$
