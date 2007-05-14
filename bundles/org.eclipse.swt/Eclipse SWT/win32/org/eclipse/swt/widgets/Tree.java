@@ -1773,6 +1773,13 @@ void createHandle () {
 			int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_FADEINOUTEXPANDOS | OS.TVS_EX_RICHTOOLTIP;
 			if ((style & SWT.FULL_SELECTION) == 0) bits |= OS.TVS_EX_AUTOHSCROLL;
 			OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
+			/*
+			* Bug in Windows.  When the tree is using the explorer
+			* theme, it does not use COLOR_WINDOW_TEXT for the
+			* default foreground color.  The fix is to explicitly
+			* set the foreground.
+			*/
+			setForegroundPixel (-1);
 		}
 	}
 
@@ -4192,6 +4199,16 @@ public void setFont (Font font) {
 }
 
 void setForegroundPixel (int pixel) {
+	/*
+	* Bug in Windows.  When the tree is using the explorer
+	* theme, it does not use COLOR_WINDOW_TEXT for the
+	* foreground.  When TVM_SETTEXTCOLOR is called with -1,
+	* it resets the color to black, not COLOR_WINDOW_TEXT.
+	* The fix is to explicitly set the color.
+	*/
+	if (explorerTheme) {
+		if (pixel == -1) pixel = defaultForeground ();
+	}
 	OS.SendMessage (handle, OS.TVM_SETTEXTCOLOR, 0, pixel);
 }
 
@@ -6291,6 +6308,15 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
+	/*
+	* Bug in Windows.  When the tree is using the explorer
+	* theme, it does not use COLOR_WINDOW_TEXT for the
+	* default foreground color.  The fix is to explicitly
+	* set the foreground.
+	*/
+	if (explorerTheme) {
+		if (foreground == -1) setForegroundPixel (-1);
+	}
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	return result;
 }
