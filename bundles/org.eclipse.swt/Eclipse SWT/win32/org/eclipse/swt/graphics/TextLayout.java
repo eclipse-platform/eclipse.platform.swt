@@ -614,9 +614,10 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			Gdip.Color_delete(color);
 		} else {
 			selBrush = OS.CreateSolidBrush(selectionBackground.handle);
-			selPen = OS.CreatePen(OS.BS_SOLID, 1, selectionForeground.handle);
+			selPen = OS.CreatePen(OS.PS_SOLID, 1, selectionForeground.handle);
 		}
 	}
+	int offset = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? -1 : 0;
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x + getLineIndent(line);
@@ -860,9 +861,9 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							if (run.style != null && run.style.foreground != null) fg = run.style.foreground.handle;
 						}
 						OS.SetTextColor(hdc, fg);
-						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
+						OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
 						if (run.style != null && (run.style.underline || run.style.strikeout)) {
-							int newPen = hasSelection && fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.BS_SOLID, 1, fg);
+							int newPen = hasSelection && fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.PS_SOLID, 1, fg);
 							int oldPen = OS.SelectObject(hdc, newPen);
 							if (run.style.underline) {
 								int underlineY = drawY + baseline + 1 - run.style.rise;
@@ -879,7 +880,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						}
 						if (partialSelection && fg != selectionForeground.handle) {
 							OS.SetTextColor(hdc, selectionForeground.handle);
-							OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
+							OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
 							if (run.style != null && (run.style.underline || run.style.strikeout)) {							
 								int oldPen = OS.SelectObject(hdc, selPen);
 								if (run.style.underline) {
