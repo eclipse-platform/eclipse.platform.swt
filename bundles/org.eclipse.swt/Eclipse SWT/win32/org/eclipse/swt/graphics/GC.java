@@ -77,8 +77,9 @@ public final class GC extends Resource {
 	static final int PEN = 1 << 11;
 	static final int NULL_BRUSH = 1 << 12;
 	static final int NULL_PEN = 1 << 13;
+	static final int DRAW_OFFSET = 1 << 14;
 
-	static final int DRAW = FOREGROUND | LINE_STYLE | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_MITERLIMIT | PEN | NULL_BRUSH;
+	static final int DRAW = FOREGROUND | LINE_STYLE | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_MITERLIMIT | PEN | NULL_BRUSH | DRAW_OFFSET;
 	static final int FILL = BACKGROUND | BRUSH | NULL_PEN;
 
 	static final float[] LINE_DOT_ZERO = new float[]{3, 3};
@@ -291,6 +292,26 @@ void checkGC(int mask) {
 			int font = createGdipFont(handle, data.hFont);
 			if (data.gdipFont != 0) Gdip.Font_delete(data.gdipFont);
 			data.gdipFont = font;
+		}
+		if ((state & DRAW_OFFSET) != 0) {
+			data.gdipXOffset = data.gdipYOffset = 0;
+			int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+			float[] elements = new float[6];
+			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+			Gdip.Matrix_GetElements(matrix, elements);
+			Gdip.Matrix_delete(matrix);
+			float scaling = elements[0];
+			if (scaling < 0) scaling = -scaling;
+			float penWidth = data.lineWidth * scaling;
+			if (penWidth == 0 || ((int)penWidth % 2) == 1) {
+				data.gdipXOffset = 0.5f / scaling;
+			}
+			scaling = elements[3];
+			if (scaling < 0) scaling = -scaling;
+			penWidth = data.lineWidth * scaling;
+			if (penWidth == 0 || ((int)penWidth % 2) == 1) {
+				data.gdipYOffset = 0.5f / scaling;
+			}
 		}
 		return;
 	}
@@ -669,7 +690,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 	if (width == 0 || height == 0 || arcAngle == 0) return;
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		if (width == height) {
 			Gdip.Graphics_DrawArc(gdipGraphics, data.gdipPen, x, y, width, height, -startAngle, -arcAngle);
 		} else {
@@ -683,8 +704,11 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 			Gdip.Matrix_delete(matrix);
 			Gdip.GraphicsPath_delete(path);
 		}
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		return;
+	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) x--;
 	}
 	/*
 	* Feature in WinCE.  The function Arc is not present in the
@@ -777,6 +801,8 @@ public void drawFocus (int x, int y, int width, int height) {
 		Gdip.Matrix_delete(matrix);
 		hdc = Gdip.Graphics_GetHDC(gdipGraphics);
 		state = OS.SaveDC(hdc);
+		OS.SetBkColor(hdc, data.background);
+		OS.SetTextColor(hdc, data.foreground);
 		if (lpXform != null) {
 			OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
 			OS.SetWorldTransform(hdc, lpXform);
@@ -1559,10 +1585,16 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 	checkGC(DRAW);
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		Gdip.Graphics_DrawLine(gdipGraphics, data.gdipPen, x1, y1, x2, y2);
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		return;
+	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) {
+			x1--;
+			x2--;
+		}
 	}
 	if (OS.IsWinCE) {
 		int [] points = new int [] {x1, y1, x2, y2};
@@ -1602,10 +1634,13 @@ public void drawOval (int x, int y, int width, int height) {
 	checkGC(DRAW);
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		Gdip.Graphics_DrawEllipse(gdipGraphics, data.gdipPen, x, y, width, height);
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		return;
+	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) x--;
 	}
 	OS.Ellipse(handle, x, y, x + width + 1, y + height + 1);
 }
@@ -1634,9 +1669,9 @@ public void drawPath (Path path) {
 	initGdip();
 	checkGC(DRAW);
 	int gdipGraphics = data.gdipGraphics;
-	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+	Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 	Gdip.Graphics_DrawPath(gdipGraphics, data.gdipPen, path.handle);
-	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+	Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 }
 
 /** 
@@ -1689,12 +1724,26 @@ public void drawPolygon(int[] pointArray) {
 	checkGC(DRAW);
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		Gdip.Graphics_DrawPolygon(gdipGraphics, data.gdipPen, pointArray, pointArray.length / 2);
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		return;
 	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) {
+			for (int i = 0; i < pointArray.length; i+=2) {
+				pointArray[i]--;
+			}
+		}
+	}
 	OS.Polygon(handle, pointArray, pointArray.length / 2);
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) {
+			for (int i = 0; i < pointArray.length; i+=2) {
+				pointArray[i]++;
+			}
+		}
+	}
 }
 
 /** 
@@ -1720,16 +1769,30 @@ public void drawPolyline(int[] pointArray) {
 	checkGC(DRAW);
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		Gdip.Graphics_DrawLines(gdipGraphics, data.gdipPen, pointArray, pointArray.length / 2);
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		return;
+	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) {
+			for (int i = 0; i < pointArray.length; i+=2) {
+				pointArray[i]--;
+			}
+		}
 	}
 	OS.Polyline(handle, pointArray, pointArray.length / 2);
 	int length = pointArray.length;
 	if (length >= 2) {
 		if (data.lineWidth <= 1) {
 			OS.SetPixel (handle, pointArray[length - 2], pointArray[length - 1], data.foreground);
+		}
+	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) {
+			for (int i = 0; i < pointArray.length; i+=2) {
+				pointArray[i]++;
+			}
 		}
 	}
 }
@@ -1754,10 +1817,23 @@ public void drawRectangle (int x, int y, int width, int height) {
 	checkGC(DRAW);
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		Gdip.Graphics_DrawRectangle(gdipGraphics, data.gdipPen, x, y, width, height);
-		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 		return;
+	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		/*
+		* Note that Rectangle() subtracts one pixel in MIRRORED mode when
+		* the pen was created with CreatePen() and its width is 0 or 1.    
+		*/
+		if (data.lineWidth > 1) {
+			if ((data.lineWidth % 2) == 1) x++;
+		} else {
+			if (data.hPen != 0 && OS.GetObject(data.hPen, 0, 0) != LOGPEN.sizeof) {
+				x++;
+			}
+		}
 	}
 	OS.Rectangle (handle, x, y, x + width + 1, y + height + 1);
 }
@@ -1810,6 +1886,9 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 	if (data.gdipGraphics != 0) {
 		drawRoundRectangleGdip(data.gdipGraphics, data.gdipPen, x, y, width, height, arcWidth, arcHeight);
 		return;
+	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (data.lineWidth != 0 && data.lineWidth % 2 == 0) x--;
 	}
 	if (OS.IsWinCE) {
 		/* 
@@ -1878,7 +1957,7 @@ void drawRoundRectangleGdip (int gdipGraphics, int pen, int x, int y, int width,
 	int naw2 = naw / 2;
 	int nah2 = nah / 2;
 	
-	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+	Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
 	if (nw > naw) {
 		if (nh > nah) {
 			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx, ny, naw, nah, -90, -90);
@@ -1905,7 +1984,7 @@ void drawRoundRectangleGdip (int gdipGraphics, int pen, int x, int y, int width,
 			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx, ny, nw, nh, 0, 360);
 		}
 	}
-	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
+	Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 }
 
 /** 
@@ -2013,13 +2092,31 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	}
 	checkGC(FONT | FOREGROUND_TEXT | BACKGROUND_TEXT);
 	int oldBkMode = OS.SetBkMode(handle, isTransparent ? OS.TRANSPARENT : OS.OPAQUE);
+	RECT rect = null;
+	SIZE size = null;
+	int flags = 0;
+	if ((data.style & SWT.MIRRORED) != 0) {
+		if (!isTransparent) {
+			size = new SIZE();
+			OS.GetTextExtentPoint32W(handle, buffer, length, size);
+			rect = new RECT ();
+			rect.left = x;
+			rect.right = x + size.cx;
+			rect.top = y;
+			rect.bottom = y + size.cy;
+			flags = OS.ETO_CLIPPED;
+		}
+		x--;
+	}
 	if (rop2 != OS.R2_XORPEN) {
-		OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
+		OS.ExtTextOutW(handle, x, y, flags, rect, buffer, length, null);
 	} else {
 		int foreground = OS.GetTextColor(handle);
 		if (isTransparent) {
-			SIZE size = new SIZE();
-			OS.GetTextExtentPoint32W(handle, buffer, length, size);
+			if (size == null) {
+				size = new SIZE();
+				OS.GetTextExtentPoint32W(handle, buffer, length, size);
+			}
 			int width = size.cx, height = size.cy;
 			int hBitmap = OS.CreateCompatibleBitmap(handle, width, height);
 			if (hBitmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -2037,7 +2134,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 		} else {
 			int background = OS.GetBkColor(handle);
 			OS.SetTextColor(handle, foreground ^ background);
-			OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
+			OS.ExtTextOutW(handle, x, y, flags, rect, buffer, length, null);
 			OS.SetTextColor(handle, foreground);
 		}
 	}
@@ -2320,6 +2417,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		return;
 	}
 	
+	if ((data.style & SWT.MIRRORED) != 0) x--;
 	/*
 	* Feature in WinCE.  The function Pie is not present in the
 	* WinCE SDK.  The fix is to emulate it by using Polygon.
@@ -2527,6 +2625,7 @@ public void fillOval (int x, int y, int width, int height) {
 		Gdip.Graphics_FillEllipse(data.gdipGraphics, data.gdipBrush, x, y, width, height);
 		return;
 	}
+	if ((data.style & SWT.MIRRORED) != 0) x--;
 	OS.Ellipse(handle, x, y, x + width + 1, y + height + 1);
 }
 
@@ -2586,7 +2685,17 @@ public void fillPolygon(int[] pointArray) {
 		Gdip.Graphics_FillPolygon(data.gdipGraphics, data.gdipBrush, pointArray, pointArray.length / 2, mode);
 		return;
 	}
+	if ((data.style & SWT.MIRRORED) != 0) {
+		for (int i = 0; i < pointArray.length; i+=2) {
+			pointArray[i]--;
+		}
+	}
 	OS.Polygon(handle, pointArray, pointArray.length / 2);
+	if ((data.style & SWT.MIRRORED) != 0) {
+		for (int i = 0; i < pointArray.length; i+=2) {
+			pointArray[i]++;
+		}
+	}
 }
 
 /** 
@@ -2666,6 +2775,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 		fillRoundRectangleGdip(data.gdipGraphics, data.gdipBrush, x, y, width, height, arcWidth, arcHeight);
 		return;
 	}
+	if ((data.style & SWT.MIRRORED) != 0) x--;
 	OS.RoundRect(handle, x,y,x+width+1,y+height+1,arcWidth, arcHeight);
 }
 
@@ -4038,7 +4148,7 @@ public void setLineAttributes(LineAttributes attributes) {
 	int mask = 0;
 	float lineWidth = attributes.width;
 	if (lineWidth != data.lineWidth) {
-		mask |= LINE_WIDTH;
+		mask |= LINE_WIDTH | DRAW_OFFSET;
 	}
 	int lineStyle = attributes.style;
 	if (lineStyle != data.lineStyle) {
@@ -4285,7 +4395,7 @@ public void setLineWidth(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineWidth == lineWidth) return;
 	data.lineWidth = lineWidth;
-	data.state &= ~LINE_WIDTH;
+	data.state &= ~(LINE_WIDTH | DRAW_OFFSET);
 }
 
 /** 
@@ -4390,6 +4500,7 @@ public void setTransform(Transform transform) {
 	}
 	Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
 	Gdip.Matrix_delete(identity);
+	data.state &= ~DRAW_OFFSET;
 }
 
 /**

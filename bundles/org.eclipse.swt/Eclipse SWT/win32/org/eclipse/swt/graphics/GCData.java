@@ -56,4 +56,5 @@ public final class GCData {
 	public int gdipFgBrush;
 	public int gdipBgBrush;
 	public int gdipFont;
+	public float gdipXOffset, gdipYOffset;
 }
