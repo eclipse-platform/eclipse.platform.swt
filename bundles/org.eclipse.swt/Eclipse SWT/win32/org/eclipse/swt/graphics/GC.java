@@ -1953,37 +1953,31 @@ void drawRoundRectangleGdip (int gdipGraphics, int pen, int x, int y, int width,
 		naw = 0 - naw;
 	if (nah < 0)
 		nah = 0 - nah;
-				
-	int naw2 = naw / 2;
-	int nah2 = nah / 2;
 	
 	Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
+	int path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+	if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (nw > naw) {
 		if (nh > nah) {
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx, ny, naw, nah, -90, -90);
-			Gdip.Graphics_DrawLine(gdipGraphics, pen, nx + naw2, ny, nx + nw - naw2, ny);
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx + nw - naw, ny, naw, nah, 0, -90);
-			Gdip.Graphics_DrawLine(gdipGraphics, pen, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx + nw - naw, ny + nh - nah, naw, nah, -270, -90);
-			Gdip.Graphics_DrawLine(gdipGraphics, pen, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx, ny + nh - nah, naw, nah, -180, -90);
-			Gdip.Graphics_DrawLine(gdipGraphics, pen, nx, ny + nah2, nx, ny + nh - nah2);
+			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nah, 0, -90);
+			Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nah, -90, -90);
+			Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, naw, nah, -180, -90);
+			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny + nh - nah, naw, nah, -270, -90);
 		} else {
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx, ny, naw, nh, -90, -180);
-			Gdip.Graphics_DrawLine(gdipGraphics, pen, nx + naw2, ny, nx + nw - naw2, ny);
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx + nw - naw, ny, naw, nh, -270, -180);
-			Gdip.Graphics_DrawLine(gdipGraphics, pen, nx + naw2, ny + nh, nx + nw - naw2, ny + nh);
+			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nh, -270, -180);
+			Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nh, -90, -180);
 		}
 	} else {
 		if (nh > nah) {
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx, ny, nw, nah, 0, -180);
-			Gdip.Graphics_DrawLine(gdipGraphics, pen, nx + nw, ny + nah2, nx + nw, ny + nh - nah2);
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx, ny + nh - nah, nw, nah, -180, -180);
-			Gdip.Graphics_DrawLine(gdipGraphics, pen, nx, ny + nah2, nx, ny + nh - nah2);
+			Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nah, 0, -180);
+			Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, nw, nah, -180, -180);
 		} else {
-			Gdip.Graphics_DrawArc(gdipGraphics, pen, nx, ny, nw, nh, 0, 360);
+			Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nh, 0, 360);
 		}
 	}
+	Gdip.GraphicsPath_CloseFigure(path);
+	Gdip.Graphics_DrawPath(gdipGraphics, pen, path);
+	Gdip.GraphicsPath_delete(path);
 	Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 }
 
@@ -2800,32 +2794,29 @@ void fillRoundRectangleGdip (int gdipGraphics, int brush, int x, int y, int widt
 	if (nah < 0)
 		nah = 0 - nah;
 
-	int naw2 = naw / 2;
-	int nah2 = nah / 2;
-
+	int path = Gdip.GraphicsPath_new(Gdip.FillModeAlternate);
+	if (path == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (nw > naw) {
 		if (nh > nah) {
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx, ny, naw, nah, -90, -90);
-			Gdip.Graphics_FillRectangle(gdipGraphics, brush, nx + naw2, ny, nw - naw2 * 2, nah2);
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx + nw - naw, ny, naw, nah, 0, -90);
-			Gdip.Graphics_FillRectangle(gdipGraphics, brush, nx, ny + nah2, nw, nh - nah2 * 2);
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx + nw - naw, ny + nh - nah, naw, nah, -270, -90);
-			Gdip.Graphics_FillRectangle(gdipGraphics, brush, nx + naw2, ny + nh - nah2, nw - naw2 * 2, nah2);
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx, ny + nh - nah, naw, nah, -180, -90);
+			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nah, 0, -90);
+			Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nah, -90, -90);
+			Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, naw, nah, -180, -90);
+			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny + nh - nah, naw, nah, -270, -90);
 		} else {
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx, ny, naw, nh, -90, -180);
-			Gdip.Graphics_FillRectangle(gdipGraphics, brush, nx + naw2, ny, nw - naw2 * 2, nh);
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx + nw - naw, ny, naw, nh, -270, -180);
+			Gdip.GraphicsPath_AddArc(path, nx + nw - naw, ny, naw, nh, -270, -180);
+			Gdip.GraphicsPath_AddArc(path, nx, ny, naw, nh, -90, -180);
 		}
 	} else {
 		if (nh > nah) {
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx, ny, nw, nah, 0, -180);
-			Gdip.Graphics_FillRectangle(gdipGraphics, brush, nx, ny + nah2, nw, nh - nah2 * 2);
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx, ny + nh - nah, nw, nah, -180, -180);
+			Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nah, 0, -180);
+			Gdip.GraphicsPath_AddArc(path, nx, ny + nh - nah, nw, nah, -180, -180);
 		} else {
-			Gdip.Graphics_FillPie(gdipGraphics, brush, nx, ny, nw, nh, 0, 360);
+			Gdip.GraphicsPath_AddArc(path, nx, ny, nw, nh, 0, 360);
 		}
 	}
+	Gdip.GraphicsPath_CloseFigure(path);
+	Gdip.Graphics_FillPath(gdipGraphics, brush, path);
+	Gdip.GraphicsPath_delete(path);
 }
 
 void flush () {
