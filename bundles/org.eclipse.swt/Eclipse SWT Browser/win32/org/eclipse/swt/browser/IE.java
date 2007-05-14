@@ -29,9 +29,10 @@ class IE extends WebBrowser {
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
 	int info;
-	
 	int globalDispatch;
 	String html;
+
+	static boolean Initialized;
 
 	static final int BeforeNavigate2 = 0xfa;
 	static final int CommandStateChange = 0x69;
@@ -244,7 +245,7 @@ public void create(Composite parent, int style) {
 									* Note. Internet Explorer appears to treat the data loaded with 
 									* nsIPersistStreamInit.Load as if it were encoded using the default
 									* local charset.  There does not seem to be an API to set the
-									* desired charset explicitely in this case.  The fix is to
+									* desired charset explicitly in this case.  The fix is to
 									* prepend the UTF-8 Byte Order Mark signature to the data.
 									*/
 									byte[] UTF8BOM = {(byte)0xEF, (byte)0xBB, (byte)0xBF};
@@ -580,6 +581,13 @@ public void create(Composite parent, int style) {
 	int[] rgdispid = auto.getIDsOfNames(new String[] {"RegisterAsDropTarget"}); //$NON-NLS-1$
 	if (rgdispid != null) auto.setProperty(rgdispid[0], variant);
 	variant.dispose();
+
+	if (!Initialized) {
+		if (!OS.IsWinCE) {
+			OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
+		}
+		Initialized = true;
+	}
 }
 
 public boolean back() {

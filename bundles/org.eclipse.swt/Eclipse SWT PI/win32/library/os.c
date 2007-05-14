@@ -929,6 +929,34 @@ fail:
 }
 #endif
 
+#ifndef NO_CoInternetSetFeatureEnabled
+JNIEXPORT jint JNICALL OS_NATIVE(CoInternetSetFeatureEnabled)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CoInternetSetFeatureEnabled_FUNC);
+/*
+	rc = (jint)CoInternetSetFeatureEnabled(arg0, arg1, (BOOL)arg2);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(CoInternetSetFeatureEnabled_LIB);
+			if (hm) fp = GetProcAddress(hm, "CoInternetSetFeatureEnabled");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1, (BOOL)arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CoInternetSetFeatureEnabled_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CombineRgn
 JNIEXPORT jint JNICALL OS_NATIVE(CombineRgn)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)

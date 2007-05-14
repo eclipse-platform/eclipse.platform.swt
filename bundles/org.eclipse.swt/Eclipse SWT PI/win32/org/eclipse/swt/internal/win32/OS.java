@@ -629,6 +629,7 @@ public class OS extends C {
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
 	public static final int FE_FONTSMOOTHINGCLEARTYPE = 0x0002;
+	public static final int FEATURE_DISABLE_NAVIGATION_SOUNDS = 21;
 	public static final int FILE_ATTRIBUTE_NORMAL = 0x00000080; 
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
@@ -1362,6 +1363,7 @@ public class OS extends C {
 	public static final int SCRBS_PRESSED = 3;
 	public static final int SCRBS_DISABLED = 4;
 	public static final int SEM_FAILCRITICALERRORS = 0x1;
+	public static final int SET_FEATURE_ON_PROCESS = 0x2;
 	public static final int SF_RTF = 0x2;
 	public static final int SHCMBF_HIDDEN = 0x2;
 	public static final int SHCMBM_OVERRIDEKEY = 0x400 + 403;
@@ -3158,6 +3160,7 @@ public static final native boolean CloseClipboard ();
 public static final native boolean CloseHandle (int /*long*/ hObject);
 public static final native int CloseThemeData (int /*long*/ hTheme);
 public static final native int CoCreateInstance (byte[] rclsid, int /*long*/ pUnkOuter, int dwClsContext, byte[] riid, int /*long*/[] ppv);
+public static final native int CoInternetSetFeatureEnabled (int FeatureEntry, int dwFlags, boolean fEnable);
 public static final native int CombineRgn (int /*long*/ hrgnDest, int /*long*/ hrgnSrc1, int /*long*/ hrgnSrc2, int fnCombineMode);
 public static final native boolean CommandBar_AddAdornments (int /*long*/ hwndCB, int dwFlags, int dwReserved);
 public static final native int /*long*/ CommandBar_Create (int /*long*/ hInst, int /*long*/ hwndParent, int idCmdBar);

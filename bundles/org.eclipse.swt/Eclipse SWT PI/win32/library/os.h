@@ -155,6 +155,7 @@
 #define NO_ChooseFontW
 #define NO_CloseThemeData
 #define NO_CoCreateInstance
+#define NO_CoInternetSetFeatureEnabled
 #define NO_CopyImage
 #define NO_CreateAcceleratorTableA
 #define NO_CreateActCtxA

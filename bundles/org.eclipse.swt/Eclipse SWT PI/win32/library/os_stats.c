@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 871;
-int OS_nativeFunctionCallCount[871];
+int OS_nativeFunctionCount = 872;
+int OS_nativeFunctionCallCount[872];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -69,6 +69,7 @@ char * OS_nativeFunctionNames[] = {
 	"CloseHandle",
 	"CloseThemeData",
 	"CoCreateInstance",
+	"CoInternetSetFeatureEnabled",
 	"CombineRgn",
 	"CommDlgExtendedError",
 	"CommandBar_1AddAdornments",
