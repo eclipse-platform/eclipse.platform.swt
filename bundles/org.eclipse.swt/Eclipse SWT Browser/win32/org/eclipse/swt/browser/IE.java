@@ -581,13 +581,6 @@ public void create(Composite parent, int style) {
 	int[] rgdispid = auto.getIDsOfNames(new String[] {"RegisterAsDropTarget"}); //$NON-NLS-1$
 	if (rgdispid != null) auto.setProperty(rgdispid[0], variant);
 	variant.dispose();
-
-	if (!Initialized) {
-		if (!OS.IsWinCE) {
-			OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
-		}
-		Initialized = true;
-	}
 }
 
 public boolean back() {
