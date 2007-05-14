@@ -25,7 +25,7 @@ public ImageList (int style) {
 	if (OS.IsWinCE) {
 		flags |= OS.ILC_COLOR;
 	} else {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.COMCTL32_MAJOR >= 6) {
 			flags |= OS.ILC_COLOR32;
 		} else {
 			int hDC = OS.GetDC (0);
