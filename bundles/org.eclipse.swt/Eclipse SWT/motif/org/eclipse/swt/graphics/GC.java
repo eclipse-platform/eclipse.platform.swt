@@ -72,7 +72,8 @@ public final class GC extends Resource {
 	final static int BACKGROUND_BG = 1 << 8;
 	final static int FOREGROUND_RGB = 1 << 9;
 	final static int BACKGROUND_RGB = 1 << 10;
-	final static int DRAW = FOREGROUND | LINE_WIDTH | LINE_STYLE  | LINE_CAP  | LINE_JOIN | LINE_MITERLIMIT;
+	final static int DRAW_OFFSET = 1 << 11;
+	final static int DRAW = FOREGROUND | LINE_WIDTH | LINE_STYLE  | LINE_CAP  | LINE_JOIN | LINE_MITERLIMIT | DRAW_OFFSET;
 	final static int FILL = BACKGROUND;
 
 	static final float[] LINE_DOT = new float[]{1, 1};
@@ -251,6 +252,23 @@ void checkGC (int mask) {
 		}
 		if ((state & LINE_MITERLIMIT) != 0) {
 			Cairo.cairo_set_miter_limit(cairo, data.lineMiterLimit);
+		}
+		if ((state & DRAW_OFFSET) != 0) {
+			data.cairoXoffset = data.cairoYoffset = 0;
+			double[] matrix = new double[6];
+			Cairo.cairo_get_matrix(cairo, matrix);
+			double scaling = matrix[0];
+			if (scaling < 0) scaling = -scaling;
+			double strokeWidth = data.lineWidth * scaling;
+			if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+				data.cairoXoffset = 0.5 / scaling;
+			}
+			scaling = matrix[3];
+			if (scaling < 0) scaling = -scaling;
+			strokeWidth = data.lineWidth * scaling;
+			if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+				data.cairoYoffset = 0.5 / scaling;
+			}
 		}
 		return;
 	}
@@ -527,16 +545,16 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	if (width == 0 || height == 0 || arcAngle == 0) return;
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 		if (width == height) {
             if (arcAngle >= 0) {
-                Cairo.cairo_arc_negative(cairo, x + offset + width / 2f, y + offset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+                Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
             } else { 
-                Cairo.cairo_arc(cairo, x + offset + width / 2f, y + offset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+                Cairo.cairo_arc(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
             }
 		} else {
 			Cairo.cairo_save(cairo);
-			Cairo.cairo_translate(cairo, x + offset + width / 2f, y + offset + height / 2f);
+			Cairo.cairo_translate(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f);
 			Cairo.cairo_scale(cairo, width / 2f, height / 2f);
             if (arcAngle >= 0) {
                 Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
@@ -1128,9 +1146,9 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 	checkGC(DRAW);
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-		Cairo.cairo_move_to(cairo, x1 + offset, y1 + offset);
-		Cairo.cairo_line_to(cairo, x2 + offset, y2 + offset);
+		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
+		Cairo.cairo_move_to(cairo, x1 + xOffset, y1 + yOffset);
+		Cairo.cairo_line_to(cairo, x2 + xOffset, y2 + yOffset);
 		Cairo.cairo_stroke(cairo);
 		return;
 	}
@@ -1170,12 +1188,12 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 		if (width == height) {
-			Cairo.cairo_arc_negative(cairo, x + offset + width / 2f, y + offset + height / 2f, width / 2f, 0, -2 * (float)Compatibility.PI);
+			Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, 0, -2 * (float)Compatibility.PI);
 		} else {
 			Cairo.cairo_save(cairo);
-			Cairo.cairo_translate(cairo, x + offset + width / 2f, y + offset + height / 2f);
+			Cairo.cairo_translate(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f);
 			Cairo.cairo_scale(cairo, width / 2f, height / 2f);
 			Cairo.cairo_arc_negative(cairo, 0, 0, 1, 0, -2 * (float)Compatibility.PI);
 			Cairo.cairo_restore(cairo);
@@ -1210,8 +1228,8 @@ public void drawPath(Path path) {
 	checkGC(DRAW);
 	int /*long*/ cairo = data.cairo;
 	Cairo.cairo_save(cairo);
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	Cairo.cairo_translate(cairo, offset, offset);
+	double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
+	Cairo.cairo_translate(cairo, xOffset, yOffset);
 	int /*long*/ copy = Cairo.cairo_copy_path(path.handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_append_path(cairo, copy);
@@ -1349,10 +1367,10 @@ public void drawPolyline(int[] pointArray) {
 void drawPolyline(int /*long*/ cairo, int[] pointArray, boolean close) {
 	int count = pointArray.length / 2;
 	if (count == 0) return;
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	Cairo.cairo_move_to(cairo, pointArray[0] + offset, pointArray[1] + offset);
+	double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
+	Cairo.cairo_move_to(cairo, pointArray[0] + xOffset, pointArray[1] + yOffset);
 	for (int i = 1, j=2; i < count; i++, j += 2) {
-		Cairo.cairo_line_to(cairo, pointArray[j] + offset, pointArray[j + 1] + offset);
+		Cairo.cairo_line_to(cairo, pointArray[j] + xOffset, pointArray[j + 1] + yOffset);
 	}
 	if (close) Cairo.cairo_close_path(cairo);
 }
@@ -1384,8 +1402,8 @@ public void drawRectangle (int x, int y, int width, int height) {
 	}
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-		Cairo.cairo_rectangle(cairo, x + offset, y + offset, width, height);
+		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
+		Cairo.cairo_rectangle(cairo, x + xOffset, y + yOffset, width, height);
 		Cairo.cairo_stroke(cairo);
 		return;
 	}
@@ -1458,8 +1476,8 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 		float fw = nw / naw2;
 		float fh = nh / nah2;
 		Cairo.cairo_save(cairo);
-		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-		Cairo.cairo_translate(cairo, nx + offset, ny + offset);
+		double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
+		Cairo.cairo_translate(cairo, nx + xOffset, ny + yOffset);
 		Cairo.cairo_scale(cairo, naw2, nah2);
 		Cairo.cairo_move_to(cairo, fw - 1, 0);
 	    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
@@ -3327,7 +3345,7 @@ void initCairo() {
 	Cairo.cairo_surface_destroy(surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_set_fill_rule(cairo, Cairo.CAIRO_FILL_RULE_EVEN_ODD);
-	data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE);
+	data.state &= ~(BACKGROUND | FOREGROUND | FONT | LINE_WIDTH | LINE_CAP | LINE_JOIN | LINE_STYLE | DRAW_OFFSET);
 	setCairoClip(cairo, data.clipRgn);
 }
 /**
@@ -3894,7 +3912,7 @@ public void setLineAttributes(LineAttributes attributes) {
 	int mask = 0;
 	float lineWidth = attributes.width;
 	if (lineWidth != data.lineWidth) {
-		mask |= LINE_WIDTH;
+		mask |= LINE_WIDTH | DRAW_OFFSET;
 	}
 	int lineStyle = attributes.style;
 	if (lineStyle != data.lineStyle) {
@@ -4136,7 +4154,7 @@ public void setLineWidth(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineWidth == lineWidth) return;
 	data.lineWidth = lineWidth;
-	data.state &= ~LINE_WIDTH;
+	data.state &= ~(LINE_WIDTH | DRAW_OFFSET);
 }
 void setString(String string) {
 	if (string == data.string) return;
@@ -4242,6 +4260,7 @@ public void setTransform(Transform transform) {
 	} else {
 		Cairo.cairo_identity_matrix(cairo);
 	}
+	data.state &= ~DRAW_OFFSET;
 }
 /** 
  * If the argument is <code>true</code>, puts the receiver
