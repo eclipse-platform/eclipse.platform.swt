@@ -49,6 +49,7 @@ public final class GCData {
 	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
 
+	public float drawXOffset, drawYOffset;
 	public int forePattern;
 	public int backPattern;
 	public Image image;

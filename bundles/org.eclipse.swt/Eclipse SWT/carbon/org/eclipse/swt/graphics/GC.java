@@ -69,8 +69,9 @@ public final class GC extends Resource {
 	final static int LINE_JOIN = 1 << 5;
 	final static int LINE_WIDTH = 1 << 6;
 	final static int LINE_MITERLIMIT = 1 << 7;
-	final static int FOREGROUND_FILL = 1 << 8;	
-	final static int DRAW = FOREGROUND | LINE_WIDTH | LINE_STYLE  | LINE_CAP  | LINE_JOIN | LINE_MITERLIMIT;
+	final static int FOREGROUND_FILL = 1 << 8;
+	final static int DRAW_OFFSET = 1 << 9;
+	final static int DRAW = FOREGROUND | LINE_WIDTH | LINE_STYLE  | LINE_CAP  | LINE_JOIN | LINE_MITERLIMIT | DRAW_OFFSET;
 	final static int FILL = BACKGROUND;
 
 	static final float[] LINE_DOT = new float[]{1, 1};
@@ -300,6 +301,21 @@ void checkGC (int mask) {
 			case SWT.CAP_SQUARE: capStyle = OS.kCGLineCapSquare; break;
 		}
 		OS.CGContextSetLineCap(handle, capStyle);
+	}
+	if ((state & DRAW_OFFSET) != 0) {
+		data.drawXOffset = data.drawYOffset = 0;
+		float scaling = data.transform != null ? data.transform[0] : 1;
+		if (scaling < 0) scaling = -scaling;
+		float strokeWidth = data.lineWidth * scaling;
+		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+			data.drawXOffset = 0.5f / scaling;
+		}
+		scaling = data.transform != null ? data.transform[3] : 1;
+		if (scaling < 0) scaling = -scaling;
+		strokeWidth = data.lineWidth * scaling;
+		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+			data.drawYOffset = 0.5f / scaling;
+		}
 	}
 }
 
@@ -739,8 +755,8 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	if (width == 0 || height == 0 || arcAngle == 0) return;
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	OS.CGContextTranslateCTM(handle, x + offset + width / 2f, y + offset + height / 2f);
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	OS.CGContextTranslateCTM(handle, x + xOffset + width / 2f, y + yOffset + height / 2f);
 	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
 	if (arcAngle < 0) {
 		OS.CGContextAddArc(handle, 0, 0, 1, -(startAngle + arcAngle) * (float)Compatibility.PI / 180,  -startAngle * (float)Compatibility.PI / 180, true);
@@ -922,9 +938,9 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 		return;
 	}
 	OS.CGContextBeginPath(handle);
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	OS.CGContextMoveToPoint(handle, x1 + offset, y1 + offset);
-	OS.CGContextAddLineToPoint(handle, x2 + offset, y2 + offset);
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	OS.CGContextMoveToPoint(handle, x1 + xOffset, y1 + yOffset);
+	OS.CGContextAddLineToPoint(handle, x2 + xOffset, y2 + yOffset);
 	OS.CGContextStrokePath(handle);
 	flush();
 }
@@ -964,8 +980,8 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	OS.CGContextTranslateCTM(handle, x + offset + width / 2f, y + offset + height / 2f);
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	OS.CGContextTranslateCTM(handle, x + xOffset + width / 2f, y + yOffset + height / 2f);
 	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
 	OS.CGContextMoveToPoint(handle, 1, 0);
 	OS.CGContextAddArc(handle, 0, 0, 1, 0, (float)(2 *Compatibility.PI), true);
@@ -999,8 +1015,8 @@ public void drawPath(Path path) {
 	if (data.updateClip) setCGClipping();
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	OS.CGContextTranslateCTM(handle, offset, offset);
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	OS.CGContextTranslateCTM(handle, xOffset, yOffset);
 	OS.CGContextAddPath(handle, path.handle);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
@@ -1059,10 +1075,11 @@ public void drawPolygon(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
 	if (data.updateClip) setCGClipping();
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	float[] points = new float[pointArray.length];
-	for (int i=0; i<points.length; i++) {
-		points[i] = pointArray[i] + offset;
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	float[] points = new float[(pointArray.length / 2) * 2];
+	for (int i=0; i<points.length; i+=2) {
+		points[i] = pointArray[i] + xOffset;
+		points[i+1] = pointArray[i+1] + yOffset;
 	}
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddLines(handle, points, points.length / 2);
@@ -1093,10 +1110,11 @@ public void drawPolyline(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	checkGC(DRAW);
 	if (data.updateClip) setCGClipping();
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	float[] points = new float[pointArray.length];
-	for (int i=0; i<points.length; i++) {
-		points[i] = pointArray[i] + offset;
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	float[] points = new float[(pointArray.length / 2) * 2];
+	for (int i=0; i<points.length; i+=2) {
+		points[i] = pointArray[i] + xOffset;
+		points[i+1] = pointArray[i+1] + yOffset;
 	}
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddLines(handle, points, points.length / 2);
@@ -1132,9 +1150,9 @@ public void drawRectangle(int x, int y, int width, int height) {
 		height = -height;
 	}
 	CGRect rect = new CGRect();
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	rect.x = x + offset;
-	rect.y = y + offset;
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	rect.x = x + xOffset;
+	rect.y = y + yOffset;
 	rect.width = width;
 	rect.height = height;
 	OS.CGContextStrokeRect(handle, rect);
@@ -1215,8 +1233,8 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	float fh = nh / nah2;
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
-	OS.CGContextTranslateCTM(handle, nx + offset, ny + offset);
+	float xOffset = data.drawXOffset, yOffset = data.drawYOffset;
+	OS.CGContextTranslateCTM(handle, nx + xOffset, ny + yOffset);
 	OS.CGContextScaleCTM(handle, naw2, nah2);
 	OS.CGContextMoveToPoint(handle, fw - 1, 0);
 	OS.CGContextAddArcToPoint(handle, 0, 0, 0, 1, 1);
@@ -2434,6 +2452,7 @@ void init(Drawable drawable, GCData data, int context) {
 	if (data.foreground != null) data.state &= ~(FOREGROUND | FOREGROUND_FILL);
 	if (data.background != null)  data.state &= ~BACKGROUND;
 	if (data.font != null) data.state &= ~FONT;
+	data.state &= ~DRAW_OFFSET;
 
 	Image image = data.image;
 	if (image != null) image.memGC = this;
@@ -2976,7 +2995,7 @@ public void setLineAttributes(LineAttributes attributes) {
 	int mask = 0;
 	float lineWidth = attributes.width;
 	if (lineWidth != data.lineWidth) {
-		mask |= LINE_WIDTH;
+		mask |= LINE_WIDTH | DRAW_OFFSET;
 	}
 	int lineStyle = attributes.style;
 	if (lineStyle != data.lineStyle) {
@@ -3222,7 +3241,7 @@ public void setLineWidth(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineWidth == lineWidth) return;
 	data.lineWidth = lineWidth;
-	data.state &= ~LINE_WIDTH;	
+	data.state &= ~(LINE_WIDTH | DRAW_OFFSET);	
 }
 
 int setString(String string, int flags) {
@@ -3397,6 +3416,7 @@ public void setTransform(Transform transform) {
 		data.backPattern = 0;
 		data.state &= ~BACKGROUND;
 	}
+	data.state &= ~DRAW_OFFSET;
 }
 
 /**
