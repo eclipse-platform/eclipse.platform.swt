@@ -6300,8 +6300,12 @@ void reset() {
 	super.redraw();
 }
 void resetCache(int firstLine, int count) {
+	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(firstLine, count);
 	renderer.calculateClientArea();
+	if (0 <= maxLineIndex && maxLineIndex < content.getLineCount()) {
+		renderer.calculate(maxLineIndex, 1);
+	}
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
 		if (topIndex > firstLine) {
