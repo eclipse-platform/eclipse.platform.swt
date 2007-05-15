@@ -14,6 +14,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -294,37 +295,35 @@ private void drag(Event dragEvent) {
 	String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 	Object oldValue = display.getData(key);
 	display.setData(key, new Boolean(true));
-	int imagelist = 0;
+	ImageList imagelist = null;
 	Image image = event.image;
 	if (image != null) {
-		imagelist = createImageList(image);
-		if (imagelist != 0) {
-			topControl = control.getShell();
-			OS.ImageList_BeginDrag(imagelist, 0, 0, 0);
-			Point location = topControl.getLocation();
-            /*
-            * Feature in Windows. When ImageList_DragEnter() is called,
-            * it takes a snapshot of the screen  If a drag is started
-            * when another window is in front, then the snapshot will
-            * contain part of the other window, causing pixel corruption.
-            * The fix is to force all paints to be delivered before
-            * calling ImageList_DragEnter().
-            */
-			if (OS.IsWinCE) {
-				OS.UpdateWindow (topControl.handle);
-			} else {
-				int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-				OS.RedrawWindow (topControl.handle, null, 0, flags);
-			}
-			OS.ImageList_DragEnter(topControl.handle, dragEvent.x - location.x, dragEvent.y - location.y);
+		imagelist = new ImageList(SWT.NONE);
+		imagelist.add(image);
+		topControl = control.getShell();
+		OS.ImageList_BeginDrag(imagelist.getHandle(), 0, 0, 0);
+		Point location = topControl.getLocation();
+        /*
+        * Feature in Windows. When ImageList_DragEnter() is called,
+        * it takes a snapshot of the screen  If a drag is started
+        * when another window is in front, then the snapshot will
+        * contain part of the other window, causing pixel corruption.
+        * The fix is to force all paints to be delivered before
+        * calling ImageList_DragEnter().
+        */
+		if (OS.IsWinCE) {
+			OS.UpdateWindow (topControl.handle);
+		} else {
+			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (topControl.handle, null, 0, flags);
 		}
+		OS.ImageList_DragEnter(topControl.handle, dragEvent.x - location.x, dragEvent.y - location.y);
 	}
 	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
-	if (imagelist != 0) {
+	if (imagelist != null) {
 		OS.ImageList_DragLeave(topControl.handle);
 		OS.ImageList_EndDrag();
-		OS.ImageList_Destroy(imagelist);
-		imagelist = 0;
+		imagelist.dispose();
 		topControl = null;
 	}
 	display.setData(key, oldValue);
@@ -343,60 +342,6 @@ private void drag(Event dragEvent) {
 	event.detail = operation;
 	notifyListeners(DND.DragEnd,event);
 	dataEffect = DND.DROP_NONE;
-}
-int createImageList(Image image) {
-	int flags = OS.ILC_MASK;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		flags |= OS.ILC_COLOR32;
-	} else {
-		int hDC = OS.GetDC (0);
-		int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
-		int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
-		OS.ReleaseDC (0, hDC);
-		int depth = bits * planes;
-		switch (depth) {
-			case 4: flags |= OS.ILC_COLOR4; break;
-			case 8: flags |= OS.ILC_COLOR8; break;
-			case 16: flags |= OS.ILC_COLOR16; break;
-			case 24: flags |= OS.ILC_COLOR24; break;
-			case 32: flags |= OS.ILC_COLOR32; break;
-			default: flags |= OS.ILC_COLOR; break;
-		}
-	}
-	if ((control.getStyle() & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
-	Rectangle bounds = image.getBounds();
-	int cx = bounds.width, cy = bounds.height;
-	int imageList = OS.ImageList_Create(cx, cy, flags, 0, 1);
-	int hImage = image.handle;
-	switch (image.type) {
-		case SWT.BITMAP: {
-			int background = control.getBackground().handle;
-			OS.ImageList_AddMasked(imageList, hImage, background);
-			break;
-		}
-		case SWT.ICON: {
-			int hDC = OS.GetDC(0);
-			int bitmap = OS.CreateCompatibleBitmap(hDC, cx, cy);
-			int hDC1 = OS.CreateCompatibleDC(hDC);
-			int hOldBitmap = OS.SelectObject(hDC1, bitmap);
-			int hIcon = OS.CopyImage(image.handle, OS.IMAGE_ICON, cx, cy, 0);
-			OS.DrawIconEx(hDC1, 0, 0, hIcon, 0, 0, 0, 0, OS.DI_NORMAL);
-			OS.DestroyIcon(hIcon);
-			OS.SelectObject(hDC1, hOldBitmap);
-			ImageData imageData = image.getImageData();
-			int background = imageData.transparentPixel;
-			OS.ImageList_AddMasked(imageList, bitmap, background);
-			OS.DeleteObject(bitmap);
-			OS.DeleteDC (hDC1);
-			OS.ReleaseDC (0, hDC);
-			break;
-		}
-		default: {
-			OS.ImageList_Destroy(imageList);
-			imageList = 0;
-		}
-	}
-	return imageList;
 }
 /* 
  * EnumFormatEtc([in] dwDirection, [out] ppenumFormatetc)

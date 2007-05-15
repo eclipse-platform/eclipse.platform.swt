@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,14 +8,14 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.internal;
 
 
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-class ImageList {
+public class ImageList {
 	int handle, style, refCount;
 	Image [] images;
 
@@ -72,7 +72,7 @@ public int add (Image image) {
 	return index;
 }
 
-int addRef() {
+public int addRef() {
 	return ++refCount;
 }
 
@@ -243,6 +243,37 @@ int copyWithAlpha (int hBitmap, int background, byte[] alphaData, int destWidth,
 	return memDib;
 }
 
+int createMaskFromAlpha (ImageData data, int destWidth, int destHeight) {
+	int srcWidth = data.width;
+	int srcHeight = data.height;
+	ImageData mask = ImageData.internal_new (srcWidth, srcHeight, 1,
+			new PaletteData(new RGB [] {new RGB (0, 0, 0), new RGB (0xff, 0xff, 0xff)}),
+			2, null, 1, null, null, -1, -1, -1, 0, 0, 0, 0);
+	int ap = 0;
+	for (int y = 0; y < mask.height; y++) {
+		for (int x = 0; x < mask.width; x++) {
+			mask.setPixel (x, y, (data.alphaData [ap++] & 0xff) <= 127 ? 1 : 0);
+		}
+	}
+	int hMask = OS.CreateBitmap (srcWidth, srcHeight, 1, 1, mask.data);
+	if (srcWidth != destWidth || srcHeight != destHeight) {
+		int hdc = OS.GetDC (0);
+		int hdc1 = OS.CreateCompatibleDC (hdc);
+		OS.SelectObject (hdc1, hMask);
+		int hdc2 = OS.CreateCompatibleDC (hdc);
+		int hMask2 = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
+		OS.SelectObject (hdc2, hMask2);
+		if (!OS.IsWinCE) OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);
+		OS.StretchBlt (hdc2, 0, 0, destWidth, destHeight, hdc1, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		OS.DeleteDC (hdc1);
+		OS.DeleteDC (hdc2);
+		OS.ReleaseDC (0, hdc);
+		OS.DeleteObject(hMask);
+		hMask = hMask2;
+	}
+	return hMask;
+}
+
 int createMask (int hBitmap, int destWidth, int destHeight, int background, int transparentPixel) {
 	BITMAP bm = new BITMAP ();
 	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
@@ -352,7 +383,7 @@ public void remove (int index) {
 	images [index] = null;
 }
 
-int removeRef() {
+public int removeRef() {
 	return --refCount;
 }
 
@@ -373,7 +404,7 @@ void set (int index, Image image, int count) {
 						hBitmap = copyWithAlpha (hImage, -1, data.alphaData, cx [0], cy [0]);
 					} else {
 						hBitmap = copyBitmap (hImage, cx [0], cy [0]);
-						hMask = Display.createMaskFromAlpha (data, cx [0], cy [0]);
+						hMask = createMaskFromAlpha (data, cx [0], cy [0]);
 					}
 					break;
 				case SWT.TRANSPARENCY_PIXEL:
