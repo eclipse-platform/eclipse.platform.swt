@@ -5283,11 +5283,12 @@ void handleTextChanged(TextChangedEvent event) {
 		int firstLineTop = getLinePixel(firstLine);
 		int newLastLineBottom = getLinePixel(lastLine + 1);
 		if (lastLineBottom != newLastLineBottom) {
-			scrollText(lastLineBottom, newLastLineBottom);
+			super.redraw();
 			if (wordWrap) setCaretLocation();
+		} else {
+			super.redraw(0, firstLineTop, clientAreaWidth, newLastLineBottom - firstLineTop, false);
+			redrawLinesBullet(renderer.redrawLines);
 		}
-		super.redraw(0, firstLineTop, clientAreaWidth, newLastLineBottom - firstLineTop, false);
-		redrawLinesBullet(renderer.redrawLines);
 	}
 	renderer.redrawLines = null;
 	// update selection/caret location after styles have been changed.
