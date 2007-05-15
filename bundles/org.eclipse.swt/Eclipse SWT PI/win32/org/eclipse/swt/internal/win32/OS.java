@@ -643,6 +643,7 @@ public class OS extends C {
 	public static final int GCS_COMPSTR = 0x8;
 	public static final int GCS_RESULTSTR = 0x800;
 	public static final int GDT_VALID = 0;
+	public static final int GET_FEATURE_FROM_PROCESS = 0x2;
 	public static final int GLPS_CLOSED = 1;
 	public static final int GLPS_OPENED = 2;
 	public static final int GM_ADVANCED = 2;
@@ -3160,6 +3161,7 @@ public static final native boolean CloseClipboard ();
 public static final native boolean CloseHandle (int /*long*/ hObject);
 public static final native int CloseThemeData (int /*long*/ hTheme);
 public static final native int CoCreateInstance (byte[] rclsid, int /*long*/ pUnkOuter, int dwClsContext, byte[] riid, int /*long*/[] ppv);
+public static final native int CoInternetIsFeatureEnabled (int FeatureEntry, int dwFlags);
 public static final native int CoInternetSetFeatureEnabled (int FeatureEntry, int dwFlags, boolean fEnable);
 public static final native int CombineRgn (int /*long*/ hrgnDest, int /*long*/ hrgnSrc1, int /*long*/ hrgnSrc2, int fnCombineMode);
 public static final native boolean CommandBar_AddAdornments (int /*long*/ hwndCB, int dwFlags, int dwReserved);

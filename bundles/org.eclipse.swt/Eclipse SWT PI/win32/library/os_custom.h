@@ -22,6 +22,7 @@
 #define BufferedPaintSetAlpha_LIB "uxtheme.dll"
 #define BeginBufferedPaint_LIB "uxtheme.dll"
 #define CloseThemeData_LIB "uxtheme.dll"
+#define CoInternetIsFeatureEnabled_LIB "urlmon.dll"
 #define CoInternetSetFeatureEnabled_LIB "urlmon.dll"
 #define CreateActCtxW_LIB "kernel32.dll"
 #define CreateActCtxA_LIB "kernel32.dll"

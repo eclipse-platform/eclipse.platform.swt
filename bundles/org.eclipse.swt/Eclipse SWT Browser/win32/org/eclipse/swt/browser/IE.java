@@ -32,8 +32,6 @@ class IE extends WebBrowser {
 	int globalDispatch;
 	String html;
 
-	static boolean Initialized;
-
 	static final int BeforeNavigate2 = 0xfa;
 	static final int CommandStateChange = 0x69;
 	static final int DocumentComplete = 0x103;
@@ -709,7 +707,16 @@ public boolean setText(String html) {
 	rgvarg[0] = new Variant(ABOUT_BLANK);
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
+	boolean oldValue = false;
+	if (!OS.IsWinCE) {
+		int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
+		oldValue = hResult == COM.S_OK;
+		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
+	}
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
+	if (!OS.IsWinCE) {
+		OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
+	}
 	rgvarg[0].dispose();
 	if (pVarResult == null) return false;
 	boolean result = pVarResult.getType() == OLE.VT_EMPTY;
@@ -740,7 +747,16 @@ public boolean setUrl(String url) {
 			rgvarg[0] = new Variant(ABOUT_BLANK);
 			int[] rgdispidNamedArgs = new int[1];
 			rgdispidNamedArgs[0] = rgdispid[1];
+			boolean oldValue = false;
+			if (!OS.IsWinCE) {
+				int hResult = OS.CoInternetIsFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.GET_FEATURE_FROM_PROCESS);
+				oldValue = hResult == COM.S_OK;
+				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, true);
+			}
 			auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
+			if (!OS.IsWinCE) {
+				OS.CoInternetSetFeatureEnabled(OS.FEATURE_DISABLE_NAVIGATION_SOUNDS, OS.SET_FEATURE_ON_PROCESS, oldValue);
+			}
 			rgvarg[0].dispose();
 		}
 		int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$

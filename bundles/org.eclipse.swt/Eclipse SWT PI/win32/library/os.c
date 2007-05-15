@@ -929,6 +929,34 @@ fail:
 }
 #endif
 
+#ifndef NO_CoInternetIsFeatureEnabled
+JNIEXPORT jint JNICALL OS_NATIVE(CoInternetIsFeatureEnabled)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CoInternetIsFeatureEnabled_FUNC);
+/*
+	rc = (jint)CoInternetIsFeatureEnabled(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!hm) hm = LoadLibrary(CoInternetIsFeatureEnabled_LIB);
+			if (hm) fp = GetProcAddress(hm, "CoInternetIsFeatureEnabled");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, CoInternetIsFeatureEnabled_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CoInternetSetFeatureEnabled
 JNIEXPORT jint JNICALL OS_NATIVE(CoInternetSetFeatureEnabled)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)

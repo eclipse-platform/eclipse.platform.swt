@@ -77,6 +77,7 @@ typedef enum {
 	CloseHandle_FUNC,
 	CloseThemeData_FUNC,
 	CoCreateInstance_FUNC,
+	CoInternetIsFeatureEnabled_FUNC,
 	CoInternetSetFeatureEnabled_FUNC,
 	CombineRgn_FUNC,
 	CommDlgExtendedError_FUNC,
