@@ -425,21 +425,14 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	
-	/* Get the HDC for the device */
-	Device device = data.device;
- 	int hDC = device.internal_new_GC(null);
- 	
+
  	/* Copy the bitmap area */
 	Rectangle rect = image.getBounds(); 	
-	int memHdc = OS.CreateCompatibleDC(hDC);
+	int memHdc = OS.CreateCompatibleDC(handle);
 	int hOldBitmap = OS.SelectObject(memHdc, image.handle);
 	OS.BitBlt(memHdc, 0, 0, rect.width, rect.height, handle, x, y, OS.SRCCOPY);
 	OS.SelectObject(memHdc, hOldBitmap);
 	OS.DeleteDC(memHdc);
-	
-	/* Release the HDC for the device */
-	device.internal_dispose_GC(hDC, null);
 }
 
 /**
