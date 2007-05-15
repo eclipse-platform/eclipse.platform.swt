@@ -6524,13 +6524,15 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
 						int gridWidth = linesVisible ? GRID_WIDTH : 0;
 						rect.left = headerRect.right - gridWidth;
+						HDITEM oldItem = new HDITEM ();
+						oldItem.mask = OS.HDI_WIDTH;
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, oldItem);
+						int deltaX = newItem.cxy - oldItem.cxy;
 						if (explorerTheme || (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem))) {
 							OS.InvalidateRect (handle, rect, true);
+							OS.OffsetRect (rect, deltaX, 0);
+							OS.InvalidateRect (handle, rect, true);
 						} else {
-							HDITEM oldItem = new HDITEM ();
-							oldItem.mask = OS.HDI_WIDTH;
-							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, oldItem);
-							int deltaX = newItem.cxy - oldItem.cxy;
 							int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 							OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 						}
