@@ -255,6 +255,7 @@ public Image(Device device, Image srcImage, int flag) {
 		alphaData = new byte[srcImage.alphaData.length];
 		System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 	}
+	createAlphaMask(width, height);
 
 	/* Create the new pixmap */
 	int /*long*/ pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), width, height, -1);
@@ -327,12 +328,6 @@ public Image(Device device, Image srcImage, int flag) {
 					line[offset] = line[offset+1] = line[offset+2] = intensity;
 				}
 				OS.memmove(pixels + (y * stride), line, stride);
-			}
-			transparentPixel = srcImage.transparentPixel;
-			alpha = srcImage.alpha;
-			if (srcImage.alphaData != null) {
-				alphaData = new byte[srcImage.alphaData.length];
-				System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
 			}
 			break;
 		}
@@ -568,28 +563,7 @@ public Image(Device device, String filename) {
 					}
 					OS.memmove(pixels + (y * stride), line, stride);
 				}
-				if (device.useXRender) {
-					mask = OS.gdk_pixmap_new(0, width, height, 8);
-					if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					GdkImage gdkImage = new GdkImage();
-					int /*long*/ imagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
-					if (imagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					OS.memmove(gdkImage, imagePtr);
-					if (gdkImage.bpl == width) {
-						OS.memmove(gdkImage.mem, alphaData, alphaData.length);
-					} else {
-						line = new byte[gdkImage.bpl];
-						for (int y = 0; y < height; y++) {
-							System.arraycopy(alphaData, width * y, line, 0, width);
-							OS.memmove(gdkImage.mem + (gdkImage.bpl * y), line, gdkImage.bpl);
-						}
-					}
-					int /*long*/ gc = OS.gdk_gc_new(mask);
-					if (gc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-					OS.gdk_draw_image(mask, gc, imagePtr, 0, 0, 0, 0, width, height);
-					OS.g_object_unref(imagePtr);
-					OS.g_object_unref(gc);
-				}
+				createAlphaMask(width, height);
 			}
 			int /*long*/ [] pixmap_return = new int /*long*/ [1];
 			OS.gdk_pixbuf_render_pixmap_and_mask(pixbuf, pixmap_return, null, 0);
@@ -602,6 +576,37 @@ public Image(Device device, String filename) {
 	} catch (SWTException e) {}
 	init(device, new ImageData(filename));
 	if (device.tracking) device.new_Object(this);
+}
+
+void createAlphaMask (int width, int height) {
+	if (device.useXRender && (alpha != -1 || alphaData != null)) {
+		mask = OS.gdk_pixmap_new(0, alpha != -1 ? 1 : width, alpha != -1 ? 1 : height, 8);
+		if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ gc = OS.gdk_gc_new(mask);
+		if (alpha != -1) {
+			GdkColor color = new GdkColor();
+			color.pixel = (alpha & 0xFF) << 8 | (alpha & 0xFF);
+			OS.gdk_gc_set_foreground(gc, color);
+			OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, 1, 1);
+		} else {
+			int /*long*/ imagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
+			if (imagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			GdkImage gdkImage = new GdkImage();
+			OS.memmove(gdkImage, imagePtr);
+			if (gdkImage.bpl == width) {
+				OS.memmove(gdkImage.mem, alphaData, alphaData.length);
+			} else {
+				byte[] line = new byte[gdkImage.bpl];
+				for (int y = 0; y < height; y++) {
+					System.arraycopy(alphaData, width * y, line, 0, width);
+					OS.memmove(gdkImage.mem + (gdkImage.bpl * y), line, gdkImage.bpl);
+				}
+			}
+			OS.gdk_draw_image(mask, gc, imagePtr, 0, 0, 0, 0, width, height);
+			OS.g_object_unref(imagePtr);
+		}		
+		OS.g_object_unref(gc);
+	}
 }
 
 /**
@@ -1046,34 +1051,7 @@ void init(Device device, ImageData image) {
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
 		}
-		if (device.useXRender && (alpha != -1 || alphaData != null)) {
-			mask = OS.gdk_pixmap_new(0, alpha != -1 ? 1 : width, alpha != -1 ? 1 : height, 8);
-			if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			int /*long*/ gc = OS.gdk_gc_new(mask);
-			if (alpha != -1) {
-				GdkColor color = new GdkColor();
-				color.pixel = (alpha & 0xFF) << 8 | (alpha & 0xFF);
-				OS.gdk_gc_set_foreground(gc, color);
-				OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, 1, 1);
-			} else {
-				int /*long*/ imagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
-				if (imagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				GdkImage gdkImage = new GdkImage();
-				OS.memmove(gdkImage, imagePtr);
-				if (gdkImage.bpl == width) {
-					OS.memmove(gdkImage.mem, alphaData, alphaData.length);
-				} else {
-					byte[] line = new byte[gdkImage.bpl];
-					for (int y = 0; y < height; y++) {
-						System.arraycopy(alphaData, width * y, line, 0, width);
-						OS.memmove(gdkImage.mem + (gdkImage.bpl * y), line, gdkImage.bpl);
-					}
-				}
-				OS.gdk_draw_image(mask, gc, imagePtr, 0, 0, 0, 0, width, height);
-				OS.g_object_unref(imagePtr);
-			}		
-			OS.g_object_unref(gc);
-		}
+		createAlphaMask(width, height);
 	}
 	this.pixmap = pixmap;
 }
