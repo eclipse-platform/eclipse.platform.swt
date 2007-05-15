@@ -413,9 +413,15 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						if (hooks (SWT.EraseItem)) {
 							RECT itemRect = item.getBounds (index, true, true, false, false, true, hDC);
 							itemRect.left -= EXPLORER_EXTRA;
-							itemRect.right += EXPLORER_EXTRA;
+							itemRect.right += EXPLORER_EXTRA + 1;
 							pClipRect.left = itemRect.left;
-							pClipRect.right = itemRect.right + 1;
+							pClipRect.right = itemRect.right;
+							if (count > 0 && hwndHeader != 0) {
+								HDITEM hdItem = new HDITEM ();
+								hdItem.mask = OS.HDI_WIDTH;
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+								pClipRect.right = Math.min (pClipRect.right, nmcd.left + hdItem.cxy);
+							}
 						}
 						RECT pRect = new RECT ();
 						OS.SetRect (pRect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
