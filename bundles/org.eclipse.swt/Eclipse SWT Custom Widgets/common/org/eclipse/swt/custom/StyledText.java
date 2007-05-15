@@ -7486,8 +7486,11 @@ public void setSelectionBackground (Color color) {
 /**
  * Sets the receiver's selection foreground color to the color specified
  * by the argument, or to the default system color for the control
- * if the argument is null.
- *
+ * if the argument is null. 
+ * <p>
+ * Note that this is a <em>HINT</em>. Some platforms do not allow the application
+ * to change the selection foreground color.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
