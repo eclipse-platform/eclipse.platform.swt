@@ -620,42 +620,45 @@ int getVisibleRegion (int control, boolean clipChildren) {
 }
 
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
-    switch (inRequest) {
-		case OS.kHMSupplyContent: {
-			short [] contentProvided = { OS.kHMContentNotProvided };
-			if (toolTipText != null && toolTipText.length () != 0) {
-				char [] buffer = new char [toolTipText.length ()];
-				toolTipText.getChars (0, buffer.length, buffer, 0);
-				int length = fixMnemonic (buffer);
-				if (display.helpString != 0) OS.CFRelease (display.helpString);
-				display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
-				HMHelpContentRec helpContent = new HMHelpContentRec ();
-				OS.memmove (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
-				helpContent.version = OS.kMacHelpVersion;
-				helpContent.tagSide = (short) OS.kHMDefaultSide;
-				display.helpWidget = null;
-				helpContent.absHotRect_left = (short) 0;
-				helpContent.absHotRect_top = (short) 0;
-				helpContent.absHotRect_right = (short) 0;
-				helpContent.absHotRect_bottom = (short) 0;
-				helpContent.content0_contentType = OS.kHMCFStringContent;
-				helpContent.content0_tagCFString = display.helpString;
-				helpContent.content1_contentType = OS.kHMCFStringContent;
-				helpContent.content1_tagCFString = display.helpString;
-				OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
-				contentProvided [0] = OS.kHMContentProvided;
+	if (parent.toolTipText == null) {
+	    switch (inRequest) {
+			case OS.kHMSupplyContent: {
+				short [] contentProvided = { OS.kHMContentNotProvided };
+				if (toolTipText != null && toolTipText.length () != 0) {
+					char [] buffer = new char [toolTipText.length ()];
+					toolTipText.getChars (0, buffer.length, buffer, 0);
+					int length = fixMnemonic (buffer);
+					if (display.helpString != 0) OS.CFRelease (display.helpString);
+					display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
+					HMHelpContentRec helpContent = new HMHelpContentRec ();
+					OS.memmove (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
+					helpContent.version = OS.kMacHelpVersion;
+					helpContent.tagSide = (short) OS.kHMDefaultSide;
+					display.helpWidget = null;
+					helpContent.absHotRect_left = (short) 0;
+					helpContent.absHotRect_top = (short) 0;
+					helpContent.absHotRect_right = (short) 0;
+					helpContent.absHotRect_bottom = (short) 0;
+					helpContent.content0_contentType = OS.kHMCFStringContent;
+					helpContent.content0_tagCFString = display.helpString;
+					helpContent.content1_contentType = OS.kHMCFStringContent;
+					helpContent.content1_tagCFString = display.helpString;
+					OS.memmove (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
+					contentProvided [0] = OS.kHMContentProvided;
+				}
+				OS.memmove (outContentProvided, contentProvided, 2);
+				break;
 			}
-			OS.memmove (outContentProvided, contentProvided, 2);
-			break;
-		}
-		case OS.kHMDisposeContent: {
-			if (display.helpString != 0) OS.CFRelease (display.helpString);
-			display.helpWidget = null;
-			display.helpString = 0;
-			break;
-		}
-    }
-	return OS.noErr;
+			case OS.kHMDisposeContent: {
+				if (display.helpString != 0) OS.CFRelease (display.helpString);
+				display.helpWidget = null;
+				display.helpString = 0;
+				break;
+			}
+	    }
+		return OS.noErr;
+	}
+	return parent.helpProc (inControl, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
 }
 
 void hookEvents () {
