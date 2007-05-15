@@ -914,7 +914,13 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 }
 
 LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
-	int hDC = nmcd.hdc;
+	/*
+	* Even when custom draw is being ignored, the font needs
+	* to be selected into the HDC so that the item bounds are
+	* measured correctly.
+	*/
+	//if (ignoreCustomDraw) return null;
+	if (nmcd.left == nmcd.right) return new LRESULT (OS.CDRF_DODEFAULT);
 	TreeItem item = getItem (nmcd);
 	/*
 	* Feature in Windows.  When a new tree item is inserted
@@ -927,11 +933,12 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	* COMCTL32.DLL,
 	*/
 	if (item == null) return null;
+	int hDC = nmcd.hdc;
 	int index = hwndHeader != 0 ? OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) : 0;
 	int hFont = item.cellFont != null ? item.cellFont [index] : -1;
 	if (hFont == -1) hFont = item.font;
 	if (hFont != -1) OS.SelectObject (hDC, hFont);
-	if (ignoreCustomDraw || (nmcd.left == nmcd.right)) {
+	if (ignoreCustomDraw) {
 		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
 	}
 	int count = 0;
