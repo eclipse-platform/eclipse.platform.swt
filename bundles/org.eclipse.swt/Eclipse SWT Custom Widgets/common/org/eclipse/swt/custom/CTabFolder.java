@@ -2225,6 +2225,7 @@ boolean onPageTraversal(Event event) {
 	return true;
 }
 void onPaint(Event event) {
+	if (inDispose) return;
 	Font font = getFont();
 	if (oldFont == null || !oldFont.equals(font)) {
 		// handle case where  default font changes
