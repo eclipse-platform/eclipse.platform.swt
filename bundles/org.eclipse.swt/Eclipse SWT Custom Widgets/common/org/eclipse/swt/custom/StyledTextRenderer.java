@@ -592,7 +592,7 @@ int[] getRanges(int start, int length) {
 		newRanges[0] = start;
 	}
 	if (end < newRanges[newRanges.length - 2] + newRanges[newRanges.length - 1] - 1) {
-		newRanges[newRanges.length - 1] = end - newRanges[newRanges.length - 2];
+		newRanges[newRanges.length - 1] = end - newRanges[newRanges.length - 2] + 1;
 	}
 	return newRanges;
 }
