@@ -194,7 +194,7 @@ void _addListener (int eventType, Listener listener) {
 				* explicitly hide the scroll bar.
 				*/
 				int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
-				if (count != 0) {
+				if (count != 0 && (bits & OS.TVS_NOHSCROLL) != 0) {
 					if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
 				}
 			}
