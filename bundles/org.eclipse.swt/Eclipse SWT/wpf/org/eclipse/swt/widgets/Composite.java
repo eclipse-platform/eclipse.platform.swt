@@ -890,6 +890,10 @@ int setBounds (int x, int y, int width, int height, int flags) {
 	return result;
 }
 
+void setClipping () {
+	OS.UIElement_ClipToBounds (topHandle (), true);
+}
+
 public boolean setFocus () {
 	checkWidget();
 	Control [] children = _getChildren ();

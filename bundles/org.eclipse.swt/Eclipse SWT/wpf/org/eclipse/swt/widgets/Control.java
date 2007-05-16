@@ -599,7 +599,7 @@ void createWidget () {
 }
 
 void setClipping () {
-	OS.UIElement_ClipToBounds (topHandle (), true);
+	//accept default clipping
 }
 
 int defaultBackground () {
