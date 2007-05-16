@@ -91,6 +91,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(ApplicationCommands_1Undo)
 }
 #endif
 
+#ifndef NO_Application_1Current
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Application_1Current)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Application_1Current)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Application_1Current_FUNC);
+	rc = (jint)TO_HANDLE(Application::Current);
+	OS_NATIVE_EXIT(env, that, Application_1Current_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Application_1Dispatcher
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Application_1Dispatcher)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(Application_1Dispatcher)
@@ -101,6 +114,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(Application_1Dispatcher)
 	rc = (jint)TO_HANDLE(((Application ^)TO_OBJECT(arg0))->Dispatcher);
 	OS_NATIVE_EXIT(env, that, Application_1Dispatcher_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_Application_1Resources__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Application_1Resources__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Application_1Resources__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Application_1Resources__I_FUNC);
+	rc = (jint)TO_HANDLE(((Application^)TO_OBJECT(arg0))->Resources);
+	OS_NATIVE_EXIT(env, that, Application_1Resources__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Application_1Resources__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Application_1Resources__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Application_1Resources__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Application_1Resources__II_FUNC);
+	((Application^)TO_OBJECT(arg0))->Resources = ((ResourceDictionary^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Application_1Resources__II_FUNC);
 }
 #endif
 
@@ -3324,6 +3361,19 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(File_1Exists)
 	OS_NATIVE_ENTER(env, that, File_1Exists_FUNC);
 	rc = (jboolean)System::IO::File::Exists((String^)TO_OBJECT(arg0));
 	OS_NATIVE_EXIT(env, that, File_1Exists_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_File_1ReadAllText
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(File_1ReadAllText)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(File_1ReadAllText)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, File_1ReadAllText_FUNC);
+	rc = (jint)TO_HANDLE(System::IO::File::ReadAllText((String^)TO_OBJECT(arg0)));
+	OS_NATIVE_EXIT(env, that, File_1ReadAllText_FUNC);
 	return rc;
 }
 #endif
