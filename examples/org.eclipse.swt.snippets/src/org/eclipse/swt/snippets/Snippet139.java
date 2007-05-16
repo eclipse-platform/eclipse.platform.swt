@@ -61,7 +61,7 @@ static ImageData rotate(ImageData srcData, int direction) {
 		}
 	}
 	// destBytesPerLine is used as scanlinePad to ensure that no padding is required
-	return new ImageData(width, height, srcData.depth, srcData.palette, destBytesPerLine, newData);
+	return new ImageData(width, height, srcData.depth, srcData.palette, srcData.scanlinePad, newData);
 }
 static ImageData flip(ImageData srcData, boolean vertical) {
 	int bytesPerPixel = srcData.bytesPerLine / srcData.width;
@@ -83,7 +83,7 @@ static ImageData flip(ImageData srcData, boolean vertical) {
 		}
 	}
 	// destBytesPerLine is used as scanlinePad to ensure that no padding is required
-	return new ImageData(srcData.width, srcData.height, srcData.depth, srcData.palette, destBytesPerLine, newData);
+	return new ImageData(srcData.width, srcData.height, srcData.depth, srcData.palette, srcData.scanlinePad, newData);
 }
 
 public static void main(String[] args) {
