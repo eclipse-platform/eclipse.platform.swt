@@ -21,6 +21,10 @@ import org.eclipse.swt.internal.gdip.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * <p>
+ * This class requires the operating system's advanced graphics subsystem
+ * which may not be available on some platforms.
+ * </p>
  * 
  * @since 3.1
  */
@@ -40,11 +44,19 @@ public class Transform extends Resource {
 	
 /**
  * Constructs a new identity Transform.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the Transform
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
@@ -59,6 +71,11 @@ public Transform (Device device) {
 /**
  * Constructs a new Transform given an array of elements that represent the 
  * matrix that describes the transformation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the Transform
  * @param elements an array of floats that describe the transformation matrix
@@ -66,6 +83,9 @@ public Transform (Device device) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device, or the elements array is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the elements array is too small to hold the matrix values</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
@@ -80,6 +100,11 @@ public Transform(Device device, float[] elements) {
 /**
  * Constructs a new Transform given all of the elements that represent the 
  * matrix that describes the transformation.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the Transform
  * @param m11 the first element of the first row of the matrix
@@ -91,6 +116,9 @@ public Transform(Device device, float[] elements) {
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>

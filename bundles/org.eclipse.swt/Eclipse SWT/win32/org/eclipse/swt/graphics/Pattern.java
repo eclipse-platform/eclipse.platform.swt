@@ -22,6 +22,10 @@ import org.eclipse.swt.internal.win32.*;
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
+ * <p>
+ * This class requires the operating system's advanced graphics subsystem
+ * which may not be available on some platforms.
+ * </p>
  * 
  * @since 3.1
  */
@@ -42,6 +46,11 @@ public class Pattern extends Resource {
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
  * pattern will cause the image to be tiled over the resulting area.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the pattern
  * @param image the image that the pattern will draw
@@ -49,6 +58,9 @@ public class Pattern extends Resource {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, or the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
@@ -81,6 +93,11 @@ public Pattern(Device device, Image image) {
  * Constructs a new Pattern that represents a linear, two color
  * gradient. Drawing with the pattern will cause the resulting area to be
  * tiled with the gradient specified by the arguments.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the pattern
  * @param x1 the x coordinate of the starting corner of the gradient
@@ -94,6 +111,9 @@ public Pattern(Device device, Image image) {
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
  *                              or if either color1 or color2 is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
@@ -109,6 +129,11 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  * Constructs a new Pattern that represents a linear, two color
  * gradient. Drawing with the pattern will cause the resulting area to be
  * tiled with the gradient specified by the arguments.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * 
  * @param device the device on which to allocate the pattern
  * @param x1 the x coordinate of the starting corner of the gradient
@@ -124,6 +149,9 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
  *                              or if either color1 or color2 is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
