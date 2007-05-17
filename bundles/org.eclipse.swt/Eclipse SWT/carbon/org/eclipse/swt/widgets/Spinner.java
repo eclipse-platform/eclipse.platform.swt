@@ -273,15 +273,7 @@ public void copy () {
 	char [] buffer= new char [range.length];
 	OS.CFStringGetCharacters (ptr [0], range, buffer);
 	OS.CFRelease (ptr [0]);
-	copy (buffer);
-}
-
-void copy (char [] buffer) {
-	if (buffer.length == 0) return;
-	OS.ClearCurrentScrap ();
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
+	copyToClipboard (buffer);
 }
 
 void createHandle () {
@@ -328,7 +320,7 @@ public void cut () {
 	if (selection [0] == selection [1]) return;
 	char [] buffer = setText ("", selection [0], selection [1], true);
 	if (buffer != null) {
-		copy (buffer);
+		copyToClipboard (buffer);
 	}
 }
 
@@ -610,15 +602,10 @@ int kEventUnicodeKeyPressed (int nextHandler, int theEvent, int userData) {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	int [] size = new int [1];
-	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) != OS.noErr || size [0] == 0) return;
-	char [] buffer = new char [size [0] / 2];
-	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) != OS.noErr) return;
+	String text = getClipboardText ();
 	short [] selection = new short [2];
 	if (OS.GetControlData (textHandle, (short)OS.kControlEntireControl, OS.kControlEditTextSelectionTag, 4, selection, null) != OS.noErr) return;
-	setText (new String (buffer), selection [0], selection [1], true);
+	setText (text, selection [0], selection [1], true);
 }
 
 public void redraw () {

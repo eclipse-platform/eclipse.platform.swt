@@ -438,15 +438,7 @@ public void copy () {
 	checkWidget ();
 	Point selection = getSelection ();
 	if (selection.x == selection.y) return;
-	copy (getText (selection.x, selection.y));
-}
-
-void copy (char [] buffer) {
-	if (buffer.length == 0) return;
-	OS.ClearCurrentScrap ();
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
+	copyToClipboard (getText (selection.x, selection.y));
 }
 
 void createHandle () {
@@ -517,7 +509,7 @@ public void cut () {
 	}
 	char [] buffer = new char [newText.length ()];
 	newText.getChars (0, buffer.length, buffer, 0);
-	copy (buffer);
+	copyToClipboard (buffer);
 	setText (leftText + newText + rightText, false);
 	start += newText.length ();
 	setSelection (new Point (start, start));
@@ -932,16 +924,6 @@ public int indexOf (String string, int start) {
 		}
 	}
 	return -1;
-}
-
-String getClipboardText () {
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	int [] size = new int [1];
-	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) != OS.noErr || size [0] == 0) return "";
-	char [] buffer = new char [size [0] / 2];
-	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) != OS.noErr) return "";
-	return new String (buffer);
 }
 
 int getCharCount () {

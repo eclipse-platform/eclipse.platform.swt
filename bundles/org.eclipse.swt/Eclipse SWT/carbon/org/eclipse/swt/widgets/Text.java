@@ -457,18 +457,10 @@ public void copy () {
 	if (txnObject == 0) {
 		Point selection = getSelection ();
 		if (selection.x == selection.y) return;
-		copy (getEditText (selection.x, selection.y - 1));	
+		copyToClipboard (getEditText (selection.x, selection.y - 1));	
 	} else {
 		OS.TXNCopy (txnObject);
 	}
-}
-
-void copy (char [] buffer) {
-	if (buffer.length == 0) return;
-	OS.ClearCurrentScrap ();
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
 }
 
 void createHandle () {
@@ -598,7 +590,7 @@ public void cut () {
 	if (cut) {
 		if (txnObject == 0) {
 			if (oldText == null) oldText = getEditText (oldSelection.x, oldSelection.y - 1);
-			copy (oldText);
+			copyToClipboard (oldText);
 			insertEditText ("");
 		} else {
 			OS.TXNCut (txnObject);
@@ -741,16 +733,6 @@ public int getCharCount () {
 		return length;
 	}
 	return OS.TXNDataSize (txnObject) / 2;
-}
-
-String getClipboardText () {
-	int [] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	int [] size = new int [1];
-	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) != OS.noErr || size [0] == 0) return "";
-	char [] buffer = new char [size [0] / 2];
-	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) != OS.noErr) return "";
-	return new String (buffer);
 }
 
 /**

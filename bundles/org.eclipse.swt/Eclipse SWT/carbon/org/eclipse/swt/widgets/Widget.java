@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
@@ -381,6 +382,14 @@ int accessibilityProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+void copyToClipboard (char [] buffer) {
+	if (buffer.length == 0) return;
+	OS.ClearCurrentScrap ();
+	int [] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
+}
+
 int createCIcon (Image image) {
 	int imageHandle = image.handle;
 	int width = OS.CGImageGetWidth(imageHandle);
@@ -677,6 +686,41 @@ int fixMnemonic (char [] buffer) {
 		}
 	}
 	return j;
+}
+
+String getClipboardText () {
+	String result = "";
+	int [] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	int [] size = new int [1];
+	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) == OS.noErr) {
+		if (size [0] != 0) {
+			char [] buffer = new char [size [0] / 2];
+			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) == OS.noErr) {
+				result = new String (buffer);
+			}
+		}
+	} else if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeText, size) == OS.noErr) {
+		if (size [0] != 0) {
+			byte [] buffer = new byte [size [0]];
+			if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeText, size, buffer) == OS.noErr) {
+				int encoding = OS.CFStringGetSystemEncoding();
+				int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+				if (cfstring != 0) {
+					int length = OS.CFStringGetLength(cfstring);
+					if (length != 0) {
+						char[] chars = new char[length];
+						CFRange range = new CFRange();
+						range.length = length;
+						OS.CFStringGetCharacters(cfstring, range, chars);
+						result = new String(chars);
+					}
+					OS.CFRelease(cfstring);
+				}
+			}
+		}
+	}
+	return result;
 }
 
 Rectangle getControlBounds (int control) {
