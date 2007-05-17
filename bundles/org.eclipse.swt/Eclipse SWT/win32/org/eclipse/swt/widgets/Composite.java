@@ -1123,8 +1123,16 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
 	if (hooks (SWT.Paint)) {
 
-		/* Use the buffered paint when available */
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0) && (style & SWT.DOUBLE_BUFFERED) != 0 && (style & SWT.NO_MERGE_PAINTS) == 0) {
+		/* Use the buffered paint when possible */
+		boolean bufferedPaint = false;
+		if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if ((style & (SWT.NO_MERGE_PAINTS | SWT.RIGHT_TO_LEFT)) == 0) {
+					bufferedPaint = true;
+				}
+			}
+		}
+		if (bufferedPaint) {
 			int hDC = OS.BeginPaint (handle, ps);
 			int width = ps.right - ps.left;
 			int height = ps.bottom - ps.top;
