@@ -192,7 +192,8 @@ public DropTarget(Control control, int style) {
 			int delay = DRAGOVER_HYSTERESIS;
 			if (time < dragOverStart) {
 				delay = (int)(dragOverStart - time);
-			} else {	
+			} else {
+				dragOverEvent.time += DRAGOVER_HYSTERESIS;
 				int allowedOperations = dragOverEvent.operations;
 				TransferData[] allowedTypes = dragOverEvent.dataTypes;
 				//pass a copy of data types in to listeners in case application modifies it
@@ -203,7 +204,7 @@ public DropTarget(Control control, int style) {
 				event.widget = dragOverEvent.widget;
 				event.x = dragOverEvent.x;
 				event.y = dragOverEvent.y;
-				event.time = (int)time;
+				event.time = dragOverEvent.time;
 				event.feedback = DND.FEEDBACK_SELECT;
 				event.dataTypes = dataTypes;
 				event.dataType = selectedDataType;
@@ -747,6 +748,7 @@ void updateDragOverHover(long delay, DNDEvent event) {
 	System.arraycopy( event.dataTypes, 0, dataTypes, 0, dataTypes.length);
 	dragOverEvent.dataTypes  = dataTypes;
 	dragOverEvent.operations = event.operations;
+	dragOverEvent.time = event.time;
 }
 
 }
