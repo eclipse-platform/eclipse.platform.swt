@@ -358,8 +358,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
 	if (txnObject == 0) {
+		if ((style & SWT.RIGHT) != 0) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
+		}
 		Rect rect = new Rect ();
 		OS.GetBestControlRect (handle, rect, null);
+		if ((style & SWT.RIGHT) != 0) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {0});
+		}
 		width = rect.right - rect.left;
 		height = rect.bottom - rect.top;
 		if ((style & SWT.SEARCH) != 0) {
@@ -477,7 +483,14 @@ void createHandle () {
 			OS.HIViewSetVisible (scrolledHandle, true);
 		}
 		int iFrameOptions = OS.kTXNDontDrawCaretWhenInactiveMask | OS.kTXNMonostyledTextMask;
-		if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
+		/*
+		* Bug in the Macintosh.  For some reason a single line text does not
+		* display properly when it is right aligned.  The fix is to use a
+		* multi line text when right aligned.
+		*/
+		if ((style & SWT.RIGHT) == 0) {
+			if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
+		}
 		if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
 		OS.HITextViewCreate (null, 0, iFrameOptions, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
@@ -525,7 +538,14 @@ void createHandle () {
 		if ((style & SWT.SEARCH) != 0 && display.smallFonts) {
 			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlSizeTag, 2, new short [] {OS.kControlSizeSmall});
 		}
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
+		/*
+		* Bug in the Macintosh.  For some reason a single line text does not
+		* display selection properly when it is right aligned.  The fix is to use a
+		* multi line text when right aligned.
+		*/
+		if ((style & SWT.RIGHT) == 0) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextSingleLineTag, 1, new byte [] {1});
+		}
 		if ((style & SWT.READ_ONLY) != 0) {
 			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlEditTextLockedTag, 1, new byte [] {1});
 		}
