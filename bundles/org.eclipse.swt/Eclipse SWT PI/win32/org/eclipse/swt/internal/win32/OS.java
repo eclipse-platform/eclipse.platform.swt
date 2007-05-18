@@ -632,6 +632,7 @@ public class OS extends C {
 	public static final int FEATURE_DISABLE_NAVIGATION_SOUNDS = 21;
 	public static final int FILE_ATTRIBUTE_NORMAL = 0x00000080; 
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
+	public static final int FNERR_BUFFERTOOSMALL = 0x3003;
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
 	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
 	public static final int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;

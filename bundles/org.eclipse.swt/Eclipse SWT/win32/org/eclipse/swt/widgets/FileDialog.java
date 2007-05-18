@@ -38,6 +38,7 @@ public class FileDialog extends Dialog {
 	String filterPath = "", fileName = "";
 	static final String FILTER = "*.*";
 	static int BUFFER_SIZE = 1024 * 32;
+	static boolean USE_HOOK;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -247,7 +248,7 @@ public String open () {
 	Callback callback = null;
 	if ((style & SWT.MULTI) != 0) {
 		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER;
-		if (!OS.IsWinCE) {
+		if (!OS.IsWinCE && USE_HOOK) {
 			callback = new Callback (this, "OFNHookProc", 4); //$NON-NLS-1$
 			int lpfnHook = callback.getAddress ();
 			if (lpfnHook == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -303,9 +304,14 @@ public String open () {
 	* file name, use an empty file name and open it again.
 	*/
 	boolean success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
-	if (OS.CommDlgExtendedError () == OS.FNERR_INVALIDFILENAME) {
-		OS.MoveMemory (lpstrFile, new TCHAR (0, "", true), TCHAR.sizeof);
-		success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
+	switch (OS.CommDlgExtendedError ()) {
+		case OS.FNERR_INVALIDFILENAME:
+			OS.MoveMemory (lpstrFile, new TCHAR (0, "", true), TCHAR.sizeof);
+			success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
+			break;
+		case OS.FNERR_BUFFERTOOSMALL: 
+			USE_HOOK = true;
+			break;
 	}
 	display.runMessagesInIdle = oldRunMessagesInIdle;
 	
