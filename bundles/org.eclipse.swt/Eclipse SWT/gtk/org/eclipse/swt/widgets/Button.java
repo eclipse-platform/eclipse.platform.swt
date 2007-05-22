@@ -555,7 +555,7 @@ void _setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	/* Aligmennt not honoured when image and text are visbible */
+	/* Alignment not honoured when image and text are visible */
 	boolean bothVisible = OS.GTK_WIDGET_VISIBLE (labelHandle) && OS.GTK_WIDGET_VISIBLE (imageHandle);
 	if (bothVisible) {
 		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
