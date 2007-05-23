@@ -1331,7 +1331,28 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 					int index = indexOf (sortColumn);
 					if (index != -1) {
 						int top = nmcd.top;
-						int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
+						/*
+						* Bug in Windows.  For some reason, during a collapse,
+						* when TVM_GETNEXTITEM is sent with TVGN_LASTVISIBLE
+						* and the collapse causes the item being collapsed
+						* to become the last visible item in the tree, the
+						* message takes a long time to process.  In order for
+						* the slowness to happen, the children of the item
+						* must have children.  Times of up to 11 seconds have
+						* been observed with 23 children, each having one
+						* child.  The fix is to use the bottom partially
+						* visible item rather than the last possible item
+						* that could be visible.
+						* 
+						* NOTE: This problem only happens on Vista during
+						* WM_NOTIFY with NM_CUSTOMDRAW and CDDS_POSTPAINT.
+						*/
+						int hItem = 0;
+						if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+							hItem = getBottomItem ();
+						} else {
+							hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
+						}
 						if (hItem != 0) {
 							RECT rect = new RECT ();
 							rect.left = hItem;
@@ -1368,7 +1389,28 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 			}
 			int height = 0;
 			RECT rect = new RECT ();
-			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
+			/*
+			* Bug in Windows.  For some reason, during a collapse,
+			* when TVM_GETNEXTITEM is sent with TVGN_LASTVISIBLE
+			* and the collapse causes the item being collapsed
+			* to become the last visible item in the tree, the
+			* message takes a long time to process.  In order for
+			* the slowness to happen, the children of the item
+			* must have children.  Times of up to 11 seconds have
+			* been observed with 23 children, each having one
+			* child.  The fix is to use the bottom partially
+			* visible item rather than the last possible item
+			* that could be visible.
+			* 
+			* NOTE: This problem only happens on Vista during
+			* WM_NOTIFY with NM_CUSTOMDRAW and CDDS_POSTPAINT.
+			*/
+			int hItem = 0;
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				hItem = getBottomItem ();
+			} else {
+				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
+			}
 			if (hItem != 0) {
 				rect.left = hItem;
 				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
@@ -2755,6 +2797,19 @@ public boolean getHeaderVisible () {
 Point getImageSize () {
 	if (imageList != null) return imageList.getImageSize ();
 	return new Point (0, getItemHeight ());
+}
+
+int getBottomItem () {
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+	if (hItem == 0) return 0;
+	int index = 0, count = OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0);
+	while (index < count) {
+		int hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+		if (hNextItem == 0) return hItem;
+		hItem = hNextItem;
+		index++;
+	}
+	return hItem;
 }
 
 /**
