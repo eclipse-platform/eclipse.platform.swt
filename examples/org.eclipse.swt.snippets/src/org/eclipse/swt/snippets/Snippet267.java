@@ -21,8 +21,8 @@ import org.mozilla.interfaces.*;
  * Browser example snippet: Toggle a Mozilla Browser between Design mode and View mode.
  * 
  * IMPORTANT: For this snippet to work properly all of the requirements for running a
- * Mozilla-based Browser instance listed in http://www.eclipse.org/swt/faq.php#howusemozilla
- * must be satisfied.
+ * Mozilla-based Browser instance in a stand-alone application listed in
+ * http://www.eclipse.org/swt/faq.php#howusejavaxpcom must be satisfied.
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
