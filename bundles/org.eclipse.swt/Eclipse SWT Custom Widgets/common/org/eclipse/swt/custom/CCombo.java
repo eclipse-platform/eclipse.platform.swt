@@ -1255,6 +1255,7 @@ public void setEnabled (boolean enabled) {
 }
 public boolean setFocus () {
 	checkWidget();
+	if (isFocusControl ()) return true;
 	return text.setFocus ();
 }
 public void setFont (Font font) {

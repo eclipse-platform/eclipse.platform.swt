@@ -76,7 +76,7 @@ public class TableEditor extends ControlEditor {
 	int column = -1;
 	ControlListener columnListener;
 	Runnable timer;
-	static final int TIMEOUT = 500;
+	static final int TIMEOUT = 1500;
 /**
 * Creates a TableEditor for the specified Table.
 *

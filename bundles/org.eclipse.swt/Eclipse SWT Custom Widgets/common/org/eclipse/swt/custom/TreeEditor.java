@@ -75,7 +75,7 @@ public class TreeEditor extends ControlEditor {
 	ControlListener columnListener;
 	TreeListener treeListener;
 	Runnable timer;
-	static final int TIMEOUT = 500;
+	static final int TIMEOUT = 1500;
 	
 /**
 * Creates a TreeEditor for the specified Tree.
