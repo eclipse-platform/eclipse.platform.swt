@@ -3615,7 +3615,47 @@ boolean isItemSelected (NMTVCUSTOMDRAW nmcd) {
 	}
 	return selected;
 }
-	
+
+void redrawSelection () {
+	if ((style & SWT.SINGLE) != 0) {
+		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+		if (hItem != 0) {
+			RECT rect = new RECT ();
+			rect.left = hItem;
+			OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect);
+			OS.InvalidateRect (handle, rect, true);
+		}
+	} else {
+		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+		if (hItem != 0) {
+			TVITEM tvItem = null;
+			if (OS.IsWinCE) {
+				tvItem = new TVITEM ();
+				tvItem.mask = OS.TVIF_STATE;
+			}
+			RECT rect = new RECT ();
+			int index = 0, count = OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0);
+			while (index < count && hItem != 0) {
+				int state = 0;
+				if (OS.IsWinCE) {
+					tvItem.hItem = hItem;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					state = tvItem.state;
+				} else {
+					state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
+				}
+				if ((state & OS.TVIS_SELECTED) != 0) {
+					rect.left = hItem;
+					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect);
+					OS.InvalidateRect (handle, rect, true);
+				}
+				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+				index++;
+			}
+		}
+	}
+}
+
 void register () {
 	super.register ();
 	if (hwndParent != 0) display.addControl (hwndParent, this);
@@ -5619,26 +5659,27 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	* with alpha is expanded or collapsed, the area where
 	* the image is drawn is not erased before it is drawn.
 	* This means that the image gets darker each time.
-	* The fix is to redraw the tree.
-	*/
-	if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6) {
-		if (imageList != null) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-				OS.InvalidateRect (handle, null, true);
-			}
-		}
-	}
-	if ((style & SWT.SINGLE) != 0) return result;
-	/*
+	* The fix is to redraw the selection.
+	* 
 	* Feature in Windows.  When multiple item have
 	* the TVIS_SELECTED state, Windows redraws only
 	* the focused item in the color used to show the
 	* selection when the tree loses or gains focus.
-	* The fix is to force Windows to redraw all the
-	* visible items when focus is gained or lost.
+	* The fix is to force Windows to redraw the
+	* selection when focus is gained or lost.
 	*/
-	OS.InvalidateRect (handle, null, false);
+	boolean redraw = (style & SWT.MULTI) != 0;
+	if (!redraw) {
+		if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6) {
+			if (imageList != null) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+					redraw = true;
+				}
+			}
+		}
+	}
+	if (redraw) redrawSelection ();
 	return result;
 }
 
@@ -6269,32 +6310,33 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
-	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
+	LRESULT result = super.WM_SETFOCUS (wParam, lParam);	
 	/*
 	* Bug in Windows.  When a tree item that has an image
 	* with alpha is expanded or collapsed, the area where
 	* the image is drawn is not erased before it is drawn.
 	* This means that the image gets darker each time.
-	* The fix is to redraw the tree.
-	*/
-	if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6) {
-		if (imageList != null) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-				OS.InvalidateRect (handle, null, true);
-			}
-		}
-	}
-	if ((style & SWT.SINGLE) != 0) return result;
-	/*
+	* The fix is to redraw the selection.
+	* 
 	* Feature in Windows.  When multiple item have
 	* the TVIS_SELECTED state, Windows redraws only
 	* the focused item in the color used to show the
 	* selection when the tree loses or gains focus.
-	* The fix is to force Windows to redraw all the
-	* visible items when focus is gained or lost.
+	* The fix is to force Windows to redraw the
+	* selection when focus is gained or lost.
 	*/
-	OS.InvalidateRect (handle, null, false);
+	boolean redraw = (style & SWT.MULTI) != 0;
+	if (!redraw) {
+		if (!OS.IsWinCE && OS.COMCTL32_MAJOR >= 6) {
+			if (imageList != null) {
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+					redraw = true;
+				}
+			}
+		}
+	}
+	if (redraw) redrawSelection ();
 	return result;
 }
 
