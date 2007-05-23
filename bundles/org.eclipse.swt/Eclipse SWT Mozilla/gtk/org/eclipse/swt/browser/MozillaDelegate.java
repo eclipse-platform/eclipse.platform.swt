@@ -18,13 +18,12 @@ import org.eclipse.swt.widgets.*;
 
 class MozillaDelegate {
 	Browser browser;
-	int /*long*/ mozillaHandle;
+	int /*long*/ mozillaHandle, embedHandle;
 	boolean hasFocus;
 	Listener listener;
 	static Callback eventCallback;
 	static int /*long*/ eventProc;
 	static final int STOP_PROPOGATE = 1;
-	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 
 	static boolean IsLinux;
 	static {
@@ -42,7 +41,10 @@ MozillaDelegate (Browser browser) {
 }
 
 static int /*long*/ eventProc (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
-	Widget widget = Display.getCurrent ().findWidget (handle);
+	int /*long*/ parent = OS.gtk_widget_get_parent (handle);
+	parent = OS.gtk_widget_get_parent (parent);
+	if (parent == 0) return 0;
+	Widget widget = Display.getCurrent ().findWidget (parent);
 	if (widget != null && widget instanceof Browser) {
 		return ((Mozilla)((Browser)widget).webBrowser).delegate.gtk_event (handle, gdkEvent, pointer);
 	}
@@ -68,15 +70,6 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 }
 
 int /*long*/ getHandle () {
-	if (eventCallback == null) {
-		eventCallback = new Callback (getClass (), "eventProc", 3); //$NON-NLS-1$
-		eventProc = eventCallback.getAddress ();
-		if (eventProc == 0) {
-			browser.dispose ();
-			Mozilla.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		}
-	}
-
 	/*
 	* Bug in Mozilla Linux GTK.  Embedding Mozilla into a GtkFixed
 	* handle causes problems with some Mozilla plug-ins.  For some
@@ -87,39 +80,9 @@ int /*long*/ getHandle () {
 	* causing the child of the GtkFixed handle to be resized to 1.
 	* The workaround is to embed Mozilla into a GtkHBox handle.
 	*/
-	int /*long*/ embedHandle = OS.gtk_hbox_new (false, 0);
+	embedHandle = OS.gtk_hbox_new (false, 0);
 	OS.gtk_container_add (browser.handle, embedHandle);
 	OS.gtk_widget_show (embedHandle);
-	
-	/*
-	* Feature in Mozilla.  GtkEvents such as key down, key pressed may be consumed
-	* by Mozilla and never be received by the parent embedder.  The workaround
-	* is to find the top Mozilla gtk widget that receives all the Mozilla GtkEvents,
-	* i.e. the first child of the parent embedder. Then hook event callbacks and
-	* forward the event to the parent embedder before Mozilla received and consumed
-	* them.
-	*/
-	int /*long*/ list = OS.gtk_container_get_children (embedHandle);
-	if (list != 0) {
-		mozillaHandle = OS.g_list_data (list);
-		OS.g_list_free (list);
-		
-		if (mozillaHandle != 0) {			
-			browser.getDisplay ().setData (ADD_WIDGET_KEY, new Object[] {new LONG (mozillaHandle), browser});
-
-			/* Note. Callback to get events before Mozilla receives and consumes them. */
-			OS.g_signal_connect (mozillaHandle, OS.event, eventProc, 0);
-			
-			/* 
-			* Note.  Callback to get the events not consumed by Mozilla - and to block 
-			* them so that they don't get propagated to the parent handle twice.  
-			* This hook is set after Mozilla and is therefore called after Mozilla's 
-			* handler because GTK dispatches events in their order of registration.
-			*/
-			OS.g_signal_connect (mozillaHandle, OS.key_press_event, eventProc, STOP_PROPOGATE);
-			OS.g_signal_connect (mozillaHandle, OS.key_release_event, eventProc, STOP_PROPOGATE);
-		}
-	}
 	return embedHandle;
 }
 
@@ -169,8 +132,46 @@ void handleFocus () {
 	browser.getShell ().addListener (SWT.Deactivate, listener);
 }
 
+void init () {
+	if (eventCallback == null) {
+		eventCallback = new Callback (getClass (), "eventProc", 3); //$NON-NLS-1$
+		eventProc = eventCallback.getAddress ();
+		if (eventProc == 0) {
+			browser.dispose ();
+			Mozilla.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		}
+	}
+
+	/*
+	* Feature in Mozilla.  GtkEvents such as key down, key pressed may be consumed
+	* by Mozilla and never be received by the parent embedder.  The workaround
+	* is to find the top Mozilla gtk widget that receives all the Mozilla GtkEvents,
+	* i.e. the first child of the parent embedder. Then hook event callbacks and
+	* forward the event to the parent embedder before Mozilla received and consumed
+	* them.
+	*/
+	int /*long*/ list = OS.gtk_container_get_children (embedHandle);
+	if (list != 0) {
+		mozillaHandle = OS.g_list_data (list);
+		OS.g_list_free (list);
+		
+		if (mozillaHandle != 0) {			
+			/* Note. Callback to get events before Mozilla receives and consumes them. */
+			OS.g_signal_connect (mozillaHandle, OS.event, eventProc, 0);
+			
+			/* 
+			* Note.  Callback to get the events not consumed by Mozilla - and to block 
+			* them so that they don't get propagated to the parent handle twice.  
+			* This hook is set after Mozilla and is therefore called after Mozilla's 
+			* handler because GTK dispatches events in their order of registration.
+			*/
+			OS.g_signal_connect (mozillaHandle, OS.key_press_event, eventProc, STOP_PROPOGATE);
+			OS.g_signal_connect (mozillaHandle, OS.key_release_event, eventProc, STOP_PROPOGATE);
+		}
+	}
+}
+
 void onDispose (int /*long*/ embedHandle) {
-	browser.getDisplay ().setData (ADD_WIDGET_KEY, new Object[] {new LONG (mozillaHandle), null});
 	if (listener != null) {
 		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
 		browser.getShell ().removeListener (SWT.Deactivate, listener);

@@ -955,6 +955,8 @@ public void create (Composite parent, int style) {
 		error (rc);
 	}
 
+	delegate.init ();
+
 	listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
@@ -1312,7 +1314,6 @@ void onDispose (Display display) {
 	if (rc != XPCOM.NS_OK) error (rc);
 	
 	unhookDOMListeners ();
-
 	if (listener != null) {
 		int[] folderEvents = new int[] {
 			SWT.Dispose,
@@ -1338,7 +1339,7 @@ void onDispose (Display display) {
 	rc = baseWindow.Destroy ();
 	if (rc != XPCOM.NS_OK) error (rc);
 	baseWindow.Release ();
-	
+
 	Release ();
 	webBrowser.Release ();
 	webBrowser = null;
@@ -1355,7 +1356,7 @@ void onDispose (Display display) {
 		new nsISupports (ptrObject.value).Release ();
 	}
 	unhookedDOMWindows = null;
-	
+
 	delegate.onDispose (embedHandle);
 	delegate = null;
 

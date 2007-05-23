@@ -55,6 +55,9 @@ String getLibraryName () {
 void handleFocus () {
 }
 
+void init () {
+}
+
 void onDispose (int /*long*/ embedHandle) {
 	browser = null;
 }

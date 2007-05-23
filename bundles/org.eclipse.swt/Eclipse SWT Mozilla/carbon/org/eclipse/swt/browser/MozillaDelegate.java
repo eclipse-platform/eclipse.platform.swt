@@ -165,6 +165,9 @@ void handleFocus () {
 	browser.getShell ().addListener (SWT.Deactivate, listener);
 }
 
+void init () {
+}
+
 void onDispose (int embedHandle) {
 	handles.remove (new LONG (embedHandle));
 	if (callback3 != null) {

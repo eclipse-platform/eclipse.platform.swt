@@ -126,6 +126,9 @@ void handleFocus () {
 	browser.getShell ().addListener (SWT.Deactivate, listener);
 }
 
+void init () {
+}
+
 void onDispose (int embedHandle) {
 	if (listener != null) {
 		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
