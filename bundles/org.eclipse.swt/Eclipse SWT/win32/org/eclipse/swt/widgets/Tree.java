@@ -925,8 +925,6 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	* to be selected into the HDC so that the item bounds are
 	* measured correctly.
 	*/
-	//if (ignoreCustomDraw) return null;
-	if (nmcd.left == nmcd.right) return new LRESULT (OS.CDRF_DODEFAULT);
 	TreeItem item = getItem (nmcd);
 	/*
 	* Feature in Windows.  When a new tree item is inserted
@@ -944,7 +942,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	int hFont = item.cellFont != null ? item.cellFont [index] : -1;
 	if (hFont == -1) hFont = item.font;
 	if (hFont != -1) OS.SelectObject (hDC, hFont);
-	if (ignoreCustomDraw) {
+	if (ignoreCustomDraw || nmcd.left == nmcd.right) {
 		return new LRESULT (hFont == -1 ? OS.CDRF_DODEFAULT : OS.CDRF_NEWFONT);
 	}
 	int count = 0;
