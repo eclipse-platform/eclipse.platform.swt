@@ -5653,7 +5653,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
-	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	/*
 	* Bug in Windows.  When a tree item that has an image
 	* with alpha is expanded or collapsed, the area where
@@ -5680,7 +5679,7 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 		}
 	}
 	if (redraw) redrawSelection ();
-	return result;
+	return super.WM_KILLFOCUS (wParam, lParam);
 }
 
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
@@ -6309,8 +6308,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
-	LRESULT result = super.WM_SETFOCUS (wParam, lParam);	
+LRESULT WM_SETFOCUS (int wParam, int lParam) {	
 	/*
 	* Bug in Windows.  When a tree item that has an image
 	* with alpha is expanded or collapsed, the area where
@@ -6337,7 +6335,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 		}
 	}
 	if (redraw) redrawSelection ();
-	return result;
+	return super.WM_SETFOCUS (wParam, lParam);
 }
 
 LRESULT WM_SETFONT (int wParam, int lParam) {
