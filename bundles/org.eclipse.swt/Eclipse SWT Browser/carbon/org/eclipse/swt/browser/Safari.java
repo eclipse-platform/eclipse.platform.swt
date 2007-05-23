@@ -39,6 +39,7 @@ class Safari extends WebBrowser {
 	//TEMPORARY CODE
 //	boolean doit;
 
+	static boolean Initialized;
 	static Callback Callback3, Callback7;
 
 	static final int MIN_SIZE = 16;
@@ -249,6 +250,13 @@ public void create (Composite parent, int style) {
 
 	// [webView setDownloadDelegate:delegate];
 	Cocoa.objc_msgSend(webView, Cocoa.S_setDownloadDelegate, delegate);
+
+	if (!Initialized) {
+		Initialized = true;
+		/* disable applets */
+		int preferences = Cocoa.objc_msgSend(Cocoa.C_WebPreferences, Cocoa.S_standardPreferences);
+		Cocoa.objc_msgSend(preferences, Cocoa.S_setJavaEnabled, 0);
+	}
 }
 
 static int eventProc3(int nextHandler, int theEvent, int userData) {

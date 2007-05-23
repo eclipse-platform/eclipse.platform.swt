@@ -37,6 +37,7 @@ public static final int C_NSCursor = Cocoa.objc_getClass("NSCursor"); //$NON-NLS
 public static final int C_NSWindow = Cocoa.objc_getClass("NSWindow"); //$NON-NLS-1$
 public static final int C_NSBitmapImageRep = Cocoa.objc_getClass("NSBitmapImageRep"); //$NON-NLS-1$
 public static final int C_NSImageView = Cocoa.objc_getClass("NSImageView"); //$NON-NLS-1$
+public static final int C_WebPreferences = Cocoa.objc_getClass("WebPreferences"); //$NON-NLS-1$
 
 /* Objective-C method selectors */
 public static final int S_absoluteString = Cocoa.sel_registerName("absoluteString"); //$NON-NLS-1$
@@ -84,11 +85,13 @@ public static final int S_setDestinationAllowOverwrite = Cocoa.sel_registerName(
 public static final int S_setDownloadDelegate = Cocoa.sel_registerName("setDownloadDelegate:"); //$NON-NLS-1$
 public static final int S_setFrameLoadDelegate = Cocoa.sel_registerName("setFrameLoadDelegate:"); //$NON-NLS-1$
 public static final int S_setGroupName = Cocoa.sel_registerName("setGroupName:"); //$NON-NLS-1$
+public static final int S_setJavaEnabled = Cocoa.sel_registerName("setJavaEnabled:"); //$NON-NLS-1$
 public static final int S_setPolicyDelegate = Cocoa.sel_registerName("setPolicyDelegate:"); //$NON-NLS-1$
 public static final int S_setResourceLoadDelegate = Cocoa.sel_registerName("setResourceLoadDelegate:"); //$NON-NLS-1$
 public static final int S_setStatusText = Cocoa.sel_registerName("setStatusText:"); //$NON-NLS-1$
 public static final int S_setUIDelegate = Cocoa.sel_registerName("setUIDelegate:"); //$NON-NLS-1$
 public static final int S_sharedHTTPCookieStorage = Cocoa.sel_registerName("sharedHTTPCookieStorage"); //$NON-NLS-1$
+public static final int S_standardPreferences = Cocoa.sel_registerName("standardPreferences"); //$NON-NLS-1$
 public static final int S_stopLoading = Cocoa.sel_registerName("stopLoading:"); //$NON-NLS-1$
 public static final int S_stringByEvaluatingJavaScriptFromString = Cocoa.sel_registerName("stringByEvaluatingJavaScriptFromString:"); //$NON-NLS-1$
 public static final int S_takeStringURLFrom = Cocoa.sel_registerName("takeStringURLFrom:"); //$NON-NLS-1$
