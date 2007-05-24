@@ -72,6 +72,7 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	boolean firstCustomDraw;
 	int drawState, drawFlags;
+	GdkColor drawForeground;
 	boolean ownerDraw, ignoreSize;
 	
 	static final int CHECKED_COLUMN = 0;
@@ -2510,7 +2511,9 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 			}
 
 			if (hooks (SWT.EraseItem)) {
+				boolean wasSelected = false; 
 				if ((drawState & SWT.SELECTED) != 0) {
+					wasSelected = true;
 					OS.gdk_window_clear_area (window, rect.x, rect.y, rect.width, rect.height);
 				}
 				GC gc = new GC (this);
@@ -2533,7 +2536,7 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 				event.height = rect.height;
 				event.detail = drawState;
 				sendEvent (SWT.EraseItem, event);
-				gc.dispose();
+				drawForeground = null;
 				drawState = event.doit ? event.detail : 0;
 				drawFlags &= ~(OS.GTK_CELL_RENDERER_FOCUSED | OS.GTK_CELL_RENDERER_SELECTED);
 				if ((drawState & SWT.SELECTED) != 0) drawFlags |= OS.GTK_CELL_RENDERER_SELECTED;
@@ -2543,7 +2546,10 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 					//TODO - parity and sorted
 					byte[] detail = Converter.wcsToMbcs (null, "cell_odd", true);
 					OS.gtk_paint_flat_box (style, window, OS.GTK_STATE_SELECTED, OS.GTK_SHADOW_NONE, rect, widget, detail, rect.x, rect.y, rect.width, rect.height);
+				} else {
+					if (wasSelected) drawForeground = gc.getForeground ().handle;
 				}
+				gc.dispose();
 			}
 		}
 	}
@@ -2560,6 +2566,9 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 		int /*long*/ g_class = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (cell));
 		GtkCellRendererClass klass = new GtkCellRendererClass ();
 		OS.memmove (klass, g_class);
+		if (drawForeground != null && OS.GTK_IS_CELL_RENDERER_TEXT (cell)) {
+			OS.g_object_set (cell, OS.foreground_gdk, drawForeground, 0);
+		}
 		result = OS.call (klass.render, cell, window, handle, background_area, cell_area, expose_area, drawFlags);
 	}
 	if (item != null) {
@@ -2588,7 +2597,8 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 					gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 				} else {
 					gc.setBackground (item.getBackground (columnIndex));
-					gc.setForeground (item.getForeground (columnIndex));
+					Color foreground = drawForeground != null ? Color.gtk_new (display, drawForeground) : item.getForeground (columnIndex);
+					gc.setForeground (foreground);
 				}
 				gc.setFont (item.getFont (columnIndex));
 				gc.setClipping (rect.x, rect.y, rect.width, rect.height);
