@@ -2529,8 +2529,8 @@ int /*long*/ rendererRenderProc (int /*long*/ cell, int /*long*/ window, int /*l
 					OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
 					rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 					rect.width -= buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-					OS.gtk_widget_style_get (handle, OS.horizontal_separator, buffer, 0);
-					rect.x += buffer[0];
+					//OS.gtk_widget_style_get (handle, OS.horizontal_separator, buffer, 0);
+					//rect.x += buffer[0];
 					//rect.width -= buffer [0]; // TODO Is this required for some versions?
 				}
 				ignoreSize = true;
