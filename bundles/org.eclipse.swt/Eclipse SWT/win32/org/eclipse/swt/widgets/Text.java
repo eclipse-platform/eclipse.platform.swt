@@ -2005,6 +2005,11 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			return callWindowProc (hwnd, OS.EM_UNDO, wParam, lParam);
 		}
 	}
+	if (msg == Display.SWT_RESTORECARET) {
+		callWindowProc (hwnd, OS.WM_KILLFOCUS, 0, 0);
+		callWindowProc (hwnd, OS.WM_SETFOCUS, 0, 0);
+		return 1;
+	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 

@@ -354,6 +354,7 @@ public class Display extends Device {
 	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
 	static final int SWT_NULL			= OS.WM_APP + 5;
 	static int SWT_TASKBARCREATED;
+	static int SWT_RESTORECARET;
 	
 	/* Workaround for Adobe Reader 7.0 */
 	int hitCount;
@@ -2473,8 +2474,9 @@ protected void init () {
 		idleHook = OS.SetWindowsHookEx (OS.WH_FOREGROUNDIDLE, foregroundIdleProc, 0, threadId);
 	}
 	
-	/* Register the task bar created message */
+	/* Register custom messages message */
 	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true));
+	SWT_RESTORECARET = OS.RegisterWindowMessage (new TCHAR (0, "SWT_RESTORECARET", true));
 
 	/* Initialize OLE */
 	if (!OS.IsWinCE) OS.OleInitialize (0);

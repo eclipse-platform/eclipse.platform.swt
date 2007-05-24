@@ -278,6 +278,19 @@ public void setFont (Font font) {
 	super.setFont (font);
 }
 
+int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (msg == Display.SWT_RESTORECARET) {
+		if ((state & CANVAS) != 0) {
+			if (caret != null) {
+				caret.killFocus ();
+				caret.setFocus ();
+				return 1;
+			}
+		}
+	}
+	return super.windowProc (hwnd, msg, wParam, lParam);
+}
+
 LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
 	LRESULT result  = super.WM_IME_COMPOSITION (wParam, lParam);
 	/*
