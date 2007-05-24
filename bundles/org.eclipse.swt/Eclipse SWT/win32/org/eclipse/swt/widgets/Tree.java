@@ -4762,8 +4762,10 @@ void showItem (int hItem) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-		int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
-		if (hParent == 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
+		/* This code is intentionally commented */
+		//int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
+		//if (hParent == 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
+		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
 		if (fixScroll) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
