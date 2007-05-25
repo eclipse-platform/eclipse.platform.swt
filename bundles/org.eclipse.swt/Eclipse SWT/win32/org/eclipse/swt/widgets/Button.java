@@ -841,7 +841,12 @@ boolean setFixedFocus () {
 /**
  * Sets the receiver's image to the argument, which may be
  * <code>null</code> indicating that no image should be displayed.
- *
+ * <p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
+ * </p>
  * @param image the image to display on the receiver (may be <code>null</code>)
  *
  * @exception IllegalArgumentException <ul>
@@ -968,12 +973,16 @@ public void setSelection (boolean selected) {
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
- * underlined but may be emphasised in a platform specific
+ * underlined but may be emphasized in a platform specific
  * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
  * '&amp;' to be displayed.
+ * </p><p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
  * </p>
- * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

@@ -2391,7 +2391,10 @@ void setBackground () {
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2419,7 +2422,10 @@ public void setBackground (Color color) {
  * by the argument, or to the default system color for the control
  * if the argument is null.  The background image is tiled to fill
  * the available space.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
  * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2751,7 +2757,9 @@ public void setFont (Font font) {
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
