@@ -504,7 +504,12 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 /**
  * Draws the receiver's text using the specified GC at the specified
  * point.
- * 
+ * <p>
+ * The parameter <code>flags</code> can include one of <code>SWT.DELIMITER_SELECTION</code>
+ * or <code>SWT.FULL_SELECTION</code> to specify the selection behavior on all lines except
+ * for the last line, and can also include <code>SWT.LAST_LINE_SELECTION</code> to extend
+ * the specified selection behavior to the last line.
+ * </p>
  * @param gc the GC to draw
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
  * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
@@ -1617,7 +1622,8 @@ public int getOrientation () {
 /**
  * Returns the previous offset for the specified offset and movement
  * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
- * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
+ * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>,
+ * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
  * 
  * @param offset the start offset
  * @param movement the movement type 
