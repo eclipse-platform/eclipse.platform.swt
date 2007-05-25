@@ -925,8 +925,8 @@ public String getText () {
 		OS.memmove (buffer, str, length);
 		return new String (Converter.mbcsToWcs (null, buffer));
 	} else {
-		int active = OS.gtk_combo_box_get_active (handle);		  
-		return active != -1 ? getItem (active) : "";
+		int index = OS.gtk_combo_box_get_active (handle);		  
+		return index != -1 ? getItem (index) : "";
 	}
 }
 
@@ -1011,7 +1011,19 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 				sendEvent(SWT.Modify);
 				if (isDisposed ()) return 0;
 			}
-			postEvent (SWT.Selection);
+			/*
+			* Feature in GTK.  GTK emits a changed signal whenever
+			* the contents of a combo box are altered by typing or
+			* by selecting an item in the list, but the event should
+			* only be sent when the list is selected. The fix is to
+			* only send out a selection event when there is a selected
+			* item. 
+			* 
+			* NOTE: This code relies on GTK clearing the selected
+			* item and not matching the item as the user types.
+			*/
+			int index = OS.gtk_combo_box_get_active (handle);
+			if (index != -1) postEvent (SWT.Selection);
 			return 0;
 		}
 	} else {
@@ -1560,10 +1572,10 @@ void setFontDescription (int /*long*/ font) {
 			* invalid minimum size.  The fix is to temporarily change the
 			* selected item to force the combo box to resize.
 			*/
-			int active = OS.gtk_combo_box_get_active (handle);
+			int index = OS.gtk_combo_box_get_active (handle);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			OS.gtk_combo_box_set_active (handle, -1);
-			OS.gtk_combo_box_set_active (handle, active);
+			OS.gtk_combo_box_set_active (handle, index);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		}
 	} else {
