@@ -16,15 +16,17 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * The SashForm lays out its children in a Row or Column arrangement (as specified
- * by the orientation) and places a Sash between the children.
- * One child may be maximized to occupy the entire size of the SashForm.
- * The relative sizes of the children may be specfied using weights.
- *
+ * The SashForm is a composite control that lays out its children in a
+ * row or column arrangement (as specified by the orientation) and places
+ * a Sash between each child. One child may be maximized to occupy the
+ * entire size of the SashForm.  The relative sizes of the children may
+ * be specified using weights.
  * <p>
  * <dl>
- * <dt><b>Styles:</b><dd>HORIZONTAL, VERTICAL, SMOOTH
+ * <dt><b>Styles:</b></dt>
+ * <dd>HORIZONTAL, VERTICAL, SMOOTH</dd>
  * </dl>
+ * </p>
  */
 public class SashForm extends Composite {
 
