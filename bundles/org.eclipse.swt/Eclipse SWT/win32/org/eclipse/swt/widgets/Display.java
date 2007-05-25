@@ -353,6 +353,7 @@ public class Display extends Device {
 	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
 	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
 	static final int SWT_NULL			= OS.WM_APP + 5;
+	static final int SWT_RUNASYNC		= OS.WM_APP + 6;
 	static int SWT_TASKBARCREATED;
 	static int SWT_RESTORECARET;
 	
@@ -1253,7 +1254,9 @@ int foregroundIdleProc (int code, int wParam, int lParam) {
 	if (runMessages) {
 		if (code >= 0) {
 			if (getMessageCount () != 0) {
-				if (runMessagesInIdle) runAsyncMessages (false);
+				if (runMessagesInIdle) {
+					OS.PostMessage (hwndMessage, SWT_RUNASYNC, 0, 0);
+				}
 				wakeThread ();
 			}
 		}
@@ -2763,6 +2766,10 @@ static char mbcsToWcs (int ch, int codePage) {
 
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
+		case SWT_RUNASYNC: {
+			if (runMessagesInIdle) runAsyncMessages (false);
+			break;
+		}
 		case SWT_KEYMSG: {
 			boolean consumed = false;
 			MSG keyMsg = new MSG ();
