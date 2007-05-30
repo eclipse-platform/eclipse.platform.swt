@@ -116,7 +116,7 @@ int /*long*/ CreateChromeWindow (int /*long*/ parent, int /*long*/ chromeFlags, 
 /* nsIWindowCreator2 */
 
 int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags, int /*long*/ contextFlags, int /*long*/ uri, int /*long*/ cancel, int /*long*/ _retval) {
-	if (parent == 0 && (chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) == 0) {
+	if (parent == 0 && (chromeFlags & nsIWebBrowserChrome.CHROME_OPENAS_CHROME) == 0) {
 		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 	Browser src = null; 
@@ -146,15 +146,17 @@ int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags,
 	}
 	final Browser browser;
 	boolean doit = true;
-	if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) {
+	if ((chromeFlags & nsIWebBrowserChrome.CHROME_OPENAS_CHROME) != 0) {
 		/*
 		* Mozilla will request a new Browser in a modal window in order to emulate a native
 		* dialog that is not available to it (eg.- a print dialog on Linux).  For this
 		* reason modal requests are handled here so that the user is not exposed to them.
 		*/
+		int style = SWT.DIALOG_TRIM;
+		if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) style |= SWT.APPLICATION_MODAL; 
 		final Shell shell = src == null ?
-			new Shell (SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL) :
-			new Shell (src.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+			new Shell (style) :
+			new Shell (src.getShell(), style);
 		shell.setLayout (new FillLayout ());
 		browser = new Browser (shell, src == null ? SWT.MOZILLA : src.getStyle () & SWT.MOZILLA);
 		browser.addVisibilityWindowListener (new VisibilityWindowListener () {
@@ -202,7 +204,7 @@ int /*long*/ CreateChromeWindow2 (int /*long*/ parent, int /*long*/ chromeFlags,
 		doit = browser != null && !browser.isDisposed ();
 		if (doit) {
 			String platform = Platform.PLATFORM;
-			boolean isMozillaNativePlatform = platform.equals ("gtk") || platform.equals ("motif");
+			boolean isMozillaNativePlatform = platform.equals ("gtk") || platform.equals ("motif"); //$NON-NLS-1$ //$NON-NLS-2$
 			doit = isMozillaNativePlatform || (browser.getStyle () & SWT.MOZILLA) != 0;
 		}
 	}

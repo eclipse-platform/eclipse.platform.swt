@@ -103,7 +103,7 @@ public class nsIWebBrowserChrome extends nsISupports {
 
 	public static final int CHROME_OPENAS_DIALOG = 1073741824;
 
-//	public static final int CHROME_OPENAS_CHROME = 2147483648;
+	public static final int CHROME_OPENAS_CHROME = -2147483648;
 
 	public static final int CHROME_ALL = 4094;
 

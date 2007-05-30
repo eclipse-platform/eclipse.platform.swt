@@ -152,11 +152,11 @@ public void create (Composite parent, int style) {
 				Library.loadLibrary ("swt-xpcominit"); //$NON-NLS-1$
 				initLoaded = true;
 			} catch (UnsatisfiedLinkError e) {
-				/*
-				 * If this library failed to load then do not attempt to detect a
-				 * xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
-				 * points at a GRE. 
-				 */
+				/* 
+				* If this library failed to load then do not attempt to detect a
+				* xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
+				* points at a GRE. 
+				*/
 			}
 		} else {
 			mozillaPath += SEPARATOR_OS + delegate.getLibraryName ();
@@ -2236,8 +2236,8 @@ int /*long*/ DestroyBrowserWindow () {
    	
 int /*long*/ SizeBrowserTo (int /*long*/ aCX, int /*long*/ aCY) {
 	size = new Point ((int)/*64*/aCX, (int)/*64*/aCY);
-	boolean isModal = (chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0;
-	if (isModal) {
+	boolean isChrome = (chromeFlags & nsIWebBrowserChrome.CHROME_OPENAS_CHROME) != 0;
+	if (isChrome) {
 		Shell shell = browser.getShell ();
 		shell.setSize (shell.computeSize (size.x, size.y));
 	}
