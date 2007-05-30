@@ -159,7 +159,7 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
  * @param classBuffer an array of integers representing the type (e.g., ARABIC, HEBREW, 
  *  LOCALNUMBER) of each character in the text array, input/output parameter
  * @param dx an array of integers representing the pixel width of each glyph in the returned
- *  glyph buffer, output paramteter
+ *  glyph buffer, output parameter
  * @param flags an integer representing rendering flag information, input parameter
  * @param offsets text segments that should be measured and reordered separately, input 
  *  parameter. See org.eclipse.swt.custom.BidiSegmentEvent for details.
@@ -497,7 +497,7 @@ public static void removeLanguageListener (int hwnd) {
 }		
 /**
  * Switch the keyboard language to the specified language type.  We do
- * not distinguish between mulitple bidi or multiple non-bidi languages, so
+ * not distinguish between multiple bidi or multiple non-bidi languages, so
  * set the keyboard to the first language of the given type.
  * <p>
  *
@@ -523,7 +523,7 @@ public static void setKeyboardLanguage(int language) {
 		// get the list of active languages
 		int[] list = getKeyboardLanguageList();
 		// set to the first non-bidi language (anything not
-		// hebrew or arabic)
+		// Hebrew or Arabic)
 		for (int i=0; i<list.length; i++) {
 			int id = list[i] & 0x000000FF;
 			if ((id != LANG_HEBREW) && (id != LANG_ARABIC)) {
