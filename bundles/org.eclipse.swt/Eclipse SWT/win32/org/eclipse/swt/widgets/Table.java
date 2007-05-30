@@ -4047,7 +4047,7 @@ void setItemHeight (boolean fixScroll) {
  * Sets the height of the area which would be used to
  * display <em>one</em> of the items in the table.
  *
- * @return the height of one item
+ * @param itemHeight the height of one item
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
