@@ -59,7 +59,7 @@ public class Transform extends Resource {
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
@@ -88,7 +88,7 @@ public Transform (Device device) {
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
@@ -121,7 +121,7 @@ public Transform(Device device, float[] elements) {
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
@@ -183,7 +183,7 @@ public void getElements(float[] elements) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_CANNOT_INVERT_MATRIX - if the matrix is not invertable</li>
+ *    <li>ERROR_CANNOT_INVERT_MATRIX - if the matrix is not invertible</li>
  * </ul>
  */
 public void invert() {
