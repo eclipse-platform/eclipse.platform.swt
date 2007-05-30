@@ -72,7 +72,7 @@ public final class FontData {
 	String lang, country, variant;
 	
 /**	 
- * Constructs a new un-initialized font data.
+ * Constructs a new uninitialized font data.
  */
 public FontData() {
 	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
@@ -351,7 +351,7 @@ int EnumLocalesProc(int lpLocaleString) {
  *
  * @return the height of this FontData
  *
- * @see #setHeight
+ * @see #setHeight(int)
  */
 public int getHeight() {
 	return (int)(0.5f + height);
