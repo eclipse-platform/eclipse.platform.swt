@@ -329,7 +329,7 @@ public void pack () {
 	if (image != null || parent.sortColumn == this) {
 		hasHeaderImage = true;
 		Image headerImage = null;
-		if (parent.sortColumn == this && parent.sortDirection != SWT.NULL) {
+		if (parent.sortColumn == this && parent.sortDirection != SWT.NONE) {
 			if (OS.COMCTL32_MAJOR < 6) {
 				headerImage = display.getSortImage (parent.sortDirection);
 			} else {
@@ -580,7 +580,7 @@ public void setImage (Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	super.setImage (image);
-	if (parent.sortColumn != this || parent.sortDirection != SWT.NULL) {
+	if (parent.sortColumn != this || parent.sortDirection != SWT.NONE) {
 		setImage (image, false, false);
 	}
 }
