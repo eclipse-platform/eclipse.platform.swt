@@ -751,8 +751,8 @@ public class SWT {
 	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
 
 	/**
-	 * A constant known to be zero (0), used in operations which
-	 * take bit flags to indicate that "no bits are set".
+	 * A constant known to be zero (0), typically used in operations
+	 * which take bit flags to indicate that "no bits are set".
 	 */
 	public static final int NONE = 0;
 	
@@ -1731,7 +1731,7 @@ public class SWT {
 	 * To allow for the future, this mask  is intended to be used in 
 	 * place of code that references  each individual keyboard mask. 
 	 *  For example, the following expression will determine whether 
-	 * any modifer is pressed and will continue to work as new modifier 
+	 * any modifier is pressed and will continue to work as new modifier 
 	 * masks are added.
 	 * 
  	 * <code>(stateMask & SWT.MODIFIER_MASK) != 0</code>.
@@ -2873,7 +2873,7 @@ public class SWT {
 	
 	/** 
 	 * SWT error constant indicating that an unsatisfied link
-	 * error occured while attempting to load a library
+	 * error occurred while attempting to load a library
 	 * (value is 47).
 	 * 
 	 * @since 3.1
