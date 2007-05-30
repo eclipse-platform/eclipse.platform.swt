@@ -955,8 +955,21 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 
 	boolean drawIcon = true;
 	int flags = OS.DI_NORMAL;
+	int offsetX = 0, offsetY = 0;
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(5, 1)) {
-		flags |= OS.DI_NOMIRROR;
+		if ((OS.GetLayout(handle) & OS.LAYOUT_RTL) != 0) {
+			flags |= OS.DI_NOMIRROR;
+			/*
+			* Bug in Windows.  For some reason, DrawIconEx() does not take
+			* into account the window origin when the DI_NOMIRROR and
+			* LAYOUT_RTL are set.  The fix is to set the window origin to
+			* (0, 0) and offset the drawing ourselves.  
+			*/
+			POINT pt = new POINT();
+			OS.GetWindowOrgEx(handle, pt);
+			offsetX = pt.x;
+			offsetY = pt.y;
+		}
 	} else {
 		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 			drawIcon = (OS.GetLayout(handle) & OS.LAYOUT_RTL) == 0;
@@ -965,7 +978,9 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 
 	/* Simple case: no stretching, entire icon */
 	if (simple && technology != OS.DT_RASPRINTER && drawIcon) {
-		OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, flags);
+		if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, 0, 0, null);
+		OS.DrawIconEx(handle, destX - offsetX, destY - offsetY, srcImage.handle, 0, 0, 0, 0, flags);
+		if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, offsetX, offsetY, null);
 		return;
 	}
 
@@ -1000,7 +1015,9 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			drawBitmapMask(srcImage, srcIconInfo.hbmColor, srcIconInfo.hbmMask, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, iconWidth, iconHeight, false);
 		} else if (simple && technology != OS.DT_RASPRINTER) {
 			/* Simple case: no stretching, entire icon */
-			OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, flags);
+			if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, 0, 0, null);
+			OS.DrawIconEx(handle, destX - offsetX, destY - offsetY, srcImage.handle, 0, 0, 0, 0, flags);
+			if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, offsetX, offsetY, null);
 		} else {
  			/* Create the icon info and HDC's */
 			ICONINFO newIconInfo = new ICONINFO();
@@ -1049,7 +1066,9 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 				OS.SelectObject(dstHdc, oldDestBitmap);
 				int hIcon = OS.CreateIconIndirect(newIconInfo);
 				if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				OS.DrawIconEx(handle, destX, destY, hIcon, destWidth, destHeight, 0, 0, flags);
+				if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, 0, 0, null);
+				OS.DrawIconEx(handle, destX - offsetX, destY - offsetY, hIcon, destWidth, destHeight, 0, 0, flags);
+				if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, offsetX, offsetY, null);
 				OS.DestroyIcon(hIcon);
 			}
 			
