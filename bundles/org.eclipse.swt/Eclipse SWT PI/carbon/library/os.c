@@ -8768,6 +8768,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsDataBrowserItemSelected)
 }
 #endif
 
+#ifndef NO_IsEventInQueue
+JNIEXPORT jboolean JNICALL OS_NATIVE(IsEventInQueue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, IsEventInQueue_FUNC);
+	rc = (jboolean)IsEventInQueue((EventQueueRef)arg0, (EventRef)arg1);
+	OS_NATIVE_EXIT(env, that, IsEventInQueue_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_IsMenuCommandEnabled
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsMenuCommandEnabled)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -10422,6 +10434,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(RemoveDataBrowserTableViewColumn)
 	OS_NATIVE_ENTER(env, that, RemoveDataBrowserTableViewColumn_FUNC);
 	rc = (jint)RemoveDataBrowserTableViewColumn((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1);
 	OS_NATIVE_EXIT(env, that, RemoveDataBrowserTableViewColumn_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RemoveEventFromQueue
+JNIEXPORT jint JNICALL OS_NATIVE(RemoveEventFromQueue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RemoveEventFromQueue_FUNC);
+	rc = (jint)RemoveEventFromQueue((EventQueueRef)arg0, (EventRef)arg1);
+	OS_NATIVE_EXIT(env, that, RemoveEventFromQueue_FUNC);
 	return rc;
 }
 #endif

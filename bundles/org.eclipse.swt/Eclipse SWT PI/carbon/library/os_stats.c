@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 907;
-int OS_nativeFunctionCallCount[907];
+int OS_nativeFunctionCount = 909;
+int OS_nativeFunctionCallCount[909];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -613,6 +613,7 @@ char * OS_nativeFunctionNames[] = {
 	"IsControlEnabled",
 	"IsControlVisible",
 	"IsDataBrowserItemSelected",
+	"IsEventInQueue",
 	"IsMenuCommandEnabled",
 	"IsMenuItemEnabled",
 	"IsValidControlHandle",
@@ -730,6 +731,7 @@ char * OS_nativeFunctionNames[] = {
 	"RemoveControlProperty",
 	"RemoveDataBrowserItems",
 	"RemoveDataBrowserTableViewColumn",
+	"RemoveEventFromQueue",
 	"RemoveEventHandler",
 	"RemoveEventLoopTimer",
 	"RemoveReceiveHandler",

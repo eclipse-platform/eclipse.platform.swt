@@ -14,6 +14,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.CFRunLoopSourceContext;
+import org.eclipse.swt.internal.carbon.EventRecord;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -108,14 +109,14 @@ public class Display extends Device {
 	Callback actionCallback, appleEventCallback, clockCallback, commandCallback, controlCallback, accessibilityCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback, searchCallback, trayItemCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback, observerCallback, sourceCallback;
-	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback, releaseCallback;
+	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback, releaseCallback, coreEventCallback;
 	int actionProc, appleEventProc, clockProc, commandProc, controlProc, appearanceProc, accessibilityProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc, searchProc, trayItemProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc, observerProc, sourceProc;
-	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc;
+	int mouseProc, trackingProc, windowProc, colorProc, textInputProc, releaseProc, coreEventProc;
 	EventTable eventTable, filterTable;
 	int queue, runLoop, runLoopSource, lastModifiers, lastState, lastX, lastY;
-	boolean closing;
+	boolean disposing;
 	
 	boolean inPaint, needsPaint;
 
@@ -381,24 +382,17 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 			}
 			break;
 		case OS.kEventClassAppleEvent:
-			int [] aeEventID = new int [1];
-			if (OS.GetEventParameter (theEvent, OS.kEventParamAEEventID, OS.typeType, null, 4, null, aeEventID) == OS.noErr) {
-				if (aeEventID [0] == OS.kAEQuitApplication) {
-					Event event = new Event ();
-					sendEvent (SWT.Close, event);
-					if (event.doit) {
-						/*
-						* When the application is closing, no SWT program can continue
-						* to run.  In order to avoid running code after the display has
-						* been disposed, exit from Java.
-						*/
-						dispose ();
-						System.exit (0);
-					}
-					return OS.userCanceledErr;
-				}
+			EventRecord eventRecord = new EventRecord ();
+			boolean release = false;
+			if (OS.IsEventInQueue (queue, theEvent)) {
+				OS.RetainEvent (theEvent);
+				release = true;
+				OS.RemoveEventFromQueue (queue, theEvent);
 			}
-			break;
+			OS.ConvertEventRefToEventRecord (theEvent, eventRecord);
+			OS.AEProcessAppleEvent (eventRecord);
+			if (release) OS.ReleaseEvent (theEvent);
+			return OS.noErr;
 	}
 	return OS.eventNotHandledErr;
 }
@@ -777,10 +771,6 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeHICommand, null, HICommand.sizeof, null, command);
 	switch (eventKind) {
 		case OS.kEventProcessCommand: {
-			if (command.commandID == OS.kAEQuitApplication) {
-				if (!closing) close ();
-				return OS.noErr;
-			}
 			if ((command.attributes & OS.kHICommandFromMenu) != 0) {
 				if (userData != 0) {
 					Widget widget = getWidget (userData);
@@ -847,6 +837,24 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int coreEventProc (int theAppleEvent, int reply, int handlerRefcon) {
+	if (!disposing) {
+		Event event = new Event ();
+		sendEvent (SWT.Close, event);
+		if (event.doit) {
+			/*
+			* When the application is closing, no SWT program can continue
+			* to run.  In order to avoid running code after the display has
+			* been disposed, exit from Java.
+			*/
+			dispose ();
+			System.exit (0);
+		}
+		return OS.userCanceledErr;
+	}
+	return OS.noErr;
+}
+
 int accessibilityProc (int nextHandler, int theEvent, int userData) {
 	Widget widget = getWidget (userData);
 	if (widget != null) return widget.accessibilityProc (nextHandler, theEvent, userData);
@@ -907,7 +915,6 @@ void clearMenuFlags () {
  */
 public void close () {
 	checkDevice ();
-	closing = true;
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if (event.doit) dispose ();
@@ -2068,6 +2075,9 @@ void initializeCallbacks () {
 	releaseCallback = new Callback (this, "releaseDataProc", 3);
 	releaseProc = releaseCallback.getAddress ();
 	if (releaseProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	coreEventCallback = new Callback (this, "coreEventProc", 3);
+	coreEventProc = coreEventCallback.getAddress ();
+	if (coreEventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -2090,6 +2100,8 @@ void initializeCallbacks () {
 		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
 	};
 	OS.InstallEventHandler (appTarget, appleEventProc, mask3.length / 2, mask3, 0, null);
+	OS.AEInstallEventHandler(OS.kCoreEventClass, OS.kAEQuitApplication, coreEventProc, 0, false);
+
 	int [] mask4 = new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 		OS.kEventClassKeyboard, OS.kEventRawKeyModifiersChanged,
@@ -2983,6 +2995,7 @@ static synchronized void register (Display display) {
  * @see #destroy
  */
 protected void release () {
+	disposing = true;
 	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -3072,15 +3085,16 @@ void releaseDisplay () {
 	observerCallback.dispose ();
 	sourceCallback.dispose ();
 	searchCallback.dispose ();
+	coreEventCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = appearanceCallback = null;
 	accessibilityCallback = clockCallback = controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = searchCallback = trayItemCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = observerCallback = sourceCallback = null;
-	textInputCallback = null;
+	textInputCallback = coreEventCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = searchProc = trayItemProc = 0;
 	accessibilityProc = clockProc = controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = observerProc = sourceProc = releaseProc = 0;
-	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
+	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = coreEventProc = 0;
 	textInputProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
