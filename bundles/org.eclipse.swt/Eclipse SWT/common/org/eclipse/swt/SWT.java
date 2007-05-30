@@ -3291,6 +3291,7 @@ public class SWT {
 
 	/**
 	 * The character movement type (value is 1&lt;&lt;0).
+	 * This constant is used to move a text offset over a character.
 	 * 
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
@@ -3301,6 +3302,10 @@ public class SWT {
 
 	/**
 	 * The cluster movement type (value is 1&lt;&lt;1).
+	 * This constant is used to move a text offset over a cluster.
+	 * A cluster groups one or more characters. A cluster is 
+	 * undivisible, this means that a caret offset can not be placed in the
+	 * middle of a cluster.  
 	 * 
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
@@ -3311,6 +3316,12 @@ public class SWT {
 
 	/**
 	 * The word movement type (value is 1&lt;&lt;2).
+	 * This constant is used to move a text offset over a word.
+	 * The behavior of this constant depends on the platform and on the 
+	 * direction of the movement. For example, on Windows the stop is 
+	 * always at the start of the word. On GTK and Mac the stop is at the end 
+	 * of the word if the direction is next and at the start of the word if the 
+	 * direction is previous.
 	 * 
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
@@ -3321,6 +3332,9 @@ public class SWT {
 
 	/**
 	 * The word end movement type (value is 1&lt;&lt;3).
+	 * This constant is used to move a text offset to the next or previous
+	 * word end. The behavior of this constant does not depend on the platform.  
+	 * 
 	 * 
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
@@ -3331,6 +3345,8 @@ public class SWT {
 
 	/**
 	 * The word start movement type (value is 1&lt;&lt;4).
+	 * This constant is used to move a text offset to the next or previous
+	 * word start. The behavior of this constant does not depend on the platform.  
 	 * 
 	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset(int, int)
 	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset(int, int)
