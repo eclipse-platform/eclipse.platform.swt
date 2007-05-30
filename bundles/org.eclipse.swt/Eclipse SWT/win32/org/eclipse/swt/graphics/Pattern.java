@@ -63,7 +63,7 @@ public class Pattern extends Resource {
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
@@ -116,7 +116,7 @@ public Pattern(Device device, Image image) {
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
@@ -154,7 +154,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()

@@ -64,7 +64,7 @@ public class Path extends Resource {
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained/li>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained</li>
  * </ul>
  * 
  * @see #dispose()
