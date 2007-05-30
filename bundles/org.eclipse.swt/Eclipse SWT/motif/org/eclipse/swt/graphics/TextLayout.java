@@ -94,8 +94,9 @@ void checkLayout () {
 
 int stringWidth (StyleItem run, char[] ch) {
 	if (ch.length == 0) return 0;
-	int fontList = getItemFont(run).handle;
-	byte[] buffer = Converter.wcsToMbcs(null, ch, true);
+	Font font = getItemFont(run);
+	int fontList = font.handle;
+	byte[] buffer = Converter.wcsToMbcs(font.codePage, ch, true);
 	int xmString = OS.XmStringCreateLocalized(buffer);
 	int width = OS.XmStringWidth(fontList, xmString);
 	OS.XmStringFree(xmString);
@@ -1397,8 +1398,9 @@ void place (StyleItem run) {
 	} else {
 		char[] chars = new char[run.length];
 		text.getChars(run.start, run.start + run.length, chars, 0);
-		int fontList = getItemFont(run).handle;
-		byte[] buffer = Converter.wcsToMbcs(null, chars, true);
+		Font font = getItemFont(run);
+		int fontList = font.handle;
+		byte[] buffer = Converter.wcsToMbcs(font.codePage, chars, true);
 		short[] width = new short[1], height = new short[1];
 		int xmString = OS.XmStringCreateLocalized(buffer);
 		OS.XmStringExtent(fontList, xmString, width, height);

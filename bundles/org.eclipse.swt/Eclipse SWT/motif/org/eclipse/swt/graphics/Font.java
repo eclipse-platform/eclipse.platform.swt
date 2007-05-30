@@ -229,7 +229,10 @@ static String getCodePage (int xDisplay, int fontList) {
 								if (OS.IsLinux) {
 									codePage = "ISO-" + codePage.substring (3, codePage.length ());
 								}
-								if (OS.IsHPUX) {
+								if (OS.IsAIX) {
+									codePage = "ISO" + codePage.substring (3, codePage.length ());
+								}
+								if (OS.IsHPUX) {	
 									start = codePage.lastIndexOf('-');
 									if (start != -1) {
 										codePage = codePage.substring (0, start) + codePage.substring (start + 1, codePage.length ());
