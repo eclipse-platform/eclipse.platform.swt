@@ -152,21 +152,11 @@ public void create (Composite parent, int style) {
 				Library.loadLibrary ("swt-xpcominit"); //$NON-NLS-1$
 				initLoaded = true;
 			} catch (UnsatisfiedLinkError e) {
-				try {
-					/* 
-					 * The initial loadLibrary attempt may have failed as a result of the user's
-					 * system not having libstdc++.so.6 installed, so try to load the alternate
-					 * swt xpcominit library that depends on libswtc++.so.5 instead.
-					 */
-					Library.loadLibrary ("swt-xpcominit-gcc3"); //$NON-NLS-1$
-					initLoaded = true;
-				} catch (UnsatisfiedLinkError ex) {
-					/*
-					 * If this library still failed to load then do not attempt to detect a
-					 * xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
-					 * points at a GRE. 
-					 */
-				}
+				/*
+				 * If this library failed to load then do not attempt to detect a
+				 * xulrunner to use.  The Browser may still be usable if MOZILLA_FIVE_HOME
+				 * points at a GRE. 
+				 */
 			}
 		} else {
 			mozillaPath += SEPARATOR_OS + delegate.getLibraryName ();
