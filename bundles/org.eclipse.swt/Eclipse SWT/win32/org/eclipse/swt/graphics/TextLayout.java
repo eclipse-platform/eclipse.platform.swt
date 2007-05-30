@@ -83,7 +83,7 @@ public final class TextLayout extends Resource {
 		int leading;
 		int x;
 
-		/* Justily info (malloc during computeRuns) */
+		/* Justify info (malloc during computeRuns) */
 		int justify;
 
 		/* ScriptBreak */
@@ -1150,7 +1150,7 @@ int getItemFont (StyleItem item) {
  * embedding level is usually used to determine the directionality of a
  * character in bidirectional text.
  * 
- * @param offset the charecter offset
+ * @param offset the character offset
  * @return the embedding level
  * 
  * @exception IllegalArgumentException <ul>
@@ -2426,7 +2426,7 @@ void shape (final int hdc, final StyleItem run) {
 		GlyphMetrics metrics = run.style.metrics;
 		/*
 		*  Bug in Windows, on a Japanese machine, Uniscribe returns glyphcount
-		*  equals zero for FFFC (possibily other unicode code points), the fix
+		*  equals zero for FFFC (possibly other unicode code points), the fix
 		*  is to make sure the glyph is at least one pixel wide.
 		*/
 		run.width = metrics.width * Math.max (1, run.glyphCount);
