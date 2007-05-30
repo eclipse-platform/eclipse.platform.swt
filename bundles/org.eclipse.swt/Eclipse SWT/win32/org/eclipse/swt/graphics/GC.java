@@ -2226,7 +2226,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
  * @param string the string to be drawn
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
  * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
- * @param flags the flags specifing how to process the text
+ * @param flags the flags specifying how to process the text
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
@@ -2911,6 +2911,7 @@ public int getAdvanceWidth(char ch) {
  * </ul>
  * 
  * @see #setAdvanced
+ * 
  * @since 3.1
  */
 public boolean getAdvanced() {
@@ -3346,7 +3347,7 @@ public int getLineCap() {
  * Returns the receiver's line dash style. The default value is
  * <code>null</code>.
  *
- * @return the lin dash style used for drawing lines
+ * @return the line dash style used for drawing lines
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -3555,7 +3556,7 @@ void initGdip() {
 	* are many issues like pixel corruption, but the most visible problem
 	* is that it does not have an effect when drawing to an bitmap.  The
 	* fix is to clear the bit before creating the GDI+ graphics and install
-	* a mirroring matrix ourselfs.
+	* a mirroring matrix ourselves.
 	*/
 	if ((data.style & SWT.MIRRORED) != 0) {
 		OS.SetLayout(handle, OS.GetLayout(handle) & ~OS.LAYOUT_RTL);
@@ -3726,8 +3727,7 @@ float measureSpace(int font, int format) {
  * advanced and normal graphics operations.  Because the two subsystems are
  * different, their output may differ.  Switching to advanced graphics before
  * any graphics operations are performed ensures that the output is consistent.
- * </p>
- * <p>
+ * </p><p>
  * Advanced graphics may not be installed for the operating system.  In this
  * case, this operation does nothing.  Some operating system have only one
  * graphics subsystem, so switching from normal to advanced graphics does
@@ -3796,6 +3796,8 @@ public void setAdvanced(boolean advanced) {
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
+ * @see #getAdvanced
+ * @see #setAdvanced
  * @see #setTextAntialias
  * 
  * @since 3.1
@@ -3834,6 +3836,9 @@ public void setAntialias(int antialias) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
+ * 
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -3889,6 +3894,8 @@ public void setBackground (Color color) {
  * </ul>
  * 
  * @see Pattern
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -3972,6 +3979,8 @@ public void setClipping (int x, int y, int width, int height) {
  * </ul>
  * 
  * @see Path
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -4124,6 +4133,8 @@ public void setForeground (Color color) {
  * </ul>
  * 
  * @see Pattern
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -4157,6 +4168,9 @@ public void setForegroundPattern (Pattern pattern) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
+ * 
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -4193,6 +4207,10 @@ public void setInterpolation(int interpolation) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
+ * 
+ * @see LineAttributes
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.3
  */
@@ -4500,6 +4518,8 @@ public void setXORMode(boolean xor) {
  *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
+ * @see #getAdvanced
+ * @see #setAdvanced
  * @see #setAntialias
  * 
  * @since 3.1
@@ -4531,7 +4551,7 @@ public void setTextAntialias(int antialias) {
 	Gdip.Graphics_SetTextRenderingHint(data.gdipGraphics, textMode);
 }
 
-/** 
+/**
  * Sets the transform that is currently being used by the receiver. If
  * the argument is <code>null</code>, the current transform is set to
  * the identity transform.
@@ -4552,6 +4572,8 @@ public void setTextAntialias(int antialias) {
  * </ul>
  * 
  * @see Transform
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -4669,7 +4691,7 @@ public Point textExtent(String string) {
  * </p>
  *
  * @param string the string to measure
- * @param flags the flags specifing how to process the text
+ * @param flags the flags specifying how to process the text
  * @return a point containing the extent of the string
  *
  * @exception IllegalArgumentException <ul>
