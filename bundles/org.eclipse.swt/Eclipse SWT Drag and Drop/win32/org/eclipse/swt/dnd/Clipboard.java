@@ -303,7 +303,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 	* Bug in Windows. When a new application takes control
 	* of the clipboard, other applications may open the 
 	* clipboard to determine if they want to record the 
-	* clipoard updates.  When this happens, the clipboard 
+	* clipboard updates.  When this happens, the clipboard 
 	* can not be accessed until the other application is
 	* finished.  To allow the other applications to release
 	* the clipboard, use PeekMessage() to enable cross thread
@@ -361,7 +361,7 @@ public boolean isDisposed () {
  * 
  * <p>NOTE: On some platforms, the data is immediately copied to the system
  * clipboard but on other platforms it is provided upon request.  As a result,
- * if the application modifes the data object it has set on the clipboard, that 
+ * if the application modifies the data object it has set on the clipboard, that 
  * modification may or may not be available when the data is subsequently 
  * requested.</p>
  *
@@ -399,7 +399,7 @@ public boolean isDisposed () {
  * </ul>
  * 
  * <p>NOTE: ERROR_CANNOT_SET_CLIPBOARD should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  */
 public void setContents(Object[] data, Transfer[] dataTypes) {
 	setContents(data, dataTypes, DND.CLIPBOARD);
@@ -413,7 +413,7 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  * 
  * <p>NOTE: On some platforms, the data is immediately copied to the specified
  * clipboard but on other platforms it is provided upon request.  As a result, 
- * if the application modifes the data object it has set on the clipboard, that 
+ * if the application modifies the data object it has set on the clipboard, that 
  * modification may or may not be available when the data is subsequently 
  * requested.</p>
  *
@@ -457,7 +457,7 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
  * </ul>
  * 
  * <p>NOTE: ERROR_CANNOT_SET_CLIPBOARD should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see DND#CLIPBOARD
  * @see DND#SELECTION_CLIPBOARD
@@ -487,7 +487,7 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 	* Bug in Windows. When a new application takes control
 	* of the clipboard, other applications may open the 
 	* clipboard to determine if they want to record the 
-	* clipoard updates.  When this happens, the clipboard 
+	* clipboard updates.  When this happens, the clipboard 
 	* can not be flushed until the other application is
 	* finished.  To allow other applications to get the
 	* data, use PeekMessage() to enable cross thread

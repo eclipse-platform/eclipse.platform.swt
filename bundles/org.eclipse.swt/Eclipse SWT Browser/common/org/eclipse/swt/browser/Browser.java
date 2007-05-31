@@ -114,9 +114,9 @@ static Composite checkParent (Composite parent) {
 	if (!"gtk".equals (platform)) return parent; //$NON-NLS-1$
 
 	/*
-	* Note.  Mozilla provides all IM suport needed for text input in webpages.
+	* Note.  Mozilla provides all IM support needed for text input in web pages.
 	* If SWT creates another input method context for the widget it will cause
-	* undetermine results to happen (hungs and crashes). The fix is to prevent 
+	* indeterminate results to happen (hangs and crashes). The fix is to prevent 
 	* SWT from creating an input method context for the  Browser widget.
 	*/
 	if (parent != null && !parent.isDisposed ()) {

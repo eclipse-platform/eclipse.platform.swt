@@ -64,7 +64,7 @@ static synchronized void loadLibrary () {
 	loaded = true;
 	Toolkit.getDefaultToolkit();
 	/*
-	* Note that the jawt library is loaded explicitily
+	* Note that the jawt library is loaded explicitly
 	* because it cannot be found by the library loader.
 	* All exceptions are caught because the library may
 	* have been loaded already.
@@ -138,7 +138,7 @@ public static Frame new_Frame (final Composite parent) {
 	int handle = parent.handle;	
 	/*
 	 * Some JREs have implemented the embedded frame constructor to take an integer
-	 * and other JREs take a long.  To handle this binary incompatability, use
+	 * and other JREs take a long.  To handle this binary incompatibility, use
 	 * reflection to create the embedded frame.
 	 */
 	Class clazz = null;
