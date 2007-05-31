@@ -370,7 +370,7 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 			result = COM.CoCreateInstance(appClsid, 0, COM.CLSCTX_INPROC_HANDLER | COM.CLSCTX_INPROC_SERVER, COM.IIDIUnknown, ppv);
 			if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
 			objIUnknown = new IUnknown(ppv[0]);
-			// get the persistant storage of the ole client
+			// get the persistent storage of the ole client
 			ppv = new int[1];
 			result = objIUnknown.QueryInterface(COM.IIDIPersistStorage, ppv);
 			if (result != COM.S_OK) OLE.error(OLE.ERROR_CANNOT_CREATE_OBJECT, result);
@@ -791,7 +791,7 @@ public boolean isDirty() {
 	 * on the file system.
 	 */
 	
-	// Get access to the persistant storage mechanism
+	// Get access to the persistent storage mechanism
 	int[] address = new int[1];
 	if (objIOleObject.QueryInterface(COM.IIDIPersistFile, address) != COM.S_OK)
 		return true;
@@ -1145,7 +1145,7 @@ private int SaveObject() {
 	return COM.S_OK;
 }
 /**
- * Saves the document to the specified file and includes OLE spcific inforrmation.  This method 
+ * Saves the document to the specified file and includes OLE specific information.  This method 
  * must <b>only</b> be used for files that have an OLE Storage format.  For example, a word file 
  * edited with Word.Document should be saved using this method because there is formating information
  * that should be stored in the OLE specific Storage format.
@@ -1165,7 +1165,7 @@ private boolean saveToStorageFile(File file) {
 	if (file == null || file.isDirectory()) return false;
 	if (!updateStorage()) return false;
 	
-	// get access to the persistant storage mechanism
+	// get access to the persistent storage mechanism
 	int[] address = new int[1];
 	if (objIOleObject.QueryInterface(COM.IIDIPersistStorage, address) != COM.S_OK) return false;
 	IPersistStorage permStorage = new IPersistStorage(address[0]);

@@ -496,7 +496,7 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
 				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
-				                           // exact nuber of characters in name.  Reset it to a large number 
+				                           // exact number of characters in name.  Reset it to a large number 
 				                           // before each call.
 				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
 					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
@@ -521,7 +521,7 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
 				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
-				                           // exact nuber of characters in name.  Reset it to a large number 
+				                           // exact number of characters in name.  Reset it to a large number 
 				                           // before each call.
 				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
 					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
@@ -736,7 +736,7 @@ void setCurrentDocument(OleClientSite doc) {
  * <p>This method must be called before in place activation of the OLE Document.  After the Document
  * is activated, the menu bar will not be modified until a subsequent activation.
  *
- * @param fileMenus an array of top level MenuItems to be inserted into the Flie location of 
+ * @param fileMenus an array of top level MenuItems to be inserted into the File location of 
  *        the menubar
  */
 public void setFileMenus(MenuItem[] fileMenus){

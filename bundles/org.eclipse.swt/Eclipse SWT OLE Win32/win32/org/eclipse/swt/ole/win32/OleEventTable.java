@@ -14,7 +14,7 @@ package org.eclipse.swt.ole.win32;
 /**
 * The OleEventTable class implements a simple
 * look up mechanism that maps an event type
-* to a listener.  Muliple listeners for the
+* to a listener.  Multiple listeners for the
 * same event type are supported.
 *
 */

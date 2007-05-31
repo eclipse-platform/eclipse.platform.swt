@@ -178,7 +178,7 @@ public class OLE extends SWT {
 	/* Ole Description types */
 	public static final short VT_BOOL = 11;     // Boolean; True=-1, False=0.
 	public static final short VT_BSTR = 8;      // Binary String.
-	public static final short VT_BYREF = 16384; // By reference - must be combined with one of the othre VT values
+	public static final short VT_BYREF = 16384; // By reference - must be combined with one of the other VT values
 	public static final short VT_CY = 6;        // Currency.
 	public static final short VT_DATE = 7;      // Date.
 	public static final short VT_DISPATCH = 9;  // IDispatch
