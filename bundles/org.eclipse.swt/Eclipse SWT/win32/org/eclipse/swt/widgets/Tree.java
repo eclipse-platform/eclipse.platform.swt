@@ -6617,18 +6617,16 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 					if ((newItem.mask & OS.HDI_WIDTH) != 0) {
 						RECT rect = new RECT ();
 						OS.GetClientRect (handle, rect);
-						RECT headerRect = new RECT ();
-						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-						rect.right = Math.max (rect.right, headerRect.right);
-						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
-						int gridWidth = linesVisible ? GRID_WIDTH : 0;
-						rect.left = headerRect.right - gridWidth;
 						HDITEM oldItem = new HDITEM ();
 						oldItem.mask = OS.HDI_WIDTH;
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, oldItem);
 						int deltaX = newItem.cxy - oldItem.cxy;
+						RECT headerRect = new RECT ();
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, headerRect);
+						int gridWidth = linesVisible ? GRID_WIDTH : 0;
+						rect.left = headerRect.right - gridWidth;
+						int newX = rect.left + deltaX;
+						rect.right = Math.max (rect.right, rect.left + Math.abs (deltaX));
 						if (explorerTheme || (findImageControl () != null || hooks (SWT.EraseItem) || hooks (SWT.PaintItem))) {
 							OS.InvalidateRect (handle, rect, true);
 							OS.OffsetRect (rect, deltaX, 0);
@@ -6639,7 +6637,7 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 						}
 						if (OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, phdn.iItem, 0) != 0) {
 							rect.left = headerRect.left;
-							rect.right = headerRect.right;
+							rect.right = newX;
 							OS.InvalidateRect (handle, rect, true);
 						}
 						setScrollWidth ();
