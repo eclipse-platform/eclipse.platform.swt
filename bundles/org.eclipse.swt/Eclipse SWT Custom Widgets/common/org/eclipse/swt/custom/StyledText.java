@@ -165,7 +165,7 @@ public class StyledText extends Canvas {
 
 	/**
 	 * The Printing class implements printing of a range of text.
-	 * An instance of <class>Printing </class> is returned in the 
+	 * An instance of <code>Printing</code> is returned in the 
 	 * StyledText#print(Printer) API. The run() method may be 
 	 * invoked from any thread.
 	 */
@@ -195,7 +195,7 @@ public class StyledText extends Canvas {
 		int printMargin;
 
 	/**
-	 * Creates an instance of <class>Printing</class>.
+	 * Creates an instance of <code>Printing</code>.
 	 * Copies the widget content and rendering data that needs 
 	 * to be requested from listeners.
 	 * </p>
@@ -229,7 +229,7 @@ public class StyledText extends Canvas {
 	/**
 	 * Caches all line data that needs to be requested from a listener.
 	 * </p>
-	 * @param printerContent <class>StyledTextContent</class> to request 
+	 * @param printerContent <code>StyledTextContent</code> to request 
 	 * 	line data for.
 	 */
 	void cacheLineData(StyledText styledText) {
@@ -341,9 +341,9 @@ public class StyledText extends Canvas {
 		}
 	}
 	/**
-	 * Copies the text of the specified <class>StyledTextContent</class>.
+	 * Copies the text of the specified <code>StyledTextContent</code>.
 	 * </p>
-	 * @param original the <class>StyledTextContent</class> to copy.
+	 * @param original the <code>StyledTextContent</code> to copy.
 	 */
 	StyledTextContent copyContent(StyledTextContent original) {
 		StyledTextContent printerContent = new DefaultContent();
@@ -361,7 +361,7 @@ public class StyledText extends Canvas {
 		return printerContent;
 	}
 	/**
-	 * Disposes of the resources and the <class>PrintRenderer</class>.
+	 * Disposes of the resources and the <code>PrintRenderer</code>.
 	 */
 	void dispose() {
 		if (gc != null) {
@@ -1447,6 +1447,10 @@ public void addVerifyListener(VerifyListener verifyListener) {
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
  * 
+ * @see MovementEvent
+ * @see MovementListener
+ * @see #removeWordMovementListener
+ * 
  * @since 3.3 
  */
 public void addWordMovementListener(MovementListener movementListener) {
@@ -2268,8 +2272,6 @@ void doDeleteWordPrevious() {
  * Moves the caret one line down and to the same character offset relative 
  * to the beginning of the line. Move the caret to the end of the new line 
  * if the new line is shorter than the character offset.
- * 
- * @return index of the new line relative to the first line in the document
  */
 void doLineDown(boolean select) {
 	int caretLine = getCaretLine();
@@ -2358,8 +2360,6 @@ void doLineStart() {
  * Moves the caret one line up and to the same character offset relative 
  * to the beginning of the line. Move the caret to the end of the new line 
  * if the new line is shorter than the character offset.
- * 
- * @return index of the new line relative to the first line in the document
  */
 void doLineUp(boolean select) {
 	int caretLine = getCaretLine(), y = 0;
@@ -5314,13 +5314,13 @@ void handleTextChanged(TextChangedEvent event) {
 /**
  * Updates the screen to reflect a pending content change.
  *
- * @param event.start the start offset of the change
- * @param event.newText text that is going to be inserted or empty String 
+ * @param event .start the start offset of the change
+ * @param event .newText text that is going to be inserted or empty String 
  *	if no text will be inserted
- * @param event.replaceCharCount length of text that is going to be replaced
- * @param event.newCharCount length of text that is going to be inserted
- * @param event.replaceLineCount number of lines that are going to be replaced
- * @param event.newLineCount number of new lines that are going to be inserted
+ * @param event .replaceCharCount length of text that is going to be replaced
+ * @param event .newCharCount length of text that is going to be inserted
+ * @param event .replaceLineCount number of lines that are going to be replaced
+ * @param event .newLineCount number of new lines that are going to be inserted
  */
 void handleTextChanging(TextChangingEvent event) {
 	if (event.replaceCharCount < 0) {
@@ -5355,7 +5355,7 @@ void handleTextChanging(TextChangingEvent event) {
 	if (caretOffset > newEndOfText) caretOffset = newEndOfText;
 }
 /**
- * Called when the widget content is set programatically, overwriting 
+ * Called when the widget content is set programmatically, overwriting 
  * the old content. Resets the caret position, selection and scroll offsets. 
  * Recalculates the content width and scroll bars. Redraws the widget.
  *
@@ -5893,7 +5893,7 @@ public Runnable print(Printer printer, StyledTextPrintOptions options) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see Control#update
+ * @see Control#update()
  */
 public void redraw() {
 	super.redraw();
@@ -5930,7 +5930,7 @@ public void redraw() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see Control#update
+ * @see Control#update()
  */
 public void redraw(int x, int y, int width, int height, boolean all) {
 	super.redraw(x, y, width, height, all);
@@ -6186,6 +6186,10 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
+ * 
+ * @see MovementEvent
+ * @see MovementListener
+ * @see #addWordMovementListener
  * 
  * @since 3.3
  */
@@ -6600,7 +6604,7 @@ public void setAlignment(int alignment) {
 	super.redraw();
 }
 /**
- * @see org.eclipse.swt.widgets.Control#setBackground
+ * @see Control#setBackground(Color)
  */
 public void setBackground(Color color) {
 	checkWidget();
@@ -6792,7 +6796,7 @@ public void setContent(StyledTextContent newContent) {
  * argument.  Overridden to handle the null case since the 
  * StyledText widget uses an ibeam as its default cursor.
  *
- * @see org.eclipse.swt.widgets.Control#setCursor
+ * @see Control#setCursor(Cursor)
  */
 public void setCursor (Cursor cursor) {
 	if (cursor == null) {

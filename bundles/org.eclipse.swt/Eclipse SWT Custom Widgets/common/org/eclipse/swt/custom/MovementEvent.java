@@ -42,6 +42,12 @@ public class MovementEvent extends TypedEvent {
 	
 	/**
 	 * the movement type (input)
+	 * 
+	 * @see org.eclipse.swt.SWT#MOVEMENT_WORD
+	 * @see org.eclipse.swt.SWT#MOVEMENT_WORD_END 
+	 * @see org.eclipse.swt.SWT#MOVEMENT_WORD_START
+	 * @see org.eclipse.swt.SWT#MOVEMENT_CHAR
+	 * @see org.eclipse.swt.SWT#MOVEMENT_CLUSTER
 	 */
 	public int movement;
 	
