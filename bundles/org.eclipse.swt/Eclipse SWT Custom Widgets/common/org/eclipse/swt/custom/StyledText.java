@@ -1368,21 +1368,26 @@ public void addPaintObjectListener(PaintObjectListener listener) {
 }
 /**	 
  * Adds a selection listener. A Selection event is sent by the widget when the 
- * selection has changed.
+ * user changes the selection.
  * <p>
  * When <code>widgetSelected</code> is called, the event x and y fields contain
  * the start and end caret indices of the selection.
  * <code>widgetDefaultSelected</code> is not called for StyledTexts.
  * </p>
  * 
- * @param listener the listener
+ * @param listener the listener which should be notified when the user changes the receiver's selection
+
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
- * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
@@ -6116,16 +6121,21 @@ public void removePaintObjectListener(PaintObjectListener listener) {
 	removeListener(PaintObject, listener);
 }
 /**
- * Removes the specified selection listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the user changes the receiver's selection.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
- * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();

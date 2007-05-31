@@ -108,11 +108,11 @@ public Scale (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's value changes, by sending
+ * be notified when the user changes the receiver's value, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control's value changes.
+ * <code>widgetSelected</code> is called when the user changes the receiver's value.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -259,7 +259,7 @@ public int getSelection () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's value changes.
+ * be notified when the user changes the receiver's value.
  *
  * @param listener the listener which should no longer be notified
  *
