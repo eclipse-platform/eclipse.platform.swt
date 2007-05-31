@@ -1899,7 +1899,7 @@ public void pack (boolean changed) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
@@ -1945,7 +1945,7 @@ void redraw (boolean all) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
@@ -2917,7 +2917,7 @@ boolean setRadioSelection (boolean value) {
  * </ul>
  * 
  * @see #redraw(int, int, int, int, boolean)
- * @see #update
+ * @see #update()
  */
 public void setRedraw (boolean redraw) {
 	checkWidget ();
@@ -3517,7 +3517,7 @@ void unsubclass () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #redraw
+ * @see #redraw()
  * @see #redraw(int, int, int, int, boolean)
  * @see PaintListener
  * @see SWT#Paint

@@ -798,7 +798,7 @@ void fixToolTip () {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */
@@ -974,7 +974,7 @@ public Point getSize () {
 
 /**
  * Returns an array containing all shells which are 
- * descendents of the receiver.
+ * descendants of the receiver.
  * <p>
  * @return the dialog shells
  *
@@ -1057,7 +1057,7 @@ int hwndMDIClient () {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#setActive
  * @see Shell#forceActive
  */
@@ -1227,7 +1227,7 @@ LRESULT selectPalette (int hPalette) {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */

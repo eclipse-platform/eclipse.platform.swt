@@ -3945,7 +3945,7 @@ void setItemCount (int count, int hParent, int hItem) {
  * Sets the height of the area which would be used to
  * display <em>one</em> of the items in the tree.
  *
- * @return the height of one item
+ * @param itemHeight the height of one item
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -6001,7 +6001,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			}
 		}
 
-		/* Check for SHIFT or normal select and delect/reselect items */
+		/* Check for SHIFT or normal select and deselect/reselect items */
 		if ((wParam & OS.MK_CONTROL) == 0) {
 			if (!hittestSelected || !dragStarted) {
 				tvItem.state = 0;
@@ -6061,7 +6061,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
 	* the widget starts a modal loop to determine if the user wants
-	* to begin a drag/drop operation or marque select.  Unfortunately,
+	* to begin a drag/drop operation or marquee select.  Unfortunately,
 	* this modal loop eats the corresponding mouse up.  The fix is to
 	* detect the cases when the modal loop has eaten the mouse up and
 	* issue a fake mouse up.

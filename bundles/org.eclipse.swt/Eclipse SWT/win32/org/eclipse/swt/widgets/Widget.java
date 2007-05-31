@@ -163,7 +163,7 @@ void _addListener (int eventType, Listener listener) {
  *
  * @see Listener
  * @see SWT
- * @see #removeListener
+ * @see #removeListener(int, Listener)
  * @see #notifyListeners
  */
 public void addListener (int eventType, Listener listener) {
@@ -334,7 +334,7 @@ protected void checkWidget () {
  * or do nothing, depending on the widget.
  * <p>
  * When a widget is destroyed in the operating system, its
- * descendents are also destroyed by the operating system.
+ * descendants are also destroyed by the operating system.
  * This means that it is only necessary to call <code>destroyWidget</code>
  * on the root of the widget tree.
  * </p><p>
@@ -379,13 +379,13 @@ int DeferWindowPos(int hWinPosInfo, int hWnd, int hWndInsertAfter, int X, int Y,
 
 /**
  * Disposes of the operating system resources associated with
- * the receiver and all its descendents. After this method has
- * been invoked, the receiver and all descendents will answer
+ * the receiver and all its descendants. After this method has
+ * been invoked, the receiver and all descendants will answer
  * <code>true</code> when sent the message <code>isDisposed()</code>.
  * Any internal connections between the widgets in the tree will
  * have been removed to facilitate garbage collection.
  * <p>
- * NOTE: This method is not called recursively on the descendents
+ * NOTE: This method is not called recursively on the descendants
  * of the receiver. This means that, widget implementers can not
  * detect when a widget is being disposed of by re-implementing
  * this method, but should instead listen for the <code>Dispose</code>
@@ -698,7 +698,7 @@ GC new_GC (GCData data) {
  * 
  * @see SWT
  * @see #addListener
- * @see #removeListener
+ * @see #removeListener(int, Listener)
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
