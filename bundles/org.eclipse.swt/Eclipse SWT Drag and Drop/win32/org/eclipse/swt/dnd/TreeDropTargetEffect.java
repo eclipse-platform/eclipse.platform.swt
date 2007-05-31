@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.*;
  * when a drag occurs over a <code>Tree</code>.
  * 
  * <p>Classes that wish to provide their own drag under effect for a <code>Tree</code>
- * can extend the <code>DropTargetAdapter</code> class and override any applicable methods 
- * in <code>DropTargetAdapter</code> to display their own drag under effect.</p>
+ * can extend the <code>TreeDropTargetEffect</code> class and override any applicable methods 
+ * in <code>TreeDropTargetEffect</code> to display their own drag under effect.</p>
  *
  * Subclasses that override any methods of this class must call the corresponding
  * <code>super</code> method to get the default drag under effect implementation.

@@ -20,8 +20,8 @@ import org.eclipse.swt.widgets.*;
  * when a drag occurs over a <code>Table</code>.
  * 
  * <p>Classes that wish to provide their own drag under effect for a <code>StyledText</code>
- * can extend this class, override the <code>StyledTextDropTargetAdapter.dragOver</code>
- * method and override any other applicable methods in <code>DropTargetAdapter</code> to 
+ * can extend this class, override the <code>StyledTextDropTargetEffect.dragOver</code>
+ * method and override any other applicable methods in <code>StyledTextDropTargetEffect</code> to 
  * display their own drag under effect.</p>
  *
  * Subclasses that override any methods of this class should call the corresponding

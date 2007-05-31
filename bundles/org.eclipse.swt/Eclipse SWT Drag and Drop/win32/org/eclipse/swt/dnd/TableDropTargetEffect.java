@@ -19,8 +19,8 @@ import org.eclipse.swt.widgets.*;
  * when a drag occurs over a <code>Table</code>.
  * 
  * <p>Classes that wish to provide their own drag under effect for a <code>Table</code>
- * can extend the <code>DragTargetAdapter</code> and override any applicable methods 
- * in <code>DropTargetAdapter</code> to display their own drag under effect.</p>
+ * can extend the <code>TableDropTargetEffect</code> and override any applicable methods 
+ * in <code>TableDropTargetEffect</code> to display their own drag under effect.</p>
  * 
  * Subclasses that override any methods of this class must call the corresponding
  * <code>super</code> method to get the default drag under effect implementation.
