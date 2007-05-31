@@ -22,11 +22,14 @@ import org.eclipse.swt.events.*;
  * objects that allow the user to enter and modify numeric
  * values.
  * <p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add children to it, or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, Modify</dd>
+ * <dd>Selection, Modify, Verify</dd>
  * </dl>
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -95,7 +98,7 @@ public void addModifyListener (ModifyListener listener) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -103,7 +106,7 @@ public void addModifyListener (ModifyListener listener) {
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -490,7 +493,7 @@ public void removeModifyListener (ModifyListener listener) {
 }
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *

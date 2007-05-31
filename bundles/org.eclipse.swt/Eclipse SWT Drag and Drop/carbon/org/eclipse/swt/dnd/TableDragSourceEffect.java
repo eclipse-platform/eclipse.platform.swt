@@ -17,14 +17,14 @@ import org.eclipse.swt.widgets.*;
  * when a drag is initiated from a <code>Table</code>.
  * 
  * <p>Classes that wish to provide their own source image for a <code>Table</code> can
- * extend the <code>DragSourceAdapter</code> class, override the 
- * <code>DragSourceAdapter.dragStart</code> method and set the field 
+ * extend the <code>TableDragSourceEffect</code> class, override the 
+ * <code>TableDragSourceEffect.dragStart</code> method and set the field 
  * <code>DragSourceEvent.image</code> with their own image.</p>
  *
  * Subclasses that override any methods of this class must call the corresponding
  * <code>super</code> method to get the default drag source effect implementation.
  *
- * @see DragSourceAdapter
+ * @see DragSourceEffect
  * @see DragSourceEvent
  * 
  * @since 3.3
@@ -35,7 +35,7 @@ public class TableDragSourceEffect extends DragSourceEffect {
 	 * from the specified <code>Table</code>.
 	 *
 	 * @param table the <code>Table</code> that the user clicks on to initiate the drag
-	 **/
+	 */
 	public TableDragSourceEffect(Table table) {
 		super(table);
 	}

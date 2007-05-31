@@ -223,8 +223,8 @@ public void setScope(int scope) {
  * Returns the start page setting that the user selected
  * before pressing OK in the dialog.
  * <p>
- * Note that this value is one based and only valid if the scope is
- * <code>PAGE_RANGE</code>.
+ * This value can be from 1 to the maximum number of pages for the platform.
+ * Note that it is only valid if the scope is <code>PAGE_RANGE</code>.
  * </p>
  *
  * @return the start page setting that the user selected
@@ -237,8 +237,8 @@ public int getStartPage() {
  * Sets the start page that the user will see when the dialog
  * is opened.
  * <p>
- * Note that this value is one based and only valid if the scope is
- * <code>PAGE_RANGE</code>.
+ * This value can be from 1 to the maximum number of pages for the platform.
+ * Note that it is only valid if the scope is <code>PAGE_RANGE</code>.
  * </p>
  * 
  * @param startPage the startPage setting when the dialog is opened
@@ -251,8 +251,8 @@ public void setStartPage(int startPage) {
  * Returns the end page setting that the user selected
  * before pressing OK in the dialog.
  * <p>
- * Note that this value is one based and only valid if the scope is
- * <code>PAGE_RANGE</code>.
+ * This value can be from 1 to the maximum number of pages for the platform.
+ * Note that it is only valid if the scope is <code>PAGE_RANGE</code>.
  * </p>
  *
  * @return the end page setting that the user selected
@@ -265,8 +265,8 @@ public int getEndPage() {
  * Sets the end page that the user will see when the dialog
  * is opened.
  * <p>
- * Note that this value is one based and only valid if the scope is
- * <code>PAGE_RANGE</code>.
+ * This value can be from 1 to the maximum number of pages for the platform.
+ * Note that it is only valid if the scope is <code>PAGE_RANGE</code>.
  * </p>
  * 
  * @param endPage the end page setting when the dialog is opened

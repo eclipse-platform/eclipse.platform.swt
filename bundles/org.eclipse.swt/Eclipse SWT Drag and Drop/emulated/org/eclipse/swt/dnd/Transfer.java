@@ -50,19 +50,19 @@ abstract public TransferData[] getSupportedTypes();
 abstract public boolean isSupportedType(TransferData transferData);
 
 /**
- * Returns the platform specfic names of the  data types that can be converted 
+ * Returns the platform specific names of the  data types that can be converted 
  * using this transfer agent.
  * 
- * @return the platform specfic names of the data types that can be converted 
+ * @return the platform specific names of the data types that can be converted 
  * using this transfer agent.
  */
 abstract protected String[] getTypeNames();
 
 /**
- * Returns the platform specfic ids of the  data types that can be converted using 
+ * Returns the platform specific ids of the  data types that can be converted using 
  * this transfer agent.
  * 
- * @return the platform specfic ids of the data types that can be converted using 
+ * @return the platform specific ids of the data types that can be converted using 
  * this transfer agent
  */
 abstract protected int[] getTypeIds();
@@ -89,7 +89,7 @@ abstract protected int[] getTypeIds();
  * </ul></p>
  *
  * @param object a java representation of the data to be converted; the type of
- * Object that is passed in is dependant on the <code>Transfer</code> subclass.
+ * Object that is passed in is dependent on the <code>Transfer</code> subclass.
  *
  * @param transferData an empty TransferData object; this object will be 
  * filled in on return with the platform specific representation of the data
@@ -109,7 +109,7 @@ abstract protected void javaToNative (Object object, TransferData transferData);
  * @return a java representation of the converted data if the conversion was 
  * successful; otherwise null.  If transferData is <code>null</code> then
  * <code>null</code> is returned.  The type of Object that is returned is 
- * dependant on the <code>Transfer</code> subclass.
+ * dependent on the <code>Transfer</code> subclass.
  */
 abstract protected Object nativeToJava(TransferData transferData);
 

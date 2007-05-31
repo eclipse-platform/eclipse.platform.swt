@@ -42,7 +42,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>DROP_DOWN, READ_ONLY, SIMPLE</dd>
  * <dt><b>Events:</b></dt>
- * <dd>DefaultSelection, Modify, Selection</dd>
+ * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles DROP_DOWN and SIMPLE may be specified.
@@ -356,11 +356,11 @@ public void addModifyListener (ModifyListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the combo's list selection changes.
+ * <code>widgetSelected</code> is called when the user changes the combo's list selection.
  * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed the combo's text area.
  * </p>
  *
@@ -1051,7 +1051,7 @@ public void removeModifyListener (ModifyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1126,9 +1126,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 /**
  * Sets the text of the item in the receiver's list at the given
- * zero-relative index to the string argument. This is equivalent
- * to removing the old item at the index, and then adding the new
- * item at that index.
+ * zero-relative index to the string argument.
  *
  * @param index the index for the item
  * @param string the new text for the item

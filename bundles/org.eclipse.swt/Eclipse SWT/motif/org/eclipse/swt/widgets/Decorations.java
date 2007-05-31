@@ -264,7 +264,7 @@ int dialogHandle () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #setDefaultButton
+ * @see #setDefaultButton(Button)
  */
 public Button getDefaultButton () {
 	checkWidget();

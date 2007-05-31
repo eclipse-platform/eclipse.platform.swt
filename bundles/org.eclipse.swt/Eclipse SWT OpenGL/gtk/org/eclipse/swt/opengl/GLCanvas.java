@@ -19,8 +19,6 @@ import org.eclipse.swt.internal.opengl.glx.*;
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
  * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
  * @since 3.2
  */
 
@@ -43,10 +41,6 @@ public class GLCanvas extends Canvas {
  * <ul><li>ERROR_NULL_ARGUMENT when the data is null
  *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);	
@@ -189,10 +183,6 @@ public GLCanvas (Composite parent, int style, GLData data) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public GLData getGLData () {
 	checkWidget ();
@@ -241,10 +231,6 @@ public GLData getGLData () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public boolean isCurrent () {
 	checkWidget ();
@@ -259,10 +245,6 @@ public boolean isCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public void setCurrent () {
 	checkWidget ();
@@ -279,10 +261,6 @@ public void setCurrent () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
- * 
- * @since 3.2
  */
 public void swapBuffers () {
 	checkWidget ();

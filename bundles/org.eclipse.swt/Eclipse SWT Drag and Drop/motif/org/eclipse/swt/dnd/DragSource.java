@@ -138,7 +138,7 @@ public class DragSource extends Widget {
  * </ul>
  * 
  * <p>NOTE: ERROR_CANNOT_INIT_DRAG should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see Widget#dispose
  * @see DragSource#checkSubclass
@@ -469,7 +469,7 @@ public Control getControl () {
 }
 /**
  * Returns the drag effect that is registered for this DragSource.  This drag
- * effect will be used during a drag and drop event to display the drag source image.
+ * effect will be used during a drag and drop operation.
  *
  * @return the drag effect that is registered for this DragSource
  * 
@@ -548,7 +548,7 @@ public void removeDragListener(DragSourceListener listener) {
 }
 /**
  * Specifies the drag effect for this DragSource.  This drag effect will be 
- * used during a drag and drop to display the drag source image.
+ * used during a drag and drop operation.
  *
  * @param effect the drag effect that is registered for this DragSource
  * 

@@ -116,7 +116,7 @@ public void setMessage (String string) {
  * of the display.
  *
  * @return the ID of the button that was selected to dismiss the
- *         message box (e.g. SWT.OK, SWT.CANCEL, etc...)
+ *         message box (e.g. SWT.OK, SWT.CANCEL, etc.)
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>

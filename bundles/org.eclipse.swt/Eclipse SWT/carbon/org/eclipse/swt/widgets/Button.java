@@ -92,11 +92,11 @@ public Button (Composite parent, int style) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
- * <code>widgetSelected</code> is called when the control is selected.
+ * <code>widgetSelected</code> is called when the control is selected by the user.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
@@ -437,7 +437,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -570,7 +570,12 @@ void setDefault (boolean value) {
 /**
  * Sets the receiver's image to the argument, which may be
  * <code>null</code> indicating that no image should be displayed.
- *
+ * <p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
+ * </p>
  * @param image the image to display on the receiver (may be <code>null</code>)
  *
  * @exception IllegalArgumentException <ul>
@@ -667,12 +672,16 @@ public void setSelection (boolean selected) {
  * character to be the mnemonic.  When the user presses a
  * key sequence that matches the mnemonic, a selection
  * event occurs. On most platforms, the mnemonic appears
- * underlined but may be emphasised in a platform specific
+ * underlined but may be emphasized in a platform specific
  * manner.  The mnemonic indicator character '&amp;' can be
  * escaped by doubling it in the string, causing a single
  * '&amp;' to be displayed.
+ * </p><p>
+ * Note that a Button can display an image and text simultaneously
+ * on Windows (starting with XP), GTK+ and OSX.  On other platforms,
+ * a Button that has an image and text set into it will display the
+ * image or text that was set most recently.
  * </p>
- * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

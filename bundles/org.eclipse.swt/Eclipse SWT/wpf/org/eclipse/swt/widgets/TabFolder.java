@@ -95,7 +95,7 @@ void addChild (Control widget) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver's selection changes, by sending
+ * be notified when the user changes the receiver's selection, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -103,7 +103,7 @@ void addChild (Control widget) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the user changes the receiver's selection
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -399,7 +399,7 @@ void hookEvents () {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -512,7 +512,7 @@ void removeControl (Control control) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver's selection changes.
+ * be notified when the user changes the receiver's selection.
  *
  * @param listener the listener which should no longer be notified
  *

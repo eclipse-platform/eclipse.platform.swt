@@ -106,7 +106,7 @@ public void addMenuDetectListener (MenuDetectListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the receiver is selected, by sending
+ * be notified when the receiver is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -114,7 +114,7 @@ public void addMenuDetectListener (MenuDetectListener listener) {
  * <code>widgetDefaultSelected</code> is called when the receiver is double-clicked
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the receiver is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -365,7 +365,7 @@ public void removeMenuDetectListener (MenuDetectListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the receiver is selected.
+ * be notified when the receiver is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *

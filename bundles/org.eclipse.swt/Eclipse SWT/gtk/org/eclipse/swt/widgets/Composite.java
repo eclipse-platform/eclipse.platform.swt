@@ -800,7 +800,13 @@ boolean isTabGroup() {
  * <p>
  * This is equivalent to calling <code>layout(true)</code>.
  * </p>
- *
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -826,7 +832,14 @@ public void layout () {
  * will cascade down through all child widgets in the receiver's widget 
  * tree until a child is encountered that does not resize.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  *
@@ -857,7 +870,14 @@ public void layout (boolean changed) {
  * tree.  However, if a child is resized as a result of a call to layout, the 
  * resize event will invoke the layout of the child.  Note that 
  * a layout due to a resize will not flush any cached information 
- * (same as <code>layout(false)</code>).</p>
+ * (same as <code>layout(false)</code>).
+ * </p>
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  *
  * @param changed <code>true</code> if the layout must flush its caches, and <code>false</code> otherwise
  * @param all <code>true</code> if all children in the receiver's widget tree should be laid out, and <code>false</code> otherwise
@@ -884,6 +904,12 @@ public void layout (boolean changed, boolean all) {
  * (potentially) optimize the work it is doing by assuming that none of the 
  * peers of the changed control have changed state since the last layout.
  * If an ancestor does not have a layout, skip it.
+ * <p>
+ * Note: Layout is different from painting. If a child is
+ * moved or resized such that an area in the parent is
+ * exposed, then the parent will paint. If no child is
+ * affected, the parent will not paint.
+ * </p>
  * 
  * @param changed a control that has had a state change which requires a recalculation of its size
  * 

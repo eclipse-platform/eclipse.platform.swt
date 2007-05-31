@@ -169,7 +169,7 @@ int actionProc (int theControl, int partCode) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -178,7 +178,7 @@ int actionProc (int theControl, int partCode) {
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user,
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -848,7 +848,7 @@ void releaseWidget () {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1010,7 +1010,7 @@ void setForeground (float [] color) {
  * Sets the receiver's disabled image to the argument, which may be
  * null indicating that no disabled image should be displayed.
  * <p>
- * The disbled image is displayed when the receiver is disabled.
+ * The disabled image is displayed when the receiver is disabled.
  * </p>
  *
  * @param image the disabled image to display on the receiver (may be null)

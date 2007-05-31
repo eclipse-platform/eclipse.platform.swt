@@ -90,8 +90,8 @@ GC() {
 /**	 
  * Constructs a new instance of this class which has been
  * configured to draw on the specified drawable. Sets the
- * foreground and background color in the GC to match those
- * in the drawable.
+ * foreground color, background color and font in the GC
+ * to match those in the drawable.
  * <p>
  * You must dispose the graphics context when it is no longer required. 
  * </p>
@@ -115,8 +115,8 @@ public GC(Drawable drawable) {
 /**	 
  * Constructs a new instance of this class which has been
  * configured to draw on the specified drawable. Sets the
- * foreground and background color in the GC to match those
- * in the drawable.
+ * foreground color, background color and font in the GC
+ * to match those in the drawable.
  * <p>
  * You must dispose the graphics context when it is no longer required. 
  * </p>
@@ -694,7 +694,12 @@ public void drawOval (int x, int y, int width, int height) {
 
 /** 
  * Draws the path described by the parameter.
- *
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
  * @param path the path to draw
  *
  * @exception IllegalArgumentException <ul>
@@ -703,6 +708,7 @@ public void drawOval (int x, int y, int width, int height) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
  * @see Path
@@ -1047,7 +1053,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
  * @param string the string to be drawn
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
  * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
- * @param flags the flags specifing how to process the text
+ * @param flags the flags specifying how to process the text
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
@@ -1311,6 +1317,11 @@ public void fillOval (int x, int y, int width, int height) {
 
 /** 
  * Fills the path described by the parameter.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  *
  * @param path the path to fill
  *
@@ -1320,6 +1331,7 @@ public void fillOval (int x, int y, int width, int height) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
  * @see Path
@@ -1490,6 +1502,7 @@ public int getAdvanceWidth(char ch) {
  * </ul>
  * 
  * @see #setAdvanced
+ * 
  * @since 3.1
  */
 public boolean getAdvanced() {
@@ -1866,7 +1879,7 @@ public int getLineCap() {
  * Returns the receiver's line dash style. The default value is
  * <code>null</code>.
  *
- * @return the lin dash style used for drawing lines
+ * @return the line dash style used for drawing lines
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -2116,8 +2129,7 @@ public boolean isDisposed() {
  * advanced and normal graphics operations.  Because the two subsystems are
  * different, their output may differ.  Switching to advanced graphics before
  * any graphics operations are performed ensures that the output is consistent.
- * </p>
- * <p>
+ * </p><p>
  * Advanced graphics may not be installed for the operating system.  In this
  * case, this operation does nothing.  Some operating system have only one
  * graphics subsystem, so switching from normal to advanced graphics does
@@ -2137,6 +2149,7 @@ public boolean isDisposed() {
  * @see #setBackgroundPattern
  * @see #setClipping(Path)
  * @see #setForegroundPattern
+ * @see #setLineAttributes
  * @see #setInterpolation
  * @see #setTextAntialias
  * @see #setTransform
@@ -2163,6 +2176,11 @@ public void setAdvanced(boolean advanced) {
  * which must be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code>
  * or <code>SWT.ON</code>. Note that this controls anti-aliasing for all
  * <em>non-text drawing</em> operations.
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  *
  * @param antialias the anti-aliasing setting
  *
@@ -2172,8 +2190,11 @@ public void setAdvanced(boolean advanced) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
+ * @see #getAdvanced
+ * @see #setAdvanced
  * @see #setTextAntialias
  * 
  * @since 3.1
@@ -2193,12 +2214,20 @@ public void setAntialias(int antialias) {
 
 /**
  * Sets the receiver's alpha value.
- *
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * @param alpha the alpha value
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
+ * 
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -2235,7 +2264,12 @@ public void setBackground (Color color) {
 
 /** 
  * Sets the background pattern. The default value is <code>null</code>.
- *
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
  * @param pattern the new background pattern
  *
  * @exception IllegalArgumentException <ul>
@@ -2243,9 +2277,12 @@ public void setBackground (Color color) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
  * @see Pattern
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -2292,8 +2329,13 @@ public void setClipping (int x, int y, int width, int height) {
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the path specified
- * by the argument.
- *
+ * by the argument.  
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
  * @param path the clipping path.
  * 
  * @exception IllegalArgumentException <ul>
@@ -2301,9 +2343,12 @@ public void setClipping (int x, int y, int width, int height) {
  * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
  * @see Path
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -2438,7 +2483,11 @@ public void setForeground (Color color) {
 
 /** 
  * Sets the foreground pattern. The default value is <code>null</code>.
- *
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * @param pattern the new foreground pattern
  *
  * @exception IllegalArgumentException <ul>
@@ -2446,9 +2495,12 @@ public void setForeground (Color color) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
  * @see Pattern
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -2464,7 +2516,12 @@ public void setForegroundPattern (Pattern pattern) {
  * Sets the receiver's interpolation setting to the parameter, which
  * must be one of <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>, 
  * <code>SWT.LOW</code> or <code>SWT.HIGH</code>.
- *
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
  * @param interpolation the new interpolation setting
  *
  * @exception IllegalArgumentException <ul>
@@ -2473,7 +2530,11 @@ public void setForegroundPattern (Pattern pattern) {
  * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
+ * 
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -2492,7 +2553,11 @@ public void setInterpolation(int interpolation) {
 
 /**
  * Sets the receiver's line attributes.
- *
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
  * @param attributes the line attributes
  *
  * @exception IllegalArgumentException <ul>
@@ -2501,7 +2566,12 @@ public void setInterpolation(int interpolation) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
+ * 
+ * @see LineAttributes
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.3
  */
@@ -2798,7 +2868,12 @@ public void setXORMode(boolean xor) {
  * which must be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code>
  * or <code>SWT.ON</code>. Note that this controls anti-aliasing only
  * for all <em>text drawing</em> operations.
- *
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
  * @param antialias the anti-aliasing setting
  *
  * @exception IllegalArgumentException <ul>
@@ -2807,8 +2882,11 @@ public void setXORMode(boolean xor) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
+ * @see #getAdvanced
+ * @see #setAdvanced
  * @see #setAntialias
  * 
  * @since 3.1
@@ -2826,11 +2904,16 @@ public void setTextAntialias(int antialias) {
 	data.textAntialias = antialias;
 }
 
-/** 
+/**
  * Sets the transform that is currently being used by the receiver. If
  * the argument is <code>null</code>, the current transform is set to
  * the identity transform.
- *
+ * <p>
+ * This operation requires the operating system's advanced
+ * graphics subsystem which may not be available on some
+ * platforms.
+ * </p>
+ * 
  * @param transform the transform to set
  * 
  * @exception IllegalArgumentException <ul>
@@ -2838,9 +2921,12 @@ public void setTextAntialias(int antialias) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
  * </ul>
  * 
  * @see Transform
+ * @see #getAdvanced
+ * @see #setAdvanced
  * 
  * @since 3.1
  */
@@ -2918,7 +3004,7 @@ public Point textExtent(String string) {
  * </p>
  *
  * @param string the string to measure
- * @param flags the flags specifing how to process the text
+ * @param flags the flags specifying how to process the text
  * @return a point containing the extent of the string
  *
  * @exception IllegalArgumentException <ul>

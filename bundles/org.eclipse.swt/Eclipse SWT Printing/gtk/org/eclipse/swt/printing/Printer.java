@@ -355,28 +355,10 @@ public void internal_dispose_GC(int /*long*/ gdkGC, GCData data) {
 	}
 }
 
-/**
- * Releases any internal resources back to the operating
- * system and clears all fields except the device handle.
- * <p>
- * When a device is destroyed, resources that were acquired
- * on behalf of the programmer need to be returned to the
- * operating system.  For example, if the device allocated a
- * font to be used as the system font, this font would be
- * freed in <code>release</code>.  Also,to assist the garbage
- * collector and minimize the amount of memory that is not
- * reclaimed when the programmer keeps a reference to a
- * disposed device, all fields except the handle are zero'd.
- * The handle is needed by <code>destroy</code>.
- * </p>
- * This method is called before <code>destroy</code>.
- * </p><p>
- * If subclasses reimplement this method, they must
- * call the <code>super</code> implementation.
- * </p>
- *
- * @see #dispose
- * @see #destroy
+/**	 
+ * Releases any internal state prior to destroying this printer.
+ * This method is called internally by the dispose
+ * mechanism of the <code>Device</code> class.
  */
 protected void release () {
 	super.release();
@@ -394,10 +376,6 @@ protected void release () {
  * followed by any number of startPage/endPage calls, followed by
  * endJob. Calling startPage, endPage, or endJob before startJob
  * will result in undefined behavior.
- * </p><p>
- * Also, this must be called before creating any GCs on the printer.
- * Calling new GC(printer) before startJob will result in undefined
- * behavior.
  * </p>
  * 
  * @param jobName the name of the print job to start
@@ -431,19 +409,10 @@ public boolean startJob(String jobName) {
 	return true;
 }
 
-/**
- * Destroys the device in the operating system and releases
- * the device's handle.  If the device does not have a handle,
- * this method may do nothing depending on the device.
- * <p>
- * This method is called after <code>release</code>.
- * </p><p>
- * Subclasses are supposed to reimplement this method and not
- * call the <code>super</code> implementation.
- * </p>
- *
- * @see #dispose
- * @see #release
+/**	 
+ * Destroys the printer handle.
+ * This method is called internally by the dispose
+ * mechanism of the <code>Device</code> class.
  */
 protected void destroy () {
 	if (printer != 0) OS.g_object_unref (printer);
@@ -561,7 +530,7 @@ public Point getDPI() {
 
 /**
  * Returns a rectangle describing the receiver's size and location.
- * For a printer, this is the size of a page, in pixels.
+ * For a printer, this is the size of a physical page, in pixels.
  *
  * @return the bounding rectangle
  *
@@ -615,10 +584,11 @@ public Rectangle getClientArea() {
  * (that is, not covered by the "trimmings") would be the
  * rectangle described by the arguments (relative to the
  * receiver's parent).
- * </p>
+ * </p><p>
  * Note that there is no setBounds for a printer. This method
  * is usually used by passing in the client area (the 'printable
  * area') of the printer. It can also be useful to pass in 0, 0, 0, 0.
+ * </p>
  * 
  * @param x the desired x coordinate of the client area
  * @param y the desired y coordinate of the client area

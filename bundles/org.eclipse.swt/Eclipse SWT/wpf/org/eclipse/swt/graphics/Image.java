@@ -1028,7 +1028,7 @@ public int internal_new_GC (GCData data) {
  * application code.
  * </p>
  *
- * @param dc the platform specific GC handle
+ * @param hDC the platform specific GC handle
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC (int dc, GCData data) {

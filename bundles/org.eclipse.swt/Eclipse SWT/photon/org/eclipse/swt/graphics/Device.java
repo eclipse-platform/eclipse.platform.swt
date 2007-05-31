@@ -526,6 +526,22 @@ public boolean isDisposed () {
 	return disposed;
 }
 
+/**
+ * Loads the font specified by a file.  The font will be
+ * present in the list of fonts available to the application.
+ *
+ * @param path the font file path
+ * @return whether the font was successfully loaded
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if path is null</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see Font
+ * 
+ * @since 3.3
+ */
 public boolean loadFont (String path) {
 	checkDevice();
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

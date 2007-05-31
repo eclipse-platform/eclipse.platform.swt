@@ -14,6 +14,35 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * This class provides a default drag under effect (eg. select, insert and scroll) 
+ * when a drag occurs over a <code>Table</code>.
+ * 
+ * <p>Classes that wish to provide their own drag under effect for a <code>Table</code>
+ * can extend the <code>TableDropTargetEffect</code> and override any applicable methods 
+ * in <code>TableDropTargetEffect</code> to display their own drag under effect.</p>
+ * 
+ * Subclasses that override any methods of this class must call the corresponding
+ * <code>super</code> method to get the default drag under effect implementation.
+ *
+ * <p>The feedback value is either one of the FEEDBACK constants defined in 
+ * class <code>DND</code> which is applicable to instances of this class, 
+ * or it must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>DND</code> effect constants. 
+ * </p>
+ * <p>
+ * <dl>
+ * <dt><b>Feedback:</b></dt>
+ * <dd>FEEDBACK_SELECT, FEEDBACK_SCROLL</dd>
+ * </dl>
+ * </p>
+ * 
+ * @see DropTargetAdapter
+ * @see DropTargetEvent
+ * 
+ * @since 3.3
+ */
 public class TableDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 	

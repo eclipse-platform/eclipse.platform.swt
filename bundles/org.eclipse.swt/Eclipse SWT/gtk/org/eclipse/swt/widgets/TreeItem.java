@@ -878,6 +878,21 @@ public String getText (int index) {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
+/**
+ * Returns a rectangle describing the size and location
+ * relative to its parent of the text at a column in the
+ * tree.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding text rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
 public Rectangle getTextBounds (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -950,8 +965,8 @@ public Rectangle getTextBounds (int index) {
  * @return the index of the item
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

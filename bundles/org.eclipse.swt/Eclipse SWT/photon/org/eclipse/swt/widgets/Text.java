@@ -23,12 +23,13 @@ import org.eclipse.swt.events.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>CENTER, LEFT, MULTI, PASSWORD, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
+ * <dd>CANCEL, CENTER, LEFT, MULTI, PASSWORD, SEARCH, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles MULTI and SINGLE may be specified. 
+ * Note: Only one of the styles MULTI and SINGLE may be specified,
+ * and only one of the styles LEFT, CENTER, and RIGHT may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -253,15 +254,17 @@ public void addModifyListener (ModifyListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the control is selected by the user, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
  * <code>widgetSelected</code> is not called for texts.
- * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text.
+ * <code>widgetDefaultSelected</code> is typically called when ENTER is pressed in a single-line text,
+ * or when ENTER is pressed in a search text. If the receiver has the <code>SWT.SEARCH | SWT.CANCEL</code> style
+ * and the user cancels the search, the event object detail field contains the value <code>SWT.CANCEL</code>.
  * </p>
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should be notified when the control is selected by the user
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -617,6 +620,25 @@ public int getLineHeight () {
 	return extent.lr_y - extent.ul_y + 1 + args [4];
 }
 
+/**
+ * Returns the widget message. When the widget is created
+ * with the style <code>SWT.SEARCH</code>, the message text
+ * is displayed as a hint for the user, indicating the
+ * purpose of the field.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not
+ * supported on platforms that do not have this concept.
+ * </p>
+ * 
+ * @return the widget message
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
 public String getMessage () {
 	checkWidget ();
 	return message;
@@ -1107,7 +1129,7 @@ public void removeModifyListener (ModifyListener listener) {
 
 /**
  * Removes the listener from the collection of listeners who will
- * be notified when the control is selected.
+ * be notified when the control is selected by the user.
  *
  * @param listener the listener which should no longer be notified
  *
@@ -1254,6 +1276,28 @@ public void setFont (Font font) {
 	setTabStops (tabs);
 }
 
+/**
+ * Sets the widget message. When the widget is created
+ * with the style <code>SWT.SEARCH</code>, the message text
+ * is displayed as a hint for the user, indicating the
+ * purpose of the field.
+ * <p>
+ * Note: This operation is a <em>HINT</em> and is not
+ * supported on platforms that do not have this concept.
+ * </p>
+ * 
+ * @param message the new message
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the message is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
 public void setMessage (String message) {
 	checkWidget ();
 	if (message == null) error (SWT.ERROR_NULL_ARGUMENT);

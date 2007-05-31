@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.wpf.*;
 
 /**
- * Instances of the receiver represent is an unselectable
+ * Instances of the receiver represent an unselectable
  * user interface object that is used to display progress,
  * typically in the form of a bar.
  * <dl>
@@ -120,7 +120,7 @@ public int getMaximum () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li >ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public int getMinimum () {

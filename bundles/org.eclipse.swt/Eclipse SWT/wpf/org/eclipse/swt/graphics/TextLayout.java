@@ -274,6 +274,33 @@ public void draw (GC gc, int x, int y) {
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
 	draw(gc, x, y, selectionStart, selectionEnd, selectionForeground, selectionBackground, 0);
 }
+/**
+ * Draws the receiver's text using the specified GC at the specified
+ * point.
+ * <p>
+ * The parameter <code>flags</code> can include one of <code>SWT.DELIMITER_SELECTION</code>
+ * or <code>SWT.FULL_SELECTION</code> to specify the selection behavior on all lines except
+ * for the last line, and can also include <code>SWT.LAST_LINE_SELECTION</code> to extend
+ * the specified selection behavior to the last line.
+ * </p>
+ * @param gc the GC to draw
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param selectionStart the offset where the selections starts, or -1 indicating no selection
+ * @param selectionEnd the offset where the selections ends, or -1 indicating no selection
+ * @param selectionForeground selection foreground, or NULL to use the system default color
+ * @param selectionBackground selection background, or NULL to use the system default color
+ * @param flags drawing options
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
+ * 
+ * @since 3.3
+ */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
 	computeRuns();
@@ -610,7 +637,7 @@ public boolean getJustify () {
  * embedding level is usually used to determine the directionality of a
  * character in bidirectional text.
  * 
- * @param offset the charecter offset
+ * @param offset the character offset
  * @return the embedding level
  * 
  * @exception IllegalArgumentException <ul>
@@ -843,7 +870,8 @@ public Point getLocation (int offset, boolean trailing) {
 /**
  * Returns the next offset for the specified offset and movement
  * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
- * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
+ * <code>SWT.MOVEMENT_CLUSTER</code>, <code>SWT.MOVEMENT_WORD</code>,
+ * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
  * 
  * @param offset the start offset
  * @param movement the movement type 
@@ -1028,7 +1056,8 @@ public int getOrientation () {
 /**
  * Returns the previous offset for the specified offset and movement
  * type.  The movement is one of <code>SWT.MOVEMENT_CHAR</code>, 
- * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>.
+ * <code>SWT.MOVEMENT_CLUSTER</code> or <code>SWT.MOVEMENT_WORD</code>,
+ * <code>SWT.MOVEMENT_WORD_END</code> or <code>SWT.MOVEMENT_WORD_START</code>.
  * 
  * @param offset the start offset
  * @param movement the movement type 

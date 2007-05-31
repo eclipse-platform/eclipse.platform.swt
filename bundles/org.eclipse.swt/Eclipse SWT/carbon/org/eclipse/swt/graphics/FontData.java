@@ -92,7 +92,7 @@ public final class FontData {
 	String lang, country, variant;
 	
 /**	 
- * Constructs a new un-initialized font data.
+ * Constructs a new uninitialized font data.
  */
 public FontData () {
 	this("", 12, SWT.NORMAL);
@@ -222,7 +222,7 @@ public boolean equals (Object object) {
  *
  * @return the height of this FontData
  *
- * @see #setHeight
+ * @see #setHeight(int)
  */
 public int getHeight() {
 	return (int)height;

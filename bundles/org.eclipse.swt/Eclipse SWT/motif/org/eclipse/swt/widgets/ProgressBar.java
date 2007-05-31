@@ -16,7 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * Instances of the receiver represent is an unselectable
+ * Instances of the receiver represent an unselectable
  * user interface object that is used to display progress,
  * typically in the form of a bar.
  * <dl>

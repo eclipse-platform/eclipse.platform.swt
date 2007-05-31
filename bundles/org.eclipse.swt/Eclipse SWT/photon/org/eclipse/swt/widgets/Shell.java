@@ -541,7 +541,7 @@ Composite findDeferredControl () {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */
@@ -674,7 +674,7 @@ public Shell getShell () {
 
 /**
  * Returns an array containing all shells which are 
- * descendents of the receiver.
+ * descendants of the receiver.
  * <p>
  * @return the dialog shells
  *
@@ -760,7 +760,7 @@ int hotkeyProc (int w, int data, int info) {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#setActive
  * @see Shell#forceActive
  */
@@ -911,7 +911,7 @@ public void removeShellListener (ShellListener listener) {
  * @see Control#setFocus
  * @see Control#setVisible
  * @see Display#getActiveShell
- * @see Decorations#setDefaultButton
+ * @see Decorations#setDefaultButton(Button)
  * @see Shell#open
  * @see Shell#setActive
  */

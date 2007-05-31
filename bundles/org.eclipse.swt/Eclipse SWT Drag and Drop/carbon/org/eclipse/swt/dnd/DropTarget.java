@@ -132,7 +132,7 @@ public class DropTarget extends Widget {
  * </ul>
  *
  * <p>NOTE: ERROR_CANNOT_INIT_DROP should be an SWTException, since it is a
- * recoverable error, but can not be changed due to backward compatability.</p>
+ * recoverable error, but can not be changed due to backward compatibility.</p>
  * 
  * @see Widget#dispose
  * @see DropTarget#checkSubclass
@@ -524,7 +524,7 @@ public Control getControl () {
  * Returns the drop effect for this DropTarget.  This drop effect will be 
  * used during a drag and drop to display the drag under effect on the 
  * target widget.
- * 
+ *
  * @return the drop effect that is registered for this DropTarget
  * 
  * @since 3.3

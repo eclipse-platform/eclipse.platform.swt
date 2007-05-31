@@ -24,9 +24,8 @@ import org.eclipse.swt.accessibility.*;
  * <dd>BORDER</dd>
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
- * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse,
- *     DragDetect, MenuDetect</dd>
+ * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
  * </dl>
  * </p><p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
@@ -201,7 +200,18 @@ public void addHelpListener (HelpListener listener) {
  * be notified when keys are pressed and released on the system keyboard, by sending
  * it one of the messages defined in the <code>KeyListener</code>
  * interface.
- *
+ * <p>
+ * When a key listener is added to a control, the control
+ * will take part in widget traversal.  By default, all
+ * traversal keys (such as the tab key and so on) are
+ * delivered to the control.  In order for a control to take
+ * part in traversal, it should listen for traversal events.
+ * Otherwise, the user can traverse into a control but not
+ * out.  Note that native controls such as table and tree
+ * implement key traversal in the operating system.  It is
+ * not necessary to add traversal listeners for these controls,
+ * unless you want to override the default traversal.
+ * </p>
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
@@ -623,12 +633,84 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *  
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
 public boolean dragDetect (Event event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return dragDetect (event.button, event.count, event.stateMask, event.x, event.y);
 }
 
+/**
+ * Detects a drag and drop gesture.  This method is used
+ * to detect a drag gesture when called from within a mouse
+ * down listener.
+ * 
+ * <p>By default, a drag is detected when the gesture
+ * occurs anywhere within the client area of a control.
+ * Some controls, such as tables and trees, override this
+ * behavior.  In addition to the operating system specific
+ * drag gesture, they require the mouse to be inside an
+ * item.  Custom widget writers can use <code>setDragDetect</code>
+ * to disable the default detection, listen for mouse down,
+ * and then call <code>dragDetect()</code> from within the
+ * listener to conditionally detect a drag.
+ * </p>
+ *
+ * @param event the mouse down event
+ * 
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
+ *
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see DragDetectListener
+ * @see #addDragDetectListener
+ * 
+ * @see #getDragDetect
+ * @see #setDragDetect
+ * 
+ * @since 3.3
+ */
 public boolean dragDetect (MouseEvent event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1718,7 +1800,7 @@ public void pack (boolean changed) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
@@ -1760,7 +1842,7 @@ void redraw (boolean all) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #update
+ * @see #update()
  * @see PaintListener
  * @see SWT#Paint
  * @see SWT#NO_BACKGROUND
@@ -2143,7 +2225,10 @@ boolean sendFocusEvent (int type) {
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2227,7 +2312,10 @@ void setBackground () {
  * by the argument, or to the default system color for the control
  * if the argument is null.  The background image is tiled to fill
  * the available space.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on Windows the background of a Button cannot be changed.
+ * </p>
  * @param image the new image (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2532,7 +2620,9 @@ void setFont (int font, double size) {
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -2686,7 +2776,7 @@ public void setMenu (Menu menu) {
  * </ul>
  * 
  * @see #redraw(int, int, int, int, boolean)
- * @see #update
+ * @see #update()
  */
 public void setRedraw (boolean redraw) {
 	checkWidget ();
@@ -3189,14 +3279,19 @@ boolean traverseReturn () {
 
 /**
  * Forces all outstanding paint requests for the widget
- * to be processed before this method returns.
+ * to be processed before this method returns. If there
+ * are no outstanding paint request, this method does
+ * nothing.
+ * <p>
+ * Note: This method does not cause a redraw.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #redraw
+ * @see #redraw()
  * @see #redraw(int, int, int, int, boolean)
  * @see PaintListener
  * @see SWT#Paint
