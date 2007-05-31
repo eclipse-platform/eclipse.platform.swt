@@ -233,7 +233,7 @@ public int getRightWidth() {
  * Returns <code>true</code> if the CBanner is rendered
  * with a simple, traditional shape.
  * 
- * @return <code>true</code> if the Cbanner is rendered with a simple shape
+ * @return <code>true</code> if the CBanner is rendered with a simple shape
  * 
  * @since 3.0
  */

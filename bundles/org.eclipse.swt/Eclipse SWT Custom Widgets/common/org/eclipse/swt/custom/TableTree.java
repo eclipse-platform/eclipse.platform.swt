@@ -50,7 +50,7 @@ public class TableTree extends Composite {
 	* TableTree inherits this behaviour from Composite.  The items
 	* must be disposed separately.  Because TableTree is not part of
 	* the org.eclipse.swt.widgets package, the method releaseWidget can 
-	* not be overriden (this is how items are disposed of in Table and Tree).
+	* not be overridden (this is how items are disposed of in Table and Tree).
 	* Instead, the items are disposed of in response to the dispose event on the
 	* TableTree.  The "inDispose" flag is used to distinguish between disposing
 	* one TableTreeItem (e.g. when removing an entry from the TableTree) and 
@@ -249,7 +249,7 @@ void expandItem (TableTreeItem item) {
 	}
 }
 public Color getBackground () {
-	// This method must be overriden otherwise, in a TableTree in which the first
+	// This method must be overridden otherwise, in a TableTree in which the first
 	// item has no sub items, a grey (Widget background colour) square will appear in
 	// the first column of the first item.
 	// It is not possible in the constructor to set the background of the TableTree

@@ -162,7 +162,7 @@ public String open (Rectangle rect) {
 	
 	// Make dialog as wide as the cell
 	listSize.x = rect.width;
-	// dialog width should not be les than minimumwidth
+	// dialog width should not be less than minimumWidth
 	if (listSize.x < minimumWidth)
 		listSize.x = minimumWidth;
 	

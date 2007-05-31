@@ -863,7 +863,7 @@ public class StyledText extends Canvas {
 		writeStyledLine(line, lineOffset, ranges, styles, lineBackground, lineIndent, lineAlignment, lineJustify);
 	}
 	/**
-	 * Appends the specified line delmimiter to the RTF data.
+	 * Appends the specified line delimiter to the RTF data.
 	 *
 	 * @param lineDelimiter line delimiter to write as RTF.
 	 * @exception SWTException <ul>
@@ -940,7 +940,7 @@ public class StyledText extends Canvas {
 			// write any unstyled text
 			if (lineIndex < start) {
 				// copy to start of style
-				// style starting betond end of write range or end of line 
+				// style starting beyond end of write range or end of line 
 				// is guarded against above.
 				write(line, lineIndex, start);
 				lineIndex = start;
@@ -1140,7 +1140,7 @@ public class StyledText extends Canvas {
 		}
 	}
 	/**
-	 * Appends the specified line delmimiter to the data.
+	 * Appends the specified line delimiter to the data.
 	 *
 	 * @param lineDelimiter line delimiter to write
 	 * @exception SWTException <ul>
@@ -2450,8 +2450,8 @@ void doMouseSelection() {
 /**
  * Returns the offset of the word at the specified offset. 
  * If the current selection extends from high index to low index 
- * (i.e., right to left, or caret is at left border of selecton on 
- * non-bidi platforms) the start offset of the word preceeding the
+ * (i.e., right to left, or caret is at left border of selection on 
+ * non-bidi platforms) the start offset of the word preceding the
  * selection is returned. If the current selection extends from 
  * low index to high index the end offset of the word following 
  * the selection is returned.
@@ -3374,7 +3374,7 @@ public int getLineAlignment(int index) {
 }
 /**
  * Returns the line at the specified offset in the text
- * where 0 &lt= offset &lt= getCharCount() so that getLineAtOffset(getCharCount())
+ * where 0 &lt; offset &lt; getCharCount() so that getLineAtOffset(getCharCount())
  * returns the line of the insert location.
  *
  * @param offset offset relative to the start of the content. 
@@ -4891,7 +4891,7 @@ void internalRedrawRange(int start, int length) {
 	startRect.width = clientAreaWidth - rightMargin - startRect.x;
 	super.redraw(startRect.x, startRect.y, startRect.width, startRect.height, false);
 
-	/* Redraw end line from the begining of the line to the end offset */
+	/* Redraw end line from the beginning of the line to the end offset */
 	if (startLine != endLine) {
 		renderer.disposeTextLayout(layout);
 		layout = renderer.getTextLayout(endLine);
@@ -6497,7 +6497,7 @@ void sendKeyEvent(Event event) {
  *
  * @param lineOffset offset of the line. This may be the offset of
  * 	a visual line if the widget is in word wrap mode.
- * @param line line text. This may be the text of a visualline if 
+ * @param line line text. This may be the text of a visual line if 
  * 	the widget is in word wrap mode.
  * @return StyledTextEvent that can be used to request line data 
  * 	for the given line.

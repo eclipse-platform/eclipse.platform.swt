@@ -66,7 +66,7 @@ public class CTabFolder extends Composite {
 	 * A multiple of the tab height that specifies the minimum width to which a tab 
 	 * will be compressed before scrolling arrows are used to navigate the tabs.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should not be capitalized.
 	 * 
 	 * @deprecated This field is no longer used.  See setMinimumCharacters(int)
@@ -76,7 +76,7 @@ public class CTabFolder extends Composite {
 	/**
 	 * Color of innermost line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated drop shadow border is no longer drawn in 3.0
@@ -85,7 +85,7 @@ public class CTabFolder extends Composite {
 	/**
 	 * Color of middle line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated drop shadow border is no longer drawn in 3.0
@@ -94,7 +94,7 @@ public class CTabFolder extends Composite {
 	/**
 	 * Color of outermost line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated drop shadow border is no longer drawn in 3.0
@@ -204,7 +204,7 @@ public class CTabFolder extends Composite {
 
 	static final int[] TOP_LEFT_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
 
-	//TOP_LEFT_CORNER_HILITE is layed out in reverse (ie. top to bottom)
+	//TOP_LEFT_CORNER_HILITE is laid out in reverse (ie. top to bottom)
 	//so can fade in same direction as right swoop curve
 	static final int[] TOP_LEFT_CORNER_HILITE = new int[] {5,2, 4,2, 3,3, 2,4, 2,5, 1,6};
 
@@ -348,10 +348,10 @@ public CTabFolder(Composite parent, int style) {
 static int checkStyle (Composite parent, int style) {
 	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
 	style = style & mask;
-	// TOP and BOTTOM are mutually exlusive.
+	// TOP and BOTTOM are mutually exclusive.
 	// TOP is the default
 	if ((style & SWT.TOP) != 0) style = style & ~SWT.BOTTOM;
-	// SINGLE and MULTI are mutually exlusive.
+	// SINGLE and MULTI are mutually exclusive.
 	// MULTI is the default
 	if ((style & SWT.MULTI) != 0) style = style & ~SWT.SINGLE;
 	// reduce the flash by not redrawing the entire area on a Resize event
@@ -1459,10 +1459,10 @@ public boolean getSimple() {
 	return simple;
 }
 /**
- * Returns <code>true</code> if the CTabFolder only displys the selected tab
+ * Returns <code>true</code> if the CTabFolder only displays the selected tab
  * and <code>false</code> if the CTabFolder displays multiple tabs.
  * 
- * @return <code>true</code> if the CTabFolder only displys the selected tab and <code>false</code> if the CTabFolder displays multiple tabs
+ * @return <code>true</code> if the CTabFolder only displays the selected tab and <code>false</code> if the CTabFolder displays multiple tabs
  * 
  * @since 3.0
  */

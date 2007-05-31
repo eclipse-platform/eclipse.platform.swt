@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * A TableTreeItem is a selectable user interface object
- * that represents an item in a heirarchy of items in a
+ * that represents an item in a hierarchy of items in a
  * TableTree.
  * 
  * @deprecated As of 3.1 use Tree, TreeItem and TreeColumn

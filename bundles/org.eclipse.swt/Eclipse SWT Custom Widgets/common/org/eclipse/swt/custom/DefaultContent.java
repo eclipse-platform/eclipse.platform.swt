@@ -88,7 +88,7 @@ int[][] addLineIndex(int start, int length, int[][] linesArray, int count) {
  * <code>TextChangingEvent</code> and <code>TextChangedEvent</code>. A 
  * <code>TextChangingEvent</code> is sent before changes to the text occur.
  * A <code>TextChangedEvent</code> is sent after changes to the text 
- * occured.
+ * occurred.
  * <p>
  *
  * @param listener the listener
@@ -102,7 +102,7 @@ public void addTextChangeListener(TextChangeListener listener) {
 	textListeners.addElement(typedListener);	
 }	
 /**
- * Adjusts the gap to accomodate a text change that is occurring.
+ * Adjusts the gap to accommodate a text change that is occurring.
  * <p>
  *
  * @param position the position at which a change is occurring
@@ -646,7 +646,7 @@ public int getOffsetAtLine(int lineIndex) {
 	}
 }	
 /**
- * Increases the line indexes array to accomodate more lines.
+ * Increases the line indexes array to accommodate more lines.
  * <p>
  *
  * @param numLines the number to increase the array by
@@ -679,7 +679,7 @@ boolean gapExists() {
 	return gapStart != gapEnd;
 }
 /**
- * Returns a string representing the continous content of
+ * Returns a string representing the continuous content of
  * the text store.
  * <p>
  *
@@ -847,7 +847,7 @@ void delete(int position, int length, int numLines) {
 	}		
 
 	// figure out the length of the new concatenated line, do so by
-	// finding the first line delmiter after position
+	// finding the first line delimiter after position
 	int j = position;
 	boolean eol = false;
 	while (j < textStore.length && !eol) {

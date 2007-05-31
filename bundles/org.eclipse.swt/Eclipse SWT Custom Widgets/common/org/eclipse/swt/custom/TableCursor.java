@@ -84,7 +84,7 @@ import org.eclipse.swt.events.*;
  *			}
  *		});
  *		// Hide the TableCursor when the user hits the "MOD1" or "MOD2" key.
- *		// This alows the user to select multiple items in the table.
+ *		// This allows the user to select multiple items in the table.
  *		cursor.addKeyListener(new KeyAdapter() {
  *			public void keyPressed(KeyEvent e) {
  *				if (e.keyCode == SWT.MOD1 || 

@@ -70,7 +70,7 @@ public class ViewForm extends Composite {
 	/**
 	 * Color of innermost line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated
@@ -79,7 +79,7 @@ public class ViewForm extends Composite {
 	/**
 	 * Color of middle line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated
@@ -88,7 +88,7 @@ public class ViewForm extends Composite {
 	/**
 	 * Color of outermost line of drop shadow border.
 	 * 
-	 * NOTE This field is badly named and can not be fixed for backwards compatability.
+	 * NOTE This field is badly named and can not be fixed for backwards compatibility.
 	 * It should be capitalized.
 	 * 
 	 * @deprecated
