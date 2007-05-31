@@ -14,7 +14,7 @@ import org.eclipse.swt.*;
 
 /**
  * <code>LineAttributes</code> defines a set of line attributes that
- * can be modifed in a GC.
+ * can be modified in a GC.
  * <p>
  * Application code does <em>not</em> need to explicitly release the
  * resources managed by each instance when those instances are no longer

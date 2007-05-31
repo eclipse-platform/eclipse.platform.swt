@@ -571,7 +571,7 @@ public Object clone() {
  * Returns the alpha value at offset <code>x</code> in
  * scanline <code>y</code> in the receiver's alpha data.
  *
- * @param x the x coodinate of the pixel to get the alpha value of
+ * @param x the x coordinate of the pixel to get the alpha value of
  * @param y the y coordinate of the pixel to get the alpha value of
  * @return the alpha value at the given coordinates
  *

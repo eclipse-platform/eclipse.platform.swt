@@ -143,7 +143,7 @@ public GridLayout () {}
  * number of columns, and whether or not the columns
  * should be forced to have the same width.
  * If numColumns has a value less than 1, the layout will not
- * set the size and postion of any controls.
+ * set the size and position of any controls.
  *
  * @param numColumns the number of columns in the grid
  * @param makeColumnsEqualWidth whether or not the columns will have equal width

@@ -14,7 +14,7 @@ package org.eclipse.swt.widgets;
 /**
  * Instances of this class are used to ensure that an
  * application cannot interfere with the locking mechanism
- * used to implement asynchonous and synchronous communication
+ * used to implement asynchronous and synchronous communication
  * between widgets and background threads.
  */
 
