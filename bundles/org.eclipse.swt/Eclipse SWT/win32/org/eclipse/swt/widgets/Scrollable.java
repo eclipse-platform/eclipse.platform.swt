@@ -304,7 +304,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	* scroll bar position before and after the WM_MOUSEWHEEL.
 	* If the native control sends a WM_VSCROLL or WM_HSCROLL,
 	* then the application has already been notified.  If not
-	* explicity send the event.
+	* explicitly send the event.
 	*/
 	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
 	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();

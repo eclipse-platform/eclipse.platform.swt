@@ -708,7 +708,7 @@ LRESULT CDDS_SUBITEMPREPAINT (NMLVCUSTOMDRAW nmcd, int wParam, int lParam) {
 	}
 	if (!ignoreDrawForeground) {
 		/*
-		* Bug in Windows.  When the attibutes are for one cell in a table,
+		* Bug in Windows.  When the attributes are for one cell in a table,
 		* Windows does not reset them for the next cell.  As a result, all
 		* subsequent cells are drawn using the previous font, foreground and
 		* background colors.  The fix is to set the all attributes when any
@@ -1175,7 +1175,7 @@ void createHandle () {
 	* The fix is to detect the version of COMCTL32.DLL, and
 	* if it is one of the versions with the problem, then
 	* use version 5.00 of the control (a version that does
-	* not have the problem).  This is the recomended work
+	* not have the problem).  This is the recommended work
 	* around from the MSDN.
 	*/
 	if (!OS.IsWinCE) {
@@ -3974,7 +3974,7 @@ public void setItemCount (int count) {
 		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
 		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, flags);
 		/*
-		* Bug in Windows.  When a virutal table contains items and
+		* Bug in Windows.  When a virtual table contains items and
 		* LVM_SETITEMCOUNT is used to set the new item count to zero,
 		* Windows does not redraw the table.  Note that simply not
 		* specifying LVSICF_NOINVALIDATEALL or LVSICF_NOSCROLL does

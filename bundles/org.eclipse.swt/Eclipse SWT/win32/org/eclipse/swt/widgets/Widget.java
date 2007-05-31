@@ -63,7 +63,7 @@ public abstract class Widget {
 	/* The preferred size of a child has changed */
 	static final int LAYOUT_CHANGED = 1<<6;
 	
-	/* A layout was requested in this widget hierachy */
+	/* A layout was requested in this widget hierarchy */
 	static final int LAYOUT_CHILD = 1<<7;
 
 	/* Background flags */
@@ -715,7 +715,7 @@ void postEvent (int eventType, Event event) {
 }
 
 /*
- * Releases the widget hiearchy and optionally destroys
+ * Releases the widget hierarchy and optionally destroys
  * the receiver.
  * <p>
  * Typically, a widget with children will broadcast this
@@ -1181,7 +1181,7 @@ boolean setKeyState (Event event, int type, int wParam, int lParam) {
 		* treated as both a virtual key and an ASCII key by Windows.
 		* Therefore, we will not receive a WM_CHAR for this key.
 		* The fix is to treat VK_DELETE as a special case and map
-		* the ASCII value explictly (Delete is 0x7F).
+		* the ASCII value explicitly (Delete is 0x7F).
 		*/
 		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 		
@@ -1430,7 +1430,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	
 	/*
 	*  Bug in Windows.  Somehow, the widget is becoming disposed after
-	*  calling PeekMessage().  In rare cirucmstances, it seems that
+	*  calling PeekMessage().  In rare circumstances, it seems that
 	*  PeekMessage() can allow SWT listeners to run that might contain
 	*  application code that disposes the widget.  It is not exactly
 	*  clear how this can happen.  PeekMessage() is only looking for
@@ -1469,7 +1469,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 		* treated as both a virtual key and an ASCII key by Windows.
 		* Therefore, we will not receive a WM_CHAR for this key.
 		* The fix is to treat VK_DELETE as a special case and map
-		* the ASCII value explictly (Delete is 0x7F).
+		* the ASCII value explicitly (Delete is 0x7F).
 		*/
 		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 
@@ -1656,7 +1656,7 @@ LRESULT wmKeyUp (int hwnd, int wParam, int lParam) {
 		* Feature in Windows. The virtual key VK_CANCEL is treated
 		* as both a virtual key and ASCII key by Windows.  This
 		* means that a WM_CHAR with WPARAM=3 will be issued for
-		* this key.  In order to distingush between this key and
+		* this key.  In order to distinguish between this key and
 		* Ctrl+C, mark the key as virtual.
 		*/
 		if (wParam == OS.VK_CANCEL) display.lastVirtual = true;
@@ -2284,7 +2284,7 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 		* treated as both a virtual key and an ASCII key by Windows.
 		* Therefore, we will not receive a WM_SYSCHAR for this key.
 		* The fix is to treat VK_DELETE as a special case and map
-		* the ASCII value explictly (Delete is 0x7F).
+		* the ASCII value explicitly (Delete is 0x7F).
 		*/
 		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 

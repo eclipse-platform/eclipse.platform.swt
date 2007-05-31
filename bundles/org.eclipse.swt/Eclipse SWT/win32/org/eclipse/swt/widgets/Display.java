@@ -3685,7 +3685,7 @@ boolean runDeferredEvents () {
 
 		/*
 		* At this point, the event queue could
-		* be null due to a recursive invokation
+		* be null due to a recursive invocation
 		* when running the event.
 		*/
 	}
@@ -4086,7 +4086,7 @@ public boolean sleep () {
  * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
- *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred when executing the runnable</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *

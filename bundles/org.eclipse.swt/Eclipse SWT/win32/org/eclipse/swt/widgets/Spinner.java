@@ -1322,7 +1322,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			* updated with the new state.  Rather than allowing
 			* the default updown window proc to set the value
 			* when the user clicks on the updown control, set
-			* the value explicity and stop the window proc
+			* the value explicitly and stop the window proc
 			* from running.
 			*/
 			value = Math.min (Math.max (min [0], value), max [0]);

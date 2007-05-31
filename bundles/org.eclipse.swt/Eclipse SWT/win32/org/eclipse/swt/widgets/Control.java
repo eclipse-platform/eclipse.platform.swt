@@ -671,7 +671,7 @@ void destroyWidget () {
  *
  * @param event the mouse down event
  * 
- * @return <code>true</code> if the gesture occured, and <code>false</code> otherwise.
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
@@ -713,7 +713,7 @@ public boolean dragDetect (Event event) {
  *
  * @param event the mouse down event
  * 
- * @return <code>true</code> if the gesture occured, and <code>false</code> otherwise.
+ * @return <code>true</code> if the gesture occurred, and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT when the event is null</li>
@@ -1635,7 +1635,7 @@ public boolean isReparentable () {
 boolean isShowing () {
 	/*
 	* This is not complete.  Need to check if the
-	* widget is obscurred by a parent or sibling.
+	* widget is obscured by a parent or sibling.
 	*/
 	if (!isVisible ()) return false;
 	Control control = this;

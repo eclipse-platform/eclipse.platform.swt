@@ -345,7 +345,7 @@ void destroyItem (CoolItem item) {
 		ignoreResize = false;
 	}
 	
-	/* Restore the visible state tof the control */
+	/* Restore the visible state of the control */
 	if (wasVisible) control.setVisible (true);
 	
 	index = 0;

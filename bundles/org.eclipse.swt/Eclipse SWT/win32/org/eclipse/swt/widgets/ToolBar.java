@@ -156,7 +156,7 @@ static int checkStyle (int style) {
 	
 	/*
 	* A vertical tool bar cannot wrap because TB_SETROWS
-	* fails when the toobar has TBSTYLE_WRAPABLE.
+	* fails when the toolbar has TBSTYLE_WRAPABLE.
 	*/
 	if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
 		
@@ -778,8 +778,8 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	* Feature in Windows.  For some reason, when a tool bar is
 	* repositioned more than once using DeferWindowPos () into
 	* the same HDWP, the toolbar redraws more than once, defeating
-	* the puropse of DeferWindowPos ().  The fix is to end the
-	* defered positioning before the next tool bar is added,
+	* the purpose of DeferWindowPos ().  The fix is to end the
+	* deferred positioning before the next tool bar is added,
 	* ensuring that only one tool bar position is deferred at
 	* any given time.
 	*/

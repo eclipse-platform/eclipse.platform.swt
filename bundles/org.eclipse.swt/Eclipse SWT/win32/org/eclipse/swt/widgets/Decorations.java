@@ -422,7 +422,7 @@ void createHandle () {
 	* leaving the default.
 	* 
 	* NOTE:  The icon is not leaked.  It is shared within
-	* the process by all theads and is released when the
+	* the process by all threads and is released when the
 	* process exits.
 	*/
 	if ((state & FOREIGN_HANDLE) == 0) {
@@ -1004,7 +1004,7 @@ void setImages (Image image, Image [] images) {
 		* leaving the default.
 		* 
 		* NOTE:  The icon is not leaked.  It is shared within
-		* the process by all theads and is released when the
+		* the process by all threads and is released when the
 		* process exits.
 		*/
 		if ((state & FOREIGN_HANDLE) == 0) {

@@ -167,7 +167,7 @@ void createWidget () {
 	increment = 1;
 	pageIncrement = 10;
 	/*
-	* Do not set the intial values of the maximum
+	* Do not set the initial values of the maximum
 	* or the thumb.  These values normally default
 	* to 100 and 10 but may have been set already
 	* by the widget that owns the scroll bar.  For

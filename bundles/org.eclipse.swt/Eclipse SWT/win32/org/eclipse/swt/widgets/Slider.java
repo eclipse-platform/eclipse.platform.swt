@@ -191,7 +191,7 @@ void createWidget () {
 	increment = 1;
 	pageIncrement = 10;
 	/*
-	* Set the intial values of the maximum
+	* Set the initial values of the maximum
 	* to 100 and the thumb to 10.  Note that
 	* info.nPage needs to be 11 in order to
 	* get a thumb that is 10.

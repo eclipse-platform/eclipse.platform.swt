@@ -1652,7 +1652,7 @@ boolean checkScroll (int hItem) {
 	* and a tree item that is not a child of the first root is selected or
 	* scrolled using TVM_SELECTITEM or TVM_ENSUREVISIBLE, then scrolling
 	* does not occur.  The fix is to detect this case, and make sure
-	* that redraw is temporarly enabled.  To avoid flashing, DefWindowProc()
+	* that redraw is temporarily enabled.  To avoid flashing, DefWindowProc()
 	* is called to disable redrawing.
 	* 
 	* NOTE:  The code that actually works around the problem is in the
@@ -1843,7 +1843,7 @@ void createHandle () {
 	* The fix is to detect the version of COMCTL32.DLL, and
 	* if it is one of the versions with the problem, then
 	* use version 5.00 of the control (a version that does
-	* not have the problem).  This is the recomended work
+	* not have the problem).  This is the recommended work
 	* around from the MSDN.
 	*/
 	if (!OS.IsWinCE) {
@@ -3720,7 +3720,7 @@ void releaseWidget () {
 	* Feature in Windows.  For some reason, when TVM_GETIMAGELIST
 	* or TVM_SETIMAGELIST is sent, the tree issues NM_CUSTOMDRAW
 	* messages.  This behavior is unwanted when the tree is being
-	* disposed.  The fix is to ingore NM_CUSTOMDRAW messages by
+	* disposed.  The fix is to ignore NM_CUSTOMDRAW messages by
 	* clearing the custom draw flag.
 	* 
 	* NOTE: This only happens on Windows XP.
@@ -6179,7 +6179,7 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	* mouse.  As soon as this happens, the selection snaps
 	* back to the previous selection.  This behavior can be
 	* observed in the Explorer but is not instantly apparent
-	* because the Explorer explicity sets the selection when
+	* because the Explorer explicitly sets the selection when
 	* the user chooses a menu item.  If the user cancels the
 	* menu, the selection snaps back.  The fix is to avoid
 	* calling the window proc and do the selection ourselves.
@@ -6877,7 +6877,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			/*
 			* When the user double clicks on a tree item
 			* or a line beside the item, the window proc
-			* for the tree collapses or expland the branch.
+			* for the tree collapses or expand the branch.
 			* When application code associates an action
 			* with double clicking, then the tree expand
 			* is unexpected and unwanted.  The fix is to

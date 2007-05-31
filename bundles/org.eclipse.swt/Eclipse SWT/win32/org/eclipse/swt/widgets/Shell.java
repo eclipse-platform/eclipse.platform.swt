@@ -736,7 +736,7 @@ void fixActiveShell () {
 	* shell is disabled.  Instead, Windows assigns focus to the
 	* next shell on the desktop (possibly a shell in another
 	* application).  The fix is to activate the disabled parent
-	* shell before disposing or hidding the active shell.
+	* shell before disposing or hiding the active shell.
 	*/
 	int hwndParent = OS.GetParent (handle);
 	if (hwndParent != 0 && handle == OS.GetActiveWindow ()) {
@@ -1072,7 +1072,7 @@ public void open () {
 	* Feature on WinCE PPC.  A new application becomes
 	* the foreground application only if it has at least
 	* one visible window before the event loop is started.
-	* The workaround is to explicitely force the shell to
+	* The workaround is to explicitly force the shell to
 	* be the foreground window.
 	*/
 	if (OS.IsWinCE) OS.SetForegroundWindow (handle);
@@ -2060,7 +2060,7 @@ LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_NCLBUTTONDOWN (wParam, lParam);
 	if (result != null) return result;
 	/*
-	* When the normal activation was interruped in WM_MOUSEACTIVATE
+	* When the normal activation was interrupted in WM_MOUSEACTIVATE
 	* because the active shell was an MDI shell, set the active window
 	* to the top level shell but lock the active window and stop focus
 	* changes.  This allows the user to interact the top level shell
