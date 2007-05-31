@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.SWTEventObject;
 /**
  * This is the super class for all typed event classes provided
  * by SWT. Typed events contain particular information which is
- * applicable to the event occurance.
+ * applicable to the event occurrence.
  *
  * @see org.eclipse.swt.widgets.Event
  */
