@@ -2445,8 +2445,8 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 				if (grabHandle != 0) {
 					if (OS.G_OBJECT_TYPE (grabHandle) == OS.GTK_TYPE_MENU ()) {
 						display.ignoreFocus = true;
+						break;
 					}
-					break;
 				}
 			}
 
@@ -2503,6 +2503,7 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	// widget could be disposed at this point
+//	System.out.println("gtk_focus_out_event=" + handle);
 	if (handle != 0) {
 		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
 			int /*long*/ imHandle = imHandle ();
