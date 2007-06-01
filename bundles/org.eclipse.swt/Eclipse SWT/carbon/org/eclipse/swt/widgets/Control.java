@@ -971,6 +971,7 @@ public boolean forceFocus () {
 	int focusHandle = focusHandle ();
 	int window = OS.GetControlOwner (focusHandle);
 	Control oldFocus = display.getFocusControl (window, true);
+	if (oldFocus == this) return true;
 	display.ignoreFocus = true;
 	OS.SetKeyboardFocus (window, focusHandle, (short) focusPart ());
 	display.ignoreFocus = false;
