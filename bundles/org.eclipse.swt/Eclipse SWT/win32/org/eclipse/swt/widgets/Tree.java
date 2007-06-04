@@ -5893,7 +5893,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 		/* Check for CONTROL or drag selection */
 		if (hittestSelected || (wParam & OS.MK_CONTROL) != 0) {
-			redraw = focused && drawCount == 0 && OS.IsWindowVisible (handle);
+			int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+			if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
+				redraw = focused && drawCount == 0 && OS.IsWindowVisible (handle);
+			}
 			if (redraw) {
 				OS.UpdateWindow (handle);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
