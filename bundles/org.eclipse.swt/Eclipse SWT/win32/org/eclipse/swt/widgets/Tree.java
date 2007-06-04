@@ -5893,6 +5893,29 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 		/* Check for CONTROL or drag selection */
 		if (hittestSelected || (wParam & OS.MK_CONTROL) != 0) {
+			/*
+			* Feature in Windows.  When the tree is not drawing focus
+			* and the user selects a tree item using while the CONTROL
+			* key is down, the tree window proc sends WM_UPDATEUISTATE
+			* to the top level window, causing controls within the shell
+			* to redraw.  When drag detect is enabled, the tree window
+			* proc runs a modal loop that allows WM_PAINT messages to be
+			* delivered during WM_LBUTTONDOWN.  When WM_SETREDRAW is used
+			* to disable drawing for the tree and a WM_PAINT happens for
+			* a parent of the tree (or a sibling that overlaps), the parent
+			* will draw on top of the tree.  If WM_SETREDRAW is turned back
+			* on without redrawing the entire tree, pixel corruption occurs.
+			* This case only seems to happen when the tree has been given
+			* focus from WM_MOUSEACTIVATE of the shell.  The fix is to
+			* detect that WM_UPDATEUISTATE will be sent and avoid using
+			* WM_SETREDRAW to disable drawing.
+			* 
+			* NOTE:  Any redraw of a parent (or sibling) will be dispatched
+			* during the modal drag detect loop.  This code only fixes the
+			* case where the tree causes a redraw from WM_UPDATEUISTATE.
+			* In SWT, the InvalidateRect() that causes the pixel corruption
+			* is found in Composite.WM_UPDATEUISTATE().
+			*/
 			int uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 			if ((uiState & OS.UISF_HIDEFOCUS) == 0) {
 				redraw = focused && drawCount == 0 && OS.IsWindowVisible (handle);
