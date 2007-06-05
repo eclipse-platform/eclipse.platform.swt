@@ -12,6 +12,9 @@ package org.eclipse.swt.snippets;
 /* 
  * Tree example snippet: Images on the right side of the TreeItem
  *
+ * For a detailed explanation of this snippet see
+ * http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm#_example5
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  * 
@@ -20,83 +23,66 @@ package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet220 {	
 	
 public static void main(String [] args) {
 	Display display = new Display();
-	final Image image = display.getSystemImage(SWT.ICON_INFORMATION);
 	Shell shell = new Shell(display);
-	shell.setText("Images on the right side of the TreeItem");
-	shell.setLayout(new FillLayout ());
-	Tree tree = new Tree(shell, SWT.MULTI | SWT.FULL_SELECTION);
-	tree.setHeaderVisible(true);
-	tree.setLinesVisible(true);			
-	int columnCount = 4;
-	for(int i = 0; i < columnCount; i++) {
-		TreeColumn column = new TreeColumn(tree, SWT.NONE);
-		column.setText("Column " + i);	
+	shell.setBounds(10, 10, 350, 200);
+	Image xImage = new Image (display, 16, 16);
+	GC gc = new GC(xImage);
+	gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
+	gc.drawLine(1, 1, 14, 14);
+	gc.drawLine(1, 14, 14, 1);
+	gc.drawOval(2, 2, 11, 11);
+	gc.dispose();
+	final int IMAGE_MARGIN = 2;
+	final Tree tree = new Tree(shell, SWT.CHECK);
+	tree.setBounds(10, 10, 300, 150);
+	TreeItem item = new TreeItem(tree, SWT.NONE);
+	item.setText("root item");
+	for (int i = 0; i < 4; i++) {
+		TreeItem newItem = new TreeItem(item, SWT.NONE);
+		newItem.setText("descendent " + i);
+		if (i % 2 == 0) newItem.setData(xImage);
+		item.setExpanded(true);
+		item = newItem;
 	}
-	int itemCount = 3;
-	for (int i=0; i<itemCount; i++) {
-		TreeItem item1 = new TreeItem(tree, SWT.NONE);
-		item1.setText("item "+i);
-		for (int c=1; c < columnCount; c++) {
-			item1.setText(c, "item ["+i+"-"+c+"]");
-		}
-		for (int j=0; j<itemCount; j++) {
-			TreeItem item2 = new TreeItem(item1, SWT.NONE);
-			item2.setText("item ["+i+" "+j+"]");
-			for (int c=1; c<columnCount; c++) {
-				item2.setText(c, "item ["+i+" "+j+"-"+c+"]");
-			}
-			for (int k=0; k<itemCount; k++) {
-				TreeItem item3 = new TreeItem(item2, SWT.NONE);
-				item3.setText("item ["+i+" "+j+" "+k+"]");
-				for (int c=1; c<columnCount; c++) {
-					item3.setText(c, "item ["+i+" "+j+" "+k+"-"+c+"]");
-				}
-			}
-		}
-	}
-	/*
-	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
-	 * Therefore, it is critical for performance that these methods be
-	 * as efficient as possible.
-	 */
-	Listener paintListener = new Listener() {
-		public void handleEvent(Event event) {			
-			switch(event.type) {
-				case SWT.MeasureItem: {
-					Rectangle rect = image.getBounds();
-					event.width += rect.width;
-					event.height = Math.max(event.height, rect.height + 2);
-					break;
-				}
-				case SWT.PaintItem: {
-					int x = event.x + event.width;
-					Rectangle rect = image.getBounds();
-					int offset = Math.max(0, (event.height - rect.height) / 2);
-					event.gc.drawImage(image, x, event.y + offset);
-					break;
-				}
-			}
-		}
-	};		
-	tree.addListener(SWT.MeasureItem, paintListener);
-	tree.addListener(SWT.PaintItem, paintListener);		
 
-	for(int i = 0; i < columnCount; i++) {
-		tree.getColumn(i).pack();
-	}	
-	shell.setSize(500, 200);
+	/*
+	 * NOTE: MeasureItem and PaintItem are called repeatedly.  Therefore it is
+	 * critical for performance that these methods be as efficient as possible.
+	 */
+	tree.addListener(SWT.MeasureItem, new Listener() {
+		public void handleEvent(Event event) {
+			TreeItem item = (TreeItem)event.item;
+			Image trailingImage = (Image)item.getData();
+			if (trailingImage != null) {
+				event.width += trailingImage.getBounds().width + IMAGE_MARGIN;
+			}
+		}
+	});
+	tree.addListener(SWT.PaintItem, new Listener() {
+		public void handleEvent(Event event) {
+			TreeItem item = (TreeItem)event.item;
+			Image trailingImage = (Image)item.getData();
+			if (trailingImage != null) {
+				int x = event.x + event.width + IMAGE_MARGIN;
+				int itemHeight = tree.getItemHeight();
+				int imageHeight = trailingImage.getBounds().height;
+				int y = event.y + (itemHeight - imageHeight) / 2;
+				event.gc.drawImage(trailingImage, x, y);
+			}
+		}
+	});
+
 	shell.open();
-	while(!shell.isDisposed ()) {
-		if(!display.readAndDispatch()) display.sleep();
+	while (!shell.isDisposed()) {
+		if (!display.readAndDispatch()) display.sleep();
 	}
-	if(image != null) image.dispose();
+	xImage.dispose();
 	display.dispose();
 }
 }
