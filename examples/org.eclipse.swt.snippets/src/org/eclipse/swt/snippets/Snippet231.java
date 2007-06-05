@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * Copyright (c) 2000, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,6 +13,9 @@ package org.eclipse.swt.snippets;
 /* 
  * example snippet: Multiple lines per TableItem
  *
+ * For a detailed explanation of this snippet see
+ * http://www.eclipse.org/articles/Article-CustomDrawingTableAndTreeItems/customDraw.htm#_example6
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  * 
@@ -21,83 +24,77 @@ package org.eclipse.swt.snippets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet231 {
 	
 public static void main(String [] args) {
+	final int COLUMN_COUNT = 4;
+	final int ITEM_COUNT = 8;
+	final int TEXT_MARGIN = 3;
 	Display display = new Display();
-	Shell shell = new Shell (display);
-	shell.setText("Multiple lines in a TableItem");
-	shell.setLayout (new FillLayout());
-	final Table table = new Table(shell, SWT.MULTI | SWT.FULL_SELECTION);
+	Shell shell = new Shell(display);
+	final Table table = new Table(shell, SWT.FULL_SELECTION);
 	table.setHeaderVisible(true);
 	table.setLinesVisible(true);
-	int columnCount = 4;
-	for (int i=0; i<columnCount; i++) {
-		TableColumn column = new TableColumn(table, SWT.NONE);
-		column.setText("Column " + i);	
+	for (int i = 0; i < COLUMN_COUNT; i++) {
+		new TableColumn(table, SWT.NONE);
 	}
-	int itemCount = 8;
-	for(int i = 0; i < itemCount; i++) {
+	for (int i = 0; i < ITEM_COUNT; i++) {
 		TableItem item = new TableItem(table, SWT.NONE);
-		item.setText(new String[] {"item "+i+" a", "item "+i+" b", "item "+i+" c", "item "+i+" d"});
-	}	
+		for (int j = 0; j < COLUMN_COUNT; j++) {
+			String string = "item " + i + " col " + j;
+			if ((i + j) % 3 == 1) {
+				string +="\nnew line1";
+			}
+			if ((i + j) % 3 == 2) {
+				string +="\nnew line1\nnew line2";
+			}
+			item.setText(j, string);
+		}
+	}
+
 	/*
 	 * NOTE: MeasureItem, PaintItem and EraseItem are called repeatedly.
 	 * Therefore, it is critical for performance that these methods be
 	 * as efficient as possible.
 	 */
-	Listener paintListener = new Listener() {
+	table.addListener(SWT.MeasureItem, new Listener() {
 		public void handleEvent(Event event) {
-			switch(event.type) {		
-				case SWT.MeasureItem: {
-					TableItem item = (TableItem)event.item;
-					String text = getText(item, event.index);
-					Point size = event.gc.textExtent(text);
-					event.width = size.x;
-					event.height = Math.max(event.height, size.y);
-					break;
-				}
-				case SWT.PaintItem: {
-					TableItem item = (TableItem)event.item;
-					String text = getText(item, event.index);
-					Point size = event.gc.textExtent(text);					
-					int offset2 = event.index == 0 ? Math.max(0, (event.height - size.y) / 2) : 0;
-					event.gc.drawText(text, event.x, event.y + offset2, true);
-					break;
-				}
-				case SWT.EraseItem: {	
-					event.detail &= ~SWT.FOREGROUND;
-					break;
-				}
-			}
+			TableItem item = (TableItem)event.item;
+			String text = item.getText(event.index);
+			Point size = event.gc.textExtent(text);
+			event.width = size.x + 2 * TEXT_MARGIN;
+			event.height = Math.max(event.height, size.y + TEXT_MARGIN);
 		}
-		String getText(TableItem item, int column) {
-			String text = item.getText(column);
-			if (column != 0) {
-				int index = table.indexOf(item);
-				if ((index+column) % 3 == 1){
-					text +="\nnew line";
-				}
-				if ((index+column) % 3 == 2) {
-					text +="\nnew line\nnew line";
-				}
-			}
-			return text;
+	});
+	table.addListener(SWT.EraseItem, new Listener() {
+		public void handleEvent(Event event) {
+			event.detail &= ~SWT.FOREGROUND;
 		}
-	};
-	table.addListener(SWT.MeasureItem, paintListener);
-	table.addListener(SWT.PaintItem, paintListener);
-	table.addListener(SWT.EraseItem, paintListener);
-	for (int i = 0; i < columnCount; i++) {
+	});
+	table.addListener(SWT.PaintItem, new Listener() {
+		public void handleEvent(Event event) {
+			TableItem item = (TableItem)event.item;
+			String text = item.getText(event.index);
+			/* center column 1 vertically */
+			int yOffset = 0;
+			if (event.index == 1) {
+				Point size = event.gc.textExtent(text);
+				yOffset = Math.max(0, (event.height - size.y) / 2);
+			}
+			event.gc.drawText(text, event.x + TEXT_MARGIN, event.y + yOffset, true);
+		}
+	});
+
+	for (int i = 0; i < COLUMN_COUNT; i++) {
 		table.getColumn(i).pack();
 	}
+	table.pack();
 	shell.pack();
 	shell.open();
-	while(!shell.isDisposed()) {
-		if(!display.readAndDispatch()) display.sleep();
+	while (!shell.isDisposed()) {
+		if (!display.readAndDispatch()) display.sleep();
 	}
 	display.dispose();
 }
