@@ -602,6 +602,18 @@ void createHandle (int index) {
 		createHandle (index, false, true);
 		OS.gtk_container_add (vboxHandle, scrolledHandle);
 		OS.gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, OS.GTK_PACK_END);
+		OS.gtk_window_set_title (shellHandle, new byte [1]);
+		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
+			OS.gtk_container_set_border_width (shellHandle, 1);
+			GdkColor color = new GdkColor ();
+			OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);
+			OS.gtk_widget_modify_bg (shellHandle,  OS.GTK_STATE_NORMAL, color);
+		}
+		int bits = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+		boolean modal = (style & bits) != 0;
+		//TEMPORARY CODE
+		if ((style & SWT.ON_TOP) == 0) modal |= (parent != null && (parent.style & bits) != 0);
+		OS.gtk_window_set_modal (shellHandle, modal);
 	} else {
 		vboxHandle = OS.gtk_bin_get_child (shellHandle);
 		if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -614,18 +626,6 @@ void createHandle (int index) {
 		handle = OS.gtk_bin_get_child (scrolledHandle);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	OS.gtk_window_set_title (shellHandle, new byte [1]);
-	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
-		OS.gtk_container_set_border_width (shellHandle, 1);
-		GdkColor color = new GdkColor ();
-		OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);
-		OS.gtk_widget_modify_bg (shellHandle,  OS.GTK_STATE_NORMAL, color);
-	}
-	int bits = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-	boolean modal = (style & bits) != 0;
-	//TEMPORARY CODE
-	if ((style & SWT.ON_TOP) == 0) modal |= (parent != null && (parent.style & bits) != 0);
-	OS.gtk_window_set_modal (shellHandle, modal);
 	/*
 	* Feature in GTK.  Realizing the shell triggers a size allocate event,
 	* which may be confused for a resize event from the window manager if
