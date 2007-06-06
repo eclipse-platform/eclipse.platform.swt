@@ -392,7 +392,6 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 			OS.ConvertEventRefToEventRecord (theEvent, eventRecord);
 			OS.AEProcessAppleEvent (eventRecord);
 			if (release) OS.ReleaseEvent (theEvent);
-			return OS.noErr;
 	}
 	return OS.eventNotHandledErr;
 }
