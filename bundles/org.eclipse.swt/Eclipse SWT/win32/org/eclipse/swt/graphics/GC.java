@@ -112,6 +112,7 @@ GC() {
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
  */
 public GC(Drawable drawable) {
@@ -140,6 +141,7 @@ public GC(Drawable drawable) {
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for GC creation</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
  * </ul>
  *  
  * @since 2.1.2
@@ -584,6 +586,10 @@ static void destroyGdipBrush(int brush) {
  * Disposes of the operating system resources associated with
  * the graphics context. Applications must dispose of all GCs
  * which they allocate.
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS if not called from the thread that created the drawable</li>
+ * </ul>
  */
 public void dispose() {
 	if (handle == 0) return;
