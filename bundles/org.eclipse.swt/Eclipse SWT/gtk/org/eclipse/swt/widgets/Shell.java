@@ -643,11 +643,15 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 	switch (eventType) {
 		case OS.FocusIn: 
 			if (xFocusEvent.mode == OS.NotifyNormal || xFocusEvent.mode == OS.NotifyWhileGrabbed) {
-				if (xFocusEvent.detail == OS.NotifyNonlinear || xFocusEvent.detail == OS.NotifyAncestor) {
-					if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
-					display.activeShell = this;
-					display.activePending = false;
-					sendEvent (SWT.Activate);
+				switch (xFocusEvent.detail) {
+					case OS.NotifyNonlinear:
+					case OS.NotifyNonlinearVirtual:
+					case OS.NotifyAncestor:
+						if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
+						display.activeShell = this;
+						display.activePending = false;
+						sendEvent (SWT.Activate);
+						break;
 				}
 			} 
 			break;
