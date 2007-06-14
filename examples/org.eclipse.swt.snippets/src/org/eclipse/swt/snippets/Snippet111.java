@@ -46,9 +46,9 @@ public static void main (String [] args) {
 			if (item != null && item == lastItem [0]) {
 				boolean showBorder = true;
 				final Composite composite = new Composite (tree, SWT.NONE);
-				if (!showBorder) composite.setBackground (black);
+				if (showBorder) composite.setBackground (black);
 				final Text text = new Text (composite, SWT.NONE);
-				final int inset = showBorder ? 0 : 1;
+				final int inset = showBorder ? 1 : 0;
 				composite.addListener (SWT.Resize, new Listener () {
 					public void handleEvent (Event e) {
 						Rectangle rect = composite.getClientArea ();
