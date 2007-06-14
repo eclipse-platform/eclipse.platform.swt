@@ -44,11 +44,11 @@ public static void main (String [] args) {
 		public void handleEvent (Event event) {
 			final TreeItem item = (TreeItem) event.item;
 			if (item != null && item == lastItem [0]) {
-				boolean isCarbon = SWT.getPlatform ().equals ("carbon");
+				boolean showBorder = true;
 				final Composite composite = new Composite (tree, SWT.NONE);
-				if (!isCarbon) composite.setBackground (black);
+				if (!showBorder) composite.setBackground (black);
 				final Text text = new Text (composite, SWT.NONE);
-				final int inset = isCarbon ? 0 : 1;
+				final int inset = showBorder ? 0 : 1;
 				composite.addListener (SWT.Resize, new Listener () {
 					public void handleEvent (Event e) {
 						Rectangle rect = composite.getClientArea ();
