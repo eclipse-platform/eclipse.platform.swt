@@ -11,6 +11,7 @@
 package org.eclipse.swt.accessibility;
 
 
+import java.lang.reflect.Constructor;
 import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -48,8 +49,12 @@ public class Accessible {
 	Vector textListeners = new Vector ();
 	Object[] variants;
 	Control control;
-
-	Accessible(Control control) {
+	
+//	public COMObject HACK () {
+//		return objIAccessible;
+//	}
+//	
+	public Accessible(Control control) {
 		this.control = control;
 		int /*long*/[] ppvObject = new int /*long*/[1];
 		/* CreateStdAccessibleObject([in] hwnd, [in] idObject, [in] riidInterface, [out] ppvObject).
@@ -142,7 +147,30 @@ public class Accessible {
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
 	 */
+	//TEMPORARY CODE
+	public static String ACCESSIBLE_CLASS_NAME;
 	public static Accessible internal_new_Accessible(Control control) {
+		if (ACCESSIBLE_CLASS_NAME != null) {
+			Class clazz = null;
+			try {
+				clazz = Class.forName(ACCESSIBLE_CLASS_NAME);
+			} catch (Throwable e) {
+				SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+			}
+			Constructor constructor = null;
+			try {
+				constructor = clazz.getConstructor (new Class [] {Control.class});
+			} catch (Throwable e1) {
+				SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e1);
+			}
+			Object value = null;
+			try {
+				value = constructor.newInstance (new Object [] {control});
+			} catch (Throwable e) {
+				SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+			}
+			return (Accessible)value;
+		}
 		return new Accessible(control);
 	}
 
