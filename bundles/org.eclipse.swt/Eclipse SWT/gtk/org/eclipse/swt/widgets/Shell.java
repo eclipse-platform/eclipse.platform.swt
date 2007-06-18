@@ -1479,6 +1479,7 @@ public void setVisible (boolean visible) {
 		* unminimized or shown on the desktop.
 		*/
 		OS.gtk_widget_show (shellHandle);
+		if (enableWindow != 0) OS.gdk_window_raise (enableWindow);
 		if (!OS.GTK_IS_PLUG (shellHandle)) {
 			mapped = false;
 			if (isDisposed ()) return;
