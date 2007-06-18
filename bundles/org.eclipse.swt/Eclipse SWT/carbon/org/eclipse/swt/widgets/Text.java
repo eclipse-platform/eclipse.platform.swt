@@ -397,7 +397,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				OS.HUnlock (oDataHandle[0]);
 			}
 			OS.DisposeHandle (oDataHandle[0]);
-			Point size = textExtent (str, wHint == SWT.DEFAULT ? 0 : wHint);
+			Point size = textExtent (str, wHint != SWT.DEFAULT && (style & SWT.WRAP) != 0 ? wHint : 0);
 			if (str != 0) OS.CFRelease(str);
 			width = size.x;
 			height = size.y;
