@@ -797,7 +797,11 @@ public:
 	void MouseEventHandler (Object^ sender, MouseEventArgs^ e) {
 		EventHandler (sender, e);	
 	}
-	
+
+	void FormsMouseEventHandler (Object^ sender, System::Windows::Forms::MouseEventArgs^ e) {
+		EventHandler (sender, e);	
+	}
+		
 	void MouseButtonEventHandler (Object^ sender, MouseButtonEventArgs^ e) {
 		EventHandler (sender, e);	
 	}
@@ -917,6 +921,10 @@ HANDLER_CONSTRUCTOR (KeyEventHandler, KeyEventHandler, "(II)V")
 
 #ifndef NO_gcnew_1MouseEventHandler
 HANDLER_CONSTRUCTOR (MouseEventHandler, MouseEventHandler, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1FormsMouseEventHandler
+HANDLER_CONSTRUCTOR (FormsMouseEventHandler, System::Windows::Forms::MouseEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1MouseButtonEventHandler
@@ -1238,6 +1246,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(Bitmap_1GetHicon)
 	OS_NATIVE_ENTER(env, that, Bitmap_1GetHicon_FUNC);
 	rc = (jint)(int)((System::Drawing::Bitmap^)TO_OBJECT(arg0))->GetHicon();
 	OS_NATIVE_EXIT(env, that, Bitmap_1GetHicon_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Icon_1FromHandle
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Icon_1FromHandle)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Icon_1FromHandle)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Icon_1FromHandle_FUNC);
+	rc = (jint)TO_HANDLE(System::Drawing::Icon::FromHandle((IntPtr)(int)arg0));
+	OS_NATIVE_EXIT(env, that, Icon_1FromHandle_FUNC);
 	return rc;
 }
 #endif

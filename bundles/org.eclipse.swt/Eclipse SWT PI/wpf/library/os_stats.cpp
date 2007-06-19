@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1265;
-int OS_nativeFunctionCallCount[1265];
+int OS_nativeFunctionCount = 1275;
+int OS_nativeFunctionCallCount[1275];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -321,6 +321,7 @@ char * OS_nativeFunctionNames[] = {
 	"FormattedText_1SetTextDecorations",
 	"FormattedText_1WidthIncludingTrailingWhitespace",
 	"FormsCommonDialog_1ShowDialog",
+	"FormsMouseEventArgs_1Button",
 	"Frame_1CanGoBack",
 	"Frame_1CanGoForward",
 	"Frame_1CurrentSource",
@@ -479,6 +480,7 @@ char * OS_nativeFunctionNames[] = {
 	"IList_1Insert",
 	"IList_1Remove",
 	"IList_1default",
+	"Icon_1FromHandle",
 	"ImageSource_1typeid",
 	"Image_1Source__I",
 	"Image_1Source__II",
@@ -593,6 +595,12 @@ char * OS_nativeFunctionNames[] = {
 	"Mouse_1XButton2",
 	"MoveMemory",
 	"NewGlobalRef",
+	"NotifyIcon_1DoubleClick",
+	"NotifyIcon_1Icon",
+	"NotifyIcon_1MouseDown",
+	"NotifyIcon_1MouseUp",
+	"NotifyIcon_1Text",
+	"NotifyIcon_1Visible",
 	"Object_1Equals",
 	"Object_1GetType",
 	"Object_1ToString",
@@ -1150,6 +1158,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1FontFamily",
 	"gcnew_1FormatConvertedBitmap",
 	"gcnew_1FormattedText",
+	"gcnew_1FormsMouseEventHandler",
 	"gcnew_1Frame",
 	"gcnew_1FrameworkElementFactory__I",
 	"gcnew_1FrameworkElementFactory__II",
@@ -1187,6 +1196,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1MouseEventHandler",
 	"gcnew_1MouseWheelEventHandler",
 	"gcnew_1NoArgsDelegate",
+	"gcnew_1NotifyIcon",
 	"gcnew_1OpenFileDialog",
 	"gcnew_1PasswordBox",
 	"gcnew_1Path",

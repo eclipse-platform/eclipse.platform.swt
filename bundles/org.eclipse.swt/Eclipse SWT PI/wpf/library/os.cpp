@@ -3797,6 +3797,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(FormsCommonDialog_1ShowDialog)
 }
 #endif
 
+#ifndef NO_FormsMouseEventArgs_1Button
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FormsMouseEventArgs_1Button)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(FormsMouseEventArgs_1Button)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FormsMouseEventArgs_1Button_FUNC);
+	rc = (jint)((System::Windows::Forms::MouseEventArgs^)TO_OBJECT(arg0))->Button;
+	OS_NATIVE_EXIT(env, that, FormsMouseEventArgs_1Button_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Frame_1CanGoBack
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1CanGoBack)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL OS_NATIVE(Frame_1CanGoBack)
@@ -7081,6 +7094,72 @@ JNIEXPORT jint JNICALL OS_NATIVE(NewGlobalRef)
 	rc = (jint)env->NewGlobalRef(arg0);
 	OS_NATIVE_EXIT(env, that, NewGlobalRef_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_NotifyIcon_1DoubleClick
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1DoubleClick)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1DoubleClick)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, NotifyIcon_1DoubleClick_FUNC);
+	((System::Windows::Forms::NotifyIcon^)TO_OBJECT(arg0))->DoubleClick += ((EventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, NotifyIcon_1DoubleClick_FUNC);
+}
+#endif
+
+#ifndef NO_NotifyIcon_1Icon
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1Icon)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1Icon)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, NotifyIcon_1Icon_FUNC);
+	((System::Windows::Forms::NotifyIcon^)TO_OBJECT(arg0))->Icon = ((System::Drawing::Icon^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, NotifyIcon_1Icon_FUNC);
+}
+#endif
+
+#ifndef NO_NotifyIcon_1MouseDown
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1MouseDown)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1MouseDown)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, NotifyIcon_1MouseDown_FUNC);
+	((System::Windows::Forms::NotifyIcon^)TO_OBJECT(arg0))->MouseDown += ((System::Windows::Forms::MouseEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, NotifyIcon_1MouseDown_FUNC);
+}
+#endif
+
+#ifndef NO_NotifyIcon_1MouseUp
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1MouseUp)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1MouseUp)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, NotifyIcon_1MouseUp_FUNC);
+	((System::Windows::Forms::NotifyIcon^)TO_OBJECT(arg0))->MouseUp += ((System::Windows::Forms::MouseEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, NotifyIcon_1MouseUp_FUNC);
+}
+#endif
+
+#ifndef NO_NotifyIcon_1Text
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1Text)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1Text)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, NotifyIcon_1Text_FUNC);
+	((System::Windows::Forms::NotifyIcon^)TO_OBJECT(arg0))->Text = ((String^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, NotifyIcon_1Text_FUNC);
+}
+#endif
+
+#ifndef NO_NotifyIcon_1Visible
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1Visible)(JNIEnv *env, jclass that, jint arg0, jboolean arg1);
+JNIEXPORT void JNICALL OS_NATIVE(NotifyIcon_1Visible)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, NotifyIcon_1Visible_FUNC);
+	((System::Windows::Forms::NotifyIcon^)TO_OBJECT(arg0))->Visible = (arg1);
+	OS_NATIVE_EXIT(env, that, NotifyIcon_1Visible_FUNC);
 }
 #endif
 
@@ -14140,6 +14219,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1MenuItem)
 	OS_NATIVE_ENTER(env, that, gcnew_1MenuItem_FUNC);
 	rc = (jint)TO_HANDLE(gcnew MenuItem());
 	OS_NATIVE_EXIT(env, that, gcnew_1MenuItem_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1NotifyIcon
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NotifyIcon)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1NotifyIcon)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1NotifyIcon_FUNC);
+	rc = (jint)TO_HANDLE(gcnew System::Windows::Forms::NotifyIcon());
+	OS_NATIVE_EXIT(env, that, gcnew_1NotifyIcon_FUNC);
 	return rc;
 }
 #endif

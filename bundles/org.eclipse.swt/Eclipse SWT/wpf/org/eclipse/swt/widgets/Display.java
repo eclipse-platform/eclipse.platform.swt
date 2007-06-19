@@ -2937,11 +2937,13 @@ public void wake () {
 }
 
 void wakeThreadHandler () {
+	//OS.DispatcherFrame_Continue (frame, false);
+	idle = false;
 }
 
 void wakeThread () {
 	int handler = OS.gcnew_NoArgsDelegate (jniRef, "wakeThreadHandler");
-	int operation = OS.Dispatcher_BeginInvoke (dispatcher, OS.DispatcherPriority_Send, handler);
+	int operation = OS.Dispatcher_BeginInvoke (dispatcher, OS.DispatcherPriority_Normal, handler);
 	OS.GCHandle_Free (operation);
 	OS.GCHandle_Free (handler);
 }
