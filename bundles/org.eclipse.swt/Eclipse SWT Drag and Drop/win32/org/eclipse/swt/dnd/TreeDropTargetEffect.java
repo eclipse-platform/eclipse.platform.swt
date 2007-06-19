@@ -176,8 +176,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 						scroll = nextItem != 0;
 					} else {
 						RECT itemRect = new RECT ();
-						itemRect.left = nextItem;
-						if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+						if (OS.TreeView_GetItemRect (handle, nextItem, itemRect, true)) {
 							RECT rect = new RECT ();
 							OS.GetClientRect (handle, rect);
 							POINT pt = new POINT ();

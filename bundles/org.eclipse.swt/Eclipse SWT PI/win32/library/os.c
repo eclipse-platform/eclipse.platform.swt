@@ -13670,6 +13670,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(TransparentImage)
 }
 #endif
 
+#ifndef NO_TreeView_1GetItemRect
+JNIEXPORT jboolean JNICALL OS_NATIVE(TreeView_1GetItemRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jboolean arg3)
+{
+	RECT _arg2, *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, TreeView_1GetItemRect_FUNC);
+	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jboolean)TreeView_GetItemRect((HWND)arg0, (HTREEITEM)arg1, lparg2, arg3);
+fail:
+	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, TreeView_1GetItemRect_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UDACCEL_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(UDACCEL_1sizeof)
 	(JNIEnv *env, jclass that)

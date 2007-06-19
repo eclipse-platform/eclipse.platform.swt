@@ -873,6 +873,7 @@ typedef enum {
 	TranslateMessage_FUNC,
 	TransparentBlt_FUNC,
 	TransparentImage_FUNC,
+	TreeView_1GetItemRect_FUNC,
 	UDACCEL_1sizeof_FUNC,
 	UnhookWindowsHookEx_FUNC,
 	UnregisterClassA_FUNC,

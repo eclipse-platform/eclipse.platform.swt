@@ -430,9 +430,8 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 	}
 	RECT rect = new RECT ();
 	if (firstColumn) {
-		rect.left = handle;
 		boolean full = columnCount == 0 && getText && getImage && fullText && fullImage;
-		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, full ? 0 : 1, rect) == 0) {
+		if (!OS.TreeView_GetItemRect (hwnd, handle, rect, !full)) {
 			return new RECT ();
 		}
 		if (getImage && !fullImage) {
@@ -468,8 +467,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean fullText, 
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
 			return new RECT ();
 		}
-		rect.left = handle;
-		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) == 0) {
+		if (!OS.TreeView_GetItemRect (hwnd, handle, rect, false)) {
 			return new RECT ();
 		}
 		rect.left = headerRect.left;
@@ -955,8 +953,6 @@ void redraw () {
 	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
-	RECT rect = new RECT ();
-	rect.left = handle;
 	/*
 	* When there are no columns and the tree is not
 	* full selection, redraw only the text.  This is
@@ -974,7 +970,8 @@ void redraw () {
 			}
 		}
 	}
-	if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, full ? 0 : 1, rect) != 0) {
+	RECT rect = new RECT ();
+	if (OS.TreeView_GetItemRect (hwnd, handle, rect, !full)) {
 		OS.InvalidateRect (hwnd, rect, true);
 	}
 }
@@ -1156,8 +1153,7 @@ public void setChecked (boolean checked) {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (parent.currentItem == this && OS.IsWindowVisible (hwnd)) {
 			RECT rect = new RECT ();
-			rect.left = handle;
-			if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+			if (OS.TreeView_GetItemRect (hwnd, handle, rect, false)) {
 				OS.InvalidateRect (hwnd, rect, true);
 			}
 		}
@@ -1234,8 +1230,7 @@ public void setExpanded (boolean expanded) {
 			int hItem = hTopItem, index = 0;
 			while (hItem != 0 && (noAnimate || hItem != handle) && index < count) {
 				RECT rect = new RECT ();
-				rect.left = hItem;
-				if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+				if (OS.TreeView_GetItemRect (hwnd, hItem, rect, true)) {
 					rects [index++] = rect;
 				}
 				hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
@@ -1285,9 +1280,8 @@ public void setExpanded (boolean expanded) {
 		boolean collapsed = false;
 		if (!expanded) {
 			RECT rect = new RECT ();
-			rect.left = hTopItem;
-			while (hTopItem != 0 && OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) == 0) {
-				hTopItem = rect.left = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hTopItem);
+			while (hTopItem != 0 && !OS.TreeView_GetItemRect (hwnd, hTopItem, rect, false)) {
+				hTopItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hTopItem);
 				collapsed = true;
 			}
 		}
@@ -1316,8 +1310,7 @@ public void setExpanded (boolean expanded) {
 					int hItem = hTopItem, index = 0;
 					while (hItem != 0 && index < count) {
 						RECT rect = new RECT ();
-						rect.left = hItem;
-						if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+						if (OS.TreeView_GetItemRect (hwnd, hItem, rect, true)) {
 							if (!OS.EqualRect (rect, rects [index])) {
 								break;
 							}
@@ -1347,8 +1340,7 @@ public void setExpanded (boolean expanded) {
 				}
 				if (handle == hBottomItem) {
 					RECT rect = new RECT ();
-					rect.left = hBottomItem;
-					if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+					if (OS.TreeView_GetItemRect (hwnd, hBottomItem, rect, false)) {
 						OS.InvalidateRect (hwnd, rect, true);
 					}
 				}
@@ -1604,8 +1596,7 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (parent.currentItem == this && OS.IsWindowVisible (hwnd)) {
 			RECT rect = new RECT ();
-			rect.left = handle;
-			if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+			if (OS.TreeView_GetItemRect (hwnd, handle, rect, false)) {
 				OS.InvalidateRect (hwnd, rect, true);
 			}
 		}

@@ -3846,6 +3846,7 @@ public static final native boolean SystemParametersInfoW (int uiAction, int uiPa
 public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, int [] pvParam, int fWinIni);
 public static final native int ToAscii (int uVirtKey, int uScanCode, byte [] lpKeyState, short [] lpChar, int uFlags);
 public static final native int ToUnicode (int wVirtKey, int wScanCode, byte [] lpKeyState, char [] pwszBuff, int cchBuff, int wFlags);
+public static final native boolean TreeView_GetItemRect (int /*long*/ hwndTV, int /*long*/ hitem, RECT prc, boolean fItemRect);
 public static final native boolean TrackMouseEvent (TRACKMOUSEEVENT lpEventTrack);
 public static final native boolean TrackPopupMenu (int /*long*/ hMenu, int uFlags, int x, int y, int nReserved, int /*long*/ hWnd, RECT prcRect);
 public static final native int TranslateAcceleratorW (int /*long*/ hWnd, int /*long*/ hAccTable, MSG lpMsg);

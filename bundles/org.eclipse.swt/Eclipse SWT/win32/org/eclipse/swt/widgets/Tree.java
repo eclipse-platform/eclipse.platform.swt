@@ -1217,8 +1217,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
 						if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
 							RECT itemRect = new RECT ();
-							itemRect.left = item.handle;
-							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+							if (OS.TreeView_GetItemRect (handle, item.handle, itemRect, true)) {
 								rect.left = Math.min (itemRect.left, rect.right);
 							}
 						}
@@ -1355,8 +1354,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 						}
 						if (hItem != 0) {
 							RECT rect = new RECT ();
-							rect.left = hItem;
-							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+							if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
 								top = rect.bottom;
 							}
 						}
@@ -1412,8 +1410,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, int wParam, int lParam) {
 				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
 			}
 			if (hItem != 0) {
-				rect.left = hItem;
-				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+				if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
 					height = rect.bottom - rect.top;
 				}
 			}
@@ -1791,8 +1788,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 			ignoreCustomDraw = false;
 		}
-		rect.left = hItem;
-		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+		if (OS.TreeView_GetItemRect (handle, hItem, rect, true)) {
 			width = Math.max (width, rect.right);
 			height += rect.bottom - rect.top;
 		}
@@ -2110,8 +2106,7 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 		if (fixParent) {
 			if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 				RECT rect = new RECT ();
-				rect.left = hParent;
-				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+				if (OS.TreeView_GetItemRect (handle, hParent, rect, false)) {
 					OS.InvalidateRect (handle, rect, true);
 				}
 			}
@@ -2126,8 +2121,7 @@ void createItem (TreeItem item, int hParent, int hInsertAfter, int hItem) {
 		if ((style & SWT.VIRTUAL) != 0) {
 			if (currentItem != null) {
 				RECT rect = new RECT ();
-				rect.left = hNewItem;
-				if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+				if (OS.TreeView_GetItemRect (handle, hNewItem, rect, false)) {
 					RECT damageRect = new RECT ();
 					boolean damaged = OS.GetUpdateRect (handle, damageRect, true);
 					if (damaged && damageRect.top < rect.bottom) {
@@ -2494,8 +2488,7 @@ void destroyItem (TreeItem item, int hItem) {
 	if ((style & SWT.DOUBLE_BUFFERED) == 0) {
 		if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 			RECT rect = new RECT ();
-			rect.left = hItem;
-			fixRedraw = OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) == 0;
+			fixRedraw = !OS.TreeView_GetItemRect (handle, hItem, rect, false);
 		}
 	}
 	if (fixRedraw) {
@@ -2541,8 +2534,7 @@ void destroyItem (TreeItem item, int hItem) {
 		*/
 		if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent) == 0) {
 			RECT rect = new RECT ();
-			rect.left = hParent;
-			if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+			if (OS.TreeView_GetItemRect (handle, hParent, rect, false)) {
 				OS.InvalidateRect (handle, rect, true);
 			}
 		}
@@ -3621,9 +3613,9 @@ void redrawSelection () {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		if (hItem != 0) {
 			RECT rect = new RECT ();
-			rect.left = hItem;
-			OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect);
-			OS.InvalidateRect (handle, rect, true);
+			if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
+				OS.InvalidateRect (handle, rect, true);
+			}
 		}
 	} else {
 		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
@@ -3645,9 +3637,9 @@ void redrawSelection () {
 					state = OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
 				}
 				if ((state & OS.TVIS_SELECTED) != 0) {
-					rect.left = hItem;
-					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect);
-					OS.InvalidateRect (handle, rect, true);
+					if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
+						OS.InvalidateRect (handle, rect, true);
+					}
 				}
 				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
 				index++;
@@ -4773,8 +4765,7 @@ void showItem (int hItem) {
 	} else {
 		boolean scroll = true;
 		RECT itemRect = new RECT ();
-		itemRect.left = hItem;
-		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+		if (OS.TreeView_GetItemRect (handle, hItem, itemRect, true)) {
 			forceResize ();
 			RECT rect = new RECT ();
 			OS.GetClientRect (handle, rect);
@@ -4801,8 +4792,7 @@ void showItem (int hItem) {
 	}
 	if (hwndParent != 0) {
 		RECT itemRect = new RECT ();
-		itemRect.left = hItem;
-		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+		if (OS.TreeView_GetItemRect (handle, hItem, itemRect, true)) {
 			forceResize ();
 			RECT rect = new RECT ();
 			OS.GetClientRect (hwndParent, rect);
@@ -5524,11 +5514,9 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					tvItem.stateMask = OS.TVIS_SELECTED;
 					int hDeselectItem = hItem;					
 					RECT rect1 = new RECT ();
-					rect1.left = hAnchor;
-					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect1);
+					OS.TreeView_GetItemRect (handle, hAnchor, rect1, false);
 					RECT rect2 = new RECT ();
-					rect2.left = hDeselectItem;
-					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect2);
+					OS.TreeView_GetItemRect (handle, hDeselectItem, rect2, false);
 					int flags = rect1.top < rect2.top ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE;
 					while (hDeselectItem != hAnchor) {
 						tvItem.hItem = hDeselectItem;
@@ -5536,10 +5524,8 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 						hDeselectItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, hDeselectItem);
 					}
 					int hSelectItem = hAnchor;
-					rect1.left = hNewItem;
-					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect1);
-					rect2.left = hSelectItem;
-					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect2);
+					OS.TreeView_GetItemRect (handle, hNewItem, rect1, false);
+					OS.TreeView_GetItemRect (handle, hSelectItem, rect2, false);
 					tvItem.state = OS.TVIS_SELECTED;
 					flags = rect1.top < rect2.top ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE;
 					while (hSelectItem != hNewItem) {
@@ -5592,8 +5578,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 							do {
 								int hVisible = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNewItem);
 								if (hVisible == 0) break;
-								rect.left = hVisible;
-								OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect);
+								if (!OS.TreeView_GetItemRect (handle, hVisible, rect, false)) break;
 								if (rect.bottom > clientRect.bottom) break;
 								if ((hNewItem = hVisible) == hItem) {
 									OS.SendMessage (handle, OS.WM_VSCROLL, OS.SB_PAGEDOWN, 0);
@@ -5631,12 +5616,11 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 						}
 						if (redraw) {
 							RECT rect1 = new RECT (), rect2 = new RECT ();
-							rect1.left = hItem;  rect2.left = hNewItem;
-							int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
-							if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = 0;
-							if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = 0;
-							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
-							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
+							boolean fItemRect = (style & SWT.FULL_SELECTION) == 0;
+							if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = false;
+							if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = false;
+							OS.TreeView_GetItemRect (handle, hItem, rect1, fItemRect);
+							OS.TreeView_GetItemRect (handle, hNewItem, rect2, fItemRect);
 							OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 							OS.InvalidateRect (handle, rect1, true);
 							OS.InvalidateRect (handle, rect2, true);
@@ -6014,12 +5998,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			}
 			if (redraw) {
 				RECT rect1 = new RECT (), rect2 = new RECT ();
-				rect1.left = hOldItem;  rect2.left = hNewItem;
-				int fItemRect = (style & SWT.FULL_SELECTION) != 0 ? 0 : 1;
-				if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = 0;
-				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = 0;
-				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
-				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
+				boolean fItemRect = (style & SWT.FULL_SELECTION) == 0;
+				if (hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) fItemRect = false;
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) fItemRect = false;
+				OS.TreeView_GetItemRect (handle, hOldItem, rect1, fItemRect);
+				OS.TreeView_GetItemRect (handle, hNewItem, rect2, fItemRect);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.InvalidateRect (handle, rect1, true);
 				OS.InvalidateRect (handle, rect2, true);
@@ -6052,19 +6035,18 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				if ((wParam & OS.MK_SHIFT) != 0) {
 					RECT rect1 = new RECT ();
 					if (hAnchor == 0) hAnchor = hNewItem;
-					rect1.left = hAnchor;
-					if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect1) != 0) {
+					if (OS.TreeView_GetItemRect (handle, hAnchor, rect1, false)) {
 						RECT rect2 = new RECT ();
-						rect2.left = hNewItem;
-						OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect2);
-						int flags = rect1.top < rect2.top ? OS.TVGN_NEXTVISIBLE : OS.TVGN_PREVIOUSVISIBLE;			
-						tvItem.state = OS.TVIS_SELECTED;
-						int hItem = tvItem.hItem = hAnchor;
-						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-						while (hItem != hNewItem) {
-							tvItem.hItem = hItem;
+						if (OS.TreeView_GetItemRect (handle, hNewItem, rect2, false)) {
+							int flags = rect1.top < rect2.top ? OS.TVGN_NEXTVISIBLE : OS.TVGN_PREVIOUSVISIBLE;			
+							tvItem.state = OS.TVIS_SELECTED;
+							int hItem = tvItem.hItem = hAnchor;
 							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-							hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, hItem);
+							while (hItem != hNewItem) {
+								tvItem.hItem = hItem;
+								OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+								hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, hItem);
+							}
 						}
 					}
 				}
@@ -6778,8 +6760,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 				if (checkVisible) {
 					if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 					RECT itemRect = new RECT ();
-					itemRect.left = lptvdi.hItem;
-					if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, itemRect) == 0) {
+					if (!OS.TreeView_GetItemRect (handle, lptvdi.hItem, itemRect, false)) {
 						break;
 					}
 					RECT rect = new RECT ();
@@ -7105,9 +7086,9 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 						int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 						if ((bits & OS.TVS_FULLROWSELECT) == 0) {
 							RECT rect = new RECT ();
-							rect.left = tvItem.hItem;
-							OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect);
-							OS.InvalidateRect (handle, rect, true);
+							if (OS.TreeView_GetItemRect (handle, tvItem.hItem, rect, false)) {
+								OS.InvalidateRect (handle, rect, true);
+							}
 						}
 					}
 				}

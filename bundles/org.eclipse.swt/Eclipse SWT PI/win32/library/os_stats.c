@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 873;
-int OS_nativeFunctionCallCount[873];
+int OS_nativeFunctionCount = 874;
+int OS_nativeFunctionCallCount[874];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -865,6 +865,7 @@ char * OS_nativeFunctionNames[] = {
 	"TranslateMessage",
 	"TransparentBlt",
 	"TransparentImage",
+	"TreeView_1GetItemRect",
 	"UDACCEL_1sizeof",
 	"UnhookWindowsHookEx",
 	"UnregisterClassA",
