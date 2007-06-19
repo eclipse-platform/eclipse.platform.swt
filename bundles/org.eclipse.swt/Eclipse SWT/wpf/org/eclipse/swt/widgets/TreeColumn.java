@@ -192,10 +192,7 @@ void createHandle () {
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	headerHandle = OS.gcnew_GridViewColumnHeader ();
 	OS.GridViewColumn_Header (handle, headerHandle);
-	int row = OS.gcnew_SWTRow (jniRef, headerHandle);
-	OS.GridViewColumnHeader_Content (headerHandle, row);
 	OS.GridViewColumn_Width (handle, 0);
-	OS.GCHandle_Free (row);	
 }
 
 void deregister () {
@@ -235,37 +232,6 @@ int findPart (String part) {
 		OS.GCHandle_Free (contentPresenter);
 	}
 	OS.GCHandle_Free (contentPresenterType);
-	return result;
-}
-
-int GetBackground (int itemHandle) {
-	return 0;
-}
-
-int GetCheck (int itemHandle) {
-	return 0;
-}
-
-int GetFont (int itemHandle) {
-	return 0;
-}
-
-int GetForeground (int itemHandle) {
-	return 0;
-}
-
-int GetImage (int itemHandle) {
-	return image != null ? image.handle : 0;
-}
-
-int GetText (int itemHandle) {
-	int result = 0;
-	if (text != null) {
-		result = stringPtr;
-		if (result == 0) {
-			result = stringPtr = createDotNetString (text, false);
-		}
-	}
 	return result;
 }
 
@@ -403,6 +369,11 @@ int HandleConvert (int value, int targetType, int parameter, int culture) {
 	return result;
 }
 
+void OnRender (int source, int dc) {
+	updateImage ();
+	updateText ();	
+}
+
 /**
  * Causes the receiver to be resized to its preferred size.
  * For a composite, this involves computing the preferred size
@@ -515,17 +486,9 @@ public void setAlignment (int alignment) {
 }
 
 public void setImage (Image image) {
-	checkWidget();
+	checkWidget ();
 	super.setImage (image);
-	int part = findPart (Tree.IMAGE_PART_NAME);
-	if (part != 0) {
-		int property = OS.Image_SourceProperty ();
-		int bindingExpression = OS.FrameworkElement_GetBindingExpression (part, property);
-		OS.BindingExpression_UpdateTarget (bindingExpression);
-		OS.GCHandle_Free (bindingExpression);
-		OS.GCHandle_Free (property);
-		OS.GCHandle_Free (part);
-	}
+	updateImage ();
 }
 
 /**
@@ -579,20 +542,8 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.equals (text)) return;
-	super.setText (string);
-	if (stringPtr != 0) {
-		OS.GCHandle_Free (stringPtr);
-		stringPtr = 0;
-	}
-	int part = findPart (Tree.TEXT_PART_NAME);
-	if (part != 0) {
-		int property = OS.TextBlock_TextProperty ();
-		int bindingExpression = OS.FrameworkElement_GetBindingExpression (part, property);
-		OS.BindingExpression_UpdateTarget (bindingExpression);
-		OS.GCHandle_Free (bindingExpression);
-		OS.GCHandle_Free (property);
-		OS.GCHandle_Free (part);
-	}
+	text = string;
+	updateText ();
 }
 
 /**
@@ -630,6 +581,22 @@ public void setWidth (int width) {
 	checkWidget ();
 	if (width < 0) return;
 	OS.GridViewColumn_Width (handle, width);
+}
+
+void updateImage() {
+	int part = findPart (Tree.IMAGE_PART_NAME);
+	if (part == 0) return;
+	OS.Image_Source (part, image == null ? 0 : image.handle);
+	OS.GCHandle_Free (part);
+}
+
+void updateText () {
+	int part = findPart (Tree.TEXT_PART_NAME);
+	if (part == 0) return;
+	int str = createDotNetString (text, false);
+	OS.TextBlock_Text (part, str);
+	OS.GCHandle_Free (str);
+	OS.GCHandle_Free (part);
 }
 
 }

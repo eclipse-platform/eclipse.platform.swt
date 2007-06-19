@@ -341,6 +341,8 @@ public class OS extends C {
 	public static final int FocusNavigationDirection_Previous = 1;
 	public static final int FocusNavigationDirection_First = 2;
 	public static final int FocusNavigationDirection_Last = 3;
+	
+	public static final int RelativeSourceMode_FindAncestor = 3;
 
 	/** GDI+ constants */
 	public static final int PixelFormat_Format24bppRgb = 137224;
@@ -375,7 +377,8 @@ public class OS extends C {
 	public static final int Colors_White = Colors_White();
 	public static final int Colors_Black = Colors_Black();
 	public static final int Colors_Transparent = Colors_Transparent();
-	public static final int SystemColors_ControlColor = SystemColors_ControlColor();	
+	public static final int SystemColors_ControlColor = SystemColors_ControlColor();
+		
 	
 /** Win32 Natives */
 public static final native boolean CloseHandle(int hObject);
@@ -463,9 +466,7 @@ public static final native int ArrayList_default(int sender, int index);
 public static final native void ArrayList_default(int sender, int index, int value);
 public static final native void ArrayList_Insert(int sender, int index, int value);
 public static final native void ArrayList_RemoveAt(int sender, int index);
-public static final native void Binding_Converter(int sender, int value);
-public static final native void Binding_ConverterParameter(int sender, int value);
-public static final native void BindingExpression_UpdateTarget(int sender);
+public static final native void Binding_RelativeSource(int sender, int value);
 public static final native int Bitmap_GetHicon(int sender);
 public static final native int BitmapDecoder_Create(int stream, int createOptions, int cacheOption);
 public static final native int BitmapDecoder_Frames(int sender);
@@ -592,6 +593,7 @@ public static final native void Control_FontSize(int sender, double value);
 public static final native int Control_HorizontalContentAlignment(int sender);
 public static final native void Control_HorizontalContentAlignment(int sender, int value);
 public static final native void Control_MouseDoubleClick(int sender, int handler);
+public static final native void Control_PreviewMouseDoubleClick(int sender, int handler);
 public static final native int Control_Template(int sender);
 public static final native void Control_Template(int sender, int value);
 public static final native int Control_TemplateProperty();
@@ -777,6 +779,7 @@ public static final native void FrameworkElement_Style(int sender, int value);
 public static final native int FrameworkElement_StyleProperty();
 public static final native int FrameworkElement_Tag(int sender);
 public static final native void FrameworkElement_Tag(int sender, int tag);
+public static final native int FrameworkElement_TagProperty();
 public static final native int FrameworkElement_typeid();
 public static final native int FrameworkElement_ToolTip(int sender);
 public static final native void FrameworkElement_ToolTip(int sender, int value);
@@ -800,6 +803,7 @@ public static final native void FrameworkElementFactory_SetBinding(int sender, i
 public static final native void FrameworkElementFactory_SetValue(int sender, int dp, boolean value);
 public static final native void FrameworkElementFactory_SetValue(int sender, int dp, int value);
 public static final native void FrameworkElementFactory_SetValueDock(int sender, int dp, int value);
+public static final native void FrameworkElementFactory_SetValueInt(int sender, int dp, int value);
 public static final native void FrameworkElementFactory_SetValueStretch(int sender, int dp, int value);
 public static final native void FrameworkElementFactory_SetValueOrientation(int sender, int dp, int value);
 public static final native void FrameworkElementFactory_SetValueVerticalAlignment(int sender, int dp, int value);
@@ -890,6 +894,7 @@ public static final native int IndexedGlyphRunCollection_Current(int sender);
 public static final native void InlineCollection_Add(int sender, int value);
 public static final native void InlineCollection_Clear(int sender);
 public static final native int InputEventArgs_Timestamp(int sender);
+public static final native int Image_Source(int sender);
 public static final native void Image_Source(int sender, int imageSource);
 public static final native int Image_SourceProperty();
 public static final native int Image_StretchProperty();
@@ -977,6 +982,7 @@ public static final native int ListBox_SelectedItems(int sender);
 public static final native void ListBox_SelectionMode(int sender, int value);
 public static final native void ListBox_UnselectAll(int sender);
 public static final native void ListView_View(int sender, int value);
+public static final native int ListViewItem_typeid();
 public static final native void Menu_IsMainMenu(int sender, boolean value);
 public static final native void MenuItem_Click(int sender, int handler);
 public static final native void MenuItem_Icon(int sender, int value);
@@ -1101,6 +1107,7 @@ public static final native int RegistryKey_OpenSubKey(int sender, int key);
 public static final native int RegistryKey_GetSubKeyNames(int sender);
 public static final native int RegistryKey_GetValue(int sender, int name);
 public static final native int RepeatBehavior_Forever();
+public static final native void RelativeSource_AncestorType(int sender, int type);
 public static final native int RenderOptions_GetBitmapScalingMode(int target);
 public static final native void RenderOptions_SetBitmapScalingMode(int target, int mode);
 public static final native void RenderOptions_SetEdgeMode(int target, int edgeMode);
@@ -1156,7 +1163,8 @@ public static final native int String_Length(int sender);
 public static final native int Style_Setters(int sender);
 public static final native int SWTCanvas_Visual(int sender);
 public static final native void SWTCanvas_Visual(int sender, int visual);
-public static final native void SWTRow_NotifyPropertyChanged(int sender, int property);
+public static final native int SWTStackPanel_JNIRefProperty();
+public static final native int SWTStackPanel_typeid();
 public static final native void SWTTextRunProperties_ForegroundBrush(int sender, int brush);
 public static final native int SystemColors_ControlBrush();
 public static final native int SystemColors_ControlColor();
@@ -1223,6 +1231,7 @@ public static final native void TextTabPropertiesCollection_Add(int sender, int 
 public static final native void TabControl_TabStripPlacement(int sender, int value);
 public static final native boolean TabItem_IsSelected(int sender);
 public static final native int TextBlock_Inlines(int sender);
+public static final native int TextBlock_Text(int sender);
 public static final native void TextBlock_Text(int sender, int str);
 public static final native int TextBlock_TextProperty();
 public static final native int TextBlock_typeid();
@@ -1335,6 +1344,7 @@ public static final native void TreeViewItem_IsSelected(int sender, boolean valu
 public static final native int TreeViewItem_HeaderTemplate(int sender);
 public static final native void TreeViewItem_HeaderTemplate(int sender, int value);
 public static final native int TreeViewItem_HeaderTemplateProperty();
+public static final native int TreeViewItem_typeid();
 public static final native int Type_GetProperty(int sender, int name, int bindingFlags);
 public static final native int TypeConverter_ConvertFromString(int sender, int string);
 public static final native int TypeConverter_ConvertToString(int sender, int object);
@@ -1491,8 +1501,7 @@ public static final native int gcnew_ArrayList(int count);
 public static final native int gcnew_ArcSegment(int point, int size,  double rotationAngle, boolean isLargeArc, int sweepDirection, boolean isStroked);
 public static final native int gcnew_BitmapImage();
 public static final native int gcnew_BezierSegment(int point1, int point2, int point3, boolean isScrolled);
-public static final native int gcnew_Binding();
-public static final native int gcnew_Binding(int path);
+public static final native int gcnew_Binding(int propertyPath);
 public static final native int gcnew_BitmapPalette(int colors);
 public static final native int gcnew_Bitmap(int width, int height, int stride, int format, byte[] scan0);
 public static final native int gcnew_Button();
@@ -1574,6 +1583,7 @@ public static final native int gcnew_QuadraticBezierSegment(int point1, int poin
 public static final native int gcnew_RadioButton();
 public static final native int gcnew_Rect(double x, double y, double width, double height);
 public static final native int gcnew_RectangleGeometry(int rect);
+public static final native int gcnew_RelativeSource(int relativeSourceMode);
 public static final native int gcnew_RenderTargetBitmap(int pixelWidth, int pixelHeight, double dpiX, double dpiY, int pixelFormat);
 public static final native int gcnew_RepeatButton();
 public static final native int gcnew_Rectangle();
@@ -1597,9 +1607,8 @@ public static final native int gcnew_String(char[] value, int startIndex, int le
 public static final native int gcnew_Style();
 public static final native int gcnew_SWTCanvas(int jniRef);
 public static final native int gcnew_SWTSafeHandle(int handle, boolean isIcon);
-public static final native int gcnew_SWTCellConverter();
+public static final native int gcnew_SWTStackPanel(int jniRef);
 public static final native int gcnew_SWTTextSource(int jniRef);
-public static final native int gcnew_SWTRow(int parentJniRef, int item);
 public static final native int gcnew_SWTTextEmbeddedObject(int properties, int lenght, double width, double height, double baseline);
 public static final native int gcnew_SWTTextRunProperties(int typeface, double size, double hittingSize, int textDecorations, int foregroundBrush, int backgroundBrush, int baselineAlignment, int culture);
 public static final native int gcnew_SWTTextParagraphProperties(int flowDirection, int textAlignment, boolean firstLineInParagraph, int defaultTextRunProperties, int textWrap, double lineHeight, double indent, int tabs);

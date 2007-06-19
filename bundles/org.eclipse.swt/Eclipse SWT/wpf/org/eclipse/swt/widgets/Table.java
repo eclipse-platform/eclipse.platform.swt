@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.wpf.*;
 
 /** 
  * Instances of this class implement a selectable user interface
@@ -68,13 +68,8 @@ public class Table extends Composite {
 	static final String CHECKBOX_PART_NAME = "SWT_PART_CHECKBOX";
 	static final String IMAGE_PART_NAME = "SWT_PART_IMAGE";
 	static final String TEXT_PART_NAME = "SWT_PART_TEXT";
-	
-	static final int BACKGROUND_NOTIFY = 3;
-	static final int CHECK_NOTIFY = 4;
-	static final int FONT_NOTIFY = 5;
-	static final int FOREGROUND_NOTIFY = 2;
-	static final int IMAGE_NOTIFY = 1;
-	static final int TEXT_NOTIFY = 0;
+	static final String STACKPANEL_PART_NAME = "SWT_PART_STACKPANEL";
+	static final String RENDER_PANEL_NAME = "SWTStackPanel";
 
 /**
  * Constructs a new instance of this class given its parent
@@ -155,8 +150,8 @@ public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addListener (SWT.Selection, typedListener);
+	addListener (SWT.DefaultSelection, typedListener);
 }
 
 int backgroundProperty () {
@@ -170,9 +165,7 @@ boolean checkData (TableItem item) {
 		Event event = new Event ();
 		event.item = item;
 		event.index = indexOf (item);
-		item.ignoreNotify = true;
 		sendEvent (SWT.SetData, event);
-		item.ignoreNotify = false;
 		//widget could be disposed at this point
 		if (isDisposed () || item.isDisposed ()) return false;
 	}
@@ -346,8 +339,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 int createCellTemplate (int index) {
 	int template = OS.gcnew_DataTemplate ();
+	int swtStackPanelType = OS.SWTStackPanel_typeid ();
+	int swtstackPanelName = createDotNetString(RENDER_PANEL_NAME, false);
+	int onRenderNode = OS.gcnew_FrameworkElementFactory (swtStackPanelType, swtstackPanelName);
+	OS.GCHandle_Free(swtstackPanelName);
+	OS.GCHandle_Free (swtStackPanelType);
+	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
+	OS.FrameworkElementFactory_SetValueInt (onRenderNode, jniRefProperty, jniRef);
+	OS.GCHandle_Free (jniRefProperty);
+	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
 	int stackPanelType = OS.StackPanel_typeid ();
-	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType);
+	int cellContentNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
+	OS.GCHandle_Free (stackPanelType);
+	OS.GCHandle_Free (stackPanelName);
 	if (index == 0 && (style & SWT.CHECK) != 0) {
 		int checkBoxType = OS.CheckBox_typeid ();
 		int checkBoxName = createDotNetString (CHECKBOX_PART_NAME, false);
@@ -357,15 +361,7 @@ int createCellTemplate (int index) {
 		int marginProperty = OS.FrameworkElement_MarginProperty ();
 		int thickness = OS.gcnew_Thickness (0,0,4,0);
 		OS.FrameworkElementFactory_SetValue (checkBoxNode, marginProperty, thickness);
-		OS.FrameworkElementFactory_AppendChild (stackPanelNode, checkBoxNode);
-		//binding
-		int checkPath = createDotNetString ("Check", false);
-		int checkBinding = OS.gcnew_Binding (checkPath);
-		int isCheckedProperty = OS.ToggleButton_IsCheckedProperty ();
-		OS.FrameworkElementFactory_SetBinding (checkBoxNode, isCheckedProperty, checkBinding);
-		OS.GCHandle_Free (checkPath);
-		OS.GCHandle_Free (checkBinding);
-		OS.GCHandle_Free (isCheckedProperty);
+		OS.FrameworkElementFactory_AppendChild (cellContentNode, checkBoxNode);
 		OS.GCHandle_Free (thickness);
 		OS.GCHandle_Free (marginProperty);
 		OS.GCHandle_Free (verticalAlignmentProperty);
@@ -376,53 +372,32 @@ int createCellTemplate (int index) {
 	int textType = OS.TextBlock_typeid ();
 	int textName = createDotNetString (TEXT_PART_NAME, false);
 	int textNode = OS.gcnew_FrameworkElementFactory (textType, textName);
+	OS.GCHandle_Free (textName);
+	OS.GCHandle_Free (textType);
 	int verticalAlignmentProperty = OS.FrameworkElement_VerticalAlignmentProperty ();
 	OS.FrameworkElementFactory_SetValueVerticalAlignment (textNode, verticalAlignmentProperty, OS.VerticalAlignment_Center);
+	OS.GCHandle_Free (verticalAlignmentProperty);
 	int imageType = OS.Image_typeid ();
 	int imageName = createDotNetString (IMAGE_PART_NAME, false);
 	int imageNode = OS.gcnew_FrameworkElementFactory (imageType, imageName);
+	OS.GCHandle_Free (imageName);
+	OS.GCHandle_Free (imageType);
 	int marginProperty = OS.FrameworkElement_MarginProperty ();
 	int thickness = OS.gcnew_Thickness (0,0,4,0);
 	OS.FrameworkElementFactory_SetValue (imageNode, marginProperty, thickness);
-	int orientationProperty = OS.StackPanel_OrientationProperty ();
-	OS.FrameworkElementFactory_SetValueOrientation (stackPanelNode, orientationProperty, OS.Orientation_Horizontal);
-	OS.FrameworkElementFactory_AppendChild (stackPanelNode, imageNode);
-	OS.FrameworkElementFactory_AppendChild (stackPanelNode, textNode);
-	OS.FrameworkTemplate_VisualTree (template, stackPanelNode);
-	
-	//bindings
-	int cellConverter = OS.gcnew_SWTCellConverter ();
-	int textPath = createDotNetString ("Text", false);
-	int textBinding = OS.gcnew_Binding (textPath);
-	OS.Binding_Converter (textBinding, cellConverter);
-	OS.Binding_ConverterParameter (textBinding, index);
-	int textProperty = OS.TextBlock_TextProperty ();
-	OS.FrameworkElementFactory_SetBinding (textNode, textProperty, textBinding);
-	int imagePath = createDotNetString ("Image", false);
-	int imageBinding = OS.gcnew_Binding (imagePath);
-	OS.Binding_Converter (imageBinding, cellConverter);
-	OS.Binding_ConverterParameter (imageBinding, index);
-	int imageProperty = OS.Image_SourceProperty ();
-	OS.FrameworkElementFactory_SetBinding (imageNode, imageProperty, imageBinding);
-	OS.GCHandle_Free (textBinding);
-	OS.GCHandle_Free (textPath);
-	OS.GCHandle_Free (textProperty);
-	OS.GCHandle_Free (imageBinding);
-	OS.GCHandle_Free (imagePath);
-	OS.GCHandle_Free (imageProperty);
-	OS.GCHandle_Free (cellConverter);
 	OS.GCHandle_Free (marginProperty);
 	OS.GCHandle_Free (thickness);
-	OS.GCHandle_Free (stackPanelType);
-	OS.GCHandle_Free (imageType);
-	OS.GCHandle_Free (textType);
-	OS.GCHandle_Free (stackPanelNode);
-	OS.GCHandle_Free (textName);
-	OS.GCHandle_Free (textNode);
-	OS.GCHandle_Free (imageName);
-	OS.GCHandle_Free (imageNode);
+	int orientationProperty = OS.StackPanel_OrientationProperty ();
+	OS.FrameworkElementFactory_SetValueOrientation (cellContentNode, orientationProperty, OS.Orientation_Horizontal);
 	OS.GCHandle_Free (orientationProperty);
-	OS.GCHandle_Free (verticalAlignmentProperty);
+	OS.FrameworkElementFactory_AppendChild (cellContentNode, imageNode);
+	OS.GCHandle_Free (imageNode);
+	OS.FrameworkElementFactory_AppendChild (cellContentNode, textNode);
+	OS.GCHandle_Free (textNode);
+	OS.FrameworkElementFactory_AppendChild (onRenderNode, cellContentNode);
+	OS.GCHandle_Free (cellContentNode);
+	OS.FrameworkTemplate_VisualTree (template, onRenderNode);
+	OS.GCHandle_Free (onRenderNode);
 	return template;
 }
 
@@ -457,10 +432,15 @@ void createHandle () {
 	OS.GCHandle_Free (children);
 }
 
-int createHeaderTemplate () {
+int createHeaderTemplate (int columnJniRef) {
 	int template = OS.gcnew_DataTemplate ();
-	int stackPanelType = OS.StackPanel_typeid ();
-	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType);
+	int stackPanelType = OS.SWTStackPanel_typeid ();
+	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
+	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
+	OS.GCHandle_Free (stackPanelName);
+	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
+	OS.FrameworkElementFactory_SetValueInt (stackPanelNode, jniRefProperty, columnJniRef);
+	OS.GCHandle_Free (jniRefProperty);
 	int textType = OS.TextBlock_typeid ();
 	int textName = createDotNetString(TEXT_PART_NAME, false);
 	int textNode = OS.gcnew_FrameworkElementFactory (textType, textName);
@@ -477,21 +457,6 @@ int createHeaderTemplate () {
 	OS.FrameworkElementFactory_AppendChild (stackPanelNode, imageNode);
 	OS.FrameworkElementFactory_AppendChild (stackPanelNode, textNode);
 	OS.FrameworkTemplate_VisualTree (template, stackPanelNode);
-	//bindings
-	int textPath = createDotNetString ("Text", false);
-	int textBinding = OS.gcnew_Binding (textPath);
-	int textProperty = OS.TextBlock_TextProperty ();
-	OS.FrameworkElementFactory_SetBinding (textNode, textProperty, textBinding);
-	int imagePath = createDotNetString ("Image", false);
-	int imageBinding = OS.gcnew_Binding (imagePath);
-	int imageProperty = OS.Image_SourceProperty ();
-	OS.FrameworkElementFactory_SetBinding (imageNode, imageProperty, imageBinding);	
-	OS.GCHandle_Free (textBinding);
-	OS.GCHandle_Free (textPath);
-	OS.GCHandle_Free (textProperty);
-	OS.GCHandle_Free (imageBinding);
-	OS.GCHandle_Free (imagePath);
-	OS.GCHandle_Free (imageProperty);
 	OS.GCHandle_Free (imageType);
 	OS.GCHandle_Free (imageName);
 	OS.GCHandle_Free (marginProperty);
@@ -511,7 +476,7 @@ void createItem (TableColumn column, int index) {
     if (index == -1) index = columnCount;
     if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
 	column.createWidget ();
-	int template = createHeaderTemplate ();
+	int template = createHeaderTemplate (column.jniRef);
 	OS.GridViewColumn_HeaderTemplate (column.handle, template);
 	OS.GCHandle_Free (template);
 	template = createCellTemplate (index);
@@ -688,40 +653,13 @@ void destroyItem (TableItem item) {
 	itemCount--;
 }
 
-int GetBackground (int itemHandle) {
-	TableItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.backgroundList;
-}
-
-int GetCheck (int itemHandle) {
-	TableItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.checkState;
-}
-
-int GetFont (int itemHandle) {
-	TableItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.fontList;
-}
-
-int GetForeground (int itemHandle) {
-	TableItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.foregroundList;
-}
-
-int GetImage (int itemHandle) {
-	TableItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.imageList;
-}
-
-int GetText (int itemHandle) {
-	TableItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.stringList;
+int findPartByType (int source, int type) {
+	if (OS.Type_IsInstanceOfType (type, source)) return source;
+	int parent = OS.VisualTreeHelper_GetParent(source);
+	if (parent == 0) return 0;
+	int result = findPartByType(parent, type);
+	if (result != parent) OS.GCHandle_Free(parent);
+	return result;
 }
 
 /**
@@ -768,17 +706,6 @@ TableColumn getColumn (int columns, int index) {
 	OS.GCHandle_Free (gridColumn);
 	return column;
 }
-
-void updateMoveable () {
-	int columns = OS.GridView_Columns (gridViewHandle);
-	boolean moveable = true;
-	for (int i = 0; moveable && i < columnCount; i++) {
-		TableColumn column = getColumn (columns, i);
-		if (!column.moveable) moveable = false;
-	}
-	OS.GCHandle_Free (columns);
-	OS.GridView_AllowsColumnReorder (gridViewHandle, moveable);
-} 
 
 /**
  * Returns the number of columns contained in the receiver.
@@ -1299,8 +1226,6 @@ void HandleChecked (int sender, int e) {
 	int source = OS.RoutedEventArgs_Source (e);
 	TableItem item = (TableItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
-	// ignore events that result from the initial binding
-	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	if (item.grayed) {
 		int checkbox = item.findPart (0, CHECKBOX_PART_NAME);
 		if (checkbox != 0) {
@@ -1309,7 +1234,6 @@ void HandleChecked (int sender, int e) {
 		}
 	}
 	item.checked = true;
-	item.updateCheckState (false);
 	Event event = new Event ();
 	event.item = item;
 	event.detail = SWT.CHECK;
@@ -1318,11 +1242,10 @@ void HandleChecked (int sender, int e) {
 
 void HandleIndeterminate (int sender, int e) {
 	if (!checkEvent (e)) return;
+	if (ignoreSelection) return;
 	int source = OS.RoutedEventArgs_Source (e);
 	TableItem item = (TableItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
-	// ignore events that result from the initial binding
-	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	if (!item.grayed) {
 		int checkbox = item.findPart (0, CHECKBOX_PART_NAME);
 		if (checkbox != 0) {
@@ -1393,10 +1316,7 @@ void HandleUnchecked (int sender, int e) {
 	int source = OS.RoutedEventArgs_Source (e);
 	TableItem item = (TableItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
-	// ignore events that result from the initial binding
-	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	item.checked = false;
-	item.updateCheckState (false);
 	Event event = new Event ();
 	event.item = item;
 	event.detail = SWT.CHECK;
@@ -1509,6 +1429,30 @@ public boolean isSelected (int index) {
 	OS.GCHandle_Free (item);
 	OS.GCHandle_Free (items);
 	return result;
+}
+
+void OnRender (int source, int dc) {
+	int type =  OS.ListViewItem_typeid();
+	int itemHandle = findPartByType (source, type);
+	OS.GCHandle_Free (type);
+	TableItem item = getItem (itemHandle, true);
+	OS.GCHandle_Free (itemHandle);
+	if (item.cached && item.rowHandle != 0) return;
+	checkData (item);
+	if (item.rowHandle == 0) {
+		int rowPresenterType = OS.GridViewRowPresenter_typeid ();
+		item.rowHandle = item.findRowPresenter (item.handle, rowPresenterType);
+		OS.GCHandle_Free (rowPresenterType);
+	}
+	int columns = columnCount == 0 ? 1 : columnCount;
+	item.updateCheck ();
+	for (int i=0; i<columns; i++) {
+		item.updateText (i);
+		item.updateImage (i);
+		item.updateBackground (i);
+		item.updateForeground (i);
+		item.updateFont (i);
+	}
 }
 
 int parentingHandle () {
@@ -1818,6 +1762,16 @@ public void selectAll () {
 	ignoreSelection = false;
 }
 
+void setBackgroundBrush(int brush) {
+	if (brush != 0) {
+		OS.Control_Background (handle, brush);
+	} else {
+		int property = OS.Control_BackgroundProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+	}
+}
+
 int setBounds (int x, int y, int width, int height, int flags) {
 	int result = super.setBounds (x, y, width, height, flags);
 	if ((result & RESIZED) != 0) {
@@ -1862,6 +1816,40 @@ public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
 	//TODO
+}
+
+void setFont (int font, double size) {
+	if (font != 0) {
+		int fontFamily = OS.Typeface_FontFamily( font);
+		int style = OS.Typeface_Style (font);
+		int weight = OS.Typeface_Weight (font);
+		int stretch = OS.Typeface_Stretch (font);
+		OS.Control_FontFamily (handle, fontFamily);
+		OS.Control_FontStyle (handle, style);
+		OS.Control_FontWeight (handle, weight);
+		OS.Control_FontStretch (handle, stretch);
+		OS.Control_FontSize (handle, size);
+		OS.GCHandle_Free (fontFamily);
+		OS.GCHandle_Free (style);
+		OS.GCHandle_Free (weight);
+		OS.GCHandle_Free (stretch);
+	} else {
+		int property = OS.Control_FontFamilyProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontStyleProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontWeightProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontStretchProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontSizeProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+	}
 }
 
 void setForegroundBrush (int brush) {
@@ -1939,10 +1927,7 @@ public void setItemCount (int count) {
 		for (int i=itemCount; i<count; i++) {
 			int item = OS.gcnew_ListViewItem ();
 			if (item == 0) error (SWT.ERROR_NO_HANDLES);
-			int row = OS.gcnew_SWTRow (jniRef, item);
-			OS.ContentControl_Content (item, row);
 			OS.ItemCollection_Add (items, item);
-			OS.GCHandle_Free (row);
 			OS.GCHandle_Free (item);
 		}
 	} else {
@@ -2306,5 +2291,16 @@ public void showSelection () {
 int topHandle () {
 	return parentingHandle;
 }
+
+void updateMoveable () {
+	int columns = OS.GridView_Columns (gridViewHandle);
+	boolean moveable = true;
+	for (int i = 0; moveable && i < columnCount; i++) {
+		TableColumn column = getColumn (columns, i);
+		if (!column.moveable) moveable = false;
+	}
+	OS.GCHandle_Free (columns);
+	OS.GridView_AllowsColumnReorder (gridViewHandle, moveable);
+} 
 
 }

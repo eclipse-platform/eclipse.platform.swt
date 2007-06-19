@@ -31,12 +31,15 @@ import org.eclipse.swt.graphics.*;
 
 public class TableItem extends Item {
 	Table parent;
-	Image[] images;
-	int stringList, imageList, foregroundList, backgroundList, fontList, checkState;
-	boolean checked, grayed, cached, ignoreNotify;
-//	int imageIndent, background = -1, foreground = -1, font = -1;
-//	int [] cellBackground, cellForeground, cellFont;
-
+	Image [] images;
+	String [] strings;
+	Color [] cellBackground, cellForeground;
+	Font [] cellFont;
+	int rowHandle;
+	boolean checked, grayed, cached; 
+	Color background, foreground;
+	Font font;
+	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -152,56 +155,103 @@ protected void checkSubclass () {
 
 void columnAdded (int index) {
 	int newLength = parent.columnCount + 1;
+	String [] strTemp = new String [newLength];
+	System.arraycopy (strings, 0, strTemp, 0, index);
+	System.arraycopy (strings, index, strTemp, index + 1, parent.columnCount - index);
+	strings = strTemp;
 	if (images != null) {
 		Image [] temp = new Image [newLength];
 		System.arraycopy (images, 0, temp, 0, index);
 		System.arraycopy (images, index, temp, index + 1, parent.columnCount - index);
 		images = temp;
 	}
-	OS.ArrayList_Insert (stringList, index, 0);
-	OS.ArrayList_Insert (imageList, index, 0);
+	if (cellBackground != null) {
+		Color [] temp = new Color [newLength];
+		System.arraycopy (cellBackground, 0, temp, 0, index);
+		System.arraycopy (cellBackground, index, temp, index + 1, parent.columnCount - index);
+		cellBackground = temp;
+	}
+	if (cellForeground != null) {
+		Color [] temp = new Color [newLength];
+		System.arraycopy (cellForeground, 0, temp, 0, index);
+		System.arraycopy (cellForeground, index, temp, index + 1, parent.columnCount - index);
+		cellForeground = temp;
+	}
+	if (cellFont != null) {
+		Font [] temp = new Font [newLength];
+		System.arraycopy (cellFont, 0, temp, 0, index);
+		System.arraycopy (cellFont, index, temp, index + 1, parent.columnCount - index);
+		cellFont = temp;
+	}
 }
 
 void columnRemoved (int index) {
+	String [] strs = new String [parent.columnCount];
+	System.arraycopy (strings, 0, strs, 0, index);
+	System.arraycopy (strings, index + 1, strs, index, parent.columnCount - index);
+	strings = strs;
 	if (images != null) {
 		Image [] temp = new Image [parent.columnCount];
 		System.arraycopy (images, 0, temp, 0, index);
 		System.arraycopy (images, index + 1, temp, index, parent.columnCount - index);
 		images = temp;
 	}
-	OS.ArrayList_RemoveAt (stringList, index);
-	OS.ArrayList_RemoveAt (imageList, index);
+	if (cellBackground != null) {
+		Color [] temp = new Color [parent.columnCount];
+		System.arraycopy (cellBackground, 0, temp, 0, index);
+		System.arraycopy (cellBackground, index + 1, temp, index, parent.columnCount - index);
+		cellBackground = temp;
+	}
+	if (cellForeground != null) {
+		Color [] temp = new Color [parent.columnCount];
+		System.arraycopy (cellForeground, 0, temp, 0, index);
+		System.arraycopy (cellForeground, index + 1, temp, index, parent.columnCount - index);
+		cellForeground = temp;
+	}
+	if (cellFont != null) {
+		Font [] temp = new Font [parent.columnCount];
+		System.arraycopy (cellFont, 0, temp, 0, index);
+		System.arraycopy (cellFont, index + 1, temp, index, parent.columnCount - index);
+		cellFont = temp;
+	}
 }
 
 void createHandle () {
 	if (handle == 0) {
 		handle = OS.gcnew_ListViewItem ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		int row = OS.gcnew_SWTRow (parent.jniRef, handle);
-		OS.ContentControl_Content (handle, row);
-		OS.GCHandle_Free (row);
 	}
 	OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Stretch);
 	OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
-	updateCheckState (false);
+	
+}
+
+void createWidget () {
+	super.createWidget ();
+	strings = new String [parent.columnCount == 0 ? 1 : parent.columnCount];
 }
 
 void clear () {
-	if (imageList != 0) OS.GCHandle_Free (imageList);
-	imageList = 0;
+	strings = new String [parent.columnCount == 0 ? 1 : parent.columnCount];
 	images = null;
-	if (stringList != 0) OS.GCHandle_Free (stringList);
-	stringList = 0;
 	checked = grayed = false;
-	updateCheckState (false);
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
+	updateCheck ();
+	int columns = parent.columnCount == 0 ? 1 : parent.columnCount;
+	for (int i = 0; i < columns; i++) {
+		updateText(i);
+		updateImage(i);
+		int part = findPart(i, Table.RENDER_PANEL_NAME);
+		if (part != 0) OS.UIElement_InvalidateVisual(part);
+		OS.GCHandle_Free(part);
+	}
+	
+
+//	int typeid = OS.GridViewRowPresenter_typeid ();
+//	intfindRowPresenter(handle, typeid);
+	
 //	background = foreground = font = -1;
 //	cellBackground = cellForeground = cellFont = null;
-	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
-	if (ignoreNotify) return;
-	int row = OS.ContentControl_Content (handle);
-	OS.SWTRow_NotifyPropertyChanged (row, Table.TEXT_NOTIFY);
-	OS.SWTRow_NotifyPropertyChanged (row, Table.IMAGE_NOTIFY);
-	OS.GCHandle_Free (row);
 }
 
 void deregister () {
@@ -229,18 +279,13 @@ int findRowPresenter (int current, int rowPresenterType) {
 }
 
 int findPart (int column, String partName) {
-	if (!OS.FrameworkElement_IsLoaded (handle)) updateLayout (handle);
-	if (!OS.FrameworkElement_IsLoaded (handle)) return 0;
-	int rowPresenterType = OS.GridViewRowPresenter_typeid ();
-	int rowPresenter = findRowPresenter (handle, rowPresenterType);
-	int contentPresenter = OS.VisualTreeHelper_GetChild (rowPresenter, column);
+	if (rowHandle == 0) return 0; //not Loaded yet.
+	int contentPresenter = OS.VisualTreeHelper_GetChild (rowHandle, column);
 	int columns = OS.GridView_Columns (parent.gridViewHandle);
 	int columnHandle = OS.GridViewColumnCollection_default (columns, column);
 	int cellTemplate = OS.GridViewColumn_CellTemplate (columnHandle);
 	int name = createDotNetString (partName, false);
 	int result = OS.FrameworkTemplate_FindName (cellTemplate, name, contentPresenter);
-	OS.GCHandle_Free (rowPresenterType);
-	OS.GCHandle_Free (rowPresenter);
 	OS.GCHandle_Free (contentPresenter);
 	OS.GCHandle_Free (columns);
 	OS.GCHandle_Free (columnHandle);
@@ -264,10 +309,7 @@ int findPart (int column, String partName) {
 public Color getBackground () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	//TODO
-	return parent.getBackground();
-//	if (background == -1) return parent.getBackground ();
-//	return Color.win32_new (display, background);
+	return background != null ? background : parent.getBackground ();
 }
 
 /**
@@ -284,14 +326,11 @@ public Color getBackground () {
  * @since 3.0
  */
 public Color getBackground (int index) {
-	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count - 1) return getBackground ();
-	//TODO
-	return parent.getBackground();
-//	int pixel = cellBackground != null ? cellBackground [index] : -1;
-//	return pixel == -1 ? getBackground () : Color.win32_new (display, pixel);
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count -1) return getBackground ();
+	if (cellBackground == null || cellBackground [index] == null) return getBackground ();
+	return cellBackground [index];
 }
 
 /**
@@ -392,9 +431,7 @@ public boolean getChecked () {
 public Font getFont () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	//TODO
-	return parent.getFont ();
-//	return font == -1 ? parent.getFont () : Font.win32_new (display, font);
+	return font != null ? font : parent.getFont ();
 }
 
 /**
@@ -414,12 +451,10 @@ public Font getFont () {
 public Font getFont (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.getColumnCount ());
+	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count -1) return getFont ();
-	//TODO
-	return parent.getFont ();
-//	int hFont = (cellFont != null) ? cellFont [index] : font;
-//	return hFont == -1 ? getFont () : Font.win32_new (display, hFont);
+	if (cellFont == null || cellFont [index] == null) return getFont ();
+	return cellFont [index];
 }
 
 /**
@@ -437,10 +472,7 @@ public Font getFont (int index) {
 public Color getForeground () {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	//TODO
-	return parent.getForeground ();
-//	if (foreground == -1) return parent.getForeground ();
-//	return Color.win32_new (display, foreground);
+	return foreground != null ? foreground : parent.getForeground ();
 }
 
 /**
@@ -460,12 +492,10 @@ public Color getForeground () {
 public Color getForeground (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int count = Math.max (1, parent.getColumnCount ());
+	int count = Math.max (1, parent.columnCount);
 	if (0 > index || index > count -1) return getForeground ();
-	//TODO
-	return parent.getForeground ();
-//	int pixel = cellForeground != null ? cellForeground [index] : -1;
-//	return pixel == -1 ? getForeground () : Color.win32_new (display, pixel);
+	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
+	return cellForeground [index];
 }
 
 /**
@@ -533,17 +563,17 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	int parentHandle = parent.topHandle ();
-	int part = findPart (index, Table.IMAGE_PART_NAME);
+	int image = findPart (index, Table.IMAGE_PART_NAME);
 	int point = OS.gcnew_Point (0, 0);
 	if (point == 0) error (SWT.ERROR_NO_HANDLES);
-	int location = OS.UIElement_TranslatePoint (part, point, parentHandle);
+	int location = OS.UIElement_TranslatePoint (image, point, parentHandle);
 	int x = (int) OS.Point_X (location);
 	int y = (int) OS.Point_Y (location);
 	OS.GCHandle_Free (point);
 	OS.GCHandle_Free (location);
-	int width = (int) OS.FrameworkElement_ActualWidth (part);
-	int height = (int) OS.FrameworkElement_ActualHeight (part);
-	OS.GCHandle_Free (part);
+	int width = (int) OS.FrameworkElement_ActualWidth (image);
+	int height = (int) OS.FrameworkElement_ActualHeight (image);
+	OS.GCHandle_Free (image);
 	return new Rectangle (x, y, width, height);
 }
 
@@ -643,13 +673,8 @@ public String getText () {
 public String getText (int index) {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (stringList != 0) {
-		if (0 <= index && index < OS.ArrayList_Count (stringList)) {
-			int ptr = OS.ArrayList_default (stringList, index);
-			String result = createJavaString (ptr);
-			OS.GCHandle_Free (ptr);
-			return result;
-		}
+	if (0 <= index && index < strings.length) {
+		return strings [index]!= null ? strings[index] : "";
 	}
 	return "";
 }
@@ -657,25 +682,6 @@ public String getText (int index) {
 Control getWidgetControl () {
 	return parent;
 }
-
-//void HandlePreviewGotKeyboardFocus (int sender, int e) {
-////	if (!checkEvent (e)) return;
-////	OS.RoutedEventArgs_Handled(e, true);
-//}
-//
-//void HandleLostKeyboardFocus (int sender, int e) {
-////	if (!checkEvent (e)) return;
-////	OS.RoutedEventArgs_Handled(e, true);
-//}
-//
-//void hookEvents () {
-//	int handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandlePreviewGotKeyboardFocus");
-//	OS.UIElement_PreviewGotKeyboardFocus (handle, handler);
-//	OS.GCHandle_Free (handler);
-//	handler = OS.gcnew_KeyboardFocusChangedEventHandler (jniRef, "HandleLostKeyboardFocus");
-//	OS.UIElement_LostKeyboardFocus (handle, handler);
-//	OS.GCHandle_Free (handler);
-//}
 
 void register () {
 	display.addWidget (handle, this);
@@ -685,17 +691,17 @@ void releaseHandle () {
 	super.releaseHandle ();
 	if (handle != 0) OS.GCHandle_Free (handle);
 	handle = 0;
+	if (rowHandle != 0) OS.GCHandle_Free (rowHandle);
+	rowHandle = 0;
 	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (imageList != 0) OS.GCHandle_Free (imageList);
-	imageList = 0;
-	if (stringList != 0) OS.GCHandle_Free (stringList);
-	stringList = 0;
-	if (checkState != 0) OS.GCHandle_Free (checkState);
-	checkState = 0;
+	strings = null;
+	images = null;
+	cellBackground = cellForeground = null;
+	cellFont = null;
 }
 
 /**
@@ -720,16 +726,17 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-//	int pixel = -1;
-	//TODO
-//	if (color != null) {
-//		parent.setCustomDraw (true);
-//		pixel = color.handle;
-//	}
-//	if (background == pixel) return;
-//	background = pixel;
+	if (color != null) {
+		int brush = OS.gcnew_SolidColorBrush (color.handle);
+		OS.Control_Background (handle, brush);
+		OS.GCHandle_Free (brush);
+	} else {
+		int property = OS.Control_BackgroundProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+	}
+	background = color;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-//	redraw ();
 }
 
 /**
@@ -757,22 +764,10 @@ public void setBackground (int index, Color color) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-//	int pixel = -1;
-	//TODO
-//	if (color != null) {
-//		parent.setCustomDraw (true);
-//		pixel = color.handle;
-//	}
-//	if (cellBackground == null) {
-//		cellBackground = new int [count];
-//		for (int i = 0; i < count; i++) {
-//			cellBackground [i] = -1;
-//		}
-//	}
-//	if (cellBackground [index] == pixel) return;
-//	cellBackground [index] = pixel;
+	if (cellBackground == null) cellBackground = new Color [count];
+	cellBackground [index] = color;
+	updateBackground (index);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-//	redraw (index, true, true);
 }
 
 /**
@@ -792,7 +787,7 @@ public void setChecked (boolean checked) {
 	if (this.checked == checked) return;
 	this.checked = checked;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	updateCheckState (true);
+	updateCheck ();
 }
 
 /**
@@ -817,39 +812,39 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-//	int hFont = -1;
-//	if (font != null) {
-//		parent.setCustomDraw (true);
-//		hFont = font.handle;
-//	}
-//	if (this.font == hFont) return;
-//	this.font = hFont;
+	if (font != null) {
+		int family = OS.Typeface_FontFamily (font.handle);
+		OS.Control_FontFamily (handle, family);
+		OS.GCHandle_Free (family);
+		int stretch = OS.Typeface_Stretch (font.handle);
+		OS.Control_FontStretch (handle, stretch);
+		OS.GCHandle_Free (stretch);
+		int style = OS.Typeface_Style (font.handle);
+		OS.Control_FontStyle (handle, style);
+		OS.GCHandle_Free (style);
+		int weight = OS.Typeface_Weight (font.handle);
+		OS.Control_FontWeight (handle, weight);
+		OS.GCHandle_Free (weight);
+		OS.Control_FontSize (handle, font.size);
+	} else {
+		int property = OS.Control_FontFamilyProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS. Control_FontStyleProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontStretchProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontWeightProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontSizeProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+	}
+	this.font = font;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-//	/*
-//	* Bug in Windows.  Despite the fact that every item in the
-//	* table always has LPSTR_TEXTCALLBACK, Windows caches the
-//	* bounds for the selected items.  This means that 
-//	* when you change the string to be something else, Windows
-//	* correctly asks you for the new string but when the item
-//	* is selected, the selection draws using the bounds of the
-//	* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-//	* even though it has not changed, causing Windows to flush
-//	* cached bounds.
-//	*/
-//	if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
-//		int itemIndex = parent.indexOf (this);
-//		if (itemIndex != -1) {
-//			int hwnd = parent.handle;
-//			LVITEM lvItem = new LVITEM ();
-//			lvItem.mask = OS.LVIF_TEXT;
-//			lvItem.iItem = itemIndex;
-//			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-//			OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-//			cached = false;
-//		}
-//	}
-//	parent.setScrollWidth (this, false);
-//	redraw ();
 }
 
 /**
@@ -878,48 +873,10 @@ public void setFont (int index, Font font) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	//TODO
-//	int hFont = -1;
-//	if (font != null) {
-//		parent.setCustomDraw (true);
-//		hFont = font.handle;
-//	}
-//	if (cellFont == null) {
-//		cellFont = new int [count];
-//		for (int i = 0; i < count; i++) {
-//			cellFont [i] = -1;
-//		}
-//	}
-//	if (cellFont [index] == hFont) return;
-//	cellFont [index] = hFont;
+	if (cellFont == null) cellFont = new Font [count];
+	cellFont[index] = font;
+	updateFont (index);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-//	if (index == 0) {
-//		/*
-//		* Bug in Windows.  Despite the fact that every item in the
-//		* table always has LPSTR_TEXTCALLBACK, Windows caches the
-//		* bounds for the selected items.  This means that 
-//		* when you change the string to be something else, Windows
-//		* correctly asks you for the new string but when the item
-//		* is selected, the selection draws using the bounds of the
-//		* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
-//		* even though it has not changed, causing Windows to flush
-//		* cached bounds.
-//		*/
-//		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
-//			int itemIndex = parent.indexOf (this);
-//			if (itemIndex != -1) {
-//				int hwnd = parent.handle;
-//				LVITEM lvItem = new LVITEM ();
-//				lvItem.mask = OS.LVIF_TEXT;
-//				lvItem.iItem = itemIndex;
-//				lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-//				OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-//				cached = false;
-//			}
-//		}
-//		parent.setScrollWidth (this, false);
-//	}	
-//	redraw (index, true, false);
 }
 
 /**
@@ -944,16 +901,17 @@ public void setForeground (Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	//TODO
-//	int pixel = -1;
-//	if (color != null) {
-//		parent.setCustomDraw (true);
-//		pixel = color.handle;
-//	}
-//	if (foreground == pixel) return;
-//	foreground = pixel;
+	if (color != null) {
+		int brush = OS.gcnew_SolidColorBrush (color.handle);
+		OS.Control_Foreground (handle, brush);
+		OS.GCHandle_Free (brush);
+	} else {
+		int property = OS.Control_ForegroundProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+	}
+	foreground = color;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-//	redraw ();
 }
 
 /**
@@ -981,22 +939,10 @@ public void setForeground (int index, Color color){
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	//TODO
-//	int pixel = -1;
-//	if (color != null) {
-//		parent.setCustomDraw (true);
-//		pixel = color.handle;
-//	}
-//	if (cellForeground == null) {
-//		cellForeground = new int [count];
-//		for (int i = 0; i < count; i++) {
-//			cellForeground [i] = -1;
-//		}
-//	}
-//	if (cellForeground [index] == pixel) return;
-//	cellForeground [index] = pixel;
+	if (cellForeground == null) cellForeground = new Color [count];
+	cellForeground [index] = color;
+	updateForeground (index);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-//	redraw (index, true, false);
 }
 
 /**
@@ -1016,7 +962,7 @@ public void setGrayed (boolean grayed) {
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	updateCheckState (true);
+	updateCheck ();
 }
 
 /**
@@ -1062,23 +1008,10 @@ public void setImage (int index, Image image) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
-	if (images == null) {
-		images = new Image [count];
-	}
+	if (images == null) images = new Image [count];
 	images [index] = image;
+	updateImage (index);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (imageList == 0) {
-		imageList = OS.gcnew_ArrayList (count);
-		for (int i = 0; i < count; i++) {
-			OS.ArrayList_Insert (imageList, i, 0);
-		}
-	}
-	int imageHandle = image != null ? image.handle : 0;
-	OS.ArrayList_default (imageList, index, imageHandle);
-	if (ignoreNotify) return;
-	int row = OS.ContentControl_Content (handle);
-	OS.SWTRow_NotifyPropertyChanged (row, Table.IMAGE_NOTIFY);
-	OS.GCHandle_Free (row);
 }
 
 public void setImage (Image image) {
@@ -1145,19 +1078,8 @@ public void setText (int index, String string) {
 	int count = Math.max(1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	if (stringList == 0) {
-		stringList = OS.gcnew_ArrayList (count);
-		for (int i = 0; i < count; i++) {
-			OS.ArrayList_Insert (stringList, i, 0);
-		}
-	}
-	int str = createDotNetString (string, false);
-	OS.ArrayList_default (stringList, index, str);
-	OS.GCHandle_Free (str);
-	if (ignoreNotify) return;
-	int row = OS.ContentControl_Content (handle);
-	OS.SWTRow_NotifyPropertyChanged (row, Table.TEXT_NOTIFY);
-	OS.GCHandle_Free (row);
+	strings[index] = string;
+	updateText (index);
 }
 
 public void setText (String string) {
@@ -1165,19 +1087,127 @@ public void setText (String string) {
 	setText (0, string);
 }
 
-void updateCheckState (boolean notify) {
-	if ((parent.style & SWT.CHECK) == 0) return;
-	if (checkState != 0) OS.GCHandle_Free (checkState);
-	if (checked) {
-		checkState = grayed ? OS.gcnew_IntPtr (2) : OS.gcnew_IntPtr (1);
-	} else {
-		checkState = OS.gcnew_IntPtr (0);
-	}
-	if (notify) {
-		int row = OS.ContentControl_Content (handle);
-		OS.SWTRow_NotifyPropertyChanged (row, Table.CHECK_NOTIFY);
-		OS.GCHandle_Free (row);
+void updateBackground (int index) {
+	if (cellBackground == null) return;
+	int panel = findPart (index, Table.STACKPANEL_PART_NAME);
+	if (panel != 0) {
+		if (cellBackground [index] != null) {
+			int brush = OS.gcnew_SolidColorBrush (cellBackground [index].handle);
+			int current = OS.Panel_Background(panel);
+			if (!OS.Object_Equals(brush, current))
+				OS.Panel_Background (panel, brush);
+			OS.GCHandle_Free(current);
+			OS.GCHandle_Free (brush);
+		} else {
+			int property = OS.Panel_BackgroundProperty ();
+			OS.DependencyObject_ClearValue (panel, property);
+			OS.GCHandle_Free (property);
+		}
+		OS.GCHandle_Free (panel);
 	}
 }
 
+void updateCheck () {
+	if ((parent.style & SWT.CHECK) == 0) return;
+	int checkBox = findPart (0, Table.CHECKBOX_PART_NAME);
+	if (checkBox != 0) {
+		parent.ignoreSelection = true;
+		if (!grayed) {
+			OS.ToggleButton_IsChecked (checkBox, checked);
+		} else {
+			if (checked) 
+				OS.ToggleButton_IsCheckedNullSetter (checkBox);
+		}
+		parent.ignoreSelection = false;
+		OS.GCHandle_Free (checkBox);
+	}
+}
+
+void updateFont (int index) {
+	if (cellFont == null) return;
+	int textBlock = findPart(index, Table.TEXT_PART_NAME);
+	if (textBlock != 0) {
+		Font font = cellFont [index];
+		if (font != null) {
+			int family = OS.Typeface_FontFamily (font.handle);
+			OS.TextBlock_FontFamily (textBlock, family);
+			OS.GCHandle_Free (family);
+			int stretch = OS.Typeface_Stretch (font.handle);
+			OS.TextBlock_FontStretch (textBlock, stretch);
+			OS.GCHandle_Free (stretch);
+			int style = OS.Typeface_Style (font.handle);
+			OS.TextBlock_FontStyle (textBlock, style);
+			OS.GCHandle_Free (style);
+			int weight = OS.Typeface_Weight (font.handle);
+			OS.TextBlock_FontWeight (textBlock, weight);
+			OS.GCHandle_Free (weight);
+			OS.TextBlock_FontSize (textBlock, font.size);
+		} else {
+			int property = OS.TextBlock_FontFamilyProperty ();
+			OS.DependencyObject_ClearValue (textBlock, property);
+			OS.GCHandle_Free (property);
+			property = OS.TextBlock_FontSizeProperty ();
+			OS.DependencyObject_ClearValue (textBlock, property);
+			OS.GCHandle_Free (property);
+			property = OS.TextBlock_FontStretchProperty ();
+			OS.DependencyObject_ClearValue (textBlock, property);
+			OS.GCHandle_Free (property);
+			property = OS.TextBlock_FontWeightProperty ();
+			OS.DependencyObject_ClearValue (textBlock, property);
+			OS.GCHandle_Free (property);
+			property = OS.TextBlock_FontStyleProperty ();
+			OS.DependencyObject_ClearValue (textBlock, property);
+			OS.GCHandle_Free (property);
+		}
+		OS.GCHandle_Free (textBlock);
+	}
+}
+
+void updateForeground (int index) {
+	if (cellForeground == null) return;
+	int textBlock = findPart (index, Table.TEXT_PART_NAME);
+	if (textBlock != 0) {
+		if (cellForeground [index] != null) {
+			int brush = OS.gcnew_SolidColorBrush (cellForeground [index].handle);
+			OS.TextBlock_Foreground (textBlock, brush);
+			OS.GCHandle_Free (brush);
+		} else {
+			int property = OS.Control_ForegroundProperty ();
+			OS.DependencyObject_ClearValue (textBlock, property);
+			OS.GCHandle_Free (property);
+		}
+		OS.GCHandle_Free (textBlock);
+	}
+}
+
+void updateImage (int index) {
+	if (images == null) return;
+	int img = findPart (index, Table.IMAGE_PART_NAME);
+	if (img != 0) {
+		int src = images [index] != null ? images [index].handle : 0;
+		int current = OS.Image_Source(img);
+		OS.Image_Source (img, src);
+		OS.GCHandle_Free (current);
+		OS.GCHandle_Free (img);
+	}
+}
+
+void updateText (int index) {
+	int textBlock = findPart (index, Table.TEXT_PART_NAME);
+	if (textBlock != 0) {
+//		if (strings[index] != null) {
+			int strPtr = createDotNetString (strings[index], false);
+			int text = OS.TextBlock_Text(textBlock);
+			OS.TextBlock_Text (textBlock, strPtr);
+			OS.GCHandle_Free (text);
+			OS.GCHandle_Free (strPtr);
+//		} else {
+//			System.out.println("clearing text property");
+//			int property = OS.TextBlock_TextProperty ();
+//			OS.DependencyObject_ClearValue (textBlock, property);
+//			OS.GCHandle_Free (property);
+//		}
+		OS.GCHandle_Free (textBlock);
+	}
+}
 }

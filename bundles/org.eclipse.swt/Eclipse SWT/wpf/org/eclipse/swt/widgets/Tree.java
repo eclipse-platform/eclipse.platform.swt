@@ -79,13 +79,7 @@ public class Tree extends Composite {
 	static final String IMAGE_PART_NAME = "SWT_PART_IMAGE";
 	static final String TEXT_PART_NAME = "SWT_PART_TEXT";
 	static final String SCROLLVIEWER_PART_NAME = "SWT_PART_SCROLLVIEWER";
-	
-	static final int BACKGROUND_NOTIFY = 3;
-	static final int CHECK_NOTIFY = 4;
-	static final int FONT_NOTIFY = 5;
-	static final int FOREGROUND_NOTIFY = 2;
-	static final int IMAGE_NOTIFY = 1;
-	static final int TEXT_NOTIFY = 0;
+	static final String STACKPANEL_PART_NAME = "SWT_PART_STACKPANEL";
 	
 	static String scrollViewerStyle = "<Style TargetType=\"ScrollViewer\" " +
 			"xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
@@ -95,7 +89,7 @@ public class Tree extends Composite {
 		"<Setter Property=\"Control.Template\">" +
 			"<Setter.Value>" +
 				"<ControlTemplate TargetType=\"ScrollViewer\">" +
-					"<Grid Background=\"{TemplateBinding Panel.Background}\" SnapsToDevicePixels=\"True\">" +
+					"<Grid Background=\"{TemplateBinding Control.Background}\" SnapsToDevicePixels=\"True\">" +
 						"<Grid.ColumnDefinitions>" +
 							"<ColumnDefinition Width=\"*\" />" +
 							"<ColumnDefinition Width=\"Auto\" />" +
@@ -354,84 +348,66 @@ void clearAll (TreeItem parentItem, boolean all) {
 
 int createCellTemplate (int index) {
 	int template = OS.gcnew_DataTemplate ();
+	int swtStackPanelType = OS.SWTStackPanel_typeid ();
+	int onRenderNode = OS.gcnew_FrameworkElementFactory (swtStackPanelType);
+	OS.GCHandle_Free (swtStackPanelType);
+	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
+	OS.FrameworkElementFactory_SetValueInt (onRenderNode, jniRefProperty, jniRef);
+	OS.GCHandle_Free (jniRefProperty);
+	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
 	int stackPanelType = OS.StackPanel_typeid ();
-	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType);
+	int cellContentNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
+	OS.GCHandle_Free (stackPanelType);
+	OS.GCHandle_Free (stackPanelName);
 	if (index == 0 && (style & SWT.CHECK) != 0) {
 		int checkBoxType = OS.CheckBox_typeid ();
 		int checkBoxName = createDotNetString (CHECKBOX_PART_NAME, false);
 		int checkBoxNode = OS.gcnew_FrameworkElementFactory (checkBoxType, checkBoxName);
+		OS.GCHandle_Free (checkBoxType);
 		int verticalAlignmentProperty = OS.FrameworkElement_VerticalAlignmentProperty ();
 		OS.FrameworkElementFactory_SetValueVerticalAlignment (checkBoxNode, verticalAlignmentProperty, OS.VerticalAlignment_Center);
+		OS.GCHandle_Free (verticalAlignmentProperty);
 		int marginProperty = OS.FrameworkElement_MarginProperty ();
 		int thickness = OS.gcnew_Thickness (0,0,4,0);
 		OS.FrameworkElementFactory_SetValue (checkBoxNode, marginProperty, thickness);
+		OS.GCHandle_Free (marginProperty);
+		OS.GCHandle_Free (thickness);
 		int threeStateProperty = OS.ToggleButton_IsThreeStateProperty ();
 		OS.FrameworkElementFactory_SetValue (checkBoxNode, threeStateProperty, true);
-		OS.FrameworkElementFactory_AppendChild (stackPanelNode, checkBoxNode);
-		//binding
-		int checkPath = createDotNetString ("Check", false);
-		int checkBinding = OS.gcnew_Binding (checkPath);
-		int isCheckedProperty = OS.ToggleButton_IsCheckedProperty ();
-		OS.FrameworkElementFactory_SetBinding (checkBoxNode, isCheckedProperty, checkBinding);
-		OS.GCHandle_Free (checkPath);
-		OS.GCHandle_Free (checkBinding);
-		OS.GCHandle_Free (isCheckedProperty);
-		OS.GCHandle_Free (checkBoxName);
 		OS.GCHandle_Free (threeStateProperty);
-		OS.GCHandle_Free (thickness);
-		OS.GCHandle_Free (marginProperty);
-		OS.GCHandle_Free (verticalAlignmentProperty);
+		OS.FrameworkElementFactory_AppendChild (cellContentNode, checkBoxNode);
+		int fooProperty = OS.FrameworkElement_NameProperty();
+		OS.FrameworkElementFactory_SetValue (checkBoxNode, fooProperty, checkBoxName);
+		OS.GCHandle_Free (checkBoxName);
+		OS.GCHandle_Free (fooProperty);
 		OS.GCHandle_Free (checkBoxNode);
-		OS.GCHandle_Free (checkBoxType);
 	}
 	int textType = OS.TextBlock_typeid ();
 	int textName = createDotNetString (TEXT_PART_NAME, false);
 	int textNode = OS.gcnew_FrameworkElementFactory (textType, textName);
+	OS.GCHandle_Free (textName);
+	OS.GCHandle_Free (textType);
 	int imageType = OS.Image_typeid ();
 	int imageName = createDotNetString (IMAGE_PART_NAME, false);
 	int imageNode = OS.gcnew_FrameworkElementFactory (imageType, imageName);
-	int marginProperty = OS.FrameworkElement_MarginProperty ();
-	int thickness = OS.gcnew_Thickness (0, 0, 4, 0);
-	OS.FrameworkElementFactory_SetValue (imageNode, marginProperty, thickness);
-	int orientationProperty = OS.StackPanel_OrientationProperty ();
-	OS.FrameworkElementFactory_SetValueOrientation (stackPanelNode, orientationProperty, OS.Orientation_Horizontal);
-	OS.FrameworkElementFactory_AppendChild (stackPanelNode, imageNode);
-	OS.FrameworkElementFactory_AppendChild (stackPanelNode, textNode);
-	OS.FrameworkTemplate_VisualTree (template, stackPanelNode);
-	
-	//bindings
-	int cellConverter = OS.gcnew_SWTCellConverter ();
-	int textPath = createDotNetString ("Text", false);
-	int textBinding = OS.gcnew_Binding (textPath);
-	OS.Binding_Converter (textBinding, cellConverter);
-	OS.Binding_ConverterParameter (textBinding, index);
-	int textProperty = OS.TextBlock_TextProperty ();
-	OS.FrameworkElementFactory_SetBinding (textNode, textProperty, textBinding);
-	int imagePath = createDotNetString ("Image", false);
-	int imageBinding = OS.gcnew_Binding (imagePath);
-	OS.Binding_Converter (imageBinding, cellConverter);
-	OS.Binding_ConverterParameter (imageBinding, index);
-	int imageProperty = OS.Image_SourceProperty ();
-	OS.FrameworkElementFactory_SetBinding (imageNode, imageProperty, imageBinding);
-	OS.GCHandle_Free (textBinding);
-	OS.GCHandle_Free (textPath);
-	OS.GCHandle_Free (textProperty);
-	OS.GCHandle_Free (imageBinding);
-	OS.GCHandle_Free (imagePath);
-	OS.GCHandle_Free (imageProperty);
-	OS.GCHandle_Free (cellConverter);
-	
 	OS.GCHandle_Free (imageName);
-	OS.GCHandle_Free (textName);
+	OS.GCHandle_Free (imageType);
+	int thickness = OS.gcnew_Thickness (0, 0, 4, 0);
+	int marginProperty = OS.FrameworkElement_MarginProperty ();
+	OS.FrameworkElementFactory_SetValue (imageNode, marginProperty, thickness);
 	OS.GCHandle_Free (marginProperty);
 	OS.GCHandle_Free (thickness);
-	OS.GCHandle_Free (stackPanelType);
-	OS.GCHandle_Free (imageType);
-	OS.GCHandle_Free (textType);
-	OS.GCHandle_Free (stackPanelNode);
-	OS.GCHandle_Free (textNode);
-	OS.GCHandle_Free (imageNode);
+	int orientationProperty = OS.StackPanel_OrientationProperty ();
+	OS.FrameworkElementFactory_SetValueOrientation (cellContentNode, orientationProperty, OS.Orientation_Horizontal);
 	OS.GCHandle_Free (orientationProperty);
+	OS.FrameworkElementFactory_AppendChild (cellContentNode, imageNode);
+	OS.GCHandle_Free (imageNode);
+	OS.FrameworkElementFactory_AppendChild (cellContentNode, textNode);
+	OS.GCHandle_Free (textNode);
+	OS.FrameworkElementFactory_AppendChild (onRenderNode, cellContentNode);
+	OS.GCHandle_Free (cellContentNode);
+	OS.FrameworkTemplate_VisualTree (template, onRenderNode);
+	OS.GCHandle_Free (onRenderNode);
 	return template;
 }
 
@@ -497,53 +473,43 @@ void createHandle () {
 	OS.GCHandle_Free (children);
 }
 
-int createHeaderTemplate () {
+int createHeaderTemplate (int columnJniRef) {
 	int template = OS.gcnew_DataTemplate ();
-	int stackPanelType = OS.StackPanel_typeid ();
-	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType);
+	int stackPanelType = OS.SWTStackPanel_typeid ();
+	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
+	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
+	OS.GCHandle_Free (stackPanelName);
+	OS.GCHandle_Free (stackPanelType);
+	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
+	OS.FrameworkElementFactory_SetValueInt (stackPanelNode, jniRefProperty, columnJniRef);
+	OS.GCHandle_Free (jniRefProperty);
 	int textType = OS.TextBlock_typeid ();
 	int textName = createDotNetString (TEXT_PART_NAME, false);
 	int textNode = OS.gcnew_FrameworkElementFactory (textType, textName);
+	OS.GCHandle_Free (textName);
+	OS.GCHandle_Free (textType);
 	int imageType = OS.Image_typeid ();
 	int imageName = createDotNetString (IMAGE_PART_NAME, false);
 	int imageNode = OS.gcnew_FrameworkElementFactory (imageType, imageName);
+	OS.GCHandle_Free (imageName);
+	OS.GCHandle_Free (imageType);
 	int marginProperty = OS.FrameworkElement_MarginProperty ();
 	int thickness = OS.gcnew_Thickness (0,0,4,0);
 	OS.FrameworkElementFactory_SetValue (imageNode, marginProperty, thickness);
+	OS.GCHandle_Free (thickness);
+	OS.GCHandle_Free (marginProperty);
 	int orientationProperty = OS.StackPanel_OrientationProperty ();
 	OS.FrameworkElementFactory_SetValueOrientation (stackPanelNode, orientationProperty, OS.Orientation_Horizontal);
+	OS.GCHandle_Free (orientationProperty);
 	int stretchProperty = OS.Image_StretchProperty ();
 	OS.FrameworkElementFactory_SetValueStretch (imageNode, stretchProperty, OS.Stretch_None);
-	OS.FrameworkElementFactory_AppendChild (stackPanelNode, imageNode);
-	OS.FrameworkElementFactory_AppendChild (stackPanelNode, textNode);
-	OS.FrameworkTemplate_VisualTree (template, stackPanelNode);
-	//bindings
-	int textPath = createDotNetString ("Text", false);
-	int textBinding = OS.gcnew_Binding (textPath);
-	int textProperty = OS.TextBlock_TextProperty ();
-	OS.FrameworkElementFactory_SetBinding (textNode, textProperty, textBinding);
-	int imagePath = createDotNetString ("Image", false);
-	int imageBinding = OS.gcnew_Binding (imagePath);
-	int imageProperty = OS.Image_SourceProperty ();
-	OS.FrameworkElementFactory_SetBinding (imageNode, imageProperty, imageBinding);
-	OS.GCHandle_Free (textPath);
-	OS.GCHandle_Free (textBinding);
-	OS.GCHandle_Free (textProperty);
-	OS.GCHandle_Free (imagePath);
-	OS.GCHandle_Free (imageBinding);
-	OS.GCHandle_Free (imageProperty);
-	OS.GCHandle_Free (imageType);
-	OS.GCHandle_Free (textName);
-	OS.GCHandle_Free (textType);
-	OS.GCHandle_Free (stackPanelType);
-	OS.GCHandle_Free (stackPanelNode);
-	OS.GCHandle_Free (textNode);
-	OS.GCHandle_Free (marginProperty);
-	OS.GCHandle_Free (thickness);
-	OS.GCHandle_Free (imageName);
-	OS.GCHandle_Free (imageNode);
-	OS.GCHandle_Free (orientationProperty);
 	OS.GCHandle_Free (stretchProperty);
+	OS.FrameworkElementFactory_AppendChild (stackPanelNode, imageNode);
+	OS.GCHandle_Free (imageNode);
+	OS.FrameworkElementFactory_AppendChild (stackPanelNode, textNode);
+	OS.GCHandle_Free (textNode);
+	OS.FrameworkTemplate_VisualTree (template, stackPanelNode);
+	OS.GCHandle_Free (stackPanelNode);
 	return template;
 }
 
@@ -558,7 +524,7 @@ void createItem (TreeColumn column, int index) {
     	updateHeaderVisibility ();
     }
 	column.createWidget ();
-	int template = createHeaderTemplate ();
+	int template = createHeaderTemplate (column.jniRef);
 	OS.GridViewColumn_HeaderTemplate (column.handle, template);
 	OS.GCHandle_Free (template);
 	template = createCellTemplate (index);
@@ -694,6 +660,15 @@ int findScrollViewer(int current, int scrollViewerType) {
 	return super.findScrollViewer (current, scrollViewerType);
 }
 
+int findPartOfType (int source, int type) {
+	if (OS.Type_IsInstanceOfType (type, source)) return source;
+	int parent = OS.VisualTreeHelper_GetParent(source);
+	if (parent == 0) return 0;
+	int result = findPartOfType(parent, type);
+	if (result != parent) OS.GCHandle_Free(parent);
+	return result;
+}
+
 void fixScrollbarVisibility () {
 	int typeid = OS.ScrollViewer_typeid();
 	int scrolledHandle = findScrollViewer(handle, typeid);
@@ -701,42 +676,6 @@ void fixScrollbarVisibility () {
 	OS.ScrollViewer_SetVerticalScrollBarVisibility (scrolledHandle, OS.ScrollBarVisibility_Visible);
 	OS.GCHandle_Free(scrolledHandle);
 	OS.GCHandle_Free(typeid);
-}
-
-int GetBackground (int itemHandle) {
-	TreeItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.backgroundList;
-}
-
-int GetCheck (int itemHandle) {
-	TreeItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.checkState;
-}
-
-int GetFont (int itemHandle) {
-	TreeItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.fontList;
-}
-
-int GetForeground (int itemHandle) {
-	TreeItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.foregroundList;
-}
-
-int GetImage (int itemHandle) {
-	TreeItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.imageList;
-}
-
-int GetText (int itemHandle) {
-	TreeItem item = getItem (itemHandle, true); 
-	checkData (item);
-	return item.stringList;
 }
 
 /**
@@ -1271,8 +1210,6 @@ void HandleChecked (int sender, int e) {
 	int source = OS.RoutedEventArgs_Source (e);
 	TreeItem item = (TreeItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
-	// ignore events that result from the initial binding
-	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	if (item.grayed) {
 		int checkbox = item.findPart (0, CHECKBOX_PART_NAME);
 		if (checkbox != 0) {
@@ -1281,11 +1218,12 @@ void HandleChecked (int sender, int e) {
 		}
 	}
 	item.checked = true;
-	item.updateCheckState (false);
+	item.updateCheck ();
 	Event event = new Event ();
 	event.item = item;
 	event.detail = SWT.CHECK;
 	sendEvent (SWT.Selection, event);
+
 }
 
 void HandleCollapsed (int sender, int e) {
@@ -1304,7 +1242,7 @@ void HandleExpanded (int sender, int e) {
 	int source = OS.RoutedEventArgs_Source (e);
 	if (OS.ItemsControl_HasItems (source)) {
 		Event event = new Event ();
-		event.item = (TreeItem) display.getWidget (source);;
+		event.item = (TreeItem) display.getWidget (source);
 		sendEvent (SWT.Expand, event);
 	}
 	OS.GCHandle_Free (source);
@@ -1315,8 +1253,6 @@ void HandleIndeterminate (int sender, int e) {
 	int source = OS.RoutedEventArgs_Source (e);
 	TreeItem item = (TreeItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
-	// ignore events that result from the initial binding
-	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	if (!item.grayed) {
 		int checkbox = item.findPart (0, CHECKBOX_PART_NAME);
 		if (checkbox != 0) {
@@ -1359,10 +1295,15 @@ void HandleMouseDoubleClick (int sender, int e) {
 	}
 }
 
+void HandlePreviewMouseDoubleClick (int sender, int e) {
+	if (!checkEvent (e)) return;
+	if (hooks (SWT.DefaultSelection)) OS.RoutedEventArgs_Handled(e, true);
+}
+
 void HandlePreviewMouseDown (int sender, int e) {
 	super.HandlePreviewMouseDown (sender, e);
-	if ((style & SWT.SINGLE) != 0) return;
 	if (!checkEvent (e)) return;
+	if ((style & SWT.SINGLE) != 0) return;
 	int source = OS.RoutedEventArgs_Source (e);
 	Widget widget = display.getWidget (source);
 	OS.GCHandle_Free (source);
@@ -1417,13 +1358,18 @@ void HandleSelectedItemChanged (int sender, int e) {
 
 void HandleUnchecked (int sender, int e) {
 	if (!checkEvent (e)) return;
+	if (ignoreSelection) return;
+	int origsource = OS.RoutedEventArgs_OriginalSource (e);
+	int typeid = OS.CheckBox_typeid ();
+	boolean isCheckBox = OS.Type_IsInstanceOfType (typeid, origsource);
+	OS.GCHandle_Free (typeid);
+	OS.GCHandle_Free (origsource);
+	if (!isCheckBox) return;
 	int source = OS.RoutedEventArgs_Source (e);
 	TreeItem item = (TreeItem) display.getWidget (source);
 	OS.GCHandle_Free (source);
-	// ignore events that result from the initial binding
-	if (!OS.FrameworkElement_IsLoaded (item.handle)) return;
 	item.checked = false;
-	item.updateCheckState (false);
+	item.updateCheck ();
 	Event event = new Event ();
 	event.item = item;
 	event.detail = SWT.CHECK;
@@ -1443,6 +1389,10 @@ void hookEvents() {
 	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandleMouseDoubleClick");
 	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.Control_MouseDoubleClick (handle, handler);
+	OS.GCHandle_Free (handler);
+	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandlePreviewMouseDoubleClick");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.Control_PreviewMouseDoubleClick (handle, handler);
 	OS.GCHandle_Free (handler);
 	
 	/* Item events */
@@ -1599,6 +1549,30 @@ void removeSelectedItem (TreeItem item) {
 	System.arraycopy (selectedItems, index + 1, selectedItems, index, selectedItemCount - index - 1);
 	selectedItems [selectedItemCount - 1] = null;
 	selectedItemCount--;
+}
+
+void OnRender (int source, int dc) {
+	int type =  OS.TreeViewItem_typeid ();
+	int itemHandle = findPartOfType (source, type);
+	OS.GCHandle_Free (type);
+	TreeItem item = getItem (itemHandle, true);
+	OS.GCHandle_Free (itemHandle);
+	if (item.cached && item.contentHandle != 0) return;
+	checkData (item);
+	if (item.contentHandle == 0) {
+		int rowPresenterType = OS.GridViewRowPresenter_typeid ();
+		item.contentHandle = item.findContentPresenter();
+		OS.GCHandle_Free (rowPresenterType);
+	}
+	int columns = columnCount == 0 ? 1 : columnCount;
+//	item.updateCheck ();
+	for (int i=0; i<columns; i++) {
+		item.updateText (i);
+		item.updateImage (i);
+		item.updateBackground (i);
+		item.updateForeground (i);
+		item.updateFont (i);
+	}
 }
 
 void OnSelectedItemChanged (int args) {
@@ -1865,15 +1839,9 @@ void setItemCount (TreeItem parentItem, int count) {
 				if (headerHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				OS.GridViewRowPresenterBase_Columns (headerHandle, columns);
 				OS.HeaderedItemsControl_Header (item, headerHandle);
-				int row = OS.gcnew_SWTRow (jniRef, item);
-				OS.GridViewRowPresenter_Content (headerHandle, row);
-				OS.GCHandle_Free (row);
 				OS.GCHandle_Free (headerHandle);
 			} else {
-				int row = OS.gcnew_SWTRow (jniRef, item);
-				OS.HeaderedItemsControl_Header (item, row);
 				OS.TreeViewItem_HeaderTemplate (item, headerTemplate);
-				OS.GCHandle_Free (row);
 			}
 			OS.ItemCollection_Add (items, item);
 			OS.GCHandle_Free (item);
@@ -1980,6 +1948,40 @@ public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
 	//TODO
+}
+
+void setFont (int font, double size) {
+	if (font != 0) {
+		int fontFamily = OS.Typeface_FontFamily( font);
+		int style = OS.Typeface_Style (font);
+		int weight = OS.Typeface_Weight (font);
+		int stretch = OS.Typeface_Stretch (font);
+		OS.Control_FontFamily (handle, fontFamily);
+		OS.Control_FontStyle (handle, style);
+		OS.Control_FontWeight (handle, weight);
+		OS.Control_FontStretch (handle, stretch);
+		OS.Control_FontSize (handle, size);
+		OS.GCHandle_Free (fontFamily);
+		OS.GCHandle_Free (style);
+		OS.GCHandle_Free (weight);
+		OS.GCHandle_Free (stretch);
+	} else {
+		int property = OS.Control_FontFamilyProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontStyleProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontWeightProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontStretchProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		property = OS.Control_FontSizeProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+	}
 }
 
 void setForegroundBrush (int brush) {

@@ -183,6 +183,56 @@ public:
 /* Table and Tree Classes						*/
 /*												*/
 
+public ref class SWTStackPanel : StackPanel {
+public: 
+	static DependencyProperty^ JNIRefProperty = DependencyProperty::Register("JNIRef", Int32::typeid, SWTStackPanel::typeid);
+private:
+	jmethodID OnRenderMID;
+	JniRefCookie^ cookie;
+
+	void callin (jmethodID mid, DrawingContext^ context) {
+		JNIEnv* env;
+		bool detach = false;
+
+#ifdef JNI_VERSION_1_2
+		if (IS_JNI_1_2) {
+			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
+		}
+#endif
+		if (env == NULL) {
+			jvm->AttachCurrentThread((void **)&env, NULL);
+			if (IS_JNI_1_2) detach = true;
+		}
+		if (env != NULL) {
+			if (cookie == nullptr) {
+				cookie = gcnew JniRefCookie(env, (jint)(Int32)GetValue(SWTStackPanel::JNIRefProperty));
+			}
+			jobject object = cookie->object;
+			if (object == NULL) { 
+			 	return;
+			}
+			if (mid == NULL){
+				jclass javaClass = env->GetObjectClass(object);
+				OnRenderMID = env->GetMethodID(javaClass, "OnRender", "(II)V");
+				mid = OnRenderMID;
+			}
+			if (!env->ExceptionOccurred()) {
+				int arg0 = TO_HANDLE(this); 
+				int arg1 = TO_HANDLE(context);
+				env->CallVoidMethod(object, mid, arg0, arg1);
+				FREE_HANDLE(arg0);
+				FREE_HANDLE(arg1);
+			}
+			if (detach) jvm->DetachCurrentThread();
+		}
+	}
+protected:
+	virtual void OnRender(DrawingContext^ drawingContext) override {
+		this->StackPanel::OnRender(drawingContext);
+		callin(OnRenderMID, drawingContext);
+	}
+};
+
 public ref class SWTTreeView : TreeView {
 private:
 	JniRefCookie^ cookie;
@@ -274,132 +324,6 @@ protected:
 	}
 };
 
-public ref class SWTCellConverter : IValueConverter {
-private: 
-public:
-	virtual Object^ Convert (Object^ value, Type^ targetType, Object^ parameter, CultureInfo^ culture) {
-		if (value == nullptr) return value;
-		IList^ cellData = (IList^)value;
-		int index = (int)parameter;
-		if (index >= cellData->Count) return nullptr;
-		return cellData[index];
-	}
-	virtual Object^ ConvertBack (Object^ value, Type^ targetType, Object^ parameter, CultureInfo^ culture) {
-		throw gcnew System::InvalidOperationException("Not implemented");
-	}
-};
-
-public ref class SWTRow : INotifyPropertyChanged {
-private:
-	JniRefCookie^ cookie;
-	FrameworkElement^ item;
-	jmethodID GetTextMID;
-	jmethodID GetImageMID;
-	jmethodID GetCheckMID;
-	jmethodID GetForegroundMID;
-	jmethodID GetBackgroundMID;
-	jmethodID GetFontMID;
-	
-	Object^ callin (jmethodID mid) {
-		jobject object = cookie->object;
-		if (object == NULL || mid == NULL) return nullptr;
-		JNIEnv* env;
-		int result = 0;
-		bool detach = false;
-
-#ifdef JNI_VERSION_1_2
-		if (IS_JNI_1_2) {
-			jvm->GetEnv((void **)&env, JNI_VERSION_1_2);
-		}
-#endif
-		if (env == NULL) {
-			jvm->AttachCurrentThread((void **)&env, NULL);
-			if (IS_JNI_1_2) detach = true;
-		}
-		if (env != NULL) {
-			if (!env->ExceptionOccurred()) {
-				int arg0 = TO_HANDLE(item);
-				result = env->CallIntMethod(object, mid, arg0);
-				FREE_HANDLE(arg0);
-			}
-			if (detach) jvm->DetachCurrentThread();
-		}
-		return TO_OBJECT (result);
-	}
-public:
-	virtual event PropertyChangedEventHandler^ PropertyChanged;
-	
-	SWTRow (JNIEnv* env, jint jniRef, FrameworkElement^ item) {
-		cookie = gcnew JniRefCookie(env, jniRef);
-		jobject object = cookie->object;
-		if (object) {
-			jclass javaClass = env->GetObjectClass(object);
-			GetTextMID = env->GetMethodID(javaClass, "GetText", "(I)I");
-			GetImageMID = env->GetMethodID(javaClass, "GetImage", "(I)I");
-			GetCheckMID = env->GetMethodID(javaClass, "GetCheck", "(I)I");
-			GetForegroundMID = env->GetMethodID(javaClass, "GetForeground", "(I)I");
-			GetBackgroundMID = env->GetMethodID(javaClass, "GetBackground", "(I)I");
-			GetFontMID = env->GetMethodID(javaClass, "GetFont", "(I)I");
-		}
-		this->item = item;
-	}
-	
-	property Object^ Text {
-		Object^ get () { return callin(GetTextMID); }
-	}
-	
-	property Object^ Image {
-		Object^ get () { return callin(GetImageMID); }
-	}
-	
-	property Object^ Foreground {
-		Object^ get () { return callin(GetForegroundMID); }
-	}
-	
-	property Object^ Background {
-		Object^ get () { return callin(GetBackgroundMID); }
-	}
-	
-	property Object^ Font {
-		Object^ get () { return callin(GetFontMID); }
-	}
-	
-	property Object^ Check {
-		Object^ get () {
-			int value = ((IntPtr)callin(GetCheckMID)).ToInt32();
-			Nullable<bool> result;
-			switch (value) {
-				case 0: result = false; break;
-				case 1: result = true; break;
-			} 
-			return result;
-		}
-		void set (Object^ value) { };
-	}
-	
-	void NotifyPropertyChanged (int property) {
-		switch (property) {
-			case 0:
-				PropertyChanged (this, gcnew PropertyChangedEventArgs("Text"));
-				break;
-			case 1:
-				PropertyChanged (this, gcnew PropertyChangedEventArgs("Image"));
-				break;
-			case 2:
-				PropertyChanged (this, gcnew PropertyChangedEventArgs("Foreground"));
-				break;
-			case 3:
-				PropertyChanged (this, gcnew PropertyChangedEventArgs("Background"));
-				break;
-			case 4:
-				PropertyChanged (this, gcnew PropertyChangedEventArgs("Check"));
-				break;
-			case 5:
-				PropertyChanged (this, gcnew PropertyChangedEventArgs("Font"));
-				break;
-		}
-	}
-};
 
 /*												*/
 /* Canvas										*/
@@ -1092,15 +1016,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCanvas)
 }
 #endif
 
-#ifndef NO_gcnew_1SWTRow
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTRow)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTRow)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+#ifndef NO_SWTStackPanel_1JNIRefProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SWTStackPanel_1JNIRefProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(SWTStackPanel_1JNIRefProperty)
+	(JNIEnv *env, jclass that)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1SWTRow_FUNC);
-	rc = (jint)TO_HANDLE(gcnew SWTRow(env, arg0, (FrameworkElement^)TO_OBJECT(arg1)));
-	OS_NATIVE_EXIT(env, that, gcnew_1SWTRow_FUNC);
+	OS_NATIVE_ENTER(env, that, SWTStackPanel_1JNIRefProperty_FUNC);
+	rc = (jint)TO_HANDLE(SWTStackPanel::JNIRefProperty);
+	OS_NATIVE_EXIT(env, that, SWTStackPanel_1JNIRefProperty_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SWTStackPanel_1typeid
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(SWTStackPanel_1typeid)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(SWTStackPanel_1typeid)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SWTStackPanel_1typeid_FUNC);
+	rc = (jint)TO_HANDLE(SWTStackPanel::typeid);
+	OS_NATIVE_EXIT(env, that, SWTStackPanel_1typeid_FUNC);
 	return rc;
 }
 #endif
@@ -1192,19 +1129,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTTreeViewRowPresenter)
 	OS_NATIVE_ENTER(env, that, gcnew_1SWTTreeViewRowPresenter_FUNC);
 	rc = (jint)TO_HANDLE(gcnew SWTTreeViewRowPresenter(TO_OBJECT(arg0)));
 	OS_NATIVE_EXIT(env, that, gcnew_1SWTTreeViewRowPresenter_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gcnew_1SWTCellConverter
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCellConverter)(JNIEnv *env, jclass that);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1SWTCellConverter) 
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1SWTCellConverter_FUNC);
-	rc = (jint)TO_HANDLE(gcnew SWTCellConverter());
-	OS_NATIVE_EXIT(env, that, gcnew_1SWTCellConverter_FUNC);
 	return rc;
 }
 #endif
@@ -1318,17 +1242,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(Bitmap_1GetHicon)
 }
 #endif
 
-#ifndef NO_SWTRow_1NotifyPropertyChanged
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(SWTRow_1NotifyPropertyChanged)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(SWTRow_1NotifyPropertyChanged)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, SWTRow_1NotifyPropertyChanged_FUNC);
-	((SWTRow^)TO_OBJECT(arg0))->NotifyPropertyChanged(arg1);
-	OS_NATIVE_EXIT(env, that, SWTRow_1NotifyPropertyChanged_FUNC);
-}
-#endif
-
 #ifndef NO_memcpy___3CII
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(memcpy___3CII)(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2);
 JNIEXPORT void JNICALL OS_NATIVE(memcpy___3CII)
@@ -1438,3 +1351,4 @@ JNIEXPORT void JNICALL OS_NATIVE(ToggleButton_1IsCheckedNullSetter)
 	OS_NATIVE_EXIT(env, that, ToggleButton_1IsCheckedNullSetter_FUNC);
 }
 #endif
+

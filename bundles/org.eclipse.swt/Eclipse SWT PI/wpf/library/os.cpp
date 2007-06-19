@@ -307,36 +307,14 @@ JNIEXPORT void JNICALL OS_NATIVE(Array_1SetValue)
 }
 #endif
 
-#ifndef NO_BindingExpression_1UpdateTarget
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(BindingExpression_1UpdateTarget)(JNIEnv *env, jclass that, jint arg0);
-JNIEXPORT void JNICALL OS_NATIVE(BindingExpression_1UpdateTarget)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	OS_NATIVE_ENTER(env, that, BindingExpression_1UpdateTarget_FUNC);
-	((BindingExpression^)TO_OBJECT(arg0))->UpdateTarget();
-	OS_NATIVE_EXIT(env, that, BindingExpression_1UpdateTarget_FUNC);
-}
-#endif
-
-#ifndef NO_Binding_1Converter
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Binding_1Converter)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Binding_1Converter)
+#ifndef NO_Binding_1RelativeSource
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Binding_1RelativeSource)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Binding_1RelativeSource)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, Binding_1Converter_FUNC);
-	((Binding^)TO_OBJECT(arg0))->Converter = ((IValueConverter^)TO_OBJECT(arg1));
-	OS_NATIVE_EXIT(env, that, Binding_1Converter_FUNC);
-}
-#endif
-
-#ifndef NO_Binding_1ConverterParameter
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Binding_1ConverterParameter)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Binding_1ConverterParameter)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, Binding_1ConverterParameter_FUNC);
-	((Binding^)TO_OBJECT(arg0))->ConverterParameter = (arg1);
-	OS_NATIVE_EXIT(env, that, Binding_1ConverterParameter_FUNC);
+	OS_NATIVE_ENTER(env, that, Binding_1RelativeSource_FUNC);
+	((Binding^)TO_OBJECT(arg0))->RelativeSource = ((RelativeSource^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Binding_1RelativeSource_FUNC);
 }
 #endif
 
@@ -1887,6 +1865,17 @@ JNIEXPORT void JNICALL OS_NATIVE(Control_1Padding)
 	OS_NATIVE_ENTER(env, that, Control_1Padding_FUNC);
 	((Control^)TO_OBJECT(arg0))->Padding = ((Thickness)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, Control_1Padding_FUNC);
+}
+#endif
+
+#ifndef NO_Control_1PreviewMouseDoubleClick
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Control_1PreviewMouseDoubleClick)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Control_1PreviewMouseDoubleClick)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, Control_1PreviewMouseDoubleClick_FUNC);
+	((Control^)TO_OBJECT(arg0))->PreviewMouseDoubleClick += ((MouseButtonEventHandler^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, Control_1PreviewMouseDoubleClick_FUNC);
 }
 #endif
 
@@ -4044,6 +4033,17 @@ JNIEXPORT void JNICALL OS_NATIVE(FrameworkElementFactory_1SetValueDock)
 }
 #endif
 
+#ifndef NO_FrameworkElementFactory_1SetValueInt
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElementFactory_1SetValueInt)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT void JNICALL OS_NATIVE(FrameworkElementFactory_1SetValueInt)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, FrameworkElementFactory_1SetValueInt_FUNC);
+	((FrameworkElementFactory^)TO_OBJECT(arg0))->SetValue((DependencyProperty^)TO_OBJECT(arg1), arg2);
+	OS_NATIVE_EXIT(env, that, FrameworkElementFactory_1SetValueInt_FUNC);
+}
+#endif
+
 #ifndef NO_FrameworkElementFactory_1SetValueOrientation
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(FrameworkElementFactory_1SetValueOrientation)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
 JNIEXPORT void JNICALL OS_NATIVE(FrameworkElementFactory_1SetValueOrientation)
@@ -4556,6 +4556,19 @@ JNIEXPORT void JNICALL OS_NATIVE(FrameworkElement_1Tag__II)
 	OS_NATIVE_ENTER(env, that, FrameworkElement_1Tag__II_FUNC);
 	((FrameworkElement^)TO_OBJECT(arg0))->Tag = ((Object^)TO_OBJECT(arg1));
 	OS_NATIVE_EXIT(env, that, FrameworkElement_1Tag__II_FUNC);
+}
+#endif
+
+#ifndef NO_FrameworkElement_1TagProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1TagProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1TagProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1TagProperty_FUNC);
+	rc = (jint)TO_HANDLE(FrameworkElement::TagProperty);
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1TagProperty_FUNC);
+	return rc;
 }
 #endif
 
@@ -5679,14 +5692,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(ImageSource_1typeid)
 }
 #endif
 
-#ifndef NO_Image_1Source
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(Image_1Source)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(Image_1Source)
+#ifndef NO_Image_1Source__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Image_1Source__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(Image_1Source__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Image_1Source__I_FUNC);
+	rc = (jint)TO_HANDLE(((Image^)TO_OBJECT(arg0))->Source);
+	OS_NATIVE_EXIT(env, that, Image_1Source__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Image_1Source__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(Image_1Source__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(Image_1Source__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, Image_1Source_FUNC);
+	OS_NATIVE_ENTER(env, that, Image_1Source__II_FUNC);
 	((Image^)TO_OBJECT(arg0))->Source = ((ImageSource^)TO_OBJECT(arg1));
-	OS_NATIVE_EXIT(env, that, Image_1Source_FUNC);
+	OS_NATIVE_EXIT(env, that, Image_1Source__II_FUNC);
 }
 #endif
 
@@ -6351,6 +6377,19 @@ JNIEXPORT void JNICALL OS_NATIVE(ListBox_1UnselectAll)
 	OS_NATIVE_ENTER(env, that, ListBox_1UnselectAll_FUNC);
 	((ListBox^)TO_OBJECT(arg0))->UnselectAll();
 	OS_NATIVE_EXIT(env, that, ListBox_1UnselectAll_FUNC);
+}
+#endif
+
+#ifndef NO_ListViewItem_1typeid
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ListViewItem_1typeid)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ListViewItem_1typeid)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ListViewItem_1typeid_FUNC);
+	rc = (jint)TO_HANDLE(ListViewItem::typeid);
+	OS_NATIVE_EXIT(env, that, ListViewItem_1typeid_FUNC);
+	return rc;
 }
 #endif
 
@@ -8373,6 +8412,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(Registry_1ClassesRoot)
 }
 #endif
 
+#ifndef NO_RelativeSource_1AncestorType
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(RelativeSource_1AncestorType)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(RelativeSource_1AncestorType)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, RelativeSource_1AncestorType_FUNC);
+	((RelativeSource^)TO_OBJECT(arg0))->AncestorType = ((Type^)TO_OBJECT(arg1));
+	OS_NATIVE_EXIT(env, that, RelativeSource_1AncestorType_FUNC);
+}
+#endif
+
 #ifndef NO_RenderOptions_1GetBitmapScalingMode
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(RenderOptions_1GetBitmapScalingMode)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(RenderOptions_1GetBitmapScalingMode)
@@ -9889,14 +9939,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(TextBlock_1Inlines)
 }
 #endif
 
-#ifndef NO_TextBlock_1Text
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(TextBlock_1Text)(JNIEnv *env, jclass that, jint arg0, jint arg1);
-JNIEXPORT void JNICALL OS_NATIVE(TextBlock_1Text)
+#ifndef NO_TextBlock_1Text__I
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(TextBlock_1Text__I)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(TextBlock_1Text__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, TextBlock_1Text__I_FUNC);
+	rc = (jint)TO_HANDLE(((TextBlock^)TO_OBJECT(arg0))->Text);
+	OS_NATIVE_EXIT(env, that, TextBlock_1Text__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TextBlock_1Text__II
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(TextBlock_1Text__II)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT void JNICALL OS_NATIVE(TextBlock_1Text__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	OS_NATIVE_ENTER(env, that, TextBlock_1Text_FUNC);
+	OS_NATIVE_ENTER(env, that, TextBlock_1Text__II_FUNC);
 	((TextBlock^)TO_OBJECT(arg0))->Text = ((String^)TO_OBJECT(arg1));
-	OS_NATIVE_EXIT(env, that, TextBlock_1Text_FUNC);
+	OS_NATIVE_EXIT(env, that, TextBlock_1Text__II_FUNC);
 }
 #endif
 
@@ -11264,6 +11327,19 @@ JNIEXPORT void JNICALL OS_NATIVE(TreeViewItem_1IsSelected__IZ)
 	OS_NATIVE_ENTER(env, that, TreeViewItem_1IsSelected__IZ_FUNC);
 	((TreeViewItem^)TO_OBJECT(arg0))->IsSelected = (arg1);
 	OS_NATIVE_EXIT(env, that, TreeViewItem_1IsSelected__IZ_FUNC);
+}
+#endif
+
+#ifndef NO_TreeViewItem_1typeid
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(TreeViewItem_1typeid)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(TreeViewItem_1typeid)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, TreeViewItem_1typeid_FUNC);
+	rc = (jint)TO_HANDLE(TreeViewItem::typeid);
+	OS_NATIVE_EXIT(env, that, TreeViewItem_1typeid_FUNC);
+	return rc;
 }
 #endif
 
@@ -13180,28 +13256,15 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1BezierSegment)
 }
 #endif
 
-#ifndef NO_gcnew_1Binding__
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Binding__)(JNIEnv *env, jclass that);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Binding__)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1Binding___FUNC);
-	rc = (jint)TO_HANDLE(gcnew Binding());
-	OS_NATIVE_EXIT(env, that, gcnew_1Binding___FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gcnew_1Binding__I
-extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Binding__I)(JNIEnv *env, jclass that, jint arg0);
-JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Binding__I)
+#ifndef NO_gcnew_1Binding
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Binding)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1Binding)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, gcnew_1Binding__I_FUNC);
+	OS_NATIVE_ENTER(env, that, gcnew_1Binding_FUNC);
 	rc = (jint)TO_HANDLE(gcnew Binding((String^)TO_OBJECT(arg0)));
-	OS_NATIVE_EXIT(env, that, gcnew_1Binding__I_FUNC);
+	OS_NATIVE_EXIT(env, that, gcnew_1Binding_FUNC);
 	return rc;
 }
 #endif
@@ -14285,6 +14348,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RectangleGeometry)
 	OS_NATIVE_ENTER(env, that, gcnew_1RectangleGeometry_FUNC);
 	rc = (jint)TO_HANDLE(gcnew RectangleGeometry((Rect)TO_OBJECT(arg0)));
 	OS_NATIVE_EXIT(env, that, gcnew_1RectangleGeometry_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gcnew_1RelativeSource
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RelativeSource)(JNIEnv *env, jclass that, jint arg0);
+JNIEXPORT jint JNICALL OS_NATIVE(gcnew_1RelativeSource)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, gcnew_1RelativeSource_FUNC);
+	rc = (jint)TO_HANDLE(gcnew RelativeSource((RelativeSourceMode)arg0));
+	OS_NATIVE_EXIT(env, that, gcnew_1RelativeSource_FUNC);
 	return rc;
 }
 #endif

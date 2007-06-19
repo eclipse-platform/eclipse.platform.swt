@@ -187,9 +187,6 @@ void createHandle () {
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	headerHandle = OS.gcnew_GridViewColumnHeader ();
 	OS.GridViewColumn_Header (handle, headerHandle);
-	int row = OS.gcnew_SWTRow (jniRef, headerHandle);
-	OS.GridViewColumnHeader_Content (headerHandle, row);
-	OS.GCHandle_Free (row);
 }
 
 void deregister () {
@@ -201,34 +198,20 @@ void destroyWidget () {
 	releaseHandle ();
 }
 
-int GetBackground (int itemHandle) {
-	return 0;
-}
-
-int GetCheck (int itemHandle) {
-	return 0;
-}
-
-int GetFont (int itemHandle) {
-	return 0;
-}
-
-int GetForeground (int itemHandle) {
-	return 0;
-}
-
-int GetImage (int itemHandle) {
-	return image != null ? image.handle : 0;
-}
-
-int GetText (int itemHandle) {
-	int result = 0;
-	if (text != null) {
-		result = stringHandle;
-		if (result == 0) {
-			result = stringHandle = createDotNetString (text, false);
-		}
-	}
+int findPart (String part) {
+	updateLayout (headerHandle);
+	int headerTemplate = OS.Control_Template (headerHandle);
+	int name = createDotNetString ("HeaderContent", false);
+	int contentPresenter = OS.FrameworkTemplate_FindName (headerTemplate, name, headerHandle);
+	OS.GCHandle_Free (name);
+	OS.GCHandle_Free (headerTemplate);
+	if (contentPresenter == 0) return 0;
+	int dataTemplate = OS.GridViewColumn_HeaderTemplate (handle);
+	name = createDotNetString (part, false);
+	int result = OS.FrameworkTemplate_FindName (dataTemplate, name, contentPresenter);
+	OS.GCHandle_Free (contentPresenter);
+	OS.GCHandle_Free (dataTemplate);
+	OS.GCHandle_Free (name);
 	return result;
 }
 
@@ -349,29 +332,9 @@ public int getWidth () {
 	return (int) OS.GridViewColumn_ActualWidth (handle);
 }
 
-int findPart (int part) {
-	if (!OS.FrameworkElement_IsLoaded (headerHandle)) updateLayout (headerHandle);
-	int contentPresenterType = OS.ContentPresenter_typeid ();
-	int contentPresenter = findStackPanel (headerHandle, contentPresenterType);
-	OS.GCHandle_Free (contentPresenterType);
-	int result = OS.VisualTreeHelper_GetChild (contentPresenter, part);
-	OS.GCHandle_Free (contentPresenter);
-	return result;
-}
-
-int findStackPanel (int element, int contentPresenterType) {
-	int type = OS.Object_GetType (element);
-	boolean found = OS.Object_Equals (contentPresenterType, type);
-	OS.GCHandle_Free (type);
-	if (found) return OS.VisualTreeHelper_GetChild (element, 0);
-	int count = OS.VisualTreeHelper_GetChildrenCount (element);
-	for (int i = 0; i < count; i++) {
-		int child = OS.VisualTreeHelper_GetChild (element, i);
-		int result = findStackPanel (child, contentPresenterType);
-		OS.GCHandle_Free (child);
-		if (result != 0) return result;
-	}
-	return 0;
+void OnRender (int source, int dc) {
+	updateImage ();
+	updateText ();	
 }
 
 /**
@@ -499,7 +462,7 @@ public void setAlignment (int alignment) {
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
-	// TODO
+	updateImage ();
 }
 
 /**
@@ -557,19 +520,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.equals (text)) return;
 	text = string;
-	if (stringHandle != 0) {
-		OS.GCHandle_Free (stringHandle);
-		stringHandle = 0;
-	}
-	if (OS.FrameworkElement_IsLoaded (headerHandle)) {
-		int part = findPart (TEXT_PART);
-		int property = OS.TextBlock_TextProperty ();
-		int bindingExpression = OS.FrameworkElement_GetBindingExpression (part, property);
-		OS.BindingExpression_UpdateTarget (bindingExpression);
-		OS.GCHandle_Free (part);
-		OS.GCHandle_Free (property);
-		OS.GCHandle_Free (bindingExpression);
-	}
+	updateText ();
 }
 
 /**
@@ -607,6 +558,22 @@ public void setWidth (int width) {
 	checkWidget ();
 	if (width < 0) return;
 	OS.GridViewColumn_Width (handle, width);
+}
+
+void updateImage() {
+	int part = findPart (Table.IMAGE_PART_NAME);
+	if (part == 0) return;
+	OS.Image_Source (part, image == null ? 0 : image.handle);
+	OS.GCHandle_Free (part);
+}
+
+void updateText () {
+	int part = findPart (Table.TEXT_PART_NAME);
+	if (part == 0) return;
+	int str = createDotNetString (text, false);
+	OS.TextBlock_Text (part, str);
+	OS.GCHandle_Free (str);
+	OS.GCHandle_Free (part);
 }
 
 }
