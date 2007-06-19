@@ -825,6 +825,15 @@ void HandleClosing (int sender, int e) {
 		doit = event.doit || isDisposed ();
 	}
 	if (doit) {
+		/** 
+		* Bug in WPF. When a window has more than
+		* two child windows, and all the the child
+		* windows are closed, the parent window is not 
+		* brought to the front. The work around is to 
+		* null out the Owner property of the child window
+		* before disposing it.
+		*/
+		OS.Window_Owner (shellHandle, 0);
 		if (!isDisposed ()) release (false);
 	} else {
 		OS.CancelEventArgs_Cancel (e, true);
@@ -926,7 +935,7 @@ void releaseChildren (boolean destroy) {
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (shell != null && !shell.isDisposed ()) {
-			shell.release (false);
+			shell.release ((style & SWT.ON_TOP) != 0);
 		}
 	}
 	super.releaseChildren (destroy);
