@@ -209,6 +209,7 @@ public String open () {
 		}
 		OS.GCHandle_Free (strings);
 		fullPath = filterPath + "\\" + fileNames [0];
+		fileName = fileNames [0];
 	} else {
 		fileNames = new String [0];
 	}
