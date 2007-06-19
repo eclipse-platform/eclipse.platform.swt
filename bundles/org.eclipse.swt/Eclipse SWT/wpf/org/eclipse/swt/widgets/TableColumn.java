@@ -332,9 +332,17 @@ public int getWidth () {
 	return (int) OS.GridViewColumn_ActualWidth (handle);
 }
 
-void OnRender (int source, int dc) {
+void HandleLoaded (int sender, int e) {
 	updateImage ();
 	updateText ();	
+}
+
+void hookEvents() {
+	super.hookEvents ();
+	int handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleLoaded");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.FrameworkElement_Loaded (headerHandle, handler);
+	OS.GCHandle_Free (handler);
 }
 
 /**

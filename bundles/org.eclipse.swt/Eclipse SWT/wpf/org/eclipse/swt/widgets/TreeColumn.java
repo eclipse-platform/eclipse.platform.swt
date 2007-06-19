@@ -352,26 +352,18 @@ public int getWidth () {
 	return (int) OS.GridViewColumn_ActualWidth(handle);
 }
 
-int HandleConvert (int value, int targetType, int parameter, int culture) {
-	int imageSourceType = OS.ImageSource_typeid (); 
-	int result = 0;
-	if (OS.Object_Equals (imageSourceType, targetType)) {
-		if (image != null) result = image.handle;
-	} else {
-		if (text != null) {
-			result = stringPtr;
-			if (result == 0) {
-				result = stringPtr = createDotNetString (text, false);
-			}
-		}
-	}
-	OS.GCHandle_Free (imageSourceType);
-	return result;
-}
 
-void OnRender (int source, int dc) {
+void HandleLoaded (int source, int e) {
 	updateImage ();
 	updateText ();	
+}
+
+void hookEvents() {
+	super.hookEvents ();
+	int handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleLoaded");
+	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.FrameworkElement_Loaded (headerHandle, handler);
+	OS.GCHandle_Free (handler);
 }
 
 /**

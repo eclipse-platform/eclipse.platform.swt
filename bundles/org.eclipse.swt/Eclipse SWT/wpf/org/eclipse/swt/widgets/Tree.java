@@ -475,14 +475,11 @@ void createHandle () {
 
 int createHeaderTemplate (int columnJniRef) {
 	int template = OS.gcnew_DataTemplate ();
-	int stackPanelType = OS.SWTStackPanel_typeid ();
+	int stackPanelType = OS.StackPanel_typeid ();
 	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
 	int stackPanelNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
 	OS.GCHandle_Free (stackPanelName);
 	OS.GCHandle_Free (stackPanelType);
-	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
-	OS.FrameworkElementFactory_SetValueInt (stackPanelNode, jniRefProperty, columnJniRef);
-	OS.GCHandle_Free (jniRefProperty);
 	int textType = OS.TextBlock_typeid ();
 	int textName = createDotNetString (TEXT_PART_NAME, false);
 	int textNode = OS.gcnew_FrameworkElementFactory (textType, textName);
@@ -2016,6 +2013,11 @@ public void setHeaderVisible (boolean show) {
 	checkWidget ();
 	headerVisibility = show ? OS.Visibility_Visible : OS.Visibility_Collapsed;
 	updateHeaderVisibility ();
+	for (int i=0; i<columnCount; i++) {
+		TreeColumn column = getColumn(i);
+		column.updateImage ();
+		column.updateText ();
+	}
 }
 
 /**
