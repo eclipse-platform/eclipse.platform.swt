@@ -7760,18 +7760,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1filenames)
 
 #ifndef NO__1gtk_1file_1chooser_1set_1current_1folder
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1set_1current_1folder_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 /*
-	gtk_file_chooser_set_current_folder(arg0, lparg1);
+	gtk_file_chooser_set_current_folder(arg0, arg1);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef void (*FPTR)(jint, jbyte *);
+		typedef void (*FPTR)(jint, jint);
 		static FPTR fptr;
 		if (!initialized) {
 			if (!handle) handle = dlopen(gtk_file_chooser_set_current_folder_LIB, RTLD_LAZY);
@@ -7779,11 +7777,9 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1set_1current_1folder)
 			initialized = 1;
 		}
 		if (fptr) {
-			(*fptr)(arg0, lparg1);
+			(*fptr)(arg0, arg1);
 		}
 	}
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1set_1current_1folder_FUNC);
 }
 #endif

@@ -368,25 +368,35 @@ void presetChooserDialog () {
 			stringBuffer.append (SEPARATOR);
 		}
 		stringBuffer.append (filterPath);
-		if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
-			stringBuffer.append (SEPARATOR);
-		}
-		if (fileName.length () > 0) {
+
+		if (fileName.length () > 0 && (style & SWT.SAVE) == 0) {
+			if (filterPath.charAt (filterPath.length () - 1) != SEPARATOR) {
+				stringBuffer.append (SEPARATOR);
+			}
 			stringBuffer.append (fileName);
+			byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
+			/*
+			* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+			* when setting a file name that is not a true canonical path. 
+			* The fix is to use the canonical path.
+			*/
+			int /*long*/ ptr = OS.realpath (buffer, null);
+			if (ptr != 0) {
+				OS.gtk_file_chooser_set_filename (handle, ptr);
+				OS.g_free (ptr);
+			}
 		} else {
-			/* go into the specified directory */
-			stringBuffer.append ('.');
-		}
-		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
-		/*
-		* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
-		* when setting a file name that is not a true canonical path. 
-		* The fix is to use the canonical path.
-		*/
-		int /*long*/ ptr = OS.realpath (buffer, null);
-		if (ptr != 0) {
-			OS.gtk_file_chooser_set_filename (handle, ptr);
-			OS.g_free (ptr);
+			byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
+			/*
+			* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+			* when setting a file name that is not a true canonical path. 
+			* The fix is to use the canonical path.
+			*/
+			int /*long*/ ptr = OS.realpath (buffer, null);
+			if (ptr != 0) {
+				OS.gtk_file_chooser_set_current_folder (handle, ptr);
+				OS.g_free (ptr);
+			}
 		}
 	} else {
 		if (fileName.length () > 0) {

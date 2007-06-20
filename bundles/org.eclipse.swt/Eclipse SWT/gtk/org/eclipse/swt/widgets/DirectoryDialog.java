@@ -141,7 +141,16 @@ String openChooserDialog () {
 		}
 		stringBuffer.append (filterPath);
 		byte [] buffer = Converter.wcsToMbcs (null, stringBuffer.toString (), true);
-		OS.gtk_file_chooser_set_current_folder (handle, buffer);
+		/*
+		* Bug in GTK. GtkFileChooser may crash on GTK versions 2.4.10 to 2.6
+		* when setting a file name that is not a true canonical path. 
+		* The fix is to use the canonical path.
+		*/
+		int /*long*/ ptr = OS.realpath (buffer, null);
+		if (ptr != 0) {
+			OS.gtk_file_chooser_set_current_folder (handle, ptr);
+			OS.g_free (ptr);
+		}
 	}
 	if (message.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, message, true);

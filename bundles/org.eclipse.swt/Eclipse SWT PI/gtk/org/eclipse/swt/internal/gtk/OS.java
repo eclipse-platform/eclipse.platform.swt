@@ -4749,8 +4749,8 @@ public static final int /*long*/ gtk_file_chooser_get_filenames(int /*long*/ cho
 		lock.unlock();
 	}
 }
-public static final native void _gtk_file_chooser_set_current_folder(int /*long*/ chooser, byte[] filename);
-public static final void gtk_file_chooser_set_current_folder(int /*long*/ chooser, byte[] filename) {
+public static final native void _gtk_file_chooser_set_current_folder(int /*long*/ chooser, int /*long*/ filename);
+public static final void gtk_file_chooser_set_current_folder(int /*long*/ chooser, int /*long*/ filename) {
 	lock.lock();
 	try {
 		_gtk_file_chooser_set_current_folder(chooser, filename);
