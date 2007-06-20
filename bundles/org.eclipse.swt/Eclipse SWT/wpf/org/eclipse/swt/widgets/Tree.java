@@ -1557,9 +1557,7 @@ void OnRender (int source, int dc) {
 	if (item.cached && item.contentHandle != 0) return;
 	checkData (item);
 	if (item.contentHandle == 0) {
-		int rowPresenterType = OS.GridViewRowPresenter_typeid ();
 		item.contentHandle = item.findContentPresenter();
-		OS.GCHandle_Free (rowPresenterType);
 	}
 	int columns = columnCount == 0 ? 1 : columnCount;
 //	item.updateCheck ();
