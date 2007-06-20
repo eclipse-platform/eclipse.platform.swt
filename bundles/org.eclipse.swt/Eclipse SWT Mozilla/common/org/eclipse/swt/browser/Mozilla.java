@@ -243,21 +243,7 @@ public void create (Composite parent, int style) {
 			try {
 				Library.loadLibrary ("swt-xulrunner"); //$NON-NLS-1$
 			} catch (UnsatisfiedLinkError e) {
-				try {
-					/* 
-					 * The initial loadLibrary attempt may have failed as a result of the user's
-					 * system not having libstdc++.so.6 installed, so try to load the alternate
-					 * swt xulrunner library that depends on libswtc++.so.5 instead.
-					 */
-					Library.loadLibrary ("swt-xulrunner-gcc3"); //$NON-NLS-1$
-				} catch (UnsatisfiedLinkError ex) {
-					browser.dispose ();
-					/*
-					 * Print the error from the first failed attempt since at this point it's
-					 * known that the failure was not due to the libstdc++.so.6 dependency.
-					 */
-					SWT.error (SWT.ERROR_NO_HANDLES, e);
-				}
+				SWT.error (SWT.ERROR_NO_HANDLES, e);
 			}
 			byte[] path = MozillaDelegate.wcsToMbcs (null, mozillaPath, true);
 			int rc = XPCOM.XPCOMGlueStartup (path);

@@ -58,8 +58,8 @@ CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = -shared -fpic -fPIC `pkg-config --libs-only-L cairo` -lcairo
 
-MOZILLA_PREFIX = swt-mozilla
-MOZILLA_LIB = lib$(MOZILLA_PREFIX)$(GCC_VERSION)-$(WS_PREFIX)-$(SWT_VERSION).so
+MOZILLA_PREFIX = swt-mozilla$(GCC_VERSION)
+MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 MOZILLACFLAGS = -O \
 	-DMOZILLA_STRICT_API=1 \
@@ -76,11 +76,11 @@ MOZILLACFLAGS = -O \
 MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic
 MOZILLAEXCLUDES = -DNO_XPCOMGlueShutdown -DNO_XPCOMGlueStartup
 
-XULRUNNER_PREFIX = swt-xulrunner$(GCC_VERSION)
+XULRUNNER_PREFIX = swt-xulrunner
 XULRUNNER_LIB = lib$(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 XULRUNNER_OBJECTS = swt.o xpcomxul.o xpcomxul_custom.o xpcomxul_structs.o xpcomxul_stats.o
 
-XPCOMINIT_PREFIX = swt-xpcominit$(GCC_VERSION)
+XPCOMINIT_PREFIX = swt-xpcominit
 XPCOMINIT_LIB = lib$(XPCOMINIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 XPCOMINIT_OBJECTS = swt.o xpcominit.o xpcominit_structs.o xpcominit_stats.o
 
