@@ -1560,7 +1560,7 @@ void OnRender (int source, int dc) {
 		item.contentHandle = item.findContentPresenter();
 	}
 	int columns = columnCount == 0 ? 1 : columnCount;
-//	item.updateCheck ();
+	item.updateCheck ();
 	for (int i=0; i<columns; i++) {
 		item.updateText (i);
 		item.updateImage (i);

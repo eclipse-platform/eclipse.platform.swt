@@ -123,10 +123,9 @@ TableItem (Table parent, int style, int index, int handle) {
 
 double computeWidth (int columnIndex) {
 	int rowPresenterType = OS.GridViewRowPresenter_typeid ();
-	int rowPresenter = findRowPresenter (handle, rowPresenterType);
 	double width = 0;
-	if (rowPresenter != 0) {
-		int contentPresenter = OS.VisualTreeHelper_GetChild (rowPresenter, columnIndex);
+	if (rowHandle != 0) {
+		int contentPresenter = OS.VisualTreeHelper_GetChild (rowHandle, columnIndex);
 		/*
 		 * Bug in WPF. The DesiredSize property of the content presenter is always 0
 		 * for all columns except the first column. The work around is to Measure the
@@ -143,7 +142,6 @@ double computeWidth (int columnIndex) {
 		width = OS.Size_Width (size);
 		OS.GCHandle_Free (size);
 		OS.GCHandle_Free (contentPresenter);
-		OS.GCHandle_Free (rowPresenter);
 	}
 	OS.GCHandle_Free (rowPresenterType);
 	return width;
@@ -155,10 +153,12 @@ protected void checkSubclass () {
 
 void columnAdded (int index) {
 	int newLength = parent.columnCount + 1;
-	String [] strTemp = new String [newLength];
-	System.arraycopy (strings, 0, strTemp, 0, index);
-	System.arraycopy (strings, index, strTemp, index + 1, parent.columnCount - index);
-	strings = strTemp;
+	if (strings != null) {
+		String [] temp = new String [newLength];
+		System.arraycopy (strings, 0, temp, 0, index);
+		System.arraycopy (strings, index, temp, index + 1, parent.columnCount - index);
+		strings = temp;
+	}
 	if (images != null) {
 		Image [] temp = new Image [newLength];
 		System.arraycopy (images, 0, temp, 0, index);
@@ -186,10 +186,12 @@ void columnAdded (int index) {
 }
 
 void columnRemoved (int index) {
-	String [] strs = new String [parent.columnCount];
-	System.arraycopy (strings, 0, strs, 0, index);
-	System.arraycopy (strings, index + 1, strs, index, parent.columnCount - index);
-	strings = strs;
+	if (strings != null) {
+		String [] temp = new String [parent.columnCount];
+		System.arraycopy (strings, 0, temp, 0, index);
+		System.arraycopy (strings, index + 1, temp, index, parent.columnCount - index);
+		strings = temp;		
+	}
 	if (images != null) {
 		Image [] temp = new Image [parent.columnCount];
 		System.arraycopy (images, 0, temp, 0, index);
@@ -225,31 +227,20 @@ void createHandle () {
 	OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
 	
 }
-
-void createWidget () {
-	super.createWidget ();
-	strings = new String [parent.columnCount == 0 ? 1 : parent.columnCount];
-}
-
 void clear () {
-	strings = new String [parent.columnCount == 0 ? 1 : parent.columnCount];
+	strings = null;
 	images = null;
 	checked = grayed = false;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 	updateCheck ();
 	int columns = parent.columnCount == 0 ? 1 : parent.columnCount;
 	for (int i = 0; i < columns; i++) {
-		updateText(i);
-		updateImage(i);
-		int part = findPart(i, Table.RENDER_PANEL_NAME);
-		if (part != 0) OS.UIElement_InvalidateVisual(part);
-		OS.GCHandle_Free(part);
-	}
-	
-
-//	int typeid = OS.GridViewRowPresenter_typeid ();
-//	intfindRowPresenter(handle, typeid);
-	
+		updateText (i);
+		updateImage (i);
+		int part = findPart (i, Table.RENDER_PANEL_NAME);
+		if (part != 0) OS.UIElement_InvalidateVisual (part);
+		OS.GCHandle_Free (part);
+	}	
 //	background = foreground = font = -1;
 //	cellBackground = cellForeground = cellFont = null;
 }
@@ -379,8 +370,7 @@ public Rectangle getBounds (int index) {
 	if (index != 0 && !parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	int rowPresenterType = OS.GridViewRowPresenter_typeid ();
-	int rowPresenter = findRowPresenter (handle, rowPresenterType);
-	int contentPresenter = OS.VisualTreeHelper_GetChild (rowPresenter, index);
+	int contentPresenter = OS.VisualTreeHelper_GetChild (rowHandle, index);
 	int point = OS.gcnew_Point (0, 0);
 	if (point == 0) error (SWT.ERROR_NO_HANDLES);
 	int parentHandle = parent.topHandle ();
@@ -389,7 +379,6 @@ public Rectangle getBounds (int index) {
 	int y = (int) OS.Point_Y (location);
 	int width = (int) OS.FrameworkElement_ActualWidth (contentPresenter);
 	int height = (int) OS.FrameworkElement_ActualHeight (handle);
-	OS.GCHandle_Free (rowPresenter);
 	OS.GCHandle_Free (rowPresenterType);
 	OS.GCHandle_Free (point);
 	OS.GCHandle_Free (location);
@@ -511,14 +500,14 @@ public Color getForeground (int index) {
  * </ul>
  */
 public boolean getGrayed () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return grayed;
 }
 
 public Image getImage () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getImage (0);
 }
@@ -536,7 +525,7 @@ public Image getImage () {
  * </ul>
  */
 public Image getImage (int index) {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (images != null) {
 		if (0 <= index && index < images.length) return images [index];
@@ -559,7 +548,7 @@ public Image getImage (int index) {
  * </ul>
  */
 public Rectangle getImageBounds (int index) {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	int parentHandle = parent.topHandle ();
@@ -588,7 +577,7 @@ public Rectangle getImageBounds (int index) {
  * </ul>
  */
 public int getImageIndent () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	//TODO
 	return 0;
@@ -613,7 +602,7 @@ String getNameText () {
  * </ul>
  */
 public Table getParent () {
-	checkWidget();
+	checkWidget ();
 	return parent;
 }
 
@@ -634,7 +623,7 @@ public Table getParent () {
  * @since 3.3
  */
 public Rectangle getTextBounds (int index) {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	int parentHandle = parent.topHandle ();
@@ -653,7 +642,7 @@ public Rectangle getTextBounds (int index) {
 }
 
 public String getText () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getText (0);
 }
@@ -671,9 +660,9 @@ public String getText () {
  * </ul>
  */
 public String getText (int index) {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (0 <= index && index < strings.length) {
+	if (strings != null && 0 <= index && index < strings.length) {
 		return strings [index]!= null ? strings[index] : "";
 	}
 	return "";
@@ -874,7 +863,7 @@ public void setFont (int index, Font font) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	if (cellFont == null) cellFont = new Font [count];
-	cellFont[index] = font;
+	cellFont [index] = font;
 	updateFont (index);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 }
@@ -957,7 +946,7 @@ public void setForeground (int index, Color color){
  * </ul>
  */
 public void setGrayed (boolean grayed) {
-	checkWidget();
+	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
@@ -980,7 +969,7 @@ public void setGrayed (boolean grayed) {
  * </ul>
  */
 public void setImage (Image [] images) {
-	checkWidget();
+	checkWidget ();
 	if (images == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<images.length; i++) {
 		setImage (i, images [i]);
@@ -1002,10 +991,8 @@ public void setImage (Image [] images) {
  * </ul>
  */
 public void setImage (int index, Image image) {
-	checkWidget();
-	if (image != null && image.isDisposed ()) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
-	}
+	checkWidget ();
+	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	if (images == null) images = new Image [count];
@@ -1033,7 +1020,7 @@ public void setImage (Image image) {
  * @deprecated this functionality is not supported on most platforms
  */
 public void setImageIndent (int indent) {
-	checkWidget();
+	checkWidget ();
 }
 
 /**
@@ -1050,7 +1037,7 @@ public void setImageIndent (int indent) {
  * </ul>
  */
 public void setText (String [] strings) {
-	checkWidget();
+	checkWidget ();
 	if (strings == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<strings.length; i++) {
 		String string = strings [i];
@@ -1073,17 +1060,18 @@ public void setText (String [] strings) {
  * </ul>
  */
 public void setText (int index, String string) {
-	checkWidget();
+	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = Math.max(1, parent.getColumnCount ());
+	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
+	if (strings == null) strings = new String [count];
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
-	strings[index] = string;
+	strings [index] = string;
 	updateText (index);
 }
 
 public void setText (String string) {
-	checkWidget();
+	checkWidget ();
 	setText (0, string);
 }
 
@@ -1093,10 +1081,10 @@ void updateBackground (int index) {
 	if (panel != 0) {
 		if (cellBackground [index] != null) {
 			int brush = OS.gcnew_SolidColorBrush (cellBackground [index].handle);
-			int current = OS.Panel_Background(panel);
-			if (!OS.Object_Equals(brush, current))
+			int current = OS.Panel_Background (panel);
+			if (!OS.Object_Equals (brush, current))
 				OS.Panel_Background (panel, brush);
-			OS.GCHandle_Free(current);
+			OS.GCHandle_Free (current);
 			OS.GCHandle_Free (brush);
 		} else {
 			int property = OS.Panel_BackgroundProperty ();
@@ -1125,7 +1113,7 @@ void updateCheck () {
 
 void updateFont (int index) {
 	if (cellFont == null) return;
-	int textBlock = findPart(index, Table.TEXT_PART_NAME);
+	int textBlock = findPart (index, Table.TEXT_PART_NAME);
 	if (textBlock != 0) {
 		Font font = cellFont [index];
 		if (font != null) {
@@ -1185,7 +1173,7 @@ void updateImage (int index) {
 	int img = findPart (index, Table.IMAGE_PART_NAME);
 	if (img != 0) {
 		int src = images [index] != null ? images [index].handle : 0;
-		int current = OS.Image_Source(img);
+		int current = OS.Image_Source (img);
 		OS.Image_Source (img, src);
 		OS.GCHandle_Free (current);
 		OS.GCHandle_Free (img);
@@ -1193,20 +1181,20 @@ void updateImage (int index) {
 }
 
 void updateText (int index) {
+	if (strings == null) return;
 	int textBlock = findPart (index, Table.TEXT_PART_NAME);
 	if (textBlock != 0) {
-//		if (strings[index] != null) {
+		if (strings [index] != null) {
 			int strPtr = createDotNetString (strings[index], false);
-			int text = OS.TextBlock_Text(textBlock);
+			int text = OS.TextBlock_Text (textBlock);
 			OS.TextBlock_Text (textBlock, strPtr);
 			OS.GCHandle_Free (text);
 			OS.GCHandle_Free (strPtr);
-//		} else {
-//			System.out.println("clearing text property");
-//			int property = OS.TextBlock_TextProperty ();
-//			OS.DependencyObject_ClearValue (textBlock, property);
-//			OS.GCHandle_Free (property);
-//		}
+		} else {
+			int property = OS.TextBlock_TextProperty ();
+			OS.DependencyObject_ClearValue (textBlock, property);
+			OS.GCHandle_Free (property);
+		}
 		OS.GCHandle_Free (textBlock);
 	}
 }

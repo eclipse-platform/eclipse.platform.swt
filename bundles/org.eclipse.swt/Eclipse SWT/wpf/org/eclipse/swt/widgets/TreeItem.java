@@ -206,14 +206,14 @@ protected void checkSubclass () {
 }
 
 void clear () {
-	strings = new String [parent.columnCount == 0 ? 1 : parent.columnCount];
+	strings = null;
 	images = null;
 	checked = grayed = false;
 	updateCheck ();
 	int columns = parent.columnCount == 0 ? 1 : parent.columnCount;
 	for (int i = 0; i < columns; i++) {
-		updateText(i);
-		updateImage(i);
+		updateText (i);
+		updateImage (i);
 	}
 //	background = foreground = font = -1;
 //	cellBackground = cellForeground = cellFont = null;
@@ -285,10 +285,12 @@ void columnAdded (int index) {
 		OS.GCHandle_Free (header);
 	} else {
 		int newLength = parent.columnCount + 1;
-		String [] strTemp = new String [newLength];
-		System.arraycopy (strings, 0, strTemp, 0, index);
-		System.arraycopy (strings, index, strTemp, index + 1, parent.columnCount - index);
-		strings = strTemp;
+		if (strings != null) {
+			String [] temp = new String [newLength];
+			System.arraycopy (strings, 0, temp, 0, index);
+			System.arraycopy (strings, index, temp, index + 1, parent.columnCount - index);
+			strings = temp;
+		}
 		if (images != null) {
 			Image [] temp = new Image [newLength];
 			System.arraycopy (images, 0, temp, 0, index);
@@ -328,10 +330,12 @@ void columnRemoved(int index) {
 	if (parent.columnCount == 0) {
 		OS.TreeViewItem_HeaderTemplate (handle, parent.headerTemplate);
 	} else {
-		String [] strs = new String [parent.columnCount];
-		System.arraycopy (strings, 0, strs, 0, index);
-		System.arraycopy (strings, index + 1, strs, index, parent.columnCount - index);
-		strings = strs;
+		if (strings == null) {
+			String [] temp = new String [parent.columnCount];
+			System.arraycopy (strings, 0, temp, 0, index);
+			System.arraycopy (strings, index + 1, temp, index, parent.columnCount - index);
+			strings = temp;
+		}
 		if (images != null) {
 			Image [] temp = new Image [parent.columnCount];
 			System.arraycopy (images, 0, temp, 0, index);
@@ -384,33 +388,27 @@ void createHandle () {
 	OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Stretch);
 	OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
 	updateCheck ();
-	
-	//clear the default templated foreground.
-	int itemStyle = OS.gcnew_Style();
-	int property = OS.Control_ForegroundProperty();
-	int propertyPath = createDotNetString("Foreground", false);
-	int binding = OS.gcnew_Binding(propertyPath);
-	int source = OS.gcnew_RelativeSource(OS.RelativeSourceMode_FindAncestor);
-	int treeViewType = OS.TreeView_typeid();
-	OS.RelativeSource_AncestorType(source, treeViewType);
-	OS.Binding_RelativeSource(binding, source);
-	int setter = OS.gcnew_Setter(property, binding);
-	int setters = OS.Style_Setters(itemStyle);
-	OS.SetterBaseCollection_Add(setters, setter);
-	OS.FrameworkElement_Style(handle, itemStyle);
-	OS.GCHandle_Free(property);
-	OS.GCHandle_Free(propertyPath);
-	OS.GCHandle_Free(binding);
-	OS.GCHandle_Free(source);
-	OS.GCHandle_Free(treeViewType);
-	OS.GCHandle_Free(setter);
-	OS.GCHandle_Free(setters);
-	OS.GCHandle_Free(itemStyle);
-}
-
-void createWidget () {
-	super.createWidget ();
-	strings = new String [parent.columnCount == 0 ? 1 : parent.columnCount];
+	/* clear the default templated foreground. */
+	int itemStyle = OS.gcnew_Style ();
+	int property = OS.Control_ForegroundProperty ();
+	int propertyPath = createDotNetString ("Foreground", false);
+	int binding = OS.gcnew_Binding (propertyPath);
+	int source = OS.gcnew_RelativeSource (OS.RelativeSourceMode_FindAncestor);
+	int treeViewType = OS.TreeView_typeid ();
+	OS.RelativeSource_AncestorType (source, treeViewType);
+	OS.Binding_RelativeSource (binding, source);
+	int setter = OS.gcnew_Setter (property, binding);
+	int setters = OS.Style_Setters (itemStyle);
+	OS.SetterBaseCollection_Add (setters, setter);
+	OS.FrameworkElement_Style (handle, itemStyle);
+	OS.GCHandle_Free (property);
+	OS.GCHandle_Free (propertyPath);
+	OS.GCHandle_Free (binding);
+	OS.GCHandle_Free (source);
+	OS.GCHandle_Free (treeViewType);
+	OS.GCHandle_Free (setter);
+	OS.GCHandle_Free (setters);
+	OS.GCHandle_Free (itemStyle);
 }
 
 void deregister () {
@@ -542,7 +540,7 @@ public Rectangle getBounds (int index) {
 	if (!OS.UIElement_IsVisible (handle)) return new Rectangle (0, 0, 0, 0);
 	updateLayout (handle);
 	int point = OS.gcnew_Point (0, 0);
-	int stackPanel = findPart(index, Tree.STACKPANEL_PART_NAME);
+	int stackPanel = findPart (index, Tree.STACKPANEL_PART_NAME);
 	int location = OS.UIElement_TranslatePoint (stackPanel, point, parent.handle);
 	int x = (int) OS.Point_X (location);
 	int y = (int) OS.Point_Y (location);
@@ -916,8 +914,8 @@ public String getText () {
 public String getText (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (0 <= index && index < strings.length) {
-		return strings [index]!= null ? strings[index] : "";
+	if (strings != null && 0 <= index && index < strings.length) {
+		return strings [index]!= null ? strings [index] : "";
 	}
 	return "";
 }
@@ -951,7 +949,7 @@ public int indexOf (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int items = OS.ItemsControl_Items (handle);
-	int index = OS.ItemCollection_IndexOf(items, item.handle);
+	int index = OS.ItemCollection_IndexOf (items, item.handle);
 	OS.GCHandle_Free (items);
 	return index;
 }
@@ -1071,9 +1069,7 @@ public void setBackground (Color color) {
  */
 public void setBackground (int index, Color color) {
 	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (color != null && color.isDisposed ())  SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	if (cellBackground == null) cellBackground = new Color [count];
@@ -1205,7 +1201,7 @@ public void setFont (int index, Font font) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 	if (cellFont == null) cellFont = new Font [count];
-	cellFont[index] = font;
+	cellFont [index] = font;
 	updateFont (index);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 }
@@ -1343,7 +1339,7 @@ public void setImage (Image [] images) {
  * @since 3.1
  */
 public void setImage (int index, Image image) {
-	checkWidget();
+	checkWidget ();
 	if (image != null && image.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -1420,8 +1416,9 @@ public void setText (String [] strings) {
 public void setText (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = Math.max(1, parent.getColumnCount ());
+	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
+	if (strings == null) strings = new String [count];
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	strings [index] = string;
 	updateText (index);
@@ -1467,7 +1464,7 @@ void updateCheck () {
 
 void updateFont (int index) {
 	if (cellFont == null) return;
-	int textBlock = findPart(index, Tree.TEXT_PART_NAME);
+	int textBlock = findPart (index, Tree.TEXT_PART_NAME);
 	if (textBlock != 0) {
 		Font font = cellFont [index];
 		if (font != null) {
@@ -1533,11 +1530,20 @@ void updateImage (int index) {
 }
 
 void updateText (int index) {
+	if (strings == null) return;
 	int textBlock = findPart (index, Tree.TEXT_PART_NAME);
 	if (textBlock != 0) {
-		int strPtr = createDotNetString (strings[index], false);
-		OS.TextBlock_Text (textBlock, strPtr);		
-		OS.GCHandle_Free (strPtr);
+		if (strings [index] != null) {
+			int strPtr = createDotNetString (strings[index], false);
+			int text = OS.TextBlock_Text (textBlock);
+			OS.TextBlock_Text (textBlock, strPtr);
+			OS.GCHandle_Free (text);
+			OS.GCHandle_Free (strPtr);
+		} else {
+			int property = OS.TextBlock_TextProperty ();
+			OS.DependencyObject_ClearValue (textBlock, property);
+			OS.GCHandle_Free (property);
+		}
 		OS.GCHandle_Free (textBlock);
 	}
 }
