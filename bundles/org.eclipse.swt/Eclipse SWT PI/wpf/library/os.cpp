@@ -11818,6 +11818,19 @@ JNIEXPORT void JNICALL OS_NATIVE(UIElement_1ClipToBounds)
 }
 #endif
 
+#ifndef NO_UIElement_1ClipToBoundsProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1ClipToBoundsProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1ClipToBoundsProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UIElement_1ClipToBoundsProperty_FUNC);
+	rc = (jint)TO_HANDLE(UIElement::ClipToBoundsProperty);
+	OS_NATIVE_EXIT(env, that, UIElement_1ClipToBoundsProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UIElement_1DesiredSize
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1DesiredSize)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jint JNICALL OS_NATIVE(UIElement_1DesiredSize)

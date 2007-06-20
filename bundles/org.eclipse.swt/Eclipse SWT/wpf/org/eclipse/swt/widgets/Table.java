@@ -348,10 +348,13 @@ int createCellTemplate (int index) {
 	OS.FrameworkElementFactory_SetValueInt (onRenderNode, jniRefProperty, jniRef);
 	OS.GCHandle_Free (jniRefProperty);
 	int stackPanelName = createDotNetString (STACKPANEL_PART_NAME, false);
-	int stackPanelType = OS.StackPanel_typeid ();
-	int cellContentNode = OS.gcnew_FrameworkElementFactory (stackPanelType, stackPanelName);
-	OS.GCHandle_Free (stackPanelType);
+	int dockPanelType = OS.DockPanel_typeid ();
+	int cellContentNode = OS.gcnew_FrameworkElementFactory (dockPanelType, stackPanelName);
+	OS.GCHandle_Free (dockPanelType);
 	OS.GCHandle_Free (stackPanelName);
+	int clipProperty = OS.UIElement_ClipToBoundsProperty ();
+	OS.FrameworkElementFactory_SetValue (cellContentNode, clipProperty, true);
+	OS.GCHandle_Free (clipProperty);
 	if (index == 0 && (style & SWT.CHECK) != 0) {
 		int checkBoxType = OS.CheckBox_typeid ();
 		int checkBoxName = createDotNetString (CHECKBOX_PART_NAME, false);
@@ -387,9 +390,9 @@ int createCellTemplate (int index) {
 	OS.FrameworkElementFactory_SetValue (imageNode, marginProperty, thickness);
 	OS.GCHandle_Free (marginProperty);
 	OS.GCHandle_Free (thickness);
-	int orientationProperty = OS.StackPanel_OrientationProperty ();
-	OS.FrameworkElementFactory_SetValueOrientation (cellContentNode, orientationProperty, OS.Orientation_Horizontal);
-	OS.GCHandle_Free (orientationProperty);
+	int stretchProperty = OS.Image_StretchProperty ();
+	OS.FrameworkElementFactory_SetValueStretch(imageNode, stretchProperty, OS.Stretch_None);
+	OS.GCHandle_Free(stretchProperty);
 	OS.FrameworkElementFactory_AppendChild (cellContentNode, imageNode);
 	OS.GCHandle_Free (imageNode);
 	OS.FrameworkElementFactory_AppendChild (cellContentNode, textNode);
@@ -858,10 +861,11 @@ public int getHeaderHeight () {
  */
 public boolean getHeaderVisible () {
 	checkWidget ();
+	if (columnCount == 0) return false;
 	int columns = OS.GridView_Columns (gridViewHandle);
 	int column = OS.GridViewColumnCollection_default (columns, 0);
 	int header = OS.GridViewColumn_Header (column);
-	boolean visible = OS.UIElement_Visibility(header) == OS.Visibility_Visible;
+	boolean visible = OS.UIElement_Visibility (header) == OS.Visibility_Visible;
 	OS.GCHandle_Free (header);
 	OS.GCHandle_Free (column);
 	OS.GCHandle_Free (columns);
@@ -1434,7 +1438,7 @@ void OnRender (int source, int dc) {
 	OS.GCHandle_Free (type);
 	TableItem item = getItem (itemHandle, true);
 	OS.GCHandle_Free (itemHandle);
-	if (item.cached && item.rowHandle != 0) return;
+	if ((item.cached || (style & SWT.VIRTUAL) == 0) && item.rowHandle != 0) return;
 	checkData (item);
 	if (item.rowHandle == 0) {
 		int rowPresenterType = OS.GridViewRowPresenter_typeid ();

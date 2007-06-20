@@ -1389,6 +1389,7 @@ public static final native void UIElement_AllowDrop(int sender, boolean value);
 public static final native boolean UIElement_CaptureMouse(int sender);
 public static final native void UIElement_Clip(int sender, int geometry);
 public static final native void UIElement_ClipToBounds(int sender, boolean value);
+public static final native int UIElement_ClipToBoundsProperty();
 public static final native void UIElement_DragEnter(int sender, int handler);
 public static final native int UIElement_DragEnterEvent();
 public static final native void UIElement_DragLeave(int sender, int handler);

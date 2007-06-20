@@ -995,6 +995,7 @@ typedef enum {
 	UIElement_1CaptureMouse_FUNC,
 	UIElement_1Clip_FUNC,
 	UIElement_1ClipToBounds_FUNC,
+	UIElement_1ClipToBoundsProperty_FUNC,
 	UIElement_1DesiredSize_FUNC,
 	UIElement_1DragEnter_FUNC,
 	UIElement_1DragEnterEvent_FUNC,

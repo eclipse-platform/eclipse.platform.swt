@@ -1185,7 +1185,7 @@ void updateText (int index) {
 	int textBlock = findPart (index, Table.TEXT_PART_NAME);
 	if (textBlock != 0) {
 		if (strings [index] != null) {
-			int strPtr = createDotNetString (strings[index], false);
+			int strPtr = createDotNetString (strings [index], false);
 			int text = OS.TextBlock_Text (textBlock);
 			OS.TextBlock_Text (textBlock, strPtr);
 			OS.GCHandle_Free (text);
