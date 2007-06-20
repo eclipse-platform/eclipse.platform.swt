@@ -80,6 +80,7 @@ public class Tree extends Composite {
 	static final String TEXT_PART_NAME = "SWT_PART_TEXT";
 	static final String SCROLLVIEWER_PART_NAME = "SWT_PART_SCROLLVIEWER";
 	static final String STACKPANEL_PART_NAME = "SWT_PART_STACKPANEL";
+	static final String RENDER_PANEL_NAME = "SWTStackPanel";
 	
 	static String scrollViewerStyle = "<Style TargetType=\"ScrollViewer\" " +
 			"xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
@@ -349,8 +350,10 @@ void clearAll (TreeItem parentItem, boolean all) {
 int createCellTemplate (int index) {
 	int template = OS.gcnew_DataTemplate ();
 	int swtStackPanelType = OS.SWTStackPanel_typeid ();
-	int onRenderNode = OS.gcnew_FrameworkElementFactory (swtStackPanelType);
+	int swtstackPanelName = createDotNetString(RENDER_PANEL_NAME, false);
+	int onRenderNode = OS.gcnew_FrameworkElementFactory (swtStackPanelType, swtstackPanelName);
 	OS.GCHandle_Free (swtStackPanelType);
+	OS.GCHandle_Free(swtstackPanelName);
 	int jniRefProperty = OS.SWTStackPanel_JNIRefProperty ();
 	OS.FrameworkElementFactory_SetValueInt (onRenderNode, jniRefProperty, jniRef);
 	OS.GCHandle_Free (jniRefProperty);

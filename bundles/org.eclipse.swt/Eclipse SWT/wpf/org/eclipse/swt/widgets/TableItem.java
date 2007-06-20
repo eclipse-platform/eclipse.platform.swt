@@ -231,18 +231,23 @@ void clear () {
 	strings = null;
 	images = null;
 	checked = grayed = false;
+	setFont (null);
+	setForeground (null);
+	setBackground (null);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 	updateCheck ();
 	int columns = parent.columnCount == 0 ? 1 : parent.columnCount;
 	for (int i = 0; i < columns; i++) {
 		updateText (i);
 		updateImage (i);
-		int part = findPart (i, Table.RENDER_PANEL_NAME);
-		if (part != 0) OS.UIElement_InvalidateVisual (part);
-		OS.GCHandle_Free (part);
-	}	
-//	background = foreground = font = -1;
-//	cellBackground = cellForeground = cellFont = null;
+		updateBackground (i);
+		updateForeground (i);
+		updateFont (i);
+	}
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
+	int part = findPart (0, Table.RENDER_PANEL_NAME);
+	if (part != 0) OS.UIElement_InvalidateVisual (part);
+	OS.GCHandle_Free (part);
 }
 
 void deregister () {
@@ -1076,10 +1081,9 @@ public void setText (String string) {
 }
 
 void updateBackground (int index) {
-	if (cellBackground == null) return;
 	int panel = findPart (index, Table.STACKPANEL_PART_NAME);
 	if (panel != 0) {
-		if (cellBackground [index] != null) {
+		if (cellBackground != null && cellBackground [index] != null) {
 			int brush = OS.gcnew_SolidColorBrush (cellBackground [index].handle);
 			int current = OS.Panel_Background (panel);
 			if (!OS.Object_Equals (brush, current))
@@ -1112,10 +1116,9 @@ void updateCheck () {
 }
 
 void updateFont (int index) {
-	if (cellFont == null) return;
 	int textBlock = findPart (index, Table.TEXT_PART_NAME);
 	if (textBlock != 0) {
-		Font font = cellFont [index];
+		Font font = cellFont != null ? cellFont [index] : null;
 		if (font != null) {
 			int family = OS.Typeface_FontFamily (font.handle);
 			OS.TextBlock_FontFamily (textBlock, family);
@@ -1152,10 +1155,9 @@ void updateFont (int index) {
 }
 
 void updateForeground (int index) {
-	if (cellForeground == null) return;
 	int textBlock = findPart (index, Table.TEXT_PART_NAME);
 	if (textBlock != 0) {
-		if (cellForeground [index] != null) {
+		if (cellForeground != null && cellForeground [index] != null) {
 			int brush = OS.gcnew_SolidColorBrush (cellForeground [index].handle);
 			OS.TextBlock_Foreground (textBlock, brush);
 			OS.GCHandle_Free (brush);
@@ -1169,10 +1171,10 @@ void updateForeground (int index) {
 }
 
 void updateImage (int index) {
-	if (images == null) return;
 	int img = findPart (index, Table.IMAGE_PART_NAME);
 	if (img != 0) {
-		int src = images [index] != null ? images [index].handle : 0;
+		int src = 0;
+		if (images != null) src = images [index] != null ? images [index].handle : 0;
 		int current = OS.Image_Source (img);
 		OS.Image_Source (img, src);
 		OS.GCHandle_Free (current);
@@ -1181,10 +1183,9 @@ void updateImage (int index) {
 }
 
 void updateText (int index) {
-	if (strings == null) return;
 	int textBlock = findPart (index, Table.TEXT_PART_NAME);
 	if (textBlock != 0) {
-		if (strings [index] != null) {
+		if (strings != null && strings [index] != null) {
 			int strPtr = createDotNetString (strings [index], false);
 			int text = OS.TextBlock_Text (textBlock);
 			OS.TextBlock_Text (textBlock, strPtr);

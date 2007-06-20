@@ -210,14 +210,21 @@ void clear () {
 	images = null;
 	checked = grayed = false;
 	updateCheck ();
+	setForeground (null);
+	setBackground (null);
+	setFont (null);
 	int columns = parent.columnCount == 0 ? 1 : parent.columnCount;
 	for (int i = 0; i < columns; i++) {
 		updateText (i);
 		updateImage (i);
+		updateBackground (i);
+		updateForeground (i);
+		updateFont (i);
 	}
-//	background = foreground = font = -1;
-//	cellBackground = cellForeground = cellFont = null;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
+	int part = findPart (0, Tree.RENDER_PANEL_NAME);
+	if (part != 0) OS.UIElement_InvalidateVisual (part);
+	OS.GCHandle_Free (part);
 }
 
 /**
@@ -1430,10 +1437,9 @@ public void setText (String string) {
 }
 
 void updateBackground (int index) {
-	if (cellBackground == null) return;
 	int panel = findPart (index, Tree.STACKPANEL_PART_NAME);
 	if (panel != 0) {
-		if (cellBackground [index] != null) {
+		if (cellBackground != null && cellBackground [index] != null) {
 			int brush = OS.gcnew_SolidColorBrush (cellBackground [index].handle);
 			OS.Panel_Background (panel, brush);
 			OS.GCHandle_Free (brush);
@@ -1466,7 +1472,7 @@ void updateFont (int index) {
 	if (cellFont == null) return;
 	int textBlock = findPart (index, Tree.TEXT_PART_NAME);
 	if (textBlock != 0) {
-		Font font = cellFont [index];
+		Font font = cellFont != null ? cellFont [index] : null;
 		if (font != null) {
 			int family = OS.Typeface_FontFamily (font.handle);
 			OS.TextBlock_FontFamily (textBlock, family);
@@ -1503,10 +1509,9 @@ void updateFont (int index) {
 }
 
 void updateForeground (int index) {
-	if (cellForeground == null) return;
 	int textBlock = findPart (index, Tree.TEXT_PART_NAME);
 	if (textBlock != 0) {
-		if (cellForeground [index] != null) {
+		if (cellForeground != null && cellForeground [index] != null) {
 			int brush = OS.gcnew_SolidColorBrush (cellForeground [index].handle);
 			OS.TextBlock_Foreground (textBlock, brush);
 			OS.GCHandle_Free (brush);
@@ -1523,17 +1528,17 @@ void updateImage (int index) {
 	if (images == null) return;
 	int img = findPart (index, Tree.IMAGE_PART_NAME);
 	if (img != 0) {
-		int src = images [index] != null ? images [index].handle : 0;
+		int src = 0;
+		if (images != null) src = images [index] != null ? images [index].handle : 0;
 		OS.Image_Source (img, src);
 		OS.GCHandle_Free (img);
 	}
 }
 
 void updateText (int index) {
-	if (strings == null) return;
 	int textBlock = findPart (index, Tree.TEXT_PART_NAME);
 	if (textBlock != 0) {
-		if (strings [index] != null) {
+		if (strings != null && strings [index] != null) {
 			int strPtr = createDotNetString (strings [index], false);
 			int text = OS.TextBlock_Text (textBlock);
 			OS.TextBlock_Text (textBlock, strPtr);
