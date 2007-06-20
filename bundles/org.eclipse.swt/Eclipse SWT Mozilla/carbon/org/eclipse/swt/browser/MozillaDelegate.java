@@ -23,7 +23,7 @@ class MozillaDelegate {
 	Browser browser;
 	Listener listener;
 	boolean hasFocus;
-	Callback callback3;
+	static Callback Callback3;
 	static Hashtable handles = new Hashtable ();
 	static final boolean USE_COCOA_VIEW_CREATE = false;
 	
@@ -78,9 +78,13 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	return buffer;
 }
 
-public int eventProc3 (int nextHandler, int theEvent, int userData) {
-	browser.getShell ().forceActive ();
-	((Mozilla)browser.webBrowser).Activate ();
+static int eventProc3 (int nextHandler, int theEvent, int userData) {
+	Widget widget = Display.getCurrent ().findWidget (userData);
+	if (widget instanceof Browser) {
+		Browser browser = (Browser) widget;
+		browser.getShell ().forceActive ();
+		((Mozilla)browser.webBrowser).Activate ();
+	}
 	return OS.eventNotHandledErr;
 }
 
@@ -131,12 +135,14 @@ int getHandle () {
 	OS.HIViewSetFrame (subHIView, rect);
 	handles.put (new LONG (embedHandle), new LONG (browser.handle));
 
-	callback3 = new Callback (this, "eventProc3", 3); //$NON-NLS-1$
+	if (Callback3 == null) Callback3 = new Callback (this.getClass (), "eventProc3", 3); //$NON-NLS-1$
+	int callback3Address = Callback3.getAddress ();
+	if (callback3Address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	int [] mask = new int [] {
 		OS.kEventClassMouse, OS.kEventMouseDown,
 	};
 	int controlTarget = OS.GetControlEventTarget (subHIView);
-	OS.InstallEventHandler (controlTarget, callback3.getAddress (), mask.length / 2, mask, subHIView, null);
+	OS.InstallEventHandler (controlTarget, callback3Address, mask.length / 2, mask, browser.handle, null);
 
 	return embedHandle;
 }
@@ -170,10 +176,6 @@ void init () {
 
 void onDispose (int embedHandle) {
 	handles.remove (new LONG (embedHandle));
-	if (callback3 != null) {
-		callback3.dispose ();
-		callback3 = null;
-	}
 	if (listener != null) {
 		browser.getDisplay ().removeFilter (SWT.FocusIn, listener);
 		browser.getShell ().removeListener (SWT.Deactivate, listener);
