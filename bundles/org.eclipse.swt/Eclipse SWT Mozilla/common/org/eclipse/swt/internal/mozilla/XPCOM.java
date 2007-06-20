@@ -69,6 +69,7 @@ public class XPCOM extends C {
 	public static final String NS_WINDOWWATCHER_CONTRACTID = "@mozilla.org/embedcomp/window-watcher;1"; //$NON-NLS-1$
 
 	/* directory service constants */
+	public static final String NS_APP_APPLICATION_REGISTRY_DIR = "AppRegD"; //$NON-NLS-1$
 	public static final String NS_APP_CACHE_PARENT_DIR = "cachePDir"; //$NON-NLS-1$
 	public static final String NS_APP_HISTORY_50_FILE = "UHist"; //$NON-NLS-1$
 	public static final String NS_APP_LOCALSTORE_50_FILE = "LclSt"; //$NON-NLS-1$
@@ -114,7 +115,7 @@ public class XPCOM extends C {
 	public static final int NS_ERROR_FACTORY_EXISTS = NS_ERROR_BASE + 0x100;
 	public static final int NS_ERROR_HTMLPARSER_UNRESOLVEDDTD = 0x804e03f3;
 	public static final int NS_ERROR_FILE_NOT_FOUND = 0x80520012;
-	public static final String NS_APP_APPLICATION_REGISTRY_DIR = "AppRegD"; //$NON-NLS-1$
+	public static final int NS_ERROR_FILE_UNRECOGNIZED_PATH = 0x80520001;
 
 public static final native void memmove(nsID dest, int /*long*/ src, int nbytes);
 public static final native void memmove(int /*long*/ dest, nsID src, int nbytes);

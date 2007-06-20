@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.util.StringTokenizer;
+
 import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
 
@@ -131,7 +133,7 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 	if (propertyName.equals (XPCOM.NS_APP_PLUGINS_DIR_LIST)) {
 		if (pluginDirs == null) {
 			int index = 0;
-			/* set the first value to the MOZ_PLUGIN_PATH environment variable value if it's defined */
+			/* set the first value(s) to the MOZ_PLUGIN_PATH environment variable value if it's defined */
 			int /*long*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_PLUGIN_PATH, true));
 			if (ptr != 0) {
 				int length = C.strlen (ptr);
@@ -139,8 +141,13 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 				C.memmove (buffer, ptr, length);
 				String value = new String (MozillaDelegate.mbcsToWcs (null, buffer));
 				if (value.length () > 0) {
-					pluginDirs = new String[3];
-					pluginDirs[index++] = value;
+					String separator = System.getProperty ("path.separator"); // $NON-NLS-1$
+					StringTokenizer tokenizer = new StringTokenizer (value, separator);
+					int count = tokenizer.countTokens ();
+					pluginDirs = new String[2 + count];
+					while (tokenizer.hasMoreTokens ()) {
+						pluginDirs[index++] = tokenizer.nextToken ();
+					}
 				}
 			}
 			if (pluginDirs == null) {
@@ -160,28 +167,38 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 	if (propertyValues != null) {
 		int /*long*/[] result = new int /*long*/[1];
 		nsISupports[] files = new nsISupports [propertyValues.length];
+		int index = 0;
 		for (int i = 0; i < propertyValues.length; i++) {
 			nsEmbedString pathString = new nsEmbedString (propertyValues[i]);
 			int rc = XPCOM.NS_NewLocalFile (pathString.getAddress (), true, result);
-			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-			if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+			if (rc != XPCOM.NS_ERROR_FILE_UNRECOGNIZED_PATH) {
+				/* value appears to be a valid pathname */
+				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+				if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+
+				nsILocalFile localFile = new nsILocalFile (result[0]);
+				result[0] = 0;
+				rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
+				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
+				if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
+				localFile.Release ();
+
+				nsIFile file = new nsIFile (result[0]);
+				files[index++] = file;
+			}
 			pathString.dispose ();
-
-			nsILocalFile localFile = new nsILocalFile (result[0]);
 			result[0] = 0;
-		    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
-			if (rc != XPCOM.NS_OK) Mozilla.error (rc);
-			if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NULL_POINTER);
-			localFile.Release ();
+		}
 
-			nsIFile file = new nsIFile (result[0]);
-			result[0] = 0;
-			files[i] = file;
+		if (index < propertyValues.length) {
+			/* there were some invalid values so remove the trailing empty array slots */
+			nsISupports[] temp = new nsISupports [index];
+			System.arraycopy (files, 0, temp, 0, index);
+			files = temp;
 		}
 
 		SimpleEnumerator enumerator = new SimpleEnumerator (files);
 		enumerator.AddRef ();
-
 		XPCOM.memmove (_retval, new int /*long*/[] {enumerator.getAddress ()}, C.PTR_SIZEOF);
 		return XPCOM.NS_OK;
 	}
