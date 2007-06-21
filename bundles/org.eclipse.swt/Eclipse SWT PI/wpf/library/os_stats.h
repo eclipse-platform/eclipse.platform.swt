@@ -227,6 +227,7 @@ typedef enum {
 	DependencyObject_1ClearValue_FUNC,
 	DependencyObject_1GetValue_FUNC,
 	DependencyObject_1SetValue_FUNC,
+	DependencyProperty_1UnsetValue_FUNC,
 	DestroyIcon_FUNC,
 	DispatcherFrame_1Continue_FUNC,
 	DispatcherHookEventArgs_1Operation_FUNC,

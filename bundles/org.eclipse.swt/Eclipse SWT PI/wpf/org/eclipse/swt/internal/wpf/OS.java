@@ -646,6 +646,7 @@ public static final native void DataObject_SetData(int sender, int format, int d
 public static final native void DependencyObject_ClearValue(int sender, int property);
 public static final native int DependencyObject_GetValue(int sender, int property);
 public static final native void DependencyObject_SetValue(int sender, int property, int object);
+public static final native int DependencyProperty_UnsetValue();
 public static final native void Dispatcher_PushFrame(int frame);
 public static final native int Dispatcher_Hooks(int sender);
 public static final native void DispatcherHooks_DispatcherInactive(int sender, int handler);

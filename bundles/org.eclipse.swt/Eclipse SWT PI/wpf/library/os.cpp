@@ -2541,6 +2541,19 @@ JNIEXPORT void JNICALL OS_NATIVE(DependencyObject_1SetValue)
 }
 #endif
 
+#ifndef NO_DependencyProperty_1UnsetValue
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DependencyProperty_1UnsetValue)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(DependencyProperty_1UnsetValue)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DependencyProperty_1UnsetValue_FUNC);
+	rc = (jint)TO_HANDLE(DependencyProperty::UnsetValue);
+	OS_NATIVE_EXIT(env, that, DependencyProperty_1UnsetValue_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DestroyIcon
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(DestroyIcon)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL OS_NATIVE(DestroyIcon)

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.DuplicateFormatFlagsException;
+
 import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -1305,7 +1307,18 @@ void HandlePreviewMouseDown (int sender, int e) {
 	if ((style & SWT.SINGLE) != 0) return;
 	int source = OS.RoutedEventArgs_Source (e);
 	Widget widget = display.getWidget (source);
+	/* 
+	* Changing the expansion state of an item should not affect the
+	* selection in the widget. When the expander is clicked the event
+	* source is the TreeViewItem instead of the ContentPresenter.
+	*/
+	int itemType = OS.TreeViewItem_typeid ();
+	int sourceType = OS.Object_GetType (source);
+	boolean expanderClicked = OS.Object_Equals (itemType, sourceType);
+	OS.GCHandle_Free (itemType);
+	OS.GCHandle_Free (sourceType);
 	OS.GCHandle_Free (source);
+	if (expanderClicked) return;
 	if (widget instanceof TreeItem) {
 		TreeItem item = (TreeItem) widget;
 		int modifiers = OS.Keyboard_Modifiers ();
@@ -1572,8 +1585,10 @@ void OnSelectedItemChanged (int args) {
 	int newItemRef = OS.RoutedPropertyChangedEventArgs_NewValue (args);
 	TreeItem newItem = null;
 	if (newItemRef != 0) {
-		newItem = getItem (newItemRef, false);
+		int unsetValue = OS.DependencyProperty_UnsetValue ();
+		if (!OS.Object_Equals (newItemRef, unsetValue)) newItem = getItem (newItemRef, false);
 		OS.GCHandle_Free (newItemRef);
+		OS.GCHandle_Free (unsetValue);
 		newItemRef = 0;
 	} 	
     int treeType = OS.Object_GetType (handle);
