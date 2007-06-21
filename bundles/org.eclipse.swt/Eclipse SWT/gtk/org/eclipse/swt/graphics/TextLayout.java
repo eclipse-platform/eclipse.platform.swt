@@ -869,15 +869,13 @@ public int[] getLineOffsets() {
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	int[] offsets = new int [lineCount + 1];
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int /*long*/ iter = OS.pango_layout_get_iter(layout);
-	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int i = 0;
-	do {
-		int bytePos = OS.pango_layout_iter_get_index(iter);
-		int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
-		offsets[i++] = untranslateOffset(pos);
-	} while (OS.pango_layout_iter_next_line(iter));
-	OS.pango_layout_iter_free(iter);
+	PangoLayoutLine line = new PangoLayoutLine();
+	for (int i = 0; i < lineCount; i++) {
+		int /*long*/ linePtr = OS.pango_layout_get_line(layout, i);
+		OS.memmove(line, linePtr, PangoLayoutLine.sizeof);
+		int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + line.start_index);
+		offsets[i] = untranslateOffset(pos);
+	}
 	offsets[lineCount] = text.length();						 
 	return offsets;
 }
