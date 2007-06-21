@@ -833,7 +833,7 @@ void HandleClosing (int sender, int e) {
 		* null out the Owner property of the child window
 		* before disposing it.
 		*/
-		OS.Window_Owner (shellHandle, 0);
+		if (shellHandle != 0) OS.Window_Owner (shellHandle, 0);
 		if (!isDisposed ()) release (false);
 	} else {
 		OS.CancelEventArgs_Cancel (e, true);

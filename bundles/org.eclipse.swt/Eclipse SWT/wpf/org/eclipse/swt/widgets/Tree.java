@@ -1286,7 +1286,7 @@ void HandleLoaded (int sender, int e) {
 	updateHeaderVisibility();
 }
 
-void HandleMouseDoubleClick (int sender, int e) {
+void HandlePreviewMouseDoubleClick (int sender, int e) {
 	if (!checkEvent (e)) return;
 	int source = OS.RoutedEventArgs_OriginalSource (e);
 	Widget widget = display.getWidget (source);
@@ -1296,10 +1296,6 @@ void HandleMouseDoubleClick (int sender, int e) {
 		event.item = (TreeItem) widget;
 		postEvent (SWT.DefaultSelection, event);
 	}
-}
-
-void HandlePreviewMouseDoubleClick (int sender, int e) {
-	if (!checkEvent (e)) return;
 	if (hooks (SWT.DefaultSelection)) OS.RoutedEventArgs_Handled(e, true);
 }
 
@@ -1379,7 +1375,7 @@ void HandleUnchecked (int sender, int e) {
 	sendEvent (SWT.Selection, event);
 }
 
-void hookEvents() {
+void hookEvents () {
 	super.hookEvents ();
 	int handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleLoaded");
 	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
@@ -1388,10 +1384,6 @@ void hookEvents() {
 	handler = OS.gcnew_RoutedPropertyChangedEventHandlerObject (jniRef, "HandleSelectedItemChanged");
 	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.TreeView_SelectedItemChanged (handle, handler);
-	OS.GCHandle_Free (handler);
-	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandleMouseDoubleClick");
-	if (handler == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.Control_MouseDoubleClick (handle, handler);
 	OS.GCHandle_Free (handler);
 	handler = OS.gcnew_MouseButtonEventHandler (jniRef, "HandlePreviewMouseDoubleClick");
 	if (handler == 0) error (SWT.ERROR_NO_HANDLES);

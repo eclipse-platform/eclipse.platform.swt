@@ -1078,7 +1078,9 @@ boolean sendKeyEvent (int type, int e, boolean textInput) {
 }
 
 boolean sendMouseEvent (int type, int e, boolean send) {
-	if (!hooks (type) && !filters (type)) return true;
+	boolean hooksType = hooks (type) || filters (type);
+	boolean hooksDoubleClick = type == SWT.MouseDown && (hooks (SWT.MouseDoubleClick) || filters (SWT.MouseDoubleClick));
+	if (!hooksType && !hooksDoubleClick) return true;
 	Event event = new Event ();
 	if (type == SWT.MouseDown || type == SWT.MouseUp || type == SWT.DragDetect) {
 		event.button = OS.MouseButtonEventArgs_ChangedButton (e) + 1;
@@ -1101,7 +1103,7 @@ boolean sendMouseEvent (int type, int e, boolean send) {
 	OS.GCHandle_Free (point);
 	setInputState (event, type, e, 0);
 	Event doubleClick = null; 
-	if (type == SWT.MouseDown && (event.count & 1) == 0) {
+	if (hooksDoubleClick && (event.count & 1) == 0) {
 		doubleClick = new Event();
 		doubleClick.button = event.button;
 		doubleClick.x = event.x;
