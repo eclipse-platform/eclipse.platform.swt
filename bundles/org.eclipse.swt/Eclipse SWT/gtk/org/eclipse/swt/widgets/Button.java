@@ -669,6 +669,7 @@ public void setImage (Image image) {
 void setOrientation () {
 	super.setOrientation ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (boxHandle != 0) OS.gtk_widget_set_direction (boxHandle, OS.GTK_TEXT_DIR_RTL);
 		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
 		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
 		if (arrowHandle != 0) {
