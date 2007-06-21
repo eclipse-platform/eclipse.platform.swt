@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import java.util.DuplicateFormatFlagsException;
-
 import org.eclipse.swt.internal.wpf.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
