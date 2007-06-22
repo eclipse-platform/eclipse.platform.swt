@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.eclipse.swt.internal.C;
 import org.eclipse.swt.internal.mozilla.*;
@@ -142,11 +142,23 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 				String value = new String (MozillaDelegate.mbcsToWcs (null, buffer));
 				if (value.length () > 0) {
 					String separator = System.getProperty ("path.separator"); // $NON-NLS-1$
-					StringTokenizer tokenizer = new StringTokenizer (value, separator);
-					int count = tokenizer.countTokens ();
-					pluginDirs = new String[2 + count];
-					while (tokenizer.hasMoreTokens ()) {
-						pluginDirs[index++] = tokenizer.nextToken ();
+					Vector segments = new Vector ();
+					int start = 0, end;
+					do {
+						end = value.indexOf (separator, start);
+						String segment;
+						if (end == -1) {
+							segment = value.substring (start);
+						} else {
+							segment = value.substring (start, end);
+						}
+						if (segment.length () > 0) segments.addElement (segment);
+						start = end + 1;
+					} while (end != -1);
+					int segmentsSize = segments.size ();
+					pluginDirs = new String [segmentsSize + 2];
+					for (index = 0; index < segmentsSize; index++) {
+						pluginDirs[index] = (String)segments.elementAt (index);
 					}
 				}
 			}
