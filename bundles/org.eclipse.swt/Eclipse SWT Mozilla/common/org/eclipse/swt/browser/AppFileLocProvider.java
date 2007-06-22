@@ -143,8 +143,9 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 				if (value.length () > 0) {
 					String separator = System.getProperty ("path.separator"); // $NON-NLS-1$
 					Vector segments = new Vector ();
-					int start = 0, end;
+					int start, end = -1;
 					do {
+						start = end + 1;
 						end = value.indexOf (separator, start);
 						String segment;
 						if (end == -1) {
@@ -153,7 +154,6 @@ int getFiles (int /*long*/ prop, int /*long*/ _retval) {
 							segment = value.substring (start, end);
 						}
 						if (segment.length () > 0) segments.addElement (segment);
-						start = end + 1;
 					} while (end != -1);
 					int segmentsSize = segments.size ();
 					pluginDirs = new String [segmentsSize + 2];
