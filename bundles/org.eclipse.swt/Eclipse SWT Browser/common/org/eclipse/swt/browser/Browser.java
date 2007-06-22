@@ -69,7 +69,7 @@ public class Browser extends Composite {
  * @since 3.0
  */
 public Browser (Composite parent, int style) {
-	super (checkParent (parent), checkStyle (style));
+	super (checkParent (parent), style = checkStyle (style));
 	String platform = SWT.getPlatform ();
 	Display display = parent.getDisplay ();
 	if ("gtk".equals (platform)) display.setData (NO_INPUT_METHOD, null); //$NON-NLS-1$
