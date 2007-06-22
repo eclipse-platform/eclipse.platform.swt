@@ -395,27 +395,7 @@ void createHandle () {
 	OS.Control_HorizontalContentAlignment (handle, OS.HorizontalAlignment_Stretch);
 	OS.Control_VerticalContentAlignment (handle, OS.VerticalAlignment_Stretch);
 	updateCheck ();
-	/* clear the default templated foreground. */
-	int itemStyle = OS.gcnew_Style ();
-	int property = OS.Control_ForegroundProperty ();
-	int propertyPath = createDotNetString ("Foreground", false);
-	int binding = OS.gcnew_Binding (propertyPath);
-	int source = OS.gcnew_RelativeSource (OS.RelativeSourceMode_FindAncestor);
-	int treeViewType = OS.TreeView_typeid ();
-	OS.RelativeSource_AncestorType (source, treeViewType);
-	OS.Binding_RelativeSource (binding, source);
-	int setter = OS.gcnew_Setter (property, binding);
-	int setters = OS.Style_Setters (itemStyle);
-	OS.SetterBaseCollection_Add (setters, setter);
-	OS.FrameworkElement_Style (handle, itemStyle);
-	OS.GCHandle_Free (property);
-	OS.GCHandle_Free (propertyPath);
-	OS.GCHandle_Free (binding);
-	OS.GCHandle_Free (source);
-	OS.GCHandle_Free (treeViewType);
-	OS.GCHandle_Free (setter);
-	OS.GCHandle_Free (setters);
-	OS.GCHandle_Free (itemStyle);
+	fixStyle ();
 }
 
 void deregister () {
@@ -461,6 +441,94 @@ int findPart (int column, String partName) {
 	return result;
 }
 
+void fixStyle () {
+	int itemStyle = OS.gcnew_Style ();
+	if (itemStyle == 0) error (SWT.ERROR_NO_HANDLES);
+	int setters = OS.Style_Setters (itemStyle);
+	int source = OS.gcnew_RelativeSource (OS.RelativeSourceMode_FindAncestor);
+	int treeViewType = OS.TreeView_typeid ();
+
+	/* clear the templated foreground color */
+	int property = OS.Control_ForegroundProperty ();
+	int propertyPath = createDotNetString ("Foreground", false);
+	int binding = OS.gcnew_Binding (propertyPath);
+	if (binding == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.GCHandle_Free (propertyPath);
+	OS.RelativeSource_AncestorType (source, treeViewType);
+	OS.Binding_RelativeSource (binding, source);
+	int setter = OS.gcnew_Setter (property, binding);
+	OS.GCHandle_Free (property);
+	OS.GCHandle_Free (binding);
+	OS.SetterBaseCollection_Add (setters, setter);
+	OS.GCHandle_Free (setter);
+
+	/* bind font properties to tree instead of parent item */
+	property = OS.Control_FontSizeProperty ();
+	propertyPath = createDotNetString ("FontSize", false);
+	binding = OS.gcnew_Binding (propertyPath);
+	if (binding == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.GCHandle_Free (propertyPath);
+	OS.Binding_RelativeSource (binding, source);
+	setter = OS.gcnew_Setter (property, binding);
+	OS.GCHandle_Free (property);
+	OS.GCHandle_Free (binding);
+	OS.SetterBaseCollection_Add (setters, setter);
+	OS.GCHandle_Free (setter);
+	
+	property = OS.TextBlock_FontFamilyProperty ();
+	propertyPath = createDotNetString ("FontFamily", false);
+	binding = OS.gcnew_Binding (propertyPath);
+	if (binding == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.GCHandle_Free (propertyPath);
+	OS.Binding_RelativeSource (binding, source);
+	setter = OS.gcnew_Setter (property, binding);
+	OS.GCHandle_Free (property);
+	OS.GCHandle_Free (binding);
+	OS.SetterBaseCollection_Add (setters, setter);
+	OS.GCHandle_Free (setter);
+	
+	property = OS.TextBlock_FontStretchProperty ();
+	propertyPath = createDotNetString ("FontStretch", false);
+	binding = OS.gcnew_Binding (propertyPath);
+	if (binding == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.GCHandle_Free (propertyPath);
+	OS.Binding_RelativeSource (binding, source);
+	setter = OS.gcnew_Setter (property, binding);
+	OS.GCHandle_Free (property);
+	OS.GCHandle_Free (binding);
+	OS.SetterBaseCollection_Add (setters, setter);
+	OS.GCHandle_Free (setter);
+	
+	property = OS.TextBlock_FontWeightProperty ();
+	propertyPath = createDotNetString ("FontWeight", false);
+	binding = OS.gcnew_Binding (propertyPath);
+	if (binding == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.GCHandle_Free (propertyPath);
+	OS.Binding_RelativeSource (binding, source);
+	setter = OS.gcnew_Setter (property, binding);
+	OS.GCHandle_Free (property);
+	OS.GCHandle_Free (binding);
+	OS.SetterBaseCollection_Add (setters, setter);
+	OS.GCHandle_Free (setter);
+	
+	property = OS.TextBlock_FontStyleProperty ();
+	propertyPath = createDotNetString ("FontStyle", false);
+	binding = OS.gcnew_Binding (propertyPath);
+	if (binding == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.GCHandle_Free (propertyPath);
+	OS.Binding_RelativeSource (binding, source);
+	setter = OS.gcnew_Setter (property, binding);
+	OS.GCHandle_Free (property);
+	OS.GCHandle_Free (binding);
+	OS.SetterBaseCollection_Add (setters, setter);
+	OS.GCHandle_Free (setter);
+	
+	OS.FrameworkElement_Style (handle, itemStyle);
+	OS.GCHandle_Free (treeViewType);
+	OS.GCHandle_Free (source);
+	OS.GCHandle_Free (setters);
+	OS.GCHandle_Free (itemStyle);
+}
 /**
  * Returns the receiver's background color.
  *
