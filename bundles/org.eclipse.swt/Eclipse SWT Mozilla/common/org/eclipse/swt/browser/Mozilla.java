@@ -637,14 +637,25 @@ public void create (Composite parent, int style) {
 		stringBuffer.append (language);
 		stringBuffer.append (TOKENIZER_LOCALE);
 		String newLocales = stringBuffer.toString ();
-		StringTokenizer tokenzier = new StringTokenizer (prefLocales, TOKENIZER_LOCALE);
-		while (tokenzier.hasMoreTokens ()) {
-			String token = (tokenzier.nextToken () + TOKENIZER_LOCALE).trim ();
-			/* ensure that duplicate locale values are not added */
-			if (newLocales.indexOf (token) == -1) {
-				stringBuffer.append (token);
+
+		int start, end = -1;
+		do {
+			start = end + 1;
+			end = prefLocales.indexOf (TOKENIZER_LOCALE, start);
+			String token;
+			if (end == -1) {
+				token = prefLocales.substring (start);
+			} else {
+				token = prefLocales.substring (start, end);
 			}
-		}
+			if (token.length () > 0) {
+				token = (token + TOKENIZER_LOCALE).trim ();
+				/* ensure that duplicate locale values are not added */
+				if (newLocales.indexOf (token) == -1) {
+					stringBuffer.append (token);
+				}
+			}
+		} while (end != -1);
 		newLocales = stringBuffer.toString ();
 		if (!newLocales.equals (prefLocales)) {
 			/* write the new locale value */
