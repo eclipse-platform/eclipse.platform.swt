@@ -72,7 +72,7 @@ public class Tree extends Composite {
 	TreeItem [] selectedItems;
 	TreeItem anchor;
 	byte headerVisibility = OS.Visibility_Collapsed;
-	boolean ignoreSelection;
+	boolean ignoreSelection, shiftDown, ctrlDown;
 
 	static final String HEADER_PART_NAME = "SWT_PART_HEADER";
 	static final String CHECKBOX_PART_NAME = "SWT_PART_CHECKBOX";
@@ -1279,6 +1279,16 @@ void HandlePreviewKeyDown (int sender, int e) {
 			postEvent (SWT.DefaultSelection, event);
 		}
 	}
+	if (key == OS.Key_RightShift || key == OS.Key_LeftShift) shiftDown = true;
+	if (key == OS.Key_RightCtrl || key == OS.Key_LeftCtrl) ctrlDown = true;
+}
+
+void HandlePreviewKeyUp (int sender, int e) {
+	super.HandlePreviewKeyUp (sender, e);
+	if (!checkEvent (e)) return;
+	int key = OS.KeyEventArgs_Key (e);
+	if (key == OS.Key_RightShift || key == OS.Key_LeftShift) shiftDown = false;
+	if (key == OS.Key_RightCtrl || key == OS.Key_LeftCtrl) ctrlDown = false;
 }
 
 void HandleLoaded (int sender, int e) {
@@ -1305,51 +1315,44 @@ void HandlePreviewMouseDown (int sender, int e) {
 	if ((style & SWT.SINGLE) != 0) return;
 	int source = OS.RoutedEventArgs_Source (e);
 	Widget widget = display.getWidget (source);
-	/* 
-	* Changing the expansion state of an item should not affect the
-	* selection in the widget. When the expander is clicked the event
-	* source is the TreeViewItem instead of the ContentPresenter.
-	*/
-	int itemType = OS.TreeViewItem_typeid ();
-	int sourceType = OS.Object_GetType (source);
-	boolean expanderClicked = OS.Object_Equals (itemType, sourceType);
-	OS.GCHandle_Free (itemType);
-	OS.GCHandle_Free (sourceType);
 	OS.GCHandle_Free (source);
-	if (expanderClicked) return;
 	if (widget instanceof TreeItem) {
 		TreeItem item = (TreeItem) widget;
-		int modifiers = OS.Keyboard_Modifiers ();
-		boolean ctrl = (modifiers & OS.ModifierKeys_Control) == OS.ModifierKeys_Control;
-		boolean shift = (modifiers & OS.ModifierKeys_Shift) == OS.ModifierKeys_Shift;
-		boolean rightClick = OS.MouseEventArgs_RightButton (e) == OS.MouseButtonState_Pressed;
-		if (rightClick && (ctrl || shift)) return;
-		if (ctrl) {
-			boolean selected = OS.TreeViewItem_IsSelected (item.handle);
-			if (item == anchor) OS.TreeViewItem_IsSelected (item.handle, !selected);
-			if (selected) {
-				int selectedItem = OS.TreeView_SelectedItem (handle);
-				if (selectedItem != 0) {
-					if (OS.Object_Equals (item.handle, selectedItem)) {
-						OS.TreeViewItem_IsSelected (selectedItem, false);
+		/* Check that content of item was clicked, not the expander */
+		int point = OS.MouseEventArgs_GetPosition (e, item.contentHandle);
+		int input = OS.UIElement_InputHitTest (item.contentHandle, point);
+		OS.GCHandle_Free (point);
+		if (input != 0) {
+			OS.GCHandle_Free (input);
+			boolean rightClick = OS.MouseEventArgs_RightButton (e) == OS.MouseButtonState_Pressed;
+			if (rightClick && (ctrlDown || shiftDown)) return;
+			if (ctrlDown) {
+				boolean selected = OS.TreeViewItem_IsSelected (item.handle);
+				if (item == anchor) OS.TreeViewItem_IsSelected (item.handle, !selected);
+				if (selected) {
+					int selectedItem = OS.TreeView_SelectedItem (handle);
+					if (selectedItem != 0) {
+						if (OS.Object_Equals (item.handle, selectedItem)) {
+							OS.TreeViewItem_IsSelected (selectedItem, false);
+						}
+						OS.GCHandle_Free (selectedItem);
 					}
-					OS.GCHandle_Free (selectedItem);
 				}
 			}
-		}
-		if (!shift || anchor == null) anchor = item;
-		if (!shift && !ctrl) {
-			boolean selected = false;
-    		for (int i = 0; i < selectedItemCount; i++) {
-    			if (selectedItems [i] == item) {
-    				selected = true;
-    				break;
-    			}
-    		}
-    		if (selected && rightClick) return;
-   			deselectAll ();
-   			insertSelectedItem (item, 0);
-   			OS.TreeViewItem_IsSelected (item.handle, true);
+			if (!shiftDown || anchor == null) anchor = item;
+			if (!shiftDown && !ctrlDown) {
+				boolean selected = false;
+	    		for (int i = 0; i < selectedItemCount; i++) {
+	    			if (selectedItems [i] == item) {
+	    				selected = true;
+	    				break;
+	    			}
+	    		}
+	    		if (selected && rightClick) return;
+	   			deselectAll ();
+	   			insertSelectedItem (item, 0);
+	   			OS.TreeViewItem_IsSelected (item.handle, true);
+			}
 		}
 	}
 }
@@ -1595,66 +1598,63 @@ void OnSelectedItemChanged (int args) {
     OS.GCHandle_Free (treeType);
     OS.GCHandle_Free (propertyName);
     OS.PropertyInfo_SetValueBoolean (property, handle, true, 0);
-    int mask = OS.ModifierKeys_Control | OS.ModifierKeys_Shift;
-    int modifiers = OS.Keyboard_Modifiers ();
-    switch (modifiers & mask) {
-        case OS.ModifierKeys_Shift:
-            deselectAll ();
-            if (anchor == null || anchor == newItem) {
-            	insertSelectedItem (newItem, selectedItemCount);
-            } else {
-                insertSelectedItems (anchor, newItem);
-            }
-            for (int i = 0; i < selectedItemCount; i++) {
-				OS.TreeViewItem_IsSelected (selectedItems[i].handle, true);
-			}
-            break;
-        case OS.ModifierKeys_Control:
-        	if (newItem != null) {
-        		boolean selected = false;
-        		for (int i = 0; i < selectedItemCount; i++) {
-        			if (selectedItems [i] == newItem) {
-        				selected = true;
-        				break;
-        			}
-        		}
-        		if (!selected) {
-	        		insertSelectedItem (newItem, selectedItemCount);
-	        		OS.TreeViewItem_IsSelected (newItem.handle, true);
-        		} else {
-        			removeSelectedItem (newItem);
-        			OS.TreeViewItem_IsSelected (newItem.handle, false);
-        		}
-        	} else {
-        		if (anchor != null) removeSelectedItem (anchor);
-        	}
-        	int oldItemRef = OS.RoutedPropertyChangedEventArgs_OldValue (args);
-        	if (oldItemRef != 0) {
-        		for (int i = 0; i < selectedItemCount; i++) {
-        			if (OS.Object_Equals (oldItemRef, selectedItems [i].handle)) {
-        				OS.TreeViewItem_IsSelected (oldItemRef, true);
-        				break;
-        			}
-        		}
-        		OS.GCHandle_Free (oldItemRef);
-        	}
-            break;
-        default:
-			for (int i = 0; i < selectedItemCount; i++) {
-				if (newItemRef == 0 || !OS.Object_Equals (newItemRef, selectedItems [i].handle)) {
-					OS.TreeViewItem_IsSelected (selectedItems [i].handle, false);
-				}
-			}
-			if (newItem != null) {
-				OS.TreeViewItem_IsSelected (newItem.handle, true);
-				selectedItems = new TreeItem [] { newItem };
-				selectedItemCount = 1;
-			} else {
-				selectedItems = new TreeItem [0];
-				selectedItemCount = 0;
-			}
-			anchor = newItem;
-    }
+    if (!shiftDown && !ctrlDown) {
+    	for (int i = 0; i < selectedItemCount; i++) {
+    		if (newItemRef == 0 || !OS.Object_Equals (newItemRef, selectedItems [i].handle)) {
+    			OS.TreeViewItem_IsSelected (selectedItems [i].handle, false);
+    		}
+    	}
+    	if (newItem != null) {
+    		OS.TreeViewItem_IsSelected (newItem.handle, true);
+    		selectedItems = new TreeItem [] { newItem };
+    		selectedItemCount = 1;
+    	} else {
+    		selectedItems = new TreeItem [0];
+    		selectedItemCount = 0;
+    	}
+    	anchor = newItem;
+    } else {
+    	if (shiftDown) {
+    		deselectAll ();
+    		if (anchor == null || anchor == newItem) {
+    			insertSelectedItem (newItem, selectedItemCount);
+    		} else {
+    			insertSelectedItems (anchor, newItem);
+    		}
+    		for (int i = 0; i < selectedItemCount; i++) {
+    			OS.TreeViewItem_IsSelected (selectedItems[i].handle, true);
+    		}
+    	} else {
+    		if (newItem != null) {
+    			boolean selected = false;
+    			for (int i = 0; i < selectedItemCount; i++) {
+    				if (selectedItems [i] == newItem) {
+    					selected = true;
+    					break;
+    				}
+    			}
+    			if (!selected) {
+    				insertSelectedItem (newItem, selectedItemCount);
+    				OS.TreeViewItem_IsSelected (newItem.handle, true);
+    			} else {
+    				removeSelectedItem (newItem);
+    				OS.TreeViewItem_IsSelected (newItem.handle, false);
+    			}
+    		} else {
+    			if (anchor != null) removeSelectedItem (anchor);
+    		}
+    		int oldItemRef = OS.RoutedPropertyChangedEventArgs_OldValue (args);
+    		if (oldItemRef != 0) {
+    			for (int i = 0; i < selectedItemCount; i++) {
+    				if (OS.Object_Equals (oldItemRef, selectedItems [i].handle)) {
+    					OS.TreeViewItem_IsSelected (oldItemRef, true);
+    					break;
+    				}
+    			}
+    			OS.GCHandle_Free (oldItemRef);
+    		}
+    	}
+    } 
 	OS.PropertyInfo_SetValueBoolean (property, handle, false, 0);
 	OS.GCHandle_Free (property);
 }
