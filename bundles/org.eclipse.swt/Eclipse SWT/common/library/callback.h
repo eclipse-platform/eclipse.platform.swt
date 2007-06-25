@@ -34,7 +34,11 @@
 #ifdef REDUCED_CALLBACKS
 #define MAX_CALLBACKS 16
 #else
+#if (defined(USE_ASSEMBLER) && (defined(__i386__) || defined(_M_IX86) || defined(_X86_)) && (defined (_WIN32) || defined (_WIN32_WCE)))
+#define MAX_CALLBACKS 256
+#else
 #define MAX_CALLBACKS 128
+#endif
 #endif /* REDUCED_CALLBACKS */
 
 #define MAX_ARGS 12
