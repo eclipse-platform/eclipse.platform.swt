@@ -3358,6 +3358,43 @@ void setTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct)
 }
 #endif
 
+#ifndef NO_TextRange
+typedef struct TextRange_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID fStart, fEnd, fHiliteStyle;
+} TextRange_FID_CACHE;
+
+TextRange_FID_CACHE TextRangeFc;
+
+void cacheTextRangeFields(JNIEnv *env, jobject lpObject)
+{
+	if (TextRangeFc.cached) return;
+	TextRangeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TextRangeFc.fStart = (*env)->GetFieldID(env, TextRangeFc.clazz, "fStart", "I");
+	TextRangeFc.fEnd = (*env)->GetFieldID(env, TextRangeFc.clazz, "fEnd", "I");
+	TextRangeFc.fHiliteStyle = (*env)->GetFieldID(env, TextRangeFc.clazz, "fHiliteStyle", "S");
+	TextRangeFc.cached = 1;
+}
+
+TextRange *getTextRangeFields(JNIEnv *env, jobject lpObject, TextRange *lpStruct)
+{
+	if (!TextRangeFc.cached) cacheTextRangeFields(env, lpObject);
+	lpStruct->fStart = (*env)->GetIntField(env, lpObject, TextRangeFc.fStart);
+	lpStruct->fEnd = (*env)->GetIntField(env, lpObject, TextRangeFc.fEnd);
+	lpStruct->fHiliteStyle = (*env)->GetShortField(env, lpObject, TextRangeFc.fHiliteStyle);
+	return lpStruct;
+}
+
+void setTextRangeFields(JNIEnv *env, jobject lpObject, TextRange *lpStruct)
+{
+	if (!TextRangeFc.cached) cacheTextRangeFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, TextRangeFc.fStart, (jint)lpStruct->fStart);
+	(*env)->SetIntField(env, lpObject, TextRangeFc.fEnd, (jint)lpStruct->fEnd);
+	(*env)->SetShortField(env, lpObject, TextRangeFc.fHiliteStyle, (jshort)lpStruct->fHiliteStyle);
+}
+#endif
+
 #ifndef NO_ThemeButtonDrawInfo
 typedef struct ThemeButtonDrawInfo_FID_CACHE {
 	int cached;

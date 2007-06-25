@@ -925,6 +925,18 @@ fail:
 }
 #endif
 
+#ifndef NO_ActivateTSMDocument
+JNIEXPORT jint JNICALL OS_NATIVE(ActivateTSMDocument)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ActivateTSMDocument_FUNC);
+	rc = (jint)ActivateTSMDocument((TSMDocumentID)arg0);
+	OS_NATIVE_EXIT(env, that, ActivateTSMDocument_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ActiveNonFloatingWindow
 JNIEXPORT jint JNICALL OS_NATIVE(ActiveNonFloatingWindow)
 	(JNIEnv *env, jclass that)
@@ -3998,6 +4010,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserSetMetric)
 }
 #endif
 
+#ifndef NO_DeactivateTSMDocument
+JNIEXPORT jint JNICALL OS_NATIVE(DeactivateTSMDocument)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DeactivateTSMDocument_FUNC);
+	rc = (jint)DeactivateTSMDocument((TSMDocumentID)arg0);
+	OS_NATIVE_EXIT(env, that, DeactivateTSMDocument_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DeleteMenu
 JNIEXPORT void JNICALL OS_NATIVE(DeleteMenu)
 	(JNIEnv *env, jclass that, jshort arg0)
@@ -4026,6 +4050,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(DeleteMenuItems)
 	OS_NATIVE_ENTER(env, that, DeleteMenuItems_FUNC);
 	rc = (jint)DeleteMenuItems((MenuRef)arg0, (MenuItemIndex)arg1, (ItemCount)arg2);
 	OS_NATIVE_EXIT(env, that, DeleteMenuItems_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DeleteTSMDocument
+JNIEXPORT jint JNICALL OS_NATIVE(DeleteTSMDocument)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DeleteTSMDocument_FUNC);
+	rc = (jint)DeleteTSMDocument((TSMDocumentID)arg0);
+	OS_NATIVE_EXIT(env, that, DeleteTSMDocument_FUNC);
 	return rc;
 }
 #endif
@@ -4613,6 +4649,18 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(Fix2X)
 	OS_NATIVE_ENTER(env, that, Fix2X_FUNC);
 	rc = (jdouble)Fix2X((Fixed)arg0);
 	OS_NATIVE_EXIT(env, that, Fix2X_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FixTSMDocument
+JNIEXPORT jint JNICALL OS_NATIVE(FixTSMDocument)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FixTSMDocument_FUNC);
+	rc = (jint)FixTSMDocument((TSMDocumentID)arg0);
+	OS_NATIVE_EXIT(env, that, FixTSMDocument_FUNC);
 	return rc;
 }
 #endif
@@ -5606,6 +5654,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetEventKind)
 	OS_NATIVE_ENTER(env, that, GetEventKind_FUNC);
 	rc = (jint)GetEventKind((EventRef)arg0);
 	OS_NATIVE_EXIT(env, that, GetEventKind_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetEventParameter__III_3II_3II
+JNIEXPORT jint JNICALL OS_NATIVE(GetEventParameter__III_3II_3II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jint arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetEventParameter__III_3II_3II_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)arg6);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, GetEventParameter__III_3II_3II_FUNC);
 	return rc;
 }
 #endif
@@ -9402,6 +9469,25 @@ JNIEXPORT jint JNICALL OS_NATIVE(NewRgn)
 }
 #endif
 
+#ifndef NO_NewTSMDocument
+JNIEXPORT jint JNICALL OS_NATIVE(NewTSMDocument)
+	(JNIEnv *env, jclass that, jshort arg0, jintArray arg1, jintArray arg2, jlong arg3)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NewTSMDocument_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)NewTSMDocument(arg0, (OSType *)lparg1, (TSMDocumentID *)lparg2, arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, NewTSMDocument_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_OffsetRect
 JNIEXPORT void JNICALL OS_NATIVE(OffsetRect)
 	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2)
@@ -11454,6 +11540,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_Point_2
+JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_Point_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	Point _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_Point_2_FUNC);
+	if (arg4) if ((lparg4 = getPointFields(env, arg4, &_arg4)) == NULL) goto fail;
+	rc = (jint)SetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (UInt32)arg3, (const void *)lparg4);
+fail:
+	if (arg4 && lparg4) setPointFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_Point_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetEventParameter__IIII_3C
 JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3C)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4)
@@ -12531,6 +12633,18 @@ fail:
 }
 #endif
 
+#ifndef NO_UseInputWindow
+JNIEXPORT jint JNICALL OS_NATIVE(UseInputWindow)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UseInputWindow_FUNC);
+	rc = (jint)UseInputWindow((TSMDocumentID)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, UseInputWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_WaitMouseMoved
 JNIEXPORT jboolean JNICALL OS_NATIVE(WaitMouseMoved)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -12950,6 +13064,20 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_carbon_Rect_
 fail:
 	if (arg0 && lparg0) setRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_carbon_Rect_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_carbon_TextRange_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_carbon_TextRange_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	TextRange _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_carbon_TextRange_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setTextRangeFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_carbon_TextRange_2II_FUNC);
 }
 #endif
 

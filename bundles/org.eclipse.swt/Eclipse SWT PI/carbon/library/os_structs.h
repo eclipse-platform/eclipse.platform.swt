@@ -839,6 +839,18 @@ void setTXNTabFields(JNIEnv *env, jobject lpObject, TXNTab *lpStruct);
 #define TXNTab_sizeof() 0
 #endif
 
+#ifndef NO_TextRange
+void cacheTextRangeFields(JNIEnv *env, jobject lpObject);
+TextRange *getTextRangeFields(JNIEnv *env, jobject lpObject, TextRange *lpStruct);
+void setTextRangeFields(JNIEnv *env, jobject lpObject, TextRange *lpStruct);
+#define TextRange_sizeof() sizeof(TextRange)
+#else
+#define cacheTextRangeFields(a,b)
+#define getTextRangeFields(a,b,c) NULL
+#define setTextRangeFields(a,b,c)
+#define TextRange_sizeof() 0
+#endif
+
 #ifndef NO_ThemeButtonDrawInfo
 void cacheThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject);
 ThemeButtonDrawInfo *getThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct);

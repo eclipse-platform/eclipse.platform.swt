@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 909;
-int OS_nativeFunctionCallCount[909];
+int OS_nativeFunctionCount = 918;
+int OS_nativeFunctionCallCount[918];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -73,6 +73,7 @@ char * OS_nativeFunctionNames[] = {
 	"AXUIElementGetIdentifier",
 	"AXValueCreate",
 	"AcquireFirstMatchingEventInQueue",
+	"ActivateTSMDocument",
 	"ActiveNonFloatingWindow",
 	"AddDataBrowserItems",
 	"AddDataBrowserListViewColumn",
@@ -303,10 +304,12 @@ char * OS_nativeFunctionNames[] = {
 	"DataBrowserGetAttributes",
 	"DataBrowserGetMetric",
 	"DataBrowserSetMetric",
+	"DeactivateTSMDocument",
 	"DeleteGlobalRef",
 	"DeleteMenu",
 	"DeleteMenuItem",
 	"DeleteMenuItems",
+	"DeleteTSMDocument",
 	"DiffRgn",
 	"DisableControl",
 	"DisableMenuCommand",
@@ -350,6 +353,7 @@ char * OS_nativeFunctionNames[] = {
 	"FindWindow",
 	"Fix2Long",
 	"Fix2X",
+	"FixTSMDocument",
 	"FrontWindow",
 	"Gestalt",
 	"GetApplicationEventTarget",
@@ -416,6 +420,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetEventClass",
 	"GetEventDispatcherTarget",
 	"GetEventKind",
+	"GetEventParameter__III_3II_3II",
 	"GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGPoint_2",
 	"GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGRect_2",
 	"GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_HICommand_2",
@@ -658,6 +663,7 @@ char * OS_nativeFunctionNames[] = {
 	"NewPtr",
 	"NewPtrClear",
 	"NewRgn",
+	"NewTSMDocument",
 	"OffsetRect",
 	"OffsetRgn",
 	"OpenDataBrowserContainer",
@@ -810,6 +816,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetEventLoopTimerNextFireTime",
 	"SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_CGPoint_2",
 	"SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_HICommand_2",
+	"SetEventParameter__IIIILorg_eclipse_swt_internal_carbon_Point_2",
 	"SetEventParameter__IIII_3C",
 	"SetEventParameter__IIII_3I",
 	"SetEventParameter__IIII_3S",
@@ -892,6 +899,7 @@ char * OS_nativeFunctionNames[] = {
 	"UnionRgn",
 	"UpdateDataBrowserItems",
 	"UpgradeScriptInfoToTextEncoding",
+	"UseInputWindow",
 	"WaitMouseMoved",
 	"X2Fix",
 	"ZoomWindowIdeal",
@@ -924,6 +932,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_carbon_Point_2_3II",
 	"memmove__Lorg_eclipse_swt_internal_carbon_RGBColor_2II",
 	"memmove__Lorg_eclipse_swt_internal_carbon_Rect_2II",
+	"memmove__Lorg_eclipse_swt_internal_carbon_TextRange_2II",
 	"memmove___3C_3BI",
 	"memmove___3ILorg_eclipse_swt_internal_carbon_TXNTab_2I",
 };
