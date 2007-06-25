@@ -231,9 +231,18 @@ JNIEXPORT SWT_PTR JNICALL Java_org_eclipse_swt_internal_Callback_bind
 				code[j++] = k;
 			}
 
-			//PUSH i - 2 bytes
-			code[j++] = 0x6a;
-			code[j++] = i;
+			if (i > 127) {
+				//PUSH i - 5 bytes
+				code[j++] = 0x68;
+				code[j++] = ((i >> 0) & 0xFF);
+				code[j++] = ((i >> 8) & 0xFF);
+				code[j++] = ((i >> 16) & 0xFF);
+				code[j++] = ((i >> 24) & 0xFF);
+			} else {
+				//PUSH i - 2 bytes
+				code[j++] = 0x6a;
+				code[j++] = i;
+			}
 
 			//MOV EAX callback - 1 + sizeof(SWT_PTR) bytes
 			code[j++] = 0xb8;
