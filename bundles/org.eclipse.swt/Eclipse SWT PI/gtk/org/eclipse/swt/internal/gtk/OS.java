@@ -371,6 +371,9 @@ public class OS extends C {
 	public static final int PANGO_ALIGN_LEFT = 0;
 	public static final int PANGO_ALIGN_CENTER = 1;
 	public static final int PANGO_ALIGN_RIGHT = 2;
+	public static final int PANGO_ATTR_FOREGROUND = 9;
+	public static final int PANGO_ATTR_BACKGROUND = 10;
+	public static final int PANGO_ATTR_UNDERLINE = 11;
 	public static final int PANGO_DIRECTION_LTR = 0;
 	public static final int PANGO_DIRECTION_RTL = 1;	
 	public static final int PANGO_SCALE = 1024;
@@ -543,6 +546,8 @@ public static final native int GtkCellRendererToggle_sizeof();
 public static final native int GtkCellRendererToggleClass_sizeof();
 public static final native int GtkTreeIter_sizeof();
 public static final native int PangoAttribute_sizeof();
+public static final native int PangoAttrColor_sizeof();
+public static final native int PangoAttrInt_sizeof();
 public static final native int PangoItem_sizeof();
 public static final native int PangoLayoutLine_sizeof();
 public static final native int PangoLayoutRun_sizeof();
@@ -9461,6 +9466,8 @@ public static final native void memmove(GdkVisual dest, int /*long*/ src);
 public static final native void memmove(GdkImage dest, int /*long*/ src);
 public static final native void memmove(GdkRectangle dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoAttribute dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(PangoAttrColor dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(PangoAttrInt dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoItem dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoLayoutLine dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoLayoutRun dest, int /*long*/ src, int /*long*/ size);
@@ -9528,6 +9535,61 @@ public static final void pango_attr_list_change(int /*long*/ list, int /*long*/ 
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _pango_attr_list_get_iterator(int /*long*/ list);
+public static final int /*long*/ pango_attr_list_get_iterator(int /*long*/ list) {
+	lock.lock();
+	try {
+		return _pango_attr_list_get_iterator(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _pango_attr_iterator_next(int /*long*/ iterator);
+public static final boolean pango_attr_iterator_next(int /*long*/ iterator) {
+	lock.lock();
+	try {
+		return _pango_attr_iterator_next(iterator);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_attr_iterator_range(int /*long*/ iterator, int[] start, int[] end);
+public static final void pango_attr_iterator_range(int /*long*/ iterator, int[] start, int[] end) {
+	lock.lock();
+	try {
+		_pango_attr_iterator_range(iterator, start, end);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_attr_iterator_get(int /*long*/ iterator, int type);
+public static final int /*long*/ pango_attr_iterator_get(int /*long*/ iterator, int type) {
+	lock.lock();
+	try {
+		return _pango_attr_iterator_get(iterator, type);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_attr_iterator_get_attrs(int /*long*/ iterator);
+public static final int /*long*/ pango_attr_iterator_get_attrs(int /*long*/ iterator) {
+	lock.lock();
+	try {
+		return _pango_attr_iterator_get_attrs(iterator);
+	} finally {
+		lock.unlock();
+	}
+}
+
+public static final native void _pango_attr_iterator_destroy(int /*long*/ iterator);
+public static final void pango_attr_iterator_destroy(int /*long*/ iterator) {
+	lock.lock();
+	try {
+		_pango_attr_iterator_destroy(iterator);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _pango_attr_list_new();
 public static final int /*long*/ pango_attr_list_new() {
 	lock.lock();
@@ -9551,6 +9613,15 @@ public static final int /*long*/ pango_attr_strikethrough_new(boolean strikethro
 	lock.lock();
 	try {
 		return _pango_attr_strikethrough_new(strikethrough);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _pango_attr_underline_color_new(short red, short green, short blue);
+public static final int /*long*/ pango_attr_underline_color_new(short red, short green, short blue) {
+	lock.lock();
+	try {
+		return _pango_attr_underline_color_new(red, green, blue);
 	} finally {
 		lock.unlock();
 	}

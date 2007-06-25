@@ -447,6 +447,30 @@ void setGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpSt
 #define GtkWidgetClass_sizeof() 0
 #endif
 
+#ifndef NO_PangoAttrColor
+void cachePangoAttrColorFields(JNIEnv *env, jobject lpObject);
+PangoAttrColor *getPangoAttrColorFields(JNIEnv *env, jobject lpObject, PangoAttrColor *lpStruct);
+void setPangoAttrColorFields(JNIEnv *env, jobject lpObject, PangoAttrColor *lpStruct);
+#define PangoAttrColor_sizeof() sizeof(PangoAttrColor)
+#else
+#define cachePangoAttrColorFields(a,b)
+#define getPangoAttrColorFields(a,b,c) NULL
+#define setPangoAttrColorFields(a,b,c)
+#define PangoAttrColor_sizeof() 0
+#endif
+
+#ifndef NO_PangoAttrInt
+void cachePangoAttrIntFields(JNIEnv *env, jobject lpObject);
+PangoAttrInt *getPangoAttrIntFields(JNIEnv *env, jobject lpObject, PangoAttrInt *lpStruct);
+void setPangoAttrIntFields(JNIEnv *env, jobject lpObject, PangoAttrInt *lpStruct);
+#define PangoAttrInt_sizeof() sizeof(PangoAttrInt)
+#else
+#define cachePangoAttrIntFields(a,b)
+#define getPangoAttrIntFields(a,b,c) NULL
+#define setPangoAttrIntFields(a,b,c)
+#define PangoAttrInt_sizeof() 0
+#endif
+
 #ifndef NO_PangoAttribute
 void cachePangoAttributeFields(JNIEnv *env, jobject lpObject);
 PangoAttribute *getPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpStruct);

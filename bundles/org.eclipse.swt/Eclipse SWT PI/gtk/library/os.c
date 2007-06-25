@@ -799,6 +799,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(GtkTreeIter_1sizeof)
 }
 #endif
 
+#ifndef NO_PangoAttrColor_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(PangoAttrColor_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PangoAttrColor_1sizeof_FUNC);
+	rc = (jint)PangoAttrColor_sizeof();
+	OS_NATIVE_EXIT(env, that, PangoAttrColor_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PangoAttrInt_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(PangoAttrInt_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PangoAttrInt_1sizeof_FUNC);
+	rc = (jint)PangoAttrInt_sizeof();
+	OS_NATIVE_EXIT(env, that, PangoAttrInt_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PangoAttribute_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(PangoAttribute_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -15395,6 +15419,69 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1foreground_1new)
 }
 #endif
 
+#ifndef NO__1pango_1attr_1iterator_1destroy
+JNIEXPORT void JNICALL OS_NATIVE(_1pango_1attr_1iterator_1destroy)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1iterator_1destroy_FUNC);
+	pango_attr_iterator_destroy((PangoAttrIterator *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1iterator_1destroy_FUNC);
+}
+#endif
+
+#ifndef NO__1pango_1attr_1iterator_1get
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1iterator_1get)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1iterator_1get_FUNC);
+	rc = (jint)pango_attr_iterator_get((PangoAttrIterator *)arg0, (PangoAttrType)arg1);
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1iterator_1get_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1attr_1iterator_1get_1attrs
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1iterator_1get_1attrs)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1iterator_1get_1attrs_FUNC);
+	rc = (jint)pango_attr_iterator_get_attrs((PangoAttrIterator *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1iterator_1get_1attrs_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1attr_1iterator_1next
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1pango_1attr_1iterator_1next)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1iterator_1next_FUNC);
+	rc = (jboolean)pango_attr_iterator_next((PangoAttrIterator *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1iterator_1next_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1attr_1iterator_1range
+JNIEXPORT void JNICALL OS_NATIVE(_1pango_1attr_1iterator_1range)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1iterator_1range_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	pango_attr_iterator_range((PangoAttrIterator *)arg0, lparg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1iterator_1range_FUNC);
+}
+#endif
+
 #ifndef NO__1pango_1attr_1list_1change
 JNIEXPORT void JNICALL OS_NATIVE(_1pango_1attr_1list_1change)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -15402,6 +15489,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1attr_1list_1change)
 	OS_NATIVE_ENTER(env, that, _1pango_1attr_1list_1change_FUNC);
 	pango_attr_list_change((PangoAttrList *)arg0, (PangoAttribute *)arg1);
 	OS_NATIVE_EXIT(env, that, _1pango_1attr_1list_1change_FUNC);
+}
+#endif
+
+#ifndef NO__1pango_1attr_1list_1get_1iterator
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1list_1get_1iterator)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1list_1get_1iterator_FUNC);
+	rc = (jint)pango_attr_list_get_iterator((PangoAttrList *)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1list_1get_1iterator_FUNC);
+	return rc;
 }
 #endif
 
@@ -15474,6 +15573,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1strikethrough_1new)
 	OS_NATIVE_ENTER(env, that, _1pango_1attr_1strikethrough_1new_FUNC);
 	rc = (jint)pango_attr_strikethrough_new(arg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1attr_1strikethrough_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1attr_1underline_1color_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1underline_1color_1new)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jshort arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1underline_1color_1new_FUNC);
+/*
+	rc = (jint)pango_attr_underline_color_new(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jshort, jshort, jshort);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(pango_attr_underline_color_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "pango_attr_underline_color_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1underline_1color_1new_FUNC);
 	return rc;
 }
 #endif
@@ -17241,6 +17369,34 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkWidge
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I_FUNC);
 	if (arg0) setGtkWidgetClassFields(env, arg0, (GtkWidgetClass *)arg1);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrColor_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrColor_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PangoAttrColor _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrColor_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setPangoAttrColorFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrColor_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrInt_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrInt_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PangoAttrInt _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrInt_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setPangoAttrIntFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrInt_2II_FUNC);
 }
 #endif
 

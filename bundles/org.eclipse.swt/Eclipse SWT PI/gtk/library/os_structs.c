@@ -1990,6 +1990,80 @@ void setGtkWidgetClassFields(JNIEnv *env, jobject lpObject, GtkWidgetClass *lpSt
 }
 #endif
 
+#ifndef NO_PangoAttrColor
+typedef struct PangoAttrColor_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID color_red, color_green, color_blue;
+} PangoAttrColor_FID_CACHE;
+
+PangoAttrColor_FID_CACHE PangoAttrColorFc;
+
+void cachePangoAttrColorFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoAttrColorFc.cached) return;
+	cachePangoAttributeFields(env, lpObject);
+	PangoAttrColorFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoAttrColorFc.color_red = (*env)->GetFieldID(env, PangoAttrColorFc.clazz, "color_red", "S");
+	PangoAttrColorFc.color_green = (*env)->GetFieldID(env, PangoAttrColorFc.clazz, "color_green", "S");
+	PangoAttrColorFc.color_blue = (*env)->GetFieldID(env, PangoAttrColorFc.clazz, "color_blue", "S");
+	PangoAttrColorFc.cached = 1;
+}
+
+PangoAttrColor *getPangoAttrColorFields(JNIEnv *env, jobject lpObject, PangoAttrColor *lpStruct)
+{
+	if (!PangoAttrColorFc.cached) cachePangoAttrColorFields(env, lpObject);
+	getPangoAttributeFields(env, lpObject, (PangoAttribute *)lpStruct);
+	lpStruct->color.red = (*env)->GetShortField(env, lpObject, PangoAttrColorFc.color_red);
+	lpStruct->color.green = (*env)->GetShortField(env, lpObject, PangoAttrColorFc.color_green);
+	lpStruct->color.blue = (*env)->GetShortField(env, lpObject, PangoAttrColorFc.color_blue);
+	return lpStruct;
+}
+
+void setPangoAttrColorFields(JNIEnv *env, jobject lpObject, PangoAttrColor *lpStruct)
+{
+	if (!PangoAttrColorFc.cached) cachePangoAttrColorFields(env, lpObject);
+	setPangoAttributeFields(env, lpObject, (PangoAttribute *)lpStruct);
+	(*env)->SetShortField(env, lpObject, PangoAttrColorFc.color_red, (jshort)lpStruct->color.red);
+	(*env)->SetShortField(env, lpObject, PangoAttrColorFc.color_green, (jshort)lpStruct->color.green);
+	(*env)->SetShortField(env, lpObject, PangoAttrColorFc.color_blue, (jshort)lpStruct->color.blue);
+}
+#endif
+
+#ifndef NO_PangoAttrInt
+typedef struct PangoAttrInt_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID value;
+} PangoAttrInt_FID_CACHE;
+
+PangoAttrInt_FID_CACHE PangoAttrIntFc;
+
+void cachePangoAttrIntFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoAttrIntFc.cached) return;
+	cachePangoAttributeFields(env, lpObject);
+	PangoAttrIntFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoAttrIntFc.value = (*env)->GetFieldID(env, PangoAttrIntFc.clazz, "value", "I");
+	PangoAttrIntFc.cached = 1;
+}
+
+PangoAttrInt *getPangoAttrIntFields(JNIEnv *env, jobject lpObject, PangoAttrInt *lpStruct)
+{
+	if (!PangoAttrIntFc.cached) cachePangoAttrIntFields(env, lpObject);
+	getPangoAttributeFields(env, lpObject, (PangoAttribute *)lpStruct);
+	lpStruct->value = (*env)->GetIntField(env, lpObject, PangoAttrIntFc.value);
+	return lpStruct;
+}
+
+void setPangoAttrIntFields(JNIEnv *env, jobject lpObject, PangoAttrInt *lpStruct)
+{
+	if (!PangoAttrIntFc.cached) cachePangoAttrIntFields(env, lpObject);
+	setPangoAttributeFields(env, lpObject, (PangoAttribute *)lpStruct);
+	(*env)->SetIntField(env, lpObject, PangoAttrIntFc.value, (jint)lpStruct->value);
+}
+#endif
+
 #ifndef NO_PangoAttribute
 typedef struct PangoAttribute_FID_CACHE {
 	int cached;

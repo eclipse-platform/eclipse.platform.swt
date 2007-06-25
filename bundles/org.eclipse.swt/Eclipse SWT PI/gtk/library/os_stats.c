@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1210;
-int OS_nativeFunctionCallCount[1210];
+int OS_nativeFunctionCount = 1221;
+int OS_nativeFunctionCallCount[1221];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1EVENT_1TYPE",
@@ -88,6 +88,8 @@ char * OS_nativeFunctionNames[] = {
 	"GtkTargetPair_1sizeof",
 	"GtkTextIter_1sizeof",
 	"GtkTreeIter_1sizeof",
+	"PangoAttrColor_1sizeof",
+	"PangoAttrInt_1sizeof",
 	"PangoAttribute_1sizeof",
 	"PangoItem_1sizeof",
 	"PangoLayoutLine_1sizeof",
@@ -1085,13 +1087,20 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1attr_1background_1new",
 	"_1pango_1attr_1font_1desc_1new",
 	"_1pango_1attr_1foreground_1new",
+	"_1pango_1attr_1iterator_1destroy",
+	"_1pango_1attr_1iterator_1get",
+	"_1pango_1attr_1iterator_1get_1attrs",
+	"_1pango_1attr_1iterator_1next",
+	"_1pango_1attr_1iterator_1range",
 	"_1pango_1attr_1list_1change",
+	"_1pango_1attr_1list_1get_1iterator",
 	"_1pango_1attr_1list_1insert",
 	"_1pango_1attr_1list_1new",
 	"_1pango_1attr_1list_1unref",
 	"_1pango_1attr_1rise_1new",
 	"_1pango_1attr_1shape_1new",
 	"_1pango_1attr_1strikethrough_1new",
+	"_1pango_1attr_1underline_1color_1new",
 	"_1pango_1attr_1underline_1new",
 	"_1pango_1attr_1weight_1new",
 	"_1pango_1cairo_1context_1get_1font_1options",
@@ -1220,6 +1229,8 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkWidgetClass_2I",
+	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrColor_2II",
+	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttrInt_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoItem_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2II",
