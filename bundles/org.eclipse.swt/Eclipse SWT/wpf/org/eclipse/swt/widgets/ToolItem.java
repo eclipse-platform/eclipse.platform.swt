@@ -610,19 +610,26 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
-	//TODO 
-//	Control oldControl = this.control, newControl = control;
-//	this.control = control;
-//	int parentHandle = parent.parentingHandle ();
-//	int parentChildren = OS.Panel_Children (parentHandle);
-//	if (oldControl != null) {
-//		int topHandle = oldControl.topHandle ();
-//		OS.UIElementCollection_Remove (parentChildren, topHandle);
-//	}
-//	OS.GCHandle_Free (parentChildren);
-//	
-//	parent.setControl (this, newControl);
-	this.control = control;
+	if (control == null) {
+		int property = OS.Control_BackgroundProperty ();
+		OS.DependencyObject_ClearValue (handle, property);
+		OS.GCHandle_Free (property);
+		Control oldControl = this.control;
+		if (oldControl != null && !oldControl.isDisposed ()) OS.Panel_SetZIndex (oldControl.handle, 0);
+	} else {
+		int brush = OS.Brushes_Transparent ();
+		OS.Control_Background (handle, brush);
+		OS.GCHandle_Free (brush);
+		int pt = OS.gcnew_Point (0, 0);
+		if (pt == 0) error (SWT.ERROR_NO_HANDLES);
+		int loc = OS.UIElement_TranslatePoint (handle, pt, parent.parentingHandle);
+		OS.GCHandle_Free (pt);
+		OS.Canvas_SetLeft (control.handle, OS.Point_X (loc));
+		OS.Canvas_SetTop (control.handle, OS.Point_Y (loc));
+		OS.Panel_SetZIndex (control.handle, parent.childCount);
+		OS.GCHandle_Free (loc);
+	}
+	this.control = control;	
 }
 
 /**
