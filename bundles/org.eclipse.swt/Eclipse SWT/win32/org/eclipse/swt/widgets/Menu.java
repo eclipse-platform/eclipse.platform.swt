@@ -209,8 +209,8 @@ void _setVisible (boolean visible) {
 		int nX = x, nY = y;
 		if (!hasLocation) {
 			int pos = OS.GetMessagePos ();
-			nX = (short) (pos & 0xFFFF);
-			nY = (short) (pos >> 16);
+			nX = OS.GET_X_LPARAM (pos);
+			nY = OS.GET_Y_LPARAM (pos);
 		}
 		/*
 		* Feature in Windows.  It is legal use TrackPopupMenu()
@@ -220,14 +220,14 @@ void _setVisible (boolean visible) {
 		* that the menu has been closed.  This is not strictly a
 		* bug but leads to unwanted behavior when application code
 		* assumes that every WM_INITPOPUPMENU will eventually result
-		* in a WM_MENUSELECT, wParam=0xFFFF0000, lParam=0 to indicate
-		* that the menu has been closed.  The fix is to detect the
-		* case when TrackPopupMenu() fails and the number of items in
+		* in a WM_MENUSELECT, wParam=MAKEWPARAM (0, 0xFFFF), lParam=0 to
+		* indicate that the menu has been closed.  The fix is to detect
+		* the case when TrackPopupMenu() fails and the number of items in
 		* the menu is zero and issue a fake WM_MENUSELECT.
 		*/
 		boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
 		if (!success && GetMenuItemCount (handle) == 0) {
-			OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
+			OS.SendMessage (hwndParent, OS.WM_MENUSELECT, OS.MAKEWPARAM (0, 0xFFFF), 0);
 		}
 	} else {
 		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
@@ -396,7 +396,7 @@ void createHandle () {
 			* a result, Shell on WinCE SP must use the class Dialog.
 			*/
 			int dwMask = OS.SHMBOF_NODEFAULT | OS.SHMBOF_NOTIFY;
-			int lParam = dwMask << 16 | dwMask;
+			int lParam = OS.MAKELPARAM (dwMask, dwMask);
 			OS.SendMessage (hwndCB, OS.SHCMBM_OVERRIDEKEY, OS.VK_ESCAPE, lParam);
 			return;
 		}

@@ -264,8 +264,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/* Compute the banding rectangle */
 	int hwndTrack = parent.handle;
 	POINT pt = new POINT ();
-	pt.x = (short) (lParam & 0xFFFF);
-	pt.y = (short) (lParam >> 16);
+	OS.POINTSTOPOINT (pt, lParam);
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	OS.MapWindowPoints (handle, 0, pt, 1);
@@ -348,8 +347,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 
 	/* Compute the banding rectangle */
 	POINT pt = new POINT ();
-	pt.x = (short) (lParam & 0xFFFF);
-	pt.y = (short) (lParam >> 16);
+	OS.POINTSTOPOINT (pt, lParam);
 	int hwndTrack = parent.handle;
 	OS.MapWindowPoints (handle, hwndTrack, pt, 1);
 	RECT rect = new RECT (), clientRect = new RECT ();
@@ -400,7 +398,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
-	int hitTest = lParam & 0xFFFF;
+	int hitTest = (short) OS.LOWORD (lParam);
  	if (hitTest == OS.HTCLIENT) {
 	 	int hCursor = 0;
 	 	if ((style & SWT.HORIZONTAL) != 0) {

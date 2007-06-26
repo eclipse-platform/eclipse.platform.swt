@@ -1163,7 +1163,7 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
-	int code = wParam >> 16;
+	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.BN_CLICKED:
 		case OS.BN_DOUBLECLICKED:

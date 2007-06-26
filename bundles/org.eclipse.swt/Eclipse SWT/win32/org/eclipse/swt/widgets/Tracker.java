@@ -1036,8 +1036,8 @@ LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
 LRESULT wmMouse (int message, int wParam, int lParam) {
 	boolean isMirrored = parent != null && (parent.style & SWT.MIRRORED) != 0;
 	int newPos = OS.GetMessagePos ();
-	int newX = (short) (newPos & 0xFFFF);
-	int newY = (short) (newPos >> 16);	
+	int newX = OS.GET_X_LPARAM (newPos);
+	int newY = OS.GET_Y_LPARAM (newPos);
 	if (newX != oldX || newY != oldY) {
 		Rectangle [] oldRectangles = rectangles;
 		boolean oldStippled = stippled;

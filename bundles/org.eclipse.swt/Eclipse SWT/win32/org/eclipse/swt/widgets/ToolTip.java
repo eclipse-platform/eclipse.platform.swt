@@ -476,7 +476,7 @@ public void setVisible (boolean visible) {
 					nY = pt.y;
 				}
 			}
-			int lParam = (nX & 0xFFFF) | ((nY << 16) & 0xFFFF0000);
+			int lParam = OS.MAKELPARAM (nX, nY);
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKPOSITION, 0, lParam);
 			
 			/*

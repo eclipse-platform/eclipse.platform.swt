@@ -747,8 +747,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (focusIndex != -1) setFocus ();
-		int x = lParam & 0xFFFF;
-		int y = lParam >> 16;
+		int x = OS.GET_X_LPARAM (lParam);
+		int y = OS.GET_Y_LPARAM (lParam);
 		int offset = layout.getOffset (x, y, null);
 		int oldSelectionX = selection.x;
 		int oldSelectionY = selection.y;
@@ -785,8 +785,8 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	if (result == LRESULT.ZERO) return result;
 	if (OS.COMCTL32_MAJOR < 6) {
 		if (mouseDownIndex == -1) return result;
-		int x = lParam & 0xFFFF;
-		int y = lParam >> 16;
+		int x = OS.GET_X_LPARAM (lParam);
+		int y = OS.GET_Y_LPARAM (lParam);
 		Rectangle [] rects = getRectangles (mouseDownIndex);
 		for (int i = 0; i < rects.length; i++) {
 			Rectangle rect = rects [i];
@@ -805,8 +805,8 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
-		int x = lParam & 0xFFFF;
-		int y = lParam >> 16;
+		int x = OS.GET_X_LPARAM (lParam);
+		int y = OS.GET_Y_LPARAM (lParam);
 		if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
 			int oldSelection = selection.y;
 			selection.y = layout.getOffset (x, y, null);

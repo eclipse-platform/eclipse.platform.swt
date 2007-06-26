@@ -13,6 +13,7 @@
 #define INC_os_H
 
 #include <windows.h>
+#include <WindowsX.h>
 #include <winuser.h>
 #include <commctrl.h>
 #include <commdlg.h>
@@ -566,6 +567,10 @@ typedef struct tagTVITEMCHANGE {
 } NMTVITEMCHANGE;
 #endif /* _WIN32_IE <= 0x0600 */
 #endif /* _WIN32_WCE */
+
+#ifndef GET_WHEEL_DELTA_WPARAM
+#define GET_WHEEL_DELTA_WPARAM(wParam)  ((short)HIWORD(wParam))
+#endif
 
 #include "os_custom.h"
 

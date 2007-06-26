@@ -274,7 +274,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 		if (msg == 0) return result;
 		int [] value = new int [1];
 		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
-		int delta = (short) (wParam >> 16);
+		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
 		int code = 0, count = 0;
   		if (value [0] == OS.WHEEL_PAGESCROLL) {	
    			code = delta < 0 ? OS.SB_PAGEDOWN : OS.SB_PAGEUP;
@@ -361,7 +361,7 @@ LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, 
 		info.fMask = OS.SIF_TRACKPOS | OS.SIF_POS | OS.SIF_RANGE;
 		OS.GetScrollInfo (hwnd, type, info);
 		info.fMask = OS.SIF_POS;
-		int code = wParam & 0xFFFF;
+		int code = OS.LOWORD (wParam);
 		switch (code) {
 			case OS.SB_ENDSCROLL:  return null;
 			case OS.SB_THUMBPOSITION:

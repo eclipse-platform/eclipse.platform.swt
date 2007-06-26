@@ -987,8 +987,8 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.button = button;
 	event.detail = detail;
 	event.count = count;
-	event.x = (short) (lParam & 0xFFFF);
-	event.y = (short) (lParam >> 16);
+	event.x = OS.GET_X_LPARAM (lParam);
+	event.y = OS.GET_Y_LPARAM (lParam);
 	setInputState (event, type);
 	mapEvent (hwnd, event);
 	if (send) {
@@ -1319,16 +1319,17 @@ LRESULT wmContextMenu (int hwnd, int wParam, int lParam) {
 	int x = 0, y = 0;
 	if (lParam != -1) {
 		POINT pt = new POINT ();
-		x = pt.x = (short) (lParam & 0xFFFF);
-		y = pt.y = (short) (lParam >> 16);
+		OS.POINTSTOPOINT (pt, lParam);
+		x = pt.x;
+		y = pt.y;
 		OS.ScreenToClient (hwnd, pt);
 		RECT rect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
 		if (!OS.PtInRect (rect, pt)) return null;
 	} else {
 		int pos = OS.GetMessagePos ();
-		x = (short) (pos & 0xFFFF);
-		y = (short) (pos >> 16);
+		x = OS.GET_X_LPARAM (pos);
+		y = OS.GET_Y_LPARAM (pos);
 	}
 
 	/* Show the menu */
@@ -1725,8 +1726,8 @@ LRESULT wmLButtonDblClk (int hwnd, int wParam, int lParam) {
 LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 	Display display = this.display;
 	LRESULT result = null;
-	int x = (short) (lParam & 0xFFFF);
-	int y = (short) (lParam >> 16);
+	int x = OS.GET_X_LPARAM (lParam);
+	int y = OS.GET_Y_LPARAM (lParam);
 	boolean [] consume = null, detect = null;
 	boolean dragging = false, mouseDown = true;
 	int count = display.getClickCount (SWT.MouseDown, 1, hwnd, lParam);
@@ -1826,7 +1827,7 @@ LRESULT wmLButtonUp (int hwnd, int wParam, int lParam) {
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
 	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	if (((wParam & 0xFFFF) & mask) == 0) {
+	if ((wParam & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
 	return result;
@@ -1892,7 +1893,7 @@ LRESULT wmMButtonUp (int hwnd, int wParam, int lParam) {
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
 	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	if (((wParam & 0xFFFF) & mask) == 0) {
+	if ((wParam & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
 	return result;
@@ -1909,10 +1910,9 @@ LRESULT wmMouseLeave (int hwnd, int wParam, int lParam) {
 	if (!hooks (SWT.MouseExit) && !filters (SWT.MouseExit)) return null;
 	int pos = OS.GetMessagePos ();
 	POINT pt = new POINT ();
-	pt.x = (short) (pos & 0xFFFF);
-	pt.y = (short) (pos >> 16); 
+	OS.POINTSTOPOINT (pt, pos);
 	OS.ScreenToClient (hwnd, pt);
-	lParam = (pt.x & 0xFFFF) | ((pt.y << 16) & 0xFFFF0000);
+	lParam = OS.MAKELPARAM (pt.x, pt.y);
 	if (!sendMouseEvent (SWT.MouseExit, 0, hwnd, OS.WM_MOUSELEAVE, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
@@ -1973,7 +1973,7 @@ LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
 
 LRESULT wmMouseWheel (int hwnd, int wParam, int lParam) {
 	if (!hooks (SWT.MouseWheel) && !filters (SWT.MouseWheel)) return null;
-	int delta = wParam >> 16;
+	int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
 	int [] value = new int [1];
 	int count, detail;
 	OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
@@ -1985,10 +1985,9 @@ LRESULT wmMouseWheel (int hwnd, int wParam, int lParam) {
 		count = value [0] * delta / OS.WHEEL_DELTA;
 	}
 	POINT pt = new POINT ();
-	pt.x = (short) (lParam & 0xFFFF);
-	pt.y = (short) (lParam >> 16); 
+	OS.POINTSTOPOINT (pt, lParam);
 	OS.ScreenToClient (hwnd, pt);
-	lParam = (pt.x & 0xFFFF) | ((pt.y << 16) & 0xFFFF0000);
+	lParam = OS.MAKELPARAM (pt.x, pt.y);
 	if (!sendMouseEvent (SWT.MouseWheel, 0, count, detail, true, hwnd, OS.WM_MOUSEWHEEL, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
@@ -2165,7 +2164,7 @@ LRESULT wmRButtonUp (int hwnd, int wParam, int lParam) {
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
 	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	if (((wParam & 0xFFFF) & mask) == 0) {
+	if ((wParam & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
 	return result;
@@ -2356,7 +2355,7 @@ LRESULT wmXButtonDblClk (int hwnd, int wParam, int lParam) {
 	LRESULT result = null;
 	Display display = this.display;
 	display.captureChanged = false;
-	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
+	int button = OS.HIWORD (wParam) == OS.XBUTTON1 ? 4 : 5;
 	sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam);
 	if (sendMouseEvent (SWT.MouseDoubleClick, button, hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_XBUTTONDBLCLK, wParam, lParam));
@@ -2374,7 +2373,7 @@ LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
 	Display display = this.display;
 	display.captureChanged = false;
 	display.xMouse = true;
-	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
+	int button = OS.HIWORD (wParam) == OS.XBUTTON1 ? 4 : 5;
 	if (sendMouseEvent (SWT.MouseDown, button, hwnd, OS.WM_XBUTTONDOWN, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_XBUTTONDOWN, wParam, lParam));
 	} else {
@@ -2389,7 +2388,7 @@ LRESULT wmXButtonDown (int hwnd, int wParam, int lParam) {
 LRESULT wmXButtonUp (int hwnd, int wParam, int lParam) {
 	Display display = this.display;
 	LRESULT result = null;
-	int button = (wParam >> 16 == OS.XBUTTON1) ? 4 : 5;
+	int button = OS.HIWORD (wParam) == OS.XBUTTON1 ? 4 : 5;
 	if (sendMouseEvent (SWT.MouseUp, button, hwnd, OS.WM_XBUTTONUP, wParam, lParam)) {
 		result = new LRESULT (callWindowProc (hwnd, OS.WM_XBUTTONUP, wParam, lParam));
 	} else {
@@ -2403,7 +2402,7 @@ LRESULT wmXButtonUp (int hwnd, int wParam, int lParam) {
 	*/
 	int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
 	if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-	if (((wParam & 0xFFFF) & mask) == 0) {
+	if ((wParam & mask) == 0) {
 		if (OS.GetCapture () == hwnd) OS.ReleaseCapture ();
 	}
 	return result;

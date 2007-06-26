@@ -1097,7 +1097,7 @@ LRESULT WM_NCPAINT (int wParam, int lParam) {
 
 LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
-		if ((wParam & 0xFFFF) == OS.WM_CREATE) {
+		if (OS.LOWORD (wParam) == OS.WM_CREATE) {
 			RECT rect = new RECT ();
 			OS.GetClientRect (handle, rect);
 			resizeEmbeddedHandle (lParam, rect.right - rect.left, rect.bottom - rect.top);
@@ -1390,7 +1390,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 
 	/* Resize the embedded window */
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
-		resizeEmbeddedHandle (OS.GetWindow (handle, OS.GW_CHILD), lParam & 0xFFFF, lParam >> 16);
+		resizeEmbeddedHandle (OS.GetWindow (handle, OS.GW_CHILD), OS.LOWORD (lParam), OS.HIWORD (lParam));
 	}
 	return result;
 }
@@ -1413,6 +1413,8 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	/*
 	* Check to see if the command is a system command or
 	* a user menu item that was added to the system menu.
+	* 
+	* NOTE: This is undocumented.
 	*/
 	if ((wParam & 0xF000) == 0) return result;
 

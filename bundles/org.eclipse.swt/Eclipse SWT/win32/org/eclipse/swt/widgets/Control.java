@@ -774,7 +774,7 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 			if ((stateMask & SWT.BUTTON3) != 0) wParam |= OS.MK_RBUTTON;
 			if ((stateMask & SWT.BUTTON4) != 0) wParam |= OS.MK_XBUTTON1;
 			if ((stateMask & SWT.BUTTON5) != 0) wParam |= OS.MK_XBUTTON2;
-			int lParam = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
+			int lParam = OS.MAKELPARAM (x, y);
 			OS.SendMessage (handle, OS.WM_LBUTTONUP, wParam, lParam);
 		}
 		return false;
@@ -2592,7 +2592,7 @@ public void setCapture (boolean capture) {
 }
 
 void setCursor () {
-	int lParam = OS.HTCLIENT | (OS.WM_MOUSEMOVE << 16);
+	int lParam = OS.MAKELPARAM (OS.HTCLIENT, OS.WM_MOUSEMOVE);
 	OS.SendMessage (handle, OS.WM_SETCURSOR, handle, lParam);
 }
 
@@ -3788,7 +3788,7 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	if (lParam == 0) {
 		Decorations shell = menuShell ();
 		if (shell.isEnabled ()) {
-			int id = wParam & 0xFFFF;
+			int id = OS.LOWORD (wParam);
 			MenuItem item = display.getMenuItem (id);
 			if (item != null && item.isEnabled ()) {
 				return item.wmCommandChild (wParam, lParam);
@@ -3939,7 +3939,7 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 	*/
 	Shell shell = getShell ();
 	Menu oldMenu = shell.activeMenu, newMenu = null;
-	if ((lParam >> 16) == 0) {
+	if (OS.HIWORD (lParam) == 0) {
 		newMenu = menuShell ().findMenu (wParam);
 		if (newMenu != null) newMenu.update ();
 	}	
@@ -4047,18 +4047,18 @@ LRESULT WM_MENUCHAR (int wParam, int lParam) {
 	* for Alt+<key>.  The fix is to detect the case and
 	* stop Windows from beeping by closing the menu.
 	*/
-	int type = wParam >> 16;
+	int type = OS.HIWORD (wParam);
 	if (type == 0 || type == OS.MF_SYSMENU) {
 		display.mnemonicKeyHit = false;
-		return new LRESULT (OS.MNC_CLOSE << 16);
+		return new LRESULT (OS.MAKELRESULT (0, OS.MNC_CLOSE));
 	}
 	return null;
 }
 
 LRESULT WM_MENUSELECT (int wParam, int lParam) {
-	int code = wParam >> 16;
+	int code = OS.HIWORD (wParam);
 	Shell shell = getShell ();
-	if (code == -1 && lParam == 0) {
+	if (code == 0xFFFF && lParam == 0) {
 		Menu menu = shell.activeMenu;
 		while (menu != null) {
 			/*
@@ -4095,7 +4095,7 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 		MenuItem item = null;
 		Decorations menuShell = menuShell ();
 		if ((code & OS.MF_POPUP) != 0) {
-			int index = wParam & 0xFFFF;
+			int index = OS.LOWORD (wParam);
 			MENUITEMINFO info = new MENUITEMINFO ();
 			info.cbSize = MENUITEMINFO.sizeof;
 			info.fMask = OS.MIIM_SUBMENU;
@@ -4106,7 +4106,7 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 		} else {
 			Menu newMenu = menuShell.findMenu (lParam);
 			if (newMenu != null) {
-				int id = wParam & 0xFFFF;
+				int id = OS.LOWORD (wParam);
 				item = display.getMenuItem (id);
 			}
 			Menu oldMenu = shell.activeMenu;
@@ -4265,7 +4265,7 @@ LRESULT WM_RBUTTONUP (int wParam, int lParam) {
 }
 
 LRESULT WM_SETCURSOR (int wParam, int lParam) {
-	int hitTest = (short) (lParam & 0xFFFF);
+	int hitTest = (short) OS.LOWORD (lParam);
  	if (hitTest == OS.HTCLIENT) {
 		Control control = display.getControl (wParam);
 		if (control == null) return null;
@@ -4318,11 +4318,13 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	* a user menu item that was added to the System menu.
 	* When a user item is added to the System menu,
 	* WM_SYSCOMMAND must always return zero.
+	* 
+	* NOTE: This is undocumented.
 	*/
 	if ((wParam & 0xF000) == 0) {
 		Decorations shell = menuShell ();
 		if (shell.isEnabled ()) {
-			MenuItem item = display.getMenuItem (wParam & 0xFFFF);
+			MenuItem item = display.getMenuItem (OS.LOWORD (wParam));
 			if (item != null) item.wmCommandChild (wParam, lParam);
 		}
 		return LRESULT.ZERO;

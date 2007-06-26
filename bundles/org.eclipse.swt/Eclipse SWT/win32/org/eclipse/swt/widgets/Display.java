@@ -1344,8 +1344,7 @@ int getClickCount (int type, int button, int hwnd, int lParam) {
 			if (clickRect == null) clickRect = new RECT ();
 			int deltaTime = Math.abs (lastTime - getLastEventTime ());
 			POINT pt = new POINT ();
-			pt.x = (short) (lParam & 0xFFFF);
-			pt.y = (short) (lParam >> 16);
+			OS.POINTSTOPOINT (pt, lParam);
 			if (lastClickHwnd == hwnd && lastButton == button && (deltaTime <= doubleClick) && OS.PtInRect (clickRect, pt)) {
 				clickCount++;
 			} else {
@@ -1358,7 +1357,7 @@ int getClickCount (int type, int button, int hwnd, int lParam) {
 			lastTime = getLastEventTime ();
 			int xInset = OS.GetSystemMetrics (OS.SM_CXDOUBLECLK) / 2;
 			int yInset = OS.GetSystemMetrics (OS.SM_CYDOUBLECLK) / 2;
-			int x = (short) (lParam & 0xFFFF), y = (short) (lParam >> 16);
+			int x = OS.GET_X_LPARAM (lParam), y = OS.GET_Y_LPARAM (lParam);
 			OS.SetRect (clickRect, x - xInset, y - yInset, x + xInset, y + yInset);
 			//FALL THROUGH
 		case SWT.MouseUp:

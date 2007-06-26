@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 874;
-int OS_nativeFunctionCallCount[874];
+int OS_nativeFunctionCount = 883;
+int OS_nativeFunctionCallCount[883];
 char * OS_nativeFunctionNames[] = {
 	"ACCEL_1sizeof",
 	"ACTCTX_1sizeof",
@@ -194,6 +194,9 @@ char * OS_nativeFunctionNames[] = {
 	"FormatMessageW",
 	"FreeLibrary",
 	"GCP_1RESULTS_1sizeof",
+	"GET_1WHEEL_1DELTA_1WPARAM",
+	"GET_1X_1LPARAM",
+	"GET_1Y_1LPARAM",
 	"GRADIENT_1RECT_1sizeof",
 	"GUITHREADINFO_1sizeof",
 	"GdiSetBatchLimit",
@@ -372,6 +375,7 @@ char * OS_nativeFunctionNames[] = {
 	"HDLAYOUT_1sizeof",
 	"HELPINFO_1sizeof",
 	"HIGHCONTRAST_1sizeof",
+	"HIWORD",
 	"HeapAlloc",
 	"HeapFree",
 	"HeapValidate",
@@ -447,6 +451,7 @@ char * OS_nativeFunctionNames[] = {
 	"LOGFONTA_1sizeof",
 	"LOGFONTW_1sizeof",
 	"LOGPEN_1sizeof",
+	"LOWORD",
 	"LVCOLUMN_1sizeof",
 	"LVHITTESTINFO_1sizeof",
 	"LVITEM_1sizeof",
@@ -467,6 +472,9 @@ char * OS_nativeFunctionNames[] = {
 	"LoadStringW",
 	"LocalFree",
 	"LockWindowUpdate",
+	"MAKELPARAM",
+	"MAKELRESULT",
+	"MAKEWPARAM",
 	"MARGINS_1sizeof",
 	"MCIWndRegisterClass",
 	"MEASUREITEMSTRUCT_1sizeof",
@@ -605,6 +613,7 @@ char * OS_nativeFunctionNames[] = {
 	"OpenClipboard",
 	"OpenThemeData",
 	"PAINTSTRUCT_1sizeof",
+	"POINTSTOPOINT",
 	"POINT_1sizeof",
 	"PRIMARYLANGID",
 	"PRINTDLG_1sizeof",

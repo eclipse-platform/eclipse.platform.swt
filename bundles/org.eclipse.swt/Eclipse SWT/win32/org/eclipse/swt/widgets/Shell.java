@@ -1799,14 +1799,14 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		* to adding a listener.
 		*/
 		if (hooks (SWT.HardKeyDown) || hooks (SWT.HardKeyUp)) {
-			int fActive = wParam & 0xFFFF;
+			int fActive = OS.LOWORD (wParam);
 			int hwnd = fActive != 0 ? handle : 0;
 			for (int bVk=OS.VK_APP1; bVk<=OS.VK_APP6; bVk++) {
 				OS.SHSetAppKeyWndAssoc ((byte) bVk, hwnd);
 			}
 		}
 		/* Restore SIP state when window is activated */
-		if ((wParam & 0xFFFF) != 0) {
+		if (OS.LOWORD (wParam) != 0) {
 			OS.SHSipPreference (handle, psai.fSipUp == 0 ? OS.SIP_DOWN : OS.SIP_UP);
 		} 
 	}
@@ -1821,7 +1821,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	* the input method status.
 	*/
 	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		if ((wParam & 0xFFFF) == 0 && OS.IsDBLocale && hIMC != 0) {
+		if (OS.LOWORD (wParam) == 0 && OS.IsDBLocale && hIMC != 0) {
 			if (OS.ImmGetOpenStatus(hIMC)) {
 				OS.ImmSetOpenStatus (hIMC, false);
 				OS.ImmSetOpenStatus (hIMC, true);
@@ -1831,7 +1831,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	
 	/* Process WM_ACTIVATE */
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
-	if ((wParam & 0xFFFF) == 0) {
+	if (OS.LOWORD (wParam) == 0) {
 		if (lParam == 0 || (lParam != toolTipHandle && lParam != balloonTipHandle)) {
 			ToolTip tip = getCurrentToolTip ();
 			if (tip != null) tip.setVisible (false);
@@ -1847,7 +1847,7 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 		* been pressed. lParam is either 0 (PocketPC 2002) or the handle
 		* to the Shell (PocketPC).
 		*/
-		int loWord = wParam & 0xFFFF;
+		int loWord = OS.LOWORD (wParam);
 		if (loWord == OS.IDOK && (lParam == 0 || lParam == handle)) {
 			OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 			return LRESULT.ZERO;			
@@ -1945,7 +1945,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	* and stop the normal shell activation but allow the mouse
 	* down to be delivered.
 	*/
-	int hittest = (short) (lParam & 0xFFFF);
+	int hittest = (short) OS.LOWORD (lParam);
 	switch (hittest) {
 		case OS.HTERROR:
 		case OS.HTTRANSPARENT:
@@ -1988,8 +1988,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	POINT pt = new POINT ();
 	if (!OS.GetCursorPos (pt)) {
 		int pos = OS.GetMessagePos ();
-		pt.x = (short) (pos & 0xFFFF);
-		pt.y = (short) (pos >> 16);
+		OS.POINTSTOPOINT (pt, pos);
 	}
 	int hwnd = OS.WindowFromPoint (pt);
 	if (hwnd == 0) return null;
@@ -2107,7 +2106,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	* fix is to detect this case and bring the shell
 	* forward.
 	*/
-	int msg = (short) (lParam >> 16);
+	int msg = OS.HIWORD (lParam);
 	if (msg == OS.WM_LBUTTONDOWN) {
 		if (!Display.TrimEnabled) {
 			Shell modalShell = display.getModalShell ();
@@ -2142,15 +2141,14 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	* with HTERROR to set the cursor but only when the
 	* mouse is in the client area of the shell.
 	*/
-	int hitTest = (short) (lParam & 0xFFFF);
+	int hitTest = (short) OS.LOWORD (lParam);
 	if (hitTest == OS.HTERROR) {
 		if (!getEnabled ()) {
 			Control control = display.getControl (wParam);
 			if (control == this && cursor != null) {
 				POINT pt = new POINT ();
 				int pos = OS.GetMessagePos ();
-				pt.x = (short) (pos & 0xFFFF);
-				pt.y = (short) (pos >> 16);
+				OS.POINTSTOPOINT (pt, pos);
 				OS.ScreenToClient (handle, pt);
 				RECT rect = new RECT ();
 				OS.GetClientRect (handle, rect);

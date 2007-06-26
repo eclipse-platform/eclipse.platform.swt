@@ -385,8 +385,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	* box.
 	*/
 	int margins = OS.SendMessage(handle, OS.EM_GETMARGINS, 0, 0);
-	rect.x -= margins & 0xFFFF;
-	rect.width += (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+	rect.x -= OS.LOWORD (margins);
+	rect.width += OS.LOWORD (margins) + OS.HIWORD (margins);
 	if ((style & SWT.H_SCROLL) != 0) rect.width++;
 	if ((style & SWT.BORDER) != 0) {
 		rect.x -= 1;
@@ -449,8 +449,8 @@ boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, b
 		int [] start = new int [1], end = new int [1];
 		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 		if (start [0] != end [0]) {
-			int lParam = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
-			int position = OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
+			int lParam = OS.MAKELPARAM (x, y);
+			int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
 			if (start [0] <= position && position < end [0]) {
 				if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
 					if (consume != null) consume [0] = true;
@@ -605,7 +605,7 @@ public Point getCaretLocation () {
 			OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 		}
 	}
-	return new Point ((short) (caretPos & 0xFFFF), (short) (caretPos >> 16));
+	return new Point (OS.GET_X_LPARAM (caretPos), OS.GET_Y_LPARAM (caretPos));
 }
 
 /**
@@ -651,10 +651,10 @@ public int getCaretPosition () {
 							int endPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, end [0], 0);
 							if (endPos == -1) {
 								int startPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
-								int startX = (short) (startPos & 0xFFFF);
+								int startX = OS.GET_X_LPARAM (startPos);
 								if (ptCurrentPos.x > startX) caret = end [0];
 							} else {
-								int endX = (short) (endPos & 0xFFFF);
+								int endX = OS.GET_X_LPARAM (endPos);
 								if (ptCurrentPos.x >= endX) caret = end [0];
 							}
 						}
@@ -866,8 +866,8 @@ public String getMessage () {
 /*public*/ int getPosition (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int lParam = (point.x & 0xFFFF) | ((point.y << 16) & 0xFFFF0000);
-	int position = OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
+	int lParam = OS.MAKELPARAM (point.x, point.y);
+	int position = OS.LOWORD (OS.SendMessage (handle, OS.EM_CHARFROMPOS, 0, lParam));
 	if (!OS.IsUnicode && OS.IsDBLocale) position = mbcsToWcsPos (position);
 	return position;
 }
@@ -1429,7 +1429,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		RECT rect = new RECT ();
 		OS.GetWindowRect (handle, rect);
 		int margins = OS.SendMessage (handle, OS.EM_GETMARGINS, 0, 0);
-		int marginWidth = (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+		int marginWidth = OS.LOWORD (margins) + OS.HIWORD (margins);
 		if (rect.right - rect.left <= marginWidth) {
 			int [] start = new int [1], end = new int [1];
 			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
@@ -1770,7 +1770,7 @@ void setTabStops (int tabs) {
 	* to round off error, the tab spacing may not be the exact
 	* number of space widths, depending on the font.
 	*/
-	int width = (getTabWidth (tabs) * 4) / (OS.GetDialogBaseUnits () & 0xFFFF);
+	int width = (getTabWidth (tabs) * 4) / OS.LOWORD (OS.GetDialogBaseUnits ());
 	OS.SendMessage (handle, OS.EM_SETTABSTOPS, 1, new int [] {width});
 }
 
@@ -2211,8 +2211,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		*/
 		boolean hasMenu = menu != null && !menu.isDisposed ();
 		if (hasMenu || hooks (SWT.MenuDetect)) {
-			int x = (short) (lParam & 0xFFFF);
-			int y = (short) (lParam >> 16);
+			int x = OS.GET_X_LPARAM (lParam);
+			int y = OS.GET_Y_LPARAM (lParam);
 			SHRGINFO shrg = new SHRGINFO ();
 			shrg.cbSize = SHRGINFO.sizeof;
 			shrg.hwndClient = handle;
@@ -2352,7 +2352,7 @@ LRESULT wmColorChild (int wParam, int lParam) {
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
-	int code = wParam >> 16;
+	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.EN_CHANGE:
 			if (ignoreModify) break;

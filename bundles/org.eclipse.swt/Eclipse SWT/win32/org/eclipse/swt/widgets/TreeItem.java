@@ -1296,7 +1296,7 @@ public void setExpanded (boolean expanded) {
 			newInfo.fMask = OS.SIF_ALL;
 			if (OS.GetScrollInfo (hwnd, OS.SB_HORZ, newInfo)) {
 				if (oldInfo.nPos != newInfo.nPos) {
-					int lParam = OS.SB_THUMBPOSITION | ((oldInfo.nPos << 16) & 0xFFFF0000);
+					int lParam = OS.MAKELPARAM (OS.SB_THUMBPOSITION, oldInfo.nPos);
 					OS.SendMessage (hwnd, OS.WM_HSCROLL, lParam, 0);
 				}
 			}

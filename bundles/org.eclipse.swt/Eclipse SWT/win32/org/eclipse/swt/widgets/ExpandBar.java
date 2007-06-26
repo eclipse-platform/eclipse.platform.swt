@@ -605,8 +605,8 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
-	int x = (short) (lParam & 0xFFFF);
-	int y = (short) (lParam >> 16);
+	int x = OS.GET_X_LPARAM (lParam);
+	int y = OS.GET_Y_LPARAM (lParam);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items[i];
 		boolean hover = item.isHover (x, y);
@@ -625,8 +625,8 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	if (focusItem == null) return result;
-	int x = (short) (lParam & 0xFFFF);
-	int y = (short) (lParam >> 16);
+	int x = OS.GET_X_LPARAM (lParam);
+	int y = OS.GET_Y_LPARAM (lParam);
 	boolean hover = focusItem.isHover (x, y);
 	if (hover) {
 		Event event = new Event ();
@@ -655,8 +655,8 @@ LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
-	int x = (short) (lParam & 0xFFFF);
-	int y = (short) (lParam >> 16);
+	int x = OS.GET_X_LPARAM (lParam);
+	int y = OS.GET_Y_LPARAM (lParam);
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items [i];
 		boolean hover = item.isHover (x, y);
@@ -713,7 +713,7 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
-	int hitTest = lParam & 0xFFFF;
+	int hitTest = (short) OS.LOWORD (lParam);
  	if (hitTest == OS.HTCLIENT) {
 		for (int i = 0; i < itemCount; i++) {
 			ExpandItem item = items [i];

@@ -1607,14 +1607,14 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 			return LRESULT.ZERO;
 		}
 	}
-	if ((wParam & 0xFFFF) != 0) {
+	if (OS.LOWORD (wParam) != 0) {
 		/*
 		* When the high word of wParam is non-zero, the activation
 		* state of the window is being changed while the window is
 		* minimized. If this is the case, do not report activation
 		* events or restore the focus.
 		*/
-		if ((wParam >> 16) != 0) return result;
+		if (OS.HIWORD (wParam) != 0) return result;
 		Control control = display.findControl (lParam);
 		if (control == null || control instanceof Shell) {
 			if (this instanceof Shell) {
@@ -1666,7 +1666,7 @@ LRESULT WM_HOTKEY (int wParam, int lParam) {
 		* If the Shell has the SWT.CLOSE style, close the Shell.
 		* Otherwise, send the Back key to the window with focus.
 		*/
-		if (((lParam >> 16) & 0xFFFF) == OS.VK_ESCAPE) {
+		if (OS.HIWORD (lParam) == OS.VK_ESCAPE) {
 			if ((style & SWT.CLOSE) != 0) {
 				OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 			} else {
@@ -1744,8 +1744,8 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		switch (wParam) {
 			case OS.SIZE_RESTORED:
 			case OS.SIZE_MAXIMIZED:
-				newWidth = lParam & 0xFFFF;
-				newHeight = lParam >> 16;
+				newWidth = OS.LOWORD (lParam);
+				newHeight = OS.HIWORD (lParam);
 				break;
 			case OS.SIZE_MINIMIZED:
 				Rectangle rect = getClientArea ();

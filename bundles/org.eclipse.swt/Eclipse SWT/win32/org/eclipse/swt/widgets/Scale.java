@@ -465,7 +465,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT wmScrollChild (int wParam, int lParam) {
 	
 	/* Do nothing when scrolling is ending */
-	int code = wParam & 0xFFFF;
+	int code = OS.LOWORD (wParam);
 	switch (code) {
 		case OS.TB_ENDTRACK:
 		case OS.TB_THUMBPOSITION:

@@ -3076,6 +3076,42 @@ JNIEXPORT jint JNICALL OS_NATIVE(GCP_1RESULTS_1sizeof)
 }
 #endif
 
+#ifndef NO_GET_1WHEEL_1DELTA_1WPARAM
+JNIEXPORT jint JNICALL OS_NATIVE(GET_1WHEEL_1DELTA_1WPARAM)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GET_1WHEEL_1DELTA_1WPARAM_FUNC);
+	rc = (jint)GET_WHEEL_DELTA_WPARAM(arg0);
+	OS_NATIVE_EXIT(env, that, GET_1WHEEL_1DELTA_1WPARAM_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GET_1X_1LPARAM
+JNIEXPORT jint JNICALL OS_NATIVE(GET_1X_1LPARAM)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GET_1X_1LPARAM_FUNC);
+	rc = (jint)GET_X_LPARAM(arg0);
+	OS_NATIVE_EXIT(env, that, GET_1X_1LPARAM_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GET_1Y_1LPARAM
+JNIEXPORT jint JNICALL OS_NATIVE(GET_1Y_1LPARAM)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GET_1Y_1LPARAM_FUNC);
+	rc = (jint)GET_Y_LPARAM(arg0);
+	OS_NATIVE_EXIT(env, that, GET_1Y_1LPARAM_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GRADIENT_1RECT_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GRADIENT_1RECT_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -6158,6 +6194,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIGHCONTRAST_1sizeof)
 }
 #endif
 
+#ifndef NO_HIWORD
+JNIEXPORT jint JNICALL OS_NATIVE(HIWORD)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, HIWORD_FUNC);
+	rc = (jint)HIWORD(arg0);
+	OS_NATIVE_EXIT(env, that, HIWORD_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_HeapAlloc
 JNIEXPORT jint JNICALL OS_NATIVE(HeapAlloc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -7192,6 +7240,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(LOGPEN_1sizeof)
 }
 #endif
 
+#ifndef NO_LOWORD
+JNIEXPORT jint JNICALL OS_NATIVE(LOWORD)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LOWORD_FUNC);
+	rc = (jint)LOWORD(arg0);
+	OS_NATIVE_EXIT(env, that, LOWORD_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LVCOLUMN_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(LVCOLUMN_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -7452,6 +7512,42 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(LockWindowUpdate)
 	OS_NATIVE_ENTER(env, that, LockWindowUpdate_FUNC);
 	rc = (jboolean)LockWindowUpdate((HWND)arg0);
 	OS_NATIVE_EXIT(env, that, LockWindowUpdate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_MAKELPARAM
+JNIEXPORT jint JNICALL OS_NATIVE(MAKELPARAM)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, MAKELPARAM_FUNC);
+	rc = (jint)MAKELPARAM(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, MAKELPARAM_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_MAKELRESULT
+JNIEXPORT jint JNICALL OS_NATIVE(MAKELRESULT)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, MAKELRESULT_FUNC);
+	rc = (jint)MAKELRESULT(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, MAKELRESULT_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_MAKEWPARAM
+JNIEXPORT jint JNICALL OS_NATIVE(MAKEWPARAM)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, MAKEWPARAM_FUNC);
+	rc = (jint)MAKEWPARAM(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, MAKEWPARAM_FUNC);
 	return rc;
 }
 #endif
@@ -9624,6 +9720,20 @@ JNIEXPORT jint JNICALL OS_NATIVE(PAINTSTRUCT_1sizeof)
 	rc = (jint)PAINTSTRUCT_sizeof();
 	OS_NATIVE_EXIT(env, that, PAINTSTRUCT_1sizeof_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_POINTSTOPOINT
+JNIEXPORT void JNICALL OS_NATIVE(POINTSTOPOINT)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	POINT _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, POINTSTOPOINT_FUNC);
+	if (arg0) if ((lparg0 = getPOINTFields(env, arg0, &_arg0)) == NULL) goto fail;
+	POINTSTOPOINT(*lparg0, arg1);
+fail:
+	if (arg0 && lparg0) setPOINTFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, POINTSTOPOINT_FUNC);
 }
 #endif
 

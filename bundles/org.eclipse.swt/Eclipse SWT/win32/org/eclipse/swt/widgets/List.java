@@ -1526,7 +1526,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
-	int code = wParam >> 16;
+	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.LBN_SELCHANGE:
 			postEvent (SWT.Selection);

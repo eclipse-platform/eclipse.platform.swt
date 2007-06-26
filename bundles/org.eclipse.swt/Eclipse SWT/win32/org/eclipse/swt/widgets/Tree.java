@@ -5007,8 +5007,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 		if (!hooks (SWT.EraseItem) && !hooks (SWT.PaintItem)) {
 			int pos = OS.GetMessagePos ();
 			POINT pt = new POINT();
-			pt.x = (short) (pos & 0xFFFF);
-			pt.y = (short) (pos >> 16);
+			OS.POINTSTOPOINT (pt, pos);
 			OS.ScreenToClient (handle, pt);
 			TVHITTESTINFO lpht = new TVHITTESTINFO ();
 			lpht.x = pt.x;
@@ -5255,13 +5254,12 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			case OS.WM_SETCURSOR: {
 				if (wParam == hwnd) {
-					int hitTest = (short) (lParam & 0xFFFF);
+					int hitTest = (short) OS.LOWORD (lParam);
 					if (hitTest == OS.HTCLIENT) {
 						HDHITTESTINFO pinfo = new HDHITTESTINFO ();
 						int pos = OS.GetMessagePos ();
 						POINT pt = new POINT ();
-						pt.x = (short) (pos & 0xFFFF);
-						pt.y = (short) (pos >> 16); 
+						OS.POINTSTOPOINT (pt, pos);
 						OS.ScreenToClient (hwnd, pt);
 						pinfo.x = pt.x;
 						pinfo.y = pt.y;
@@ -5344,7 +5342,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				* on Windows Vista.
 				*/
 				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					if ((wParam & 0xFFFF) == OS.SB_THUMBTRACK) {
+					if (OS.LOWORD (wParam) == OS.SB_THUMBTRACK) {
 						info.nPos = info.nTrackPos;
 					}
 				}
@@ -5670,8 +5668,8 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	TVHITTESTINFO lpht = new TVHITTESTINFO ();
-	lpht.x = (short) (lParam & 0xFFFF);
-	lpht.y = (short) (lParam >> 16);
+	lpht.x = OS.GET_X_LPARAM (lParam);
+	lpht.y = OS.GET_Y_LPARAM (lParam);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem != 0) {
 		if ((style & SWT.CHECK) != 0) {
@@ -5738,8 +5736,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* below the last item is selected.
 	*/
 	TVHITTESTINFO lpht = new TVHITTESTINFO ();
-	lpht.x = (short) (lParam & 0xFFFF);
-	lpht.y = (short) (lParam >> 16);
+	lpht.x = OS.GET_X_LPARAM (lParam);
+	lpht.y = OS.GET_Y_LPARAM (lParam);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem == 0 || (lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
 		Display display = this.display;
@@ -6075,7 +6073,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* issue a fake mouse up.
 	*/
 	if (dragStarted) {
-		sendDragEvent (1, (short) (lParam & 0xFFFF), (short) (lParam >> 16));
+		sendDragEvent (1, OS.GET_X_LPARAM (lParam), OS.GET_Y_LPARAM (lParam));
 	} else {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.TVS_DISABLEDRAGDROP) == 0) {
@@ -6099,10 +6097,10 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 		*/
 		int mask = OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON;
 		if (display.xMouse) mask |= OS.MK_XBUTTON1 | OS.MK_XBUTTON2;
-		if (((wParam & 0xFFFF) & mask) == 0) {
+		if ((wParam & mask) == 0) {
 			TVHITTESTINFO lpht = new TVHITTESTINFO ();
-			lpht.x = (short) (lParam & 0xFFFF);
-			lpht.y = (short) (lParam >> 16);
+			lpht.x = OS.GET_X_LPARAM (lParam);
+			lpht.y = OS.GET_Y_LPARAM (lParam);
 			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 			if (lpht.hItem != 0) {
 				int hDC = OS.GetDC (handle);
@@ -6194,8 +6192,8 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	* This behavior is consistent with the table.
 	*/
 	TVHITTESTINFO lpht = new TVHITTESTINFO ();
-	lpht.x = (short) (lParam & 0xFFFF);
-	lpht.y = (short) (lParam >> 16);
+	lpht.x = OS.GET_X_LPARAM (lParam);
+	lpht.y = OS.GET_Y_LPARAM (lParam);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if (lpht.hItem != 0) {
 		int flags = OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL;
@@ -6472,8 +6470,7 @@ LRESULT wmNotify (NMHDR hdr, int wParam, int lParam) {
 					}
 					int pos = OS.GetMessagePos ();
 					POINT pt = new POINT();
-					pt.x = (short) (pos & 0xFFFF);
-					pt.y = (short) (pos >> 16);
+					OS.POINTSTOPOINT (pt, pos);
 					OS.ScreenToClient (handle, pt);
 					TVHITTESTINFO lpht = new TVHITTESTINFO ();
 					lpht.x = pt.x;
@@ -6892,8 +6889,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			if (hooks (SWT.DefaultSelection)) {
 				POINT pt = new POINT ();
 				int pos = OS.GetMessagePos ();
-				pt.x = (short) (pos & 0xFFFF);
-				pt.y = (short) (pos >> 16);
+				OS.POINTSTOPOINT (pt, pos);
 				OS.ScreenToClient (handle, pt);
 				TVHITTESTINFO lpht = new TVHITTESTINFO ();
 				lpht.x = pt.x;

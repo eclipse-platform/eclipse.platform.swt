@@ -416,7 +416,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 		if (hwndText != 0) {
 			int margins = OS.SendMessage (hwndText, OS.EM_GETMARGINS, 0, 0);
-			int marginWidth = (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+			int marginWidth = OS.LOWORD (margins) + OS.HIWORD (margins);
 			width += marginWidth + 3;
 		}
 	}
@@ -589,8 +589,8 @@ boolean dragDetect (int hwnd, int x, int y, boolean filter, boolean [] detect, b
 			int [] start = new int [1], end = new int [1];
 			OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
 			if (start [0] != end [0]) {
-				int lParam = (x & 0xFFFF) | ((y << 16) & 0xFFFF0000);
-				int position = OS.SendMessage (hwndText, OS.EM_CHARFROMPOS, 0, lParam) & 0xFFFF;
+				int lParam = OS.MAKELPARAM (x, y);
+				int position = OS.LOWORD (OS.SendMessage (hwndText, OS.EM_CHARFROMPOS, 0, lParam));
 				if (start [0] <= position && position < end [0]) {
 					if (super.dragDetect (hwnd, x, y, filter, detect, consume)) {
 						if (consume != null) consume [0] = true;
@@ -1723,7 +1723,7 @@ public void setSelection (Point selection) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
 	}
-	int bits = (start & 0xFFFF) | ((end << 16) & 0xFFFF0000);
+	int bits = OS.MAKELPARAM (start, end);
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 }
 
@@ -2165,7 +2165,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (isDisposed ()) return result;
 		if (buffer != null) {
 			OS.SetWindowText (handle, buffer);
-			int bits = (start [0] & 0xFFFF) | ((end [0] << 16) & 0xFFFF0000);
+			int bits = OS.MAKELPARAM (start [0], end [0]);
 			OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 			if (redraw) setRedraw (true);
 		}
@@ -2285,7 +2285,7 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
-	int code = wParam >> 16;
+	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.CBN_EDITCHANGE:
 			if (ignoreModify) break;

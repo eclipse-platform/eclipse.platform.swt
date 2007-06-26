@@ -1129,11 +1129,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 		bits |= width & 0xFFFF;
 	}
-	int result = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, -1, bits | 0xFFFF0000);
-	int width = result & 0xFFFF;
+	int result = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, -1, OS.MAKELPARAM (bits, 0xFFFF));
+	int width = OS.LOWORD (result);
 	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-	int itemHeight = (oneItem >> 16) - (empty >> 16);
+	int itemHeight = OS.HIWORD (oneItem) - OS.HIWORD (empty);
 	height += OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0) * itemHeight;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
@@ -1196,7 +1196,7 @@ void createHandle () {
 	if ((style & SWT.CHECK) != 0) {
 		int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-		int width = (oneItem >> 16) - (empty >> 16), height = width;
+		int width = OS.HIWORD (oneItem) - OS.HIWORD (empty), height = width;
 		setCheckboxImageList (width, height, false);
 		OS.SendMessage (handle, OS. LVM_SETCALLBACKMASK, OS.LVIS_STATEIMAGEMASK, 0);
 	}
@@ -2205,7 +2205,7 @@ public int getItemHeight () {
 	checkWidget ();
 	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-	return (oneItem >> 16) - (empty >> 16);
+	return OS.HIWORD (oneItem) - OS.HIWORD (empty);
 }
 
 /**
@@ -3252,8 +3252,8 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	* the widget does not eat the mouse up.
 	*/
 	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
-	pinfo.x = (short) (lParam & 0xFFFF);
-	pinfo.y = (short) (lParam >> 16);
+	pinfo.x = OS.GET_X_LPARAM (lParam);
+	pinfo.y = OS.GET_Y_LPARAM (lParam);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	Display display = this.display;
 	display.captureChanged = false;
@@ -4997,13 +4997,12 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			case OS.WM_SETCURSOR: {
 				if (wParam == hwnd) {
-					int hitTest = (short) (lParam & 0xFFFF);
+					int hitTest = (short) OS.LOWORD (lParam);
 					if (hitTest == OS.HTCLIENT) {
 						HDHITTESTINFO pinfo = new HDHITTESTINFO ();
 						int pos = OS.GetMessagePos ();
 						POINT pt = new POINT ();
-						pt.x = (short) (pos & 0xFFFF);
-						pt.y = (short) (pos >> 16); 
+						OS.POINTSTOPOINT (pt, pos);
 						OS.ScreenToClient (hwnd, pt);
 						pinfo.x = pt.x;
 						pinfo.y = pt.y;
@@ -5200,8 +5199,8 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	* case and avoid calling the window proc.
 	*/
 	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
-	pinfo.x = (short) (lParam & 0xFFFF);
-	pinfo.y = (short) (lParam >> 16);
+	pinfo.x = OS.GET_X_LPARAM (lParam);
+	pinfo.y = OS.GET_Y_LPARAM (lParam);
 	int index = OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	Display display = this.display;
 	display.captureChanged = false;
@@ -5252,8 +5251,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
 		LVHITTESTINFO pinfo = new LVHITTESTINFO ();
-		pinfo.x = (short) (lParam & 0xFFFF);
-		pinfo.y = (short) (lParam >> 16);
+		pinfo.x = OS.GET_X_LPARAM (lParam);
+		pinfo.y = OS.GET_Y_LPARAM (lParam);
 		/*
 		* Note that when the table has LVS_EX_FULLROWSELECT and the
 		* user clicks anywhere on a row except on the check box, all
@@ -5372,8 +5371,8 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 	* case and avoid calling the window proc.
 	*/
 	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
-	pinfo.x = (short) (lParam & 0xFFFF);
-	pinfo.y = (short) (lParam >> 16);
+	pinfo.x = OS.GET_X_LPARAM (lParam);
+	pinfo.y = OS.GET_Y_LPARAM (lParam);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	Display display = this.display;
 	display.captureChanged = false;
@@ -5580,7 +5579,7 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	*/
 	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
-		int code = wParam & 0xFFFF;
+		int code = OS.LOWORD (wParam);
 		switch (code) {
 			case OS.SB_ENDSCROLL:
 			case OS.SB_THUMBPOSITION:
@@ -5598,7 +5597,7 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 				clientRect.top += headerHeight;
 				int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 				int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-				int itemHeight = (oneItem >> 16) - (empty >> 16);
+				int itemHeight = OS.HIWORD (oneItem) - OS.HIWORD (empty);
 				if (code == OS.SB_LINEDOWN) {
 					clientRect.top = clientRect.bottom - itemHeight - GRID_WIDTH;
 				} else {
@@ -5621,7 +5620,7 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 	if (itemHeight == -1) {
 		int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
 		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-		struct.itemHeight = (oneItem >> 16) - (empty >> 16);
+		struct.itemHeight = OS.HIWORD (oneItem) - OS.HIWORD (empty);
 	} else {
 		struct.itemHeight = itemHeight;
 	}
@@ -6008,8 +6007,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 			if (hdr.code == OS.LVN_BEGINDRAG) {
 				int pos = OS.GetMessagePos ();
 				POINT pt = new POINT ();
-				pt.x = (short) (pos & 0xFFFF);
-				pt.y = (short) (pos >> 16); 
+				OS.POINTSTOPOINT (pt, pos);
 				OS.ScreenToClient (handle, pt);
 				sendDragEvent (1, pt.x, pt.y);
 			}

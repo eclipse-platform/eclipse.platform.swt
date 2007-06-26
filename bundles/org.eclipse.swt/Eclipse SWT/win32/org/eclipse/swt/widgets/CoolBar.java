@@ -1100,8 +1100,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 		case OS.RBN_BEGINDRAG: {
 			int pos = OS.GetMessagePos ();
 			POINT pt = new POINT ();
-			pt.x = (short) (pos & 0xFFFF);
-			pt.y = (short) (pos >> 16); 
+			OS.POINTSTOPOINT (pt, pos);
 			OS.ScreenToClient (handle, pt);
 			int button = display.lastButton != 0 ? display.lastButton : 1;
 			if (!sendDragEvent (button, pt.x, pt.y)) return LRESULT.ONE;

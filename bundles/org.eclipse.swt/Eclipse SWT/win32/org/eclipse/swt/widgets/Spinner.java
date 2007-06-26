@@ -329,8 +329,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	* box.
 	*/
 	int margins = OS.SendMessage (hwndText, OS.EM_GETMARGINS, 0, 0);
-	x -= margins & 0xFFFF;
-	width += (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+	x -= OS.LOWORD (margins);
+	width += OS.LOWORD (margins) + OS.HIWORD (margins);
 	if ((style & SWT.BORDER) != 0) {
 		x -= 1;
 		y -= 1;
@@ -501,7 +501,7 @@ public int getPageIncrement () {
 public int getSelection () {
 	checkWidget ();
 	if (OS.IsWinCE) {
-		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+		return OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 	} else {
 		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
@@ -779,7 +779,7 @@ public void setDigits (int value) {
 	this.digits = value;
 	int pos;
 	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
@@ -844,7 +844,7 @@ public void setMaximum (int value) {
 	if (value <= min [0]) return;
 	int pos;
 	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
@@ -873,7 +873,7 @@ public void setMinimum (int value) {
 	if (value >= max [0]) return;
 	int pos;
 	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+		pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
@@ -1131,7 +1131,7 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
-	int width = lParam & 0xFFFF, height = lParam >> 16;
+	int width = OS.LOWORD (lParam), height = OS.HIWORD (lParam);
 	int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 	int textWidth = width - upDownWidth;
 	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
@@ -1228,7 +1228,7 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
-	int code = wParam >> 16;
+	int code = OS.HIWORD (wParam);
 	switch (code) {
 		case OS.EN_CHANGE:
 			if (ignoreModify) break;
@@ -1236,7 +1236,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			if (value != -1) {
 				int pos;
 				if (OS.IsWinCE) {
-					pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+					pos = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 				} else {
 					pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 				}
@@ -1267,7 +1267,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 		int value = getSelectionText ();
 		if (value != -1) {
 			if (OS.IsWinCE) {
-				value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+				value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 			} else {
 				value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 			}
@@ -1296,7 +1296,7 @@ LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
 	int value = getSelectionText ();
 	if (value == -1) {
 		if (OS.IsWinCE) {
-			value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+			value = OS.LOWORD (OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0));
 		} else {
 			value = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 		}		
@@ -1335,7 +1335,7 @@ LRESULT wmNotifyChild (NMHDR hdr, int wParam, int lParam) {
 }
 
 LRESULT wmScrollChild (int wParam, int lParam) {
-	int code = wParam & 0xFFFF;
+	int code = OS.LOWORD (wParam);
 	switch (code) {
 		case OS.SB_THUMBPOSITION:
 			postEvent (SWT.Selection);

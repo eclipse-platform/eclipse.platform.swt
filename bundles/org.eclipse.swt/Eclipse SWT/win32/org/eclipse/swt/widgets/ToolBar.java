@@ -643,7 +643,7 @@ void layoutItems () {
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_SIZE;
 		int size = OS.SendMessage (handle, OS.TB_GETBUTTONSIZE, 0, 0);
-		info.cx = (short) (size & 0xFFFF);
+		info.cx = (short) OS.LOWORD (size);
 		int index = 0;
 		while (index < items.length) {
 			ToolItem item = items [index];
@@ -652,7 +652,7 @@ void layoutItems () {
 		}
 		if (index < items.length) {
 			int padding = OS.SendMessage (handle, OS.TB_GETPADDING, 0, 0);
-			info.cx += (padding & 0xFFFF) * 2;
+			info.cx += OS.LOWORD (padding) * 2;
 		}
 		for (int i=0; i<items.length; i++) {
 			ToolItem item = items [i];
@@ -940,7 +940,7 @@ void setRowCount (int count) {
 		* choosing two instead of one as the row increment fixes both cases.
 		*/
 		count += 2;
-		OS.SendMessage (handle, OS.TB_SETROWS, (1 << 16) | count, 0);
+		OS.SendMessage (handle, OS.TB_SETROWS, OS.MAKEWPARAM (count, 1), 0);
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
 		SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
 		ignoreResize = false;
@@ -1287,7 +1287,7 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
-	ToolItem child = items [wParam & 0xFFFF];
+	ToolItem child = items [OS.LOWORD (wParam)];
 	if (child == null) return null;
 	return child.wmCommandChild (wParam, lParam);
 }

@@ -876,7 +876,7 @@ public void setVisible (boolean visible) {
 LRESULT wmScrollChild (int wParam, int lParam) {
 
 	/* Do nothing when scrolling is ending */
-	int code = wParam & 0xFFFF;
+	int code = OS.LOWORD (wParam);
 	if (code == OS.SB_ENDSCROLL) return null;
 
 	/*

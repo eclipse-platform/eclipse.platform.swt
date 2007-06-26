@@ -847,10 +847,10 @@ LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
 	*/
 	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return result;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		int code = wParam & 0xFFFF;
+		int code = OS.LOWORD (wParam);
 		switch (code) {
 			case OS.WM_CREATE: {
-				int id = (wParam >> 16), hwnd = lParam;
+				int id = OS.HIWORD (wParam), hwnd = lParam;
 				if (id == ID_UPDOWN) {
 					int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 					OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE,	bits | OS.WS_EX_LAYOUTRTL);
