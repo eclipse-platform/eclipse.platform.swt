@@ -701,7 +701,15 @@ void createMembersPanel(Composite panel) {
 								case FIELD_CAST_COLUMN: text = data.getCast(); break;
 								case FIELD_ACCESSOR_COLUMN: {
 									text = data.getAccessor(); 
-									if (text.length() == 0) text = data.getField().getName();
+									if (text.length() == 0) {
+										text = data.getField().getName();
+										int index = text.lastIndexOf('_');
+										if (index != -1) {
+											char[] chars = text.toCharArray();
+											chars[index] = '.';
+											text = new String(chars);
+										}
+									}
 									break;
 								}
 								case FIELD_EXCLUDE_COLUMN: text = data.getExclude(); break;
