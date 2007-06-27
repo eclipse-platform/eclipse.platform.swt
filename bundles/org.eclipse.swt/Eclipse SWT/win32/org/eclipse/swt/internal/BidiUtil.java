@@ -511,7 +511,7 @@ public static void setKeyboardLanguage(int language) {
 		int[] list = getKeyboardLanguageList();
 		// set to first bidi language
 		for (int i=0; i<list.length; i++) {
-			int id = list[i] & 0x000000FF;
+			int id = OS.PRIMARYLANGID(OS.LOWORD(list[i]));
 			if ((id == LANG_ARABIC) || (id == LANG_HEBREW)) {
 				OS.ActivateKeyboardLayout(list[i], 0);
 				return;
@@ -523,7 +523,7 @@ public static void setKeyboardLanguage(int language) {
 		// set to the first non-bidi language (anything not
 		// Hebrew or Arabic)
 		for (int i=0; i<list.length; i++) {
-			int id = list[i] & 0x000000FF;
+			int id = OS.PRIMARYLANGID(OS.LOWORD(list[i]));
 			if ((id != LANG_HEBREW) && (id != LANG_ARABIC)) {
 				OS.ActivateKeyboardLayout(list[i], 0);
 				return;
