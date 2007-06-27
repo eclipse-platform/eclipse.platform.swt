@@ -403,11 +403,9 @@ public static int getFontBidiAttributes(GC gc) {
  */
 public static int getKeyboardLanguage() {
 	int layout = OS.GetKeyboardLayout(0);
-	// only interested in low 2 bytes, which is the primary
-	// language identifier
-	layout = layout & 0x000000FF;
-	if (layout == LANG_HEBREW) return KEYBOARD_BIDI;
-	if (layout == LANG_ARABIC) return KEYBOARD_BIDI;
+	int langID = OS.PRIMARYLANGID(OS.LOWORD(layout));
+	if (langID == LANG_HEBREW) return KEYBOARD_BIDI;
+	if (langID == LANG_ARABIC) return KEYBOARD_BIDI;
 	// return non-bidi for all other languages
 	return KEYBOARD_NON_BIDI;
 }
@@ -478,7 +476,7 @@ public static boolean isBidiPlatform() {
 public static boolean isKeyboardBidi() {
 	int[] list = getKeyboardLanguageList();
 	for (int i=0; i<list.length; i++) {
-		int id = list[i] & 0x000000FF;
+		int id = OS.PRIMARYLANGID(OS.LOWORD(list[i]));
 		if ((id == LANG_ARABIC) || (id == LANG_HEBREW)) {
 			return true;
 		}

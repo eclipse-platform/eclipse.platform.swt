@@ -3651,7 +3651,7 @@ public static final native boolean PostMessageW (int /*long*/ hWnd, int Msg, int
 public static final native boolean PostMessageA (int /*long*/ hWnd, int Msg, int /*long*/ wParam, int /*long*/ lParam);
 public static final native boolean PostThreadMessageW (int idThread, int Msg, int /*long*/ wParam, int /*long*/ lParam);
 public static final native boolean PostThreadMessageA (int idThread, int Msg, int /*long*/ wParam, int /*long*/ lParam);
-public static final native short PRIMARYLANGID (short lgid);
+public static final native short PRIMARYLANGID (int lgid);
 public static final native boolean PrintDlgW (PRINTDLG lppd);
 public static final native boolean PrintDlgA (PRINTDLG lppd);
 public static final native boolean PrintWindow (int /*long*/ hwnd, int /*long*/ hdcBlt, int nFlags);

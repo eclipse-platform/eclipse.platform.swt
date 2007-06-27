@@ -9751,7 +9751,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(POINT_1sizeof)
 
 #ifndef NO_PRIMARYLANGID
 JNIEXPORT jshort JNICALL OS_NATIVE(PRIMARYLANGID)
-	(JNIEnv *env, jclass that, jshort arg0)
+	(JNIEnv *env, jclass that, jint arg0)
 {
 	jshort rc = 0;
 	OS_NATIVE_ENTER(env, that, PRIMARYLANGID_FUNC);

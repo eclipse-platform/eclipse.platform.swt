@@ -361,7 +361,6 @@
 #define NO_Pie
 #define NO_PostMessageA
 #define NO_PostThreadMessageA
-#define NO_PRIMARYLANGID
 #define NO_PrintDlgA
 #define NO_PrintDlgW
 #define NO_PrintWindow
