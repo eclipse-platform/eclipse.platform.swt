@@ -183,7 +183,7 @@ String openChooserDialog () {
 					OS.memmove (chars, utf16Ptr, clength * 2);
 					OS.g_free (utf16Ptr);
 					answer = new String (chars);
-					filterPath = answer.substring (answer.lastIndexOf (SEPARATOR) + 1);
+					filterPath = answer;
 				}
 			}
 		}
