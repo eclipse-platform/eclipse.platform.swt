@@ -12,9 +12,6 @@
 #ifndef INC_wpf_H
 #define INC_wpf_H
 
-#include <string.h>
-#include <windows.h>
-
 #using <mscorlib.dll>
 
 using namespace System;

@@ -8,13 +8,10 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.wpf;
+package org.eclipse.swt.internal.win32;
 
-public class ICONINFO {
-	public boolean fIcon;
-	public int xHotspot; 
-	public int yHotspot;
-	public int hbmMask;
-	public int hbmColor;
-	public static final int sizeof = 20;
+public class POINT {
+	public int x;
+	public int y;
+	public static final int sizeof = 8;
 }

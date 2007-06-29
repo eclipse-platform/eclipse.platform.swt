@@ -9,22 +9,14 @@
  *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-#ifdef NATIVE_STATS
-extern int COM_nativeFunctionCount;
-extern int COM_nativeFunctionCallCount[];
-extern char* COM_nativeFunctionNames[];
-#define COM_NATIVE_ENTER(env, that, func) COM_nativeFunctionCallCount[func]++;
-#define COM_NATIVE_EXIT(env, that, func) 
-#else
-#ifndef COM_NATIVE_ENTER
-#define COM_NATIVE_ENTER(env, that, func) 
-#endif
-#ifndef COM_NATIVE_EXIT
-#define COM_NATIVE_EXIT(env, that, func) 
-#endif
-#endif
+#ifndef INC_win32_H
+#define INC_win32_H
 
-typedef enum {
-	OleInitialize_FUNC,
-	OleUninitialize_FUNC,
-} COM_FUNCS;
+
+#include "swt.h"
+#include <ole2.h>
+#include <objbase.h>
+#include <string.h>
+#include <windows.h>
+
+#endif /* INC_win32_H */

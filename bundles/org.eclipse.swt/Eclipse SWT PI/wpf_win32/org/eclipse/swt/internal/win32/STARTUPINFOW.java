@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.wpf;
+package org.eclipse.swt.internal.win32;
 
 public class STARTUPINFOW {
 	public int cb;
@@ -29,5 +29,5 @@ public class STARTUPINFOW {
 	public int /*long*/ hStdInput;
 	public int /*long*/ hStdOutput;
 	public int /*long*/ hStdError;
-	public static int sizeof = OS.STARTUPINFOW_sizeof ();
+	public static int sizeof = Win32.STARTUPINFOW_sizeof ();
 }

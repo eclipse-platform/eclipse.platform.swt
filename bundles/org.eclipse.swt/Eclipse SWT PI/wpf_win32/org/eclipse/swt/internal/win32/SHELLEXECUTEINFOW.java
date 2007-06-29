@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.wpf;
+package org.eclipse.swt.internal.win32;
 
 public class SHELLEXECUTEINFOW {
 	public int cbSize;
@@ -31,6 +31,6 @@ public class SHELLEXECUTEINFOW {
 //	};
 	public int /*long*/ hIcon;
 	public int /*long*/ hProcess; 
-	public static final int sizeof = OS.SHELLEXECUTEINFOW_sizeof ();
+	public static final int sizeof = Win32.SHELLEXECUTEINFOW_sizeof ();
 }
 

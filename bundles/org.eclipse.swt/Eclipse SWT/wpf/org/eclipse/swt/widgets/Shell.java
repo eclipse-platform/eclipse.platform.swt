@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -1318,7 +1319,7 @@ void updateModal () {
 	int source = OS.PresentationSource_FromVisual (handle);
 	if (source != 0) {
 		int hwnd = OS.HwndSource_Handle (source);
-		OS.EnableWindow (OS.IntPtr_ToInt32 (hwnd), isActive ());
+		Win32.EnableWindow (OS.IntPtr_ToInt32 (hwnd), isActive ());
 		OS.GCHandle_Free (hwnd);
 		OS.GCHandle_Free (source);
 	}

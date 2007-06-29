@@ -6,9 +6,14 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    IBM Corporation - initial API and implementation
+ *     IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.swt.internal.win32;
 
-#include "swt.h"
-#include <ole2.h>
-#include <objbase.h>
+public class PROCESS_INFORMATION {
+	public int /*long*/ hProcess;
+	public int /*long*/ hThread;
+	public int dwProcessId;
+	public int dwThreadId;
+	public static int sizeof = Win32.PROCESS_INFORMATION_sizeof ();
+}

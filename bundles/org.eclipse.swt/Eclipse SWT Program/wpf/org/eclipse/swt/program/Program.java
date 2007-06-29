@@ -11,6 +11,7 @@
 package org.eclipse.swt.program;
 
 import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -234,19 +235,19 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	
-	int hHeap = OS.GetProcessHeap ();
+	int hHeap = Win32.GetProcessHeap ();
 	int length = fileName.length ();
 	char [] buffer = new char [length + 1];
 	fileName.getChars (0, length, buffer, 0);
 	int byteCount = buffer.length  * 2;
-	int lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (lpFile, buffer, byteCount);
+	int lpFile = Win32.HeapAlloc (hHeap, Win32.HEAP_ZERO_MEMORY, byteCount);
+	Win32.MoveMemory (lpFile, buffer, byteCount);
 	SHELLEXECUTEINFOW info = new SHELLEXECUTEINFOW ();
 	info.cbSize = SHELLEXECUTEINFOW.sizeof;
 	info.lpFile = lpFile;
-	info.nShow = OS.SW_SHOW;
-	boolean result = OS.ShellExecuteExW (info);
-	if (lpFile != 0) OS.HeapFree (hHeap, 0, lpFile);
+	info.nShow = Win32.SW_SHOW;
+	boolean result = Win32.ShellExecuteExW (info);
+	if (lpFile != 0) Win32.HeapFree (hHeap, 0, lpFile);
 	return result;
 }
 
@@ -286,9 +287,9 @@ public boolean execute (String fileName) {
 	STARTUPINFOW lpStartupInfo = new STARTUPINFOW ();
 	lpStartupInfo.cb = STARTUPINFOW.sizeof;
 	PROCESS_INFORMATION lpProcessInformation = new PROCESS_INFORMATION ();
-	boolean success = OS.CreateProcessW (0, buffer, 0, 0, false, 0, 0, 0, lpStartupInfo, lpProcessInformation);
-	if (lpProcessInformation.hProcess != 0) OS.CloseHandle (lpProcessInformation.hProcess);
-	if (lpProcessInformation.hThread != 0) OS.CloseHandle (lpProcessInformation.hThread);
+	boolean success = Win32.CreateProcessW (0, buffer, 0, 0, false, 0, 0, 0, lpStartupInfo, lpProcessInformation);
+	if (lpProcessInformation.hProcess != 0) Win32.CloseHandle (lpProcessInformation.hProcess);
+	if (lpProcessInformation.hThread != 0) Win32.CloseHandle (lpProcessInformation.hThread);
 	return success;
 }
 
@@ -314,7 +315,7 @@ public ImageData getImageData () {
 	char [] buffer = new char [length + 1];
 	fileName.getChars (0, length, buffer, 0);
 	int [] phiconSmall = new int [1], phiconLarge = null;
-	OS.ExtractIconExW (buffer, nIconIndex, phiconLarge, phiconSmall, 1);
+	Win32.ExtractIconExW (buffer, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
 	int empty = OS.Int32Rect_Empty ();
 	int source = OS.Imaging_CreateBitmapSourceFromHIcon (phiconSmall [0], empty, 0);

@@ -12,6 +12,8 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.internal.win32.*;
+
 import org.eclipse.swt.*;
 
 /**
@@ -194,8 +196,8 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
 	
 	/* Create the cursor */
-	int hInst = OS.GetModuleHandleW(null);
-	int cursor = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
+	int hInst = Win32.GetModuleHandleW(null);
+	int cursor = Win32.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
 	if (cursor == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int safeHandle = OS.gcnew_SWTSafeHandle(cursor, false);
 	if (safeHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -256,7 +258,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	int pixelFormat = 0;
 	boolean transparent = source.maskData != null || source.transparentPixel != -1 || source.alpha != -1 || source.alphaData != null;
 	if (transparent) {
-		pixelFormat = OS.PixelFormat_Format32bppArgb;
+		pixelFormat = Win32.PixelFormat_Format32bppArgb;
 		if (!(palette.isDirect && source.depth == 32 && redMask == 0xFF00 && greenMask == 0xFF0000 && blueMask == 0xFF000000)) {
 			newData = new ImageData(width, height, 32, new PaletteData(0xFF00, 0xFF0000, 0xFF000000));
 		}
@@ -266,32 +268,32 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			case 2:
 			case 4:
 			case 8:
-				pixelFormat = OS.PixelFormat_Format24bppRgb;
+				pixelFormat = Win32.PixelFormat_Format24bppRgb;
 				newData = new ImageData(source.width, source.height, 24, new PaletteData(0xFF, 0xFF00, 0xFF0000));
 				break;
 			case 16:
 				if (redMask == 0x7C00 && greenMask == 0x3E0 && blueMask == 0x1F) {
-					pixelFormat = OS.PixelFormat_Format16bppRgb555;
+					pixelFormat = Win32.PixelFormat_Format16bppRgb555;
 				} else if (redMask == 0xF800 && greenMask == 0x7E0 && blueMask == 0x1F) {
-					pixelFormat = OS.PixelFormat_Format16bppRgb565;
+					pixelFormat = Win32.PixelFormat_Format16bppRgb565;
 				} else {
-					pixelFormat = OS.PixelFormat_Format16bppRgb555;
+					pixelFormat = Win32.PixelFormat_Format16bppRgb555;
 					newData = new ImageData(source.width, source.height, 16, new PaletteData(0x7C00, 0x3E0, 0x1F));
 				}
 				break;
 			case 24:
 				if (redMask == 0xFF && greenMask == 0xFF00 && blueMask == 0xFF0000) {
-					pixelFormat = OS.PixelFormat_Format24bppRgb;
+					pixelFormat = Win32.PixelFormat_Format24bppRgb;
 				} else {
-					pixelFormat = OS.PixelFormat_Format24bppRgb;
+					pixelFormat = Win32.PixelFormat_Format24bppRgb;
 					newData = new ImageData(source.width, source.height, 24, new PaletteData(0xFF, 0xFF00, 0xFF0000));
 				}
 				break;
 			case 32:
 				if (redMask == 0xFF00 && greenMask == 0xFF0000 && blueMask == 0xFF000000) {
-					pixelFormat = OS.PixelFormat_Format32bppRgb;
+					pixelFormat = Win32.PixelFormat_Format32bppRgb;
 				} else {
-					pixelFormat = OS.PixelFormat_Format32bppRgb;
+					pixelFormat = Win32.PixelFormat_Format32bppRgb;
 					newData = new ImageData(source.width, source.height, 32, new PaletteData(0xFF00, 0xFF0000, 0xFF000000));
 				}
 				break;
@@ -363,14 +365,14 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	int hIcon = OS.Bitmap_GetHicon(bitmap);
 	if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	ICONINFO info = new ICONINFO(); 
-	OS.GetIconInfo(hIcon, info);
+	Win32.GetIconInfo(hIcon, info);
 	info.fIcon = false;
 	info.xHotspot = hotspotX;
 	info.yHotspot = hotspotY;
-	OS.DestroyIcon(hIcon);
-	hIcon = OS.CreateIconIndirect(info);
-	if (info.hbmColor != 0) OS.DeleteObject(info.hbmColor);
-	if (info.hbmMask != 0)OS.DeleteObject(info.hbmMask);
+	Win32.DestroyIcon(hIcon);
+	hIcon = Win32.CreateIconIndirect(info);
+	if (info.hbmColor != 0) Win32.DeleteObject(info.hbmColor);
+	if (info.hbmMask != 0)Win32.DeleteObject(info.hbmMask);
 	if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	
 	/* Create the cursor */

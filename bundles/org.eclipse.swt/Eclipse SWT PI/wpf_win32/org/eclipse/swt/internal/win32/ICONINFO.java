@@ -8,17 +8,13 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.wpf;
+package org.eclipse.swt.internal.win32;
 
-
-import org.eclipse.swt.internal.*;
-
-public class COM extends Platform {
-	static {
-		Library.loadLibrary ("swt-com"); //$NON-NLS-1$
-	}
-	
-public static final native int OleInitialize(int reserved);
-public static final native void OleUninitialize();
-	
+public class ICONINFO {
+	public boolean fIcon;
+	public int xHotspot; 
+	public int yHotspot;
+	public int hbmMask;
+	public int hbmColor;
+	public static final int sizeof = 20;
 }

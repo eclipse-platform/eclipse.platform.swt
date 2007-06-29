@@ -13,6 +13,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
@@ -1360,15 +1361,15 @@ boolean setKeyState (Event event, int type, int e) {
 	}
 	boolean textual = false;
 	int vKey = OS.KeyInterop_VirtualKeyFromKey (key);
-	int mapKey = OS.MapVirtualKeyW (vKey, 2);
+	int mapKey = Win32.MapVirtualKeyW (vKey, 2);
 	if ((mapKey & 0x80000000) != 0) {
 		display.deadChar = true;
 		return false;
 	}
 	char [] result = new char [1];
 	byte [] keyboard = new byte [256];
-	OS.GetKeyboardState (keyboard);
-	textual = OS.ToUnicode (vKey, 0, keyboard, result, 1, 0) == 1;
+	Win32.GetKeyboardState (keyboard);
+	textual = Win32.ToUnicode (vKey, 0, keyboard, result, 1, 0) == 1;
 	if (textual && type == SWT.KeyDown) {
 		if (display.deadChar) display.lastChar = result [0];
 		//TODO  problem: in german, dead key + non-combing key

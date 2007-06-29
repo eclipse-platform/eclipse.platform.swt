@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent icons that can be placed on the
@@ -350,7 +351,7 @@ public void setImage (Image image) {
 		OS.BitmapSource_CopyPixels (newImage, rect, buffer, buffer.length, bytesPerLine);
 		OS.GCHandle_Free (rect);
 		OS.GCHandle_Free (newImage);
-		int bitmap = OS.gcnew_Bitmap (width, height, bytesPerLine, OS.PixelFormat_Format32bppArgb, buffer);
+		int bitmap = OS.gcnew_Bitmap (width, height, bytesPerLine, Win32.PixelFormat_Format32bppArgb, buffer);//TODO
 		int hIcon = OS.Bitmap_GetHicon (bitmap);
 		OS.GCHandle_Free (bitmap);
 		int icon = OS.Icon_FromHandle (hIcon);

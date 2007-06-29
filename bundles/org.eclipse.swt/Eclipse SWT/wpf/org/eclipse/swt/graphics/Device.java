@@ -23,8 +23,9 @@ public abstract class Device implements Drawable {
 	
 	/* Debugging */
 	public static boolean DEBUG;
+	public static boolean TRACK;
 	boolean debug = DEBUG;
-	boolean tracking = DEBUG;
+	boolean tracking = DEBUG || TRACK;
 	Error [] errors;
 	Object [] objects;
 	
@@ -100,6 +101,7 @@ public Device(DeviceData data) {
 			debug = data.debug;
 			tracking = data.tracking;
 		}
+		tracking = true;
 		create (data);
 		init ();
 		if (tracking) {
@@ -536,8 +538,19 @@ public boolean isDisposed () {
  * @since 3.3
  */
 public boolean loadFont (String path) {
-	//TODO
-	return false;
+	checkDevice();
+	if (path == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	int length = path.length ();
+	char[] buffer = new char [length + 1];
+	path.getChars (0, length, buffer, 0);
+	int str = OS.gcnew_String(buffer);
+	int uri = OS.gcnew_Uri(str, OS.UriKind_RelativeOrAbsolute);
+	int list = OS.Fonts_GetTypefaces(uri);
+	int count = OS.TypefaceCollection_Count(list);
+	OS.GCHandle_Free(list);
+	OS.GCHandle_Free(uri);
+	OS.GCHandle_Free(str);
+	return count != 0;
 }
 
 void new_Object (Object object) {
@@ -588,6 +601,19 @@ protected void release () {
 	colors = null;
 	if (systemFont != null) systemFont.dispose();
 	systemFont = null;
+	if (objects != null) {
+		for (int i = 0; i < objects.length; i++) {
+			if (objects[i] != null) ((Resource)objects[i]).dispose();
+		}
+	}
+	if (TRACK & objects != null) {
+		for (int i = 0; i < objects.length; i++) {
+			if (objects[i] != null) {
+				System.err.println(objects[i]);
+				errors[i].printStackTrace();
+			}
+		}
+	}
 }
 
 /**

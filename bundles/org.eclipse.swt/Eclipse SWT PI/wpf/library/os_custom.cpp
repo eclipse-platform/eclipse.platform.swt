@@ -12,6 +12,7 @@
 #include "swt.h"
 #include "os_structs.h"
 #include "os_stats.h"
+#include "string.h"
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_wpf_OS_##func
 
@@ -425,12 +426,18 @@ public:
 		this->handle = handle;
 		_isIcon = isIcon;
 	}
+	[DllImport("user32.dll", SetLastError = true)]
+	static bool DestroyIcon(int hIcon);
+
+	[DllImport("user32.dll", SetLastError = true)]
+	static bool DestroyCursor(int hCursor);
+	
 	virtual bool ReleaseHandle () override {
 		bool result;
 		if (_isIcon) {
-			result = DestroyIcon((HICON)(int)handle);
+			result = DestroyIcon((int)handle);
 		} else {
-			result = DestroyCursor((HCURSOR)(int)handle);
+			result = DestroyCursor((int)handle);
 		}
 		handle = (IntPtr)(-1);
 		return result;

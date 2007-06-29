@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.wpf.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -672,7 +673,7 @@ protected void create (DeviceData data) {
 }
 
 void createDisplay (DeviceData data) {
-	COM.OleInitialize (0);
+	Win32.OleInitialize (0);
 	application = OS.gcnew_Application();
 	if (application == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.Application_ShutdownMode (application, OS.ShutdownMode_OnExplicitShutdown);
@@ -1038,7 +1039,7 @@ public Control getCursorControl () {
 public Point getCursorLocation () {
 	checkDevice ();	
 	POINT pt = new POINT ();
-	OS.GetCursorPos (pt);
+	Win32.GetCursorPos (pt);
 	return new Point (pt.x, pt.y);
 }
 
@@ -1513,43 +1514,43 @@ public Image getSystemImage (int id) {
 	switch (id) {
 		case SWT.ICON_ERROR: {
 			if (errorImage != null) return errorImage;
-			int hIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			int hIcon = Win32.LoadImage (0, Win32.OIC_HAND, Win32.IMAGE_ICON, 0, 0, Win32.LR_SHARED);
 			int empty = OS.Int32Rect_Empty ();
 			int source = OS.Imaging_CreateBitmapSourceFromHIcon (hIcon, empty, 0);
 			errorImage = Image.wpf_new (this, SWT.BITMAP, source);
 			OS.GCHandle_Free (empty);
-			OS.DestroyIcon (hIcon);
+			Win32.DestroyIcon (hIcon);
 			return errorImage;
 		}
 		case SWT.ICON_WORKING:
 		case SWT.ICON_INFORMATION: {
 			if (infoImage != null) return infoImage;
-			int hIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			int hIcon = Win32.LoadImage (0, Win32.OIC_INFORMATION, Win32.IMAGE_ICON, 0, 0, Win32.LR_SHARED);
 			int empty = OS.Int32Rect_Empty ();
 			int source = OS.Imaging_CreateBitmapSourceFromHIcon (hIcon, empty, 0);
 			infoImage = Image.wpf_new (this, SWT.BITMAP, source);
 			OS.GCHandle_Free (empty);
-			OS.DestroyIcon (hIcon);
+			Win32.DestroyIcon (hIcon);
 			return infoImage;
 		}
 		case SWT.ICON_QUESTION: {
 			if (questionImage != null) return questionImage;
-			int hIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			int hIcon = Win32.LoadImage (0, Win32.OIC_QUES, Win32.IMAGE_ICON, 0, 0, Win32.LR_SHARED);
 			int empty = OS.Int32Rect_Empty ();
 			int source = OS.Imaging_CreateBitmapSourceFromHIcon (hIcon, empty, 0);
 			questionImage = Image.wpf_new (this, SWT.BITMAP, source);
 			OS.GCHandle_Free (empty);
-			OS.DestroyIcon (hIcon);
+			Win32.DestroyIcon (hIcon);
 			return questionImage;
 		}
 		case SWT.ICON_WARNING: {
 			if (warningIcon != null) return warningIcon;
-			int hIcon = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			int hIcon = Win32.LoadImage (0, Win32.OIC_BANG, Win32.IMAGE_ICON, 0, 0, Win32.LR_SHARED);
 			int empty = OS.Int32Rect_Empty ();
 			int source = OS.Imaging_CreateBitmapSourceFromHIcon (hIcon, empty, 0);
 			warningIcon = Image.wpf_new (this, SWT.BITMAP, source);
 			OS.GCHandle_Free (empty);
-			OS.DestroyIcon (hIcon);
+			Win32.DestroyIcon (hIcon);
 			return warningIcon;
 		}
 	}
@@ -2308,7 +2309,7 @@ void releaseDisplay () {
 	shells = null;
 	
 	/* Uninitialize OLE */
-	COM.OleUninitialize ();
+	Win32.OleUninitialize ();
 }
 
 /**
@@ -2549,7 +2550,7 @@ void sendEvent (int eventType, Event event) {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-	OS.SetCursorPos (x, y);
+	Win32.SetCursorPos (x, y);
 }
 
 /**
