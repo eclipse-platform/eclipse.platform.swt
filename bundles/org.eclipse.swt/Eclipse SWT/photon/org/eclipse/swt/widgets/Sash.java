@@ -154,7 +154,14 @@ void drawBand (int x, int y, int width, int height) {
 	int background = args [4];
 	int color = foreground ^ ~background;
 	int prevContext = OS.PgSetGC (phGC);
-	OS.PgSetRegion (OS.PtWidgetRid (parentHandle));
+	int disjoint = OS.PtFindDisjoint( handle );
+	if( disjoint != 0 )
+		OS.PgSetRegion( OS.PtWidgetRid( disjoint ) );
+	PhPoint_t pt = new PhPoint_t ();
+	PhRect_t tran_rect = new PhRect_t();
+	if (parentHandle <= 0) return; 
+	OS.PtWidgetOffset(parentHandle, pt);
+	OS.PgSetTranslation(pt,0);
 	OS.PgSetDrawMode (OS.Pg_DrawModeDSx);
 	OS.PgSetFillColor (color);
 	OS.PgDrawIRect (x, y, x + width - 1, y + height - 1, OS.Pg_DRAW_FILL);

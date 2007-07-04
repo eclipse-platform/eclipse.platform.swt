@@ -731,6 +731,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgSetMultiClip)
 }
 #endif
 
+#ifndef NO_PgSetMultiClipTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PgSetMultiClipTiles)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PgSetMultiClipTiles_FUNC);
+	rc = (jint)PgSetMultiClipTiles(arg0);
+	OS_NATIVE_EXIT(env, that, PgSetMultiClipTiles_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PgSetPalette
 JNIEXPORT jint JNICALL OS_NATIVE(PgSetPalette)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshort arg2, jshort arg3, jint arg4, jint arg5)
@@ -834,6 +846,20 @@ JNIEXPORT void JNICALL OS_NATIVE(PgSetTextXORColor)
 	OS_NATIVE_ENTER(env, that, PgSetTextXORColor_FUNC);
 	PgSetTextXORColor((PgColor_t)arg0, (PgColor_t)arg1);
 	OS_NATIVE_EXIT(env, that, PgSetTextXORColor_FUNC);
+}
+#endif
+
+#ifndef NO_PgSetTranslation
+JNIEXPORT void JNICALL OS_NATIVE(PgSetTranslation)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	PhPoint_t _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, PgSetTranslation_FUNC);
+	if (arg0) if ((lparg0 = getPhPoint_tFields(env, arg0, &_arg0)) == NULL) goto fail;
+	PgSetTranslation(lparg0, arg1);
+fail:
+	if (arg0 && lparg0) setPhPoint_tFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, PgSetTranslation_FUNC);
 }
 #endif
 
@@ -2271,6 +2297,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtGetResources)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, PtGetResources_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PtGetVisibleTiles
+JNIEXPORT jint JNICALL OS_NATIVE(PtGetVisibleTiles)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PtGetVisibleTiles_FUNC);
+	rc = (jint)PtGetVisibleTiles(arg0);
+	OS_NATIVE_EXIT(env, that, PtGetVisibleTiles_FUNC);
 	return rc;
 }
 #endif

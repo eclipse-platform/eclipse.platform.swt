@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 276;
-int OS_nativeFunctionCallCount[276];
+int OS_nativeFunctionCount = 279;
+int OS_nativeFunctionCallCount[279];
 char * OS_nativeFunctionNames[] = {
 	"PfDecomposeStemToID",
 	"PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III",
@@ -63,6 +63,7 @@ char * OS_nativeFunctionNames[] = {
 	"PgSetFont",
 	"PgSetGC",
 	"PgSetMultiClip",
+	"PgSetMultiClipTiles",
 	"PgSetPalette",
 	"PgSetRegion",
 	"PgSetStrokeCap",
@@ -72,6 +73,7 @@ char * OS_nativeFunctionNames[] = {
 	"PgSetStrokeWidth",
 	"PgSetTextColor",
 	"PgSetTextXORColor",
+	"PgSetTranslation",
 	"PgSetUserClip",
 	"PgShmemCreate",
 	"PgShmemDestroy",
@@ -174,6 +176,7 @@ char * OS_nativeFunctionNames[] = {
 	"PtFrameSize",
 	"PtGetAbsPosition",
 	"PtGetResources",
+	"PtGetVisibleTiles",
 	"PtGlobalFocusNext",
 	"PtGlobalFocusNextContainer",
 	"PtGlobalFocusPrev",

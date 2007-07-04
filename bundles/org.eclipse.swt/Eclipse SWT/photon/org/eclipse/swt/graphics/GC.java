@@ -340,6 +340,7 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY, 
 			dim.w = (short)Math.min(phDrawImage.size_w, x + width);
 			dim.h = (short)Math.min(phDrawImage.size_h, y + height);
 			int prevContext = setGC();
+			setGCTranslation();
 			setGCClipping();
 			OS.PgSetUserClip(clip);
 			if (phDrawImage.palette != 0) OS.PgSetPalette(phDrawImage.palette, 0, (short)0, (short)phDrawImage.colors, OS.Pg_PALSET_SOFT, 0);
@@ -360,27 +361,16 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY, 
 			PhPoint_t delta = new PhPoint_t();
 			delta.x = (short)deltaX;
 			delta.y = (short)deltaY;
-			int clipRects = data.clipRects;
-			int child_clip = getClipping(widget, data.topWidget, true, true, null);
-			if (clipRects == 0 && child_clip == 0) {
+			int visibleTiles = getClipping(widget, data.topWidget, true, true, null);
+			if ( visibleTiles == 0 )
 				OS.PtBlit(widget, rect, delta);
-			} else {
+			 else {
 				int srcTile = OS.PhGetTile();
 				OS.memmove(srcTile, rect, PhRect_t.sizeof);
-				int clip = child_clip;
-				if (clipRects != 0) {
-					clip = OS.PhRectsToTiles(clipRects, data.clipRectsCount);
-					if (child_clip != 0) {
-						short[] unused = new short[1];
-						int newClip = OS.PhIntersectTilings(clip, child_clip, unused);
-						OS.PhFreeTiles(child_clip);
-						OS.PhFreeTiles(clip);
-						clip = newClip;
-					}
-				}
-				OS.PtClippedBlit(widget, srcTile, delta, clip);
-				OS.PhFreeTiles(clip);
-			}		
+				OS.PtClippedBlit(widget, srcTile, delta, visibleTiles);
+				OS.PhFreeTiles(srcTile);;
+				OS.PhFreeTiles(visibleTiles);
+			}	
 		}
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
@@ -517,6 +507,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawArc(center, radii, startAngle, arcAngle, OS.Pg_ARC | OS.Pg_DRAW_STROKE);
 		unsetGC(prevContext);
@@ -547,6 +538,7 @@ public void drawFocus (int x, int y, int width, int height) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();	
+		setGCTranslation();
 		setGCClipping();
 		if (width < 0) width -= width;
 		if (height < 0) height -= height;
@@ -668,6 +660,7 @@ void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int
 		clip.lr_x = (short)(destX + destWidth - 1);
 		clip.lr_y = (short)(destY + destHeight - 1);
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgSetDrawMode(data.xorMode ? OS.Pg_DrawModeDSx : OS.Pg_DrawModeS);
 		dirtyBits |= DIRTY_XORMODE;
@@ -972,6 +965,7 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawILine(x1, y1, x2, y2);
 		unsetGC(prevContext);
@@ -1012,6 +1006,7 @@ public void drawOval (int x, int y, int width, int height) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawEllipse(center, radii,	OS.Pg_DRAW_STROKE | OS.Pg_EXTENT_BASED);
 		unsetGC(prevContext);
@@ -1071,6 +1066,7 @@ public void drawPoint (int x, int y) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawIPixel(x, y);
 		unsetGC(prevContext);
@@ -1108,6 +1104,7 @@ public void drawPolygon(int[] pointArray) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawPolygon(points, pointArray.length / 2,	new PhPoint_t(), OS.Pg_DRAW_STROKE | OS.Pg_CLOSED);
 		unsetGC(prevContext);
@@ -1145,6 +1142,7 @@ public void drawPolyline(int[] pointArray) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawPolygon(points, pointArray.length / 2,	new PhPoint_t(), OS.Pg_DRAW_STROKE);
 		unsetGC(prevContext);
@@ -1172,7 +1170,8 @@ public void drawRectangle (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int flags = OS.PtEnter(0);
 	try {
-		int prevContext = setGC();	
+		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		// Don't subtract one, so that the bottom/right edges are drawn
 		OS.PgDrawIRect(x, y, x + width, y + height, OS.Pg_DRAW_STROKE);
@@ -1236,6 +1235,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawRoundRect(rect, radii, OS.Pg_DRAW_STROKE);
 		unsetGC(prevContext);
@@ -1297,6 +1297,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();	
+		setGCTranslation();
 		setGCClipping();
 		PhPoint_t pos = new PhPoint_t();
 		pos.x = (short)x;
@@ -1615,7 +1616,8 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 	
 	int flags = OS.PtEnter(0);
 	try {
-		int prevContext = setGC();	
+		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawArc(center, radii, startAngle, arcAngle, OS.Pg_ARC_PIE | OS.Pg_DRAW_FILL);
 		unsetGC(prevContext);
@@ -1675,7 +1677,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	lowerRight.y = (short)(y + height - 1);
 	int flags = OS.PtEnter(0);
 	try {
-		int prevContext = setGC();	
+		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawGradient(upperLeft, lowerRight,
 			vertical ? OS.Pg_GRAD_VERTICAL : OS.Pg_GRAD_HORIZONTAL, OS.Pg_GRAD_LINEAR,
@@ -1713,6 +1716,7 @@ public void fillOval (int x, int y, int width, int height) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawEllipse(center, radii,	OS.Pg_DRAW_FILL | OS.Pg_EXTENT_BASED);
 		unsetGC(prevContext);
@@ -1781,6 +1785,7 @@ public void fillPolygon(int[] pointArray) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawPolygon(points, pointArray.length / 2,	new PhPoint_t(), OS.Pg_DRAW_FILL | OS.Pg_CLOSED);
 		unsetGC(prevContext);
@@ -1810,6 +1815,7 @@ public void fillRectangle (int x, int y, int width, int height) {
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();	
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawIRect(x, y, x + width - 1, y + height - 1, OS.Pg_DRAW_FILL);
 		unsetGC(prevContext);
@@ -1866,6 +1872,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();
+		setGCTranslation();
 		setGCClipping();
 		OS.PgDrawRoundRect(rect, radii, OS.Pg_DRAW_FILL);
 		unsetGC(prevContext);
@@ -3241,104 +3248,174 @@ int setGC() {
 
 void setGCClipping() {
 	int rid = data.rid;
-	int widget = data.widget;
-	if (rid == OS.Ph_DEV_RID) OS.PgSetRegion(rid);
-	else if (widget != 0) OS.PgSetRegion(OS.PtWidgetRid(widget));
-	else if (data.image != null) return;
-	
-	/* NOTE: PgSetRegion resets the clipping rectangle */
-	OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);	
+    int widget = data.widget;
+    if(OS.QNX_MAJOR >= 6 && OS.QNX_MINOR >= 3)
+    {
+        if(widget > 0)
+        {
+            int visibleTiles = OS.PtGetVisibleTiles(widget);
+            if(data.clipRects != 0)
+            {
+                int gcClip = OS.PhRectsToTiles(data.clipRects, data.clipRectsCount);
+                PhPoint_t pt = new PhPoint_t();
+                PhRect_t tran_rect = new PhRect_t();
+                OS.PtWidgetExtent(widget, tran_rect);
+                OS.PtWidgetOffset(widget, pt);
+                pt.x += tran_rect.ul_x;
+                pt.y += tran_rect.ul_y;
+                OS.PhTranslateTiles(gcClip, pt);
+                int inter = OS.PhIntersectTilings(visibleTiles, gcClip, new short[1]);
+                if(inter != 0)
+                {
+                    OS.PgSetMultiClipTiles(inter);
+                    OS.free(inter);
+                }
+                OS.free(gcClip);
+            } else
+            {
+                OS.PgSetMultiClipTiles(visibleTiles);
+            }
+            OS.free(visibleTiles);
+        }
+        return;
+    }
+    if(rid == 1)
+        OS.PgSetRegion(rid);
+    else
+    if(widget != 0)
+        OS.PgSetRegion(OS.PtWidgetRid(widget));
+    else
+    if(data.image != null)
+        return;
+    if(widget == 0)
+        return;
+    OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);
+    int clip_tile = getClipping(widget, data.topWidget, true, true, null);
+    int clip_rects_count[] = new int[1];
+    int clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
+    OS.PhFreeTiles(clip_tile);
+    if(clip_rects_count[0] == 0)
+    {
+        clip_rects_count[0] = 1;
+        OS.free(clip_rects);
+        clip_rects = OS.malloc(8);
+        OS.memset(clip_rects, 0, 8);
+    }
+    OS.PgSetClipping((short)clip_rects_count[0], clip_rects);
+    OS.free(clip_rects);
+}
 
-	if (widget == 0 || data.paint) return;
-	
-	int clip_tile = getClipping(widget, data.topWidget, true, true, null);
-	int[] clip_rects_count = new int[1];
-	int clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
-	OS.PhFreeTiles(clip_tile);	
-	if (clip_rects_count[0] == 0) {
-		clip_rects_count[0] = 1;
-		OS.free(clip_rects);
-		clip_rects = OS.malloc(PhRect_t.sizeof);
-		OS.memset(clip_rects, 0, PhRect_t.sizeof);
-	}
-	OS.PgSetClipping((short)clip_rects_count[0], clip_rects);
-	OS.free(clip_rects);
+void setGCTranslation() {
+	PhPoint_t pt = new PhPoint_t ();
+	PhRect_t tran_rect = new PhRect_t();
+	if (data.widget <= 0 ) return; 
+	OS.PtWidgetExtent(data.widget, tran_rect) ;
+	OS.PtWidgetOffset(data.widget, pt);
+	pt.x += tran_rect.ul_x;
+	pt.y += tran_rect.ul_y;
+	OS.PgSetTranslation(pt,0);
 }
 
 int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSiblings, int[] child_tiles) {
-	int child_tile = 0;
-	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
+	if(OS.QNX_MAJOR >= 6 && OS.QNX_MINOR >= 3)
+        if(widget > 0)
+        {
+            int visTiles = OS.PtGetVisibleTiles(widget);
+            PhPoint_t pt = new PhPoint_t();
+            PhRect_t tranRect = new PhRect_t();
+            OS.PtWidgetExtent(widget, tranRect);
+            OS.PtWidgetOffset(widget, pt);
+            pt.x += tranRect.ul_x;
+            pt.y += tranRect.ul_y;
+            int tranPoint = OS.malloc(4);
+            OS.memmove(tranPoint, pt, 4);
+            OS.PhDeTranslateTiles(visTiles, tranPoint);
+            return visTiles;
+        } else
+        {
+            return 0;
+        }
+    int child_tile = 0;
+    int widget_tile = OS.PhGetTile();
+    PhRect_t rect = new PhRect_t();
+    int args[] = {
+        1006, 0, 0, 2015, 0, 0
+    };
+    if(clipSiblings && OS.PtWidgetClass(topWidget) != OS.PtWindow())
+    {
+        for(int temp_widget = topWidget; (temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0;)
+            if(OS.PtWidgetIsRealized(temp_widget))
+            {
+                int tile = OS.PhGetTile();
+                if(child_tile == 0)
+                    child_tile = tile;
+                else
+                    child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
+                OS.PtWidgetExtent(temp_widget, tile);
+                args[1] = args[4] = 0;
+                OS.PtGetResources(temp_widget, args.length / 3, args);
+                if((args[1] & 0x100) != 0)
+                {
+                    int basic_flags = args[4];
+                    OS.memmove(rect, tile, 8);
+                    if((basic_flags & 1) != 0)
+                        rect.ul_y++;
+                    if((basic_flags & 2) != 0)
+                        rect.lr_y--;
+                    if((basic_flags & 8) != 0)
+                        rect.ul_x++;
+                    if((basic_flags & 4) != 0)
+                        rect.lr_x--;
+                    OS.memmove(tile, rect, 8);
+                }
+            }
 
-	PhRect_t rect = new PhRect_t ();
-	int args [] = {OS.Pt_ARG_FLAGS, 0, 0, OS.Pt_ARG_BASIC_FLAGS, 0, 0};
-	
-	/* Get the rectangle of all siblings in front of the widget */
-	if (clipSiblings && OS.PtWidgetClass(topWidget) != OS.PtWindow()) {
-		int temp_widget = topWidget;
-		while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
-			if (OS.PtWidgetIsRealized(temp_widget)) {
-				int tile = OS.PhGetTile();
-				if (child_tile == 0) child_tile = tile;			
-				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
-				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
-				args [1] = args [4] = 0;
-				OS.PtGetResources(temp_widget, args.length / 3, args);
-				if ((args [1] & OS.Pt_HIGHLIGHTED) != 0) {
-					int basic_flags = args [4];
-					OS.memmove(rect, tile, PhRect_t.sizeof);
-					if ((basic_flags & OS.Pt_TOP_ETCH) != 0) rect.ul_y++;
-					if ((basic_flags & OS.Pt_BOTTOM_ETCH) != 0) rect.lr_y--;
-					if ((basic_flags & OS.Pt_RIGHT_ETCH) != 0) rect.ul_x++;
-					if ((basic_flags & OS.Pt_LEFT_ETCH) != 0) rect.lr_x--;
-					OS.memmove(tile, rect, PhRect_t.sizeof);
-				}
-			}
-		}
-		/* Translate the siblings rectangles to the widget's coordinates */
-		OS.PtWidgetCanvas(topWidget, widget_tile); // NOTE: widget_tile->rect
-		OS.PhDeTranslateTiles(child_tile, widget_tile); // NOTE: widget_tile->rect.ul
-	}
-			
-	/* Get the rectangle of the widget's children */
-	if (clipChildren) {
-		int temp_widget = OS.PtWidgetChildBack(widget);
-		while (temp_widget != 0) {
-			if (OS.PtWidgetIsRealized(temp_widget)) {
-				int tile = OS.PhGetTile();
-				if (child_tile == 0) child_tile = tile;			
-				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
-				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
-				args [1] = args [4] = 0;
-				OS.PtGetResources(temp_widget, args.length / 3, args);
-				if ((args [1] & OS.Pt_HIGHLIGHTED) != 0) {
-					int basic_flags = args [4];
-					OS.memmove(rect, tile, PhRect_t.sizeof);
-					if ((basic_flags & OS.Pt_TOP_ETCH) != 0) rect.ul_y++;
-					if ((basic_flags & OS.Pt_BOTTOM_ETCH) != 0) rect.lr_y--;
-					if ((basic_flags & OS.Pt_RIGHT_ETCH) != 0) rect.ul_x++;
-					if ((basic_flags & OS.Pt_LEFT_ETCH) != 0) rect.lr_x--;
-					OS.memmove(tile, rect, PhRect_t.sizeof);
-				}
-			}
-			temp_widget = OS.PtWidgetBrotherInFront(temp_widget);
-		}
-	}
+        OS.PtWidgetCanvas(topWidget, widget_tile);
+        OS.PhDeTranslateTiles(child_tile, widget_tile);
+    }
+    if(clipChildren)
+    {
+        for(int temp_widget = OS.PtWidgetChildBack(widget); temp_widget != 0; temp_widget = OS.PtWidgetBrotherInFront(temp_widget))
+            if(OS.PtWidgetIsRealized(temp_widget))
+            {
+                int tile = OS.PhGetTile();
+                if(child_tile == 0)
+                    child_tile = tile;
+                else
+                    child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
+                OS.PtWidgetExtent(temp_widget, tile);
+                args[1] = args[4] = 0;
+                OS.PtGetResources(temp_widget, args.length / 3, args);
+                if((args[1] & 0x100) != 0)
+                {
+                    int basic_flags = args[4];
+                    OS.memmove(rect, tile, 8);
+                    if((basic_flags & 1) != 0)
+                        rect.ul_y++;
+                    if((basic_flags & 2) != 0)
+                        rect.lr_y--;
+                    if((basic_flags & 8) != 0)
+                        rect.ul_x++;
+                    if((basic_flags & 4) != 0)
+                        rect.lr_x--;
+                    OS.memmove(tile, rect, 8);
+                }
+            }
 
-	/* Get the widget's rectangle */
-	OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
-	OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
-
-
-	/* Clip the widget's rectangle from the child/siblings rectangle's */
-	if (child_tile != 0) {
-		if (child_tiles != null) {
-			child_tiles[0] = OS.PhIntersectTilings(widget_tile, child_tile, new short[1]);
-		}
-		int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
-		OS.PhFreeTiles(child_tile);
-		return clip_tile;
-	}
-	return widget_tile;
+    }
+    OS.PtWidgetCanvas(widget, widget_tile);
+    OS.PhDeTranslateTiles(widget_tile, widget_tile);
+    if(child_tile != 0)
+    {
+        if(child_tiles != null)
+            child_tiles[0] = OS.PhIntersectTilings(widget_tile, child_tile, new short[1]);
+        int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
+        OS.PhFreeTiles(child_tile);
+        return clip_tile;
+    } else
+    {
+        return widget_tile;
+    }
 }
 
 /**

@@ -673,68 +673,70 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 }
 
 int drawProc (int widget, int damage) {
-	drawWidget (widget, damage);
+	if (widget <=0) return OS.Pt_CONTINUE; 
+	drawWidget (widget, damage );
 	if (!hooks(SWT.Paint) && !filters (SWT.Paint)) return OS.Pt_CONTINUE;
-	
-	/* Translate the damage to widget coordinates */
-	short [] widgetX = new short [1];
-	short [] widgetY = new short [1];
-	OS.PtGetAbsPosition (handle, widgetX, widgetY);
-	short [] shellX = new short [1];
-	short [] shellY = new short [1];
-	int shellHandle = OS.PtFindDisjoint (handle);
-	OS.PtGetAbsPosition (shellHandle, shellX, shellY);
-	PhPoint_t pt = new PhPoint_t ();
-	pt.x = (short) (shellX [0] - widgetX [0]);
-	pt.y = (short) (shellY [0] - widgetY [0]);
-	damage = OS.PhCopyTiles (damage);
-	damage = OS.PhTranslateTiles (damage, pt);
-	
 	/* Send the paint event */
+	PhPoint_t pt = new PhPoint_t ();  
+	PhRect_t widRect = new PhRect_t();    
+	OS.PtWidgetExtent(widget, widRect) ;
+	OS.PtWidgetOffset(widget, pt);
+	pt.x += widRect.ul_x;
+	pt.y += widRect.ul_y;
+	damage = OS.PhCopyTiles( damage );
 	PhTile_t tile = new PhTile_t ();
 	OS.memmove (tile, damage, PhTile_t.sizeof);
+	int transPoint = OS.malloc ( PhPoint_t.sizeof);
+	OS.memmove(transPoint, pt, PhPoint_t.sizeof);
+	OS.PhDeTranslateTiles(damage, transPoint);
+	OS.free(transPoint);
+	OS.memmove (tile, damage, PhTile_t.sizeof);
 	boolean noMerge = (style & SWT.NO_MERGE_PAINTS) != 0 && (state & CANVAS) != 0;
-	if (tile.next != 0 && noMerge) {
-		while (tile.next != 0) {
-			OS.memmove (tile, tile.next, PhTile_t.sizeof);
-			if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
-				Event event = new Event ();
-				event.x = tile.rect_ul_x;
-				event.y = tile.rect_ul_y;
-				event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
-				event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-				GCData data = new GCData();
-				if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
-					data.paint = true;
-				}
-				GC gc = event.gc = GC.photon_new (this, data);
-				gc.setClipping (event.x, event.y, event.width, event.height);
-				sendEvent (SWT.Paint, event);
-				if (isDisposed ()) break;
-				gc.dispose ();
-				event.gc = null;
-			}
-		}
-	} else {
-		if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
+	if (tile.next != 0 && noMerge) 
+	{
+		OS.memmove (tile, tile.next, PhTile_t.sizeof);
+		while (tile.next != 0) 
+		{
 			Event event = new Event ();
-			event.x = tile.rect_ul_x;
-			event.y = tile.rect_ul_y;
 			event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
 			event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-			Region region = Region.photon_new (display, tile.next);
-			GCData data = new GCData();
-			if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
-				data.paint = true;
-			}
-			GC gc = event.gc = GC.photon_new (this, data);
-			gc.setClipping (region);
+			event.x = tile.rect_ul_x;
+			event.y = tile.rect_ul_y; 
+			GC gc = event.gc = new GC (this);
+			gc.setClipping(event.x, event.y, event.width, event.height);
+			sendEvent (SWT.Paint, event);
+			if (isDisposed ()) break;
+			gc.dispose ();
+			event.gc = null;
+			if ( tile.next != 0 )
+				OS.memmove (tile, tile.next, PhTile_t.sizeof);
+		}
+	} 
+	else 
+	{
+		int rect1 = OS.malloc (PhRect_t.sizeof);
+		int rect2 = OS.malloc (PhRect_t.sizeof);
+		OS.memmove (rect1, tile, PhRect_t.sizeof);
+		OS.memmove (rect2, widRect, PhRect_t.sizeof);
+		int inter = OS.PhRectIntersect(rect1, rect2);
+		if ( inter == 1 )
+		{
+			OS.memmove(widRect, rect1, PhRect_t.sizeof);
+			Event event = new Event ();
+			event.x = widRect.ul_x;
+			event.y = widRect.ul_y; 
+			event.width = widRect.lr_x - widRect.ul_x + 1;
+			event.height = widRect.lr_y - widRect.ul_y + 1;
+            GC gc = event.gc = new GC (this);
+            gc.setClipping(event.x, event.y, event.width, event.height );
 			sendEvent (SWT.Paint, event);
 			gc.dispose ();
 			event.gc = null;
 		}
+		OS.free(rect1);
+		OS.free(rect2);
 	}
-	OS.PhFreeTiles (damage);
+	OS.PhFreeTiles( damage );
 	return OS.Pt_CONTINUE;
 }
 
@@ -1226,6 +1228,9 @@ public int internal_new_GC (GCData data) {
 	OS.PtGetResources (handle, args.length / 3, args);
 	data.device = display;
 	data.widget = handle;
+	int disjoint = OS.PtFindDisjoint( handle );
+	if( disjoint != 0 )
+		OS.PgSetRegion( OS.PtWidgetRid( disjoint ) );
 	data.topWidget = topHandle ();
 	data.foreground = args [1];
 	data.background = args [4];
