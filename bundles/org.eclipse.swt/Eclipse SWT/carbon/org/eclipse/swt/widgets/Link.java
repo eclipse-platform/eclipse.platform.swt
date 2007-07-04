@@ -641,14 +641,18 @@ public void setText (String string) {
 		Point point = offsets [i];
 		layout.setStyle (linkStyle, point.x, point.y);
 	}
-	TextStyle mnemonicStyle = new TextStyle (null, null, null);
-	mnemonicStyle.underline = true;
-	for (int i = 0; i < mnemonics.length; i++) {
-		int mnemonic  = mnemonics [i];
-		if (mnemonic != -1) {
-			layout.setStyle (mnemonicStyle, mnemonic, mnemonic);
-		}
-	}
+	/*
+	* This code is intentionally commented. Mnemonics are 
+	* drawn in Macintosh.
+	*/
+//	TextStyle mnemonicStyle = new TextStyle (null, null, null);
+//	mnemonicStyle.underline = true;
+//	for (int i = 0; i < mnemonics.length; i++) {
+//		int mnemonic  = mnemonics [i];
+//		if (mnemonic != -1) {
+//			layout.setStyle (mnemonicStyle, mnemonic, mnemonic);
+//		}
+//	}
 	redraw ();    
 }
 
