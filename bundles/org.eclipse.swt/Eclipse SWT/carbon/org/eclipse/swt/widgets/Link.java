@@ -643,7 +643,7 @@ public void setText (String string) {
 	}
 	/*
 	* This code is intentionally commented. Mnemonics are 
-	* drawn in Macintosh.
+	* not drawn on the Macintosh.
 	*/
 //	TextStyle mnemonicStyle = new TextStyle (null, null, null);
 //	mnemonicStyle.underline = true;
