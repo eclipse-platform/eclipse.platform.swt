@@ -42,24 +42,23 @@ public static void main (String [] args) {
 		int leftMargin = dpi.x + trim.x; // one inch from left side of paper
 		int topMargin = dpi.y / 2 + trim.y; // one-half inch from top edge of paper
 		GC gc = new GC(printer);
-		Font font = gc.getFont(); // example just uses printer's default font
 		if (printer.startPage()) {
 			gc.setBackground(white);
 			gc.setForeground(black);
 			String testString = "Hello World!";
 			Point extent = gc.stringExtent(testString);
-			gc.drawString(testString, leftMargin, topMargin + font.getFontData()[0].getHeight());
+			gc.drawString(testString, leftMargin, topMargin);
 			gc.setForeground(red);
 			gc.drawRectangle(leftMargin, topMargin, extent.x, extent.y);
 			printer.endPage();
 		}
 		gc.dispose();
 		printer.endJob();
-		}
+	}
 	printer.dispose();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose();
-	}
+}
 }
