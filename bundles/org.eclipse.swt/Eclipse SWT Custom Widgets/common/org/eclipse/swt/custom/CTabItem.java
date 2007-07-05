@@ -143,16 +143,19 @@ String shortenText(GC gc, String text, int width, String ellipses) {
 	if (gc.textExtent(text, FLAGS).x <= width) return text;
 	int ellipseWidth = gc.textExtent(ellipses, FLAGS).x;
 	int length = text.length();
-	int end = length - 1;
+	TextLayout layout = new TextLayout(getDisplay());
+	layout.setText(text);
+	int end = layout.getPreviousOffset(length, SWT.MOVEMENT_CLUSTER);
 	while (end > 0) {
 		text = text.substring(0, end);
 		int l = gc.textExtent(text, FLAGS).x;
 		if (l + ellipseWidth <= width) {
-			return text + ellipses;
+			break;
 		}
-		end--;
+		end = layout.getPreviousOffset(end, SWT.MOVEMENT_CLUSTER);
 	}
-	return text.substring(0,1);
+	layout.dispose();
+	return end == 0 ? text.substring(0, 1) : text + ellipses;
 }
 
 public void dispose() {
