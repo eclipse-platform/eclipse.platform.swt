@@ -6390,9 +6390,7 @@ boolean scrollHorizontal(int pixels, boolean adjustScrollBar) {
 		}
 	}
 	horizontalScrollOffset += pixels;
-	int oldColumnX = columnX;
 	setCaretLocation();
-	columnX = oldColumnX;
 	return true;
 }
 /**
@@ -6445,9 +6443,7 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 		calculateTopIndex(pixels);
 		super.redraw();
 	}
-	int oldColumnX = columnX;
 	setCaretLocation();
-	columnX = oldColumnX;
 	return true;
 }
 void scrollText(int srcY, int destY) {
