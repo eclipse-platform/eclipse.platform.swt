@@ -836,6 +836,10 @@ public:
 	void DragEventHandler (Object^ sender, DragEventArgs^ e) {
 		EventHandler (sender, e);	
 	}
+	
+	void DragDeltaEventHandler (Object^ sender, DragDeltaEventArgs^ e) {
+		EventHandler (sender, e);	
+	}
 		
 	void GiveFeedbackEventHandler (Object^ sender, GiveFeedbackEventArgs^ e) {
 		EventHandler (sender, e);	
@@ -964,6 +968,10 @@ HANDLER_CONSTRUCTOR (RoutedEventHandler, RoutedEventHandler, "(II)V")
 
 #ifndef NO_gcnew_1DragEventHandler
 HANDLER_CONSTRUCTOR (DragEventHandler, DragEventHandler, "(II)V")
+#endif
+
+#ifndef NO_gcnew_1DragDeltaEventHandler
+HANDLER_CONSTRUCTOR (DragDeltaEventHandler, DragDeltaEventHandler, "(II)V")
 #endif
 
 #ifndef NO_gcnew_1GiveFeedbackEventHandler

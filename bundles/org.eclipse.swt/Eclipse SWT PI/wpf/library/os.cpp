@@ -2439,6 +2439,30 @@ JNIEXPORT void JNICALL OS_NATIVE(DependencyObject_1SetValue)
 }
 #endif
 
+#ifndef NO_DependencyPropertyDescriptor_1AddValueChanged
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(DependencyPropertyDescriptor_1AddValueChanged)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+JNIEXPORT void JNICALL OS_NATIVE(DependencyPropertyDescriptor_1AddValueChanged)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, DependencyPropertyDescriptor_1AddValueChanged_FUNC);
+	((DependencyPropertyDescriptor^)TO_OBJECT(arg0))->AddValueChanged((Object^)TO_OBJECT(arg1), (EventHandler^)TO_OBJECT(arg2));
+	OS_NATIVE_EXIT(env, that, DependencyPropertyDescriptor_1AddValueChanged_FUNC);
+}
+#endif
+
+#ifndef NO_DependencyPropertyDescriptor_1FromProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DependencyPropertyDescriptor_1FromProperty)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(DependencyPropertyDescriptor_1FromProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DependencyPropertyDescriptor_1FromProperty_FUNC);
+	rc = (jint)TO_HANDLE(DependencyPropertyDescriptor::FromProperty((DependencyProperty^)TO_OBJECT(arg0), (Type^)TO_OBJECT(arg1)));
+	OS_NATIVE_EXIT(env, that, DependencyPropertyDescriptor_1FromProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DependencyProperty_1UnsetValue
 extern "C" JNIEXPORT jint JNICALL OS_NATIVE(DependencyProperty_1UnsetValue)(JNIEnv *env, jclass that);
 JNIEXPORT jint JNICALL OS_NATIVE(DependencyProperty_1UnsetValue)
@@ -4092,6 +4116,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1CursorProperty)
 	OS_NATIVE_ENTER(env, that, FrameworkElement_1CursorProperty_FUNC);
 	rc = (jint)TO_HANDLE(FrameworkElement::CursorProperty);
 	OS_NATIVE_EXIT(env, that, FrameworkElement_1CursorProperty_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_FrameworkElement_1FindResource
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1FindResource)(JNIEnv *env, jclass that, jint arg0, jint arg1);
+JNIEXPORT jint JNICALL OS_NATIVE(FrameworkElement_1FindResource)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, FrameworkElement_1FindResource_FUNC);
+	rc = (jint)TO_HANDLE(((FrameworkElement^)TO_OBJECT(arg0))->FindResource((Object^)TO_OBJECT(arg1)));
+	OS_NATIVE_EXIT(env, that, FrameworkElement_1FindResource_FUNC);
 	return rc;
 }
 #endif
@@ -10509,6 +10546,19 @@ JNIEXPORT jdouble JNICALL OS_NATIVE(Thickness_1Top)
 }
 #endif
 
+#ifndef NO_Thumb_1DragDeltaEvent
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(Thumb_1DragDeltaEvent)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(Thumb_1DragDeltaEvent)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, Thumb_1DragDeltaEvent_FUNC);
+	rc = (jint)TO_HANDLE(Thumb::DragDeltaEvent);
+	OS_NATIVE_EXIT(env, that, Thumb_1DragDeltaEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TileBrush_1AlignmentX
 extern "C" JNIEXPORT void JNICALL OS_NATIVE(TileBrush_1AlignmentX)(JNIEnv *env, jclass that, jint arg0, jint arg1);
 JNIEXPORT void JNICALL OS_NATIVE(TileBrush_1AlignmentX)
@@ -10839,6 +10889,45 @@ JNIEXPORT void JNICALL OS_NATIVE(ToolBar_1BandIndex__II)
 }
 #endif
 
+#ifndef NO_ToolBar_1BandProperty
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1BandProperty)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1BandProperty)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1BandProperty_FUNC);
+	rc = (jint)TO_HANDLE(ToolBar::BandProperty);
+	OS_NATIVE_EXIT(env, that, ToolBar_1BandProperty_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ToolBar_1ButtonStyleKey
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1ButtonStyleKey)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1ButtonStyleKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1ButtonStyleKey_FUNC);
+	rc = (jint)TO_HANDLE(ToolBar::ButtonStyleKey);
+	OS_NATIVE_EXIT(env, that, ToolBar_1ButtonStyleKey_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ToolBar_1CheckBoxStyleKey
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1CheckBoxStyleKey)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1CheckBoxStyleKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1CheckBoxStyleKey_FUNC);
+	rc = (jint)TO_HANDLE(ToolBar::CheckBoxStyleKey);
+	OS_NATIVE_EXIT(env, that, ToolBar_1CheckBoxStyleKey_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ToolBar_1HasOverflowItems
 extern "C" JNIEXPORT jboolean JNICALL OS_NATIVE(ToolBar_1HasOverflowItems)(JNIEnv *env, jclass that, jint arg0);
 JNIEXPORT jboolean JNICALL OS_NATIVE(ToolBar_1HasOverflowItems)
@@ -10848,6 +10937,32 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ToolBar_1HasOverflowItems)
 	OS_NATIVE_ENTER(env, that, ToolBar_1HasOverflowItems_FUNC);
 	rc = (jboolean)((ToolBar^)TO_OBJECT(arg0))->HasOverflowItems;
 	OS_NATIVE_EXIT(env, that, ToolBar_1HasOverflowItems_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ToolBar_1RadioButtonStyleKey
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1RadioButtonStyleKey)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1RadioButtonStyleKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1RadioButtonStyleKey_FUNC);
+	rc = (jint)TO_HANDLE(ToolBar::RadioButtonStyleKey);
+	OS_NATIVE_EXIT(env, that, ToolBar_1RadioButtonStyleKey_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ToolBar_1SeparatorStyleKey
+extern "C" JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1SeparatorStyleKey)(JNIEnv *env, jclass that);
+JNIEXPORT jint JNICALL OS_NATIVE(ToolBar_1SeparatorStyleKey)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ToolBar_1SeparatorStyleKey_FUNC);
+	rc = (jint)TO_HANDLE(ToolBar::SeparatorStyleKey);
+	OS_NATIVE_EXIT(env, that, ToolBar_1SeparatorStyleKey_FUNC);
 	return rc;
 }
 #endif
@@ -11366,12 +11481,12 @@ JNIEXPORT jint JNICALL OS_NATIVE(UIElementCollection_1default)
 #endif
 
 #ifndef NO_UIElement_1AddHandler
-extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1AddHandler)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2);
+extern "C" JNIEXPORT void JNICALL OS_NATIVE(UIElement_1AddHandler)(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3);
 JNIEXPORT void JNICALL OS_NATIVE(UIElement_1AddHandler)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
 {
 	OS_NATIVE_ENTER(env, that, UIElement_1AddHandler_FUNC);
-	((UIElement^)TO_OBJECT(arg0))->AddHandler((RoutedEvent^)TO_OBJECT(arg1), (Delegate^)TO_OBJECT(arg2));
+	((UIElement^)TO_OBJECT(arg0))->AddHandler((RoutedEvent^)TO_OBJECT(arg1), (Delegate^)TO_OBJECT(arg2), arg3);
 	OS_NATIVE_EXIT(env, that, UIElement_1AddHandler_FUNC);
 }
 #endif

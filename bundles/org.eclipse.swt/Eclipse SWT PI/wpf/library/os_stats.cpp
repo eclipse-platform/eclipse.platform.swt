@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1253;
-int OS_nativeFunctionCallCount[1253];
+int OS_nativeFunctionCount = 1264;
+int OS_nativeFunctionCallCount[1264];
 char * OS_nativeFunctionNames[] = {
 	"AccessText_1AccessKey",
 	"AccessText_1Text",
@@ -214,6 +214,8 @@ char * OS_nativeFunctionNames[] = {
 	"DependencyObject_1ClearValue",
 	"DependencyObject_1GetValue",
 	"DependencyObject_1SetValue",
+	"DependencyPropertyDescriptor_1AddValueChanged",
+	"DependencyPropertyDescriptor_1FromProperty",
 	"DependencyProperty_1UnsetValue",
 	"DispatcherFrame_1Continue",
 	"DispatcherHookEventArgs_1Operation",
@@ -351,6 +353,7 @@ char * OS_nativeFunctionNames[] = {
 	"FrameworkElement_1ContextMenuOpening",
 	"FrameworkElement_1Cursor",
 	"FrameworkElement_1CursorProperty",
+	"FrameworkElement_1FindResource",
 	"FrameworkElement_1FlowDirection__I",
 	"FrameworkElement_1FlowDirection__II",
 	"FrameworkElement_1FocusVisualStyle",
@@ -887,6 +890,7 @@ char * OS_nativeFunctionNames[] = {
 	"Thickness_1Left",
 	"Thickness_1Right",
 	"Thickness_1Top",
+	"Thumb_1DragDeltaEvent",
 	"TileBrush_1AlignmentX",
 	"TileBrush_1AlignmentY",
 	"TileBrush_1Stretch",
@@ -916,7 +920,12 @@ char * OS_nativeFunctionNames[] = {
 	"ToolBar_1Band__II",
 	"ToolBar_1BandIndex__I",
 	"ToolBar_1BandIndex__II",
+	"ToolBar_1BandProperty",
+	"ToolBar_1ButtonStyleKey",
+	"ToolBar_1CheckBoxStyleKey",
 	"ToolBar_1HasOverflowItems",
+	"ToolBar_1RadioButtonStyleKey",
+	"ToolBar_1SeparatorStyleKey",
 	"ToolBar_1SetOverflowMode",
 	"ToolBar_1typeid",
 	"TransformCollection_1Add",
@@ -1122,6 +1131,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1DispatcherTimer",
 	"gcnew_1DoubleAnimationUsingKeyFrames",
 	"gcnew_1DoubleCollection",
+	"gcnew_1DragDeltaEventHandler",
 	"gcnew_1DragEventHandler",
 	"gcnew_1DrawingVisual",
 	"gcnew_1Duration",
@@ -1208,6 +1218,7 @@ char * OS_nativeFunctionNames[] = {
 	"gcnew_1SWTTextParagraphProperties",
 	"gcnew_1SWTTextRunProperties",
 	"gcnew_1SWTTextSource",
+	"gcnew_1SWTToolBar",
 	"gcnew_1SWTTreeView",
 	"gcnew_1SWTTreeViewRowPresenter",
 	"gcnew_1SaveFileDialog",
