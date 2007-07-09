@@ -1339,19 +1339,19 @@ void hookEvents () {
 		handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleChecked");
 		if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 		int event = OS.ToggleButton_CheckedEvent ();
-		OS.UIElement_AddHandler (handle, event, handler);
+		OS.UIElement_AddHandler (handle, event, handler, false);
 		OS.GCHandle_Free (event);
 		OS.GCHandle_Free (handler);
 		handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleUnchecked");
 		if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 		event = OS.ToggleButton_UncheckedEvent ();
-		OS.UIElement_AddHandler (handle, event, handler);
+		OS.UIElement_AddHandler (handle, event, handler, false);
 		OS.GCHandle_Free (event);
 		OS.GCHandle_Free (handler);
 		handler = OS.gcnew_RoutedEventHandler (jniRef, "HandleIndeterminate");
 		if (handler == 0) error (SWT.ERROR_NO_HANDLES);
 		event = OS.ToggleButton_IndeterminateEvent ();
-		OS.UIElement_AddHandler (handle, event, handler);
+		OS.UIElement_AddHandler (handle, event, handler, false);
 		OS.GCHandle_Free (event);
 		OS.GCHandle_Free (handler);
 	}
