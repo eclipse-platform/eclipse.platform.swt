@@ -208,7 +208,6 @@ public class COM extends OS {
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEMOVE = 0xFFFFFDA2;
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEDOWN = 0xFFFFFDA3;
 	public static final int DISPID_HTMLDOCUMENTEVENTS_ONMOUSEUP = 0xFFFFFDA1;
-	public static final int DISPID_HTMLDOCUMENTEVENTS_ONSTOP = 0x00000402;
 
 	//public static final int DISPID_READYSTATE = -525;
 	//public static final int DISPID_READYSTATECHANGE = -609;
