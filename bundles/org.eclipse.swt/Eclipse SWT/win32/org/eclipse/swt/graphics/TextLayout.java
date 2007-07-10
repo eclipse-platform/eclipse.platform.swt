@@ -82,6 +82,8 @@ public final class TextLayout extends Resource {
 		int descent;
 		int leading;
 		int x;
+		int underlinePos, underlineThickness;
+		int strikeoutPos, strikeoutThickness;
 
 		/* Justify info (malloc during computeRuns) */
 		int /*long*/ justify;
@@ -822,20 +824,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							Gdip.Graphics_Restore(gdipGraphics, gstate2);
 						}
 						Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-						if (run.style != null && (run.style.underline || run.style.strikeout)) {
-							int /*long*/ newPen = hasSelection ? selPen : Gdip.Pen_new(brush, 1);
-							Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
-							if (run.style.underline) {
-								int underlineY = drawY + baseline + 1 - run.style.rise;
-								Gdip.Graphics_DrawLine(gdipGraphics, newPen, drawX, underlineY, drawX + run.width, underlineY);
-							}
-							if (run.style.strikeout) {
-								int strikeoutY = drawRunY + run.leading + (run.ascent - run.style.rise) / 2;
-								Gdip.Graphics_DrawLine(gdipGraphics, newPen, drawX, strikeoutY, drawX + run.width, strikeoutY);
-							}
-							if (newPen != selPen) Gdip.Pen_delete(newPen);
-							Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
-						}
+						drawLines(gdip, gdipGraphics, drawX, drawRunY, run, brush);
 						if (partialSelection) {
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 							gstate = Gdip.Graphics_Save(gdipGraphics);
@@ -843,18 +832,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							Gdip.Graphics_SetSmoothingMode(gdipGraphics, textAntialias);
 							Gdip.Graphics_FillPath(gdipGraphics, selBrushFg, path);
 							Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
-							if (run.style != null && (run.style.underline || run.style.strikeout)) {
-								Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
-								if (run.style.underline) {
-									int underlineY = drawY + baseline + 1 - run.style.rise;
-									Gdip.Graphics_DrawLine(gdipGraphics, selPen, rect.left, underlineY, rect.right, underlineY);
-								}
-								if (run.style.strikeout) {
-									int strikeoutY = drawRunY + run.leading + (run.ascent - run.style.rise) / 2;
-									Gdip.Graphics_DrawLine(gdipGraphics, selPen, rect.left, strikeoutY, rect.right, strikeoutY);
-								}
-								Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
-							}
+							drawLines(gdip, gdipGraphics, drawX, drawRunY, run, selBrushFg);
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
 						}
 						Gdip.GraphicsPath_delete(path);
@@ -868,39 +846,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						}
 						OS.SetTextColor(hdc, fg);
 						OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-						if (run.style != null && (run.style.underline || run.style.strikeout)) {
-							int /*long*/ newPen = hasSelection && fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.PS_SOLID, 1, fg);
-							int /*long*/ oldPen = OS.SelectObject(hdc, newPen);
-							if (run.style.underline) {
-								int underlineY = drawY + baseline + 1 - run.style.rise;
-								OS.MoveToEx(hdc, drawX, underlineY, 0);
-								OS.LineTo(hdc, drawX + run.width, underlineY);
-							}
-							if (run.style.strikeout) {
-								int strikeoutY = drawRunY + run.leading + (run.ascent - run.style.rise) / 2;
-								OS.MoveToEx(hdc, drawX, strikeoutY, 0);
-								OS.LineTo(hdc, drawX + run.width, strikeoutY);	
-							}
-							OS.SelectObject(hdc, oldPen);
-							if (!hasSelection || fg != selectionForeground.handle) OS.DeleteObject(newPen);
-						}
+						drawLines(gdip, hdc, drawX, drawRunY, run, fg);
 						if (partialSelection && fg != selectionForeground.handle) {
 							OS.SetTextColor(hdc, selectionForeground.handle);
 							OS.ScriptTextOut(hdc, run.psc, drawX + offset, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
-							if (run.style != null && (run.style.underline || run.style.strikeout)) {							
-								int /*long*/ oldPen = OS.SelectObject(hdc, selPen);
-								if (run.style.underline) {
-									int underlineY = drawY + baseline + 1 - run.style.rise;
-									OS.MoveToEx(hdc, rect.left, underlineY, 0);
-									OS.LineTo(hdc, rect.right, underlineY);
-								}
-								if (run.style.strikeout) {
-									int strikeoutY = drawRunY + run.leading + (run.ascent - run.style.rise) / 2;
-									OS.MoveToEx(hdc, rect.left, strikeoutY, 0);
-									OS.LineTo(hdc, rect.right, strikeoutY);	
-								}
-								OS.SelectObject(hdc, oldPen);
-							}
+							drawLines(gdip, hdc, drawX, drawRunY, run, selectionForeground.handle);
 						}
 					}
 				}
@@ -917,6 +867,55 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		if (gdipGraphics != 0) Gdip.Graphics_ReleaseHDC(gdipGraphics, hdc);
 		if (selBrush != 0) OS.DeleteObject (selBrush);
 		if (selPen != 0) OS.DeleteObject (selPen);
+	}
+}
+
+void drawLines(boolean advance, int /*long*/ graphics, int x, int y, StyleItem run, int /*long*/ color) {
+	if (run.style == null) return;
+	if (!run.style.underline && !run.style.strikeout) return;
+	int underlineY = y + run.ascent - run.underlinePos;
+	int strikeoutY = y + run.ascent - run.strikeoutPos;
+	if (advance) {
+		int /*long*/ newPen = 0;
+		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
+		if (run.style.underline) {
+			newPen = Gdip.Pen_new(color, run.underlineThickness);
+			Gdip.Graphics_DrawLine(graphics, newPen, x, underlineY, x + run.width, underlineY);
+		}
+		if (run.style.strikeout) {
+			if (newPen == 0 || run.strikeoutThickness != run.underlineThickness) {
+				if (newPen != 0) {
+					Gdip.Pen_delete(newPen);
+				}
+				newPen = Gdip.Pen_new(color, run.strikeoutThickness);
+			}
+			Gdip.Graphics_DrawLine(graphics, newPen, x, strikeoutY, x + run.width, strikeoutY);
+		}
+		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
+		Gdip.Pen_delete(newPen);
+	} else {
+		int /*long*/ newPen = 0;
+		int /*long*/ oldPen = 0;
+		if (run.style.underline) {
+			newPen = OS.CreatePen(OS.PS_SOLID, run.underlineThickness, color);
+			oldPen = OS.SelectObject(graphics, newPen);
+			OS.MoveToEx(graphics, x, underlineY, 0);
+			OS.LineTo(graphics, x + run.width, underlineY);
+		}
+		if (run.style.strikeout) {
+			if (newPen == 0 || run.strikeoutThickness != run.underlineThickness) {
+				if (newPen != 0) {
+					OS.SelectObject(graphics, oldPen);
+					OS.DeleteObject(newPen);
+				}
+				newPen = OS.CreatePen(OS.PS_SOLID, run.strikeoutThickness, color);
+				oldPen = OS.SelectObject(graphics, newPen);
+			}
+			OS.MoveToEx(graphics, x, strikeoutY, 0);
+			OS.LineTo(graphics, x + run.width, strikeoutY);	
+		}
+		OS.SelectObject(graphics, oldPen);
+		OS.DeleteObject(newPen);
 	}
 }
 
@@ -2423,28 +2422,58 @@ void shape (final int /*long*/ hdc, final StyleItem run) {
 	run.goffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
 	if (run.goffsets == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, run.advances, run.goffsets, abc);
-	if (run.style != null && run.style.metrics != null) {
-		GlyphMetrics metrics = run.style.metrics;
-		/*
-		*  Bug in Windows, on a Japanese machine, Uniscribe returns glyphcount
-		*  equals zero for FFFC (possibly other unicode code points), the fix
-		*  is to make sure the glyph is at least one pixel wide.
-		*/
-		run.width = metrics.width * Math.max (1, run.glyphCount);
-		run.ascent = metrics.ascent;
-		run.descent = metrics.descent;
-		run.leading = 0;
+	run.width = abc[0] + abc[1] + abc[2];
+	TextStyle style = run.style;
+	if (style != null) {
+		OUTLINETEXTMETRIC lotm = null;
+		if (style.underline || style.strikeout) {
+			lotm = OS.IsUnicode ? (OUTLINETEXTMETRIC)new OUTLINETEXTMETRICW() : new OUTLINETEXTMETRICA();
+			if (OS.GetOutlineTextMetrics(hdc, OUTLINETEXTMETRIC.sizeof, lotm) == 0) {
+				lotm = null;
+			}
+		}
+		if (style.metrics != null) {
+			GlyphMetrics metrics = style.metrics;
+			/*
+			 *  Bug in Windows, on a Japanese machine, Uniscribe returns glyphcount
+			 *  equals zero for FFFC (possibly other unicode code points), the fix
+			 *  is to make sure the glyph is at least one pixel wide.
+			 */
+			run.width = metrics.width * Math.max (1, run.glyphCount);
+			run.ascent = metrics.ascent;
+			run.descent = metrics.descent;
+			run.leading = 0;
+		} else {
+			TEXTMETRIC lptm = null;
+			if (lotm != null) {
+				lptm = OS.IsUnicode ? (TEXTMETRIC)((OUTLINETEXTMETRICW)lotm).otmTextMetrics : ((OUTLINETEXTMETRICA)lotm).otmTextMetrics;
+			} else {
+				lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+				OS.GetTextMetrics(hdc, lptm);
+			}
+			run.ascent = lptm.tmAscent;
+			run.descent = lptm.tmDescent;
+			run.leading = lptm.tmInternalLeading;
+		}
+		if (lotm != null) {
+			run.underlinePos = lotm.otmsUnderscorePosition;
+			run.underlineThickness = lotm.otmsUnderscoreSize;
+			run.strikeoutPos = lotm.otmsStrikeoutPosition;
+			run.strikeoutThickness = lotm.otmsStrikeoutSize;
+		} else {
+			run.underlinePos = 1;
+			run.underlineThickness = 1;
+			run.strikeoutPos = run.ascent / 2;
+			run.strikeoutThickness = 1;
+		}
+		run.ascent += style.rise;
+		run.descent -= style.rise;
 	} else {
-		run.width = abc[0] + abc[1] + abc[2];
 		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 		OS.GetTextMetrics(hdc, lptm);
 		run.ascent = lptm.tmAscent;
 		run.descent = lptm.tmDescent;
 		run.leading = lptm.tmInternalLeading;
-	}
-	if (run.style != null) {
-		run.ascent += run.style.rise;
-		run.descent -= +run.style.rise;
 	}
 }
 
