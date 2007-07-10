@@ -720,6 +720,11 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							rect.right = drawX + runX;
 							rect.bottom = drawY + lineHeight - lineSpacing;
 							if (gdip) {
+								if (rect.left > rect.right) {
+									int tmp = rect.left;
+									rect.left = rect.right;
+									rect.right = tmp;
+								}
 								Gdip.Graphics_FillRectangle(gdipGraphics, selBrush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 							} else {
 								OS.SelectObject(hdc, selBrush);
@@ -830,7 +835,15 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							gstate = Gdip.Graphics_Save(gdipGraphics);
 							Gdip.Graphics_SetClip(gdipGraphics, gdipRect, Gdip.CombineModeIntersect);
 							Gdip.Graphics_SetSmoothingMode(gdipGraphics, textAntialias);
+							if ((data.style & SWT.MIRRORED) != 0) {
+								gstate2 = Gdip.Graphics_Save(gdipGraphics);
+								Gdip.Graphics_ScaleTransform(gdipGraphics, -1, 1, Gdip.MatrixOrderPrepend);
+								Gdip.Graphics_TranslateTransform(gdipGraphics, -2 * drawX - run.width, 0, Gdip.MatrixOrderPrepend);
+							}
 							Gdip.Graphics_FillPath(gdipGraphics, selBrushFg, path);
+							if ((data.style & SWT.MIRRORED) != 0) {
+								Gdip.Graphics_Restore(gdipGraphics, gstate2);
+							}
 							Gdip.Graphics_SetSmoothingMode(gdipGraphics, antialias);
 							drawLines(gdip, gdipGraphics, drawX, drawRunY, run, selBrushFg);
 							Gdip.Graphics_Restore(gdipGraphics, gstate);
